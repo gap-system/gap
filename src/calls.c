@@ -32,191 +32,44 @@
 **  ...what the handlers are..
 **  ...what the other components are...
 */
-char * Revision_calls_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_calls_c =
    "@(#)$Id$";
 
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* Bag, NewBag                     */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling                  */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gvars.h"               /* global variables                */
 
 #define INCLUDE_DECLARATION_PART
-#include        "calls.h"               /* declaration part of the package */
+#include        "calls.h"               /* generic call mechanism          */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "opers.h"               /* NewFilterC                      */
+#include        "opers.h"               /* generic operations package      */
 
-#include        "lists.h"               /* IS_LIST, LEN_LIST, ELM_LIST, ...*/
+#include        "lists.h"               /* generic list package            */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "plist.h"               /* SET_LEN_PLIST, SET_ELM_PLIST,...*/
-#include        "string.h"              /* NEW_STRING, CSTR_STRING         */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings and characters          */
 
-#include        "code.h"                /* used by 'stats.h'               */
-#include        "vars.h"                /* SWITCH_TO_NEW_LVARS, SWITCH_T...*/
+#include        "code.h"                /* coder package                   */
+#include        "vars.h"                /* local variables                 */
 
-#include        "stats.h"               /* PrintStat                       */
-
-#include        "gap.h"                 /* Error                           */
+#include        "stats.h"               /* statment package                */
 
 
 /****************************************************************************
 **
 
-*T  ObjFunc . . . . . . . . . . . . . . . . type of function returning object
-**
-**  'ObjFunc' is the type of a function returning an object.
-**
-**  'ObjFunc' is defined in the declaration part of this package as follows
-**
-typedef Obj (* ObjFunc) ();
+*F * * * * wrapper for functions with variable number of arguments  * * * * *
 */
-
-
-/****************************************************************************
-**
-*F  HDLR_FUNC( <func>, <i> )  . . . . . . . <i>-th call handler of a function
-*F  NAME_FUNC( <func> ) . . . . . . . . . . . . . . . . .  name of a function
-*F  NARG_FUNC( <func> ) . . . . . . . . . . number of arguments of a function
-*F  NAMS_FUNC( <func> ) . . . . . . .  names of local variables of a function
-*F  NAMI_FUNC( <func> ) . . . . . name of <i>-th local variable of a function
-*F  PROF_FUNC( <func> ) . . . . . . . profiling information bag of a function
-*F  NLOC_FUNC( <func> ) . . . . . . . . . . .  number of locals of a function
-*F  BODY_FUNC( <func> ) . . . . . . . . . . . . . . . . .  body of a function
-*F  ENVI_FUNC( <func> ) . . . . . . . . . . . . . . environment of a function
-*F  FEXS_FUNC( <func> ) . . . . . . . . . . .  func. expr. list of a function
-*V  SIZE_FUNC . . . . . . . . . . . . . . . . . size of the bag of a function
-**
-**  These macros  make it possible  to access  the  various components  of  a
-**  function.
-**
-**  'HDLR_FUNC(<func>,<i>)' is the <i>-th handler of the function <func>.
-**
-**  'NAME_FUNC(<func>)' is the name of the function.
-**
-**  'NARG_FUNC(<func>)' is the number of arguments (-1  if  <func>  accepts a
-**  variable number of arguments).
-**
-**  'NAMS_FUNC(<func>)'  is the list of the names of the local variables,
-**
-**  'NAMI_FUNC(<func>,<i>)' is the name of the <i>-th local variable.
-**
-**  'PROF_FUNC(<func>)' is the profiling information bag.
-**
-**  'NLOC_FUNC(<func>)' is the number of local variables of  the  interpreted
-**  function <func>.
-**
-**  'BODY_FUNC(<func>)' is the body.
-**
-**  'ENVI_FUNC(<func>)'  is the  environment  (i.e., the local  variables bag
-**  that was current when <func> was created).
-**
-**  'FEXS_FUNC(<func>)'  is the function expressions list (i.e., the list of
-**  the function expressions of the functions defined inside of <func>).
-**
-**  'HDLR_FUNC',
-**  'NAME_FUNC', 'NARG_FUNC', 'NAMS_FUNC', 'NAMI_FUNC', 'PROF_FUNC',
-**  'NLOC_FUNC', 'BODY_FUNC', 'ENVI_FUNC', 'FEXS_FUNC', and 'SIZE_FUNC'
-**  are defined in the declaration part of this package as follows
-**
-#define HDLR_FUNC(func,i)     (* (ObjFunc*) (ADDR_OBJ(func) + 0 +(i)) )
-#define NAME_FUNC(func)       (*            (ADDR_OBJ(func) + 8     ) )
-#define NARG_FUNC(func)       (* (Int*)     (ADDR_OBJ(func) + 9     ) )
-#define NAMS_FUNC(func)       (*            (ADDR_OBJ(func) +10     ) )
-#define NAMI_FUNC(func,i)     ((Char*)ADDR_OBJ(ELM_LIST(NAMS_FUNC(func),i)))
-#define PROF_FUNC(func)       (*            (ADDR_OBJ(func) +11     ) )
-#define NLOC_FUNC(func)       (* (Int*)     (ADDR_OBJ(func) +12     ) )
-#define BODY_FUNC(func)       (*            (ADDR_OBJ(func) +13     ) )
-#define ENVI_FUNC(func)       (*            (ADDR_OBJ(func) +14     ) )
-#define FEXS_FUNC(func)       (*            (ADDR_OBJ(func) +15     ) )
-#define SIZE_FUNC             (16*sizeof(Bag))
-*/
-
-
-/****************************************************************************
-**
-
-*F  CALL_0ARGS( <func> )  . . . . . . . . .  call a function with 0 arguments
-*F  CALL_1ARGS( <func>, <arg1> )  . . . . .  call a function with 1 arguments
-*F  CALL_2ARGS( <func>, <arg1>, ... ) . . .  call a function with 2 arguments
-*F  CALL_3ARGS( <func>, <arg1>, ...)  . . .  call a function with 3 arguments
-*F  CALL_4ARGS( <func>, <arg1>, ...)  . . .  call a function with 4 arguments
-*F  CALL_5ARGS( <func>, <arg1>, ...)  . . .  call a function with 5 arguments
-*F  CALL_6ARGS( <func>, <arg1>, ...)  . . .  call a function with 6 arguments
-*F  CALL_XARGS( <func>, <args> )  . . . . .  call a function with X arguments
-**
-**  'CALL_<i>ARGS' passes control  to  the function  <func>, which must  be a
-**  function object  ('T_FUNCTION').  It returns the  return value of <func>.
-**  'CALL_0ARGS' is for calls passing   no arguments, 'CALL_1ARGS' for  calls
-**  passing one argument, and so on.   'CALL_XARGS' is for calls passing more
-**  than 6 arguments, where the arguments must be collected  in a plain list,
-**  and this plain list must then be passed.
-**
-**  'CALL_<i>ARGS' can be used independently  of whether the called  function
-**  is a compiled   or interpreted function.    It checks that the number  of
-**  passed arguments is the same  as the number of  arguments expected by the
-**  callee,  or it collects the  arguments in a list  if  the callee allows a
-**  variable number of arguments.
-**
-**  'CALL_<i>ARGS'  are defined  in the declaration  part  of this package as
-**  follows
-**
-#define CALL_0ARGS(f)                     HDLR_FUNC(f,0)(f)
-#define CALL_1ARGS(f,a1)                  HDLR_FUNC(f,1)(f,a1)
-#define CALL_2ARGS(f,a1,a2)               HDLR_FUNC(f,2)(f,a1,a2)
-#define CALL_3ARGS(f,a1,a2,a3)            HDLR_FUNC(f,3)(f,a1,a2,a3)
-#define CALL_4ARGS(f,a1,a2,a3,a4)         HDLR_FUNC(f,4)(f,a1,a2,a3,a4)
-#define CALL_5ARGS(f,a1,a2,a3,a4,a5)      HDLR_FUNC(f,5)(f,a1,a2,a3,a4,a5)
-#define CALL_6ARGS(f,a1,a2,a3,a4,a5,a6)   HDLR_FUNC(f,6)(f,a1,a2,a3,a4,a5,a6)
-#define CALL_XARGS(f,as)                  HDLR_FUNC(f,7)(f,as)
-*/
-
-
-/****************************************************************************
-**
-
-*F  CALL_0ARGS_PROF( <func>, <arg1> ) . . . . .  call a prof func with 0 args
-*F  CALL_1ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 1 args
-*F  CALL_2ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 2 args
-*F  CALL_3ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 3 args
-*F  CALL_4ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 4 args
-*F  CALL_5ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 5 args
-*F  CALL_6ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 6 args
-*F  CALL_XARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with X args
-**
-**  'CALL_<i>ARGS_PROF' is used   in the profile  handler 'DoProf<i>args'  to
-**  call  the  real  handler  stored  in the   profiling  information of  the
-**  function.
-*/
-#define CALL_0ARGS_PROF(f) \
-        HDLR_FUNC(PROF_FUNC(f),0)(f)
-
-#define CALL_1ARGS_PROF(f,a1) \
-        HDLR_FUNC(PROF_FUNC(f),1)(f,a1)
-
-#define CALL_2ARGS_PROF(f,a1,a2) \
-        HDLR_FUNC(PROF_FUNC(f),2)(f,a1,a2)
-
-#define CALL_3ARGS_PROF(f,a1,a2,a3) \
-        HDLR_FUNC(PROF_FUNC(f),3)(f,a1,a2,a3)
-
-#define CALL_4ARGS_PROF(f,a1,a2,a3,a4) \
-        HDLR_FUNC(PROF_FUNC(f),4)(f,a1,a2,a3,a4)
-
-#define CALL_5ARGS_PROF(f,a1,a2,a3,a4,a5) \
-        HDLR_FUNC(PROF_FUNC(f),5)(f,a1,a2,a3,a4,a5)
-
-#define CALL_6ARGS_PROF(f,a1,a2,a3,a4,a5,a6) \
-        HDLR_FUNC(PROF_FUNC(f),6)(f,a1,a2,a3,a4,a5,a6)
-
-#define CALL_XARGS_PROF(f,as) \
-        HDLR_FUNC(PROF_FUNC(f),7)(f,as)
-
 
 /****************************************************************************
 **
@@ -411,6 +264,12 @@ Obj DoWrap6args (
 /****************************************************************************
 **
 
+*F * * wrapper for functions with do not support the number of arguments  * *
+*/
+
+/****************************************************************************
+**
+
 *F  DoFail0args( <self> )  . . . . . .  fail a function call with 0 arguments
 **
 **  'DoWrap<i>args' accepts the <i> arguments <arg1>, <arg2>,  and so on, and
@@ -418,11 +277,6 @@ Obj DoWrap6args (
 **  expects another number of arguments.  'DoFail<i>args' are the handlers in
 **  the other slots of a function.
 */
-extern  Obj CallFuncListHandler (
-            Obj                 self,
-            Obj                 func,
-            Obj                 args );
-
 Obj DoFail0args (
     Obj                 self )
 {
@@ -572,64 +426,28 @@ Obj DoFailXargs (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * *  wrapper for profiling * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *V  TimeDone  . . . . . .   amount of time spent for completed function calls
-*V  StorDone  . . . . .  amount of storage spent for completed function calls
 **
 **  'TimeDone' is  the amount of time spent  for all function calls that have
 **  already been completed.
-**
-**  'StorDone' is the amount of storage spent for all function call that have
-**  already been completed.
 */
-UInt            TimeDone;
-UInt            StorDone;
+UInt TimeDone;
 
 
 /****************************************************************************
 **
-*F  COUNT_PROF( <prof> )  . . . . . . . . number of invocations of a function
-*F  TIME_WITH_PROF( <prof> )  . . . . . . time with    children in a function
-*F  TIME_WOUT_PROF( <prof> )  . . . . . . time without children in a function
-*F  STOR_WITH_PROF( <prof> )  . . . .  storage with    children in a function
-*F  STOR_WOUT_PROF( <prof> )  . . . .  storage without children in a function
-*V  LEN_PROF  . . . . . . . . . . .  length of a profiling bag for a function
+*V  StorDone  . . . . .  amount of storage spent for completed function calls
 **
-**  With each  function we associate two  time measurements.  First the *time
-**  spent by this  function without its  children*, i.e., the amount  of time
-**  during which this  function was active.   Second the *time  spent by this
-**  function with its  children*, i.e., the amount  of time during which this
-**  function was either active or suspended.
-**
-**  Likewise with each  function  we associate the two  storage measurements,
-**  the storage spent by  this function without its  children and the storage
-**  spent by this function with its children.
-**
-**  These  macros  make it possible to  access   the various components  of a
-**  profiling information bag <prof> for a function <func>.
-**
-**  'COUNT_PROF(<prof>)' is the  number  of  calls  to the  function  <func>.
-**  'TIME_WITH_PROF(<prof>) is  the time spent  while the function <func> was
-**  either  active or suspended.   'TIME_WOUT_PROF(<prof>)' is the time spent
-**  while the function <func>   was active.  'STOR_WITH_PROF(<prof>)'  is the
-**  amount of  storage  allocated while  the  function  <func>  was active or
-**  suspended.  'STOR_WOUT_PROF(<prof>)' is  the amount  of storage allocated
-**  while the  function <func> was   active.  'LEN_PROF' is   the length of a
-**  profiling information bag.
-**
-#define COUNT_PROF(prof)            (INT_INTOBJ(ELM_PLIST(prof,1)))
-#define TIME_WITH_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,2)))
-#define TIME_WOUT_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,3)))
-#define STOR_WITH_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,4)))
-#define STOR_WOUT_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,5)))
-
-#define SET_COUNT_PROF(prof,n)      (SET_ELM_PLIST(prof,1,INTOBJ_INT(n)))
-#define SET_TIME_WITH_PROF(prof,n)  (SET_ELM_PLIST(prof,2,INTOBJ_INT(n)))
-#define SET_TIME_WOUT_PROF(prof,n)  (SET_ELM_PLIST(prof,3,INTOBJ_INT(n)))
-#define SET_STOR_WITH_PROF(prof,n)  (SET_ELM_PLIST(prof,4,INTOBJ_INT(n)))
-#define SET_STOR_WOUT_PROF(prof,n)  (SET_ELM_PLIST(prof,5,INTOBJ_INT(n)))
-
-#define LEN_PROF                    5
+**  'StorDone' is the amount of storage spent for all function call that have
+**  already been completed.
 */
+UInt StorDone;
 
 
 /****************************************************************************
@@ -1046,6 +864,13 @@ Obj DoProfXargs (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * *  create a new function * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  InitHandlerFunc( <handler>, <cookie> ) . . . . . . . . register a handler
 **
 **  Every handler should  be registered (once) before  it is installed in any
@@ -1053,72 +878,76 @@ Obj DoProfXargs (
 **  saved workspace.  <cookie> should be a  unique  C string, identifying the
 **  handler
 */
-
 #ifndef MAX_HANDLERS
 #define MAX_HANDLERS 20000
 #endif
 
 typedef struct {
-  ObjFunc hdlr;
-  Char *cookie;
-} TNumHandlerInfo;
+    ObjFunc		hdlr;
+    SYS_CONST Char *    cookie;
+}
+TNumHandlerInfo;
 
 static TNumHandlerInfo HandlerFuncs[MAX_HANDLERS];
 static UInt NHandlerFuncs = 0;
  
-
 void InitHandlerFunc (
-     ObjFunc hdlr,
-     Char *cookie)
+    ObjFunc		hdlr,
+    SYS_CONST Char *	cookie )
 {
-  if (NHandlerFuncs >= MAX_HANDLERS)
-    {
-      Pr("No room left for function handler\n",0L,0L);
-      SyExit(1);
+    if ( NHandlerFuncs >= MAX_HANDLERS ) {
+	Pr( "No room left for function handler\n", 0L, 0L );
+	SyExit(1);
     }
-   HandlerFuncs[NHandlerFuncs].hdlr = hdlr;
-   HandlerFuncs[NHandlerFuncs].cookie = cookie;
-   NHandlerFuncs++;
+    HandlerFuncs[NHandlerFuncs].hdlr   = hdlr;
+    HandlerFuncs[NHandlerFuncs].cookie = cookie;
+    NHandlerFuncs++;
 }
 
 
 
+/****************************************************************************
+**
+*f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
+*/
 static void CheckHandlersBag(
-      Bag bag )
+    Bag 	bag )
 {
 #ifdef DEBUG_HANDLER_REGISTRATION
-  UInt i,j;
-  ObjFunc hdlr;
-  if (TNUM_BAG(bag) == T_FUNCTION)
-  {
-    for (j = 0; j < 8; j++)
-      {
-        hdlr = HDLR_FUNC(bag,j);
-	/* zero handlers are used in a few odd places */
-	if (hdlr != 0)
-	  {
-	    for (i = 0; i < NHandlerFuncs; i++)
-	      {
-		if (hdlr == HandlerFuncs[i].hdlr)
-		  break;
-	      }
-	    if (i == NHandlerFuncs)
-	      {
-		Pr("Unregistered Handler %d args  ", j, 0L);
-		PrintObj(NAME_FUNC(bag));
-		Pr("\n",0L,0L);
-	      }
-	  }
-      }
-  }
+    UInt	i;
+    UInt	j;
+    ObjFunc	hdlr;
+
+    if ( TNUM_BAG(bag) == T_FUNCTION ) {
+	for ( j = 0;  j < 8;  j++ ) {
+	    hdlr = HDLR_FUNC(bag,j);
+
+	    /* zero handlers are used in a few odd places                  */
+	    if ( hdlr != 0 ) {
+		for ( i = 0;  i < NHandlerFuncs;  i++ ) {
+		    if ( hdlr == HandlerFuncs[i].hdlr )
+			break;
+		}
+		if ( i == NHandlerFuncs ) {
+		    Pr("Unregistered Handler %d args  ", j, 0L);
+		    PrintObj(NAME_FUNC(bag));
+		    Pr("\n",0L,0L);
+		}
+	    }
+	}
+    }
 #endif
-  return;
+    return;
 }
 
-void CheckAllHandlers(
-       void )
+
+/****************************************************************************
+**
+*F  CheckAllHandlers()  . . . . . . . . . . . . . check all function handlers
+*/
+void CheckAllHandlers( void )
 {
-  CallbackForAllBags( CheckHandlersBag);
+    CallbackForAllBags(CheckHandlersBag);
 }
 
 /****************************************************************************
@@ -1151,9 +980,9 @@ Obj NewFunction (
 **  <nams> as C strings.
 */
 Obj NewFunctionC (
-    Char *              name,
+    SYS_CONST Char *    name,
     Int                 narg,
-    Char *              nams,
+    SYS_CONST Char *    nams,
     ObjFunc             hdlr )
 {
     return NewFunctionCT( T_FUNCTION, SIZE_FUNC, name, narg, nams, hdlr );
@@ -1240,9 +1069,9 @@ Obj NewFunctionT (
 Obj NewFunctionCT (
     UInt                type,
     UInt                size,
-    Char *              name_c,
+    SYS_CONST Char *    name_c,
     Int                 narg,
-    Char *              nams_c,
+    SYS_CONST Char *    nams_c,
     ObjFunc             hdlr )
 {
     Obj                 name_o;         /* name as an object               */
@@ -1271,7 +1100,7 @@ Obj NewFunctionCT (
             l++;
         }
         name_o = NEW_STRING( l-k );
-        SyStrncat( CSTR_STRING(name_o), nams_c+k, l-k );
+        SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );
         SET_ELM_PLIST( nams_o, i, name_o );
         k = l;
     }
@@ -1279,7 +1108,7 @@ Obj NewFunctionCT (
     /* convert the name to an object                                       */
     len = SyStrlen( name_c );
     name_o = NEW_STRING(len);
-    SyStrncat( CSTR_STRING(name_o), name_c, len );
+    SyStrncat( CSTR_STRING(name_o), name_c, (UInt)len );
 
     /* make the function                                                   */
     return NewFunctionT( type, size, name_o, narg, nams_o, hdlr );
@@ -1288,6 +1117,13 @@ Obj NewFunctionCT (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * type and print function  * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  TypeFunction( <func> )  . . . . . . . . . . . . . . .  kind of a function
 **
 **  'TypeFunction' returns the kind of the function <func>.
@@ -1331,9 +1167,9 @@ void PrintFunction (
     narg = (NARG_FUNC(func) == -1 ? 1 : NARG_FUNC(func));
     for ( i = 1; i <= narg; i++ ) {
         if ( NAMS_FUNC(func) != 0 )
-            Pr( "%I", (Int)NAMI_FUNC( func, i ), 0L );
+            Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
         else
-            Pr( "<<arg-%d>>", i, 0L );
+            Pr( "<<arg-%d>>", (Int)i, 0L );
         if ( i != narg )  Pr("%<, %>",0L,0L);
     }
     Pr(" %<)",0L,0L);
@@ -1353,9 +1189,9 @@ void PrintFunction (
             Pr("%>local  ",0L,0L);
             for ( i = 1; i <= nloc; i++ ) {
                 if ( NAMS_FUNC(func) != 0 )
-                    Pr( "%I", (Int)NAMI_FUNC( func, narg + i ), 0L );
+                    Pr( "%I", (Int)NAMI_FUNC( func, (Int)(narg+i) ), 0L );
                 else
-                    Pr( "<<loc-%d>>", i, 0L );
+                    Pr( "<<loc-%d>>", (Int)i, 0L );
                 if ( i != nloc )  Pr("%<, %>",0L,0L);
             }
             Pr("%<;\n",0L,0L);
@@ -1487,7 +1323,7 @@ Obj CallFunctionHandler (
         list2 = NEW_PLIST( T_PLIST, LEN_LIST(args)-1 );
         SET_LEN_PLIST( list2, LEN_LIST(args)-1 );
         for ( i = 1; i <= LEN_LIST(args)-1; i++ ) {
-            arg = ELMV_LIST( args, i+1 );
+            arg = ELMV_LIST( args, (Int)(i+1) );
             SET_ELM_PLIST( list2, i, arg );
         }
         result = CALL_XARGS( func, list2 );
@@ -1570,7 +1406,7 @@ Obj CallFuncListHandler (
         list2 = NEW_PLIST( T_PLIST, LEN_LIST(list) );
         SET_LEN_PLIST( list2, LEN_LIST(list) );
         for ( i = 1; i <= LEN_LIST(list); i++ ) {
-            arg = ELMV_LIST( list, i );
+            arg = ELMV_LIST( list, (Int)i );
             SET_ELM_PLIST( list2, i, arg );
         }
         result = CALL_XARGS( func, list2 );
@@ -1584,6 +1420,12 @@ Obj CallFuncListHandler (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * * * utility functions  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  FuncNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
 */
 Obj NAME_FUNC_Oper;
@@ -1593,7 +1435,7 @@ Obj FuncNAME_FUNC (
     Obj                 func )
 {
     Obj                 name;
-    char *              deflt = "unknown";
+    SYS_CONST char *    deflt = "unknown";
 
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
@@ -1870,112 +1712,112 @@ Obj FuncUNPROFILE_FUNC(
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
 **
 **  'InitCalls' initializes the call package.
 */
-void            InitCalls ()
+void InitCalls ()
 {
     /* install the marking functions                                       */
     InfoBags[         T_FUNCTION ].name = "function";
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
+
 
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
     ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
     TypeObjFuncs[ T_FUNCTION ] = TypeFunction;
 
+
     /* install the printer                                                 */
-    PrintObjFuncs[    T_FUNCTION ] = PrintFunction;
+    PrintObjFuncs[ T_FUNCTION ] = PrintFunction;
+
 
     /* make and install the 'IS_FUNCTION' filter                           */
-    InitHandlerFunc( IsFunctionHandler, "IS_FUNCTION" );
-    IsFunctionFilt = NewFilterC( "IS_FUNCTION", 1L, "obj",
-                                  IsFunctionHandler );
-    AssGVar( GVarName( "IS_FUNCTION" ), IsFunctionFilt );
+    C_NEW_GVAR_FILT( "IS_FUNCTION", "obj", IsFunctionFilt, IsFunctionHandler,
+         "src/calls.c:IS_FUNCTION" );
+
 
     /* make and install the 'CALL_FUNC' operation                          */
-    InitHandlerFunc( CallFunctionHandler, "CALL_FUNC" );
-    CallFunctionOper = NewOperationC( "CALL_FUNC", -1L, "args",
-                                       CallFunctionHandler );
-    AssGVar( GVarName( "CALL_FUNC" ), CallFunctionOper );
+    C_NEW_GVAR_OPER( "CALL_FUNC", -1, "args",
+                     CallFunctionOper, CallFunctionHandler,
+         "src/calls.c:CALL_FUNC" );
+
 
     /* make and install the 'CALL_FUNC_LIST' operation                     */
-    InitHandlerFunc( CallFuncListHandler, "CALL_FUNC_LIST" );
-    CallFuncListOper = NewOperationC( "CALL_FUNC_LIST", 2L, "func, list",
-                                       CallFuncListHandler );
-    AssGVar( GVarName( "CALL_FUNC_LIST" ), CallFuncListOper );
+    C_NEW_GVAR_OPER( "CALL_FUNC_LIST", 2L, "func, list",
+		     CallFuncListOper, CallFuncListHandler,
+         "src/calls.c:CALL_FUNC_LIST" );
 
 
     /* make and install the 'NAME_FUNC' etc. operations                    */
-    InitHandlerFunc( FuncNAME_FUNC, "NAME_FUNC" );
-    NAME_FUNC_Oper = NewOperationC( "NAME_FUNC", 1L, "func",
-                                     FuncNAME_FUNC );
-    AssGVar( GVarName( "NAME_FUNC" ), NAME_FUNC_Oper );
+    C_NEW_GVAR_OPER( "NAME_FUNC", 1L, "func", NAME_FUNC_Oper,
+                  FuncNAME_FUNC,
+         "src/calls.c:NAME_FUNC" );
 
-    InitHandlerFunc( FuncNARG_FUNC, "NARG_FUNC" );
-    NARG_FUNC_Oper = NewOperationC( "NARG_FUNC", 1L, "func",
-                                     FuncNARG_FUNC );
-    AssGVar( GVarName( "NARG_FUNC" ), NARG_FUNC_Oper );
+    C_NEW_GVAR_OPER( "NARG_FUNC", 1L, "func", NARG_FUNC_Oper,
+                  FuncNARG_FUNC,
+         "src/calls.c:NARG_FUNC" );
 
-    InitHandlerFunc( FuncNAMS_FUNC, "NAMS_FUNC" );
-    NAMS_FUNC_Oper = NewOperationC( "NAMS_FUNC", 1L, "func",
-                                     FuncNAMS_FUNC );
-    AssGVar( GVarName( "NAMS_FUNC" ), NAMS_FUNC_Oper );
+    C_NEW_GVAR_OPER( "NAMS_FUNC", 1L, "func", NAMS_FUNC_Oper,
+                  FuncNAMS_FUNC,
+         "src/calls.c:NAMS_FUNC" );
 
-    InitHandlerFunc( FuncPROF_FUNC, "PROF_FUNC" );
-    PROF_FUNC_Oper = NewOperationC( "PROF_FUNC", 1L, "func",
-                                     FuncPROF_FUNC );
-    AssGVar( GVarName( "PROF_FUNC" ), PROF_FUNC_Oper );
+    C_NEW_GVAR_OPER( "PROF_FUNC", 1L, "func", PROF_FUNC_Oper,
+                  FuncPROF_FUNC,
+         "src/calls.c:PROF_FUNC" );
 
 
     /* make and install the profile functions                              */
-    InitHandlerFunc( FuncCLEAR_PROFILE_FUNC, "Clear Profile");
-    AssGVar( GVarName( "CLEAR_PROFILE_FUNC" ),
-         NewFunctionC( "CLEAR_PROFILE_FUNC", 1L, "function",
-                    FuncCLEAR_PROFILE_FUNC ) );
+    C_NEW_GVAR_FUNC( "CLEAR_PROFILE_FUNC", 1L, "func",
+                  FuncCLEAR_PROFILE_FUNC,
+	 "src/calls.c:CLEAR_PROFILE_FUNC" );
 
-    InitHandlerFunc( FuncIS_PROFILED_FUNC, "Is Profiled");
-    AssGVar( GVarName( "IS_PROFILED_FUNC" ),
-         NewFunctionC( "IS_PROFILED_FUNC", 1L, "function",
-                    FuncIS_PROFILED_FUNC ) );
+    C_NEW_GVAR_FUNC( "IS_PROFILED_FUNC", 1L, "func",
+                  FuncIS_PROFILED_FUNC,
+	 "src/calls.c:IS_PROFILED_FUNC" );
 
-    InitHandlerFunc( FuncPROFILE_FUNC, "Profile function");
-    AssGVar( GVarName( "PROFILE_FUNC" ),
-         NewFunctionC( "PROFILE_FUNC", 1L, "function",
-                    FuncPROFILE_FUNC ) );
+    C_NEW_GVAR_FUNC( "PROFILE_FUNC", 1L, "func",
+                  FuncPROFILE_FUNC,
+	 "src/calls.c:PROFILE_FUNC" );
 
-    InitHandlerFunc( FuncUNPROFILE_FUNC, "Unprofile function");
-    AssGVar( GVarName( "UNPROFILE_FUNC" ),
-         NewFunctionC( "UNPROFILE_FUNC", 1L, "function",
-                    FuncUNPROFILE_FUNC ) );
+    C_NEW_GVAR_FUNC( "UNPROFILE_FUNC", 1L, "func",
+                  FuncUNPROFILE_FUNC,
+	 "src/calls.c:UNPROFILE_FUNC" );
 
 
-    InitHandlerFunc( DoFail0args, "0 arg fail");
-    InitHandlerFunc( DoFail1args, "1 arg fail");
-    InitHandlerFunc( DoFail2args, "2 arg fail");
-    InitHandlerFunc( DoFail3args, "3 arg fail");
-    InitHandlerFunc( DoFail4args, "4 arg fail");
-    InitHandlerFunc( DoFail5args, "5 arg fail");
-    InitHandlerFunc( DoFail6args, "6 arg fail");
-    InitHandlerFunc( DoFailXargs, "X arg fail");
+    /* initialise all 'Do<Something><N>args' handlers                      */
+    InitHandlerFunc( DoFail0args, "src/calls.c:DoFail0args" );
+    InitHandlerFunc( DoFail1args, "src/calls.c:DoFail1args" );
+    InitHandlerFunc( DoFail2args, "src/calls.c:DoFail2args" );
+    InitHandlerFunc( DoFail3args, "src/calls.c:DoFail3args" );
+    InitHandlerFunc( DoFail4args, "src/calls.c:DoFail4args" );
+    InitHandlerFunc( DoFail5args, "src/calls.c:DoFail5args" );
+    InitHandlerFunc( DoFail6args, "src/calls.c:DoFail6args" );
+    InitHandlerFunc( DoFailXargs, "src/calls.c:DoFailXargs" );
 
-    InitHandlerFunc( DoWrap0args, "0 arg wrap");
-    InitHandlerFunc( DoWrap1args, "1 arg wrap");
-    InitHandlerFunc( DoWrap2args, "2 arg wrap");
-    InitHandlerFunc( DoWrap3args, "3 arg wrap");
-    InitHandlerFunc( DoWrap4args, "4 arg wrap");
-    InitHandlerFunc( DoWrap5args, "5 arg wrap");
-    InitHandlerFunc( DoWrap6args, "6 arg wrap");
+    InitHandlerFunc( DoWrap0args, "src/calls.c:DoWrap0args" );
+    InitHandlerFunc( DoWrap1args, "src/calls.c:DoWrap1args" );
+    InitHandlerFunc( DoWrap2args, "src/calls.c:DoWrap2args" );
+    InitHandlerFunc( DoWrap3args, "src/calls.c:DoWrap3args" );
+    InitHandlerFunc( DoWrap4args, "src/calls.c:DoWrap4args" );
+    InitHandlerFunc( DoWrap5args, "src/calls.c:DoWrap5args" );
+    InitHandlerFunc( DoWrap6args, "src/calls.c:DoWrap6args" );
 
-    InitHandlerFunc( DoProf0args, "0 arg profile");
-    InitHandlerFunc( DoProf1args, "1 arg profile");
-    InitHandlerFunc( DoProf2args, "2 arg profile");
-    InitHandlerFunc( DoProf3args, "3 arg profile");
-    InitHandlerFunc( DoProf4args, "4 arg profile");
-    InitHandlerFunc( DoProf5args, "5 arg profile");
-    InitHandlerFunc( DoProf6args, "6 arg profile");
-    InitHandlerFunc( DoProfXargs, "X arg profile");
+    InitHandlerFunc( DoProf0args, "src/calls.c:DoProf0args" );
+    InitHandlerFunc( DoProf1args, "src/calls.c:DoProf1args" );
+    InitHandlerFunc( DoProf2args, "src/calls.c:DoProf2args" );
+    InitHandlerFunc( DoProf3args, "src/calls.c:DoProf3args" );
+    InitHandlerFunc( DoProf4args, "src/calls.c:DoProf4args" );
+    InitHandlerFunc( DoProf5args, "src/calls.c:DoProf5args" );
+    InitHandlerFunc( DoProf6args, "src/calls.c:DoProf6args" );
+    InitHandlerFunc( DoProfXargs, "src/calls.c:DoProfXargs" );
 }
 
 

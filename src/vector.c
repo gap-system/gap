@@ -29,7 +29,7 @@ char *          Revision_vector_c =
 
 #include        "bool.h"                /* True, False                     */
 
-#include        "integer.h"             /* TypDigit                        */
+#include        "integer.h"             /* <op>_INTOBJS for fast ariths    */
 
 #include        "listoper.h"            /* ProdListScl                     */
 

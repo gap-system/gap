@@ -1,7 +1,21 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  files.tex                 GAP documentation              Frank Celler
+%W                                                     & Martin Schoenert
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file    contains the  description of   the   file, filename  and
+%%  directory functions.
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Files and Filenames}
 
-Files   are identified by filenames, which   are represented in {\GAP} as
+Files are identified by filenames, which are represented in {\GAP} as
 strings.  Filenames can be created directly by the user or a program, but
 of course this is operating system dependent.
 
@@ -13,13 +27,13 @@ of files in subdirectories relative to a given directory object.  In this
 case  the  directory separator is  *always*  `{'/'}' even under  `DOS' or
 `MacOS'.
 
-The  section "Directories" describes how  to  construct directory objects
+Section "Directories" describes how  to  construct directory objects
 for the common GAP and system  directories.  Using the command `Filename'
 described in  section "Filename" it  is possible  to construct a filename
 pointing to a  file in  these  directories.  There are  also functions to
 test for accessibility of files, see "File Access".
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Portability}
 
 For portability filenames and directory  names should be restricted to at
@@ -37,7 +51,7 @@ This record   contains  at least   the  component  `message' which   is a
 string. This message is, however,  highly operating system dependent  and
 should only be used as informational message for the user.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{GAP Root Directory}
 
 When   starting {\GAP} it is possible   to specify various directories as
@@ -50,7 +64,7 @@ For example,  if  ``<root1>;<root2>;...''    is  passed as   argument  to
 ``group.gd'' in the {\GAP} root directory it will first check if the file
 exists in `<root1>', if not, it checks `<root2>', and so on.
 
-This layout makes  it possible to  have one  system wide  installation of
+This layout makes  it possible to  have one  system-wide  installation of
 {\GAP}  which is read-only  but still  allows users  to modify individual
 files.  Therefore instead of constructing an absolute path name to a file
 you should always use `DirectoriesLibrary' or `DirectoriesPackageLibrary'
@@ -59,7 +73,7 @@ root directory.
 
 *Example*
 
-Assume that the system wide installation lives in ``/usr/local/lib/gap4''
+Assume that the system-wide installation lives in ``/usr/local/lib/gap4''
 and you want  to modify the  file ``lib/files.gd'' without disturbing the
 system installation.
 
@@ -81,18 +95,18 @@ The directory/file structure now looks like
 If you start {\GAP} using (under UNIX)
 
 \begintt
-    unix> gap -l '/home/myhome/gap;/usr/local/lib/gap4'
+    you@unix> gap -l '/home/myhome/gap;/usr/local/lib/gap4'
 \endtt
 
-then the  file ``/home/myhome/gap/lib/files.gd'' will   be used when ever
+then the  file  ``/home/myhome/gap/lib/files.gd'' will  be  used whenever
 {\GAP} references the  file with filename  ``lib/files.gd'' in the {\GAP}
 root directory.
 
-This setup also allows  to easily install  new share packages even if  no
-access to the system {\GAP} installation is  possible.  Simply unpack the
-files into ``/home/myhome/gap''.
+This setup also  allows to easily install  new share packages or bugfixes
+even if no access to the system {\GAP} installation  is possible.  Simply
+unpack the files into ``/home/myhome/gap''.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Directories}
 
 \>DirectoryTemporary( <hint> )
@@ -108,7 +122,7 @@ collection  collects the directory   object  or upon termination  of  the
 `DirectoryTemporary' is free to use only a  part of <hint> or even ignore
 it completely.
 
-If `DirectoryTemporary' is   unable to create a  new  directory `fail' is
+If `DirectoryTemporary' is  unable to create a  new  directory, `fail' is
 returned.  In this case `LastSystemError' can be  used to get information
 about the error.
 
@@ -164,7 +178,7 @@ directories where the  executable programs  for the contributed   package
 directories where  the system programs reside as  list.  Under  UNIX this
 would usually represent `\$\{PATH\}'.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Filename}
 
 \>Filename( <dir>, <name> )
@@ -212,7 +226,7 @@ use `DirectoryTemporary' together with the first form of `Filename'.
     "/var/tmp/tmp.0.021738.0001/file.new"
 \endtt
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Special Filenames}
 
 The special filename `"*stdin*"'   denotes the standard input, i.e.,  the
@@ -229,7 +243,7 @@ input file up to the  end of the file.   When control returns to the main
 read eval print loop the input stream will still  return end of file, and
 GAP will terminate.
 
-The  special filename `"*errin*"' denotes   the stream connected with the
+The  special filename `"*errin*"' denotes   the stream connected  to  the
 `stderr' output.  This stream is usually connected  to the terminal, even
 if  the standard input was  redirected, unless the  standard error stream
 was also redirected, in which case opening of `"*errin*"' fails.
@@ -238,10 +252,10 @@ The special filename `"*stdout*"'  can be used to  print to  the standard
 output.
 
 The special  filename `"*errout*"' can be  used to  print to the standard
-error output file, which is usually  connected with the terminal, even if
+error output file, which is usually  connected  to  the terminal, even if
 the standard output was redirected.
     
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{File Access}
 
 The  following functions  return `fail'  if a system  error occurred, for
@@ -276,9 +290,9 @@ different machine.
 
 \>IsDirectoryPath( <name-file> )
 
-returns `true' if the file with  the filename <name-file> exists *and* is
-a directory.  It returns `false' if the file exists but  is a plain file.
-Note  that this functions does not  check that if  the {\GAP} process has
+returns `true' if the file with the  filename <name-file> exists *and* is
+a directory.  It returns `false' if the file  exists but is a plain file.
+Note  that this  functions does  not  check if   the  {\GAP} process  has
 actually write or execute permissions for the directory.
 
 *Examples*
@@ -318,7 +332,7 @@ actually write or execute permissions for the directory.
 \endexample
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{File Operations}
 
 \>Read( <name-file> )
@@ -341,14 +355,14 @@ file, but from  the input connected to the  `stderr'  output of GAP.   If
 this break loop is left  with `quit' (or <ctr>-'D')  GAP does continue to
 read from it.
 
-Note that a statement may not begin in one file and end in another, i.e.,
-<eof> (`end-of-file')   is not treated  as whitespace,  but  as a special
-symbol that must not appear inside any statement.
+Note that  a statement must  not begin in one  file  and end  in another,
+i.e.,  <eof> (`end-of-file') is not    treated as whitespace,  but as   a
+special symbol that must not appear inside any statement.
 
 Note that one file may very well contain a read statement causing another
 file to be read, before input is again taken from the  first file.  There
 is an operating system dependent maximum on the  number of files that may
-be open at once, usually it is 15.
+be open simultaneously, usually it is 15.
 
 \>ReadAsFunction( <name-file> )
 
@@ -391,7 +405,7 @@ already existed.  `AppendTo'  can   be used to   append to  a file   (see
 "AppendTo").
     
 There is an  operating system dependent maximum  to the number  of output
-files that may be open at once, usually this is 14.
+files that may be open simultaneously, usually this is 14.
 
 \>AppendTo( <name-file> )
 
@@ -423,10 +437,10 @@ In this form `InputLogTo' stops logging again.
 
 \>OutputLogTo( <name-file> )
 
-causes the subsequent   output to be logged   to the file  with  the name
-<name-file>, i.e., everything you type on your  terminal will also appear
-in this file.  Note that `OutputLogTo' and `LogTo' cannot  be used at the
-same time while `InputLogTo' and `OutputLogTo' can.
+causes   the subsequent output to   be logged to  the file  with the name
+<name-file>,  i.e., everything {\GAP} prints  on  your terminal will also
+appear in this file.  Note that  `OutputLogTo' and `LogTo' cannot be used
+at the same time while `InputLogTo' and `OutputLogTo' can.
 
 \)OutputLogTo()
 
@@ -434,16 +448,20 @@ In this form `OutputLogTo' stops logging again.
 
 \>CrcFile( <name-file> )
 
-computes a checksum value for the file  with filename <name-file> and returns
-this value as integer. The function return  `fail' if a system error occured,
-for  example,  if <name-file>  does not  exist.   In this   case the function
-`LastSystemError' can be used to get information about the error.
+computes  a checksum  value for the  file  with filename <name-file>  and
+returns this value  as integer. The function return   `fail' if a  system
+error occured, for example, if <name-file> does not  exist.  In this case
+the function `LastSystemError' can  be used to  get information about the
+error.
 
 \>RemoveFile( <name-file> )
 
-will remove the file with filename <name-file>  and returns `true' in case of
-success.  The function return `fail' if a system  error occured, for example,
-if your  permissions do not allow the  removal of <name-file>.  In  this case
-the  function  `LastSystemError' can  be  used  to get  information about the
-error.
+will remove the file with filename <name-file> and returns `true' in case
+of  success.  The function returns `fail' if a  system error occured, for
+example, if your permissions do not allow the removal of <name-file>.  In
+this case the function  `LastSystemError' can be  used to get information
+about the error.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  files.tex . . . . . . . . . . . . . . . . . . . . . . . . . ends here

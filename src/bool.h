@@ -8,8 +8,8 @@
 **
 **  This file declares the functions for the boolean package.
 */
-#ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_bool_h =
+#ifdef INCLUDE_DECLARATION_PART
+SYS_CONST char * Revision_bool_h =
    "@(#)$Id$";
 #endif
 

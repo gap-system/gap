@@ -1127,22 +1127,20 @@ void            IntrOr ( void )
     }
 
     /* if the left operand is 'false', the result is the right operand     */
-    else if ( opL == True  ) {
+    else if ( opL == False  ) {
         if ( opR == True || opR == False  ) {
             PushObj( opR );
         }
         else {
-            ErrorQuit(
-                "<expr> must be 'true' or 'false' (not to a %s)",
-                (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L );
+            ErrorQuit( "<expr> must be 'true' or 'false' (not a %s)",
+                       (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L );
         }
     }
     
     /* signal an error                                                     */
     else {
-        ErrorQuit(
-            "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
+        ErrorQuit( "<expr> must be 'true' or 'false' (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
     }
 }
 

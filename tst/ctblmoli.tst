@@ -34,12 +34,9 @@ gap> MolienSeries( NaturalCharacter( G ) );
 ( 1 ) / ( (1-z^12)*(1-z^9)*(1-z^6)*(1-z^5)*(1-z^3)*(1-z) )
 
 
-gap> STOP_TEST( "unknown.tst", 100000 );
+gap> STOP_TEST( "ctblmoli.tst", 1358360000 );
 
 #############################################################################
 ##
 #E  ctblmoli.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

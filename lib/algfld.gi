@@ -92,7 +92,7 @@ local fam,i;
   SetIsUFDFamily(fam,true);
 
   # and set one and zero
-  SetZero(fam,ObjByExtRep(fam,Zero(f)));;
+  SetZero(fam,ObjByExtRep(fam,Zero(f)));
   SetOne(fam,ObjByExtRep(fam,One(f)));
 
   StoreAlgExtFam(p,f,fam);

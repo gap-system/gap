@@ -164,8 +164,18 @@ HasOperatorOfExternalSet := Tester( OperatorOfExternalSet );
 ##
 #A  OperationHomomorphism( <xset> ) . homomorphism into S_{HomeEnumerator(D)}
 ##
+OperationHomomorphism := NewOperationArgs( "OperationHomomorphism" );
 OperationHomomorphismAttr := NewAttribute( "OperationHomomorphism",
                                  IsExternalSet );
+OperationHomomorphismConstructor := NewOperationArgs
+                                    ( "OperationHomomorphismConstructor" );
+
+#############################################################################
+##
+#A  SurjectiveOperationHomomorphism( <xset> ) .  surj. operation homomorphism
+##
+SurjectiveOperationHomomorphismAttr := NewAttribute
+    ( "SurjectiveOperationHomomorphism", IsExternalSet );
 
 #############################################################################
 ##
@@ -344,7 +354,6 @@ HasStabilizerOfExternalSet := Tester( StabilizerOfExternalSet );
 
 AttributeOperation := NewOperationArgs( "AttributeOperation" );
 OrbitishOperation := NewOperationArgs( "OrbitishOperation" );
-OperationHomomorphism := NewOperationArgs( "OperationHomomorphism" );
 OperationHomomorphismSubsetAsGroupGeneralMappingByImages := NewOperationArgs
     ( "OperationHomomorphismSubsetAsGroupGeneralMappingByImages" );
 Operation := NewOperationArgs( "Operation" );

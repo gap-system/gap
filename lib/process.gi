@@ -175,7 +175,7 @@ function( dir, prg, input, output, args )
     if not IsInputTextFileRep(input)  then
         name_input := TmpName();
         new := OutputTextFile( name_input, true );
-        WriteAll( new, ReadAll(input) );;
+        WriteAll( new, ReadAll(input) );
         CloseStream(new);
         input := InputTextFile( name_input );
     fi;

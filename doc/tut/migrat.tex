@@ -1,0 +1,750 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  migrat.tex               GAP manual                  Alexander Hulpke
+%%
+%H  @(#)$Id$
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Migrating to GAP 4}
+
+This document is intended to give users who have experience with {\GAP}~3
+some information about what has changed in {\GAP}~4.
+
+In particular, it informs about changed command line options
+(see~"Changed Command Line Options"),
+the new global variable `fail' (see~"Fail"),
+some functions that have changed their behaviour
+(see~"Changed Functionality") or their names
+(see~"Changed Variable Names"),
+and some conventions used for variable names (see~"Naming Conventions").
+
+Then the new concepts of {\GAP}~4 are sketched,
+first that of mutability or immutability (see~"Immutability"),
+with the explanation of related changes in functions that copy objects
+(see~"Copy"),
+then the concepts of operations and method selection, which are compared
+with the use of operations records in {\GAP}~3
+(see~"Attributes vs. Record Components", "Operations Records",
+and~"Operations vs. Dispatcher Functions").
+
+More local changes affect the concepts of notions of generation
+(see~"Notions of Generation"), of parents (see~"Parents and Subgroups"),
+of homomorphisms (see~"Homomorphisms vs. General Mappings",
+"Homomorphisms vs. Factor Structures",
+and~"Isomorphisms vs. Isomorphic Structures"),
+how elements in finitely presented groups are treated
+(see~"Elements of Finitely Presented Groups"),
+how information about progress of computations can be obtained
+(see~"The Info Mechanism"),
+and how one gets information in a `break' loop
+(see~"Debugging").
+
+While a ``{\GAP}~3 compatibility mode'' is provided
+(see "Compatibility Mode"),
+its use will disable some of the new features of {\GAP}~4.
+Also it certainly can only try to provide partial compatibility.
+
+For a detailed explanation of the new features and concepts of {\GAP}~4,
+see the manual ``Extending GAP 4''.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Changed Command Line Options}
+
+In {\GAP}~4, the `-l' option is used to specify the *root directory*
+(see~"ref:GAP Root Directory") of the {\GAP} distribution,
+which is the directory containing the `lib' and `doc' subdirectories.
+Note that in {\GAP}~3 this option was used to specify the path to the
+`lib' directory.
+
+The `-h' option of {\GAP}~3 has been removed,
+the path(s) for the documentation are deduced automatically in {\GAP}~4.
+
+The option `-g' is now used to print information only about full garbage
+collections.
+The new option `-g -g' causes printing information also about partial
+garbarge collections.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Fail}
+
+There is a new global variable
+
+\)fail
+
+%{fail instead of false}
+
+in {\GAP}~4.
+It is intended as a return value of a function for the case that it
+could not perform its task.
+For example, `Inverse' returns `fail' if its is called with a singular
+matrix, and `Position' returns `fail' if the second argument is not
+contained in the list given as first argument.
+
+{\GAP}~3 handled such situations by either signalling an error,
+for example if it was asked for the inverse of a singular matrix,
+or by (mis)using `false' as return value, as in the example `Position'.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Changed Functionality}
+
+Some functions that were available already in {\GAP}~3 have a different
+behaviour in {\GAP}~4.  This section lists them.
+
+\>Exec( <string> )
+
+{\GAP}~4 now supports processes (see Chapter~"ref:Processes"),
+which allow {\GAP}~4 to communicate with external programs in a more
+general way than `Exec' did.
+`Exec' is not supported any longer.
+
+\>Order( <g> )
+
+only takes the element <g> and computes its multiplicative order.
+Calling `Order' with two arguments is not permitted any longer.
+(Note that it does not make sense anymore to specify a group as
+first argument w.r.t. which the order of the second argument shall
+be computed, see~"Elements of Finitely Presented Groups".)
+
+\>Position( <list>, <obj> )
+
+If <obj> is not contained in the list <list> then `fail' is returned
+in {\GAP}~4 (see~"Fail"), whereas `false' was returned in {\GAP}~3.
+
+\>Print( <obj>, ... )
+
+Objects may appear on the screen in a different way,
+depending on whether they are printed by the read-eval-print loop
+or by an explicit call of `Print'.
+The reason is that the read-eval-print loop calls the operation `ViewObj'
+and not `PrintObj', whereas `Print' calls `PrintObj' for each of its
+arguments.
+This permits to  install methods for printing objects in a short form
+in the read-eval-print loop while retaining `Print' to display
+the object completely.
+(The standard method installed for `ViewObj' is `PrintObj'.)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Changed Variable Names}
+
+A couple of functions changed their name without changing the
+functionality.
+A -- probably incomplete -- list follows
+\begintt
+    GAP 3                   GAP 4
+
+    AgGroup                 PcGroup            # (also composita)
+    Backtrace               Where
+    CharTable               CharacterTable     # (also composita)
+    Denomiantor             DenominatorRat
+    Elements                AsListSorted
+    IsBijective             IsBijection
+    IsFunc                  IsFunction
+    IsRec                   IsRecord
+    IsSet                   IsSSortedList
+    NOfCyc                  Conductor
+    Numerator               NumeratorRat
+    RandomInvertableMat     RandomInvertibleMat
+    RecFields               RecNames
+\endtt
+
+See Section~"Compatibility Mode" for a possibility to make the old names
+available again.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Naming Conventions}
+
+The way functions are named has been unified in {\GAP}~4.
+This might help to memorize or even guess names of library functions.
+
+If a variable name consists of several words then the first
+letter of each word is capitalized.
+
+If the first part of the name of a function is a verb then the function
+may modify its argument(s) but does not return anything,
+for example `Append' appends the list given as second argument to the
+list given as first argument.
+Otherwise the function returns an object without changing the arguments,
+for example `Concatenation' returns the concatenation of the lists
+given as arguments.
+
+If the name of a function contains the word `By' then the return value is
+thought of as built in a certain way from the parts given as arguments.
+For example, `GroupByGenerators' returns a group built from its group
+generators, and creating a group as a factor group of a given group
+by a normal subgroup can be done by taking the image of
+`NaturalHomomorphismByNormalSubgroup'
+(see also~"Homomorphisms vs. Factor Structures").
+Other examples of ```By''' functions are `GroupHomomorphismByImages' and
+`UnivariateLaurentPolynomialByCoefficients'.
+
+If the name of a function contains the word `Of' then the return value is
+thought of as information deduced from the arguments.
+Usually such functions are attributes
+(see~"tut:Attributes" and~"prg:Attributes").
+Examples are `GeneratorsOfGroup', which returns a list of generators for
+the group entered as argument, or `DiagonalOfMat'.
+
+For the setter and tester functions of an attribute <attr>
+(see~"prg:Attributes" and~"Attributes vs. Record Components"),
+usually the names `Set<attr>' resp.~`Has<attr>' are available.
+
+If the name of a function <fun1> ends with `NC' then there is another
+function <fun2> with the same name except that the `NC' is missing.
+`NC' stands for ``no check''.
+When <fun2> is called then it checks whether its arguments are valid,
+and if yes then it calls <fun1>.
+The functions `SubgroupNC' and `Subgroup' are a typical example.
+
+The idea is that the possibly time consuming check of the arguments
+can be omitted if one is sure that they are unnecessary.
+For example, if an algorithm produces generators of the derived subgroup
+of a group then it is guaranteed that they lie in the original group;
+`Subgroup' would check this, and `SubgroupNC' omits the check.
+
+Needless to say, all these rules are not followed slavishly,
+for example there is one operation `Zero' instead of two operations
+`ZeroOfElement' and `ZeroOfAdditiveGroup'.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Immutability}
+
+{\GAP}~4 supports ``immutable'' objects.
+Such objects cannot be changed, attempting to do so issues an error.
+Typically attribute values are immutable,
+and also the results of arithmetic operations.
+For example, `0 * [ 1 .. 100 ]' is an immutable list of 100 zeroes.
+
+A typical usage of `<number> \* <list>' in {\GAP}~3 was to create a list
+of zeroes, which then could be modified.
+In {\GAP}~4, one can use the new function `ListWithIdenticalEntries' to
+obtain a mutable list of zeroes.
+
+There is no way to *make* an immutable object mutable or vice versa,
+one can only get a mutable copy by `ShallowCopy' resp. an immutable copy
+by `Immutable'.
+
+More about immutability can be found in~"tut:Immutability"
+and~"prg:Mutability and Copyability".
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Copy}
+
+The function `Copy' of {\GAP}~3 is not supported in {\GAP}~4.
+This function was used to create a copy <cop> of its argument <obj> with
+the properties that <cop> and <obj> had no subobjects in common and that
+if two subobjects of <obj> were identical then also the corresponding
+subobjects of <cop> were identical.
+
+The possibility to have immutable objects (see~"Immutability") can and
+should be used to avoid unnecessary copying.
+Namely, given an immutable object one needs to copy it only if one wants
+to get a modified object, and in such a situation usually it is
+sufficient to use `ShallowCopy', or at least one knows how deep one must
+copy in order to do the changes one has in mind.
+
+For example, suppose you have a matrix group, and you want to use its
+generators to construct a modified list of matrices.
+The list of generators is immutable, so you call `ShallowCopy' to get a
+mutable list that contains the same generators.
+If you only want to exchange some of the matrices, or to append some
+other matrices, this shallow copy is already what you need.
+So suppose that you are interested in a list of matrices where also
+the rows are changed.  For that, you call `ShallowCopy' for the matrices
+in question, and you get matrices whose rows can be changed.
+If you want matrices where single entries in some rows shall be
+changed, `ShallowCopy' must be called to get mutable copies of these
+rows.
+Note that in all these situations there is no danger to change, i.e.,
+to destroy the original generators of the matrix group.
+
+If one needs the facility of the `Copy' function of {\GAP}~3 to get a
+copy with the same structure then one can use the new {\GAP}~4 function
+`StructuralCopy'.
+It returns a structural copy that has no *mutable* subobject in common
+with its argument.
+So if `StructuralCopy' is called with an immutable object then this
+object itself is returned,
+and if `StructuralCopy' is called with a mutable list of immutable
+objects then a shallow copy of this list is returned.
+
+Note that `ShallowCopy' now is an operation.
+So if you create your own type of objects then you may define what a
+shallow copy of these objects is, and install an appropriate method.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Attributes vs. Record Components}
+
+In {\GAP}~3, many complex objects were represented via records,
+for example all domains.
+Information about these objects was stored in components of these
+records.
+For the user, this was usually not relevant, since there were functions
+for computing information about the objects in question.
+For example, if one was interested in the size of a group then one could
+call `Size'.
+
+But since it was guaranteed that the size of a domain <D> was stored as
+value of the component `size', it was allowed to access `<D>.size'
+if this component was bound, and a check for this was possible via
+`IsBound( <D>.size )'.
+
+In {\GAP}~4, only the access via functions is admissible.
+One reason is the following basic rule.
+
+*From the information that a given {\GAP}~4 object is for example a
+domain, one cannot conclude that this object has a certain
+representation.*
+
+For attributes like `Size', {\GAP}~4 provides two related functions,
+the *setter* and the *tester* of the attribute, which can be used to
+set an attribute value and to check whether the value of an attribute
+is already stored for an object (see also~"prg:Attributes").
+For example, if <D> is a domain in {\GAP}~4 then `Tester( Size )( <D> )'
+is `true' if the size of <D> is already stored, and `false' otherwise.
+In the latter case, if you know that the size of <D> is <size> then you
+may store it by `Setter( Size )( <D>, <size> )'.
+
+Besides the flexibility in the internal representation of objects,
+storing information only via function calls has also the advantage that
+{\GAP}~4 is able to draw conclusions automatically.
+For example, as soon as it is stored that a group is nilpotent, it is
+also stored that it is solvable, see Chapters~"prg:Types"
+and~"prg:Method Selection" for the details.
+
+As a consequence, you cannot put your favourite information into a
+domain <D> by assigning it to a new component like `<D>.myPrivateInfo'.
+Instead you can introduce a new attribute and then use its setter,
+see~"prg:Attributes".
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Notions of Generation}
+
+As in {\GAP}~3, a *domain* in {\GAP}~4 is a structured set.
+
+The same set can have different structures, for example a field can be
+regarded as a ring or as an algebra or vector space over a subfield.
+
+In {\GAP}~3, however, an object representing a ring did not represent a
+field, and an object representing a field did not represent a ring.
+One reason for this was that the record component `generators' was used
+to denote the appropriate generators of the domain.
+For a ring <R>, the component `<R>.generators' was a list of ring
+generators, and for a field <F>, `<F>.generators' was a list of field
+generators.
+
+{\GAP}~4 cleans this up.
+It supports many different notions of generation,
+for example one can ask for magma generators of a group
+or for generators of a field as additive group.
+A subtle but important distinction is that between generators of an
+algebra and of an algebra-with-one.
+
+So the attributes `GeneratorsOfGroup', `GeneratorsOfMagma',
+`GeneratorsOfRing', `GeneratorsOfField', `GeneratorsOfVectorSpace',
+and so on, replace the access to the `generators' component.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations Records}
+
+Already in {\GAP}~3 there were several functions that were applicable to
+many different kinds of objects, for example `Size' could be applied to
+any domain, and the binary infix multiplication `*' could be used to
+multiply two matrices, an integer with a row vector, or a permutation
+with a permutation group.
+This was implemented as follows.
+Functions like `Size' and `*' tried to find out what situation was
+described by its arguments, and then it called a more specific function
+to compute the desired information.
+These more specific functions, let us call them *methods* as they are
+also called in {\GAP}~4,
+were stored in so-called *operations records* of the arguments.
+
+For example, every domain in {\GAP}~3 was represented as a record, and
+the operations record was stored in the record component `operations'.
+If `Size' was called for the domain then the method to compute the size
+of the domain was found as value of the `Size' component of the
+operations record.
+
+This was fine for functions taking only one argument,
+and in principle it is possible that for those functions an object
+stored an optimal method in its operations record.
+But in the case of more arguments this is not possible.
+In a multiplication of two objects in {\GAP}~3, one had to choose between
+the methods stored in the operations records of the arguments,
+and if for example the method stored for the left operand was called,
+this method had to handle all possible right operands.
+
+So operations records turned out to be not flexible enough.
+In {\GAP}~4, operations records are not supported
+(see~"Compatibility Mode" for a possibility to use your {\GAP}~3 code
+that utilizes operations records, at least to some extent).
+A detailed description of the new mechanism to select methods can be
+found in~"prg:Method Selection".
+
+An important point is that the new mechanism allows {\GAP} to take the
+relation between arguments into account.
+So it is possible (and recommended) to install different methods for
+different relations between the arguments.
+Note that such methods need not do the extensive argument checking
+that was necessary in {\GAP}~3, because most of the checks are done
+already by the method selection mechanism.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations vs. Dispatcher Functions}
+
+{\GAP}~3 functions like `Size', `CommutatorSubgroup', or `SylowSubgroup'
+did mainly call an appropriate method (see~"Operations Records")
+after they had checked their arguments.
+Such functions were called *dispatchers* in {\GAP}~3.
+In {\GAP}~4, many dispatchers have been replaced by *operations*,
+due to the fact that methods are no longer stored in operations records
+(see~"prg:Method Selection" for the details).
+
+Most dispatchers taking only one argument were treated in a special way
+in {\GAP}~3, they had the additional tasks to store computed values
+and to use these values in subsequent calls.
+For example, the dispatcher `Size' first checked whether the size of the
+argument was already stored, and if yes then this value was returned;
+otherwise a method was called, the value returned by this method was
+stored in the argument, and then returned by `Size'.
+
+Also in {\GAP}~4, computed values of operations that take one argument
+(these operations are called *attributes*) are stored,
+only the mechanism to achieve this has changed,
+see~"prg:Attributes" and~"prg:Properties".
+
+So the behaviour of `Size' is the same in {\GAP}~3 and {\GAP}~4.
+But note that in {\GAP}~4, it is not possible to access `<D>.size',
+see~"Attributes vs. Record Components".
+As described in~"Operations Records", {\GAP}~4 does not admit ``bypassing
+the dispatcher'' by calling for example `<D>.operations.Size'.
+This was done in {\GAP}~3 often for efficiency reasons,
+but the method selection mechanism of {\GAP}~4 is fast enough to make
+this unnecessary.
+
+If you had written your own dispatchers and put your own methods into
+existing operations records then this code will not work in {\GAP}~4.
+See~"prg:Creating New Objects" and~"prg:Method Selection"
+for a description how to define operations and to install methods.
+
+Finally, a couple of functions in {\GAP}~3 were hidden in
+operations records, e.g., `PermGroupOps.MovedPoints'.
+Also these functions became proper operations in {\GAP}~4.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Parents and Subgroups}
+
+In {\GAP}~3 there was a strict distinction between parent groups and
+subgroups.
+The use of the name ``parent'' (instead of ``supergroup'')
+was chosen to indicate that the parent of an object was more than just
+useful information.
+In fact the main reason for the introduction of parents was to provide
+a common roof for example for all groups of polycyclic words that
+belonged to the same PC-presentation, or for all subgroups of a finitely
+presented group (see~"Elements of Finitely Presented Groups").
+A subgroup was never a parent group, and it was possible to create
+subgroups only of parent groups.
+
+In {\GAP}~4 this common roof is provided already by the concept of
+*families*, see~"prg:Families".
+Thus it is no longer compulsory to use parent groups at all.
+On the other hand, parents *may* be used in {\GAP}~4 to provide
+information about an object, for example the normalizer of a group in its
+parent group may be stored as an attribute value.
+Note that there is no restriction on the supergroup that is set to be
+the parent,
+it is possible to create a subgroup of
+any group, this group then being the parent of the new subgroup.
+This permits for example chains of subgroups with respective parents,
+of arbitrary length.
+
+As a consequence, the `Parent' command cannot be used in {\GAP}~4
+to test whether for example the two arguments of `CommutatorSubgroup'
+fit together, this is now a question of the relation between the families
+of the groups.
+So the 2-argument version of `Parent' and the now meaningless function
+`IsParent' have been abolished.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Homomorphisms vs. General Mappings}
+
+In {\GAP}~3 there had been a confusion of group homomorphisms and general
+mappings,
+as `GroupHomomorphismByImages' created only a general mapping that did
+*not* store whether it was a mapping.
+This caused expensive, unwanted, and unnecessary tests whether the
+mapping was in fact a group homomorphism.
+Moreover, the ``official'' workaround to set some components of the
+mapping record was quite unhandy.
+
+In {\GAP}~4, `GroupHomomorphismByImages' assumes that the desired mapping
+is indeed a group homomorphism, and stores this in the mapping.
+If you want to check whether a general mapping that respects the group
+operations is really a mapping, you can construct it via
+`GroupGeneralMappingByImages' and then call `IsMapping' for it.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Homomorphisms vs. Factor Structures}
+
+If $F$ is a factor structure of $G$, with kernel $N$,
+full information about the connection between $F$ and $G$ is provided by
+the *natural homomorphism*.
+
+In {\GAP}~3, the ``official way'' to construct this natural homomorphism
+was to create first the factor structure $F$, and then to call
+`NaturalHomomorphism' with the arguments $G$ and $F$.
+For that, the data necessary to compute the homomorphism was stored in
+$F$ when $F$ was constructed.
+
+In {\GAP}~4, factor structures are not treated in a special way,
+especially they do not store information about a homomorphism.
+Instead, the more natural way is taken to construct the natural
+homomorphism from $G$ and $N$ by `NaturalHomomorphismByNormalSubgroup'
+if $N$ is a normal subgroup of the group $G$,
+or by `NaturalHomomorphismByIdeal' if $N$ is an ideal in the ring $G$.
+The factor $F$ can then be accessed as image of this homomorphism,
+and of course $G$ is the preimage and $N$ is the kernel.
+
+Note that {\GAP}~4 does not guarantee anything about the representation
+of the factor $F$, it may be a permutation group or a polycyclically
+presented group or another kind of group.
+Also note that a natural homomorphism need not be surjective.
+
+A consequence of this change is that {\GAP}~4 does *not* allow you to
+construct a natural homomorphism from the groups $G$ and $F$.
+
+In a similar fashion, *operation homomorphisms* are handled.
+That is, an operation homomorphism is constructed from an acting group,
+an operation domain, and a function describing the operation.
+The permutation group arising by the induced action is then the image
+of this operation homomorphism.
+
+The {\GAP}~3 function `Operation' is still supported,
+but from the original group and the result of `Operation' it is not
+possible to construct the operation homomorphism.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Isomorphisms vs. Isomorphic Structures}
+
+In {\GAP}~3, a different representation of a group could be obtained by
+calling `AgGroup' to get an isomorphic polycyclically presented group,
+`PermGroup' to get an isomorphic permutation group, and so on.
+The returned objects stored an isomorphism in the record component
+`bijection'.
+
+For the same reason as in~"Homomorphisms vs. Factor Structures",
+{\GAP}~4 puts emphasis on the isomorphism,
+and the isomorphic object in the desired representation can be accessed
+as its image.
+So you can call `IsomorphismPcGroup' or `IsomorphismPermGroup' in order
+to get an isomorphism to a polycyclically presented group or a
+permutation group, respectively, and then call `Image' to get the
+isomorphic group.
+
+Note that the image of an operation homomorphism with trivial kernel is
+also an isomorphic permutation group,
+but an operation homomorphism need not be surjective,
+since it may be easier to define it into the full symmetric group.
+
+Further note that in {\GAP}~3, a usual application of isomorphisms to
+polycyclically presented groups was to utilize the usually more effective
+algorithms for solvable groups.
+However, the new concept of polycyclic generating systems in {\GAP}~4
+makes it possible to apply these algorithms to arbitrary solvable groups,
+independent of the representation.
+For example, {\GAP}~4 can handle polycyclic generating systems of
+solvable permutation groups.
+So in many cases, a change of the representation may be not necessary any
+longer.
+
+% `IsomorphismFpGroup' in general will define a presentation on generators
+% which the algorithm chooses. The corresponding elements of the original
+% group can be obtained by the command
+% \begintt
+% gens:=List(isofp!.genimages,i->PreImagesRepresentative(isofp,i));
+% \endtt
+% If a presentation in given generators is needed, the command
+% `IsomorphismFpGroupByGenerators(<G>,<gens>)' will produce one.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements of Finitely Presented Groups}
+
+Strictly speaking, {\GAP}~3 did not support elements of finitely
+presented groups.
+Instead, the ``words in abstract generators'' of the underlying free
+groups were (mis)used.
+This caused problems whenever calculations with elements were involved,
+the most obvious ones being wrong results of element comparisons.
+But also functions that should in principle work for any group were not
+applicable to finitely presented groups.
+In effect, a finitely presented group had to be treated in a special way
+in {\GAP}~3.
+
+{\GAP}~4 distinguishes free groups and their elements from finitely
+presented groups and their elements.
+Comparing two elements of a finitely presented group will yield either
+the correct result or no result at all.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Info Mechanism}
+
+Sometimes it is useful to get information about the progress of a
+calculation.
+Many {\GAP} functions contain statements to display such information
+under certain conditions.
+
+In {\GAP}~3, these statements were calls to functions such as
+`InfoGroup1' or `InfoGroup2', and if the user assigned `Print' to
+these variables then this had the effect to switch on the printing of
+information.
+`InfoGroup2' was used for more detailed information than `InfoGroup1'.
+One could switch off the printing again by assigning `Ignore' to the
+variables, and `Ignore' was also the default value.
+
+{\GAP}~4 uses one function `Info' for the same purpose,
+which is a function that takes as first argument an *info class* such as
+`InfoGroup', as second argument an *info level*, and the print statements
+as remaining arguments.
+The level of an info class <class> is set to <level> by calling
+`SetInfoLevel( <class>, <level> )'.
+An `Info' statement is printed only if its second argument is smaller than
+or equal to the current info level.
+For example,
+\begintt
+    gap> test:= function( obj )
+    > Info( InfoGroup, 2, "This is useful, isn't it?" );
+    > return obj;
+    > end;;
+    gap> test( 1 );
+    1
+    gap> SetInfoLevel( InfoGroup, 2 );
+    gap> test( 1 );
+    #I  This is useful, isn't it?
+    1
+\endtt
+
+As in {\GAP}~3, if an info statement is ignored then its arguments are
+not evaluated.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Debugging}
+
+If {\GAP}~4 runs into an error or is interrupted,
+it enters a break loop.
+The command `Where( <number> )', which replaces `Backtrace' of {\GAP}~3,
+can be used to display <number> lines of information about the current
+function call stack.
+
+As in {\GAP}~3, access is only possible to the variables of the current
+level in the function stack,
+but in {\GAP}~4 the function `DownEnv' permits to step up and down in the
+stack.
+
+When interrupting, the first line printed by `Where' actually may be
+one level higher, as the following example shows
+\begintt
+    gap> test:= function( n )
+    >    if n > 3 then Error( "!" ); fi; test( n+1 ); end;;
+    gap> test( 1 );
+    Error ! at
+    Error( "!" );
+    Entering break read-eval-print loop,
+    you can 'quit;' to quit to outer loop,
+    or you can return to continue
+    brk> Where();
+    test( n + 1 ); called from
+    test( n + 1 ); called from
+    test( n + 1 ); called from
+    <function>( <arguments> ) called from read-eval-loop
+    brk> n;
+    4
+    brk> DownEnv();
+    brk> n;
+    3
+    brk> Where();
+    test( n + 1 ); called from
+    test( n + 1 ); called from
+    <function>( <arguments> ) called from read-eval-loop
+    brk> DownEnv( 2 );
+    brk> n;
+    1
+    brk> Where();
+    <function>( <arguments> ) called from read-eval-loop
+    brk> DownEnv( -2 );
+    brk> n;
+    3
+\endtt
+
+% For purposes of debugging, it can be helpful sometimes, to see what
+% information is stored within an object. In {\GAP}~3 this was possible using
+% `RecFields'. {\GAP}~4 permits the same for component objects by
+% `REC_NAMES_ROBJ(<object>)', which will list all components present.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Compatibility Mode}
+
+For users who want to use {\GAP}~3 code with as little changes as
+possible, a compatibility mode is provided by {\GAP}~4.
+This mode must be turned on explicitly by the user,
+and doing so may damage some features of {\GAP}~4 permanently
+for the current session.
+
+It should be noted that this compatibility mode has not been tested
+thoroughly.
+
+The compatibility mode can be turned on by loading some of the following
+files with `ReadLib'.
+The different files address different aspects of compatibility.
+
+\beginitems
+`compat3a.g' &
+    makes some {\GAP}~3 function names available that were changed
+    in {\GAP}~4,
+    and provides code for some {\GAP}~3 features that were
+    deliberately left out from the {\GAP}~4 library,
+
+`compat3b.g' &
+    allows to call functions in operations records, such as
+    `PermGroupOps.Size',
+    and makes accesses such as `<D>.size' and `IsBound( <D>.size )'
+    for domains <D> available (by redirecting this to calls of the
+    appropritae attribute getters resp. testers),
+
+`compat3c.g' &
+    permits to implement your own elements represented as records,
+    and using operations records to provide a `Print' methods and
+    the basic arithmetic operations,
+
+`compat3d.g' &
+    provides some {\GAP}~3 functions like `Domain', simulates the
+    behaviour of `String' in {\GAP}~4, and replaces `fail' by `false';
+    these changes destroy some of the functionality of {\GAP}~4.
+    A better compatibility in this respect will eventually be achieved
+    via a command line option.
+\enditems
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

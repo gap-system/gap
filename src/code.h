@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  code.h                      GAP source                   Martin Schoenert
+*W  code.h                      GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -11,14 +11,15 @@
 **  The  coder package  is   the part of   the interpreter  that creates  the
 **  expressions.  Its functions are called from the reader.
 */
-#ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_code_h =
+#ifdef INCLUDE_DECLARATION_PART
+SYS_CONST char * Revision_code_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *S  T_BODY  . . . . . . . . . . . . . . . . . . . . type of function body bag
 **
 **  'T_BODY' is the type of the function body bags.
@@ -465,6 +466,13 @@ extern Stat PopStat ( void );
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * *  coder functions * * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  CodeBegin() . . . . . . . . . . . . . . . . . . . . . . . start the coder
 *F  CodeEnd(<error>)  . . . . . . . . . . . . . . . . . . . .  stop the coder
 **
@@ -522,14 +530,13 @@ extern  void            CodeFuncCallEnd (
 **  called when the reader encounters the end of a function expression.  <nr>
 **  is the number of statements in the body of the function.
 **
-*N something has changed in CodeFuncExprEnd without being documented
 */
-extern  void            CodeFuncExprBegin (
+extern void CodeFuncExprBegin (
             Int                 narg,
             Int                 nloc,
             Obj                 nams );
 
-extern  void            CodeFuncExprEnd (
+extern void CodeFuncExprEnd (
             UInt                nr,
             UInt                mapsto );
 
@@ -1191,6 +1198,13 @@ extern  void            CodeAssertEnd3Args ( void );
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  InitCode()  . . . . . . . . . . . . . . . .  initialize the coder package
 **
 **  'InitCode' initializes the coder package.
@@ -1200,6 +1214,7 @@ extern  void            InitCode ( void );
 
 /****************************************************************************
 **
+
 *E  code.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

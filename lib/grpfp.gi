@@ -304,7 +304,6 @@ InstallMethod( CosetTable,
 
 function( G, H );
 
-### if FamilyObj( G ) <> FamilyObj( H ) then
     if G <> FamilyObj( H )!.wholeGroup then
         Error( "<H> must be a subgroup of <G>" );
     fi;
@@ -1222,7 +1221,7 @@ LowIndexSubgroupsFpGroup := function ( arg )
 
         # mark the column numbers of the generators to be excluded
         ngens := Length( fgens );
-        excludeGens := [ ]; excludeGens[2*ngens] := 0;
+        excludeGens := ListWithIdenticalEntries( 2 * ngens, 0 );
         for i in [ 1 .. ngens ] do
             gen := fgens[i];
             if gen in excludeList or gen^-1 in excludeList then
@@ -1275,7 +1274,7 @@ LowIndexSubgroupsFpGroup := function ( arg )
     nrsubgrp := Length( subgroup );
 
     # make an structure that is passed to 'ApplyRel'
-    app := [ 0,0,0,0 ];
+    app := ListWithIdenticalEntries( 4, 0 );
 
     # set up the action stack
     definition := 1;
@@ -1867,7 +1866,8 @@ RelatorRepresentatives := function ( rels )
         length := LengthWord( rel );
         if length > 0  then
 
-            # invert the exponents to get the wanted lexicography.
+            # invert the exponents to their negative values in order to get
+            # an appropriate lexicographical ordering of the relators.
             fam := FamilyObj( rel );
             list := ExtRepOfObj( rel );
             for i in [ 2, 4 .. Length( list ) ] do

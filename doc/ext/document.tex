@@ -1,61 +1,140 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  document.tex              GAP documentation              Frank Celler
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file describes the manual format.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Manual Format}
 
-This chapter  describes  the manual  format used  to produces the  {\GAP}
-manual and the on-line help.   The {\TeX}  source of  the manual is  also
-used to generated the on-line help.   Therefore some restriction apply to
-the {\TeX}  macros  one can   use.   These restriction are  described  in
+This chapter  describes  the manual format used  to   produces the {\GAP}
+manual and the on-line  help.  The {\TeX}   source of the manual is  also
+used to generated the on-line help.  Therefore  some restriction apply to
+the {\TeX} macros one   should use.  These  restriction are  described in
 sections "TeX Macros" and "Examples, Lists, and Verbatim".
 
 The first sections "Manual  Files"  and "Chapters and Sections"  describe
 the  general  layout of the  files  in case  you need to   write your own
 package documentation.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Manual Files}
 
-`\\TitlePage''
-`\\TableOfContents'
-`\\FrontMatters'
-`\\Chapters'
-  `\\Input'
-`\\Appendices'
-  `\\Index'
+The main {\TeX} is called  ``manual.tex''.  This file should contain only
+the following commands:
 
+\begintt
+  \input ../gapmacro.tex
+  \BeginningOfBook{name-of-book}
+    \UseReferences{book1}
+    ...
+    \UseReferences{bookn}
+    \TitlePage{title}
+    \TableOfContents
+    \FrontMatter
+      \Input{file1}
+      ...
+      \Input{filen}
+    \Chapters
+      \Input{file1}
+      ...
+      \Input{filen}
+    \Appendices
+      \Input{file1}
+      ...
+      \Input{filen}
+      \Answers
+      \Bibliography
+      \Index
+  \EndOfBook
+\endtt
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The first  line inputs the  file ``gapmacro.tex''.  If  you are writing a
+share package  either copy this file or use a  relative path.  The former
+method will always work but requires you to keep the file consistent with
+the  system while  the latter  forces users to  change the ``manual.tex''
+file  if they are installing  a package in  a private location.  See also
+Section "ref:GAP Root Directory" in the reference manual.
+
+`\\BeginningOfBook' starts   the   book, `name-of-book'   is  used    for
+cross-references,  see "Labels  and References".   If  you are  writing a
+share package use the name of your package here.
+
+If   your manual   consists   of more    then    one book  the    command
+`\\UseReferences' can  be used to  load the labels  of the other books in
+case  cross-references  occur.  `booki'  is  the  path  of the  directory
+containing  the book  whose  references you want  to   load.  If you  are
+writing a share package and you need to reference the main {\GAP} manual,
+use  `\\UseReferences' for each book  you want to reference.  However, as
+said  above  this requires  changes to   the ``manual.tex'' file   if the
+package is not installed in the standard location.
+
+*Example*
+
+If your  ``manual.tex''  lives in  ``pkg/qwer/doc''  and you want  to use
+references to the tutorial use
+
+\begintt
+  \UseReferences{../../../doc/tut}
+\endtt
+
+`\\TitlePage' produces a page containing the `title'.
+
+`\\TableOfContents' produces a table of contents.
+
+`\\FrontMatter' starts the front matter  chapters like a copyright notice
+or a preface.
+
+`\\Chapters'  starts the chapters  of the manual,  which are included via
+`\\Input'.  For the chapter format see Section "Chapters and Sections".
+
+`\\Appendices'  starts the appendices.   `\\Answers'  produces an answers
+chapter, see  "Excersises  and  Answers".  `\\Bibliography'  produces   a
+bibliography, and `\\Index' an index.
+
+Finally `\\EndOfBook' closes the book.
+
+*Example*
+
+Assume you have a share package ``qwert'' with two chapters ``Qwert'' and
+``Extending  Qwert'', a copyright  notice,  a preface, no exercises, then
+your ``manual.tex'' would basically like:
+
+\begintt
+  \input gapmacro.tex
+  \BeginningOfBook{qwert}
+    \TitlePage{
+      \centerline{\titlefont The Share Package ``qwert''}
+      \centerline{\secfont by}
+      \centerline{\titlefont Q. Mustermensch}
+    }
+    \FrontMatter
+      \TableOfContents
+      \Input{copyrght}
+      \Input{preface}
+    \Chapters
+      \Input{qwert}
+      \Input{extend}
+    \Appendices
+      \Index
+  \EndOfBook
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Chapters and Sections}
 
-The  command `\\Chapter\{<chaptername>\}'  starts  a   new chapter  named
-<chaptername>, a chapter beginns with an  introduction to the chapter and
-is followed  be   sections  created  with  the   `\\Section\{<secname>\}'
-command.   The strings  <chaptername>  and   <secname> are  automatically
+The  command `\\Chapter\{<chaptername>\}'  starts  a  new  chapter  named
+<chaptername>,  a chapter begins with an  introduction to the chapter and
+is  followed be sections     created with the    `\\Section\{<secname>\}'
+command.  The   strings  <chaptername> and  <secname>   are automatically
 available as references.
 
-
-\\Section{<secname>}\null
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  \Chapter{title}\par \Section{title}\par
-      make chapter or section title. Automatically generates table of
-%      contents, a label and an index entry. \Section{...}\null
-      inhibits labels and indexing.
-%  \FrontMatter, \Chapters, \Appendices  parts of the book
-%  \Bibliography, \TableOfContents       make these chapters automatically
-%  \Index                                make index without chapter head
-
-%  \>function( arguments )!{ index subentry }
-%  \>`a binop b'{binary operation}!{ index subentry }
-      make a  heading for a subsection   explaining a function  or a binary
-      operation. This automatically generates   a label and an  index entry
-      (with optional subentry).
-%  \){\fmark ...}
-      the same without label and index entry. \fmark is the triangle.
-
-  These last three probably won't occur in the tutorial.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{TeX Macros}
 
 As the manual pages are  also used as  on-line help and are automatically
@@ -79,11 +158,11 @@ are free to use other fonts or even colour.
     
 `\<text>' &
     sets the text in italics.  This can also be used inside `\$...\$' and
-    `{`...'}'. Use `\<' to  get a less than sign.   `\<text>' is  used to
-    denote  a  variable which is  a  argument of a  function, a typically
-    application is the description of a function.
+    `{`...'}'. Use `\\\<' to get a less than sign.  `\<text>' is  used to
+    denote  a  variable which is  an argument of a  function,  a  typical
+    application is the description of a function:
 \begintt
-        Group( <U> )
+        \>Group( <U> )
         The function `Group' constructs a group $G$ isomorphic to <U>.
 \endtt
 
@@ -101,21 +180,27 @@ are free to use other fonts or even colour.
 
 `"ref"' &
     produces  a reference  to a  label.  References  are generated by the
-    `\\Chapter', `\\Section', *@WHAT ELSE@* commands.
+    `\\Chapter', `\\Section', see "Labels and References".
 
 `\\index\{...\}' &
     defines an index entry.  Index entries are  also used for the section
-    index `tutorial.six' used by the on-line help.
+    index ``tutorial.six'' used by the on-line help.
 
-`\\GAP' &
+`\{\\GAP\}' &
     typesets {\GAP}.
+
+`\\>' &
+    *@explaination missing@*
+
+`\\)' &
+    *@explaination missing@*
 
 \enditems
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Examples, Lists, and Verbatim}
 
-In order  to   produces a  list   of  items with   descriptions  use  the
+In order  to   produce  a  list   of  items with   descriptions  use  the
 `\\beginitems', `\\enditems' environment.
 
 For examples, the   following  list describes   `base', `knownBase',  and
@@ -171,7 +256,7 @@ typesets the example
 Other non-{\GAP} examples are typeset using the `\\begintt', `\\endtt'
 environment.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Using TeX macros}
 
 As  described in "TeX Macros"  the use of  macros should be restricted to
@@ -180,5 +265,9 @@ might be forced  use  other {\TeX}, for  example  in order  to  typeset a
 lattice.  In this case you should provide  an alternative for the on-line
 help.
 
-*@WHAT IS EXACT SYNTAX?@*
+*@NOT SUPPORTED YET@*
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  document.tex  . . . . . . . . . . . . . . . . . . . . . . . ends here

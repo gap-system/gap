@@ -110,7 +110,7 @@ char *          Revision_exprs_c =
 #define EVAL_EXPR(expr) \
                         (IS_REFLVAR(expr) ? OBJ_REFLVAR(expr) : \
                          (IS_INTEXPR(expr) ? OBJ_INTEXPR(expr) : \
-                          (*EvalExprFuncs[ TNUM_STAT(exrp) ])( expr ) ))
+                          (*EvalExprFuncs[ TNUM_STAT(expr) ])( expr ) ))
 */
 
 

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  blister.h                   GAP source                   Martin Schoenert
+*W  blister.h                   GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -15,24 +15,30 @@
 **  Lists" in the {\GAP} Manual.  Read  also the section "More  about Boolean
 **  Lists" about the different internal representations of such lists.
 */
-#ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_blister_h =
+#ifdef INCLUDE_DECLARATION_PART
+SYS_CONST char * Revision_blister_h =
    "@(#)$Id$";
 #endif
 
-
 /****************************************************************************
 **
+
 *V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
 **
-**  'BIPEB' is the number of bits per block, usually 32.
+**  'BIPEB' is the number of bits per block, where a block fills a UInt, which
+**   must be the same size as a bag identifier.
+**
 */
-#define BIPEB                           (sizeof(UInt4) * 8L)
+
+#define BIPEB                           (sizeof(UInt) * 8L)
+
+
 
 
 /****************************************************************************
 **
-*F  PLEN_SIZE_BLIST(<size>) . .  physical length from size for a boolean list
+
+*F  PLEN_SIZE_BLIST( <size> ) .  physical length from size for a boolean list
 **
 **  'PLEN_SIZE_BLIST'  computes  the  physical  length  (e.g.  the  number of
 **  elements that could be stored  in a list) from the <size> (as reported by
@@ -42,12 +48,12 @@ char *          Revision_blister_h =
 **  that have sideeffects.
 */
 #define PLEN_SIZE_BLIST(size) \
-                        ((((size)-sizeof(Obj))/sizeof(Obj)) * BIPEB)
+                        ((((size)-sizeof(Obj))/sizeof(UInt)) * BIPEB)
 
 
 /****************************************************************************
 **
-*F  SIZE_PLEN_BLIST(<plen>)size for a boolean list with given physical length
+*F  SIZE_PLEN_BLIST( <plen> ) . . size for a blist with given physical length
 **
 **  'SIZE_PLEN_BLIST' returns  the size  that a boolean list  with  room  for
 **  <plen> elements must at least have.
@@ -56,12 +62,12 @@ char *          Revision_blister_h =
 **  that have sideeffects.
 */
 #define SIZE_PLEN_BLIST(plen) \
-                        (sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(Obj))
+                        (sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(UInt))
 
 
 /****************************************************************************
 **
-*F  LEN_BLIST(<list>) . . . . . . . . . . . . . . .  length of a boolean list
+*F  LEN_BLIST( <list> ) . . . . . . . . . . . . . .  length of a boolean list
 **
 **  'LEN_BLIST' returns the logical length of the boolean list <list>, as a C
 **  integer.
@@ -72,10 +78,19 @@ char *          Revision_blister_h =
 #define LEN_BLIST(list) \
                         (INT_INTOBJ(ADDR_OBJ(list)[0]))
 
+/***************************************************************************
+**
+*F  NUMBER_BLOCKS_BLIST(<list>) .  . . . . . . number of UInt blocks in list
+**
+**
+*/
+
+#define NUMBER_BLOCKS_BLIST( blist ) ((LEN_BLIST((blist)) + BIPEB -1)/BIPEB)
+
 
 /****************************************************************************
 **
-*F  SET_LEN_BLIST(<list>,<len>) . . . . . .  set the length of a boolean list
+*F  SET_LEN_BLIST( <list>, <len> )  . . . .  set the length of a boolean list
 **
 **  'SET_LEN_BLIST' sets the  length of the boolean list  <list> to the value
 **  <len>, which must be a positive C integer.
@@ -85,6 +100,47 @@ char *          Revision_blister_h =
 */
 #define SET_LEN_BLIST(list,len) \
                         (ADDR_OBJ(list)[0] = INTOBJ_INT(len))
+
+/****************************************************************************
+**
+*F  BLOCKS_BLIST( <list> ) . . . . . . . . first block of a boolean list
+**
+**  returns a pointer to the start of the data of the Boolean list
+**
+*/
+
+#define BLOCKS_BLIST( list )  ((UInt*)(ADDR_OBJ(list)+1))
+
+/****************************************************************************
+**
+*F  BLOCK_ELM_BLIST(<list>,<pos>) . . . . . . . . . .block  of a boolean list
+**
+**  'BLOCK_ELM_BLIST' return the block containing the <pos>-th element of 
+**   the boolean list <list> as a UInt value, which is also a valid left
+**  hand side.
+**  <pos> must  be a positive integer less than
+**  or equal to the length of <hdList>.
+**
+**  Note that 'BLOCK_ELM_BLIST' is a macro, so do not call it  with arguments
+**  that have sideeffects.
+*/
+
+#define BLOCK_ELM_BLIST(list, pos) (BLOCKS_BLIST( list )[((pos)-1)/BIPEB])
+
+
+/****************************************************************************
+**
+*F  MASK_POS_BLIST(<pos>) . . .  . . .bit mask for position of a Boolean list
+**
+**  MASK_POS_BLIST(<pos>) returns a UInt with a single set bit in position
+**  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
+**
+**  Note that 'MASK_POS_BLIST' is a macro, so do not call it  with arguments
+**  that have sideeffects.
+*/
+
+#define MASK_POS_BLIST( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
+
 
 
 /****************************************************************************
@@ -99,13 +155,12 @@ char *          Revision_blister_h =
 **  have sideeffects.
 */
 #define ELM_BLIST(list,pos) \
- (((UInt4*)(ADDR_OBJ(list)+1))[((pos)-1)/BIPEB]&(1UL<<((pos)-1)%BIPEB) ? \
-  True : False)
+  ((BLOCK_ELM_BLIST(list,pos) & MASK_POS_BLIST(pos)) ?  True : False)
 
 
 /****************************************************************************
 **
-*F  SET_ELM_BLIST(<list>,<pos>,<val>) . . .  set an element of a boolean list
+*F  SET_ELM_BLIST( <list>, <pos>, <val> ) .  set an element of a boolean list
 **
 **  'SET_ELM_BLIST' sets  the element at position <pos>   in the boolean list
 **  <list> to the value <val>.  <pos> must be a positive integer less than or
@@ -114,11 +169,25 @@ char *          Revision_blister_h =
 **  Note that  'SET_ELM_BLIST' is  a macro, so do not  call it with arguments
 **  that have sideeffects.
 */
+
 #define SET_ELM_BLIST(list,pos,val)  \
  ((val) == True ? \
-  (((UInt4*)(ADDR_OBJ(list)+1))[((pos)-1)/BIPEB]|=(1UL<<((pos)-1)%BIPEB)) : \
-  (((UInt4*)(ADDR_OBJ(list)+1))[((pos)-1)/BIPEB]&=~(1UL<<((pos)-1)%BIPEB)))
+  (BLOCK_ELM_BLIST(list, pos) |= MASK_POS_BLIST(pos)) : \
+  (BLOCK_ELM_BLIST(list, pos) &= ~MASK_POS_BLIST(pos)))
 
+
+/****************************************************************************
+**
+*F  IS_IMM_BLIST( <list> )  . . . . . .  check if boolean <list> is immutable
+*/
+#define IS_IMM_BLIST(list)  ((TNUM_OBJ(list) - T_BLIST) % 2)
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
 
 /****************************************************************************
 **
@@ -130,3 +199,8 @@ extern  void            InitBlist ( void );
 
 
 
+/****************************************************************************
+**
+
+*E  blister.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

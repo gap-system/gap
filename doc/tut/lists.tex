@@ -1,4 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  lists.tex                 GAP documentation             Thomas Breuer
+%W                                                         & Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                       & Heiko Theissen
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file contains a tutorial introduction to lists.
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Lists}
 
 Modern mathematics, especially algebra, is based on set theory. When sets
@@ -8,8 +23,15 @@ description of  lists  and their  manipulation. {\GAP}  regards sets as a
 special kind of lists, namely as lists without  holes or duplicates whose
 entries are ordered with respect to the precedence relation~`\<'.
 
+After  the introduction of  the basic  manipulations with lists in~"Plain
+Lists", some difficulties concerning identity and mutability of lists are
+discussed  in~"Identical  Lists"  and~"Immutability".  Sets,  ranges, row
+vectors, and matrices are introduced as special kinds of lists in~"Sets",
+"Ranges", "Vectors and Matrices".   Loops  and some list   operations are
+shown in~"For and While Loops" and~"List Operations".
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Plain lists}\null
+\Section{Plain Lists}\null
 
 \atindex{lists!plain}{|indexit}%
 A *list* is a collection of objects separated by  commas and enclosed  in
@@ -76,8 +98,9 @@ The list itself however must  exist before a  value can be  assigned to a
 position of the list.  This list may be the empty list `[ ]'.
 \beginexample
     gap> lll[1]:= 2;
-    Error, Variable: 'lll' must have a value
+    Variable: 'lll' must have a value
     gap> lll:= []; lll[1]:= 2;
+    [  ]
     2 
 \endexample
 Of course  existing entries of a list  can be  changed by this mechanism,
@@ -157,7 +180,7 @@ This way you get  a new list that  contains at position <i> that  element
 whose position is the <i>th entry of the argument in the curly braces.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Identical lists}\null
+\Section{Identical Lists}\null
 
 \atindex{lists!identical}{|indexit}%
 This second  section  about lists is dedicated  to  the subtle difference
@@ -165,8 +188,8 @@ between  equality  and identity  of   lists. It  is  really  important to
 understand   this  difference in  order   to  understand how complex data
 structures are  realized in {\GAP}.   This section applies  to all {\GAP}
 objects  that have  subobjects,  e.g.,  to lists   and to  records. After
-reading the section  about records you  should return to this section and
-translate it into the record context.
+reading the section about records~"Plain Records" you should return to
+this section and translate it into the record context.
 
 Two  lists are equal if all their entries are equal.  This means that the
 equality operator `=' returns `true' for the  comparison of  two lists if
@@ -194,7 +217,9 @@ value of  the subobject `numbers[3]'  of `numbers' this will  also change
 but they do  point  to an object that  occupies  storage memory.   So the
 assignment `numbers := primes' did *not* create a new list in a different
 place of memory but only created the new name `numbers'  for the same old
-list of primes. *The same object can have several names.*
+list of primes.
+
+*The same object can have several names.*
 
 If you want to change a list with the  contents of `primes' independently
 from `primes'  you will have to  make a copy of  `primes' by the function
@@ -211,9 +236,9 @@ the argument. (We will first restore the old value of `primes'.)
 Now `numbers' is no longer equal to `primes' and `primes' still is a list
 of primes.  Check this by printing the values of `numbers' and `primes'.
 
-The  only objects  that can be  changed  this way  are records and lists,
-because only {\GAP} objects of  these  types have subobjects.  To clarify
-this statement consider the following example.
+Lists and records can be changed this way because {\GAP} objects of these
+types have subobjects.
+To clarify this statement consider the following example.
 \beginexample
     gap> i:= 1;; j:= i;; i:= i+1;; 
 \endexample
@@ -235,8 +260,73 @@ Finally try the following examples and explain the results.
     gap> l[1]:= l;
     [ ~ ]
 \endexample
-Now return to the  previous section and   find out whether the  functions
+Now return to Section~"Plain Lists" and find out whether the functions
 `Add' and `Append' change their arguments.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Immutability}
+
+{\GAP} has a mechanism that protects lists against  changes like the ones
+that have bothered   us in    Section~"Identical Lists". The     function
+`Immutable' takes as argument a list and returns an immutable copy of it,
+i.e., a list  which  looks exactly like the   old one, but has  two extra
+properties:
+(1)~The new list is immutable, i.e., itself and its subobjects cannot be
+    changed.
+(2)~For that, every part of the list that can be changed has been copied,
+    so that changes to the old list will not affect the new one. In other
+    words, the new list has no mutable  subobjects in common with the old
+    list.
+\begintt
+    gap> list := [ 1, 2, "three", [ 4 ] ];; copy := Immutable( list );;
+    gap> list[3][5] := 'w';; list; copy;
+    [ 1, 2, "threw", [ 4 ] ]
+    [ 1, 2, "three", [ 4 ] ]
+    gap> copy[3][5] := 'w';
+    Lists Assignment: <list> must be a mutable list
+    Entering break read-eval-print loop, you can 'quit;' to quit to outer \
+    loop,
+    or you can return and ignore the assignment to continue
+    brk> quit;
+\endtt
+As a consequence of  these rules, in the  immutable copy of a list  which
+contains an already immutable list as subobject, this immutable subobject
+need not be copied,  because it is unchangeable. This is the idea  behind
+`Immutable': it produces lists that are unchangeable. Such lists are
+useful in many complex {\GAP} objects,  for example as generator lists of
+groups. By  making them immutable, {\GAP}  ensures that no generators can
+be added to the list, removed or exchanged. Such  changes would of course
+lead  to serious inconsistencies with  other  knowledge that may already
+have been calculcated for the group.
+
+A  converse function to  `Immutable' is `ShallowCopy', which produces a
+new  mutable list whose $i$th entry  is the $i$th  entry of the old list.
+The single entries are not copied, they are just  placed in the new list.
+That's  why the result  is called   a ``shallow  copy''.  Since the  list
+entries were subobjects of  the  immutable old  list and  hence immutable
+themselves, the result of `ShallowCopy' is mutable only at the top.
+
+\indextt{StructuralCopy}%
+\exercise How can  you produce  a  mutable ``deep copy'' of  an immutable
+list?
+
+\answer `StructuralCopy( list )' will copy `list' only as deep  as  it is
+mutable, hence it will not copy an immutable list at all.  So you have to
+iterate the effect  of `ShallowCopy', e.g.,  with the following recursive
+function:
+\begintt
+    DeepCopy := function( old )
+    local   new,  entry;
+        new := [  ];  for entry  in old  do
+        if IsList( entry )  then  Add( new, DeepCopy( entry ) );
+                            else  Add( new, entry );  fi;  od;
+        return new;
+    end;
+\endtt
+This works only if the original list  does not contain the same subobject
+(up to `IsIdentical', see Section~"Objects vs. Elements") twice.
+For example, the list which {\GAP} prints as `[ ~ ]' will cause this
+function to recurse infinitely.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Sets}
@@ -252,7 +342,8 @@ cannot have duplicates. {\GAP} calls a  set also a *strictly sorted list*
 and the function `IsSSortedList' tests whether a given  list is a set. It
 returns  a boolean value.  For any  list contained  in  one family  there
 exists  a    corresponding set containing  the   same  elements (ignoring
-repitions). This set is constructed by the function `Set' which takes the
+repetitions).
+This set is constructed by the function `Set' which takes the
 list as  its argument   and returns a   set  obtained from this   list by
 ignoring holes and duplicates and by sorting the elements.
 
@@ -267,8 +358,9 @@ strings.
     [ "apple", "cherry", "plum", "strawberry" ] 
 \endexample
 Note  that the  original list `fruits'  is not  changed  by the  function
-`Set'.  It   produces a new  which  we  have to   assign to  the variable
-`fruits'.
+`Set'.
+It produces a new list which we have to assign to the variable `fruits'
+in order to make it a set.
 
 The `in' operator is  used  to test whether an  object is an element of a
 set.  It returns a boolean value `true' or `false'.
@@ -289,14 +381,13 @@ object `fruits' is changed.
     gap> AddSet(fruits, "banana");
     gap> fruits;  #  The banana is inserted in the right place.
     [ "apple", "banana", "cherry", "plum", "strawberry" ]
-|_
     gap> AddSet(fruits, "apple");
     gap> fruits;  #  `fruits' has not changed.
     [ "apple", "banana", "cherry", "plum", "strawberry" ] 
 \endexample
 Sets can be intersected by the function `Intersection'  and united by the
 function `Union' which both take  two sets as their arguments  and return
-the intersection (union) of the two sets as a new object.
+the intersection resp. union of the two sets as a new object.
 \beginexample
     gap> breakfast:= ["tea", "apple", "egg"];
     [ "tea", "apple", "egg" ]
@@ -332,22 +423,23 @@ consecutive integers the second entry may be omitted.
 \endexample
 This compact printed representation of a fairly long  list corresponds to
 a  compact internal representation.  The function `IsRange' tests whether
-an object is a range.  If this is true for a list but the list is not yet
-represented in the compact form of a range this will be done then.
+an object is a range.
+%  If this is true for a list but the list is not yet
+%represented in the compact form of a range this will be done then.
 \beginexample
     gap> a:= [-2,-1,0,1,2,3,4,5];
     [ -2, -1, 0, 1, 2, 3, 4, 5 ]
     gap> IsRange(a);
     true
-    gap> a;
-    [ -2 .. 5 ]
+    gap> a = [ -2 .. 5 ];
+    true
 \endexample
-Note that this  change of representation does  *not* change the  value of
-the list `a'. The list `a'  still behaves in any context  in the same way
-as it would have in the long representation.
+% Note that this  change of representation does  *not* change the  value of
+% the list `a'. The list `a'  still behaves in any context  in the same way
+% as it would have in the long representation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{For and while loops}\null
+\Section{For and While Loops}\null
 
 \atindex{loops!for}{|indexit}\atindex{loops!while}{|indexit}%
 Given a list `pp' of permutations we can form their product by means of a
@@ -366,7 +458,9 @@ First a  new variable `prod'  is initialized  to the identity permutation
 `()'. Then the loop variable `p' takes as its value one permutation after
 the other from the list `pp' and is multiplied with  the present value of
 `prod'  resulting in a  new value which  is then assigned  to `prod'. The
-`for' loop has the syntax `for <var> in <list> do <statements> od;'
+`for' loop has the following syntax
+
+\)\fmark for <var> in <list> do <statements> od;
 
 The  effect of the `for'  loop  is to execute the <statements> for  every
 element  of  the <list>.   A `for'  loop  is  a  statement  and therefore
@@ -375,14 +469,18 @@ keywords `do' and `od'  (reverse  `do').  A `for'  loop returns no value.
 Therefore we had  to  ask  explicitly for  the  value  of  `prod' in  the
 preceding example.
 
-The `for' loop can loop over any kind of list, even a list with holes. In
-many programming languages (and  in former versions  of {\GAP},  too) the
-`for' loop has the form `for <var> from <first> to <last> do <statements>
-od;' But   this is merely  a special  case of  the general `for'  loop as
-defined above where the <list> in the loop body is a range. `for <var> in
-[<first>..<last>] do <statements>  od;' You can for  instance loop over a
-range to compute the  factorial $15!$ of the  number 15 in the  following
-way.
+The `for' loop can loop over any kind of list, even a list with holes.
+In many programming languages the `for' loop has the form
+
+\)\fmark for <var> from <first> to <last> do <statements> od;
+
+But this is merely a special case of the general `for' loop as defined
+above where the <list> in the loop body is a range.
+
+\)\fmark for <var> in [<first>..<last>] do <statements>  od;
+
+You can for  instance loop over a range to compute the factorial $15!$
+of the number 15 in the following way.
 \beginexample
     gap> ff:= 1;;
     gap> for i in [1..15] do
@@ -407,14 +505,12 @@ that prime, add it to the list `factors' and continue.
 \beginexample
     gap> n:= 1333;;
     gap> factors:= [];;
-|_
     gap> for p in primes do
     >       while n mod p = 0 do
     >          n:= n/p;
     >          Add(factors, p);
     >       od;
     >    od;
-|_
     gap> factors; n;
     [ 31, 43 ]
     1 
@@ -438,7 +534,6 @@ function `Unbind' to delete entries from a list.
 \beginexample
     gap> primes:= [];;
     gap> numbers:= [2..1000];;
-|_
     gap> for p in numbers do
     >       Add(primes, p);
     >       for n in numbers do
@@ -460,7 +555,7 @@ This yields a nice and short orbit  algorithm for the  action of a group,
 for example.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{List operations}
+\Section{List Operations}
 
 There is however a more comfortable way to  compute the product of a list
 of numbers or permutations.
@@ -479,8 +574,9 @@ There are other often used loops available as functions.   Guess what the
 function `Sum' does.  The function `List' may  take a list and a function
 as its arguments.  It will then apply the function to each element of the
 list  and return  the corresponding list of results.   A list of cubes is
-produced as follows with the function `cubed' from section~"Functions".
+produced as follows with the function `cubed' from Section~"Functions".
 \beginexample
+    gap> cubed:= x -> x^3;;
     gap> List([2..10], cubed);
     [ 8, 27, 64, 125, 216, 343, 512, 729, 1000 ] 
 \endexample
@@ -492,11 +588,11 @@ additional argument.
     true 
 \endexample
 The  primes less than 30 can  be retrieved out  of the list `primes' from
-section~"Plain lists" by the function `Filtered'. This function takes the
+Section~"Plain Lists" by the function `Filtered'. This function takes the
 list `primes' and a property as its arguments and will return the list of
 those elements of `primes' which have this property. Such a property will
 be represented  by  a function  that  returns  a boolean  value. In  this
-example the property  of  being less than  30  can be reresented  by  the
+example the property  of  being less than  30 can be represented  by  the
 function `x  -> x \<   30' since `x \<   30' will evaluate to `true'  for
 values `x' less than 30 and to `false' otherwise.
 \beginexample
@@ -512,73 +608,13 @@ elements from the original list corresponding to these positions.
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Immutability}
-
-{\GAP} has a mechanism that protects lists  against changes like the ones
-that   have   bothered us in  section    "Identical lists".  The function
-`Immutable' takes as argument a list and returns an immutable copy of it,
-i.e.,  a list which looks   exactly like the old   one, but has two extra
-properties: (1)~It has no mutable subobjects in common with the old list,
-i.e., every part of the list that can be changed has been copied, so that
-changes to the old list will not affect the new  one. (2)~The new list is
-made immutable, i.e., no part of it can be changed any more.
-\beginexample
-    gap> list := [ 1, 2, "three", [ 4 ] ];; copy := Immutable( list );;
-    gap> list[3][5] := 'w';; list; copy;
-    [ 1, 2, [ 't', 'h', 'r', 'e', 'w' ], [ 4 ] ]
-    [ 1, 2, "three", [ 4 ] ]
-    gap> copy[3][5] := 'w';
-    Lists Assignment: <list> must be a mutable list
-    Entering break read-eval-print loop, you can 'quit;' to quit to outer \
-    loop,
-    or you can return and ignore the assignment to continue
-    brk> quit;
-\endexample
-As a consequence of  these rules, in the  immutable copy of a list  which
-contains an already immutable list as subobject, this immutable subobject
-need not be copied,  because it is a   constant. This is the idea  behind
-`Immutable': it produces lists that behave like constants. Such lists are
-useful in many complex {\GAP} objects,  for example as generator lists of
-groups. By  making them immutable, {\GAP}  ensures that no generators can
-be added to the list, removed or exchanged. Such  changes would of course
-lead  to serious inconsistencies with  other  attributes that may already
-have been calculcated for the group.
-
-The  converse function to  `Immutable' is `ShallowCopy', which produces a
-new  mutable list whose $i$th entry  is the $i$th  entry of the old list.
-The single entries are not copied, they are just  placed in the new list.
-That's  why the result  is called   a ``shallow  copy''.  Since the  list
-entries were subobjects of  the  immutable old  list and  hence immutable
-themselves, the result of `ShallowCopy' is mutable only at the top.
-
-\indextt{StructuralCopy}%
-\exercise How can  you produce  a  mutable ``deep copy'' of  an immutable
-list?
-
-\answer `StructuralCopy( list )' will copy `list' only as deep  as  it is
-mutable, hence it will not copy an immutable list at all.  So you have to
-iterate the effect  of `ShallowCopy', e.g.,  with the following recursive
-function:
-\begintt
-    DeepCopy := function( old )
-    local   new,  entry;
-        new := [  ];  for entry  in old  do
-        if IsList( entry )  then  Add( new, DeepCopy( entry ) );
-                            else  Add( new, entry );  fi;  od;
-        return new;
-    end;
-\endtt
-This works only if the original list  does not contain the same subobject
-(up to `IsIdentical') twice. For example, the list which {\GAP} prints as
-`[ ~ ]' will cause this function to recurse infinitely.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Vectors and matrices}\null
+\Section{Vectors and Matrices}\null
 
 \index{vectors!row}\index{matrices}%
 This section describes how {\GAP} uses lists to represent row vectors and
 matrices. A *row vector* is a dense list of elements from a common field.
-A *matrix* is a dense list of row vectors of equal length.
+A *matrix* is a dense list of row vectors over a common field and of
+equal length.
 \beginexample
     gap> v:= [3, 6, 2, 5/2];;  IsRowVector(v);
     true
@@ -590,16 +626,19 @@ product.
     gap> 2 * v;  v * 1/3;  v * v;
     [ 6, 12, 4, 5 ]
     [ 1, 2, 2/3, 5/6 ]
-    221/4  # the scalar product of `v' with itself
+    # the scalar product of `v' with itself
+    221/4
 \endexample
 Note  that   the expression `v   *  1/3' is   actually evaluated by first
 multiplying `v' by 1 (which yields again `v')  and by then dividing by 3.
 This  is  also an allowed scalar   operation.  The expression `v/3' would
-result in  the same value. *All  these arithmetical  operations result in
-immutable vectors,*  regardless of whether the   operands were mutable or
-immutable. So if  you want to produce an  immutable list with 100~entries
-equal to~25, you can simply say `25  + 0 * [  1 .. 100 ]', because ranges
-are also vectors (over the rationals).
+result in  the same value.
+
+*All  these arithmetical  operations result in immutable vectors*,
+regardless of whether the operands were mutable or immutable.
+So if you want to produce an immutable list with 100~entries equal to~25,
+you can simply say `25  + 0 * [ 1 .. 100 ]',
+because ranges are also vectors (over the rationals).
 
 \indextt{ListWithIdenticalEntries}%
 \exercise  How can  you produce  a mutable  list  with 100~entries  equal
@@ -609,29 +648,31 @@ to~25?
 ->  25 )'. Since such constructions  are frequently needed, {\GAP} offers
 you a shortcut: you can simply say `ListWithIdenticalEntries( 100, 25 )'.
 
+A matrix is a dense list of row vectors of equal length.
 \beginexample
     gap> m:= [[1,-1, 1],
     >         [2, 0,-1],
     >         [1, 1, 1]];
     [ [ 1, -1, 1 ], [ 2, 0, -1 ], [ 1, 1, 1 ] ]
     gap> m[2][1];
-    2 |
+    2
 \endexample
 Syntactically a matrix is a list of lists. So the number  2 in the second
 row  and the first  column of the matrix `m'  is referred to as the first
-element of the second element of the list `m' via `m[2][1]'. A matrix may
-be multiplied by scalars, row vectors and other matrices. The row vectors
-and matrices involved in such a multiplication must however have suitable
-dimensions.
+element of the second element of the list `m' via `m[2][1]'.
+
+A matrix may be multiplied by scalars, row vectors and other matrices.
+The row vectors and matrices involved in such a multiplication must
+however have suitable dimensions.
 \beginexample
     gap> [1, 0, 0, 0] * m;
-    Error, Vector *: vectors must have the same length
+    Vector *: <right> must have the same length as <left> (4)
     gap> [1, 0, 0] * m;
-    [ 1, 2, 3, 4 ]
-    gap> m * [1, 0, 0];
-    Error, Vector *: vectors must have the same length
+    [ 1, -1, 1 ]
     gap> m * [1, 0, 0, 0];
-    [ 1, 5, 9 ]
+    Vector *: <right> must have the same length as <left> (3)
+    gap> m * [1, 0, 0];
+    [ 1, 2, 1 ]
 \endexample
 Note that multiplication  of a row vector with  a matrix will result in a
 linear combination of the  rows of the  matrix, while multiplication of a
@@ -642,14 +683,13 @@ column vector.
 A  matrix of integers can also  be multiplied with  a finite field scalar
 and vice  versa. Such products result in  a matrix  over the finite field
 with the integers mapped into the finite field in the obvious way. Finite
-field matrices are  nicer to read  when  the are `Display'ed  rather than
+field matrices are  nicer to read  when they are `Display'ed  rather than
 `Print'ed.
 \beginexample
     gap> Display( m * One( GF(5) ) );
      1 4 1
      2 . 4
      1 1 1
-|_
     gap> Display( m^2 * Z(2) + m * Z(4) );
     z = Z(4)
      z^1 z^1 z^2
@@ -666,17 +706,19 @@ arithmetical operation).
     gap> sm{ [ 1, 2 ] }{ [2] } := [[-2],[0]];;  sm;
     [ [ -1, -2 ], [ 0, 0 ] ]
 \endexample
+The first curly brackets contain the selection of rows,
+the second that of columns.
 
-The interesting point is that matrices appear not only in linear algebra,
-but also as  group elements, provided they are  invertible.  Here we have
-the  first  opportunity  to  meet a   group-theoretical  function, namely
-`Order', which computes the order of a group element.
-\beginexample
+Matrices appear not only in linear algebra, but also as group elements,
+provided they are invertible.
+Here we have the opportunity to meet a group-theoretical function,
+namely `Order', which computes the order of a group element.
+\begintt
     gap> Order( m * One( GF(5) ) );
     8
     gap> Order( m );
     |#I  Order: warning, order of <mat> might be infinite
-\endexample
+\endtt
 Since the order  of `m' over the  rationals really is  infinite, you will
 have to interrupt {\GAP} by  pressing `<ctl>-C' (followed by `<ctl>-D' or
 `quit;'  to leave the   break loop). To prove  that  the order of `m'  is
@@ -686,16 +728,84 @@ rationals.
     gap> f := MinimalPolynomial( Rationals, m );;  Factors( f );
     [ P1C0(-2+x), P1C0(3+x^2) ]
 \endexample
+`Factors' returns a list of irreducible factors of the polynomial `f'.
+The notion `P1C0' means that the factors are univariate polynomials in
+characteristic zero.
+
 The first  irreducible factor $X-2$ reveals   that 2 is an  eigenvalue of
 `m', hence its order cannot be finite.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Further Reading}\null
+
+% In this chapter you have encountered the fundamental concept of a list.
+% You have seen how to construct lists, how to extend them and how to refer
+% to single elements of a list.
+% Moreover you have seen that lists may contain elements of different
+% types, even holes (unbound  entries),
+% and that a list may be an entry of itself or of one of its entries.
+% 
+% You have seen the difference between equal lists and identical lists.
+% Since lists are objects that have subobjects, they can be mutable or
+% immutable, and mutable lists can be changed.
+% Changing an object will change the values of all variables that point to
+% that object.
+% Be careful, since one object can have several names.
+% The function `ShallowCopy' creates a shallow copy of a list which is then
+% a new object.
+% 
+You will find more about lists in Chapter~"ref:Lists",
+and more about identical lists in~"ref:Identical Lists".
+% 
+% You have seen that sets are a special kind of list.
+% There are functions to expand sets, intersect or unite sets, and there is
+% the membership test with the `in' operator.
+Sets are described in more detail in Chapter~"ref:Sets".
+% 
+% You have seen that finite arithmetic progressions of integers can be
+% represented in a compact way as ranges.
+Chapter~"ref:Ranges" contains a detailed description of ranges.
+% 
+A more detailed description of strings is contained in
+Chapter~"ref:Strings and Characters".
+% 
+% You have met row vectors and matrices as special lists,
+% and you have seen how to refer to entries of a matrix and how to multiply
+% scalars, row vectors, and matrices.
+% 
+Fields are described in Chapter~"ref:Fields",
+some known fields in {\GAP} are described in Chapters~"ref:Rationals",
+"ref:Cyclotomics", "ref:Gaussians", "ref:Subfields of Cyclotomic  Fields"
+and "ref:Finite Fields".
+Row vectors and matrices are described in more detail in chapters
+"Row Vectors" and "Matrices".
+Vector spaces are described in Chapter~"ref:Vector Spaces",
+and further matrix related structures are described in Chapters~"Matrix Rings" and~"Matrix Groups".
+% 
+% You have learned how to loop over a list by the `for' loop and how to
+% loop with respect to a logical condition with the `while' loop.
+% You have seen that even the list in the loop body can be changed.
+
+The `for' loop is described in "ref:For".
+The `while' loop is described in "ref:While".
+% 
+% You have seen some functions which implement often used `for' loops.
+% There are functions like `Product' to form the product of the elements of
+% a list.
+% The function `List' can apply a function to all elements of a list
+% and the function `Filtered' creates a sublist of a given list.
+You will find more predefined `for' loops in Chapter~"ref:Lists".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:
 % mode:               text
 % mode:               outline-minor
-% outline-regexp:     "\\\\Chapter\\|\\\\Section"
+% outline-regexp:     "\\\\Chapter\\|\\\\Section\\|\\\\stars"
 % paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
 % paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
 % fill-column:        73
 % End:
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  lists.tex . . . . . . . . . . . . . . . . . . . . . . . . . ends here

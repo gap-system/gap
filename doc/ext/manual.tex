@@ -1,73 +1,87 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                GAP documentation             Thomas Breuer
+%W                                                         & Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                       & Heiko Theissen
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,    RWTH Aachen,   Germany
+%%
 \input ../gapmacro
 %
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . . . . .  first page
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{ext}
+\UseReferences{../tut}
+\UseReferences{../ref}
+\UseReferences{../prg}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
 %%
 \TitlePage{
   \centerline{Contributions to}\bigskip
   \centerline{\titlefont Extending GAP 4}\medskip
   \centerline{\titlefont ---}\medskip
-  \centerline{\titlefont Reference Manual}
+  \centerline{\titlefont Reference Manual}\vfill
+  \centerline{\secfont by}\vfill
+  \centerline{\secfont Lehrstuhl D f\accent127ur Mathematik}\medskip
+  \centerline{\secfont RWTH, 52056 Aachen, Germany}\bigskip
+  \centerline{\secfont and}\bigskip
+  \centerline{\secfont School of Mathematical and Computational Sciences}
+    \medskip
+  \centerline{\secfont University of St.~Andrews, North Haugh, St.~Andrews,
+              Fife KY16 9SS, Scotland}
 }
 %
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%F  BeginningOfBook . . . . . . . . . . . . . . . . . . . . .  start the book
-%%
-\BeginningOfBook
-%
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%F  TableOfContents . . . . . . . . . . . . . .  generate a table of contents
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
 %%
 \TableOfContents
 %
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%F  FrontMatter	. . . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \FrontMatter
+\Input{../tut/copyrigh}
 %
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%F  Chapters  . . . . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%F  Chapters  . . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \Chapters
 \Input{document}
 %
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%F  Appendices  . . . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%F  Appendices  . . . . . . . . . . . .  Extending GAP 4 Reference Manual
 %%
 \Appendices
-%
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%F  Index . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . index
-%%
-\Chapter{Index}
-
-\parindent 0pt
-
-Entries  in   `typewriter  style' refer   to  {\GAP} functions  (e.g.,
-`Size'); entries in roman type refer to {\GAP}-specific concepts. Page
-numbers are given in the form <chapter>--<page_within_chapter>. A page
-number in  {\it italics} denotes a  whole section  which is named like
-the index entry. For mathematical terms, especially their definitions,
-see  the   glossary in appendix~A.  For   references to the algorithms
-implemented in {\GAP}, see the bibliography in appendix~B.
-
-Keywords   are   sorted  with    case  and   spaces    ignored,  e.g.,
-```PermutationCharacter''' comes before ``permutation group''.
-
+%\Answers
+%\Bibliography
 \Index
-
-\bye
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex	. . . . . . . . . . . . . . . . . . . . . . . . ends here

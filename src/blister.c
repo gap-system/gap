@@ -57,40 +57,41 @@
 **  the other parts of  the {\GAP} kernel can access and modify boolean lists
 **  without actually being aware that they are dealing with a boolean list.
 **
-**  The  third part  consists    of the functions  'IsBlist',  'FuncIsBlist',
-**  'FuncBlistList', 'FuncListBlist',  'FuncSizeBlist',  'FuncIsSubsetBlist',
-**  'FuncUniteBlist', 'FuncIntersectBlist',  and  'FuncSubtractBlist'.  These
+**  The   third part  consists of   the  functions 'IsBlist',  'FuncIsBlist',
+**  'FuncBLIST_LIST', 'FuncLIST_BLIST', 'FuncSIZE_BLIST', 'FuncIS_SUB_BLIST',
+**  'FuncUNITE_BLIST',   'FuncINTER_BLIST', and 'FuncSUBTR_BLIST'.      These
 **  functions make it possible to make boolean lists,  either by converting a
-**  list to a boolean list,  or by computing  the characteristic boolean list
-**  of a  sublist, or by  computing the union,  intersection or difference of
+**  list to  a boolean list, or by  computing the characteristic boolean list
+**  of a sublist, or  by computing the union,  intersection or  difference of
 **  two boolean lists.
 **
-*N  1992/12/16 martin should have 'LtBlist'
+*N 1992/12/16 martin should have 'LtBlist'
 */
-char *          Revision_blister_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_blister_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* system dependent functions      */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling                  */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
-
+#include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations package      */
 
-#include        "ariths.h"              /* generic operations package      */
+#include        "ariths.h"              /* basic arithmetic                */
 #include        "lists.h"               /* generic list package            */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "plist.h"               /* GET_LEN_PLIST, GET_ELM_PLIST,...*/
-#include        "set.h"                 /* IsSet, SetList                  */
+#include        "plist.h"               /* plain lists                     */
+#include        "set.h"                 /* plain sets                      */
 
 #define INCLUDE_DECLARATION_PART
-#include        "blister.h"             /* declaration part of the package */
+#include        "blister.h"             /* boolean lists                   */
 #undef  INCLUDE_DECLARATION_PART
 
 #include        "range.h"               /* GET_LEN_RANGE, GET_LOW_RANGE,...*/
@@ -100,17 +101,19 @@ char *          Revision_blister_c =
 
 /****************************************************************************
 **
-
 *V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
 **
-**  'BIPEB' is the number of bits per block, wher a block fille a UInt, which
-**   should be the same size as a bag identifier, although we do not rely on
-**   this
+**  'BIPEB' is the number of bits per block, where a block fills a UInt, which
+**   must be the same size as a bag identifier.
 **
-**  'BIPEB' is defined in the declaration part of this package as follows:
+**  'BIPEB' is defined in  the  declaration  part of this  package as
+**  follows:
 **
+
 #define BIPEB                           (sizeof(UInt) * 8L)
+
 */
+
 
 
 /****************************************************************************
@@ -125,13 +128,14 @@ char *          Revision_blister_c =
 **  Note that 'PLEN_SIZE_BLIST' is a macro, so  do not call it with arguments
 **  that have sideeffects.
 **
-**  'PLEN_SIZE_BLIST'  is defined in the declaration  part of this package as
+**  'PLEN_SIZE_BLIST' is defined in  the  declaration  part of this  package as
 **  follows:
 **
-#define PLEN_SIZE_BLIST(size) \
-                        ((((size)-sizeof(Obj))/sizeof(Obj)) * BIPEB)
-*/
 
+
+#define PLEN_SIZE_BLIST(size) \
+                        ((((size)-sizeof(Obj))/sizeof(UInt)) * BIPEB)
+*/
 
 /****************************************************************************
 **
@@ -143,11 +147,11 @@ char *          Revision_blister_c =
 **  Note that 'SIZE_PLEN_BLIST' is a macro, so do not call it with  arguments
 **  that have sideeffects.
 **
-**  'SIZE_PLEN_BLIST' is  defined  in the declaration part of this package as
+**  'SIZE_PLEN_BLIST' is defined in  the  declaration  part of this  package as
 **  follows:
-**
+** 
 #define SIZE_PLEN_BLIST(plen) \
-                        (sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(Obj))
+                        (sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(UInt))
 */
 
 
@@ -161,10 +165,23 @@ char *          Revision_blister_c =
 **  Note that 'LEN_BLIST' is a macro, so do not call it  with  arguments that
 **  have sideeffects.
 **
-**  'LEN_BLIST' is defined in the declaration part of the package as follows:
+**  'LEN_BLIST' is defined in  the  declaration  part of this  package as
+**  follows:
 **
 #define LEN_BLIST(list) \
-                        ((Int)(ADDR_OBJ(list)[0]))
+                        (INT_INTOBJ(ADDR_OBJ(list)[0]))
+*/
+
+
+/***************************************************************************
+**
+*F  NUMBER_BLOCKS_BLIST(<list>) .  . . . . . . number of UInt blocks in list
+**
+**
+**  'NUMBER_BLOCKS_BLIST' is defined in the declaration part of this package 
+**  as  follows:
+**
+#define NUMBER_BLOCKS_BLIST( blist ) ((LEN_BLIST((blist)) + BIPEB -1)/BIPEB)
 */
 
 
@@ -178,13 +195,58 @@ char *          Revision_blister_c =
 **  Note that 'SET_LEN_BLIST' is a macro, so do  not  call it with  arguments
 **  that have sideeffects.
 **
-**  'SET_LEN_BLIST' is  defined in the declaration part of  this  package  as
+**  'SET_LEN_BLIST' is defined in  the  declaration  part of this  package as
 **  follows:
 **
 #define SET_LEN_BLIST(list,len) \
-                        (ADDR_OBJ(list)[0] = (Obj)(len))
+                        (ADDR_OBJ(list)[0] = INTOBJ_INT(len))
 */
 
+/****************************************************************************
+**
+*F  BLOCKS_BLIST( <list> ) . . . . . . . . first block of a boolean list
+**
+**  returns a pointer to the start of the data of the Boolean list
+**
+**
+
+#define BLOCKS_BLIST( list )  ((UInt*)(ADDR_OBJ(list)+1))
+*/
+/****************************************************************************
+**
+*F  BLOCK_ELM_BLIST(<list>,<pos>) . . . . . . . . . .block  of a boolean list
+**
+**  'BLOCK_ELM_BLIST' return the block containing the <pos>-th element of 
+**   the boolean list <list> as a UInt value, which is also a valid left
+**  hand side.
+**  <pos> must  be a positive integer less than
+**  or equal to the length of <hdList>.
+**
+**  Note that 'BLOCK_ELM_BLIST' is a macro, so do not call it  with arguments
+**  that have sideeffects.
+
+
+#define BLOCK_ELM_BLIST(list, pos) (BLOCKS_BLIST( list )[((pos)-1)/BIPEB])
+*/
+
+/****************************************************************************
+**
+*F  MASK_POS_BLIST(<pos>) . . .  . . .bit mask for position of a Boolean list
+**
+**  MASK_POS_BLIST(<pos>) returns a UInt with a single set bit in position
+**  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
+**
+**  Note that 'MASK_POS_BLIST' is a macro, so do not call it  with arguments
+**  that have sideeffects.
+**
+**  'MASK_POS_BLIST' is defined in  the  declaration  part of this  package as
+**  follows:
+**
+
+
+#define MASK_POS_BLIST( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
+
+*/
 
 /****************************************************************************
 **
@@ -197,11 +259,11 @@ char *          Revision_blister_c =
 **  Note that 'ELM_BLIST' is a macro, so do not call it  with arguments  that
 **  have sideeffects.
 **
-**  'ELM_BLIST' is defined in the declaration part of the package as follows:
+**  'ELM_BLIST' is defined in  the  declaration  part of this  package as
+**  follows:
 **
 #define ELM_BLIST(list,pos) \
- (((UInt4*)(ADDR_OBJ(list)+1))[((pos)-1)/BIPEB]&(1UL<<((pos)-1)%BIPEB) ? \
-  True : False)
+  BLOCK_ELM_BLIST(list,pos) & MASK_POS_BLIST(pos) ?  True : False
 */
 
 
@@ -218,29 +280,28 @@ char *          Revision_blister_c =
 **
 **  'SET_ELM_BLIST' is defined in  the  declaration  part of this  package as
 **  follows:
-**
+
+
 #define SET_ELM_BLIST(list,pos,val)  \
  ((val) == True ? \
-  (((UInt4*)(ADDR_OBJ(list)+1))[((pos)-1)/BIPEB]|=(1UL<<((pos)-1)%BIPEB)) : \
-  (((UInt4*)(ADDR_OBJ(list)+1))[((pos)-1)/BIPEB]&=~(1UL<<((pos)-1)%BIPEB)))
+  (BLOCK_ELM_BLIST(list, pos) |= MASK_POS_BLIST(pos)) : \
+  (BLOCK_ELM_BLIST(list, pos) &= ~MASK_POS_BLIST(pos)))
 */
 
 
 /****************************************************************************
 **
-
 *F  TypeBlist(<list>) . . . . . . . . . . . . . . . .  kind of a boolean list
 **
 **  'TypeBlist' returns the kind of a boolean list.
 **
-**  'TypeBlist' is the function in 'TypeObjFuncs' for boolean lists.
+**  'TypeBlist' is the function in 'KindObjFuncs' for boolean lists.
 */
-extern  Obj             TYPE_LIST_EMPTY_MUTABLE;
-extern  Obj             TYPE_LIST_EMPTY_IMMUTABLE;
+extern  Obj             KIND_LIST_EMPTY_MUTABLE;
+extern  Obj             KIND_LIST_EMPTY_IMMUTABLE;
 
-extern  Obj             TYPE_LIST_HOM;
+extern  Obj             KIND_LIST_HOM;
 
-#define IS_IMM_BLIST(list)  ((TNUM_OBJ(list) - T_BLIST) % 2)
 
 Obj             TypeBlist (
     Obj                 list )
@@ -283,6 +344,13 @@ Obj             TypeBlist (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * * copy functions * * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+
 *F  CopyBlist( <list>, <mut> )  . . . . . . . . . . . . . copy a boolean list
 **
 **  'CopyBlist' returns a structural (deep) copy  of the boolean list <list>,
@@ -306,8 +374,8 @@ Obj CopyBlist (
     Int                 mut )
 {
     Obj                 copy;           /* handle of the copy, result      */
-    UInt4 *             l;              /* pointer into the list           */
-    UInt4 *             c;              /* pointer into the copy           */
+    UInt *             l;              /* pointer into the list           */
+    UInt *             c;              /* pointer into the copy           */
     UInt                i;              /* loop variable                   */
 
     /* don't change immutable objects                                      */
@@ -332,9 +400,9 @@ Obj CopyBlist (
     RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
-    l = (UInt4*)(ADDR_OBJ(list)+1);
-    c = (UInt4*)(ADDR_OBJ(copy)+1);
-    for ( i = 1; i <= (LEN_BLIST(copy)+BIPEB-1)/BIPEB; i++ )
+    l = (UInt*)(ADDR_OBJ(list)+1);
+    c = (UInt*)(ADDR_OBJ(copy)+1);
+    for ( i = 1; i <= NUMBER_BLOCKS_BLIST(copy); i++ )
         *c++ = *l++;
 
     /* return the copy                                                     */
@@ -382,19 +450,26 @@ void CleanBlistCopy (
 /****************************************************************************
 **
 
-*F  EqBlist(<listL>,<listR>)  . . . . . . test if two boolean lists are equal
+*F * * * * * * * * * * * * * * list functions * * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+
+*F  EqBlist( <listL>, <listR> ) . . . . . test if two boolean lists are equal
 **
 **  'EqBlist' returns 'true' if the two boolean lists <listL> and <listR> are
 **  equal and 'false' otherwise.
 */
-Int             EqBlist (
+Int EqBlist (
     Obj                 listL,
     Obj                 listR )
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
-    UInt4 *             ptrL;           /* pointer to the left operand     */
-    UInt4 *             ptrR;           /* pointer to the right operand    */
+    UInt *              ptrL;           /* pointer to the left operand     */
+    UInt *              ptrR;           /* pointer to the right operand    */
     UInt                i;              /* loop variable                   */
 
     /* get the lengths of the lists and compare them                       */
@@ -405,8 +480,8 @@ Int             EqBlist (
     }
 
     /* test for equality blockwise                                         */
-    ptrL = (UInt4*)(ADDR_OBJ(listL)+1);
-    ptrR = (UInt4*)(ADDR_OBJ(listR)+1);
+    ptrL = BLOCKS_BLIST(listL);
+    ptrR = BLOCKS_BLIST(listR);
     for ( i = (lenL+BIPEB-1)/BIPEB; 0 < i; i-- ) {
         if ( *ptrL++ != *ptrR++ )
             return 0L;
@@ -419,13 +494,13 @@ Int             EqBlist (
 
 /****************************************************************************
 **
-*F  LenBlist(<list>)  . . . . . . . . . . . . . . .  length of a boolean list
+*F  LenBlist( <list> )  . . . . . . . . . . . . . .  length of a boolean list
 **
 **  'LenBlist' returns the length of the boolean list <list> as a C integer.
 **
 **  'LenBlist' is the function in 'LenListFuncs' for boolean lists.
 */
-Int             LenBlist (
+Int LenBlist (
     Obj                 list )
 {
     return LEN_BLIST( list );
@@ -434,7 +509,7 @@ Int             LenBlist (
 
 /****************************************************************************
 **
-*F  IsbBlist(<list>,<pos>)  . . . . . . test for an element of a boolean list
+*F  IsbBlist( <list>, <pos> ) . . . . . test for an element of a boolean list
 **
 **  'IsbBlist' returns  1 if the boolean list <list> contains an  element  at
 **  the position <pos> and 0 otherwise.  It  is  the  responsibility  of  the
@@ -442,14 +517,19 @@ Int             LenBlist (
 **
 **  'IsbBlist' is the function in 'IsbListFuncs' for boolean lists.
 */
-Int             IsbBlist (
+Int IsbBlist (
     Obj                 list,
     Int                 pos )
 {
     return (pos <= LEN_BLIST(list));
 }
 
-Int             IsbvBlist (
+
+/****************************************************************************
+**
+*F  IsbvBlist( <list>, <pos> )  . . . . test for an element of a boolean list
+*/
+Int IsbvBlist (
     Obj                 list,
     Int                 pos )
 {
@@ -459,18 +539,13 @@ Int             IsbvBlist (
 
 /****************************************************************************
 **
-*F  Elm0Blist(<list>,<pos>) . . . . . . . select an element of a boolean list
-*F  Elm0vBlist(<list>,<pos>)  . . . . . . select an element of a boolean list
+*F  Elm0Blist( <list>, <pos> )  . . . . . select an element of a boolean list
 **
 **  'Elm0Blist' returns the element at the position <pos> of the boolean list
 **  <list>, or 0 if  <list>  has no  assigned object  at  <pos>.  It  is  the
 **  responsibility of the caller to ensure that <pos> is a positive integer.
-**
-**  'Elm0vPlist' does the same thing than 'Elm0List', but need not check that
-**  <pos>  is less  than or  equal   to the length   of  <list>, this is  the
-**  responsibility of the caller.
 */
-Obj             Elm0Blist (
+Obj Elm0Blist (
     Obj                 list,
     Int                 pos )
 {
@@ -482,7 +557,16 @@ Obj             Elm0Blist (
     }
 }
 
-Obj             Elm0vBlist (
+
+/****************************************************************************
+**
+*F  Elm0vBlist( <list>, <pos> ) . . . . . select an element of a boolean list
+**
+**  'Elm0vPlist' does the same thing than 'Elm0List', but need not check that
+**  <pos>  is less  than or  equal   to the length   of  <list>, this is  the
+**  responsibility of the caller.
+*/
+Obj Elm0vBlist (
     Obj                 list,
     Int                 pos )
 {
@@ -492,21 +576,17 @@ Obj             Elm0vBlist (
 
 /****************************************************************************
 **
-*F  ElmBlist(<list>,<pos>)  . . . . . . . select an element of a boolean list
+*F  ElmBlist( <list>, <pos> ) . . . . . . select an element of a boolean list
 **
 **  'ElmBlist' selects  the  element at  position <pos> of  the  boolean list
 **  <list>.  It is the responsibility of the caller to ensure that <pos> is a
 **  positive integer.   An  error is signalled   if <pos> is larger  than the
 **  length of <list>.
 **
-**  'ElmvBlist' does the same thing than  'ElmBlist', but need not check that
-**  <pos>   is less than   or equal  to the  length  of  <list>,  this is the
-**  responsibility of the caller.
-**
 **  'ElmBlist'   is  the  function  in    'ElmListFuncs'  for boolean  lists.
 **  'ElmvBlist' is the function in 'ElmvListFuncs' for boolean lists.
 */
-Obj             ElmBlist (
+Obj ElmBlist (
     Obj                 list,
     Int                 pos )
 {
@@ -524,7 +604,16 @@ Obj             ElmBlist (
     return ELM_BLIST( list, pos );
 }
 
-Obj             ElmvBlist (
+/****************************************************************************
+**
+*F  ElmvBlist( <list>, <pos> )  . . . . . select an element of a boolean list
+**
+**  'ElmvBlist' does the same thing than  'ElmBlist', but need not check that
+**  <pos>   is less than   or equal  to the  length  of  <list>,  this is the
+**  responsibility of the caller.
+**
+*/
+Obj ElmvBlist (
     Obj                 list,
     Int                 pos )
 {
@@ -535,7 +624,7 @@ Obj             ElmvBlist (
 
 /****************************************************************************
 **
-*F  ElmsBlist(<list>,<poss>)  . . . . .  select a sublist from a boolean list
+*F  ElmsBlist( <list>, <poss> ) . . . .  select a sublist from a boolean list
 **
 **  'ElmsBlist' returns a new list  containing the elements at the  positions
 **  given in the   list  <poss> from  the boolean   list <list>.   It  is the
@@ -545,7 +634,7 @@ Obj             ElmvBlist (
 **
 **  'ElmsBlist' is the function in 'ElmsListFuncs' for boolean lists.
 */
-Obj             ElmsBlist (
+Obj ElmsBlist (
     Obj                 list,
     Obj                 poss )
 {
@@ -555,8 +644,8 @@ Obj             ElmsBlist (
     Int                 lenPoss;        /* length of <positions>           */
     Int                 pos;            /* <position> as integer           */
     Int                 inc;            /* increment in a range            */
-    UInt4               block;          /* one block of <elms>             */
-    UInt4               bit;            /* one bit of a block              */
+    UInt                block;          /* one block of <elms>             */
+    UInt                bit;            /* one bit of a block              */
     UInt                i;              /* loop variable                   */
 
     /* general code                                                        */
@@ -577,7 +666,7 @@ Obj             ElmsBlist (
         for ( i = 1; i <= lenPoss; i++ ) {
 
             /* get <position>                                              */
-            pos = INT_INTOBJ( ELMW_LIST( poss, i ) );
+            pos = INT_INTOBJ( ELMW_LIST( poss, (Int)i ) );
             if ( lenList < pos ) {
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
@@ -594,7 +683,7 @@ Obj             ElmsBlist (
                 block |= bit;
             bit <<= 1;
             if ( bit == 0 || i == lenPoss ) {
-                ((UInt4*)(ADDR_OBJ(elms)+1))[(i-1)/BIPEB] = block;
+                BLOCK_ELM_BLIST( elms, i) = block;
                 block = 0;
                 bit = 1;
             }
@@ -647,7 +736,7 @@ Obj             ElmsBlist (
                 block |= bit;
             bit <<= 1;
             if ( bit == 0 || i == lenPoss ) {
-                ((UInt4*)(ADDR_OBJ(elms)+1))[(i-1)/BIPEB] = block;
+                BLOCK_ELM_BLIST(elms, i) = block;
                 block = 0;
                 bit = 1;
             }
@@ -663,7 +752,7 @@ Obj             ElmsBlist (
 
 /****************************************************************************
 **
-*F  AssBlist(<list>,<pos>,<val>)  . . . . . . . . .  assign to a boolean list
+*F  AssBlist( <list>, <pos>, <val> )  . . . . . . .  assign to a boolean list
 **
 **  'AssBlist' assigns the   value <val> to  the  boolean list <list> at  the
 **  position <pos>.   It is the responsibility  of the caller to  ensure that
@@ -679,7 +768,7 @@ Obj             ElmsBlist (
 **  length  by one.  Otherwise  the boolean list is  converted to an ordinary
 **  list and the assignment is performed the ordinary way.
 */
-void            AssBlist (
+void AssBlist (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -719,7 +808,7 @@ void            AssBlist (
         PLAIN_LIST( list );
         RetypeBag( list, T_PLIST );
         if ( LEN_PLIST(list) < pos ) {
-            GROW_PLIST( list, pos );
+            GROW_PLIST( list, (UInt)pos );
             SET_LEN_PLIST( list, pos );
         }
         SET_ELM_PLIST( list, pos, val );
@@ -727,7 +816,12 @@ void            AssBlist (
     }
 }
 
-void            AssBlistImm (
+
+/****************************************************************************
+**
+*F  AssBlistImm( <list>, <pos>, <val> ) . assign to an immutable boolean list
+*/
+void AssBlistImm (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -741,7 +835,7 @@ void            AssBlistImm (
 
 /****************************************************************************
 **
-*F  AsssBlist(<list>,<poss>,<vals>) . . .  assign several elements to a blist
+*F  AsssBlist( <list>, <poss>, <vals> ) .  assign several elements to a blist
 **
 **  'AsssBlist' assignes the values  from  the list  <vals> at the  positions
 **  given  in the  list  <poss>  to the   boolean  list  <list>.  It is   the
@@ -755,7 +849,7 @@ void            AssBlistImm (
 **  does the same stuff  as 'AsssPlist'.  This is   because a boolean is  not
 **  very likely to stay a boolean list after the assignment.
 */
-void            AsssBlist (
+void AsssBlist (
     Obj                 list,
     Obj                 poss,
     Obj                 vals )
@@ -768,7 +862,12 @@ void            AsssBlist (
     ASSS_LIST( list, poss, vals );
 }
 
-void            AsssBlistImm (
+
+/****************************************************************************
+**
+*F  AsssBlistImm( <list>, <poss>, <vals> )  . .  assign to an immutable blist
+*/
+void AsssBlistImm (
     Obj                 list,
     Obj                 poss,
     Obj                 val )
@@ -782,13 +881,13 @@ void            AsssBlistImm (
 
 /****************************************************************************
 **
-*F  IsDenseBlist(<list>)  . . .  dense list test function for boolean lists
+*F  IsDenseBlist( <list> )  . . .  dense list test function for boolean lists
 **
 **  'IsDenseBlist' returns 1, since boolean lists are always dense.
 **
 **  'IsDenseBlist' is the function in 'IsDenseBlistFuncs' for boolean lists.
 */
-Int             IsDenseBlist (
+Int IsDenseBlist (
     Obj                 list )
 {
     return 1L;
@@ -797,9 +896,9 @@ Int             IsDenseBlist (
 
 /****************************************************************************
 **
-*F  IsHomogBlist(<list>)
+*F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
 */
-Int             IsHomogBlist (
+Int IsHomogBlist (
     Obj                 list )
 {
     return (0 < LEN_BLIST(list));
@@ -808,9 +907,9 @@ Int             IsHomogBlist (
 
 /****************************************************************************
 **
-*F  IsSSortBlist(<list>)
+*F  IsSSortBlist( <list> )  . . . . . . .  check if <list> is strictly sorted
 */
-Int             IsSSortBlist (
+Int IsSSortBlist (
     Obj                 list )
 {
     Int                 isSort;
@@ -828,13 +927,23 @@ Int             IsSSortBlist (
     return isSort;
 }
 
-Int             IsSSortBlistNot (
+
+/****************************************************************************
+**
+*F  IsSSortBlistNot( <list> ) . . . . . . . . . . . . . unsorted boolean list
+*/
+Int IsSSortBlistNot (
     Obj                 list )
 {
     return 0L;
 }
 
-Int             IsSSortBlistYes (
+
+/****************************************************************************
+**
+*F  IsSSortBlistYes( <list> ) . . . . . . . . . . . . . . sorted boolean list
+*/
+Int IsSSortBlistYes (
     Obj                 list )
 {
     return 1L;
@@ -843,12 +952,12 @@ Int             IsSSortBlistYes (
 
 /****************************************************************************
 **
-*F  IsPossBlist(<list>) . .  positions list test function for boolean lists
+*F  IsPossBlist( <list> ) . .  positions list test function for boolean lists
 **
 **  'IsPossBlist' returns  1 if  <list> is  empty, and 0 otherwise, since a
 **  boolean list is a positions list if and only if it is empty.
 */
-Int             IsPossBlist (
+Int IsPossBlist (
     Obj                 list )
 {
     return LEN_BLIST(list) == 0;
@@ -857,7 +966,7 @@ Int             IsPossBlist (
 
 /****************************************************************************
 **
-*F  PosBlist(<list>,<val>,<start>) . . . position of an elm in a boolean list
+*F  PosBlist( <list>, <val>, <start> )   position of an elm in a boolean list
 **
 **  'PosBlist' returns the   position of  the first  occurence  of the  value
 **  <val>, which may be  an  object of  arbitrary  type, in the boolean  list
@@ -866,14 +975,14 @@ Int             IsPossBlist (
 **
 **  'PosBlist' is the function in 'PosListFuncs' for boolean lists.
 */
-Int             PosBlist (
+Int PosBlist (
     Obj                 list,
     Obj                 val,
     Int                 start )
 {
     Int                 k;              /* position, result                */
     Int                 len;            /* logical length of the list      */
-    UInt4 *             ptr;            /* pointer to the blocks           */
+    UInt *              ptr;            /* pointer to the blocks           */
     UInt                i,  j;          /* loop variables                  */
 
     len = LEN_BLIST(list);
@@ -885,7 +994,7 @@ Int             PosBlist (
 
     /* look for 'true'                                                     */
     else if ( val == True ) {
-        ptr = (UInt4*)(ADDR_OBJ(list)+1);
+        ptr = BLOCKS_BLIST(list);
         if ( ptr[start/BIPEB] >> (start%BIPEB) != 0 ) {
             i = start/BIPEB;
             for ( j = start%BIPEB; j < BIPEB; j++ ) {
@@ -905,7 +1014,7 @@ Int             PosBlist (
 
     /* look for 'false'                                                    */
     else if ( val == False ) {
-        ptr = (UInt4*)(ADDR_OBJ(list)+1);
+        ptr = BLOCKS_BLIST(list);
         if ( ~ptr[start/BIPEB] >> (start%BIPEB) != 0 ) {
             i = start/BIPEB;
             for ( j = start%BIPEB; j < BIPEB; j++ ) {
@@ -914,7 +1023,7 @@ Int             PosBlist (
         }
         else {
             for ( i = start/BIPEB+1; i < (len-1)/BIPEB; i++ ) {
-                if ( ptr[i] != ~0UL )  break;
+                if ( ptr[i] != ~(UInt)0 )  break;
             }
             for ( j = 0; j < BIPEB; j++ ) {
                 if ( (ptr[i] & (1UL<<j)) == 0 )  break;
@@ -932,15 +1041,16 @@ Int             PosBlist (
     return k;
 }
 
+
 /****************************************************************************
 **
-*F  PlainBlist(<list>)  . . . .  convert a boolean list into an ordinary list
+*F  PlainBlist( <list> )  . . .  convert a boolean list into an ordinary list
 **
 **  'PlainBlist' converts the boolean list <list> to a plain list.
 **
 **  'PlainBlist' is the function in 'PlainListFuncs' for boolean lists.
 */
-void            PlainBlist (
+void PlainBlist (
     Obj                 list )
 {
     Int                 len;            /* length of <list>                */
@@ -949,7 +1059,7 @@ void            PlainBlist (
     /* resize the list and retype it, in this order                        */
     len = LEN_BLIST( list );
     RetypeBag( list, T_PLIST );
-    GROW_PLIST( list, len );
+    GROW_PLIST( list, (UInt)len );
     SET_LEN_PLIST( list, len );
 
     /* replace the bits by 'True' or 'False' as the case may be            */
@@ -963,20 +1073,20 @@ void            PlainBlist (
 
 /****************************************************************************
 **
-*F  IsBlist(<list>) . . . . . . . . . . test whether a list is a boolean list
+*F  IsBlist( <list> ) . . . . . . . . . test whether a list is a boolean list
 **
 **  'IsBlist'  returns 1 if the list  <list> is a  boolean list, i.e., a list
 **  that has no holes and contains only  'true' and 'false', and 0 otherwise.
 **  As a sideeffect  'IsBlist'  changes the representation of   boolean lists
 **  into the compact representation of type 'T_BLIST' described above.
 */
-Int             IsBlist (
+Int IsBlist (
     Obj                 list )
 {
     UInt                isBlist;        /* result of the test              */
     Int                 len;            /* logical length of the list      */
-    UInt4               block;          /* one block of the boolean list   */
-    UInt4               bit;            /* one bit of a block              */
+    UInt                block;          /* one block of the boolean list   */
+    UInt                bit;            /* one bit of a block              */
     UInt                i;              /* loop variable                   */
 
     /* if <list> is known to be a boolean list, it is very easy            */
@@ -996,9 +1106,9 @@ Int             IsBlist (
         /* test that all elements are bound and either 'true' or 'false'   */
         len = LEN_LIST( list );
         for ( i = 1; i <= len; i++ ) {
-            if ( ELMV0_LIST( list, i ) == 0
-              || (ELMW_LIST( list, i ) != True
-               && ELMW_LIST( list, i ) != False) ) {
+            if ( ELMV0_LIST( list, (Int)i ) == 0
+              || (ELMW_LIST( list, (Int)i ) != True
+               && ELMW_LIST( list, (Int)i ) != False) ) {
                 break;
             }
         }
@@ -1009,11 +1119,11 @@ Int             IsBlist (
             block = 0;
             bit = 1;
             for ( i = 1; i <= len; i++ ) {
-                if ( ELMW_LIST( list, i ) == True )
+                if ( ELMW_LIST( list, (Int)i ) == True )
                     block |= bit;
                 bit = bit << 1;
                 if ( bit == 0 || i == len ) {
-                    ((UInt4*)(ADDR_OBJ(list)+1))[(i-1)/BIPEB] = block;
+		    BLOCK_ELM_BLIST(list,i) = block;
                     block = 0;
                     bit = 1;
                 }
@@ -1034,9 +1144,16 @@ Int             IsBlist (
 /****************************************************************************
 **
 
-*F  FuncIsBlist( <self>, <val> )  . . . . . test if a value is a boolean list
+*F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
 **
-**  'FuncIsBlist' implements the internal function 'IsBlist'.
+
+
+*F  IsBlistHandler( <self>, <val> ) . . . . test if a value is a boolean list
+**
+**  'IsBlistHandler' implements the internal function 'IsBlist'.
 **
 **  'IsBlist( <val> )'
 **
@@ -1046,7 +1163,7 @@ Int             IsBlist (
 */
 Obj IsBlistFilt;
 
-Obj             IsBlistHandler (
+Obj IsBlistHandler (
     Obj                 self,
     Obj                 val )
 {
@@ -1057,9 +1174,9 @@ Obj             IsBlistHandler (
 
 /****************************************************************************
 **
-*F  FuncBlistList( <self>, <list>, <sub> ) make a boolean list from a sublist
+*F  FuncBLIST_LIST( <self>, <list>, <sub> )  make boolean list from a sublist
 **
-**  'FuncBlistList' implements the internal function 'BlistList'.
+**  'FuncBLIST_LIST' implements the internal function 'BlistList'.
 **
 **  'BlistList( <list>, <sub> )'
 **
@@ -1071,15 +1188,15 @@ Obj             IsBlistHandler (
 **  'BlistList' is most effective if <list> is a set, but can be used with an
 **  arbitrary list that has no holes.
 */
-Obj FuncBlistList (
+Obj FuncBLIST_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 sub )
 {
     Obj                 blist;          /* boolean list, result            */
-    UInt4 *             ptrBlist;       /* pointer to the boolean list     */
-    UInt4               block;          /* one block of boolean list       */
-    UInt4               bit;            /* one bit of block                */
+    UInt  *             ptrBlist;       /* pointer to the boolean list     */
+    UInt                block;          /* one block of boolean list       */
+    UInt                bit;            /* one bit of block                */
     Int                 lenList;        /* logical length of the list      */
     Obj *               ptrSub;         /* pointer to the sublist          */
     UInt                lenSub;         /* logical length of sublist       */
@@ -1108,7 +1225,7 @@ Obj FuncBlistList (
         lenSub   = GET_LEN_RANGE( sub );
         blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
         ADDR_OBJ(blist)[0] = INTOBJ_INT(lenList);
-        ptrBlist = (UInt4*)(ADDR_OBJ(blist)+1);
+        ptrBlist = BLOCKS_BLIST(blist);
 
         /* get the bounds of the subset with respect to the boolean list   */
         s = INT_INTOBJ( GET_ELM_RANGE( list, 1 ) );
@@ -1122,7 +1239,7 @@ Obj FuncBlistList (
         for ( k = i; k <= j && (k-1)%BIPEB != 0; k++ )
             ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
         for ( ; k+BIPEB <= j; k += BIPEB )
-            ptrBlist[(k-1)/BIPEB] = ~0L;
+            ptrBlist[(k-1)/BIPEB] = ~(UInt)0;
         for ( ; k <= j; k++ )
             ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
 
@@ -1138,7 +1255,7 @@ Obj FuncBlistList (
         lenSub   = LEN_LIST( sub );
         blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
         ADDR_OBJ(blist)[0] = INTOBJ_INT(lenList);
-        ptrBlist = (UInt4*)(ADDR_OBJ(blist)+1);
+        ptrBlist = BLOCKS_BLIST(blist);
         ptrSub = ADDR_OBJ(sub);
 
         /* loop over <sub> and set the corresponding entries to 'true'     */
@@ -1198,8 +1315,7 @@ Obj FuncBlistList (
                     /* set bit if <sub>[<l>] was found at position k       */
                     if ( k <= lenList
                       && EQ( ADDR_OBJ(list)[k], ADDR_OBJ(sub)[l] ) )
-                        ((UInt4*)(ADDR_OBJ(blist)+1))[(k-1)/BIPEB]
-                            |= (1UL << (k-1)%BIPEB);
+		      SET_ELM_BLIST( blist, k, True);
                 }
             }
 
@@ -1239,9 +1355,9 @@ Obj FuncBlistList (
                 /* if block is full add it to boolean list and start next  */
                 bit = bit << 1;
                 if ( bit == 0 || l == lenList ) {
-                    ((UInt4*)(ADDR_OBJ(blist)+1))[(l-1)/BIPEB] = block;
-                    block = 0;
-                    bit   = 1;
+		  BLOCK_ELM_BLIST( blist, l) = block;
+		  block = 0;
+		  bit   = 1;
                 }
 
             }
@@ -1297,11 +1413,10 @@ Obj FuncBlistList (
             /* if block is full add it to the boolean list and start next  */
             bit = bit << 1;
             if ( bit == 0 || l == lenList ) {
-                ((UInt4*)(ADDR_OBJ(blist)+1))[(l-1)/BIPEB] = block;
+                BLOCK_ELM_BLIST( blist, l ) = block;
                 block = 0;
                 bit   = 1;
             }
-
         }
 
     }
@@ -1311,221 +1426,14 @@ Obj FuncBlistList (
 }
 
 
-/****************************************************************************
-**
-*F  FuncListBlist( <self>, <list>, <blist> )  . . make a sublist from a blist
-**
-**  'FuncListBlist' implements the internal function 'ListBlist'.
-**
-**  'ListBlist( <list>, <blist> )'
-**
-**  'ListBlist' returns the  sublist of the  elements of the list  <list> for
-**  which the boolean list   <blist>, which must   have  the same  length  as
-**  <list>, contains 'true'.  The order of the elements in the result is  the
-**  same as in <list>.
-**
-*/
-Obj FuncListBlist (
-    Obj                 self,
-    Obj                 list,
-    Obj                 blist )
-{
-    Obj                 sub;            /* handle of the result            */
-    Int                 len;            /* logical length of the list      */
-    UInt4 *             ptr;            /* pointer to blist                */
-    UInt                nrb;            /* number of blocks in blist       */
-    UInt4               m;              /* number of bits in a block       */
-    UInt                n;              /* number of bits in blist         */
-    UInt                nn;
-    UInt                i;              /* loop variable                   */
-
-    /* get and check the first argument                                    */
-    while ( ! IS_LIST( list ) ) {
-        list = ErrorReturnObj(
-            "ListBlist: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
-            "you can return a list for <list>" );
-    }
-
-    /* get and check the second argument                                   */
-    if ( ! IsBlist( blist ) ) {
-        blist = ErrorReturnObj(
-            "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
-            "you can return a boolean list for <blist>" );
-    }
-    while ( LEN_LIST( list ) != LEN_BLIST( blist ) ) {
-        blist = ErrorReturnObj(
-            "ListBlist: <blist> must have the same length as <list> (%d)",
-            LEN_PLIST( list ), 0L,
-            "you can return another boolean list for <blist>" );
-    }
-
-    /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
-    nrb = (LEN_BLIST(blist)+BIPEB-1)/BIPEB;
-    ptr = (UInt4*)(ADDR_OBJ(blist)+1);
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
-        m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
-        m = (m + (m >>  4)) & 0x0f0f0f0f;
-        m = (m + (m >>  8));
-        m = (m + (m >> 16)) & 0x000000ff;
-        n += m;
-    }
-
-    /* make the sublist (we now know its size exactely)                    */
-    sub = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, n );
-    SET_LEN_PLIST( sub, n );
-
-    /* loop over the boolean list and stuff elements into <sub>            */
-    len = LEN_LIST( list );
-    nn  = 1;
-    for ( i = 1;  nn <= n && i <= len;  i++  ) {
-        if ( ELM_BLIST( blist, i ) == True ) {
-            SET_ELM_PLIST( sub, nn, ELMW_LIST( list, i ) );
-            CHANGED_BAG( sub );
-            nn++;
-        }
-    }
-
-    /* return the sublist                                                  */
-    return sub;
-}
-
 
 /****************************************************************************
 **
-*F  FuncPositionsTrueBlist( <self>, <blist> ) . . . true positions in a blist
+*F  SizeBlist( <blist> ) . . . . . number of 'true' entries in a boolean list
+*F  FuncSIZE_BLIST(<self>,<blist>)  number of 'true' entries in a boolean list
 **
-*N  1992/12/15 martin this depends on 'BIPEB' being 32
-*/
-Obj FuncPositionsTrueBlist (
-    Obj                 self,
-    Obj                 blist )
-{
-    Obj                 sub;            /* handle of the result            */
-    Int                 len;            /* logical length of the list      */
-    UInt4 *             ptr;            /* pointer to blist                */
-    UInt                nrb;            /* number of blocks in blist       */
-    UInt4               m;              /* number of bits in a block       */
-    UInt                n;              /* number of bits in blist         */
-    UInt                nn;
-    UInt                i;              /* loop variable                   */
-
-    /* get and check the first argument                                    */
-    if ( ! IsBlist( blist ) ) {
-        blist = ErrorReturnObj(
-            "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
-            "you can return a boolean list for <blist>" );
-    }
-
-    /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
-    nrb = (LEN_BLIST(blist)+BIPEB-1)/BIPEB;
-    ptr = (UInt4*)(ADDR_OBJ(blist)+1);
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
-        m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
-        m = (m + (m >>  4)) & 0x0f0f0f0f;
-        m = (m + (m >>  8));
-        m = (m + (m >> 16)) & 0x000000ff;
-        n += m;
-    }
-
-    /* make the sublist (we now know its size exactely)                    */
-    sub = NEW_PLIST( T_PLIST, n );
-    SET_LEN_PLIST( sub, n );
-
-    /* loop over the boolean list and stuff elements into <sub>            */
-    len = LEN_BLIST( blist );
-    nn  = 1;
-    for ( i = 1; nn <= n && i <= len;  i++ ) {
-        if ( ELM_BLIST( blist, i ) == True ) {
-            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
-            nn++;
-        }
-    }
-    CHANGED_BAG(sub);
-
-    /* return the sublist                                                  */
-    return sub;
-}
-
-
-/****************************************************************************
-**
-*F  FuncPositionNthTrueBlist( <self>, <blist>, <Nth> )
-**
-*N  1992/12/15 martin this depends on 'BIPEB' being 32
-*/
-Obj FuncPositionNthTrueBlist (
-    Obj                 self,
-    Obj                 blist,
-    Obj                 Nth )
-{
-    UInt                nrb;
-    Int                 nth,  pos,  i;
-    UInt4               m,  mask;
-    UInt4 *             ptr;
-
-    /* Check the arguments. */    
-    while ( ! IsBlist( blist ) ) {
-        blist = ErrorReturnObj(
-            "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
-            "you can return a boolean list for <blist>" );
-    }
-    while ( ! IS_INTOBJ(Nth) || INT_INTOBJ(Nth) <= 0 ) {
-        Nth = ErrorReturnObj(
-            "Position: <nth> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(Nth)].name), 0L,
-            "you can return a positive integer for <nth>" );
-    }
-    
-    nrb = (LEN_BLIST(blist)+BIPEB-1)/BIPEB;
-    if ( ! nrb )  return Fail;
-    nth = INT_INTOBJ( Nth );
-    pos = 0;
-    ptr = (UInt4*)(ADDR_OBJ(blist)+1);
-    i = 1;
-    m = *ptr;
-    m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
-    m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
-    m = (m + (m >>  4)) & 0x0f0f0f0f;
-    m = (m + (m >>  8));
-    m = (m + (m >> 16)) & 0x000000ff;
-    while ( nth > m ) {
-        if ( ++i > nrb )  return Fail;
-        nth -= m;
-        pos += BIPEB;
-        ptr++;
-        m = *ptr;
-        m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
-        m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
-        m = (m + (m >>  4)) & 0x0f0f0f0f;
-        m = (m + (m >>  8));
-        m = (m + (m >> 16)) & 0x000000ff;
-    }
-    m = *ptr;
-    mask = 0x1;
-    while ( nth > 0 ) {
-        pos++;
-        if ( m & mask )  nth--;
-        mask <<= 1;
-    }
-    return INTOBJ_INT( pos );
-}
-
-
-/****************************************************************************
-**
-*F  FuncSizeBlist( <self>, <blist> )  . . number of 'true' entries in <blist>
-**
-**  'FuncSizeBlist' implements the internal function 'SizeBlist'
+**  'FuncSIZE_BLIST' implements the internal function 'SizeBlist'
+**  'SizeBlist' is a C function that does the same calculation
 **
 **  'SizeBlist( <blist> )'
 **
@@ -1553,50 +1461,269 @@ Obj FuncPositionNthTrueBlist (
 **  bytes and looking up the number of bits  of a byte in a  table may be 10%
 **  faster, but only if the table lives in the data cache.
 **
-*N  1992/12/15 martin this depends on 'BIPEB' being 32
+*N  1992/12/15 martin this depends on 'BIPEB' being 32 
+*N  1996/11/12 Steve  altered to handle 64 bit also
+**
+**  Introduced the SizeBlist function for kernel use, and the 
+**  COUNT_TRUES_BLOCK( <var> ) macro which replaces a block of bits in <var> 
+**  by the number of ones it contains. It will fail horribly if <var> is not 
+**  a variable.
 */
-Obj FuncSizeBlist (
-    Obj                 self,
+
+#ifdef SYS_IS_64_BIT
+#define COUNT_TRUES_BLOCK( block )                                                          \
+        do {                                                                                \
+        (block) = ((block) & 0x5555555555555555L) + (((block) >> 1) & 0x5555555555555555L); \
+        (block) = ((block) & 0x3333333333333333L) + (((block) >> 2) & 0x3333333333333333L); \
+        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f0f0f0f0fL;                        \
+        (block) = ((block) + ((block) >>  8));                                              \
+        (block) = ((block) + ((block) >> 16));                                              \
+        (block) = ((block) + ((block) >> 32)) & 0x00000000000000ffL; } while (0)            
+#else
+#define COUNT_TRUES_BLOCK( block )                                        \
+        do {                                                              \
+        (block) = ((block) & 0x55555555) + (((block) >> 1) & 0x55555555); \
+        (block) = ((block) & 0x33333333) + (((block) >> 2) & 0x33333333); \
+        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f;               \
+        (block) = ((block) + ((block) >>  8));                            \
+        (block) = ((block) + ((block) >> 16)) & 0x000000ff; } while (0)   
+#endif
+
+UInt             SizeBlist (
     Obj                 blist )
 {
-    UInt4 *             ptr;            /* pointer to blist                */
+    UInt *               ptr;            /* pointer to blist                */
     UInt                nrb;            /* number of blocks in blist       */
-    UInt4               m;              /* number of bits in a block       */
+    UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in blist         */
     UInt                i;              /* loop variable                   */
 
-    /* get and check the argument                                          */
-    while ( TNUM_OBJ(blist) != T_BLIST && ! IsBlist(blist) ) {
-        blist = ErrorReturnObj(
-            "SizeBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
-            "you can return a boolean list for <blist>" );
-    }
-
     /* get the number of blocks and a pointer                              */
-    nrb = (LEN_BLIST(blist)+BIPEB-1)/BIPEB;
-    ptr = (UInt4*)(ADDR_OBJ(blist)+1);
+    nrb = NUMBER_BLOCKS_BLIST(blist);
+    ptr = BLOCKS_BLIST( blist );
 
     /* loop over the blocks, adding the number of bits of each one         */
     n = 0;
     for ( i = 1; i <= nrb; i++ ) {
         m = *ptr++;
-        m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
-        m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
-        m = (m + (m >>  4)) & 0x0f0f0f0f;
-        m = (m + (m >>  8));
-        m = (m + (m >> 16)) & 0x000000ff;
+        COUNT_TRUES_BLOCK(m);
         n += m;
     }
 
     /* return the number of bits                                           */
-    return INTOBJ_INT( n );
+    return n;
+}
+
+
+Obj             FuncSIZE_BLIST (
+    Obj                 self,
+    Obj                 blist )
+{
+    /* get and check the argument                                          */
+  while ( TNUM_OBJ(blist) != T_BLIST && ! IsBlist(blist) ) {
+    blist = ErrorReturnObj(
+			   "SizeBlist: <blist> must be a boolean list (not a %s)",
+			   (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
+			   "you can return a boolean list for <blist>" );
+  }
+  
+  return INTOBJ_INT(SizeBlist(blist));
+}
+
+
+
+/****************************************************************************
+**
+*F  FuncListBlist(<self>,<list>,<blist>)   make a sublist from a boolean list
+**
+**  'FuncListBlist' implements the internal function 'ListBlist'.
+**
+**  'ListBlist( <list>, <blist> )'
+**
+**  'ListBlist' returns the  sublist of the  elements of the list  <list> for
+**  which the boolean list   <blist>, which must   have  the same  length  as
+**  <list>, contains 'true'.  The order of the elements in the result is  the
+**  same as in <list>.
+**
+*/
+Obj FuncLIST_BLIST (
+    Obj                 self,
+    Obj                 list,
+    Obj                 blist )
+{
+    Obj                 sub;            /* handle of the result            */
+    Int                 len;            /* logical length of the list      */
+    UInt                n;              /* number of bits in blist         */
+    UInt                nn;
+    UInt                i;              /* loop variable                   */
+
+    /* get and check the first argument                                    */
+    while ( ! IS_LIST( list ) ) {
+        list = ErrorReturnObj(
+            "ListBlist: <list> must be a list (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            "you can return a list for <list>" );
+    }
+    /* get and check the second argument                                   */
+    if ( ! IsBlist( blist ) ) {
+        blist = ErrorReturnObj(
+            "ListBlist: <blist> must be a boolean list (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
+            "you can return a boolean list for <blist>" );
+    }
+    while ( LEN_LIST( list ) != LEN_BLIST( blist ) ) {
+        blist = ErrorReturnObj(
+            "ListBlist: <blist> must have the same length as <list> (%d)",
+            LEN_PLIST( list ), 0L,
+            "you can return another boolean list for <blist>" );
+    }
+
+    /* compute the number of 'true'-s                                      */
+    n = SizeBlist(blist);
+
+    /* make the sublist (we now know its size exactely)                    */
+    sub = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, n );
+    SET_LEN_PLIST( sub, n );
+
+    /* loop over the boolean list and stuff elements into <sub>            */
+    len = LEN_LIST( list );
+    nn  = 1;
+    for ( i = 1;  nn <= n && i <= len;  i++  ) {
+        if ( ELM_BLIST( blist, i ) == True ) {
+            SET_ELM_PLIST( sub, (Int)nn, ELMW_LIST( list, (Int)i ) );
+            CHANGED_BAG( sub );
+            nn++;
+        }
+    }
+
+    /* return the sublist                                                  */
+    return sub;
 }
 
 
 /****************************************************************************
 **
-*F  FuncIsSubsetBlist( <self>, <list1>, <list2> ) . .  <list2> subset <list1>
+*F  FuncPositionsTrueBlist( <self>, <blist> ) . . . true positions in a blist
+**
+*N  1992/12/15 martin this depends on 'BIPEB' being 32
+*N Fix up for 64 bit SL
+*/
+Obj FuncPositionsTrueBlist (
+    Obj                 self,
+    Obj                 blist )
+{
+    Obj                 sub;            /* handle of the result            */
+    Int                 len;            /* logical length of the list      */
+    UInt  *             ptr;            /* pointer to blist                */
+    UInt                nrb;            /* number of blocks in blist       */
+    UInt                m;              /* number of bits in a block       */
+    UInt                n;              /* number of bits in blist         */
+    UInt                nn;
+    UInt                i;              /* loop variable                   */
+
+    /* get and check the first argument                                    */
+    if ( ! IsBlist( blist ) ) {
+        blist = ErrorReturnObj(
+            "ListBlist: <blist> must be a boolean list (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
+            "you can return a boolean list for <blist>" );
+    }
+
+    /* compute the number of 'true'-s just as in 'FuncSIZE_BLIST'            */
+    nrb = NUMBER_BLOCKS_BLIST( blist);
+    ptr = BLOCKS_BLIST( blist );
+    n = 0;
+    for ( i = 1; i <= nrb; i++ ) {
+        m = *ptr++;
+        COUNT_TRUES_BLOCK(m);
+        n += m;
+    }
+
+    /* make the sublist (we now know its size exactely)                    */
+    sub = NEW_PLIST( T_PLIST, n );
+    SET_LEN_PLIST( sub, n );
+
+    /* loop over the boolean list and stuff elements into <sub>            */
+    /* This could be a bit quicker for sparse blists by skipping whole empty
+       blocks as we go past                  SL  9/1/97                    */
+    len = LEN_BLIST( blist );
+    nn  = 1;
+    for ( i = 1; nn <= n && i <= len;  i++ ) {
+        if ( ELM_BLIST( blist, i ) == True ) {
+            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
+            nn++;
+        }
+    }
+    CHANGED_BAG(sub);
+
+    /* return the sublist                                                  */
+    return sub;
+}
+
+
+/****************************************************************************
+**
+*F  FuncPositionNthTrueBlist( <self>, <blist>, <Nth> )	. . . find true value
+**
+*N  1992/12/15 martin this depends on 'BIPEB' being 32
+*N  Fixed up for 64 SL
+*/
+Obj FuncPositionNthTrueBlist (
+
+    Obj                 self,
+    Obj                 blist,
+    Obj                 Nth )
+{
+    UInt                nrb;
+    Int                 nth,  pos,  i;
+    UInt                m,  mask;
+    UInt  *             ptr;
+
+    /* Check the arguments. */    
+    while ( ! IsBlist( blist ) ) {
+        blist = ErrorReturnObj(
+            "ListBlist: <blist> must be a boolean list (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
+            "you can return a boolean list for <blist>" );
+    }
+    while ( ! IS_INTOBJ(Nth) || INT_INTOBJ(Nth) <= 0 ) {
+        Nth = ErrorReturnObj(
+            "Position: <nth> must be a positive integer (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(Nth)].name), 0L,
+            "you can return a positive integer for <nth>" );
+    }
+    
+    nrb = NUMBER_BLOCKS_BLIST(blist);
+    if ( ! nrb )  return Fail;
+    nth = INT_INTOBJ( Nth );
+    pos = 0;
+    ptr = BLOCKS_BLIST( blist );
+    i = 1;
+    m = *ptr;
+    COUNT_TRUES_BLOCK(m);
+    while ( nth > m ) {
+        if ( ++i > nrb )  return Fail;
+        nth -= m;
+        pos += BIPEB;
+        ptr++;
+	m = *ptr;
+	COUNT_TRUES_BLOCK(m);
+    }
+    m = *ptr;
+    mask = 0x1;
+    while ( nth > 0 ) {
+        pos++;
+        if ( m & mask )  nth--;
+        mask <<= 1;
+    }
+    return INTOBJ_INT( pos );
+}
+
+
+/****************************************************************************
+**
+*F  FuncIsSubsetBlist(<self>,<list1>,<list2>) . . . . . . . . . . . . . . . .
+*F  . . . . . . . . . . . . . . . test if a boolean list is subset of another
 **
 **  'FuncIsSubsetBlist' implements the internal function 'IsSubsetBlist'.
 **
@@ -1606,13 +1733,13 @@ Obj FuncSizeBlist (
 **  the  boolean  list <list1>, which must  have  equal length.  <list2> is a
 **  subset if <list1> if '<list2>[<i>] >= <list1>[<i>]' for all <i>.
 */
-Obj FuncIsSubsetBlist (
+Obj FuncIS_SUB_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt4 *             ptr1;           /* pointer to the first argument   */
-    UInt4 *             ptr2;           /* pointer to the second argument  */
+    UInt *             ptr1;           /* pointer to the first argument   */
+    UInt *             ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -1636,9 +1763,10 @@ Obj FuncIsSubsetBlist (
     }
 
     /* test for subset property blockwise                                  */
-    ptr1 = (UInt4*)(ADDR_OBJ(list1)+1);
-    ptr2 = (UInt4*)(ADDR_OBJ(list2)+1);
-    for ( i = (LEN_BLIST(list1)+BIPEB-1)/BIPEB; 0 < i; i-- ) {
+    ptr1 = BLOCKS_BLIST(list1);
+    ptr2 = BLOCKS_BLIST(list2);
+
+    for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) {
         if ( *ptr1 != (*ptr1 | *ptr2) )
             break;
         ptr1++;  ptr2++;
@@ -1651,9 +1779,9 @@ Obj FuncIsSubsetBlist (
 
 /****************************************************************************
 **
-*F  FuncUniteBlist( <self>, <list1>, <list2> )  . unite one list with another
+*F  FuncUNITE_BLIST( <self>, <list1>, <list2> ) . unite one list with another
 **
-**  'FuncUniteBlist' implements the internal function 'UniteBlist'.
+**  'FuncUNITE_BLIST' implements the internal function 'UniteBlist'.
 **
 **  'UniteBlist( <blist1>, <blist2> )'
 **
@@ -1661,13 +1789,13 @@ Obj FuncIsSubsetBlist (
 **  <blist2>,  which  must  have the   same  length.  This  is  equivalent to
 **  assigning '<blist1>[<i>] := <blist1>[<i>] or <blist2>[<i>]' for all <i>.
 */
-Obj FuncUniteBlist (
+Obj FuncUNITE_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt4 *             ptr1;           /* pointer to the first argument   */
-    UInt4 *             ptr2;           /* pointer to the second argument  */
+    UInt *             ptr1;           /* pointer to the first argument   */
+    UInt *             ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -1691,8 +1819,8 @@ Obj FuncUniteBlist (
     }
 
     /* compute the union by *or*-ing blockwise                             */
-    ptr1 = (UInt4*)(ADDR_OBJ(list1)+1);
-    ptr2 = (UInt4*)(ADDR_OBJ(list2)+1);
+    ptr1 = BLOCKS_BLIST(list1);
+    ptr2 = BLOCKS_BLIST(list2);
     for ( i = (LEN_BLIST(list1)+BIPEB-1)/BIPEB; 0 < i; i-- ) {
         *ptr1++ |= *ptr2++;
     }
@@ -1704,9 +1832,9 @@ Obj FuncUniteBlist (
 
 /****************************************************************************
 **
-*F  FuncIntersectBlist( <self>, <list1>, <list2>) .<list1> interstion <list2>
+*F  FuncINTER_BLIST( <self>, <list1>, <list2> ) .  <list1> interstion <list2>
 **
-**  'FuncIntersectBlist' implements the function 'IntersectBlist'.
+**  'FuncINTER_BLIST' implements the function 'IntersectBlist'.
 **
 **  'IntersectBlist( <list1>, <list2> )'
 **
@@ -1714,13 +1842,13 @@ Obj FuncUniteBlist (
 **  list <list2>, which  must have the  same length.   This is equivalent  to
 **  assigning '<list1>[<i>] := <list1>[<i>] and <list2>[<i>]' for all <i>.
 */
-Obj FuncIntersectBlist (
+Obj FuncINTER_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt4 *             ptr1;           /* pointer to the first argument   */
-    UInt4 *             ptr2;           /* pointer to the second argument  */
+    UInt  *             ptr1;           /* pointer to the first argument   */
+    UInt  *             ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -1744,9 +1872,9 @@ Obj FuncIntersectBlist (
     }
 
     /* compute the intersection by *and*-ing blockwise                     */
-    ptr1 = (UInt4*)(ADDR_OBJ(list1)+1);
-    ptr2 = (UInt4*)(ADDR_OBJ(list2)+1);
-    for ( i = (LEN_BLIST(list1)+BIPEB-1)/BIPEB; 0 < i; i-- ) {
+    ptr1 = BLOCKS_BLIST(list1);
+    ptr2 = BLOCKS_BLIST(list2);
+    for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) {
         *ptr1++ &= *ptr2++;
     }
 
@@ -1757,9 +1885,9 @@ Obj FuncIntersectBlist (
 
 /****************************************************************************
 **
-*F  FuncSubtractBlist( <self>, <list1>, <list2>)  . . . . . <list1> - <list2>
+*F  FuncSUBTR_BLIST( <self>, <list1>, <list2> )	. . . . . . <list1> - <list2>
 **
-**  'FuncSubtractBlist' implements the internal function 'SubtractBlist'.
+**  'FuncSUBTR_BLIST' implements the internal function 'SubtractBlist'.
 **
 **  'SubtractBlist( <list1>, <list2> )'
 **
@@ -1767,13 +1895,13 @@ Obj FuncIntersectBlist (
 **  <list1>, which  must have the  same length.  This is equivalent assigning
 **  '<list1>[<i>] := <list1>[<i>] and not <list2>[<i>]' for all <i>.
 */
-Obj FuncSubtractBlist (
+Obj FuncSUBTR_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt4 *             ptr1;           /* pointer to the first argument   */
-    UInt4 *             ptr2;           /* pointer to the second argument  */
+    UInt *             ptr1;           /* pointer to the first argument   */
+    UInt *             ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -1797,15 +1925,14 @@ Obj FuncSubtractBlist (
     }
 
     /* compute the difference by operating blockwise                       */
-    ptr1 = (UInt4*)(ADDR_OBJ(list1)+1);
-    ptr2 = (UInt4*)(ADDR_OBJ(list2)+1);
-    for ( i = (LEN_BLIST(list1)+BIPEB-1)/BIPEB; 0 < i; i-- ) {
-        *ptr1++ &= ~ *ptr2++;
-    }
+    ptr1 = BLOCKS_BLIST(list1);
+    ptr2 = BLOCKS_BLIST(list2); 
+    for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) 
+      { 
+	*ptr1++ &= ~ *ptr2++; 
+      }
 
-    /* return nothing, this function is a procedure                        */
-    return 0;
-}
+    /* return nothing, this function is a procedure */ return 0; }
 
 
 /****************************************************************************
@@ -1817,31 +1944,34 @@ Obj FuncSubtractBlist (
 */
 void InitBlist ( void )
 {
-    Int                 t1, t2;
+    UInt                 t1;
+    UInt                 t2;
+
+
+    /* install the names                                                   */
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
+        InfoBags[t1                  ].name="list (boolean list)";
+        InfoBags[t1+IMMUTABLE        ].name="list (boolean list,imm)";
+        InfoBags[t1          +COPYING].name="list (boolean list,copied)";
+        InfoBags[t1+IMMUTABLE+COPYING].name="list (boolean list,imm,copied)";
+    }
+
 
     /* install the marking function                                        */
-    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
-        InfoBags[         t1                     ].name
-            = "list (boolean list)";
-        InitMarkFuncBags( t1                     , MarkNoSubBags );
-        InfoBags[         t1 +IMMUTABLE          ].name
-            = "list (boolean list)";
-        InitMarkFuncBags( t1 +IMMUTABLE          , MarkNoSubBags );
-    }
-    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
-        InfoBags[         t1            +COPYING ].name
-            = "list (boolean list), copied";
-        InitMarkFuncBags( t1            +COPYING , MarkOneSubBags );
-        InfoBags[         t1 +IMMUTABLE +COPYING ].name
-            = "list (boolean list), copied";
-        InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
+	InitMarkFuncBags( t1,                      MarkNoSubBags  );
+	InitMarkFuncBags( t1 +IMMUTABLE,           MarkNoSubBags  );
+	InitMarkFuncBags( t1            +COPYING , MarkOneSubBags );
+	InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
     }
 
-    /* install the kind method                                             */
-    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
-        TypeObjFuncs[ t1            ] = TypeBlist;
+
+    /* install the type method                                             */
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
+       TypeObjFuncs[ t1            ] = TypeBlist;
         TypeObjFuncs[ t1 +IMMUTABLE ] = TypeBlist;
     }
+
 
     /* install the copy functions                                          */
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
@@ -1855,12 +1985,14 @@ void InitBlist ( void )
         CleanObjFuncs[ t1 +IMMUTABLE +COPYING ] = CleanBlistCopy;
     }
 
+
     /* install the comparison methods                                      */
-    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT+IMMUTABLE; t1++ ) {
-        for ( t2 = T_BLIST; t2 <= T_BLIST_SSORT+IMMUTABLE; t2++ ) {
-            EqFuncs  [  t1  ][ t2  ] = EqBlist;
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT+IMMUTABLE;  t1++ ) {
+        for ( t2 = T_BLIST;  t2 <= T_BLIST_SSORT+IMMUTABLE;  t2++ ) {
+            EqFuncs[ t1 ][ t2 ] = EqBlist;
         }
     }
+
 
     /* install the list functions in the tables                            */
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
@@ -1904,55 +2036,46 @@ void InitBlist ( void )
     IsSSortListFuncs[ T_BLIST_SSORT            ] = IsSSortBlistYes;
     IsSSortListFuncs[ T_BLIST_SSORT +IMMUTABLE ] = IsSSortBlistYes;
 
+
     /* install the internal functions                                      */
-    InitHandlerFunc(IsBlistHandler, "IS_BLIST");
-    IsBlistFilt = NewFilterC( "IS_BLIST", 1L, "obj", IsBlistHandler );
-    AssGVar( GVarName( "IS_BLIST" ), IsBlistFilt );
+    C_NEW_GVAR_FILT( "IS_BLIST", "obj", IsBlistFilt, IsBlistHandler,
+       "src/blister.c:IS_BLIST" );
 
-    InitHandlerFunc(FuncBlistList, "BLIST_LIST");
-    AssGVar( GVarName( "BLIST_LIST" ),
-         NewFunctionC( "BLIST_LIST", 2L, "list, sub",
-                    FuncBlistList ) );
+    C_NEW_GVAR_FUNC( "BLIST_LIST", 2L, "list, sub",
+                  FuncBLIST_LIST,
+       "src/blister.c:BLIST_LIST" );
 
-    InitHandlerFunc(FuncListBlist, "LIST_BLIST");
-    AssGVar( GVarName( "LIST_BLIST" ),
-         NewFunctionC( "LIST_BLIST", 2L, "list, blist",
-                    FuncListBlist ) );
+    C_NEW_GVAR_FUNC( "LIST_BLIST", 2L, "list, blist",
+		  FuncLIST_BLIST,
+       "src/blister.c:LIST_BLIST" );
 
-    InitHandlerFunc(FuncSizeBlist, "SIZE_BLIST");
-    AssGVar( GVarName( "SIZE_BLIST" ),
-         NewFunctionC( "SIZE_BLIST", 1L, "blist",
-                    FuncSizeBlist ) );
+    C_NEW_GVAR_FUNC( "SIZE_BLIST", 1L, "blist",
+                  FuncSIZE_BLIST,
+       "src/blister.c:SIZE_BLIST" );
 
-    InitHandlerFunc(FuncIsSubsetBlist, "IS_SUB_BLIST");
-    AssGVar( GVarName( "IS_SUB_BLIST" ),
-         NewFunctionC( "IS_SUB_BLIST", 2L, "blist1, blist2",
-                    FuncIsSubsetBlist ) );
+    C_NEW_GVAR_FUNC( "IS_SUB_BLIST", 2L, "blist1, blist2",
+ 		  FuncIS_SUB_BLIST,
+       "src/blister.c:IS_SUB_BLIST" );
 
-    InitHandlerFunc(FuncUniteBlist, "UNITE_BLIST");
-    AssGVar( GVarName( "UNITE_BLIST" ),
-         NewFunctionC( "UNITE_BLIST", 2L, "blist1, blist2", 
-                    FuncUniteBlist ) );
+    C_NEW_GVAR_FUNC( "UNITE_BLIST", 2L, "blist1, blist2",
+		  FuncUNITE_BLIST,
+       "src/blister.c:UNITE_BLIST" );
 
-    InitHandlerFunc(FuncIntersectBlist, "INTER_BLIST");
-    AssGVar( GVarName( "INTER_BLIST" ),
-         NewFunctionC( "INTER_BLIST", 2L, "blist1, blist2",
-                    FuncIntersectBlist ) );
+    C_NEW_GVAR_FUNC( "INTER_BLIST", 2L, "blist1, blist2",
+                  FuncINTER_BLIST,
+       "src/blister.c:INTER_BLIST" );
 
-    InitHandlerFunc(FuncSubtractBlist, "SUBTR_BLIST");
-    AssGVar( GVarName( "SUBTR_BLIST" ),
-         NewFunctionC( "SUBTR_BLIST", 2L, "blist1, blist2",
-                    FuncSubtractBlist ) );
+    C_NEW_GVAR_FUNC( "SUBTR_BLIST", 2L, "blist1, blist2",
+		  FuncSUBTR_BLIST,
+       "src/blister.c:SUBTR_BLIST" );
 
-    InitHandlerFunc(FuncPositionNthTrueBlist, "PositionNthTrueBlist");
-    AssGVar( GVarName( "PositionNthTrueBlist" ),
-         NewFunctionC( "PositionNthTrueBlist", 2L, "blist, nth",
-                    FuncPositionNthTrueBlist ) );
+    C_NEW_GVAR_FUNC( "PositionNthTrueBlist", 2L, "blist, nth",
+		  FuncPositionNthTrueBlist,
+       "src/blister.c:PositionNthTrueBlist" );
 
-    InitHandlerFunc(FuncPositionsTrueBlist, "PositionsTrueBlist");
-    AssGVar( GVarName( "PositionsTrueBlist" ),
-         NewFunctionC( "PositionsTrueBlist", 1L, "blist",
-                    FuncPositionsTrueBlist ) );
+    C_NEW_GVAR_FUNC( "PositionsTrueBlist", 1L, "blist",
+                  FuncPositionsTrueBlist,
+       "src/blister.c:PositionsTrueBlist" );
 }
 
 

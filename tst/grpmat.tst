@@ -12,7 +12,7 @@ gap> START_TEST("$Id$");
 gap> i := E(4);; G := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
 gap> gens := GeneratorsOfGroup( G );; IsSSortedList( gens );
 false
-gap> KindObj( ShallowCopy( gens ) ) = false;
+gap> TypeObj( ShallowCopy( gens ) ) = false;
 false
 gap> SetName( G, "Q8" );
 gap> One( TrivialSubgroup( G ) );
@@ -37,7 +37,7 @@ gap> List( cl, c -> ExponentsOfPcElement( pcgs, Representative( c ) ) );
 gap> Size( AutomorphismGroup( G ) );
 24
 
-gap> STOP_TEST( "grpmat.tst", 1 );
+gap> STOP_TEST( "grpmat.tst", 199830000 );
 
 #############################################################################
 ##

@@ -390,12 +390,9 @@ SemiEchelonBasis( VectorSpace( Rationals,
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] )
 
 
-gap> STOP_TEST( "vspcmat.tst", 25000000 );
+gap> STOP_TEST( "vspcmat.tst", 35560000 );
 
 #############################################################################
 ##
 #E  vspcmat.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

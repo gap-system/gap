@@ -308,10 +308,8 @@ AffinePermGroupByMatrixGroup := function( M )
     # construct the affine group
     A := GroupByGenerators( Concatenation
                  ( GeneratorsOfGroup( G ), GeneratorsOfGroup( E ) ) );
-    SetSize( A, Size( M ) * Size( E ) );
-    if IsPrimitive( A, [ 1 .. Size( V ) ] )  then
-        Setter( EarnsAttr )( A, E );
-    fi;
+    SetSize( A, Size( M ) * Size( V ) );
+    Setter( EarnsAttr )( A, E );
     if HasName( M )  then
         SetName( A, Concatenation( String( Size( FieldOfMatrixGroup( M ) ) ),
                 "^", String( DimensionOfMatrixGroup( M ) ), ":",
@@ -326,20 +324,17 @@ end;
 #F  PrimitiveAffinePermGroupByMatrixGroup( <M> )  primitive affine perm group
 ##
 PrimitiveAffinePermGroupByMatrixGroup := function( M )
-    local   V,  G,  e,  A;
+    local   V,  G,  E,  A;
     
-    # build the vector space
     V := FieldOfMatrixGroup( M ) ^ DimensionOfMatrixGroup( M );
-    
-    # the linear part
     G := Operation( M, V );
-    
-    # the translation part, one vector is enough
-    e := Permutation( Basis( V )[ 1 ], V, \+ );
-    
-    # construct the affine group
-    A := GroupByGenerators( Concatenation( GeneratorsOfGroup( G ), [ e ] ) );
+    E := GroupByGenerators( List( Basis( V ), b ->
+                 Permutation( b, V, \+ ) ) );
+    SetSize( E, Size( V ) );
+    A := GroupByGenerators( Concatenation
+                 ( GeneratorsOfGroup( G ), [ GeneratorsOfGroup( E )[1] ] ) );
     SetSize( A, Size( M ) * Size( V ) );
+    Setter( EarnsAttr )( A, E );
     if HasName( M )  then
         SetName( A, Concatenation( String( Size( FieldOfMatrixGroup( M ) ) ),
                 "^", String( DimensionOfMatrixGroup( M ) ), ":",
@@ -652,11 +647,6 @@ MakePrimitiveGroup := function( deg, nr )
         p := FactorsInt( deg )[ 1 ];
         n := LogInt( deg, p );
         
-        # First look in Mark Short's table of solvable groups.
-        if IsEmpty( IrredSolGroupList )  then
-            ReadPrim( "irredsol.grp" );
-        fi;
-
         # Mark Short does not deal with the one-dimensional case.
         if n = 1  then
             div := DivisorsInt( p - 1 );
@@ -836,6 +826,119 @@ NrAffinePrimitiveGroups := function( deg )
         return Length( AFFINE_NON_SOLVABLE_GROUPS[ deg ] ) +
                NrSolvableAffinePrimitiveGroups( deg );
     fi;
+end;
+
+#############################################################################
+##
+
+#F  SelectionFunctionValue( <arglis>, <func> )  . . . . . . . . . . . . local
+##
+SelectionFunctionValue := function( arglis, func, rest )
+    local   p,  r,  warn;
+    
+    warn := false;
+    p := Position( arglis, func );
+    if p <> fail  then
+        r := arglis[ p + 1 ];
+        RemoveElmList( arglis, p );
+        RemoveElmList( arglis, p );
+        if not IsList( r )  then
+            r := [ r ];
+        fi;
+        if rest <> true  and  not IsSubset( rest, r )  then
+            r := Intersection( r, rest );
+            warn := true;
+        fi;
+    elif rest <> true  then
+        r := rest;
+        warn := true;
+    else
+        r := fail;
+    fi;
+    if warn  then
+        Info( InfoWarning, 1, "primitive permutation groups: ",
+               NameFunction( func ), " restricted to ", rest );
+    fi;
+    return r;
+end;
+
+IsSolvable := "2b defined";
+
+#############################################################################
+##
+#F  SelectPrimitiveGroups( <arglis>, <alle> ) . . . . . . . . . . . . . local
+##
+SelectPrimitiveGroups := function( arglis, alle )
+    local   deg,  aff,  sol,  dim,  chr,  fr,  to,
+            res,  d,  i,  p,  G;
+    
+    deg := SelectionFunctionValue( arglis, NrMovedPoints, [ 1 .. 999 ] );
+    aff := SelectionFunctionValue( arglis, IsPrimitiveAffine, true );
+    sol := SelectionFunctionValue( arglis, IsSolvable, true );
+    fr := x -> 0;
+    to := NrPrimitiveGroups;
+    if   aff = [ true ]   then  to := NrAffinePrimitiveGroups;  fi;
+    if   sol = [ true ]   then  to := NrSolvableAffinePrimitiveGroups;
+    elif sol = [ false ]  then  fr := NrSolvableAffinePrimitiveGroups;  fi;
+    if   aff = [ false ]  then  fr := NrAffinePrimitiveGroups;  fi;
+    if aff = [ true ]  then
+        dim := SelectionFunctionValue( arglis, Dimension, [ 1 .. 7 ] );
+        chr := SelectionFunctionValue( arglis, Characteristic,
+                       Intersection( Primes, [ 2 .. 255 ] ) );
+        deg := Intersection( deg, Flat( List
+                       ( dim, d -> List( chr, p -> p^d ) ) ) );
+    fi;
+    
+    res := [  ];
+    for d  in deg  do
+        if aff = [ true ]  and  sol = [ true ]  and  not IsPrime( d )  then
+            chr := FactorsInt( d )[ 1 ];
+            dim := LogInt( d, chr );
+            Append( res, List( CallFuncList
+                    ( AllIrreducibleSolvableGroups, Concatenation
+                    ( [ Dimension, dim, Characteristic, chr ], arglis ) ),
+                    PrimitiveAffinePermGroupByMatrixGroup ) );
+        else
+            for i  in  [ fr( d ) + 1 .. to( d ) ]  do
+                G := PrimitiveGroup( d, i );
+                for p  in [ 1, 3 .. Length( arglis ) - 1 ]  do
+                    if arglis[ p ]( G ) <> arglis[ p + 1 ]  then
+                        G := fail;
+                        break;
+                    fi;
+                od;
+                if G <> fail  then
+                    Add( res, G );
+                    if not alle  then
+                        return res;
+                    fi;
+                fi;
+            od;
+        fi;
+    od;
+    return res;
+end;
+
+#############################################################################
+##
+#F  AllPrimitiveGroups( <fun>, <res>, ... ) . . . . . . .  selection function
+##
+AllPrimitiveGroups := function ( arg )
+  return SelectPrimitiveGroups(arg,true);
+end;
+
+#############################################################################
+##
+#F  OnePrimitiveGroup( <fun>, <res>, ... )  . . . . . . .  selection function
+##
+OnePrimitiveGroup := function ( arg )
+local sel;
+  sel:=SelectPrimitiveGroups(arg,false);
+  if sel=[] then
+    return fail;
+  else
+    return sel;
+  fi;
 end;
 
 #############################################################################

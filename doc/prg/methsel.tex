@@ -1,0 +1,250 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  methsel.tex               GAP manual                    Thomas Breuer
+%W                                                       Martin Schoenert
+%%
+%H  @(#)$Id$
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Method Selection}
+
+An *operation* is a special {\GAP} function that bundles a set of
+functions, its *methods*.
+
+All methods of an operation compute the same result.
+But each method is installed for specific types of arguments.
+
+If an operation is called with a tuple of arguments,
+one of the applicable methods is selected and called.
+
+Special cases of methods are partial methods, immediate methods,
+and logical implications.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations and Methods}
+
+Operations are functions in the category `IsOperation'.
+
+So on one hand, *operations* are {\GAP} functions, that is,
+they can be applied to arguments and return a result or cause a
+side-effect.
+
+On the other hand, operations are more.
+Namely, an operation corresponds to a set of {\GAP} functions,
+called the *methods* of the operation.
+
+Each call of an operation causes that a suitable method is selected
+and then called.
+The decision what method to select is made according to the types
+of the arguments,
+the underlying mechanism is described in the following sections.
+
+Examples of operations are the binary infix operators `=', `+' etc.,
+and `PrintObj' is the operation that is called for each argument of
+`Print'.
+
+Also all attributes and properties are operations.
+When an attribute is called then one of its methods is called
+also if the attribute value is already stored;
+this method should of course simply return this value.
+
+As stated above, the setter of an attribute is called automatically
+if an attribute value has been computed.
+Attribute setters are operations, too.
+They have a default method that ignores the request to store the value.
+Depending on the type of the object,
+there may be another method to store the value in a suitable way,
+and then set the attribute tester for the object to `true'.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Method Installation}
+
+In order to describe what it means to select a method of an operation,
+we must describe how the methods are connected to their operations.
+
+A function <method> is installed as a method for the operation <opr> by
+
+\>InstallMethod( <opr>, <text>, <famp>, <args-filts>, <val>, <method> )
+
+where <text> is a short but informative string that describes for what
+situation the method is installed,
+<famp> is a function to be applied to the families of the arguments,
+<args-filts> is a list of requirements for the arguments,
+each entry being a filter,
+and <val> is an integer that measures the priority of the method.
+
+The exact meaning of the arguments <famp>, <args-filts>, and <val>
+is explained below.
+
+<opr> expects its methods to require certain filters for their arguments.
+For example, the argument of a method for the operation `Zero' must be
+in the category `IsAdditiveElementWithZero'.
+It is not possible to use `InstallMethod' to install a method for which
+the entries of <args-filt> do not imply the respective requirements of
+the operation <opr>.
+If one wants to override this restriction,
+one has to use `InstallOtherMethod' instead.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Applicable Methods and Method Selection}
+
+A method installed as above is *applicable* for an arguments tuple
+if the following conditions are satisfied.
+
+The number of arguments equals the length of the list <args-filts>,
+the $i$-th argument lies in the filter `<args-filts>[$i$]',
+and <famp> returns `true' when applied to the families of the arguments.
+
+So <args-filt> describes conditions for each argument,
+and <famp> describes a relation between the arguments.
+
+For unary operations such as attributes and properties,
+there is no such relation to postulate,
+<famp> is `ReturnTrue' for these operations,
+a function that does always return `true'.
+For binary operations, a usual value of <famp> is `IsIdentical',
+which means that both arguments must lie in the same family.
+
+If no method is applicable,
+the error message `no method found' is signaled.
+
+Otherwise, the applicable method with highest *rank* is selected and then
+called.
+This rank is given by the sum of the ranks of the filters in the list
+<args-filt>,
+*including implied filters*,
+plus the number <val> used in the call of `InstallMethod'.
+So the argument <val> can be used to raise the priority of a method
+relative to other methods for <opr>.
+
+Note that from the applicable methods,
+an efficient one shall be selected.
+This is a method that needs only little time and storage for the
+computations.
+
+It seems to be impossible to achieve that {\GAP} will select an optimal
+method in all cases.
+The present ranking of methods is based on the assumption
+that a method installed for a special situation shall be preferred
+to a method installed for a more general situation.
+
+For example, a method for computing a Sylow subgroup of a nilpotent
+group is expected to be more efficient than a method for arbitrary
+groups.
+So the more specific method will be selected if {\GAP} knows that the
+group given as argument is nilpotent.
+
+Of course there is no obvious way to decide between the efficiency of
+incommensurable methods.
+For example, take an operation with one method for permutation groups,
+another method for nilpotent groups,
+but no method for nilpotent permutation groups,
+and call this operation with a permutation group that knows to be
+nilpotent.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Partial Methods}
+
+After a method has been selected and called,
+this method may recognize that it cannot compute the desired result,
+and give up by calling `TryNextMethod()'.
+
+In effect, the execution of the method is terminated,
+and the method selection calls the next method that is applicable w.r.t.
+the original arguments.
+In other words, the applicable method is called that is subsequent to the
+one that called `TryNextMethod',
+according to decreasing rank of the methods.
+
+For example, since every finite group of odd order is solvable,
+one may install a method for the property `IsSolvableGroup' that checks
+whether the size of the argument is an odd integer,
+returns `true' if yes,
+and gives up otherwise.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Immediate Methods}
+
+Usually a method is called only if its operation has been called
+and if this method has been selected.
+
+For attributes and properties, one can install also *immediate methods*.
+An immediate method is called automatically as soon as it is applicable
+to an object, provided that the value is not yet known.
+Afterwards the attribute setter is called in order to store the value.
+
+Note that in such a case {\GAP} executes a computation for which
+it was not explicitly asked by the user.
+So one should install only those methods as immediate methods
+that are *extremely cheap*.
+To emphasize this, immediate methods are also called *zero cost methods*.
+The time for their execution should really be approximately zero.
+
+An immediate method <method> for the attribute or property <attr>
+with requirement <req> is installed via
+
+\>InstallImmediateMethod( <attr>, <req>, <val>, <method> )
+
+where <val> is an integer value that measures the priority of <method>
+among the immediate methods for <attr>.
+
+Note the difference to `InstallMethod' that no family predicate occurs
+because <attr> expects only one argument,
+and that <req> is not a list of requirements but the argument requirement
+itself.
+
+For example, the size of a permutation group can be computed very cheap
+if a stabilizer chain of the group is known.
+So it is reasonable to install an immediate method for `Size' with
+requirement `IsGroup and Tester( <stab> )',
+where <stab> is the attribute corresponding to the stabilizer chain.
+
+Another example would be the implementation of the conclusion that
+every finite group of prime power order is nilpotent.
+This could be done by installing an immediate method for the attribute
+`IsNilpotentGroup' with requirement `IsGroup and Tester( Size )'.
+This method would then check whether the size is a finite prime power,
+return `true' in this case and otherwise call `TryNextMethod()'.
+But this requires factoring of an integer,
+which cannot be guaranteed to be very cheap,
+so one should not install this method as an immediate method.
+
+Immediate methods are thought of as a possibility for objects to gain
+useful knowledge.
+They must not be used to force the storing of ``defining information''
+in an object.
+In other words, {\GAP} should work also if all immediate methods are
+invalidated.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Logical Implications}
+
+It may happen that a property <prop> is implied by another filter <filt>,
+which is usually a meet of other properties,
+or the meet of some properties and some categories.
+Such a logical implication can be installed as an immediate method for
+<prop> that requires <filt> and that returns always `true'.
+It should be installed via
+
+\>InstallTrueMethod( <prop>, <filt> )
+
+For example, each cyclic group is abelian,
+each finite vector space is finite dimensional,
+and each division ring is integral.
+The installation of the first of these implications is
+
+\>InstallTrueMethod( IsCommutative, IsGroup and IsCyclic )
+
+Contrary to other immediate methods,
+logical implications cannot be switched off.
+This means that after the above implication has been installed,
+one can rely on the fact that every object in the filter
+`IsGroup and IsCyclic' will also be in the filter `IsCommutative'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

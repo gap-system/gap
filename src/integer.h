@@ -23,8 +23,15 @@ char *          Revision_integer_h =
 **  'TypDigit' is the type of a single digit of an  arbitrary  size  integer.
 **  This is of course unsigned short int, which gives us the 16 bits we want.
 */
+#ifdef SYS_IS_64_BIT
+typedef UInt4           TypDigit;
+#else
 typedef UInt2           TypDigit;
+#endif
 
+#define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
+#define INTBASE            (1L << NR_DIGIT_BITS)
+#define NR_SMALL_INT_BITS  (2*NR_DIGIT_BITS - 4)
 
 /****************************************************************************
 **
@@ -70,7 +77,7 @@ extern  Int             LtInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvSum' for a better  efficiency.
+**  This case is usually alread<<y handled in 'EvSum' for a better  efficiency.
 */
 extern  Obj             SumInt (
             Obj                 opL,

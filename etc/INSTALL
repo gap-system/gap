@@ -1,0 +1,311 @@
+GAP 4 Beta 1
+------------
+
+This    file      (ftp://ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4b1/INSTALL)
+contains installation  instructions for the first beta  release of GAP 4,
+called GAP 4.B.1 for short.
+
+At the moment we only support GAP 4.B.1 under UNIX, it has been tested on
+the following systems:
+
+  'alpha-dec-OSF32-gcc2'      for DECalpha under OSF 3.2 with GNU cc 2
+  'mips-dec-ultrix-cc'        for DECstation under Ultrix with cc
+  'hppa1.1-hp-hpux-gcc2'      for HP9000 under HP-UX with GNU cc 2
+  'i386-ibm-freebsd-gcc2'     for IBM PC under FreeBSD 2.x with GNU cc 2
+  'i386-ibm-linux-gcc2'       for IBM PC under Linux with GNU cc 2
+  'i386-ibm-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2
+  'mips-sgi-irix-cc'          for SGI Mips under IRIX 5/6 with cc
+  'sparc-sun-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2
+  'sparc-sun-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2
+
+You  will need a  Pentium   class i386 with  at   least 16 Mbyte  to work
+comfortable with  GAP 4.B.1, a 486 is  not recommended although GAP 4.B.1
+compiles on such systems.
+
+Porting GAP to  another unix system is not  hard, however.  You need some
+very basic understanding  of C and UNIX,  see "Porting GAP to other  UNIX
+systems".  If you plan to port GAP to a non-UNIX system please contact
+
+    gap-trouble@dcs.st-and.ac.uk
+
+
+How to get GAP 4.B.1
+--------------------
+
+GAP 4.B.1  is available via  ftp, please  see the  accompanied README for
+details about the status and copyright of GAP.
+
+You can get GAP 4.B.1 from:
+
+    ftp://ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4b1/
+    ftp://ftp.math.rwth-aachen.de/pub/gap4b1/
+
+These directories contain the following files:
+
+    INSTALL		this file
+    README		information about GAP
+    gap4b1.tar.gz	the source code as gzipped tar archive
+    doc4b1.tar.gz       the documentation as gzipped tar archive
+    fix1.tar.gz         corrections, additions for the files above
+    ...
+
+You  need  all the above  files, however,  at the  time this document was
+written no ``fixX.tar.gz'' existed.
+
+
+Installation of GAP 4.B.1 under UNIX
+------------------------------------
+
+Installing GAP 4.B.1 on any of the machines mentioned at the beginning of
+this file is fairly  easy.  Get the files described   in "How to  get GAP
+4.B.1" and decide into which directory you want to install GAP 4.B.1.  If
+you will be the only user using GAP 4.B.1, you probably should install it
+in your home directory. If other users will be also using  GAP 4.B.1, you
+should install  it in a public  place, such as  ``/usr/local/lib/''.  GAP
+4.B.1 will be installed in a subdirectory ``gap4beta'' of this directory.
+You can later  move GAP 4.B.1 to a  different location.  For example  you
+can first install it  in your home directory and when it works move it to
+``/usr/local/lib/''.
+
+The following  installation example assumes  that  you are installing GAP
+4.B.1 into the   directory ``/usr/local/lib'' on  a  Pentium  Pro running
+FreeBSD.
+
+First  create a   directory   called  ``gap4beta'' and  `cd'  into   this
+directory.
+
+    you@unix> mkdir /usr/local/lib/gap4beta
+    you@unix> cd /usr/local/lib/gap4beta
+
+Now copy or ftp the  files described in "How  to get GAP 4.B.1" into this
+directory.  Unpack the files ``gap4b1.tar.gz'', ``doc4b1.tar.gz'' and any
+``fixX.tar.gz'' into the directory using `gunzip' and `tar'.  If there is
+more  than    one   fix   file,    first  unpack   ``fix1.tar.gz'',  then
+``fix2.tar.gz'', an so on.
+
+Let us assume that there are no  ``fixX.tar.gz'' files, if there were any
+they must be packed *after* ``gap4b1.tar.gz'' and ``doc4b1.tar.gz''.
+
+    you@unix> gunzip gap4b1.tar.gz doc4b1.tar.gz
+    you@unix> tar xvf gap4b1.tar
+    ...
+    you@unix> tar xvf doc4b1.tar.gz
+    ...
+
+Change   into the  directory ``src'' and    execute `make'  to  see which
+compilation targets are predefined.
+
+    you@unix> make
+    usage: 'make <target>' where target is one of
+    'alpha-dec-OSF32-gcc2'      for DECalpha under OSF 3.2 with GNU cc 2
+    'mips-dec-ultrix-cc'        for DECstation under Ultrix with cc
+    'hppa1.1-hp-hpux-gcc2'      for HP9000 under HP-UX with GNU cc 2
+    'i386-ibm-freebsd-gcc2'     for IBM PC under FreeBSD 2.x with GNU cc 2
+				(GNU cc 2.6 comes with FreeBSD 2.0)
+    'i386-ibm-linux-gcc2'       for IBM PC under Linux with GNU cc 2
+    'i386-ibm-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2
+				(GNU cc 2.5.8 comes with NeXTSTEP 3.3)
+    'mips-sgi-irix-gcc2'        for SGI Mips under IRIX 5/6 with GNU cc 2
+    'mips-sgi-irix-cc'          for SGI Mips under IRIX 5/6 with cc
+    'sparc-sun-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2
+    'sparc-sun-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2
+
+      targets are listed according to preference, i.e.,
+	'mips-sgi-irix-gcc2' is better than 'mips-sgi-irix-cc'.
+
+      additional C compiler and linker flags can be passed with
+	'make <target> COPTS=<compiler-opts> LOPTS=<linker-opts>',
+	i.e., 'make sparc-sun-sunos-gcc2 COPTS=-g LOPTS=-g.'
+
+Choose  the  best matching target.   If nothing matches  precisely, check
+Section  "Porting GAP 4.B.1  to other UNIX systems".   In our example the
+right target is 'i386-ibm-freebsd-gcc2'.  Now compile GAP.
+
+    you@unix> make i386-ibm-freebsd-gcc2
+    gcc -ansi -Wall -g ...
+    ...
+
+The compilation  process creates the object  files and the  executable in
+the directory ``/usr/local/lib/gap4beta/bin/<target>/''.  In our  example
+the          executable       will             be      created         as
+``/usr/local/lib/gap4beta/bin/i386-ibm-freebsd-gcc2/gap''
+
+In order   to    test  your   compilation    `cd'  into   the   directory
+``/usr/local/lib/gap4beta/'' and execute the newly created executable.
+
+*If you are using a 64 bit maschine, start gap using the '-N' flag.*
+
+    you@unix> cd ..
+    you@unix> bin/i386-ibm-freebsd-gcc2/gap
+    BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA
+
+    This is a  BETA version  of GAP 4.  Please  do not  redistribute this
+    version or discuss it in the GAP forum.  Use the GAP 4 forum instead.
+    Please report bugs and problems to
+
+		      gap-trouble@dcs.st-and.ac.uk
+
+    quoting  the  Version  below  and  the  machine, operation system, and
+    compiler used.
+
+    BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA
+
+    Version:  GAP Release 4 Beta 1
+
+    BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA
+
+    Loading the library, please be patient this may take a while.
+
+    gap>
+
+Try a few things to see if the compilation succeeded.
+
+    gap> Factors( 2^100-1 );  
+    [ 3, 5, 5, 5, 11, 31, 41, 101, 251, 601, 1801, 4051, 8101, 268501 ]
+    gap> Size( SymmetricGroup( 10 ) );
+    3628800
+    gap> quit;
+
+Now    edit     the    shell         script   ``gap.sh''       in     the
+``/usr/local/lib/gap4beta/bin'' directory according to the   instructions
+in  this file.  Then  copy this  script into a  directory  in your search
+path, i.e.,  ``~/bin/'' as ``gap4beta''.  (If you  are using the C-shell,
+you will also have to `rehash', so  that the C-shell adds ``gap4beta'' to
+its internal tables).  When you later move GAP  4.B.1 to another location
+you only need to edit this script.
+
+    you@unix> cd ~
+    you@unix> gap4beta
+
+A set of test files is provided, running them all  takes some 1000 sec on
+a Pentium Pro 200 Mhz.  So start with ``combinat.tst'' first.
+
+    gap> Filename( DirectoriesLibrary("tst"), "combinat.tst" );
+    "/usr/local/lib/gap4beta/tst/combinat.tst"
+    gap> ReadTest(last);
+    + $Id$
+    + GAP4stones: 27801
+    true
+
+Now use `Read'  (*not* `ReadTest') to read the  file ``testall.g'' to run
+*all* available test files.
+
+    gap> Filename( DirectoriesLibrary("tst"), "testall.g" );
+    "/usr/local/lib/gap4beta/tst/testall.g"
+    gap> Read(last);
+    You should start GAP4 using: `gap -N -M -m 16m'. The more 
+    GAP4stones you get, the faster your system is.  The runtime of
+    the following tests (in general) increases.  You should expect
+    about 10000 GAP4stones on a Pentium 5, 133 MHz, about 22000 on
+    a Pentium Pro, 200 Mhz.  The `next' time is an approximation of
+    the running time for the next test.
+
+    Architecture: i386-ibm-freebsd-gcc2
+
+    test file         GAP4stones     time(msec)
+    -------------------------------------------
+    unknown.tst            15238             21    (next ~ 0 sec)
+    listgen.tst           118000              5    (next ~ 0 sec)
+    gaussian.tst            2738            325    (next ~ 0 sec)
+    grpfree.tst            16390            133    (next ~ 0 sec)
+    ffe.tst                10366            464    (next ~ 0 sec)
+    cyclotom.tst           21176            221    (next ~ 0 sec)
+    zmodnz.tst             46294            170    (next ~ 0 sec)
+    mapping.tst            18225            541    (next ~ 0 sec)
+    fldabnum.tst           23606            585    (next ~ 1 sec)
+    vspcrow.tst            24626           1005    (next ~ 1 sec)
+    modfree.tst            27141            850    (next ~ 1 sec)
+    vspcmat.tst            27311           1302    (next ~ 1 sec)
+    vspchom.tst            24712           1530    (next ~ 1 sec)
+    combinat.tst           24858           1587    (next ~ 1 sec)
+    vspcmali.tst           27482           1585    (next ~ 1 sec)
+    ...
+
+The documentation  already contains the  corresponding ``dvi'' files, the
+GAP 4.B.1 manual is split into  four parts.  Ask your system adminstrator
+how to print ``dvi'' files.  In  case you want to  re-TeX them: `cd' into
+the corresponding directory and execute `tex manual'.
+
+GAP 4 Manual
+    A Tutorial		    /usr/local/lib/gap4beta/doc/tut/manual.dvi
+    Reference Manual        /usr/local/lib/gap4beta/doc/ref/manual.dvi
+
+Extending GAP 4
+    A Tutorial	            /usr/local/lib/gap4beta/doc/prg/manual.dvi
+    Reference Manual        /usr/local/lib/gap4beta/doc/ext/manual.dvi
+
+
+Porting GAP to other UNIX systems
+---------------------------------
+
+As GAP 4.B.1 is a beta release, fixes  and additions will be  distributed
+more rapidly than with GAP 3. Please check our WEB pages before trying to
+install GAP on machines not mentioned in the beginning.
+
+    http://www-groups.dcs.st-and.ac.uk/~gap/Info4/bugfixes.html
+    http://www.math.rwth-aachen.de/LDFM/GAP/Info4/bugfixes.html
+
+In order  to port GAP  to a UNIX  systems not mentioned in the beginning,
+you  will need  an ANSI C   compiler.  Proceed with "Installation  of GAP
+4.B.1 for UNIX" until you have to select a target.
+
+Now edit the ``Makefile'' and create a new target  for your machine.  For
+a System V machine a good beginning is:
+
+<processor>-<company>-<system>-<compiler>:
+        @(if test ! -d ../bin; then mkdir ../bin; fi; \
+          cd ../bin; \
+          if test ! -d <processor>-<company>-<system>-<compiler>; then \
+              mkdir <processor>-<company>-<system>-<compiler>; \
+          fi; \
+          cd ../bin/<processor>-<company>-<system>-<compiler>; \
+        )
+        @(cd ../bin/<processor>-<company>-<system>-<compiler>; \
+          $(MAKE) -f ../../src/Makefile gap \
+            SRC="../../src" \
+            CC="cc" \
+            LFLAGS="$(LOPTS)" \
+            CFLAGS="$(COPTS) -O" \
+            CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+            CFLAGS_SYS="$(COPTS) \
+                -DSYS_IS_USG \
+                -DSYS_HAS_ANSI=1 \
+                -DSYS_ARCH='\"<processor>-<company>-<system>-<compiler>\"'" \
+        )
+
+For a BSD  machine, replace ``SYS_IS_USG''  be ``SYS_IS_BSD''  and try to
+compile GAP 4.B.1.  Most likely you  get warnings or error messages about
+conflicting prototypes in ``system.h'' and some  of your operating system
+files.   Check with functions generate problems  and add the following to
+the list ``CFLAGS_SYS'' (do not forget the prefix ``-D'') above:
+
+SYS_HAS_EXEC_PROTO		execve, fork, vfork
+SYS_HAS_IOCTL_PROTO		ioctl
+SYS_HAS_MALLOC_PROTO		malloc, free
+SYS_HAS_MISC_PROTO		sbrk, exit, getenv, atoi, isatty, ttyname
+SYS_HAS_READ_PROTO		read, write
+SYS_HAS_SIGNAL_PROTO		signal, getpid, kill
+SYS_HAS_STDIO_PROTO		fopen, fclose, setbuf, fgets, fputs
+SYS_HAS_STRING_PROTO		strncat, strcmp, strncmp, strlen
+SYS_HAS_TIME_PROTO		getrusage, times, clock
+
+Another possible source of problems  are missing header files, define the
+following if you  do  not have   the corresponding  header file  and  the
+compiler tries to use it.
+
+SYS_TERMIO_H			termio.h
+SYS_SGTTY_H			sgtty.h
+SYS_SIGNAL_H                    signal.h
+SYS_STDIO_H                     stdio.h
+SYS_STDLIB_H                    stdlib.h
+SYS_UNISTD_H                    unistd.h
+
+If the  compilation succeeds *but* the  linker complains about  a missing
+`vfork',         throw          away        the         compiled     file
+``/usr/local/lib/gap4beta/bin/<target>/sysfile.o''          and       add
+`SYS_HAS_NO_VFORK'.
+
+If you have  compiled and linked GAP 4.B.1  successfully  please send the
+corresponding ``Makefile'' entry to
+
+    gap-trouble@dcs.st-and.ac.uk

@@ -10,34 +10,34 @@ extern void  UnmarkTree(
 extern UInt   Mark(
             Obj   tree,
             Obj   reftree,
-            int   index  );
+            Int   index  );
 
 
-extern int     AlmostEqual(
+extern Int     AlmostEqual(
                      Obj    tree1,
-                     int    index1,
+                     Int    index1,
                      Obj    tree2,
-                     int    index2    );
+                     Int    index2    );
 
 
-extern int     Equal(
+extern Int     Equal(
                Obj     tree1,
-               int     index1,
+               Int     index1,
                Obj     tree2,
-               int     index2   );
+               Int     index2   );
 
 
 
 extern Obj    Mark2(
               Obj        tree,
-              int        index1,
+              Int        index1,
               Obj        reftree,
-              int        index2   );
+              Int        index2   );
 
 
 extern UInt    FindTree(
                  Obj     tree,
-                 int     index );
+                 Int     index );
 
 
 extern Obj    MakeFormulaVector(
@@ -50,27 +50,27 @@ extern Obj  binomial(
                Obj     k    );
 
 
-extern int     Leftof(
+extern Int     Leftof(
                 Obj     tree1,
-                int     index1,
+                Int     index1,
                 Obj     tree2,
-                int     index2    );
+                Int     index2    );
 
 
 
-extern int    Leftof2(
+extern Int    Leftof2(
                 Obj    tree1,
-                int    index1,
+                Int    index1,
                 Obj    tree2,
-                int    index2     );
+                Int    index2     );
 
 
 
-extern int    Earlier(
+extern Int    Earlier(
                 Obj    tree1,
-                int    index1,
+                Int    index1,
                 Obj    tree2,
-                int    index2         );
+                Int    index2         );
 
 extern void   FindNewReps(
                     Obj     tree,
@@ -82,15 +82,15 @@ extern void   FindNewReps(
 
 extern void  FindSubs(
                 Obj        tree,
-                int        x,
+                Int        x,
                 Obj        list1,
                 Obj        list2,
                 Obj        a,
                 Obj        b,
-                int        al,
-                int        ar,
-                int        bl,
-                int        br,
+                Int        al,
+                Int        ar,
+                Int        bl,
+                Int        br,
                 Obj        reps,
                 Obj        pr,
                 Obj        max       );
@@ -115,8 +115,8 @@ extern void    TestTree(
 
 extern Obj      Part(
                       Obj   list,
-                      int   pos1,
-                      int   pos2         );
+                      Int   pos1,
+                      Int   pos2         );
 
 
 

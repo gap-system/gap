@@ -24,22 +24,30 @@ scalars is not regarded as a vector space in {\GAP}.
 Every field is itself a vector space, the set of matrices of the same
 shape over a given field is a vector space, the set of linear mappings
 between two vector spaces is a vector space.
+
+\beginexample
+    gap> f:= GF(8); IsVectorSpace( f );
+    # the field with 8 elements
+    GF(2^3)
+    true
+    gap> v:= GF(3)^[2,3]; IsVectorSpace( v );
+    # 2 by 3 matrices over the field with 3 elements
+    ( GF(3)^[ 2, 3 ] )
+    true
+    gap> w:= GF(3)^2; IsVectorSpace( w );
+    # row vectors of length 2 over `GF(3)'
+    ( GF(3)^2 )
+    true
+    gap> hom:= Hom( GF(3), v, w ); IsVectorSpace( hom );
+    # `GF(3)'-linear maps from `v' to `w'
+    Hom( GF(3), ( GF(3)^[ 2, 3 ] ), ( GF(3)^2 ) )
+    true                                         
+\endexample
+
 Given a vector space, the linear closure of any subset is again a vector
 space.
 
 \beginexample
-    gap> f:= GF(8); IsVectorSpace( f );
-    GF(2^3)
-    true
-    gap> v:= GF(3)^[2,3]; IsVectorSpace( v );
-    ( GF(3)^[ 2, 3 ] )
-    true
-    gap> w:= GF(3)^2; IsVectorSpace( w );
-    ( GF(3)^2 )
-    true
-    gap> hom:= Hom( GF(3), v, w ); IsVectorSpace( hom );
-    Hom( GF(3), ( GF(3)^[ 2, 3 ] ), ( GF(3)^2 ) )
-    true
     gap> Subspace( f, [ Z(2), Z(8)^3 ] );
     VectorSpace( GF(2), [ Z(2)^0, Z(2^3)^3 ] )
     gap> m:= [ [ 1, 0, 0 ], [ 0, 1, 1 ] ] * Z(3)^0;
@@ -48,8 +56,8 @@ space.
     VectorSpace( GF(3), 
     [ [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, Z(3)^0 ] ] ] )
     gap> z:= Subspace( hom, [ ZeroMapping( v, w ) ] );
-    VectorSpace( GF(3), 
-    [ ZeroMapping( ( GF(3)^[ 2, 3 ] ), ( GF(3)^2 ) ) ] )
+    VectorSpace( GF(3), [ ZeroMapping( ( GF(3)^[ 2, 3 ] ), ( GF(3)^2 ) )
+     ] )
 \endexample
 
 The probably most common $F$-vector spaces in {\GAP} are so-called
@@ -71,7 +79,8 @@ or an extension field of $F$.
 
 Note that the same set of vectors can be a vector space over different
 fields,
-one can construct a space over another field using `AsVectorSpace'.
+one can construct spaces over suitable other fields using
+`AsVectorSpace'.
 
 \beginexample
     gap> as:= AsVectorSpace( GF(3), rowsp );
@@ -86,15 +95,7 @@ one can construct a space over another field using `AsVectorSpace'.
 
 The defining invariant of a vector space $V$ is its *dimension*,
 the maximal cardinality of a tuple of vectors in $V$ that are linearly
-independent over the coefficients field $F$ of $V$.
-Each such maximal tuple of vectors is called a *basis* of the vector
-space.
-For a given basis $B$ of $V$, every vector $v$ in $V$ can be expressed
-uniquely as $v = \sum_{b \in B} c_b b$, with coefficients $c_b \in F$.
-
-In {\GAP}, bases are special lists of vectors.
-They are used mainly for the computation of coefficients and linear
-combinations.
+independent over the coefficient field $F$ of $V$.
 
 \beginexample
     gap> Dimension( rowsp );
@@ -107,6 +108,18 @@ combinations.
     3
     gap> Dimension( hom );
     12
+\endexample
+
+Each such maximal tuple of vectors is called a *basis* of the vector
+space.
+For a given basis $B$ of $V$, every vector $v$ in $V$ can be expressed
+uniquely as $v = \sum_{b \in B} c_b b$, with coefficients $c_b \in F$.
+
+In {\GAP}, bases are special lists of vectors.
+They are used mainly for the computation of coefficients and linear
+combinations.
+
+\beginexample
     gap> bas:= Basis( f );
     CanonicalBasis( GF(2^3) )
     gap> bas[1]; bas[2]; bas[3];
@@ -145,8 +158,9 @@ space.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Algebras}
 
-A vector space that is also closed under multiplication is called an
-*algebra*.
+If a multiplication is defined for the elements of a vector space,
+and if the vector space is closed under this multiplication then it is
+called an *algebra*.
 For example, every field is an algebra, the vector space of all
 square matrices of a given dimension over a given field is an algebra,
 and the endomorphisms of a vector space form an algebra.
@@ -170,7 +184,7 @@ But if a domain was not constructed as an algebra,
 for example if it knows only about its additive or multiplicative
 structure, then {\GAP} does not regard it as algebra.
 One can use `AsAlgebra' to get the domain consisting of the same elements
-but viewed as algebra over an appropriate coefficients domain.
+but viewed as algebra over an appropriate coefficient domain.
 
 \beginexample
     gap> bas:= Basis( a );
@@ -190,6 +204,8 @@ but viewed as algebra over an appropriate coefficients domain.
     true
     true
 \endexample
+
+In the above example, note that the operator `=' tests equality as sets.
 
 An algebra may or may not contain a multiplicatively neutral element.
 If yes then the algebra may or may not contain the zeroth power
@@ -240,8 +256,8 @@ and the factor by an ideal is again an algebra.
     gap> Dimension( a );
     3
     gap> s:= Subspace( a, [ m1 ] );
-    VectorSpace( Rationals, 
-    [ [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 0 ] ] ] )
+    VectorSpace( Rationals, [ [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 0 ] ]
+     ] )
     gap> Dimension( s );
     1
     gap> hom1:= NaturalHomomorphismBySubspace( a, s );;
@@ -258,20 +274,22 @@ and the factor by an ideal is again an algebra.
 
 Besides the more or less ``natural'' occurrencies of the algebras
 shown above, an algebra can also be given by a presentation.
-Any finite dimensional algebra can be described by so-called
-*structure constants*, that is, for a fixed basis $B$,
+A special kind of presentation is given by so-called
+*structure constants*, that is, for a fixed basis $B$ of the algebra,
 the $B$-coefficients of the products of elements in $B$.
+Any finite dimensional algebra can be described by finitely many
+structure constants.
 
 \beginexample
-gap> bas:= Basis( a );;
-gap> T:= StructureConstantsTable( bas );
-[ [ [ [ 3 ], [ 1 ] ], [ [  ], [  ] ], [ [ 1 ], [ 1 ] ] ], 
-  [ [ [  ], [  ] ], [ [ 2 ], [ 1 ] ], [ [  ], [  ] ] ], 
-  [ [ [ 1 ], [ 1 ] ], [ [  ], [  ] ], [ [ 3 ], [ 1 ] ] ], 0, 0 ]
-gap> sc:= AlgebraByStructureConstants( Rationals, T );
-<algebra of dimension 3 over Rationals>
-gap> AlgebraByStructureConstants( CF(7), T );
-<algebra of dimension 3 over CF(7)>
+    gap> bas:= Basis( a );;
+    gap> T:= StructureConstantsTable( bas );
+    [ [ [ [ 3 ], [ 1 ] ], [ [  ], [  ] ], [ [ 1 ], [ 1 ] ] ], 
+      [ [ [  ], [  ] ], [ [ 2 ], [ 1 ] ], [ [  ], [  ] ] ], 
+      [ [ [ 1 ], [ 1 ] ], [ [  ], [  ] ], [ [ 3 ], [ 1 ] ] ], 0, 0 ]
+    gap> sc:= AlgebraByStructureConstants( Rationals, T );
+    <algebra of dimension 3 over Rationals>
+    gap> AlgebraByStructureConstants( CF(7), T );
+    <algebra of dimension 3 over CF(7)>
 \endexample
 
 An interesting class of algebras for that many special algorithms
@@ -362,7 +380,7 @@ Another example of algebras is provided by *quaternion algebras*.
     gap> b5:= EB(5);
     E(5)+E(5)^4
     gap> q:= QuaternionAlgebra( FieldByGenerators( [ b5 ] ) );
-    <algebra of dimension 4 over NF(5,[ 1, 4 ])>
+    <algebra-with-one of dimension 4 over NF(5,[ 1, 4 ])>
     gap> gens:= GeneratorsOfAlgebra( q );
     [ e, i, j, k ]
     gap> e:= gens[1];; i:= gens[2];; j:= gens[3];; k:= gens[4];;
@@ -377,7 +395,7 @@ Another example of algebras is provided by *quaternion algebras*.
     e
 \endexample
 
-If the coefficients field is a real subfield of the complex numbers
+If the coefficient field is a real subfield of the complex numbers
 then the quaternion algebra is in fact a division ring.
 
 \beginexample
@@ -389,6 +407,8 @@ then the quaternion algebra is in fact a division ring.
 
 So {\GAP} knows about this fact.
 As in any ring, we can look at groups of units.
+(The function `StarCyc' used below computes the unique algebraic
+conjugate of an element in a quadratic subfield of a cyclotomic field.)
 
 \beginexample
     gap> c5:= StarCyc( b5 );
@@ -441,8 +461,7 @@ and compute the linear action of elements w.r.t. this basis.
     gap> ImagesRepresentative( op, e );
     [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ]
     gap> ImagesRepresentative( op, i );
-    [ [ 0, 1, 0, 0 ], [ -1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] 
-     ]
+    [ [ 0, 1, 0, 0 ], [ -1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] ]
     gap> ImagesRepresentative( op, g1 );
     [ [ 1/2*E(5)+1/2*E(5)^4, 1/2, -1/2*E(5)^2-1/2*E(5)^3, 0 ], 
       [ -1/2, 1/2*E(5)+1/2*E(5)^4, 0, -1/2*E(5)^2-1/2*E(5)^3 ], 
@@ -454,6 +473,3 @@ and compute the linear action of elements w.r.t. this basis.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E  algvspc.tex . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

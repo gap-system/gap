@@ -182,7 +182,6 @@ rec(
   d := 2,
   ATLAS := "-1-b5",
   display := "(-1-ER(5))/2" )
-gap> ÿ
 gap> GeneratorsPrimeResidues( 7^4 );
 rec(
   primes := [ 7 ],
@@ -245,12 +244,9 @@ gap> RationalizedMat( gm.mat );
 [ [ 2666, -1, -2, 0, 0 ], [ 519550080, 0, 0, 0, 0 ], 
   [ 1770515712, 0, -2, 0, 0 ], [ 4337827830, 0, 0, 0, -1 ] ]
 
-gap> STOP_TEST( "cyclotom.tst", 10000 );
+gap> STOP_TEST( "cyclotom.tst", 4680000 );
 
 #############################################################################
 ##
 #E  cyclotom.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

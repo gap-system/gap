@@ -446,12 +446,9 @@ SemiEchelonBasis( VectorSpace( Rationals,
   LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ] )
 
 
-gap> STOP_TEST( "vspcmali.tst", 30000000 );
+gap> STOP_TEST( "vspcmali.tst", 43560000 );
 
 #############################################################################
 ##
 #E  vspcmali.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

@@ -33,6 +33,10 @@ GS_SIZE := 20;
 GlasbyCover := function( S, A, B, pcgsK )
     local   Am, Bm, z, i;
 
+    # copy immutable objects
+    A := ShallowCopy( AsList( A ) );
+    B := ShallowCopy( AsList( B ) );
+
     # Decompose the intersection <H> /\ <K> /\ <N>.
     Am := S.intersection;
     Bm := List( Am, x -> x / SiftedPcElement( pcgsK, x ) );
@@ -80,7 +84,7 @@ GlasbyStabilizer := function( pcgs, A, B, pcgsS, pcgsR )
 
     pt := List( pcgsL, x -> Zero( f ) );
     Add( pt, One( f ) );
-    return GeneratorsOfGroup( Stabilizer( U, pt, A, matA, OnRight ) );
+    return Pcgs( Stabilizer( U, pt, A, matA, OnRight ) );
 end;
 
 
@@ -169,12 +173,6 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
                              x -> start <= DepthOfPcElement( pcgs, x ) and
                                   next > DepthOfPcElement( pcgs, x ) );
 
-#            pcgsN   := InducedPcgsByPcSequenceNC( pcgs, pcgs{[next..m]} );
-#            pcgsHmN := PcgsByPcSequence( fam, Concatenation( HmN, pcgsN ));
-#            pcgsHF  := pcgsHmN mod pcgsN;
-#            pcgsKmN := PcgsByPcSequence( fam, Concatenation( KmN, pcgsN ) );
-#            pcgsKF  := pcgsKmN mod pcgsN;
-
             pcgsN   := InducedPcgsByPcSequenceNC( pcgs, pcgs{[next..m]} );
             pcgsHmN := Concatenation( HmN, pcgsN );
             pcgsHmN := InducedPcgsByPcSequenceNC( pcgs, pcgsHmN );
@@ -194,6 +192,8 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
                 pcgsR := Concatenation( sum.sum, pcgsN );
                 pcgsR := InducedPcgsByPcSequenceNC( pcgs, pcgsR );
                 C := GlasbyStabilizer( pcgs, A, B, pcgsS, pcgsR );
+                B := Concatenation( B, pcgsN );
+                B := InducedPcgsByPcSequenceNC( pcgs, B );
                 D := GlasbyShift( C, B );
             fi;
 

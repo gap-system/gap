@@ -257,34 +257,8 @@ ReadTrans := ReadAndCheckFunc("trans");
 #F  Banner  . . . . . . . . . . . . . . . . . . . . . . . print a nice banner
 ##
 if not QUIET and BANNER then
-ReadGapRoot( "lib/version.g" );
 P := function(a) Print( a, "\n" );  end;
-
-P("");
-P("ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA");
-P("");
-P("This is  an ALPHA version  of GAP 4.  Please  do not  redistribute this");
-P("version, discuss it  in the  GAP forum,  or use  it  for more  than two");
-P("weeks.  You can get a new version from");
-P("");
-P("                ftp://ftp.math.rwth-aachen.de");
-P("");
-P("Please report bugs and problems to");
-P("");
-P("                  gap4@Math.RWTH-Aachen.DE");
-P("");
-P("quoting the Version and Date below and the machine, operation system,");
-P("and compiler used.");
-P("");
-P("ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA");
-P("");
-Print("Version:  ", VERSION, "\n");
-Print("Date:     ", DATE, "\n");
-P("");
-P("ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA");
-P("");
-P("Loading the library, please be patient this may take a while.");
-P("");
+ReadGapRoot( "lib/version.g" );
 fi;
 
 
@@ -315,6 +289,42 @@ ReadOrComplete( "lib/read7.g" );
 
 # overloaded operations
 ReadOrComplete( "lib/read8.g" );
+
+
+#############################################################################
+##
+
+#F  NamesGVars()  . . . . . . . . . . . list of names of all global variables
+##
+NamesGVars := function()
+    return Immutable( Set( IDENTS_GVAR() ) );
+end;
+
+
+#############################################################################
+##
+#F  NamesSystemGVars()  . . . . . .  list of names of system global variables
+##
+NAMES_SYSTEM_GVARS := ShallowCopy(IDENTS_GVAR());
+Add( NAMES_SYSTEM_GVARS, "NamesGVars" );
+Add( NAMES_SYSTEM_GVARS, "NamesUserGVars" );
+Add( NAMES_SYSTEM_GVARS, "NamesSystemGVars" );
+Add( NAMES_SYSTEM_GVARS, "NAMES_SYSTEM_GVARS" );
+NAMES_SYSTEM_GVARS := Immutable(Set(NAMES_SYSTEM_GVARS));
+
+NamesSystemGVars := function()
+    return NAMES_SYSTEM_GVARS;
+end;
+
+
+#############################################################################
+##
+#F  NamesUserGVars()  . . . . . . . .  list of names of user global variables
+##
+NamesUserGVars := function()
+    return Immutable( Filtered( Difference( NamesGVars(), 
+        NamesSystemGVars() ), ISB_GVAR ) );
+end;
 
 
 #############################################################################

@@ -1,8 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%A  debug.tex                 GAP manual                    Thomas Breuer
-%A                                                       Alexander Hulpke
-%A                                                       Martin Schoenert
+%W  debug.tex                 GAP manual                    Thomas Breuer
+%W                                                       Alexander Hulpke
+%W                                                       Martin Schoenert
 %%
 %H  @(#)$Id$
 %%
@@ -10,9 +10,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Debugging and Profiling Facilities}
 
-"ApplicableMethod"
+This chapter describes some functions that are useful mainly for
+debugging and profiling purposes.
 
-"Tracing Methods"
+The sections~"ApplicableMethod" and~"Tracing Methods" show how to get
+information about the methods chosen by the method selection mechanism
+(see~"prg:Method Selection").
 
 The final sections describe functions for collecting statistics about
 computations (see "Runtime", "Profiling").
@@ -22,8 +25,8 @@ computations (see "Runtime", "Profiling").
 \Section{ApplicableMethod}
 
 \>ApplicableMethod( <opr>, <args> )
-\>ApplicableMethod( <opr>, <args>, <printlevel>, <nr> )
-\>ApplicableMethod( <opr>, <args>, <printlevel>, "all" )
+\)ApplicableMethod( <opr>, <args>, <printlevel>, <nr> )
+\)ApplicableMethod( <opr>, <args>, <printlevel>, "all" )
 
 In the first form, `ApplicableMethod' returns the method of highest rank
 that is applicable for the operation <opr> with the arguments in the list
@@ -44,19 +47,24 @@ Depending on the integer value <printlevel>,
 additional information is printed.
 Admissible values and their meaning are as follows.
 
-\beginitems
-0& no information,
+\beginlist
+\item{0}
+    no information,
 
-1& information about the applicable method,
+\item{1}
+    information about the applicable method,
 
-2& also information about the not applicable methods of higher rank,
+\item{2}
+    also information about the not applicable methods of higher rank,
 
-3& also for each not applicable method the first reason why it is not
-   applicable,
+\item{3}
+    also for each not applicable method the first reason why it is not
+    applicable,
 
-4& also for each not applicable method all reasons why it is not
-   applicable.
-\enditems
+\item{4}
+    also for each not applicable method all reasons why it is not
+    applicable.
+\endlist
 
 When a method returned by `ApplicableMethod' is called then
 it returns either the desired result or the string `TRY_NEXT_METHOD',
@@ -69,7 +77,7 @@ method.
 \Section{Tracing Methods}
 
 \>TraceMethods( <oprs> )
-\>UntraceMethods( <oprs> )
+\)UntraceMethods( <oprs> )
 
 After the call of `TraceMethods' with a list <oprs> of operations,
 whenever a method of one of the operations in <oprs> is called
@@ -118,7 +126,7 @@ switches off.
     gap> UntraceMethods( [ Size ] );
 \endexample
 
-This examples gives an explanation for the two calls of the
+This example gives an explanation for the two calls of the
 ``system getter'' for `Size'.
 Namely, there are immediate methods that access the known size
 of the group.
@@ -135,49 +143,50 @@ after the call of `Size' have other arguments than `g'.
 
 `Runtime' returns the time spent by {\GAP} in milliseconds as an integer.
 This is usually the cpu time, i.e., not the wall clock time.
-Also time spent by subprocesses of {\GAP} (see "Exec") is not counted.
+Also time spent by subprocesses of {\GAP} (see "Process") is not counted.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Profiling}
 
 \>ProfileOperations( true )
-\>ProfileOperationsAndMethods( true )
-\>ProfileMethods( <oprs> )
+\)ProfileOperationsAndMethods( true )
+\)ProfileMethods( <oprs> )
 
 With these calls, the profiling is turned on.
 Subsequent computations will record the time spent by each profiled
 function and the number of times each function was called.
 Old profiling information is cleared.
 
-`ProfileOperations' turns the profiling on for all operations,
+Here `ProfileOperations' turns the profiling on for all operations,
 `ProfileOperationsAndMethods' for all methods of all operations,
 and `ProfileMethods' for all methods of the operations in the list
 <oprs>.
 
 
 \>ProfileOperations( false )
-\>ProfileOperationsAndMethods( false )
-\>UnprofileMethods( <oprs> )
+\)ProfileOperationsAndMethods( false )
+\)UnprofileMethods( <oprs> )
 
 With these calls, the profiling is turned off again.
 Recorded information is still kept, so you can  display it even after
 turning the profiling off.
 
-`ProfileOperations' turns the profiling off for all operations,
+Here `ProfileOperations' turns the profiling off for all operations,
 `ProfileOperationsAndMethods' for all methods of all operations,
 and `UnprofileMethods' for all methods of the operations in the list
 <oprs>.
 
 
-\>ProfileOperationsAndMethods(  )
-\>DisplayProfile(  )
-\>DisplayProfile( <funcs> )
+\>ProfileOperations(  )
+\)ProfileOperationsAndMethods(  )
+\)DisplayProfile(  )
+\)DisplayProfile( <funcs> )
 
 With these calls, the collected information is displayed in the format
 described below.
 
-`ProfileOperations' displays only information about operations,
+Here `ProfileOperations' displays only information about operations,
 `ProfileOperationsAndMethods' displays information about operations
 and methods.
 
@@ -186,9 +195,7 @@ for all profiled functions,
 in the second form only the functions in the list <funcs> are
 considered.
 
-
-
-(Frank, could you describe the format?)
+% (Frank, could you describe the format?)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

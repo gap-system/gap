@@ -64,8 +64,11 @@ end;
 #T The destructive part of the compatibility mode can be available only via
 #T a command line option.
 ##
-MakeReadWriteGVar( "fail" );
-fail := false;
+if not IsBound( OLDFAIL ) then
+  OLDFAIL:= fail;
+  MakeReadWriteGVar( "fail" );
+  fail := false;
+fi;
 
 
 #############################################################################
@@ -103,6 +106,29 @@ Order := function( arg )
     else
       Error( "usage: Order( <D>, <d> )" );
     fi;
+end;
+
+
+#############################################################################
+##
+#M  Position( <list>, <elm> ) . . . . . . .  return `false' instead of `fail'
+#M  Position( <list>, <elm>, <from> ) . . .  return `false' instead of `fail'
+##
+if not IsBound( OLDPOSITION ) then
+    OLDPOSITION := Position;
+fi;
+
+Position := function( arg )
+    local pos;
+    if Length( arg ) = 2 then
+      pos:= OLDPOSITION( arg[1], arg[2] );
+    else
+      pos:= OLDPOSITION( arg[1], arg[2], arg[3] );
+    fi;
+    if pos = OLDFAIL then
+      pos:= false;
+    fi;
+    return pos;
 end;
 
 

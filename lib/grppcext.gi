@@ -290,7 +290,7 @@ LinearOperationFunctionOfCompatiblePairs := function( C, cohom )
             new  := List( new, 
                     x -> ExponentsOfPcElement(pcgsN, x) 
                          * One(cohom.module.field ) );
-            new  := List( new, x -> x^g[2] );
+            new  := List( new, x -> x * g[2] );
             new  := Concatenation( new );
             new  := SolutionMat( cohom.base, new ){[1..l]};
             Add( mat, new );

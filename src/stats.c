@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  stats.c                     GAP source                   Martin Schoenert
+*W  stats.c                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -11,11 +11,12 @@
 **  The  statements package  is the  part  of  the interpreter that  executes
 **  statements for their effects and prints statements.
 */
-char *          Revision_stats_c =
+#include        "system.h"              /* Ints, UInts                     */
+
+SYS_CONST char * Revision_stats_c =
    "@(#)$Id$";
 
-
-#include        "system.h"              /* Ints, UInts                     */
+#include        "sysfiles.h"            /* file input/output               */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TNUM_OBJ, types            */

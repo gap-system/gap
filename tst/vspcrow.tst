@@ -342,13 +342,10 @@ gap> ImmutableBasis( mb );
 SemiEchelonBasis( VectorSpace( Rationals, [ [ 1, 2, 3, 4 ], [ 0, 0, 0, 1 ] 
  ] ), [ [ 1, 2, 3, 4 ], [ 0, 0, 0, 1 ] ] )
 
-gap> STOP_TEST( "vspcrow.tst", 13900306 );
+gap> STOP_TEST( "vspcrow.tst", 24750000 );
 
 
 #############################################################################
 ##
 #E  vspcrow.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

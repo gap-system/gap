@@ -44,38 +44,12 @@ char *          Revision_code_c =
 
 /****************************************************************************
 **
-*S  T_BODY  . . . . . . . . . . . . . . . . . . . . type of function body bag
-**
-**  'T_BODY' is the type of the function body bags.
-**
-**  'T_BODY' is defined in the declaration part of this package as follows
-**
-#define T_BODY                  175
-*/
 
-
-/****************************************************************************
-**
-*T  Stat  . . . . . . . . . . . . . . . . . . . . . . . .  type of statements
-**
-**  'Stat' is the type of statements.
-**
-**  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
-**  break.
-**
-**  'Stat' is defined in the declaration part of this package as follows
-**
-#define Stat            UInt4
-*/
-
-
-/****************************************************************************
-**
 *V  PtrBody . . . . . . . . . . . . . . . . . . . . . pointer to current body
 **
 **  'PtrBody' is a pointer to the current body.
 */
-Stat *          PtrBody;
+Stat * PtrBody;
 
 
 /****************************************************************************
@@ -85,168 +59,17 @@ Stat *          PtrBody;
 **  'OffsBody' is the  offset in the current   body.  It is  only valid while
 **  coding.
 */
-Stat            OffsBody;
+Stat OffsBody;
 
 
 /****************************************************************************
 **
-*V  FIRST_STAT_CURR_FUNC  . . . . . . . .  index of first statement in a body
-**
-**  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
-**
-** 'FIRST_STAT_CURR_FUNC' is defined in  the declaration part of this package
-** as follows
-**
-#define FIRST_STAT_CURR_FUNC    sizeof(Stat)
-*/
-
-
-/****************************************************************************
-**
-*S  T_<name>  . . . . . . . . . . . . . .  symbolic names for statement types
-*S  FIRST_STAT_TNUM . . . . . . . . . . . . . . . . . .  first statement type
-*S  LAST_STAT_TNUM  . . . . . . . . . . . . . . . . . . . last statement type
-**
-**  For every type  of statements there is  a symbolic name  defined for this
-**  type.
-**
-**  As long as statements   are represented by  bags,  these types  must  not
-**  overlap with the values types, lest Gasman becomes confused.
-**
-**  The types are defined in the declaration part of this package as follows
-**
-#define FIRST_STAT_TNUM         0
-
-#define T_PROCCALL_0ARGS        (FIRST_STAT_TNUM+ 0)
-#define T_PROCCALL_1ARGS        (FIRST_STAT_TNUM+ 1)
-#define T_PROCCALL_2ARGS        (FIRST_STAT_TNUM+ 2)
-#define T_PROCCALL_3ARGS        (FIRST_STAT_TNUM+ 3)
-#define T_PROCCALL_4ARGS        (FIRST_STAT_TNUM+ 4)
-#define T_PROCCALL_5ARGS        (FIRST_STAT_TNUM+ 5)
-#define T_PROCCALL_6ARGS        (FIRST_STAT_TNUM+ 6)
-#define T_PROCCALL_XARGS        (FIRST_STAT_TNUM+ 7)
-
-#define T_SEQ_STAT              (FIRST_STAT_TNUM+ 8)
-#define T_SEQ_STAT2             (FIRST_STAT_TNUM+ 9)
-#define T_SEQ_STAT3             (FIRST_STAT_TNUM+10)
-#define T_SEQ_STAT4             (FIRST_STAT_TNUM+11)
-#define T_SEQ_STAT5             (FIRST_STAT_TNUM+12)
-#define T_SEQ_STAT6             (FIRST_STAT_TNUM+13)
-#define T_SEQ_STAT7             (FIRST_STAT_TNUM+14)
-#define T_IF                    (FIRST_STAT_TNUM+15)
-#define T_IF_ELSE               (FIRST_STAT_TNUM+16)
-#define T_IF_ELIF               (FIRST_STAT_TNUM+17)
-#define T_IF_ELIF_ELSE          (FIRST_STAT_TNUM+18)
-#define T_FOR                   (FIRST_STAT_TNUM+19)
-#define T_FOR2                  (FIRST_STAT_TNUM+20)
-#define T_FOR3                  (FIRST_STAT_TNUM+21)
-#define T_FOR_RANGE             (FIRST_STAT_TNUM+22)
-#define T_FOR_RANGE2            (FIRST_STAT_TNUM+23)
-#define T_FOR_RANGE3            (FIRST_STAT_TNUM+24)
-#define T_WHILE                 (FIRST_STAT_TNUM+25)
-#define T_WHILE2                (FIRST_STAT_TNUM+26)
-#define T_WHILE3                (FIRST_STAT_TNUM+27)
-#define T_REPEAT                (FIRST_STAT_TNUM+28)
-#define T_REPEAT2               (FIRST_STAT_TNUM+29)
-#define T_REPEAT3               (FIRST_STAT_TNUM+30)
-#define T_BREAK                 (FIRST_STAT_TNUM+31)
-#define T_RETURN_OBJ            (FIRST_STAT_TNUM+32)
-#define T_RETURN_VOID           (FIRST_STAT_TNUM+33)
-
-#define T_ASS_LVAR              (FIRST_STAT_TNUM+34)
-#define T_ASS_LVAR_01           (FIRST_STAT_TNUM+35)
-#define T_ASS_LVAR_02           (FIRST_STAT_TNUM+36)
-#define T_ASS_LVAR_03           (FIRST_STAT_TNUM+37)
-#define T_ASS_LVAR_04           (FIRST_STAT_TNUM+38)
-#define T_ASS_LVAR_05           (FIRST_STAT_TNUM+39)
-#define T_ASS_LVAR_06           (FIRST_STAT_TNUM+40)
-#define T_ASS_LVAR_07           (FIRST_STAT_TNUM+41)
-#define T_ASS_LVAR_08           (FIRST_STAT_TNUM+42)
-#define T_ASS_LVAR_09           (FIRST_STAT_TNUM+43)
-#define T_ASS_LVAR_10           (FIRST_STAT_TNUM+44)
-#define T_ASS_LVAR_11           (FIRST_STAT_TNUM+45)
-#define T_ASS_LVAR_12           (FIRST_STAT_TNUM+46)
-#define T_ASS_LVAR_13           (FIRST_STAT_TNUM+47)
-#define T_ASS_LVAR_14           (FIRST_STAT_TNUM+48)
-#define T_ASS_LVAR_15           (FIRST_STAT_TNUM+49)
-#define T_ASS_LVAR_16           (FIRST_STAT_TNUM+50)
-#define T_UNB_LVAR              (FIRST_STAT_TNUM+51)
-#define T_ASS_HVAR              (FIRST_STAT_TNUM+52)
-#define T_UNB_HVAR              (FIRST_STAT_TNUM+53)
-#define T_ASS_GVAR              (FIRST_STAT_TNUM+54)
-#define T_UNB_GVAR              (FIRST_STAT_TNUM+55)
-#define T_ASS_LIST              (FIRST_STAT_TNUM+56)
-#define T_ASSS_LIST             (FIRST_STAT_TNUM+57)
-#define T_ASS_LIST_LEV          (FIRST_STAT_TNUM+58)
-#define T_ASSS_LIST_LEV         (FIRST_STAT_TNUM+59)
-#define T_UNB_LIST              (FIRST_STAT_TNUM+60)
-#define T_ASS_REC_NAME          (FIRST_STAT_TNUM+61)
-#define T_ASS_REC_EXPR          (FIRST_STAT_TNUM+62)
-#define T_UNB_REC_NAME          (FIRST_STAT_TNUM+63)
-#define T_UNB_REC_EXPR          (FIRST_STAT_TNUM+64)
-#define T_ASS_POSOBJ            (FIRST_STAT_TNUM+65)
-#define T_ASSS_POSOBJ           (FIRST_STAT_TNUM+66)
-#define T_ASS_POSOBJ_LEV        (FIRST_STAT_TNUM+67)
-#define T_ASSS_POSOBJ_LEV       (FIRST_STAT_TNUM+68)
-#define T_UNB_POSOBJ            (FIRST_STAT_TNUM+69)
-#define T_ASS_COMOBJ_NAME       (FIRST_STAT_TNUM+70)
-#define T_ASS_COMOBJ_EXPR       (FIRST_STAT_TNUM+71)
-#define T_UNB_COMOBJ_NAME       (FIRST_STAT_TNUM+72)
-#define T_UNB_COMOBJ_EXPR       (FIRST_STAT_TNUM+73)
-
-#define T_INFO                  (FIRST_STAT_TNUM+74)
-#define T_ASSERT_2ARGS          (FIRST_STAT_TNUM+75)
-#define T_ASSERT_3ARGS          (FIRST_STAT_TNUM+76)
-
-#define LAST_STAT_TNUM          T_ASSERT_3ARGS
-*/
-
-
-/****************************************************************************
-**
-*F  TNUM_STAT(<stat>) . . . . . . . . . . . . . . . . . . type of a statement
-**
-**  'TNUM_STAT' returns the type of the statement <stat>.
-**
-**  'TNUM_STAT' is defined in the declaration part of this package as follows
-**
-#define TNUM_STAT(stat) (ADDR_STAT(stat)[-1] & 0xFF)
-*/
-
-
-/****************************************************************************
-**
-*F  SIZE_STAT(<stat>) . . . . . . . . . . . . . . . . . . size of a statement
-**
-**  'SIZE_STAT' returns the size of the statement <stat>.
-**
-**  'SIZE_STAT' is defined in the declaration part of this package as follows
-**
-#define SIZE_STAT(stat) (ADDR_STAT(stat)[-1] >> 8)
-*/
-
-
-/****************************************************************************
-**
-*F  ADDR_STAT(<stat>) . . . . . . . . . . . . absolute address of a statement
-**
-**  'ADDR_STAT' returns   the  absolute address of the    memory block of the
-**  statement <stat>.
-**
-**  'ADDR_STAT' is defined in the declaration part of this package as follows
-**
-#define ADDR_STAT(stat) ((Stat*)(((char*)PtrBody)+(stat)))
-*/
-
-
-/****************************************************************************
-**
-*F  NewStat(<type>,<size>)  . . . . . . . . . . . .  allocate a new statement
+*F  NewStat( <type>, <size> ) . . . . . . . . . . .  allocate a new statement
 **
 **  'NewStat'   allocates a new   statement memory block  of  type <type> and
 **  <size> bytes.  'NewStat' returns the identifier of the new statement.
 */
-Stat            NewStat (
+Stat NewStat (
     UInt                type,
     UInt                size )
 {
@@ -278,231 +101,7 @@ Stat            NewStat (
 
 /****************************************************************************
 **
-*T  Expr  . . . . . . . . . . . . . . . . . . . . . . . . type of expressions
-**
-**  'Expr' is the type of expressions.
-**
-**  If 'Expr' is different  from 'Stat', then  a lot of things will  probably
-**  break.
-**
-**  'Expr' is defined in the declaration part of this package as follows
-**
-#define Expr            Stat
-*/
-
-
-/****************************************************************************
-**
-*F  IS_REFLVAR(<expr>). . . . test if an expression is a reference to a local
-*F  REFLVAR_LVAR(<lvar>)  . . . . . convert a local to a reference to a local
-*F  LVAR_REFLVAR(<expr>)  . . . . . convert a reference to a local to a local
-**
-**  'IS_REFLVAR'  returns  1  if  the  expression <expr>  is  an  (immediate)
-**  reference to a local variable, and 0 otherwise.
-**
-**  'REFLVAR_LVAR'  returns  a (immediate) reference  to   the local variable
-**  <lvar> (given by its index).
-**
-**  'LVAR_REFLVAR' returns the local variable (by  its index) to which <expr>
-**  is a (immediate) reference.
-**
-**  'IS_REFLVAR', 'REFLVAR_LVAR',   and 'LVAR_REFLVAR'   are defined  in  the
-**  declaration part of this package as follows
-**
-#define IS_REFLVAR(expr)        \
-                        (((Int)(expr) & 0x03) == 0x03)
-
-#define REFLVAR_LVAR(lvar)      \
-                        ((Expr)(((lvar) << 2) + 0x03))
-
-#define LVAR_REFLVAR(expr)      \
-                        ((Int)(expr) >> 2)
-*/
-
-
-/****************************************************************************
-**
-*F  IS_INTEXPR(<expr>). . . .  test if an expression is an integer expression
-*F  INTEXPR_INT(<i>)  . . . . .  convert a C integer to an integer expression
-*F  INT_INTEXPR(<expr>) . . . .  convert an integer expression to a C integer
-**
-**  'IS_INTEXPR' returns 1 if the expression <expr> is an (immediate) integer
-**  expression, and 0 otherwise.
-**
-**  'INTEXPR_INT' converts    the C integer <i>    to  an (immediate) integer
-**  expression.
-**
-**  'INT_INTEXPR' converts the (immediate) integer  expression <expr> to a  C
-**  integer.
-**
-**  'IS_INTEXPR', 'INTEXPR_INT', and    'INT_INTEXPR'  are defined in     the
-**  declaration part of this package as follows
-**
-#define IS_INTEXPR(expr)        \
-                        (((Int)(expr) & 0x03) == 0x01)
-
-#define INTEXPR_INT(indx)       \
-                        ((Expr)(((indx) << 2) + 0x01))
-
-#define INT_INTEXPR(expr)       \
-                        (((Int)(Int4)(expr)) / 4)
-*/
-
-
-/****************************************************************************
-**
-*S  T_<name>  . . . . . . . . . . . . . . symbolic names for expression types
-*S  FIRST_EXPR_TNUM . . . . . . . . . . . . . . . . . . first expression type
-*S  LAST_EXPR_TNUM  . . . . . . . . . . . . . . . . . .  last expression type
-**
-**  For every type of expressions there  is a symbolic  name defined for this
-**  type.
-**
-**  As long as  expressions  are represented by  bags,  these types must  not
-**  overlap with the values types, lest Gasman becomes confused.
-**
-**  The types are defined in the declaration part of this package as follows
-**
-#define FIRST_EXPR_TNUM         128
-
-#define T_FUNCCALL_0ARGS        (FIRST_EXPR_TNUM+ 0)
-#define T_FUNCCALL_1ARGS        (FIRST_EXPR_TNUM+ 1)
-#define T_FUNCCALL_2ARGS        (FIRST_EXPR_TNUM+ 2)
-#define T_FUNCCALL_3ARGS        (FIRST_EXPR_TNUM+ 3)
-#define T_FUNCCALL_4ARGS        (FIRST_EXPR_TNUM+ 4)
-#define T_FUNCCALL_5ARGS        (FIRST_EXPR_TNUM+ 5)
-#define T_FUNCCALL_6ARGS        (FIRST_EXPR_TNUM+ 6)
-#define T_FUNCCALL_XARGS        (FIRST_EXPR_TNUM+ 7)
-#define T_FUNC_EXPR             (FIRST_EXPR_TNUM+ 8)
-
-#define T_OR                    (FIRST_EXPR_TNUM+ 9)
-#define T_AND                   (FIRST_EXPR_TNUM+10)
-#define T_NOT                   (FIRST_EXPR_TNUM+11)
-#define T_EQ                    (FIRST_EXPR_TNUM+12)
-#define T_NE                    (FIRST_EXPR_TNUM+13)
-#define T_LT                    (FIRST_EXPR_TNUM+14)
-#define T_GE                    (FIRST_EXPR_TNUM+15)
-#define T_GT                    (FIRST_EXPR_TNUM+16)
-#define T_LE                    (FIRST_EXPR_TNUM+17)
-#define T_IN                    (FIRST_EXPR_TNUM+18)
-#define T_SUM                   (FIRST_EXPR_TNUM+19)
-#define T_AINV                  (FIRST_EXPR_TNUM+20)
-#define T_DIFF                  (FIRST_EXPR_TNUM+21)
-#define T_PROD                  (FIRST_EXPR_TNUM+22)
-#define T_INV                   (FIRST_EXPR_TNUM+23)
-#define T_QUO                   (FIRST_EXPR_TNUM+24)
-#define T_MOD                   (FIRST_EXPR_TNUM+25)
-#define T_POW                   (FIRST_EXPR_TNUM+26)
-
-#define T_INTEXPR               (FIRST_EXPR_TNUM+27)
-#define T_INT_EXPR              (FIRST_EXPR_TNUM+28)
-#define T_TRUE_EXPR             (FIRST_EXPR_TNUM+29)
-#define T_FALSE_EXPR            (FIRST_EXPR_TNUM+30)
-#define T_CHAR_EXPR             (FIRST_EXPR_TNUM+31)
-#define T_PERM_EXPR             (FIRST_EXPR_TNUM+32)
-#define T_PERM_CYCLE            (FIRST_EXPR_TNUM+33)
-#define T_LIST_EXPR             (FIRST_EXPR_TNUM+34)
-#define T_LIST_TILD_EXPR        (FIRST_EXPR_TNUM+35)
-#define T_RANGE_EXPR            (FIRST_EXPR_TNUM+36)
-#define T_STRING_EXPR           (FIRST_EXPR_TNUM+37)
-#define T_REC_EXPR              (FIRST_EXPR_TNUM+38)
-#define T_REC_TILD_EXPR         (FIRST_EXPR_TNUM+39)
-
-#define T_REFLVAR               (FIRST_EXPR_TNUM+40)
-#define T_REF_LVAR              (FIRST_EXPR_TNUM+41)
-#define T_REF_LVAR_01           (FIRST_EXPR_TNUM+42)
-#define T_REF_LVAR_02           (FIRST_EXPR_TNUM+43)
-#define T_REF_LVAR_03           (FIRST_EXPR_TNUM+44)
-#define T_REF_LVAR_04           (FIRST_EXPR_TNUM+45)
-#define T_REF_LVAR_05           (FIRST_EXPR_TNUM+46)
-#define T_REF_LVAR_06           (FIRST_EXPR_TNUM+47)
-#define T_REF_LVAR_07           (FIRST_EXPR_TNUM+48)
-#define T_REF_LVAR_08           (FIRST_EXPR_TNUM+49)
-#define T_REF_LVAR_09           (FIRST_EXPR_TNUM+50)
-#define T_REF_LVAR_10           (FIRST_EXPR_TNUM+51)
-#define T_REF_LVAR_11           (FIRST_EXPR_TNUM+52)
-#define T_REF_LVAR_12           (FIRST_EXPR_TNUM+53)
-#define T_REF_LVAR_13           (FIRST_EXPR_TNUM+54)
-#define T_REF_LVAR_14           (FIRST_EXPR_TNUM+55)
-#define T_REF_LVAR_15           (FIRST_EXPR_TNUM+56)
-#define T_REF_LVAR_16           (FIRST_EXPR_TNUM+57)
-#define T_ISB_LVAR              (FIRST_EXPR_TNUM+58)
-#define T_REF_HVAR              (FIRST_EXPR_TNUM+59)
-#define T_ISB_HVAR              (FIRST_EXPR_TNUM+60)
-#define T_REF_GVAR              (FIRST_EXPR_TNUM+61)
-#define T_ISB_GVAR              (FIRST_EXPR_TNUM+62)
-#define T_ELM_LIST              (FIRST_EXPR_TNUM+63)
-#define T_ELMS_LIST             (FIRST_EXPR_TNUM+64)
-#define T_ELM_LIST_LEV          (FIRST_EXPR_TNUM+65)
-#define T_ELMS_LIST_LEV         (FIRST_EXPR_TNUM+66)
-#define T_ISB_LIST              (FIRST_EXPR_TNUM+67)
-#define T_ELM_REC_NAME          (FIRST_EXPR_TNUM+68)
-#define T_ELM_REC_EXPR          (FIRST_EXPR_TNUM+69)
-#define T_ISB_REC_NAME          (FIRST_EXPR_TNUM+70)
-#define T_ISB_REC_EXPR          (FIRST_EXPR_TNUM+71)
-#define T_ELM_POSOBJ            (FIRST_EXPR_TNUM+72)
-#define T_ELMS_POSOBJ           (FIRST_EXPR_TNUM+73)
-#define T_ELM_POSOBJ_LEV        (FIRST_EXPR_TNUM+74)
-#define T_ELMS_POSOBJ_LEV       (FIRST_EXPR_TNUM+75)
-#define T_ISB_POSOBJ            (FIRST_EXPR_TNUM+76)
-#define T_ELM_COMOBJ_NAME       (FIRST_EXPR_TNUM+77)
-#define T_ELM_COMOBJ_EXPR       (FIRST_EXPR_TNUM+78)
-#define T_ISB_COMOBJ_NAME       (FIRST_EXPR_TNUM+79)
-#define T_ISB_COMOBJ_EXPR       (FIRST_EXPR_TNUM+80)
-
-#define LAST_EXPR_TNUM          T_ISB_COMOBJ_EXPR
-*/
-
-
-/****************************************************************************
-**
-*F  TNUM_EXPR(<expr>) . . . . . . . . . . . . . . . . . type of an expression
-**
-**  'TNUM_EXPR' returns the type of the expression <expr>.
-**
-**  'TNUM_EXPR' is defined in the declaration part of this package as follows
-**
-#define TNUM_EXPR(expr)         \
-                        (IS_REFLVAR( (expr) ) ? T_REFLVAR : \
-                         (IS_INTEXPR( (expr) ) ? T_INTEXPR : \
-                          TNUM_STAT(expr) ))
-*/
-
-
-/****************************************************************************
-**
-*F  SIZE_EXPR(<expr>) . . . . . . . . . . . . . . . . . size of an expression
-**
-**  'SIZE_EXPR' returns the size of the expression <expr>.
-**
-**  Note  that  it is *fatal*  to apply  'SIZE_EXPR'   to expressions of type
-**  'T_REFLVAR' or 'T_INTEXPR'.
-**
-**  'SIZE_EXPR' is defined in the declaration part of this package as follows
-**
-#define SIZE_EXPR(expr) SIZE_STAT(expr)
-*/
-
-
-/****************************************************************************
-**
-*F  ADDR_EXPR(<expr>) . . . . . . . . . . . absolute address of an expression
-**
-**  'ADDR_EXPR' returns  the absolute  address  of  the memory  block of  the
-**  expression <expr>.
-**
-**  Note  that  it is *fatal*  to apply  'ADDR_EXPR'   to expressions of type
-**  'T_REFLVAR' or 'T_INTEXPR'.
-**
-**  'ADDR_EXPR' is defined in the declaration part of this package as follows
-**
-#define ADDR_EXPR(expr) ADD_STAT(expr)
-*/
-
-
-/****************************************************************************
-**
-*F  NewExpr(<type>,<size>)  . . . . . . . . . . . . allocate a new expression
+*F  NewExpr( <type>, <size> ) . . . . . . . . . . . allocate a new expression
 **
 **  'NewExpr' allocates a new expression memory block of  the type <type> and
 **  <size> bytes.  'NewExpr' returns the identifier of the new expression.
@@ -539,73 +138,19 @@ Expr            NewExpr (
 
 /****************************************************************************
 **
-*F  FUNC_CALL(<call>) . . . . . . . . . . . . .  function for a function call
-*F  ARGI_CALL(<call>,<i>) . . . .  <i>-th formal argument for a function call
-*F  NARG_SIZE_CALL(<size>)  . . . . . number of arguments for a function call
-*F  SIZE_NARG_CALL(<narg>)  . . . . . . . size of the bag for a function call
-**
-**  'FUNC_CALL'  returns the expression that should  evaluate to the function
-**  for the procedure or  function call <call>.   This is a legal left value,
-**  so it can be used to set the expression too.
-**
-**  'ARGI_CALL'  returns  the expression that evaluate   to the <i>-th actual
-**  argument for the procedure or function call <call>.  This is a legal left
-**  value, so it can be used to set the expression too.
-**
-**  'NARG_SIZE_CALL' returns the number of  arguments in a function call from
-**  the size <size> of the function call bag (as returned by 'SIZE_EXPR').
-**
-**  'SIZE_NARG_CALL' returns the size a  function call bag  should have for a
-**  function call bag with <narg> arguments.
-**
-**  'FUNC_CALL', 'ARGI_CALL',  'NARG_SIZE_CALL',   and  'SIZE_NARG_CALL'  are
-**  defined in the declaration part of this package as follows
-**
-#define FUNC_CALL(call)         (* (ADDR_EXPR((call)) +0     ) )
-#define ARGI_CALL(call,i)       (* (ADDR_EXPR((call)) +0 +(i)) )
-#define NARG_SIZE_CALL(size)    (((size) / sizeof(Expr)) - 1)
-#define SIZE_NARG_CALL(narg)    (((narg) + 1) * sizeof(Expr))
-*/
-
-/****************************************************************************
-**
-*F  ARGI_INFO(<info>,<i>) . . .  <i>-th formal argument for an Info statement
-*F  NARG_SIZE_INFO(<size>)  . . . . number of arguments for an Info statement
-*F  SIZE_NARG_INFO(<narg>)  . . . . . . size of the bag for an Info statement
-**
-**  'ARGI_INFO'  returns  the expression that evaluates  to the <i>-th actual
-**  argument for the Info statement <info>.  This is a legal left
-**  value, so it can be used to set the expression too.
-**
-**  'NARG_SIZE_INFO' returns the number of  arguments in a function call from
-**  the size <size> of the function call bag (as returned by 'SIZE_STAT').
-**
-**  'SIZE_NARG_INFO' returns the size a  function call bag  should have for a
-**  function call bag with <narg> arguments.
-**  defined in the declaration part of this package as follows
-**
-#define ARGI_INFO(info,i)       (* (ADDR_STAT((info))+(i) -1) )
-#define NARG_SIZE_INFO(size)    ((size) / sizeof(Expr))
-#define SIZE_NARG_INFO(narg)    ((narg) * sizeof(Expr))
-*/
-
-
-
-/****************************************************************************
-**
 *V  CodeResult  . . . . . . . . . . . . . . . . . . . . . .  result of coding
 **
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was
 **  coded.
 */
-Obj             CodeResult;
+Obj CodeResult;
 
 
 /****************************************************************************
 **
 *V  StackStat . . . . . . . . . . . . . . . . . . . . . . .  statements stack
 *V  CountStat . . . . . . . . . . . . . . . number of statements on the stack
-*F  PushStat(<stat>)  . . . . . . . . . . . . . push statement onto the stack
+*F  PushStat( <stat> )  . . . . . . . . . . . . push statement onto the stack
 *F  PopStat() . . . . . . . . . . . . . . . . .  pop statement from the stack
 **
 **  'StackStat' is the stack of statements that have been coded.
@@ -619,11 +164,11 @@ Obj             CodeResult;
 **  'PopStat' returns the  top statement from the  statements  stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Bag             StackStat;
+Bag StackStat;
 
-Int             CountStat;
+Int CountStat;
 
-void            PushStat (
+void PushStat (
     Stat                stat )
 {
     /* there must be a stack, it must not be underfull or overfull         */
@@ -640,7 +185,7 @@ void            PushStat (
     CountStat++;
 }
 
-Stat            PopStat ( void )
+Stat PopStat ( void )
 {
     Stat                stat;
 
@@ -657,7 +202,7 @@ Stat            PopStat ( void )
     return stat;
 }
 
-Stat            PopSeqStat (
+Stat PopSeqStat (
     UInt                nr )
 {
     Stat                body;           /* sequence, result                */
@@ -696,7 +241,7 @@ Stat            PopSeqStat (
 **
 *V  StackExpr . . . . . . . . . . . . . . . . . . . . . . . expressions stack
 *V  CountExpr . . . . . . . . . . . . . .  number of expressions on the stack
-*F  PushExpr(<expr>)  . . . . . . . . . . . .  push expression onto the stack
+*F  PushExpr( <expr> )  . . . . . . . . . . .  push expression onto the stack
 *F  PopExpr() . . . . . . . . . . . . . . . .   pop expression from the stack
 **
 **  'StackExpr' is the stack of expressions that have been coded.
@@ -710,11 +255,11 @@ Stat            PopSeqStat (
 **  'PopExpr' returns the top expressions from the expressions stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Bag             StackExpr;
+Bag StackExpr;
 
-Int             CountExpr;
+Int CountExpr;
 
-void            PushExpr (
+void PushExpr (
     Expr                expr )
 {
     /* there must be a stack, it must not be underfull or overfull         */
@@ -731,7 +276,7 @@ void            PushExpr (
     CountExpr++;
 }
 
-Expr            PopExpr ( void )
+Expr PopExpr ( void )
 {
     Expr                expr;
 
@@ -751,12 +296,12 @@ Expr            PopExpr ( void )
 
 /****************************************************************************
 **
-*F  PushUnaryOp(<type>) . . . . . . . . . . . . . . . . . push unary operator
+*F  PushUnaryOp( <type> ) . . . . . . . . . . . . . . . . push unary operator
 **
 **  'PushUnaryOp' pushes a   unary  operator expression onto the   expression
 **  stack.  <type> is the type of the operator (currently only 'T_NOT').
 */
-void            PushUnaryOp (
+void PushUnaryOp (
     UInt                type )
 {
     Expr                unop;           /* unary operator, result          */
@@ -776,12 +321,12 @@ void            PushUnaryOp (
 
 /****************************************************************************
 **
-*F  PushBinaryOp(<type>)  . . . . . . . . . . . . . . .  push binary operator
+*F  PushBinaryOp( <type> )  . . . . . . . . . . . . . .  push binary operator
 **
 **  'PushBinaryOp' pushes a binary   operator expression onto  the expression
 **  stack.  <type> is the type of the operator.
 */
-void            PushBinaryOp (
+void PushBinaryOp (
     UInt                type )
 {
     Expr                binop;          /* binary operator, result         */
@@ -807,8 +352,14 @@ void            PushBinaryOp (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * *  coder functions * * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  CodeBegin() . . . . . . . . . . . . . . . . . . . . . . . start the coder
-*F  CodeEnd(<error>)  . . . . . . . . . . . . . . . . . . . .  stop the coder
+*F  CodeEnd( <error> )  . . . . . . . . . . . . . . . . . . .  stop the coder
 **
 **  'CodeBegin'  starts  the  coder.    It is   called  from  the   immediate
 **  interpreter   when he encounters  a construct  that it cannot immediately
@@ -821,9 +372,9 @@ void            PushBinaryOp (
 **
 **  ...only function expressions inbetween...
 */
-Bag             CodeLVars;
+Bag CodeLVars;
 
-void            CodeBegin ( void )
+void CodeBegin ( void )
 {
     /* the stacks must be empty                                            */
     assert( CountStat == 0 );
@@ -836,7 +387,7 @@ void            CodeBegin ( void )
     CodeResult = 0;
 }
 
-UInt            CodeEnd (
+UInt CodeEnd (
     UInt                error )
 {
     /* if everything went fine                                             */
@@ -871,7 +422,7 @@ UInt            CodeEnd (
 /****************************************************************************
 **
 *F  CodeFuncCallBegin() . . . . . . . . . . . . . . code function call, begin
-*F  CodeFuncCallEnd(<funccall>,<nr>)  . . . . . . . . code function call, end
+*F  CodeFuncCallEnd( <funccall>, <nr> ) . . . . . . . code function call, end
 **
 **  'CodeFuncCallBegin'  is an action to code  a function call.  It is called
 **  by the reader  when it encounters the parenthesis  '(', i.e., *after* the
@@ -883,11 +434,11 @@ UInt            CodeEnd (
 **  call,  and 0  if  this  is  a procedure  call.    <nr> is the   number of
 **  arguments.
 */
-void            CodeFuncCallBegin ( void )
+void CodeFuncCallBegin ( void )
 {
 }
 
-void            CodeFuncCallEnd (
+void CodeFuncCallEnd (
     UInt                funccall,
     UInt                nr )
 {
@@ -932,8 +483,8 @@ void            CodeFuncCallEnd (
 
 /****************************************************************************
 **
-*F  CodeFuncExprBegin(<narg>,<nloc>,<nams>) . code function expression, begin
-*F  CodeFuncExprEnd(<nr>) . . . . . . . . . . . code function expression, end
+*F  CodeFuncExprBegin( <narg>, <nloc>, <nams> ) . . code function expr, begin
+*F  CodeFuncExprEnd( <nr>, <mapsto> )   . . . . code function expression, end
 **
 **  'CodeFuncExprBegin'  is an action to code  a  function expression.  It is
 **  called when the reader encounters the beginning of a function expression.
@@ -945,7 +496,7 @@ void            CodeFuncCallEnd (
 **  called when the reader encounters the end of a function expression.  <nr>
 **  is the number of statements in the body of the function.
 */
-void            CodeFuncExprBegin (
+void CodeFuncExprBegin (
     Int                 narg,
     Int                 nloc,
     Obj                 nams )
@@ -990,7 +541,7 @@ void            CodeFuncExprBegin (
     assert( stat1 == FIRST_STAT_CURR_FUNC );
 }
 
-void            CodeFuncExprEnd (
+void CodeFuncExprEnd (
     UInt                nr,
     UInt                mapsto )
 {
@@ -1095,8 +646,8 @@ void            CodeFuncExprEnd (
 *F  CodeIfElif()  . . . . . . . . . . code if-statement, begin of elif-branch
 *F  CodeIfElse()  . . . . . . . . . . code if-statement, begin of else-branch
 *F  CodeIfBeginBody() . . . . . . . . . . .  code if-statement, begin of body
-*F  CodeIfEndBody(<nr>) . . . . . . . . . . .  code if-statement, end of body
-*F  CodeIfEnd(<nr>) . . . . . . . . . . . code if-statement, end of statement
+*F  CodeIfEndBody( <nr> ) . . . . . . . . . .  code if-statement, end of body
+*F  CodeIfEnd( <nr> ) . . . . . . . . . . code if-statement, end of statement
 **
 **  'CodeIfBegin' is an  action to code an  if-statement.  It is called  when
 **  the reader encounters the 'if', i.e., *before* the condition is read.
@@ -1119,31 +670,31 @@ void            CodeFuncExprEnd (
 **  reader encounters the end of the statement.   <nr> is the number of 'if',
 **  'elif', or 'else' branches.
 */
-void            CodeIfBegin ( void )
+void CodeIfBegin ( void )
 {
 }
 
-void            CodeIfElif ( void )
+void CodeIfElif ( void )
 {
 }
 
-void            CodeIfElse ( void )
+void CodeIfElse ( void )
 {
     CodeTrueExpr();
 }
 
-void            CodeIfBeginBody ( void )
+void CodeIfBeginBody ( void )
 {
 }
 
-void            CodeIfEndBody (
+void CodeIfEndBody (
     UInt                nr )
 {
     /* collect the statements in a statement sequence if necessary         */
     PushStat( PopSeqStat( nr ) );
 }
 
-void            CodeIfEnd (
+void CodeIfEnd (
     UInt                nr )
 {
     Stat                stat;           /* if-statement, result            */
@@ -1191,7 +742,7 @@ void            CodeIfEnd (
 *F  CodeForBegin()  . . . . . . . . .  code for-statement, begin of statement
 *F  CodeForIn() . . . . . . . . . . . . . . . . code for-statement, 'in' read
 *F  CodeForBeginBody()  . . . . . . . . . . code for-statement, begin of body
-*F  CodeForEndBody(<nr>)  . . . . . . . . . . code for-statement, end of body
+*F  CodeForEndBody( <nr> )  . . . . . . . . . code for-statement, end of body
 *F  CodeForEnd()  . . . . . . . . . . .  code for-statement, end of statement
 **
 **  'CodeForBegin' is  an action to code  a for-statement.  It is called when
@@ -1213,19 +764,19 @@ void            CodeIfEnd (
 **  reader encounters  the end of   the  statement, i.e., immediately   after
 **  'CodeForEndBody'.
 */
-void            CodeForBegin ( void )
+void CodeForBegin ( void )
 {
 }
 
-void            CodeForIn ( void )
+void CodeForIn ( void )
 {
 }
 
-void            CodeForBeginBody ( void )
+void CodeForBeginBody ( void )
 {
 }
 
-void            CodeForEndBody (
+void CodeForEndBody (
     UInt                nr )
 {
     Stat                stat;           /* for-statement, result           */
@@ -1275,7 +826,7 @@ void            CodeForEndBody (
     PushStat( stat );
 }
 
-void            CodeForEnd ( void )
+void CodeForEnd ( void )
 {
 }
 
@@ -1284,7 +835,7 @@ void            CodeForEnd ( void )
 **
 *F  CodeWhileBegin()  . . . . . . .  code while-statement, begin of statement
 *F  CodeWhileBeginBody()  . . . . . . . . code while-statement, begin of body
-*F  CodeWhileEndBody(<nr>)  . . . . . . . . code while-statement, end of body
+*F  CodeWhileEndBody( <nr> )  . . . . . . . code while-statement, end of body
 *F  CodeWhileEnd()  . . . . . . . . .  code while-statement, end of statement
 **
 **  'CodeWhileBegin'  is an action to  code a while-statement.   It is called
@@ -1355,7 +906,7 @@ void CodeWhileEnd ( void )
 **
 *F  CodeRepeatBegin() . . . . . . . code repeat-statement, begin of statement
 *F  CodeRepeatBeginBody() . . . . . . .  code repeat-statement, begin of body
-*F  CodeRepeatEndBody(<nr>) . . . . . . .  code repeat-statement, end of body
+*F  CodeRepeatEndBody( <nr> ) . . . . . .  code repeat-statement, end of body
 *F  CodeRepeatEnd() . . . . . . . . . code repeat-statement, end of statement
 **
 **  'CodeRepeatBegin' is an action to code a  repeat-statement.  It is called
@@ -1460,7 +1011,7 @@ void            CodeBreak ( void )
 **  called when the reader encounters a 'return <expr>;', but *after* reading
 **  the expression <expr>.
 */
-void            CodeReturnObj ( void )
+void CodeReturnObj ( void )
 {
     Stat                stat;           /* return-statement, result        */
     Expr                expr;           /* expression                      */
@@ -1484,7 +1035,7 @@ void            CodeReturnObj ( void )
 **  'CodeReturnVoid' is the action  to  code a return-void-statement.   It is
 **  called when the reader encounters a 'return;'.
 */
-void            CodeReturnVoid ( void )
+void CodeReturnVoid ( void )
 {
     Stat                stat;           /* return-statement, result        */
 
@@ -1522,73 +1073,74 @@ void            CodeReturnVoid ( void )
 **  'CodePow' are the actions to   code the respective operator  expressions.
 **  They are called by the reader *after* *both* operands are read.
 */
-void            CodeOrL ( void )
+void CodeOrL ( void )
 {
 }
 
-void            CodeOr ( void )
+void CodeOr ( void )
 {
     PushBinaryOp( T_OR );
 }
 
-void            CodeAndL ( void )
+void CodeAndL ( void )
 {
 }
 
-void            CodeAnd ( void )
+void CodeAnd ( void )
 {
     PushBinaryOp( T_AND );
 }
 
-void            CodeNot ( void )
+void CodeNot ( void )
 {
     PushUnaryOp( T_NOT );
 }
 
-void            CodeEq ( void )
+void CodeEq ( void )
 {
     PushBinaryOp( T_EQ );
 }
 
-void            CodeNe ( void )
+void CodeNe ( void )
 {
     PushBinaryOp( T_NE );
 }
 
-void            CodeLt ( void )
+void CodeLt ( void )
 {
     PushBinaryOp( T_LT );
 }
 
-void            CodeGe ( void )
+void CodeGe ( void )
 {
     PushBinaryOp( T_GE );
 }
 
-void            CodeGt ( void )
+void CodeGt ( void )
 {
     PushBinaryOp( T_GT );
 }
 
-void            CodeLe ( void )
+void CodeLe ( void )
 {
     PushBinaryOp( T_LE );
 }
 
-void            CodeIn ( void )
+void CodeIn ( void )
 {
     PushBinaryOp( T_IN );
 }
 
-void            CodeSum ( void )
+void CodeSum ( void )
 {
     PushBinaryOp( T_SUM );
 }
 
-void            CodeAInv ( void )
+void CodeAInv ( void )
 {
     Expr                expr;
     Int                 i;
+
     expr = PopExpr();
     if ( IS_INTEXPR(expr) && INT_INTEXPR(expr) != -(1L<<28) ) {
         i = INT_INTEXPR(expr);
@@ -1600,32 +1152,32 @@ void            CodeAInv ( void )
     }
 }
 
-void            CodeDiff ( void )
+void CodeDiff ( void )
 {
     PushBinaryOp( T_DIFF );
 }
 
-void            CodeProd ( void )
+void CodeProd ( void )
 {
     PushBinaryOp( T_PROD );
 }
 
-void            CodeInv ( void )
+void CodeInv ( void )
 {
     PushUnaryOp( T_INV );
 }
 
-void            CodeQuo ( void )
+void CodeQuo ( void )
 {
     PushBinaryOp( T_QUO );
 }
 
-void            CodeMod ( void )
+void CodeMod ( void )
 {
     PushBinaryOp( T_MOD );
 }
 
-void            CodePow ( void )
+void CodePow ( void )
 {
     PushBinaryOp( T_POW );
 }
@@ -1633,12 +1185,12 @@ void            CodePow ( void )
 
 /****************************************************************************
 **
-*F  CodeIntExpr(<str>)  . . . . . . . . . . . code literal integer expression
+*F  CodeIntExpr( <str> )  . . . . . . . . . . code literal integer expression
 **
 **  'CodeIntExpr' is the action to code a literal integer expression.  <str>
 **  is the integer as a (null terminated) C character string.
 */
-void            CodeIntExpr (
+void CodeIntExpr (
     Char *              str )
 {
     Expr                expr;           /* expression, result              */
@@ -1711,7 +1263,7 @@ void            CodeIntExpr (
 **
 **  'CodeTrueExpr' is the action to code a literal true expression.
 */
-extern  void            CodeTrueExpr ( void )
+void CodeTrueExpr ( void )
 {
     PushExpr( NewExpr( T_TRUE_EXPR, 0L ) );
 }
@@ -1723,7 +1275,7 @@ extern  void            CodeTrueExpr ( void )
 **
 **  'CodeFalseExpr' is the action to code a literal false expression.
 */
-extern  void            CodeFalseExpr ( void )
+void CodeFalseExpr ( void )
 {
     PushExpr( NewExpr( T_FALSE_EXPR, 0L ) );
 }
@@ -1731,12 +1283,12 @@ extern  void            CodeFalseExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeCharExpr(<chr>) . . . . . . . . . code a literal character expression
+*F  CodeCharExpr( <chr> ) . . . . . . . . code a literal character expression
 **
 **  'CodeCharExpr'  is the action  to  code a  literal  character expression.
 **  <chr> is the C character.
 */
-void            CodeCharExpr (
+void CodeCharExpr (
     Char                chr )
 {
     Expr                litr;           /* literal expression, result      */
@@ -1752,8 +1304,8 @@ void            CodeCharExpr (
 
 /****************************************************************************
 **
-*F  CodePermCycle(<nrx>,<nrc>)  . . . . . code literal permutation expression
-*F  CodePerm(<nrc>) . . . . . . . . . . . code literal permutation expression
+*F  CodePermCycle( <nrx>, <nrc> ) . . . . code literal permutation expression
+*F  CodePerm( <nrc> ) . . . . . . . . . . code literal permutation expression
 **
 **  'CodePermCycle'  is an action to code  a  literal permutation expression.
 **  It is called when one cycles is read completely.  <nrc>  is the number of
@@ -1764,7 +1316,7 @@ void            CodeCharExpr (
 **  called when  the permutation is read completely.   <nrc> is the number of
 **  cycles.
 */
-void            CodePermCycle (
+void CodePermCycle (
     UInt                nrx,
     UInt                nrc )
 {
@@ -1785,7 +1337,7 @@ void            CodePermCycle (
     PushExpr( cycle );
 }
 
-void            CodePerm (
+void CodePerm (
     UInt                nrc )
 {
     Expr                perm;           /* permutation, result             */
@@ -1809,28 +1361,28 @@ void            CodePerm (
 
 /****************************************************************************
 **
-*F  CodeListExprBegin(<top>)  . . . . . . . . . . code list expression, begin
-*F  CodeListExprBeginElm(<pos>) . . . . . code list expression, begin element
+*F  CodeListExprBegin( <top> )  . . . . . . . . . code list expression, begin
+*F  CodeListExprBeginElm( <pos> ) . . . . code list expression, begin element
 *F  CodeListExprEndElm()  . . . . . . .  .. code list expression, end element
-*F  CodeListExprEnd(<nr>,<range>,<top>,<tilde>) . . code list expression, end
+*F  CodeListExprEnd( <nr>, <range>, <top>, <tilde> )  . . code list expr, end
 */
-void            CodeListExprBegin (
+void CodeListExprBegin (
     UInt                top )
 {
 }
 
-void            CodeListExprBeginElm (
+void CodeListExprBeginElm (
     UInt                pos )
 {
     /* push the literal integer value                                      */
     PushExpr( INTEXPR_INT(pos) );
 }
 
-void            CodeListExprEndElm ( void )
+void CodeListExprEndElm ( void )
 {
 }
 
-void            CodeListExprEnd (
+void CodeListExprEnd (
     UInt                nr,
     UInt                range,
     UInt                top,
@@ -1877,9 +1429,9 @@ void            CodeListExprEnd (
 
 /****************************************************************************
 **
-*F  CodeStringExpr(<str>) . . . . . . . . . .  code literal string expression
+*F  CodeStringExpr( <str> ) . . . . . . . . .  code literal string expression
 */
-void            CodeStringExpr (
+void CodeStringExpr (
     Char *              str )
 {
     Expr                string;         /* string, result                  */
@@ -1897,25 +1449,25 @@ void            CodeStringExpr (
 
 /****************************************************************************
 **
-*F  CodeRecExprBegin(<top>) . . . . . . . . . . . . . code record expr, begin
-*F  CodeRecExprBeginElmName(<rnam>) . . . . . code record expr, begin element
+*F  CodeRecExprBegin( <top> ) . . . . . . . . . . . . code record expr, begin
+*F  CodeRecExprBeginElmName( <rnam> ) . . . . code record expr, begin element
 *F  CodeRecExprBeginElmExpr() . . . . . . . . code record expr, begin element
 *F  CodeRecExprEndElmExpr() . . . . . . . . . . code record expr, end element
-*F  CodeRecExprEnd(<nr>,<top>,<tilde>)  . . . . . . . . code record expr, end
+*F  CodeRecExprEnd( <nr>, <top>, <tilde> )  . . . . . . code record expr, end
 */
-void            CodeRecExprBegin (
+void CodeRecExprBegin (
     UInt                top )
 {
 }
 
-void            CodeRecExprBeginElmName (
+void CodeRecExprBeginElmName (
     UInt                rnam )
 {
     /* push the record name as integer expressions                         */
     PushExpr( INTEXPR_INT( rnam ) );
 }
 
-void            CodeRecExprBeginElmExpr ( void )
+void CodeRecExprBeginElmExpr ( void )
 {
     Expr                expr;
 
@@ -1929,11 +1481,11 @@ void            CodeRecExprBeginElmExpr ( void )
     }
 }
 
-void            CodeRecExprEndElm ( void )
+void CodeRecExprEndElm ( void )
 {
 }
 
-void            CodeRecExprEnd (
+void CodeRecExprEnd (
     UInt                nr,
     UInt                top,
     UInt                tilde )
@@ -1966,7 +1518,7 @@ void            CodeRecExprEnd (
 
 /****************************************************************************
 **
-*F  CodeAssLVar(<lvar>) . . . . . . . . . . . . . .  code assignment to local
+*F  CodeAssLVar( <lvar> ) . . . . . . . . . . . . .  code assignment to local
 **
 **  'CodeAssLVar' is the action  to code an  assignment to the local variable
 **  <lvar> (given  by its  index).  It is   called by the  reader *after* the
@@ -1976,7 +1528,7 @@ void            CodeRecExprEnd (
 **  subexpressions.  The  *first* is the local variable,  the *second* is the
 **  right hand side expression.
 */
-void            CodeAssLVar (
+void CodeAssLVar (
     UInt                lvar )
 {
     Stat                ass;            /* assignment, result              */
@@ -2001,7 +1553,12 @@ void            CodeAssLVar (
     PushStat( ass );
 }
 
-void            CodeUnbLVar (
+
+/****************************************************************************
+**
+*F  CodeUnbLVar( <lvar> ) . . . . . . . . . . .  code unbind a local variable
+*/
+void CodeUnbLVar (
     UInt                lvar )
 {
     Stat                ass;            /* unbind, result                  */
@@ -2019,7 +1576,7 @@ void            CodeUnbLVar (
 
 /****************************************************************************
 **
-*F  CodeRefLVar(<lvar>) . . . . . . . . . . . . . . . code reference to local
+*F  CodeRefLVar( <lvar> ) . . . . . . . . . . . . . . code reference to local
 **
 **  'CodeRefLVar' is  the action  to code a  reference  to the local variable
 **  <lvar> (given  by its   index).  It is   called by  the  reader  when  it
@@ -2028,7 +1585,7 @@ void            CodeUnbLVar (
 **  A   reference to   a local  variable    is represented immediately   (see
 **  'REFLVAR_LVAR').
 */
-void            CodeRefLVar (
+void CodeRefLVar (
     UInt                lvar )
 {
     Expr                ref;            /* reference, result               */
@@ -2040,7 +1597,12 @@ void            CodeRefLVar (
     PushExpr( ref );
 }
 
-void            CodeIsbLVar (
+
+/****************************************************************************
+**
+*F  CodeIsbLVar( <lvar> ) . . . . . . . . . . code bound local variable check
+*/
+void CodeIsbLVar (
     UInt                lvar )
 {
     Expr                ref;            /* isbound, result                 */
@@ -2058,7 +1620,7 @@ void            CodeIsbLVar (
 
 /****************************************************************************
 **
-*F  CodeAssHVar(<hvar>) . . . . . . . . . . . . . . code assignment to higher
+*F  CodeAssHVar( <hvar> ) . . . . . . . . . . . . . code assignment to higher
 **
 **  'CodeAssHVar' is the action to code an  assignment to the higher variable
 **  <hvar> (given by its  level  and  index).  It  is  called by  the  reader
@@ -2068,7 +1630,7 @@ void            CodeIsbLVar (
 **  two subexpressions.  The *first* is the higher  variable, the *second* is
 **  the right hand side expression.
 */
-void            CodeAssHVar (
+void CodeAssHVar (
     UInt                hvar )
 {
     Stat                ass;            /* assignment, result              */
@@ -2088,7 +1650,12 @@ void            CodeAssHVar (
     PushStat( ass );
 }
 
-void            CodeUnbHVar (
+
+/****************************************************************************
+**
+*F  CodeUnbHVar( <hvar> ) . . . . . . . . . . . . . . . code unbind of higher
+*/
+void CodeUnbHVar (
     UInt                hvar )
 {
     Stat                ass;            /* unbind, result                  */
@@ -2106,7 +1673,7 @@ void            CodeUnbHVar (
 
 /****************************************************************************
 **
-*F  CodeRefHVar(<hvar>) . . . . . . . . . . . . . .  code reference to higher
+*F  CodeRefHVar( <hvar> ) . . . . . . . . . . . . .  code reference to higher
 **
 **  'CodeRefHVar' is the  action to code  a reference to the higher  variable
 **  <hvar> (given by its level  and index).  It is  called by the reader when
@@ -2115,7 +1682,7 @@ void            CodeUnbHVar (
 **  A reference to a higher variable is represented by an expression bag with
 **  one subexpression.  This is the higher variable.
 */
-void            CodeRefHVar (
+void CodeRefHVar (
     UInt                hvar )
 {
     Expr                ref;            /* reference, result               */
@@ -2130,7 +1697,12 @@ void            CodeRefHVar (
     PushExpr( ref );
 }
 
-void            CodeIsbHVar (
+
+/****************************************************************************
+**
+*F  CodeIsbHVar( <hvar> ) . . . . . . . . . . . . . . code bound higher check
+*/
+void CodeIsbHVar (
     UInt                hvar )
 {
     Expr                ref;            /* isbound, result                 */
@@ -2148,7 +1720,7 @@ void            CodeIsbHVar (
 
 /****************************************************************************
 **
-*F  CodeAssGVar(<gvar>) . . . . . . . . . . . . . . code assignment to global
+*F  CodeAssGVar( <gvar> ) . . . . . . . . . . . . . code assignment to global
 **
 **  'CodeAssGVar' is the action to code  an assignment to the global variable
 **  <gvar>.  It is  called   by  the reader    *after* the right   hand  side
@@ -2158,7 +1730,7 @@ void            CodeIsbHVar (
 **  two subexpressions.  The *first* is the  global variable, the *second* is
 **  the right hand side expression.
 */
-void            CodeAssGVar (
+void CodeAssGVar (
     UInt                gvar )
 {
     Stat                ass;            /* assignment, result              */
@@ -2178,7 +1750,12 @@ void            CodeAssGVar (
     PushStat( ass );
 }
 
-void            CodeUnbGVar (
+
+/****************************************************************************
+**
+*F  CodeUnbGVar( <gvar> ) . . . . . . . . . . . . . . . code unbind of global
+*/
+void CodeUnbGVar (
     UInt                gvar )
 {
     Stat                ass;            /* unbind, result                  */
@@ -2196,7 +1773,7 @@ void            CodeUnbGVar (
 
 /****************************************************************************
 **
-*F  CodeRefGVar(<gvar>) . . . . . . . . . . . . . .  code reference to global
+*F  CodeRefGVar( <gvar> ) . . . . . . . . . . . . .  code reference to global
 **
 **  'CodeRefGVar' is the  action to code a  reference to  the global variable
 **  <gvar>.  It is called by the reader when it encounters a global variable.
@@ -2204,7 +1781,7 @@ void            CodeUnbGVar (
 **  A reference to a global variable is represented by an expression bag with
 **  one subexpression.  This is the global variable.
 */
-void            CodeRefGVar (
+void CodeRefGVar (
     UInt                gvar )
 {
     Expr                ref;            /* reference, result               */
@@ -2219,7 +1796,12 @@ void            CodeRefGVar (
     PushExpr( ref );
 }
 
-void            CodeIsbGVar (
+
+/****************************************************************************
+**
+*F  CodeIsbGVar( <gvar> ) . . . . . . . . . . . . . . code bound global check
+*/
+void CodeIsbGVar (
     UInt                gvar )
 {
     Expr                ref;            /* isbound, result                 */
@@ -2239,10 +1821,10 @@ void            CodeIsbGVar (
 **
 *F  CodeAssList() . . . . . . . . . . . . . . . . . code assignment to a list
 *F  CodeAsssList()  . . . . . . . . . . .  code multiple assignment to a list
-*F  CodeAssListLevel(<level>) . . . . . . .  code assignment to several lists
-*F  CodeAsssListLevel(<level>)  . . code multiple assignment to several lists
+*F  CodeAssListLevel( <level> ) . . . . . .  code assignment to several lists
+*F  CodeAsssListLevel( <level> )  . code multiple assignment to several lists
 */
-void            CodeAssListUniv (
+void CodeAssListUniv (
     Stat                ass )
 {
     Expr                list;           /* list expression                 */
@@ -2265,7 +1847,7 @@ void            CodeAssListUniv (
     PushStat( ass );
 }
 
-void            CodeAssList ( void )
+void CodeAssList ( void )
 {
     Stat                ass;            /* assignment, result              */
 
@@ -2276,7 +1858,7 @@ void            CodeAssList ( void )
     CodeAssListUniv( ass );
 }
 
-void            CodeAsssList ( void )
+void CodeAsssList ( void )
 {
     Stat                ass;            /* assignment, result              */
 
@@ -2287,7 +1869,7 @@ void            CodeAsssList ( void )
     CodeAssListUniv( ass );
 }
 
-void            CodeAssListLevel (
+void CodeAssListLevel (
     UInt                level )
 {
     Stat                ass;            /* assignment, result              */
@@ -2300,7 +1882,7 @@ void            CodeAssListLevel (
     CodeAssListUniv( ass );
 }
 
-void            CodeAsssListLevel (
+void CodeAsssListLevel (
     UInt                level )
 {
     Stat                ass;            /* assignment, result              */
@@ -2313,7 +1895,12 @@ void            CodeAsssListLevel (
     CodeAssListUniv( ass );
 }
 
-void            CodeUnbList ( void )
+
+/****************************************************************************
+**
+*F  CodeUnbList() . . . . . . . . . . . . . . .  code unbind of list position
+*/
+void CodeUnbList ( void )
 {
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
@@ -2339,10 +1926,10 @@ void            CodeUnbList ( void )
 **
 *F  CodeElmList() . . . . . . . . . . . . . . . . .  code selection of a list
 *F  CodeElmsList()  . . . . . . . . . . . . code multiple selection of a list
-*F  CodeElmListLevel(<level>) . . . . . . . . code selection of several lists
-*F  CodeElmsListLevel(<level>)  . .  code multiple selection of several lists
+*F  CodeElmListLevel( <level> ) . . . . . . . code selection of several lists
+*F  CodeElmsListLevel( <level> )  .  code multiple selection of several lists
 */
-void            CodeElmListUniv (
+void CodeElmListUniv (
     Expr                ref )
 {
     Expr                list;           /* list expression                 */
@@ -2360,7 +1947,7 @@ void            CodeElmListUniv (
     PushExpr( ref );
 }
 
-void            CodeElmList ( void )
+void CodeElmList ( void )
 {
     Expr                ref;            /* reference, result               */
 
@@ -2371,7 +1958,7 @@ void            CodeElmList ( void )
     CodeElmListUniv( ref );
 }
 
-void            CodeElmsList ( void )
+void CodeElmsList ( void )
 {
     Expr                ref;            /* reference, result               */
 
@@ -2382,7 +1969,7 @@ void            CodeElmsList ( void )
     CodeElmListUniv( ref );
 }
 
-void            CodeElmListLevel (
+void CodeElmListLevel (
     UInt                level )
 {
     Expr                ref;            /* reference, result               */
@@ -2395,7 +1982,7 @@ void            CodeElmListLevel (
     CodeElmListUniv( ref );
 }
 
-void            CodeElmsListLevel (
+void CodeElmsListLevel (
     UInt                level )
 {
     Expr                ref;            /* reference, result               */
@@ -2408,7 +1995,12 @@ void            CodeElmsListLevel (
     CodeElmListUniv( ref );
 }
 
-void            CodeIsbList ( void )
+
+/****************************************************************************
+**
+*F  CodeIsbList() . . . . . . . . . . . . . .  code bound list position check
+*/
+void CodeIsbList ( void )
 {
     Expr                ref;            /* isbound, result                 */
     Expr                list;           /* list expression                 */
@@ -2432,7 +2024,7 @@ void            CodeIsbList ( void )
 
 /****************************************************************************
 **
-*F  CodeAssRecName(<rnam>)  . . . . . . . . . . . code assignment to a record
+*F  CodeAssRecName( <rnam> )  . . . . . . . . . . code assignment to a record
 *F  CodeAssRecExpr()  . . . . . . . . . . . . . . code assignment to a record
 */
 void            CodeAssRecName (
@@ -2530,10 +2122,10 @@ void            CodeUnbRecExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeElmRecName(<rnam>)  . . . . . . . . . . .  code selection of a record
+*F  CodeElmRecName( <rnam> )  . . . . . . . . . .  code selection of a record
 *F  CodeElmRecExpr()  . . . . . . . . . . . . . .  code selection of a record
 */
-void            CodeElmRecName (
+void CodeElmRecName (
     UInt                rnam )
 {
     Expr                expr;           /* reference, result               */
@@ -2553,7 +2145,7 @@ void            CodeElmRecName (
     PushExpr( expr );
 }
 
-void            CodeElmRecExpr ( void )
+void CodeElmRecExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
@@ -2574,7 +2166,12 @@ void            CodeElmRecExpr ( void )
     PushExpr( expr );
 }
 
-void            CodeIsbRecName (
+
+/****************************************************************************
+**
+*F  CodeIsbRecName( <rnam> )  . . . . . . . . . . . code bound rec name check
+*/
+void CodeIsbRecName (
     UInt                rnam )
 {
     Expr                expr;           /* isbound, result                 */
@@ -2594,7 +2191,12 @@ void            CodeIsbRecName (
     PushExpr( expr );
 }
 
-void            CodeIsbRecExpr ( void )
+
+/****************************************************************************
+**
+*F  CodeIsbRecExpr()  . . . . . . . . . . . . . . . code bound rec expr check
+*/
+void CodeIsbRecExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
@@ -2620,10 +2222,10 @@ void            CodeIsbRecExpr ( void )
 **
 *F  CodeAssPosObj() . . . . . . . . . . . . . . . . code assignment to a list
 *F  CodeAsssPosObj()  . . . . . . . . . .  code multiple assignment to a list
-*F  CodeAssPosObjLevel(<level>) . . . . . .  code assignment to several lists
-*F  CodeAsssPosObjLevel(<level>)  . code multiple assignment to several lists
+*F  CodeAssPosObjLevel( <level> ) . . . . .  code assignment to several lists
+*F  CodeAsssPosObjLevel( <level> )  code multiple assignment to several lists
 */
-void            CodeAssPosObjUniv (
+void CodeAssPosObjUniv (
     Stat                ass )
 {
     Expr                list;           /* list expression                 */
@@ -2646,7 +2248,7 @@ void            CodeAssPosObjUniv (
     PushStat( ass );
 }
 
-void            CodeAssPosObj ( void )
+void CodeAssPosObj ( void )
 {
     Stat                ass;            /* assignment, result              */
 
@@ -2657,7 +2259,7 @@ void            CodeAssPosObj ( void )
     CodeAssPosObjUniv( ass );
 }
 
-void            CodeAsssPosObj ( void )
+void CodeAsssPosObj ( void )
 {
     Stat                ass;            /* assignment, result              */
 
@@ -2668,7 +2270,7 @@ void            CodeAsssPosObj ( void )
     CodeAssPosObjUniv( ass );
 }
 
-void            CodeAssPosObjLevel (
+void CodeAssPosObjLevel (
     UInt                level )
 {
     Stat                ass;            /* assignment, result              */
@@ -2681,7 +2283,7 @@ void            CodeAssPosObjLevel (
     CodeAssPosObjUniv( ass );
 }
 
-void            CodeAsssPosObjLevel (
+void CodeAsssPosObjLevel (
     UInt                level )
 {
     Stat                ass;            /* assignment, result              */
@@ -2694,7 +2296,12 @@ void            CodeAsssPosObjLevel (
     CodeAssPosObjUniv( ass );
 }
 
-void            CodeUnbPosObj ( void )
+
+/****************************************************************************
+**
+*F  CodeUnbPosObj() . . . . . . . . . . . . . . . . .  code unbind pos object
+*/
+void CodeUnbPosObj ( void )
 {
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
@@ -2720,10 +2327,10 @@ void            CodeUnbPosObj ( void )
 **
 *F  CodeElmPosObj() . . . . . . . . . . . . . . . .  code selection of a list
 *F  CodeElmsPosObj()  . . . . . . . . . . . code multiple selection of a list
-*F  CodeElmPosObjLevel(<level>) . . . . . . . code selection of several lists
-*F  CodeElmsPosObjLevel(<level>)  .  code multiple selection of several lists
+*F  CodeElmPosObjLevel( <level> ) . . . . . . code selection of several lists
+*F  CodeElmsPosObjLevel( <level> )   code multiple selection of several lists
 */
-void            CodeElmPosObjUniv (
+void CodeElmPosObjUniv (
     Expr                ref )
 {
     Expr                list;           /* list expression                 */
@@ -2741,7 +2348,7 @@ void            CodeElmPosObjUniv (
     PushExpr( ref );
 }
 
-void            CodeElmPosObj ( void )
+void CodeElmPosObj ( void )
 {
     Expr                ref;            /* reference, result               */
 
@@ -2752,7 +2359,7 @@ void            CodeElmPosObj ( void )
     CodeElmPosObjUniv( ref );
 }
 
-void            CodeElmsPosObj ( void )
+void CodeElmsPosObj ( void )
 {
     Expr                ref;            /* reference, result               */
 
@@ -2763,7 +2370,7 @@ void            CodeElmsPosObj ( void )
     CodeElmPosObjUniv( ref );
 }
 
-void            CodeElmPosObjLevel (
+void CodeElmPosObjLevel (
     UInt                level )
 {
     Expr                ref;            /* reference, result               */
@@ -2776,7 +2383,7 @@ void            CodeElmPosObjLevel (
     CodeElmPosObjUniv( ref );
 }
 
-void            CodeElmsPosObjLevel (
+void CodeElmsPosObjLevel (
     UInt                level )
 {
     Expr                ref;            /* reference, result               */
@@ -2789,7 +2396,12 @@ void            CodeElmsPosObjLevel (
     CodeElmPosObjUniv( ref );
 }
 
-void            CodeIsbPosObj ( void )
+
+/****************************************************************************
+**
+*F  CodeIsbPosObj() . . . . . . . . . . . . . . . code bound pos object check
+*/
+void CodeIsbPosObj ( void )
 {
     Expr                ref;            /* isbound, result                 */
     Expr                list;           /* list expression                 */
@@ -2813,7 +2425,7 @@ void            CodeIsbPosObj ( void )
 
 /****************************************************************************
 **
-*F  CodeAssComObjName(<rnam>) . . . . . . . . . . code assignment to a record
+*F  CodeAssComObjName( <rnam> ) . . . . . . . . . code assignment to a record
 *F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a record
 */
 void            CodeAssComObjName (
@@ -2911,10 +2523,10 @@ void            CodeUnbComObjExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeElmComObjName(<rnam>) . . . . . . . . . .  code selection of a record
+*F  CodeElmComObjName( <rnam> ) . . . . . . . . .  code selection of a record
 *F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a record
 */
-void            CodeElmComObjName (
+void CodeElmComObjName (
     UInt                rnam )
 {
     Expr                expr;           /* reference, result               */
@@ -2934,7 +2546,7 @@ void            CodeElmComObjName (
     PushExpr( expr );
 }
 
-void            CodeElmComObjExpr ( void )
+void CodeElmComObjExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
@@ -2955,7 +2567,12 @@ void            CodeElmComObjExpr ( void )
     PushExpr( expr );
 }
 
-void            CodeIsbComObjName (
+
+/****************************************************************************
+**
+*F  CodeIsbComObjName( <rname> )  . . . . .  code bound com object name check
+*/
+void CodeIsbComObjName (
     UInt                rnam )
 {
     Expr                expr;           /* isbound, result                 */
@@ -2975,7 +2592,11 @@ void            CodeIsbComObjName (
     PushExpr( expr );
 }
 
-void            CodeIsbComObjExpr ( void )
+/****************************************************************************
+**
+*F  CodeIsbComObjExpr()	. . . . . . . . . .  code bound com object expr check
+*/
+void CodeIsbComObjExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
@@ -3008,15 +2629,15 @@ void            CodeIsbComObjExpr ( void )
 **
 **  Only CodeInfoEnd actually does anything
 */
-void            CodeInfoBegin ( void )
+void CodeInfoBegin ( void )
 {
 }
 
-void            CodeInfoMiddle ( void )
+void CodeInfoMiddle ( void )
 {
 }
 
-void            CodeInfoEnd   (
+void CodeInfoEnd   (
     UInt                narg )
 {
     Stat                stat;           /* we build the statement here     */
@@ -3047,19 +2668,19 @@ void            CodeInfoEnd   (
 **
 **  Only the End functions actually do anything
 */
-void            CodeAssertBegin ( void )
+void CodeAssertBegin ( void )
 {
 }
 
-void            CodeAssertAfterLevel ( void )
+void CodeAssertAfterLevel ( void )
 {
 }
 
-void            CodeAssertAfterCondition ( void )
+void CodeAssertAfterCondition ( void )
 {
 }
 
-void            CodeAssertEnd2Args ( void )
+void CodeAssertEnd2Args ( void )
 {
     Stat                stat;           /* we build the statement here     */
 
@@ -3071,7 +2692,7 @@ void            CodeAssertEnd2Args ( void )
     PushStat( stat );
 }
 
-void            CodeAssertEnd3Args ( void )
+void CodeAssertEnd3Args ( void )
 {
     Stat                stat;           /* we build the statement here     */
 
@@ -3087,6 +2708,13 @@ void            CodeAssertEnd3Args ( void )
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  InitCode()  . . . . . . . . . . . . . . . .  initialize the coder package
 **
 **  'InitCode' initializes the coder package.
@@ -3110,6 +2738,7 @@ void            InitCode ( void )
 
 /****************************************************************************
 **
+
 *E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

@@ -192,12 +192,9 @@ gap> Coefficients( c, [ 1, 2, 3, 4 ] );
 gap> BasisOfDomain( Integers^2 );
 CanonicalBasis( ( Integers^2 ) )
 
-gap> STOP_TEST( "modfree.tst", 14000000 );
+gap> STOP_TEST( "modfree.tst", 23070000 );
 
 #############################################################################
 ##
 #E  modfree.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

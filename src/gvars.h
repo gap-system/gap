@@ -125,7 +125,7 @@ extern  Char *          NameGVar (
 **  'GVarName' returns the global variable with the name <name>.
 */
 extern  UInt            GVarName (
-            Char *              name );
+            SYS_CONST Char *              name );
 
 
 /****************************************************************************
@@ -187,6 +187,14 @@ extern UInt iscomplete_gvar (
 extern UInt completion_gvar (
             Char *              name,
             UInt                len );
+
+
+/****************************************************************************
+**
+*F  MakeReadOnlyGVar( <gvar> )  . . . . . .  make a global variable read only
+*/
+extern void MakeReadOnlyGVar (
+    UInt                gvar );
 
 
 /****************************************************************************

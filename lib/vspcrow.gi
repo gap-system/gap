@@ -1745,6 +1745,20 @@ InstallMethod( PositionCanonical, true,
     return num;
 end );
 
+#############################################################################
+##
+#F  OnLines( <vec>, <g> ) . . . . . . . .  for operation on projective points
+##
+OnLines := function( vec, g )
+    local c;
+    vec:= vec * g;
+    c:= DepthVector( vec );
+    if c <= Length( vec ) then
+      vec:= vec / vec[c];
+    fi;
+    return vec;
+    end;
+
 #T mutable bases for Gaussian row and matrix spaces should allow 'SiftedVector'!
 #T mutable bases for Gaussian row and matrix spaces are always semi-ech.
 #T (note that we construct a mutable basis only if we want to do successive

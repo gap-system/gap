@@ -181,7 +181,7 @@ end;
 ##
 #F  FrobeniusCharacterValue( <value>, <p> )
 ##
-##  returns the value of the Frobenius character corresponding to the Brauer
+##  is the value of the Frobenius character corresponding to the Brauer
 ##  character value <value>, where <p> is the characteristic of the field.
 ##
 ##  Let $n$ be the conductor of $v$.
@@ -224,7 +224,7 @@ FrobeniusCharacterValue := function( value, p )
           i;
 
     if IsRat( value ) then
-      return ( value mod p ) * Z(p)^0;
+      return ( value mod p ) * One( Z(p) );
     fi;
 
     n:= Conductor( value );
@@ -247,10 +247,11 @@ FrobeniusCharacterValue := function( value, p )
       # Use the internal finite fields of {\GAP}.
       # (Express the Brauer character value in terms of the Zumbroich basis
       # of the underlying cyclotomic field.)
-      ffe:= GF( size ).root ^ power;
+      ffe:= PrimitiveRoot( GF( size ) ) ^ power;
       cf:= CanonicalBasis( CF( n ) );
-      value:= List( Coefficients( cf, value ), y -> y mod p )
-              * List( ZumbroichBase( n, 1 ), exp -> ffe ^ exp );
+      value:= LinearCombination(
+                  List( Coefficients( cf, value ), y -> y mod p ),
+                  List( ZumbroichBase( n, 1 ), exp -> ffe ^ exp ) );
 
     else
 
@@ -509,7 +510,7 @@ SymmetricParts := function( tbl, characters, n )
           sym,
           exp,
           factor,
-          powermap;          # shallow copy of 'tbl.powermap'
+          powermap;          # list of computed power maps of 'tbl'
 
     if IsEmpty( characters ) then
       return [];
@@ -532,7 +533,7 @@ SymmetricParts := function( tbl, characters, n )
     od;
 
     # Compute necessary power maps.
-    powermap:= ShallowCopy( ComputedPowerMaps( tbl ) );
+    powermap:= ComputedPowerMaps( tbl );
     for i in [ 1 .. n ] do
       if not IsBound( powermap[i] ) then
         powermap[i]:= PowerMap( tbl, i );
@@ -612,7 +613,7 @@ AntiSymmetricParts := function( tbl, characters, n )
     od;
 
     # Compute necessary power maps.
-    powermap:= ShallowCopy( ComputedPowerMaps( tbl ) );
+    powermap:= ComputedPowerMaps( tbl );
     for i in [ 1 .. n ] do
       if not IsBound( powermap[i] ) then
         powermap[i]:= PowerMap( tbl, i );
@@ -905,15 +906,6 @@ end;
 ##
 #F  PrimeBlocks( <tbl>, <prime> )
 ##
-##  Two ordinary irreducible characters $\chi, \psi$ are said to lie in the
-##  same block if the images of their central characters $\omega_{\chi},
-##  \omega_{\psi}$ under the homomorphism $\ast: R \rightarrow R / M$ are
-##  equal.  The central character is defined by
-##  $\omega_{\chi}(g) = \chi(g) \|Cl_G(g)\| / \chi(1)$.
-##  $R$ denotes the ring of algebraic integers in the complex numbers, $M$ is
-##  a maximal ideal in $R$ with $pR \subseteq M$.  Thus $F = R/M$ is a field
-##  of characteristics $p$.
-##
 ##  $\chi$ and $\psi$ lie in the same block if and only if there is an integer
 ##  $n$ with the property $(\omega_{chi}(g) - \omega_{\psi}(g))^n \in pR$
 ##  (see~\cite{Isaacs}, p. 271).
@@ -921,11 +913,11 @@ end;
 ##  Following the proof in~\cite{Isaacs}, a sufficient value for $n$ is
 ##  $\varphi(\|g\|)$.  The test must be performed only for one class of each
 ##  Galois family.
+##  Also it is sufficient to test only $p$-regular classes.
+##  (see Feit, p. 150)
 ##
-##  It is sufficient to test $p$-regular classes. (see Feit, p. 150)
-##
-##  Any character $\chi$ where $p$ does not divide $\|G\| / \chi(1)$
-##  (such a character is called defect-zero-character) forms a block of its
+##  Any character $\chi$ where $p$ does not divide $|G|/\chi(1)$
+##  (such a character is called defect zero character) forms a block of its
 ##  own.
 ##
 ##  If the info level of 'InfoCharacterTable' is at least 2, the defect of
@@ -944,7 +936,7 @@ end;
 ##
 PrimeBlocks := function( tbl, prime )
 
-    local i, j, x,
+    local i, j,
           characters,
           nccl,
           classes,
@@ -961,7 +953,6 @@ PrimeBlocks := function( tbl, prime )
           tbl_irredinfo,
           inverse,
           d,
-          gcd,
           filt,
           pos;
 
@@ -976,19 +967,27 @@ PrimeBlocks := function( tbl, prime )
 
     primeblocks:= rec( block:= [], defect:= [] );
     blockreps:= [];
-    exponents:= [];
-    for i in [ 2 .. nccl ] do exponents[i]:= Phi( tbl_orders[i] ); od;
+
+    # Compute a representative for each Galois family
+    # of 'prime'-regular classes.
     families:= GaloisMat( TransposedMat( characters ) ).galoisfams;
-    representatives:= Filtered( [ 2 .. nccl ], x -> families[x] <> 0 );
-               # only check one representative for each galois family
+#T better introduce attribute `RepCycSub' ?
+    representatives:= Filtered( [ 2 .. nccl ],
+                                x ->     families[x] <> 0
+                                     and tbl_orders[x] mod prime <> 0 );
+
+    exponents:= [];
+    for i in representatives do
+      exponents[i]:= Phi( tbl_orders[i] );
+    od;
+
+    # Compute the order of the 'prime' Sylow group of 'tbl'.
     ppart:= 1;
     d:= Size( tbl ) / prime;
     while IsInt( d ) do
       ppart:= ppart * prime;
       d:= d / prime;
     od;
-
-    # now 'a' is the exponent of the order of the 'prime' Sylow group of 'tbl'
 
     sameblock:= function( central1, central2 )
     local i, j, value, coeffs, n;
@@ -1003,6 +1002,7 @@ PrimeBlocks := function( tbl, prime )
         for j in [ 1 .. Length( coeffs ) ] do
           value:= value + coeffs[j] * E( n ) ^ ( j - 1 );
         od;
+#T `value mod prime' ?
         if not IsCycInt( ( value ^ exponents[i] ) / prime ) then
           return false;
         fi;
@@ -1014,14 +1014,18 @@ PrimeBlocks := function( tbl, prime )
     end;
 
     for i in [ 1 .. Length( characters ) ] do
-      if characters[i][1] mod ppart = 0 then  # defect-0-character
+      if characters[i][1] mod ppart = 0 then
+
+        # defect zero character
         pos:= Position( characters, characters[i] );
         if pos = i then
+#T why useful ??
           Add( blockreps, characters[i] );
           primeblocks.block[i]:= Length( blockreps );
         else
           primeblocks.block[i]:= primeblocks.block[ pos ];
         fi;
+
       else
         central:= [];                       # the central character
         for j in [ 2 .. nccl ] do
@@ -1058,7 +1062,7 @@ PrimeBlocks := function( tbl, prime )
           "PrimeBlocks: prime blocks for prime ", prime,
           " written to the table" );
 
-    # compute the defects
+    # Compute the defects.
     inverse:= InverseMap( primeblocks.block );
     for i in inverse do
       if IsInt( i ) then
@@ -1092,6 +1096,7 @@ PrimeBlocks := function( tbl, prime )
       fi;
     od;
 
+    # Return the result.
     return primeblocks;
 end;
 
@@ -1107,7 +1112,7 @@ end;
 ##  of two elements of <reducibles> (if \"triangle\" is specified) or of
 ##  an element of <reducibles> and an element of <reducibles2>.
 ##
-##  Let 'scpr' be the value of '<tbl>.operations.ScalarProduct'.
+##  Let 'scpr = ScalarProduct'.
 ##
 ##  If <scprmatrix> is not specified it will be calculated,
 ##  otherwise we must have

@@ -8,10 +8,13 @@
 **
 **  This file contains the functions of the objects package.
 */
-char * Revision_objects_c =
+#include        "system.h"              /* Ints, UInts, SyIsIntr           */
+
+SYS_CONST char * Revision_objects_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* Ints, UInts, SyIsIntr           */
+#include        "sysfiles.h"            /* file input/output               */
+
 #include        "gasman.h"              /* Retype                          */
 
 #define INCLUDE_DECLARATION_PART

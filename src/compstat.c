@@ -17,7 +17,16 @@
 **
 **  This a dummy list in case no module statically linked.
 */
+#ifdef USE_PRECOMPILED
+extern StructCompInitInfo * Init_lib_methsel_g ( void );
+extern StructCompInitInfo * Init_lib_type_g ( void );
+#endif
+
 CompInitFunc CompInitFuncs [] = {
+#ifdef USE_PRECOMPILED
+    Init_lib_methsel_g,
+    Init_lib_type_g,
+#endif
     0
 };
 

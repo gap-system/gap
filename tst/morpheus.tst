@@ -41,8 +41,8 @@ gap> Image(p,a.1);;
 gap> Image(p,a.1*a.2);;
 gap> Pcgs(a);;
 
-# thats all, folks
-gap> STOP_TEST( "morpheus.tst", 1 );
+# that's all, folks
+gap> STOP_TEST( "morpheus.tst", 657320000 );
 
 #############################################################################
 ##

@@ -10,7 +10,7 @@ Revision.grppcaut_gi :=
 #I InfoAutGrp
 ##
 InfoAutGrp := NewInfoClass( "InfoAutGrp" ); SetInfoLevel( InfoAutGrp, 1 );
-InfoMatOrb := NewInfoClass( "InfoMatOrb" ); SetInfoLevel( InfoMatOrb, 0 );
+InfoMatOrb := NewInfoClass( "InfoMatOrb" ); SetInfoLevel( InfoMatOrb, 1 );
 InfoOverGr := NewInfoClass( "InfoOverGr" ); SetInfoLevel( InfoOverGr, 0 );
 SetInfoLevel( InfoCompPairs, 1 );
 if not IsBound( CHOP ) then CHOP := false; fi;
@@ -68,21 +68,24 @@ StabilizerByMatrixOperation := function( C, v, f, cohom )
     local field, modu, bases, l, m, incl, gens, ind, vec, tmp, upp,
           low, fac, i, o, S, oper;
 
+    # the trivial case 
+    if Size( C ) = 1 then return C; fi;
+
     # gens and opers
     if HasPcgs( C ) then 
         gens := Pcgs( C );
     else 
         gens := GeneratorsOfGroup( C ); 
     fi;
-    if Length( gens ) = 0 then return C; fi;
     oper  := List( gens, x -> f( x, cohom ) );
 
     # construct module to use meataxe
     if CHOP then
         modu  := GModuleByMats( oper, cohom.module.field );
         bases := SMTX.BasesCompositionSeries( modu );
-        l     := Length( bases ) - 1;
-        Info( InfoMatOrb, 1, "mat orb: found comp series of length ",l);
+        l     := Length( bases );
+        Info( InfoMatOrb, 1, "  MO: found comp series of length ",l);
+        Info( InfoMatOrb, 1, "  MO: with dimensions ",List(bases, Length));
 
         # compute m
         m := 1;
@@ -91,14 +94,11 @@ StabilizerByMatrixOperation := function( C, v, f, cohom )
             m := m + 1;
             incl := IsList( SolutionMat( bases[m], v ) );
         od;
-        Info( InfoMatOrb, 1, "mat orb: v is included in ",m,"th subspace");
+        Info( InfoMatOrb, 1, "  MO: v is included in ",m,"th subspace");
     else
         bases := [[], oper[1]^0];
         m     := 2;
     fi;
-
-    # set up
-    o    := 1;
 
     # the first factor includes v
     fac := BaseSteinitzVectors( bases[m], bases[m-1] ).factorspace;
@@ -107,8 +107,7 @@ StabilizerByMatrixOperation := function( C, v, f, cohom )
     tmp := OrbitStabilizer( C, vec, gens, ind, OnRight );
     SetSize( tmp.stabilizer, Size( C ) / Length( tmp.orbit ) );
     C   := tmp.stabilizer;
-    o   := o * Length( tmp.orbit );
-    Info( InfoMatOrb, 1, "mat orb: found orbit of length ",o );
+    Info( InfoMatOrb, 1, "  MO: found orbit of length ",Length(tmp.orbit) );
 
     # loop over the remaining factors
     for i in Reversed( [1..m-2] ) do
@@ -128,8 +127,8 @@ StabilizerByMatrixOperation := function( C, v, f, cohom )
         tmp  := OrbitStabilizer( C, vec, gens, ind, OnRight );
         SetSize( tmp.stabilizer, Size( C ) / Length( tmp.orbit ) );
         C    := tmp.stabilizer;
-        o    := o * Length( tmp.orbit );
-        Info( InfoMatOrb, 1, "mat orb: found orbit of length ", o);
+        Info( InfoMatOrb, 1, "  MO: found orbit of length ", 
+                                Length(tmp.orbit));
     od;
     return C;
 end;
@@ -240,6 +239,7 @@ InducedActionAutGroup := function( epi, weights, s, n, A )
         tup := Tuple( [aut, mat] );
         Add( comp, tup );
     od; 
+Error("in ind action");
 
     # add size and check solubility
     D := Group( comp, Tuple( [One(A), IdentityMat(Length(pcgsM), field)]));
@@ -256,15 +256,42 @@ end;
 #F Fingerprint( G, U )
 ##
 if not IsBound( MyFingerprint ) then MyFingerprint := false; fi;
+
+FingerprintSmall := function( G, U )
+    return [IdGroup( U ), Size( CommutatorSubgroup(G,U) )];
+end;
+
+FingerprintMedium := function( G, U )
+    local w, cl, id;
+
+    # some general stuff
+    w := LGWeights( SpecialPcgs( U ) );
+    id := [w, Size( CommutatorSubgroup( G, U ) )];
+
+    # about conjugacy classes
+    cl := ConjugacyClasses( U );
+    Add( id, List( cl, x -> [Size(x), Order(Representative(x))] ) );
+
+    return id;
+end;
+
+FingerprintLarge := function( G, U )
+    return [Size(U), Size( DerivedSubgroup( U ) ),
+            Size( CommutatorSubgroup( G, U ) )];
+end;
+
 Fingerprint := function ( G, U )
     local id;
     if not IsBool( MyFingerprint ) then
         return MyFingerprint( G, U );
     fi;
-    id := [Size(U), Size( DerivedSubgroup( U ) ),
-            Size( CommutatorSubgroup( G, U ) )];
-    if Size( U ) <= 200 then Add( id, IdGroup( U ) ); fi;
-    return id;
+    if Size( U ) <= 100 then 
+        return FingerprintSmall( G, U );
+    elif Size( U ) <= 1000 then
+        return FingerprintMedium( G, U );
+    else
+        return FingerprintLarge( G, U );
+    fi;
 end;
 
 #############################################################################
@@ -431,6 +458,8 @@ InduciblePairs := function( C, epi, M )
     cc := TwoCocyclesSQ( Cl, F, M );
     cb := TwoCoboundariesSQ ( Cl, F, M );
     co := BaseSteinitzVectors( cc, cb ).factorspace;
+
+    Info( InfoAutGrp, 1, " computed cohomology with dim ",Length( co ));
 
     # get linear operation
     cohom := rec( group := F, 
@@ -679,23 +708,32 @@ AutomorphismGroupSolvableGroup := function( G )
             Info( InfoAutGrp, 1," compute reduced gl ");
             B := NormalizingReducedGL( spec, s, n, M );
             D := DirectProduct( A, B ); 
-            Info( InfoAutGrp, 1," compute compatible pairs ");
+            Info( InfoAutGrp, 1," compute compatible pairs in group of size ",
+                                  Size(A), " x ",Size(B));
             C := CompatiblePairs( F, M, D );
         else
-            Info( InfoAutGrp, 1, " compute induced action ");
-            D := InducedActionAutGroup( epi, weights, s, n, A );
+            Info( InfoAutGrp, 1," compute reduced gl ");
+            B := NormalizingReducedGL( spec, s, n, M );
+            D := DirectProduct( A, B ); 
+            # Info( InfoAutGrp, 1, " compute induced action ");
+            # D := InducedActionAutGroup( epi, weights, s, n, A );
             if weights[s][1] > 1 then
-                Info( InfoAutGrp, 1, " compute compatible pairs ");
+                Info( InfoAutGrp, 1,
+                      " compute compatible pairs in group of size ",
+                       Size(A), " x ",Size(B));
                 D := CompatiblePairs( F, M, D );
             fi;
-            Info( InfoAutGrp, 1, " compute inducible pairs ");
+            Info( InfoAutGrp,1, " compute inducible pairs in a group of size ",
+                  Size( D ));
             C := InduciblePairs( D, epi, M );
         fi;
 
 
         # lift
         Info( InfoAutGrp, 1, " lift back ");
-        if IsPcgsComputable( C ) then
+        if Size( C ) = 1 then
+            gens := [];
+        elif IsPcgsComputable( C ) then
             gens := Pcgs( C );
         else
             gens  := GeneratorsOfGroup( C );
@@ -723,7 +761,10 @@ AutomorphismGroupSolvableGroup := function( G )
         F := ShallowCopy( H );
         A := Group( autos );
         SetSize( A, Size( C ) * p^Length(elms) );
-        if IsPcgsComputable( C ) then
+        if Size(C) = 1 then
+            rels := List( [1..Length(elms)], x-> p );
+            TransferPcgsInfo( A, autos, rels );
+        elif IsPcgsComputable( C ) then
             rels := Concatenation( RelativeOrders(gens), 
                                    List( [1..Length(elms)], x-> p ) );
             TransferPcgsInfo( A, autos, rels );
@@ -745,9 +786,6 @@ AutomorphismGroupSolvableGroup := function( G )
         fi;
     od; 
 
-    # rewrite aut group
-    
-    
     # return
     if IsPcgsComputable( A ) then SetIsSolvableGroup( A, true ); fi;
     return A;

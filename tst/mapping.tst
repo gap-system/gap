@@ -264,12 +264,9 @@ gap> PreImagesRange( map );
 [ 0*Z(3), Z(3)^0, Z(3) ]
 
 
-gap> STOP_TEST( "mapping.tst", 10000000 );
+gap> STOP_TEST( "mapping.tst", 9860000 );
 
 
 #############################################################################
 ##
 #E  mapping.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

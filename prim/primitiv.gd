@@ -6,6 +6,12 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.2  1997/07/17 15:29:43  htheisse
+#H  reflects the state of my thesis
+#H
+#H  Revision 4.1  1997/07/17 15:15:52  fceller
+#H  for version 4
+#H
 #H  Revision 1.1  1997/06/09 13:38:53  htheisse
 #H  added the file
 #H
@@ -51,13 +57,10 @@ NrPrimitiveGroups := NewOperationArgs( "NrPrimitiveGroups" );
 NrSolvableAffinePrimitiveGroups := NewOperationArgs( "NrSolvableAffinePrimitiveGroups" );
 NrAffinePrimitiveGroups := NewOperationArgs( "NrAffinePrimitiveGroups" );
 
-IrreducibleSolvableGroup := NewOperationArgs( "IrreducibleSolvableGroup" );
-
 COHORTS := [  ];
 COHORTS_DONE := [  ];
 SIMS_NUMBERS := [  ];
 SIMS_NAMES := [  ];
-IrredSolGroupList := [  ];
 
 #############################################################################
 ##

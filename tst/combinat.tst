@@ -9,7 +9,7 @@
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
 
-gap> START_TEST("$Id: combinat.tst,v ");
+gap> START_TEST("$Id$");
 
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
 gap> List( [0..10], Factorial );
@@ -456,13 +456,10 @@ gap> Bernoulli( 80 );
 -4603784299479457646935574969019046849794257872751288919656867/230010
 
 # thats it for the combinatorical package  ##################################
-gap> STOP_TEST( "combinat.tst", 80440353 );
+gap> STOP_TEST( "combinat.tst", 39450000 );
 
 
 #############################################################################
 ##
 #E  combinat.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

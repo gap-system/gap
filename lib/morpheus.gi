@@ -675,10 +675,11 @@ local m,n;
     fi;
   fi;
 
-  Print("GroupId not yet implemented\n");
+  #Print("GroupId not yet implemented\n");
   if Size(G)<>Size(H) or
      Length(ConjugacyClasses(G))<>Length(ConjugacyClasses(H))
-     #or (Size(G)<=100 and GroupId(G)<>GroupId(H))
+     or (Size(G)<=1000 and (not Size(G) in [512,768])
+         and IdGroup(G)<>IdGroup(H))
      then
    return fail;
   fi;

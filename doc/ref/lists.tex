@@ -75,41 +75,42 @@ resp.~`\\\{\\\}\\:\\='.
 \>AsList( <D> )
 
 `AsList( <D> )' constructs a {\GAP} object that represents a domain as if
-it  were a list of its  elements. Note that we  say ``a list'', not ``the
-list'' because there are many ways of ordering  the elements and, indeed,
-{\GAP} does not guarantee anything about  the ordering it chooses. If you
-say `$list_1$  := AsList( $D_1$ );'  and  `$list_2$ := AsList(  $D_2$ );'
-then even if `$D_1$ = $D_2$', the orderings  of $list_1$ and $list_2$ may
-be  different, and consequently you   may  have `$list_1$ \<>  $list_2$'.
-After all, $D_1$ may  be   represented differently  than $D_2$  and   the
-`AsList' may be constructed depending on the representation. (Even if you
-say  `$list_3$ := AsList( $D_1$  );' again later,  you may have `$list_3$
-\<> $list_1$'.)
+it were an  immutable list of its elements.  Note that we say ``a list'',
+not ``the list''  because there are  many  ways of ordering  the elements
+and, indeed, {\GAP} does  not  guarantee anything  about the  ordering it
+chooses. If  you  say `$list_1$ := AsList(  $D_1$   );' and `$list_2$  :=
+AsList( $D_2$ );' then even if `$D_1$ = $D_2$', the orderings of $list_1$
+and $list_2$ may be different,  and consequently  you may have  `$list_1$
+\<> $list_2$'. After all, $D_1$ may be represented differently than $D_2$
+and the `AsList' may  be   constructed depending on  the  representation.
+(Even if you say `$list_3$ := AsList( $D_1$ );' again later, you may have
+`$list_3$ \<> $list_1$'.)
 
-Objects constructed by  `AsList' behave like lists, so   you can use  the
-three basic list operations `Length', `IsBound' and `[  ]' with them. The
-sublist operator `<list>\{ <poss>  \}' is also  available, it is normally
-just  manufactured from the  `[  ]' operator.  The  time needed  by these
-operations  should not depend on  the length of the  list, but the memory
-needed should grow proportionally  to   the length,  as should  the  time
-needed by `Position'. This  is just as it is  with ordinary lists, but it
-is not always  what you want. To   make these operations  space efficient
-rather  than time efficient, and to  make `Position' more time efficient,
-it  is  necessary    to overlay the  generic   methods   by  more special
-algorithms,  which    will  generally   require   a   different  internal
-representation of the object  <list>. To emphasize this distinction, such
-space  efficient objects are not  constructed by `AsList', but instead by
-the operation `Enumerator'.
+Objects constructed  by  `AsList'  behave like  immutable  lists,  so you
+cannot modify them, neither by assigning to elements  or sublists, nor by
+`Unbind'ing. But you  can use the three  basic  list operations `Length',
+`IsBound' and `[ ]' with them.  The sublist operator `<list>\{ <poss> \}'
+is  also  available, it  is  normally  just  manufactured from  the `[ ]'
+operator. The  time needed by  these operations should  not depend on the
+length of  the list, but the  memory needed should grow proportionally to
+the length, as should  the time needed by `Position'.  This is just as it
+is with ordinary lists, but it is not always what you want. To make these
+operations  space  efficient  rather  than time  efficient,   and to make
+`Position' more time  efficient, it is necessary  to  overlay the generic
+methods by   more  special algorithms, which   will  generally  require a
+different internal representation of the object <list>. To emphasize this
+distinction,  such space   efficient    objects are not  constructed   by
+`AsList', but instead by the `Enumerator'.
 
 \>Enumerator( <D> )
 
-An *enumerator* is a {\GAP} object that represents  a collection as if it
-were a list of its elements; just like an object constructed by `AsList'.
-The  remarks  made  at  the  beginning  of  that  section   also apply to
-enumerators,  and the only    difference is  that enumerators  are  space
-efficient  rather than  time    efficient. Again  you can  use   the list
-operations like `<enum>[ <pos> ]'  and `Position', but you cannot  assign
-to single positions or  to sublists of enumerators,  nor can you `Unbind'
+An *enumerator* is a {\GAP} object that represents a  collection as if it
+were an immutable list  of its elements;  just like an object constructed
+by `AsList'. The remarks made at the beginning of that section also apply
+to enumerators, and the   only difference is  that enumerators  are space
+efficient   rather   than time  efficient. Again   you   can use the list
+operations  like `<enum>[ <pos> ]'  and `Position', but you cannot assign
+to single positions  or to sublists of enumerators,  nor can you `Unbind'
 elements.
 
 \>PositionCanonical( <enum>, <elm> )

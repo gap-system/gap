@@ -524,7 +524,7 @@ InstallMethod( EarnsOp,
     if not IsPrimePowerInt( n )  then
         return fail;
     elif not IsPrimitive( G, Omega )  then
-        Error( "sorry, cannot compute the earns for imprimitive groups" );
+        TryNextMethod();
     fi;
     
     # Try a shortcut for solvable groups (or if a solvable normal subgroup is

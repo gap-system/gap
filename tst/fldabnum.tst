@@ -308,12 +308,9 @@ gap> Size( g );
 gap> IsAbelian( g );
 true
 
-gap> STOP_TEST( "fldabnum.tst", 3560005 );
+gap> STOP_TEST( "fldabnum.tst", 13810000 );
 
 
 #############################################################################
 ##
 #E  fldabnum.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

@@ -206,7 +206,7 @@ void            PrintInt (
         while ( k > 0 && PrIntC[k-1] == 0 )  k--;
         while ( k > 0 ) {
             for ( c = 0, p = PrIntC+k-1; p >= PrIntC; p-- ) {
-                c  = (c<<16) + *p;
+                c  = (c<<NR_DIGIT_BITS) + *p;
                 *p = c / 10000;
                 c  = c - 10000 * *p;
             }
@@ -407,12 +407,12 @@ Obj             SumInt (
         if ( 0 < c ) {
             sum = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
             ADDR_INT(sum)[0] = c;
-            ADDR_INT(sum)[1] = c >> 16;
+            ADDR_INT(sum)[1] = c >> NR_DIGIT_BITS;
         }
         else {
             sum = NewBag( T_INTNEG, 4*sizeof(TypDigit) );
             ADDR_INT(sum)[0] = (-c);
-            ADDR_INT(sum)[1] = (-c) >> 16;
+            ADDR_INT(sum)[1] = (-c) >> NR_DIGIT_BITS;
         }
 
     }
@@ -448,18 +448,18 @@ Obj             SumInt (
         l = ADDR_INT(opL);
         s = ADDR_INT(sum);
 
-        /* add the first four digit, note the left operand has only two    */
-        c = *l++ + (TypDigit)i;                  *s++ = c;
-        c = *l++ + (TypDigit)(i>>16) + (c>>16);  *s++ = c;
-        c = *l++                     + (c>>16);  *s++ = c;
-        c = *l++                     + (c>>16);  *s++ = c;
+        /* add the first four digits,the right operand has only two digits */
+        c = (Int)*l++ + (TypDigit)i;                             *s++ = c;
+        c = (Int)*l++ + (i>>NR_DIGIT_BITS) + (c>>NR_DIGIT_BITS); *s++ = c;
+        c = (Int)*l++                      + (c>>NR_DIGIT_BITS); *s++ = c;
+        c = (Int)*l++                      + (c>>NR_DIGIT_BITS); *s++ = c;
 
         /* propagate the carry, this loop is almost never executed         */
-        for ( k = SIZE_INT(opL)/4-1; k != 0 && (c>>16) != 0; k-- ) {
-            c = *l++ + (c>>16);  *s++ = c;
-            c = *l++ + (c>>16);  *s++ = c;
-            c = *l++ + (c>>16);  *s++ = c;
-            c = *l++ + (c>>16);  *s++ = c;
+        for ( k = SIZE_INT(opL)/4-1; k != 0 && (c>>NR_DIGIT_BITS) != 0; k-- ) {
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
         }
 
         /* just copy the remaining digits, do it two digits at once        */
@@ -469,8 +469,8 @@ Obj             SumInt (
         }
 
         /* if there is a carry, enter it, otherwise shrink the sum         */
-        if ( (c>>16) != 0 )
-            *s++ = (c>>16);
+        if ( (c>>NR_DIGIT_BITS) != 0 )
+            *s++ = (c>>NR_DIGIT_BITS);
         else
             ResizeBag( sum, (SIZE_INT(sum)-4)*sizeof(TypDigit) );
 
@@ -506,21 +506,22 @@ Obj             SumInt (
         r = ADDR_INT(opR);
         s = ADDR_INT(sum);
 
-        /* add the digits                                                  */
+        /* add the digits, convert to Int to get maximum precision         */
         c = 0;
         for ( k = SIZE_INT(opR)/4; k != 0; k-- ) {
-            c = *l++ + *r++ + (c>>16);  *s++ = c;
-            c = *l++ + *r++ + (c>>16);  *s++ = c;
-            c = *l++ + *r++ + (c>>16);  *s++ = c;
-            c = *l++ + *r++ + (c>>16);  *s++ = c;
+            c = (Int)*l++ + (Int)*r++ + (c>>NR_DIGIT_BITS);  *s++ = c; 
+            c = (Int)*l++ + (Int)*r++ + (c>>NR_DIGIT_BITS);  *s++ = c; 
+            c = (Int)*l++ + (Int)*r++ + (c>>NR_DIGIT_BITS);  *s++ = c; 
+            c = (Int)*l++ + (Int)*r++ + (c>>NR_DIGIT_BITS);  *s++ = c; 
         }
 
         /* propagate the carry, this loop is almost never executed         */
-        for ( k=(SIZE_INT(opL)-SIZE_INT(opR))/4; k!=0 && (c>>16)!=0; k-- ) {
-            c = *l++ + (c>>16);  *s++ = c;
-            c = *l++ + (c>>16);  *s++ = c;
-            c = *l++ + (c>>16);  *s++ = c;
-            c = *l++ + (c>>16);  *s++ = c;
+        for ( k=(SIZE_INT(opL)-SIZE_INT(opR))/4;
+	     k!=0 && (c>>NR_DIGIT_BITS)!=0; k-- ) {
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
         }
 
         /* just copy the remaining digits, do it two digits at once        */
@@ -530,8 +531,8 @@ Obj             SumInt (
         }
 
         /* if there is a carry, enter it, otherwise shrink the sum         */
-        if ( (c>>16) != 0 )
-            *s++ = (c>>16);
+        if ( (c>>NR_DIGIT_BITS) != 0 )
+            *s++ = (c>>NR_DIGIT_BITS);
         else
             ResizeBag( sum, (SIZE_INT(sum)-4)*sizeof(TypDigit) );
 
@@ -567,10 +568,10 @@ Obj         AInvInt (
     if ( IS_INTOBJ( op ) ) {
 
         /* special case (ugh)                                              */
-        if ( op == INTOBJ_INT( -(1L<<28) ) ) {
+        if ( op == INTOBJ_INT( -(1L<<NR_SMALL_INT_BITS) ) ) {
             inv = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
             ADDR_INT(inv)[0] = 0;
-            ADDR_INT(inv)[1] = (1L<<12);
+            ADDR_INT(inv)[1] = (1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS));
         }
 
         /* general case                                                    */
@@ -585,9 +586,11 @@ Obj         AInvInt (
 
         /* special case (ugh)                                              */
         if ( TNUM_OBJ(op) == T_INTPOS && SIZE_INT(op) == 4
-          && ADDR_INT(op)[3] == 0 && ADDR_INT(op)[2] == 0
-          && 65536*ADDR_INT(op)[1] + ADDR_INT(op)[0] == (1L<<28) ) {
-            inv = INTOBJ_INT( -(1L<<28) );
+          && ADDR_INT(op)[3] == 0 
+	  && ADDR_INT(op)[2] == 0 
+          && ADDR_INT(op)[1] == (1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS))
+	  && ADDR_INT(op)[0] == 0 ) {
+            inv = INTOBJ_INT( -(1L<<NR_SMALL_INT_BITS) );
         }
 
         /* general case                                                    */
@@ -657,12 +660,12 @@ Obj             DiffInt (
         if ( 0 < c ) {
             dif = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
             ADDR_INT(dif)[0] = c;
-            ADDR_INT(dif)[1] = c >> 16;
+            ADDR_INT(dif)[1] = c >> NR_DIGIT_BITS;
         }
         else {
             dif = NewBag( T_INTNEG, 4*sizeof(TypDigit) );
             ADDR_INT(dif)[0] = (-c);
-            ADDR_INT(dif)[1] = (-c) >> 16;
+            ADDR_INT(dif)[1] = (-c) >> NR_DIGIT_BITS;
         }
 
     }
@@ -709,18 +712,18 @@ Obj             DiffInt (
         d = ADDR_INT(dif);
 
         /* sub the first four digit, note the left operand has only two    */
-        /*N (c>>16) need not work, replace by (c<0?-1:0)                   */
-        c = *l++ - (TypDigit)i;                  *d++ = c;
-        c = *l++ - (TypDigit)(i>>16) + (c>>16);  *d++ = c;
-        c = *l++                     + (c>>16);  *d++ = c;
-        c = *l++                     + (c>>16);  *d++ = c;
+        /*N (c>>16<) need not work, replace by (c<0?-1:0)                   */
+        c = (Int)*l++ - (TypDigit)i;                              *d++ = c;
+        c = (Int)*l++ - (i>>NR_DIGIT_BITS) + (c>>NR_DIGIT_BITS);  *d++ = c;
+        c = (Int)*l++                      + (c>>NR_DIGIT_BITS);  *d++ = c;
+        c = (Int)*l++                      + (c>>NR_DIGIT_BITS);  *d++ = c;
 
         /* propagate the carry, this loop is almost never executed         */
-        for ( k = SIZE_INT(opL)/4-1; k != 0 && (c>>16) != 0; k-- ) {
-            c = *l++ + (c>>16);  *d++ = c;
-            c = *l++ + (c>>16);  *d++ = c;
-            c = *l++ + (c>>16);  *d++ = c;
-            c = *l++ + (c>>16);  *d++ = c;
+        for ( k = SIZE_INT(opL)/4-1; k != 0 && (c>>NR_DIGIT_BITS) != 0; k-- ) {
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
         }
 
         /* just copy the remaining digits, do it two digits at once        */
@@ -745,11 +748,11 @@ Obj             DiffInt (
 
             /* reduce to small integer if possible, otherwise shrink bag   */
             if ( k <= 2 && TNUM_OBJ(dif) == T_INTPOS
-              && (UInt)(65536*d[1]+d[0]) < (1<<28) )
-                dif = INTOBJ_INT( 65536*d[1]+d[0] );
+              && (UInt)(INTBASE*d[1]+d[0])<(1L<<NR_SMALL_INT_BITS) )
+                dif = INTOBJ_INT( INTBASE*d[1]+d[0] );
             else if ( k <= 2 && TNUM_OBJ(dif) == T_INTNEG
-              && (UInt)(65536*d[1]+d[0]) <= (1<<28) )
-                dif = INTOBJ_INT( -(65536*d[1]+d[0]) );
+              && (UInt)(INTBASE*d[1]+d[0])<=(1L<<NR_SMALL_INT_BITS) )
+                dif = INTOBJ_INT( -(INTBASE*d[1]+d[0]) );
             else
                 ResizeBag( dif, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
         }
@@ -793,18 +796,19 @@ Obj             DiffInt (
         /* subtract the digits                                             */
         c = 0;
         for ( k = SIZE_INT(opR)/4; k != 0; k-- ) {
-            c = *l++ - *r++ + (c>>16);  *d++ = c;
-            c = *l++ - *r++ + (c>>16);  *d++ = c;
-            c = *l++ - *r++ + (c>>16);  *d++ = c;
-            c = *l++ - *r++ + (c>>16);  *d++ = c;
+            c = (Int)*l++ - (Int)*r++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ - (Int)*r++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ - (Int)*r++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ - (Int)*r++ + (c>>NR_DIGIT_BITS);  *d++ = c;
         }
 
         /* propagate the carry, this loop is almost never executed         */
-        for ( k=(SIZE_INT(opL)-SIZE_INT(opR))/4; k!=0 && (c>>16)!=0; k-- ) {
-            c = *l++ + (c>>16);  *d++ = c;
-            c = *l++ + (c>>16);  *d++ = c;
-            c = *l++ + (c>>16);  *d++ = c;
-            c = *l++ + (c>>16);  *d++ = c;
+        for ( k=(SIZE_INT(opL)-SIZE_INT(opR))/4; 
+	     k!=0 && (c>>NR_DIGIT_BITS)!=0; k-- ) {
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
+            c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
         }
 
         /* just copy the remaining digits, do it two digits at once        */
@@ -829,11 +833,11 @@ Obj             DiffInt (
 
             /* reduce to small integer if possible, otherwise shrink bag   */
             if ( k <= 2 && TNUM_OBJ(dif) == T_INTPOS
-              && (UInt)(65536*d[1]+d[0]) < (1<<28) )
-                dif = INTOBJ_INT( 65536*d[1]+d[0] );
+              && (UInt)(INTBASE*d[1]+d[0]) < (1L<<NR_SMALL_INT_BITS) )
+                dif = INTOBJ_INT( INTBASE*d[1]+d[0] );
             else if ( k <= 2 && TNUM_OBJ(dif) == T_INTNEG
-              && (UInt)(65536*d[1]+d[0]) <= (1<<28) )
-                dif = INTOBJ_INT( -(65536*d[1]+d[0]) );
+              && (UInt)(INTBASE*d[1]+d[0])<=(1L<<NR_SMALL_INT_BITS))
+                dif = INTOBJ_INT( -(INTBASE*d[1]+d[0]) );
             else
                 ResizeBag( dif, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
 
@@ -900,12 +904,16 @@ Obj             ProdInt (
         if ( k < 0 )  k = -k;
 
         /* multiply digitwise                                              */
-        c = (TypDigit)i       * (TypDigit)k;                        p[0] = c;
-        c = (TypDigit)i       * (TypDigit)(k>>16)        + (c>>16); p[1] = c;
-        p[2] = c>>16;
-        c = (TypDigit)(i>>16) * (TypDigit)k       + p[1];           p[1] = c;
-        c = (TypDigit)(i>>16) * (TypDigit)(k>>16) + p[2] + (c>>16); p[2] = c;
-        p[3] = c>>16;
+        c = (Int)(TypDigit)i * (TypDigit)k;            p[0] = c;
+        c = (Int)(TypDigit)i * (k>>NR_DIGIT_BITS) 
+	  + (c>>NR_DIGIT_BITS);                        p[1] = c;
+        p[2] = c>>NR_DIGIT_BITS;
+
+        c = (Int)(TypDigit)(i>>NR_DIGIT_BITS) * (TypDigit)k 
+	  + p[1];                                      p[1] = c;
+        c = (Int)(TypDigit)(i>>NR_DIGIT_BITS) * (TypDigit)(k>>NR_DIGIT_BITS)
+	  + p[2] + (c>>NR_DIGIT_BITS);                 p[2] = c;
+        p[3] = c>>NR_DIGIT_BITS;
 
     }
 
@@ -929,9 +937,11 @@ Obj             ProdInt (
         /* the large integer 1<<28 times -1 is the small integer -(1<<28)  */
         if ( i == -1
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
-          && ADDR_INT(opR)[3] == 0     && ADDR_INT(opR)[2] == 0
-          && 65536*ADDR_INT(opR)[1] + ADDR_INT(opR)[0] == (1<<28) )
-            return INTOBJ_INT( -(1<<28) );
+          && ADDR_INT(opR)[3] == 0
+	  && ADDR_INT(opR)[2] == 0
+          && ADDR_INT(opR)[1] == (1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS))
+	  && ADDR_INT(opR)[0] == 0 )
+            return INTOBJ_INT( -(1L<<NR_SMALL_INT_BITS) );
 
         /* multiplication by -1 is easy, just switch the sign and copy     */
         if ( i == -1 ) {
@@ -966,16 +976,16 @@ Obj             ProdInt (
 
             /* multiply the right with this digit and store in the product */
             for ( k = SIZE_INT(opR)/4; k != 0; k-- ) {
-                c = l * *r++ + (c>>16);  *p++ = c;
-                c = l * *r++ + (c>>16);  *p++ = c;
-                c = l * *r++ + (c>>16);  *p++ = c;
-                c = l * *r++ + (c>>16);  *p++ = c;
+                c = (Int)l * (Int)*r++ + (c>>NR_DIGIT_BITS);  *p++ = c;
+                c = (Int)l * (Int)*r++ + (c>>NR_DIGIT_BITS);  *p++ = c;
+                c = (Int)l * (Int)*r++ + (c>>NR_DIGIT_BITS);  *p++ = c;
+                c = (Int)l * (Int)*r++ + (c>>NR_DIGIT_BITS);  *p++ = c;
             }
-            *p = (c>>16);
+            *p = (c>>NR_DIGIT_BITS);
         }
 
         /* multiply with the larger digit of the left operand              */
-        l = i >> 16;
+        l = i >> NR_DIGIT_BITS;
         if ( l != 0 ) {
 
             r = ADDR_INT(opR);
@@ -984,12 +994,12 @@ Obj             ProdInt (
 
             /* multiply the right with this digit and add into the product */
             for ( k = SIZE_INT(opR)/4; k != 0; k-- ) {
-                c = l * *r++ + *p + (c>>16);  *p++ = c;
-                c = l * *r++ + *p + (c>>16);  *p++ = c;
-                c = l * *r++ + *p + (c>>16);  *p++ = c;
-                c = l * *r++ + *p + (c>>16);  *p++ = c;
+                c = (Int)l * (Int)*r++ + (Int)*p + (c>>NR_DIGIT_BITS); *p++ = c;
+                c = (Int)l * (Int)*r++ + (Int)*p + (c>>NR_DIGIT_BITS); *p++ = c;
+                c = (Int)l * (Int)*r++ + (Int)*p + (c>>NR_DIGIT_BITS); *p++ = c;
+                c = (Int)l * (Int)*r++ + (Int)*p + (c>>NR_DIGIT_BITS); *p++ = c;
             }
-            *p = (c>>16);
+            *p = (c>>NR_DIGIT_BITS);
         }
 
         /* remove the leading zeroes, note that there can't be more than 6 */
@@ -1026,12 +1036,12 @@ Obj             ProdInt (
 
             /* multiply the right with this digit and add into the product */
             for ( k = SIZE_INT(opR)/4; k != 0; k-- ) {
-                c = l * *r++ + *p + (c>>16);  *p++ = c;
-                c = l * *r++ + *p + (c>>16);  *p++ = c;
-                c = l * *r++ + *p + (c>>16);  *p++ = c;
-                c = l * *r++ + *p + (c>>16);  *p++ = c;
+                c = (Int)l * (Int)*r++ + (Int)*p + (c>>NR_DIGIT_BITS); *p++ = c;
+                c = (Int)l * (Int)*r++ + (Int)*p + (c>>NR_DIGIT_BITS); *p++ = c;
+                c = (Int)l * (Int)*r++ + (Int)*p + (c>>NR_DIGIT_BITS); *p++ = c;
+                c = (Int)l * (Int)*r++ + (Int)*p + (c>>NR_DIGIT_BITS); *p++ = c;
             }
-            *p = (c>>16);
+            *p = (c>>NR_DIGIT_BITS);
         }
 
         /* remove the leading zeroes, note that there can't be more than 7 */
@@ -1102,7 +1112,7 @@ Obj             ProdIntObj (
     /* <res> = 0 means that <res> is the neutral element                   */
     else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) >   1 ) {
         res = 0;
-        k = 1L << 31;
+        k = 1L << (NR_SMALL_INT_BITS+1);
         l = INT_INTOBJ(n);
         while ( 1 < k ) {
             res = (res == 0 ? res : SUM( res, res ));
@@ -1162,7 +1172,7 @@ Obj             OneInt (
 *F  PowInt( <intL>, <intR> )  . . . . . . . . . . . . . . power of an integer
 **
 **  'PowInt' returns the <intR>-th (an integer) power of the integer  <intL>.
-**  'PowInt' is handles operands of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
+**  'PowInt' handles operands of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
@@ -1287,7 +1297,7 @@ Obj             PowObjInt (
     /* <res> = 0 means that <res> is the neutral element                   */
     else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) >   0 ) {
         res = 0;
-        k = 1L << 31;
+        k = 1L << (NR_SMALL_INT_BITS+1);
         l = INT_INTOBJ(n);
         while ( 1 < k ) {
             res = (res == 0 ? res : PROD( res, res ));
@@ -1333,7 +1343,7 @@ Obj             PowObjIntHandler (
 
 /****************************************************************************
 **
-*F  ModInt( <intL>, <intR> )  . . representant of residue class of an integer
+*F  ModInt( <intL>, <intR> )  . representative of residue class of an integer
 **
 **  'ModInt' returns the smallest positive representant of the residue  class
 **  of the  integer  <intL>  modulo  the  integer  <intR>.  'ModInt'  handles
@@ -1342,7 +1352,7 @@ Obj             PowObjIntHandler (
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
 **  This case is usually already handled in 'EvMod' for a better efficiency.
-**
+p**
 **  Is called from the 'EvMod'  binop so both operands are already evaluated.
 */
 Obj             ModInt (
@@ -1394,10 +1404,12 @@ Obj             ModInt (
     else if ( IS_INTOBJ(opL) ) {
 
         /* the small int -(1<<28) mod the large int (1<<28) is 0           */
-        if ( opL == INTOBJ_INT(-(1<<28))
+        if ( opL == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
-          && ADDR_INT(opR)[3] == 0 && ADDR_INT(opR)[2] == 0
-          && 65536*ADDR_INT(opR)[1] + ADDR_INT(opR)[0] == 1<<28 )
+          && ADDR_INT(opR)[3] == 0 
+	  && ADDR_INT(opR)[2] == 0
+          && ADDR_INT(opR)[1] == (NR_SMALL_INT_BITS-NR_DIGIT_BITS)
+	  && ADDR_INT(opR)[0] == 0 )
             mod = INTOBJ_INT(0);
 
         /* in all other cases the remainder is equal the left operand      */
@@ -1412,7 +1424,8 @@ Obj             ModInt (
 
     /* compute the remainder of a large integer by a small integer         */
     else if ( IS_INTOBJ(opR)
-           && INT_INTOBJ(opR) < 65536 && -65536 <= INT_INTOBJ(opR) ) {
+           && INT_INTOBJ(opR) < INTBASE
+	   && -INTBASE <= INT_INTOBJ(opR) ) {
 
         /* pathological case first                                         */
         if ( opR == INTOBJ_INT(0) ) {
@@ -1427,7 +1440,7 @@ Obj             ModInt (
         i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
 
         /* maybe its trivial                                               */
-        if ( 65536 % i == 0 ) {
+        if ( INTBASE % i == 0 ) {
             c = ADDR_INT(opL)[0] % i;
         }
 
@@ -1436,7 +1449,7 @@ Obj             ModInt (
             l = ADDR_INT(opL) + SIZE_INT(opL) - 1;
             c = 0;
             for ( ; l >= ADDR_INT(opL); l-- ) {
-                c  = (c<<16) + *l;
+                c  = (c<<NR_DIGIT_BITS) + (Int)*l;
                 c  = c % i;
             }
         }
@@ -1455,19 +1468,18 @@ Obj             ModInt (
 
     /* compute the remainder of a large integer modulo a large integer     */
     else {
-
         /* a small divisor larger than one digit isn't handled above       */
         if ( IS_INTOBJ(opR) ) {
             if ( 0 < INT_INTOBJ(opR) ) {
                 mod = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
                 ADDR_INT(mod)[0] = (TypDigit)(INT_INTOBJ(opR));
-                ADDR_INT(mod)[1] = (INT_INTOBJ(opR)>>16);
+                ADDR_INT(mod)[1] = (INT_INTOBJ(opR)>>NR_DIGIT_BITS);
                 opR = mod;
             }
             else {
                 mod = NewBag( T_INTNEG, 4*sizeof(TypDigit) );
                 ADDR_INT(mod)[0] = (TypDigit)(-INT_INTOBJ(opR));
-                ADDR_INT(mod)[1] = (-INT_INTOBJ(opR))>>16;
+                ADDR_INT(mod)[1] = (-INT_INTOBJ(opR))>>NR_DIGIT_BITS;
                 opR = mod;
             }
         }
@@ -1493,31 +1505,37 @@ Obj             ModInt (
         rs = SIZE_INT(opR);
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
-        for ( e = 0; (r[rs-1]<<e) + (r[rs-2]>>(16-e)) < 65536/2; e++ ) ;
-        r1 = (r[rs-1]<<e) + (r[rs-2]>>(16-e));
-        r2 = (r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(16-e) : 0);
+        for ( e = 0;
+	     ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
+	                       < INTBASE/2; e++ ) ;
+
+        r1 = ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
+        r2 = ((Int)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
 
         /* run through the digits in the quotient                          */
         for ( i = SIZE_INT(mod)-SIZE_INT(opR)-1; i >= 0; i-- ) {
 
             /* guess the factor                                            */
             m = ADDR_INT(mod) + rs + i;
-            m01 = ((65536*m[0]+m[-1])<<e) + (m[-2]>>(16-e));
+            m01 = ((INTBASE*m[0]+m[-1])<<e) 
+	                   + (m[-2]>>(NR_DIGIT_BITS-e));
             if ( m01 == 0 )  continue;
-            m2  = (m[-2]<<e) + (rs+i>=3 ? m[-3]>>(16-e) : 0);
-            if ( (m[0]<<e)+(m[-1]>>(16-e)) < r1 )  qi = m01 / r1;
-            else                                   qi = 65536 - 1;
-            while ( m01-qi*r1 < 65536 && 65536*(m01-qi*r1)+m2 < qi*r2 )
-                qi--;
+            m2  = ((Int)m[-2]<<e) + (rs+i>=3 ? m[-3]>>(NR_DIGIT_BITS-e) : 0);
+            if ( ((Int)m[0]<<e)+(m[-1]>>(NR_DIGIT_BITS-e)) < r1 )
+	            qi = m01 / r1;
+            else    qi = INTBASE - 1;
+            while ( m01-(Int)qi*r1 < INTBASE 
+		    && INTBASE*(m01-(Int)qi*r1)+m2 < (Int)qi*r2 )
+	            qi--;
 
             /* m = m - qi * r;                                             */
             d = 0;
             m = ADDR_INT(mod) + i;
             r = ADDR_INT(opR);
             for ( k = 0; k < rs; ++k, ++m, ++r ) {
-                c = *m - qi * *r - d;  *m = c;  d = -(c>>16);
+                c = *m - (Int)qi * *r - d;  *m = c;  d = -(c>>NR_DIGIT_BITS);
             }
-            c = *m - d;  *m = c;  d = -(c>>16);
+            c = (Int)*m - d;  *m = c;  d = -(c>>NR_DIGIT_BITS);
 
             /* if we have a borrow then add back                           */
             if ( d != 0 ) {
@@ -1525,9 +1543,11 @@ Obj             ModInt (
                 m = ADDR_INT(mod) + i;
                 r = ADDR_INT(opR);
                 for ( k = 0; k < rs; ++k, ++m, ++r ) {
-                    c = *m + *r + d;  *m = c;  d = (c>>16);
+                    c = (Int)*m + (Int)*r + (Int)d;
+		    *m = c; 
+		    d = (c>>NR_DIGIT_BITS);
                 }
-                c = *m + d;  *m = c;  d = (c>>16);
+                c = (Int)*m + d;  *m = c;  d = (c>>NR_DIGIT_BITS);
                 qi--;
             }
 
@@ -1546,17 +1566,18 @@ Obj             ModInt (
             }
 
             /* reduce to small integer if possible, otherwise shrink bag   */
+
             if ( k <= 2 && TNUM_OBJ(mod) == T_INTPOS
-              && (UInt)(65536*m[1]+m[0]) < (1<<28) )
-                mod = INTOBJ_INT( 65536*m[1]+m[0] );
+              && (UInt)(INTBASE*m[1]+m[0])<(1L<<NR_SMALL_INT_BITS) )
+                mod = INTOBJ_INT( INTBASE*m[1]+m[0] );
             else if ( k <= 2 && TNUM_OBJ(mod) == T_INTNEG
-              && (UInt)(65536*m[1]+m[0]) <= (1<<28) )
-                mod = INTOBJ_INT( -(65536*m[1]+m[0]) );
+              && (UInt)(INTBASE*m[1]+m[0])<=(1L<<NR_SMALL_INT_BITS) )
+                mod = INTOBJ_INT( -(INTBASE*m[1]+m[0]) );
             else
                 ResizeBag( mod, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
         }
 
-        /* make the representant positive                                  */
+        /* make the representative positive                                  */
         if ( (TNUM_OBJ(mod) == T_INT && INT_INTOBJ(mod) < 0)
           || TNUM_OBJ(mod) == T_INTNEG ) {
             if ( TNUM_OBJ(opR) == T_INTPOS )
@@ -1651,9 +1672,10 @@ Obj             QuoInt (
         }
 
         /* the small int -(1<<28) divided by -1 is the large int (1<<28)   */
-        if ( opL == INTOBJ_INT(-(1<<28)) && opR == INTOBJ_INT(-1) ) {
+        if ( opL == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS)) 
+	    && opR == INTOBJ_INT(-1) ) {
             quo = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
-            ADDR_INT(quo)[1] = 1<<12;
+            ADDR_INT(quo)[1] = 1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS);
             ADDR_INT(quo)[0] = 0;
             return quo;
         }
@@ -1675,10 +1697,13 @@ Obj             QuoInt (
     else if ( IS_INTOBJ(opL) ) {
 
         /* the small int -(1<<28) divided by the large int (1<<28) is -1   */
-        if ( opL == INTOBJ_INT(-(1<<28))
+
+        if ( opL == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
-          && ADDR_INT(opR)[3] == 0 && ADDR_INT(opR)[2] == 0
-          && 65536*ADDR_INT(opR)[1] + ADDR_INT(opR)[0] == 1<<28 )
+          && ADDR_INT(opR)[3] == 0 
+	  && ADDR_INT(opR)[2] == 0
+          && ADDR_INT(opR)[1] == 1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS)
+	  && ADDR_INT(opR)[0] == 0 )
             quo = INTOBJ_INT(-1);
 
         /* in all other cases the quotient is of course zero               */
@@ -1689,7 +1714,8 @@ Obj             QuoInt (
 
     /* divide a large integer by a small integer                           */
     else if ( IS_INTOBJ(opR)
-           && INT_INTOBJ(opR) < 65536 && -65536 <= INT_INTOBJ(opR) ) {
+           && INT_INTOBJ(opR) < INTBASE 
+	   && -INTBASE  <= INT_INTOBJ(opR) ) {
 
         /* pathological case first                                         */
         if ( opR == INTOBJ_INT(0) ) {
@@ -1715,7 +1741,7 @@ Obj             QuoInt (
         /* run through the left operand and divide digitwise               */
         c = 0;
         for ( ; l >= ADDR_INT(opL); l--, q-- ) {
-            c  = (c<<16) + *l;
+            c  = (c<<NR_DIGIT_BITS) + (Int)*l;
             *q = c / i;
             c  = c - i * *q;
             /*N clever compilers may prefer:  c  = c % i;                  */
@@ -1731,11 +1757,13 @@ Obj             QuoInt (
         q = ADDR_INT(quo) + SIZE_INT(quo);
         if ( SIZE_INT(quo) == 4 && q[-2] == 0 && q[-1] == 0 ) {
             if ( TNUM_OBJ(quo) == T_INTPOS
-              && (UInt)(65536*q[-3]+q[-4]) < (1<<28) )
-                quo = INTOBJ_INT( 65536*q[-3]+q[-4] );
+              &&(UInt)(INTBASE*q[-3]+q[-4]) 
+		< (1L<<NR_SMALL_INT_BITS))
+                quo = INTOBJ_INT( INTBASE*q[-3]+q[-4] );
             else if ( TNUM_OBJ(quo) == T_INTNEG
-              && (UInt)(65536*q[-3]+q[-4]) <= (1<<28) )
-                quo = INTOBJ_INT( -(65536*q[-3]+q[-4]) );
+              && (UInt)(INTBASE*q[-3]+q[-4])
+		     <= (1L<<NR_SMALL_INT_BITS) )
+                quo = INTOBJ_INT( -(INTBASE*q[-3]+q[-4]) );
         }
 
     }
@@ -1748,13 +1776,13 @@ Obj             QuoInt (
             if ( 0 < INT_INTOBJ(opR) ) {
                 quo = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
                 ADDR_INT(quo)[0] = (TypDigit)(INT_INTOBJ(opR));
-                ADDR_INT(quo)[1] = (INT_INTOBJ(opR)>>16);
+                ADDR_INT(quo)[1] = (INT_INTOBJ(opR)>>NR_DIGIT_BITS);
                 opR = quo;
             }
             else {
                 quo = NewBag( T_INTNEG, 4*sizeof(TypDigit) );
                 ADDR_INT(quo)[0] = (TypDigit)(-INT_INTOBJ(opR));
-                ADDR_INT(quo)[1] = (-INT_INTOBJ(opR))>>16;
+                ADDR_INT(quo)[1] = (-INT_INTOBJ(opR))>>NR_DIGIT_BITS;
                 opR = quo;
             }
         }
@@ -1775,9 +1803,12 @@ Obj             QuoInt (
         rs = SIZE_INT(opR);
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
-        for ( e = 0; (r[rs-1]<<e) + (r[rs-2]>>(16-e)) < 65536/2; e++ ) ;
-        r1 = (r[rs-1]<<e) + (r[rs-2]>>(16-e));
-        r2 = (r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(16-e) : 0);
+        for ( e = 0;
+	     ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
+	                       < INTBASE/2 ; e++ ) ;
+
+        r1 = ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
+        r2 = ((Int)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
 
         /* allocate a bag for the quotient                                 */
         if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
@@ -1790,13 +1821,16 @@ Obj             QuoInt (
 
             /* guess the factor                                            */
             l = ADDR_INT(opL) + rs + i;
-            l01 = ((65536*l[0]+l[-1])<<e) + (l[-2]>>(16-e));
+            l01 = ((INTBASE*l[0]+l[-1])<<e) 
+	      + (l[-2]>>(NR_DIGIT_BITS-e));
 
             if ( l01 == 0 )  continue;
-            l2  = (l[-2]<<e) + (rs+i>=3 ? l[-3]>>(16-e) : 0);
-            if ( (l[0]<<e)+(l[-1]>>(16-e)) < r1 )  qi = l01 / r1;
-            else                                   qi = 65536 - 1;
-            while ( l01-qi*r1 < 65536 && 65536*(l01-qi*r1)+l2 < qi*r2 )
+            l2  = ((Int)l[-2]<<e) + (rs+i>=3 ? l[-3]>>(NR_DIGIT_BITS-e) : 0);
+            if ( ((Int)l[0]<<e)+(l[-1]>>(NR_DIGIT_BITS-e)) < r1 )
+	             qi = l01 / r1;
+            else     qi = INTBASE - 1;
+            while ( l01-(Int)qi*r1 < INTBASE 
+		    && INTBASE*(l01-(Int)qi*r1)+l2 < (Int)qi*r2 )
                 qi--;
 
             /* l = l - qi * r;                                             */
@@ -1804,9 +1838,9 @@ Obj             QuoInt (
             l = ADDR_INT(opL) + i;
             r = ADDR_INT(opR);
             for ( k = 0; k < rs; ++k, ++l, ++r ) {
-                c = *l - qi * *r - d;  *l = c;  d = -(c>>16);
+                c = *l - (Int)qi * *r - d;  *l = c;  d = -(c>>NR_DIGIT_BITS);
             }
-            c = *l - d; d = -(c>>16);
+            c = (Int)*l - d; d = -(c>>NR_DIGIT_BITS);
 
             /* if we have a borrow then add back                           */
             if ( d != 0 ) {
@@ -1814,9 +1848,11 @@ Obj             QuoInt (
                 l = ADDR_INT(opL) + i;
                 r = ADDR_INT(opR);
                 for ( k = 0; k < rs; ++k, ++l, ++r ) {
-                    c = *l + *r + d;  *l = c;  d = (c>>16);
+                    c = (Int)*l + (Int)*r + (Int)d;
+		    *l = c;
+		    d = (c>>NR_DIGIT_BITS);
                 }
-                c = *l + d; d = (c>>16);
+                c = *l + d; d = (c>>NR_DIGIT_BITS);
                 qi--;
             }
 
@@ -1836,11 +1872,11 @@ Obj             QuoInt (
         q = ADDR_INT(quo) + SIZE_INT(quo);
         if ( SIZE_INT(quo) == 4 && q[-2] == 0 && q[-1] == 0 ) {
             if ( TNUM_OBJ(quo) == T_INTPOS
-              && (UInt)(65536*q[-3]+q[-4]) < (1<<28) )
-                quo = INTOBJ_INT( 65536*q[-3]+q[-4] );
+              && (UInt)(INTBASE*q[-3]+q[-4]) < (1L<<NR_SMALL_INT_BITS) )
+                quo = INTOBJ_INT( INTBASE*q[-3]+q[-4] );
             else if ( TNUM_OBJ(quo) == T_INTNEG
-              && (UInt)(65536*q[-3]+q[-4]) <= (1<<28) )
-                quo = INTOBJ_INT( -(65536*q[-3]+q[-4]) );
+              && (UInt)(INTBASE*q[-3]+q[-4]) <= (1L<<NR_SMALL_INT_BITS) )
+                quo = INTOBJ_INT( -(INTBASE*q[-3]+q[-4]) );
         }
 
     }
@@ -1955,10 +1991,12 @@ Obj             RemInt (
     else if ( IS_INTOBJ(opL) ) {
 
         /* the small int -(1<<28) rem the large int (1<<28) is 0           */
-        if ( opL == INTOBJ_INT(-(1<<28))
+        if ( opL == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
-          && ADDR_INT(opR)[3] == 0 && ADDR_INT(opR)[2] == 0
-          && 65536*ADDR_INT(opR)[1] + ADDR_INT(opR)[0] == 1<<28 )
+          && ADDR_INT(opR)[3] == 0 
+	  && ADDR_INT(opR)[2] == 0
+          && ADDR_INT(opR)[1] == 1L << (NR_SMALL_INT_BITS-NR_DIGIT_BITS)
+	  && ADDR_INT(opR)[0] == 0 )
             rem = INTOBJ_INT(0);
 
         /* in all other cases the remainder is equal the left operand      */
@@ -1969,7 +2007,8 @@ Obj             RemInt (
 
     /* compute the remainder of a large integer by a small integer         */
     else if ( IS_INTOBJ(opR)
-           && INT_INTOBJ(opR) < 65536 && -65536 <= INT_INTOBJ(opR) ) {
+           && INT_INTOBJ(opR) < INTBASE
+	   && -INTBASE <= INT_INTOBJ(opR) ) {
 
         /* pathological case first                                         */
         if ( opR == INTOBJ_INT(0) ) {
@@ -1984,7 +2023,7 @@ Obj             RemInt (
         i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
 
         /* maybe its trivial                                               */
-        if ( 65536 % i == 0 ) {
+        if ( INTBASE % i == 0 ) {
             c = ADDR_INT(opL)[0] % i;
         }
 
@@ -1993,7 +2032,7 @@ Obj             RemInt (
             l = ADDR_INT(opL) + SIZE_INT(opL) - 1;
             c = 0;
             for ( ; l >= ADDR_INT(opL); l-- ) {
-                c  = (c<<16) + *l;
+                c  = (c<<NR_DIGIT_BITS) + (Int)*l;
                 c  = c % i;
             }
         }
@@ -2014,13 +2053,13 @@ Obj             RemInt (
             if ( 0 < INT_INTOBJ(opR) ) {
                 rem = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
                 ADDR_INT(rem)[0] = (TypDigit)(INT_INTOBJ(opR));
-                ADDR_INT(rem)[1] = (INT_INTOBJ(opR)>>16);
+                ADDR_INT(rem)[1] = (INT_INTOBJ(opR)>>NR_DIGIT_BITS);
                 opR = rem;
             }
             else {
                 rem = NewBag( T_INTNEG, 4*sizeof(TypDigit) );
                 ADDR_INT(rem)[0] = (TypDigit)(-INT_INTOBJ(opR));
-                ADDR_INT(rem)[1] = (-INT_INTOBJ(opR))>>16;
+                ADDR_INT(rem)[1] = (-INT_INTOBJ(opR))>>NR_DIGIT_BITS;
                 opR = rem;
             }
         }
@@ -2040,21 +2079,26 @@ Obj             RemInt (
         rs = SIZE_INT(opR);
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
-        for ( e = 0; (r[rs-1]<<e) + (r[rs-2]>>(16-e)) < 65536/2; e++ ) ;
-        r1 = (r[rs-1]<<e) + (r[rs-2]>>(16-e));
-        r2 = (r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(16-e) : 0);
+        for ( e = 0;
+	     ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
+	                       < INTBASE/2; e++ ) ;
+
+        r1 = ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
+        r2 = ((Int)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
 
         /* run through the digits in the quotient                          */
         for ( i = SIZE_INT(rem)-SIZE_INT(opR)-1; i >= 0; i-- ) {
 
             /* guess the factor                                            */
             m = ADDR_INT(rem) + rs + i;
-            m01 = ((65536*m[0]+m[-1])<<e) + (m[-2]>>(16-e));
+            m01 = ((INTBASE*m[0]+m[-1])<<e) + (m[-2]>>(NR_DIGIT_BITS-e));
             if ( m01 == 0 )  continue;
-            m2  = (m[-2]<<e) + (rs+i>=3 ? m[-3]>>(16-e) : 0);
-            if ( (m[0]<<e)+(m[-1]>>(16-e)) < r1 )  qi = m01 / r1;
-            else                                   qi = 65536 - 1;
-            while ( m01-qi*r1 < 65536 && 65536*(m01-qi*r1)+m2 < qi*r2 )
+            m2  = ((Int)m[-2]<<e) + (rs+i>=3 ? m[-3]>>(NR_DIGIT_BITS-e) : 0);
+            if ( ((Int)m[0]<<e)+(m[-1]>>(NR_DIGIT_BITS-e)) < r1 )
+	            qi = m01 / r1;
+            else    qi = INTBASE - 1;
+            while ( m01-(Int)qi*r1 < INTBASE 
+		   && INTBASE*(m01-(Int)qi*r1)+m2 < (Int)qi*r2 )
                 qi--;
 
             /* m = m - qi * r;                                             */
@@ -2062,9 +2106,11 @@ Obj             RemInt (
             m = ADDR_INT(rem) + i;
             r = ADDR_INT(opR);
             for ( k = 0; k < rs; ++k, ++m, ++r ) {
-                c = *m - qi * *r - d;  *m = c;  d = -(c>>16);
+                c = (Int)*m - (Int)qi * *r - (Int)d;
+		*m = c;
+		d = -(c>>NR_DIGIT_BITS);
             }
-            c = *m - d;  *m = c;  d = -(c>>16);
+            c = *m - d;  *m = c;  d = -(c>>NR_DIGIT_BITS);
 
             /* if we have a borrow then add back                           */
             if ( d != 0 ) {
@@ -2072,9 +2118,11 @@ Obj             RemInt (
                 m = ADDR_INT(rem) + i;
                 r = ADDR_INT(opR);
                 for ( k = 0; k < rs; ++k, ++m, ++r ) {
-                    c = *m + *r + d;  *m = c;  d = (c>>16);
+                    c = (Int)*m + (Int)*r + (Int)d;
+		    *m = c;
+		    d = (c>>NR_DIGIT_BITS);
                 }
-                c = *m + d;  *m = c;  d = (c>>16);
+                c = *m + d;  *m = c;  d = (c>>NR_DIGIT_BITS);
                 qi--;
             }
 
@@ -2094,11 +2142,11 @@ Obj             RemInt (
 
             /* reduce to small integer if possible, otherwise shrink bag   */
             if ( k <= 2 && TNUM_OBJ(rem) == T_INTPOS
-              && (UInt)(65536*m[1]+m[0]) < (1<<28) )
-                rem = INTOBJ_INT( 65536*m[1]+m[0] );
+              && (UInt)(INTBASE*m[1]+m[0]) < (1L<<NR_SMALL_INT_BITS) )
+                rem = INTOBJ_INT( INTBASE*m[1]+m[0] );
             else if ( k <= 2 && TNUM_OBJ(rem) == T_INTNEG
-              && (UInt)(65536*m[1]+m[0]) <= (1<<28) )
-                rem = INTOBJ_INT( -(65536*m[1]+m[0]) );
+              && (UInt)(INTBASE*m[1]+m[0]) <= (1L<<NR_SMALL_INT_BITS) )
+                rem = INTOBJ_INT( -(INTBASE*m[1]+m[0]) );
             else
                 ResizeBag( rem, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
         }
@@ -2195,10 +2243,10 @@ Obj             GcdInt (
         }
 
         /* now i is the result                                             */
-        if ( i == (1<<28) ) {
+        if ( i == (1L<<NR_SMALL_INT_BITS) ) {
             gcd = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
             ADDR_INT(gcd)[0] = i;
-            ADDR_INT(gcd)[1] = (i>>16);
+            ADDR_INT(gcd)[1] = (i>>NR_DIGIT_BITS);
         }
         else {
             gcd = INTOBJ_INT( i );
@@ -2208,9 +2256,9 @@ Obj             GcdInt (
 
     /* compute the gcd of a small and a large integer                      */
     else if ( (IS_INTOBJ(opL)
-               && INT_INTOBJ(opL) < 65536 && -65536 <= INT_INTOBJ(opL))
+               && INT_INTOBJ(opL) < INTBASE && -INTBASE <= INT_INTOBJ(opL))
            || (IS_INTOBJ(opR)
-               && INT_INTOBJ(opR) < 65536 && -65536 <= INT_INTOBJ(opR)) ) {
+               && INT_INTOBJ(opR) < INTBASE && -INTBASE <= INT_INTOBJ(opR)) ) {
 
         /* make the right operand the small one                            */
         if ( IS_INTOBJ(opL) ) {
@@ -2228,7 +2276,7 @@ Obj             GcdInt (
         l = ADDR_INT(opL) + SIZE_INT(opL) - 1;
         c = 0;
         for ( ; l >= ADDR_INT(opL); l-- ) {
-            c  = (c<<16) + *l;
+            c  = (c<<NR_DIGIT_BITS) + (Int)*l;
             c  = c % i;
         }
         k = c;
@@ -2241,10 +2289,10 @@ Obj             GcdInt (
         }
 
         /* now i is the result                                             */
-        if ( i == (1<<28) ) {
+        if ( i == (1L<<NR_SMALL_INT_BITS) ) {
             gcd = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
-            ADDR_INT(gcd)[0] = i;
-            ADDR_INT(gcd)[1] = (i>>16);
+            ADDR_INT(gcd)[0] = 0;
+            ADDR_INT(gcd)[1] = 1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS);
         }
         else {
             gcd = INTOBJ_INT( i );
@@ -2260,29 +2308,29 @@ Obj             GcdInt (
             if ( 0 < INT_INTOBJ(opL) ) {
                 gcd = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
                 ADDR_INT(gcd)[0] = (TypDigit)(INT_INTOBJ(opL));
-                ADDR_INT(gcd)[1] = (INT_INTOBJ(opL)>>16);
+                ADDR_INT(gcd)[1] = (INT_INTOBJ(opL)>>NR_DIGIT_BITS);
                 opL = gcd;
             }
             else {
                 gcd = NewBag( T_INTNEG, 4*sizeof(TypDigit) );
                 ADDR_INT(gcd)[0] = (TypDigit)(-INT_INTOBJ(opL));
-                ADDR_INT(gcd)[1] = (-INT_INTOBJ(opL))>>16;
+                ADDR_INT(gcd)[1] = (-INT_INTOBJ(opL))>>NR_DIGIT_BITS;
                 opL = gcd;
             }
         }
 
-        /* a small divisor larger than one digit isn't handled above       */
+        /* a small dividend larger than one digit isn't handled above       */
         if ( IS_INTOBJ(opR) ) {
             if ( 0 < INT_INTOBJ(opR) ) {
                 gcd = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
                 ADDR_INT(gcd)[0] = (TypDigit)(INT_INTOBJ(opR));
-                ADDR_INT(gcd)[1] = (INT_INTOBJ(opR)>>16);
+                ADDR_INT(gcd)[1] = (INT_INTOBJ(opR)>>NR_DIGIT_BITS);
                 opR = gcd;
             }
             else {
                 gcd = NewBag( T_INTNEG, 4*sizeof(TypDigit) );
                 ADDR_INT(gcd)[0] = (TypDigit)(-INT_INTOBJ(opR));
-                ADDR_INT(gcd)[1] = (-INT_INTOBJ(opR))>>16;
+                ADDR_INT(gcd)[1] = (-INT_INTOBJ(opR))>>NR_DIGIT_BITS;
                 opR = gcd;
             }
         }
@@ -2317,21 +2365,25 @@ Obj             GcdInt (
         while ( rs >= 2 ) {
 
             /* get the leading two digits                                  */
-            for ( e = 0; (r[rs-1]<<e) + (r[rs-2]>>(16-e)) < 65536/2; e++ ) ;
-            r1 = (r[rs-1]<<e) + (r[rs-2]>>(16-e));
-            r2 = (r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(16-e) : 0);
+            for ( e = 0;
+		 ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
+		                   < INTBASE/2; e++ ) ;
+            r1 = ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
+            r2 = ((Int)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
 
             /* run through the digits in the quotient                      */
             for ( i = ls - rs; i >= 0; i-- ) {
 
                 /* guess the factor                                        */
                 l = ADDR_INT(opL) + rs + i;
-                l01 = ((65536*l[0]+l[-1])<<e) + (l[-2]>>(16-e));
+                l01 = ((INTBASE*l[0]+l[-1])<<e) + (l[-2]>>(NR_DIGIT_BITS-e));
                 if ( l01 == 0 )  continue;
-                l2  = (l[-2]<<e) + (rs+i>=3 ? l[-3]>>(16-e) : 0);
-                if ( (l[0]<<e)+(l[-1]>>(16-e)) < r1 )  qi = l01 / r1;
-                else                                   qi = 65536 - 1;
-                while ( l01-qi*r1 < 65536 && 65536*(l01-qi*r1)+l2 < qi*r2 )
+                l2  = ((Int)l[-2]<<e) + (rs+i>=3 ? l[-3]>>(NR_DIGIT_BITS-e):0);
+                if ( ((Int)l[0]<<e)+(l[-1]>>(NR_DIGIT_BITS-e)) < r1 )
+		        qi = l01 / r1;
+                else    qi = INTBASE - 1;
+                while ( l01-(Int)qi*r1 < INTBASE 
+		        && INTBASE*(l01-(Int)qi*r1)+l2 < (Int)qi*r2 )
                     qi--;
 
                 /* l = l - qi * r;                                         */
@@ -2339,9 +2391,11 @@ Obj             GcdInt (
                 l = ADDR_INT(opL) + i;
                 r = ADDR_INT(opR);
                 for ( k = 0; k < rs; ++k, ++l, ++r ) {
-                    c = *l - qi * *r - d;  *l = c;  d = -(c>>16);
+                    c = (Int)*l - (Int)qi * *r - (Int)d;
+		    *l = c;
+		    d = -(c>>NR_DIGIT_BITS);
                 }
-                c = *l - d;  *l = c;  d = -(c>>16);
+                c = *l - d;  *l = c;  d = -(c>>NR_DIGIT_BITS);
 
                 /* if we have a borrow then add back                       */
                 if ( d != 0 ) {
@@ -2349,9 +2403,11 @@ Obj             GcdInt (
                     l = ADDR_INT(opL) + i;
                     r = ADDR_INT(opR);
                     for ( k = 0; k < rs; ++k, ++l, ++r ) {
-                        c = *l + *r + d;  *l = c;  d = (c>>16);
+                        c = (Int)*l + (Int)*r + (Int)d;
+			*l = c;
+			d = (c>>NR_DIGIT_BITS);
                     }
-                    c = *l + d;  *l = c;  d = (c>>16);
+                    c = *l + d;  *l = c;  d = (c>>NR_DIGIT_BITS);
                     qi--;
                 }
             }
@@ -2384,11 +2440,11 @@ Obj             GcdInt (
 
                 /* reduce to small integer if possible, otherwise shrink b */
                 if ( k <= 2 && TNUM_OBJ(opL) == T_INTPOS
-                  && (UInt)(65536*l[1]+l[0]) < (1<<28) )
-                    opL = INTOBJ_INT( 65536*l[1]+l[0] );
+                  && (UInt)(INTBASE*l[1]+l[0]) < (1L<<NR_SMALL_INT_BITS) )
+                    opL = INTOBJ_INT( INTBASE*l[1]+l[0] );
                 else if ( k <= 2 && TNUM_OBJ(opL) == T_INTNEG
-                  && (UInt)(65536*l[1]+l[0]) <= (1<<28) )
-                    opL = INTOBJ_INT( -(65536*l[1]+l[0]) );
+                  && (UInt)(INTBASE*l[1]+l[0]) <= (1L<<NR_SMALL_INT_BITS) )
+                    opL = INTOBJ_INT( -(INTBASE*l[1]+l[0]) );
                 else
                     ResizeBag( opL, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
             }
@@ -2407,7 +2463,7 @@ Obj             GcdInt (
             l = ADDR_INT(opL) + SIZE_INT(opL) - 1;
             c = 0;
             for ( ; l >= ADDR_INT(opL); l-- ) {
-                c  = (c<<16) + *l;
+                c  = (c<<NR_DIGIT_BITS) + (Int)*l;
                 c  = c % i;
             }
             k = c;
@@ -2420,10 +2476,10 @@ Obj             GcdInt (
             }
 
             /* now i is the result                                         */
-            if ( i == (1<<28) ) {
+            if ( i == (1L<<NR_SMALL_INT_BITS) ) {
                 gcd = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
-                ADDR_INT(gcd)[0] = i;
-                ADDR_INT(gcd)[1] = (i>>16);
+                ADDR_INT(gcd)[0] = 0;
+                ADDR_INT(gcd)[1] = 1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS);
             }
             else {
                 gcd = INTOBJ_INT( i );
@@ -2491,11 +2547,16 @@ void            InitInt ( void )
 
     /* install the marking functions                                       */
     InfoBags[           T_INT           ].name = "integer";
-    InfoBags[           T_INTPOS        ].name = "integer (> 2^28)";
     InitMarkFuncBags(   T_INTPOS        , MarkNoSubBags );
-    InfoBags[           T_INTNEG        ].name = "integer (< -2^28)";
     InitMarkFuncBags(   T_INTNEG        , MarkNoSubBags );
 
+#ifdef SYS_IS_64_BIT
+    InfoBags[           T_INTPOS        ].name = "integer (>= 2^60)";
+    InfoBags[           T_INTNEG        ].name = "integer (< -2^60)";
+#else
+    InfoBags[           T_INTPOS        ].name = "integer (>= 2^28)";
+    InfoBags[           T_INTNEG        ].name = "integer (< -2^28)";
+#endif
 
     /* install the kind functions                                          */
     ImportGVarFromLibrary( "TYPE_INT_SMALL_ZERO", &TYPE_INT_SMALL_ZERO );

@@ -1,6 +1,7 @@
 /****************************************************************************
 **
-*W  ariths.h                    GAP source                   Martin Schoenert
+*W  ariths.c                    GAP source                       Frank Celler
+*W                                                         & Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -8,8 +9,8 @@
 **
 **  This file declares the functions of the  arithmetic  operations  package.
 */
-#ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_ariths_h =
+#ifdef INCLUDE_DECLARATION_PART
+SYS_CONST char * Revision_ariths_h =
    "@(#)$Id$";
 #endif
 
@@ -22,7 +23,7 @@ char *          Revision_ariths_h =
 **  'CompaMethod'  is the type of methods  for comparison operations, i.e., a
 **  function accepting two arguments of type 'Obj' and returning an 'Int'.
 */
-typedef Int     (* CompaMethod) ( Obj opL, Obj opR );
+typedef Int (* CompaMethod) ( Obj opL, Obj opR );
 
 
 /****************************************************************************
@@ -33,7 +34,7 @@ typedef Int     (* CompaMethod) ( Obj opL, Obj opR );
 **  i.e.,  a function accepting  one argument of type  'Obj' and returning an
 **  'Obj'.
 */
-typedef Obj     (* ArithMethod1) ( Obj op );
+typedef Obj (* ArithMethod1) ( Obj op );
 
 
 /****************************************************************************
@@ -44,8 +45,148 @@ typedef Obj     (* ArithMethod1) ( Obj op );
 **  i.e., a function  accepting two arguments  of type 'Obj' and returning an
 **  'Obj'.
 */
-typedef Obj     (* ArithMethod2) ( Obj opL, Obj opR );
+typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
 
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * *  unary arithmetic operations * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  ZERO( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
+**
+**  'ZERO' returns the zero of the object <op>.
+*/
+#define ZERO(op)        ((*ZeroFuncs[TNUM_OBJ(op)])(op))
+
+extern Obj ZeroAttr;
+
+
+/****************************************************************************
+**
+*V  ZeroFuncs[<type>] . . . . . . . . . . . . . . . . . table of zero methods
+*/
+extern ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  InstallZeroObject( <verb> )
+*/
+extern void InstallZeroObject ( Int );
+
+
+/****************************************************************************
+**
+
+*F  AINV( <op> )  . . . . . . . . . . . . . . . additive inverse of an object
+**
+**  'AINV' returns the additive inverse of the object <op>.
+*/
+#define AINV(op) ((*AInvFuncs[TNUM_OBJ(op)])(op))
+
+extern Obj AInvAttr;
+
+
+/****************************************************************************
+**
+*V  AInvFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
+*/
+extern ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  InstallAinvObject( <verb> )
+*/
+extern void InstallAinvObject ( Int );
+
+
+/****************************************************************************
+**
+*F  C_AINV( <val>, <left> ) . . . . . . . . . . . . . . . . . .  compute ainv
+*/
+#define C_AINV(val,left) \
+ val = AINV( left );
+
+
+/****************************************************************************
+**
+*F  C_AINV_FIA( <val>, <left> ) . . . . . . . . .  compute ainv, fast integer
+*/
+#define C_AINV_FIA(val,left) \
+ val = AINV( left );
+
+
+/****************************************************************************
+**
+*F  C_AINV_INTOBJS( <val>, <left> ) . . . . . . .  compute ainv of an integer
+*/
+#define C_AINV_INTOBJS(val,left) \
+ val = AINV( left );
+
+
+/****************************************************************************
+**
+
+*F  ONE( <op> ) . . . . . . . . . . . . . . . . . . . . . .  one of an object
+**
+**  'ONE' returns the one of the object <op>.
+*/
+#define ONE(op)         ((*OneFuncs[TNUM_OBJ(op)])(op))
+
+extern Obj OneAttr;
+
+
+/****************************************************************************
+**
+*V  OneFuncs[<type>]  . . . . . . . . . . . . . . . . .  table of one methods
+*/
+extern ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  InstallOneObject( <verb> )
+*/
+extern void InstallOneObject ( Int );
+
+
+/****************************************************************************
+**
+
+*F  INV( <op> ) . . . . . . . . . . . . . . . . . . . .  inverse of an object
+**
+**  'INV' returns the multiplicative inverse of the object <op>.
+*/
+#define INV(op)         ((*InvFuncs[TNUM_OBJ(op)])(op))
+
+extern Obj InvAttr;
+
+
+/****************************************************************************
+**
+*V  InvFuncs[<type>]  . . . . . . . . . . . . . .  table of inverse functions
+*/
+extern ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  InstallInvObject( <verb> )
+*/
+extern void InstallInvObject ( Int );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * comparison operations  * * * * * * * * * * * * *
+*/
 
 /****************************************************************************
 **
@@ -141,6 +282,12 @@ extern void InstallInObject ( Int );
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * binary arithmetic operations * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  SUM( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  sum of two objects
 **
 **  'SUM' returns the sum of the two objects <opL> and <opR>.
@@ -172,54 +319,30 @@ extern void InstallSumObject ( Int );
 
 /****************************************************************************
 **
-
-*F  ZERO( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
-**
-**  'ZERO' returns the zero of the object <op>.
+*F  C_SUM( <val>, <left>, <right> ) . . . . . . . . . . . . . . . compute sum
 */
-#define ZERO(op)        ((*ZeroFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj ZeroAttr;
+#define C_SUM(val,left,right) \
+ val = SUM( left, right );
 
 
 /****************************************************************************
 **
-*V  ZeroFuncs[<type>] . . . . . . . . . . . . . . . . . table of zero methods
+*F  C_SUM_FIA( <val>, <left>, <right> ) . . . . .  compute sum, fast integers
 */
-extern ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
+#define C_SUM_FIA(val,left,right) \
+ if ( ! ARE_INTOBJS(left,right) || ! SUM_INTOBJS(val,left,right) ) { \
+  val = SUM( left, right ); \
+ }
 
 
 /****************************************************************************
 **
-*F  InstallZeroObject( <verb> )
+*F  C_SUM_INTOBJS( <val>, <left>, <right> ) . . . compute sum of two integers
 */
-extern void InstallZeroObject ( Int );
-
-
-/****************************************************************************
-**
-
-*F  AINV( <op> )  . . . . . . . . . . . . . . . additive inverse of an object
-**
-**  'AINV' returns the additive inverse of the object <op>.
-*/
-#define AINV(op)        ((*AInvFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj AInvAttr;
-
-
-/****************************************************************************
-**
-*V  AInvFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
-*/
-extern ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
-
-
-/****************************************************************************
-**
-*F  InstallAinvObject( <verb> )
-*/
-extern void InstallAinvObject ( Int );
+#define C_SUM_INTOBJS(val,left,right) \
+ if ( ! SUM_INTOBJS(val,left,right) ) { \
+  val = SUM( left, right ); \
+ }
 
 
 /****************************************************************************
@@ -256,6 +379,34 @@ extern void InstallDiffObject ( Int );
 
 /****************************************************************************
 **
+*F  C_DIFF( <val>, <left>, <right> )  . . . . . . . . . . . . .  compute diff
+*/
+#define C_DIFF(val,left,right) \
+ val = DIFF( left, right );
+
+
+/****************************************************************************
+**
+*F  C_DIFF_FIA( <val>, <left>, <right> )  . . . . compute diff, fast integers
+*/
+#define C_DIFF_FIA(val,left,right) \
+ if ( ! ARE_INTOBJS(left,right) || ! DIFF_INTOBJS(val,left,right) ) { \
+  val = DIFF( left, right ); \
+ }
+
+
+/****************************************************************************
+**
+*F  C_DIFF_INTOBJS( <val>, <left>, <right> )  .  compute diff of two integers
+*/
+#define C_DIFF_INTOBJS(val,left,right) \
+ if ( ! DIFF_INTOBJS(val,left,right) ) { \
+  val = DIFF( left, right ); \
+ }
+
+
+/****************************************************************************
+**
 
 *F  PROD( <opL>, <opR> )  . . . . . . . . . . . . . .  product of two objects
 **
@@ -288,54 +439,30 @@ extern void InstallProdObject ( Int );
 
 /****************************************************************************
 **
-
-*F  ONE( <op> ) . . . . . . . . . . . . . . . . . . . . . .  one of an object
-**
-**  'ONE' returns the one of the object <op>.
+*F  C_PROD( <val>, <left>, <right> )  . . . . . . . . . . . . compute product
 */
-#define ONE(op)         ((*OneFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj OneAttr;
+#define C_PROD(val,left,right) \
+ val = PROD( left, right );
 
 
 /****************************************************************************
 **
-*V  OneFuncs[<type>]  . . . . . . . . . . . . . . . . .  table of one methods
+*F  C_PROD_FIA( <val>, <left>, <right> )  . .  compute product, fast integers
 */
-extern ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
+#define C_PROD_FIA(val,left,right) \
+ if ( ! ARE_INTOBJS(left,right) || ! PROD_INTOBJS(val,left,right) ) { \
+  val = PROD( left, right ); \
+ }
 
 
 /****************************************************************************
 **
-*F  InstallOneObject( <verb> )
+*F  C_PROD_INTOBJS( <val>, <left>, <right> )  compute product of two integers
 */
-extern void InstallOneObject ( Int );
-
-
-/****************************************************************************
-**
-
-*F  INV( <op> ) . . . . . . . . . . . . . . . . . . . .  inverse of an object
-**
-**  'INV' returns the multiplicative inverse of the object <op>.
-*/
-#define INV(op)         ((*InvFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj InvAttr;
-
-
-/****************************************************************************
-**
-*V  InvFuncs[<type>]  . . . . . . . . . . . . . .  table of inverse functions
-*/
-extern ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
-
-
-/****************************************************************************
-**
-*F  InstallInvObject( <verb> )
-*/
-extern void InstallInvObject ( Int );
+#define C_PROD_INTOBJS(val,left,right) \
+ if ( ! PROD_INTOBJS(val,left,right) ) { \
+  val = PROD( left, right ); \
+ }
 
 
 /****************************************************************************
@@ -473,15 +600,21 @@ extern void InstallModObject ( Int );
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  InitAriths()  . . . . . . .  initialize the arithmetic operations package
 **
 **  'InitAriths' initializes the arithmetic operations package.
 */
-extern  void            InitAriths ( void );
+extern void InitAriths ( void );
 
 
 /****************************************************************************
 **
 
-*E  ariths.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*E  ariths.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

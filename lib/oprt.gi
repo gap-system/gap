@@ -556,8 +556,14 @@ end );
 #M  OperationHomomorphism( <xset> ) . . . . . . . . .  operation homomorphism
 ##
 OperationHomomorphism := function( arg )
-    local   xset,  p;
+    local   attr,  xset,  p;
     
+    if arg[ Length( arg ) ] = "surjective"  then
+        attr := SurjectiveOperationHomomorphismAttr;
+        Unbind( arg[ Length( arg ) ] );
+    else
+        attr := OperationHomomorphismAttr;
+    fi;
     if Length( arg ) = 1  then
         xset := arg[ 1 ];
     elif     Length( arg ) = 2
@@ -578,11 +584,10 @@ OperationHomomorphism := function( arg )
             xset := CallFuncList( ExternalOrbit, arg );
         fi;
     fi;
-    return OperationHomomorphismAttr( xset );
+    return attr( xset );
 end;
 
-InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
-    function( xset )
+OperationHomomorphismConstructor := function( xset, surj )
     local   G,  D,  opr,  fam,  filter,  hom,  i;
     
     G := ActingDomain( xset );
@@ -595,10 +600,14 @@ InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
     else
         filter := IsOperationHomomorphism;
     fi;
+    if surj  then
+        filter := filter and IsSurjective;
+    fi;
     hom := rec(  );
     if IsExternalSetByOperatorsRep( xset )  then
         filter := filter and IsOperationHomomorphismByOperators;
     elif     IsMatrixGroup( G )
+         and not IsProjectiveSpaceEnumerator( D )
          and IsScalarList( D[ 1 ] )
          and opr in [ OnPoints, OnRight ]  then
         if     not IsExternalSubset( xset )
@@ -646,7 +655,17 @@ InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
     Objectify( NewType( fam, filter ), hom );
     SetUnderlyingExternalSet( hom, xset );
     return hom;
-end );
+end;
+
+InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
+    xset -> OperationHomomorphismConstructor( xset, false ) );
+
+#############################################################################
+##
+#M  SurjectiveOperationHomomorphism( <xset> ) .  surj. operation homomorphism
+##
+InstallMethod( SurjectiveOperationHomomorphismAttr, true, [ IsExternalSet ],
+        0, xset -> OperationHomomorphismConstructor( xset, true ) );
 
 #############################################################################
 ##
@@ -668,8 +687,12 @@ InstallMethod( Source, true, [ IsOperationHomomorphism ], 0,
 ##
 #M  Range( <hom> )  . . . . . . . . . . . . . range of operation homomorphism
 ##
-InstallMethod( Range, true, [ IsOperationHomomorphism ], 0,
-    hom -> SymmetricGroup( Length( HomeEnumerator( UnderlyingExternalSet( hom ) ) ) ) );
+InstallMethod( Range, true, [ IsOperationHomomorphism ], 0, hom ->
+    SymmetricGroup( Length( HomeEnumerator(UnderlyingExternalSet(hom)) ) ) );
+
+InstallMethod( Range, true, [ IsOperationHomomorphism and IsSurjective ], 0,
+    hom -> GroupByGenerators( List( GeneratorsOfGroup( Source( hom ) ),
+            gen -> ImagesRepresentative( hom, gen ) ) ) );
 
 #############################################################################
 ##
@@ -1806,19 +1829,9 @@ Earns := function( arg )
     return AttributeOperation( EarnsOp, EarnsAttr, false, arg );
 end;
 
-InstallMethod( EarnsOp, "fail if non-affine", true,
-        [ IsGroup and Tester( IsPrimitiveAffineProp ), IsList,
-          IsList,
-          IsList,
-          IsFunction ], SUM_FLAGS,
-    function( G, D, gens, oprs, opr )
-    if not IsPrimitiveAffineProp( G )  then  return fail;
-                                       else  TryNextMethod();  fi;
-end );
-
 InstallMethod( EarnsOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
-    Error( "sorry, I am too lazy to compute the earns" );
+    Error( "`Earns' only implemented for primitive permutation groups" );
 end );
 
 #############################################################################

@@ -203,7 +203,7 @@ function( efam )
     SetCoefficientsFamily( fam, efam );
 
     # and set one and zero
-    SetZero( fam, ObjByExtRep( fam, [ Zero(efam), [] ] ) );;
+    SetZero( fam, ObjByExtRep( fam, [ Zero(efam), [] ] ) );
     SetOne( fam, ObjByExtRep( fam, [ Zero(efam), [ [], One(efam) ] ] ) );
 
     # and return

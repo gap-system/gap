@@ -40,8 +40,8 @@ gap> List(com,Size);
 gap> List(com,i->Number(com,j->RepresentativeOperation(g,i,j)<>fail));
 [ 1, 1, 1, 1 ]
 
-# thats all, folks
-gap> STOP_TEST( "onecohom.tst", 1 );
+# that's all, folks
+gap> STOP_TEST( "onecohom.tst", 112210000 );
 
 #############################################################################
 ##

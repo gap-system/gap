@@ -296,7 +296,7 @@ typedef UInt2           FFV;
 **  Note that 'FLD_FFE' is a macro, so do not call  it  with  arguments  that
 **  have sideeffects.
 */
-#define FLD_FFE(ffe)            ((((UInt4)(ffe)) & 0xFFFF) >> 3)
+#define FLD_FFE(ffe)            ((((UInt)(ffe)) & 0xFFFF) >> 3)
 
 
 /****************************************************************************
@@ -310,7 +310,7 @@ typedef UInt2           FFV;
 **  Note that 'VAL_FFE' is a macro, so do not call  it  with  arguments  that
 **  have sideeffects.
 */
-#define VAL_FFE(ffe)            (((UInt4)(ffe)) >> 16)
+#define VAL_FFE(ffe)            (((UInt)(ffe)) >> 16)
 
 
 /****************************************************************************
@@ -323,7 +323,8 @@ typedef UInt2           FFV;
 **  Note that 'NEW_FFE' is a macro, so do not  call  it  with  arguments that
 **  have sideeffects.
 */
-#define NEW_FFE(fld,val)        ((Obj)(((val) << 16) + ((fld) << 3) + 0x02))
+#define NEW_FFE(fld,val)        ((Obj)(((UInt)(val) << 16) + \
+                                ((UInt)(fld) << 3) + (UInt)0x02))
 
 
 /****************************************************************************

@@ -248,9 +248,6 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
 
     # initialize the tree of secondary generators.
     if type = 1 then
-###     treelength := 0;
-###     tree1 := 0;
-###     tree2 := 0;
         treelength := 1;
         tree1 := [ 1 ];
         tree2 := [ 0 ];
@@ -259,7 +256,7 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
         length := treelength + 100;
         tree1 := ListWithIdenticalEntries( length, 0 );
         for i in [ 1 .. numgens ] do
-            tree1[i] := [ 1 .. i ];
+            tree1[i] := ListWithIdenticalEntries( i, 0 );
             tree1[i][i] := 1;
         od;
         tree2 := ListWithIdenticalEntries( numgens, 0 );
@@ -286,7 +283,7 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
     fi;
 
     # make the structure that is passed to 'MakeConsequences2'
-    app := [ ]; app[16] := 0;
+    app := ListWithIdenticalEntries( 16, 0 );
     app[1] := table;
     app[2] := next;
     app[3] := prev;
@@ -368,11 +365,7 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
                 app[9]  := lastDef;
                 app[10] := i;
                 app[11] := firstDef;
-### Print( "calling MakeConsequences2 for\n" );
-### Print( "  type = ", type, "\n" );
-### Print( "  tree = ", tree, "\n" );
                 nrdel := nrdel + MakeConsequences2( app );
-### Print( "returned from MakeConsequences2\n" );
                 firstFree := app[6];
                 lastFree  := app[7];
                 firstDef  := app[8];
@@ -405,7 +398,7 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
 aug.index := index;
         exponent := app[16];
         if exponent = 0 then
-            exponent := "infinity";
+            exponent := infinity;
         elif exponent < 0 then
             exponent := - exponent;
         fi;
@@ -490,7 +483,7 @@ aug.index := index;
     if type = 1 then
         exponent := app[16];
         if exponent = 0 then
-            aug.exponent := "infinity";
+            aug.exponent := infinity;
             aug.subgroupRelators := [ [ ] ];
         else
             if exponent < 0 then  exponent := - exponent;  fi;
@@ -597,10 +590,7 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
     app2[2] := deductions[ded][2];
     app2[3] := -1;
     app2[4] := app2[2];
-### Print( "calling ApplyRel2 with app2[5] = ", app2[5], " and tree =\n" );
-### Print( tree, "\n" );
     ApplyRel2( app2, triple[2], triple[1] );
-### Print( "returned from ApplyRel2\n" );
     factors := app2[7];
 
     # ensure that the scan provided a deduction.
@@ -613,8 +603,6 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
 
     # extend the tree to define a proper factor, if necessary.
     fac := TreeEntry( tree, factors );
-### Print( "TrreEntry returned fac = ", fac, " and tree =\n" );
-### Print( tree, "\n" );
 
     # now enter the deduction to the tables.
     triple[2][app2[1]][app2[2]] := app2[4];
@@ -656,7 +644,8 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
                 tree[3] := treelength;
                 tree[4] := numgens;
                 if type = 0 then
-                    tree1[treelength] := [ 1 .. numgens ];
+                    tree1[treelength] :=
+                        ListWithIdenticalEntries( numgens, 0 );
                     tree1[treelength][numgens] := 1;
                     tree2[numgens] := 0;
                 else
@@ -694,9 +683,7 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
                             # a deduction has been found: compute the
                             # corresponding factor and enter the deduction to
                             # the tables and to the deductions lists.
-### Print( "  calling EnterDeduction(1)\n" );
                             EnterDeduction( );
-### Print( "  returned from EnterDeduction(1)\n" );
                             if count <= 0 then
                                 return;
                             fi;
@@ -722,6 +709,11 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
         Error( "invalid type; it should be 0 or 2" );
     fi;
 
+    # get some local variables
+    Fam := ElementsFamily( FamilyObj( G ) );
+    fgens := GeneratorsOfGroup( Fam!.freeGroup );
+    grels := Fam!.relators;
+
     # check the number of columns of the given coset table to be twice the
     # number of generators of the parent group G.
     numcols := Length( cosTable );
@@ -730,23 +722,18 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
     fi;
     index  := Length( cosTable[1] );
 
-    # get some local variables
-    Fam := ElementsFamily( FamilyObj( G ) );
-    fgens := GeneratorsOfGroup( Fam!.freeGroup );
-    grels := Fam!.relators;
-
     # get a negative copy of the coset table, and initialize the coset factor
     # table (parallel to it) by zeros.
     negTable := [ ];
     coFacTable := [ ];
     for i in [1 .. numcols/2] do
-        negTable[2*i-1] := - cosTable[2*i-1];
+        negTable[2*i-1] := List( cosTable[2*i-1], x -> -x );
         coFacTable[2*i-1] := ListWithIdenticalEntries( index, 0 );
         if IsIdentical( cosTable[2*i], cosTable[2*i-1] ) then
             negTable[2*i] := negTable[2*i-1];
             coFacTable[2*i] := coFacTable[2*i-1];
         else
-            negTable[2*i] := - cosTable[2*i];
+            negTable[2*i] := List( cosTable[2*i], x -> -x );
             coFacTable[2*i] := ListWithIdenticalEntries( index, 0 );
         fi;
     od;
@@ -806,7 +793,7 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
 
     # make the local structures that are passed to 'ApplyRel' or, via
     # EnterDeduction, to 'ApplyRel2".
-    app := [ 0,0,0,0 ];
+    app := ListWithIdenticalEntries( 4, 0 );
     app2 := ListWithIdenticalEntries( 9, 0 );
     if type = 0 then
         factors := tree2;
@@ -838,9 +825,7 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
                 # a deduction has been found: compute the corresponding
                 # factor and enter the deduction to the tables and to the
                 # deductions lists.
-### Print( "  calling EnterDeduction(2)\n" );
                 EnterDeduction( );
-### Print( "  returned from EnterDeduction(2)\n" );
             fi;
         od;
 
@@ -1083,14 +1068,13 @@ end;
 ##
 IsStandardized := function ( table )
 
-    local i, index, j, next, range;
+    local i, index, j, next;
 
     index := Length( table[1] );
-    range := 2 * [ 1 .. Length( table ) / 2 ] - 1;
     j := 1;
     next := 2;
     while next < index do
-        for i in range do
+        for i in [ 1, 3 .. Length( table ) - 1 ] do
             if table[i][j] >= next then
                 if table[i][j] > next then  return false;  fi;
                 next := next + 1;
@@ -1163,21 +1147,20 @@ PresentationAugmentedCosetTable := function ( arg )
 
     # construct the generators and the inverses list, and save the generators
     # as components of the Tietze record.
-    invs := [ ];
-    comps := [ ];
-    pointers := [ ]; pointers[treelength] := 0;
+    invs := [ ]; invs[2*numgens+1] := 0;
+    pointers := [ 1 .. treelength ];
     for i in [ 1 .. numgens ] do
         invs[numgens+1-i] := i;
         invs[numgens+1+i] := - i;
         T.(String( i )) := fgens[i];
-        comps[i] := i;
         pointers[treeNums[i]] := treelength + i;
     od;
     invs[numgens+1] := 0;
+    comps := [ 1 .. numgens ];
 
     # define the remaining Tietze stack entries.
     tietze[TZ_NUMGENS] := numgens;
-    tietze[TZ_GENERATORS] := fgens;
+    tietze[TZ_GENERATORS] := List( [ 1 .. numgens ], i -> fgens[i] );
     tietze[TZ_INVERSES] := invs;
     tietze[TZ_NUMREDUNDS] := 0;
     tietze[TZ_STATUS] := [ 0, 0, -1 ];
@@ -1194,8 +1177,8 @@ PresentationAugmentedCosetTable := function ( arg )
     T.eliminationsLimit := 100;
     T.expandLimit := 150;
     T.generatorsLimit := 0;
-    T.lengthLimit := "infinity";
-    T.loopLimit := "infinity";
+    T.lengthLimit := infinity;
+    T.loopLimit := infinity;
     T.printLevel := 0;
     T.saveLimit := 10;
     T.searchSimultaneous := 20;
@@ -1365,19 +1348,11 @@ PresentationSubgroupMtc := function ( arg )
 
     # do a Modified Todd-Coxeter coset representative enumeration to
     # construct an augmented coset table of H.
-### if Length( GeneratorsOfGroup( H ) ) = 1 then
-### type := 1;
-### else
     type := 2;
-### fi;
-### Print( "calling AugmentedCosetTable\n" );
     aug := AugmentedCosetTableMtc( G, H, type, string );
 
     # determine a set of subgroup relators.
-### if type = 2 then
-### Print( "calling RewriteSubgroupRelators\n" );
     RewriteSubgroupRelators( aug );
-### fi;
 
     # create a Tietze record for the resulting presentation.
     T := PresentationAugmentedCosetTable( aug );
@@ -1389,12 +1364,6 @@ PresentationSubgroupMtc := function ( arg )
     DecodeTree( T );
     T.printLevel := 1;
 
-### if type = 1 then
-### if aug.exponent > 0 then
-### Print( "size = ", aug.exponent * IndexInWholeGroup( H ), "\n" );
-### else Print( "size = infinite\n" ); fi;
-### return aug;
-### fi;
     return T;
 end;
 
@@ -1573,11 +1542,6 @@ RelatorMatrixAbelianizedNormalClosureRrs := function ( G, H )
     # determine a set of abelianized subgroup relators.
     RewriteAbelianizedSubgroupRelators( aug );
 
-### Print( "aug.primaryGeneratorWords = ", aug.primaryGeneratorWords, "\n" );
-### Print( "aug.subgroupGenerators = ", aug.subgroupGenerators, "\n" );
-#@# Print( "treelength = ", aug.tree[3], "\n" );
-#@# Print( "numgens = ", aug.tree[4], "\n" );
-### Print( "aug.subgroupRelators = ", aug.subgroupRelators, "\n" );
     return aug.subgroupRelators;
 
 end;
@@ -1618,12 +1582,6 @@ RelatorMatrixAbelianizedSubgroupMtc := function ( G, H )
     # determine a set of abelianized subgroup relators.
     RewriteAbelianizedSubgroupRelators( aug );
 
-### Print( "aug.primaryGeneratorWords = ", aug.primaryGeneratorWords, "\n" );
-### Print( "aug.subgroupGenerators = ", aug.subgroupGenerators, "\n" );
-### Print( "tree = ", aug.tree, "\n" );
-#@# Print( "treelength = ", aug.tree[3], "\n" );
-#@# Print( "numgens = ", aug.tree[4], "\n" );
-### Print( "aug.subgroupRelators = ", aug.subgroupRelators, "\n" );
     return aug.subgroupRelators;
 
 end;
@@ -1682,11 +1640,6 @@ RelatorMatrixAbelianizedSubgroupRrs := function ( G, H )
     # determine a set of abelianized subgroup relators.
     RewriteAbelianizedSubgroupRelators( aug );
 
-### Print( "aug.primaryGeneratorWords = ", aug.primaryGeneratorWords, "\n" );
-### Print( "aug.subgroupGenerators = ", aug.subgroupGenerators, "\n" );
-#@# Print( "treelength = ", aug.tree[3], "\n" );
-#@# Print( "numgens = ", aug.tree[4], "\n" );
-### Print( "aug.subgroupRelators = ", aug.subgroupRelators, "\n" );
     return aug.subgroupRelators;
 
 end;
@@ -1727,7 +1680,7 @@ RenumberTree := function ( aug )
     numgens := Length( defs );
 
     # establish a local renumbering list.
-    convert := [ ];
+    convert := ListWithIdenticalEntries( 2 * treelength + 1, 0 );
     null := treelength + 1;
     j := treelength + 1;  k := numgens + 1;
     i := treelength;
@@ -1782,9 +1735,7 @@ RewriteAbelianizedSubgroupRelators := function ( aug )
 
     local app2, coFacTable, colRels, cols, cosTable, factor, ggens, grel, i,
           index, j, length, nums, numgens, numrels, p, rels, total, tree,
-### last, old,
           treelength, type;
-#@# Print( "RewriteAbelianSubgroupRelators called\n" );
 
     # check the type for being zero.
     type := aug.type;
@@ -1801,15 +1752,9 @@ RewriteAbelianizedSubgroupRelators := function ( aug )
     treelength := tree[3];
     numgens := tree[4];
     total := numgens;
-    rels := ListWithIdenticalEntries( total,
-        ListWithIdenticalEntries( numgens, 0 ) );
+    rels := List( [ 1 .. total ],
+        i -> ListWithIdenticalEntries( numgens, 0 ) );
     numrels := 0;
-### Print( "numgens = ", numgens, "\n" );
-### Print( "treelength = ", treelength, "\n" );
-### Print( "index = ", index, "\n" );
-### Print( "cosTable = ", cosTable, "\n" );
-### Print( "coFacTable = ", coFacTable, "\n" );
-### Print( "tree = ", tree, "\n" );
 
     # display some information.
     Info( InfoFpGroup, 2, "#I  index is ", index, "\n" );
@@ -1817,7 +1762,7 @@ RewriteAbelianizedSubgroupRelators := function ( aug )
     Info( InfoFpGroup, 2, "#I  tree length is ", treelength, "\n" );
 
     # initialize the structure that is passed to 'ApplyRel2'
-    app2 := [ ]; app2[9] := 0;
+    app2 := ListWithIdenticalEntries( 9, 0 );
     app2[5] := type;
     app2[6] := coFacTable;
     app2[8] := tree;
@@ -1864,19 +1809,10 @@ RewriteAbelianizedSubgroupRelators := function ( aug )
             app2[2] := i;
             app2[3] := 2 * length - 1;
             app2[4] := i;
-### Print( "calling ApplyRel2(1)  grel = ", grel, "  i = ", i,
-### "\n  app2[7] = ", app2[7], "\n" );
             ApplyRel2( app2, cols, nums );
-###         last := LengthRelVector( rels[numrels] );
 
             # add the resulting subgroup relator to rels.
-### Print( "call AddAbelianRelator(1) for ", rels, " and ", numrels, "\n");
-### old := numrels;
             numrels := AddAbelianRelator( rels, numrels );
-### if numrels = old then
-### Print( "AddAbelianRelator(1) returned rels[", numrels, "] = " );
-### Print( rels[numrels], "\n" ); fi;
-### Print( "AddAbelianRelator(1) returned ", numrels, "\n" );
         od;
     od;
 
@@ -1919,21 +1855,13 @@ RewriteAbelianizedSubgroupRelators := function ( aug )
         app2[2] := 1;
         app2[3] := 2 * length - 1;
         app2[4] := 1;
-### Print( "calling ApplyRel2(2)  j = ", j, "\n  app2[7] = ", app2[7], "\n" );
         ApplyRel2( app2, cols, nums );
-###     last := LengthRelVector( rels[numrels] );
 
         # add as last factor the generator number j.
         rels[numrels][j] := rels[numrels][j] + 1;
 
         # add the resulting subgroup relator to rels.
-### Print( "call AddAbelianRelator(2) for ", rels, " and ", numrels, "\n");
-### old := numrels;
         numrels := AddAbelianRelator( rels, numrels );
-### if numrels = old then
-### Print( "AddAbelianRelator(2) returned rels[", numrels, "] = " );
-### Print( rels[numrels], "\n" ); fi;
-### Print( "AddAbelianRelator(2) returned ", numrels, "\n" );
     od;
 
     # reduce the relator list to its proper size.
@@ -1947,9 +1875,6 @@ RewriteAbelianizedSubgroupRelators := function ( aug )
         Unbind( rels[i] );
     od;
 
-#@# Print( "numrels = ", numrels, "\n" );
-### Print( rels, "\n" );
-#@# Print( "returning from RewriteAbelianSubgroupRelators\n" );
     aug.subgroupRelators := rels;
 end;
 
@@ -1983,8 +1908,7 @@ RewriteSubgroupRelators := function ( aug )
     rels := [ ];
 
     # initialize the structure that is passed to 'ApplyRel2'
-    app2 := [ ]; app2[9] := 0;
-### Print( "app2 = ", app2, "\n" );
+    app2 := ListWithIdenticalEntries( 9, 0 );
     app2[5] := type;
     app2[6] := coFacTable;
     app2[7] := [ ]; app2[7][100] := 0;
@@ -2026,14 +1950,11 @@ RewriteSubgroupRelators := function ( aug )
             app2[2] := i;
             app2[3] := 2 * length - 1;
             app2[4] := i;
-### Print( "calling ApplyRel2(1)  grel = ", grel, "  i = ", i,
-### "\n  app2[7] = ", app2[7], "  app2[9] = ", app2[9], "\n" );
             ApplyRel2( app2, cols, nums );
 
             # add the resulting subgroup relator to rels.
             rel := app2[7];
             last := Length( rel );
-### Print( "ApplyRel2 liefert ", rel, "\n" );
             if last > 0 then
                 MakeCanonical( rel );
                 if Length( rel ) > 0 and not rel in rels then
@@ -2078,7 +1999,6 @@ RewriteSubgroupRelators := function ( aug )
         app2[2] := 1;
         app2[3] := 2 * length - 1;
         app2[4] := 1;
-### Print( "calling ApplyRel2(2)  j = ", j, "\n  app2[7] = ", app2[7], "\n" );
         ApplyRel2( app2, cols, nums );
 
         # add as last factor the generator number j.
@@ -2176,7 +2096,7 @@ SpanningTree := function ( cosTable )
     fi;
     numcols := Length( cosTable );
     numrows := Length( cosTable[1] );
-    for i in [2 .. numcols] do
+    for i in [ 2 .. numcols ] do
         if not ( IsList( cosTable[i] ) and
             Length( cosTable[i] ) = numrows ) then
             Error( "argument must be a coset table" );
@@ -2184,15 +2104,15 @@ SpanningTree := function ( cosTable )
     od;
 
     # initialize the spanning tree.
-    span1 := ListWithIdenticalEntries( numrows, -1 );
+    span1 := [ -1, -2 .. -numrows ];
     span2 := ListWithIdenticalEntries( numrows, 0 );
     span1[1] := 0;
     if numrows = 1 then  return [ span1, span2 ];  fi;
 
     # find the first occurrence in the table of each coset > 1.
-    done := [1];
+    done := [ 1 ];
     for i in done do
-        for j in [1 .. numcols] do
+        for j in [ 1 .. numcols ] do
             k := cosTable[j][i];
             if span1[k] < 0 then
                 span1[k] := i;  span2[k] := j;

@@ -112,14 +112,16 @@ alpha-dec-OSF32-gcc2:
 	@(cd ../bin/alpha-dec-OSF32-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
-	    CC="cc" \
+	    CC="gcc" \
 	    LFLAGS="$(LOPTS)" \
-	    CFLAGS="$(COPTS) -O2 -DSYS_IS_64BIT" \
+	    CFLAGS="$(COPTS) -Wall -ansi -g -O2 -DSYS_IS_64_BIT" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) \
+	    CFLAGS_SYS="$(COPTS) -g \
+                        -DSYS_IS_64_BIT \
+                        -DSYS_HAS_READ_PROTO \
 			-DSYS_IS_BSD \
-			-DSYS_HAS_STACK_ALIGN=4 \
-			-DSYS_HAS_ANSI=1 \
+			-DSYS_HAS_STACK_ALIGN=8 \
+			-DSYS_HAS_ANSI=1 -DSYS_HAS_MISC_PROTO \
 			-DSYS_ARCH='\"alpha-dec-OSF32-gcc2\"'" \
 	)
 
@@ -141,15 +143,16 @@ mips-dec-ultrix-cc:
 	@(cd ../bin/mips-dec-ultrix-cc; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
-	    CC="cc" \
+	    CC="gcc -ansi -Wall" \
 	    LFLAGS="$(LOPTS)" \
 	    CFLAGS="$(COPTS) -O2 -Olimit 1000" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) \
-			-DSYS_IS_BSD \
-			-DSYS_HAS_STACK_ALIGN=4 \
-			-DSYS_HAS_ANSI=1 \
-			-DSYS_ARCH='\"mips-dec-ultrix-cc\"'" \
+	        -DSYS_IS_BSD \
+		-DSYS_HAS_STACK_ALIGN=4 \
+		-DSYS_HAS_ANSI=1 \
+		-DSYS_HAS_BROKEN_EXEC_PROTO \
+		-DSYS_ARCH='\"mips-dec-ultrix-cc\"'" \
 	)
 	@(cd ../bin/mips-dec-ultrix-cc; \
 	  $(MAKE) -f ../../src/Makefile gac \
@@ -185,17 +188,18 @@ hppa1.1-hp-hpux-gcc2:
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) \
-			-DSYS_IS_USG \
-			-DSYS_HAS_STACK_ALIGN=4 \
-			-DSYS_HAS_ANSI=1 \
-			-DSYS_HAS_CONST=const \
-			-DSYS_HAS_STDIO_PROTO \
-			-DSYS_HAS_READ_PROTO \
-			-DSYS_HAS_IOCTL_PROTO \
-			-DSYS_HAS_SIGNAL_PROTO \
-			-DSYS_HAS_TIME_PROTO \
-			-DSYS_HAS_MISC_PROTO \
-			-DSYS_ARCH='\"hppa1.1-hp-hpux-gcc2\"'" \
+              -DSYS_IS_USG \
+	      -DSYS_HAS_STACK_ALIGN=4 \
+	      -DSYS_HAS_ANSI=1 \
+	      -DSYS_HAS_CONST=const \
+	      -DSYS_HAS_STDIO_PROTO \
+	      -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_IOCTL_PROTO \
+	      -DSYS_HAS_SIGNAL_PROTO \
+	      -DSYS_HAS_TIME_PROTO \
+	      -DSYS_HAS_MISC_PROTO \
+	      -DSYS_HAS_EXEC_PROTO \
+	      -DSYS_ARCH='\"hppa1.1-hp-hpux-gcc2\"'" \
 	)
 	@(cd ../bin/hppa1.1-hp-hpux-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gac \
@@ -240,6 +244,7 @@ i386-ibm-freebsd-gcc2:
 			-DSYS_HAS_READ_PROTO \
 			-DSYS_HAS_IOCTL_PROTO \
 			-DSYS_HAS_SIGNAL_PROTO \
+			-DSYS_HAS_EXEC_PROTO \
 			-DSYS_HAS_DL_LIBRARY \
 			-DSYS_ARCH='\"i386-ibm-freebsd-gcc2\"'" \
 	)
@@ -287,12 +292,20 @@ i386-ibm-linux-gcc2:
 	    LFLAGS="$(LOPTS)  -export-dynamic -ldl" \
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_STACK_ALIGN=2 \
-	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
-		       -D_POSIX_SOURCE -DSYS_HAS_SIGNAL_PROTO \
-		       -DSYS_HAS_TIME_PROTO -DSYS_HAS_MISC_PROTO -DSYS_HAS_DL_LIBRARY \
-	               -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
-		       -DSYS_ARCH='\"i386-ibm-linux-gcc2\"'" \
+	    CFLAGS_SYS="$(COPTS) \
+              -DSYS_IS_USG \
+	      -D_POSIX_SOURCE \
+	      -D__USE_MISC \
+              -DSYS_HAS_STACK_ALIGN=2 \
+	      -DSYS_HAS_STDIO_PROTO \
+              -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_WAIT_PROTO \
+              -DSYS_HAS_SIGNAL_PROTO \
+	      -DSYS_HAS_TIME_PROTO \
+              -DSYS_HAS_DL_LIBRARY \
+              -DSYS_HAS_WAITPID \
+	      -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
+	      -DSYS_ARCH='\"i386-ibm-linux-gcc2\"'" \
         )
 	@(cd ../bin/i386-ibm-linux-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gac \
@@ -335,11 +348,16 @@ any-next-nextstep-cc:
 	    SRC="../../src" \
 	    CC="cc -g" \
 	    LFLAGS="$(LOPTS) $(ARCH)" \
-	    CFLAGS="$(COPTS) -DCOUNT_BAGS -O2 $(ARCH)" \
+	    CFLAGS="$(COPTS) -O2 -Wall $(ARCH)" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_MACH -DSYS_HAS_STACK_ALIGN=4 \
-	      -DSYS_HAS_ANSI=1 -D_POSIX_SOURCE -DSYS_HAS_READ_PROTO \
+	    CFLAGS_SYS="$(COPTS) -Wall \
+	      -DSYS_IS_MACH \
+	      -D_POSIX_SOURCE \
+	      -DSYS_HAS_ANSI=1 \
+	      -DSYS_HAS_STACK_ALIGN=4 \
+              -DSYS_HAS_READ_PROTO \
               -DSYS_HAS_RLD_LIBRARY \
+	      -DSYS_HAS_WAIT4 \
 	      $(ARCH) \
 	      -DSYS_ARCH='\"$(ADIR)-next-nextstep-cc\"'" \
 	)
@@ -401,12 +419,20 @@ mips-sgi-irix-gcc2:
             LFLAGS="$(LOPTS)" \
             CFLAGS="$(COPTS) -O2" \
             CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-            CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
-                       -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
-                       -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
-                       -DSYS_HAS_MISC_PROTO -DSYS_HAS_MALLOC_PROTO \
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
-		       -DSYS_ARCH='\"mips-sgi-irix-gcc2\"'" \
+            CFLAGS_SYS="$(COPTS) \
+              -DSYS_IS_USG \
+              -DSYS_HAS_ANSI=1 \
+              -DSYS_HAS_CONST=const \
+	      -DSYS_HAS_NO_VFORK \
+              -DSYS_HAS_TIME_PROTO \
+              -DSYS_HAS_IOCTL_PROTO \
+              -DSYS_HAS_STDIO_PROTO \
+              -DSYS_HAS_MISC_PROTO \
+              -DSYS_HAS_MALLOC_PROTO \
+              -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_EXEC_PROTO \
+              -DSYS_HAS_SIGNAL_PROTO \
+	      -DSYS_ARCH='\"mips-sgi-irix-gcc2\"'" \
 	)
 
 
@@ -431,12 +457,20 @@ mips-sgi-irix-cc:
 	    LFLAGS="$(LOPTS)" \
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
-                       -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
-                       -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
-                       -DSYS_HAS_MISC_PROTO -DSYS_HAS_MALLOC_PROTO \
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
-		       -DSYS_ARCH='\"mips-sgi-irix-cc\"'" \
+	    CFLAGS_SYS="$(COPTS) \
+              -DSYS_IS_USG \
+              -DSYS_HAS_ANSI=1 \
+              -DSYS_HAS_CONST=const \
+	      -DSYS_HAS_NO_VFORK \
+              -DSYS_HAS_TIME_PROTO \
+              -DSYS_HAS_IOCTL_PROTO \
+              -DSYS_HAS_STDIO_PROTO \
+              -DSYS_HAS_MISC_PROTO \
+              -DSYS_HAS_MALLOC_PROTO \
+              -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_EXEC_PROTO \
+              -DSYS_HAS_SIGNAL_PROTO \
+	      -DSYS_ARCH='\"mips-sgi-irix-cc\"'" \
 	)
 
 
@@ -462,14 +496,20 @@ sparc-sun-solaris-gcc2:
 	    LFLAGS="$(LOPTS) -ldl" \
 	    CFLAGS="$(COPTS) -DSPARC -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
-                       -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
-                       -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
-                       -DSYS_HAS_MISC_PROTO\
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
-                       -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
-		       -DSYS_HAS_DL_LIBRARY \
-                       -DSYS_ARCH='\"sparc-sun-solaris-gcc2\"'" \
+	    CFLAGS_SYS="$(COPTS) \
+              -DSYS_IS_USG \
+              -DSYS_HAS_ANSI=1 \
+              -DSYS_HAS_TIME_PROTO \
+              -DSYS_HAS_IOCTL_PROTO \
+              -DSYS_HAS_STDIO_PROTO \
+              -DSYS_HAS_CONST=const \
+              -DSYS_HAS_MISC_PROTO \
+              -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_EXEC_PROTO \
+              -DSYS_HAS_SIGNAL_PROTO \
+	      -DSYS_HAS_DL_LIBRARY \
+              -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
+              -DSYS_ARCH='\"sparc-sun-solaris-gcc2\"'" \
 	)
 	@(cd ../bin/sparc-sun-solaris-gcc2; \
           $(MAKE) -f ../../src/Makefile gac \
@@ -504,10 +544,15 @@ sparc-sun-sunos-gcc2:
 	    LFLAGS="$(LOPTS)" \
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
-		       -DSYS_HAS_DL_LIBRARY \
-                       -DSYS_ARCH='\"sparc-sun-sunos-gcc2\"'" \
+	    CFLAGS_SYS="$(COPTS) \
+              -DSYS_IS_USG \
+	      -DSYS_HAS_NO_STRERROR \
+              -DSYS_HAS_TIME_PROTO \
+              -DSYS_HAS_READ_PROTO \
+              -DSYS_HAS_SIGNAL_PROTO \
+              -DSYS_HAS_EXEC_PROTO \
+	      -DSYS_HAS_DL_LIBRARY \
+              -DSYS_ARCH='\"sparc-sun-sunos-gcc2\"'" \
 	)
 	@(cd ../bin/sparc-sun-sunos-gcc2; \
           $(MAKE) -f ../../src/Makefile gac \
@@ -596,8 +641,8 @@ OBJECTS =   \
  vars.o     \
  vector.o
 
-gap: $(OBJECTS) compstat.o
-	$(CC) $(LFLAGS)  -o gap  $(OBJECTS) compstat.o
+gap: $(OBJECTS) compstat.o c_type.o c_methse.o
+	$(CC) $(LFLAGS)  -o gap  $(OBJECTS) compstat.o c_type.o c_methse.o
 
 
 #############################################################################
@@ -608,6 +653,12 @@ gap: $(OBJECTS) compstat.o
 ##  the commands needed to compile them (those must  be  given,  because  the
 ##  implicit rules work only if the source is in the same directory).
 ##
+c_type.o: $(SRC)/c_type.c     $(SRC)/compstat.h $(SRC)/system.h
+	$(CC) $(CFLAGS)  -o c_type.o      -c $(SRC)/c_type.c
+
+c_methse.o: $(SRC)/c_methse.c $(SRC)/compstat.h $(SRC)/system.h
+	$(CC) $(CFLAGS)  -o c_methse.o    -c $(SRC)/c_methse.c
+
 system.o:   $(SRC)/system.c   $(SRC)/system.h
 	$(CC) $(CFLAGS_SYS) $(CFLAGS_SIG)  -o system.o    -c $(SRC)/system.c
 

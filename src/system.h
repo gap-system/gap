@@ -20,22 +20,7 @@ char * Revision_system_h =
    "@(#)$Id$";
 #endif
 
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include       <stdio.h>
-# define SYS_STDIO_H
-#endif
-
-#ifndef SYS_UNISTD_H                    /* definition of 'R_OK'            */
-# include       <unistd.h>
-# define SYS_UNISTD_H
-#endif
-
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
-
-
-#define CTR(C)          ((C) & 0x1F)    /* <ctr> character                 */
-#define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
-#define CTV(C)          ((C) | 0x200)   /* <ctr>V quotes characters        */
 
 
 /****************************************************************************
@@ -163,7 +148,7 @@ char * Revision_system_h =
 *T  Char, Int1, Int2, Int4, Int, UChar, UInt1, UInt2, UInt4, UInt .  integers
 **
 **  'Char',  'Int1',  'Int2',  'Int4',  'Int',   'UChar',   'UInt1', 'UInt2',
-**  'UInt4', 'UInt' are the integer types.
+**  'UInt4', 'UInt'  and possibly 'Int8' and 'UInt8' are the integer types.
 **
 **  Note that to get this to work, all files must be compiled with or without
 **  '-DSYS_IS_64_BIT', not just "system.c".
@@ -178,11 +163,13 @@ typedef char                    Char;
 typedef char                    Int1;
 typedef short int               Int2;
 typedef int                     Int4;
+typedef long int                Int8;
 typedef long int                Int;
 typedef unsigned char           UChar;
 typedef unsigned char           UInt1;
 typedef unsigned short int      UInt2;
 typedef unsigned int            UInt4;
+typedef unsigned long int       UInt8;
 typedef unsigned long int       UInt;
 
 /* 32bit machines                                                          */
@@ -212,7 +199,7 @@ typedef unsigned long int       UInt;
 **
 **  It is used in 'InitGap' for the 'VERSYS' variable.
 */
-extern Char SyFlags [];
+extern SYS_CONST Char SyFlags [];
 
 
 /****************************************************************************
@@ -224,7 +211,7 @@ extern Char SyFlags [];
 /****************************************************************************
 **
 
-*F  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
+*V  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
 **
 **  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
 **  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
@@ -242,7 +229,7 @@ extern UInt SyStackAlign;
 **
 *V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
 */
-extern Char * SyArchitecture;
+extern SYS_CONST Char * SyArchitecture;
 
 
 /****************************************************************************
@@ -568,7 +555,7 @@ extern UInt SyTime ( void );
 **  'IsAlpha' returns 1 if its character argument is a normal character  from
 **  the range 'a..zA..Z' and 0 otherwise.
 */
-#include        <ctype.h>
+#include <ctype.h>
 #define IsAlpha(ch)     (isalpha(ch))
 
 
@@ -590,7 +577,7 @@ extern UInt SyTime ( void );
 **  characters in <str> that precede the terminating null character.
 */
 extern UInt SyStrlen (
-            Char *              str );
+            SYS_CONST Char *     str );
 
 
 /****************************************************************************
@@ -602,8 +589,8 @@ extern UInt SyStrlen (
 **  <str2> lexicographically.
 */
 extern Int SyStrcmp (
-            Char *              str1,
-            Char *              str2 );
+            SYS_CONST Char *    str1,
+            SYS_CONST Char *    str2 );
 
 
 /****************************************************************************
@@ -615,8 +602,8 @@ extern Int SyStrcmp (
 **  <str2> lexicographically.  'SyStrncmp' compares at most <len> characters.
 */
 extern Int SyStrncmp (
-            Char *              str1,
-            Char *              str2,
+            SYS_CONST Char *    str1,
+            SYS_CONST Char *    str2,
             UInt                len );
 
 
@@ -631,373 +618,8 @@ extern Int SyStrncmp (
 */
 extern Char * SyStrncat (
             Char *              dst,
-            Char *              src,
+            SYS_CONST Char *    src,
             UInt                len );
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * * * * input/output * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
-**
-**  The function 'SyFopen'  is called to open the file with the name  <name>.
-**  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
-**  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
-**  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
-**
-**  'SyFopen' returns an integer used by the scanner to  identify  the  file.
-**  'SyFopen' returns -1 if it cannot open the file.
-**
-**  The following standard files names and file identifiers  are  guaranteed:
-**  'SyFopen( "*stdin*", "r")' returns 0 identifying the standard input file.
-**  'SyFopen( "*stdout*","w")' returns 1 identifying the standard outpt file.
-**  'SyFopen( "*errin*", "r")' returns 2 identifying the brk loop input file.
-**  'SyFopen( "*errout*","w")' returns 3 identifying the error messages file.
-**
-**  If it is necessary to adjust the  filename  this  should  be  done  here.
-**  Right now GAP does not read nonascii files, but if this changes sometimes
-**  'SyFopen' must adjust the mode argument to open the file in binary  mode.
-*/
-extern Int SyFopen (
-            Char *              name,
-            Char *              mode );
-
-
-/****************************************************************************
-**
-*F  SyFclose( <fid> ) . . . . . . . . . . . . . . . . .  close the file <fid>
-**
-**  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
-**  from 'SyFopen'.
-*/
-extern Int SyFclose (
-            Int                 fid );
-
-
-/****************************************************************************
-**
-*F  SyFgets( <line>, <lenght>, <fid> )  . . . . .  get a line from file <fid>
-**
-**  'SyFgets' is called to read a line from the file  with  identifier <fid>.
-**  'SyFgets' (like 'fgets') reads characters until either  <length>-1  chars
-**  have been read or until a <newline> or an  <eof> character is encoutered.
-**  It retains the '\n' (unlike 'gets'), if any, and appends '\0' to  <line>.
-**  'SyFgets' returns <line> if any char has been read, otherwise '(char*)0'.
-**
-**  'SyFgets'  allows to edit  the input line if the  file  <fid> refers to a
-**  terminal with the following commands:
-**
-**      <ctr>-A move the cursor to the beginning of the line.
-**      <esc>-B move the cursor to the beginning of the previous word.
-**      <ctr>-B move the cursor backward one character.
-**      <ctr>-F move the cursor forward  one character.
-**      <esc>-F move the cursor to the end of the next word.
-**      <ctr>-E move the cursor to the end of the line.
-**
-**      <ctr>-H, <del> delete the character left of the cursor.
-**      <ctr>-D delete the character under the cursor.
-**      <ctr>-K delete up to the end of the line.
-**      <esc>-D delete forward to the end of the next word.
-**      <esc>-<del> delete backward to the beginning of the last word.
-**      <ctr>-X delete entire input line, and discard all pending input.
-**      <ctr>-Y insert (yank) a just killed text.
-**
-**      <ctr>-T exchange (twiddle) current and previous character.
-**      <esc>-U uppercase next word.
-**      <esc>-L lowercase next word.
-**      <esc>-C capitalize next word.
-**
-**      <tab>   complete the identifier before the cursor.
-**      <ctr>-L insert last input line before current character.
-**      <ctr>-P redisplay the last input line, another <ctr>-P will redisplay
-**              the line before that, etc.  If the cursor is not in the first
-**              column only the lines starting with the string to the left of
-**              the cursor are taken. The history is limitied to ~8000 chars.
-**      <ctr>-N Like <ctr>-P but goes the other way round through the history
-**      <esc>-< goes to the beginning of the history.
-**      <esc>-> goes to the end of the history.
-**      <ctr>-O accept this line and perform a <ctr>-N.
-**
-**      <ctr>-V enter next character literally.
-**      <ctr>-U execute the next command 4 times.
-**      <esc>-<num> execute the next command <num> times.
-**      <esc>-<ctr>-L repaint input line.
-**
-**  Not yet implemented commands:
-**
-**      <ctr>-S search interactive for a string forward.
-**      <ctr>-R search interactive for a string backward.
-**      <esc>-Y replace yanked string with previously killed text.
-**      <ctr>-_ undo a command.
-**      <esc>-T exchange two words.
-*/
-extern Char * SyFgets (
-            Char *              line,
-            UInt                length,
-            Int                 fid );
-
-
-/****************************************************************************
-**
-*F  SyFputs( <line>, <fid> )  . . . . . . . .  write a line to the file <fid>
-**
-**  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
-*/
-extern void SyFputs (
-            Char *              line,
-            Int                 fid );
-
-
-/****************************************************************************
-**
-*F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
-**
-**  'SyIsIntr' is called from the evaluator at  regular  intervals  to  check
-**  wether the user hit '<ctr>-C' to interrupt a computation.
-**
-**  'SyIsIntr' returns 1 if the user typed '<ctr>-C' and 0 otherwise.
-*/
-extern UInt SyIsIntr ( void );
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*F  syWinPut( <fid>, <cmd>, <str> ) . . . . send a line to the window handler
-**
-**  'syWinPut'  send the command   <cmd> and the  string  <str> to the window
-**  handler associated with the  file identifier <fid>.   In the string <str>
-**  '@'  characters are duplicated, and   control characters are converted to
-**  '@<chr>', e.g., <newline> is converted to '@J'.
-*/
-extern void syWinPut (
-            Int                 fid,
-            Char *              cmd,
-            Char *              str );
-
-
-/****************************************************************************
-**
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . .  . execute a window cmd
-**
-**  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
-**  ignored).  In the string <str> '@' characters are duplicated, and control
-**  characters  are converted to  '@<chr>', e.g.,  <newline> is converted  to
-**  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
-**  that string.
-*/
-extern Char * SyWinCmd (
-            Char *              str,
-            UInt                len );
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
-**
-**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
-**  routines  from   allocating their  buffers  using  'malloc',  which would
-**  otherwise confuse Gasman.
-*/
-typedef struct {
-    FILE *      fp;                     /* file pointer for this file      */
-    FILE *      echo;                   /* file pointer for the echo       */
-    UInt        pipe;                   /* file is really a pipe           */
-    Char        buf [BUFSIZ];           /* the buffer for this file        */
-} SYS_SY_BUF;
-
-extern SYS_SY_BUF syBuf [256];
-
-
-/****************************************************************************
-**
-
-*F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
-**
-**  'SyIsExistingFile' returns 1 if the  file <name> exists and 0  otherwise.
-**  It does not check if the file is readable, writable or excuteable. <name>
-**  is a system dependent description of the file.
-*/
-extern Int SyIsExistingFile(
-            Char * name );
-
-
-/****************************************************************************
-**
-*F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
-**
-**  'SyIsReadableFile'   returns 1  if the   file  <name> is   readable and 0
-**  otherwise. <name> is a system dependent description of the file.
-*/
-extern Int SyIsReadableFile(
-            Char * name );
-
-
-/****************************************************************************
-**
-*F  SyIsWritable( <name> )  . . . . . . . . . . . is the file <name> writable
-**
-**  'SyIsWriteableFile'   returns 1  if the  file  <name>  is  writable and 0
-**  otherwise. <name> is a system dependent description of the file.
-*/
-extern Int SyIsWritableFile(
-            Char * name );
-
-
-/****************************************************************************
-**
-*F  SyIsExecutableFile( <name> )  . . . . . . . . . is file <name> executable
-**
-**  'SyIsExecutableFile' returns 1 if the  file <name>  is  executable and  0
-**  otherwise. <name> is a system dependent description of the file.
-*/
-extern Int SyIsExecutableFile(
-            Char * name );
-
-
-/****************************************************************************
-**
-*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
-*/
-extern Char * SyFindGapRootFile (
-            Char *          filename );
-
-
-/****************************************************************************
-**
-*F  SyFindOrLinkGapRootFile( <filename>, <res>, <len> ) . . . .  load or link
-**
-**  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
-**  check  if   there is a corresponding    statically  or dynamically linked
-**  module.  If the CRC matches this module  is loaded otherwise the filename
-**  is returned.
-*/
-extern Int SyFindOrLinkGapRootFile (
-            Char *          filename,
-            UInt4           crc_gap,
-            Char *          result,
-            Int             len );
-
-
-/****************************************************************************
-**
-*F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
-**
-**  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.
-**  The function 'SyExit' must perform all the neccessary cleanup operations.
-**  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
-**  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
-*/
-extern void SyExit (
-            UInt                ret );
-
-
-/****************************************************************************
-**
-*F  SyExec( <cmd> ) . . . . . . . . . . . execute command in operating system
-**
-**  'SyExec' executes the command <cmd> (a string) in the operating system.
-**
-**  'SyExec'  should call a command  interpreter  to execute the command,  so
-**  that file name expansion and other common  actions take place.  If the OS
-**  does not support this 'SyExec' should print a message and return.
-**
-**  For UNIX we can use 'system', which does exactly what we want.
-*/
-extern void SyExec (
-            Char *              cmd );
-
-
-/****************************************************************************
-**
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-**
-**  'SyTmpname' creates and returns a new temporary name.
-*/
-extern Char * SyTmpname ( void );
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*F  SyGAPCRC( <name> )  . . . . . . . . . . . . . . . . . . crc of a GAP file
-**
-**  This function should  be clever and handle  white spaces and comments but
-**  one has to certain that such characters are not ignored in strings.
-*/
-extern UInt4 SyGAPCRC(
-            Char *          name );
-
-
-/****************************************************************************
-**
-*T  StructCompInitInfo  . . . . . . . . . . . . . . . .  compiled modulo info
-*/
-typedef struct {
-    UInt4           magic1;
-    Char *          magic2;
-    void            (* link) ( void );
-    Int             (* function1) ( void );
-    Int             (* functions) ( void );
-} StructCompInitInfo;
-
-typedef StructCompInitInfo * (* CompInitFunc) ( void );
-
-
-/****************************************************************************
-**
-*F  SyLoadModule( <name> )  . . . . . . . . . . . . .  load a compiled module
-*/
-extern void * SyLoadModule(
-            Char *          name );
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * * * help system  * * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*F  SyHelp( <topic>, <fid> )  . . . . . . . . . . . . . . display online help
-**
-**  This function is of course way to large.  But what the  heck,  it  works.
-*/
-extern void SyHelp (
-            Char *              topic,
-            Int                 fin );
 
 
 /****************************************************************************
@@ -1066,12 +688,48 @@ extern void SyAbortBags (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*T  StructCompInitInfo  . . . . . . . . . . . . . . . .  compiled modulo info
+*/
+typedef struct {
+    UInt4           magic1;
+    Char *          magic2;
+    void            (* link) ( void );
+    Int             (* function1) ( void );
+    Int             (* functions) ( void );
+} StructCompInitInfo;
+
+typedef StructCompInitInfo * (* CompInitFunc) ( void );
+
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
 
+*F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
+**
+**  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.
+**  The function 'SyExit' must perform all the neccessary cleanup operations.
+**  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
+**  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
+*/
+extern void SyExit (
+    UInt                ret );
+
+
+/****************************************************************************
+**
 *F  InitSystem( <argc>, <argv> )  . . . . . . . . . initialize system package
 **
 **  'InitSystem' is called very early during the initialization from  'main'.

@@ -24,21 +24,25 @@
 **  The scanner relies on the functions  provided  by  the  operating  system
 **  dependent module 'system.c' for the low level input/output.
 */
-char *          Revision_scanner_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* system dependent functions      */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
+SYS_CONST char * Revision_scanner_c =
+   "@(#)$Id$";
+
+#include        "sysfiles.h"            /* file input/output               */
+
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
 
 #define INCLUDE_DECLARATION_PART
-#include        "scanner.h"             /* declaration part of the package */
+#include        "scanner.h"             /* scanner                         */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "calls.h"               /* CALL_1ARGS, Function            */
+#include        "gap.h"                 /* error handling                  */
 
-#include        "bool.h"                /* True, False                     */
+#include        "calls.h"               /* generic call mechanism          */
+
+#include        "bool.h"                /* booleans                        */
 
 #include        "string.h"              /* ObjsChar, NEW_STRING, CSTR_ST...*/
 
@@ -695,9 +699,9 @@ UInt CloseInput ( void )
 **
 **  As a convention GAP test files should start with:
 **
-**    gap> START_TEST("$Id$");
+**    gap> START_TEST("%Id%");
 **
-**  and end with
+**  where the '%' is to be replaced by '$' and end with
 **
 **    gap> STOP_TEST( "filename.tst", 123456789 );
 **
@@ -1160,8 +1164,6 @@ UInt OpenOutput (
 UInt OpenOutputStream (
     Obj                 stream )
 {
-    Int                 file;
-
     /* fail if we can not handle another open output file                  */
     if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
         return 0;
@@ -1892,14 +1894,6 @@ void GetSymbol ( void )
     default :   if ( IsAlpha(*In) )                   { GetIdent();  break; }
                 Symbol = S_ILLEGAL;                     GET_CHAR();  break;
     }
-
-
-    /* check for dual semicolon                                            */
-    if ( Symbol == S_SEMICOLON && *In == ';' ) {
-        GET_CHAR();
-        DualSemicolon = 1;
-    }
-
 }
 
 
@@ -2183,11 +2177,11 @@ void PutChr (
 **  must pass 0L if you don't make use of an argument to please lint.
 */
 void Pr (
-    Char *              format,
+    SYS_CONST Char *    format,
     Int                 arg1,
     Int                 arg2 )
 {
-    Char *              p;
+    SYS_CONST Char *    p;
     Char *              q;
     Int                 prec,  n;
     Char                fill;

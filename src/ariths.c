@@ -1,6 +1,7 @@
 /****************************************************************************
 **
-*W  ariths.c                    GAP source                   Martin Schoenert
+*W  ariths.c                    GAP source                       Frank Celler
+*W                                                         & Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -8,26 +9,26 @@
 **
 **  This file contains the functions of the  arithmetic  operations  package.
 */
-char * Revision_ariths_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_ariths_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* InfoBags                        */
-#include        "objects.h"             /* TNUM_OBJ, FIRST_VIRTUAL_TNUM,...*/
+#include        "gap.h"                 /* error handling                  */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
-
-#include        "calls.h"               /* ObjFunc                         */
-#include        "opers.h"               /* NewOperation, DoOperation2Args  */
+#include        "gvars.h"               /* global variables                */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* operation, property, attribute  */
 
 #define INCLUDE_DECLARATION_PART
-#include        "ariths.h"              /* declaration part of the package */
+#include        "ariths.h"              /* basic arithmetic                */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "bool.h"                /* True, False                     */
-
-#include        "gap.h"                 /* Error                           */
+#include        "bool.h"                /* booleans                        */
 
 
 /****************************************************************************
@@ -84,19 +85,6 @@ typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
 /****************************************************************************
 **
 
-*F  ZERO( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
-**
-**  'ZERO' returns the zero of the object <op>.
-**
-**  'ZERO' is defined in the declaration part of this package as follows
-**
-#define ZERO(op)        ((*ZeroFuncs[TNUM_OBJ(op)])(op))
-*/
-Obj ZeroAttr;
-
-
-/****************************************************************************
-**
 *V  ZeroFuncs[ <type> ] . . . . . . . . . . . . . . . . table of zero methods
 */
 ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
@@ -106,6 +94,8 @@ ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  ZeroObject( <obj> ) . . . . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj ZeroAttr;
+
 Obj ZeroObject (
     Obj                 obj )
 
@@ -160,19 +150,6 @@ void InstallZeroObject ( Int verb )
 /****************************************************************************
 **
 
-*F  AINV( <obj> ) . . . . . . . . . . . . . . . additive inverse of an object
-**
-**  'AINV' returns the additive inverse of the object <obj>.
-**
-**  'AINV' is defined in the declaration part of this package as follows
-**
-#define AINV(obj)        ((*AInvFuncs[TNUM_OBJ(obj)])(obj))
-*/
-Obj AInvAttr;
-
-
-/****************************************************************************
-**
 *V  AInvFuncs[ <type> ] . . . . . . . . . . table of additive inverse methods
 */
 ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
@@ -182,6 +159,8 @@ ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  AInvObj( <obj> )  . . . . . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj AInvAttr;
+
 Obj AInvObject (
     Obj                 obj )
 {
@@ -234,19 +213,6 @@ void InstallAinvObject ( Int verb )
 /****************************************************************************
 **
 
-*F  ONE( <obj> )  . . . . . . . . . . . . . . . . . . . . .  one of an object
-**
-**  'ONE' returns the one of the object <op>.
-**
-**  'ONE' is defined in the declaration part of this package as follows
-**
-#define ONE(obj)         ((*OneFuncs[TNUM_OBJ(obj)])(obj))
-*/
-Obj OneAttr;
-
-
-/****************************************************************************
-**
 *V  OneFuncs[ <type> ]  . . . . . . . . . . . . . . . .  table of one methods
 */
 ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
@@ -256,6 +222,8 @@ ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  OneObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj OneAttr;
+
 Obj OneObject (
     Obj                 obj )
 {
@@ -308,19 +276,6 @@ void InstallOneObject ( Int verb )
 /****************************************************************************
 **
 
-*F  INV( <obj> )  . . . . . . . . . . . . . . . . . . .  inverse of an object
-**
-**  'INV' returns the multiplicative inverse of the object <obj>.
-**
-**  'INV' is defined in the declaration of this package as follows
-**
-#define INV(obj)         ((*InvFuncs[TNUM_OBJ(obj)])(obj))
-*/
-Obj InvAttr;
-
-
-/****************************************************************************
-**
 *V  InvFuncs[ <type> ]  . . . . . . . . . . . . .  table of inverse functions
 */
 ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
@@ -330,6 +285,8 @@ ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  InvObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj InvAttr;
+
 Obj InvObject (
     Obj                 obj )
 {
@@ -388,25 +345,6 @@ void InstallInvObject ( Int verb )
 /****************************************************************************
 **
 
-*F  EQ( <opL>, <opR> )  . . . . . . . . . . . . . . comparison of two objects
-**
-**  'EQ' returns a nonzero value  if the object <opL>  is equal to the object
-**  <opR>, and zero otherwise.
-**
-**  'EQ' is defined in the declaration part of this package as follows
-**
-#define EQ(opL,opR)     ((opL) == (opR) || \
-                         (!ARE_INTOBJS(opL,opR) && \
-                          (*EqFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR)))
-
-#define EQ2(opL,opR)    ((opL) == (opR) || \
-                          (*EqFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj EqOper;
-
-
-/****************************************************************************
-**
 *V  EqFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of comparison methods
 */
 CompaMethod EqFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -428,6 +366,8 @@ Int EqNot (
 **
 *F  EqObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj EqOper;
+
 Int EqObject (
     Obj                 opL,
     Obj                 opR )
@@ -482,10 +422,10 @@ void InstallEqObject ( Int verb )
         EqFuncs[ t2 ][ T_OBJECT ] = func;
         EqFuncs[ T_OBJECT ][ t2 ] = func;
 
-	EqFuncs[ t2 ][ T_PREC            ] = func;
-	EqFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	EqFuncs[ T_PREC            ][ t2 ] = func;
-	EqFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        EqFuncs[ t2 ][ T_PREC            ] = func;
+        EqFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        EqFuncs[ T_PREC            ][ t2 ] = func;
+        EqFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -493,25 +433,6 @@ void InstallEqObject ( Int verb )
 /****************************************************************************
 **
 
-*F  LT( <opL>, <opR> )  . . . . . . . . . . . . . . comparison of two objects
-**
-**  'LT' returns a nonzero value if the object <opL> is  less than the object
-**  <opR>, and zero otherwise.
-**
-**  'LT' is defined in the declaration part of this package as follows
-**
-#define LT(opL,opR)     ((opL) == (opR) ? 0 : \
-                         (ARE_INTOBJS(opL,opR) ? (Int)(opL) < (Int)(opR) : \
-                          (*LtFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR)))
-
-#define LT2(opL,opR)    ((opL) == (opR) ? 0 : \
-                          (*LtFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj LtOper;
-
-
-/****************************************************************************
-**
 *V  LtFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of comparison methods
 */
 CompaMethod LtFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -521,6 +442,8 @@ CompaMethod LtFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 **
 *F  LtObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj LtOper;
+
 Int LtObject (
     Obj                 opL,
     Obj                 opR )
@@ -575,10 +498,10 @@ void InstallLtObject ( Int verb )
         LtFuncs[ t2 ][ T_OBJECT ] = func;
         LtFuncs[ T_OBJECT ][ t2 ] = func;
 
-	LtFuncs[ t2 ][ T_PREC            ] = func;
-	LtFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	LtFuncs[ T_PREC            ][ t2 ] = func;
-	LtFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        LtFuncs[ t2 ][ T_PREC            ] = func;
+        LtFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        LtFuncs[ T_PREC            ][ t2 ] = func;
+        LtFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -586,20 +509,6 @@ void InstallLtObject ( Int verb )
 /****************************************************************************
 **
 
-*F  IN( <opL>, <opR> )  . . . . . . . . . . .  membership test of two objects
-**
-**  'IN' returns a nonzero   value if the object  <opL>  is a member  of  the
-**  object <opR>, and zero otherwise.
-**
-**  'IN' is defined in the declaration part of this package as follows
-**
-#define IN(opL,opR)     ((*InFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj InOper;
-
-
-/****************************************************************************
-**
 *V  InFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of membership methods
 */
 CompaMethod InFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -625,6 +534,8 @@ Int InUndefined (
 **
 *F  InObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj InOper;
+
 Int InObject (
     Obj                 opL,
     Obj                 opR )
@@ -679,8 +590,8 @@ void InstallInObject ( Int verb )
         InFuncs[ t2 ][ T_OBJECT ] = func;
         InFuncs[ T_OBJECT ][ t2 ] = func;
 
-	InFuncs[ t2 ][ T_PREC            ] = func;
-	InFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        InFuncs[ t2 ][ T_PREC            ] = func;
+        InFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
     }
 }
 
@@ -694,19 +605,6 @@ void InstallInObject ( Int verb )
 /****************************************************************************
 **
 
-*F  SUM( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  sum of two objects
-**
-**  'SUM' returns the sum of the two objects <opL> and <opR>.
-**
-**  'SUM' is defined in the declaration part of this package as follows
-**
-#define SUM(opL,opR)    ((*SumFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj SumOper;
-
-
-/****************************************************************************
-**
 *V  SumFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . . .  table of sum methods
 */
 ArithMethod2    SumFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -716,6 +614,8 @@ ArithMethod2    SumFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 **
 *F  SumObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj SumOper;
+
 Obj SumObject (
     Obj                 opL,
     Obj                 opR )
@@ -770,10 +670,10 @@ void InstallSumObject ( Int verb )
         SumFuncs[ t2 ][ T_OBJECT ] = func;
         SumFuncs[ T_OBJECT ][ t2 ] = func;
 
-	SumFuncs[ t2 ][ T_PREC            ] = func;
-	SumFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	SumFuncs[ T_PREC            ][ t2 ] = func;
-	SumFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        SumFuncs[ t2 ][ T_PREC            ] = func;
+        SumFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        SumFuncs[ T_PREC            ][ t2 ] = func;
+        SumFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -781,19 +681,6 @@ void InstallSumObject ( Int verb )
 /****************************************************************************
 **
 
-*F  DIFF( <opL>, <opR> )  . . . . . . . . . . . . . difference of two objects
-**
-**  'DIFF' returns the difference of the two objects <opL> and <opR>.
-**
-**  'DIFF' is defined in the declaration part of this package as follows
-**
-#define DIFF(opL,opR)   ((*DiffFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj DiffOper;
-
-
-/****************************************************************************
-**
 *V  DiffFuncs[ <typeL> ][ <typeR> ] . . . . . . . table of difference methods
 */
 ArithMethod2 DiffFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -833,6 +720,8 @@ Obj DiffDefaultHandler (
 **
 *F  DiffObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
+Obj DiffOper;
+
 Obj DiffObject (
     Obj                 opL,
     Obj                 opR )
@@ -887,10 +776,10 @@ void InstallDiffObject ( Int verb )
         DiffFuncs[ t2 ][ T_OBJECT ] = func;
         DiffFuncs[ T_OBJECT ][ t2 ] = func;
 
-	DiffFuncs[ t2 ][ T_PREC            ] = func;
-	DiffFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	DiffFuncs[ T_PREC            ][ t2 ] = func;
-	DiffFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        DiffFuncs[ t2 ][ T_PREC            ] = func;
+        DiffFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        DiffFuncs[ T_PREC            ][ t2 ] = func;
+        DiffFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -898,19 +787,6 @@ void InstallDiffObject ( Int verb )
 /****************************************************************************
 **
 
-*F  PROD( <opL>, <opR> )  . . . . . . . . . . . . . .  product of two objects
-**
-**  'PROD' returns the product of the two objects <opL> and <opR>.
-**
-**  'PROD' is defined in the declaration part of this package as follows
-**
-#define PROD(opL,opR)   ((*ProdFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj ProdOper;
-
-
-/****************************************************************************
-**
 *V  ProdFuncs[ <typeL> ][ <typeR> ] . . . . . . . .  table of product methods
 */
 ArithMethod2    ProdFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -920,6 +796,8 @@ ArithMethod2    ProdFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 **
 *F  ProdObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
+Obj ProdOper;
+
 Obj ProdObject (
     Obj                 opL,
     Obj                 opR )
@@ -974,10 +852,10 @@ void InstallProdObject ( Int verb )
         ProdFuncs[ t2 ][ T_OBJECT ] = func;
         ProdFuncs[ T_OBJECT ][ t2 ] = func;
 
-	ProdFuncs[ t2 ][ T_PREC            ] = func;
-	ProdFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	ProdFuncs[ T_PREC            ][ t2 ] = func;
-	ProdFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        ProdFuncs[ t2 ][ T_PREC            ] = func;
+        ProdFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        ProdFuncs[ T_PREC            ][ t2 ] = func;
+        ProdFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -985,19 +863,6 @@ void InstallProdObject ( Int verb )
 /****************************************************************************
 **
 
-*F  QUO( <opL>, <opR> ) . . . . . . . . . . . . . . . quotient of two objects
-**
-**  'QUO' returns the quotient of the object <opL> by the object <opR>.
-**
-**  'QUO' is defined in the declaration part of this package as follows
-**
-#define QUO(opL,opR)    ((*QuoFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj QuoOper;
-
-
-/****************************************************************************
-**
 *V  QuoFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . table of quotient methods
 */
 ArithMethod2 QuoFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -1036,6 +901,8 @@ Obj QuoDefaultHandler (
 **
 *F  QuoObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj QuoOper;
+
 Obj QuoObject (
     Obj                 opL,
     Obj                 opR )
@@ -1090,10 +957,10 @@ void InstallQuoObject ( Int verb )
         QuoFuncs[ t2 ][ T_OBJECT ] = func;
         QuoFuncs[ T_OBJECT ][ t2 ] = func;
 
-	QuoFuncs[ t2 ][ T_PREC            ] = func;
-	QuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	QuoFuncs[ T_PREC            ][ t2 ] = func;
-	QuoFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        QuoFuncs[ t2 ][ T_PREC            ] = func;
+        QuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        QuoFuncs[ T_PREC            ][ t2 ] = func;
+        QuoFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -1101,19 +968,6 @@ void InstallQuoObject ( Int verb )
 /****************************************************************************
 **
 
-*F  LQUO( <opL>, <opR> )  . . . . . . . . . . .  left quotient of two operand
-**
-**  'LQUO' returns the left quotient of the object <opL> by the object <opR>.
-**
-**  'LQUO' is defined in the declaration part of this package as follows
-**
-#define LQUO(opL,opR)   ((*LQuoFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj LQuoOper;
-
-
-/****************************************************************************
-**
 *V  LQuoFuncs[ <typeL> ][ <typeR> ] . . . . .  table of left quotient methods
 */
 ArithMethod2 LQuoFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -1152,6 +1006,8 @@ Obj LQuoDefaultHandler (
 **
 *F  LQuoObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
+Obj LQuoOper;
+
 Obj LQuoObject (
     Obj                 opL,
     Obj                 opR )
@@ -1206,10 +1062,10 @@ void InstallLQuoObject ( Int verb )
         LQuoFuncs[ t2 ][ T_OBJECT ] = func;
         LQuoFuncs[ T_OBJECT ][ t2 ] = func;
 
-	LQuoFuncs[ t2 ][ T_PREC            ] = func;
-	LQuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	LQuoFuncs[ T_PREC            ][ t2 ] = func;
-	LQuoFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        LQuoFuncs[ t2 ][ T_PREC            ] = func;
+        LQuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        LQuoFuncs[ T_PREC            ][ t2 ] = func;
+        LQuoFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -1217,19 +1073,6 @@ void InstallLQuoObject ( Int verb )
 /****************************************************************************
 **
 
-*F  POW( <opL>, <opR> ) . . . . . . . . . . . . . . . .  power of two objects
-**
-**  'POW' returns the power of the object <opL> by the object <opL>.
-**
-**  'POW' is defined in the declaration part of this package as follows
-**
-#define POW(opL,opR)    ((*PowFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj PowOper;
-
-
-/****************************************************************************
-**
 *V  PowFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . .  table of power methods
 */
 ArithMethod2 PowFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -1268,6 +1111,8 @@ Obj PowDefaultHandler (
 **
 *F  PowObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj PowOper;
+
 Obj PowObject (
     Obj                 opL,
     Obj                 opR )
@@ -1322,10 +1167,10 @@ void InstallPowObject ( Int verb )
         PowFuncs[ t2 ][ T_OBJECT ] = func;
         PowFuncs[ T_OBJECT ][ t2 ] = func;
 
-	PowFuncs[ t2 ][ T_PREC            ] = func;
-	PowFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	PowFuncs[ T_PREC            ][ t2 ] = func;
-	PowFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        PowFuncs[ t2 ][ T_PREC            ] = func;
+        PowFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        PowFuncs[ T_PREC            ][ t2 ] = func;
+        PowFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -1333,19 +1178,6 @@ void InstallPowObject ( Int verb )
 /****************************************************************************
 **
 
-*F  COMM( <opL>, <opR> )  . . . . . . . . . . . . . commutator of two objects
-**
-**  'COMM' returns the commutator of the two objects <opL> and <opR>.
-**
-**  'COMM' is defined in the declaration part of this package as follows
-**
-#define COMM(opL,opR)   ((*CommFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj CommOper;
-
-
-/****************************************************************************
-**
 *V  CommFuncs[ <typeL> ][ <typeR> ] . . . . . . . table of commutator methods
 */
 ArithMethod2 CommFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -1386,6 +1218,8 @@ Obj CommDefaultHandler (
 **
 *F  CommObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
+Obj CommOper;
+
 Obj CommObject (
     Obj                 opL,
     Obj                 opR )
@@ -1440,10 +1274,10 @@ void InstallCommObject ( Int verb )
         CommFuncs[ t2 ][ T_OBJECT ] = func;
         CommFuncs[ T_OBJECT ][ t2 ] = func;
 
-	CommFuncs[ t2 ][ T_PREC            ] = func;
-	CommFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	CommFuncs[ T_PREC            ][ t2 ] = func;
-	CommFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        CommFuncs[ t2 ][ T_PREC            ] = func;
+        CommFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        CommFuncs[ T_PREC            ][ t2 ] = func;
+        CommFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -1451,19 +1285,6 @@ void InstallCommObject ( Int verb )
 /****************************************************************************
 **
 
-*F  MOD( <opL>, <opR> ) . . . . . . . . . . . . . .  remainder of two objects
-**
-**  'MOD' returns the remainder of the object <opL> by the object <opR>.
-**
-**  'MOD' is defined in the declaration part of this package as follows
-**
-#define MOD(opL,opR)    ((*ModFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-*/
-Obj ModOper;
-
-
-/****************************************************************************
-**
 *V  ModFuncs[ <typeL> ][ <typeR> ]  . . . . . . .  table of remainder methods
 */
 ArithMethod2 ModFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
@@ -1474,6 +1295,8 @@ ArithMethod2 ModFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 **
 *F  ModObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
+Obj ModOper;
+
 Obj ModObject (
     Obj                 opL,
     Obj                 opR )
@@ -1528,10 +1351,10 @@ void InstallModObject ( Int verb )
         ModFuncs[ t2 ][ T_OBJECT ] = func;
         ModFuncs[ T_OBJECT ][ t2 ] = func;
 
-	ModFuncs[ t2 ][ T_PREC            ] = func;
-	ModFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-	ModFuncs[ T_PREC            ][ t2 ] = func;
-	ModFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
+        ModFuncs[ t2 ][ T_PREC            ] = func;
+        ModFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
+        ModFuncs[ T_PREC            ][ t2 ] = func;
+        ModFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 

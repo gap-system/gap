@@ -158,23 +158,71 @@ Obj             MethsOper (
 #define NRB_FLAGS(flags)                ((LEN_FLAGS(flags)+BIPEB-1)/BIPEB)
 
 
+
 /****************************************************************************
 **
-*F  ELM_FLAGS( <flags>, <pos> ) . . . . . . . . . . . element of a flags list
+*F  BLOCK_ELM_FLAGS(<list>,<pos>) . . . . . . . . . .block  of a flags list
+**
+**  'BLOCK_ELM_FLAGS' return the block containing the <pos>-th element of 
+**   the flags list <list> as a UInt value, which is also a valid left
+**  hand side.
+**  <pos> must  be a positive integer less than
+**  or equal to the length of <hdList>.
+**
+**  Note that 'BLOCK_ELM_FLAGS' is a macro, so do not call it  with arguments
+**  that have sideeffects.
 */
-#define ELM_FLAGS(flags,pos) \
-  (((UInt4*)DATA_FLAGS(flags))[((pos)-1)/BIPEB]&(1UL<<((pos)-1)%BIPEB) ? \
-  True : False)
+
+#define BLOCK_ELM_FLAGS(list, pos) (DATA_FLAGS( list )[((pos)-1)/BIPEB])
 
 
 /****************************************************************************
 **
-*F  SET_ELM_FLAGS( <list>, <pos>, <val> ) . .  set an element of a flags list
+*F  MASK_POS_FLAGS(<pos>) . . .  . . .bit mask for position of a Flags list
+**
+**  MASK_POS_FLAGS(<pos>) returns a UInt with a single set bit in position
+**  (pos-1) % BIPEB, useful for accessing the pos'th element of a FLAGS
+**
+**  Note that 'MASK_POS_FLAGS' is a macro, so do not call it  with arguments
+**  that have sideeffects.
 */
-#define SET_ELM_FLAGS(flags,pos,val)  \
-  ((val) == True ? \
-   (((UInt4*)DATA_FLAGS(flags))[((pos)-1)/BIPEB]|=(1UL<<((pos)-1)%BIPEB)) :\
-   (((UInt4*)DATA_FLAGS(flags))[((pos)-1)/BIPEB]&=~(1UL<<((pos)-1)%BIPEB)))
+
+#define MASK_POS_FLAGS( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
+
+
+
+/****************************************************************************
+**
+*F  ELM_FLAGS(<list>,<pos>) . . . . . . . . . . . . element of a flags list
+**
+**  'ELM_FLAGS' return the <pos>-th element of the flags list <list>, which
+**  is either 'true' or 'false'.  <pos> must  be a positive integer less than
+**  or equal to the length of <hdList>.
+**
+**  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
+**  have sideeffects.
+*/
+#define ELM_FLAGS(list,pos) \
+  ((BLOCK_ELM_FLAGS(list,pos) & MASK_POS_FLAGS(pos)) ?  True : False)
+
+
+/****************************************************************************
+**
+*F  SET_ELM_FLAGS(<list>,<pos>,<val>) . . .  set an element of a flags list
+**
+**  'SET_ELM_FLAGS' sets  the element at position <pos>   in the flags list
+**  <list> to the value <val>.  <pos> must be a positive integer less than or
+**  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
+**
+**  Note that  'SET_ELM_FLAGS' is  a macro, so do not  call it with arguments
+**  that have sideeffects.
+*/
+
+#define SET_ELM_FLAGS(list,pos,val)  \
+ ((val) == True ? \
+  (BLOCK_ELM_FLAGS(list, pos) |= MASK_POS_FLAGS(pos)) : \
+  (BLOCK_ELM_FLAGS(list, pos) &= ~MASK_POS_FLAGS(pos)))
+
 
 
 /****************************************************************************
@@ -534,6 +582,28 @@ Obj FuncSUB_FLAGS (
     return flags;
 }
 
+/* See blister.c for more about this */
+
+#ifdef SYS_IS_64_BIT
+#define COUNT_TRUES_BLOCK( block )                                                          \
+        do {                                                                                \
+        (block) = ((block) & 0x5555555555555555L) + (((block) >> 1) & 0x5555555555555555L); \
+        (block) = ((block) & 0x3333333333333333L) + (((block) >> 2) & 0x3333333333333333L); \
+        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f0f0f0f0fL;                        \
+        (block) = ((block) + ((block) >>  8));                                              \
+        (block) = ((block) + ((block) >> 16));                                              \
+        (block) = ((block) + ((block) >> 32)) & 0x00000000000000ffL; } while (0)            
+#else
+#define COUNT_TRUES_BLOCK( block )                                        \
+        do {                                                              \
+        (block) = ((block) & 0x55555555) + (((block) >> 1) & 0x55555555); \
+        (block) = ((block) & 0x33333333) + (((block) >> 2) & 0x33333333); \
+        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f;               \
+        (block) = ((block) + ((block) >>  8));                            \
+        (block) = ((block) + ((block) >> 16)) & 0x000000ff; } while (0)   
+#endif
+
+
 
 /****************************************************************************
 **
@@ -547,9 +617,9 @@ Obj FuncTRUES_FLAGS (
 {
     Obj                 sub;            /* handle of the result            */
     Int                 len;            /* logical length of the list      */
-    UInt4 *             ptr;            /* pointer to flags                */
+    UInt *              ptr;            /* pointer to flags                */
     UInt                nrb;            /* number of blocks in flags       */
-    UInt4               m;              /* number of bits in a block       */
+    UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in flags         */
     UInt                nn;
     UInt                i;              /* loop variable                   */
@@ -567,15 +637,11 @@ Obj FuncTRUES_FLAGS (
 
     /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
     nrb = NRB_FLAGS(flags);
-    ptr = (UInt4*)DATA_FLAGS(flags);
+    ptr = (UInt*)DATA_FLAGS(flags);
     n = 0;
     for ( i = 1; i <= nrb; i++ ) {
         m = *ptr++;
-        m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
-        m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
-        m = (m + (m >>  4)) & 0x0f0f0f0f;
-        m = (m + (m >>  8));
-        m = (m + (m >> 16)) & 0x000000ff;
+	COUNT_TRUES_BLOCK(m); 
         n += m;
     }
 
@@ -701,7 +767,6 @@ Obj FuncIS_SUBSET_FLAGS (
     return True;
 }
 
-
 /****************************************************************************
 **
 *F  FuncSIZE_FLAGS( <self>, <flags> )
@@ -712,9 +777,9 @@ Obj FuncSIZE_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
-    UInt4 *             ptr;            /* pointer to flags                */
+    UInt *              ptr;            /* pointer to flags                */
     UInt                nrb;            /* number of blocks in flags       */
-    UInt4               m;              /* number of bits in a block       */
+    UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in flags         */
     UInt                i;              /* loop variable                   */
 
@@ -734,11 +799,7 @@ Obj FuncSIZE_FLAGS (
     n = 0;
     for ( i = 1; i <= nrb; i++ ) {
         m = *ptr++;
-        m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
-        m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
-        m = (m + (m >>  4)) & 0x0f0f0f0f;
-        m = (m + (m >>  8));
-        m = (m + (m >> 16)) & 0x000000ff;
+	COUNT_TRUES_BLOCK(m);
         n += m;
     }
 
@@ -935,9 +996,9 @@ Obj NewFilter (
 
 
 Obj NewFilterC (
-    Char *              name,
+    SYS_CONST Char *    name,
     Int                 narg,
-    Char *              nams,
+    SYS_CONST Char *    nams,
     ObjFunc             hdlr )
 {
     Obj                 getter;
@@ -2733,9 +2794,9 @@ Obj NewOperation (
 *f  NewOperationC( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewOperationC (
-    Char *              name,
+    SYS_CONST Char *    name,
     Int                 narg,
-    Char *              nams,
+    SYS_CONST Char *    nams,
     ObjFunc             hdlr )
 {
     Obj                 oper;
@@ -4420,9 +4481,9 @@ Obj NewAttribute (
 *f  NewAttributeC( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewAttributeC (
-    Char *              name,
+    SYS_CONST Char *    name,
     Int                 narg,
-    Char *              nams,
+    SYS_CONST Char *    nams,
     ObjFunc             hdlr )
 {
     Obj                 getter;
@@ -4796,9 +4857,9 @@ Obj NewProperty (
 *f  NewPropertyC( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewPropertyC (
-    Char *              name,
+    SYS_CONST Char *    name,
     Int                 narg,
-    Char *              nams,
+    SYS_CONST Char *    nams,
     ObjFunc             hdlr )
 {
     Obj                 getter;

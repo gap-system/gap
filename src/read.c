@@ -1794,29 +1794,37 @@ UInt ReadEvalCommand ( void )
     /* read an expression or an assignment or a procedure call             */
     if      ( Symbol == S_IDENT  ) { ReadExpr(   S_SEMICOLON|S_EOF, 'x' ); }
 
-	/* otherwise read a statement                                      */
-	else if (Symbol==S_UNBIND ) { ReadUnbind( S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_INFO   ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_ASSERT ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
-        else if (Symbol== S_SAVEWS) { ReadSaveWS( S_SEMICOLON|S_EOF      ); }
-        else if (Symbol== S_LOADWS) { ReadLoadWS( S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_IF     ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_FOR    ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_WHILE  ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_REPEAT ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_BREAK  ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_RETURN ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_TRYNEXT) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_QUIT   ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
+    /* otherwise read a statement                                          */
+    else if (Symbol==S_UNBIND    ) { ReadUnbind( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_INFO      ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_ASSERT    ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol== S_SAVEWS   ) { ReadSaveWS( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol== S_LOADWS   ) { ReadLoadWS( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_IF        ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_FOR       ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_WHILE     ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_REPEAT    ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_BREAK     ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_RETURN    ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_TRYNEXT   ) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_QUIT      ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
 
-	/* otherwise try to read an expression                             */
-	else                        { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
+    /* otherwise try to read an expression                                 */
+    else                        { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
 
-	/* every statement must be terminated by a semicolon               */
+    /* every statement must be terminated by a semicolon                   */
     if ( Symbol != S_SEMICOLON ) {
-      SyntaxError( "; expected");
+	SyntaxError( "; expected");
     }
 
+    /* check for dual semicolon                                            */
+    if ( *In == ';' ) {
+	GetSymbol();
+	DualSemicolon = 1;
+    }
+    else {
+	DualSemicolon = 0;
+    }
 
     /* end the interpreter                                                 */
     if ( ! READ_ERROR() ) {

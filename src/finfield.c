@@ -355,7 +355,7 @@ typedef UInt2           FFV;
 **
 **  'FLD_FFE' is defined in the declaration part of this package as follows
 **
-#define FLD_FFE(ffe)            ((((UInt4)(ffe)) & 0xFFFF) >> 3)
+#define FLD_FFE(ffe)            ((((UInt)(ffe)) & 0xFFFF) >> 3)
 */
 
 
@@ -372,7 +372,7 @@ typedef UInt2           FFV;
 **
 **  'VAL_FFE' is defined in the declaration part of this package as follows
 **
-#define VAL_FFE(ffe)            (((UInt4)(ffe)) >> 16)
+#define VAL_FFE(ffe)            (((UInt)(ffe)) >> 16)
 */
 
 

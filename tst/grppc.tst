@@ -46,10 +46,10 @@ gap> v:=Group( gens[1], gens[2], gens[3]*gens[5], gens[4]*gens[6],
 gap> gens[7]*gens[11],gens[8]*gens[12],gens[9]*gens[13], gens[10]*gens[14]);;
 gap> Intersection(u,v);;
 
-# thats all, folks
-gap> STOP_TEST( "grppc.tst", 14522218995 );
+# that's all, folks
+gap> STOP_TEST( "grppc.tst", 46360000 );
 
 #############################################################################
 ##
-#E  grppc.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E  grppc.tst . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

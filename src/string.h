@@ -89,6 +89,19 @@ extern  Obj             ObjsChar [256];
 
 /****************************************************************************
 **
+*F  PrintString(<list>) . . . . . . . . . . . . . . . . . . .  print a string
+**
+**  'PrintString' prints the string with the handle <list>.
+**
+**  No  linebreaks are allowed,  if one must be  inserted  anyhow, it must be
+**  escaped by a backslash '\', which is done in 'Pr'.
+*/
+extern void PrintString (
+    Obj                 list );
+
+
+/****************************************************************************
+**
 *F  PrintString1(<list>)  . . . . . . . . . . . .  print a string for 'Print'
 **
 **  'PrintString1' prints the string  constant  in  the  format  used  by  the

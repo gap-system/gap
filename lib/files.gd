@@ -261,6 +261,27 @@ end;
 
 #############################################################################
 ##
+#F  LoadDynamicModule( <filename> ) . . . . . . . . . . . . . . load a module
+##
+LoadDynamicModule := function( arg )
+
+    if Length(arg) = 1  then
+        if not LOAD_DYN( arg[1], false )  then
+            Error( "no support for dynamic loading" );
+        fi;
+    elif Length(arg) = 2  then
+        if not LOAD_DYN( arg[1], arg[2] )  then
+            Error( "<crc> mismatch (or no support for dynamic loading)" );
+        fi;
+    else
+        Error( "usage: LoadDynamicModule( <filename> )" );
+    fi;
+
+end;
+
+
+#############################################################################
+##
 
 #F  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
 ##

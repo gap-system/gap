@@ -144,57 +144,6 @@ extern  void            ErrorQuitNrArgs (
     do { PTR_BAG(CURR_FRAME_8UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_8UP); } while ( 0 )
 
 
-/* arithmetic, should go into 'ariths.c' * * * * * * * * * * * * * * * * * */
-
-#define C_SUM(val,left,right) \
- val = SUM( left, right );
-
-#define C_SUM_FIA(val,left,right) \
- if ( ! ARE_INTOBJS(left,right) || ! SUM_INTOBJS(val,left,right) ) { \
-  val = SUM( left, right ); \
- }
-
-#define C_SUM_INTOBJS(val,left,right) \
- if ( ! SUM_INTOBJS(val,left,right) ) { \
-  val = SUM( left, right ); \
- }
-
-#define C_AINV(val,left) \
- val = AINV( left );
-
-#define C_AINV_FIA(val,left) \
- val = AINV( left );
-
-#define C_AINV_INTOBJS(val,left) \
- val = AINV( left );
-
-#define C_DIFF(val,left,right) \
- val = DIFF( left, right );
-
-#define C_DIFF_FIA(val,left,right) \
- if ( ! ARE_INTOBJS(left,right) || ! DIFF_INTOBJS(val,left,right) ) { \
-  val = DIFF( left, right ); \
- }
-
-#define C_DIFF_INTOBJS(val,left,right) \
- if ( ! DIFF_INTOBJS(val,left,right) ) { \
-  val = DIFF( left, right ); \
- }
-
-#define C_PROD(val,left,right) \
- val = PROD( left, right );
-
-#define C_PROD_FIA(val,left,right) \
- if ( ! ARE_INTOBJS(left,right) || ! PROD_INTOBJS(val,left,right) ) { \
-  val = PROD( left, right ); \
- }
-
-#define C_PROD_INTOBJS(val,left,right) \
- if ( ! PROD_INTOBJS(val,left,right) ) { \
-  val = PROD( left, right ); \
- }
-
-
 /* objects, should into 'objects.c'  * * * * * * * * * * * * * * * * * * * */
 
 /* there should be a function for C_ELM_POSOBJ */

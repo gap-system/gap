@@ -134,10 +134,10 @@ HELP_BOOKS_INFO := rec();
 ##  libraries.
 ##
 HELP_MAIN_BOOKS := Immutable( [
-    "tutorial",   "doc/tut", "GAP 4 Tutorial",
-    "reference",  "doc/ref", "GAP 4 Reference Manual",
-    "extending",  "doc/ext", "Extending GAP 4 Reference Manual",
-    "programmer", "doc/prg", "Programmers Tutorial",
+    "tutorial",     "doc/tut",  "GAP 4 Tutorial",
+    "reference",    "doc/ref",  "GAP 4 Reference Manual",
+    "extending",    "doc/ext",  "Extending GAP 4 Reference Manual",
+    "prg tutorial", "doc/prg",  "Programmers Tutorial",
 ] );
 
 
@@ -888,7 +888,8 @@ HELP_SHOW_WELCOME := function( book )
 
     lines := [
 "Welcome to GAP 4\n",
-"Try '?About HELP' (without quotes) for introduction to the help system\n",
+"Try '?tutorial:The Help system' (without quotes) for an introduction to",
+"the help system",
     ];
     HELP_PRINT_LINES(lines);
     return true;

@@ -48,6 +48,7 @@ char *          Revision_gvars_c =
 
 #include        "gap.h"                 /* Error                           */
 
+#include        "bool.h"
 
 /****************************************************************************
 **
@@ -291,8 +292,8 @@ Char *          NameGVar (
 **
 **  'GVarName' returns the global variable with the name <name>.
 */
-UInt            GVarName (
-    Char *              name )
+UInt GVarName (
+    SYS_CONST Char *    name )
 {
     Obj                 gvar;           /* global variable (as imm intval) */
     UInt                pos;            /* hash position                   */
@@ -300,7 +301,7 @@ UInt            GVarName (
     Obj                 string;         /* temporary string value <name>   */
     Obj                 table;          /* temporary copy of <TableGVars>  */
     Obj                 gvar2;          /* one element of <table>          */
-    Char *              p;              /* loop variable                   */
+    SYS_CONST Char *    p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
     /* start looking in the table at the following hash position           */
@@ -733,6 +734,68 @@ UInt            completion_gvar (
 
 /****************************************************************************
 **
+*F  FuncIDENTS_GVAR( <self> ) . . . . . . . . . .  idents of global variables
+*/
+Obj FuncIDENTS_GVAR (
+    Obj                 self )
+{
+    extern Obj          NameGVars;
+    Obj                 copy;
+    UInt                i;
+
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
+    for ( i = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
+        SET_ELM_PLIST( copy, i, ELM_PLIST( NameGVars, i ) );
+    }
+    SET_LEN_PLIST( copy, LEN_PLIST(NameGVars) );
+    return copy;
+}
+
+
+/****************************************************************************
+**
+*F  FuncASS_GVAR( <self>, <gvar>, <val> ) . . . . assign to a global variable
+*/
+Obj FuncASS_GVAR (
+    Obj                 self,
+    Obj                 gvar,
+    Obj                 val )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( gvar ) ) {
+        gvar = ErrorReturnObj(
+            "READ: <gvar> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(gvar)].name), 0L,
+            "you can return a string for <gvar>" );
+    }
+
+    AssGVar( GVarName( CSTR_STRING(gvar) ), val );
+    return 0L;
+}
+
+
+/****************************************************************************
+**
+*F  FuncISB_GVAR( <self>, <gvar> )  . . check assignment of a global variable
+*/
+Obj FuncISB_GVAR (
+    Obj                 self,
+    Obj                 gvar )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( gvar ) ) {
+        gvar = ErrorReturnObj(
+            "READ: <gvar> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(gvar)].name), 0L,
+            "you can return a string for <gvar>" );
+    }
+
+    return ValAutoGVar( GVarName( CSTR_STRING(gvar) ) ) ? True : False;
+}
+
+
+/****************************************************************************
+**
 *F  InitGVars() . . . . . . . . . . . initialize the global variables package
 **
 **  'InitGVars' initializes the global variables package.
@@ -798,6 +861,19 @@ void            InitGVars ( void )
     InitHandlerFunc( AUTOHandler, "AUTO");
     AUTOFunc = NewFunctionC( "AUTO", -1L, "args", AUTOHandler );
     AssGVar( GVarName( "AUTO" ), AUTOFunc );
+
+    C_NEW_GVAR_FUNC( "IDENTS_GVAR", 0L, "",
+                  FuncIDENTS_GVAR,
+           "src/gap.c:IDENTS_GVAR" );
+
+    C_NEW_GVAR_FUNC( "ISB_GVAR", 1L, "gvar",
+                  FuncISB_GVAR,
+           "src/gap.c:ISB_GVAR" );
+
+    C_NEW_GVAR_FUNC( "ASS_GVAR", 2L, "gvar, value",
+                  FuncASS_GVAR,
+           "src/gap.c:ASS_GVAR" );
+
 }
 
 

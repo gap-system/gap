@@ -519,12 +519,12 @@ void MarkAllSubBagsDefault (
 *F  CallbackForAllBags( <func> ) call a C function on all non-zero mptrs
 **
 **  This calls a C function on every bag, including garbage ones, by simply
-**  walking the masterpointer area. Not terribly safe
+**  walking the masterpointer area. Not terribly safe.
 **
 */
 
 void CallbackForAllBags(
-     void (*func)() )
+     void (*func)(Bag) )
 {
   Bag ptr;
   for (ptr = (Bag)MptrBags; ptr < (Bag)OldBags; ptr ++)
@@ -552,7 +552,7 @@ TNumGlobalBags GlobalBags;
 */
 void InitGlobalBag (
     Bag *               addr,
-    Char *              cookie )
+    SYS_CONST Char *    cookie )
 {
     extern TNumAbortFuncBags   AbortFuncBags;
 

@@ -147,7 +147,6 @@ Int READ_TEST ( void )
 
         /* read and evaluate the command                                   */
 	ClearError();
-        DualSemicolon = 0;
         type = ReadEvalCommand();
 
         /* stop the stopwatch                                              */
@@ -968,7 +967,7 @@ Obj FuncTmpDirectory (
     Char *              tmp;
     Obj                 name;
 
-    tmp = SyTmpdir();
+    tmp = SyTmpdir("tmp");
     if ( tmp == 0 )
 	return Fail;
     C_NEW_STRING( name, SyStrlen(tmp), tmp );
@@ -1352,6 +1351,7 @@ Obj FuncREAD_LINE_FILE (
     str = NEW_STRING(0);
     len = 0;
     while (1) {
+        len += 255;
         ResizeBag( str, 1+len );
         if ( SyFgets( buf, 256, INT_INTOBJ(fid) ) == 0 )
             break;
@@ -1359,7 +1359,6 @@ Obj FuncREAD_LINE_FILE (
         SyStrncat( cstr, buf, 255 );
         if ( buf[SyStrlen(buf)-1] == '\n' )
             break;
-        len += 255;
     }
 
     /* fix the length of <str>                                             */
@@ -1444,7 +1443,7 @@ Obj FuncWRITE_BYTE_FILE (
 
 *F  FuncExecuteProcess( <self>, <dir>, <prg>, <in>, <out>, <args> )   process
 */
-static Obj  * ExecArgs  [ 1024 ];
+static Obj    ExecArgs  [ 1024 ];
 static Char * ExecCArgs [ 1024 ];
 
 Obj FuncExecuteProcess (

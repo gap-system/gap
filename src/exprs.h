@@ -29,9 +29,16 @@ char *          Revision_exprs_h =
                         OBJ_LVAR( LVAR_REFLVAR( (expr) ) )
 #endif
 #ifndef NO_LVAR_CHECKS
+
+#ifdef SYS_IS_64_BIT
+#define OFFSET_REFLVAR(expr)  (((expr)*2)+10)
+#else
+#define OFFSET_REFLVAR(expr)  ((expr) + 5)
+#endif
+
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)PtrLVars)+(expr)+5) != 0 ? \
-                         *(Obj*)(((char*)PtrLVars)+(expr)+5) : \
+                        (*(Obj*)(((char*)PtrLVars)+OFFSET_REFLVAR(expr)) != 0 ? \
+                         *(Obj*)(((char*)PtrLVars)+OFFSET_REFLVAR(expr)) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 
@@ -48,9 +55,14 @@ char *          Revision_exprs_h =
 **  course    highly  dependent  on    (immediate)  integer   expressions and
 **  (immediate) integer values having the same representation.
 */
+
+#ifndef SYS_IS_64_BIT
 #define OBJ_INTEXPR(expr)       \
                         ((Obj)(Int)(Int4)(expr))
-
+#else
+#define OBJ_INTEXPR(expr)       \
+                        (INTOBJ_INT(INT_INTEXPR((expr))))
+#endif
 
 /****************************************************************************
 **

@@ -137,7 +137,7 @@ function ( name )
     readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
     APPEND_LIST_INTR( READ_INDENT, "  " );
     InfoRead1( "#I", READ_INDENT, "Read( \"", name, "\" )\n" );
-    found := IsReadableFile(name) and READ(name);
+    found := (IsReadableFile(name)=true) and READ(name);
     READ_INDENT := readIndent;
     if found and READ_INDENT = ""  then
         InfoRead1( "#I  Read( \"", name, "\" ) done\n" );

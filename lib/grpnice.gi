@@ -219,14 +219,6 @@ GroupMethodByNiceMonomorphismCollColl( Core,
     [ IsGroup, IsGroup ] );
 
 
-#############################################################################
-##
-#M  CoreInParent( <G> ) . . . . . . . . . . . . . . . . core of <G> in parent
-##
-SubgroupMethodByNiceMonomorphism( CoreInParent,
-    [ IsGroup and HasParent ] );
-
-
 ##############################################################################
 ##
 #M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
@@ -293,14 +285,6 @@ AttributeMethodByNiceMonomorphismCollColl( Index,
 
 #############################################################################
 ##
-#M  IndexInParent( <G> )  . . . . . . . . . . . . . .  index of <G> in parent
-##
-AttributeMethodByNiceMonomorphism( IndexInParent,
-    [ IsGroup and HasParent ] );
-
-
-#############################################################################
-##
 #M  Intersection2( <G>, <H> ) . . . . . . . . . . . .  intersection of groups
 ##
 GroupMethodByNiceMonomorphismCollColl( Intersection2,
@@ -353,14 +337,6 @@ PropertyMethodByNiceMonomorphism( IsNilpotentGroup,
 ##
 PropertyMethodByNiceMonomorphismCollColl( IsNormal,
     [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
-#M  IsNormalInParent( <G> ) . . . . . . . . . .  test if <G> normal in parent
-##
-PropertyMethodByNiceMonomorphism( IsNormalInParent,
-    [ IsGroup and HasParent ] );
 
 
 #############################################################################
@@ -451,14 +427,6 @@ GroupMethodByNiceMonomorphismCollColl( Normalizer,
     [ IsGroup, IsGroup ] );
 SubgroupMethodByNiceMonomorphismCollColl( Normalizer,
     [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
-#M  NormalizerInParent( <G> ) . . . . . . . . . . normalizer of <G> in parent
-##
-SubgroupMethodByNiceMonomorphism( NormalizerInParent, 
-    [ IsGroup and HasParent ] );
 
 
 #############################################################################

@@ -29,9 +29,9 @@ VectorSpace( GF(3), [ Z(3^3) ] )
 gap> PreImagesRange( map1 );
 VectorSpace( GF(3), [ Z(3)^0 ] )
 gap> CoKernelOfAdditiveGeneralMapping( map1 );
-VectorSpace( GF(3), [  ], 0*Z(3) )
+VectorSpace( GF(3), [  ] )
 gap> KernelOfAdditiveGeneralMapping( map1 );
-VectorSpace( GF(3), [  ], 0*Z(3) )
+VectorSpace( GF(3), [  ] )
 gap> IsSingleValued( map1 );
 true
 gap> IsInjective( map1 );
@@ -60,7 +60,7 @@ VectorSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ],
 gap> PreImagesRange( map2 );
 GF(3^3)
 gap> CoKernelOfAdditiveGeneralMapping( map2 );
-VectorSpace( GF(3), [  ], [ 0*Z(3), 0*Z(3) ] )
+VectorSpace( GF(3), [  ] )
 gap> KernelOfAdditiveGeneralMapping( map2 );
 VectorSpace( GF(3), [ Z(3^3)^18 ] )
 gap> IsSingleValued( map2 );
@@ -93,7 +93,7 @@ VectorSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ],
 gap> CoKernelOfAdditiveGeneralMapping( map3 );
 VectorSpace( GF(3), [ Z(3^3)^18 ] )
 gap> KernelOfAdditiveGeneralMapping( map3 );
-VectorSpace( GF(3), [  ], [ 0*Z(3), 0*Z(3) ] )
+VectorSpace( GF(3), [  ] )
 gap> IsSingleValued( map3 );
 false
 gap> IsInjective( map3 );
@@ -514,12 +514,9 @@ End( GF(3), End( GF(3), GF(3^3) ) )
 gap> Dimension( endoendo );
 81
 
-gap> STOP_TEST( "vspchom.tst", 17000000 );
+gap> STOP_TEST( "vspchom.tst", 37810000 );
 
 
 #############################################################################
 ##
 #E  vspchom.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

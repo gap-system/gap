@@ -471,7 +471,7 @@ extern  UInt                    SizeDeadBags;
 **  '-DCOUNT_BAGS', e.g., with 'make <target> COPTS=-DCOUNT_BAGS'.
 */
 typedef struct  {
-    char *                  name;
+    SYS_CONST Char *        name;
     UInt                    nrLive;
     UInt                    nrAll;
     UInt                    sizeLive;
@@ -655,7 +655,6 @@ extern  void            MarkAllSubBags (
 
 extern  Bag *                   MptrBags;
 extern  Bag *                   OldBags;
-extern  Bag *                   YoungBags;
 extern  Bag *                   AllocBags;
 extern  Bag                     MarkedBags;
 
@@ -678,7 +677,7 @@ extern  Bag                     MarkedBags;
 
 typedef struct {
     Bag *                   addr [NR_GLOBAL_BAGS];
-    Char *                  cookie [NR_GLOBAL_BAGS];
+    SYS_CONST Char *        cookie [NR_GLOBAL_BAGS];
     UInt                    nr;
 } TNumGlobalBags;
 
@@ -712,7 +711,7 @@ extern TNumGlobalBags GlobalBags;
 
 extern  void            InitGlobalBag (
             Bag *               addr,
-            Char *              cookie );
+            SYS_CONST Char *    cookie );
 
 
 /****************************************************************************
@@ -890,7 +889,7 @@ extern  void            InitBags (
 */
 
 extern void CallbackForAllBags(
-     void (*func)() );
+     void (*func)(Bag) );
 
 
 /****************************************************************************

@@ -1497,7 +1497,7 @@ Obj FuncTreeEntry(
     treeType = INT_INTOBJ( ELM_PLIST( objTree, 5 ) );
 
     /*  Get the second argument (word)                                     */
-    if ( IS_PLIST(word) ) {
+    if ( ! IS_PLIST(word) ) {
         ErrorQuit( "invalid <word>", 0L, 0L );
         return 0;
     }
@@ -2872,7 +2872,7 @@ void InitCosetTable ( void )
 
     InitHandlerFunc( FuncTreeEntry, "costab: tree entry");
     AssGVar( GVarName( "TreeEntry" ),
-         NewFunctionC( "TreeEntry", 1L, "relator",
+         NewFunctionC( "TreeEntry", 2L, "relator, word",
                     FuncTreeEntry ) );
 
     InitHandlerFunc( FuncMakeConsequences2, "costab: make consequences 2");

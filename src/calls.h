@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  calls.h                     GAP source                   Martin Schoenert
+*W  calls.h                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -40,19 +40,20 @@
 **  calling  another compiled function, which expects fewer than 4 arguments,
 **  with no profiling, the overhead is only a couple of instructions.
 */
-#ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_calls_h =
+#ifdef INCLUDE_DECLARATION_PART
+SYS_CONST char * Revision_calls_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *T  ObjFunc . . . . . . . . . . . . . . . . type of function returning object
 **
 **  'ObjFunc' is the type of a function returning an object.
 */
-typedef Obj             (* ObjFunc) ();
+typedef Obj (* ObjFunc) (/*arguments*/);
 
 
 /****************************************************************************
@@ -112,6 +113,7 @@ typedef Obj             (* ObjFunc) ();
 
 /****************************************************************************
 **
+
 *F  CALL_0ARGS(<func>)  . . . . . . . . . call a function with 0    arguments
 *F  CALL_1ARGS(<func>,<arg1>) . . . . . . call a function with 1    arguments
 *F  CALL_2ARGS(<func>,<arg1>...)  . . . . call a function with 2    arguments
@@ -146,6 +148,48 @@ typedef Obj             (* ObjFunc) ();
 
 /****************************************************************************
 **
+
+*F  CALL_0ARGS_PROF( <func>, <arg1> ) . . . . .  call a prof func with 0 args
+*F  CALL_1ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 1 args
+*F  CALL_2ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 2 args
+*F  CALL_3ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 3 args
+*F  CALL_4ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 4 args
+*F  CALL_5ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 5 args
+*F  CALL_6ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 6 args
+*F  CALL_XARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with X args
+**
+**  'CALL_<i>ARGS_PROF' is used   in the profile  handler 'DoProf<i>args'  to
+**  call  the  real  handler  stored  in the   profiling  information of  the
+**  function.
+*/
+#define CALL_0ARGS_PROF(f) \
+        HDLR_FUNC(PROF_FUNC(f),0)(f)
+
+#define CALL_1ARGS_PROF(f,a1) \
+        HDLR_FUNC(PROF_FUNC(f),1)(f,a1)
+
+#define CALL_2ARGS_PROF(f,a1,a2) \
+        HDLR_FUNC(PROF_FUNC(f),2)(f,a1,a2)
+
+#define CALL_3ARGS_PROF(f,a1,a2,a3) \
+        HDLR_FUNC(PROF_FUNC(f),3)(f,a1,a2,a3)
+
+#define CALL_4ARGS_PROF(f,a1,a2,a3,a4) \
+        HDLR_FUNC(PROF_FUNC(f),4)(f,a1,a2,a3,a4)
+
+#define CALL_5ARGS_PROF(f,a1,a2,a3,a4,a5) \
+        HDLR_FUNC(PROF_FUNC(f),5)(f,a1,a2,a3,a4,a5)
+
+#define CALL_6ARGS_PROF(f,a1,a2,a3,a4,a5,a6) \
+        HDLR_FUNC(PROF_FUNC(f),6)(f,a1,a2,a3,a4,a5,a6)
+
+#define CALL_XARGS_PROF(f,as) \
+        HDLR_FUNC(PROF_FUNC(f),7)(f,as)
+
+
+/****************************************************************************
+**
+
 *F  COUNT_PROF( <prof> )  . . . . . . . . number of invocations of a function
 *F  TIME_WITH_PROF( <prof> )  . . . . . . time with    children in a function
 *F  TIME_WOUT_PROF( <prof> )  . . . . . . time without children in a function
@@ -192,84 +236,7 @@ typedef Obj             (* ObjFunc) ();
 
 /****************************************************************************
 **
-*F  InitHandlerFunc( <handler>, <cookie> ) . . . . . . . . register a handler
-**
-**  Every handler should  be registered (once) before  it is installed in any
-**  function bag. This is needed so that it can be  identified when loading a
-**  saved workspace.  <cookie> should be a  unique  C string, identifying the
-**  handler
-*/
-extern void InitHandlerFunc (
-     ObjFunc        hdlr,
-     Char *         cookie );
 
-
-/****************************************************************************
-**
-*F  NewFunction(<name>,<narg>,<nams>,<hdlr>) . . . . . .  make a new function
-*F  NewFunctionC(<name>,<narg>,<nams>,<hdlr>)  . . . . .  make a new function
-*F  NewFunctionT(<type>,<size>,<name>,<narg>,<nams>,<hdlr>) . .  new function
-*F  NewFunctionCT(<type>,<size>,<name>,<narg>,<nams>,<hdlr>)  .  new function
-**
-**  'NewFunction' creates and returns a new function.  <name> must be  a  GAP
-**  string containing the name of the function.  <narg> must be the number of
-**  arguments, where -1 means a variable number of arguments.  <nams> must be
-**  a GAP list containg the names  of  the  arguments.  <hdlr>  must  be  the
-**  C function (accepting <self> and  the  <narg>  arguments)  that  will  be
-**  called to execute the function.
-**
-**  'NewFunctionC' does the same as 'NewFunction',  but  expects  <name>  and
-**  <nams> as C strings.
-**
-**  'NewFunctionT' does the same as 'NewFunction', but allows to specify  the
-**  <type> and <size> of the newly created bag.
-**
-**  'NewFunctionCT' does the same as 'NewFunction', but  expects  <name>  and
-**  <nams> as C strings, and allows to specify the <type> and <size>  of  the
-**  newly created bag.
-*/
-extern  Obj             NewFunction (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
-    
-extern  Obj             NewFunctionC (
-            Char *              name,
-            Int                 narg,
-            Char *              nams,
-            ObjFunc             hdlr );
-    
-extern  Obj             NewFunctionT (
-            UInt                type,
-            UInt                size,
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
-    
-extern  Obj             NewFunctionCT (
-            UInt                type,
-            UInt                size,
-            Char *              name,
-            Int                 narg,
-            Char *              nams,
-            ObjFunc             hdlr );
-    
-
-/****************************************************************************
-**
-*F  PrintFunction( <func> )   . . . . . . . . . . . . . . .  print a function
-**
-**  'PrintFunction' prints  the   function  <func> in  abbreviated  form   if
-**  'PrintObjFull' is false.
-*/
-extern void PrintFunction (
-    Obj                 func );
-
-
-/****************************************************************************
-**
 *F  C_NEW_GVAR_FUNC( <name>, <nargs>, <nams>, <hdlr>, <cookie> )
 */
 #define C_NEW_GVAR_FUNC( name, nargs, nams, hdlr, cookie ) \
@@ -310,11 +277,130 @@ extern void PrintFunction (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * *  create a new function * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  InitHandlerFunc( <handler>, <cookie> ) . . . . . . . . register a handler
+**
+**  Every handler should  be registered (once) before  it is installed in any
+**  function bag. This is needed so that it can be  identified when loading a
+**  saved workspace.  <cookie> should be a  unique  C string, identifying the
+**  handler
+*/
+extern void InitHandlerFunc (
+     ObjFunc            hdlr,
+     SYS_CONST Char *	cookie );
+
+
+/****************************************************************************
+**
+*F  NewFunction( <name>, <narg>, <nams>, <hdlr> )  . . .  make a new function
+*F  NewFunctionC( <name>, <narg>, <nams>, <hdlr> ) . . .  make a new function
+*F  NewFunctionT( <type>, <size>, <name>, <narg>, <nams>, <hdlr> )
+*F  NewFunctionCT( <type>, <size>, <name>, <narg>, <nams>, <hdlr> )
+**
+**  'NewFunction' creates and returns a new function.  <name> must be  a  GAP
+**  string containing the name of the function.  <narg> must be the number of
+**  arguments, where -1 means a variable number of arguments.  <nams> must be
+**  a GAP list containg the names  of  the  arguments.  <hdlr>  must  be  the
+**  C function (accepting <self> and  the  <narg>  arguments)  that  will  be
+**  called to execute the function.
+**
+**  'NewFunctionC' does the same as 'NewFunction',  but  expects  <name>  and
+**  <nams> as C strings.
+**
+**  'NewFunctionT' does the same as 'NewFunction', but allows to specify  the
+**  <type> and <size> of the newly created bag.
+**
+**  'NewFunctionCT' does the same as 'NewFunction', but  expects  <name>  and
+**  <nams> as C strings, and allows to specify the <type> and <size>  of  the
+**  newly created bag.
+*/
+extern Obj NewFunction (
+            Obj                 name,
+            Int                 narg,
+            Obj                 nams,
+            ObjFunc             hdlr );
+    
+extern Obj NewFunctionC (
+            SYS_CONST Char *    name,
+            Int                 narg,
+            SYS_CONST Char *    nams,
+            ObjFunc             hdlr );
+    
+extern Obj NewFunctionT (
+            UInt                type,
+            UInt                size,
+            Obj                 name,
+            Int                 narg,
+            Obj                 nams,
+            ObjFunc             hdlr );
+    
+extern Obj NewFunctionCT (
+            UInt                type,
+            UInt                size,
+            SYS_CONST Char *    name,
+            Int                 narg,
+            SYS_CONST Char *    nams,
+            ObjFunc             hdlr );
+    
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * type and print function  * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  PrintFunction( <func> )   . . . . . . . . . . . . . . .  print a function
+**
+**  'PrintFunction' prints  the   function  <func> in  abbreviated  form   if
+**  'PrintObjFull' is false.
+*/
+extern void PrintFunction (
+    Obj                 func );
+
+
+/****************************************************************************
+**
+*F  CallFuncListHandler( <self>, <func>, <list> ) . . . . . . call a function
+**
+**  'CallFuncListHandler' implements the internal function 'CallFuncList'.
+**
+**  'CallFuncList( <func>, <list> )'
+**
+**  'CallFuncList' calls the  function <func> with the arguments list <list>,
+**  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
+*/
+extern Obj CallFuncListHandler (
+    Obj                 self,
+    Obj                 func,
+    Obj                 list );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
 **
 **  'InitCalls' initializes the call package.
 */
-extern  void            InitCalls ( void );
+extern void InitCalls ( void );
 
 
+/****************************************************************************
+**
 
+*E  calls.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -1,42 +1,55 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  streams.tex               GAP documentation              Frank Celler
+%W                                                     & Martin Schoenert
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file contains the description of streams.
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Streams}
 
-Files can be  read and  write using  `Read' and  `AppendTo', however, the
+Files can be read and  written using `Read'  and `AppendTo', however, the
 former allows only to read a complete file as {\GAP} input and the latter
-has a high time penalty if a lot of small pieces  of output is written to
+has a high time penalty if a lot of small pieces of output are written to
 large files.
 
-In  addition  to `Read' and  `AppendTo'  files  can  also be accessed  as
-*streams*.  An *input stream*  deliver characters to {\GAP} which *reads*
+In addition  to  `Read'  and `AppendTo'  files  can  also be  accessed as
+*streams*.  An *input stream* delivers characters to {\GAP} which *reads*
 them from the stream.  When an  input stream has delivered all characters
-it is at `end-of-stream'.   An  *output streams* receive characters  from
-{\GAP}  which *writes*  them to   the stream.   Streams  differ in  their
-treatment of  `end-of-line' and non-printable characters.  *Text streams*
-translate the   `end-of-line'  character   (`{'\\n'}')  to   the  systems
-representation  of      `end-of-line' (e.g., <new-line>     under   UNIX,
-<carriage-return>   under MacOS, <carriage-return>-<new-line> under  DOS,
-implicit under  VMS), and the  behaviour for nonprintable  characters are
+it is  at `end-of-stream'.  An  *output  stream* receives characters from
+{\GAP} which *writes* them   to  the stream.    Streams differ in   their
+treatment of `end-of-line' and  non-printable characters.  *Text streams*
+translate the `end-of-line'     character (`{'\\n'}')  to  the    systems
+representation   of   `end-of-line'   (e.g.,    <new-line>  under   UNIX,
+<carriage-return> under  MacOS,  <carriage-return>-<new-line> under  DOS,
+implicit under VMS), and  the behaviour  for nonprintable characters   is
 undefined.  *Binary streams* do not translate the `end-of-line' character
 and allow nonprintable characters.
 
 Note that binary streams are *not* yet implemented.
 
-Whereas it  is cheap to  append to  a  stream, streams do  consume system
+Whereas it   is cheap to append  to  a stream, streams  do consume system
 resources, only a limited amount can be open at any time, therefore it is
-neccessary to  close  a stream as soon  as  possible using  `CloseStream'
-described  in section "CloseStream".  If the  creating of a stream failed
-then   `LastSystemError' (see  "LastSystemError")  can   be used to   get
-information about the failure. However, if an error occured in one of the
-read or write functions `LastError' (see "LastError") should be used.
+neccessary  to  close a stream   as soon as possible  using `CloseStream'
+described in section "CloseStream".  If  creating of a stream failed then
+`LastSystemError' (see "LastSystemError") can  be used to get information
+about the failure.  However,  if an error occurred  in one of the read or
+write functions `LastError' (see "LastError") should be used.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{File Streams}
 
-File streams are streams accociated with  files.  Input file streams read
-the characters  they deliver from   files, output file streams print  the
-characters they receive to files.  The following functions can be used to
-create such  streams.  The return  `fail'  if an error occurred,  in this
-case  `LastSystemError'  (see  "LastSystemError")   can be   used  to get
+File streams  are  streams associated with  files.  An  input file stream
+reads  the characters  it delivers from  a  file,  an output  file stream
+prints the characters it receives to a file.  The following functions can
+be used to create such streams.  They return `fail' if an error occurred,
+in this case `LastSystemError' (see "LastSystemError") can be used to get
 information about the error.
 
 \>InputTextFile( <name-file> )
@@ -47,7 +60,7 @@ the characters from the file <name-file>.
 \>OutputTextFile( <name-file>, <append> )
 
 returns  an output stream  in the category `IsOutputTextFile' that writes
-received characters  to the file   <file-name>.  If <append> is  'false',
+received characters  to the file   <file-name>.  If <append> is  `false',
 then the  file is emptied first,  otherwise received characters are added
 at the end of the list.
 
@@ -86,13 +99,13 @@ at the end of the list.
     gap> CloseStream(input);
 \endtt
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{String Streams}
 
-String streams are streams accociated with strings.  Input string streams
-read  the characters they  deliver from a   string, output string streams
-append the characters  they receive to  strings.  The following functions
-can be used to create such streams.
+String streams   are streams associated  with   strings.  An input string
+stream reads  the characters it delivers  from a string, an output string
+stream  appends the characters  it receives  to  a string.  The following
+functions can be used to create such streams.
 
 \>InputTextString( <string> )
 
@@ -104,7 +117,7 @@ influence on the input stream.
 \>OutputTextString( <list>, <append> )
 
 returns an output stream that puts  all received characters into the list
-<list>.   If <append>   is  'false',  then  the list   is  emptied first,
+<list>.   If <append>   is  `false',  then  the list   is  emptied first,
 otherwise received characters are added at the end of the list.
 
 *Example*
@@ -129,10 +142,10 @@ otherwise received characters are added at the end of the list.
     (1,2,3,4)(5,6)
 \endtt
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Dummy Streams}
 
-The following  two commands create  dummy streams  which will  cosume all
+The following  two commands create  dummy streams  which will consume all
 characters and never deliver one.
 
 
@@ -148,7 +161,7 @@ returns a dummy output   stream, which discards all received  characters.
 Its main use is for calls to `Process' when  the started program does not
 write anything.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{CloseStream}
 
 \>CloseStream( <stream> )
@@ -161,23 +174,27 @@ It is an error to  try to read  characters from or  write characters to a
 closed  stream.   Closing a  stream tells  the {\GAP}   kernel and/or the
 operating system kernel  that the file is  no longer needed.  This may be
 necessary  because  the {\GAP} kernel  and/or  the  operating  system may
-impose a limit on how may streams may be open at once.
+impose a limit on how may streams may be open simultaneously.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Input Stream Operations}
 
 \>IsEndOfStream( <input-stream> )
 
-returns `true' if  the input stream  is  at `end-of-stream', and  'false'
-otherwise.  Note  that 'IsEndOfStream' might return  'false' even  if the
-next 'ReadByte' fails.
+returns `true' if  the input stream  is  at `end-of-stream', and  `false'
+otherwise.  Note  that `IsEndOfStream' might return  `false' even  if the
+next `ReadByte' fails.
 
-\>Read( <input-text-stream> )
+\>Read( <input-text-stream> )!{for streams}
 
 reads the input-text-stream as input  until `end-of-stream' occurrs.  See
 "File Operations" for details.
 
-\>ReadTest( <input-text-stream> )
+\>ReadAsFunction( <input-text-stream> )!{for streams}
+
+reads the input-text-stream as function and returns this function.
+
+\>ReadTest( <input-text-stream> )!{for streams}
 
 reads the input-text-stream as  test input until `end-of-stream' occurrs.
 See "File Operations" for details.
@@ -215,32 +232,32 @@ Note that *no* newline is added if the last line of is incomplete.
 \>ReadAll( <input-text-stream> )
 
 returns   the  whole available input as    string.  If <input-stream> has
-reached `end-of-stream' an empty string is return *not* `fail'.
+reached `end-of-stream' an empty string is returned, *not* `fail'.
 
 *Example*
 
 \beginexample
-   gap> i := InputTextString( "1Hallo\nYou\n1" );;
-   gap> ReadByte(i);
-   49
-   gap> CHAR_INT(last);
-   '1'
-   gap> ReadLine(i);
-   "Hallo\n"
-   gap> ReadLine(i);
-   "You\n"
-   gap> ReadLine(i);
-   "1"
-   gap> ReadLine(i);
-   fail
-   gap> ReadAll(i);
-   ""
-   gap> RewindStream(i);;
-   gap> ReadAll(i);     
-   "1Hallo\nYou\n1"
+    gap> i := InputTextString( "1Hallo\nYou\n1" );;
+    gap> ReadByte(i);
+    49
+    gap> CHAR_INT(last);
+    '1'
+    gap> ReadLine(i);
+    "Hallo\n"
+    gap> ReadLine(i);
+    "You\n"
+    gap> ReadLine(i);
+    "1"
+    gap> ReadLine(i);
+    fail
+    gap> ReadAll(i);
+    ""
+    gap> RewindStream(i);;
+    gap> ReadAll(i);     
+    "1Hallo\nYou\n1"
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Output Stream Operations}
 
 \>WriteByte( <output-stream>, <int> )
@@ -275,7 +292,7 @@ The function returns `true' if the write succeeds and `fail' otherwise.
     You
 \endexample
 
-\>AppendTo( <output-stream>, <arg1>, ... )
+\>AppendTo( <output-stream>, <arg1>, ... )!{for streams}
 
 works like  `Print',  except that the  output is  appended to the  output
 stream <output-stream>.
@@ -289,3 +306,8 @@ stream <output-stream>.
     gap> Print( str, "\n" );
     (1,2,3):Z(3)
 \endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  streams.tex . . . . . . . . . . . . . . . . . . . . . . . . ends here

@@ -1,3 +1,19 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  introduc.tex              GAP documentation             Thomas Breuer
+%W                                                         & Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                       & Heiko Theissen
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file contains a tutorial introduction to GAP.
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{A first session with GAP}
 
 This tutorial introduces you to  the {\GAP}  system.  It is written  with
@@ -31,7 +47,7 @@ systematic  treatment of  the various types  of objects  that  {\GAP} can
 manipulate.  But it  seems neither  desirable   to start this  systematic
 course with  the  most elementary (and most   boring) structures, nor  to
 confront you with all the complex data types before you know how they are
-internally represented in terms of elementary structures. For this reason
+composed from elementary structures. For this reason
 this tutorial wants to  provide you with a  basic understanding of {\GAP}
 objects, on  which the reference manual  then will rely when  it explains
 everything in detail.  So  after having mastered  this tutorial, you  can
@@ -47,39 +63,43 @@ give a better  understanding to the interested   reader. But there  is no
 harm in simply skipping  these dangerous bends,  and the sign should help
 the reader in doing so.
 
-Since this  book   should be a  tutorial,  we  also  have included   some
-exercises. They interrupt the example session every  now and then and ask
-something that  you might  well have  asked yourself  when you  typed the
-examples printed  here.  You should then   try to solve this  question by
-typing in  some more  examples   and  studying  the  output  that  {\GAP}
-delivers. If you want  to check whether  you  drew the right  conclusions
-from what  you saw,  you can  look  up the  answer  to every exercise  in
-appendix~A\null.
+Since this book is a tutorial, we also have included some exercises.
+They interrupt the example session every now and then and ask something
+that you might well have asked yourself when you typed the examples
+printed here.
+You should then try to solve this question by typing in some more
+examples and studying the output that {\GAP} delivers.
+If you want to check whether you drew the right conclusions from what you
+saw, you can look up the answer to every exercise in appendix~A\null.
+
+Each chapter of this tutorial contains an overview of its sections at the
+beginning,
+and a section with references to the reference manual at the end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Starting and leaving GAP}\null
+\Section{Starting and Leaving GAP}\null
 
 \atindex{starting GAP}{@starting {\GAP}}%
 \atindex{leaving GAP}{@leaving {\GAP}}%
 \indextt{quit}%
 If the  program is correctly  installed then you  start  {\GAP} by simply
 typing  `gap' at  the  prompt of your   operating system followed by  the
-<return> key (sometimes also called the <newline> key).
-\beginexample
+<return> key, sometimes this is also called the <newline> key.
+\begintt
     $ gap
-\endexample
+\endtt
 {\GAP}  answers your  request with  its beautiful  banner (which  you can
 avoid with the command line option `-b') and then it shows its own prompt
 `gap>' asking you for further input.
-\beginexample
+\begintt
     gap>
-\endexample
+\endtt
 The usual  way to end a  {\GAP} session is  to type `quit;' at the `gap>'
 prompt. Do not omit the semicolon!
-\beginexample
+\begintt
     gap> quit;
     $ 
-\endexample
+\endtt
 On some systems you may as well type  <ctl>-`D' to yield the same effect.
 In any situation   {\GAP} is ended by  typing  <ctl>-`C' twice  within  a
 second. Here as always, a combination like  <ctl>-`D' means that you have
@@ -98,14 +118,14 @@ A *comment* in  {\GAP} starts with the  symbol `\#' and continues to  the
 end of the line. Comments are  treated like whitespace  by {\GAP}. We use
 comments in   the printed examples  in this  tutorial to  explain certain
 lines of input or output. These comments will be printed in a normal font
-for better readability, hence they start with the symbol~\#.
+for better readability, they start with the symbol~\#.
 
 The examples of  {\GAP} sessions given  in any particular chapter of this
 manual have been  run in one continuous   session, starting with the  two
 commands
-\beginexample
+\begintt
     gap> SizeScreen( [ 72, ] ); LogTo( "erg.log" );
-\endexample
+\endtt
 which are used to set the line length to 72 and  to save a listing of the
 session on some file.  If  you choose any chapter  and rerun its examples
 in the given order, you should be able to reproduce our results except of
@@ -115,7 +135,7 @@ soon as  random processes are involved, you  may get different results if
 you extract single examples and run them separately.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{The read-evaluate-print loop}\null
+\Section{The Read-Evaluate-Print Loop}\null
 
 \atindex{read-evaluate-print loop}{|indexit}%
 {\GAP}  is  an   interactive   system.    It  continuously   executes   a
@@ -159,7 +179,7 @@ If you make a mistake while typing the  line, but before typing the final
 delete the last typed  character. You can  also move the cursor  back and
 forward  in the line  with <ctl>-`B' and  <ctl>-`F' and  insert or delete
 characters  anywhere  in the line.  The  line editing  commands are fully
-described in "Line editing".
+described in "ref:Line editing".
 
 If you discover a mistake after typing <return>, e.g., if you omitted the
 semicolon  at the end of the  line, then {\GAP}  has  read everything you
@@ -173,21 +193,25 @@ returns.
     > ;
     22 
 \endexample
-Whenever you see this partial prompt and you cannot decide what {\GAP} is
+So the input can consist of several lines, and {\GAP} prints a partial
+prompt `>' in each input line except the first, until the command is
+completed with a semicolon.
+Whenever you see the partial prompt and you cannot decide what {\GAP} is
 still  waiting for, then  you have  to type  semicolons  until the normal
-prompt  returns.  In  every situation this  is the  exact meaning of  the
-prompt `gap>': the program is waiting for a new problem.
+prompt returns.
+In  every situation the exact meaning of the prompt `gap>' is that the
+program is waiting for a new problem.
 
 But even if you  mistyped the command more  seriously, you do not have to
 type   it all again. Suppose   you  mistyped or  forgot  the last closing
 parenthesis. Then your command is syntactically incorrect and {\GAP} will
 notice it, incapable of computing the desired result.
-\beginexample
+\begintt
     gap> (9 - 7) * (5 + 6;
     Syntax error: ) expected
     (9 - 7) * (5 + 6;
                     ^
-\endexample
+\endtt
 \index{line editing}%
 Instead of the result an error message  occurs indicating the place where
 an unexpected  symbol occurred with   an arrow sign  `^'  under it.  As a
@@ -213,9 +237,11 @@ is indicated by the special prompt `brk>'. If another syntax error occurs
 while  {\GAP} is in  a break loop, the prompt  will  change to `brk_02>',
 `brk_03>' and so on. You can leave the current break loop and exit to the
 next outer one by either typing `quit;' or by hitting <ctl>-`D'.
+Eventually {\GAP} will return to its normal state and show its normal
+prompt `gap>' again.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Constants and operators}\null
+\Section{Constants and Operators}\null
 
 \index{constants}\index{operators}%
 In an  expression like `(9  - 7) * (5 +  6)' the constants `5', `6', `7',
@@ -257,6 +283,8 @@ The `mod' operator allows you to compute one value modulo another.
 \endexample
 Note  that  there must be   whitespace around the  keyword  `mod' in this
 example since `17mod3' or `17mod' would be interpreted as identifiers.
+The whitespace around operators that do not consist of letters, e.g.,
+the operators `*' and `-', is not necessary.
 
 {\GAP}  knows a  precedence  between operators that may be overridden  by
 parentheses.
@@ -328,7 +356,7 @@ other types of  constants in {\GAP} like permutations.   You are now in a
 position to use {\GAP} as a simple desktop calculator.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Variables vs.\ objects}\null
+\Section{Variables vs.\ Objects}\null
 
 \index{variables}\index{assignment}\index{identifier}\index{objects}%
 \atindex{objects!vs.\ variables}{|indexit}%
@@ -404,13 +432,21 @@ There are some predefined variables coming with {\GAP}.  Many of them you
 will find in the remaining  chapters of  this manual, since functions are
 also referred to via identifiers.
 
+You    can get   an  overview   of  *all*  {\GAP}   variables by entering
+`NamesGVars()'.  Many of these are predefined.  If  you are interested in
+the variables you  have defined yourself  in the current {\GAP}  session,
+you can enter `NamesUserGVars()'.
+\begintt
+    gap> NamesUserGVars();
+    [ "a", "w" ]
+\endtt
 This seems to be the  right place to state the  following rule:  The name
 of  every function in the {\GAP}  library starts with a *capital letter*.
 Thus if you choose  only names starting with a  small letter for your own
 variables you will  not overwrite any predefined  function. But there are
 some further interesting variables one of which shall be introduced now.
 
-Whenever {\GAP} returns a  object by printing it  on  the next  line this
+Whenever {\GAP} returns an object by printing it  on  the next  line this
 object is assigned to the variable `last'.  So if you computed
 \beginexample
     gap> (9 - 7) * (5 + 6);
@@ -432,7 +468,7 @@ variables storing the latest returned  objects. And you have learned that
 a double semicolon prevents the result of a statement from being printed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Objects vs.\ elements}\null
+\Section{Objects vs.\ Elements}\null
 
 \atindex{objects!vs.\ elements}{|indexit}\index{elements}%
 In the last section  we mentioned that every object   is given a  certain
@@ -442,27 +478,28 @@ different places in memory are never equal, and if  the object pointed to
 by the  variable  `a' (to be more  precise,  the variable with identifier
 `a')  is  equal to the   object pointed to by  the  variable `b', then we
 should better  say that they  are not only  equal but *identical*. {\GAP}
-provides the function `IsIdentical' to test whether this is the case, you
-can, e.g., say `IsIdentical( a, b )'.
+provides the function `IsIdentical' to test whether this is the case.
+
+\beginexample
+    gap> a:= (1,2);; IsIdentical( a, a );
+    true
+    gap> b:= (1,2);; IsIdentical( a, b );
+    false
+    gap> b:= a;; IsIdentical( a, b );
+    true
+\endexample
 
 \indextt{IsIdentical}%
-\exercise  `IsIdentical'   works not only  for   variables,  but also for
-constants. Try  the commands  `IsIdentical(  -1, -1 )'  and `IsIdentical(
-(1,2), (1,2) )' and explain the outcome.
+\exercise  `IsIdentical' works not   only   for variables, but  also  for
+constants. Try the commands `IsIdentical( -1,  -1 )', `IsIdentical( 2^28,
+2^28 )', `IsIdentical( (1,2), (1,2) )', and explain the outcome.
 
-\answer  (1)~`IsIdentical( -1,  -1  )  =  true'.  Integers  like `-1' are
-constants that have a predefined place in memory  even before their first
-appearance  in {\GAP}, therefore there  is only one  `-1' in every {\GAP}
-session.  (Actually,   the integer is  not  really stored in  that memory
-place, because  the place itself --- the  address ---  already determines
-the  integer.)\quad(2)~`IsIdentical(  (1,2),  (1,2) )   =  false'. Unlike
-integers, permutations are constructed and   stored in memory whenever  a
-sequence of    parantheses,    digits and  commas   appears.   Here,  the
-permutation $(1,2)$  is constructed  twice  and stored  in  memory twice,
-i.e.,  in different   places.  (The  identity  permutation,  `()', is  an
-exception, it has a  predefined memory place like  integers. On the other
-hand,  integers larger than  $2^{28}$  are constructed like permutations,
-hence `IsIdentical( 2^28, 2^28 ) = false'.)
+\answer `IsIdentical( -1,  -1 )' is  `true'. Small integers like `-1' are
+treated in a  special way,  equal small  integers behave as  if they were
+identical  objects. Integers  larger   than $2^{28}-1$  or  smaller  than
+$-2^{28}$ can be nonidentical objects, and calculating such an integer or
+entering it  at the keyboard constructs a  new object. The same holds for
+the two equal but not identical permutations in the third example.
 
 If  you have done this  exercise, you  will  have experienced that {\GAP}
 objects  <a>  and  <b> can  be  unequal  although they are   equal from a
@@ -478,9 +515,9 @@ the finitely presented group $\langle  x\mid x^2=1\rangle$, we would have
 equality, *not* the identity of objects. Hence we often  have `<a> = <b>'
 although `IsIdentical(  <a>, <b> ) = false'.  The operator `=' defines an
 equivalence relation on  the set of  all {\GAP} objects,  and we call the
-corresponding   equivalence   classes  (i.e.,    the  equality   classes)
-*elements*. Phrasing it differently, the  same element may be represented
-by various {\GAP} objects.
+corresponding equivalence classes *elements*.
+Phrasing it differently, the  same element may be represented by various
+{\GAP} objects.
 
 Non-trivial examples of   elements   that are represented by    different
 objects (objects  that really  look different,  not ones  that are merely
@@ -554,23 +591,80 @@ After the function has been defined, it can now be applied.
 \endexample
 More complicated  functions,  especially functions   with  more than  one
 argument cannot be  defined in this way. You  will see how to  write your
-own   {\GAP}   functions in chapter   "The  Programming  Language" in the
-reference manual.
+own   {\GAP}   functions in Chapter~"Functions".
 
 %%  Summary  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In this section you have seen {\GAP} objects of  type function.  You have
+In  this section you have seen {\GAP} objects of type function.  You have
 learned how to apply a function to  arguments.  This  yields as result  a
 new object or a side effect.  A side effect may change an argument of the
 function.   Moreover you have seen an easy  way  to define a  function in
 {\GAP} with the maps-to operator.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Help System}
+
+The contents of the {\GAP} manuals is also available as on-line help.
+
+`?<book>:<section>'
+
+The help command `?' displays the section  with the name <section> in the
+manual <book> on the screen.  For example
+\begintt
+    ?tutorial:The Help system
+\endtt
+will display this section on the screen.  When the whole section has been
+displayed  the normal {\GAP}  prompt  `gap>' is  shown and normal  {\GAP}
+interaction resumes.
+
+`??<topic>'
+
+`??' looks up <topic> in {\GAP}'s index and prints  all the index entries
+that contain the substring <topic>.  Then you can decide which section is
+the one you are actually interested in and request this one.
+
+A complete   list  of commands is   available  in Section  "Help" of  the
+reference manual.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Further Reading}\null
+
+For large amounts of input data, is might be advisable to write your
+input first into a file, and then read this into {\GAP};
+see~"ref:Read", "ref:Edit" for this.
+
+The definition of the {\GAP} syntax can be looked up in
+Chapter~"ref:The Programming Language".
+A complete list of command line editing facilities is found
+in~"ref:Line Editing".
+The break loop is described in~"ref:Break Loops".
+
+Operators are explained in more detail in~"ref:Comparisons" and
+"ref:Operations".
+You will find more information about boolean values in
+Chapters~"ref:Booleans" and "ref:Boolean Lists".
+Permutations are described in Chapter~"ref:Permutations" and characters
+in Chapter~"ref:Strings and Characters".
+
+Variables and assignments are described in more detail in~"ref:Variables"
+and "ref:Assignments".
+A complete list of keywords is contained in~"ref:Keywords".
+
+More about functions can be found in~"ref:Function Calls"
+and~"ref:Procedure Calls".
+
+A complete list of commands for the help system is available in
+Section~"ref:Help".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:
 % mode:               text
 % mode:               outline-minor
-% outline-regexp:     "\\\\Chapter\\|\\\\Section"
+% outline-regexp:     "\\\\Chapter\\|\\\\Section\\|\\\\stars"
 % paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
 % paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
 % fill-column:        73
 % End:
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  introduc.tex  . . . . . . . . . . . . . . . . . . . . . . . ends here

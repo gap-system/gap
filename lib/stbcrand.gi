@@ -9,46 +9,6 @@
 ##  This  file contains  the  functions for  a random Schreier-Sims algorithm
 ##  with verification.
 ##
-#H  $Log$
-#H  Revision 4.11  1997/05/28 13:20:07  fceller
-#H  changed 'DeepCopy' to 'StructuralCopy'
-#H
-#H  Revision 4.10  1997/05/23 08:14:38  htheisse
-#H  replaced `RemoveSet' by `Difference'
-#H
-#H  Revision 4.9  1997/04/28 07:36:51  htheisse
-#H  fixed a wrong comparison
-#H
-#H  Revision 4.8  1997/01/14 15:28:16  htheisse
-#H  fixed a bug in `SCRRestoredRecord'
-#H
-#H  Revision 4.7  1996/12/19 09:59:22  htheisse
-#H  added revision lines
-#H
-#H  Revision 4.6  1996/12/17 12:28:29  htheisse
-#H  contributed Akos' changes
-#H
-#H  Revision 4.5  1996/11/27 15:33:04  htheisse
-#H  replaced `Copy' by `StructuralCopy'
-#H
-#H  Revision 4.4  1996/11/05 07:59:09  htheisse
-#H  added `Closure', `NormalClosure' and `DerivedSubgroup' for perm groups
-#H
-#H  Revision 4.3  1996/10/24 08:45:20  htheisse
-#H  Akos corrected an error in `VerifySGS' and `VerifyStabilizer'
-#H
-#H  Revision 4.2  1996/10/18 15:52:59  htheisse
-#H  Akos corrected `VerifySGS'
-#H
-#H  Revision 4.1  1996/09/23 16:47:51  htheisse
-#H  added files for permutation groups (incl. backtracking)
-#H                  stabiliser chains
-#H                  group homomorphisms (of permutation groups)
-#H                  operation homomorphisms
-#H                  polycyclic generating systems of soluble permutation groups
-#H                     (general concept tentatively)
-#H
-##
 Revision.stbcrand_gi :=
     "@(#)$Id$";
 
@@ -1536,15 +1496,11 @@ VerifySGS := function(S,missing,correct)
                 longer := Concatenation(temp.generators, [gen]);
                 orbit := OrbitPerms( longer, temp.orbit[ 1 ] );
                 blks := Blocks( GroupByGenerators( longer ), orbit, set );
-                if Length(blks) * Length(set) <> Length(orbit) then
-                    result := "false0";
-                else
-                    pos := Position( blks, set );
-                    extension := ExtensionOnBlocks( temp, n, blks, [gen] );
-                    temp2 := extension[1];
-                    newgen := extension[2][1]; 
-                    InsertTrivialStabilizer(temp2, n + pos); 
-                fi;
+                pos := Position( blks, set );
+                extension := ExtensionOnBlocks( temp, n, blks, [gen] );
+                temp2 := extension[1];
+                newgen := extension[2][1]; 
+                InsertTrivialStabilizer(temp2, n + pos); 
             fi; 
  
             # first generator in first group can be verified easily

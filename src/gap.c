@@ -82,6 +82,9 @@ extern char * In;
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        "streams.h"             /* streams package                 */
+#include        "sysfiles.h"            /* file input/output               */
+
 #define INCLUDE_DECLARATION_PART
 #include        "gap.h"                 /* declaration part of the package */
 #undef  INCLUDE_DECLARATION_PART
@@ -187,7 +190,7 @@ int main (
         if ( ! OpenInput(SyCompileInput) ) {
             SyExit(1);
         }
-        func = READ_AS_FUNC(SyCompileInput);
+        func = READ_AS_FUNC();
         crc  = SyGAPCRC(SyCompileInput);
         type = CompileFunc( SyCompileOutput,
                             func,
@@ -208,7 +211,6 @@ int main (
         /* read and evaluate one command                                   */
         Prompt = "gap> ";
 	ClearError();
-        DualSemicolon = 0;
         type = ReadEvalCommand();
 
         /* stop the stopwatch                                              */
@@ -493,8 +495,12 @@ Obj FuncWhere (
             if ( call == 0 ) {
                 Pr( "<corrupted call value> ", 0L, 0L );
             }
+#if T_PROCCALL_0ARGS
             else if ( T_PROCCALL_0ARGS <= TNUM_STAT(call)
                    && TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
+#else
+            else if ( TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
+#endif
                 PrintStat( call );
             }
             else if ( T_FUNCCALL_0ARGS <= TNUM_EXPR(call)
@@ -530,11 +536,11 @@ Obj FuncWhere (
 *F  ErrorMode( <msg>, <arg1>, <arg2>, <args>, <msg2>, <mode> )
 */
 Obj ErrorMode (
-    Char *              msg,
+    SYS_CONST Char *    msg,
     Int                 arg1,
     Int                 arg2,
     Obj                 args,
-    Char *              msg2,
+    SYS_CONST Char *    msg2,
     Char                mode )
 {
     Obj                 errorLVars0;
@@ -702,7 +708,7 @@ Obj ErrorMode (
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
 void ErrorQuit (
-    Char *              msg,
+    SYS_CONST Char *    msg,
     Int                 arg1,
     Int                 arg2 )
 {
@@ -715,10 +721,10 @@ void ErrorQuit (
 *F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
 */
 Obj ErrorReturnObj (
-    Char *              msg,
+    SYS_CONST Char *    msg,
     Int                 arg1,
     Int                 arg2,
-    Char *              msg2 )
+    SYS_CONST Char *    msg2 )
 {
     return ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'v' );
 }
@@ -729,10 +735,10 @@ Obj ErrorReturnObj (
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
 void ErrorReturnVoid (
-    Char *              msg,
+    SYS_CONST Char *    msg,
     Int                 arg1,
     Int                 arg2,
-    Char *              msg2 )
+    SYS_CONST Char *    msg2 )
 {
     ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
 }
@@ -1689,7 +1695,7 @@ Obj FuncTNUM_OBJ (
 {
     Obj                 res;
     Obj                 str;
-    Char *              cst;
+    SYS_CONST Char *    cst;
 
     res = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( res, 2 );
@@ -1717,7 +1723,7 @@ Obj FuncXTNUM_OBJ (
     Obj                 res;
     Obj                 str;
     UInt                xtype;
-    Char *              cst;
+    SYS_CONST Char *    cst;
 
     res = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( res, 2 );
@@ -1832,48 +1838,6 @@ Obj FuncSWAP_MPTR (
 
 /****************************************************************************
 **
-*F  FuncIDENTS_GVAR( <self> ) . . . . . . . . . .  idents of global variables
-*/
-Obj FuncIDENTS_GVAR (
-    Obj                 self )
-{
-    extern Obj          NameGVars;
-    Obj                 copy;
-    UInt                i;
-
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
-    for ( i = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
-        SET_ELM_PLIST( copy, i, ELM_PLIST( NameGVars, i ) );
-    }
-    SET_LEN_PLIST( copy, LEN_PLIST(NameGVars) );
-    return copy;
-}
-
-
-/****************************************************************************
-**
-*F  FuncASS_GVAR( <self>, <gvar>, <val> ) . . . . assign to a global variable
-*/
-Obj FuncASS_GVAR (
-    Obj                 self,
-    Obj                 gvar,
-    Obj                 val )
-{
-    /* check the argument                                                  */
-    while ( ! IsStringConv( gvar ) ) {
-        gvar = ErrorReturnObj(
-            "READ: <gvar> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(gvar)].name), 0L,
-            "you can return a string for <gvar>" );
-    }
-
-    AssGVar( GVarName( CSTR_STRING(gvar) ), val );
-    return 0L;
-}
-
-
-/****************************************************************************
-**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -1889,8 +1853,8 @@ static UInt   NrImportedGVars = 0;
 
 
 void ImportGVarFromLibrary(
-    Char *          name,
-    Obj *           address )
+    SYS_CONST Char * 	name,
+    Obj *               address )
 {
     if ( NrImportedGVars == 1024 ) {
         if ( ! SyQuiet ) {
@@ -1921,8 +1885,8 @@ static UInt   NrImportedFuncs = 0;
 
 
 void ImportFuncFromLibrary(
-    Char *          name,
-    Obj *           address )
+    SYS_CONST Char * 	name,
+    Obj *               address )
 {
     if ( NrImportedFuncs == 1024 ) {
         if ( ! SyQuiet ) {
@@ -2421,14 +2385,6 @@ void InitGap (
     C_NEW_GVAR_FUNC( "SWAP_MPTR", 2L, "obj1, obj2",
                   FuncSWAP_MPTR,
            "src/gap.c:SWAP_MPTR" );
-
-    C_NEW_GVAR_FUNC( "IDENTS_GVAR", 0L, "",
-                  FuncIDENTS_GVAR,
-           "src/gap.c:IDENTS_GVAR" );
-
-    C_NEW_GVAR_FUNC( "ASS_GVAR", 2L, "gvar, value",
-                  FuncASS_GVAR,
-           "src/gap.c:ASS_GVAR" );
 
 #ifdef DEBUG_HANDLER_REGISTRATION
     CheckAllHandlers();

@@ -1,6 +1,7 @@
 #############################################################################
 ##
-#W  gprd.gi                     GAP library                    Heiko Thei"sen
+#W  gprd.gi                     GAP library                      Bettina Eick
+##                                                             Heiko Thei"sen
 ##
 #H  @(#)$Id$
 ##

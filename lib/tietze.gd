@@ -383,34 +383,6 @@ TzUpdateGeneratorImages := NewOperationArgs("TzUpdateGeneratorImages");
 
 ############################################################################
 ##
-#F  TzWord
-##
-TzWord := NewOperationArgs("TzWord");
-
-
-############################################################################
-##
-#F  TzSortC
-##
-TzSortC := NewOperationArgs("TzSortC");
-
-
-############################################################################
-##
-#F  TzRenumberGens
-##
-TzRenumberGens := NewOperationArgs("TzRenumberGens");
-
-
-############################################################################
-##
-#F  TzReplaceGens
-##
-TzReplaceGens := NewOperationArgs("TzReplaceGens");
-
-
-############################################################################
-##
 #F  TzSubstituteGen
 ##
 TzSubstituteGen := NewOperationArgs("TzSubstituteGen");
@@ -421,13 +393,6 @@ TzSubstituteGen := NewOperationArgs("TzSubstituteGen");
 #F  TzOccurrences
 ##
 TzOccurrences := NewOperationArgs("TzOccurrences");
-
-
-############################################################################
-##
-#F  TzOccurrencesPairs
-##
-TzOccurrencesPairs := NewOperationArgs("TzOccurrencesPairs");
 
 
 ############################################################################

@@ -53,6 +53,16 @@ extern UInt Time;
 /****************************************************************************
 **
 
+*F  ViewObjHandler  . . . . . . . . . handler to view object and catch errors
+*/
+extern UInt ViewObjGVar;
+
+extern void ViewObjHandler ( Obj obj );
+
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * * print and error  * * * * * * * * * * * * * * *
 */
 
@@ -72,7 +82,7 @@ extern Obj FuncPrint (
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
 extern void ErrorQuit (
-            Char *              msg,
+            SYS_CONST Char *    msg,
             Int                 arg1,
             Int                 arg2 );
 
@@ -82,10 +92,10 @@ extern void ErrorQuit (
 *F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
 */
 extern Obj ErrorReturnObj (
-            Char *              msg,
+            SYS_CONST Char *    msg,
             Int                 arg1,
             Int                 arg2,
-            Char *              msg2 );
+            SYS_CONST Char *    msg2 );
 
 
 /****************************************************************************
@@ -93,10 +103,10 @@ extern Obj ErrorReturnObj (
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
 extern void ErrorReturnVoid (
-            Char *              msg,
+            SYS_CONST Char *    msg,
             Int                 arg1,
             Int                 arg2,
-            Char *              msg2 );
+            SYS_CONST Char *    msg2 );
 
 
 extern void InitGap (
@@ -203,8 +213,8 @@ extern Obj DoCompleteXargs (
 *F  ImportGVarFromLibrary( <name>, <address> )  . . .  import global variable
 */
 extern void ImportGVarFromLibrary(
-            Char *          name,
-            Obj *           address );
+            SYS_CONST Char *    name,
+            Obj *               address );
 
 
 /****************************************************************************
@@ -212,8 +222,8 @@ extern void ImportGVarFromLibrary(
 *F  ImportFuncFromLibrary( <name>, <address> )  . . .  import global function
 */
 extern void ImportFuncFromLibrary(
-            Char *          name,
-            Obj *           address );
+            SYS_CONST Char *    name,
+            Obj *               address );
 
 
 /****************************************************************************

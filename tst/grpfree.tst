@@ -88,7 +88,7 @@ gap> first50:= List( [ 1 .. 50 ], x -> enum[x] );
 gap> List( first50, x -> Position( enum, x ) ) = [ 1 .. 50 ];
 true
 
-gap> STOP_TEST( "grpfree.tst", 170000 );
+gap> STOP_TEST( "grpfree.tst", 2180000 );
 
 #############################################################################
 ##

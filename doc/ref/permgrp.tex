@@ -180,11 +180,12 @@ category test function is called `IsPermGroup'.
 These functions take a permutation group~<G> on `[1..N]', a group~<H> and
 a homomorphism  $hom\colon  H\to S_n$ and  construct  the wreath  product
 $G\wr_{hom}H$ as a permutation group
-{\parindent\manindent
-\item{$\bullet$} acting  on `[1..N\*n]' in the  imprimitive action in the
-case of `WreathProduct',
-\item{$\bullet$} acting on  `[1..N^n]' in the product  action in the case
-of `WreathProductProductAction'.\par}
+\beginlist
+  \item{$\bullet$} acting on `[1..N\*n]' in the imprimitive action in the
+    case of `WreathProduct',
+  \item{$\bullet$} acting on `[1..N^n]' in the product action in the case
+    of `WreathProductProductAction'.
+\endlist
 If $H\le S_n$  is a permutation group  and <hom> is  omitted, the natural
 operation $hom\colon H\hookrightarrow S_n$ is assumed.
 
@@ -582,27 +583,24 @@ on the concept of  an *R-base*, which generalizes the  concept of  a base
 $(\Omega)  = \Pi_0 \ge \Pi_1 \ge  \ldots \ge \Pi_r$ of ordered partitions
 and a sequence $(a_1,\ldots,a_r)$ of points from  $\Omega$ such that, for
 $i\ge 1$,
-{\parindent\manindent
-\item{(1)} $\Pi_i$ contains the singleton cell~$\{a_i\}$;
-
-\item{(2)}  if $g\in  U$ fixes  the  partition $\Pi_{i-1}$  and the point
-$a_i$, then it also fixes the partition~$\Pi_i$;
-
-\item{(3)} the points in singleton cells of $\Pi_r$ form a base of~<G>.
-\par}
+\beginlist
+  \item{(1)} $\Pi_i$ contains the singleton cell~$\{a_i\}$;
+  \item{(2)} if $g\in  U$ fixes the partition  $\Pi_{i-1}$ and the  point
+    $a_i$, then it also fixes the partition~$\Pi_i$;
+  \item{(3)} the points in singleton cells of $\Pi_r$ form a base of~<G>.
+\endlist
 
 It  then follows   that  $(a_1,\ldots,a_r)$ is a base   for  <U> (but not
 necessarily for <G>).  To enumerate all   elements of <U>,  the backtrack
 algorithm constructs, for  each possible base image $(b_1,\ldots,b_r)$, a
 decreasing sequence $(\Omega)  = \Sigma_0  \ge  \Sigma_1 \ge \ldots   \ge
 \Sigma_r$ of ordered partitions such that, for $i\ge 1$,
-{\parindent\manindent
-\item{(1')} $\Sigma_i$ contains the singleton cell~$\{b_i\}$;
-
-\item{(2')} if $g\in U$ maps  the partition $\Pi_{i-1}$ to $\Sigma_{i-1}$
-and the point  $a_i$ to $b_i$,  then it also  maps the  partition $\Pi_i$
-to~$\Sigma_i$.
-\par}
+\beginlist
+  \item{(1')} $\Sigma_i$ contains the singleton cell~$\{b_i\}$;
+  \item{(2')}    if  $g\in U$     maps    the partition $\Pi_{i-1}$    to
+    $\Sigma_{i-1}$  and the point $a_i$ to  $b_i$, then it  also maps the
+    partition $\Pi_i$ to~$\Sigma_i$.
+\endlist
 
 Because of property~(3), there is then a  unique $g\in G$ mapping $\Pi_r$
 to $\Sigma_r$,  and it can be constructed   with the aid of  a stabilizer
@@ -615,6 +613,52 @@ to rules~(2)  and~(2') is known as  *refinement*. The partition backtrack
 method is efficient if strong refinements are known  that are tailored to
 the property  in question, which is  the case in  the applications of the
 algorithm, e.g., to centralizer and normalizer calculations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Internal representation of ordered partitions}\null
+\atindex{ordered partitions!internal representation}{|indexit}%
+
+{\GAP} represents  an ordered partition as  a  record with  the following
+components.
+\beginitems
+`points' &
+        a list of all points contained in the partition, such that points
+        from the same cell are neighboured,
+
+`cellno' &
+        a list whose <i>th entry is the number of the cell which contains
+        the point <i>,
+
+`firsts' &
+        a list  such that  `points[firsts[<j>]]'  is  the first point  in
+        `points' which is in cell <j>,
+
+`lengths' &
+        a list of the cell lengths.
+\enditems
+With these components, the <m>th cell of a  partition <P> is expressed as
+`<P>.points{ [ <P>.firsts[<m>]  .. <P>.firsts[<m>] + <P>.lengths[<m>] - 1
+] }'.  The most important operations, however,  to  be performed upon <P>
+are the splitting of a cell and the reuniting of the two parts. Following
+the strategy of J.~Leon, this is done as follows:
+
+(1) The points which make up  the cell that is  to be split are sorted so
+that the ones that  remain inside occupy  positions `[ <P>.firsts[<m>] ..
+<last> ]' in the list `<P>.points'.
+
+(2)   The  points  at   positions   `[  <last>+1 ..   <P>.firsts[<m>]   +
+<P>.lengths[<m>]-1  ]'  form   the new   cell. This    new  cell requires
+additional  entries   in  `<P>.firsts'   (namely, `<last>+1')    and   in
+`<P>.lengths'.
+
+(3) The  entries  `<P>.cellno{      [ <last>+1 ..      <P>.firsts[<m>]  +
+P.lengths[<m>]-1 ] }' must be set to the number of the new cell.
+
+(4) The entry    `<P>.lengths[<m>]'  must   be  reduced  to   `<last>   -
+<P>.firsts[<m>] + 1'.
+
+Then reuniting the  two cells requires  only the reversal of steps~2 to~4
+above. The list `<P>.points' need not be rearranged.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Group functions!for permutation groups}
@@ -1072,7 +1116,7 @@ by a strong  generating set of  permutations. With the extension of these
 functions to solvable  permutation   groups,  {\GAP} allows you    to use
 certain functions  that   were written  for ag  groups  also for solvable
 permutation   groups.     Such  functions   are   described    in chapter
-"chapter:Solvable Groups".
+"chapter Solvable Groups".
 
 \>NormalPcSeries( <pcgs> )!{for solvable permutation groups}
 \>NormalPcFirst( <pcgs> )!{for solvable permutation groups}
@@ -1156,14 +1200,14 @@ in~\cite{SS94}.
 The   action of  permutation  group <G>   on  a  set <D> of   integers is
 semiregular if  and  only if  ($S_D$ denotes the  symmetric  group of all
 permutations on <D>)
-{\parindent\manindent
-\item{$\bullet$} all orbits of <G> on <D> have the same length,
-\item{$\bullet$} for every point $p\in D$ and for every generator <g> of
-    <G> there is a permutation $z_g\in C_{S_D}(G)$ such that $pz_g = pg$,
-    and
-\item{$\bullet$} there is  a permutation $z\in  C_{S_D}(G)$ that permutes
-    the orbits of <G> on <D> setwise.\par}
-
+\beginlist
+  \item{$\bullet$} all orbits of <G> on <D> have the same length,
+  \item{$\bullet$}  for every point $p\in D$  and for every generator <g>
+    of <G> there  is a permutation  $z_g\in C_{S_D}(G)$ such that $pz_g =
+    pg$, and
+  \item{$\bullet$} there is a permutation $z\in C_{S_D}(G)$ that permutes
+    the orbits of <G> on <D> setwise.
+\endlist
 This can  be tested in time  proportional to $o n^2 +  d n$, where <o> is
 the size of a single  orbit, <n> is the number  of generators of <G>, and
 <d> is the size of~<D>.

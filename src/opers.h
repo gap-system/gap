@@ -97,9 +97,9 @@ extern Obj NewFilter (
             ObjFunc             hdlr );
 
 extern Obj NewFilterC (
-            Char *              name,
+            SYS_CONST Char *    name,
             Int                 narg,
-            Char *              nams,
+            SYS_CONST Char *    nams,
             ObjFunc             hdlr );
 
 
@@ -215,9 +215,9 @@ extern Obj NewOperation (
             ObjFunc             hdlr );
 
 extern Obj NewOperationC (
-            Char *              name,
+            SYS_CONST Char *    name,
             Int                 narg,
-            Char *              nams,
+            SYS_CONST Char *    nams,
             ObjFunc             hdlr );
 
 
@@ -232,9 +232,9 @@ extern Obj NewOperationKA1 (
             ObjFunc             hdlr );
 
 extern Obj NewOperationKA1C (
-            Char *              name,
+            SYS_CONST Char *    name,
             Int                 narg,
-            Char *              nams,
+            SYS_CONST Char *    nams,
             ObjFunc             hdlr );
 
 
@@ -257,9 +257,9 @@ extern  Obj NewAttribute (
             ObjFunc             hdlr );
 
 extern  Obj NewAttributeC (
-            Char *              name,
+            SYS_CONST Char *    name,
             Int                 narg,
-            Char *              nams,
+            SYS_CONST Char *    nams,
             ObjFunc             hdlr );
 
 
@@ -278,9 +278,9 @@ extern Obj NewProperty (
             ObjFunc             hdlr );
 
 extern Obj NewPropertyC (
-            Char *              name,
+            SYS_CONST Char *    name,
             Int                 narg,
-            Char *              nams,
+            SYS_CONST Char *    nams,
             ObjFunc             hdlr );
 
 
@@ -300,6 +300,10 @@ extern void ChangeDoOperations (
 *F  InitOpers() . . . . . . . . . . . . . . initialize the operations package
 */
 extern  void            InitOpers ( void );
+
+
+
+
 
 
 

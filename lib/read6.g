@@ -28,4 +28,5 @@ ReadTrans( "trans.grp" );
 ##
 #X  Read primitive groups library
 ##
+ReadPrim( "irredsol.grp" );
 ReadPrim( "primitiv.gi" );

@@ -387,6 +387,8 @@ end;
 
 #F  AddGeneratorsExtendSchreierTree( <S>, <new> ) . . . . . .  add generators
 ##
+##  This function may be called with a generatorless <S>.
+##
 AddGeneratorsExtendSchreierTree := function( S, new )
     local   gen,  pos,  # new generator and its position in <S>.labels
             old,  ald,  # genlabels before extension
@@ -1208,6 +1210,8 @@ end;
 ##
 #F  SiftedPermutation( <S>, <g> ) . . . . . . . . . . . .  sifted permutation
 ##
+##  This function may be called with a generatorless <S>.
+##
 SiftedPermutation := function( S, g )
     local   bpt,  img;
     
@@ -1235,6 +1239,8 @@ end;
 ##
 #F  MinimalElementCosetStabChain( <S>, <g> )  . . .  minimal element of coset
 ##
+##  This function may be called with a generatorless <S>.
+##
 MinimalElementCosetStabChain := function( S, g )
     local   p;
     
@@ -1251,6 +1257,8 @@ end;
 #############################################################################
 ##
 #M  MembershipTestKnownBase( <S>, <knownBase>, <word> ) . . . with known base
+##
+##  This function may be called with a generatorless <S>.
 ##
 InstallMethod( MembershipTestKnownBase, true, [ IsRecord,
         IsList and IsCyclotomicsCollection, IsList ], 0,
@@ -1298,6 +1306,8 @@ end );
 
 #F  BaseStabChain( <S> )  . . . . . . . . . . . . . . . . . . . . . . .  base
 ##
+##  This function may be called with a generatorless <S>.
+##
 BaseStabChain := function( S )
     local   base;
     
@@ -1312,6 +1322,8 @@ end;
 #############################################################################
 ##
 #F  SizeStabChain( <S> )  . . . . . . . . . . . . . . . . . . . . . . .  size
+##
+##  This function may be called with a generatorless <S>.
 ##
 SizeStabChain := function( S )
     local   size;
@@ -1343,6 +1355,8 @@ end;
 ##
 #F  IndicesStabChain( <S> ) . . . . . . . . . . . . . . . . . . . . . indices
 ##
+##  This function may be called with a generatorless <S>.
+##
 IndicesStabChain := function( S )
     local   ind;
     
@@ -1357,6 +1371,8 @@ end;
 #############################################################################
 ##
 #F  ListStabChain( <S> )  . . . . . . . . . . . . .  stabilizer chain as list
+##
+##  This function may be called with a generatorless <S>.
 ##
 ListStabChain := function( S )
     local   list;
@@ -1378,7 +1394,7 @@ OrbitStabChain := function( S, pnt )
     if IsBound( S.edges )  and  IsBound( S.edges[ pnt ] )  then
         return ShallowCopy( S.orbit );
     else
-        return OrbitPerms( S.labels{ S.genlabels }, pnt );
+        return OrbitPerms( S.generators, pnt );
     fi;
 end;
 

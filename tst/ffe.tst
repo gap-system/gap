@@ -96,13 +96,10 @@ GF(2^6)
 
 #T missing: polynomials and polynomial rings
 
-gap> STOP_TEST( "ffe.tst", 1070031 );
+gap> STOP_TEST( "ffe.tst", 4810000 );
 
 
 #############################################################################
 ##
 #E  ffe.tst . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

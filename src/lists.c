@@ -45,6 +45,7 @@ char *          Revision_lists_c =
 
 #include        "plist.h"               /* LEN_PLIST, SET_LEN_PLIST,   ... */
 #include        "range.h"               /* IS_RANGE, GET_LEN_RANGE, ...    */
+#include        "string.h"              /* strings and characters          */
 
 #include        "gap.h"                 /* Error                           */
 

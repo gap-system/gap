@@ -100,25 +100,36 @@ AFFINE_NON_SOLVABLE_GROUPS[ 81 ] := [
   PrimitiveAffinePermGroupByMatrixGroup( Sp(4,3) );
  end,
  function() return
- PrimitiveAffinePermGroupByMatrixGroup( Normalizer(GL(4,3),O(-1,4,3)) );
+ PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+  Normalizer( GL( 4, 3 ), O( -1, 4, 3 ) ), 1 ) );
  end,
  function() return
-  PrimitiveAffinePermGroupByMatrixGroup( O(-1,4,3) );
+ PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+  Normalizer( GL( 4, 3 ), O( -1, 4, 3 ) ), 2 ) );
  end,
  function() return
-   PrimitiveAffinePermGroupByMatrixGroup( DerivedSubgroup(O(-1,4,3)) );
+ PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+  Normalizer( GL( 4, 3 ), O( -1, 4, 3 ) ), 3 ) );
  end,
  function() return
-    PrimitiveAffinePermGroupByMatrixGroup( ClosureGroup
-  ( DerivedSubgroup(O(-1,4,3)), Centre(O(-1,4,3)) ) );
+ PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+  Normalizer( GL( 4, 3 ), O( -1, 4, 3 ) ), 4 ) );
  end,
- function()
-  local   hom,  cls,  U;
-  hom := NaturalHomomorphismByNormalSubgroupInParent
-   (DerivedSubgroup(O(-1,4,3)));
-  cls := List(MaximalSubgroupClassReps(Image(hom)),U->PreImage(hom,U));
-  return PrimitiveAffinePermGroupByMatrixGroup(First(cls,
-   U->not -One(Source(hom)) in U));
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+  Normalizer( GL( 4, 3 ), O( -1, 4, 3 ) ), 5 ) );
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+  Normalizer( GL( 4, 3 ), O( -1, 4, 3 ) ), 6 ) );
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+  Normalizer( GL( 4, 3 ), O( -1, 4, 3 ) ), 7 ) );
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+  Normalizer( GL( 4, 3 ), O( -1, 4, 3 ) ), 8 ) );
  end,
  function() return
  PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(2xS5,1));

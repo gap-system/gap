@@ -2,26 +2,26 @@
 
 When you start {\GAP}, it  already knows several groups. Currently {\GAP}
 initially knows the following groups:
-{\parindent\manindent
-\item{$\bullet$}  some basic groups, such  as cyclic  groups or symmetric
-  groups (see "Basic groups"),
-\item{$\bullet$} a   library of  primitive permutation groups   of degree
-  $\<1000$,  complete  for degrees   $\<256$ (see  "Primitive permutation
-  groups"),
-\item{$\bullet$}  the irreducible  solvable  subgroups  of  $GL(n,p)$ for
-  $n>1$ and $p^n \< 256$ (also in "Primitive permutation groups"),
-\item{$\bullet$} the transitive permutation  groups of degree at  most 23
-  (see "Transitive permutation groups"),
-\item{$\bullet$} the  small groups of size at  most 1000, excluding sizes
-  512 and 768 (see "Small groups"),
-\item{$\bullet$} the finite   perfect  groups  of  size at  most   $10^6$
-  (excluding 11 sizes) (see "Finite Perfect Groups").
+\beginlist
+  \item{$\bullet$} some basic groups, such  as cyclic groups or symmetric
+    groups (see "Basic groups"),
+  \item{$\bullet$}  a library of  primitive  permutation groups of degree
+    $\<1000$, complete  for degrees  $\<256$ (see "Primitive  permutation
+    groups"),
+  \item{$\bullet$}  the  irreducible solvable subgroups of  $GL(n,p)$ for
+    $n>1$ and $p^n \< 256$ (also in "Primitive permutation groups"),
+  \item{$\bullet$} the transitive permutation groups of degree at most 23
+    (see "Transitive permutation groups"),
+  \item{$\bullet$} the small groups of size at most 1000, excluding sizes
+    512 and 768 (see "Small groups"),
+  \item{$\bullet$}  the  finite perfect  groups of   size  at most $10^6$
+    (excluding 11 sizes) (see "Finite perfect groups").
 %\item{$\bullet$} the irreducible maximal finite integral matrix groups 
 %  of dimension at most  24  (see  "Irreducible Maximal Finite Integral
 %  Matrix Groups"),
 %\item{$\bullet$} the  crystallographic  groups  of  dimension  at most  4 
 %  (see "The Crystallographic Groups Library").
-\par}
+\endlist
 
 There   is usually no   relation  between the   groups  in the  different
 libraries. Note that a system administrator may choose to install all, or
@@ -160,18 +160,19 @@ property~(1).
 {\GAP} contains a library of primitive permutation groups which includes,
 up to  isomorphism of permutation groups   (i.e., up to conjugacy  in the
 corresponding symmetric group)
-{\parindent\manindent
-\item{$\bullet$} all   primitive permutation  groups  of  degree $\<256$,
-  namely
-\itemitem{$\circ$}  the  primitive permutation  groups   up to degree~50,
-  calculated by C.~Sims,
-\itemitem{$\circ$}  the  solvable (hence  affine)   primitive permutation
-  groups of degree $\<256$, calculated by M.~Short \cite{Short92},
-\itemitem{$\circ$} the insolvable affine  primitive permutation groups of
-  degree $\<256$, calculated in \cite{Theissen97},
-\item{$\bullet$} the non-affine primitive   permutation groups of  degree
-  $\<1000$,  described   in   \cite{DixonMortimer88},  with    generators
-  calculated in \cite{Theissen97}.\par}
+\beginlist
+  \item{$\bullet$} all  primitive  permutation groups of  degree $\<256$,
+    namely
+    \itemitem{$\circ$} the primitive permutation groups up to degree~50,
+      calculated by C.~Sims,
+    \itemitem{$\circ$}  the solvable (hence affine) primitive permutation
+      groups of degree $\<256$, calculated by M.~Short \cite{Short92},
+    \itemitem{$\circ$} the insolvable affine primitive permutation groups
+      of degree $\<256$, calculated in \cite{Theissen97},
+  \item{$\bullet$} the  non-affine primitive permutation groups of degree
+    $\<1000$,   described    in  \cite{DixonMortimer88},  with generators
+    calculated in \cite{Theissen97}.
+\endlist
 Note that the affine primitive permutation groups of degrees 256--999 are
 not included.
 
@@ -296,17 +297,17 @@ permutation isomorphic to the group `TransitiveGroup(m,n)'.
 The {\GAP} library of finite  perfect groups provides, up to isomorphism,
 a list of all perfect groups whose sizes are less than  $10^6$  excluding
 the following sizes:
-{\parindent\manindent
-\item{$\bullet$}
+\beginlist
+  \item{$\bullet$}
       For $n = 61440$, 122880, 172032, 245760, 344064, 491520, 688128, or
       983040,  the perfect groups  of size  $n$  have not completely been
       determined yet.  The library  neither provides  the number of these
       groups nor the groups themselves.
-\item{$\bullet$}
+  \item{$\bullet$}
       For  $n = 86016$,  368640,  or  737280,  the library  does not  yet
       contain  the perfect groups  of size  $n$,  it  only provides their
       their numbers which are 52, 46, or 54, respectively.
-\par}
+\endlist
 
 Except for these eleven sizes, the list of altogether 1096 perfect groups
 in the library  is complete. It relies   on results of  Derek~F. Holt and
@@ -382,25 +383,25 @@ cyclic factors. (In fact, the function replaces any list of more than one
 integer expression among the arguments by their product.)
 
 The following text strings are accepted as simple group names.
-{\parindent\manindent
-\item{$\bullet$} `A<n>' or `A(<n>)' for the alternating groups  $A_n$,
-        $5\leq n\leq9$, for example `A5' or `A(6)'.
-\item{$\bullet$} `L<n>(<q>)'  or `L(<n>,<q>)' for $PSL(n,q)$, where
-        $n\in\{2,3\}$ and $q$ a prime power, ranging
-\itemitem{$\circ$} for $n=2$ from 4 to 125
-\itemitem{$\circ$} for $n=3$ from 2 to 5
-\itemitem{$\circ$} for $n=2$ from 4 to 125
-\item{$\bullet$} `U<n>(<q>)'  or `U(<n>,<q>)' for $PSU(n,q)$, where
-        $n\in\{3,4\}$ and $q$ a prime power, ranging
-\itemitem{$\circ$} for $n=3$ from 3 to 5
-\itemitem{$\circ$} for $n=4$ from 2 to 2
-\item{$\bullet$} `Sp4(4)' or `S(4,4)' for the symplectic group $S(4,4)$,
-\item{$\bullet$} `Sz(8)' for the Suzuki group $Sz(8)$,
-\item{$\bullet$} `M<n>' or `M(<n>)' for the Mathieu groups 
-        $M_{11}$, $M_{12}$, and $M_{22}$, and
-\item{$\bullet$} `J<n>' or  `J(<n>)' for the Janko groups $J_1$
-        and $J_2$.
-\par}
+\beginlist
+  \item{$\bullet$} `A<n>' or  `A(<n>)' for the  alternating groups $A_n$,
+    $5\leq n\leq9$, for example `A5' or `A(6)'.
+  \item{$\bullet$}  `L<n>(<q>)'   or  `L(<n>,<q>)' for  $PSL(n,q)$, where
+    $n\in\{2,3\}$ and $q$ a prime power, ranging
+    \itemitem{$\circ$} for $n=2$ from 4 to 125
+    \itemitem{$\circ$} for $n=3$ from 2 to 5
+    \itemitem{$\circ$} for $n=2$ from 4 to 125
+  \item{$\bullet$} `U<n>(<q>)'  or  `U(<n>,<q>)' for   $PSU(n,q)$,  where
+    $n\in\{3,4\}$ and $q$ a prime power, ranging
+    \itemitem{$\circ$} for $n=3$ from 3 to 5
+    \itemitem{$\circ$} for $n=4$ from 2 to 2
+  \item{$\bullet$} `Sp4(4)' or `S(4,4)' for the symplectic group $S(4,4)$,
+  \item{$\bullet$} `Sz(8)' for the Suzuki group $Sz(8)$,
+  \item{$\bullet$} `M<n>'  or `M(<n>)' for  the  Mathieu groups $M_{11}$,
+    $M_{12}$, and $M_{22}$, and
+  \item{$\bullet$} `J<n>' or `J(<n>)'   for  the Janko groups  $J_1$  and
+    $J_2$.
+\endlist
 
 Note that,   for  most of  the  groups, the   preceding  list offers  two
 different names in order  to  be consistent with   the notation  used  in
@@ -426,26 +427,26 @@ case, <n> is omitted,  the function will  loop over all library groups of
 size <size>.
 
 The information provided for $G$ includes the following items:
-{\parindent\manindent
-\item{$\bullet$} a headline containing the size number $[<size>,<n>]$ of $G$
-  in the form $<size>.<n>$ (the suffix $.<n>$ will be suppressed if, up to
-  isomorphism, $G$ is the only perfect group of size $size$),
-\item{$\bullet$} a message  if $G$ is  simple or quasisimple,  id est, if the
-  factor group of $G$ by its centre is simple,
-\item{$\bullet$} the ``description''  of the  structure of $G$  as it is
-  given by Holt and Plesken in \cite{HoltPlesken89} (see below),
-\item{$\bullet$} the size of the centre of  $G$  (suppressed, if  $G$  is
-  simple),
-\item{$\bullet$} the prime decomposition of the size of $G$,
-\item{$\bullet$} orbit sizes for a faithful permutation representation of $G$ 
-  which is provided by the library (see below),
-\item{$\bullet$} a reference to each occurrence of $G$  in the tables of
-  section 5.3 of \cite{HoltPlesken89}. Each  of these references consists
-  of a  class number and  an internal number $(i,j)$   under which $G$ is
-  listed in that class. For some groups, there is more than one reference
-  because these groups belong   to more than  one of  the classes  in the
-  book.
-\par}
+\beginlist
+  \item{$\bullet$} a headline  containing the size number  $[<size>,<n>]$
+    of $G$ in the form $<size>.<n>$ (the suffix $.<n>$ will be suppressed
+    if, up to isomorphism, $G$ is the only perfect group of size $size$),
+  \item{$\bullet$} a message if $G$ is simple  or quasisimple, id est, if
+    the factor group of $G$ by its centre is simple,
+  \item{$\bullet$} the ``description'' of  the structure of  $G$ as it is
+    given by Holt and Plesken in \cite{HoltPlesken89} (see below),
+  \item{$\bullet$} the size of  the centre of $G$  (suppressed, if $G$ is
+    simple),
+  \item{$\bullet$} the prime decomposition of the size of $G$,
+  \item{$\bullet$} orbit sizes for  a faithful permutation representation
+    of $G$ which is provided by the library (see below),
+  \item{$\bullet$} a reference to each occurrence of $G$ in the tables of
+    section 5.3    of  \cite{HoltPlesken89}. Each  of   these  references
+    consists of a class number and an internal number $(i,j)$ under which
+    $G$ is listed in that class. For some groups, there  is more than one
+    reference because these groups belong to more than one of the classes
+    in the book.
+\endlist
 \beginexample
 gap> DisplayInformationPerfectGroups( 30720, 3 );
 |#I Perfect group 30720:  A5 ( 2^4 E N 2^1 E 2^4 ) A

@@ -1156,7 +1156,7 @@ InstallMethod( AsFLMLOR,
       SubtractSet( L, AsListSorted( A ) );
     od;
     if Length( AsList( A ) ) <> Length( D )  then
-      Error( "the elements of <D> must form a FLMLOR" );
+      return fail;
     fi;
     A:= FLMLOR( F, GeneratorsOfLeftOperatorRing( A ), Zero( D[1] ) );
     SetAsListSorted( A, D );
@@ -1179,7 +1179,8 @@ InstallMethod( AsFLMLOR,
 ##
 InstallMethod( AsFLMLOR,
     "method for a division ring and a free left module",
-    true, [ IsDivisionRing, IsFreeLeftModule ], 0,
+    true,
+    [ IsDivisionRing, IsFreeLeftModule ], 0,
     function( F, V )
 
     local L, A;
@@ -1188,7 +1189,7 @@ InstallMethod( AsFLMLOR,
 
       A:= FLMLOR( F, GeneratorsOfLeftModule( V ) );
       if A <> V then
-        Error( "<V> is not a FLMLOR" );
+        return fail;
       fi;
       if HasBasisOfDomain( V ) then
         SetBasisOfDomain( A, BasisOfDomain( V ) );
@@ -1207,7 +1208,7 @@ InstallMethod( AsFLMLOR,
                                              y -> x * y ) ) );
       A:= FLMLOR( F, L );
       if A <> V then
-        Error( "<V> is not a FLMLOR" );
+        return fail;
       fi;
 
     elif IsSubset( F, LeftActingDomain( V ) ) then
@@ -1216,11 +1217,11 @@ InstallMethod( AsFLMLOR,
       L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(V), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfLeftModule( V ),
                                  y -> not x * y in V ) ) then
-        Error( "field change leads out of <V>" );
+        return fail;
       fi;
       A:= FLMLOR( F, GeneratorsOfLeftModule( V ) );
       if A <> V then
-        Error( "<V> is not a FLMLOR" );
+        return fail;
       fi;
 
     else
@@ -1276,7 +1277,7 @@ InstallMethod( AsFLMLOR,
       L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
-        Error( "field change leads out of <D>" );
+        return fail;
       fi;
       A:= FLMLOR( F, GeneratorsOfAlgebra( D ) );
 
@@ -2378,7 +2379,7 @@ InstallMethod( Centre,
     B:= BasisOfDomain( A );
     T:= StructureConstantsTable( B );
     n:= Dimension( A );
-    M:= NullMat( n, n*n, LeftActingDomain( A ) );
+    M:= MutableNullMat( n, n*n, LeftActingDomain( A ) );
     for i in [ 1 .. n ] do
       row:= M[i];
       for j in [ 1 .. n ] do
@@ -2591,7 +2592,7 @@ InstallMethod( RadicalOfAlgebra,
           rad;   # a basis of the radical of <A>
 
     # Make sure that the algebra is associative and not a matrix algebra.
-    if IsRingElementCollCollColl( A ) or not IsAssociative( A ) then
+    if not IsAssociative( A ) then
       TryNextMethod();
     fi;
 
@@ -2658,7 +2659,7 @@ InstallMethod( IsTrivial,
     "method for a FLMLOR-with-one",
     true,
     [ IsFLMLORWithOne ], 0,
-    A -> not IsZero( One( A ) ) );
+    A -> IsZero( One( A ) ) );
 
 
 #############################################################################
