@@ -8,13 +8,23 @@
 Revision.gprdpc_gi :=
     "@(#)$Id$";
 
+
 #############################################################################
 ##
-#F  DirectProductOfPcGroups( list )
+#M  DirectProductOp( <list>, <G> )
 ##
-InstallGlobalFunction( DirectProductOfPcGroups, function( list )
+InstallMethod( DirectProductOp,
+    "for a list (of pc groups), and a pc group",
+    true,
+    [ IsList, IsPcGroup ], 0,
+    function( list, pcgp )
     local len, F, gensF, relsF, s, G, pcgsG, isoG, FG, relsG, gensG, n, D,
           info, first;
+
+    # Check the arguments.
+    if ForAny( list, G -> not IsPcGroup( G ) ) then
+      TryNextMethod();
+    fi;
 
     len := Sum( List( list, x -> Length( Pcgs( x ) ) ) );
     F   := FreeGroup( len );
@@ -24,6 +34,7 @@ InstallGlobalFunction( DirectProductOfPcGroups, function( list )
     s := 0;
     first := [1];
     for G in list do
+
         pcgsG := Pcgs( G );
         isoG  := IsomorphismFpGroupByPcgs( pcgsG, "F" );
         FG    := Image( isoG );
@@ -48,6 +59,7 @@ InstallGlobalFunction( DirectProductOfPcGroups, function( list )
     return D;
 end );
  
+
 #############################################################################
 ##
 #A Embedding
@@ -88,7 +100,7 @@ InstallMethod( Projection,
          [ IsPcGroup and HasDirectProductInfo, IsPosInt ], 
          0,
     function( D, i )
-    local info, G, imgs, hom, N, list, gens;
+    local info, G, imgs, hom, N, gens;
 
     # check
     info := DirectProductInfo( D );
@@ -103,7 +115,7 @@ InstallMethod( Projection,
                            Pcgs( G ),
                            List( [info.first[i+1]..Length(gens)], x -> One(G)));
     hom := GroupHomomorphismByImagesNC( D, G, gens, imgs );
-    N := Subgroup( D, gens{Concatenation( [1..info.first[i]-1], 
+    N := SubgroupNC( D, gens{Concatenation( [1..info.first[i]-1], 
                            [info.first[i+1]..Length(gens)] )} );
     SetIsSurjective( hom, true );
     SetKernelOfMultiplicativeGeneralMapping( hom, N );
@@ -156,7 +168,7 @@ InstallOtherMethod( SemidirectProduct,
     [ IsPcGroup, IsGroupHomomorphism],
     0,
 function( G, pr )
-    local U, M, H, info;
+    local U, M;
     U := Image( pr );
     M := rec( dimension  := DimensionOfMatrixGroup( U ),
               field      := FieldOfMatrixGroup( U ),
@@ -217,7 +229,7 @@ InstallOtherMethod( Projection,
     imgs := Concatenation( AsList( Pcgs(G) ),
                            List( [list[2]+1..list[3]], x -> One(G)) );
     hom := GroupHomomorphismByImagesNC( D, G, AsList( Pcgs(D) ), imgs );
-    N := Subgroup( D, Pcgs(D){[list[2]+1..list[3]]});
+    N := SubgroupNC( D, Pcgs(D){[list[2]+1..list[3]]});
     SetIsSurjective( hom, true );
     SetKernelOfMultiplicativeGeneralMapping( hom, N );
 
@@ -225,4 +237,9 @@ InstallOtherMethod( Projection,
     info.projections := hom;
     return hom;
 end );
+
+
+#############################################################################
+##
+#E
 

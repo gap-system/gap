@@ -29,24 +29,27 @@
 ##
 SHELL=/bin/sh
 CC=@CC@
+BASECC=@BASECC@
 @SET_MAKE@
 
-default: config compile
+default: compile
 
-config: bin/@target@-@CC@/configure bin/@target@-@CC@/Makefile
+config: bin/@target@-@BASECC@/configure bin/@target@-@BASECC@/Makefile
 
-bin/@target@-@CC@/configure: cnf/configure.out
+bin/@target@-@BASECC@/configure: cnf/configure.out
 	if test ! -d bin;  then mkdir bin;  fi
-	if test ! -d bin/@target@-@CC@;  then mkdir bin/@target@-@CC@;  fi
-	@rm -f bin/@target@-@CC@/configure
-	cp cnf/configure.out bin/@target@-@CC@/configure
+	if test ! -d bin/@target@-@BASECC@;  then mkdir bin/@target@-@BASECC@;  fi
+	@rm -f bin/@target@-@BASECC@/configure
+	cp cnf/configure.out bin/@target@-@BASECC@/configure
 
-bin/@target@-@CC@/Makefile: bin/@target@-@CC@/configure cnf/config.hin
-	( cd bin/@target@-@CC@ ; CC=$(CC) ./configure --target=@target@ @gp_configure_options@ )
+bin/@target@-@BASECC@/Makefile: bin/@target@-@BASECC@/configure cnf/config.hin
+	( cd bin/@target@-@BASECC@ ; CC=$(CC) ./configure --target=@target@ @gp_configure_options@ )
 
-compile:
-	( cd bin/@target@-@CC@ ; $(MAKE) CC=$(CC) )
+compile: config
+	( cd bin/@target@-@BASECC@ ; $(MAKE) CC=$(CC) )
+	chmod +x bin/gap.sh
 
 clean:
-	rm -rf bin/@target@-@CC@
+	rm -rf bin/@target@-@BASECC@
 	rm -f config.cache config.log config.status Makefile
+	rm -f bin/gap.sh

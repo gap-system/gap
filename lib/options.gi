@@ -1,0 +1,103 @@
+#############################################################################
+##
+#W  options.gi                     GAP library                      Steve Linton
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
+
+Revision.options_gi :=
+    "@(#)$Id$";
+
+
+##
+## Initially the stack is empty -- we mutate the object bound to it, but
+## don't replace it, so we can make it Read Only
+##
+
+OptionsStack := [];
+MakeReadOnlyGlobal("OptionsStack");
+
+#############################################################################
+##
+#F  PushOptions( <options record> )                           set new options
+##
+##  This is a function, not an operation, so we need to check our arguments
+##
+
+
+InstallGlobalFunction( PushOptions,
+   function(opts)
+    local merged, field, len;
+    if not IsRecord(opts) then
+        Error("Usage: PushOptions( <opts> )");
+    fi;
+    len := Length(OptionsStack);
+    if len > 0 then
+        merged := ShallowCopy(OptionsStack[len]);
+        for field in RecNames(opts) do
+            merged.(field) := opts.(field);
+        od;
+    else
+        merged := ShallowCopy(opts);
+    fi;
+        
+    Add(OptionsStack,merged);
+    Info(InfoOptions,1, "Pushing ",opts);
+end);
+
+
+
+#############################################################################
+##
+#F  PopOptions( )                                              remove options
+##
+
+InstallGlobalFunction( PopOptions,
+        function()
+    Unbind(OptionsStack[Length(OptionsStack)]);
+    Info(InfoOptions, 1, "Popping");
+end);
+
+#############################################################################
+##
+#F  ValueOption( <opt> )                                       access options
+##
+##  Basic access function. This could get very slow if the stack gets deep
+##  Returns fail if option has never been bound
+##
+
+InstallGlobalFunction( ValueOption, 
+        function(tag)
+    local top,len;
+    len := Length(OptionsStack);
+    if len = 0 then
+        Info(InfoOptions,1,
+             "Seeking option ",tag," found nothing");
+        return fail;
+    else
+        top := OptionsStack[len];
+        if IsBound(top.(tag)) then
+            Info(InfoOptions,2,
+                 "Seeking option ",tag," found ",top.(tag));
+            return top.(tag);
+        else
+        Info(InfoOptions,1,
+             "Seeking option ",tag," found nothing");
+        return fail;
+        fi;
+    fi;
+end);
+
+#############################################################################
+##
+#F  DisplayOptionsStack( )                          display the options stack
+##
+##  This function prints a human-readable display of all currently set 
+##  options
+##
+
+InstallGlobalFunction( DisplayOptionsStack, function()
+    Print(OptionsStack,"\n"); end);

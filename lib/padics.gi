@@ -333,9 +333,10 @@ end );
 
 #############################################################################
 ##
-#M  Zero( <padic> )
+#M  ZeroOp( <padic> )
 ##
-InstallMethod( Zero,
+InstallMethod( ZeroOp,
+    "for a p-adic number",
     true,
     [ IsPadicNumber ],
     0,
@@ -347,9 +348,10 @@ end );
 
 #############################################################################
 ##
-#M  One( <padic> )
+#M  OneOp( <padic> )
 ##
-InstallMethod( One,
+InstallMethod( OneOp,
+    "for a p-adic number",
     true,
     [ IsPadicNumber ],
     0,
@@ -476,7 +478,7 @@ InstallOtherMethod( Random,
     0,
 
 function ( fam )
-    local c, l;
+    local c;
 
     c := [];
     c[1] := Random( -fam!.precision, fam!.precision );
@@ -554,9 +556,9 @@ end );
 #############################################################################
 ##
 
-#M  AdditiveInverse( <pure-padic> )
+#M  AdditiveInverseOp( <pure-padic> )
 ##
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
      true,
      [ IsPurePadicNumber ],
      0,
@@ -572,9 +574,9 @@ end );
 
 #############################################################################
 ##
-#M  Inverse( <pure-padic> )
+#M  InverseOp( <pure-padic> )
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseOp,
      true,
      [ IsPurePadicNumber ],
      0,
@@ -1020,9 +1022,9 @@ end );
 #############################################################################
 ##
 
-#M  AdditiveInverse( <extended-padic> )
+#M  AdditiveInverseOp( <extended-padic> )
 ##
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
      true,
      [ IsPadicExtensionNumber ],
      0,
@@ -1038,15 +1040,15 @@ end );
 
 #############################################################################
 ##
-#M  Inverse( <extended-padic> )
+#M  InverseOp( <extended-padic> )
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseOp,
     true,
     [ IsPadicExtensionNumber ],
     0,
 
 function(x)
-    local   fam,  val,  coeffppart,  coeffypart,  ppart,  z,  i,  L,  k,  j,  
+    local   fam,  val,  coeffppart,  coeffypart,  ppart,  z,  L,  k,  j,  
             Lp,  E,  Beta,  ppot,  Beta_k,  c,  addppart;
 
     if IsZero(x)  then

@@ -7,3 +7,4 @@ ReadGrp( "basicprm.gi" );
 ReadGrp( "basicmat.gi" );
 ReadGrp( "perf.grp"    );
 ReadGrp( "classic.gi" );
+ReadGrp( "suzuki.gi"  );

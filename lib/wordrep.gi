@@ -129,7 +129,7 @@ InstallMethod( PrintObj,
     len:= Length( word ) - 1;
     i:= 1;
     if len < 0 then
-      Print( "<identity> of ..." );
+      Print( "<identity ...>" );
     else
       while i < len do
         Print( names[ word[i] ] );
@@ -169,7 +169,7 @@ InstallMethod( String,
     i:= 1;
     str:= "";
     if len < 0 then
-      return "<identity> of ...";
+      return "<identity ...>";
 #T ??
     fi;
     while i < len do
@@ -335,17 +335,33 @@ InstallMethod( \*,
     [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
     8Bits_Product );
 
-InstallMethod( One,
+InstallMethod( OneOp,
     "for an 8 bits assoc. word-with-one",
     true,
     [ Is8BitsAssocWord and IsAssocWordWithOne ], 0,
     x -> 8Bits_AssocWord( FamilyObj( x )!.types[1], [] ) );
 
+
 InstallMethod( \^,
-    "for an 8 bits assoc. word, and a small integer",
+    "for an 8 bits assoc. word, and zero (in small integer rep)",
     true,
-    [ Is8BitsAssocWord, IsInt and IsSmallIntRep ], 0,
+    [ Is8BitsAssocWord and IsMultiplicativeElementWithOne, 
+      IsZeroCyc and IsSmallIntRep ], 0,
     8Bits_Power );
+
+InstallMethod( \^,
+    "for an 8 bits assoc. word, and a small negative integer",
+    true,
+    [ Is8BitsAssocWord and IsMultiplicativeElementWithInverse,
+      IsInt and IsNegRat and IsSmallIntRep ], 0,
+    8Bits_Power );
+
+InstallMethod( \^,
+    "for an 8 bits assoc. word, and a small positive integer",
+    true,
+    [ Is8BitsAssocWord, IsPosInt and IsSmallIntRep ], 0,
+    8Bits_Power );
+
 
 InstallMethod( ExponentSyllable,
     "for an 8 bits assoc. word, and a pos. integer",
@@ -412,17 +428,33 @@ InstallMethod( \*,
     [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
     16Bits_Product );
 
-InstallMethod( One,
+InstallMethod( OneOp,
     "for a 16 bits assoc. word-with-one",
     true,
     [ Is16BitsAssocWord and IsAssocWordWithOne ], 0,
     x -> 16Bits_AssocWord( FamilyObj( x )!.types[2], [] ) );
 
+
 InstallMethod( \^,
-    "for a 16 bits assoc. word, and small integer",
+    "for a 16 bits assoc. word, and zero (in small integer rep)",
     true,
-    [ Is16BitsAssocWord, IsInt and IsSmallIntRep ], 0,
+    [ Is16BitsAssocWord and IsMultiplicativeElementWithOne, 
+      IsZeroCyc and IsSmallIntRep ], 0,
     16Bits_Power );
+
+InstallMethod( \^,
+    "for a 16 bits assoc. word, and a small negative integer",
+    true,
+    [ Is16BitsAssocWord and IsMultiplicativeElementWithInverse,
+      IsInt and IsNegRat and IsSmallIntRep ], 0,
+    16Bits_Power );
+
+InstallMethod( \^,
+    "for a 16 bits assoc. word, and a small positive integer",
+    true,
+    [ Is16BitsAssocWord, IsPosInt and IsSmallIntRep ], 0,
+    16Bits_Power );
+
 
 InstallMethod( ExponentSyllable,
     "for a 16 bits assoc. word, and pos. integer",
@@ -489,17 +521,33 @@ InstallMethod( \*,
     [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
     32Bits_Product );
 
-InstallMethod( One,
+InstallMethod( OneOp,
     "for a 32 bits assoc. word-with-one",
     true,
     [ Is32BitsAssocWord and IsAssocWordWithOne ], 0,
     x -> 32Bits_AssocWord( FamilyObj( x )!.types[3], [] ) );
 
+
 InstallMethod( \^,
-    "for a 32 bits assoc. word, and small integer",
+    "for a 32 bits assoc. word, and zero (in small integer rep)",
     true,
-    [ Is32BitsAssocWord, IsInt and IsSmallIntRep ], 0,
+    [ Is32BitsAssocWord and IsMultiplicativeElementWithOne, 
+      IsZeroCyc and IsSmallIntRep ], 0,
     32Bits_Power );
+
+InstallMethod( \^,
+    "for a 32 bits assoc. word, and a small negative integer",
+    true,
+    [ Is32BitsAssocWord and IsMultiplicativeElementWithInverse,
+      IsInt and IsNegRat and IsSmallIntRep ], 0,
+    32Bits_Power );
+
+InstallMethod( \^,
+    "for a 32 bits assoc. word, and a small positive integer",
+    true,
+    [ Is32BitsAssocWord, IsPosInt and IsSmallIntRep ], 0,
+    32Bits_Power );
+
 
 InstallMethod( ExponentSyllable,
     "for a 32 bits assoc. word, and pos. integer",
@@ -639,7 +687,7 @@ InstallMethod( \<,
     InfBits_Less );
 
 InfBits_One := x -> InfBits_AssocWord( FamilyObj(x)!.types[4],[] );
-InstallMethod( One,
+InstallMethod( OneOp,
     "for an inf. bits assoc. word-with-one",
     true,
     [ IsInfBitsAssocWord and IsAssocWordWithOne ], 0,
@@ -693,8 +741,8 @@ InfBits_ExponentSums3 := function( obj, from, to )
     local expvec, i;
     expvec:= [];
     if from < 2 then from:= 1; else from:= 2 * from - 1; fi;
-    if TypeObj( obj )![ AWP_NR_GENS ] / 2 < to then
-      to:= TypeObj( obj )![ AWP_NR_GENS ] / 2 - 1;
+    if TypeObj( obj )![ AWP_NR_GENS ] < to then
+      to:= 2 * TypeObj( obj )![ AWP_NR_GENS ] - 1;
     else
       to:= 2 * to - 1;
     fi;
@@ -710,7 +758,7 @@ end;
 InstallOtherMethod( ExponentSums,
     "for an inf. bits assoc. word, and two integers",
     true,
-    [ IsInfBitsAssocWord, IsInt, IsInt ], 0,
+    [ IsInfBitsAssocWord, IsInt, IsInt ], 1,
     InfBits_ExponentSums3 );
 
 #############################################################################
@@ -723,7 +771,7 @@ InstallGlobalFunction( ObjByVector, function( Type, vec )
 end );
 
 
-BindGlobal( "InfBits_ObjByVector", function( F, vec )
+BindGlobal( "InfBits_ObjByVector", function( type, vec )
     local expr, i;
     expr:= [];
     for i in [ 1 .. Length( vec ) ] do
@@ -732,7 +780,7 @@ BindGlobal( "InfBits_ObjByVector", function( F, vec )
         Add( expr, vec[i] );
       fi;
     od;
-    return ObjByExtRep( F, expr );
+    return ObjByExtRep( FamilyType(type), expr );
 end );
 
 
@@ -878,23 +926,26 @@ end );
 
 #############################################################################
 ##
-#R  IsInfiniteListOfNamesRep( <string> )
+#R  IsInfiniteListOfNamesRep( <list> )
 ##
-##  is a representation of a list containing at position $i$ the string
-##  `<string>$i$'.
+##  is a representation of a list <list> containing at position $i$
+##  either the string `<string>$i$' or the string `<init>[$i$]',
+##  where the latter holds if and only if $i$ does not exceed the
+##  length of the list <init>.
 ##
-##  <string> is stored at position 1 in the list object.
+##  <string> is stored at position 1 in the positional object <list>,
+##  <init> is stored at position 2.
 ##
 DeclareRepresentation( "IsInfiniteListOfNamesRep",
     IsPositionalObjectRep,
-    [ 1 ] );
+    [ 1, 2 ] );
 
 InstallMethod( PrintObj,
     "for an infinite list of names",
     true,
     [ IsList and IsInfiniteListOfNamesRep ], 0,
     function( list )
-    Print( "[ ", list[1], ", ", list[2], ", ... ]" );
+    Print( "InfiniteListOfNames( \"", list![1], "\", ", list![2], " )" );
     end );
 
 InstallMethod( ViewObj,
@@ -911,8 +962,12 @@ InstallMethod( \[\],
     [ IsList and IsInfiniteListOfNamesRep, IsPosInt ], 0,
     function( list, pos )
     local entry;
-    entry:= Concatenation( list![1], String( pos ) );
-    ConvertToStringRep( entry );
+    if pos <= Length( list![2] ) then
+      entry:= list![2][ pos ];
+    else
+      entry:= Concatenation( list![1], String( pos ) );
+      ConvertToStringRep( entry );
+    fi;
     return entry;
     end );
 
@@ -928,11 +983,19 @@ InstallMethod( Position,
     [ IsList and IsInfiniteListOfNamesRep, IsObject, IsZeroCyc ], 0,
     function( list, obj, zero )
     local digits, pos, i;
-    if    ( not IsString( obj ) )
+
+    # Check whether `obj' is in the initial segment, and if not,
+    # whether `obj' matches the names in the rest of the list..
+    pos:= Position( list![2], obj );
+    if pos <> fail then
+      return pos;
+    elif  ( not IsString( obj ) )
        or Length( obj ) <= Length( list![1] )
        or obj{ [ 1 .. Length( list![1] ) ] } <> list![1] then
       return fail;
     fi;
+
+    # Convert the suffix to a number if possible.
     digits:= "0123456789";
     pos:= 0;
     for i in [ Length( list![1] ) + 1 .. Length( obj ) ] do
@@ -942,6 +1005,12 @@ InstallMethod( Position,
         return fail;
       fi;
     od;
+
+    # If the number belongs to a position in the initial segment,
+    # `obj' is not in the list.
+    if pos <= Length( list![2] ) then
+      pos:= fail;
+    fi;
     return pos;
     end );
 
@@ -949,34 +1018,50 @@ InstallMethod( Position,
 #############################################################################
 ##
 #F  InfiniteListOfNames( <string> )
+#F  InfiniteListOfNames( <string>, <init> )
 ##
-InstallGlobalFunction( InfiniteListOfNames, function( string )
-    local list;
+InstallGlobalFunction( InfiniteListOfNames, function( arg )
+    local string, init, list;
+
+    if Length( arg ) = 1 and IsString( arg[1] ) then
+      string := Immutable( arg[1] );
+      init   := Immutable( [] );
+    elif Length( arg ) = 2 and IsString( arg[1] ) and IsList( arg[2] ) then
+      string := Immutable( arg[1] );
+      init   := Immutable( arg[2] );
+    else
+      Error( "usage: InfiniteListOfNames( <string>[, <init>] )" );
+    fi;
+
     list:= Objectify( NewType( CollectionsFamily( FamilyObj( string ) ),
                                    IsList
                                and IsDenseList
                                and IsConstantTimeAccessList
                                and IsInfiniteListOfNamesRep ),
-                      [ string ] );
+                      [ string, init ] );
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
     SetLength( list, infinity );
+#T meaningless since not attribute storing!
     return list;
 end );
 
 
 #############################################################################
 ##
-#R  IsInfiniteListOfGeneratorsRep( <F> )
+#R  IsInfiniteListOfGeneratorsRep( <Fam> )
 ##
-##  is a representation of a list containing at position $i$ the $i$-th
-##  generator of the free something family <F>.
+##  is a representation used for lists containing at position $i$ the $i$-th
+##  generator of the ``free something family'' <Fam>.
+##  Note that we have to distinguish the cases of associative words and
+##  nonassociative words, since they have different external representations.
 ##
-##  <F> is stored at position 1 in the list object.
+##  The family <Fam> is stored at position 1 in the list object,
+##  at position 2 a (possibly empty) list of initial generators is stored.
 ##
 DeclareRepresentation( "IsInfiniteListOfGeneratorsRep",
     IsPositionalObjectRep,
-    [ 1 ] );
+    [ 1, 2 ] );
 
 InstallMethod( ViewObj,
     "for an infinite list of generators",
@@ -1005,7 +1090,13 @@ InstallMethod( \[\],
     true,
     [ IsList and IsInfiniteListOfGeneratorsRep, IsPosInt ], 0,
     function( list, i )
-    return ObjByExtRep( list![1], [ i, 1 ] );
+    if i <= Length( list![2] ) then
+      return list![2][i];
+    elif IsAssocWordFamily( list![1] ) then
+      return ObjByExtRep( list![1], [ i, 1 ] );
+    else
+      return ObjByExtRep( list![1], i );
+    fi;
     end );
 
 InstallMethod( Position,
@@ -1013,15 +1104,26 @@ InstallMethod( Position,
     true,
     [ IsList and IsInfiniteListOfGeneratorsRep, IsObject, IsZeroCyc ], 0,
     function( list, obj, zero )
-    local digits, pos;
+    local ext;
+
     if FamilyObj( obj ) <> list![1] then
       return fail;
     fi;
-    obj:= ExtRepOfObj( obj );
-    if obj[2] <> 1 then
-      return fail;
+
+    ext:= ExtRepOfObj( obj );
+
+    if IsAssocWord( obj ) then
+      if ext[2] <> 1 then
+        return fail;
+      else
+        return ext[1];
+      fi;
     else
-      return obj[1];
+      if not IsInt( ext ) then
+        return fail;
+      else
+        return ext;
+      fi;
     fi;
     end );
 
@@ -1049,18 +1151,28 @@ InstallMethod( Random,
 #############################################################################
 ##
 #F  InfiniteListOfGenerators( <F> )
+#F  InfiniteListOfGenerators( <F>, <init> )
 ##
-InstallGlobalFunction( InfiniteListOfGenerators, function( F )
-    local list;
+InstallGlobalFunction( InfiniteListOfGenerators, function( arg )
+    local F, init, list;
+    if Length( arg ) = 1 and IsFamily( arg[1] ) then
+      F    := arg[1];
+      init := Immutable( [] );
+    elif Length( arg ) = 2 and IsFamily( arg[1] ) and IsList( arg[2] ) then
+      F    := arg[1];
+      init := Immutable( arg[2] );
+    fi;
+
     list:= Objectify( NewType( CollectionsFamily( F ),
                                    IsList
                                and IsDenseList
                                and IsConstantTimeAccessList
                                and IsInfiniteListOfGeneratorsRep ),
-                      [ F ] );
+                      [ F, init ] );
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
     SetLength( list, infinity );
+#T meaningless since not attribute storing!
     return list;
 end );
 
@@ -1068,6 +1180,6 @@ end );
 #############################################################################
 ##
 
-#E  wordrep.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 ##
 

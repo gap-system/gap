@@ -5,7 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains functions for polynomials over the rationals
 ##
@@ -16,14 +16,14 @@ Revision.polyrat_gi:=
 ##
 #F  APolyProd(<a>,<b>,<p>)   . . . . . . . . . . polynomial product a*b mod p
 ##
-APolyProd := function(a,b,p)
-local ac,bc,i,j,pc,pv,brci;
+##return a*b mod p;
+InstallGlobalFunction(APolyProd,function(a,b,p)
+local ac,bc,i,j,pc,pv,ci,fam;
 
-#return a*b mod p;
-
-  brci:=BRCIUnivPols(a,b);
-  a:=CoefficientsOfUnivariateLaurentPolynomial(a);
-  b:=CoefficientsOfUnivariateLaurentPolynomial(b);
+  ci:=CIUnivPols(a,b);
+  fam:=FamilyObj(a);
+  a:=CoefficientsOfLaurentPolynomial(a);
+  b:=CoefficientsOfLaurentPolynomial(b);
 
   pv:=a[2]+b[2];
   #pc:=ProductCoeffs(a.coefficients,b.coefficients);
@@ -45,22 +45,24 @@ local ac,bc,i,j,pc,pv,brci;
       pc[i+j-1]:=(pc[i+j-1]+ac[i]*bc[j]) mod p;
     od;
   od;
-  return UnivariateLaurentPolynomialByCoefficients(brci[1],pc,pv,brci[2]);
-end;
+  pv:=pv+RemoveOuterCoeffs(pc,fam!.zeroCoefficient);
+  return LaurentPolynomialByExtRep(fam,pc,pv,ci);
+end);
 
 #############################################################################
 ##
 #F  BPolyProd(<a>,<b>,<m>,<p>) . . . . . . polynomial product a*b mod m mod p
 ##
-BPolyProd := function(a,b,m,p)
-local ac,bc,mc,i,j,pc,brci,f;
+##  return EuclideanRemainder(PolynomialRing(Rationals),a*b mod p,m) mod p;
+InstallGlobalFunction(BPolyProd,function(a,b,m,p)
+local ac,bc,mc,i,j,pc,ci,f,fam;
 
-#return EuclideanRemainder(PolynomialRing(Rationals),a*b mod p,m) mod p;
 
-  brci:=BRCIUnivPols(a,b);
-  a:=CoefficientsOfUnivariateLaurentPolynomial(a);
-  b:=CoefficientsOfUnivariateLaurentPolynomial(b);
-  m:=CoefficientsOfUnivariateLaurentPolynomial(m);
+  ci:=CIUnivPols(a,b);
+  fam:=FamilyObj(a);
+  a:=CoefficientsOfLaurentPolynomial(a);
+  b:=CoefficientsOfLaurentPolynomial(b);
+  m:=CoefficientsOfLaurentPolynomial(m);
   # we shift as otherwise the mod will mess up valuations (should occur
   # rarely anyhow)
   ac:=List(a[1],i->i mod p);
@@ -100,23 +102,16 @@ local ac,bc,mc,i,j,pc,brci,f;
     ReduceCoeffsMod(pc,mc,p);
     ShrinkCoeffs(pc);
   od;
-  return UnivariatePolynomialByCoefficients(brci[1],pc,brci[2]);
-end;
-
-#############################################################################
-##
-#F  RootRat: . . . . . . . . . . . . . . like RootInt, but also for rationals
-##
-RootRat := function(z)
-  return RootInt(NumeratorRat(z))/(1+RootInt(DenominatorRat(z)-1));
-end;
+  p:=RemoveOuterCoeffs(pc,fam!.zeroCoefficient);
+  return LaurentPolynomialByExtRep(fam,pc,p,ci);
+end);
 
 
 #############################################################################
 ##
 #F  ApproxRational:  approximativ k"urzen
 ##
-ApproxRational := function(r,s)
+BindGlobal("ApproxRational",function(r,s)
 local n,d,u;
   n:=NumeratorRat(r);
   d:=DenominatorRat(r);
@@ -127,17 +122,25 @@ local n,d,u;
   else 
     return r;
   fi;
-end;
+end);
 
 #############################################################################
 ##
 #F  ApproximateRoot(<num>,<n>[,<digits>]) . . approximate th n-th root of num
 ##   numerically with a denominator of 'digits' digits.
 ##
-ApproximateRoot := function(arg)
-local r,e,f,x,nf,lf,c;
+APPROXROOTS:=[];
+
+BindGlobal("ApproximateRoot",function(arg)
+local r,e,f,x,nf,lf,c,store;
   r:=arg[1];
   e:=arg[2];
+
+  store:= e<=10 and IsInt(r) and 0<=r and r<=100;
+  if store and IsBound(APPROXROOTS[e]) and IsBound(APPROXROOTS[e][r+1])
+    then return APPROXROOTS[e][r+1];
+  fi;
+
   if Length(arg)>2 then
     f:=arg[3];
   else
@@ -166,19 +169,28 @@ local r,e,f,x,nf,lf,c;
     fi;
   # until 3 times no improvement
   until c>2;
+  if e<=10 and IsInt(r) and 0<=r and r<=100 then
+    
+  fi;
+  if store then
+    if not IsBound(APPROXROOTS[e]) then
+      APPROXROOTS[e]:=[];
+    fi;
+    APPROXROOTS[e][r+1]:=x;
+  fi;
   return x;
-end;
+end);
 
 #############################################################################
 ##
 #F  ApproxRootBound(f) Numerical approximation of RootBound (better, but
 ##  may fail)
 ##
-ApproxRootBound := function(f)
-local pl,x,p,pc,tp,diff,app,d,scheit,loop,v,nkon;
+BindGlobal("ApproxRootBound",function(f)
+local pl,x,p,tp,diff,app,d,scheit,v,nkon;
   
-  x:=IndeterminateNumberOfUnivariateLaurentPolynomial(f);
-  p:=CoefficientsOfUnivariateLaurentPolynomial(f);
+  x:=IndeterminateNumberOfLaurentPolynomial(f);
+  p:=CoefficientsOfLaurentPolynomial(f);
   if p[2]<0 or not ForAll(p[1],IsRat) then
     # avoid complex conjugation etc.
     Error("only yet implemented for rational polynomials");
@@ -190,7 +202,7 @@ local pl,x,p,pc,tp,diff,app,d,scheit,loop,v,nkon;
 
   # probably first test, whether polynomial should be inverted. However,
   # we expect roots larger than one.
-  d:=DegreeOfUnivariateLaurentPolynomial(f);
+  d:=DegreeOfLaurentPolynomial(f);
   f:=Value(f,1/x)*x^d;
   app:=1/2;
   diff:=1/4;
@@ -198,7 +210,7 @@ local pl,x,p,pc,tp,diff,app,d,scheit,loop,v,nkon;
   repeat
     # pol, whose roots are the 1/app of the roots of f
     tp:=Value(f,x*app);
-    tp:=CoefficientsOfUnivariateLaurentPolynomial(tp)[1];
+    tp:=CoefficientsOfLaurentPolynomial(tp)[1];
     tp:=tp/tp[1];
     tp:=List(tp,i->ApproxRational(i,10));
     # now check, by using the Lehmer/Schur method, whether tp has a root
@@ -243,16 +255,16 @@ local pl,x,p,pc,tp,diff,app,d,scheit,loop,v,nkon;
   # revert last enlargement and add accuracy to be secure
   app:=app-2*diff;
   return 1/app+1/20;
-end;
+end);
 
 #############################################################################
 ##
 #F  RootBound(<f>) . . . . bound for absolute value of (complex) roots of f
 ##
-RootBound := function(f)
+InstallGlobalFunction(RootBound,function(f)
 local a,b,c,d;
   # valuation gives only 0 as zero, this can be neglected
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f)[1];
+  f:=CoefficientsOfLaurentPolynomial(f)[1];
   # normieren
   f:=f/f[Length(f)];
   f:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,f,1);
@@ -260,7 +272,7 @@ local a,b,c,d;
   a:=ApproxRootBound(f);
   # did the numerical part fail?
   if a=fail then
-    c:=CoefficientsOfUnivariateLaurentPolynomial(f)[1];
+    c:=CoefficientsOfLaurentPolynomial(f)[1];
     c:=List(c,AbsInt);
     d:=Length(c);
     a:=Maximum(1,Sum(c{[1..d-1]}));
@@ -293,15 +305,15 @@ local a,b,c,d;
 
   fi;
   return a;
-end;
+end);
 
 #############################################################################
 ##
 #F  BombieriNorm(<pol>) . . . . . . . . . . . . compute weighted Norm [pol]_2
 ##
-BombieriNorm := function(f)
+InstallGlobalFunction(BombieriNorm,function(f)
 local c,i,n,s;
-  c:=CoefficientsOfUnivariateLaurentPolynomial(f);
+  c:=CoefficientsOfLaurentPolynomial(f);
   c:=ShiftedCoeffs(c[1],c[2]);
   n:=Length(c)-1;
   s:=0;
@@ -309,7 +321,7 @@ local c,i,n,s;
     s:=s+AbsInt(c[i+1])^2/Binomial(n,i); 
   od;
   return ApproximateRoot(s,2);
-end;
+end);
 
 #############################################################################
 ##
@@ -347,7 +359,7 @@ local bn,bnf,a,b,c,d,bb,bf,bd,step,x,cnt;
   end;
 
   x:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,[0,1],
-       IndeterminateNumberOfUnivariateLaurentPolynomial(f));
+       IndeterminateNumberOfLaurentPolynomial(f));
   d:=0;
   cnt:=0;
   repeat
@@ -383,22 +395,22 @@ end);
 #F  BeauzamyBound(<pol>) . . . . . Beauzamy's Bound for Factors Coefficients
 ##                                 cf. JSC 13 (1992), 463-472
 ##
-BeauzamyBound := function(f)
+BindGlobal("BeauzamyBound",function(f)
 local n;
-  n:=DegreeOfUnivariateLaurentPolynomial(f);
+  n:=DegreeOfLaurentPolynomial(f);
   return Int(
   # the strange number in the next line is an (upper) rational approximation
   # for 3^{3/4}/2/\sqrt(\pi)
   643038/1000000*ApproximateRoot(3^n,2)/ApproximateRoot(n,2)*BombieriNorm(f))+1;
-end;
+end);
 
 #############################################################################
 ##
 #F  OneFactorBound(<pol>) . . . . . . . . . . . . Bound for one factor of pol
 ##
-OneFactorBound := function(f)
+InstallGlobalFunction(OneFactorBound,function(f)
 local d,n;
-  n:=DegreeOfUnivariateLaurentPolynomial(f);
+  n:=DegreeOfLaurentPolynomial(f);
   if n>=3 then
     # Single factor bound of Beauzamy, Trevisan and Wang (1993)
     return Int(10912/10000*(ApproximateRoot(2^n,2)/ApproximateRoot(n^3,8)
@@ -408,10 +420,10 @@ local d,n;
     d:=QuoInt(n,2);
     return
     Binomial(d,QuoInt(d,2))
-      *(1+RootInt(Sum(CoefficientsOfUnivariateLaurentPolynomial(f)[1],
+      *(1+RootInt(Sum(CoefficientsOfLaurentPolynomial(f)[1],
                       i->i^2),2));
   fi;
-end;
+end);
 
 #############################################################################
 ##
@@ -422,7 +434,7 @@ InstallMethod(PrimitivePolynomial,"univariate polynomial",true,
 function(f)
 local lcm, c, fc,fac;
 
-  fc:=CoefficientsOfUnivariateLaurentPolynomial(f)[1];
+  fc:=CoefficientsOfLaurentPolynomial(f)[1];
   # compute lcm of denominator
   lcm := 1;
   for c  in fc  do
@@ -432,7 +444,7 @@ local lcm, c, fc,fac;
   # remove all denominators
   f := f*lcm;
   fac:=1/lcm;
-  fc:=CoefficientsOfUnivariateLaurentPolynomial(f)[1];
+  fc:=CoefficientsOfLaurentPolynomial(f)[1];
 
   # remove gcd of coefficients
   if Length(fc)>0 then
@@ -445,12 +457,12 @@ local lcm, c, fc,fac;
 
 end);
 
-InstallMethod(PrimitivePolynomial,"rational polynomial",true,
-  [IsPolynomial],0,
-function(f)
-local e,d,lcm,i,fac;
-  e:=ExtRepOfObj(f)[2];
+BindGlobal("PrimitiveFacExtRepRatPol",function(e)
+local d,lcm,i,fac;
   d:=e{[2,4..Length(e)]};
+  if not ForAll(d,IsRat) then
+    TryNextMethod();
+  fi;
   lcm:=1;
   for i in d do
     lcm := LcmInt(lcm,DenominatorRat(i));
@@ -460,6 +472,15 @@ local e,d,lcm,i,fac;
   if Length(d)>0 then
     fac:=fac*Gcd(d);
   fi;
+  return fac;
+end);
+
+InstallMethod(PrimitivePolynomial,"rational polynomial",true,
+  [IsPolynomial],0,
+function(f)
+local e,fac;
+  e:=ExtRepPolynomialRatFun(f);
+  fac:=PrimitiveFacExtRepRatPol(e);
   return [f/fac,fac];
 end);
 
@@ -470,37 +491,49 @@ end);
 ##
 ##  cf. JSC 13 (1992),463-472
 ##
-BeauzamyBoundGcd := function(f,g)
-  local   n, A, B;
+BindGlobal("BeauzamyBoundGcd",function(f,g)
+local   n, A, B,lf,lg;
 
-  n := DegreeOfUnivariateLaurentPolynomial(f);
+  lf:=LeadingCoefficient(f);
+  if not IsOne(lf) then
+    f:=f/lf;
+  fi;
+
+  lg:=LeadingCoefficient(f);
+  if not IsOne(lg) then
+    g:=g/lg;
+  fi;
+  n := DegreeOfLaurentPolynomial(f);
   # the   strange   number  in   the   next line  is   an  (upper) rational
   # approximation for 3^{3/4}/2/\sqrt(\pi)
   A := Int(643038/1000000
         * ApproximateRoot(3^n,2)/ApproximateRoot(n,2)
-        * BombieriNorm(f/LeadingCoefficient(f)))+1;
+        * BombieriNorm(f))+1;
 
   # the   strange  number   in  the   next   line is  an   (upper) rational
   # approximation for 3^{3/4}/2/\sqrt(\pi)
-  n := DegreeOfUnivariateLaurentPolynomial(g);
+  n := DegreeOfLaurentPolynomial(g);
   B := Int(643038/1000000
         * ApproximateRoot(3^n,2)/ApproximateRoot(n,2)
-        * BombieriNorm(f/LeadingCoefficient(g)))+1;
-  return GcdInt(LeadingCoefficient(f),LeadingCoefficient(g))
-       * Minimum(A,B);
+        * BombieriNorm(g))+1;
+  B:=Minimum(A,B);
+  if not (IsOne(lf) or IsOne(lg)) then
+     B:=B*GcdInt(lf,lg);
+  fi;
+  return B;
 
-end;
+end);
 
 
 #############################################################################
 ##
 #F  RPGcdModPrime(<R>,<f>,<g>,<p>,<a>,<brci>)  . . gcd mod <p>
 ##
-RPGcdModPrime := function(R,f,g,p,a,brci)
-local gcd, u, v, w, val, r, s, e;
+BindGlobal("RPGcdModPrime",function(R,f,g,p,a,brci)
+local gcd, u, v, w, val, r, s;
   
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  g:=CoefficientsOfUnivariateLaurentPolynomial(g);
+  f:=CoefficientsOfLaurentPolynomial(f);
+  g:=CoefficientsOfLaurentPolynomial(g);
   # compute in the finite field F_<p>
   val := Minimum(f[2], g[2]);
   s   := ShiftedCoeffs(f[1],f[2]-val);
@@ -524,16 +557,17 @@ local gcd, u, v, w, val, r, s, e;
   ReduceCoeffsMod(gcd,p);
 
   # and return the polynomial
-  return UnivariateLaurentPolynomialByCoefficients(brci[1],gcd,val,brci[2]);
+  return LaurentPolynomialByCoefficients(R,gcd,val,brci);
 
-end;
+end);
 
 
-RPGcdCRT := function(f,p,g,q,brci)
-local min, cf, lf, cg, lg, i, P, m, r;
+BindGlobal("RPGcdCRT",function(f,p,g,q,ci)
+local min, cf, lf, cg, lg, i, P, m, r, fam;
 
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  g:=CoefficientsOfUnivariateLaurentPolynomial(g);
+  fam := FamilyObj(f);
+  f:=CoefficientsOfLaurentPolynomial(f);
+  g:=CoefficientsOfLaurentPolynomial(g);
   # remove valuation
   min := Minimum(f[2],g[2]);
   if f[2] <> min  then 
@@ -570,12 +604,12 @@ local min, cf, lf, cg, lg, i, P, m, r;
   fi;
 
   # return the polynomial
-  return UnivariateLaurentPolynomialByCoefficients(brci[1],cf,min,brci[2]);
+  return LaurentPolynomialByCoefficients(fam,cf,min,ci);
 
-end;
+end);
 
 
-RPGcd1 := function(R,t,a,f,g)
+BindGlobal("RPGcd1",function(R,t,a,f,g)
 local G, P, l, m, i;
 
   # <P> will hold the product of primes use so far
@@ -593,16 +627,16 @@ local G, P, l, m, i;
     Info(InfoPoly,3,"gcd mod ",t.prime," = ",t.gcd);
 
     # if the degree of <C> is smaller we started with wrong <p>
-    if DegreeOfUnivariateLaurentPolynomial(t.gcd)
-       < DegreeOfUnivariateLaurentPolynomial(G)
+    if DegreeOfLaurentPolynomial(t.gcd)
+       < DegreeOfLaurentPolynomial(G)
     then
       Info(InfoPoly,3,"found lower degree,restarting");
       return false;
     fi;
 
     # if the degrees of <C> and <G> are equal use chinese remainder
-    if DegreeOfUnivariateLaurentPolynomial(t.gcd) 
-       = DegreeOfUnivariateLaurentPolynomial(G)
+    if DegreeOfLaurentPolynomial(t.gcd) 
+       = DegreeOfLaurentPolynomial(G)
     then
       P := G;
       G := RPGcdCRT(G,t.modulo,t.gcd,t.prime,t.brci);
@@ -621,7 +655,7 @@ local G, P, l, m, i;
   od;
 
   # get <G> into the -<t.modulo>/2 to +<t.modulo> range
-  G:=CoefficientsOfUnivariateLaurentPolynomial(G);
+  G:=CoefficientsOfLaurentPolynomial(G);
   l := [];
   m := t.modulo/2;
   for i  in [ 1 .. Length(G[1]) ]  do
@@ -631,7 +665,8 @@ local G, P, l, m, i;
       l[i] := G[1][i];
     fi;
   od;
-  G := UnivariateLaurentPolynomialByCoefficients(t.brci[1],l,G[2],t.brci[2]);
+  G := LaurentPolynomialByExtRep(CoefficientsFamily(FamilyObj(f)),
+                                 l,G[2],t.brci);
   Info(InfoPoly,3,"gcd mod ",t.modulo," = ",G);
 
   # check if <G> is correct but return 'true' in any case
@@ -639,15 +674,15 @@ local G, P, l, m, i;
   t.gcd := G;
   return true;
 
-end;
+end);
 
 
-RPIGcd := function(R,f,g)
+BindGlobal("RPIGcd", function(R,f,g)
 local a,t;
 
   # compute the Beauzamy bound for the gcd
   t := rec(prime := 1000);
-  t.brci:=BRCIUnivPols(f,g);
+  t.brci:=CIUnivPols(f,g);
 
   t.bound := 2 * Int(BeauzamyBoundGcd(f,g)+1);
   Info(InfoPoly,3,"Beauzamy bound = ",t.bound/2);
@@ -665,7 +700,7 @@ local a,t;
 
     # loop until we have success
     repeat
-      if 0 = DegreeOfUnivariateLaurentPolynomial(t.gcd)  then
+      if 0 = DegreeOfLaurentPolynomial(t.gcd)  then
         Info(InfoPoly,3,"<f> and <g> are relative prime");
         return One(f);
       fi;
@@ -675,69 +710,83 @@ local a,t;
   # return the gcd
   return t.gcd;
 
-end;
-
+end);
 
 #############################################################################
 ##
 #F  GcdOp( <R>, <f>, <g> )  . . . . . . . for rational univariate polynomials
 ##
-InstallMethod( GcdOp,
-    "RatPol",
-    IsCollsElmsElms,
+InstallMethod( GcdOp, "rational univariate polynomials", IsCollsElmsElms,
   [IsRationalsPolynomialRing and IsEuclideanRing,
    IsUnivariatePolynomial,IsUnivariatePolynomial],0,
 function(R,f,g)
+local brci,gcd,fam,fc,gc;
 
-  if BRCIUnivPols(f,g)=fail then TryNextMethod();fi;
+  brci:=CIUnivPols(f,g);
+  if brci=fail then TryNextMethod();fi;
   # check trivial cases
-  if -1 = DegreeOfUnivariateLaurentPolynomial(f)  then
+  if -1 = DegreeOfLaurentPolynomial(f)  then
     return g;
-  elif -1 = DegreeOfUnivariateLaurentPolynomial(g)  then
+  elif -1 = DegreeOfLaurentPolynomial(g)  then
     return f;
-  elif 0 = DegreeOfUnivariateLaurentPolynomial(f)
-       or 0 = DegreeOfUnivariateLaurentPolynomial(g)
+  elif 0 = DegreeOfLaurentPolynomial(f)
+       or 0 = DegreeOfLaurentPolynomial(g)
   then
     return One(f);
   fi;
 
+  fam:=FamilyObj(f);
   # convert polynomials into integer polynomials
   f := PrimitivePolynomial(f)[1];
   g := PrimitivePolynomial(g)[1];
   Info(InfoPoly,3,"<f> = ",f);
   Info(InfoPoly,3,"<g> = ",g);
 
-  # return the standard associate
-  return StandardAssociate(R,RPIGcd(R,f,g));
+  fc:=CoefficientsOfLaurentPolynomial(f);
+  gc:=CoefficientsOfLaurentPolynomial(g);
 
+  # try heuristic method:
+  gcd:=HeuGcdIntPolsCoeffs(fc[1],gc[1]);
+  if gcd=fail then
+    # fall back to the original version:
+    return StandardAssociate(R,RPIGcd(R,f,g));
+
+  fi;
+  fc:=Minimum(fc[2],gc[2]);
+  fc:=fc+RemoveOuterCoeffs(gcd,fam!.zeroCoefficient);
+  return StandardAssociate(R,LaurentPolynomialByExtRep(fam,gcd,fc,brci));
 end);
 
-InstallMethod(\mod,"poly MOD int",true,[IsUnivariatePolynomial,IsInt],0,
+InstallMethod(\mod,"reduction of univariate integer polynomial at a prime",
+  true,[IsUnivariatePolynomial,IsInt],0,
 function(f,p)
 local c;
-  c:=CoefficientsOfUnivariateLaurentPolynomial(f);
+  c:=CoefficientsOfLaurentPolynomial(f);
+  if Length(c[1])>0 and ForAny(c[1],i->not IsRat(i)) then
+    TryNextMethod();
+  fi;
   c:=[List(c[1],i->i mod p),c[2]];
-  return UnivariateLaurentPolynomialByCoefficients(
+  return LaurentPolynomialByCoefficients(
       CoefficientsFamily(FamilyObj(f)),c[1],c[2],
-      IndeterminateNumberOfUnivariateLaurentPolynomial(f));
+      IndeterminateNumberOfLaurentPolynomial(f));
 end);
 
 #############################################################################
 ##
 #F  RPQuotientModPrime(<R>,<f>,<g>,<p>) . . .  quotient
 ##
-RPQuotientModPrime := function(R,f,g,p)
-local   m, n, i, k, c, q, val, fc,gc,brci;
+BindGlobal("RPQuotientModPrime",function(R,f,g,p)
+local   m, n, i, k, c, q, val, fc,gc,brci,fam;
 
   # get base ring
-  brci:=BRCIUnivPols(f,g);
-
+  brci:=CIUnivPols(f,g);
+  fam:=FamilyObj(f);
   # reduce <f> and <g> mod <p>
   f := f mod p;
   g := g mod p;
 
-  fc:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  gc:=CoefficientsOfUnivariateLaurentPolynomial(g);
+  fc:=CoefficientsOfLaurentPolynomial(f);
+  gc:=CoefficientsOfLaurentPolynomial(g);
 
   # if <f> is zero return it
   if 0 = Length(fc[1])  then
@@ -765,21 +814,23 @@ local   m, n, i, k, c, q, val, fc,gc,brci;
   od;
 
   # Did the division work?
+
   for i  in [ 1 .. m+n ]  do
-    if f[i] <> Zero(brci[1]) then
+    if f[i] <> fam!.zeroCoefficient then
       return false;
     fi;
   od;
-  return UnivariateLaurentPolynomialByCoefficients(brci[1],q,val,brci[2]);
+  val:=val+RemoveOuterCoeffs(q,fam!.zeroCoefficient);
+  return LaurentPolynomialByExtRep(fam,q,val,brci);
 
-end;
+end);
 
 
 #############################################################################
 ##
 #F  RPGcdRepresentationModPrime(<R>,<f>,<g>,<p>)  . gcd
 ##
-RPGcdRepresentationModPrime := function(R,f,g,p)
+BindGlobal("RPGcdRepresentationModPrime",function(R,f,g,p)
 
   local   val,     # the minimal valuation of <f> and <g>
       s, sx,    # first line of gcd algorithm
@@ -792,11 +843,12 @@ RPGcdRepresentationModPrime := function(R,f,g,p)
 
   Info(InfoPoly,3,"f=",f,"g=",g);
   # get base ring
-  brci:=BRCIUnivPols(f,g);
+  brci:=CIUnivPols(f,g);
+  brci:=[CoefficientsFamily(FamilyObj(f)),brci];
 
   # remove common x^i term
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  g:=CoefficientsOfUnivariateLaurentPolynomial(g);
+  f:=CoefficientsOfLaurentPolynomial(f);
+  g:=CoefficientsOfLaurentPolynomial(g);
 
   val:=Minimum(f[2],g[2]);
   f  :=ShiftedCoeffs(f[1],f[2]-val);
@@ -849,25 +901,25 @@ RPGcdRepresentationModPrime := function(R,f,g,p)
     #sx := q * sx;
     MultRowVector(sx,q);
     ReduceCoeffsMod(sx,p);
-    return [ UnivariateLaurentPolynomialByCoefficients(brci[1],sx,0,brci[2]),
+    return [ LaurentPolynomialByCoefficients(brci[1],sx,0,brci[2]),
          Zero(brci[1]) ];
   else
     #hx := q * sx;
     hx:=ShallowCopy(sx);
     MultRowVector(hx,q);
     ReduceCoeffsMod(hx,p);
-    hx := UnivariateLaurentPolynomialByCoefficients(brci[1],hx,0,brci[2]);
+    hx := LaurentPolynomialByCoefficients(brci[1],hx,0,brci[2]);
     AddCoeffs(s,ProductCoeffs(sx,f),-1);
     #s := q * s;
     MultRowVector(s,q);
     ReduceCoeffsMod(s,p);
-    s := UnivariateLaurentPolynomialByCoefficients(brci[1],s,0,brci[2]);
-    g := UnivariateLaurentPolynomialByCoefficients(brci[1],g,0,brci[2]);
+    s := LaurentPolynomialByCoefficients(brci[1],s,0,brci[2]);
+    g := LaurentPolynomialByCoefficients(brci[1],g,0,brci[2]);
     q := RPQuotientModPrime(R,s,g,p);
     return [ hx,q ];
   fi;
 
-end;
+end);
 
 
 #############################################################################
@@ -876,8 +928,8 @@ end;
 ##    if the computation takes place over an algebraic extension, then
 ##    minpol and denominator must be given
 ##
-HenselBound := function(arg)
-local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc;
+InstallGlobalFunction(HenselBound,function(arg)
+local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc,ro;
 
   pol:=arg[1];
   if Length(arg)>1 then
@@ -887,7 +939,7 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc;
     dis:=Discriminant(n);
     nalpha:=RootBound(n); # bound for norm of \alpha.
 
-    polc:=CoefficientsOfUnivariateLaurentPolynomial(pol)[1];
+    polc:=CoefficientsOfLaurentPolynomial(pol)[1];
     if not ForAll(polc,IsRat) then
       # now try to bound the roots of f accordingly. As in all estimates by
       # RootBound only the absolute value of the coefficients is used, we will
@@ -908,7 +960,7 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc;
     else
       pol:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,polc,1);
     fi;
-    n:=DOULP(n);
+    n:=DegreeOfLaurentPolynomial(n);
   else
     n:=1;
   fi;
@@ -919,15 +971,15 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc;
   bea:=BeauzamyBound(pol);
   # compute Landau-Mignotte bound for absolute values of
   # coefficients of any factor
-  polc:=CoefficientsOfUnivariateLaurentPolynomial(pol)[1];
+  polc:=CoefficientsOfLaurentPolynomial(pol)[1];
   w:=Sum(polc,i->i^2);
   # we want an upper bound of the root, RootInt will give a lower
   # bound. So we compute the root of w-1 (in case w is a perfect square)
   # and add 1. As we nowhere selected a specific galois representative,
   # this bound (which is rational!) will bound all conjugactes as well.
   lm:=(RootInt(Int(w)-1,2)+1);
-  lb:=2^QuoInt(DOULP(pol),2)*lm;
-  for k in [1..DOULP(pol)] do
+  lb:=2^QuoInt(DegreeOfLaurentPolynomial(pol),2)*lm;
+  for k in [1..DegreeOfLaurentPolynomial(pol)] do
 
     l:=2^k*lm;
     if l<bea then
@@ -964,39 +1016,28 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc;
       # algebraic Extension case
       # finally we have to bound (again) the coefficients of \alpha when
       # writing the coefficients of the factor as \sum c_i/d\alpha^i.
-      w:=Int(d*w*Factorial(n)/RootRat(AbsInt(dis))*nalpha^(n*(n-1)/2))+1;
+
+      ro:=AbsInt(dis);
+      ro:=RootInt(NumeratorRat(ro))/(1+RootInt(DenominatorRat(ro)-1));
+      w:=Int(d*w*Factorial(n)/ro*nalpha^(n*(n-1)/2))+1;
     fi;
 
     bound[k]:=Int(w)+1;
   od;
   return bound;
-end;
-
-IsAlgExtElm:=ReturnFalse;
+end);
 
 #############################################################################
 ##
-#F  CoeffAbs(<a>) . maximal coefficient in representation of algebraic elm. a
+#F  TrialQuotientRPF(<f>,<g>,<b>)  . . . . . . f/g if coeffbounds are given by b
 ##
-CoeffAbs := function(e)
-  if IsAlgExtElm(e) then
-    return Maximum(List(e.coefficients,i->AbsInt(NumeratorRat(i))));
-  else
-    return AbsInt(NumeratorRat(e));
-  fi;
-end;
-
-#############################################################################
-##
-#F  TrialQuotient(<f>,<g>,<b>)  . . . . . . f/g if coeffbounds are given by b
-##
-TrialQuotient := function(f,g,b)
-local  fc,gc,a,m, n, i, k, c, q, val, brci;
-  brci:=BRCIUnivPols(f,g);
-  a:=DOULP(f)
-    -DOULP(g);
-  fc:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  gc:=CoefficientsOfUnivariateLaurentPolynomial(g);
+InstallGlobalFunction(TrialQuotientRPF,function(f,g,b)
+local  fc,gc,a,m, n, i, k, c, q, val, brci,fam;
+  brci:=CIUnivPols(f,g);
+  a:=DegreeOfLaurentPolynomial(f)-DegreeOfLaurentPolynomial(g);
+  fam:=FamilyObj(f);
+  fc:=CoefficientsOfLaurentPolynomial(f);
+  gc:=CoefficientsOfLaurentPolynomial(g);
   if a=0 then
     # Special case (that has to return 0)
     a:=b[1];
@@ -1018,7 +1059,7 @@ local  fc,gc,a,m, n, i, k, c, q, val, brci;
 #  if IsField(R) then
     for i in [0..m] do
       c:=f[(m-i+n)]/gc[n];
-      if CoeffAbs(c)>a then 
+      if MaxNumeratorCoeffAlgElm(c)>a then 
         Info(InfoPoly,3,"early break\n");
         return fail;
       fi;
@@ -1033,13 +1074,13 @@ local  fc,gc,a,m, n, i, k, c, q, val, brci;
 #      if c=fail then
 #        return fail;
 #      fi;
-#      if CoeffAbs(c)>a then 
+#      if MaxNumeratorCoeffAlgElm(c)>a then 
 #        Info(InfoPoly,3,"early break\n");
 #        return fail;
 #      fi;
 #      for k in [1..n] do
 #        f[m-i+k]:=f[m-i+k]-c*g.coefficients[k];
-#        if CoeffAbs(f[m-i+k])>b then
+#        if MaxNumeratorCoeffAlgElm(f[m-i+k])>b then
 #          Info(InfoPoly,3,"early break\n");
 #          return fail;
 #        fi;
@@ -1053,16 +1094,17 @@ local  fc,gc,a,m, n, i, k, c, q, val, brci;
       return fail;
     fi;
   od;
-  return UnivariateLaurentPolynomialByCoefficients(brci[1],q,val,brci[2]);
-end;
+  val:=val+RemoveOuterCoeffs(q,fam!.zeroCoefficient);
+  return LaurentPolynomialByExtRep(fam,q,val,brci);
+end);
 
 
 #############################################################################
 ##
 #F  TryCombinations(<f>,...)  . . . . . . . . . . . . . . . .  try factors
 ##
-TryCombinations := function(f,lc,l,p,t,bounds,opt,split)
-local  p2, res, j, i,ii,o,d,b,lco,degs, step, c, cnew, sel, deli,
+InstallGlobalFunction(TryCombinations,function(f,lc,l,p,t,bounds,opt,split)
+local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
      degf, good, act, da, prd, cof, q, combi,mind,binoli,alldegs;
 
   alldegs:=t.degrees;
@@ -1075,7 +1117,7 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, c, cnew, sel, deli,
 
   # coefficients should be in -<p>/2 and <p>/2
   p2  :=p/2;
-  deli:=List(l,DOULP);
+  deli:=List(l,DegreeOfLaurentPolynomial);
 
   # sel are the still selected indices
   sel:=[ 1 .. Length(l) ];
@@ -1092,7 +1134,7 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, c, cnew, sel, deli,
 
   # factors of larger than half remaining degree we will find as
   # final cofactor
-  degf:=DOULP(f);
+  degf:=DegreeOfLaurentPolynomial(f);
   degs:=Filtered(alldegs,i -> 2*i<=degf);
   if IsBound(opt.onlydegs) then
     degs:=Intersection(degs,opt.onlydegs);
@@ -1164,7 +1206,7 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, c, cnew, sel, deli,
 	  # make sure that the quotient has a chance,compute the
 	  # extremal coefficient of the product:
 	  q:=(ProductMod(List(l{combi},
-	      i->CoefficientsOfUnivariateLaurentPolynomial(i)[1][1]),
+	      i->CoefficientsOfLaurentPolynomial(i)[1][1]),
 		   p) * lc) mod p;
 	  if p2 < q  then
 	    q:=q - p;
@@ -1173,11 +1215,11 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, c, cnew, sel, deli,
 	  # As  we  don't  know  yet  the gcd  of  all the products
 	  # coefficients (to make it  primitive),we do  a slightly
 	  # weaker test:  (test of  leading   coeffs is  first   in
-	  # 'TrialQuotient') this just should  reduce the number of
+	  # 'TrialQuotientRPF') this just should  reduce the number of
 	  # 'ProductMod' neccessary.   the  absolute  part  of  the
 	  # product must  divide  the absolute  part of  f  up to a
 	  # divisor of <lc>
-	  q:=CoefficientsOfUnivariateLaurentPolynomial(f)[1][1] / q * lc;
+	  q:=CoefficientsOfLaurentPolynomial(f)[1][1] / q * lc;
 	  if not IsInt(q)  then
 	    Info(InfoPoly,3,"ignoring combination ",combi);
 	    q:=fail;
@@ -1199,12 +1241,13 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, c, cnew, sel, deli,
 	    cof:=cof * (1/Gcd(cof));
 	    prd:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,
 	      cof,t.ind);
-	    q:=TrialQuotient(f,prd,bounds);
+	    q:=TrialQuotientRPF(f,prd,bounds);
 	  fi;
 
 	  if q <> fail  then
 	    f:=q;
-	    Info(InfoPoly,2,"found true factor of degree ",DOULP(prd));
+	    Info(InfoPoly,2,"found true factor of degree ",
+	         DegreeOfLaurentPolynomial(prd));
 	    if Length(combi)=1 or split  then
 		q:=0;
 	    else
@@ -1219,7 +1262,8 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, c, cnew, sel, deli,
 		Append(res.irreducibles,combi);
 		Add(res.irrFactors,prd);
 
-		if IsBound(opt.stopdegs) and DOULP(prd) in opt.stopdegs then
+		if IsBound(opt.stopdegs) 
+		 and DegreeOfLaurentPolynomial(prd) in opt.stopdegs then
 		  Info(InfoPoly,2,"hit stopdegree");
 		  Add(res.redFactors,f);
 		  res.stop:=true;
@@ -1273,14 +1317,14 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, c, cnew, sel, deli,
   # return the result
   return res;
 
-end;
+end);
 
 
 #############################################################################
 ##
 #F  RPSquareHensel(<R>,<f>,<t>,<opt>)
 ##
-RPSquareHensel := function(R,f,t,opt)
+BindGlobal("RPSquareHensel",function(R,f,t,opt)
 
   local   p,       # prime
       q,       # current modulus
@@ -1295,15 +1339,10 @@ RPSquareHensel := function(R,f,t,opt)
       fcn,     # index of true factor in <l>
       dis,     # distance of <f> and <l>
       cor,     # correction
-      rcr,     # inverse corrections
-      quo,     # quotient
-      sum,     # temp
-      aa, bb,   # left and right subproducts
-      lq1,     # factors mod <q1>
       max,     # maximum absolute coefficient of <f>
       res,     # result
       gcd,     # used in gcd representation
-      i, j, x;    # loop
+      i, j;    # loop
 
   # get <l> and <p>
   l:=t.factors;
@@ -1319,7 +1358,8 @@ RPSquareHensel := function(R,f,t,opt)
   ofb:=2*AbsInt(lc)*OneFactorBound(f);
   Info(InfoPoly,2,"One factor bound = ",ofb);
   bounds:=2*AbsInt(lc)*HenselBound(f);
-  k:=bounds[Maximum(Filtered(t.degrees,i-> 2*i<=DOULP(f)))];
+  k:=bounds[Maximum(Filtered(t.degrees,
+                             i-> 2*i<=DegreeOfLaurentPolynomial(f)))];
   Info(InfoPoly,2,"Hensel bound = ",k);
 
   # compute a representation of the 1 mod <p>
@@ -1356,7 +1396,7 @@ RPSquareHensel := function(R,f,t,opt)
     od;
 
     # NOCH: Assert und leading coeff
-    #if not ForAll(CoefficientsOfUnivariateLaurentPolynomial(Product(l)-f)[1],
+    #if not ForAll(CoefficientsOfLaurentPolynomial(Product(l)-f)[1],
     #        i->i mod q=0) then
     #  Error("not product modulo q");
     #fi;
@@ -1412,14 +1452,15 @@ RPSquareHensel := function(R,f,t,opt)
         Info(InfoPoly,2,"new one factor bound = ",ofb);
 
         # degree arguments or OFB arguments prove f irreducible
-        if ForAll(t.degrees,i->i=0 or 2*i>=DOULP(f)) or ofb<q  then
+        if ForAll(t.degrees,i->i=0 or 2*i>=DegreeOfLaurentPolynomial(f))
+	   or ofb<q  then
           Add(fcn.irrFactors,f);
           Add(res.irrFactors,f);
           f:=f^0;
         fi;
         
         # if <f> is trivial return
-        if DOULP(f) < 1  then
+        if DegreeOfLaurentPolynomial(f) < 1  then
           Info(InfoPoly,2,"found non-trivial factorization");
           return res;
         fi;
@@ -1430,7 +1471,7 @@ RPSquareHensel := function(R,f,t,opt)
                 i -> Minimum(bounds[i],k[i]));
          k:=2 * AbsInt(lc) 
              * bounds[Maximum(Filtered(t.degrees,
-                         i-> 2*i<=DOULP(f)))];
+                         i-> 2*i<=DegreeOfLaurentPolynomial(f)))];
         Info(InfoPoly,2,"new Hensel bound = ",k);
 
         # remove true factors from <l> and corresponding <rep>
@@ -1441,14 +1482,14 @@ RPSquareHensel := function(R,f,t,opt)
         # reduce <rep>[i] mod <l>[i]
         for i  in [ 1 .. Length(l) ]  do
 	  #rep[i]:=rep[i] mod l[i] mod q;
-          rep[i]:=CoefficientsOfUnivariateLaurentPolynomial(rep[i]);
+          rep[i]:=CoefficientsOfLaurentPolynomial(rep[i]);
 	  rep[i]:=ShiftedCoeffs(rep[i][1],rep[i][2]);
-	  j:=CoefficientsOfUnivariateLaurentPolynomial(l[i]);
+	  j:=CoefficientsOfLaurentPolynomial(l[i]);
 	  j:=ReduceCoeffsMod(rep[i],ShiftedCoeffs(j[1],j[2]),q);
 	  # shrink the list rep[i], according to the 'j' value
 	  rep[i]:=rep[i]{[1..j]};
-	  rep[i]:=UnivariateLaurentPolynomialByCoefficients(
-	            CyclotomicsFamily,rep[i],t.ind);
+	  rep[i]:=LaurentPolynomialByCoefficients(
+	            CyclotomicsFamily,rep[i],0,t.ind);
         od;
 
       # if there was a factor,we ought to have found it
@@ -1477,7 +1518,7 @@ RPSquareHensel := function(R,f,t,opt)
   res.lc       :=lc;
   return res;
 
-end;
+end);
 
 
 #############################################################################
@@ -1486,8 +1527,8 @@ end;
 ##
 ##  <f> must be squarefree.  We test 3 "small" and 2 "big" primes.
 ##
-RPFactorsModPrime := function(R,f)
-local i,j,   # loops
+BindGlobal("RPFactorsModPrime",function(R,f)
+local i,     # loops
       fc,    # f's coeffs
       lc,    # leading coefficient of <f>
       p,     # current prime
@@ -1499,18 +1540,16 @@ local i,j,   # loops
       LP,    # factorization of <f> mod <P>
       deg,   # possible degrees of factors
       t,     # return record
-      tab,   # integer table of GF(<P>)
-      log,   # zech log of finite field element
       cof,   # new coefficients
       tmp;
 
-  fc:=CoefficientsOfUnivariateLaurentPolynomial(f)[1];
+  fc:=CoefficientsOfLaurentPolynomial(f)[1];
   # set minimal number of factors to the degree of <f>
-  min:=DOULP(f)+1;
+  min:=DegreeOfLaurentPolynomial(f)+1;
   lc :=LeadingCoefficient(f);
 
   # find a suitable prime
-  t:=rec(ind:=IndeterminateNumberOfUnivariateLaurentPolynomial(f));
+  t:=rec(ind:=IndeterminateNumberOfLaurentPolynomial(f));
   p:=1;
   for i  in [ 1 .. 5 ]  do
 
@@ -1526,7 +1565,7 @@ local i,j,   # loops
       tmp:=1/lc mod p;
       fp :=UnivariatePolynomialByCoefficients(FamilyObj(Z(p)),
            List(fc,x->((tmp*x) mod p)* Z(p)^0),1);
-    until 0 = DOULP(Gcd(PR,fp,Derivative(fp)));
+    until 0 = DegreeOfLaurentPolynomial(Gcd(PR,fp,Derivative(fp)));
 
     # factorize <f> modulo <p>
     Info(InfoPoly,2,"starting factorization mod p:  ",Runtime());
@@ -1541,7 +1580,7 @@ local i,j,   # loops
       return t;
     else
       Info(InfoPoly,2,"found ",Length(lp)," factors mod ",p);
-      Info(InfoPoly,2,"of degree ",List(lp,DOULP));
+      Info(InfoPoly,2,"of degree ",List(lp,DegreeOfLaurentPolynomial));
     fi;
 
     # choose a maximal prime with minimal number of factors
@@ -1552,7 +1591,8 @@ local i,j,   # loops
     fi;
 
     # compute the possible degrees
-    tmp:=Set(List(Combinations(List(lp,DOULP)),g -> Sum(g)));
+    tmp:=Set(List(Combinations(List(lp,DegreeOfLaurentPolynomial)),
+                  g -> Sum(g)));
     if 1 = i  then
       deg:=tmp;
     else
@@ -1586,7 +1626,7 @@ local i,j,   # loops
   t.degrees    :=deg;
   return t;
 
-end;
+end);
 
 
 #############################################################################
@@ -1595,7 +1635,7 @@ end;
 ##
 ##  <f> must be square free and must have a constant term.
 ##
-InstallOtherMethod(FactorsSquarefree,"RatPol",true,
+InstallMethod( FactorsSquarefree, "univariate rational poly", true,
   [IsRationalsPolynomialRing,IsUnivariatePolynomial,IsRecord],0,
 function(R,f,opt)
 local t, h, fac, g, tmp;
@@ -1606,7 +1646,10 @@ local t, h, fac, g, tmp;
   Info(InfoPoly,2,"using prime ",t.prime," for factorization");
 
   # for easy combining,we want large degree factors first
-  Sort(t.factors,function(a,b) return DOULP(a) > DOULP(b); end);
+  Sort(t.factors,
+    function(a,b) 
+      return DegreeOfLaurentPolynomial(a) > DegreeOfLaurentPolynomial(b);
+    end);
 
   # start Hensel
   h:=RPSquareHensel(R,f,t,opt);
@@ -1657,13 +1700,11 @@ local t, h, fac, g, tmp;
   
 end);
 
+BindGlobal("RPIFactors",function(R,f,opt)
+local   fc,ind, v, g, q, s, r, x,shift;
 
-
-RPIFactors := function(R,f,opt)
-local   fc,ind,l, v, g, q, s, r, x,shift;
-
-  fc:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  ind:=IndeterminateNumberOfUnivariateLaurentPolynomial(f);
+  fc:=CoefficientsOfLaurentPolynomial(f);
+  ind:=IndeterminateNumberOfLaurentPolynomial(f);
   # if <f> is trivial return
   Info(InfoPoly,2,"starting integer factorization: ",Runtime());
   if 0 = Length(fc[1])  then
@@ -1674,7 +1715,7 @@ local   fc,ind,l, v, g, q, s, r, x,shift;
   # remove a valuation
   v:=fc[2];
   f:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,fc[1],ind);
-  x:=UnivariateLaurentPolynomialByCoefficients(CyclotomicsFamily,[1],1,ind);
+  x:=LaurentPolynomialByCoefficients(CyclotomicsFamily,[1],1,ind);
 
   # if <f> is almost constant return
   if Length(fc[1])=1  then
@@ -1684,7 +1725,7 @@ local   fc,ind,l, v, g, q, s, r, x,shift;
   fi;
 
   # if <f> is almost linear return
-  if 1 = DOULP(f)  then
+  if 1 = DegreeOfLaurentPolynomial(f)  then
     Info(InfoPoly,2,"<f> is almost linear");
     s:=List([1..v],f -> x);
     Add(s,f);
@@ -1692,7 +1733,7 @@ local   fc,ind,l, v, g, q, s, r, x,shift;
   fi;
 
   # shift the zeros of f if appropriate
-  if DOULP(f) > 20  then
+  if DegreeOfLaurentPolynomial(f) > 20  then
     g:=MinimizedBombieriNorm(f);
     f:=g[1];
     shift:=-g[2];
@@ -1704,15 +1745,16 @@ local   fc,ind,l, v, g, q, s, r, x,shift;
   g:=Gcd(R,f,Derivative(f));
   q:=PrimitivePolynomial(Quotient(R,f,g))[1];
   q:=q * SignInt(LeadingCoefficient(q));
-  Info(InfoPoly,3,"factorizing polynomial of degree ",DOULP(q));
+  Info(InfoPoly,3,"factorizing polynomial of degree ",
+       DegreeOfLaurentPolynomial(q));
 
   # and factorize <q>
-  if DOULP(q) < 2  then
+  if DegreeOfLaurentPolynomial(q) < 2  then
     Info(InfoPoly,2,"<f> is a linear power");
     s:=[ q ];
   else
     # treat zeroes (only one possible)
-    s:=CoefficientsOfUnivariateLaurentPolynomial(q)[2];
+    s:=CoefficientsOfLaurentPolynomial(q)[2];
     if s>0 then 
       s:=[x];
       q:=q/x;
@@ -1724,12 +1766,13 @@ local   fc,ind,l, v, g, q, s, r, x,shift;
 
   # find factors of <g>
   for r  in s  do
-    if 0 < DOULP(g) and DOULP(g) >= DOULP(r)  then
+    if 0 < DegreeOfLaurentPolynomial(g) 
+       and DegreeOfLaurentPolynomial(g) >= DegreeOfLaurentPolynomial(r) then
       q:=Quotient(R,g,r);
-      while 0 < DOULP(g) and q <> fail  do
+      while 0 < DegreeOfLaurentPolynomial(g) and q <> fail  do
         Add(s,r);
         g:=q;
-        if DOULP(g) >= DOULP(r)   then
+        if DegreeOfLaurentPolynomial(g)>=DegreeOfLaurentPolynomial(r) then
           q:=Quotient(R,g,r);
         else
           q:=fail;
@@ -1751,10 +1794,10 @@ local   fc,ind,l, v, g, q, s, r, x,shift;
   # return the (primitive) factors
   return s;
 
-end;
+end);
 
 
-RPFactors := function (arg)
+BindGlobal("RPFactors", function (arg)
 local r,R,cr,f,opt,irf,i;
 
   R:=arg[1];
@@ -1773,7 +1816,7 @@ local r,R,cr,f,opt,irf,i;
     opt:=rec();
   fi;
   # handle trivial case
-  if DOULP(f) < 2  then
+  if DegreeOfLaurentPolynomial(f) < 2  then
     StoreFactorsPol(cr,f,[f]);
     return [f];
   fi;
@@ -1799,19 +1842,19 @@ local r,R,cr,f,opt,irf,i;
   fi;
   return r;
 
-end;
+end);
 
 #############################################################################
 ##
 #M  Factors(<R>,<f> [,<opt>]) . .  factors of rational polynomial
 ##
-InstallMethod(Factors,"FactRatPolNew",true,
+InstallMethod(Factors,"univariate rational polynomial",true,
   [IsRationalsPolynomialRing,IsUnivariatePolynomial],0,
 function(R,f)
   return RPFactors(R,f);
 end);
 
-InstallOtherMethod(Factors,"FactRatPolNew2",true,
+InstallOtherMethod(Factors,"univariate rational polynomial, w. options",true,
   [IsRationalsPolynomialRing,IsUnivariatePolynomial,IsRecord],0,
 function(R,f,opt)
   return RPFactors(R,f,opt);
@@ -1822,43 +1865,49 @@ end);
 #M  IsIrreducibleRingElement(<pol>) . . . . . . . .  for rational polynomials
 ##
 InstallMethod(IsIrreducibleRingElement,"RatPol",true,
-  [IsRationalsPolynomialRing,IsPolynomial],0,
+  [IsRationalsPolynomialRing,IsUnivariatePolynomial],0,
 function(R,f)
-  return Length(Factors(R,f,rec(stopdegs:=[1..DOULP(f)])))<=1;
+  return Length(Factors(R,f,
+                    rec(stopdegs:=[1..DegreeOfLaurentPolynomial(f)])))<=1;
 end);
 
-# specialize one indeterminate in an external representation
-SpecializedExtRepPol:=function(fam,ext,ind,val,zer)
-local e,i,p,m,c;
-  e:=[];
-  for i in [1,3..Length(ext)-1] do
-    # is the indeterminate used in the monomial
-    p:=PositionProperty([1,3..Length(ext[i])-1],j->ext[i][j]=ind);
-    if p=fail then
-      m:=ext[i];
-      c:=ext[i+1];
-    else
-      # yes, compute changed monomial and coefficient
-      p:=2*p-1; #actual position 1,3..
-      m:=ext[i]{Concatenation([1..p-1],[p+2..Length(ext[i])])};
-      c:=ext[i+1]*val^ext[i][p+1];
-    fi;
-    e:=ZippedSum(e,[m,c],zer,fam!.zippedSum);
-  od;
-  return e;
-end;
+
 
 #############################################################################
 ##
-#F  GcdHeuIntPolys(<a>,<b>)
+#F  SymAdic( <x>, <b> ) . . . . . . . . . . symmetric <b>-adic expansion of <x>
+#F  (<b> and <x> integers)
+##  
+SymAdic:=function(x,b)
+  local l, b2, r;
+  b2:=QuoInt(b,2);
+  l:=[];
+  while x<>0 do
+    r:=x mod b;
+    if r>b2 then
+      r:=r-b;
+    fi;
+    Add(l,r);
+    x:=(x-r)/b;
+  od;
+  return l;
+end;
+
+
+#############################################################################
 ##
-##  takes two primitive polynomials with integer coefficients and tries to
+#F  HeuGcdIntPolsExtRep(<a>,<b>)
+##
+##  takes two polynomials ext reps, primitivizes them with integer
+##  coefficients and tries to
 ##  compute a Gcd expanding Gcds of specializations.
 ##  Source: Geddes,Czapor,Labahn: Algorithm 7.4
-GcdHeuIntPolys:=function(a,b)
-local d,e,x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,xp,zero;
-  d:=ExtRepOfObj(a)[2];
-  e:=ExtRepOfObj(b)[2];
+
+#V MAXTRYGCDHEU: defines maximal number of attempts to find Gcd heuristically
+MAXTRYGCDHEU:=6;
+
+InstallGlobalFunction(HeuGcdIntPolsExtRep,function(fam,d,e)
+local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
 
   # find the indeterminates and their degrees:
   x:=[];
@@ -1899,29 +1948,30 @@ local d,e,x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,xp,zero;
 
   # pick the first indeterminate
   x:=x[1];
-  xp:=Indeterminate(Rationals,x);
   xd:=[xd[1][1],xd[2][1]];
 
   xi:=2*Minimum(Maximum(List(d{[2,4..Length(d)]},AbsInt)),
                 Maximum(List(e{[2,4..Length(e)]},AbsInt)))+2;
 
-  for loop in [1..6] do
+  for loop in [1..MAXTRYGCDHEU] do
     if LogInt(AbsInt(Int(xi)),10)*Maximum(xd)>5000 then
       return fail;
     fi;
     # specialize both polynomials at x=xi
     # and compute their heuristic Gcd
-    gamma:=GcdHeuIntPolys(
-      ObjByExtRep(FamilyObj(a),
-                   [0,SpecializedExtRepPol(FamilyObj(a),d,x,xi,0)]),
-      ObjByExtRep(FamilyObj(a),
-                   [0,SpecializedExtRepPol(FamilyObj(b),e,x,xi,0)]) );
+    gamma:=HeuGcdIntPolsExtRep(fam,
+              SpecializedExtRepPol(fam,d,x,xi),
+	      SpecializedExtRepPol(fam,e,x,xi) );
 
     if gamma<>fail then
       # generate G from xi-adic expansion
-      G:=0;
+      G:=[];
       i:=0;
-      zero:=0*gamma;
+      if IsInt(gamma) then
+	zero:=Zero(gamma);
+      else
+        zero:=[];
+      fi;
       while gamma<>zero do
 	if IsInt(gamma) then
 	  # gamma is an integer value
@@ -1930,45 +1980,98 @@ local d,e,x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,xp,zero;
 	    g:=g-xi; # symmetric rep.
 	  fi;
 	  gamma:=(gamma-g)/xi;
+	  add:=[[x,i],g];
 	else
-	  # gamma is a polynomial
-	  p:=ShallowCopy(ExtRepOfObj(gamma)[2]);
+	  # gamma is an ext rep 
 	  g:=[];
-	  for j in [2,4..Length(p)] do
-	    k:=p[j] mod xi;
+	  for j in [2,4..Length(gamma)] do
+	    k:=gamma[j] mod xi;
 	    if k>xi/2 then
 	      k:=k - xi; #symmetric rep
 	    fi;
 	    if k<>0*k then
-	      Add(g,p[j-1]);
+	      Add(g,gamma[j-1]);
 	      Add(g,k);
 	    fi;
 	  od;
-	  g:=ObjByExtRep(FamilyObj(a),[0,g]);
-	  gamma:=(gamma-g)/xi;
+	  #gamma:=(gamma-g)/xi in ext rep;
+	  add:=ShallowCopy(g);
+	  add{[2,4..Length(add)]}:=-add{[2,4..Length(add)]}; #-g
+	  gamma:=ZippedSum(gamma,add,0,fam!.zippedSum); # gamma-g
+	  gamma{[2,4..Length(gamma)]}:=gamma{[2,4..Length(gamma)]}/xi; # /xi
+	  #add:=g*xp^i; in extrep
+	  add:=ZippedProduct(g,[[x,i],1],0,fam!.zippedProduct);
 	fi;
-	G:=G+g*xp^i;
+	# G:=G+add in extrep
+	G:=ZippedSum(G,add,0,fam!.zippedSum);
 	i:=i+1;
       od;
-      if Quotient(a,G)<>fail and Quotient(b,G)<>fail then
+
+      if QuotientPolynomialsExtRep(fam,d,G)<>fail and 
+         QuotientPolynomialsExtRep(fam,e,G)<>fail then
 	return G;
       fi;
     fi;
     xi:=QuoInt(xi*73794,27011); #square of golden ratio
   od;
   return fail;
-end;
+end);
+
+# and the same in univariate
+InstallGlobalFunction(HeuGcdIntPolsCoeffs,function(f,g)
+local xi, t, h, i, lf, lg, lh,fr,gr;
+  
+  # first test value for heuristic gcd:
+  xi:=2+2*Minimum(Maximum(List(f,AbsInt)),Maximum(List(g,AbsInt)));
+  i:=0;
+  lf:=f[Length(f)];
+  lg:=g[Length(g)];
+  
+  # and now the tests:
+  while i< MAXTRYGCDHEU do
+    
+    # xi-adic expansion of Gcd(f(xi),g(xi)) (regarded as coefficient list)
+    h:=Gcd(  ValuePol(f,xi),
+             ValuePol(g,xi) );
+    h:=SymAdic(h,xi);
+    
+    # make it primitive:
+    t:=Gcd(h);
+    if t<>1 then
+      h:=h/t;
+    fi;
+    lh:=h[Length(h)];
+    
+    # check if it divides f and g: if yes, ready! if no, try larger xi
+    
+    ## this should be done more efficiently !
+    if RemInt(lg,lh)=0 and RemInt(lf,lh)=0 then
+      fr:=ShallowCopy(f);
+      ReduceCoeffs(fr,h);
+      gr:=ShallowCopy(g);
+      ReduceCoeffs(gr,h);
+      t:=Set(Concatenation(fr,gr));
+    else
+      t:=false;
+    fi;
+    if t=[0] then
+      Info(InfoPoly,4,"GcdHeuPrimitiveList: tried ",i+1," values");
+      return h;
+    else
+      i:=i+1;
+      xi:=QuoInt(xi*73794,27011);
+    fi;
+  od;
+  Info(InfoPoly,2,"GcdHeuPrimitiveList: failed after trying ",
+             MAXTRYGCDHEU," values");
+  return fail;
+end);
 
 
-
-#############################################################################
-##
-#M  TryGcdCancelExtRepPol(<fam>,<a>,<b>,<zero>);
-##
-InstallMethod(TryGcdCancelExtRepPol,"rational polynomials",true,
-  [IsRationalFunctionsFamily,IsList,IsList,IsRat],0,
-function(fam,a,b,z)
-local g;
+InstallMethod(HeuristicCancelPolynomialsExtRep,"rationals",true,
+  [IsRationalFunctionsFamily,IsList,IsList],0,
+function(fam,a,b)
+local nf,df,g;
   if not (HasCoefficientsFamily(fam)
      and IsIdenticalObj(CoefficientsFamily(fam),CyclotomicsFamily)
      and ForAll(a{[2,4..Length(a)]},IsRat) 
@@ -1976,28 +2079,45 @@ local g;
     # the coefficients are not all rationals
     TryNextMethod();
   fi;
-  a:=PrimitivePolynomial(ObjByExtRep(fam,[z,a]));
-  b:=PrimitivePolynomial(ObjByExtRep(fam,[z,b]));
-  g:=GcdHeuIntPolys(a[1],b[1]);
-  if g=fail then
-    TryNextMethod(); # Don't return `fail' as a betrter method may still exist
+
+  # make numerator and denominator primitive with integer coefficients
+  nf:=PrimitiveFacExtRepRatPol(a);
+  if not IsOne(nf) then
+    a:=ShallowCopy(a);
+    a{[2,4..Length(a)]}:=a{[2,4..Length(a)]}/nf;
   fi;
-  # cancel out gcd
-  if IsRat(g) then
-    a:=PrimitivePolynomial(a[1]*(a[2]/g));
-    b:=PrimitivePolynomial(b[1]*(b[2]/g));
-  else
-    a:=PrimitivePolynomial(Quotient(a[1],g)*a[2]);
-    b:=PrimitivePolynomial(Quotient(b[1],g)*b[2]);
+
+  df:=PrimitiveFacExtRepRatPol(b);
+  if not IsOne(df) then
+    b:=ShallowCopy(b);
+    b{[2,4..Length(b)]}:=b{[2,4..Length(b)]}/df;
   fi;
-  g:=a[2]/b[2];
-  # return the parts of the external representation
-  return [ExtRepOfObj(a[1]*NumeratorRat(g))[2],
-          ExtRepOfObj(b[1]*DenominatorRat(g))[2]];
+
+  # the remaining common factor
+  nf:=nf/df;
+  g:=HeuGcdIntPolsExtRep(fam,a,b);
+  if IsList(g) and (Length(g)>2 or (Length(g)=2 and Length(g[1])>0)) then
+    # make g primitive
+    df:=PrimitiveFacExtRepRatPol(g);
+    if not IsOne(df) then
+      g:=ShallowCopy(g);
+      g{[2,4..Length(g)]}:=g{[2,4..Length(g)]}/df;
+    fi;
+
+    Info(InfoPoly,3,"Heuristic integer gcd returns ",g);
+
+    a:=QuotientPolynomialsExtRep(fam,a,g);
+    b:=QuotientPolynomialsExtRep(fam,b,g);
+    if a<>fail and b<>fail then
+      a{[2,4..Length(a)]}:=a{[2,4..Length(a)]}*nf;
+      g:=[a,b];
+      return g;
+    fi;
+  fi;
+  return fail;
 end);
 
 #############################################################################
 ##
 #E  polyrat.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-

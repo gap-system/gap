@@ -27,6 +27,77 @@ Revision.ffe_gi :=
 
 #############################################################################
 ##
+#M  \+( <ffe>, <rat> )
+#M  \+( <rat>, <ffe> )
+#M  \*( <ffe>, <rat> )
+#M  \*( <rat>, <ffe> )
+##
+##  The arithmetic operations with one operand a FFE <ffe> and the other
+##  a rational <rat> are defined as follows.
+##  Let `<one> = One( <ffe> )', and let <num> and <den> denote the numerator
+##  and denominator of <rat>.
+##  Let `<new> = (<num>\*<one>) / (<den>\*<one>)'.
+##  (Note that the multiplication of FFEs with positive integers is defined
+##  as abbreviated addition.)
+##  Then we have `<ffe> + <rat> = <rat> + <ffe> = <ffe> + <new>',
+##  and `<ffe> \* <rat> = <rat> \* <ffe> = <ffe> \* <new>'.
+##  As usual, difference and quotient are defined as sum and product,
+##  with the second argument replaced by its additive and mutliplicative
+##  inverse, respectively.
+##
+##  (It would be possible to install these methods in the kernel tables,
+##  where the case of arithmetic operations with one operand an internally
+##  represented FFE and the other a rational *integer* is handled.
+##  But the case of noninteger rationals does probably not occur particularly
+##  often.)
+##
+InstallMethod( \+,
+    "for a FFE and a rational",
+    true,
+    [ IsFFE, IsRat ], 0,
+    function( ffe, rat )
+    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    return ffe + rat;
+    end );
+
+InstallMethod( \+,
+    "for a rational and a FFE",
+    true,
+    [ IsRat, IsFFE ], 0,
+    function( rat, ffe )
+    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    return rat + ffe;
+    end );
+
+InstallMethod( \*,
+    "for a FFE and a rational",
+    true,
+    [ IsFFE, IsRat ], 0,
+    function( ffe, rat )
+    if IsInt( rat ) then
+      # Avoid the recursion trap.
+      TryNextMethod();
+    fi;
+    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    return ffe * rat;
+    end );
+
+InstallMethod( \*,
+    "for a rational and a FFE",
+    true,
+    [ IsRat, IsFFE ], 0,
+    function( rat, ffe )
+    if IsInt( rat ) then
+      # Avoid the recursion trap.
+      TryNextMethod();
+    fi;
+    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    return rat * ffe;
+    end );
+
+
+#############################################################################
+##
 #M  DegreeFFE( <vector> )
 ##
 InstallOtherMethod( DegreeFFE,
@@ -80,11 +151,11 @@ InstallMethod( LogFFE,
 ##
 #M  IntVecFFE( <vector> )
 ##
-InstallOtherMethod( IntVecFFE,
+InstallMethod( IntVecFFE,
     "for a row vector of FFEs",
     true,
     [ IsRowVector and IsFFECollection ], 0,
-    vector -> List( vector, IntFFE ) );
+    v -> List( v, IntFFE ) );
 
 
 #############################################################################
@@ -105,20 +176,20 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         F:= NewFamily( "FFEFamily", IsFFE );
         SetCharacteristic( F, p );
-  
+
         # Store the type for the representation of prime field elements
         # via residues.
         F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge and IsModulusRep );
         SetDataType( F!.typeOfZmodnZObj, p );
         F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
         F!.modulus:= p;
-  
+
         SetOne(  F, ZmodnZObj( F, 1 ) );
         SetZero( F, ZmodnZObj( F, 0 ) );
-  
+
         # The whole family is a unique factorisation domain.
         SetIsUFDFamily( F, true );
-  
+
         Add( FAMS_FFE_LARGE[1], p );
         Add( FAMS_FFE_LARGE[2], F );
         SortParallel( FAMS_FFE_LARGE[1], FAMS_FFE_LARGE[2] );
@@ -130,8 +201,13 @@ InstallGlobalFunction( FFEFamily, function( p )
       # small characteristic
       # (The list `TYPE_FFE' is used to store the types.)
       F:= FamilyType( TYPE_FFE( p ) );
-      SetOne(  F, One( Z(p) ) );
-      SetZero( F, Zero( Z(p) ) );
+      if not HasOne( F ) then
+
+        # This family has not been accessed by `FFEFamily' before.
+        SetOne(  F, One( Z(p) ) );
+        SetZero( F, Zero( Z(p) ) );
+
+      fi;
 
     fi;
     return F;
@@ -256,17 +332,19 @@ InstallGlobalFunction( GaloisField, function ( arg )
         fi;
 
       # if the extension is given by an irreducible polynomial
-      elif     IsUnivariateLaurentPolynomial( d )
-           and DegreeFFE( d.coefficients ) = 1  then
+      # over the prime field
+      elif     IsRationalFunction( d )
+           and IsLaurentPolynomial( d )
+           and DegreeFFE( CoefficientsOfLaurentPolynomial( d )[1] ) = 1 then
 
         # `GF( p, <pol> )' for prime `p'
         return FieldExtension( GaloisField( p, 1 ), d );
 
       # if the extension is given by coefficients of an irred. polynomial
+      # over the prime field
       elif IsHomogeneousList( d )  and DegreeFFE( d ) = 1  then
 
-        Error( "univ. pol. ..." );
-#T !!
+        # `GF( p, <polcoeffs> )' for prime `p'
         return FieldExtension( GaloisField( p, 1 ),
                                UnivariatePolynomial( GaloisField(p,1), d ) );
 
@@ -280,13 +358,13 @@ InstallGlobalFunction( GaloisField, function ( arg )
 
         # Check that the vectors in `d' really form a basis,
         # and construct the basis.
-        B:= BasisByGenerators( F, d );
+        B:= Basis( F, d );
         if B = fail then
           Error( "<extension> is not linearly independent" );
         fi;
 
         # Note that `F' is *not* the field stored in the global list!
-        SetBasisOfDomain( F, B );
+        SetBasis( F, B );
         return F;
 
       fi;
@@ -311,18 +389,18 @@ InstallGlobalFunction( GaloisField, function ( arg )
       elif     IsHomogeneousList( d )
            and DegreeOverPrimeField( subfield ) mod DegreeFFE( d ) = 0 then
 
-        Error( "univ. pol. ..." );
-#T !!
+        # `GF( subfield, <polcoeffs> )'
         return FieldExtension( subfield,
                                UnivariatePolynomial( subfield, d ) );
 
-      # if the extension is given by an irreducible polynomial
-      elif     IsUnivariateLaurentPolynomial( d )
-           and DegreeOverPrimeField( subfield )
-                                     mod DegreeFFE( d.coefficients ) = 0 then
-#T DegreeVecFFE ?
-#T polynomial!
 
+      # if the extension is given by an irreducible polynomial
+      elif     IsRationalFunction( d )
+           and IsLaurentPolynomial( d )
+           and DegreeOverPrimeField( subfield ) mod
+               DegreeFFE( CoefficientsOfLaurentPolynomial( d )[1] ) = 0 then
+
+        # `GF( subfield, <pol> )'
         return FieldExtension( subfield, d );
 
       # if a basis for the extension is given
@@ -334,13 +412,13 @@ InstallGlobalFunction( GaloisField, function ( arg )
 
         # Check that the vectors in `d' really form a basis,
         # and construct the basis.
-        B:= BasisByGenerators( F, d );
+        B:= Basis( F, d );
         if B = fail then
           Error( "<extension> is not linearly independent" );
         fi;
 
         # Note that `F' is *not* the field stored in the global list!
-        SetBasisOfDomain( F, B );
+        SetBasis( F, B );
         return F;
 
       # Otherwise we don't know how to handle the extension.
@@ -352,6 +430,10 @@ InstallGlobalFunction( GaloisField, function ( arg )
     else
       Error( "<subfield> must be a prime or a finite field" );
     fi;
+
+    # If this place is reached,
+    # `p' is the characteristic, `d' is the degree of the extension,
+    # and `p^d' is less than or equal to `MAXSIZE_GF_INTERNAL'.
 
     if IsInt( subfield ) then
 
@@ -393,12 +475,13 @@ InstallOtherMethod( FieldExtension,
     "for a field of FFEs, and a univ. Laurent polynomial",
     true,
 #T CollPoly
-    [ IsField and IsFFECollection, IsUnivariateLaurentPolynomial ], 0,
+    [ IsField and IsFFECollection, IsLaurentPolynomial ], 0,
     function( F, poly )
 
-    local coeffs, p, d, z, r, E;
+    local coeffs, p, d, z, r, one, zero, E;
 
-    coeffs:= ShiftedCoeffs( poly, Valuation( poly ) );
+    coeffs:= CoefficientsOfLaurentPolynomial( poly );
+    coeffs:= ShiftedCoeffs( coeffs[1], coeffs[2] );
     p:= Characteristic( F );
     d:= ( Length( coeffs ) - 1 ) * DegreeOverPrimeField( F );
 
@@ -409,14 +492,18 @@ InstallOtherMethod( FieldExtension,
     # Compute a root of the defining polynomial.
     z := Z( p^d );
     r := z;
-    while r <> r^0 and ValuePol( coeffs, r ) <> 0 * r  do
+    one:= One( r );
+    zero:= Zero( r );
+    while r <> one and ValuePol( coeffs, r ) <> zero do
       r := r * z;
     od;
     if DegreeFFE( r ) < Length( coeffs ) - 1  then
       Error( "<poly> must be irreducible" );
     fi;
 
-    E:= AsField( F, GF( p, d ) );
+    # We must not call `AsField' here because then the standard `GF(p^d)'
+    # would be returned whenever `F' is equal to `GF(p)'.
+    E:= FieldByGenerators( F, [ z ] );
     SetDefiningPolynomial( E, poly );
     SetRootOfDefiningPolynomial( E, r );
     if r = z or Order( r ) = Size( E ) - 1  then
@@ -426,6 +513,85 @@ InstallOtherMethod( FieldExtension,
     fi;
 
     return E;
+    end );
+
+
+#############################################################################
+##
+#M  DefiningPolynomial( <F> ) . . . . . . . . . .  for standard finite fields
+##
+##  If <F> is a finite field without defining polynomial stored then the
+##  subfield is the prime field and the polynomial is the Conway polynomial.
+##
+InstallMethod( DefiningPolynomial,
+    "for a field of FFEs (return the Conway polynomial)",
+    true,
+    [ IsField and IsFFECollection ], 0,
+    function( F )
+    local size;
+    Assert( 1, IsPrimeField( LeftActingDomain( F ) ),
+            "here the subfield is expected to be a prime field" );
+
+    # Store also a root whenever this is reasonable.
+    size:= Size( F );
+    if IsPrimeField( F ) then
+      SetRootOfDefiningPolynomial( F, PrimitiveRootMod( size ) * One( F ) );
+    elif size <= MAXSIZE_GF_INTERNAL then
+      SetRootOfDefiningPolynomial( F, Z( size ) );
+    fi;
+
+    # Return the polynomial.
+    return ConwayPolynomial( Characteristic( F ),
+                             DegreeOverPrimeField( F ) );
+    end );
+
+
+#############################################################################
+##
+#M  RootOfDefiningPolynomial( <F> ) . . . . . . .  for standard finite fields
+##
+##  If <F> is a finite field without root of the defining polynomial stored
+##  then the subfield is the prime field and the polynomial is the Conway
+##  polynomial.
+##
+InstallMethod( RootOfDefiningPolynomial,
+    "for a small field of FFEs",
+    true,
+    [ IsField and IsFFECollection ], 0,
+    function( F )
+    local coeffs, p, d, z, r, one, zero;
+
+    coeffs:= CoefficientsOfLaurentPolynomial( DefiningPolynomial( F ) );
+
+    # Maybe the call to `DefiningPolynomial' has caused that a root is bound.
+    if HasRootOfDefiningPolynomial( F ) then
+      return RootOfDefiningPolynomial( F );
+    fi;
+
+    coeffs:= ShiftedCoeffs( coeffs[1], coeffs[2] );
+    p:= Characteristic( F );
+    d:= ( Length( coeffs ) - 1 ) * DegreeOverPrimeField( F );
+
+    if Length( coeffs ) = 2 then
+      return - coeffs[1] / coeffs[2];
+    elif MAXSIZE_GF_INTERNAL < p^d then
+      TryNextMethod();
+    fi;
+
+    # Compute a root of the defining polynomial.
+    z := Z( p^d );
+    r := z;
+    one:= One( r );
+    zero:= Zero( r );
+    while r <> one and ValuePol( coeffs, r ) <> zero do
+      r := r * z;
+    od;
+    if DegreeFFE( r ) < Length( coeffs ) - 1  then
+      Error( "<poly> must be irreducible" );
+    fi;
+
+    # Return the root.
+    return r;
     end );
 
 
@@ -509,24 +675,26 @@ InstallMethod( Intersection2,
 
 #############################################################################
 ##
-#M  Conjugates( <F>, <z> ) . . . . . . . conjugates of a finite field element
+#M  Conjugates( <L>, <K>, <z> )  . . . . conjugates of a finite field element
 ##
 InstallMethod( Conjugates,
-    "for a field of FFEs, and a FFE",
-    IsCollsElms,
-    [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
-    function ( F, z )
-    local   cnjs,       # conjugates of <z> in <F>, result
-            ord,        # order of the subfield of <F>
-            deg,        # degree of <F> over its subfield
+    "for two fields of FFEs, and a FFE",
+    IsCollsXElms,
+    [ IsField and IsFinite and IsFFECollection,
+      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+    function( L, K, z )
+    local   cnjs,       # conjugates of <z> in <L>/<K>, result
+            ord,        # order of the subfield <K>
+            deg,        # degree of <L> over <K>
             i;          # loop variable
 
-    # get the order of the subfield and the dimension
-    ord := Size( LeftActingDomain( F ) );
-    deg := Dimension( F );
-    if DegreeOverPrimeField( F ) mod DegreeFFE(z) <> 0  then
-        Error("<z> must lie in <F>");
+    if DegreeOverPrimeField( L ) mod DegreeFFE(z) <> 0  then
+      Error( "<z> must lie in <L>" );
     fi;
+
+    # Get the order of `K' and the dimension of `L' as a `K'-vector space.
+    ord := Size( K );
+    deg := DegreeOverPrimeField( L ) / DegreeOverPrimeField( K );
 
     # compute the conjugates $\set_{i=0}^{d-1}{z^(q^i)}$
     cnjs := [];
@@ -542,54 +710,49 @@ InstallMethod( Conjugates,
 
 #############################################################################
 ##
-#F  Norm( <F>, <z> )  . . . . . . . . . . . .  norm of a finite field element
+#F  Norm( <L>, <K>, <z> )   . . . . . . . . .  norm of a finite field element
 ##
 InstallMethod( Norm,
-    "for a field of FFEs, and a FFE",
-    IsCollsElms,
-    [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
-    function ( F, z )
-    local   nrm,        # norm of <z> in <F>, result
-            ord,        # order of the subfield of <F>
-            deg;        # degree of <F> over its subfield
+    "for two fields of FFEs, and a FFE",
+    IsCollsXElms,
+    [ IsField and IsFinite and IsFFECollection,
+      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+    function( L, K, z )
 
-    # get the order of the subfield and the dimension
-    ord := Size( LeftActingDomain( F ) );
-    deg := Dimension( F );
-    if DegreeOverPrimeField( F ) mod DegreeFFE(z) <> 0  then
-        Error("<z> must lie in <F>");
+    if DegreeOverPrimeField( L ) mod DegreeFFE(z) <> 0  then
+      Error( "<z> must lie in <L>" );
     fi;
 
-    # $nrm = \prod_{i=0}^{deg-1}{ z^(ord^i) }
-    #      = z ^ {1 + ord + ord^2 + .. + ord^{deg-1}}
-    #      = z ^ {(ord^deg-1)/(ord-1)} $
-    nrm := z ^ ((ord^deg-1)/(ord-1));
-
-    # return the norm
-    return nrm;
+    # Let $|K| = q$, $|L| = q^d$.
+    # The norm of $z$ is
+    # $\prod_{i=0}^{d-1} (z^{q^i}) = z^{\sum_{i=0}^{d-1} q^i}
+    #                              = z^{\frac{q^d-1}{q-1}$.
+    return z ^ ( ( Size(L) - 1 ) / ( Size(K) - 1 ) );
     end );
 
 
 #############################################################################
 ##
-#M  Trace( <F>, <z> ) . . . . . . . . . . . . trace of a finite field element
+#M  Trace( <L>, <K>, <z> )  . . . . . . . . . trace of a finite field element
 ##
 InstallMethod( Trace,
-    "for a field of FFEs, and a FFE",
-    IsCollsElms,
-    [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
-    function ( F, z )
-    local   trc,        # trace of <z> in <F>, result
-            ord,        # order of the subfield of <F>
-            deg,        # degree of <F> over its subfield
+    "for two fields of FFEs, and a FFE",
+    IsCollsXElms,
+    [ IsField and IsFinite and IsFFECollection,
+      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+    function( L, K, z )
+    local   trc,        # trace of <z> in <L>/<K>, result
+            ord,        # order of the subfield <K>
+            deg,        # degree of <L> over <K>
             i;          # loop variable
 
-    # get the order of the subfield and the dimension
-    ord := Size( LeftActingDomain( F ) );
-    deg := Dimension( F );
-    if DegreeOverPrimeField( F ) mod DegreeFFE(z) <> 0  then
-        Error("<z> must lie in <F>");
+    if DegreeOverPrimeField( L ) mod DegreeFFE(z) <> 0  then
+      Error( "<z> must lie in <L>" );
     fi;
+
+    # Get the order of `K' and the dimension of `L' as a `K'-vector space.
+    ord := Size( K );
+    deg := DegreeOverPrimeField( L ) / DegreeOverPrimeField( K );
 
     # $trc = \sum_{i=0}^{deg-1}{ z^(ord^i) }$
     trc := 0;
@@ -694,7 +857,7 @@ InstallMethod( String,
         fi;
         str := Concatenation(str,")");
         root:= Z( Characteristic( ffe ) ^ DegreeFFE( ffe ) );
-        if LogFFE( ffe, root ) <> 1  then
+        if ffe <> root then
             str := Concatenation(str,"^",String(LogFFE(ffe,root)));
         fi;
     fi;
@@ -730,8 +893,7 @@ InstallMethod( FieldOverItselfByGenerators,
     SetDegreeOverPrimeField( F, d );
     SetDimension( F, 1 );
 
-    if q < MAXSIZE_GF_INTERNAL then
-      SetRootOfDefiningPolynomial( F, Z(q) );
+    if q <= MAXSIZE_GF_INTERNAL then
       SetPrimitiveRoot( F, Z(q) );
     fi;
 
@@ -771,11 +933,12 @@ InstallMethod( FieldByGenerators,
     SetDegreeOverPrimeField( F, d );
     SetDimension( F, d / DegreeOverPrimeField( subfield ) );
 
-    if q < MAXSIZE_GF_INTERNAL then
+    if q <= MAXSIZE_GF_INTERNAL then
       z:= Z(q);
-      SetRootOfDefiningPolynomial( F, z );
       SetPrimitiveRoot( F, z );
       gens:= [ z ];
+    elif d <> 1 then
+      Error( "sorry, large non-prime fields are not yet implemented" );
     fi;
 
     SetGeneratorsOfDivisionRing( F, gens );
@@ -813,10 +976,18 @@ InstallOtherMethod( DefaultFieldByGenerators,
 #M  FLMLORByGenerators( <F>, <elms> ) . . . . . . . . . .  for FFE collection
 #M  FLMLORWithOneByGenerators( <F>, <elms> )  . . . . . .  for FFE collection
 ##
-##  In all these cases, the result is in fact a field,
+##  In all these cases, the result is either zero or in fact a field,
 ##  so we may delegate to `GF'.
 ##
-RingFromFFE := gens -> GF( Characteristic( gens ), DegreeFFE( gens ) );
+RingFromFFE := function( gens )
+    local F;
+
+    F:= GF( Characteristic( gens ), DegreeFFE( gens ) );
+    if ForAll( gens, IsZero ) then
+      F:= TrivialSubalgebra( F );
+    fi;
+    return F;
+end;
 
 InstallMethod( RingByGenerators,
     "for a collection of FFE",
@@ -838,8 +1009,12 @@ InstallMethod( DefaultRingByGenerators,
 
 
 FLMLORFromFFE := function( F, elms )
-    return GF( Characteristic( F ),
-               Lcm( DegreeFFE( elms ), DegreeOverPrimeField( F ) ) );
+    if ForAll( elms, IsZero ) then
+      return TrivialSubalgebra( F );
+    else
+      return GF( Characteristic( F ),
+                 Lcm( DegreeFFE( elms ), DegreeOverPrimeField( F ) ) );
+    fi;
 end;
 
 InstallMethod( FLMLORByGenerators,
@@ -857,7 +1032,16 @@ InstallMethod( FLMLORWithOneByGenerators,
 
 #############################################################################
 ##
-#E  ffe.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  IsGeneratorsOfMagmaWithInverses( <ffelist> )
+##
+InstallMethod( IsGeneratorsOfMagmaWithInverses,
+    "for a collection of FFEs",
+    true,
+    [ IsFFECollection ], 0,
+    ffelist -> ForAll( ffelist, x -> not IsZero( x ) ) );
 
 
+#############################################################################
+##
+#E
 

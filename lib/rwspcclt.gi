@@ -784,6 +784,143 @@ end );
 
 #############################################################################
 ##
+#M  EvaluateOverlapCBA  . . . . . . . . . . . . . evaluate a consistency test
+##
+InstallMethod( EvaluateOverlapCBA,
+        "polyc. collector, 2 hom. lists, 3 pos. integers",
+        true,
+        [ IsPolycyclicCollector,
+          IsHomogeneousList, IsHomogeneousList,
+          IsPosInt, IsPosInt, IsPosInt ], 0,
+function( coll, l, r, z, y, x )
+    local   status;
+
+    ##  if this routine is used for computing tails, then the tail t is
+    ##                            t = l-r
+
+    ##  (z y) x = y z^y x
+    repeat
+        l[y] := 1;
+        status := CollectWordOrFail( coll, l, GetConjugateNC( coll, z, y ) );
+        if status = true then
+            status := CollectWordOrFail( coll, l, 
+                              coll![SCP_RWS_GENERATORS][x] );
+        fi;
+    until status = true;
+
+    ##  z (y x) = x z^x y^x
+    repeat 
+        r[x] := 1;
+        status := CollectWordOrFail( coll, r, GetConjugateNC( coll, z, x ) );
+        if status = true then
+            status := CollectWordOrFail( coll, r, 
+                              GetConjugateNC( coll, y, x ) );
+        fi;
+    until status = true;
+end );
+
+#############################################################################
+##
+#M  EvaluateOverlapBNA  . . . . . . . . . . . . . evaluate a consistency test
+##
+InstallMethod( EvaluateOverlapBNA,
+        "polyc. collector, 2 hom. lists, 3 pos. integers",
+        true,
+        [ IsPolycyclicCollector,
+          IsHomogeneousList, IsHomogeneousList,
+          IsPosInt, IsPosInt, IsPosInt ], 0,
+function( coll, l, r, b, n, a )
+    local   status;
+
+    ##  if this routine is used for computing tails, then the tail t is
+    ##                            t = l-r
+    
+    ##  b^n a
+    repeat
+        status := CollectWordOrFail( coll, l, GetPowerNC( coll, b ) );
+        if status = true then
+            status := CollectWordOrFail( coll, l, 
+                              coll![SCP_RWS_GENERATORS][a] );
+        fi;
+    until status = true;
+
+    ##  b^(n-1) (b a) = b^(n-1) a b^a
+    repeat
+        r[b] := n-1;
+        status := CollectWordOrFail( coll, r, 
+                          coll![SCP_RWS_GENERATORS][a] );
+        if status = true then
+            status := CollectWordOrFail( coll, r, 
+                              GetConjugateNC( coll, b, a ) );
+        fi;
+    until status = true;
+end );
+
+
+#############################################################################
+##
+#M  EvaluateOverlapBAN  . . . . . . . . . . . . . evaluate a consistency test
+##
+InstallMethod( EvaluateOverlapBAN,
+        "polyc. collector, 2 hom. lists, 3 pos. integers",
+        true,
+        [ IsPolycyclicCollector,
+          IsHomogeneousList, IsHomogeneousList,
+          IsPosInt, IsPosInt, IsPosInt ], 0,
+function( coll, l, r, z, y, n )
+    local   status;
+                    
+    ##  if this routine is used for computing tails, then the tail t is
+    ##                            t = l-r
+
+    ##  (z y) y^(n-1) = y z^y y^(n-1)
+    repeat
+        l[y] := 1;
+        status := CollectWordOrFail( coll, l, GetConjugateNC( coll, z, y ) );
+        if status = true then
+            status := CollectWordOrFail( coll, l, 
+                              coll![SCP_RWS_GENERATORS][y]^(n-1) );
+        fi;
+    until status = true;
+
+    ##  z * y^n
+    repeat
+        r[z] := 1;
+    until CollectWordOrFail( coll, r, GetPowerNC( coll, y ) ) = true;
+end );
+
+#############################################################################
+##
+#M  EvaluateOverlapANA  . . . . . . . . . . . . . evaluate a consistency test
+##
+InstallMethod( EvaluateOverlapANA,
+        "polyc. collector, 2 hom. lists, 3 pos. integers",
+        true,
+        [ IsPolycyclicCollector,
+          IsHomogeneousList, IsHomogeneousList,
+          IsPosInt, IsPosInt ], 0,
+function( coll, l, r, a, n )
+    local   status;
+
+    ##  (a^n) a
+    repeat
+        status := CollectWordOrFail( coll, l, GetPowerNC( coll, a ) );
+        if status = true then
+            status := CollectWordOrFail( coll, l, 
+                              coll![SCP_RWS_GENERATORS][a] );
+        fi;
+    until status = true;
+
+    ##  a (a^n)
+    repeat 
+        r[a] := 1;
+        status := CollectWordOrFail( coll, r, GetPowerNC( coll, a ) );
+    until status = true;
+end );
+
+#############################################################################
+##
+
 
 #E  rwspcclt.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

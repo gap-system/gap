@@ -1,0 +1,50 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  options.msk                    GAP documentation           Steve Linton
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Options Stack}
+
+\FileHeader{options}[1]
+
+\Declaration{PushOptions}
+
+\Declaration{PopOptions}
+
+\Declaration{ValueOption}
+
+\Declaration{DisplayOptionsStack}
+
+\Declaration{InfoOptions}
+
+
+The example below shows simple manipulation of the Options Stack,
+first using 'PushOptions' and 'PopOptions' and then using the special
+function calling syntax. 
+
+\beginexample
+gap> foo := function()                                                         
+> Print("myopt1 = ", ValueOption("myopt1"),                                    
+>       " myopt2 = ",ValueOption("myopt2"),"\n");                              
+> end;
+function(  ) ... end
+gap> foo();
+myopt1 = fail myopt2 = fail
+gap> PushOptions(rec(myopt1 := 17)); 
+gap> foo();                
+myopt1 = 17 myopt2 = fail
+gap> DisplayOptionsStack();
+[ rec(
+      myopt1 := 17 ) ]
+gap> PopOptions();         
+gap> foo();                
+myopt1 = fail myopt2 = fail
+gap> foo( : myopt1, myopt2 := [Z(3),"aardvark"]);
+myopt1 = true myopt2 = [ Z(3), "aardvark" ]
+gap> DisplayOptionsStack();
+[  ]
+gap> 
+\endexample

@@ -15,7 +15,6 @@ Revision.profile_g :=
 
 #############################################################################
 ##
-
 #V  PROFILED_FUNCTIONS  . . . . . . . . . . . . . . list of profiled function
 ##
 PROFILED_FUNCTIONS := [];
@@ -34,20 +33,45 @@ PREV_PROFILED_FUNCTIONS_NAMES := [];
 ##
 #F  ClearProfile()  . . . . . . . . . . . . . . clear all profile information
 ##
-ClearProfile := function()
+##  clears all stored profiling information.
+BIND_GLOBAL("ClearProfile",function()
     local   i;
 
     for i  in Concatenation(PROFILED_FUNCTIONS, PREV_PROFILED_FUNCTIONS)  do
         CLEAR_PROFILE_FUNC(i);
     od;
-end;
-
+end);
 
 #############################################################################
 ##
-#F  DisplayProfile( <funcs> ) . . . . . . . . . display profiling information
+#V  PROFILETHRESHOLD
 ##
-DisplayProfile := function( arg )
+##  This variable is a list $[<cnt>,<time>]$ of length two. `DisplayProfile'
+##  will only display lines for functions which are called at least <cnt>
+##  times or whose *total* time (``self''+``child'') is at least <time>.
+##  The default value of `PROFILETHRESHOLD' is [10000,30].
+PROFILETHRESHOLD:=[10000,30]; # cnt, time
+
+#############################################################################
+##
+#F  DisplayProfile( )
+#F  DisplayProfile( <funcs> )
+##
+##  In the first form, `DisplayProfile' displays the profiling information
+##  for profiled operations, methods and functions. If an argument
+##  <funcs> is given, only profiling information for the functions in
+##  <funcs> is given.  The information for a profiled  function is only
+##  displayed if the number of calls to the function or the total time spent
+##  in the function exceeds a given threshold (see~"PROFILETHRESHOLD").
+##
+##  Profiling information is displayed in a list of lines for all functions
+##  (also operations and methods) which are profiled. For each function,
+##  ``count'' gives the number of times the function has been called.
+##  ``self'' gives the time spent in the function itself, ``child'' the time
+##  spent in profiled functions called from within this function.
+##  The list is sorted according to the total time spent, that is the sum
+##  ``self''+``child''.
+BIND_GLOBAL("DisplayProfile",function( arg )
     local    prof,  tmp,  i,  p,  w,  j,  line,  str,  n,  s,  tsum,  other,
              funcs,  k,  all,  nam,  tsto,  sum;
 
@@ -62,9 +86,11 @@ DisplayProfile := function( arg )
     nam := Concatenation( PROFILED_FUNCTIONS_NAMES,
                           PREV_PROFILED_FUNCTIONS_NAMES );
     if 0 = Length(arg)  then
-        funcs := all;
+      funcs := all;
+    elif Length(arg)=1 and not IsFunction(arg[1]) then
+      funcs:=arg[1];
     else
-        funcs := arg[1];
+      funcs:=arg;
     fi;
 
     # get all operations called at least once
@@ -104,17 +130,27 @@ DisplayProfile := function( arg )
 	fi;
     od;
 
+    # take only those which are not to be ignored
+    prof:=Filtered(prof,i->i[2]>PROFILETHRESHOLD[1]
+			or i[3]>PROFILETHRESHOLD[2]);
+
     # sort functions according to time spent in self
+    #Sort( prof, function(a,b)
+    #    return ( a[4] = b[4] and a[2] > b[2] ) or a[4] > b[4];
+    #end );
+    #prof := Reversed(prof);
+
+    # sort functions according to total time spent
     Sort( prof, function(a,b)
-        return ( a[4] = b[4] and a[2] > b[2] ) or a[4] > b[4];
+	return a[3]<b[3];
     end );
-    prof := Reversed(prof);
 
     # set width and names
     if ForAll( prof, i -> i[5] = 0 )  then
-        w := [ 7, 7,  7,  7, -43 ];
-        p := [ 2, 4, -1, -2,   1 ];
-        n := [ "count", "self/ms", "sum/ms", "chld/ms", "function" ];
+        w := [ 7, 7, 7, -43 ];
+        p := [ 2, 4,-2,   1 ];
+
+        n := [ "count", "self/ms", "chld/ms", "function" ];
     else
         w := [ 7, 7,  7, 7,  7, -30 ];
         p := [ 2, 4, -2, 6, -3,   1 ];
@@ -133,9 +169,9 @@ DisplayProfile := function( arg )
         fi;
     od;
     if w[k] < 0  then
-        w[k] := - AbsInt( SizeScreen()[1] - j - Length(s) - 2 );
+        w[k] := - AbsInt( SizeScreen()[1] - j - Length(s) -2);
     else
-        w[k] := AbsInt( SizeScreen()[1] - j - Length(s) - 2 );
+        w[k] := AbsInt( SizeScreen()[1] - j - Length(s)-2 );
     fi;
 
     # print a nice header
@@ -223,16 +259,29 @@ DisplayProfile := function( arg )
         PROFILE_FUNC(i);
     od;
 
-end;
-
+end);
 
 #############################################################################
 ##
-
-#F  ProfileFunctions( <funcs>, <names> )  . . . . . . . . . profile functions
+#F  ProfileFunctions( <funcs> )
 ##
-ProfileFunctions := function( funcs, names )
-    local   i,  pos;
+##  turns profiling on for all function in <funcs>. You can use
+##  `ProfileGlobalFunctions' (see~"ProfileGlobalFunctions") to turn
+##  profiling on for all globally declared functions simultaneously.
+BIND_GLOBAL("ProfileFunctions",function( arg )
+local funcs,names,i,pos;
+
+  if Length(arg)=2 and IsList(arg[1]) and IsList(arg[2]) then
+    funcs:=arg[1];
+    names:=arg[2];
+  else
+    if IsFunction(arg[1]) then
+      funcs:=arg;
+    else
+      funcs:=arg[1];
+    fi;
+    names:=List(funcs,NameFunction);
+  fi;
 
     for i  in [ 1 .. Length(funcs) ]  do
         if not funcs[i] in PROFILED_FUNCTIONS  then
@@ -249,15 +298,24 @@ ProfileFunctions := function( funcs, names )
     od;
     PREV_PROFILED_FUNCTIONS      :=Compacted(PREV_PROFILED_FUNCTIONS);
     PREV_PROFILED_FUNCTIONS_NAMES:=Compacted(PREV_PROFILED_FUNCTIONS_NAMES);
-end;
+end);
 
 
 #############################################################################
 ##
 #F  UnprofileFunctions( <funcs> ) . . . . . . . . . . . . unprofile functions
 ##
-UnprofileFunctions := function( list )
-    local   f,  pos;
+##  turns profiling off for all function in <funcs>. Recorded information is
+##  still kept, so you can  display it even after turning the profiling off.
+
+BIND_GLOBAL("UnprofileFunctions",function( arg )
+local list,  f,  pos;
+
+    if Length(arg)=1 and not IsFunction(arg[1]) then
+      list:=arg[1];
+    else
+      list:=arg;
+    fi;
 
     for f  in list  do
         pos := Position( PROFILED_FUNCTIONS, f );
@@ -271,12 +329,11 @@ UnprofileFunctions := function( list )
     od;
     PROFILED_FUNCTIONS       := Compacted(PROFILED_FUNCTIONS);
     PROFILED_FUNCTIONS_NAMES := Compacted(PROFILED_FUNCTIONS_NAMES);
-end;
+end);
 
 
 #############################################################################
 ##
-
 #V  PROFILED_METHODS  . . . . . . . . . . . . . . .  list of profiled methods
 ##
 PROFILED_METHODS := [];
@@ -286,7 +343,9 @@ PROFILED_METHODS := [];
 ##
 #F  ProfileMethods( <ops> ) . . . . . . . . . . . . . start profiling methods
 ##
-ProfileMethods := function( arg )
+##  starts profiling of the methods for all operations in <ops>.
+
+BIND_GLOBAL("ProfileMethods",function( arg )
     local   funcs,  names,  op,  i,  meth,  j,  name;
 
     arg := Flat(arg);
@@ -300,7 +359,7 @@ ProfileMethods := function( arg )
                 for j  in [ 0, (4+i) .. Length(meth)-(4+i) ]  do
                     Add( funcs, meth[j+(2+i)] );
                     if name = meth[j+(4+i)]  then
-                        Add( names, [ "Method(", name, ")" ] );
+                        Add( names, [ "Meth(", name, ")" ] );
                     else
                         Add( names, meth[j+(4+i)] );
                     fi;
@@ -308,20 +367,23 @@ ProfileMethods := function( arg )
             fi;
         od;
     od;
-    ProfileFunctions( funcs, names );
+    ProfileFunctions( funcs,names );
     for op  in funcs  do
         if not op in PROFILED_METHODS  then
             Add( PROFILED_METHODS, op );
         fi;
     od;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  UnprofileMethods( <ops> ) . . . . . . . . . . . .  stop profiling methods
 ##
-UnprofileMethods := function( arg )
+##  stops profiling of the methods for all operations in <ops>. Recorded
+##  information is still kept, so you can  display it even after turning the
+##  profiling off.
+BIND_GLOBAL("UnprofileMethods",function( arg )
     local   funcs,  op,  i,  meth,  j;
 
     arg := Flat(arg);
@@ -337,14 +399,14 @@ UnprofileMethods := function( arg )
         od;
     od;
     UnprofileFunctions(funcs);
-end;
+end);
 
 
 #############################################################################
 ##
-
 #V  PROFILED_OPERATIONS . . . . . . . . . . . . . list of profiled operations
 ##
+
 PROFILED_OPERATIONS := [];
 
 
@@ -352,46 +414,62 @@ PROFILED_OPERATIONS := [];
 ##
 #F  ProfileOperationsOn() . . . . . . . . . . . start profiling of operations
 ##
-ProfileOperationsOn := function()
+##  starts profiling of all operations.
+
+BIND_GLOBAL("ProfileOperationsOn",function()
     local   prof,  nams;
 
     prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
     nams := List( prof, NameFunction );
     PROFILED_OPERATIONS := prof;
     UnprofileMethods(prof);
-    ProfileFunctions( prof, nams );
-end;
+    ProfileFunctions( prof );
+end);
 
 
 #############################################################################
 ##
 #F  ProfileOperationsAndMethodsOn() . . start profiling of operations/methods
 ##
-ProfileOperationsAndMethodsOn := function()
+##  starts profiling of all operations and their methods. Old profiling
+##  information is cleared.
+BIND_GLOBAL("ProfileOperationsAndMethodsOn",function()
     local   prof,  nams;
 
     prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
     nams := List( prof, NameFunction );
     PROFILED_OPERATIONS := prof;
     ProfileMethods(prof);
-    ProfileFunctions( prof, nams );
-end;
+    ProfileFunctions( prof );
+
+    # methods for the kernel functions
+    ProfileMethods(\+,\-,\*,\/,\^,\mod,\<,\=,\in,
+                     \.,\.\:\=,IsBound\.,Unbind\.,
+                     \[\],\[\]\:\=,IsBound\[\],Unbind\[\]);
+end);
 
 
 #############################################################################
 ##
 #F  ProfileOperationsOff()  . . . . . . . . . .  stop profiling of operations
 ##
-ProfileOperationsOff := function()
+##  stops profiling of all operations.
+BIND_GLOBAL("ProfileOperationsOff",function()
     UnprofileFunctions(PROFILED_OPERATIONS);
     UnprofileMethods(PROFILED_OPERATIONS);
-end;
+
+    # methods for the kernel functions
+    UnprofileMethods(\+,\-,\*,\/,\^,\mod,\<,\=,\in,
+                     \.,\.\:\=,IsBound\.,Unbind\.,
+                     \[\],\[\]\:\=,IsBound\[\],Unbind\[\]);
+end);
 
 
 #############################################################################
 ##
 #F  ProfileOperationsAndMethodsOff()  .  stop profiling of operations/methods
 ##
+##  stops profiling of all operations and their methods.
 ProfileOperationsAndMethodsOff := ProfileOperationsOff;
 
 
@@ -399,7 +477,17 @@ ProfileOperationsAndMethodsOff := ProfileOperationsOff;
 ##
 #F  ProfileOperations( [<true/false>] ) . . . . . . . . .  start/stop/display
 ##
-ProfileOperations := function( arg )
+##  When called with argument <true>, this function starts profiling of all
+##  operations.
+##  Old profiling information is cleared.
+##  When called with <false> it stops profiling of all operations.
+##  Recorded information is still kept,
+##  so you can display it even after turning the profiling off.
+##
+##  When called without argument, profiling information for all profiled
+##  operations is displayed (see~"DisplayProfile").
+##
+BIND_GLOBAL("ProfileOperations",function( arg )
     if 0 = Length(arg)  then
 	DisplayProfile(PROFILED_OPERATIONS);
     elif 1 = Length(arg)  then
@@ -411,14 +499,25 @@ ProfileOperations := function( arg )
     else
         Print( "usage: ProfileOperations( [<true/false>] )" );
     fi;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  ProfileOperationsAndMethods( [<true/false>] ) . . . .  start/stop/display
 ##
-ProfileOperationsAndMethods := function( arg )
+##  When called with argument <true>, this function starts profiling of all
+##  operations and their methods.
+##  Old profiling information is cleared.
+##  When called with <false> it stops profiling of all operations and their
+##  methods.
+##  Recorded information is still kept,
+##  so you can display it even after turning the profiling off.
+##
+##  When called without argument, profiling information for all profiled
+##  operations and their methods is displayed (see~"DisplayProfile").
+##
+BIND_GLOBAL("ProfileOperationsAndMethods",function( arg )
     if 0 = Length(arg)  then
 	DisplayProfile(Concatenation(PROFILED_OPERATIONS,PROFILED_METHODS));
     elif 1 = Length(arg)  then
@@ -430,16 +529,76 @@ ProfileOperationsAndMethods := function( arg )
     else
         Print( "usage: ProfileOperationsAndMethods( [<true/false>] )" );
     fi;
-end;
-
+end);
 
 #############################################################################
 ##
+#F  ProfileGlobalFunctions(true)
+#F  ProfileGlobalFunctions(false)
+##
+##  `ProfileGlobalFunctions(true)' turns on profiling for all functions that
+##  have been declared via `DeclareGlobalFunction'. A function call with the
+##  argument `false' turns it off again.
+##
+PROFILED_GLOBAL_FUNCTIONS := [];
 
+BIND_GLOBAL( "ProfileGlobalFunctions", function( arg )
+    local name, func, funcs;
+    if 0 = Length(arg) then
+        DisplayProfile( PROFILED_GLOBAL_FUNCTIONS );
+    elif arg[1] then
+        PROFILED_GLOBAL_FUNCTIONS  := [];
+        for name in GLOBAL_FUNCTION_NAMES do
+            if IsBoundGlobal(name) then
+                func := ValueGlobal(name);
+                if IsFunction(func) then
+                    Add(PROFILED_GLOBAL_FUNCTIONS, func);
+                fi;
+            fi;
+        od;
+        ProfileFunctions(PROFILED_GLOBAL_FUNCTIONS);
+    else
+        UnprofileFunctions(PROFILED_GLOBAL_FUNCTIONS);
+        PROFILED_GLOBAL_FUNCTIONS := [];
+    fi;
+end);
+        
+#############################################################################
+##
+#F  ProfileFunctionsInGlobalVariables()
+##
+##
+PROFILED_GLOBAL_VARIABLE_FUNCTIONS := [];
 
+BIND_GLOBAL( "ProfileFunctionsInGlobalVariables", function( arg )
+    local name, func, funcs;
+    if 0 = Length(arg) then
+        DisplayProfile( PROFILED_GLOBAL_VARIABLE_FUNCTIONS );
+    elif arg[1] then
+        PROFILED_GLOBAL_VARIABLE_FUNCTIONS  := [];
+        for name in NamesGVars() do
+            if IsBoundGlobal(name) then
+                func := ValueGlobal(name);
+                if IsFunction(func) then
+                    Add(PROFILED_GLOBAL_VARIABLE_FUNCTIONS, func);
+                fi;
+            fi;
+        od;
+        ProfileFunctions(PROFILED_GLOBAL_VARIABLE_FUNCTIONS);
+    else
+        UnprofileFunctions(PROFILED_GLOBAL_VARIABLE_FUNCTIONS);
+        PROFILED_GLOBAL_VARIABLE_FUNCTIONS := [];
+    fi;
+end);
+        
+        
+
+#############################################################################
+##
 #F  DisplayRevision() . . . . . . . . . . . . . . .  display revision entries
 ##
-DisplayRevision := function()
+##  Displays the revision numbers of all loaded files from the library.
+BIND_GLOBAL("DisplayRevision",function()
     local   names,  source,  library,  unknown,  name,  p,  s,  type,  
             i,  j;
 
@@ -497,14 +656,16 @@ DisplayRevision := function()
             Print( "\n" );
         fi;
     od;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  DisplayCacheStats() . . . . . . . . . . . . . .  display cache statistics
 ##
-DisplayCacheStats := function()
+##  displays statistics about the different caches used by the method
+##  selection.
+BIND_GLOBAL("DisplayCacheStats",function()
     local   cache,  names,  pos,  i;
 
     cache := ShallowCopy(OPERS_CACHE_INFO());
@@ -549,14 +710,16 @@ DisplayCacheStats := function()
                FormattedString( String(cache[i]), 12 ), "\n" );
     od;
 
-end;
+end);
 
 
 #############################################################################
 ##
 #F  ClearCacheStats() . . . . . . . . . . . . . . . .  clear cache statistics
 ##
-ClearCacheStats := function()
+##  clears all statistics about the different caches used by the method
+##  selection.
+BIND_GLOBAL("ClearCacheStats",function()
     CLEAR_CACHE_INFO();
     WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT := 0;
     WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
@@ -564,12 +727,11 @@ ClearCacheStats := function()
     WITH_IMPS_FLAGS_CACHE_MISS := 0;
     NEW_TYPE_CACHE_HIT := 0;
     NEW_TYPE_CACHE_MISS := 0;
-end;
+end);
 
 
 #############################################################################
 ##
-
 #F  START_TEST( <id> )  . . . . . . . . . . . . . . . . . . . start test file
 ##
 START_TIME := 0;
@@ -601,6 +763,5 @@ end;
 
 #############################################################################
 ##
-
 #E  profile.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

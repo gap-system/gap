@@ -117,6 +117,13 @@ extern void ErrorQuitIntSmall (
 extern void ErrorQuitIntSmallPos (
     Obj                 obj );
 
+/****************************************************************************
+**
+*F  ErrorQuitIntPos( <obj> ) . . . . . . .  not a positive  integer
+*/
+extern void ErrorQuitIntPos (
+    Obj                 obj );
+
 
 /****************************************************************************
 **
@@ -375,7 +382,13 @@ extern Obj DoCompleteXargs (
 *V  FN_IS_TABLE . . . . . . . . . . . . . . . . . filter number for `IsTable'
 */
 #define FN_IS_TABLE             9
-#define LAST_FN                 FN_IS_TABLE
+
+/****************************************************************************
+**
+*V  FN_IS_RECT . . . . . . . . . . . . filter number for `IsRectangularTable'
+*/
+#define FN_IS_RECT             10
+#define LAST_FN                 FN_IS_RECT
 
 
 /****************************************************************************

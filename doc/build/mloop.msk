@@ -1,0 +1,678 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  mloop.msk                  GAP documentation             Martin Schoenert
+%%
+%A @(#)$Id$
+%%
+%Y Copyright 1990-1992, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+%%
+\Chapter{Main Loop and Break Loop}
+
+This chapter is a first of a series of chapters that describe the
+interactive environment in which you use {\GAP}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Main Loop}
+
+\index{read eval print loop}\index{loop!read eval print}
+\index{prompt}\index{prompt!partial}
+\index{syntax errors}\index{errors!syntax}
+\index{output!suppressing}
+\index{last}\index{previous result}
+The normal interaction with {\GAP} happens in the so--called
+*read--eval--print* loop.
+This means that you type an input, {\GAP} first reads it,
+evaluates it, and then shows the result.
+Note that the term *print* may be confusing since there is a {\GAP}
+function called `Print' (see~"View and Print") which is in fact *not*
+used in the read--eval--print loop, but traditions are hard to break.
+In the following, whenever we want to express that {\GAP} places some
+characters on the standard output, we will say that {\GAP} *shows*
+something.
+
+The exact sequence in the read eval print loop is as follows.
+
+To signal that it is ready to accept your input,
+{\GAP} shows the *prompt* `gap>'.
+When you see this, you know that {\GAP} is waiting for your input.
+
+Note that every statement must be terminated by a semicolon. You must
+also enter <return> before {\GAP} starts to read and evaluate your input.
+Because {\GAP} does not do anything until you enter <return>, you can
+edit your input to fix typos and only when everything is correct enter
+<return> and have {\GAP} take a look at it (see~"Line Editing"). It is
+also possible to enter several statements as input on a single line. Of
+course each statement must be terminated by a semicolon.
+
+It is absolutely acceptable to enter a single statement on several lines.
+When you have entered the beginning of a statement, but the statement is
+not yet complete, and you enter <return>,
+{\GAP} will show the *partial prompt* `>'.
+When you see this, you know that {\GAP} is waiting for the rest
+of the statement. This happens also when you forget
+the semicolon `;' that terminates every {\GAP} statement.
+Note that when <return> has been entered and the current statement is not
+yet complete, {\GAP} will already evaluate those parts of the input that 
+are complete, for example function calls that appear as arguments in
+another function call which needs several input lines.
+So it may happen that one has to wait some time for the partial prompt.
+% And side-effects caused by the first lines are executed although
+% a syntax error in a later input line may invalidate the whole statement.
+
+When you enter <return>, {\GAP} first checks your input to see if it is
+syntactically correct (see Chapter~"The Programming Language" for the
+definition of syntactically correct). If it is not, {\GAP} prints an
+error message of the following form
+
+\begintt
+gap> 1 * ;
+Syntax error: expression expected
+1 * ;
+    ^ 
+\endtt
+
+The first line tells you what is wrong about the input, in this case the
+`*' operator takes two expressions as operands, so obviously the right
+one is missing. If the input came from a file (see~"Read"), this line
+will also contain the filename and the line number. The second line is a
+copy of the input. And the third line contains a caret pointing to the
+place in the previous line where {\GAP} realized that something is wrong.
+This need not be the exact place where the error is, but it is usually
+quite close.
+
+Sometimes, you will also see a partial prompt after you have entered an
+input that is syntactically incorrect. This is because {\GAP} is so
+confused by your input, that it thinks that there is still something to
+follow. In this case you should enter `;<return>' repeatedly, ignoring
+further error messages, until you see the full prompt again. When you
+see the full prompt, you know that {\GAP} forgave you and is now ready to
+accept your next -- hopefully correct -- input.
+
+If your input is syntactically correct, {\GAP} evaluates or executes it,
+i.e., performs the required computations (see Chapter~"The Programming
+Language" for the definition of the evaluation).
+
+If you do not see a prompt, you know that {\GAP} is still working on your
+last input. Of course, you can *type ahead*, i.e., already start
+entering new input, but it will not be accepted by {\GAP} until {\GAP}
+has completed the ongoing computation.
+
+When {\GAP} is ready it will usually show the result of the computation,
+i.e., the value computed. Note that not all statements produce a value,
+for example, if you enter a `for' loop, nothing will be printed, because
+the `for' loop does not produce a value that could be shown.
+
+Also sometimes you do not want to see the result. For example if you
+have computed a value and now want to assign the result to a variable,
+you probably do not want to see the value again. You can terminate
+statements by *two semicolons* to suppress showing the result.
+
+If you have entered several statements on a single line {\GAP} will first
+read, evaluate, and show the first one, then read, evaluate, and show
+the second one, and so on. This means that the second statement will not
+even be checked for syntactical correctness until {\GAP} has completed
+the first computation.
+
+After the result has been shown {\GAP} will display another prompt, and
+wait for your next input.
+And the whole process starts all over again.
+Note that if you have entered several statements on a single line,
+a new prompt will only be printed after {\GAP} has read, evaluated,
+and shown the last statement.
+
+In each statement that you enter, the result of the previous statement
+that produced a value is available in the variable `last'. The next to
+previous result is available in `last2' and the result produced before
+that is available in `last3'.
+
+\begintt
+gap> 1; 2; 3;
+1
+2
+3
+gap> last3 + last2 * last;
+7 
+\endtt
+
+Also in each statement the time spent by the last statement, whether it
+produced a value or not, is available in the variable `time'. This is an
+integer that holds the number of milliseconds.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{View and Print}
+
+\Declaration{View}
+
+\>Print( <obj1>, <obj2>... ) F
+
+Also `Print' shows the objects <obj1>, <obj2>... etc.
+on the standard output.
+The difference compared to `View' is in general that the shown form
+is not required to be short,
+and that in many cases the form shown by `Print' is {\GAP} readable.
+
+% For example for large matrices `Print' may print
+% the full matrix, while `View' may only display the dimensions and the
+% characteristic.
+
+\begintt
+gap> z:= Z(2);
+Z(2)^0
+gap> v:= [ z, z, z, z, z, z, z ];
+<a GF2 vector of length 7>
+gap> Print( v );
+[ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ]gap>
+\endtt
+
+Another difference is that `Print' shows strings without the enclosing
+quotes, so `Print' can be used to produce formatted text on the
+standard output (see also chapter~"Strings and Characters").
+Some characters preceded by a backslash, such as `\\n', are processed
+specially (see chapter~"Special Characters").
+`PrintTo' can be used to print to a file (see~"PrintTo").
+
+\begintt
+gap> for i in [1..5] do
+>      Print( i, " ", i^2, " ", i^3, "\n" );
+>    od;
+1 1 1
+2 4 8
+3 9 27
+4 16 64
+5 25 125 
+\endtt
+
+\begintt
+gap> g:= SmallGroup(12,5);
+<pc group with 3 generators>
+gap> Print(g);
+Group( [ f1, f2, f3 ] )gap> 
+gap> View(g);
+<pc group with 3 generators>gap> 
+\endtt
+
+\>ViewObj( <obj> ) O
+\>PrintObj( <obj> ) O
+
+The functions `View' and `Print' actually call the operations
+`ViewObj' and~`PrintObj', respectively, for each argument.
+By installing special methods for these operations,
+it is possible to achieve special printing behavior for certain objects
+(see chapter~"prg:Method Selection" in the programmer's manual).
+The only exceptions are strings (see Chapter~"Strings and Characters"),
+for which the default `PrintObj' and `ViewObj' methods as well as the
+function `View' print also the enclosing doublequotes, whereas `Print'
+strips the doublequotes.
+
+The default method for `ViewObj' is to call `PrintObj'.
+So it is sufficient to have a `PrintObj' method for an object in order
+to `View' it.
+If one wants to supply a ``short form'' for `View',
+one can install additionally a method for `ViewObj'.
+
+\Declaration{Display}
+\begintt
+gap> c:= CharacterTable( "A5" );
+CharacterTable( "A5" )
+gap> Display(c);
+     2  2  2  .  .  .
+     3  1  .  1  .  .
+     5  1  .  .  1  1
+
+       1a 2a 3a 5a 5b
+    2P 1a 1a 3a 5b 5a
+    3P 1a 2a 1a 5b 5a
+    5P 1a 2a 3a 1a 1a
+
+X.1     1  1  1  1  1
+X.2     3 -1  .  A *A
+X.3     3 -1  . *A  A
+X.4     4  .  1 -1 -1
+X.5     5  1 -1  .  .
+
+A = -E(5)-E(5)^4 = (1-ER(5))/2 = -b5
+\endtt
+
+\Declaration{Name}
+\begintt
+gap> c:= CharacterTable( "A5" );
+CharacterTable( "A5" )
+gap> SetName( c, "tblA5" );  c;
+tblA5
+\endtt
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Break Loops}
+
+When an error has occurred or when you interrupt {\GAP} (usually by
+hitting <ctrl>-`C') {\GAP} enters a break loop, that is in most respects
+like the main read eval print loop (see~"Main Loop"). That is, you can
+enter statements, {\GAP} reads them, evaluates them, and shows the
+result if any. However those evaluations happen within the context in
+which the error occurred. So you can look at the arguments and local
+variables of the functions that were active when the error happened and
+even change them. The prompt is changed from `gap>' to `brk>' to
+indicate that you are in a break loop.
+
+\begintt
+gap> 1/0;
+Rational operations: divisor must not be zero
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return a new divisor to continue
+\endtt
+
+If errors occur within a break loop {\GAP} enters another break loop at a
+*deeper level*. This is indicated by a number appended to `brk':
+
+\begintt
+brk> 1/0;
+Rational operations: divisor must not be zero
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return a new divisor to continue
+brk_02> 
+\endtt
+
+There are two ways to leave a break loop.
+
+\>`quit'{quit}
+
+The first is to *quit* the break loop.
+To do this you enter `quit;' or type the <eof> (*e*nd *o*f *f*ile) character,
+which is usually <ctrl>-`D'.
+Note that {\GAP} code between `quit;' and the end of the input line
+is ignored.
+
+\begintt
+brk_02> quit;
+brk>
+\endtt
+
+In this case control returns to the break loop one level above or
+to the main loop, respectively.
+So iterated break loops must be left iteratively.
+Note also that if you type `quit;' from a `gap>' prompt, {\GAP} will exit
+(see~"Leaving GAP").
+
+*If you leave a break loop with `quit' without completing a command
+it is possible (though not very likely) that data structures
+will be corrupted or incomplete data has been stored in objects.
+Therefore no guarantee can be given that calculations afterwards
+will return correct results!*
+
+\>`return [<obj>];'{return from break loop}
+
+The other way is to *return* from a break loop. To do this you enter
+`return;' or `return <expr>;'.
+If the break loop was entered because you interrupted {\GAP},
+then you can continue by entering `return;'.
+If the break loop was entered due to an error,
+you usually have to return a value to continue the computation.
+For example, if the break loop was entered because a variable had no
+assigned value, the value to be returned is the value that this variable
+should have to continue the computation.
+
+\begintt
+brk> return 9;  # we had tried to enter the divisor 9 but typed 0 ...
+1/9
+gap>
+\endtt
+
+\>`OnBreak'{Break loop} V
+
+By default, when a break loop is entered, {\GAP} prints a trace of the 
+innermost 5 commands currently being executed. This behaviour can be
+configured by changing the value of the global variable
+`OnBreak'. When a break loop is entered, the value of `OnBreak' is
+checked. If it is a function, then it is called with no arguments. By
+default, the value of `OnBreak' is `Where' (see "Where").
+
+\begintt
+gap> OnBreak := function() Print("Hallo\n"); end;
+function(  ) ... end
+gap> Error("!");
+Error !
+Hallo
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk> 
+\endtt
+
+
+\index{Backtrace}
+\>Where( [<nr>] ) F
+
+shows the last <nr> commands on the execution stack during whose execution
+the error occurred. If not given, <nr> defaults to 5.
+
+\begintt
+gap> StabChain(SymmetricGroup(100));
+# Here ^C was pressed
+user interrupt at
+S := S.stabilizer;
+SiftedPermutation( S, (g * rep) ^ -1 ) called from
+StabChainStrong( S.stabilizer, [ sch ], options ); called from
+StabChainStrong( S.stabilizer, [ sch ], options ); called from
+StabChainStrong( S, GeneratorsOfGroup( G ), options ); called from
+StabChainOp( G, rec(
+     ) ) called from
+StabChainImmutable( arg[1] ) called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk> Where(2);
+SiftedPermutation( S, (g * rep) ^ -1 ) called from
+StabChainStrong( S.stabilizer, [ sch ], options ); called from
+...
+\endtt
+
+Note that the variables displayed even in the first line of the `Where' list
+may be already one environment level higher and `DownEnv' (see~"DownEnv")
+may be necessary to access them.
+
+At the moment this backtrace does not work from within compiled code (this
+includes the method selection which by default is compiled into the kernel).
+If this creates problems for debugging, call {\GAP} with the `-M' option
+(see~"Advanced Features of GAP") to avoid loading compiled code.
+
+(Function calls to `Info' and methods installed for binary operations are
+handled in a special way. In rare circumstances it is possible therefore
+that they do not show up in a `Where' log but the log refers to the *last*
+proper function call that happened before.)
+
+The command line option '-T' to {\GAP} disables the break loop. This
+is mainly intended for testing purposes and for special
+applications. If this option is given then errors simply cause {\GAP}
+to return to the main loop.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Variable Access in a Break Loop}
+
+In a break loop access to variables of the current break level and higher
+levels is possible, but if the same variable name is used for different
+objects or if a function calls itself recursively, of course only the
+variable at the lowest level can be accessed.
+
+\index{UpEnv}
+\>DownEnv( [<nr>] ) F
+
+Moves up <nr> steps in the environment and allows one to inspect variables on
+this level. If <nr> is negative it steps down in the environment again. <nr>
+defaults to 1 if not given.
+
+\begintt
+gap> test:= function( n )
+>    if n > 3 then Error( "!" ); fi; test( n+1 ); end;;
+gap> test( 1 );
+Error ! at
+Error( "!" );
+Entering break read-eval-print loop,
+you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk> Where();
+test( n + 1 ); called from
+test( n + 1 ); called from
+test( n + 1 ); called from
+<function>( <arguments> ) called from read-eval-loop
+brk> n;
+4
+brk> DownEnv();
+brk> n;
+3
+brk> Where();
+test( n + 1 ); called from
+test( n + 1 ); called from
+<function>( <arguments> ) called from read-eval-loop
+brk> DownEnv( 2 );
+brk> n;
+1
+brk> Where();
+<function>( <arguments> ) called from read-eval-loop
+brk> DownEnv( -2 );
+brk> n;
+3
+\endtt
+
+Note that the change of the environment caused by `DownEnv' only affects
+variable access in the break loop. If you use `return' to continue a
+calculation {\GAP} automatically jumps to the right environment level
+again.
+
+Note also that search for variables looks first in the chain of outer
+functions which enclosed the definition of a currently executing
+function, before it looks at the chain of calling functions which led
+to the current invocation of the function. 
+
+\begintt
+gap> foo := function() 
+> local x; x := 1; 
+> return function() local y; y := x*x; Error("!!"); end; 
+> end;  
+function(  ) ... end
+gap> bar := foo();
+function(  ) ... end
+gap> fun := function() local x; x := 3; bar(); end;
+function(  ) ... end
+gap> fun();
+Error !! at
+Error( "!!" );
+bar(  ); called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk> x;
+1
+brk> DownEnv(1);
+brk> x;
+3
+\endtt
+
+Here the `x' of `foo' which contained the definition of `bar' is found 
+before that of `fun' which caused its execution. Using `DownEnv' we
+can access the `x' from `fun'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Error}
+
+\>Error( <messages>... ) F
+
+`Error' signals an error from within a function. First the messages
+<messages> are printed, this is done exactly as if `Print'
+(see~"View and Print")
+were called with these arguments. Then a break loop (see~"Break Loops") is
+entered, unless the standard error output is not connected to a terminal.
+You can leave this break loop with `return;' to continue execution with the
+statement following the call to `Error'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ErrorCount}
+
+\>ErrorCount() F
+
+`ErrorCount' returns a count of the number of errors (including user
+interruptions) which have occurred in the {\GAP} session so far.
+This count is reduced modulo $2^{28}$ on $32$ bit systems,
+$2^{60}$ on $64$ bit systems.
+The count is incremented by each error, even if {\GAP} was
+started with the `-T' option to disable the break loop.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Leaving GAP}
+
+\index{quit}
+\index{QUIT}
+\index{exit}
+\index{at exit functions}
+\index{saving on exit}
+The normal way to terminate a {\GAP} session is to enter either
+`quit;' (note the semicolon) or an end-of-file character (usually
+ctrl-D) at the `gap>' prompt in the main read eval print loop. 
+
+An emergency way to leave {\GAP} is to enter 
+\>`QUIT'{QUIT}
+
+at any `gap>'
+or `brk>' or `brk_<nn>>' prompt. 
+
+\>InstallAtExit( <func> ) F
+\>`QUITTING'{QUITTING} V
+
+Before actually terminating, {\GAP} will call (with no arguments) all
+of the functions that have been installed using `InstallAtExit'. These
+typically perform tasks such as cleaning up temporary files created
+during the session, and closing open files. If an error occurs during
+the execution of one of these functions, that function is simply
+abandoned, no break loop is entered. 
+
+\begintt
+gap> InstallAtExit(function() Print("bye\n"); end);
+gap> quit;
+bye
+\endtt
+
+During execution of these functions, the global variable `QUITTING'
+will be set to `true' if {\GAP} is exiting because the user typed
+`QUIT' and `false' otherwise. Since `QUIT' is considered as an emergency
+measure, different action may be appropriate.
+
+\>`SaveOnExitFile'{SaveOnExitFile} V
+
+If, when {\GAP} is exiting due to a `quit' or end-of-file (ie not due
+to a `QUIT') the variable `SaveOnExitFile' is bound to a string value,
+then the system will try to save the workspace to that file.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Line Editing}
+
+{\GAP} allows one you to edit the current input line with a number of editing
+commands. Those commands are accessible either as *control keys* or as
+*escape keys*. You enter a control key by pressing the <ctrl> key, and,
+while still holding the <ctrl> key down, hitting another key <key>. You
+enter an escape key by hitting <esc> and then hitting another key <key>.
+Below we denote control keys by <ctrl>-<key> and escape keys by
+<esc>-<key>. The case of <key> does not matter, i.e., <ctrl>-`A' and
+<ctrl>-`a' are equivalent.
+
+Typing <ctrl>-<key> or <esc>-<key> for characters not mentioned below
+always inserts <ctrl>-<key> resp.~<esc>-<key> at the current cursor position.
+
+The first few commands allow you to move the cursor on the current line.
+
+<ctrl>-`A' move the cursor to the beginning of the line. 
+
+<esc>-`B' move the cursor to the beginning of the previous word. 
+
+<ctrl>-`B' move the cursor backward one character. 
+
+<ctrl>-`F' move the cursor forward one character. 
+
+<esc>-`F' move the cursor to the end of the next word. 
+
+<ctrl>-`E' move the cursor to the end of the line.
+
+The next commands delete or kill text.
+The last killed text can be reinserted, possibly at a different position,
+with the ``yank'' command <ctrl>-`Y'.
+
+<ctrl>-`H' or <del> delete the character left of the cursor. 
+
+<ctrl>-`D' delete the character under the cursor. 
+
+<ctrl>-`K' kill up to the end of the line. 
+
+<esc>-`D' kill forward to the end of the next word. 
+
+<esc>-<del> kill backward to the beginning of the last word. 
+
+<ctrl>-`X' kill entire input line, and discard all pending input. 
+
+<ctrl>-`Y' insert (yank) a just killed text.
+
+The next commands allow you to change the input.
+
+<ctrl>-`T' exchange (twiddle) current and previous character. 
+
+<esc>-`U' uppercase next word. 
+
+<esc>-`L' lowercase next word. 
+
+<esc>-`C' capitalize next word.
+
+The <tab> character, which is in fact the control key <ctrl>-`I', looks at
+the characters before the cursor, interprets them as the beginning of an
+identifier and tries to complete this identifier. If there is more than
+one possible completion, it completes to the longest common prefix of all
+those completions. If the characters to the left of the cursor are
+already the longest common prefix of all completions hitting <tab> a
+second time will display all possible completions.
+
+<tab>  complete the identifier before the cursor.
+
+The next commands allow you to fetch previous lines, e.g., to correct
+typos, etc. This history is limited to about 8000 characters.
+
+<ctrl>-`L' insert last input line before current character.
+
+<ctrl>-`P' redisplay the last input line, another <ctrl>-`P' will
+  redisplay the line before that, etc. If the cursor is
+  not in the first column only the lines starting with the
+  string to the left of the cursor are taken.
+
+<ctrl>-`N' Like <ctrl>-`P' but goes the other way round through the
+  history.
+
+<esc>-`\<' goes to the beginning of the history.
+
+<esc>-`>' goes to the end of the history.
+
+<ctrl>-`O' accepts this line and perform a <ctrl>-`N'.
+
+Finally there are a few miscellaneous commands.
+
+<ctrl>-`V' enter next character literally, i.e., enter it even if it
+  is one of the control keys.
+
+<ctrl>-`U' execute the next line editing command 4 times.
+
+<esc>-<num> execute the next line editing command <num> times.
+
+<esc>-<ctrl>-`L' redisplay input line.
+
+The four arrow keys (cursor keys) can be used instead of <ctrl>-`B',
+<ctrl>-`F', <ctrl>-`P', and <ctrl>-`N', respectively.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Edit}
+
+\Declaration{Edit}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SizeScreen}
+
+\>SizeScreen() F
+
+In this form `SizeScreen' returns the size of the screen as a list with
+two entries. The first is the length of each line, the second is the
+number of lines.
+
+\>SizeScreen( [ <x>, <y> ] ) F
+
+In this form `SizeScreen' sets the size of the screen. <x> is the
+length of each line, <y> is the number of lines. Either value may be
+missing, to leave this value unaffected. It returns the new
+values. Note that those parameters can also be set with the command
+line options `-x <x>' and `-y <y>' (see Chapter~"Installing GAP").
+
+The screen width must be between 20 and 256 characters (inclusive) and 
+the depth at least 10 lines. Values outside this range will be
+adjusted to the nearest endpoint of the range.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

@@ -1,0 +1,5 @@
+This document describes how to install GAP 4 on a Unix system. Section
+"Getting GAP" describes where to get GAP 4 and which files to get. Section
+"Installation of GAP for UNIX" describes the installation process. Section
+"Porting GAP" describes what to do to port GAP 4 to other systems.
+

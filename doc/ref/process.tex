@@ -26,7 +26,7 @@ Note that the latter kind of process is *@not yet implemented@*.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Process}
 
-\>Process( <dir>, <prg>, <stream-in>, <stream-out>, <options> )
+\>Process( <dir>, <prg>, <stream-in>, <stream-out>, <options> ) O
 
 runs  a new process.  `Process' returns  when the process terminates.  It
 returns the return value of the process (if the operating system supports
@@ -45,14 +45,15 @@ process creates temporary or log files the latter  should be used because
 {\GAP} will attempt  to remove these  directories  together with all  the
 files in them when quitting.
 
-If  a program of a  share  package needs  to be  launched  in a directory
+If a program of a share package which does not only consist of {GAP} code
+needs  to be  launched  in a directory
 relative  to  certain  data    libraries,   then  the first     entry  of
 `DirectoryPackageLibrary'    should  be   used.     The     argument   of
 `DirectoryPackageLibrary' should be the path to the data library relative
 to the package directory.
 
 If a program calls other programs and needs to be launched in a directory
-containing the executables for the share package then  the first entry of
+containing the executables for such a share package then  the first entry of
 `DirectoriesPackagePrograms' should be used.
 
 The latter  two alternatives should only  be used if absolutely necessary
@@ -62,24 +63,24 @@ directory.
 Examples
 
 \beginexample
-   gap> path := DirectoriesSystemPrograms();;
-   gap> ls := Filename( path, "ls" );;
-   gap> stdin := InputTextUser();;
-   gap> stdout := OutputTextUser();;
-   gap> Process( path[1], ls, stdin, stdout, ["-c"] );;
-   awk    ls     mkdir
+gap> path := DirectoriesSystemPrograms();;
+gap> ls := Filename( path, "ls" );;
+gap> stdin := InputTextUser();;
+gap> stdout := OutputTextUser();;
+gap> Process( path[1], ls, stdin, stdout, ["-c"] );;
+awk    ls     mkdir
 
-   # current directory, here the root directory
-   gap> Process( DirectoryCurrent(), ls, stdin, stdout, ["-c"] );;
-   bin    lib    trans  tst    CVS    grp    prim   thr    two
-   src    dev    etc    tbl    doc    pkg    small  tom
+# current directory, here the root directory
+gap> Process( DirectoryCurrent(), ls, stdin, stdout, ["-c"] );;
+bin    lib    trans  tst    CVS    grp    prim   thr    two
+src    dev    etc    tbl    doc    pkg    small  tom
 
-   # create a temporary directory
-   gap> tmpdir := DirectoryTemporary();;                          
-   gap> Process( tmpdir, ls, stdin, stdout, ["-c"] );;            
-   gap> PrintTo( Filename( tmpdir, "emil" ) );
-   gap> Process( tmpdir, ls, stdin, stdout, ["-c"] );;
-   emil
+# create a temporary directory
+gap> tmpdir := DirectoryTemporary();;                          
+gap> Process( tmpdir, ls, stdin, stdout, ["-c"] );;            
+gap> PrintTo( Filename( tmpdir, "emil" ) );
+gap> Process( tmpdir, ls, stdin, stdout, ["-c"] );;
+emil
 \endexample
 
 <prg> is the filename of the program to launch, for portability it should
@@ -89,7 +90,7 @@ list of directories, this is done by `Filename'.
 
 <stream-in>  is the  input stream   that  delivers the characters  to the
 process.   For portability it  should either  be `InputTextNone' (if  the
-process reads  no characters), `InputTextUser' (*@not yet implemented@*),
+process reads  no characters), `InputTextUser',
 the  result  of a call to `InputTextFile'  from which  no characters have
 been read, or the result of a call to `InputTextString'.
 
@@ -98,7 +99,7 @@ does not require any input at all.
 
 <stream-out> is the output stream  which receives the characters from the
 process.  For portability it should   either be `OutputTextNone' (if  the
-process writes no characters), `OutputTextUser' (*@not yet implemented@*),
+process writes no characters), `OutputTextUser',
 the result of a call to `OutputTextFile' to which no characters have been
 written, or the result of a call to `OutputTextString'.
 
@@ -115,46 +116,50 @@ In   order to  find   a  system program  use  `DirectoriesSystemPrograms'
 together with `Filename'.
 
 \begintt
-   gap> path := DirectoriesSystemPrograms();;
-   gap> date := Filename( path, "date" );
-   "/bin/date"
+gap> path := DirectoriesSystemPrograms();;
+gap> date := Filename( path, "date" );
+"/bin/date"
 \endtt
 
 Now execute `date' with no argument and no input, collect the output into
 a string stream.
 
 \begintt
-    gap> str := "";; a := OutputTextString(str,true);;
-    gap> Process( DirectoryCurrent(), date, InputTextNone(), a, [] );
-    0
-    gap> CloseStream(a);
-    gap> Print(str);   
-    Fri Jul 11 09:04:23 MET DST 1997
+gap> str := "";; a := OutputTextString(str,true);;
+gap> Process( DirectoryCurrent(), date, InputTextNone(), a, [] );
+0
+gap> CloseStream(a);
+gap> Print(str);   
+Fri Jul 11 09:04:23 MET DST 1997
 \endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Exec}
 
-\>Exec( <cmd>, <option1>, ..., <optionN> )
+\>Exec( <cmd>, <option1>, ..., <optionN> ) F
 
 runs a shell in the  current directory to execute  the command <cmd> with
 options <option1> ... <optionN>.
 
 \begintt
-    gap> Exec( "date" )
-    Thu Jul 24 10:04:13 BST 1997
+gap> Exec( "date" )
+Thu Jul 24 10:04:13 BST 1997
 \endtt
 
 <cmd> is  interpreted by the shell  and therefore we  can make use of the
 various features that a shell offers as in following example.
 
 \beginexample
-   gap> Exec( "echo \"GAP is great!\" > foo" );    
-   gap> Exec( "cat foo" );
-   GAP is great!
-   gap> Exec( "rm foo" );
+gap> Exec( "echo \"GAP is great!\" > foo" );    
+gap> Exec( "cat foo" );
+GAP is great!
+gap> Exec( "rm foo" );
 \endexample
+
+`Edit' (see~"Edit") should be used to call an editor from within {\GAP}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%E  streams.tex . . . . . . . . . . . . . . . . . . . . . . . . ends here
+%E
+

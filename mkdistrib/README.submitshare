@@ -1,0 +1,6 @@
+This archive contains all submitted contributions (as of the release date of
+this version of GAP), that make use of the `RequirePackage' mechanism, but
+are not yet accepted share packages.
+You should extract it in the `pkg' directory. See
+http://www-gap.dcs.st-and.ac.uk/~gap/Info4/deposit.html#psh
+more details about such user contributions.

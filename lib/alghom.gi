@@ -309,7 +309,7 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
       fi;
 
       # $A_1$
-      MB:= MutableBasisByGenerators( LeftActingDomain( A ), generators,
+      MB:= MutableBasis( LeftActingDomain( A ), generators,
                                      Zero( A ) );
       dim:= 0;
       len:= Length( origgenerators );
@@ -415,7 +415,7 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
       fi;
 
       # $A_1$
-      MB:= MutableBasisByGenerators( LeftActingDomain( A ), generators,
+      MB:= MutableBasis( LeftActingDomain( A ), generators,
                                      Zero( A ) );
       dim:= 0;
       len:= Length( origgenerators );
@@ -633,9 +633,9 @@ InstallMethod( \*,
 
 #############################################################################
 ##
-#M  AdditiveInverse( <map> )  . . . . . . . . . . . . .  for algebra g.m.b.i.
+#M  AdditiveInverseOp( <map> )  . . . . . . . . . . . .  for algebra g.m.b.i.
 ##
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
     "for algebra g.m.b.i.",
     true,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
@@ -867,7 +867,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
           a -> InducedLinearAction( ophom!.basis, a, ophom!.operation ) );
       if IsEmpty( origgenimages ) then
         I:= FLMLORWithOneByGenerators( F, origgenimages,
-                                       NullMat( F, dim, dim ) );
+                                       Immutable( NullMat( F, dim, dim ) ) );
       else
         I:= FLMLORWithOneByGenerators( F, origgenimages );
       fi;
@@ -877,7 +877,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
           a -> InducedLinearAction( ophom!.basis, a, ophom!.operation ) );
       if IsEmpty( origgenimages ) then
         I:= FLMLORByGenerators( F, origgenimages,
-                                   NullMat( F, dim, dim ) );
+                                   Immutable( NullMat( F, dim, dim ) ) );
       else
         I:= FLMLORByGenerators( F, origgenimages );
       fi;
@@ -889,7 +889,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
     maxdim:= dim^2;
 
     # $A_1$
-    MB:= MutableBasisByGenerators( F, genimages, Zero( I ) );
+    MB:= MutableBasis( F, genimages, Zero( I ) );
     dim:= 0;
     len:= Length( origgenimages );
 
@@ -914,7 +914,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
     od;
 
     # Set the desired components.
-    ophom!.basisImage:= BasisByGeneratorsNC( I, genimages );
+    ophom!.basisImage:= BasisNC( I, genimages );
     ophom!.preimagesBasisImage:= Immutable( preimages );
 end );
 
@@ -1057,7 +1057,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
 
     dim:= Length( origgenimages[1] );
     if dim = 0 then
-      ophom!.basisImage:= BasisByGeneratorsNC( I, [] );
+      ophom!.basisImage:= BasisNC( I, [] );
       ophom!.preimagesBasisImage:= Immutable( [] );
       return;
     fi;
@@ -1067,7 +1067,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
     genimages := [ One( origgenimages[1] ) ];
 
     # $A_1$
-    MB:= MutableBasisByGenerators( F, genimages, Zero( I ) );
+    MB:= MutableBasis( F, genimages, Zero( I ) );
     dim:= 0;
     len:= Length( origgenimages );
 
@@ -1092,7 +1092,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
     od;
 
     # Set the desired components.
-    ophom!.basisImage:= BasisByGeneratorsNC( I, genimages );
+    ophom!.basisImage:= BasisNC( I, genimages );
     ophom!.preimagesBasisImage:= Immutable( preimages );
     end );
 
@@ -1151,8 +1151,8 @@ InstallMethod( OperationAlgebraHomomorphism,
     if IsEmpty( basis ) then
 
       image                      := NullAlgebra( LeftActingDomain( A ) );
-      ophom!.basisImage          := BasisOfDomain( image );
-      ophom!.preimagesBasisImage := [ Zero( A ) ];
+      ophom!.basisImage          := Basis( image );
+      ophom!.preimagesBasisImage := Immutable( [ Zero( A ) ] );
 
       SetRange( ophom, image );
       SetKernelOfAdditiveGeneralMapping( ophom, A );
@@ -1162,6 +1162,21 @@ InstallMethod( OperationAlgebraHomomorphism,
 
     # Return the operation homomorphism.
     return ophom;
+    end );
+
+
+#############################################################################
+##
+#M  OperationAlgebraHomomorphism( <A>, <C> )
+##
+##  Add the default argument `OnRight'.
+##
+InstallOtherMethod( OperationAlgebraHomomorphism,
+    "for a FLMLOR and a collection (add `OnRight' argument)",
+    true,
+    [ IsFLMLOR, IsCollection ], 0,
+    function( A, C )
+    return OperationAlgebraHomomorphism( A, C, OnRight );
     end );
 
 
@@ -1180,22 +1195,7 @@ InstallOtherMethod( OperationAlgebraHomomorphism,
       IsFunction ],
     0,
     function( A, V, opr )
-    return OperationAlgebraHomomorphism( A, BasisOfDomain( V ), opr );
-    end );
-
-
-#############################################################################
-##
-#M  OperationAlgebraHomomorphism( <A>, <C> )
-##
-##  Add the default argument `OnRight'.
-##
-InstallOtherMethod( OperationAlgebraHomomorphism,
-    "for a FLMLOR and a collection (add `OnRight' argument)",
-    true,
-    [ IsFLMLOR, IsCollection ], 0,
-    function( A, C )
-    return OperationAlgebraHomomorphism( A, C, OnRight );
+    return OperationAlgebraHomomorphism( A, Basis( V ), opr );
     end );
 
 
@@ -1240,7 +1240,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
       TryNextMethod();
     fi;
 
-    BA:= BasisOfDomain( A );
+    BA:= Basis( A );
     BV:= ophom!.basis;
     opr:= ophom!.operation;
 
@@ -1295,7 +1295,7 @@ InstallMethod( RepresentativeLinearOperation,
       fi;
     fi;
 
-    B:= BasisOfDomain( A );
+    B:= Basis( A );
     vectors:= BasisVectors( B );
 
     # Compute the matrix of the equation system,
@@ -1333,7 +1333,7 @@ InstallOtherMethod( RepresentativeLinearOperation,
       fi;
     fi;
 
-    B:= BasisOfDomain( A );
+    B:= Basis( A );
     vectors:= BasisVectors( B );
 
     # Compute the matrix of the equation system,
@@ -1431,16 +1431,16 @@ InstallMethod( NaturalHomomorphismByIdeal,
     fi;
 
     # Compute a basis of `A' through a basis of `I'.
-    Ivectors:= BasisVectors( BasisOfDomain( I ) );
-    mb:= MutableBasisByGenerators( F, Ivectors );
+    Ivectors:= BasisVectors( Basis( I ) );
+    mb:= MutableBasis( F, Ivectors );
     compl:= [];
-    for gen in BasisVectors( BasisOfDomain( A ) ) do
+    for gen in BasisVectors( Basis( A ) ) do
       if not IsContainedInSpan( mb, gen ) then
         Add( compl, gen );
         CloseMutableBasis( mb, gen );
       fi;
     od;
-    B:= BasisByGeneratorsNC( A, Concatenation( Ivectors, compl ) );
+    B:= BasisNC( A, Concatenation( Ivectors, compl ) );
 
     # Compute the structure constants of the quotient algebra.
     zero:= Zero( F );
@@ -1469,7 +1469,7 @@ InstallMethod( NaturalHomomorphismByIdeal,
     canbas:= CanonicalBasis( img );
     zero:= zero * [ 1 .. n ];
     Bimgs:= Concatenation( List( [ 1 .. k ], v -> zero ),
-                           IdentityMat( n, F ) );
+                           Immutable( IdentityMat( n, F ) ) );
 
     nathom:= LeftModuleHomomorphismByMatrix( B, Bimgs, canbas );
 #T take a special representation for nat. hom.s,
@@ -1521,20 +1521,22 @@ InstallMethod( IsomorphismMatrixFLMLOR,
           imgs,  # images of `gens' under the action from the right
           dim;   # dimension of `A'
 
-    if    not IsFiniteDimensional( A )
+    if    IsSubalgebraFpAlgebra( A )   # avoid to call `IsFiniteDimensional'
+                                       # in this case
+       or not IsFiniteDimensional( A )
        or not IsAssociative( A )
        or MultiplicativeNeutralElement( A ) = fail then
       TryNextMethod();
     fi;
 
-    B:= BasisOfDomain( A );
+    B:= Basis( A );
     F:= LeftActingDomain( A );
 
     if IsEmpty( B ) then
 
       # Handle the case that `A' is trivial.
       I:= NullAlgebra( F );
-      map:= LeftModuleHomomorphismByImagesNC( A, I, B, BasisOfDomain( I ) );
+      map:= LeftModuleHomomorphismByImagesNC( A, I, B, Basis( I ) );
       SetRespectsMultiplication( map, true );
 
     else
@@ -1547,7 +1549,7 @@ InstallMethod( IsomorphismMatrixFLMLOR,
       imgs:= List( gens, a -> InducedLinearAction( B, a, OnRight ) );
       if IsEmpty( imgs ) then
         dim:= Dimension( A );
-        imgs[1]:= NullMat( F, dim, dim );
+        imgs[1]:= Immutable( NullMat( F, dim, dim ) );
       fi;
       I:= FLMLORByGenerators( F, imgs );
       UseIsomorphismRelation( A, I );
@@ -1602,7 +1604,7 @@ InstallMethod( IsomorphismMatrixFLMLOR,
 ##  algebra.
 ##
 InstallMethod( IsomorphismFpFLMLOR,
-    "for a finite dimensional associative FLMLOR-with-one",
+    "for a finite dimensional FLMLOR-with-one",
     true,
     [ IsFLMLORWithOne ], 0,
     function( A )
@@ -1656,7 +1658,7 @@ InstallMethod( IsomorphismFpFLMLOR,
     fi;
 
     # $A_1$
-    MB:= MutableBasisByGenerators( LeftActingDomain( A ), generators,
+    MB:= MutableBasis( LeftActingDomain( A ), generators,
                                    Zero( A ) );
     dim:= 0;
     len:= Length( Agens );
@@ -1698,7 +1700,7 @@ InstallMethod( IsomorphismFpFLMLOR,
 
     od;
 
-    B:= BasisByGeneratorsNC( A, generators );
+    B:= BasisNC( A, generators );
     dim:= Length( generators );
 
     # Construct the relators given by the multiplication table.
@@ -1778,5 +1780,5 @@ InstallMethod( IsomorphismFpFLMLOR,
 
 #############################################################################
 ##
-#E  alghom.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

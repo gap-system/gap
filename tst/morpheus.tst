@@ -59,14 +59,14 @@ gap> autd8 := AutomorphismGroup( d8 );;
 gap> Size(autd8);
 8
 gap> DisplayCompositionSeries(AutomorphismGroup(SymmetricGroup(3)));
-Group
+G (size 6)
  | Z(2)
-Group
+S (1 gens, size 3)
  | Z(3)
-Group
+1 (size 1)
 
 # that's all, folks
-gap> STOP_TEST( "morpheus.tst", 1835321121 );
+gap> STOP_TEST( "morpheus.tst", 656842500 );
 
 #############################################################################
 ##

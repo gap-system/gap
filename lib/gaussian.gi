@@ -40,9 +40,9 @@ InstallMethod( \in,
 
 #############################################################################
 ##
-#M  BasisOfDomain( GaussianIntegers ) . . . . . . . . . for Gaussian integers
+#M  Basis( GaussianIntegers ) . . . . . . . . . . . . . for Gaussian integers
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for Gaussian integers",
     true,
     [ IsGaussianIntegers ], 0,
@@ -342,6 +342,5 @@ InstallMethod( Factors,
 
 #############################################################################
 ##
-#E  gaussian.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
+#E
 

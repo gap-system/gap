@@ -1,241 +1,520 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %W  sharepkg.tex              GAP documentation             Werner Nickel
+%W                                                       Alexander Hulpke
 %%
 %H  @(#)$Id$
 %%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Chapter{Share Packages}
+\Chapter{Writing a Share Package}
 
-A {\GAP} share package is  a part of  the {\GAP} distribution that is not
-automatically   available when  {\GAP}  is  started.  A  share package is
-activated by the  function  RequirePackage().  Share packages  reside  in
-subdirectories of the directory pkg which itself is one of about a dozend
-subdirectories of a typical {\GAP} installation.
-
-A share package extends  the functionality of   {\GAP} as defined by  the
-{\GAP} kernel,  the   {\GAP}  library  and  the  various  data libraries.
-Typically, a share package includes one or more standalone programs which
-perfom tasks that either are not available in  {\GAP} or can be performed
-much faster by purpose written programs.  However, this is not always the
-case:  some share library packages   are entirely  written in the  {\GAP}
-language.
-
-The responsibility  and copyright of  a share  package remains  with  the
-original author while the responsibility of  the rest of {\GAP} lies with
-the {\GAP} developer team.  A share package undergoes a formal refereeing
-process before it becomes part  of the {\GAP} distribution.  This process
-is in many ways similar to the refereeing process of a paper submitted to
-a  journal.    It assesses the quality  and   usefulness of the submitted
-package and makes sure  that it can be  started and runs smoothly.  Share
-packages  should  be submitted to  the  chairman of   the {\GAP} council,
-Prof. Charles Wright.
-
-A share package is the way to make software written by (groups of) {\GAP}
-users available to the computational community.
-
-While much effort has  been spent on making {\GAP}  available on  as many
-platforms as  possible, the same is  not always  true for share packages.
-Share packages that consist entriely  of {\GAP} code  can be used on  any
-platform where  {\GAP}  runs.   However,   share  packages that   contain
-standalone programs often run only in a UNIX environment.
+This chapter explains the basics of how to write a share package so that it
+interfaces properly to {\GAP}.
+For the role of share packages and the ways to load them,
+see Chapter~"ref:Share Packages" in the Reference Manual.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Structure of a Share Package}
 
-Every  share  package is  in  a subdirectory of  the  directory pkg which
-itself  is a subdirectory of a  {\GAP} root directory.  This directory os
-called the home   directory  of the share   package.  *The  name of  this
-directory is  the name of the  share  package.* It is  this name  that is
-passed as  the only argument  to   RequirePackage() when the  package  is
-loaded.  The share package directory must contain a file called 'init.g'.
-This is the only file of a share library package that is directly read by
-the  function RequirePackage().   'init.g' contains  the necessary {\GAP}
-code  to setup all that  the share package  needs.  In addition, the home
-directory can  contain other files and  subdirectories.  It is  usually a
-good idea to follow the general example  of the subdirectory structure of
-the {\GAP} root directory.  Although  this is not strictly necessary,  it
-makes it easier to  look through a  share package and some administrative
-functions for share packages rely  on it.  Typically  there are at  least
-two  subdirectories call 'lib' and  'doc'.  The first contains files with
-{\GAP} code and corresponds to the  {\GAP} library directory.  The second
-contains the manual and documentation of the share package.  If the share
-package  has  standalone programs,  it  should have a subdirectory called
-'bin'  that contains the  executables.  This directory is subdivided into
-several others.   Refer  to the section   standalone programs for  a more
-detailed explanation.   In this  case  there might  also  be  a directory
-called 'src'  containing the source code of  the  standalone programs and
-instructions for their compilation.
+Every share package is in a subdirectory of the directory `pkg' which
+itself is a subdirectory of a {\GAP} root directory
+(see~"ref:GAP Root Directory"). This directory is
+called the home directory of the share package. *The name of this
+directory is the name of the share package.*
 
+The home directory of the share package must contain a file
+`init.g'. This file contains the necessary {\GAP} code to set up all
+that the share package needs. Section "The Init File of a Share
+Package" explains how such an `init' file must look. If declaration
+and implementation are separated (see "Declaration and Implementation
+Part") or if completion (see "Package Completion") is used
+there also will be a second file `read.g' which reads in
+further files.)
 
-To illustrate this, create  the following directories  in your home area:
-'pkg' and  'pkg/example'.  Inside the directory  'example'  create the
-file 'init.g' with the single line
+In addition, the home directory can contain other files and
+subdirectories. It is usually a good idea to follow the general
+example of the subdirectory structure of the {\GAP} root directory.
+Although this is not strictly necessary, it makes it easier to look
+through a share package and some administrative functions for share
+packages rely on it.
+
+Typically there are at least two subdirectories called `lib' and
+`doc'. The first contains files with {\GAP} code and corresponds to
+the {\GAP} library directory. The second contains the manual and
+documentation of the share package.
+
+If the share package has stand-alone programs, it should have a
+subdirectory called `bin' that contains the executables. This
+directory is subdivided into several others. Refer to section
+"Standalone Programs in a Share Package" on stand-alone programs for a
+more detailed explanation. In this case there might also be a
+directory called `src' containing the source code of the stand-alone
+programs and instructions for their compilation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Init File of a Share Package}
+
+The initialization file of a share package is a file `init.g' in the
+home directory of the share package. This file tells {\GAP} about the
+version number of the share package, about the documentation and about
+the actual code. It is a proper {\GAP} file (so syntax and comments
+are standard), but only the following {\GAP} functions may be called
+(if further functions are called the loading process, which proceeds
+in two stages, may not work):
+
+The first command in the file will be a call to `DeclarePackage' (see
+"ref:DeclarePackage" in the Reference Manual). This indicates the package's
+version number and permits to test whether necessary external binaries or
+other share packages are installed. If instead `DeclareAutoPackage'
+(see~"ref:DeclareAutoPackage" in the Reference Manual) is called, the
+package will be loaded automatically when {\GAP} has started. (To be exact:
+{\GAP} loads the library, then reads the users `gaprc' file and then loads
+the share packages which are intended for automatic loading and which are
+not yet loaded via the users `gaprc' file.)
+
+At the moment automatic loading is only available for the packages listed
+in the file `pkg/ALLPKG'. This is due to the fact that there is no standard
+C-Function that will list the contents of a subdirectory.
+
+The next command will be a call to `DeclarePackageDocumentation' (see
+"ref:DeclarePackageDocumentation" in the Reference Manual) to indicate the
+location of the share packages documentation to {\GAP}. If instead
+`DeclarePackageAutoDocumentation' (see "ref:DeclarePackageAutoDocumentation"
+in the Reference Manual) is called, the documentation will be read
+automatically when {\GAP} starts (however `RequirePackage' still has to be
+used to load the actual package in case the first command in the file is
+`DeclarePackage').
+
+If the package requires other share packages (see "Requesting one Share
+Package from within Another") this is followed by calls to `RequirePackage'.
+
+Finally, calls to `ReadPkg' will read files which contain the actual {\GAP}
+functions the package provides.
+
+To separate declaration and implementation parts, for larger packages it is
+recommended to only load the declaration part from within `init.g' and to
+use the separate `read.g' file to load the implementation part.
+See sections~"Declaration and Implementation Part" and~"Package Completion"
+for details.
+
+For example this is the `init.g' file of a simple ``test'' share package:
+
 \begintt
-'Print( "reading the init file of share package example" )'
+# announce the package version
+DeclarePackage("test","1.0",ReturnTrue);
+
+# install the documentation
+DeclarePackageDocumentation( "test", "doc" );
+
+# read the actual code.
+ReadPkg( "test", "gap/code.g");
 \endtt
-The next bit is a  bit tricky because you have  to find out what the root
-directories  of  {\GAP} on your   system are.  This   is done by starting
-{\GAP} and looking   at the variable  'GAP_ROOT_PATHS'.  This  a list  of
-directories which {\GAP} searches upon startup for things like the {\GAP}
-library.
+
+This file installs the share package ``test'' in version 1.0. There
+are no requirements that have to be tested, so `ReturnTrue' is used as
+test function. It then installs documentation for the share package,
+which can be found in the `doc' subdirectory. Finally, it reads the
+file `code.g' in the `gap' subdirectory, which contains the actual
+code.
+
+If the package author wants the share package to display a separate
+banner the printing of the banner must be issued from within a file
+which will be read via `ReadPkg' from the `init.g' file. If the share
+package is intended for automatic loading we however recommend not to print
+any separate banner as the user will get a list of the loaded share packages
+at the end of the initialization process.
+
+A share package which has been loaded once
+cannot be unloaded and also cannot be loaded again.
+When  writing (and debugging) a share package it may be therefore
+helpful to use  `RereadPkg' on single  files or to use a separate
+``reader'' file which does not use the `RequirePackage' mechanism.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{An Example of a Share Package}
+
+We illustrate the creation of a share package by an example of a basic
+share package. (The following assumes that you are using {\GAP} under UNIX.)
+
+Create the following  directories in your home area:  `pkg' and
+`pkg/test'. Inside the directory `test' create the file `init.g' with
+the lines
+
+\begintt
+DeclarePackage("test","1.0",ReturnTrue);
+ReadPkg( "test", "banner.g");
+\endtt
+and create a file `banner.g' containing the single line
+\begintt
+Print( "#I reading the share package ``test''\n" );
+\endtt
+
+The next bit is a bit tricky because you have to find out what the
+root directories of {\GAP} on your system are.  This is done by
+starting {\GAP} and looking at the variable `GAP_ROOT_PATHS'. This a
+list of directories which {\GAP} searches upon startup for things like
+the {\GAP} library.
+
 \begintt
 gap> GAP_ROOT_PATHS;
 [ "/gap/4.0/" ]
 \endtt
 Now start {\GAP} with the command 
-\beginitems
-gap -l \"./;/gap/4.0/\"
-\enditems
-The  string between the  pair  of double quotes    are the components  of
-'GAP_ROOT_PATHS' seperated by semicolons.  We have added at the beginning
-the string  './' denoting the  current directory.  This  adds the current
-directory to the list of {\GAP} root directories.   Now you can load your
-`share package':
-\beginitems
-gap> RequirePackage("example");
-\#I  Reading init file of the share package example.
-\enditems
-This share package is too  simple to be useful, but  we have succeeded in
-loading it via 'RequirePackage()'.
+\begintt
+gap -l "./;/gap/4.0/"
+\endtt
 
+The string between the pair of double quotes gives the components of
+`GAP_ROOT_PATHS' separated by semicolons. We have added at the beginning
+the string `./' denoting the current directory. This adds the current
+directory to the list of {\GAP} root directories.  Now you can load your
+share package `test':
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Writing a Share Package}
+\begintt
+gap> RequirePackage("test");
+#I reading the share package ``test''
+true
+\endtt
+
+This share package is too simple to be useful, but we have succeeded in
+loading it via `RequirePackage()'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Standalone Programs in a Share Package}
 
-Share  packages  that    involve standalone  programs  are  fundamentally
-different from  share packages  that  consist entirely of  {\GAP}  code.
-There are two reasons  for this: the  input data has  to passed on to the
-standalone  program and the standalone   program  has to be started  from
-within {\GAP}.
+Share packages that  involve stand-alone programs are fundamentally
+different from share packages that consist entirely of {\GAP} code.
 
-There are two principal ways of doing this.  The first possibility is to
-write all the data for the standalone to one or several files, then start
-the standalone which then writes the output data to file and finally read
-in the standalone's output file.  
+This difference is threefold: A  user who installs the share package
+must also  compile (or install) the packages  binaries, the share
+package must  check whether the binaries  are indeed available and
+finally the {\GAP} code of the share package has to start the external
+binary and to communicate with it. We will treat these three points in
+the following sections.
+
+If the package does not solely consist of an interface to an external
+binary and if the external program called is not just special-purpose
+code, but a generally available program, chances are high that sooner
+or later other share packages might also require this program.
+
+We therefore strongly suggest to provide a documented {\GAP} function
+that will call the external binary. We also suggest to create actually
+two share  packages; the first providing only the binary and the
+interface and the second (requiring the first, see "Requesting one
+Share Package from within Another") being the actual share package.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Relevant Functions}
+\Section{Installation of Share Package Binaries}
 
-\>RequirePackage( <name> )
+The scheme for the installation of package binaries which is described
+further on is intended to permit  the installation on different
+architectures which  share a common file  system (and share the
+architecture independent file).
 
-checks if the share package with name <name> has been initialised earlier
-in  which   case  nothing  happens.   Otherwise    the share   package is
-initialised  by reading the file  'init.g'  from the corresponding  share
-package directory.
-
-Often when you are debugging  a share package, it  happens that you would
-like to  reread the package.  {\GAP}  keeps  track of  the share packages
-that have been  initialized by  the variable  LOADED_PACKAGES.   It is  a
-record   that   contains one component for    each   share package.  This
-component  contains the directory where the  share package  resides -- or
-more specifically, where its  init.g    file is.   In our example,    the
-following would happen:
-\begintt
-vgap> LOADED_PACKAGES;
-rec(
-  example := [ dir("/home/werner/Gap/4.0/pkg/example/") ] )
-\endtt
-To reread to package, do the following:
-\begintt
-gap> Unbind( LOADED_PACKAGES.example ); 
-gap> RequirePackage( "example" );
-#I  Reading init file of the share package example
-\endtt
-
-\>ReadPkg( <name>, <file> )
-
-reads a file of the share package <name>.  The file name <file> is
-relative to the home directory of the share package.
-
-\>DeclarePackageDocumentation( <name> )
-
-adds the share package's documentation to the online help.
-
-\>ReadAsFile( <filename> )
-%LastSystemError()
-
-\>DirectoriesPackagePrograms( <name> )
-
-takes the name of a share package and locates the directory where itsn
-executable programs are.
+A share package  which includes external binaries contains a `bin'
+subdirectory. This subdirectory in turn contains subdirectories for
+the different architectures on which the share package binaries are
+installed.  The names of these directories must be the same as the
+names of the architecture dependent subdirectories of the main `bin'
+directory. Unless you use a tool like `autoconf' yourself, you must
+obtain the correct name of the binary directory from the main {\GAP}
+branch. To help with this, the main {\GAP} directory contains a file
+`sysinfo.gap' which assigns the shell variable `GAParch' to the proper
+name as determined by {\GAP}'s `configure' process. For example on a
+Linux system, the file `sysinfo.gap' may  look like this:
 
 \begintt
-gap> DirectoriesPackagePrograms( "nq" );    
-[ dir("/home/werner/Gap/4.0/pkg/nq/bin/i686-unknown-linux2.0.30-gcc/") ]
+GAParch=i586-unknown-linux2.0.31-gcc
 \endtt
 
-\>DirectoriesPackageLibrary( <name>, [<path>] )
+We suggest that your share package contains a file `configure' which
+is  called with the  path of  the  {\GAP} root directory  as
+parameter. This file then  will  read `sysinfo.gap' and set  up
+everything for compiling under the given architecture (for example
+creating a `Makefile' from `Makefile.in'.
 
-takes  the name of a share  package and locates  the library functions of
-the share package.  The default is that the  library functions are in the
-subdirectory 'lib' of the share package's home directory.  If this is not
-the case, then the  second  argument needs to   be present and specify  a
-string that is  a path name relative to  the home directory of  the share
-package.
+The standard {\GAP} distribution contains a share package ``example''
+whose installation script shows an example way of how to do this.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Test for the Existence of Share Package Binaries}
+
+If an external binary is essential for the  workings of a share package, the
+test function called  from `DeclarePackage' should test whether the program
+has been compiled on the architecture (and inhibit package loading if this
+is not the case). This is especially important if the package is loaded
+automatically.
+
+The easiest way to accomplish this is to use `Filename' (see "ref:Filename"
+in the Reference Manual) for checking for  the actual binaries in the path
+given by `DirectoryPackagePrograms'  for the respective package. For example
+the ``example'' share package uses the following commands to test whether
+the binary `hello' has been compiled, it issues a warning if not and will
+only load if it is indeed available.
 
 \begintt
-gap> DirectoriesPackageLibrary( "example", "gap" );  
-[ dir("/home/werner/Gap/4.0/pkg/example/gap/") ]
+DeclarePackage("example","1.0",
+  function()
+  local path,file;
+    # test for existence of the compiled binary
+    path:=DirectoriesPackagePrograms("example");
+    file:=Filename(path,"hello");
+    if file=fail then
+      Info(InfoWarning,1,
+        "Package ``example'': The program `hello' is not compiled");
+    fi;
+    return file<>fail;
+  end);
 \endtt
+
+You might also have to cope with the situation that external binaries will
+only run under UNIX (and not, say on a Macintosh). See section~"ref:Testing
+for the System Architecture" in the reference manual for information on how
+to test for the architecture.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Calling of and Communication with External Binaries}
+
+There are two reasons for this: the input data has  to be passed on to
+the stand-alone program and the  stand-alone program  has to be  started
+from within {\GAP}.
+
+There are two principal ways of doing this.  
+
+The first possibility is to write  all the data  for the stand-alone to
+one or several files, then start the stand-alone  which then writes the
+output data to file and finally read in the standalone's output file.
+
+The second way is interfacing via streams (see chapter~"ref:Streams" in the
+reference manual). The support for this however is not yet fully implemented.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Requesting one Share Package from within Another}
+
+It is possible for one share package to require another. In principle this
+can be simply done by calling `RequirePackage' from the `init' file of the
+one share package. However, the other package might be essential and we
+might want to fail loading if the other package is not available. To achieve
+this,  the <tester> function in `DeclarePackage' can call
+`TestPackageAvailability'  (see "ref:TestPackageAvailability") and check,
+whether it returns `fail' or not.
+
+(If the other share package is not compulsory, it is also possible to leave
+out the `TestPackageAvailability' command and only to call `RequirePackage'
+later in the `init.g' file. In this case the other share package will be
+loaded if available but if this is not the case this will not inhibit
+loading of the first package. See "Testing for a Share Package".)
+
+Even if we tested the availability of another package this way, we
+still  need to eventually load the other package using
+`RequirePackage'. This might initially look like having to do the same
+work twice. The reason of this split between testing availability and
+package loading is to ensure the possibility of two share packages
+compulsory requesting each other.
+
+For example, the `init.g' file of a share package ``test'', which requires
+the share package ``example'' in at least version 2.3 would look like:
+
+\begintt
+DeclarePackage("test","1.0",
+  function()
+  local a;
+    a:=TestPackageAvailability("example","2.3");
+    if a=fail then
+      Info(InfoWarning,1,"required share package ``example'' not available");
+    fi;
+    return a<>fail;
+  end
+  );
+
+DeclarePackageDocumentation( "test", "doc" );
+
+RequirePackage("example","2.3");
+
+ReadPkg( "test", "gap/read.g");
+\endtt
+
+If the share package ``example'' was not available (or only available in an
+older version), the installation of the package ``test'' would fail, no code
+would be read in and no documentation would be installed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Declaration and Implementation Part}
+
+When  share   packages  require  each other    in  a  circular  way, a
+``bootstrapping'' problem arises of defining functions before they are
+called. The same  problem occurs in the  library, it is resolved there
+by separating declarations (which  define categories, operations etc.)
+and   implementations (which install methods)   in different files. An
+implementation  file may use   declarations defined in any declaration
+file.   {\GAP} initially reads all  declaration  files (in the library
+they have a `gd' suffix) and afterwards reads all implementation files
+(which have a `gi' suffix).
+
+Something similar  is possible for  share packages: if a file `read.g'
+exists in the same place as `init.g',  this `read.g' file is read only
+*after*  all  the `init.g' files   of  all (implicitly) required share
+packages  are read.  Therefore  it is possible to separate declaration
+and implementation for a share package in the same way as done for the
+library  by  creating  such  a file   `read.g',   and restricting  the
+`ReadPkg' statements  in  `init.g' to  only load   those  files of the
+package which provide declaration and to load the implementation files
+from `read.g'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Package Completion}
+
+Reading a larger package can take a few moments and will take up user
+workspace. This might be a nuisance to users, especially if the package is
+loaded automatically.
+The same problem of course affects the library, the problem there is solved
+using completion files (see~"ref:completion files" in the reference manual).
+
+Completion files make it possible to read only short function headers
+initially which are completed to full functions only if the functions are
+actually called.  This section explains how to set up completion for a share
+package:
+
+Completion works for those files which are read (using `ReadPkg')
+from the `read.g' file. (This is no real restriction as completion affects
+only the implementation part.) To create completion files, load the share
+package. Then issue the command
+
+\>CreateCompletionFilesPkg(<pkgname>)
+
+This will create a new file `read.co' in the share packages home directory
+(so you must have write permissions there). When reading the share package
+this file is used in place of `read.g' if it exists and automatically takes
+care of completion.
+
+When you change files which are completed, {\GAP} will complain about
+non-matching CRC files and will not load them. In this case remove
+the `read.co' file and create it anew.
+
+As a share package author you should consider including a completion file
+with the package.
+
+If you start {\GAP} with the command line option `-D', it displays
+information about reading and completion, the command line option `-N' turns
+completion off (as if all `.co' files were erased).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Version Numbers}
+
+A version number is a string which contains nonnegative integers separated
+by the characters `.' or `-'. Examples of valid version numbers are for
+example
+
+\begintt
+"1.0"   "3.141.59"  "2-7-8.3"
+\endtt
+
+Version numbers are interpreted as lists of integers and are compared in
+that way. Thus version `"2-3"' is larger than version `"2-2-5"' but smaller
+than `"11.0"'.
+
+It is possible for code to require share packages in certain versions. In
+this case, all versions, whose number is equal or larger than the requested
+number are acceptable. It is the task of the package author to provide
+upwards compatibility.
+
+The global variable `VERSION' contains the version number of the version of
+{\GAP} and also can be checked against (using `CompareVersionNumbers', see
+"ref:CompareVersionNumbers" in the Reference Manual).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Testing for a Share Package}
+
+There are two ways in which one might want to test for a share package. 
+
+The first is whether a package is available for loading or has been loaded.
+This can be done via the function `TestPackageAvailability' (see
+"ref:TestPackageAvailability" in the Reference Manual). 
+
+In order to test whether a share package <name> has been loaded already, you
+can check the global variable `LOADED_PACKAGES' for a record component
+`LOADED_PACKAGES.(<name>)'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Writing Documentation}
 
-DeclarePackageDocumentation;
-The format of the documentation
+The format of the documentation is described in chapter "Manual format". The
+documentation files provided with the share package must contain the
+`manual.tex' file to actually run {\TeX} over the manual, the separate
+{\TeX} files for the manual chapters and the file `manual.six', produced by
+running {\TeX}. This file is used by the online help to get the index
+information. It may also be helpful to add a pre{\TeX}ed `dvi' or `ps' file
+of the package's manual.
 
-%%  `text'   set text in typewriter style (use `\<' instead of `<')
-%%  <text>   set text in italics (use $\<$ instead of $<$ for less than)
-%%  *text*   set text in emphasized style (i.e. slanted)
-%%  $a.b$    same as $a \cdot b$ (use $\.$ instead of $.$ for full stop)
-%%  "ref"    refer to a label (like "function!for category")
-%%  \cite{.} make a citation
-%%  \index{.} \indextt{.} make index entry (\indextt in typewriter style)
-%%
-%%  \beginitems         produce itemized texts with 3pc hanging indentation
-%%    item & text
-%%
-%%    item & text ...
-%%  \enditems
-%%
-%%  \begintt            verbatim text in typewriter style (`|' is
-%%    verbatim material   temporary escape character, a line
-%%  \endtt                `|_' allows a page break)
-%%  \beginexamplett     verbatim text in typewriter style (`|' is
-%%    verbatim material   temporary escape character, a line
-%%  \endtt                `|_' allows a page break)
-%%
-%%  \Input{file}  includes file `file.tex' (not recommended for appendices)
-%%  \Chapter title \par
-%%  \Section{title} \par
-%%      make  chapter  or section   title. Automatically  generates  table of
-%%      contents. \null after \Section{...} inhibits indexing.
-%%  \>function( arguments )!{ index subentry }
-%%  \>`a binop b'{binary operation}!{ index subentry }
-%%      make a  heading for a subsection   explaining a function  or a binary
-%%      operation. This automatically generates   a label and an  index entry
-%%      (with optional subentry).
-%%  \){\fmark ...}
-%%      the same without label and index entry
-%%
-%%  \BeginningOfBook
-%%  \FrontMatter, \Chapters, \Appendices     parts of the book
-%%  \Bibliography, \Index, \TableOfContents  make these chapters (w/o head)
-%%  \EndOfBook
-%%
-
+The main directory of the share package should also contain a file `INSTALL'
+or `README' that tells the user shortly what the share package does and (if
+applicable) how to compile and install binaries.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%E  Emacs . . . . . . . . . . . . . . . . . . . . . local emacs variables
-%%
-%%  Local Variables:
-%%  fill-column:    73
-%%  End:
-%%
+\Section{Wrapping Up a Share Package}
+
+The releases of share packages are independent of releases of {\GAP}.
+Therefore share packages should be wrapped up in separate files that can be
+installed onto any version of {\GAP}. Similarly a share package can be
+upgraded any time without the need to wait for new releases of {\GAP}.
+
+Because it is independent of the version of {\GAP} a share package should be
+archived from the {\GAP} `pkg'  directory, that is all files are archived with
+the path starting the package's name.
+
+The archive of a share package should contain all files necessary for the
+share package to work. This includes a `manual.six' file in the
+documentation subdirectory which is created by {\TeX}ing the documentation.
+If the package provides a substantial amount of code,
+especially if it is intended to be loaded automatically, create a completion
+file (see~"Package Completion") and include it with the package.
+
+We use the `ZOO' archiver to provide {\GAP} archives and we ask you to
+use this format for your share packages. If `zoo' is not installed on your
+system, you can get source code for example at
+\begintt
+ftp://ftp.tex.ac.uk/pub/archive/tools/zoo
+\endtt
+
+`ZOO' by itself archives all files as binary files. This may lead to minor
+problems when viewing files on DOS or Macintosh systems, which use a
+different textfile format (CRLF versus LF). To overcome such problems we use
+the following mechanism for the {\GAP} archive files, which is supported by
+the `unzoo' we are providing (but is unfortunately not part of the standard
+`ZOO' format):
+
+All files are archived as Unix versions. (If you are using a Windows PC or a
+Macintosh the easiest way to achieve this is to ftp the files in text mode
+to a Unix machine and do the archiving there.)
+
+In `ZOO' one can add comments to files. Whenever a file gets a comment
+`!TEXT!' this file  will be considered as text (respectively one can enforce
+binary mode by a `!BINARY' comment) and `unzoo' will extract it accordingly,
+adding a CR on non-Unix systems.
+
+If you are using the standard UNIX version of `zoo' the command
+\begintt
+zoo c archive.zoo filename
+\endtt
+will prompt you for a comment to add to the file <filename> in the archive
+`archive.zoo'. You will enter for example
+\begintt
+!TEXT!
+/END
+\endtt
+
+Normally, all files of a share package except `dvi' files or special binary
+files are text files.
+
+If you are unsure about the format, you can use the ``list'' feature of
+`ZOO' on an existing package (for example `XGAP') to see all files with
+comments:
+\begintt 
+zoo lc xgap.zoo
+\endtt 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
+%E
+

@@ -8,18 +8,35 @@
 %%
 \Chapter{Mappings}
 
+\index{functions}
+\index{relations}
+A *mapping* in {\GAP} is what is called a ``function'' in mathematics.
+{\GAP} also implements *generalized mappings* in which one element might
+have several images, these can be imagined as subsets of the cartesian
+product and are often called ``relations''.
+
+Most operations are declared for general mappings and therefore this manual
+often  refers to ``(general) mappings'', unless you deliberatily need the
+generalization you can ignore the ``general'' bit and just read
+it as ``mappings''.
+
 \FileHeader{mapping}[1]
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+For mappings which preserve an algebraic structure a *kernel* is defined.
+Depending on the structure preserved the operation to compute this kernel is
+called differently, see section~"Mappings which are Compatible with Algebraic
+Structures".
 
-\Declaration{IsGeneralMapping}
-\Declaration{IsConstantTimeAccessGeneralMapping}
-\Declaration{IsEndoGeneralMapping}
+Some technical details of general mappings are described in section~"General
+Mappings".
+
+%%  The general support for mappings is due to Thomas Breuer.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Creating mappings}
+\Section{Creating Mappings}
 
 \Declaration{GeneralMappingByElements}
+\Declaration{MappingByFunction}
 
 \Declaration{CompositionMapping}
 \Declaration{CompositionMapping2}
@@ -30,8 +47,10 @@
 \Declaration{Embedding}
 \Declaration{Projection}
 
+\Declaration{RestrictedMapping}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Properties and Attributes of (general) mappings}
+\Section{Properties and Attributes of (General) Mappings}
 
 \Declaration{IsTotal}
 \Declaration{IsSingleValued}
@@ -47,7 +66,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Images under mappings}
+\Section{Images under Mappings}
 
 \Declaration{ImagesSource}
 \Declaration{ImagesRepresentative}
@@ -58,7 +77,7 @@
 \Declaration{Images}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Preimages under mappings}
+\Section{Preimages under Mappings}
 
 \Declaration{PreImagesRange}
 \Declaration{PreImagesElm}
@@ -69,10 +88,16 @@
 \Declaration{PreImages}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Structure preserving mappings}
+\Section{Arithmetic Operations for General Mappings}
+
+\FileHeader{mapping}[3]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mappings which are Compatible with Algebraic Structures}
 
 From an algebraical point of view, the most important mappings are those
-which preserve a structure. {\GAP} supports four types of such mappings:
+which are compatible with a structure. For Magmas, Groups and Rings, {\GAP}
+supports the following four types of such mappings:
 
 1. General mappings that respect multiplication
 
@@ -82,18 +107,34 @@ which preserve a structure. {\GAP} supports four types of such mappings:
 
 4. General mappings that respect multiplicative and additive structure
 
+(Very technical note: GAP defines categories `IsSPGeneralMapping' and
+`IsNonSPGeneralMapping'. The distinction between these is orthogonal to the
+Structure Compatibility described here and should not be confused.)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Group Homomorphisms}
+\Section{Magma Homomorphisms}
+
+\Declaration{IsMagmaHomomorphism}
+\Declaration{MagmaHomomorphismByFunctionNC}
+\Declaration{NaturalHomomorphismByGenerators}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mappings that Respect Multiplication}
 
 \Declaration{RespectsMultiplication}
-\Declaration{RespectsInverses}
 \Declaration{RespectsOne}
+\Declaration{RespectsInverses}
+Mappings that are defined on a group and respect multiplication and inverses
+are group homomorphisms. Chapter~"Group Homomorphisms" explains them in more
+detail.
+
 \Declaration{IsGroupGeneralMapping}
+
 \Declaration{KernelOfMultiplicativeGeneralMapping}
 \Declaration{CoKernelOfMultiplicativeGeneralMapping}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Additive Group Homomorphisms}
+\Section{Mappings that Respect Addition}
 
 \Declaration{RespectsAddition}
 \Declaration{RespectsAdditiveInverses}
@@ -103,7 +144,7 @@ which preserve a structure. {\GAP} supports four types of such mappings:
 \Declaration{CoKernelOfAdditiveGeneralMapping}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Linear mappings}
+\Section{Linear Mappings}
 
 \Declaration{RespectsScalarMultiplication}
 \Declaration{IsLeftModuleGeneralMapping}
@@ -121,11 +162,19 @@ which preserve a structure. {\GAP} supports four types of such mappings:
 \Declaration{IsFieldHomomorphism}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Technical matters}
+\Section{General Mappings}
+
+\Declaration{IsGeneralMapping}
+\Declaration{IsConstantTimeAccessGeneralMapping}
+\Declaration{IsEndoGeneralMapping}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Technical Matters Concerning General Mappings}
 
 \FileHeader{mapping}[2]
 
-\Declaration{IsGeneralMappingCollection}
+\Declaration{IsSPGeneralMapping}
+
 \Declaration{IsGeneralMappingFamily}
 \Declaration{FamilyRange}
 \Declaration{FamilySource}
@@ -133,4 +182,9 @@ which preserve a structure. {\GAP} supports four types of such mappings:
 \Declaration{GeneralMappingsFamily}
 \Declaration{TypeOfDefaultGeneralMapping}
 
+\FileHeader{mapping}[4]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
 

@@ -9,133 +9,176 @@
 %%
 \Chapter{Strings and Characters}
 
-A *character* is simply an object in {\GAP} that represents an arbitrary
-character from the character set of the operating system. Character
-literals can be entered in {\GAP} by enclosing the character in
-*singlequotes* `{'}'.
-
 \index{type!strings}
 \index{doublequotes}
+\index{singlequotes}
 
+\Declaration{IsChar}
 \beginexample
-gap> `a';
-`a'
-gap> `*';
-`*'
+gap> x:= 'a';  IsChar( x );
+'a'
+true
+gap> '*';
+'*'
 \endexample
 
-A *string* is simply a dense list of characters. Strings are used mainly
-in filenames and error messages. A string literal can either be entered
-simply as the list of characters or by writing the characters between
-*doublequotes* `\"'. {\GAP} will always output strings in the latter
-format.
-
+\Declaration{IsString}
 \beginexample
-gap> s1 := ['H','a','l','l','o',' `,'w','o','r','l','d','.'];
-"Hallo world."
-gap> s2 := "Hallo world.";
-"Hallo world."
+gap> s1 := ['H','e','l','l','o',' ','w','o','r','l','d','.'];
+"Hello world."
+gap> IsString( s1 );
+true
+gap> s2 := "Hello world.";
+"Hello world."
 gap> s1 = s2;
 true
 gap> s3 := "";
-"" # the empty string
+""           # the empty string
 gap> s3 = [];
-true 
+true
+gap> IsString( [] );
+true
+gap> IsString( "123" );  IsString( 123 );
+true
+false
+gap> IsString( [ '1', '2', '3' ] );
+true
+gap> IsString( [ '1', '2', , '4' ] );  IsString( [ '1', '2', 3 ] );
+false        # strings must be dense
+false        # strings must only contain characters
 \endexample
 
-Note that a string is just a special case of a list. So everything that
-is possible for lists (see "Lists") is also possible for strings. Thus
-you can access the characters in such a string (see "List Elements"),
-test for membership (see "In"), etc. You can even assign to such a
-string (see "List Assignment"). Of course unless you assign a character
-in such a way that the list stays dense, the resulting list will no
-longer be a string.
+Note that a string is just a special case of a list.
+So everything that is possible for lists (see~"Lists") is also possible
+for strings.
+Thus you can access the characters in such a string (see~"List Elements"),
+test for membership (see~"Membership Test for Collections"),
+ask for the length, concatenate strings (see~"Concatenation"),
+form substrings etc.
+You can even assign to a mutable string (see~"List Assignment").
+Of course unless you assign a character in such a way that the list stays
+dense,
+the resulting list will no longer be a string.
 
 \beginexample
 gap> Length( s2 );
 12
 gap> s2[2];
-`a'
-gap> `e' in s2;
+'e'
+gap> 'a' in s2;
 false
-gap> s2[2] := `e';; s2;
-"Hello world." 
+gap> s2[2] := 'a';;  s2;
+"Hallo world."
+gap> s1{ [1..4] };
+"Hell"
+gap> Concatenation( s1{ [ 1 .. 6 ] }, s1{ [ 1 .. 4 ] } );
+"Hello Hell"
 \endexample
 
-If a string is displayed as result of an evaluation (see "Main Loop"), it
-is displayed with enclosing doublequotes. However, if a string is
-displayed by `Print', `PrintTo', or `AppendTo' (see "Print", "PrintTo",
-"AppendTo") the enclosing doublequotes are dropped.
+If a string is displayed by `View', for example as result of an
+evaluation (see~"Main Loop"), or by `ViewObj' and `PrintObj',
+it is displayed with enclosing doublequotes.
+However, if a string is displayed by `Print', `PrintTo', or `AppendTo'
+(see~"View and Print", "PrintTo", "AppendTo")
+the enclosing doublequotes are dropped.
+So strings behave differently from other {\GAP} objects
+w.r.t. printing in the sense that the output of `Print' for a string
+is not equal to the output of `PrintObj'.
 
 \beginexample
-gap> s2;
+gap> s4:= "abc\"def\nghi";;
+gap> View( s4 );  Print( "\n" );
+"abc\"def\nghi"
+gap> ViewObj( s4 );  Print( "\n" );
+"abc\"def\nghi"
+gap> PrintObj( s4 );  Print( "\n" );
+"abc"def\nghi"
+gap> Print( s4 );  Print( "\n" );
+abc"def
+ghi
+\endexample
+
+Note that only those line breaks are printed by `Print' that are contained
+in the string (`\\n' characters, see~"Special Characters"),
+as is shown in the example below.
+
+\begintt
+gap> s1;
 "Hello world."
-gap> Print( s2 );
-Hello world.gap>
-\endexample
+gap> Print( s1 );
+Hello world.gap> Print( s1, "\nnext line\n" );
+Hello world.
+next line
+gap>
+\endtt
 
-\Declaration{IsChar}
-\Declaration{IsString}
-
-\beginexample
-gap> IsString( "Hello world.\n" );
-true
-gap> IsString( "123" );
-true
-gap> IsString( 123 );
-false
-gap> IsString( [ `1', `2', `3' ] );
-true
-gap> IsString( [ `1', `2', , `4' ] );
-false # strings must be dense
-gap> IsString( [ `1', `2', 3 ] );
-false # strings must only contain characters
-\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Special Characters}
 
-\index{backslash}\index{special character sequences}
+\index{special character sequences}
+\index{newline character}
+\index{doublequote character}
+\index{singlequote character}
+\index{backslash character}
+\index{backspace character}
+\index{carriage return character}
+\index{flush character}
+
 There are a number of *special character sequences* that can be used
-between the single quote of a character literal or between the
+between the singlequotes of a character literal or between the
 doublequotes of a string literal to specify characters, which may
 otherwise be inaccessible. They consist of two characters. The first is
 a backslash $\backslash$. The second may be any character. The meaning
 is given in the following list
 
-\beginitems
-`n':& *newline character*. This is the character that, at least on
-    UNIX systems, separates lines in a text file. Printing of this
-    character in a string has the effect of moving the cursor down
-    one line and back to the beginning of the line.
+\beginlist
+\item{`$\backslash$n'}
+    *newline character*.
+    This is the character that, at least on UNIX systems,
+    separates lines in a text file.
+    Printing of this character in a string has the effect of moving
+    the cursor down one line and back to the beginning of the line.
 
-`\"':& *doublequote character*. Inside a string a doublequote must be
-      escaped by the backslash, because it is otherwise interpreted as
-      end of the string.
+\item{`$\backslash$\"'}
+    *doublequote character*.
+    Inside a string a doublequote must be escaped by the backslash,
+    because it is otherwise interpreted as end of the string.
 
-`{'}':& *singlequote character*. Inside a character a singlequote must
-     escaped by the backslash, because it is otherwise interpreted as
-     end of the character.
+\item{`$\backslash${'}'}
+    *singlequote character*.
+    Inside a character a singlequote must escaped by the backslash,
+    because it is otherwise interpreted as end of the character.
 
-$\backslash$:& *backslash character*. Inside a string a backslash must
-     be escaped by another backslash, because it is otherwise
-     interpreted as first character of an escape sequence.
+\item{$\backslash${$\backslash$}}
+    *backslash character*.
+    Inside a string a backslash must be escaped by another backslash,
+    because it is otherwise interpreted as first character of
+    an escape sequence.
 
-`b':& *backspace character*. Printing this character should have the
-     effect of moving the cursor back one character. Whether it works
-     or not is system dependent and should not be relied upon.
+\item{`$\backslash$b'}
+    *backspace character*.
+    Printing this character should have the effect of moving the cursor
+    back one character.  Whether it works or not is system dependent
+    and should not be relied upon.
 
-`r':& *carriage return character*. Printing this character should have
-     the effect of moving the cursor back to the beginning of the same
-     line. Whether this works or not is again system dependent.
+\item{`$\backslash$r'}
+    *carriage return character*.
+    Printing this character should have the effect of moving the cursor
+    back to the beginning of the same line.  Whether this works or not
+    is again system dependent.
 
-`c':& *flush character*. This character is not printed. Its purpose
-     is to flush the output queue. Usually {\GAP} waits until it sees
-     a <newline> before it prints a string. If you want to display a
-     string that does not include this character use $\backslash c$.
+\item{`$\backslash$c'}
+    *flush character*.
+    This character is not printed.
+    Its purpose is to flush the output queue.
+    Usually {\GAP} waits until it sees a <newline> before it prints a string.
+    If you want to display a string that does not include this character
+    use `$\backslash$c'.
 
-other:& For any other character the backslash is simply ignored.
-\enditems
+\item{other}
+    For any other character the backslash is simply ignored.
+\endlist
 
 Again, if the line is displayed as result of an evaluation, those escape
 sequences are displayed in the same way that they are input. They are
@@ -150,20 +193,35 @@ This is another line.
 \endexample
 
 It is not allowed to enclose a <newline> inside the string. You can use
-the special character sequence $\backslash n$ to write strings that
-include <newline> characters. If, however, a string is too long to fit
-on a single line it is possible to *continue* it over several lines. In
-this case the last character of each line, except the last must be a
-backslash. Both backslash and <newline> are thrown away. Note that the
-same continuation mechanism is available for identifiers and integers.
+the special character sequence `$\backslash$n' to write strings that
+include <newline> characters.
+If, however, an input string is too long to fit on a single line it is
+possible to *continue* it over several lines.
+In this case the last character of each input line, except the last line
+must be a backslash.
+Both backslash and <newline> are thrown away.
+Note that the same continuation mechanism is available for identifiers
+and integers.
 
 \beginexample
 gap> "This is a very long string that does not fit on a line \
 gap> and is therefore continued on the next line.";
 "This is a very long string that does not fit on a line and is therefo\
 re continued on the next line."
-# note that the output is also continued, but at a different place 
 \endexample
+
+Note that the output is also continued, but at a different place
+that is determined by the value of `SizeScreen' (see~"SizeScreen").
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Recognizing Characters}%
+
+\Declaration{IsDigitChar}
+\Declaration{IsLowerAlphaChar}
+\Declaration{IsUpperAlphaChar}
+\Declaration{IsAlphaChar}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Comparisons of Strings}%
@@ -185,7 +243,7 @@ gap> "Hello world." = "Hello world.\n";
 false # the first string has no <newline>
 gap> "Goodbye world.\n" = "Hello world.\n";
 false
-gap> [ `a', `b' ] = "ab";
+gap> [ 'a', 'b' ] = "ab";
 true
 \endexample
 
@@ -205,10 +263,13 @@ gap> "Goodbye world.\n" < "Hello world.\n";
 true # `G' comes before `H', in ASCII at least
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations to produce strings}
+Strings can be compared via `\<' with certain {\GAP} objects that are not
+strings, see~"Comparisons" for the details.
 
-\index{convert!to a string}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations to Produce Strings}
+
 \Declaration{String}
 
 \beginexample
@@ -235,16 +296,44 @@ gap> LowercaseString("This Is UpperCase");
 "this is uppercase"
 \endexample
 
+\Declaration{SplitString}
+\beginexample
+gap> SplitString( "substr1:substr2::substr4", ":" );
+[ "substr1", "substr2", "", "substr4" ]
+gap> SplitString( "a;b;c;d;", ";" );
+[ "a", "b", "c", "d" ]
+gap> SplitString( "/home//user//dir/", "", "/" );
+[ "home", "user", "dir" ]
+\endexample
+
+\Declaration{ReplacedString}
+\beginexample
+gap> ReplacedString("abacab","a","zl");
+"zlbzlczlb"
+gap> ReplacedString("ababa", "aba","c");
+"cba"
+gap> ReplacedString("abacab","a","ba");
+"babbacbab"
+\endexample
+
+For the possibility to print {\GAP} objects to strings, see~"String Streams".
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations to evaluate strings}
+\Section{Operations to Evaluate Strings}
 
 \){\fmark Int(<str>)}\index{evaluation!strings}
 \){\fmark Rat(<str>)}
 \index{Val}
 
-return an integer, respectively a rational as represented by <str>. Both
-methods return `fail' if illegal characters occur. (The methods only
-evaluate numbers but do *not* perform arithmetic!)
+return an integer, respectively a rational as represented by the string
+<str>.
+`Int' returns `fail' if non-digit characters occur in <str>.
+For `Rat', the argument string may start with the sign character `{'}-{'}',
+followed by either a sequence of digits or by two sequences of digits
+that are separated by one of the characters `{'}/{'}' or `{'}.{'}',
+where the latter stands for a decimal dot.
+(The methods only evaluate numbers but do *not* perform arithmetic!)
 
 \beginexample
 gap> Int("12345")+1;
@@ -253,27 +342,26 @@ gap> Int("123/45");
 fail
 gap> Int("1+2");
 fail
-gap> Int("-12"); 
+gap> Int("-12");
 -12
 gap> Rat("123/45");
 41/15
+gap> Rat( "123.45" );
+2469/20
 \endexample
 
 \Declaration{Ordinal}
 \beginexample
-gap> Ordinal(2);
+gap> Ordinal(2);  Ordinal(21);  Ordinal(33);  Ordinal(-33);
 "2nd"
-gap> Ordinal(21);
 "21st"
-gap> Ordinal(33);
 "33rd"
-gap> Ordinal(-33);
 "-33th"
 \endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Calendar arithmetic}
+\Section{Calendar Arithmetic}
 
 \FileHeader{string}[2]
 
@@ -313,4 +401,40 @@ gap> SecHMSM([1,10,5,13]);
 gap> StringTime([1,10,5,13]);
 " 1:10:05.013"
 \endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Internally Represented Strings}
+
+\index{convert!to a string}
+
+\Declaration{IsStringRep}
+\Declaration{ConvertToStringRep}
+\Declaration{IsEmptyString}
+\beginexample
+gap> l:= [];;  IsString( l );  IsEmptyString( l );  IsEmpty( l );
+true
+false
+true
+gap> l;  ConvertToStringRep( l );  l;
+[  ]
+""
+gap> IsEmptyString( l );  IsEmptyString( "" );  IsEmptyString( "abc" );
+true
+true
+false
+gap> ll:= [ 'a', 'b' ];  IsStringRep( ll );  ConvertToStringRep( ll );
+"ab"
+false
+gap> ll;  IsStringRep( ll );
+"ab"
+true
+\endexample
+
+\Declaration{CharsFamily}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
 

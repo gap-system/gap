@@ -15,7 +15,6 @@ Revision.basicmat_gi :=
 
 #############################################################################
 ##
-
 #M  CyclicGroupCons( <IsMatrixGroup>, <field>, <n> )
 ##
 InstallOtherMethod( CyclicGroupCons,
@@ -30,12 +29,12 @@ function( filter, fld, n )
     local   o,  m,  i;
 
     o := One(fld);
-    m := MutableNullMat( n, n, fld );
+    m := NullMat( n, n, fld );
     for i  in [ 1 .. n-1 ]  do
         m[i][i+1] := o;
     od;
     m[n][1] := o;
-    m := Group( ImmutableMatrix(fld,m) );
+    m := GroupByGenerators( [ ImmutableMatrix(fld,m) ] );
     SetSize( m, n );
     return m;
     
@@ -56,12 +55,12 @@ InstallMethod( CyclicGroupCons,
 function( filter, n )
     local   m,  i;
 
-    m := MutableNullMat( n, n, Rationals );
+    m := NullMat( n, n, Rationals );
     for i  in [ 1 .. n-1 ]  do
         m[i][i+1] := 1;
     od;
     m[n][1] := 1;
-    m := Group( ImmutableMatrix(Rationals,m) );
+    m := GroupByGenerators( [ ImmutableMatrix(Rationals,m) ] );
     SetSize( m, n );
     return m;
     
@@ -93,7 +92,7 @@ function( filter, n, q )
     z := PrimitiveRoot( f );
     o := One( f );
 
-    mat1 := MutableIdentityMat( n, o );
+    mat1 := IdentityMat( n, o );
     mat1[1][1] := z;
     mat2 := List( Zero(o) * mat1, ShallowCopy );
     mat2[1][1] := -o;
@@ -107,12 +106,16 @@ function( filter, n, q )
     SetName( g, Concatenation("GL(",String(n),",",String(q),")") );
     SetDimensionOfMatrixGroup( g, n );
     SetFieldOfMatrixGroup( g, f );
-    SetIsGeneralLinearGroup( g, true );
+    SetIsNaturalGL( g, true );
+    SetIsFinite(g,true);
+
+    if n<50 or n+q<500 then
+      Size(g);
+    fi;
 
     # Return the group.
     return g;
 end );
-
 
 #############################################################################
 ##
@@ -142,7 +145,7 @@ function( filter, n, q )
          # construct the generators
          o := One(f);
          z := PrimitiveRoot(f);
-         mat1 := MutableIdentityMat( n, o );
+         mat1 := IdentityMat( n, o );
          mat2 := List( Zero(o) * mat1, ShallowCopy );
          mat2[1][n] := o;
          for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;
@@ -166,17 +169,15 @@ function( filter, n, q )
      SetFieldOfMatrixGroup( g, f );
      SetIsFinite( g, true );
      if q = 2  then
-         SetIsGeneralLinearGroup( g, true );
+         SetIsNaturalGL( g, true );
      fi;
+     SetIsNaturalSL( g, true );
+     SetIsFinite(g,true);
 
      # add the size
-     size := 1;
-     qi   := q;
-     for i in [ 2 .. n ] do
-       qi   := qi * q;
-       size := size * (qi-1);
-     od;
-     SetSize( g, q^(n*(n-1)/2) * size );
+      if n<50 or n+q<500 then
+       Size(g);
+     fi;
 
      # return the group
      return g;
@@ -185,6 +186,6 @@ end );
 
 #############################################################################
 ##
-
-#E  basicmat.gd	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 ##
+

@@ -1,0 +1,498 @@
+#!/bin/sh
+#############################################################################
+##
+#W  zooit							 Frank Celler
+#W       						     Alexander Hulpke
+##
+##  this shell script zoos up the next version
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# clean the old files
+cd ${DISTROOT}
+[ -d OLD ] || mkdir OLD
+rm -rf OLD/*
+mv [a-z]*.zoo split OLD
+
+if [ \! -d split ];  then
+    mkdir split
+fi
+
+# remove things that should not go in the distribution
+
+echo "Cleaning up before wrapping"
+(cd $DISTROOT/$DISTNAME;
+
+rm -rf doc/build doc/abattoir doc/Makefile alpha beta dev dev \
+  config.*
+)
+
+# create the files that will indicate text and binary mode
+echo '!TEXT!' > TEXTCOM
+echo '/END'   >>TEXTCOM
+echo '!BINARY!'>BINCOM
+echo '/END'   >>BINCOM
+
+# go into the source directory and create the zoo files
+echo "$0: zooing version $VERSION of $DATE"
+
+#echo "README file"
+#cp ${DISTNAME}/etc/README .
+
+echo "HTML Documentation (section-wise)"
+
+for i in ${DISTNAME}/doc/htm_small/ref/*; do
+  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
+  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/htm_small/tut/*; do
+  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
+  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/htm_small/ext/*; do
+  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
+  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/htm_small/prg/*; do
+  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
+  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+for i in ${DISTNAME}/doc/htm_small/*.htm; do
+  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
+  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+rm -rf ${DISTNAME}/doc/htm_small
+
+(cd $DISTROOT;
+
+echo "Basic version"
+
+for i in ${DISTNAME}/lib/*; do
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/grp/*; do
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/tst/*; do
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/pkg/example/*; do
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/pkg/example/src/*; do
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/pkg/example/doc/*; do
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/pkg/example/gap/*; do
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+for i in ${DISTNAME}/doc/ref/*.tex; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/tut/*.tex; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/ext/*.tex; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/prg/*.tex; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+zoo ah basic$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex > /dev/null
+zoo c basic$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex <TEXTCOM >&/dev/null
+zoo ah basic$RBVERSION.zoo ${DISTNAME}/doc/manual.bib > /dev/null
+zoo c basic$RBVERSION.zoo ${DISTNAME}/doc/manual.bib <TEXTCOM >&/dev/null
+zoo ah basic$RBVERSION.zoo ${DISTNAME}/doc/manualindex > /dev/null
+zoo c basic$RBVERSION.zoo ${DISTNAME}/doc/manualindex <TEXTCOM >&/dev/null
+
+zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex > /dev/null
+zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex <TEXTCOM >&/dev/null
+zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/manual.bib > /dev/null
+zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/manual.bib <TEXTCOM >&/dev/null
+zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/manualindex > /dev/null
+zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/manualindex <TEXTCOM >&/dev/null
+
+for i in ${DISTNAME}/doc/{ref,tut,ext,prg}/manual.six; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+# there is no README.... zoo ah basic$RBVERSION.zoo README> /dev/null
+
+# this version will also be used for mac and pc, we don't give them the
+# source however.
+cp basic$RBVERSION.zoo macpc.zoo
+
+cp INSTALL ${DISTNAME}
+zoo ah basic$RBVERSION.zoo ${DISTNAME}/INSTALL > /dev/null
+zoo c basic$RBVERSION.zoo ${DISTNAME}/INSTALL <TEXTCOM >&/dev/null
+
+zoo ah basic$RBVERSION.zoo ${DISTNAME}/gap.shi > /dev/null
+zoo c basic$RBVERSION.zoo ${DISTNAME}/gap.shi <TEXTCOM >&/dev/null
+zoo ah split/src$RBVERSION.zoo ${DISTNAME}/gap.shi > /dev/null
+zoo c split/src$RBVERSION.zoo ${DISTNAME}/gap.shi <TEXTCOM >&/dev/null
+
+for i in ${DISTNAME}/src/*; do
+  zoo ah split/src$RBVERSION.zoo $i >/dev/null
+  zoo c split/src$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/cnf/*; do
+  zoo ah split/src$RBVERSION.zoo $i >/dev/null
+  zoo c split/src$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+for i in  ${DISTNAME}/{Makefile.in,sysinfo.in,configure}; do
+  zoo ah split/src$RBVERSION.zoo $i >/dev/null
+  zoo c split/src$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+echo "Omnibus edition"
+# extend the basic version
+cp basic$RBVERSION.zoo gap$RBVERSION.zoo
+
+echo "TeXed Documentation"
+for i in ${DISTNAME}/doc/*/manual.dvi; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah docdvi$RBVERSION.zoo $i >/dev/null
+  zoo c docdvi$RBVERSION.zoo $i <BINCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <BINCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <BINCOM >&/dev/null;
+done
+zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
+zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
+zoo ah docdvi$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
+zoo c docdvi$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
+zoo ah macpc.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
+zoo c macpc.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
+zoo ah gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
+zoo c gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
+
+for i in ${DISTNAME}/doc/*/manual.pdf; do
+  zoo ah docpdf$RBVERSION.zoo $i >/dev/null
+  zoo c docpdf$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+zoo ah docpdf$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf > /dev/null
+zoo c docpdf$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf <TEXTCOM >&/dev/null
+zoo ah gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf > /dev/null
+zoo c gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf <TEXTCOM >&/dev/null
+
+# postscript files (do we really still want them?)
+for i in ${DISTNAME}/doc/*/manual.ps; do
+  zoo ah docps$RBVERSION.zoo $i >/dev/null
+  zoo c docps$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+done
+zoo ah docps$RBVERSION.zoo ${DISTNAME}/doc/fullindex.ps > /dev/null
+zoo c docps$RBVERSION.zoo ${DISTNAME}/doc/fullindex.ps <TEXTCOM >&/dev/null
+
+echo "HTML Documentation"
+for i in ${DISTNAME}/doc/htm/ref/*; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah html$RBVERSION.zoo $i >/dev/null
+  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/htm/tut/*; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah html$RBVERSION.zoo $i >/dev/null
+  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/htm/ext/*; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah html$RBVERSION.zoo $i >/dev/null
+  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/htm/prg/*; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah html$RBVERSION.zoo $i >/dev/null
+  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/htm/*.htm; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah html$RBVERSION.zoo $i >/dev/null
+  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+echo "Trans"
+for i in ${DISTNAME}/trans/*; do
+  zoo ah split/trans$RBVERSION.zoo $i >/dev/null
+  zoo c split/trans$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+cp split/trans$RBVERSION.zoo gdat$RBVERSION.zoo
+
+echo "Small"
+for i in ${DISTNAME}/small/*.*; do
+  zoo ah split/small$RBVERSION.zoo $i >/dev/null
+  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/id2/*; do
+  zoo ah split/small$RBVERSION.zoo $i >/dev/null
+  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/id3/*; do
+  zoo ah split/small$RBVERSION.zoo $i >/dev/null
+  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/small2/*; do
+  zoo ah split/small$RBVERSION.zoo $i >/dev/null
+  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/small3/*; do
+  zoo ah split/small$RBVERSION.zoo $i >/dev/null
+  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+echo "Prim"
+for i in ${DISTNAME}/prim/*.*; do
+  zoo ah split/prim$RBVERSION.zoo $i >/dev/null
+  zoo c split/prim$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/prim/grps/*; do
+  zoo ah split/prim$RBVERSION.zoo $i >/dev/null
+  zoo c split/prim$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+echo "Tbl"
+for i in ${DISTNAME}/tbl/*; do
+  zoo ah split/tbl$RBVERSION.zoo $i >/dev/null
+  zoo c split/tbl$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah tdat$RBVERSION.zoo $i >/dev/null
+  zoo c tdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+${BINDIR}/tommove
+echo "Tom"
+for i in ${DISTNAME}/tom/*; do
+  zoo ah split/tom$RBVERSION.zoo $i >/dev/null
+  zoo c split/tom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah tdat$RBVERSION.zoo $i >/dev/null
+  zoo c tdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
+echo "XTom"
+mv ${DISTNAME}/tom ${DISTNAME}/tomy
+mv ${DISTNAME}/tomx ${DISTNAME}/tom
+
+for i in ${DISTNAME}/tom/*; do
+  zoo ah split/tom$RBVERSION.zoo $i >/dev/null
+  zoo c split/tom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah xtom$RBVERSION.zoo $i >/dev/null
+  zoo c xtom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+done
+
+echo "------------------------------"
+
+echo "Lib"
+for i in ${DISTNAME}/lib/*; do
+  zoo ah split/lib$RBVERSION.zoo $i >/dev/null
+  zoo c split/lib$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+done
+
+echo "Tst"
+for i in ${DISTNAME}/tst/*; do
+  zoo ah split/tst$RBVERSION.zoo $i >/dev/null
+  zoo c split/tst$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+done
+
+echo "Grp"
+for i in ${DISTNAME}/grp/*; do
+  zoo ah split/grp$RBVERSION.zoo $i >/dev/null
+  zoo c split/grp$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+done
+
+echo "------------------------------"
+echo "Linux binaries"
+zoo ah gap$RBVERSION-${LINUXPATH}.zoo ${DISTNAME}/${LINUXPATH}/gap >/dev/null
+zoo c gap$RBVERSION-${LINUXPATH}.zoo ${DISTNAME}/${LINUXPATH}/gap <BINCOM >&/dev/null
+zoo ah gap$RBVERSION-${LINUXPATH}.zoo ${DISTNAME}/gac >/dev/null
+zoo c gap$RBVERSION-${LINUXPATH}.zoo ${DISTNAME}/gac <BINCOM >&/dev/null
+
+echo "Pc version"
+cp macpc.zoo gappc$RBVERSION.zoo
+
+cp ${DISTNAME}/bin/i586-pc-cygwin-gcc/gap.exe ${DISTNAME}/bin/gapw95.exe
+cp /gap/4.0/bin/cygwin1.dll ${DISTNAME}/bin
+zoo ah gappc$RBVERSION.zoo ${DISTNAME}/bin/gapw95.exe> /dev/null
+zoo c gappc$RBVERSION.zoo ${DISTNAME}/bin/gapw95.exe <BINCOM >&/dev/null
+zoo ah gappc$RBVERSION.zoo ${DISTNAME}/bin/cygwin1.dll> /dev/null
+zoo c gappc$RBVERSION.zoo ${DISTNAME}/bin/cygwin1.dll <BINCOM >&/dev/null
+zoo ah gappc$RBVERSION.zoo ${DISTNAME}/bin/gap.bat> /dev/null
+zoo c gappc$RBVERSION.zoo ${DISTNAME}/bin/gap.bat <TEXTCOM >&/dev/null
+zoo ah gappc$RBVERSION.zoo ${DISTNAME}/instwin.bat> /dev/null
+zoo c gappc$RBVERSION.zoo ${DISTNAME}/instwin.bat <TEXTCOM >&/dev/null
+
+zoo ah winbin$RBVERSION.zoo ${DISTNAME}/bin/gapw95.exe> /dev/null
+zoo c winbin$RBVERSION.zoo ${DISTNAME}/bin/gapw95.exe <BINCOM >&/dev/null
+zoo ah winbin$RBVERSION.zoo ${DISTNAME}/bin/cygwin1.dll> /dev/null
+zoo c winbin$RBVERSION.zoo ${DISTNAME}/bin/cygwin1.dll <BINCOM >&/dev/null
+zoo ah winbin$RBVERSION.zoo ${DISTNAME}/instwin.bat> /dev/null
+zoo c winbin$RBVERSION.zoo ${DISTNAME}/instwin.bat <TEXTCOM >&/dev/null
+
+cp INSTALL.WIN ${DISTNAME}
+zoo ah gappc$RBVERSION.zoo ${DISTNAME}/INSTALL.WIN > /dev/null
+zoo c gappc$RBVERSION.zoo ${DISTNAME}/INSTALL.WIN <TEXTCOM >&/dev/null
+rm ${DISTNAME}/bin/{gapw95.exe,cygwin1.dll}
+
+echo "Mac version"
+mv macpc.zoo gapmac$RBVERSION.zoo
+cp INSTALL-MAC.TXT ${DISTNAME}
+zoo ah gapmac$RBVERSION.zoo ${DISTNAME}/INSTALL-MAC.TXT > /dev/null
+zoo c gapmac$RBVERSION.zoo ${DISTNAME}/INSTALL-MAC.TXT <TEXTCOM >&/dev/null
+
+##  echo "Mac src"
+##  find ${DISTNAME}/{macsrc,macgac} -print | zoo ahI macsrc$RBVERSION.zoo > /dev/null
+
+echo "Accepted Share Packages"
+chmod 755 ${DISTNAME}/etc/zoomerge
+for i in /home/ftp/pub/gap/gap4/share/*.zoo; do
+${DISTNAME}/etc/zoomerge allshare$RBVERSION.zoo $i
+done
+for i in /home/ftp/pub/gap/gap4/share/README*; do
+cp $i .
+done
+cp ${DISTNAME}/mkdistrib/README.allshare README
+for i in READM*; do
+zoo ah allshare$RBVERSION.zoo $i
+zoo c allshare$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+done
+rm -f README*
+
+echo "Submitted Share Packages"
+chmod 755 ${DISTNAME}/etc/zoomerge
+for i in /home/ftp/pub/gap/gap4/deposit/psh/*.zoo; do
+${DISTNAME}/etc/zoomerge submitshare$RBVERSION.zoo $i
+done
+for i in /home/ftp/pub/gap/gap4/deposit/psh/README*; do
+cp $i .
+done
+cp ${DISTNAME}/mkdistrib/README.submitshare README
+for i in READM*; do
+zoo ah submitshare$RBVERSION.zoo $i
+zoo c submitshare$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+done
+rm -f README*
+
+)
+
+exit 0

@@ -32,10 +32,12 @@ extern  Obj             MakeFunction (
 
 /****************************************************************************
 **
-*F  ExecBegin() . . . . . . . . . . . . . . . . . . . . .  begin an execution
+*F  ExecBegin( <frame> ) . . . . . . . . .begin an execution in context frame
+**  if in doubt, pass BottomLVars as <frame>
+**
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
-extern  void            ExecBegin ( void );
+extern  void            ExecBegin ( Obj frame );
 
 extern  void            ExecEnd (
             UInt                error );

@@ -19,7 +19,7 @@ Revision.ctblpc_gi :=
 #F       of the r-th class matrix and store it in the appropriate column of M
 ##
 PcGroupClassMatrixColumn := function(D,M,r,t)
-  local c,gt,s,z,i,T,w,e,j,p,orb;
+  local c,s,z,i,T,p,orb;
   if t=1 then
     M[D.inversemap[r]][t]:=D.classiz[r];
   else
@@ -27,7 +27,7 @@ PcGroupClassMatrixColumn := function(D,M,r,t)
     z:=D.classreps[t];
     c:=orb.orbits[t][1];
     if c<>t then
-      p:=RepresentativeOperation(orb.group,c,t);
+      p:=RepresentativeAction(orb.group,c,t);
       # was the first column of the galois class active?
       if ForAny(M,i->i[c]>0) then
 	for i in D.classrange do
@@ -45,8 +45,12 @@ PcGroupClassMatrixColumn := function(D,M,r,t)
       T[1][i]:=T[1][i]*z;
     od;
 
-    T[1]:=List(ClassesSolvableGroup(D.group,0,rec(candidates:=T[1])),
-               i->Position(D.ids,i.representative));
+    #T AH: Here something goes wrong in the solvable group class
+    #T computation. Workaround
+    T[1]:=List(T[1],i->Position(D.ids,D.identification(D,i)));
+
+    #T[1]:=List(ClassesSolvableGroup(D.group,0,rec(candidates:=T[1])),
+    #           i->Position(D.ids,i.representative));
 
     for i in [1..Length(T[1])] do
       s:=T[1][i];
@@ -62,7 +66,7 @@ end;
 #F  IdentificationSolvableGroup(<D>,<el>) . .  class invariants for el in G
 ##
 IdentificationSolvableGroup := function(D,el)
-  return ClassesSolvableGroup(D.group,0,[el])[1].representative;
+  return ClassesSolvableGroup(D.group,0,rec(candidates:=[el]))[1].representative;
 end;
 
 
@@ -72,7 +76,7 @@ end;
 ##
 InstallMethod(DxPreparation,"pc group",true,[IsPcGroup,IsRecord],0,
 function(G,D)
-local i,j,enum,cl;
+local i,cl;
 
   if not IsDxLargeGroup(G) then
     TryNextMethod();
@@ -87,7 +91,7 @@ local i,j,enum,cl;
   D.ids:=[];
   D.rids:=[];
   for i in D.classrange do
-    D.ids[i]:=D.classreps[i];
+    D.ids[i]:=D.identification(D,D.classreps[i]);
     D.rids[i]:=D.rationalidentification(D,D.classreps[i]);
   od;
 

@@ -401,9 +401,9 @@ InstallMethod( \^,
 
 #############################################################################
 ##
-#M  Zero( <elm> ) . . . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
+#M  ZeroOp( <elm> ) . . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
 ##
-InstallMethod( Zero,
+InstallMethod( ZeroOp,
     "for element in Z/nZ (ModulusRep)",
     true,
     [ IsZmodnZObj ], 0,
@@ -412,9 +412,9 @@ InstallMethod( Zero,
 
 #############################################################################
 ##
-#M  AdditiveInverse( <elm> )  . . . . . . . . . . . . . . . for `IsZmodnZObj'
+#M  AdditiveInverseOp( <elm> )  . . . . . . . . . . . . . . for `IsZmodnZObj'
 ##
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
     "for element in Z/nZ (ModulusRep)",
     true,
     [ IsZmodnZObj and IsModulusRep ], 0,
@@ -423,9 +423,9 @@ InstallMethod( AdditiveInverse,
 
 #############################################################################
 ##
-#M  One( <elm> )  . . . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
+#M  OneOp( <elm> )  . . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
 ##
-InstallMethod( One,
+InstallMethod( OneOp,
     "for element in Z/nZ (ModulusRep)",
     true,
     [ IsZmodnZObj ], 0,
@@ -434,9 +434,9 @@ InstallMethod( One,
 
 #############################################################################
 ##
-#M  Inverse( <elm> )  . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
+#M  InverseOp( <elm> )  . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseOp,
     "for element in Z/nZ (ModulusRep)",
     true,
     [ IsZmodnZObj and IsModulusRep ], 0,
@@ -515,7 +515,7 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  AsListSorted( <R> ) . . . . . . . . . . . .  set of elements of Z mod n Z
+#M  AsSSortedList( <R> ) . . . . . . . . . . . .  set of elements of Z mod n Z
 #M  AsList( <R> ) . . . . . . . . . . . . . . .  set of elements of Z mod n Z
 ##
 InstallMethod( AsList,
@@ -526,12 +526,12 @@ InstallMethod( AsList,
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
     F:= List( [ 0 .. Size( R ) - 1 ], x -> ZmodnZObj( F, x ) );
-    SetAsListSorted( R, F );
+    SetAsSSortedList( R, F );
     SetIsSSortedList( F, true );
     return F;
     end );
 
-InstallMethod( AsListSorted,
+InstallMethod( AsSSortedList,
     "for full ring Z/nZ",
     true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
@@ -716,6 +716,7 @@ InstallGlobalFunction( ZmodpZNC, function( p )
       # Make the domain.
       F:= FieldOverItselfByGenerators( [ ZmodnZObj( F, 1 ) ] );
       SetIsPrimeField( F, true );
+      SetIsWholeFamily( F, false );
 
       # Store the field.
       Add( Z_MOD_NZ[1], p );
@@ -754,7 +755,9 @@ InstallGlobalFunction( ZmodnZ, function( n )
       # Construct the family of element objects of our ring.
       F:= NewFamily( Concatenation( "Zmod", String( n ) ),
                      IsZmodnZObj,
-                     IsZmodnZObjNonprime );
+                     IsZmodnZObjNonprime and CanEasilySortElements
+                                         and IsNoImmediateMethodsObject,
+		     CanEasilySortElements);
 
       # Install the data.
       F!.modulus:= n;
@@ -801,5 +804,38 @@ InstallMethod( \mod,
 
 #############################################################################
 ##
-#E  zmodnz.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  ModulusOfZmodnZObj( <obj> )
+##
+##  For an element <obj> in a residue class ring of integers modulo $n$
+##  (see~"IsZmodnZObj"), `ModulusOfZmodnZObj' returns the positive integer
+##  $n$.
+##
+InstallMethod( ModulusOfZmodnZObj,
+    "for element in Z/nZ (nonprime)",
+    true,
+    [ IsZmodnZObjNonprime ], 0,
+    res -> FamilyObj( res )!.modulus );
+
+InstallMethod( ModulusOfZmodnZObj,
+    "for element in Z/pZ (prime)",
+    true,
+    [ IsZmodpZObj ], 0,
+    Characteristic );
+
+InstallOtherMethod( ModulusOfZmodnZObj,
+    "for FFE",
+    true,
+    [ IsFFE ], 0,
+    function( ffe )
+    if DegreeFFE( ffe ) = 1 then
+      return Characteristic( ffe );
+    else
+      return fail;
+    fi;
+    end );
+
+
+#############################################################################
+##
+#E
 

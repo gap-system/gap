@@ -11,7 +11,7 @@
 ##  character table library that is not automatically produced from the
 ##  library files.
 ##
-##  0. Global variable to handle the table library
+##  0. Global variables to handle the table library.
 ##  1. Representations of library tables
 ##  2. Functions used in the library files
 ##  3. Functions to construct library tables
@@ -19,50 +19,237 @@
 ##  5. Selection functions for the table library
 ##  6. Functions to produce tables in library format
 ##
-##  Note that in all construction functions, the table under construction is
-##  a plain record, *not* a table object.
-##
 Revision.ctadmin_tbd :=
     "@(#)$Id$";
 
 
 #############################################################################
 ##
-##  0. Global variable to handle the table library
+##  Tell {\GAP} about the component.
+##
+DeclareComponent( "tbl", "1.0" );
+
+
+#############################################################################
+##
+#1
+##  The files of the {\GAP} character table library
+##  --if they are installed--
+##  reside in the `tbl' directory of the {\GAP} installation.
+##
+##  The filenames start with `ct' (for ``character table''),
+##  followed by either `o' (for ``ordinary''), `b' (for ``Brauer''),
+##  or `g' (for ``generic''),
+##  then a description of the contents (up to $5$ characters, e.g., `alter'
+##  for the tables of alternating and related groups),
+##  and the suffix `.tbl'.
+##
+##  The file `ctb<descr>.tbl' contains the known Brauer tables
+##  corresponding to the ordinary tables in the file `cto<descr>.tbl'.
+##
+##  Each data file of the table library is supposed to consist of
+##  \beginlist
+##  \item{1.}
+##      comment lines, starting with `#' in the first column,
+##  \item{2.}
+##      assignments to `ALN' (short for ``add library name'',
+##      see~"NotifyNameOfCharacterTable")
+##      and to a component of `Revision', at the beginning of the file,
+##      for example in the file with name `ctoalter.tbl' a value is assigned
+##      to `Revision.ctoalter_tbl',
+##  \item{3.}
+##      assignments to `ALN' and to a component of `LIBTABLE.LOADSTATUS',
+##      at the end of the file, and
+##  \item{4.}
+##      function calls of the form
+##      `SET_TABLEFILENAME( <filename> );',
+##      `MBT( <name>, <data> );' (``make Brauer table''),
+##      `MOT( <name>, <data> );' (``make ordinary table''),
+##      `ALF( <from>, <to>, <map> );',
+##      `ALF( <from>, <to>, <map>, <textlines> );' (``add library fusion''),
+##      `ALN( <name>, <listofnames> );', and
+##      `ARC( <name>, <component>, <compdata> );' (``add record component'').
+##
+##      Here <filename> must be a string corresponding to the filename but
+##      without suffix, for example `\"ctoalter\"' if the file has the name
+##      `ctoalter.tbl';
+##      <name> must be the identifier value of the ordinary character table
+##      corresponding to the table to which the command refers;
+##      <data> must be a comma separated sequence of {\GAP} objects;
+##      <from> and <to> must be identifier values of ordinary character
+##      tables,
+##      <map> a list of positive itegers,
+##      <textlines> and <listofnames> lists list of strings,
+##      <component> a string, and
+##      <compdata> any {\GAP} object.
+##
+##      `MOT', `ALF', `ALN', and `ARC' occur only in files containing
+##      ordinary character tables,
+##      and `MBT' occurs only in files containing Brauer tables.
+##  \endlist
+##  Besides the above calls, the data in files containing ordinary and Brauer
+##  tables may contain only the following {\GAP} functions.
+##  (Files containing generic character tables may contain arbitrary
+##  {\GAP} functions.)
+##
+##  `ACM',
+##  `Concatenation',
+##  `ConstructClifford',
+##  `ConstructDirectProduct',
+##  `ConstructFactor',
+##  `ConstructGS3',
+##  `ConstructIsoclinic',
+##  `ConstructMixed',
+##  `ConstructPermuted',
+##  `ConstructProj',
+##  `ConstructSubdirect',
+##  `ConstructV4G',
+##  `E',
+##  `EvalChars',
+##  `GALOIS',
+##  `NotifyCharTableName',
+##  `TENSOR', and
+##  `TransposedMat'.
+##
+##  The `awk' script `maketbl' in the `etc' directory of the {\GAP}
+##  distribution expects the file format described above,
+##  and to some extent this format is checked by this script.
+##
+##  The function calls may be continued over several lines of a file.
+##  The `;' is assumed to be the last character in its line if and only if
+##  it terminates a function call.
+##
+##  Names of character tables are strings
+##  (see Chapter~"Strings and Characters"),
+##  i.e., they are enclosed in double quotes;
+##  strings in table library files must not be split over several lines,
+##  because otherwise the `awk' script may get confused.
+##  Additionally, no character table name is allowed to contain double
+##  quotes.
+##
+##  The knowledge of {\GAP} about the ordinary tables in the table library
+##  is contained in the file `ctprimar.tbl' (the ``primary file'' of the
+##  table library).
+##  This file is automatically produced from the library files by the script
+##  `maketbl' in the `etc' directory of the {\GAP} distribution.
+##  The information is stored in the global variable `LIBLIST',
+##  which is a record with the following components.
+##  \beginitems
+##  `firstnames' &
+##      the list of `Identifier' values of the ordinary tables,
+##
+##  `files' &
+##      the list of filenames containing the data of ordinary tables,
+##
+##  `filenames' &
+##      a list of positive integers, value $j$ at position $i$ means that the
+##      table whose identifier is the $i$--th in the `firstnames' list is
+##      contained in the $j$-th file of the `files' component,
+##
+##  `fusionsource' &
+##      a list containing at position $i$ the list of names of tables that
+##      store a fusion into the table whose identifier is the $i$--th in the
+##      `firstnames' list,
+##
+##  `allnames' &
+##      a list of all admissible names of ordinary library tables,
+##
+##  `position' &
+##      a list that stores at position $i$ the position in `firstnames'
+##      of the identifier of the table with the $i$--th admissible name in
+##      `allnames',
+##
+##  `projections' &
+##      a list of triples $[ <name>, <factname>, <map> ]$
+##      describing a factor fusion <map> from the table with identifier
+##      <name> to the table with identifier <factname>
+##      (this is used to construct the table of <name> using the data of
+##      the table of <factname>),
+##
+##  `simpleinfo' &
+##      a list of triples $[ <m>, <name>, <a> ]$ describing the tables of
+##      simple groups in the library; <name> is the identifier of the table,
+##      `<m>.<name>' and `<name>.<a>' are admissible names for its
+##      Schur multiplier and automorphism group, respectively,
+##
+##  `sporadicSimple' &
+##      a list of identifiers of the tables of the $26$ sporadic simple
+##      groups, and
+##
+##  `GENERIC' &
+##      a record with information about generic tables
+##      (see~"Generic Character Tables").
+##  \enditems
+##
+##  There are three different ways how the table data can be stored in the
+##  file.
+##
+##  *Full ordinary tables* are encoded by a call to the function `MOT',
+##  where the arguments correspond to the relevant attribute values;
+##  each fusion into another library table is added by a call to `ALF',
+##  values to be stored in components of the table object are added with
+##  `ARC', and admissible names are notified with `ALN'.
+##  The argument of `MOT' that encodes the irreducible characters is
+##  abbreviated as follows.
+##  For each subset of characters that differ just by multiplication with a
+##  linear character or by Galois conjugacy, only the first one is given by
+##  its values, the others are replaced by
+##  `[TENSOR,[<i>,<j>]]' (which means that the character is the tensor
+##  product of the <i>-th and the <j>-th character in the list)
+##  or `[GALOIS,[<i>,<j>]]' (which means that the character is obtained from
+##  the <i>-th character by applying `GaloisCyc( ., <j> )' to it.
+##
+##  *Brauer tables* are stored relative to the corresponding ordinary tables;
+##  attribute values that can be got by restriction from the ordinary table
+##  to $p$--regular classes are not stored,
+##  and instead of the irreducible characters the files contain (inverses of)
+##  decomposition matrices or Brauer trees for the blocks of nonzero defects.
+##
+##  *Ordinary construction tables* have a component `construction',
+##  with value a function of one argument that is called by `CharacterTable'
+##  when the table is constructed
+##  (*not* when the file containing the table is read).
+##  The aim of this mechanism is to store structured character tables such as
+##  tables of direct products and tables of central extensions of other
+##  tables in a very compact way.
+##
+
+#############################################################################
+##
+##  0. Global variables to handle the table library.
 ##
 
 #############################################################################
 ##
 #V  LIBTABLE
 ##
-##  is a record with components
-##
-##  `LOADSTATUS'
+##  is a record with the components
+##  \beginitems
+##  `LOADSTATUS' &
 ##     a record whose components are names of files in the table library,
-##     with value one of `"loaded"', `"unloaded"', `"userloaded"',
+##     with value one of `\"loaded\"', `\"unloaded\"', `\"userloaded\"',
 ##
-##  `TABLEFILENAME'
-##     the name of the file to be read at the moment
+##  `TABLEFILENAME' &
+##     the name of the file that is currently read
 ##     (is set by `SET_TABLEFILENAME'),
 ##
-##  `clmelab'
-##     list for Clifford matrices of extensions by elementary abelian normal
+##  `clmelab' &
+##     the list for Clifford matrices of extensions by elementary abelian
+##     normal subgroups
+##
+##  `clmexsp' &
+##     the list for Clifford matrices of extensions by extraspecial normal
 ##     subgroups
+##  \enditems
+##  Additionally the filenames of loaded and userloaded files occur as
+##  components, with values the lists of data stored in the files.
 ##
-##  `clmexsp'
-##     list for Clifford matrices of extensions by extraspecial normal
-##     subgroups
-##
-##  <name>
-##     a list of table data for each loaded or userloaded library file
-##     (This is not initialized here.)
-##
-LIBTABLE := rec(
+BindGlobal( "LIBTABLE", rec(
                  LOADSTATUS    := rec(),
                  TABLEFILENAME := "",
                  clmelab       := [],
                  clmexsp       := []
-                );
+                ) );
 
 
 #############################################################################
@@ -111,11 +298,23 @@ DeclareGlobalFunction( "EvalChars" );
 
 #############################################################################
 ##
-#F  ALF( <from>, <to>, <map> )
-#F  ALF( <from>, <to>, <map>, <text> )
-##     stores a fusion between library tables in the component `classFusions'
-##     of the table <from>,
-##     and adjusts the global list `LIBLIST.fusionsource'.
+#F  ALF( <from>, <to>, <map>[, <text>] )
+##
+##  `ALF' stores the fusion map <map> between the ordinary character tables
+##  with identifier strings <from> and <to> in the record encoding the table
+##  with identifier <from>.
+##  If the string <text> is given then it is added as `text' component of the
+##  fusion.
+##
+##  `ALF' changes the global list `LIBLIST.fusionsource'.
+##
+##  Note that the `ALF' statement should be placed in the file containing the
+##  data for the table with identifier <from>.
+##
+DeclareGlobalFunction( "ALF" );
+
+
+#############################################################################
 ##
 #F  ACM( <spec>, <dim>, <val> )
 ##     adds a Clifford matrix to the library.
@@ -131,7 +330,6 @@ DeclareGlobalFunction( "EvalChars" );
 ##  so they assume that it is not necessary to read such a file before the
 ##  data can be stored.
 ##
-DeclareGlobalFunction( "ALF" );
 DeclareGlobalFunction( "ACM" );
 DeclareGlobalFunction( "ARC" );
 
@@ -141,20 +339,22 @@ DeclareGlobalFunction( "ARC" );
 #F  NotifyNameOfCharacterTable( <firstname>, <newnames> )
 #F  ALN( <firstname>, <newnames> )
 ##
-##  notifies the new names in the list <newnames> for the library table with
-##  first name <firstname>.
-##  If there is already another table for that some of these names are
-##  admissible, an error is signaled.
+##  notifies the strings in the list <newnames> as new admissible names for
+##  the library table with `Identifier' (see~"Identifier") value <firstname>.
+##  If there is already another library table for which some of these names
+##  are admissible then an error is signaled.
+##
+##  `NotifyNameOfCharacterTable' modifies the global variable `LIBLIST'.
 ##
 ##  `ALN' is a shorthand for `NotifyNameOfCharacterTable'.
-##  In those library tables for that the `awk' script has produced the
+##  In those library files for which the `maketbl' script has produced the
 ##  necessary information for `LIBLIST', `ALN' is set to `Ignore'
 ##  in the beginning and back to `NotifyNameOfCharacterTable' in the end.
 ##
-##  `NotifyNameOfCharacterTable' modifies the global variable `LIBLIST'
-##
 DeclareGlobalFunction( "NotifyNameOfCharacterTable" );
-ALN := NotifyNameOfCharacterTable;
+ALN:= NotifyNameOfCharacterTable;  # We do not use `DeclareSynonym' here
+                                   # because assignments are made to `ALN'
+                                   # in data files.
 
 #T because of the table files ...
 NotifyCharTableName := NotifyNameOfCharacterTable;
@@ -166,13 +366,16 @@ NotifyCharTableName := NotifyNameOfCharacterTable;
 ##
 ##  notifies a new ordinary table to the library.
 ##  This table has `identifier' component <firstname>,
-##  it is contained in the file with name <filename>,
-##  and it is known to have also the names contained in the list
-##  <othernames>.
+##  it is contained (in library format, see~"PrintToLib") in the file with
+##  name <filename>
+##  (without suffix `.tbl', and relative to the `tbl' directory of the {\GAP}
+##  installation),
+##  and the names contained in the list <othernames> are admissible for it.
 ##
-##  `NotifyCharacterTable' modifies the global variable `LIBLIST'
-##  after having checked that there is no other table yet with admissible
-##  name equal to <firstname> or contained in <othernames>.
+##  `NotifyCharacterTable' modifies the global variable `LIBLIST' for the
+##  current {\GAP} session,
+##  after having checked that there is no other library table yet with an
+##  admissible name equal to <firstname> or contained in <othernames>.
 ##
 DeclareGlobalFunction( "NotifyCharacterTable" );
 
@@ -258,22 +461,22 @@ DeclareGlobalFunction( "PrimeBase" );
 #F  LibInfoCharacterTable( <tblname> )
 ##
 ##  is a record with components
-##
-##  `firstName'
+##  \beginitems
+##  `firstName' &
 ##      the `Identifier' value of the library table
-##      for that <tblname> is an admissible name,
+##      for which <tblname> is an admissible name, and
 ##
-##  `fileName'
-##      the name of the file in that the table is stored.
-##
+##  `fileName' &
+##      the name of the file in which the table data is stored.
+##  \enditems
 ##  If no such table exists in the {\GAP} library then `fail' is returned.
 ##
-##  If <tblname> contains the substring "mod" it is regarded as name of a
-##  Brauer table.
+##  If <tblname> contains the substring `\"mod\"' then it is regarded as the
+##  name of a Brauer table.
 ##  In this case the result is computed from that for the corresponding
-##  ordinary table.
-##  So if the ordinary table exists one gets a record, but the modular
-##  table need not be contained in the library.
+##  ordinary table and the characteristic.
+##  So if the ordinary table exists then the result is a record although
+##  the Brauer table in question need not be contained in the {\GAP} library.
 ##
 DeclareGlobalFunction( "LibInfoCharacterTable" );
 
@@ -290,16 +493,95 @@ DeclareGlobalFunction( "LibraryTables" );
 
 #############################################################################
 ##
-#F  CharacterTableFromLibrary( [ <tblname> ] )
+#F  CharacterTableFromLibrary( <tblname> )
+#F  CharacterTableFromLibrary( <series>, <param1>[, <param2>] )
 ##
-##  returns the library table that is known to have name <tblname>,
-##  if exists; otherwise `fail' is returned.
+##  If the only argument is a string <tblname> and if this is an admissible
+##  name (see below) of a library character table then
+##  `CharacterTableFromLibrary' returns this library table, otherwise `fail'.
 ##
-#F  CharacterTableFromLibrary( [ <series>, <parameters> ] )
+##  If `CharacterTableFromLibrary' is called with more than one argument
+##  then the first must be a string <series> specifying a series of groups
+##  which is implemented via a generic character table,
+##  for example `\"Symmetric\"' for symmetric groups;
+##  the remaining arguments specialise then the desired member of the series
+##  (see~"Generic Character Tables" for a list of available generic tables).
+##  If no generic table with name <series> is available or if the parameters
+##  are not admissible then `CharacterTableFromLibrary' returns `fail'.
 ##
-##  returns the character table which is got from the generic table of the
-##  series with name <series> by specialising with <parameters>, if these
-##  parameters are admissible; otherwise `fail' is returned.
+##  A call of `CharacterTableFromLibrary' may cause to read some library
+##  files and to construct the table object from the data stored in these
+##  files,
+##  so fetching a library table may take more time than on expects.
+##
+##  `CharacterTableFromLibrary' is called by `CharacterTable' if the first
+##  argument is a string, so one may also call `CharacterTable'.
+##
+##  Admissible names for the *ordinary character table* $t$ of the group $G$
+##  are
+##  \beginlist
+##  \item{-}
+##      an {\ATLAS} like name if $t$ is an {\ATLAS} table
+##      (see~"ATLAS Tables"), for example
+##      `\"M22\"' for the table of the Mathieu group $M_{22}$,
+##      `\"L2(13).2\"' for $L_2(13):2$, and
+##      `\"12_1.U4(3).2_1\"' for $12_1\.U_4(3)\.2_1$,
+##
+##      (The difference to the name printed in the {\ATLAS} is that
+##      subscripts and superscripts are omitted except if they are used to
+##      qualify integer values,
+##      and double dots are replaced by a single dot.)
+##  \item{-}
+##      the names that were admissible for tables of $G$ in {\sf CAS}
+##      if the {\sf CAS} table library contained a table of $G$,
+##      for example `sl42' for the table of the alternating group $A_8$,
+##
+##      (But note that the {\GAP} table may be different from that in
+##      {\sf CAS}, see~"CAS Tables".)
+##  \item{-}
+##      some ``relative'' names, as follows.
+##
+##      If $G$ is the <n>--th maximal subgroup (in decreasing group order)
+##      of a group whose library table $s$ is available in {\GAP} and stores
+##      the `Maxes' value (see~"Maxes"),
+##      and if <name> is an admissible name for $s$
+##      then `<name>M<n>' is admissible for $t$.
+##      For example, the name `\"J3M2\"' can be used to access the second
+##      maximal subgroup of the sporadic simple Janko group $J_3$
+##      which has the admissible name `J3'.
+##
+##      If $G$ is a nontrivial Sylow $p$ normalizer in a sporadic simple
+##      group with admissible name <name>,
+##      --where nontrivial means that $G$ is not isomorphic to a subgroup of
+##      $p:(p-1)$--
+##      then `<name>N<p>' is an admissible name of $t$.
+##      For example, the name `\"J4N11\"' can be used to access the table of
+##      the Sylow $11$ normalizer in the sporadic simple Janko group $J_4$.
+##
+##      In a few cases, the table of the Sylow $p$ subgroup of $G$ is
+##      accessible via the name `<name>Syl<p>' where <name> is an admissible
+##      name of the table of $G$.
+##      For example, `\"A11Syl2\"' is an admissible name for the table of the
+##      Sylow $2$ subgroup of the alternating group $A_{11}$.
+##
+##      In a few cases, the table of an element centralizer in $G$ is
+##      accessible via the name `<name>C<cl>'
+##      where <name> is an admissible name of the table of $G$.
+##      For example, `\"M11C2\"' is an admissible name for the table of an
+##      involution centralizer in the Mathieu group $M_{11}$.
+##  \endlist
+##
+##  The recommended way to access *Brauer tables* from the library is via the
+##  `mod' operator from the ordinary table and the desired characteristic
+##  (see~"BrauerTable", "Operators for Character Tables"),
+##  so it is not necessary to define admissible names of Brauer tables.
+##
+##  *Generic character tables* are accessible only by the name given by their
+##  `Identifier' value (see~"Generic Character Tables").
+##
+##  Case is not significant for character table names.
+##  For example, both `\"suzm3\"' and `\"SuzM3\"' are admissible names for
+##  the third maximal subgroup of the sporadic simple Suzuki group.
 ##
 DeclareGlobalFunction( "CharacterTableFromLibrary" );
 
@@ -356,19 +638,21 @@ DeclareGlobalFunction( "BrauerTree" );
 
 #############################################################################
 ##
-#F  BrauerTable( <name>, <ordtbl> )
+#F  BrauerTableFromLibrary( <ordtbl>, <p> )
 ##
-##  is the Brauer table with name <name> and corresponding ordinary table
-##  <ordtbl>.
+##  is the <p>-modular Brauer table of the ordinary library table <ordtbl>.
 ##
-DeclareGlobalFunction( "BrauerTable" );
+DeclareGlobalFunction( "BrauerTableFromLibrary" );
 
 
 #############################################################################
 ##
 #F  CharacterTableSpecialized( <generic_table>, <q> )  . . . . specialise <q>
 ##
-##  This function does the actual specialisation of generic tables.
+##  For a record <generic_table> representing a generic character table,
+##  and a parameter value <q>,
+##  `CharacterTableSpecialized' returns a character table object computed by
+##  evaluating <generic_table> at <q>.
 ##
 DeclareGlobalFunction( "CharacterTableSpecialized" );
 
@@ -376,6 +660,9 @@ DeclareGlobalFunction( "CharacterTableSpecialized" );
 #############################################################################
 ##
 ##  4. Functions used as `construction' component of library tables
+##
+##  Note that in all construction functions, the table under construction is
+##  a plain record, *not* a table object.
 ##
 
 #############################################################################
@@ -405,49 +692,108 @@ DeclareGlobalFunction( "TransferComponentsToLibraryTableRecord" );
 ##  and stores the corresponding global variable and <name>
 ##  in the global variable `TABLE_CONSTRUCTORS'.
 ##
-TABLE_CONSTRUCTORS := [ [], [] ];
+BindGlobal( "TABLE_CONSTRUCTORS", [ [], [] ] );
 
-DeclareTableConstructor := function( name )
+BindGlobal( "DeclareTableConstructor", function( name )
     DeclareGlobalFunction( name );
     Add( TABLE_CONSTRUCTORS[1], ValueGlobal( name ) );
     Add( TABLE_CONSTRUCTORS[2], name );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ConstructMixed( <tbl>, <subname>, <factname>, <plan>, <perm> )
 ##
-##  <tbl> is the table of a group $m.G.a$,
-##  <subname> is the name of a subgroup $m.G$ which is a cyclic central
-##  extension of the (not necessarily simple) group $G$,
-##  <factname> is the name of the factor group $G.a$ of <tbl> where the
-##  outer automorphisms $a$ (a group of prime order) acts nontrivially on
-##  the central $m$.
-##  Then the faithful characters of <tbl> are induced characters of $m.G$.
+##  `ConstructMixed' constructs the ordinary character table <tbl> of a group
+##  $m\.G\.a$ where the automorphism $a$ (a group of prime order) of $m\.G$
+##  acts notrivially on the central subgroup $m$ of $m\.G$.
+##  <subname> is the name of the subgroup $m\.G$ which is a (not necessarily
+##  cyclic) central extension of the (not necessarily simple) group $G$,
+##  <factname> is the name of the factor group $G\.a$.
+##  Then the faithful characters of <tbl> are induced characters of $m\.G$.
 ##
-##  <plan> is a list of lists, each containing the numbers of characters of
-##  $m.G$ that form an orbit under the action of $a$
+##  <plan> is a list, each entry being a list containing positions of
+##  characters of $m\.G$ that form an orbit under the action of $a$
 ##  (so the induction of characters is simulated).
+##
 ##  <perm> is the permutation that must be applied to the list of characters
 ##  that is obtained on appending the faithful characters to the
 ##  inflated characters of the factor group.
+##  A nonidentity permutation occurs for example for groups of structure
+##  $12\.G\.2$ that are encoded via the subgroup $12\.G$ and the factor group
+##  $6\.G\.2$, where the faithful characters of $4\.G\.2$ shall precede those
+##  of $6\.G\.2$.
 ##
-##  Examples of tables where this is used to compress the library files are
-##  the tables of $3.F_{3+}.2$ (subgroup $3.F_{3+}$, factor group $F_{3+}.2$)
-##  and $6.Fi_{22}.2$ (subgroup $6.Fi_{22}$, factor group $2.Fi_{22}.2$).
+##  Examples where `ConstructMixed' is used to encode library tables are the
+##  tables of $3\.F_{3+}\.2$ (subgroup $3\.F_{3+}$, factor group $F_{3+}\.2$)
+##  and $12_1\.U_4(3)\.2_2$ (subgroup $12_1\.U_4(3)$, factor group
+##  $6_1\.U_4(3)\.2_2$).
 ##
 DeclareTableConstructor( "ConstructMixed" );
 
 
 #############################################################################
 ##
-#F  ConstructProj( <tbl> )
+#F  ConstructMixedInfo( <tblmGa>, <tblmG>, <tblGa> )
 ##
-##  constructs irreducibles for projective tables from projectives of
-##  a factor group table.
+##  Let <tblmGa> be the ordinary character table of a group of structure
+##  $m\.G\.a$ where the factor group of prime order $a$ acts nontrivially on
+##  the normal subgroup of order $m$ that is central in $m\.G$,
+##  <tblmG> the character table of $m\.G$, and <tblGa> the character table of
+##  the factor group $G\.a$.
+##
+##  `ConstructMixedInfo' returns a record with components `subname',
+##  `factname', `plan', and `perm',
+##  which are the arguments of `ConstructMixed' (see~"ConstructMixed").
+##
+DeclareGlobalFunction( "ConstructMixedInfo" );
+
+
+#############################################################################
+##
+#F  ConstructProj( <tbl> )
+#F  ConstructProjInfo( <tbl>, <kernel> )
+##
+##  `ConstructProj' constructs the irreducible characters of record encoding
+##  the ordinary character table <tbl> from projective characters of tables
+##  of factor groups,
+##  which are stored in the `projectives' component of the smallest factor;
+##  the information about the name of this factor and the projectives to
+##  take is stored in the `Irr' component of <tbl>.
+##
+##  `ConstructProjInfo' takes an ordinary character table <tbl> and a list
+##  <kernel> of class positions of a cyclic kernel of order dividing $12$,
+##  and returns a record with the components
+##  \beginitems
+##  `projectives' &
+##      a record being the entry for the `projectives' list of the table of
+##      the factor of <tbl> by <kernel>,
+##      describing the irreducibles of <tbl>, and
+##
+##  `info' &
+##      the value of the `Irr' component of the library version of <tbl>
+##      before applying `ConstructProj'.
+##  \enditems
+##
+##  In order to encode a library table $t$ as a ``projective table'' relative
+##  to another library table $f$, say, one has to do the following.
+##  First the factor fusion from $t$ to $f$ must be stored on the table of
+##  $t$, and $t$ is written to a library file.
+##  Then the result of `ConstructProjInfo', called for $t$ and the kernel of
+##  the factor fusion is used.
+##  Its `info' component replaces the irreducibles in the library version of
+##  $t$, and `ConstructProj' is added as last entry of the `MOT' call for this
+##  library version.
+##  The `projectives' component is added to the list $f$`!.projectives',
+##  and a new library version of $f$ is produced (this contains the new
+##  projectives via an `ARC' call).
+##  Finally, `etc/maketbl' is called in order to store the projection for the
+##  factor fusion in the `ctprimar.tbl' data.
 ##
 DeclareTableConstructor( "ConstructProj" );
+
+DeclareGlobalFunction( "ConstructProjInfo" );
 
 
 #############################################################################
@@ -499,12 +845,12 @@ DeclareTableConstructor( "ConstructIsoclinic" );
 ##
 #F  ConstructV4G( <tbl>, <facttbl>, <aut> )
 ##
-##  Let <tbl> be the character table of a group of type $2^2.G$
+##  Let <tbl> be the character table of a group of type $2^2\.G$
 ##  where an outer automorphism of order 3 permutes the three involutions
 ##  in the central $2^2$.
 ##  Let <aut> be the permutation of classes of <tbl> induced by that
 ##  automorphism, and <facttbl> the name of the character table
-##  of the factor group $2.G$.
+##  of the factor group $2\.G$.
 ##  Then `ConstructV4G' constructs the irreducible characters of <tbl> from
 ##  that information.
 ##
@@ -523,16 +869,24 @@ DeclareGlobalFunction( "InducedLibraryCharacters" );
 #############################################################################
 ##
 #F  ConstructGS3( <tbls3>, <tbl2>, <tbl3>, <ind2>, <ind3>, <ext>, <perm> )
+#F  ConstructGS3Info( <tbl2>, <tbl3>, <tbls3> )
 ##
-##  constructs the irreducibles of a table <tbls3> of type $G.S_3$ from the
-##  table names <tbl2> and <tbl3> of $G.2$ and $G.3$, respectively.
-##  <ind2> is a list of numbers denoting irreducibles of <tbl2>.
-##  <ind3> is a list of pairs, each denoting irreducibles of <tbl3>.
-##  <ext>  is a list of pairs, each denoting one irreducible of <tbl2>
+##  `ConstructGS3' constructs the irreducibles of a table <tbls3> of type
+##  $G\.S_3$ from the tables with names <tbl2> and <tbl3>, corresponding to
+##  the groups $G\.2$ and $G\.3$, respectively.
+##  <ind2> is a list of numbers referring to irreducibles of <tbl2>.
+##  <ind3> is a list of pairs, each referring to irreducibles of <tbl3>.
+##  <ext>  is a list of pairs, each referring to one irreducible of <tbl2>
 ##                             and one of <tbl3>.
-##  <perm> is a permutation that must be applied to the irreducibles.
+##  <perm> is a permutation that must be applied to the irreducibles
+##  after the construction.
+##
+##  `ConstructGS3Info' returns a record with the components `ind2', `ind3',
+##  `ext', and `perm', as needed for `ConstructGS3'.
 ##
 DeclareTableConstructor( "ConstructGS3" );
+
+DeclareGlobalFunction( "ConstructGS3Info" );
 
 
 #############################################################################
@@ -610,16 +964,6 @@ DeclareGlobalFunction( "CllToClf" );
 
 #############################################################################
 ##
-#F  AddDecMats( <modtbl> )
-##
-##  stores decomposition matrices of blocks in the `block' component of
-##  the Brauer table <modtbl>
-##
-DeclareGlobalFunction( "AddDecMats" );
-
-
-#############################################################################
-##
 ##  5. Selection functions for the table library
 ##
 
@@ -640,15 +984,63 @@ DeclareGlobalFunction( "SchurCover" );
 
 #############################################################################
 ##
-#F  AllCharacterTableNames( )   . . . all ordinary table names in the library
-#F  AllCharacterTableNames( IsSimple, true )
-#F  AllCharacterTableNames( IsSporadicSimpleGroup, true )
-#F  AllCharacterTableNames( <func>, <val> )
-#F  AllCharacterTableNames( ..., OfThose, AutomorphismGroup )
-#F  AllCharacterTableNames( ..., OfThose, SchurCover )
-#F  AllCharacterTableNames( ..., OfThose, <func> )
+#F  AllCharacterTableNames( {<func>, <val>} )
+#F  AllCharacterTableNames( <func>, <val>, ...{, OfThose, <func>} )
 ##
-##  selection function for {\GAP} library tables
+##  Similar to group libraries (see Chapter~"Group Libraries"),
+##  the {\GAP} character table library can be used to search for ordinary
+##  character tables with prescribed properties.
+##
+##  A specific library table can be selected by an admissible name
+##  (see~"CharacterTableFromLibrary").
+##
+##  The selection function for character tables with certain abstract
+##  properties is `AllCharacterTableNames'.
+##  Contrary to the situation in the case of group libraries,
+##  the selection function returns a list not of library character tables
+##  but of their names;
+##  using `CharacterTable' one can then access the tables themselves.
+##
+##  `AllCharacterTableNames' takes an arbitrary even number of arguments.
+##  The argument at each odd position must be a function, and
+##  the argument at the subsequent even position must be a value that this
+##  function must return when called for the character table in question,
+##  in order to have the name of the table included in the selection,
+##  or a list of such values.
+##  For example,
+##  \beginexample
+##  gap> names:= AllCharacterTableNames();;
+##  \endexample
+##  returns a list containing an admissible name of each ordinary character
+##  table in the {\GAP} library, and
+##  \beginexample
+##  gap> simpnames:= AllCharacterTableNames( IsSimple, true );;
+##  gap> AllCharacterTableNames( IsSimple, true, Size, [ 1 .. 100 ] );
+##  [ "A5" ]
+##  \endexample
+##  return lists containing an admissible name of each ordinary character
+##  table in the {\GAP} library whose groups are simple or are simple and
+##  have order at most $100$, respectively.
+##
+##  For the sake of efficiency,
+##  the arguments `IsSimple' and `IsSporadicSimple' followed by `true' are
+##  handled in a special way, {\GAP} need not read all files of the table
+##  library in these cases in order to find the desired names.
+##
+##  If the function `OfThose' is an argument at an odd position then the
+##  following argument <func> must be a function that takes a character table
+##  and returns a name of a character table or a list of names;
+##  this is interpreted as replacement of the names computed up to this
+##  position by the union of names returned by <func>.
+##  For example, <func> may be `Maxes' (see~"Maxes") or
+##  `NamesOfFusionSources' (see~"NamesOfFusionSources").
+##  \beginexample
+##  gap> maxesnames:= AllCharacterTableNames( IsSporadicSimple, true,
+##  >                                         HasMaxes, true,
+##  >                                         OfThose, Maxes );;
+##  \endexample
+##  returns the union of names of ordinary tables of those maximal subgroups
+##  of sporadic simple groups that are contained in the table library.
 ##
 DeclareGlobalFunction( "AllCharacterTableNames" );
 
@@ -693,6 +1085,26 @@ DeclareGlobalFunction( "TextString" );
 
 #############################################################################
 ##
+#F  BlanklessPrintTo( <stream>, <obj> )
+##
+##  appends <obj> to the output stream <stream>,
+##  thereby trying to avoid unnecessary blanks.
+##  For the subobjects of <obj>, the function `PrintTo' is used.
+##  (So the subobjects are appended only if <stream> is of the appropriate
+##  type, see~"PrintTo".)
+##
+##  If <obj> is a record then the component `text' and strings in an `irr'
+##  list are *not* treated in a special way!
+##
+##  This function is used by the libraries of character tables and of tables
+##  of marks.
+##
+DeclareGlobalFunction( "BlanklessPrintTo" );
+#T better use WriteAll?
+
+
+#############################################################################
+##
 #F  ShrinkChars( <chars> )
 ##
 ##  returns the list corresponding to the list <chars> where
@@ -718,7 +1130,7 @@ DeclareGlobalFunction( "ShrinkChars" );
 ##
 ##  See `CllToClf' for the meaning of the entries.
 ##
-#T DeclareGlobalFunction( "ClfToCll" );
+DeclareGlobalFunction( "ClfToCll" );
 #T up to now no function is installed
 
 
@@ -726,8 +1138,17 @@ DeclareGlobalFunction( "ShrinkChars" );
 ##
 #F  LibraryFusion( <name>, <fus> )
 ##
-##  is a string that encodes the assignment of the fusion record <fus> that
-##  shall be stored on the table with name <name>, in library format.
+##  For a string <name> that is an `Identifier' value of an ordinary
+##  character table in the {\GAP} library,
+##  and a record <fus> with components `name' (the identifier of the
+##  destination table), `map' (the fusion map, a list of image positions),
+##  and optionally `text' (a string containing information about the fusion),
+##  `LibraryFusion' returns a string whose printed value can be used to add
+##  the fusion in question to the library file containing the data for the
+##  table with identifier <name>.
+##
+##  <name> may also be a character table, in this case its `Identifier' value
+##  is used as string.
 ##
 DeclareGlobalFunction( "LibraryFusion" );
 
@@ -736,12 +1157,14 @@ DeclareGlobalFunction( "LibraryFusion" );
 ##
 #F  PrintToLib( <file>, <tbl> )
 ##
-##  prints the character table <tbl> in library format to the file
-##  `<file>.tbl' resp. <file> (if this ends already with `.tbl').
+##  prints the (ordinary or Brauer) character table <tbl> in library format
+##  to the file `<file>.tbl' or <file>
+##  (if this has already the suffix `.tbl'), respectively.
 ##
-##  The value of the attribute `NamesOfFusionSources' is ignored,
-##  since this information is extracted from the source tables by the
-##  `maketbl' script.
+##  If <tbl> is an ordinary table then the value of the attribute
+##  `NamesOfFusionSources' is ignored by `PrintToLib',
+##  since for library tables this information is extracted from the source
+##  files by the `maketbl' script.
 ##
 DeclareGlobalFunction( "PrintToLib" );
 
@@ -756,7 +1179,7 @@ DeclareGlobalFunction( "PrintToLib" );
 ##  <clms> must be a Clifford table or a list of Clifford records.
 ##  In case of splitting, each Clifford record must contain `splitinfos'.
 ##
-#T DeclareGlobalFunction( "PrintClmsToLib" );
+DeclareGlobalFunction( "PrintClmsToLib" );
 #T up to now no function is installed
 
 
@@ -774,5 +1197,133 @@ DeclareGlobalFunction( "OrbitsResidueClass" );
 
 #############################################################################
 ##
-#E  ctadmin.tbd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#A  CASInfo( <tbl> )
+##
+##  Let <tbl> be an ordinary character table <tbl> in the {\GAP} library
+##  that was contained already in the {\sf CAS} table library.
+##  When one fetches <tbl> from the library, one does in general not get the
+##  original {\sf CAS} table.
+##  Namely, in many cases (mostly {\ATLAS} tables, see~"ATLAS Tables")
+##  not only the identifier of the table (see~"Identifier") but also the
+##  ordering of classes and characters is different for the table in
+##  {\sf CAS} and its {\GAP} version.
+##
+##  Note that in several cases, the {\sf CAS} library contains different
+##  tables of the same group,
+##  in particular these tables may have different names and orderings of
+##  classes and characters.
+##
+##  The `CASInfo' value of <tbl>, if stored, is a list of records,
+##  each describing the relation between <tbl> and a character table in the
+##  {\sf CAS} library.
+##  The records have the components
+##  \beginitems
+##  `name' &
+##      the name of the {\sf CAS} table,
+##
+##  `permchars' and `permclasses' &
+##      permutations of the `Irr' values and the classes of <tbl>,
+##      respectively, that must be applied in order to get the orderings in
+##      the original {\sf CAS} table, and
+##
+##  `text' &
+##      the text stored on the {\sf CAS} table.
+##  \enditems
+##
+DeclareAttributeSuppCT( "CASInfo", IsNearlyCharacterTable,
+    [ "class", "character" ] );
+
+
+#############################################################################
+##
+#A  Maxes( <tbl> )
+##
+##  is a list of identifiers of the tables of all maximal subgroups of <tbl>.
+##  This is meaningful usually only for library tables,
+##  and there is no default method to compute the value.
+##
+##  If the `Maxes' value of <tbl> is stored then it lists exactly one
+##  representative for each conjugacy class of maximal subgroups of the group
+##  of <tbl>;
+##  the tables of these maximal subgroups are then available in the {\GAP}
+##  table library, and the fusions to <tbl> are stored on these tables.
+##
+DeclareAttributeSuppCT( "Maxes", IsNearlyCharacterTable, [] );
+
+
+#############################################################################
+##
+#F  GaloisPartnersOfIrreducibles( <tbl>, <characters>, <n> )
+##
+DeclareGlobalFunction( "GaloisPartnersOfIrreducibles" );
+
+
+#############################################################################
+##
+#F  AtlasLabelsOfIrreducibles( <tbl>[, "short"] )
+##
+##  Let <tbl> be the (ordinary or Brauer) character table of a bicyclic
+##  extension of a simple group that occurs in the
+##  {\ATLAS} of Finite Groups~\cite{CCN85} or the
+##  {\ATLAS} of Brauer Characters~\cite{JLPW95}.
+##  `AtlasLabelsOfIrreducibles' returns a list of strings, the $i$-th entry
+##  being a label for the $i$-th irreducible character of <tbl>.
+##
+##  The labels have the following form.
+##  We state the rules only for ordinary characters,
+##  the rules for Brauer characters are obtained by replacing $\chi$
+##  by $\varphi$.
+##
+##  First consider only downward extensions $m\.G$ of a simple group $G$.
+##  If $m \leq 2$ then only labels of the form $\chi_i$ occur,
+##  which denotes the $i$-th ordinary character shown in the {\ATLAS}.
+##
+##  The labels of faithful ordinary characters of groups $m\.G$ with $m\geq 3$
+##  are of the form $\chi_i$, $\chi_i^{\ast}$, or $\chi_i^{\ast k}$,
+##  which means the $i$-th character printed in the {\ATLAS},
+##  the unique character that is not printed and for which $\chi_i$ acts as
+##  proxy
+##  (see~Sections~8 and~19 of Chapter~7 in the {\ATLAS} of Finite Groups),
+##  and the image of the printed character $\chi_i$ under the algebraic
+##  conjugacy operator $\ast k$, respectively.
+##
+##  For groups $m\.G\.a$ with $a > 1$, the labels of the irreducible characters
+##  are derived from the labels of the irreducible constituents of their
+##  restrictions to $m\.G$, as follows.
+##  \beginlist
+##  \item{1.}
+##      If the ordinary irreducible character $\chi_i$ of $m\.G$ extends to
+##      $m\.G\.a$ then the $a^{\prime}$ extensions are denoted by
+##      $\chi_{i,0}, \chi_{i,1}, \ldots, \chi_{i,a^{\prime}}$,
+##      where $\chi_{i,0}$ is the character whose values are printed in the
+##      {\ATLAS}.
+##  \item{2.}
+##      The label $\chi_{i_1 + i_2 + \cdots + i_a}$ means that $a$ different
+##      characters $\chi_{i_1}, \chi_{i_2}, \ldots, \chi_{i_a}$ of $m\.G$
+##      induce to an irreducible character of $m\.G\.a$ with this label.
+##
+##      If the string `\"short\"' was entered as second argument then the
+##      label has the short form $\chi_{i_1+}$.
+##      Note that $i_2, i_3, \ldots, i_a$ can be read off from the
+##      fusion signs in the {\ATLAS}.
+##  \item{3.}
+##      Finally, the label
+##      $\chi_{i_1,j_1 + i_2,j_2 + \cdots + i_{a^{\prime}},j_{a^{\prime}}}$
+##      means that the characters
+##      $\chi_{i_1}, \chi_{i_2}, \ldots, \chi_{i_{a^{\prime}}}$ of $m\.G$
+##      extend to a group that lies properly between $m\.G$ and $m\.G\.a$,
+##      and the extensions $\chi_{i_1,j_1}, \chi_{i_2,j_2}, \ldots
+##      \chi_{i_{a^{\prime}},j_{a^{\prime}}}$
+##      induce to an irreducible character of $m\.G\.a$ with this label.
+##
+##      Again, if the string `\"short\"' was entered as second argument then
+##      the label has a short form, namely $\chi_{i,j+}$.
+##  \endlist
+##
+DeclareGlobalFunction( "AtlasLabelsOfIrreducibles" );
+
+
+#############################################################################
+##
+#E
 

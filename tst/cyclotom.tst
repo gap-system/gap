@@ -6,9 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-
 gap> START_TEST("$Id$");
-
 gap> cyc:= E(5) + E(7);
 -E(35)^2-2*E(35)^12-E(35)^17-E(35)^19-E(35)^22-E(35)^26-E(35)^27-E(35)^32
  -E(35)^33
@@ -137,82 +135,35 @@ gap> StarCyc( ER(13) );
 -E(13)+E(13)^2-E(13)^3-E(13)^4+E(13)^5+E(13)^6+E(13)^7+E(13)^8-E(13)^9
  -E(13)^10+E(13)^11-E(13)^12
 gap> Quadratic( 4 );
-rec(
-  a := 4,
-  b := 0,
-  root := 1,
-  d := 1,
-  ATLAS := "4",
-  display := "4" )
+rec( a := 4, b := 0, root := 1, d := 1, ATLAS := "4", display := "4" )
 gap> Quadratic( EB(7) );
-rec(
-  a := -1,
-  b := 1,
-  root := -7,
-  d := 2,
-  ATLAS := "b7",
+rec( a := -1, b := 1, root := -7, d := 2, ATLAS := "b7", 
   display := "(-1+ER(-7))/2" )
 gap> Quadratic( E(4) );
-rec(
-  a := 0,
-  b := 1,
-  root := -1,
-  d := 1,
-  ATLAS := "i",
-  display := "ER(-1)" )
+rec( a := 0, b := 1, root := -1, d := 1, ATLAS := "i", display := "ER(-1)" )
 gap> Quadratic( E(3) );
-rec(
-  a := -1,
-  b := 1,
-  root := -3,
-  d := 2,
-  ATLAS := "b3",
+rec( a := -1, b := 1, root := -3, d := 2, ATLAS := "b3", 
   display := "(-1+ER(-3))/2" )
 gap> Quadratic( ER(12) );
-rec(
-  a := 0,
-  b := 2,
-  root := 3,
-  d := 1,
-  ATLAS := "2r3",
-  display := "2*ER(3)" )
+rec( a := 0, b := 2, root := 3, d := 1, ATLAS := "2r3", display := "2*ER(3)" )
 gap> Quadratic( StarCyc( EB(5) ) );
-rec(
-  a := -1,
-  b := -1,
-  root := 5,
-  d := 2,
-  ATLAS := "-1-b5",
+rec( a := -1, b := -1, root := 5, d := 2, ATLAS := "-1-b5", 
   display := "(-1-ER(5))/2" )
 gap> GeneratorsPrimeResidues( 7^4 );
-rec(
-  primes := [ 7 ],
-  exponents := [ 4 ],
-  generators := [ 3 ] )
+rec( primes := [ 7 ], exponents := [ 4 ], generators := [ 3 ] )
 gap> GeneratorsPrimeResidues( 27*125 );
-rec(
-  primes := [ 3, 5 ],
-  exponents := [ 3, 3 ],
-  generators := [ 1001, 2377 ] )
+rec( primes := [ 3, 5 ], exponents := [ 3, 3 ], generators := [ 1001, 2377 ] )
 gap> GeneratorsPrimeResidues( 2*9*5 );
-rec(
-  primes := [ 2, 3, 5 ],
-  exponents := [ 1, 2, 1 ],
+rec( primes := [ 2, 3, 5 ], exponents := [ 1, 2, 1 ], 
   generators := [ 1, 11, 37 ] )
 gap> GeneratorsPrimeResidues( 4*3*25 );
-rec(
-  primes := [ 2, 3, 5 ],
-  exponents := [ 2, 1, 2 ],
+rec( primes := [ 2, 3, 5 ], exponents := [ 2, 1, 2 ], 
   generators := [ 151, 101, 277 ] )
 gap> GeneratorsPrimeResidues( 8*49*11 );
-rec(
-  primes := [ 2, 7, 11 ],
-  exponents := [ 3, 2, 1 ],
+rec( primes := [ 2, 7, 11 ], exponents := [ 3, 2, 1 ], 
   generators := [ [ 1079, 2157 ], 3433, 3137 ] )
 gap> GeneratorsPrimeResidues( 16*13*29 );
-rec(
-  primes := [ 2, 13, 29 ],
-  exponents := [ 4, 1, 1 ],
+rec( primes := [ 2, 13, 29 ], exponents := [ 4, 1, 1 ], 
   generators := [ [ 5279, 1509 ], 1393, 1249 ] )
 gap> 
 gap> mat:= [ [       1333, EB(7),        -1,       0,      0 ],
@@ -220,10 +171,9 @@ gap> mat:= [ [       1333, EB(7),        -1,       0,      0 ],
 >            [  885257856,     0, 2*ER(5)-1,       0,      0 ],
 >            [ 1445942610,     0,         0,       0, EC(43) ] ];;
 gap> gm:= GaloisMat( mat );
-rec(
-  mat := 
-   [ [ 1333, E(7)+E(7)^2+E(7)^4, -1, 0, 0 ], [ 259775040, 0, 0, -2*E(12)^7
-             +2*E(12)^11, 0 ], 
+rec( 
+  mat := [ [ 1333, E(7)+E(7)^2+E(7)^4, -1, 0, 0 ], [ 259775040, 0, 0, -2*E(12)
+              ^7+2*E(12)^11, 0 ], 
       [ 885257856, 0, 3*E(5)-E(5)^2-E(5)^3+3*E(5)^4, 0, 0 ], 
       [ 1445942610, 0, 0, 0, 
           E(43)+E(43)^2+E(43)^4+E(43)^8+E(43)^11+E(43)^16+E(43)^21+E(43)^22
@@ -237,16 +187,14 @@ rec(
       [ 1445942610, 0, 0, 0, 
           E(43)^7+E(43)^9+E(43)^13+E(43)^14+E(43)^15+E(43)^17+E(43)^18
              +E(43)^25+E(43)^26+E(43)^28+E(43)^29+E(43)^30+E(43)^34+E(43)^36 
-         ] ],
+         ] ], 
   galoisfams := [ [ [ 1, 5 ], [ 1, 10321 ] ], [ [ 2, 6 ], [ 1, 9031 ] ], 
       [ [ 3, 7 ], [ 1, 10837 ] ], [ [ 4, 8, 9 ], [ 1, 7141, 10501 ] ], 0, 0, 
-      0, 0, 0 ],
-  generators := [ (4,8,9), (3,7), (2,6), (1,5) ] )
+      0, 0, 0 ], generators := [ (4,8,9), (3,7), (2,6), (1,5) ] )
 gap> Print(RationalizedMat( gm.mat ),"\n");
 [ [ 2666, -1, -2, 0, 0 ], [ 519550080, 0, 0, 0, 0 ], 
   [ 1770515712, 0, -2, 0, 0 ], [ 4337827830, 0, 0, 0, -1 ] ]
-
-gap> STOP_TEST( "cyclotom.tst", 6575144 );
+gap> STOP_TEST( "cyclotom.tst", 7232500 );
 
 #############################################################################
 ##

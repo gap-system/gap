@@ -18,6 +18,11 @@ Revision.module_gd :=
 ##
 #C  IsLeftOperatorAdditiveGroup( <D> )
 ##
+##  A domain <D> lies in `IsLeftOperatorAdditiveGroup' if it is an additive
+##  group that is closed under scalar multplication from the
+##  left, and such that $\lambda*(x+y)=\lambda*x+\lambda*y$ for all
+##  scalars $\lambda$ and elements $x,y\in D$.
+##
 DeclareSynonym( "IsLeftOperatorAdditiveGroup",
         IsAdditiveGroup
     and IsExtLSet
@@ -27,6 +32,12 @@ DeclareSynonym( "IsLeftOperatorAdditiveGroup",
 #############################################################################
 ##
 #C  IsLeftModule( <M> )
+##
+##  A domain <M> lies in `IsLeftModule' if it lies in
+##  `IsLeftOperatorAdditiveGroup', {\it and} the set of scalars forms a ring,
+##  {\it and} $(\lambda+\mu)*x=\lambda*x+\mu*x$ for scalars $\lambda,\mu$
+##  and $x\in M$, {\it and} scalar multiplication satisfies $\lambda*(\mu*x)=
+##  (\lambda*\mu)*x$ for scalars $\lambda,\mu$ and $x\in M$.
 ##
 DeclareSynonym( "IsLeftModule",
         IsLeftOperatorAdditiveGroup
@@ -40,6 +51,11 @@ DeclareSynonym( "IsLeftModule",
 ##
 #C  IsRightOperatorAdditiveGroup( <D> )
 ##
+##  A domain <D> lies in `IsRightOperatorAdditiveGroup' if it is an additive
+##  group that is closed under scalar multplication from the
+##  right, and such that $(x+y)*\lambda=x*\lambda+y*\lambda$ for all
+##  scalars $\lambda$ and elements $x,y\in D$.
+##
 DeclareSynonym( "IsRightOperatorAdditiveGroup",
         IsAdditiveGroup
     and IsExtRSet
@@ -49,6 +65,12 @@ DeclareSynonym( "IsRightOperatorAdditiveGroup",
 #############################################################################
 ##
 #C  IsRightModule( <M> )
+##
+##  A domain <M> lies in `IsRightModule' if it lies in
+##  `IsRightOperatorAdditiveGroup', {\it and} the set of scalars forms a ring,
+##  {\it and} $x*(\lambda+\mu) = x*\lambda+x*\mu$ for scalars $\lambda,\mu$
+##  and $x\in M$, {\it and} scalar multiplication satisfies $(x*\mu)*\lambda=
+##  x*(\mu*\lambda)$ for scalars $\lambda,\mu$ and $x\in M$.
 ##
 DeclareSynonym( "IsRightModule",
         IsRightOperatorAdditiveGroup
@@ -67,6 +89,10 @@ DeclareSynonym( "IsRightModule",
 ##
 ##  Free left modules can have bases.
 ##
+##  The characteristic (see~"Characteristic") of a free left module
+##  is defined as the characteristic of its left acting domain
+##  (see~"LeftActingDomain").
+##
 DeclareCategory( "IsFreeLeftModule", IsLeftModule );
 
 
@@ -79,12 +105,12 @@ DeclareCategory( "IsFreeLeftModule", IsLeftModule );
 ##
 DeclareProperty( "IsFiniteDimensional", IsFreeLeftModule );
 
-InstallSubsetMaintainedMethod( IsFiniteDimensional,
+InstallSubsetMaintenance( IsFiniteDimensional,
     IsFreeLeftModule and IsFiniteDimensional, IsFreeLeftModule );
 
-InstallFactorMaintainedMethod( IsFiniteDimensional,
+InstallFactorMaintenance( IsFiniteDimensional,
     IsFreeLeftModule and IsFiniteDimensional,
-    IsCollection, IsFreeLeftModule );
+    IsObject, IsFreeLeftModule );
 
 InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsFinite );
 
@@ -93,7 +119,8 @@ InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsFinite );
 ##
 #P  IsFullRowModule( M )
 ##
-##  A *full row module* is a module $R^n$, for a ring $R$.
+##  A *full row module* is a module $R^n$,
+##  for a ring $R$ and a nonnegative integer $n$.
 ##
 ##  More precisely, a full row module is a free left module over a ring $R$
 ##  such that the elements are row vectors with entries in $R$ and such that
@@ -102,21 +129,22 @@ InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsFinite );
 ##  Several functions delegate their tasks to full row modules,
 ##  for example `Iterator' and `Enumerator'.
 ##
-DeclareProperty( "IsFullRowModule", IsFreeLeftModule );
+DeclareProperty( "IsFullRowModule", IsFreeLeftModule, 20 );
 
 
 #############################################################################
 ##
 #P  IsFullMatrixModule( M )
 ##
-##  A *full matrix module* is a module $R^[m,n]$, for a ring $R$.
+##  A *full matrix module* is a module $R^{[m,n]}$,
+##  for a ring $R$ and two nonnegative integers $m$, $n$.
 ##
 ##  More precisely, a full matrix module is a free left module over a ring
 ##  $R$ such that the elements are matrices with entries in $R$
 ##  and such that the dimension is equal to the number of entries in each
 ##  matrix.
 ##
-DeclareProperty( "IsFullMatrixModule", IsFreeLeftModule );
+DeclareProperty( "IsFullMatrixModule", IsFreeLeftModule, 20 );
 
 
 #############################################################################
@@ -132,6 +160,7 @@ DeclareProperty( "IsFullMatrixModule", IsFreeLeftModule );
 DeclareCategory( "IsHandledByNiceBasis",
     IsFreeLeftModule and IsAttributeStoringRep );
 #T individually choose for each repres. in this category?
+#T why not `DeclareFilter' ?
 
 
 #############################################################################
@@ -152,6 +181,9 @@ DeclareAttribute( "Dimension", IsFreeLeftModule );
 ##
 #A  GeneratorsOfLeftOperatorAdditiveGroup( <D> )
 ##
+##  returns a list of elements of <D> that generates <D> as a left operator
+##  additive group.
+##
 DeclareAttribute( "GeneratorsOfLeftOperatorAdditiveGroup",
     IsLeftOperatorAdditiveGroup );
 
@@ -159,6 +191,8 @@ DeclareAttribute( "GeneratorsOfLeftOperatorAdditiveGroup",
 ############################################################################
 ##
 #A  GeneratorsOfLeftModule( <M> )
+##
+##  returns a list of elements of <M> that generate <M> as a left module.
 ##
 DeclareSynonymAttr( "GeneratorsOfLeftModule",
     GeneratorsOfLeftOperatorAdditiveGroup );
@@ -168,6 +202,9 @@ DeclareSynonymAttr( "GeneratorsOfLeftModule",
 ##
 #A  GeneratorsOfRightOperatorAdditiveGroup( <D> )
 ##
+##  returns a list of elements of <D> that generates <D> as a right operator
+##  additive group.
+##
 DeclareAttribute( "GeneratorsOfRightOperatorAdditiveGroup",
     IsRightOperatorAdditiveGroup );
 
@@ -175,6 +212,8 @@ DeclareAttribute( "GeneratorsOfRightOperatorAdditiveGroup",
 #############################################################################
 ##
 #A  GeneratorsOfRightModule( <M> )
+##
+##  returns a list of elements of <M> that generate <M> as a left module.
 ##
 DeclareSynonymAttr( "GeneratorsOfRightModule",
     GeneratorsOfRightOperatorAdditiveGroup );
@@ -184,6 +223,8 @@ DeclareSynonymAttr( "GeneratorsOfRightModule",
 ##
 #A  TrivialSubmodule( <M> )
 ##
+##  returns the zero submodule of <M>.
+##
 DeclareSynonymAttr( "TrivialSubmodule", TrivialSubadditiveMagmaWithZero );
 
 
@@ -191,12 +232,20 @@ DeclareSynonymAttr( "TrivialSubmodule", TrivialSubadditiveMagmaWithZero );
 ##
 #O  AsLeftModule( <R>, <D> )
 ##
+##  if the domain <D> forms an additive group and is closed under left
+##  multiplication by the elements of <R>, then `AsLeftModule( <R>, <D> )'
+##  returns the domain <D> viewed as a left module.
+##
 DeclareOperation( "AsLeftModule", [ IsRing, IsCollection ] );
 
 
 #############################################################################
 ##
 #O  AsFreeLeftModule( <F>, <D> )  . . . . .  view <D> as free left <F>-module
+##
+##  if the domain <D> is a free left module over <F>, then
+##  `AsFreeLeftModule( <F>, <D> )' returns the domain <D> viewed as free
+##   left module over <F>.
 ##
 DeclareOperation( "AsFreeLeftModule", [ IsRing, IsCollection ] );
 
@@ -216,7 +265,11 @@ DeclareOperation( "ClosureLeftModule", [ IsLeftModule, IsVector ] );
 #O  LeftModuleByGenerators( <R>, <gens> ) .  left <R>-module gener. by <gens>
 #O  LeftModuleByGenerators( <R>, <gens>, <zero> )
 ##
+##  returns the left module over <R> generated by <gens>.
+##
 DeclareOperation( "LeftModuleByGenerators", [ IsRing, IsCollection ] );
+DeclareOperation( "LeftModuleByGenerators",
+    [ IsRing, IsListOrCollection, IsObject ] );
 
 
 #############################################################################
@@ -225,7 +278,15 @@ DeclareOperation( "LeftModuleByGenerators", [ IsRing, IsCollection ] );
 ##
 ##  The vectors in the list <gens> are known to form a basis of the
 ##  free left module <V>.
-##  `UseBasis' stores information in <V> that can be derived form this fact.
+##  `UseBasis' stores information in <V> that can be derived form this fact,
+##  namely
+##  \beginlist
+##  \item{-}
+##    <gens> are stored as left module generators if no such generators were
+##    bound (this is useful especially if <V> is an algebra),
+##  \item{-}
+##    the dimension of <V> is stored.
+##  \endlist
 ##
 DeclareOperation( "UseBasis", [ IsFreeLeftModule, IsHomogeneousList ] );
 
@@ -248,6 +309,23 @@ DeclareOperation( "UseBasis", [ IsFreeLeftModule, IsHomogeneousList ] );
 ##  If the last argument is the string `"basis"' then the vectors in
 ##  <gens> are known to form a basis of the free module.
 ##
+##  It should be noted that the generators <gens> must be vectors,
+##  that is, they must support an addition and a scalar action of <R>
+##  via left multiplication.
+##  (See also Section~"Constructing Domains" for the general meaning of
+##  ``generators'' in {\GAP}.)
+##  In particular, `FreeLeftModule' is *not* an equivalent of commands
+##  such as `FreeGroup' (see~"FreeGroup") in the sense of a constructor of
+##  a free group on abstract generators;
+##  Such a construction seems to be unnecessary for vector spaces,
+##  for that one can use for example row spaces (see~"FullRowSpace")
+##  in the finite dimensional case
+##  and polynomial rings (see~"PolynomialRing") in the infinite dimensional
+##  case.
+##  Moreover, the definition of a ``natural'' addition for elements of a
+##  given magma (for example a permutation group) is possible via the
+##  construction of magma rings (see Chapter "ref:Magma Rings").
+##
 DeclareGlobalFunction( "FreeLeftModule" );
 
 
@@ -255,8 +333,8 @@ DeclareGlobalFunction( "FreeLeftModule" );
 ##
 #F  FullRowModule( <R>, <n> )
 ##
-##  is the row module $<R>^<n>$, for a ring <R> and a nonnegative integer
-##  <n>.
+##  is the row module `<R>^<n>',
+##  for a ring <R> and a nonnegative integer <n>.
 ##
 DeclareGlobalFunction( "FullRowModule" );
 
@@ -265,13 +343,10 @@ DeclareGlobalFunction( "FullRowModule" );
 ##
 #F  FullMatrixModule( <R>, <m>, <n> )
 ##
-##  is the row module $<R>^[<m>,<n>]$, for a ring <R> and nonnegative
-##  integers <m> and <n>.
+##  is the row module `<R>^[<m>,<n>]',
+##  for a ring <R> and nonnegative integers <m> and <n>.
 ##
 DeclareGlobalFunction( "FullMatrixModule" );
-DeclareSynonym( "FullMatrixSpace", FullMatrixModule );
-DeclareSynonym( "MatrixSpace", FullMatrixModule );
-DeclareSynonym( "MatSpace", FullMatrixModule );
 
 
 #############################################################################
@@ -286,63 +361,76 @@ DeclareGlobalFunction( "StandardGeneratorsOfFullMatrixModule" );
 #F  Submodule( <M>, <gens> )  . . . . .  submodule of <M> generated by <gens>
 #F  Submodule( <M>, <gens>, "basis" )
 ##
-##  is the left module generated by <gens>, with parent module <M>.
-##  The second form generates
-##  the submodule of <M> for that <gens> is a list of basis vectors.
-##  It is *not* checked whether <gens> really are linearly independent
-##  and whether all in <gens> lie in <V>.
+##  is the left module generated by the collection <gens>,
+##  with parent module <M>.
+##  The second form generates the submodule of <M> for that the list <gens>
+##  is known to be a list of basis vectors;
+##  in this case, it is *not* checked whether <gens> really are linearly
+##  independent and whether all in <gens> lie in <M>.
 ##
 DeclareGlobalFunction( "Submodule" );
 
 
 #############################################################################
 ##
-#F  SubmoduleNC( <V>, <gens> )
-#F  SubmoduleNC( <V>, <gens>, "basis" )
+#F  SubmoduleNC( <M>, <gens> )
+#F  SubmoduleNC( <M>, <gens>, "basis" )
 ##
 ##  `SubmoduleNC' does the same as `Submodule', except that it does not check
-##  whether all in <gens> lie in <V>.
+##  whether all in <gens> lie in <M>.
 ##
 DeclareGlobalFunction( "SubmoduleNC" );
 
 
 #############################################################################
 ##
-#R  IsRowModuleRep( <M> )
+#P  IsRowModule( <V> )
 ##
-##  A *row module* is a free left module whose elements are lists of scalars.
+##  A *row module* is a free left module whose elements are row vectors.
 ##
-DeclareRepresentation( "IsRowModuleRep", IsComponentObjectRep,
-    [ "vectordim" ] );
+DeclareProperty( "IsRowModule", IsFreeLeftModule );
+
+InstallTrueMethod( IsRowModule, IsFullRowModule );
+
+
+#############################################################################
+##
+#P  IsMatrixModule( <V> )
+##
+##  A *matrix module* is a free left module whose elements are matrices.
+##
+DeclareProperty( "IsMatrixModule", IsFreeLeftModule );
+
+InstallTrueMethod( IsMatrixModule, IsFullMatrixModule );
+
+
+#############################################################################
+##
+#A  DimensionOfVectors( <M> ) . . . . . . . . . .  for row and matrix modules
+##
+##  For a left module <M> that consists of row vectors (see~"IsRowModule"),
+##  `DimensionOfVectors' returns the length of each row vector in <M>.
+##  For a left module <M> that consists of matrices (see~"IsMatrixModule"),
+##  `DimensionOfVectors' returns the list of dimensions (see~"DimensionsMat")
+##  of each matrix in <M>.
+##
+DeclareAttribute( "DimensionOfVectors", IsFreeLeftModule );
 
 
 #############################################################################
 ##
 #M  IsFiniteDimensional( <M> )  . . . . . .  row modules are always fin. dim.
-##
-InstallTrueMethod( IsFiniteDimensional,
-    IsRowModuleRep and IsFreeLeftModule );
-
-
-#############################################################################
-##
-#R  IsMatrixModuleRep( <V> )
-##
-##  A *matrix module* is a free left module whose elements are matrices.
-##
-DeclareRepresentation( "IsMatrixModuleRep", IsComponentObjectRep,
-    [ "vectordim" ] );
-
-
-#############################################################################
-##
 #M  IsFiniteDimensional( <M> )  . . . . . matrix modules are always fin. dim.
 ##
+##  Any free left module in the filter `IsRowModule' or `IsMatrixModule'
+##  is finite dimensional.
+##
+InstallTrueMethod( IsFiniteDimensional, IsRowModule and IsFreeLeftModule );
 InstallTrueMethod( IsFiniteDimensional,
-    IsMatrixModuleRep and IsFreeLeftModule );
+    IsMatrixModule and IsFreeLeftModule );
 
 
 #############################################################################
 ##
-#E  module.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

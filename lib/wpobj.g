@@ -18,6 +18,11 @@ Revision.wpobj_g :=
 #V  TYPE_WPOBJ  . . . . . . . . . . . . . . . . . . . . type of all wp object
 ##
 TYPE_WPOBJ := NewType( ListsFamily,
-    IsWeakPointerObject and IsInternalRep and IsFinite and IsSmallList );
+    IsWeakPointerObject and IsInternalRep and IsSmallList and IsMutable );
 
+
+#############################################################################
+##
+#E
+##
 

@@ -7,17 +7,14 @@
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains the destructive part of the {\GAP} 3 compatibility
-##  mode, i.e., those parts whose availability in {\GAP} 4 is possible only
-##  at the cost of losing some {\GAP} 4 specific functionality.
+##  This file contains the destructive part of the {\GAP}~3 compatibility
+##  mode, i.e., those parts whose availability in {\GAP}~4 is possible only
+##  at the cost of losing some {\GAP}~4 specific functionality.
 ##
-##  This file is read only if the user explicitly reads it.
+##  This file should be read only via the `-O' option of {\GAP},
+##  one should not simply read it via a `Read' or `ReadLib' statement.
 ##  *Note* that it is not possible to switch off the destructive part of the
 ##  compatibility mode once it has been loaded.
-##
-#T I think we should make the compatibility mode available only via a
-#T command line option.
-#T (This will be unavoidable if it involves changes in the kernel.)
 ##
 Revision.compat3d_g :=
     "@(#)$Id$";
@@ -51,12 +48,14 @@ Print( "#I  Now the destructive part of the GAP 3 compatibility mode\n",
 #F  Domain( <list> )
 ##
 ##  We must forbid calling `Domain'.
-##  In {\GAP}-3, it was used as an oracle in the construction of domains,
+##  In {\GAP}~3, it was used as an oracle in the construction of domains,
 ##  it returned for example `FiniteFieldMatrices' or `Permutations'.
 ##
-##  In {\GAP}-4, the various aspects of information to create domains are
+##  In {\GAP}~4, the various aspects of information to create domains are
 ##  described by the types of objects.
 ##
+MakeReadWriteGlobal( "Domain" );
+
 Domain := function( arg )
     Error( "this function is not available in GAP 4\n",
            "because the domain construction mechanism has changed" );
@@ -67,14 +66,14 @@ end;
 ##
 #F  IsString( <obj> )
 ##
-##  In {\GAP} 3, `IsString' did silently convert its argument to the string
+##  In {\GAP}~3, `IsString' did silently convert its argument to the string
 ##  representation.
 ##
 if not IsBound( OLDISSTRING ) then
     OLDISSTRING := IsString;
 fi;
 
-MakeReadWriteGlobal("IsString");
+MakeReadWriteGlobal( "IsString" );
 
 IsString := function( obj )
     local result;
@@ -88,8 +87,5 @@ end;
 
 #############################################################################
 ##
-#E  compat3d.g  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-
+#E
 

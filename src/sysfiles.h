@@ -69,6 +69,16 @@ extern InitInfoFunc SyLoadModule(
 
 /****************************************************************************
 **
+*V  SyCanLoadDynamicModules . . . true if system supports dynamical libraries
+*/
+#if SYS_MAC_MWC
+# include <Types.h>
+extern Boolean SyCanLoadDynamicModules;
+#endif
+
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
 */
@@ -122,12 +132,40 @@ extern Char * SyWinCmd (
 **  routines  from   allocating their  buffers  using  'malloc',  which would
 **  otherwise confuse Gasman.
 */
+#if SYS_MAC_MWC
+/* on the Mac, we need some additional info about the file 
+** fromDoc should really be of type DocumentRecord*, but but this would require "macedit.h", 
+** which gives trouble with some of the other  GAP source files under CW Pro 2,
+** because it refuses to include "List.h" if it has already read <List.h>
+*/
+#include <Files.h>    /* for FSSpec, SIgnedByte and Boolean (from MacTypes.h) */
+
+#define MIN_BUFSIZ 16
+typedef struct {
+    FILE *	     	fp;                     /* file pointer for this file      */
+#if 0 
+    FILE *      	echo;                   /* file pointer for the echo       */
+#endif
+    void *		 	fromDoc;				/* the document window from which it reads, if any */
+#if DYNAMIC_BUFFER
+    Handle        	bufH;           		/* the buffer for this file        */    
+#else
+	char			buf[BUFSIZ];
+#endif
+	long			bufPos, bufLen;
+	FSSpec 			fsspec;					/* the file specs for this file */
+	SignedByte		permission;
+	Boolean			binary;                 /* binary file? */
+} SYS_SY_BUF;
+
+#else
 typedef struct {
     FILE *      fp;                     /* file pointer for this file      */
     FILE *      echo;                   /* file pointer for the echo       */
     UInt        pipe;                   /* file is really a pipe           */
     Char        buf [BUFSIZ];           /* the buffer for this file        */
 } SYS_SY_BUF;
+#endif
 
 extern SYS_SY_BUF syBuf [256];
 
@@ -273,6 +311,16 @@ extern void SyInstallAnswerIntr ( void );
 
 extern UInt SyIsIntr ( void );
 
+
+/****************************************************************************
+**
+*V  SyInFid . . . 
+**
+*V  SyOutFid
+*/
+#if SYS_MAC_MWC
+extern Int 			SyInFid, SyOutFid; /* for i/o redirection */
+#endif
 
 /****************************************************************************
 **
@@ -432,6 +480,16 @@ extern UInt SyExecuteProcess (
 
 /****************************************************************************
 **
+*V  SyCanExec . . . . . . true if operating system supports launching another 
+**                        application
+*/
+#if SYS_MAC_MWC
+extern Boolean		SyCanExec;
+#endif
+
+
+/****************************************************************************
+**
 
 *F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
 **
@@ -532,7 +590,37 @@ extern Char * SyTmpname ( void );
 */
 extern Char * SyTmpdir ( Char * hint );
 
+/****************************************************************************
+**
+*V  SyTmpVref . . . . . . . . . .. . . volume ref num for temporary directory
+**
+*V  SyTmpDirId . . . . . . . . . . . . . . . . dir id for temporary directory
+*/
+#if SYS_MAC_MWC
+extern short 		SyTmpVref; 
+extern long 		SyTmpDirId;
+#endif
 
+/****************************************************************************
+**
+*F  SyFSMakeNewFSSpec ( <vol>, <dir>, <name>, <newFSSpec>) . .  get an unused
+**                                                              Mac file spec
+**  This returns a Mac file specification for a file in directory <dir> on 
+**  volume <vol>, whose name is based upon the string <name>
+*/
+#if SYS_MAC_MWC
+OSErr SyFSMakeNewFSSpec (short vol, long dir, Str31 name, FSSpecPtr newFSSpec);
+#endif
+
+/****************************************************************************
+**
+*F  void getwindowsize( void )  . probe the OS for the window size and
+**                               set SyNrRows and SyNrCols accordingly
+*/
+
+extern void getwindowsize( void );
+
+     
 /****************************************************************************
 **
 

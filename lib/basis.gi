@@ -15,41 +15,6 @@ Revision.basis_gi :=
 
 #############################################################################
 ##
-#F  Basis( <V> )
-#F  Basis( <V>, <vectors> )
-##
-InstallGlobalFunction( Basis, function( arg )
-    if Length( arg ) = 1 and IsFreeLeftModule( arg[1] ) then
-      return BasisOfDomain( arg[1] );
-    elif Length( arg ) = 2 and IsFreeLeftModule( arg[1] )
-                           and IsHomogeneousList( arg[2] ) then
-      return BasisByGenerators( arg[1], arg[2] );
-    else
-      Error( "usage: Basis( <V> ) or Basis( <V>, <vectors> )" );
-    fi;
-end );
-
-
-#############################################################################
-##
-#F  SemiEchelonBasis( <V> )
-#F  SemiEchelonBasis( <V>, <vectors> )
-##
-InstallGlobalFunction( SemiEchelonBasis, function( arg )
-    if Length( arg ) = 1 and IsFreeLeftModule( arg[1] ) then
-      return SemiEchelonBasisOfDomain( arg[1] );
-    elif Length( arg ) = 2 and IsFreeLeftModule( arg[1] )
-                           and IsHomogeneousList( arg[2] ) then
-      return SemiEchelonBasisByGenerators( arg[1], arg[2] );
-    else
-      Error( "usage: SemiEchelonBasis( <V> ) or \n",
-             "SemiEchelonBasis( <V>, <vectors> )" );
-    fi;
-end );
-
-
-#############################################################################
-##
 #M  IsCanonicalBasis( <B> ) . . . . . . . . . . . . . . . . . . for any basis
 ##
 ##  Note that we run into an error if no canonical basis is defined for the
@@ -57,8 +22,7 @@ end );
 ##
 InstallMethod( IsCanonicalBasis,
     "for a basis",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     B -> B = CanonicalBasis( UnderlyingLeftModule( B ) ) );
 
 
@@ -72,22 +36,19 @@ InstallMethod( IsCanonicalBasis,
 ##
 InstallMethod( \[\],
     "for a basis and a positive integer",
-    true,
-    [ IsBasis, IsPosInt ], 0,
+    [ IsBasis, IsPosInt ],
     function( B, i ) return BasisVectors( B )[i]; end );
 
 InstallMethod( Position,
-    "for a basis, an object, and a positive integer",
-    true,
-    [ IsBasis, IsObject, IsInt ], 0,
+    "for a basis, an object, and a nonnegative integer",
+    [ IsBasis, IsObject, IsInt ],
     function( B, v, from )
     return Position( BasisVectors( B ), v, from );
     end );
 
 InstallMethod( Length,
     "for a basis",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     B -> Length( BasisVectors( B ) ) );
 
 
@@ -122,7 +83,7 @@ InstallTrueMethod( IsFinite, IsBasis and IsRelativeBasisDefaultRep );
 InstallMethod( RelativeBasis,
     "for a basis and a homogeneous list",
     IsIdenticalObj,
-    [ IsBasis, IsHomogeneousList ], 0,
+    [ IsBasis, IsHomogeneousList ],
     function( B, vectors )
 
     local M,   # basechange matrix
@@ -178,7 +139,7 @@ InstallMethod( RelativeBasis,
 InstallMethod( RelativeBasisNC,
     "for a basis and a homogeneous list",
     IsIdenticalObj,
-    [ IsBasis, IsHomogeneousList ], 0,
+    [ IsBasis, IsHomogeneousList ],
     function( B, vectors )
 
     local M,   # basechange matrix
@@ -214,8 +175,7 @@ InstallMethod( RelativeBasisNC,
 ##
 InstallMethod( PrintObj,
     "for a basis with basis vectors",
-    true,
-    [ IsBasis and HasBasisVectors ], 0,
+    [ IsBasis and HasBasisVectors ],
     function( B )
     Print( "Basis( ", UnderlyingLeftModule( B ), ", ",
            BasisVectors( B ), " )" );
@@ -223,8 +183,7 @@ InstallMethod( PrintObj,
 
 InstallMethod( PrintObj,
     "for a basis",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     function( B )
     Print( "Basis( ", UnderlyingLeftModule( B ), ", ... )" );
     end );
@@ -233,8 +192,7 @@ InstallMethod( PrintObj,
 
 InstallMethod( PrintObj,
     "for a semi-echelonized basis with basis vectors",
-    true,
-    [ IsBasis and HasBasisVectors and IsSemiEchelonized ], 0,
+    [ IsBasis and HasBasisVectors and IsSemiEchelonized ],
     function( B )
     Print( "SemiEchelonBasis( ", UnderlyingLeftModule( B ), ", ",
            BasisVectors( B ), " )" );
@@ -242,15 +200,13 @@ InstallMethod( PrintObj,
 
 InstallMethod( PrintObj,
     "for a semi-echelonized basis",
-    true,
-    [ IsBasis and IsSemiEchelonized ], 0,
+    [ IsBasis and IsSemiEchelonized ],
     function( B )
     Print( "SemiEchelonBasis( ", UnderlyingLeftModule( B ), ", ... )" );
     end );
 
 InstallMethod( PrintObj,
     "for a canonical basis",
-    true,
     [ IsBasis and IsCanonicalBasis ], SUM_FLAGS,
     function( B )
     Print( "CanonicalBasis( ", UnderlyingLeftModule( B ), " )" );
@@ -266,8 +222,7 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( ViewObj,
     "for a basis with basis vectors",
-    true,
-    [ IsBasis and HasBasisVectors ], 0,
+    [ IsBasis and HasBasisVectors ],
     function( B )
     Print( "Basis( " );
     View( UnderlyingLeftModule( B ) );
@@ -278,8 +233,7 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for a basis",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     function( B )
     Print( "Basis( " );
     View( UnderlyingLeftModule( B ) );
@@ -288,8 +242,7 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for a semi-echelonized basis with basis vectors",
-    true,
-    [ IsBasis and HasBasisVectors and IsSemiEchelonized ], 0,
+    [ IsBasis and HasBasisVectors and IsSemiEchelonized ],
     function( B )
     Print( "SemiEchelonBasis( " );
     View( UnderlyingLeftModule( B ) );
@@ -300,8 +253,7 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for a semi-echelonized basis",
-    true,
-    [ IsBasis and IsSemiEchelonized ], 0,
+    [ IsBasis and IsSemiEchelonized ],
     function( B )
     Print( "SemiEchelonBasis( " );
     View( UnderlyingLeftModule( B ) );
@@ -310,7 +262,6 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for a canonical basis",
-    true,
     [ IsBasis and IsCanonicalBasis ], SUM_FLAGS,
     function( B )
     Print( "CanonicalBasis( " );
@@ -321,11 +272,21 @@ InstallMethod( ViewObj,
 
 #############################################################################
 ##
-#M  BasisOfDomain( <D> )
+#M  Basis( <D> )
 ##
-InstallImmediateMethod( BasisOfDomain,
-    IsFreeLeftModule and HasCanonicalBasis, 0,
+InstallImmediateMethod( Basis,
+    IsFreeLeftModule and HasCanonicalBasis and IsAttributeStoringRep, 0,
     CanonicalBasis );
+
+
+#############################################################################
+##
+#M  CanonicalBasis( <D> ) . . . . . . . . . . . . . .  default, return `fail'
+##
+InstallMethod( CanonicalBasis,
+    "default method, return `fail'",
+    [ IsFreeLeftModule ],
+    ReturnFail );
 
 
 #############################################################################
@@ -334,8 +295,7 @@ InstallImmediateMethod( BasisOfDomain,
 ##
 InstallMethod( LinearCombination,
     "for a basis and a homogeneous list",
-    true,
-    [ IsBasis, IsHomogeneousList ], 0,
+    [ IsBasis, IsHomogeneousList ],
     function( B, coeff )
 
     local vec,   # list of basis vectors of `B'
@@ -356,8 +316,7 @@ InstallMethod( LinearCombination,
 
 InstallOtherMethod( LinearCombination,
     "for two lists",
-    true,
-    [ IsList, IsList ], 0,
+    [ IsList, IsList ],
     function( B, coeff )
     local lincomb,
           i;
@@ -371,6 +330,10 @@ InstallOtherMethod( LinearCombination,
       Error( "sorry, can't compute linear combination w.r. to <B>" );
     fi;
     end );
+# why not PROD_LIST_LIST_DEFAULT or PROD_LIST_LIST_TRY ??
+# (cf. method in fieldfin.gi)
+# note that coeff and B may be empty, then the zero vector is returned!
+# (document this for the operation!)
 
 
 #############################################################################
@@ -398,10 +361,21 @@ DeclareRepresentation( "IsBasisSpaceEnumeratorRep",
 ##
 InstallMethod( Position,
     "for an enumerator-by-basis, a vector, and zero",
-    true,
     [ IsDomainEnumerator and IsBasisSpaceEnumeratorRep,
-      IsVector, IsZeroCyc ], 0,
+      IsVector, IsZeroCyc ],
     function( enum, elm, zero )
+    elm:= Coefficients( enum!.basis, elm );
+    if elm <> fail then
+      elm:= Position( enum!.coeffspaceenum, elm );
+    fi;
+    return elm;
+    end );
+
+InstallMethod( PositionCanonical,
+    "for an enumerator-by-basis and a vector",
+    [ IsDomainEnumerator and IsBasisSpaceEnumeratorRep,
+      IsVector ],
+    function( enum, elm )
     elm:= Coefficients( enum!.basis, elm );
     if elm <> fail then
       elm:= Position( enum!.coeffspaceenum, elm );
@@ -411,9 +385,8 @@ InstallMethod( Position,
 
 InstallMethod( \[\],
     "for an enumerator-by-basis and a positive integer",
-    true,
     [ IsDomainEnumerator and IsBasisSpaceEnumeratorRep,
-      IsPosInt ], 0,
+      IsPosInt ],
     function( enum, n )
     n:= enum!.coeffspaceenum[ n ];
     return LinearCombination( enum!.basis, n );
@@ -421,8 +394,7 @@ InstallMethod( \[\],
 
 InstallMethod( EnumeratorByBasis,
     "for basis of a finite dimensional left module",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     function( B )
     local V;
 
@@ -470,23 +442,29 @@ DeclareRepresentation( "IsBasisSpaceIteratorRep",
 ##
 InstallMethod( IsDoneIterator,
     "for an iterator-by-basis",
-    true,
-    [ IsIterator and IsBasisSpaceIteratorRep ], 0,
+    [ IsIterator and IsBasisSpaceIteratorRep ],
     iter -> IsDoneIterator( iter!.coeffspaceiter ) );
 
 InstallMethod( NextIterator,
-    "for an iterator-by-basis",
-    true,
-    [ IsIterator and IsBasisSpaceIteratorRep ], 0,
+    "for a mutable iterator-by-basis",
+    [ IsIterator and IsMutable and IsBasisSpaceIteratorRep ],
     iter -> LinearCombination( iter!.basis,
                                NextIterator( iter!.coeffspaceiter ) ) );
 
 InstallMethod( IteratorByBasis,
     "for basis of a finite dimensional left module",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     function( B )
     local V;
+
+    # We delegate to the canonical basis of a full row module,
+    # in order to avoid infinite recursion, we must guarantee
+    # that `B' is not itself such a basis.
+    if     ( not HasIsCanonicalBasisFullRowModule( B ) )
+       and IsCanonicalBasisFullRowModule( B )
+       and HasIsCanonicalBasisFullRowModule( B ) then
+      return IteratorByBasis( B );
+    fi;
 
     V:= UnderlyingLeftModule( B );
     if not IsFiniteDimensional( V ) then
@@ -495,13 +473,23 @@ InstallMethod( IteratorByBasis,
 
     return Objectify(
                       NewType( IteratorsFamily,
-                               IsIterator and IsBasisSpaceIteratorRep ),
+                                   IsIterator
+                               and IsMutable
+                               and IsBasisSpaceIteratorRep ),
                       rec( basis          := B,
                            coeffspaceiter := IteratorByBasis( CanonicalBasis(
                                   FullRowModule( LeftActingDomain( V ),
                                                 Dimension( V ) ) ) ) )
                      );
     end );
+
+InstallMethod( ShallowCopy,
+    "for an iterator-by-basis",
+    [ IsIterator and IsBasisSpaceIteratorRep ],
+    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
+                rec( basis          := iter!.basis,
+                     coeffspaceiter := ShallowCopy(
+                                           iter!.coeffspaceiter ) ) ) );
 
 
 #############################################################################
@@ -510,8 +498,7 @@ InstallMethod( IteratorByBasis,
 ##
 InstallMethod( StructureConstantsTable,
     "for a basis",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     function( B )
 
     local A,        # underlying algebra
@@ -580,7 +567,7 @@ InstallMethod( StructureConstantsTable,
 InstallMethod( Coefficients,
     "for relative basis and vector",
     IsCollsElms,
-    [ IsBasis and IsRelativeBasisDefaultRep, IsVector ], 0,
+    [ IsBasis and IsRelativeBasisDefaultRep, IsVector ],
     function( B, v )
     v:= Coefficients( B!.basis, v );
     if v <> fail then
@@ -592,25 +579,26 @@ InstallMethod( Coefficients,
 
 #############################################################################
 ##
-#M  BasisByGenerators( <V>, <gens> )
-#M  BasisByGeneratorsNC( <V>, <gens> )
+#M  Basis( <V>, <gens> )
+#M  BasisNC( <V>, <gens> )
 ##
 ##  The default for this is a relative basis.
 ##
-InstallMethod( BasisByGenerators,
+InstallMethod( Basis,
     "method returning a relative basis",
     IsIdenticalObj,
-    [ IsFreeLeftModule, IsHomogeneousList ], 0,
+    [ IsFreeLeftModule, IsHomogeneousList ],
     function( V, gens )
-    return RelativeBasis( BasisOfDomain( V ), gens );
+    return RelativeBasis( Basis( V ), gens );
     end );
 
-InstallMethod( BasisByGeneratorsNC,
+InstallMethod( BasisNC,
     "method returning a relative basis",
     IsIdenticalObj,
-    [ IsFreeLeftModule, IsHomogeneousList ], 0,
+    [ IsFreeLeftModule, IsHomogeneousList ],
     function( V, gens )
-    return RelativeBasisNC( BasisOfDomain( V ), gens );
+    UseBasis( V, gens );
+    return RelativeBasisNC( Basis( V ), gens );
     end );
 
 
@@ -621,38 +609,170 @@ InstallMethod( BasisByGeneratorsNC,
 
 #############################################################################
 ##
-#M  NewBasis( <V> ) . . . . . . . . . . create a basis for a free left module
-#M  NewBasis( <V>, <vectors> )  . . . . create a basis for a free left module
+#F  InstallHandlingByNiceBasis( <name>, <record> )
 ##
-InstallOtherMethod( NewBasis,
-    "for a free module handled by nice basis",
-    true,
-    [ IsFreeLeftModule and IsHandledByNiceBasis ], 0,
-    function( V )
-    local B;
-    NiceFreeLeftModule( V );
-    B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasisByNiceBasis and IsAttributeStoringRep ),
-                   rec() );
-    SetUnderlyingLeftModule( B, V );
-    return B;
-    end );
+InstallGlobalFunction( "InstallHandlingByNiceBasis",
+    function( name, record )
 
-InstallMethod( NewBasis,
-    "for a free module handled by nice basis, and homogeneous list",
-    IsIdenticalObj,
-    [ IsFreeLeftModule and IsHandledByNiceBasis,
-      IsCollection and IsList ], 0,
-    function( V, vectors )
-    local B;
-    NiceFreeLeftModule( V );
-    B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasisByNiceBasis and IsAttributeStoringRep ),
-                   rec() );
-    SetUnderlyingLeftModule( B, V );
-    SetBasisVectors( B, vectors );
-    return B;
-    end );
+    local filter, entry;
+
+    # Check the arguments.
+    if not IsString( name ) then
+      Error( "<name> must be a string" );
+    elif not IsSubset( RecNames( record ),
+                       [ "detect",
+                         "NiceFreeLeftModuleInfo",
+                         "NiceVector", "UglyVector" ] ) then
+      Error( "<record> has not all necessary components" );
+    fi;
+
+    # Get the filter.
+    filter:= ValueGlobal( name );
+
+    # Install the detection of the filter.
+    entry:= First( NiceBasisFiltersInfo,
+                   x -> IsIdenticalObj( filter, x[1] ) );
+    Add( entry, record.detect );
+    filter:= IsLeftModule and filter;
+    InstallTrueMethod( IsHandledByNiceBasis, filter );
+
+    # Install the methods.
+    InstallMethod( NiceFreeLeftModuleInfo,
+        Concatenation( "for left module in `", name, "'" ),
+        [ filter ],
+        record.NiceFreeLeftModuleInfo );
+
+    InstallMethod( NiceVector,
+        Concatenation( "for left module in `", name, "', and object" ),
+        [ filter, IsObject ],
+        record.NiceVector );
+
+    InstallMethod( UglyVector,
+        Concatenation( "for left module in `", name, "', and object" ),
+        [ filter, IsObject ],
+        record.UglyVector );
+end );
+
+
+#############################################################################
+##
+#F  CheckForHandlingByNiceBasis( <F>, <gens>, <V>, <zero> )
+##
+InstallGlobalFunction( "CheckForHandlingByNiceBasis",
+    function( F, gens, V, zero )
+    local triple, value;
+    if not IsHandledByNiceBasis( V ) then
+      for triple in NiceBasisFiltersInfo do
+        value:= triple[3]( F, gens, V, zero );
+        if value = true then
+          SetFilterObj( V, triple[1] );
+          return;
+        elif value = fail then
+          return;
+        fi;
+      od;
+    fi;
+end );
+
+
+#############################################################################
+##
+#F  NiceFreeLeftModuleInfo( <V> )
+#F  NiceVector( <V>, <v> )
+#F  UglyVector( <V>, <r> )
+##
+InstallHandlingByNiceBasis( "IsGenericFiniteSpace", rec(
+    detect:= function( R, gens, V, zero )
+      return    ( IsFinite( R ) and IsFinite( gens ) )
+             or ForAll( gens, IsZero );
+      end,
+
+    NiceFreeLeftModuleInfo:= function( V )
+      local elms,      # set of elements, result
+            base,      # list of basis vectors
+            fieldelms, # elements set of the coefficients field of `V'
+            gen,       # loop over generators
+            i,         # loop over field elements
+            new,       # intermediate elements list
+            numbers,   # list of positions of elements w.r. to construction
+            B;         # basis record, result
+
+      elms := [ Zero( V ) ];
+      base := [];
+
+      fieldelms:= Enumerator( LeftActingDomain( V ) );
+
+      # Form all linear combinations of the generators.
+      for gen in GeneratorsOfLeftModule( V ) do
+        if not gen in elms then
+
+          # Form the closure with `gen'
+          Add( base, gen );
+          new:= [];
+          for i in fieldelms do
+            Append( new, List( elms, x -> x + i * gen ) );
+          od;
+          elms:= new;
+
+        fi;
+      od;
+
+      # Compute the coefficients information.
+      numbers:= [ 1 .. Length( elms ) ];
+      SortParallel( elms, numbers );
+
+      return rec( elements         := elms,
+                  numbers          := numbers,
+                  q                := Length( fieldelms ),
+                  fieldelements    := fieldelms,
+                  base             := base );
+      end,
+
+    NiceVector:= function( V, v )
+      local info, pos, n, coeffs, q, i;
+
+      info:= NiceFreeLeftModuleInfo( V );
+
+      # Compute the $q$-adic expression.
+      pos:= Position( info.elements, v );
+      if pos = fail then
+        return fail;
+      fi;
+      n:= info.numbers[ pos ] - 1;
+      coeffs:= [];
+      q:= info.q;
+      for i in [ 1 .. Length( info.base ) ] do
+        Add( coeffs, RemInt( n, q ) + 1 );
+        n:= QuoInt( n, q );
+      od;
+
+      # Compute and return the coefficients vector itself.
+      return info.fieldelements{ coeffs };
+      end,
+
+    UglyVector:= function( V, r )
+      local vectors;
+      vectors:= NiceFreeLeftModuleInfo( V ).base;
+      if Length( vectors ) = Length( r ) then
+        return LinearCombination( r, vectors );
+      else
+        return fail;
+      fi;
+      end ) );
+
+
+#############################################################################
+##
+#M  NiceFreeLeftModule( <V> )
+##
+##  This is the rare case where the `NiceFreeLeftModule' value is a full row
+##  space.
+##
+InstallMethod( NiceFreeLeftModule,
+    "for generic finite space (use that this is a full row module)",
+    [ IsFreeLeftModule and IsGenericFiniteSpace ],
+    V -> FullRowSpace( LeftActingDomain( V ),
+                       Length( NiceFreeLeftModuleInfo( V ).base ) ) );
 
 
 #############################################################################
@@ -661,17 +781,15 @@ InstallMethod( NewBasis,
 ##
 InstallMethod( NiceBasis,
     "for basis by nice basis",
-    true,
-    [ IsBasisByNiceBasis ], 0,
+    [ IsBasisByNiceBasis ],
     function( B )
     local V;
     V:= UnderlyingLeftModule( B );
     if HasBasisVectors( B ) then
-      return BasisByGenerators( NiceFreeLeftModule( V ),
-                      List( BasisVectors( B ),
-                            v -> NiceVector( V, v ) ) );
+      return Basis( NiceFreeLeftModule( V ),
+                    List( BasisVectors( B ), v -> NiceVector( V, v ) ) );
     else
-      return BasisOfDomain( NiceFreeLeftModule( V ) );
+      return Basis( NiceFreeLeftModule( V ) );
     fi;
     end );
 
@@ -682,19 +800,19 @@ InstallMethod( NiceBasis,
 ##
 InstallMethod( NiceBasisNC,
     "for basis by nice basis",
-    true,
-    [ IsBasisByNiceBasis ], 0,
+    [ IsBasisByNiceBasis ],
     function( B )
     local A;
     A:= UnderlyingLeftModule( B );
     if HasBasisVectors( B ) then
-      A:= BasisByGeneratorsNC( NiceFreeLeftModule( A ),
-                     List( BasisVectors( B ),
-                           v -> NiceVector( A, v ) ) );
+      A:= BasisNC( NiceFreeLeftModule( A ),
+                   List( BasisVectors( B ), v -> NiceVector( A, v ) ) );
     else
-      A:= BasisOfDomain( NiceFreeLeftModule( A ) );
+      A:= Basis( NiceFreeLeftModule( A ) );
     fi;
-    SetNiceBasis( B, A );
+    if not HasNiceBasis( B ) then
+      SetNiceBasis( B, A );
+    fi;
     return A;
     end );
 #T is this operation meaningful at all??
@@ -706,8 +824,7 @@ InstallMethod( NiceBasisNC,
 ##
 InstallMethod( BasisVectors,
     "for basis by nice basis",
-    true,
-    [ IsBasisByNiceBasis ], 0,
+    [ IsBasisByNiceBasis ],
     function( B )
     local V;
     V:= UnderlyingLeftModule( B );
@@ -725,7 +842,7 @@ InstallMethod( BasisVectors,
 InstallMethod( Coefficients,
     "for basis handled by nice basis, and vector",
     IsCollsElms,
-    [ IsBasisByNiceBasis, IsVector ], 0,
+    [ IsBasisByNiceBasis, IsVector ],
     function( B, v )
     local n;
     n:= NiceVector( UnderlyingLeftModule( B ), v );
@@ -754,15 +871,14 @@ InstallMethod( Coefficients,
 ##
 InstallMethod( CanonicalBasis,
     "for free module that is handled by a nice basis",
-    true,
-    [ IsFreeLeftModule and IsHandledByNiceBasis ], 0,
+    [ IsFreeLeftModule and IsHandledByNiceBasis ],
     function( V )
 
     local N,   # associated nice space of `V'
           B;   # canonical basis of `V', result
 
     N:= NiceFreeLeftModule( V );
-    B:= BasisByGeneratorsNC( V, List( BasisVectors( CanonicalBasis( N ) ),
+    B:= BasisNC( V, List( BasisVectors( CanonicalBasis( N ) ),
                               v -> UglyVector( V, v ) ) );
     SetIsCanonicalBasis( B, true );
     return B;
@@ -775,51 +891,92 @@ InstallMethod( CanonicalBasis,
 ##
 InstallMethod( IsCanonicalBasis,
     "for a basis handled by a nice basis",
-    true,
-    [ IsBasisByNiceBasis ], 0,
+    [ IsBasisByNiceBasis ],
     function( B )
     local V;
     V:= UnderlyingLeftModule( B );
-    B:= BasisByGeneratorsNC( V, List( BasisVectors( B ),
-                                      v -> NiceVector( V, v ) ) );
+    B:= BasisNC( V, List( BasisVectors( B ), v -> NiceVector( V, v ) ) );
     return IsCanonicalBasis( B );
     end );
 
 
 #############################################################################
 ##
-#M  BasisOfDomain( <V> )  . . . . . . . for free module handled by nice basis
+#M  Basis( <V> )  . . . . . . . . . . . for free module handled by nice basis
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for free module that is handled by a nice basis",
-    true,
-    [ IsFreeLeftModule and IsHandledByNiceBasis ], 10,
-    NewBasis );
+    [ IsFreeLeftModule and IsHandledByNiceBasis ], 20,
+    # This method shall be called also for FLMLORs
+    # that are handled by nice bases.
+    # Note that the default method for a FLMLOR
+    # without left module generators is to call
+    # `MutableBasisOfClosureUnderAction',
+    # and the `ImmutableBasis' call will use `NewBasis',
+#T what is really going on here??
+    # which may again call `MutableBasisOfClosureUnderAction';
+    # so it is cheaper to create the basis object directly.
+    function( V )
+    local B;
+    B:= Objectify( NewType( FamilyObj( V ),
+                            IsBasisByNiceBasis and IsAttributeStoringRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    return B;
+    end );
 
 
 #############################################################################
 ##
-#M  BasisByGenerators( <V>, <gens> )
-#M  BasisByGeneratorsNC( <V>, <gens> )
+#M  Basis( <V>, <vectors> )
+#M  BasisNC( <V>, <vectors> )
 ##
-InstallMethod( BasisByGenerators,
+InstallMethod( Basis,
     "for free module that is handled by a nice basis, and hom. list",
     IsIdenticalObj,
     [ IsFreeLeftModule and IsHandledByNiceBasis, IsHomogeneousList ], 10,
-    function( V, gens )
+    function( V, vectors )
     local B;
-    B:= NewBasis( V, gens );
+
+    # Create the basis object.
+    B:= Objectify( NewType( FamilyObj( V ),
+                            IsBasisByNiceBasis and IsAttributeStoringRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    SetBasisVectors( B, vectors );
+
+    # Check whether the vectors in fact form a basis.
     if NiceBasis( B ) = fail then
       return fail;
     fi;
+
+    # Use the basis information.
+    UseBasis( V, vectors );
+
+    # Return the result.
     return B;
     end );
 
-InstallMethod( BasisByGeneratorsNC,
+InstallMethod( BasisNC,
     "for free module that is handled by a nice basis, and hom. list",
     IsIdenticalObj,
     [ IsFreeLeftModule and IsHandledByNiceBasis, IsHomogeneousList ], 10,
-    NewBasis );
+    function( V, vectors )
+    local B;
+
+    # Create the basis object.
+    B:= Objectify( NewType( FamilyObj( V ),
+                            IsBasisByNiceBasis and IsAttributeStoringRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    SetBasisVectors( B, vectors );
+
+    # Use the basis information.
+    UseBasis( V, vectors );
+
+    # Return the result.
+    return B;
+    end );
 
 
 #############################################################################
@@ -829,26 +986,20 @@ InstallMethod( BasisByGeneratorsNC,
 ##  There are two default methods.
 ##
 ##  The first is available if left module generators for <V> are known;
-##  it calls `PrepareNiceFreeLeftModule( <V> )'
-##  and then returns the free left module generated by the nice vectors
+##  it returns the free left module generated by the nice vectors
 ##  of the left module generators of <V>.
 ##
-##  The second is available if <V> is a FLMLOR for that left operator
+##  The second is available if <V> is a FLMLOR for which left operator
 ##  ring(-with-one) generators are known;
-##  it calls `PrepareNiceFreeLeftModule( <V> )'
-##  and then computes left module generators of <V> via the process of
+##  it computes left module generators of <V> via the process of
 ##  closing a basis under multiplications.
 ##
 InstallMethod( NiceFreeLeftModule,
     "for free module that is handled by a nice basis",
-    true,
     [ IsFreeLeftModule and HasGeneratorsOfLeftModule
-                       and IsHandledByNiceBasis ], 0,
+                       and IsHandledByNiceBasis ],
     function( V )
     local gens;
-
-    # Provide the necessary individual data.
-    PrepareNiceFreeLeftModule( V );
 
     gens:= GeneratorsOfLeftModule( V );
     if IsEmpty( gens ) then
@@ -860,7 +1011,7 @@ InstallMethod( NiceFreeLeftModule,
     fi;
     end );
 
-NiceFreeLeftModuleForFLMLOR := function( A, side )
+BindGlobal( "NiceFreeLeftModuleForFLMLOR", function( A, side )
 
     local Agens,     # algebra generators of `A'
           F,         # left acting domain of `A'
@@ -871,9 +1022,6 @@ NiceFreeLeftModuleForFLMLOR := function( A, side )
     if HasGeneratorsOfLeftModule( A ) then
       TryNextMethod();
     fi;
-
-    # Provide the necessary individual data.
-    PrepareNiceFreeLeftModule( A );
 
     # Get the algebra generators.
     Agens:= GeneratorsOfLeftOperatorRing( A );
@@ -903,6 +1051,7 @@ NiceFreeLeftModuleForFLMLOR := function( A, side )
     Vgens:= BasisVectors( ImmutableBasis( MB ) );
     UseBasis( A, Vgens );
 
+    # (Now `A' knows left module generators.)
     if IsEmpty( Vgens ) then
       return LeftModuleByGenerators( F, [],
                           NiceVector( A, Zero( A ) ) );
@@ -910,30 +1059,26 @@ NiceFreeLeftModuleForFLMLOR := function( A, side )
       return LeftModuleByGenerators( F,
                           List( Vgens, v -> NiceVector( A, v ) ) );
     fi;
-end;
+end );
 
 InstallMethod( NiceFreeLeftModule,
     "for FLMLOR that is handled by a nice basis",
-    true,
-    [ IsFLMLOR and IsHandledByNiceBasis ], 0,
+    [ IsFLMLOR and IsHandledByNiceBasis ],
     A -> NiceFreeLeftModuleForFLMLOR( A, "both" ) );
 
 InstallMethod( NiceFreeLeftModule,
     "for associative FLMLOR that is handled by a nice basis",
-    true,
-    [ IsFLMLOR and IsAssociative and IsHandledByNiceBasis ], 0,
+    [ IsFLMLOR and IsAssociative and IsHandledByNiceBasis ],
     A -> NiceFreeLeftModuleForFLMLOR( A, "left" ) );
 
 InstallMethod( NiceFreeLeftModule,
     "for anticommutative FLMLOR that is handled by a nice basis",
-    true,
-    [ IsFLMLOR and IsAnticommutative and IsHandledByNiceBasis ], 0,
+    [ IsFLMLOR and IsAnticommutative and IsHandledByNiceBasis ],
     A -> NiceFreeLeftModuleForFLMLOR( A, "left" ) );
 
 InstallMethod( NiceFreeLeftModule,
     "for commutative FLMLOR that is handled by a nice basis",
-    true,
-    [ IsFLMLOR and IsCommutative and IsHandledByNiceBasis ], 0,
+    [ IsFLMLOR and IsCommutative and IsHandledByNiceBasis ],
     A -> NiceFreeLeftModuleForFLMLOR( A, "left" ) );
 
 
@@ -944,7 +1089,7 @@ InstallMethod( NiceFreeLeftModule,
 InstallMethod( \in,
     "for vector and free left module that is handled by a nice basis",
     IsElmsColls,
-    [ IsVector, IsFreeLeftModule and IsHandledByNiceBasis ], 0,
+    [ IsVector, IsFreeLeftModule and IsHandledByNiceBasis ],
     function( v, V )
     local W, a;
     W:= NiceFreeLeftModule( V );
@@ -971,10 +1116,9 @@ InstallMethod( \in,
 #T (strictly speaking, may other bases assume that these special methods
 #T will catch the special situation?)
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for trivial free left module",
-    true,
-    [ IsFreeLeftModule and IsTrivial ], 0,
+    [ IsFreeLeftModule and IsTrivial ],
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
@@ -986,10 +1130,9 @@ InstallMethod( BasisOfDomain,
     return B;
     end );
 
-InstallMethod( BasisByGenerators,
+InstallMethod( Basis,
     "for free left module and empty list",
-    true,
-    [ IsFreeLeftModule, IsList and IsEmpty ], 0,
+    [ IsFreeLeftModule, IsList and IsEmpty ],
     function( V, empty )
     local B;
 
@@ -1010,10 +1153,9 @@ InstallMethod( BasisByGenerators,
     return B;
     end );
 
-InstallMethod( BasisByGeneratorsNC,
+InstallMethod( BasisNC,
     "for free left module and empty list",
-    true,
-    [ IsFreeLeftModule, IsList and IsEmpty ], 0,
+    [ IsFreeLeftModule, IsList and IsEmpty ],
     function( V, empty )
     local B;
 
@@ -1030,10 +1172,9 @@ InstallMethod( BasisByGeneratorsNC,
     return B;
     end );
 
-InstallMethod( SemiEchelonBasisByGenerators,
+InstallMethod( SemiEchelonBasis,
     "for free left module and empty list",
-    true,
-    [ IsFreeLeftModule, IsList and IsEmpty ], 0,
+    [ IsFreeLeftModule, IsList and IsEmpty ],
     function( V, empty )
     local B;
 
@@ -1055,10 +1196,9 @@ InstallMethod( SemiEchelonBasisByGenerators,
     return B;
     end );
 
-InstallMethod( SemiEchelonBasisByGeneratorsNC,
+InstallMethod( SemiEchelonBasisNC,
     "for free left module and empty list",
-    true,
-    [ IsFreeLeftModule, IsList and IsEmpty ], 0,
+    [ IsFreeLeftModule, IsList and IsEmpty ],
     function( V, empty )
     local B;
 
@@ -1078,7 +1218,6 @@ InstallMethod( SemiEchelonBasisByGeneratorsNC,
 
 InstallMethod( BasisVectors,
     "for empty basis",
-    true,
     [ IsBasis and IsEmpty ], SUM_FLAGS,
     B -> [] );
 
@@ -1096,7 +1235,6 @@ InstallMethod( Coefficients,
 
 InstallMethod( LinearCombination,
     "for empty basis and empty list",
-    true,
     [ IsBasis and IsEmpty, IsList and IsEmpty ], SUM_FLAGS,
     function( B, v )
     return Zero( UnderlyingLeftModule( B ) );
@@ -1113,137 +1251,75 @@ InstallMethod( SiftedVector,
 
 #############################################################################
 ##
-#E  basis.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#R  IsBasisWithReplacedLeftModuleRep( <B> )
+##
+DeclareRepresentation( "IsBasisWithReplacedLeftModuleRep",
+    IsAttributeStoringRep, [ "basisWithWrongModule" ] );
 
 
+#############################################################################
+##
+#F  BasisWithReplacedLeftModule( <B>, <V> )
+##
+InstallGlobalFunction( BasisWithReplacedLeftModule, function( B, V )
+    local new;
 
-#T methods for ``generic spaces'' (works only if finite)
+    new:= Objectify( NewType( FamilyObj( B ),
+                              IsBasis and IsBasisWithReplacedLeftModuleRep ),
+                     rec() );
+    SetUnderlyingLeftModule( new, V );
+    new!.basisWithWrongModule:= B;
 
-#T #############################################################################
-#T ##
-#T #F  BasisSpaceOps.AssociatedNiceSpace( <B> )
-#T ##
-#T ##  If space generators of the space are known, and if the space is finite
-#T ##  then there is a default method to compute an associated nice space,
-#T ##  namely computing all elements of the space,
-#T ##  and in parallel computing a basis.
-#T ##
-#T ##  Otherwise there is no generic method.
-#T ##
-#T ##  The following components are bound in the underlying space
-#T ##  after the call.
-#T ##
-#T ##  `elements'  : \\
-#T ##          set of elements of the space,
-#T ##
-#T ##  `numbers'   : \\
-#T ##          for each, ...
-#T ##
-#T ##  `exponents' : \\
-#T ##          list with length the dimension of the space,
-#T ##          at each position containing the size of the field,
-#T ##
-#T ##  `fieldelements' : \\
-#T ##          elements list of the coefficients field,
-#T ##
-#T ##  `canonicalvectors' : \\
-#T ##          elements of the underlying space that correspond to the
-#T ##          canonical basis of the row space.
-#T ##
-#T BasisSpaceOps.AssociatedNiceSpace := function( B )
-#T 
-#T     local V,         # the underlying space of `B'
-#T           elms,      # set of elements, result
-#T           base,      # list of basis vectors
-#T           fieldelms, # elements set of the coefficients field of `V'
-#T           gen,       # loop over generators
-#T           i,         # loop over field elements
-#T           new,       # intermediate elements list
-#T           numbers,   # list of positions of elements w.r. to construction
-#T           B;         # basis record, result
-#T 
-#T     V    := B.structure;
-#T     elms := [ Zero( V ) ];
-#T     base := [];
-#T 
-#T     if     not IsFinite( V.field )
-#T        and ForAny( SpaceGenerators( V ), x -> not x in elms ) then
-#T       Error( "sorry, there is no generic method to compute\n",
-#T              "an associated nice space of an infinite vector space" );
-#T     fi;
-#T 
-#T     fieldelms:= Elements( V.field );
-#T 
-#T     # Form all linear combinations of the generators.
-#T     # Note that we must not use known basis vectors because
-#T     # otherwise we cannot check whether they really form a basis.
-#T     for gen in SpaceGenerators( V ) do
-#T       if not gen in elms then
-#T 
-#T         # Form the closure with `gen'
-#T         Add( base, gen );
-#T         new:= [];
-#T         for i in fieldelms do
-#T           Append( new, List( elms, x -> x + i * gen ) );
-#T         od;
-#T         elms:= new;
-#T 
-#T       fi;
-#T     od;
-#T 
-#T     # Compute the coefficients information.
-#T     numbers:= [ 1 .. Length( elms ) ];
-#T     SortParallel( elms, numbers );
-#T 
-#T     V.elements         := elms;
-#T     V.numbers          := numbers;
-#T     V.exponents        := List( base, x -> Length( fieldelms ) );
-#T     V.fieldelements    := fieldelms;
-#T     V.canonicalvectors := Reversed( base );
-#T 
-#T     # Return the associated space.
-#T     return FullRowModule( V.field, Length( base ) );
-#T     end;
-#T 
-#T #############################################################################
-#T ##
-#T #F  BasisSpaceOps.AssociatedNiceVector( <B>, <v> )
-#T ##
-#T BasisSpaceOps.AssociatedNiceVector := function( B, v )
-#T 
-#T     local V,        # underlying space
-#T           pos,      # position of `v' in the elements list
-#T           coeffs;   # coefficients vector, result
-#T 
-#T     V:= B.structure;
-#T 
-#T     # Compute the $q$-adic expression.
-#T     pos:= PositionSorted( V.elements, v );
-#T     if pos = false then
-#T       return fail;
-#T     fi;
-#T     coeffs:= CoefficientsInt( V.exponents, V.numbers[ pos ] - 1 ) + 1;
-#T 
-#T     # Compute the coefficients vector itself.
-#T     coeffs:= V.fieldelements{ coeffs };
-#T 
-#T     # Return the coefficients vector;
-#T     return coeffs;
-#T     end;
-#T 
-#T ##############################################################################
-#T ##
-#T #F  BasisSpaceOps.AssociatedVector( <B>, <r> )
-#T ##
-#T BasisSpaceOps.AssociatedVector := function( B, r )
-#T 
-#T     local v,
-#T           i;
-#T 
-#T     v:= Zero( B.structure );
-#T     for i in [ 1 .. Length( r ) ] do
-#T       v:= v + B.structure.canonicalvectors[i] * r[i];
-#T     od;
-#T     return v;
-#T     end;
-#T 
+    return new;
+end );
+
+
+#############################################################################
+##
+#M  BasisVectors( <B> )
+##
+InstallMethod( BasisVectors,
+    "for a basis with replaced left module",
+    [ IsBasis and IsBasisWithReplacedLeftModuleRep ],
+    B -> BasisVectors( B!.basisWithWrongModule ) );
+
+
+#############################################################################
+##
+#M  Coefficients( <B>, <v> )
+##
+InstallMethod( Coefficients,
+    "for a basis with replaced left module, and a vector",
+    IsCollsElms,
+    [ IsBasis and IsBasisWithReplacedLeftModuleRep, IsVector ],
+    function( B, v )
+    return Coefficients( B!.basisWithWrongModule, v );
+    end );
+
+
+#############################################################################
+##
+#M  LinearCombination( <B>, <v> )
+##
+InstallMethod( LinearCombination,
+    "for a basis with replaced left module, and a hom. list",
+    [ IsBasis and IsBasisWithReplacedLeftModuleRep, IsHomogeneousList ],
+    function( B, v )
+    return LinearCombination( B!.basisWithWrongModule, v );
+    end );
+
+
+#############################################################################
+##
+#M  IsCanonicalBasis( <B> )
+##
+InstallMethod( IsCanonicalBasis,
+    "for a basis with replaced left module, and a vector",
+    [ IsBasis and IsBasisWithReplacedLeftModuleRep ],
+    B -> IsCanonicalBasis( B!.basisWithWrongModule ) );
+
+
+#############################################################################
+##
+#E
+

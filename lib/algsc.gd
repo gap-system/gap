@@ -105,7 +105,7 @@ DeclareProperty( "IsFullSCAlgebra", IsFLMLOR and IsSCAlgebraObjCollection );
 #P  IsCanonicalBasisFullSCAlgebra( <B> )
 ##
 ##  is `true' if the underlying free left module of the basis <B> is a full
-##  s.~c. algebra and <B> is equal to its canonical basis,                
+##  s.~c. algebra and <B> is equal to its canonical basis,
 ##  and `false' otherwise.
 ##
 ##  The canonical basis of a full s.~c. algebra consists of elements whose
@@ -121,35 +121,22 @@ InstallTrueMethod( IsCanonicalBasis, IsCanonicalBasisFullSCAlgebra );
 
 #############################################################################
 ##
-#R  IsSCAlgebraObjSpaceRep
+#F  IsSCAlgebraObjSpace( <V> )
 ##
-##  We use that the family of an s.~c. algebra knows a constitutive basis.
-##  The associated row vectors can be computed for the whole family,
-##  i.e., independent of the substructure (subalgebra, subspace, ideal)
-##  under consideration.
-##
-DeclareRepresentation( "IsSCAlgebraObjSpaceRep",
-    IsAttributeStoringRep and IsHandledByNiceBasis, [] );
-
-
-#############################################################################
-##
-#M  IsSCAlgebraObjSpaceRep( <V> )
-##
-##  We claim that a free left module of s.~c. algebra elements is in
-##  `IsSCAlgebraObjSpaceRep', which means that the free module is handled by
-##  a nice module.
-##
-##  This allows to omit special methods for `LeftModuleByGenerators' and
-##  `FLMLORByGenerators' (which would differ from the default methods only
-##  by setting this flag).
+##  If an $F$-vector space <V> is in the filter `IsSCAlgebraObjSpace' then
+##  this expresses that <V> consists of elements in a s.c. algebra,
+##  and that <V> is handled via the mechanism of nice bases (see~"...")
+##  in the following way.
+##  The `NiceFreeLeftModuleInfo' value of <V> is irrelevant,
+##  and the `NiceVector' value of $v \in <V>$ is defined as
+##  $`ExtRepOfObj'( v )$.
 ##
 ##  (So the right way to replace the handling of the module by a better one
 ##  is to overlay those methods to compute bases that use the flag
 ##  `IsHandledByNiceBasis'.)
 ##
-InstallTrueMethod( IsSCAlgebraObjSpaceRep,
-    IsSCAlgebraObjCollection and IsFreeLeftModule );
+DeclareHandlingByNiceBasis( "IsSCAlgebraObjSpace",
+    "for free left modules of s.c. algebra elements" );
 
 
 #############################################################################
@@ -162,5 +149,5 @@ InstallTrueMethod( IsFiniteDimensional,
 
 #############################################################################
 ##
-#E  algsc.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

@@ -135,13 +135,37 @@ const char * Revision_objects_h =
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The product itself is stored in <o>.
 */
-#define PROD_INTOBJS(o,l,r)                            \
-    ((o) = (Obj)(((Int)(l)>>2) * ((Int)(r)-1) + 1),    \
-     (((Int)(o) << 1) >> 1) == (Int)(o)                \
-      && (((Int)(l)>>2) == 0                           \
-      || ((Int)(o)-1) / ((Int)(l)>>2) == ((Int)(r)-1)))
 
+#ifdef SYS_IS_64_BIT
+#define HALF_A_WORD 32
+#else
+#define HALF_A_WORD 16
+#endif
 
+static inline Obj prod_intobjs(Int l, Int r)
+{
+  Int prod;
+  if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
+    return INTOBJ_INT(0);
+  if (l == (Int)INTOBJ_INT(1))
+    return (Obj)r;
+  if (r == (Int)INTOBJ_INT(1))
+    return (Obj)l;
+  prod = ((Int)l >> 2) * ((Int)r-1)+1;
+  if ((prod << 1)>> 1 !=  prod)
+    return (Obj) 0;
+  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
+      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
+    return (Obj) prod;
+  if ((prod -1) / (l >> 2) == r-1)
+    return (Obj) prod;
+  else
+    return (Obj) 0;
+}
+
+#define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
+                                  (o) != (Obj) 0)
+   
 /****************************************************************************
 **
 *F  IS_FFE( <o> ) . . . . . . . . test if an object is a finite field element
@@ -197,7 +221,7 @@ const char * Revision_objects_h =
 */
 #define FIRST_REAL_TNUM         0
 
-#define FIRST_CONSTANT_TNUM     0
+#define FIRST_CONSTANT_TNUM     ((UInt)0)
 #define T_INT                   (FIRST_CONSTANT_TNUM+ 0)    /* immediate */
 #define T_INTPOS                (FIRST_CONSTANT_TNUM+ 1)
 #define T_INTNEG                (FIRST_CONSTANT_TNUM+ 2)
@@ -210,11 +234,13 @@ const char * Revision_objects_h =
 #define T_CHAR                  (FIRST_CONSTANT_TNUM+ 9)
 #define T_FUNCTION              (FIRST_CONSTANT_TNUM+10)
 #define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
-#define LAST_CONSTANT_TNUM      T_FLAGS
+#define T_FLOAT                 (FIRST_CONSTANT_TNUM+12)
+#define T_RESERVED              (FIRST_CONSTANT_TNUM+13)   
+#define LAST_CONSTANT_TNUM      T_RESERVED 
 
 #define IMMUTABLE               1
 
-#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+1)
+#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+1)       /* Should be even */
 #define FIRST_RECORD_TNUM       FIRST_IMM_MUT_TNUM
 #define T_PREC                  (FIRST_RECORD_TNUM+ 0)
 #define LAST_RECORD_TNUM        (T_PREC+IMMUTABLE)
@@ -225,25 +251,31 @@ const char * Revision_objects_h =
 #define T_PLIST_NDENSE          (FIRST_LIST_TNUM+ 2)
 #define T_PLIST_DENSE           (FIRST_LIST_TNUM+ 4)
 #define T_PLIST_DENSE_NHOM      (FIRST_LIST_TNUM+ 6)
-#define T_PLIST_EMPTY           (FIRST_LIST_TNUM+ 8)
-#define T_PLIST_HOM             (FIRST_LIST_TNUM+10)
-#define T_PLIST_HOM_NSORT       (FIRST_LIST_TNUM+12)
-#define T_PLIST_HOM_SSORT       (FIRST_LIST_TNUM+14)
-#define T_PLIST_TAB             (FIRST_LIST_TNUM+16)
-#define T_PLIST_TAB_NSORT       (FIRST_LIST_TNUM+18)
-#define T_PLIST_TAB_SSORT       (FIRST_LIST_TNUM+20)
-#define T_PLIST_CYC             (FIRST_LIST_TNUM+22)
-#define T_PLIST_CYC_NSORT       (FIRST_LIST_TNUM+24)
-#define T_PLIST_CYC_SSORT       (FIRST_LIST_TNUM+26)
-#define LAST_PLIST_TNUM         (T_PLIST_CYC_SSORT+IMMUTABLE)
-#define T_RANGE_NSORT           (FIRST_LIST_TNUM+28)
-#define T_RANGE_SSORT           (FIRST_LIST_TNUM+30)
-#define T_BLIST                 (FIRST_LIST_TNUM+32)
-#define T_BLIST_NSORT           (FIRST_LIST_TNUM+34)
-#define T_BLIST_SSORT           (FIRST_LIST_TNUM+36)
-#define T_STRING                (FIRST_LIST_TNUM+38)
-#define T_STRING_NSORT          (FIRST_LIST_TNUM+40)
-#define T_STRING_SSORT          (FIRST_LIST_TNUM+42)
+#define T_PLIST_DENSE_NHOM_SSORT (FIRST_LIST_TNUM+8 )
+#define T_PLIST_DENSE_NHOM_NSORT (FIRST_LIST_TNUM+10)
+#define T_PLIST_EMPTY           (FIRST_LIST_TNUM+12)
+#define T_PLIST_HOM             (FIRST_LIST_TNUM+14)
+#define T_PLIST_HOM_NSORT       (FIRST_LIST_TNUM+16)
+#define T_PLIST_HOM_SSORT       (FIRST_LIST_TNUM+18)
+#define T_PLIST_TAB             (FIRST_LIST_TNUM+20)
+#define T_PLIST_TAB_NSORT       (FIRST_LIST_TNUM+22)
+#define T_PLIST_TAB_SSORT       (FIRST_LIST_TNUM+24)
+#define T_PLIST_TAB_RECT             (FIRST_LIST_TNUM+26)
+#define T_PLIST_TAB_RECT_NSORT       (FIRST_LIST_TNUM+28)
+#define T_PLIST_TAB_RECT_SSORT       (FIRST_LIST_TNUM+30)
+#define T_PLIST_CYC             (FIRST_LIST_TNUM+32)
+#define T_PLIST_CYC_NSORT       (FIRST_LIST_TNUM+34)
+#define T_PLIST_CYC_SSORT       (FIRST_LIST_TNUM+36)
+#define T_PLIST_FFE             (FIRST_LIST_TNUM+38)
+#define LAST_PLIST_TNUM         (T_PLIST_FFE+IMMUTABLE)
+#define T_RANGE_NSORT           (FIRST_LIST_TNUM+40)
+#define T_RANGE_SSORT           (FIRST_LIST_TNUM+42)
+#define T_BLIST                 (FIRST_LIST_TNUM+44)
+#define T_BLIST_NSORT           (FIRST_LIST_TNUM+46)
+#define T_BLIST_SSORT           (FIRST_LIST_TNUM+48)
+#define T_STRING                (FIRST_LIST_TNUM+50)
+#define T_STRING_NSORT          (FIRST_LIST_TNUM+52)
+#define T_STRING_SSORT          (FIRST_LIST_TNUM+54)
 #define LAST_LIST_TNUM          (T_STRING_SSORT+IMMUTABLE)
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
@@ -322,6 +354,13 @@ const char * Revision_objects_h =
 #define F_TABLE         10
 #define F_NOT_TABLE     11
 
+/****************************************************************************
+**
+*F  F_RECT . . . . . . . . . . . . . . . . . . . . . . IsRectangularTableProp
+*/
+#define F_RECT         12
+#define F_NOT_RECT     13
+
 
 /****************************************************************************
 **
@@ -357,7 +396,7 @@ const char * Revision_objects_h =
 **  'ADDR_OBJ' returns the absolute address of the memory block of the object
 **  <obj>.
 */
-#define ADDR_OBJ        PTR_BAG
+#define ADDR_OBJ(bag)        PTR_BAG(bag)
 
 
 /****************************************************************************
@@ -595,6 +634,8 @@ extern Obj (*CopyObjFuncs[ LAST_REAL_TNUM+COPYING+1 ]) ( Obj obj, Int mut );
 extern void (*CleanObjFuncs[ LAST_REAL_TNUM+COPYING+1 ]) ( Obj obj );
 
 
+extern void (*MakeImmutableObjFuncs[ LAST_REAL_TNUM+1 ]) (Obj obj );
+
 /****************************************************************************
 **
 *F  PrintObj( <obj> ) . . . . . . . . . . . . . . . . . . . . print an object
@@ -709,6 +750,17 @@ extern void (* PrintPathFuncs [ LAST_REAL_TNUM  +1 ]) (
 *F  TYPE_DATOBJ( <obj> )  . . . . . . . . . . . . . . . kind of a data object
 */
 #define TYPE_DATOBJ(obj)          ADDR_OBJ(obj)[0]
+
+
+/****************************************************************************
+**
+*F  TYPE_ANYOBJ( <obj> )  . . . . . . . . . . . . .kind of an external object
+**
+** This is a hack which relies on the fact that TYPE_COMOBJ, TYPE_DATOBJ and
+** TYPE_POSOBJ are actually the same
+*/
+
+#define TYPE_ANYOBJ(obj)          ADDR_OBJ(obj)[0]
 
 
 /****************************************************************************

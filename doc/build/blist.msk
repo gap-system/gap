@@ -1,5 +1,175 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  blist.msk                  GAP documentation             Martin Schoenert
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
 \Chapter{Boolean Lists}
 
+This chapter describes boolean lists.   A *boolean list*  is a list  that
+has no holes and contains only the boolean values `true'  and `false'
+(see Chapter~"Booleans").
+In function names we call boolean lists *blist* for brevity.
+
+\Declaration{IsBlist}
+\beginexample
+gap> IsBlist( [ true, true, false, false ] );
+true
+gap> IsBlist( [] );
+true
+gap> IsBlist( [false,,true] );
+false    # has holes
+gap> IsBlist( [1,1,0,0] );
+false    # contains not only boolean values
+gap> IsBlist( 17 );
+false    # is not even a list 
+\endexample
+
+Boolean lists are lists and all operations for lists are therefore
+applicable to boolean lists.
+
+Boolean lists can be used  in various ways, but  maybe the most important
+application is their use for the description of *subsets* of finite sets.
+Suppose <set>  is a finite set,  represented  as  a list.   Then a subset
+<sub>  of <set> is represented  by a boolean  list   <blist>  of the same
+length as <set> such that `<blist>[<i>]' is `true'  if `<set>[<i>]' is in
+<sub> and `false' otherwise.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Boolean Lists Representing Subsets}
+
+\Declaration{BlistList}
+\beginexample
+gap> BlistList( [1..10], [2,3,5,7] );
+[ false, true, true, false, true, false, true, false, false, false ]
+gap> BlistList( [1,2,3,4,5,2,8,6,4,10], [4,8,9,16] );
+[ false, false, false, true, false, false, true, false, true, false ]
+\endexample
+
+\Declaration{ListBlist}
+\beginexample
+gap> ListBlist([1..8],[false,true,true,true,true,false,true,true]);
+[ 2, 3, 4, 5, 7, 8 ]
+gap> ListBlist( [1,2,3,4,5,2,8,6,4,10],
+> [false,false,false,true,false,false,true,false,true,false] );
+[ 4, 8, 4 ] 
+\endexample
+
+\Declaration{SizeBlist}
+\beginexample
+gap> SizeBlist( [ false, true, false, true, false ] );
+2 
+\endexample
+
+\Declaration{IsSubsetBlist}
+\beginexample
+gap> blist1 := [ true, true, false, false ];;
+gap> blist2 := [ true, false, true, false ];;
+gap> IsSubsetBlist( blist1, blist2 );
+false
+gap> blist2 := [ true, false, false, false ];;
+gap> IsSubsetBlist( blist1, blist2 );
+true 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Operations via Boolean Lists}
+
+\Declaration{UnionBlist}
+\Declaration{IntersectionBlist}
 \Declaration{DifferenceBlist}
 \beginexample
+gap> blist1 := [ true, true, false, false ];;
+gap> blist2 := [ true, false, true, false ];;
+gap> UnionBlist( blist1, blist2 );
+[ true, true, true, false ] 
+gap> IntersectionBlist( blist1, blist2 );
+[ true, false, false, false ] 
+gap> DifferenceBlist( blist1, blist2 );
+[ false, true, false, false ] 
 \endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Function that Modify Boolean Lists}
+
+\Declaration{UniteBlist}
+\beginexample
+gap> blist1 := [ true, true, false, false ];;
+gap> blist2 := [ true, false, true, false ];;
+gap> UniteBlist( blist1, blist2 );
+gap> blist1;
+[ true, true, true, false ] 
+\endexample
+
+The  function  `UnionBlist'   (see "UnionBlist") is   the  nondestructive
+counterpart to the procedure `UniteBlist'.
+
+\Declaration{IntersectBlist}
+\beginexample
+gap> blist1 := [ true, true, false, false ];;
+gap> blist2 := [ true, false, true, false ];;
+gap> IntersectBlist( blist1, blist2 );
+gap> blist1;
+[ true, false, false, false ] 
+\endexample
+
+The  function `IntersectionBlist'    (see  "IntersectionBlist")   is  the
+nondestructive counterpart to the procedure `IntersectBlist'.
+
+\Declaration{SubtractBlist}
+\beginexample
+gap> blist1 := [ true, true, false, false ];;
+gap> blist2 := [ true, false, true, false ];;
+gap> SubtractBlist( blist1, blist2 );
+gap> blist1;
+[ false, true, false, false ] 
+\endexample
+
+The function   `DifferenceBlist'    (see   "DifferenceBlist")    is   the
+nondestructive counterpart to the procedure `SubtractBlist'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Boolean Lists}
+
+We defined a boolean list as a list that has no holes and contains only
+`true' and `false'.
+There is a special internal representation for boolean lists that needs
+only 1 bit for each entry.
+This bit is set if the entry is `true' and reset if the entry is `false'.
+This representation is of course much more compact than the ordinary
+representation of lists, which needs (at least) 32 bits per entry.
+
+%T Add a note about internal representation of plain lists (preferably in
+%T the chapter ``Lists''),
+%T in order to allow a user to estimate the space needed for
+%T computations with lists;
+%T then add crossreferences from and to the other available list
+%T representations!
+
+Not every boolean list is represented in this compact representation. It
+would be too much work to test every time a list is changed, whether this
+list has become a boolean list.  This section tells you under which
+circumstances a   boolean list is represented  in  the compact
+representation, so you can write your functions in such a way that you make
+best use of the compact representation.
+
+The  results of `BlistList',  `UnionBlist',  `IntersectionBlist' and
+`DifferenceBlist' are known to be boolean lists by construction, and thus
+are represented in the compact representation upon creation.
+
+If an argument of `IsBlist', `IsSubsetBlist', `ListBlist', `UnionBlist',
+`IntersectionBlist', `DifferenceBlist',  `UniteBlist', `IntersectBlist' and
+`SubtractBlist' is a list represented in the ordinary representation, it is
+tested to see if it is in fact a boolean list. If it is not, `IsBlist'
+returns `false' and the other functions signal an error. If it is,  the
+representation of the list  is changed to  the compact representation.
+
+If you change a  boolean list that is  represented in  the compact
+representation by assignment (see "List Assignment") or `Add' (see "Add")
+in such a way that the list remains a boolean list  it will remain
+represented in the compact representation.  Note that changing a list
+that is not represented in the compact representation, whether it is a
+boolean list or not, in such a way that the resulting list becomes a
+boolean list, will never change the representation of the list.

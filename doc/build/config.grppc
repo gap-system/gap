@@ -1,5 +1,6 @@
 @msfiles = ("grppc","pcgs");
 @gdfiles = ("grppc","clas","pcgs","pcgsind","pcgsmodu","pcgsspec","grp.gd",
-            "pcgspcg","onecohom","grppcfp");
+            "pcgspcg","onecohom","grppcfp", "rwspcclt", "twocohom", 
+            "randiso", "grppcext", "rwspcgrp", "rws.gd");
 $DIR = "../ref";
 $LIB = "../../lib"; 

@@ -27,7 +27,6 @@ extern  Obj             TYPE_LIST_HOM;
 
 /****************************************************************************
 **
-
 *F  IS_LIST(<obj>)  . . . . . . . . . . . . . . . . . . . is an object a list
 *V  IsListFuncs[<type>] . . . . . . . . . . . . . . . . . table for list test
 **
@@ -46,6 +45,25 @@ extern  Obj             TYPE_LIST_HOM;
 
 extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
+/****************************************************************************
+**
+*F  IS_SMALL_LIST(<obj>)  . . . . . . . . . . . . . is an object a small list
+*V  IsSmallListFuncs[<type>] . . . . . . . . . . .. table for small list test
+**
+**  'IS_SMALL_LIST' returns a nonzero value if  the object <obj> is a small
+**  list (meaning that its length will fit in 28 bits and zero otherwise.
+**  in particular, it returns zero if <obj> is not a list at all
+**
+**  If <obj> is an external object it does not trigger length computation
+**  in general
+**  instead it will check if the object HasIsSmallList and IsSmallList, or
+**  HasLength in which case Length will be checked
+*/
+
+#define IS_SMALL_LIST(obj)    ((*IsSmallListFuncs[ TNUM_OBJ( obj ) ])( obj ))
+
+extern  Int                (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+
 
 /****************************************************************************
 **
@@ -53,7 +71,7 @@ extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 *V  LenListFuncs[<type>]  . . . . . . . . . . . . . table of length functions
 **
 **  'LEN_LIST' returns the logical length of the list <list>  as a C integer.
-**  An error is signalled if <list> is not a list.
+**  An error is signalled if <list> is not a small list.
 **
 **  Note that  'LEN_LIST' is a  macro, so do  not call it with arguments that
 **  have sideeffects.
@@ -64,6 +82,25 @@ extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 #define LEN_LIST(list)  ((*LenListFuncs[ TNUM_OBJ(list) ])( list ))
 
 extern  Int             (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+
+
+/****************************************************************************
+**
+*F  LENGTH(<list>)  . . . . . . . . . . . . . . . . . . .  length of a list
+*V  LengthFuncs[<type>]  . . . . . . . . . . . . . table of length functions
+**
+**  'LENGTH' returns the logical length of the list <list>  as a GAP object
+**  An error is signalled if <list> is not a list.
+**
+**  Note that  'LENGTH' is a  macro, so do  not call it with arguments that
+**  have sideeffects.
+**
+**  A package  implementing a list type <type>  must  provide such a function
+**  and install it in 'LengthFuncs[<type>]'.
+*/
+#define LENGTH(list)    ((*LengthFuncs[ TNUM_OBJ(list) ])( list ))
+
+extern  Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 
 /****************************************************************************
@@ -102,6 +139,12 @@ extern  Int             (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 extern  Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 extern  Int             (*IsbvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+
+#define ISBB_LIST(list,pos) \
+                        ((*IsbbListFuncs[TNUM_OBJ(list)])(list,pos))
+
+extern  Int             (*IsbbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
+
 
 
 /****************************************************************************
@@ -154,7 +197,7 @@ extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 *F  ELMV0_LIST( <list>, <pos> ) . . . . . . . . select an element from a list
 **
 **  'ELMV0_LIST' does the same as 'ELM0_LIST', but the caller also guarantees
-**  that <list> is a list and that <pos> is less thatn or equal to the length
+**  that <list> is a list and that <pos> is less than  or equal to the length
 **  of <list>.
 **
 **  Note that 'ELMV0_LIST' is a macro, so do not call  it with arguments that
@@ -165,7 +208,6 @@ extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 /****************************************************************************
 **
-
 *V  ElmListFuncs[ <type> ]  . . . . . . . . . .  table of selection functions
 **
 **  A package implementing a  list  type <type> must  provide a  function for
@@ -188,8 +230,45 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **
 **  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
 **  call them with arguments that have sideeffects.
+**
+**  The difference between ELM_LIST and ELMB_LIST is that ELMB_LIST accepts
+**  an object as the second argument (which should be a positive large integer.
+**  It is intended as an interface for access to elements of large external
+**  lists, on the rare occasions when the kernel needs to do this.
 */
 #define ELM_LIST(list,pos)      ((*ElmListFuncs[TNUM_OBJ(list)])(list,pos))
+
+/****************************************************************************
+**
+*V  ElmbListFuncs[ <type> ]  . . . . . . . . . .  table of selection functions
+**
+**  A package implementing a  list  type <type> may  provide a  function for
+**  'ELMB_LIST' and install it  in 'ElmbListFuncs[<type>]'.  This function must
+**  signal an error if <pos> is larger than the length of <list> or if <list>
+**  has no assigned object at <pos>.
+*/
+extern Obj (*ElmbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
+
+
+/****************************************************************************
+**
+*F  ELMB_LIST( <list>, <pos> ) . . . . . . . . . select an element from a list
+**
+**  'ELM_LIST' returns the element at the position  <pos> in the list <list>.
+**  An  error is signalled if  <list> is not a list,  if <pos> is larger than
+**  the length of <list>, or if <list>  has no assigned  object at <pos>.  It
+**  is the responsibility  of the caller to  ensure that <pos>  is a positive
+**  integer.
+**
+**  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
+**  call them with arguments that have sideeffects.
+**
+**  The difference between ELM_LIST and ELMB_LIST is that ELMB_LIST accepts
+**  an object as the second argument (which should be a positive large integer.
+**  It is intended as an interface for access to elements of large external
+**  lists, on the rare occasions when the kernel needs to do this.
+*/
+#define ELMB_LIST(list,pos)      ((*ElmbListFuncs[TNUM_OBJ(list)])(list,pos))
 
 
 /****************************************************************************
@@ -332,6 +411,11 @@ extern void ElmsListLevelCheck (
 
 extern void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
+#define UNBB_LIST(list,pos) \
+                        ((*UnbbListFuncs[TNUM_OBJ(list)])(list,pos))
+
+extern void             (*UnbbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
+
 
 /****************************************************************************
 **
@@ -356,6 +440,30 @@ extern void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
                         ((*AssListFuncs[TNUM_OBJ(list)])(list,pos,obj))
 
 extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
+
+/****************************************************************************
+**
+*F  ASSB_LIST(<list>,<pos>,<obj>)  . . . . . . . . assign an element to a list
+*V  AssbListFuncs[<type>]  . . . . . . . . . . . table of assignment functions
+**
+**  'ASSB_LIST' assigns the object <obj> to the list <list> at position <pos>.
+**  Note that  the assignment may change  the length or the representation of
+**  <list>.  An error   is signalled if  <list>  is not a  list.    It is the
+**  responsibility of the caller to ensure that <pos>  is a positive integer,
+**  and that <obj> is not 0.
+**
+**  Note that 'ASSB_LIST' is a macro,  so do not  call it with arguments  that
+**  have sideeffects.
+**
+**  A package  implementing a list type  <type> must provide  such a function
+**  and   install it in  'AssbListFuncs[<type>]'.   This  function must extend
+**  <list> if <pos> is larger than the length of  <list> and must also change
+**  the representation of <list> to that of a plain list if necessary.
+*/
+#define ASSB_LIST(list,pos,obj) \
+                        ((*AssbListFuncs[TNUM_OBJ(list)])(list,pos,obj))
+
+extern  void            (*AssbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos, Obj obj );
 
 
 /****************************************************************************
@@ -596,7 +704,7 @@ extern  Int             PosListDefault (
 */
 extern  void            ElmListLevel (
             Obj                 lists,
-            Int                 pos,
+            Obj                 pos,
             Int                 level );
 
 
@@ -650,7 +758,7 @@ extern  void            ElmsListLevel (
 */
 extern  void            AssListLevel (
             Obj                 lists,
-            Int                 pos,
+            Obj                 pos,
             Obj                 objs,
             Int                 level );
 
@@ -762,7 +870,7 @@ extern  Obj             TYPES_LIST_FAM (
 **  The macro  `SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
-extern Int SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 
 
 /****************************************************************************
@@ -771,16 +879,21 @@ extern Int SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 */
 #define SET_FILT_LIST(list,fn) \
   do { \
-    Int     new; \
+    UInt     new; \
     new = SetFiltListTNums[TNUM_OBJ(list)][fn]; \
     if ( new > 0 ) \
       RetypeBag( list, new ); \
-    else if ( new < 0 ) { \
+     else if ( new == -1 ) { \
       Pr( "#E  SET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
       Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
-    } \
+      }  \
   } while (0)
 
+/****************************************************************************
+**
+*F  FuncSET_FILTER_LIST( <self>, <list>, <filter> ) . . . . . . .  set filter
+*/
+extern Obj FuncSET_FILTER_LIST ( Obj self, Obj list, Obj filter );
 
 /****************************************************************************
 **
@@ -794,7 +907,7 @@ extern Int SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 **  The macro `RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
-extern Int ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 
 
 /****************************************************************************
@@ -803,14 +916,14 @@ extern Int ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 */
 #define RESET_FILT_LIST(list,fn) \
   do { \
-    Int     new; \
+    UInt     new; \
     new = ResetFiltListTNums[TNUM_OBJ(list)][fn]; \
     if ( new > 0 ) \
       RetypeBag( list, new ); \
-    else if ( new < 0 ) { \
+/*    else if ( new < 0 ) { \
       Pr( "#E  RESET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
       Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
-    } \
+      } */ \
   } while (0)
 
 
@@ -839,7 +952,7 @@ extern Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 **
 **  The macro `CLEAR_PROPS_LIST' is used to clear all properties of a list.
 */
-extern Int ClearFiltsTNums [ LAST_REAL_TNUM ];
+extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 
 
 /****************************************************************************
@@ -848,14 +961,14 @@ extern Int ClearFiltsTNums [ LAST_REAL_TNUM ];
 */
 #define CLEAR_FILTS_LIST(list) \
   do { \
-    Int     new; \
+    UInt     new; \
     new = ClearFiltsTNums[TNUM_OBJ(list)]; \
     if ( new > 0 ) \
       RetypeBag( list, new ); \
-    else if ( new < 0 ) { \
+/*    else if ( new < 0 ) { \
       Pr( "#E  CLEAR_FILTS_LIST[%s] in ", (Int)TNAM_OBJ(list), 0 ); \
       Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
-    } \
+      } */ \
   } while (0)
 
 /****************************************************************************

@@ -31,7 +31,7 @@ Revision.global_gd :=
 
 #############################################################################
 ##
-#O  ValueGlobal ( <name> ) .  . . . . . . . . . . access a global by its name
+#F  ValueGlobal ( <name> ) .  . . . . . . . . . . access a global by its name
 ## 
 ##  ValueGlobal ( <name> ) returns the value currently bound to the global
 ##  variable named by the string <name>. An error is raised if no value
@@ -43,7 +43,7 @@ DeclareGlobalFunction("ValueGlobal");
 
 #############################################################################
 ##
-#O  IsBoundGlobal ( <name> ) . . . . . check if a global is bound by its name
+#F  IsBoundGlobal ( <name> ) . . . . . check if a global is bound by its name
 ## 
 ##  IsBoundGlobal ( <name> ) returns true if a value currently bound
 ##  to the global variable named by the string <name> and false otherwise
@@ -55,12 +55,12 @@ DeclareGlobalFunction("IsBoundGlobal");
 
 #############################################################################
 ##
-#O  UnbindGlobal ( <name> ) . . . . . . . . . .  unbind a global  by its name
+#F  UnbindGlobal ( <name> ) . . . . . . . . . .  unbind a global  by its name
 ## 
 ##  UnbindGlobal ( <name> ) removes any value currently bound
 ##  to the global variable named by the string <name>. Nothing is returned
 ##
-##  A warning is given is <name> was not bound
+##  A warning is given if <name> was not bound
 ##  The global variable named by <name> must be writable,
 ##  otherwise an error is raised.
 ## 
@@ -69,7 +69,7 @@ DeclareGlobalFunction("UnbindGlobal");
 
 #############################################################################
 ##
-#O  IsReadOnlyGlobal ( <name> ) . determine if a global variable is read-only
+#F  IsReadOnlyGlobal ( <name> ) . determine if a global variable is read-only
 ##
 ##  IsReadOnlyGlobal ( <name> ) returns true if the global variable
 ##  named by the string <name> is read-only and false otherwise (the default)
@@ -79,7 +79,7 @@ DeclareGlobalFunction("IsReadOnlyGlobal");
 
 #############################################################################
 ##
-#O  MakeReadOnlyGlobal ( <name> ) . . . . .  make a global variable read-only
+#F  MakeReadOnlyGlobal ( <name> ) . . . . .  make a global variable read-only
 ##
 ##  MakeReadOnlyGlobal ( <name> ) marks the global variable named
 ##  by the string <name> as read-only. 
@@ -92,7 +92,7 @@ DeclareGlobalFunction("MakeReadOnlyGlobal");
 
 #############################################################################
 ##
-#O  MakeReadWriteGlobal ( <name> )  . . . . make a global variable read-write
+#F  MakeReadWriteGlobal ( <name> )  . . . . make a global variable read-write
 ##
 ##  MakeReadWriteGlobal ( <name> ) marks the global variable named
 ##  by the string <name> as read-write
@@ -104,7 +104,7 @@ DeclareGlobalFunction("MakeReadWriteGlobal");
 
 #############################################################################
 ##
-#O  BindGlobal ( <name>, <val> )  . . . . . . sets a global variable 'safely'
+#F  BindGlobal ( <name>, <val> )  . . . . . . sets a global variable `safely'
 ##
 ##  BindGlobal ( <name>, <val> ) sets the global variable named by
 ##  the string <name> to the value <val>, provided it was previously
@@ -126,8 +126,30 @@ DeclareGlobalFunction("BindGlobal");
 ##  TemporaryGlobalVarName() is called.  The optional argument prefix can
 ##  specify a string with which the name of the global variable starts.
 ##
-
 DeclareGlobalFunction("TemporaryGlobalVarName");
+
+#############################################################################
+##
+#F  HideGlobalVariables(<str1>[,<str2>,...]))
+##
+##  temporarily makes global variables ``undefined''. The arguments to
+##  `HideGlobalVariables' are strings. If there is a global variable defined
+##  whose identifier is equal to one of the strings it will be ``hidden''.
+##  This means that identifier and value will be safely stored on a stack
+##  and the variable will be undefined afterwards. A call to
+##  `UnhideGlobalVariables' will restore the old values.
+##  The main purpose of hiding variables will be for the temporary creation
+##  of global variables for reading in data created by other programs.
+
+DeclareGlobalFunction("HideGlobalVariables");
+
+#############################################################################
+##
+#F  UnhideGlobalVariables(<str1>[,<str2>,...]))
+#F  UnhideGlobalVariables()
+##
+##  The second version unhides all variables that are still hidden.
+DeclareGlobalFunction("UnhideGlobalVariables");
 
 #############################################################################
 ##

@@ -13,18 +13,51 @@
 
 \FileHeader{field}[1]
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Generating Fields}
 
 \Declaration{IsDivisionRing}
 \Declaration{IsField}
+
+\beginexample
+gap> IsField( GaloisField(16) );           # the field with 16 elements
+true
+gap> IsField( Rationals );                 # the field of rationals
+true
+gap> q:= QuaternionAlgebra( Rationals );;  # a noncommutative division ring
+gap> IsField( q );  IsDivisionRing( q );
+false
+true
+gap> mat:= [ [ 1 ] ];;  a:= Algebra( Rationals, [ mat ] );;
+gap> IsDivisionRing( a );                  # an algebra not constructed
+false                                      # as a division ring
+\endexample
+
 \Declaration{Field}
 \Declaration{DefaultField}
+
+\beginexample
+gap> Field( Z(4) );  Field( [ Z(4), Z(8) ] );  # finite fields
+GF(2^2)
+GF(2^6)
+gap> Field( E(9) );  Field( CF(4), [ E(9) ] ); # abelian number fields
+CF(9)
+AsField( GaussianRationals, CF(36) )
+gap> f1:= Field( EB(5) );  f2:= DefaultField( EB(5) );
+NF(5,[ 1, 4 ])
+CF(5)
+gap> f1 = f2;  IsSubset( f2, f1 );
+false
+true
+\endexample
+
 \Declaration{DefaultFieldByGenerators}
 \Declaration{GeneratorsOfDivisionRing}
 \Declaration{GeneratorsOfField}
 \Declaration{DivisionRingByGenerators}
 \Declaration{AsDivisionRing}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Subfields of Fields}
@@ -43,50 +76,91 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Galois Action}
 
-\Declaration{GaloisGroup}
-\Declaration{Norm}
-\Declaration{Trace}
-\Declaration{Conjugates}
+\FileHeader{field}[2]
+
+\indextt{IsFieldControlledByGaloisGroup}
+
+\Declaration{GaloisGroup}[field]
+
 \beginexample
-gap> GaloisGroup(CF(8));
-Group( [ ANFAutomorphism( CF(8), 7 ), ANFAutomorphism( CF(8), 5 ) ], ... )
-gap> Norm(CF(8),E(8));    
-1
-gap> Trace(CF(8),E(8));
-0
-gap> Norm(Field(CF(8),[E(8)]),E(8));
-E(8)
-gap> Conjugates(CF(8),E(8));
-[ E(8), E(8)^3, -E(8), -E(8)^3 ]
-gap> Conjugates(E(8));      
-[ E(8), E(8)^3, -E(8), -E(8)^3 ]
-gap> Conjugates(CF(16),E(8)); 
-[ E(8), E(8)^3, -E(8), -E(8)^3, E(8), E(8)^3, -E(8), -E(8)^3 ]
+gap> g:= GaloisGroup( AsField( GF(2^2), GF(2^12) ) );;
+gap> Size( g );  IsCyclic( g );
+6
+true
+gap> h:= GaloisGroup( CF(60) );;
+gap> Size( h );  IsAbelian( h );
+16
+true
 \endexample
 
-\>MinimalPolynomial(<F>,<z>[,<ind>])
+\>MinimalPolynomial( <F>, <z>[, <ind>] ) O
 
-returns the minimal polynomial of <z> over the field <F>. This is the
-generator of the ideal of $<F>[x]$ of polynomials which vanish on <z>.
+returns the minimal polynomial of <z> over the field <F>.
+This is a generator of the ideal in $<F>[x]$ of all polynomials
+which vanish on <z>.
 (This definition is consistent with the general definition of
-`MinimalPolynomial' for rings.)
+`MinimalPolynomial' for rings, see~"MinimalPolynomial".)
+
+\beginexample
+gap> MinimalPolynomial( Rationals, E(8) );
+1+x_1^4
+gap> MinimalPolynomial( CF(4), E(8) );    
+-E(4)+x_1^2
+gap> MinimalPolynomial( CF(8), E(8) );
+-E(8)+x_1
+\endexample
 
 \Declaration{TracePolynomial}
 
-(Such a polynomial is sometimes called ``characteristic polynomial''.
-Therefore methods are installed for `CharacteristicPolynomial' that call
-`TracePolynomial' in the case of field extensions.)
+\index{characteristic polynomial!for field elements}
 
 \beginexample
-gap> MinimalPolynomial(CF(8),E(8));
--E(8)+x_1
-gap> MinimalPolynomial(CF(8),E(16));
--E(8)+x_1^2
-gap> TracePolynomial(CF(8),CF(16),E(8));
-E(4)+-2*E(8)*x_1+x_1^2
-gap> TracePolynomial(CF(8),CF(16),E(16));
--E(8)+x_1^2
+gap> TracePolynomial( CF(8), Rationals, E(8) );
+1+x_1^4
+gap> TracePolynomial( CF(16), Rationals, E(8) );
+1+2*x_1^4+x_1^8
 \endexample
 
+\Declaration{Norm}
+\Declaration{Trace}
+\Declaration{Conjugates}
+
+\beginexample
+gap> Norm( E(8) );  Norm( CF(8), E(8) );
+1
+1
+gap> Norm( CF(8), CF(4), E(8) );
+-E(4)
+gap> Norm( AsField( CF(4), CF(8) ), E(8) );
+-E(4)
+gap> Trace( E(8) );  Trace( CF(8), CF(8), E(8) );
+0
+E(8)
+gap> Conjugates( CF(8), E(8) );
+[ E(8), E(8)^3, -E(8), -E(8)^3 ]
+gap> Conjugates( CF(8), CF(4), E(8) );
+[ E(8), -E(8) ]
+gap> Conjugates( CF(16), E(8) );       
+[ E(8), E(8)^3, -E(8), -E(8)^3, E(8), E(8)^3, -E(8), -E(8)^3 ]
+\endexample
+
+\FileHeader{field}[3]
+
 \Declaration{NormalBase}
+
+\beginexample
+gap> NormalBase( CF(5) );
+[ -E(5), -E(5)^2, -E(5)^3, -E(5)^4 ]
+gap> NormalBase( CF(4) );
+[ 1/2-1/2*E(4), 1/2+1/2*E(4) ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\Section{Field Homomorphisms}
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
 

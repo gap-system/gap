@@ -11,8 +11,19 @@
 ##  This file contains the functions dealing with monomiality questions for
 ##  solvable groups.
 ##
+##  1. Character Degrees and Derived Length
+##  2. Primitivity of Characters
+##  3. Testing Monomiality
+##  4. Minimal Nonmonomial Groups
+##
 Revision.ctblmono_gi :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+##  1. Character Degrees and Derived Length
+##
 
 
 #############################################################################
@@ -20,18 +31,18 @@ Revision.ctblmono_gi :=
 #M  Alpha( <G> )  . . . . . . . . . . . . . . . . . . . . . . . . for a group
 ##
 InstallMethod( Alpha,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( G )
 
-    local irr,        # irreducible characters of 'G'
-          degrees,    # set of degrees of 'irr'
-          chars,      # at position <i> all in 'irr' of degree 'degrees[<i>]'
+    local irr,        # irreducible characters of `G'
+          degrees,    # set of degrees of `irr'
+          chars,      # at position <i> all in `irr' of degree `degrees[<i>]'
           chi,        # one character
           alpha,      # result list
           max,        # maximal derived length found up to now
-          kernels,    # at position <i> the kernels of all in 'chars[<i>]'
+          kernels,    # at position <i> the kernels of all in `chars[<i>]'
           minimal,    # list of minimal kernels
           relevant,   # minimal kernels of one degree
           k,          # one kernel
@@ -59,7 +70,7 @@ InstallMethod( Alpha,
     max:= 1;
 
     # Compute kernels (as position lists)
-    kernels:= List( chars, x -> Set( List( x, KernelChar ) ) );
+    kernels:= List( chars, x -> Set( List( x, ClassPositionsOfKernel ) ) );
 
     # list of all minimal elements found up to now
     minimal:= [];
@@ -94,8 +105,8 @@ InstallMethod( Alpha,
       # Compute the derived lengths
       for k in relevant do
 
-        dl:= Length( DerivedSeriesOfGroup(
-                 FactorGroupNormalSubgroupClasses( G, k ) ) ) - 1;
+        dl:= Length( DerivedSeriesOfGroup( FactorGroupNormalSubgroupClasses(
+                         OrdinaryCharacterTable( G ), k ) ) ) - 1;
         if dl > max then
           max:= dl;
         fi;
@@ -116,13 +127,13 @@ InstallMethod( Alpha,
 #M  Delta( <G> )  . . . . . . . . . . . . . . . . . . . . . . . . for a group
 ##
 InstallMethod( Delta,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( G )
 
     local delta,  # result list
-          alpha,  # 'Alpha( <G> )'
+          alpha,  # `Alpha( <G> )'
           r;      # loop variable
 
     delta:= [ 1 ];
@@ -137,16 +148,16 @@ InstallMethod( Delta,
 
 #############################################################################
 ##
-#M  IsBergerCondition( <chi> )  . . . . . . . . .  for a character with group
+#M  IsBergerCondition( <chi> )  . . . . . . . . . . . . . . . for a character
 ##
 InstallOtherMethod( IsBergerCondition,
-    "method for a character with group",
+    "for a class function",
     true,
-    [ IsCharacter and IsClassFunctionWithGroup ], 0,
+    [ IsClassFunction ], 0,
     function( chi )
 
-    local G,           # group of <chi>
-          values,      # values of 'chi'
+    local tbl,         # character table of <chi>
+          values,      # values of `chi'
           ker,         # intersection of kernels of smaller degree
           deg,         # degree of <chi>
           psi,         # one irreducible character of $G$
@@ -155,11 +166,11 @@ InstallOtherMethod( IsBergerCondition,
 
     Info( InfoMonomial, 1,
           "IsBergerCondition called for character ",
-          CharacterString( chi ) );
+          CharacterString( chi, "chi" ) );
 
     values:= ValuesOfClassFunction( chi );
     deg:= values[1];
-    G:= UnderlyingGroup( chi );
+    tbl:= UnderlyingCharacterTable( chi );
 
     if 1 < deg then
 
@@ -168,20 +179,20 @@ InstallOtherMethod( IsBergerCondition,
       ker:= [ 1 .. Length( values ) ];
       for psi in Irr( UnderlyingCharacterTable( chi ) ) do
         if DegreeOfCharacter( psi ) < deg then
-          IntersectSet( ker, KernelChar( psi ) );
+          IntersectSet( ker, ClassPositionsOfKernel( psi ) );
         fi;
       od;
 
       # Check whether the derived group of this normal subgroup
-      # lies in the kernel of 'chi'.
-      kerchi:= KernelChar( values );
+      # lies in the kernel of `chi'.
+      kerchi:= ClassPositionsOfKernel( values );
       if IsSubsetSet( kerchi, ker ) then
 
         # no need to compute subgroups
         isberger:= true;
       else
-        isberger:= IsSubgroup( KernelOfCharacter( chi ),
-                       DerivedSubgroup( NormalSubgroupClasses( G, ker ) ) );
+        isberger:= IsSubset( KernelOfCharacter( chi ),
+                     DerivedSubgroup( NormalSubgroupClasses( tbl, ker ) ) );
       fi;
 
     else
@@ -198,14 +209,15 @@ InstallOtherMethod( IsBergerCondition,
 #M  IsBergerCondition( <G> )  . . . . . . . . . . . . . . . . . . for a group
 ##
 InstallMethod( IsBergerCondition,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( G )
 
-    local psi,         # one irreducible character of $G$
+    local tbl,         # character table of `G'
+          psi,         # one irreducible character of `G'
           isberger,    # result
-          degrees,     # different character degrees of 'G'
+          degrees,     # different character degrees of `G'
           kernels,     #
           pos,         #
           i,           # loop variable
@@ -214,6 +226,8 @@ InstallMethod( IsBergerCondition,
           right;       #
 
     Info( InfoMonomial, 1, "IsBergerCondition called for group ", G );
+
+    tbl:= OrdinaryCharacterTable( G );
 
     if Size( G ) mod 2 = 1 then
 
@@ -228,18 +242,20 @@ InstallMethod( IsBergerCondition,
         pos:= Position( degrees, psi[1], 0 );
         if pos = fail then
           Add( degrees, psi[1] );
-          Add( kernels, KernelChar( psi ) );
+          Add( kernels, ShallowCopy( ClassPositionsOfKernel( psi ) ) );
         else
-          IntersectSet( kernels[ pos ], KernelChar( psi ) );
+          IntersectSet( kernels[ pos ], ClassPositionsOfKernel( psi ) );
         fi;
       od;
       SortParallel( degrees, kernels );
 
       # Let $1 = f_1 \leq f_2 \leq\ldots \leq f_n$ the distinct
-      # irreducible degrees of 'G'.
+      # irreducible degrees of `G'.
       # We must have for all $1 \leq i \leq n-1$ that
-      # \[ ( \bigcap_{\psi(1) \leq f_i}  \ker(\psi) )^{\prime} \leq
-      #      \bigcap_{\chi(1) = f_{i+1}} \ker(\chi) \]
+      # $$
+      #    ( \bigcap_{\psi(1) \leq f_i}  \ker(\psi) )^{\prime} \leq
+      #      \bigcap_{\chi(1) = f_{i+1}} \ker(\chi)
+      # $$
 
       i:= 1;
       isberger:= true;
@@ -247,13 +263,13 @@ InstallMethod( IsBergerCondition,
 
       while i < Length( degrees ) and isberger do
 
-        # 'leftinters' becomes $\bigcap_{\psi(1) \leq f_i} \ker(\psi)$.
+        # `leftinters' becomes $\bigcap_{\psi(1) \leq f_i} \ker(\psi)$.
         IntersectSet( leftinters, kernels[i] );
         if not IsSubsetSet( kernels[i+1], leftinters ) then
 
           # we have to compute the groups
-          left:= DerivedSubgroup( NormalSubgroupClasses( G, leftinters ) );
-          right:= NormalSubgroupClasses( G, kernels[i+1] );
+          left:= DerivedSubgroup( NormalSubgroupClasses( tbl, leftinters ) );
+          right:= NormalSubgroupClasses( tbl, kernels[i+1] );
           if not IsSubset( right, left ) then
             isberger:= false;
             Info( InfoMonomial, 1,
@@ -274,15 +290,20 @@ InstallMethod( IsBergerCondition,
 
 #############################################################################
 ##
+##  2. Primitivity of Characters
+##
+
+
+#############################################################################
+##
 #F  TestHomogeneous( <chi>, <N> )
 ##
 InstallGlobalFunction( TestHomogeneous, function( chi, N )
 
-    local G,        # the group of <chi>
-          t,        # character table of 'G'
-          classes,  # class lengths of 't'
+    local t,        # character table of `G'
+          classes,  # class lengths of `t'
           values,   # values of <chi>
-          cl,       # classes of 'G' that form <N>
+          cl,       # classes of `G' that form <N>
           norm,     # norm of the restriction of <chi> to <N>
           tn,       # table of <N>
           fus,      # fusion of conjugacy classes <N> in $G$
@@ -295,11 +316,11 @@ InstallGlobalFunction( TestHomogeneous, function( chi, N )
     if IsList( N ) then
       cl:= N;
     else
-      cl:= ClassesOfNormalSubgroup( UnderlyingGroup( chi ), N );
+      cl:= ClassPositionsOfNormalSubgroup( UnderlyingCharacterTable( chi ),
+                                           N );
     fi;
 
-    G:= UnderlyingGroup( chi );
-    t:= CharacterTable( G );
+    t:= UnderlyingCharacterTable( chi );
     classes:= SizesConjugacyClasses( t );
     norm:= Sum( cl, c -> classes[c] * values[c]
                                     * GaloisCyc( values[c], -1 ), 0 );
@@ -312,13 +333,12 @@ InstallGlobalFunction( TestHomogeneous, function( chi, N )
 
     else
 
-      # 'chi' restricts reducibly.
-      # Compute the table of 'N' if necessary,
+      # `chi' restricts reducibly.
+      # Compute the table of `N' if necessary,
       # and check the constituents of the restriction
-      G:= UnderlyingGroup( chi );
-      N:= NormalSubgroupClasses( G, cl );
+      N:= NormalSubgroupClasses( t, cl );
       tn:= CharacterTable( N );
-      fus:= FusionConjugacyClasses( N, G );
+      fus:= FusionConjugacyClasses( tn, t );
       rest:= values{ fus };
 
       for i in Irr( tn ) do
@@ -344,15 +364,15 @@ end );
 #M  TestQuasiPrimitive( <chi> ) . . . . . . . . . . . . . . . for a character
 ##
 InstallMethod( TestQuasiPrimitive,
-    "method for a character",
+    "for a character",
     true,
     [ IsCharacter ], 0,
     function( chi )
 
     local values,   # list of character values
-          t,        # character table of 'chi'
-          nsg,      # list of normal subgroups of 't'
-          cen,      # centre of 'chi'
+          t,        # character table of `chi'
+          nsg,      # list of normal subgroups of `t'
+          cen,      # centre of `chi'
           allhomog, # are all restrictions up to now homogeneous?
           j,        # loop over normal subgroups
           testhom,  # test of homogeneous restriction
@@ -360,7 +380,7 @@ InstallMethod( TestQuasiPrimitive,
 
     Info( InfoMonomial, 1,
           "TestQuasiPrimitive called for character ",
-          CharacterString( chi ) );
+          CharacterString( chi, "chi" ) );
 
     values:= ValuesOfClassFunction( chi );
 
@@ -374,11 +394,11 @@ InstallMethod( TestQuasiPrimitive,
 
       t:= UnderlyingCharacterTable( chi );
 
-      # Compute the normal subgroups of 'G' containing the centre of 'chi'.
+      # Compute the normal subgroups of `G' containing the centre of `chi'.
 
-      # Note that 'chi' restricts homogeneously to all normal subgroups
-      # of 'G' if (and only if) it restricts homogeneously to all those
-      # normal subgroups containing the centre of 'chi'.
+      # Note that `chi' restricts homogeneously to all normal subgroups
+      # of `G' if (and only if) it restricts homogeneously to all those
+      # normal subgroups containing the centre of `chi'.
 
       # {\em Proof:}
       # Let $N \unlhd G$ such that $Z(\chi) \not\leq N$.
@@ -395,9 +415,8 @@ InstallMethod( TestQuasiPrimitive,
       # i.e., every constituent of $\vartheta_N$ is invariant in $N Z(\chi)$,
       # i.e., $\vartheta$ (and thus $\chi$) restricts homogeneously to $N$.
 
-      cen:= CentreChar( values );
-      nsg:= NormalSubgroups( t );
-#T !
+      cen:= ClassPositionsOfCentre( values );
+      nsg:= ClassPositionsOfNormalSubgroups( t );
       nsg:= Filtered( nsg, x -> IsSubsetSet( x, cen ) );
 
       allhomog:= true;
@@ -428,7 +447,7 @@ InstallMethod( TestQuasiPrimitive,
     fi;
 
     Info( InfoMonomial, 1,
-          "TestQuasiPrimitive returns '", test.isQuasiPrimitive, "'" );
+          "TestQuasiPrimitive returns `", test.isQuasiPrimitive, "'" );
 
     return test;
     end );
@@ -439,7 +458,7 @@ InstallMethod( TestQuasiPrimitive,
 #M  IsQuasiPrimitive( <chi> ) . . . . . . . . . . . . . . . . for a character
 ##
 InstallMethod( IsQuasiPrimitive,
-    "method for a character",
+    "for a character",
     true,
     [ IsCharacter ], 0,
     chi -> TestQuasiPrimitive( chi ).isQuasiPrimitive );
@@ -447,55 +466,49 @@ InstallMethod( IsQuasiPrimitive,
 
 #############################################################################
 ##
-#M  IsPrimitiveCharacter( <chi> ) . . . . . . . .  for a character with group
+#M  IsPrimitiveCharacter( <chi> ) . . . . . . . . . . . . . . for a character
 ##
 InstallMethod( IsPrimitiveCharacter,
-    "method for a character with group",
+    "for a class function",
     true,
-    [ IsCharacter and IsClassFunctionWithGroup ], 0,
+    [ IsClassFunction ], 0,
     function( chi )
     if not IsSolvableGroup( UnderlyingGroup( chi ) ) then
       TryNextMethod();
     fi;
-    return TestQuasiPrimitive( chi ).isQuasiPrimitive;
+    return IsCharacter( chi ) and TestQuasiPrimitive( chi ).isQuasiPrimitive;
     end );
 
 
 #############################################################################
 ##
-#F  TestInducedFromNormalSubgroup( <chi>, <N> )
-#F  TestInducedFromNormalSubgroup( <chi> )
+#M  IsPrimitive( <chi> )  . . . . . . . . . . . . . . . . . . for a character
 ##
-##  returns a record with information about whether the irreducible group
-##  character <chi> of the group $G$ is induced from a proper normal subgroup
-##  of $G$.
+InstallOtherMethod( IsPrimitive,
+    "for a character",
+    true,
+    [ IsClassFunction ], 0,
+    IsPrimitiveCharacter );
+#T really install this?
+
+
+#############################################################################
 ##
-##  If <chi> is the only argument then it is checked whether there is a
-##  maximal normal subgroup of $G$ from that <chi> is induced.
-##
-##  A second argument <N> must be a normal subgroup of $G$ or the list of
-##  class positions of a normal subgroup of $G$.  Then it is checked
-##  whether <chi> is induced from <N>.
-##
-##  The result contains always a component 'comment', a string.
-##  The component 'isInduced' is 'true' or 'false', depending on whether
-##  <chi> is induced.  In the 'true' case the component 'character'
-##  contains a character of a maximal normal subgroup from that <chi> is
-##  induced.
+#F  TestInducedFromNormalSubgroup( <chi>[, <N>] )
 ##
 InstallGlobalFunction( TestInducedFromNormalSubgroup, function( arg )
 
     local sizeN,      # size of <N>
           sizefactor, # size of $G / <N>$
-          values,     # values list of 'chi'
+          values,     # values list of `chi'
           m,          # list of all maximal normal subgroups of $G$
           test,       # intermediate result
           tn,         # character table of <N>
-          irr,        # irreducibles of 'tn'
+          irr,        # irreducibles of `tn'
           i,          # loop variable
           scpr,       # one scalar product in <N>
           N,          # optional second argument
-          cl,         # classes corresponding to 'N'
+          cl,         # classes corresponding to `N'
           chi;        # first argument
 
     # check the arguments
@@ -508,11 +521,11 @@ InstallGlobalFunction( TestInducedFromNormalSubgroup, function( arg )
 
     Info( InfoMonomial, 1,
           "TestInducedFromNormalSubgroup called with character ",
-          CharacterString( chi ) );
+          CharacterString( chi, "chi" ) );
 
     if Length( arg ) = 1 then
 
-      # 'TestInducedFromNormalSubgroup( <chi> )'
+      # `TestInducedFromNormalSubgroup( <chi> )'
       if DegreeOfCharacter( chi ) = 1 then
 
         return rec( isInduced:= false,
@@ -521,7 +534,8 @@ InstallGlobalFunction( TestInducedFromNormalSubgroup, function( arg )
       else
 
         # Get all maximal normal subgroups.
-        m:= MaximalNormalSubgroups( UnderlyingCharacterTable( chi ) );
+        m:= ClassPositionsOfMaximalNormalSubgroups(
+                UnderlyingCharacterTable( chi ) );
 
         for N in m do
 
@@ -538,7 +552,7 @@ InstallGlobalFunction( TestInducedFromNormalSubgroup, function( arg )
 
     else
 
-      # 'TestInducedFromNormalSubgroup( <chi>, <N> )'
+      # `TestInducedFromNormalSubgroup( <chi>, <N> )'
 
       N:= arg[2];
 
@@ -594,7 +608,7 @@ InstallGlobalFunction( TestInducedFromNormalSubgroup, function( arg )
         od;
 
         cl:= N;
-        N:= NormalSubgroupClasses( UnderlyingGroup( chi ), N );
+        N:= NormalSubgroupClasses( UnderlyingCharacterTable( chi ), N );
 
       else
 
@@ -606,7 +620,8 @@ InstallGlobalFunction( TestInducedFromNormalSubgroup, function( arg )
 
         fi;
 
-        cl:= ClassesOfNormalSubgroup( UnderlyingGroup( chi ), N );
+        cl:= ClassPositionsOfNormalSubgroup( UnderlyingCharacterTable( chi ),
+                                             N );
 
         # Check whether the character vanishes outside <N>.
         for i in [ 2 .. Length( values ) ] do
@@ -619,7 +634,8 @@ InstallGlobalFunction( TestInducedFromNormalSubgroup, function( arg )
       fi;
 
       # Compute the restriction to <N>.
-      chi:= values{ FusionConjugacyClasses( N, UnderlyingGroup( chi ) ) };
+      chi:= values{ FusionConjugacyClasses( OrdinaryCharacterTable( N ),
+                        UnderlyingCharacterTable( chi ) ) };
 
       # Check possible constituents.
       tn:= CharacterTable( N );
@@ -657,7 +673,7 @@ end );
 #M  IsInducedFromNormalSubgroup( <chi> )  . . . . . . . . . . for a character
 ##
 InstallMethod( IsInducedFromNormalSubgroup,
-    "method for a character",
+    "for a character",
     true,
     [ IsCharacter ], 0,
     chi -> TestInducedFromNormalSubgroup( chi ).isInduced );
@@ -665,17 +681,23 @@ InstallMethod( IsInducedFromNormalSubgroup,
 
 #############################################################################
 ##
+##  3. Testing Monomiality
+##
+
+
+#############################################################################
+##
 #M  TestSubnormallyMonomial( <G> )  . . . . . . . . . . . . . . . for a group
 ##
 InstallMethod( TestSubnormallyMonomial,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( G )
 
     local test,       # result record
           orbits,     # orbits of characters
-          chi,        # loop over 'orbits'
+          chi,        # loop over `orbits'
           found,      # decision is found
           i;          # loop variable
 
@@ -727,7 +749,7 @@ InstallMethod( TestSubnormallyMonomial,
 
     # Return the result.
     Info( InfoMonomial, 1,
-          "TestSubnormallyMonomial returns with '",
+          "TestSubnormallyMonomial returns with `",
           test.isSubnormallyMonomial, "'" );
     return test;
     end );
@@ -735,12 +757,12 @@ InstallMethod( TestSubnormallyMonomial,
 
 #############################################################################
 ##
-#M  TestSubnormallyMonomial( <chi> )  . . . . . .  for a character with group
+#M  TestSubnormallyMonomial( <chi> )  . . . . . . . . . . . . for a character
 ##
 InstallOtherMethod( TestSubnormallyMonomial,
-    "method for a character with group",
+    "for a character",
     true,
-    [ IsCharacter and IsClassFunctionWithGroup ], 0,
+    [ IsClassFunction ], 0,
     function( chi )
 
     local test,       # result record
@@ -748,7 +770,7 @@ InstallOtherMethod( TestSubnormallyMonomial,
 
     Info( InfoMonomial, 1,
           "TestSubnormallyMonomial called for character ",
-          CharacterString( chi ) );
+          CharacterString( chi, "chi" ) );
 
     if   DegreeOfCharacter( chi ) = 1 then
 
@@ -776,18 +798,18 @@ InstallOtherMethod( TestSubnormallyMonomial,
 
       # We have to check recursively.
 
-      # Given a character 'chi' of the group $N$, and two classes lists
-      # 'forbidden' and 'allowed' that describe all maximal normal
-      # subgroups of $N$, where 'forbidden' denotes all those normal
-      # subgroups through that 'chi' cannot be subnormally induced,
+      # Given a character `chi' of the group $N$, and two classes lists
+      # `forbidden' and `allowed' that describe all maximal normal
+      # subgroups of $N$, where `forbidden' denotes all those normal
+      # subgroups through that `chi' cannot be subnormally induced,
       # return either a linear character of a subnormal subgroup of $N$
-      # from that 'chi' is induced, or 'false' if no such character exists.
+      # from that `chi' is induced, or `false' if no such character exists.
       # If we reach a nilpotent group then we return a character of this
       # group, so the character is not necessarily linear.
 
       testsm:= function( chi, forbidden, allowed )
 
-      local N,       # group of 'chi'
+      local N,       # group of `chi'
             mns,     # max. normal subgroups
             forbid,  #
             n,       # one maximal normal subgroup
@@ -809,18 +831,18 @@ InstallOtherMethod( TestSubnormallyMonomial,
       chi:= ValuesOfClassFunction( chi );
       len:= Length( chi );
 
-      # Loop over 'allowed'.
+      # Loop over `allowed'.
       for cl in allowed do
 
         if ForAll( [ 1 .. len ], x -> chi[x] = 0 or x in cl ) then
 
-          # 'chi' vanishes outside 'n', so is induced from 'n'.
+          # `chi' vanishes outside `n', so is induced from `n'.
 
-          n:= NormalSubgroupClasses( N, cl );
+          n:= NormalSubgroupClasses( OrdinaryCharacterTable( N ), cl );
           nt:= CharacterTable( n );
 
-          # Compute a constituent of the restriction of 'chi' to 'n'.
-          fus:= FusionConjugacyClasses( n, N );
+          # Compute a constituent of the restriction of `chi' to `n'.
+          fus:= FusionConjugacyClasses( nt, OrdinaryCharacterTable( N ) );
           rest:= chi{ fus };
           deg:= chi[1] * Size( n ) / Size( N );
           const:= First( Irr( n ),
@@ -835,14 +857,14 @@ InstallOtherMethod( TestSubnormallyMonomial,
             return false;
           fi;
 
-          # Compute allowed and forbidden maximal normal subgroups of 'n'.
-          mns:= MaximalNormalSubgroups( nt );
+          # Compute allowed and forbidden maximal normal subgroups of `n'.
+          mns:= ClassPositionsOfMaximalNormalSubgroups( nt );
           nallowed:= [];
           nforbid:= [];
           for gp in mns do
 
             # A group is forbidden if it is the intersection of a group
-            # in 'forbid' with 'n'.
+            # in `forbid' with `n'.
             fusgp:= Set( fus{ gp } );
             if ForAny( forbid, x -> IsSubsetSet( x, fusgp ) ) then
               Add( nforbid, gp );
@@ -852,7 +874,7 @@ InstallOtherMethod( TestSubnormallyMonomial,
 
           od;
 
-          # Check whether 'const' is subnormally induced from 'n'.
+          # Check whether `const' is subnormally induced from `n'.
           test:= testsm( const, nforbid, nallowed );
           if test <> false then
             return test;
@@ -860,7 +882,7 @@ InstallOtherMethod( TestSubnormallyMonomial,
 
         fi;
 
-        # Add 'n' to the forbidden subgroups.
+        # Add `n' to the forbidden subgroups.
         Add( forbid, cl );
 
       od;
@@ -872,8 +894,8 @@ InstallOtherMethod( TestSubnormallyMonomial,
 
       # Run the recursive search.
       # Here all maximal normal subgroups are allowed.
-      test:= testsm( chi, [],
-                 MaximalNormalSubgroups( UnderlyingCharacterTable( chi ) ) );
+      test:= testsm( chi, [], ClassPositionsOfMaximalNormalSubgroups(
+                                  UnderlyingCharacterTable( chi ) ) );
 
       # Prepare the output.
       if test = false then
@@ -892,7 +914,7 @@ InstallOtherMethod( TestSubnormallyMonomial,
     fi;
 
     Info( InfoMonomial, 1,
-          "TestSubnormallyMonomial returns with '",
+          "TestSubnormallyMonomial returns with `",
           test.isSubnormallyMonomial, "'" );
     return test;
     end );
@@ -901,18 +923,18 @@ InstallOtherMethod( TestSubnormallyMonomial,
 #############################################################################
 ##
 #M  IsSubnormallyMonomial( <G> )  . . . . . . . . . . . . . . . . for a group
-#M  IsSubnormallyMonomial( <chi> )  . . . . . . .  for a character with group
+#M  IsSubnormallyMonomial( <chi> )  . . . . . . . . . . . . . for a character
 ##
 InstallMethod( IsSubnormallyMonomial,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     G -> TestSubnormallyMonomial( G ).isSubnormallyMonomial );
 
 InstallOtherMethod( IsSubnormallyMonomial,
-    "method for a character with group",
+    "for a character",
     true,
-    [ IsCharacter and IsClassFunctionWithGroup ], 0,
+    [ IsClassFunction ], 0,
     chi -> TestSubnormallyMonomial( chi ).isSubnormallyMonomial );
 
 
@@ -921,16 +943,16 @@ InstallOtherMethod( IsSubnormallyMonomial,
 #M  IsMonomialNumber( <n> ) . . . . . . . . . . . . .  for a positive integer
 ##
 InstallMethod( IsMonomialNumber,
-    "method for a positive integer",
+    "for a positive integer",
     true,
     [ IsPosInt ], 0,
     function( n )
 
-    local factors,   # list of prime factors of 'n'
+    local factors,   # list of prime factors of `n'
           collect,   # list of (prime divisor, exponent) pairs
           nu2,       # $\nu_2(n)$
-          pair,      # loop over 'collect'
-          pair2,     # loop over 'collect'
+          pair,      # loop over `collect'
+          pair2,     # loop over `collect'
           ord;       # multiplicative order
 
     factors := FactorsInt( n );
@@ -1005,46 +1027,32 @@ InstallMethod( IsMonomialNumber,
 
 #############################################################################
 ##
-#M  TestMonomialQuick( <chi> )  . . . . . . . . .  for a character with group
-##
-##  The following criteria are used for a character <chi>.
-##
-##  o Linear characters are monomial.
-##  o If the group has the component 'isMonomial' with value 'true' then
-##    <chi> is monomial.
-##  o If the codegree is a prime power then the character is monomial.
-##  o Let $\pi$ be the set of primes in the codegree of <chi>.
-##    Then <chi> is induced from a Hall $\pi$ subgroup (Isaacs).
-##  o The factor group modulo the kernel is checked for monomiality
-##    by 'TestMonomialQuick'.
-##
-#T Was ist das Kriterium, nach dem etwas in 'Quick'getestet wird?
-#T Verzicht auf teure Tafel-Berechnungen?
+#M  TestMonomialQuick( <chi> )  . . . . . . . . . . . . . . . for a character
 ##
 InstallMethod( TestMonomialQuick,
-    "method for a character with group",
+    "for a character",
     true,
-    [ IsCharacter and IsClassFunctionWithGroup ], 0,
+    [ IsClassFunction ], 0,
     function( chi )
 
-    local G,          # group of 'chi'
-          factsize,   # size of the kernel factor of 'chi'
-          codegree,   # codegree of 'chi'
+    local G,          # group of `chi'
+          factsize,   # size of the kernel factor of `chi'
+          codegree,   # codegree of `chi'
           pi,         # prime divisors of a Hall subgroup
-          hall,       # size of 'pi' Hall subgroup of kernel factor
-          ker,        # kernel of 'chi'
-          t,          # character table of 'G'
-          grouptest;  # result of the call to 'G / ker'
+          hall,       # size of `pi' Hall subgroup of kernel factor
+          ker,        # kernel of `chi'
+          t,          # character table of `G'
+          grouptest;  # result of the call to `G / ker'
 
     Info( InfoMonomial, 1,
           "TestMonomialQuick called for character ",
-          CharacterString( chi ) );
+          CharacterString( chi, "chi" ) );
 
     if   HasIsMonomialCharacter( chi ) then
 
       # The character knows about being monomial.
       Info( InfoMonomial, 1,
-            "TestMonomialQuick returns with '",
+            "TestMonomialQuick returns with `",
             IsMonomialCharacter( chi ), "'" );
       return rec( isMonomial := IsMonomialCharacter( chi ),
                   comment    := "was already stored" );
@@ -1053,7 +1061,7 @@ InstallMethod( TestMonomialQuick,
 
       # Linear characters are monomial.
       Info( InfoMonomial, 1,
-            "TestMonomialQuick returns with 'true'" );
+            "TestMonomialQuick returns with `true'" );
       return rec( isMonomial := true,
                   comment    := "linear character" );
 
@@ -1062,7 +1070,7 @@ InstallMethod( TestMonomialQuick,
 
       # The whole group is known to be monomial.
       Info( InfoMonomial, 1,
-            "TestMonomialQuick returns with 'true'" );
+            "TestMonomialQuick returns with `true'" );
       return rec( isMonomial := true,
                   comment    := "whole group is monomial" );
 
@@ -1071,8 +1079,8 @@ InstallMethod( TestMonomialQuick,
     G   := UnderlyingGroup( chi );
     chi := ValuesOfClassFunction( chi );
 
-    # Replace 'G' by the factor group modulo the kernel.
-    ker:= KernelChar( chi );
+    # Replace `G' by the factor group modulo the kernel.
+    ker:= ClassPositionsOfKernel( chi );
     if 1 < Length( ker ) then
       t:= CharacterTable( G );
       factsize:= Size( G ) / Sum( SizesConjugacyClasses( t ){ ker }, 0 );
@@ -1089,7 +1097,7 @@ InstallMethod( TestMonomialQuick,
       # (Chillag, Mann, Manz).
 #T also if the group is not solvable?
       Info( InfoMonomial, 1,
-            "TestMonomialQuick returns with 'true'" );
+            "TestMonomialQuick returns with `true'" );
       return rec( isMonomial := true,
                   comment    := "codegree is prime power" );
     fi;
@@ -1105,7 +1113,7 @@ InstallMethod( TestMonomialQuick,
       # The character is induced from a {\em linear} character
       # of the $\pi$ Hall group.
       Info( InfoMonomial, 1,
-            "TestMonomialQuick returns with 'true'" );
+            "TestMonomialQuick returns with `true'" );
       return rec( isMonomial := true,
                   comment    := "degree is index of Hall subgroup" );
 
@@ -1113,7 +1121,7 @@ InstallMethod( TestMonomialQuick,
 
       # The {\em order} of this Hall subgroup is monomial.
       Info( InfoMonomial, 1,
-            "TestMonomialQuick returns with 'true'" );
+            "TestMonomialQuick returns with `true'" );
       return rec( isMonomial := true,
                   comment    := "induced from monomial Hall subgroup" );
 
@@ -1127,7 +1135,7 @@ InstallMethod( TestMonomialQuick,
         # The order of the kernel factor group is monomial.
         # (For faithful characters this check has been done already.)
         Info( InfoMonomial, 1,
-              "TestMonomialQuick returns with 'true'" );
+              "TestMonomialQuick returns with `true'" );
         return rec( isMonomial := true,
                     comment    := "size of kernel factor is monomial" );
 
@@ -1135,20 +1143,20 @@ InstallMethod( TestMonomialQuick,
 
         # The factor group modulo the kernel is supersolvable.
         Info( InfoMonomial, 1,
-              "TestMonomialQuick returns with 'true'" );
+              "TestMonomialQuick returns with `true'" );
         return rec( isMonomial:= true,
                     comment:= "kernel factor group is supersolvable" );
 #T Is there more one can do without computing the factor group?
 
       fi;
 
-      grouptest:= TestMonomialQuick(
-                       FactorGroupNormalSubgroupClasses( G, ker ) );
+      grouptest:= TestMonomialQuick( FactorGroupNormalSubgroupClasses(
+                      OrdinaryCharacterTable( G ), ker ) );
 #T This can help ??
       if grouptest.isMonomial = true then
 
         Info( InfoMonomial, 1,
-              "#I  TestMonomialQuick returns with 'true'" );
+              "#I  TestMonomialQuick returns with `true'" );
         return rec( isMonomial := true,
                     comment    := "kernel factor group is monomial" );
 
@@ -1158,7 +1166,7 @@ InstallMethod( TestMonomialQuick,
 
     # No more cheap tests are available.
     Info( InfoMonomial, 1,
-          "TestMonomialQuick returns with '?'" );
+          "TestMonomialQuick returns with `?'" );
     return rec( isMonomial := "?",
                 comment    := "no decision by cheap tests" );
     end );
@@ -1181,7 +1189,7 @@ InstallMethod( TestMonomialQuick,
 ##     and check whether they are abelian.)
 ##
 InstallOtherMethod( TestMonomialQuick,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( G )
@@ -1190,7 +1198,7 @@ InstallOtherMethod( TestMonomialQuick,
 #T (and implement this function ...)
 
     local test,       # the result record
-          ssr;        # supersolvable residuum of 'G'
+          ssr;        # supersolvable residuum of `G'
 
     Info( InfoMonomial, 1,
           "TestMonomialQuick called for group ",
@@ -1254,40 +1262,46 @@ InstallOtherMethod( TestMonomialQuick,
     fi;
 
     Info( InfoMonomial, 1,
-          "TestMonomialQuick returns with '", test.isMonomial, "'" );
+          "TestMonomialQuick returns with `", test.isMonomial, "'" );
     return test;
     end );
 
 
 #############################################################################
 ##
-#M  TestMonomial( <chi> ) . . . . . . . . . . . .  for a character with group
+#M  TestMonomial( <chi> ) . . . . . . . . . . . . . . . . . . for a character
+##
+##  Called with a character <chi> as argument, `TestMonomialQuick( <chi> )'
+##  is inspected first.  If this did not decide the question, we test all
+##  those normal subgroups of $G$ to that <chi> restricts nonhomogeneously
+##  whether the interesting character of the inertia subgroup is monomial.
+##  (If <chi> is quasiprimitive then it is nonmonomial.)
 ##
 InstallMethod( TestMonomial,
-    "method for a character with group",
+    "for a character",
     true,
-    [ IsCharacter and IsClassFunctionWithGroup ], 0,
+    [ IsClassFunction ], 0,
     function( chi )
 
-    local G,         # group of 'chi'
+    local G,         # group of `chi'
           test,      # result record
-          t,         # character table of 'G'
-          nsg,       # list of normal subgroups of 'G'
-          ker,       # kernel of 'chi'
-          isqp,      # is 'chi' quasiprimitive
+          t,         # character table of `G'
+          nsg,       # list of normal subgroups of `G'
+          ker,       # kernel of `chi'
+          isqp,      # is `chi' quasiprimitive
           i,         # loop over normal subgroups
-          testhom,   # does 'chi' restrict homogeneously
+          testhom,   # does `chi' restrict homogeneously
           theta,     # constituent of the restriction
           found,     # monomial character found
           found2,    # monomial character found
-          T,         # inertia group of 'theta'
-          fus,       # fusion of conjugacy classes 'T' in 'G'
-          deg,       # degree of 'theta'
-          rest,      # restriction of 'chi' to 'T'
-          j,         # loop over irreducibles of 'T'
-          psi,       # character of 'T'
+          T,         # inertia group of `theta'
+          fus,       # fusion of conjugacy classes `T' in `G'
+          deg,       # degree of `theta'
+          rest,      # restriction of `chi' to `T'
+          j,         # loop over irreducibles of `T'
+          psi,       # character of `T'
           testmon,   # test for monomiality
-          orbits,    # orbits of irreducibles of 'T'
+          orbits,    # orbits of irreducibles of `T'
           poss;      # list of possibly nonmonomial characters
 
     Info( InfoMonomial, 1, "TestMonomial called" );
@@ -1307,12 +1321,13 @@ InstallMethod( TestMonomial,
 
       t:= CharacterTable( G );
 
-      # Loop over all normal subgroups of 'G' to that <chi> restricts
+      # Loop over all normal subgroups of `G' to that <chi> restricts
       # nonhomogeneously.
       # (If there are no such normal subgroups then <chi> is
       # quasiprimitive hence not monomial.)
-      ker:= KernelChar( ValuesOfClassFunction( chi ) );
-      nsg:= Filtered( NormalSubgroups( t ), x -> IsSubsetSet( x, ker ) );
+      ker:= ClassPositionsOfKernel( ValuesOfClassFunction( chi ) );
+      nsg:= Filtered( ClassPositionsOfNormalSubgroups( t ),
+                      x -> IsSubsetSet( x, ker ) );
       isqp:= true;
 
       i:= 1;
@@ -1325,7 +1340,7 @@ InstallMethod( TestMonomial,
 
           isqp:= false;
 
-          # Take a constituent 'theta' in a nonhomogeneous restriction.
+          # Take a constituent `theta' in a nonhomogeneous restriction.
           theta:= testhom.character;
 
           # We have $<chi>_N = e \sum_{i=1}^t \theta_i$.
@@ -1341,11 +1356,11 @@ InstallMethod( TestMonomial,
 
           else
 
-            # Compute the inertia group 'T'.
+            # Compute the inertia group `T'.
             T:= InertiaSubgroup( G, theta );
             if TestMonomialQuick( T ).isMonomial = true then
 
-              # 'chi' is induced from 'T', and 'T' is monomial.
+              # `chi' is induced from `T', and `T' is monomial.
               found:= true;
               test:= rec( isMonomial := true,
                           comment    := "induced from monomial subgroup",
@@ -1353,13 +1368,14 @@ InstallMethod( TestMonomial,
 
             else
 
-              # Check whether a character of 'T' from that <chi>
+              # Check whether a character of `T' from that <chi>
               # is induced can be proved to be monomial.
 
-              # First get all characters 'psi' of 'T'
+              # First get all characters `psi' of `T'
               # from that <chi> is induced.
               t:= Irr( T );
-              fus:= FusionConjugacyClasses( T, G );
+              fus:= FusionConjugacyClasses( OrdinaryCharacterTable( T ),
+                                            OrdinaryCharacterTable( G ) );
               deg:= DegreeOfCharacter( chi ) / Index( G, T );
               rest:= ValuesOfClassFunction( chi ){ fus };
               j:= 1;
@@ -1413,7 +1429,7 @@ InstallMethod( TestMonomial,
     fi;
 
     Info( InfoMonomial, 1,
-          "TestMonomial returns with '", test.isMonomial, "'" );
+          "TestMonomial returns with `", test.isMonomial, "'" );
     return test;
     end );
 
@@ -1422,8 +1438,13 @@ InstallMethod( TestMonomial,
 ##
 #M  TestMonomial( <G> ) . . . . . . . . . . . . . . . . . . . . . for a group
 ##
+##  Called with a group <G> the program checks whether all representatives
+##  of character orbits are monomial.
+##
+#T used e.g. by `Irr' for supersolvable groups, function `IrrConlon'!
+##
 InstallOtherMethod( TestMonomial,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( G )
@@ -1431,9 +1452,9 @@ InstallOtherMethod( TestMonomial,
     local test,      # result record
           found,     # monomial character found
           testmon,   # test for monomiality
-          j,         # loop over irreducibles of 'T'
-          psi,       # character of 'T'
-          orbits,    # orbits of irreducibles of 'T'
+          j,         # loop over irreducibles of `T'
+          psi,       # character of `T'
+          orbits,    # orbits of irreducibles of `T'
           poss;      # list of possibly nonmonomial characters
 
     Info( InfoMonomial, 1, "TestMonomial called for a group" );
@@ -1446,7 +1467,7 @@ InstallOtherMethod( TestMonomial,
       if Size( G ) mod 2 = 0 and ForAny( Delta( G ), x -> 1 < x ) then
 
         # For even order groups it is checked whether
-        # the list 'Delta( G )' contains an entry that is bigger
+        # the list `Delta( G )' contains an entry that is bigger
         # than one. (For monomial groups and for odd order groups
         # this is always less than one, according to Taketa\'s Theorem
         # and Berger\'s result).
@@ -1480,7 +1501,7 @@ InstallOtherMethod( TestMonomial,
 
         elif Length( poss ) = 0 then
 
-          # all checks answered 'true'
+          # all checks answered `true'
           test:= rec( isMonomial := true,
                       comment    := "all characters checked" );
 
@@ -1498,7 +1519,7 @@ InstallOtherMethod( TestMonomial,
 
     # Return the result.
     Info( InfoMonomial, 1,
-          "TestMonomial returns with '", test.isMonomial, "'" );
+          "TestMonomial returns with `", test.isMonomial, "'" );
     return test;
     end );
 
@@ -1508,322 +1529,367 @@ InstallOtherMethod( TestMonomial,
 #M  IsMonomialGroup( <G> ) . . . . . . . . . . . . . . . . . . .  for a group
 ##
 InstallMethod( IsMonomialGroup,
-    "method for a group",
+    "for a group",
     true, [ IsGroup ], 0,
     G -> TestMonomial( G ).isMonomial );
 
 
 #############################################################################
 ##
-#M  IsMonomialCharacter( <chi> ) . . . . . . . . . for a character with group
+#M  IsMonomialCharacter( <chi> )  . . . . . . . . . . . . . . for a character
 ##
 InstallMethod( IsMonomialCharacter,
-    "method for a character with group",
+    "for a character",
     true,
-    [ IsCharacter and IsClassFunctionWithGroup ], 0,
+    [ IsClassFunction ], 0,
     chi -> TestMonomial( chi ).isMonomial );
-
-
-#T #############################################################################
-#T ##
-#T #F  TestRelativelySM( <G> )
-#T #F  TestRelativelySM( <chi> )
-#T #F  TestRelativelySM( <G>, <N> )
-#T #F  TestRelativelySM( <chi>, <N> )
-#T ##
-#T ##  The algorithm for a character <chi> and a normal subgroup <N>
-#T ##  proceeds as follows.
-#T ##  If <N> is abelian or has nilpotent factor then <chi> is relatively SM
-#T ##  with respect to <N>.
-#T ##  Otherwise we check whether <chi> restricts irreducibly to <N>; in this
-#T ##  case we also get a positive answer.
-#T ##  Otherwise a subnormal subgroup from that <chi> is induced must be
-#T ##  contained in a maximal normal subgroup of <N>.  So we get all maximal
-#T ##  normal subgroups containing <N> from that <chi> can be induced, take a
-#T ##  character that induces to <chi>, and check recursively whether it is
-#T ##  relatively subnormally monomial with respect to <N>.
-#T ##
-#T ##  For a group $G$ we consider only representatives of character orbits.
-#T ##
-#T TestRelativelySM := function( arg )
-#T 
-#T     local test,      # result record
-#T           G,         # argument, group
-#T           chi,       # argument, character of 'G'
-#T           N,         # argument, normal subgroup of 'G'
-#T           n,         # classes in 'N'
-#T           t,         # character table of 'G'
-#T           nsg,       # list of normal subgroups of 'G'
-#T           newnsg,    # filtered list of normal subgroups
-#T           orbits,    # orbits on 't.irreducibles'
-#T           found,     # not relatively SM character found?
-#T           i,         # loop over 'nsg'
-#T           j,         # loop over characters
-#T           fus,       # fusion of conjugacy classes 'N' in 'G'
-#T           norm,      # norm of restriction of 'chi' to 'N'
-#T           isrelSM,   # is the constituent relatively SM?
-#T           check,     #
-#T           induced,   # is a subnormal subgroup found from where
-#T                      # the actual character can be induced?
-#T           k;         # loop over 'newnsg'
-#T 
-#T     # step 1:
-#T     # Check the arguments.
-#T     if     Length( arg ) < 1 or 2 < Length( arg )
-#T         or not ( IsGroup( arg[1] ) or IsCharacter( arg[1] ) ) then
-#T       Error( "first argument must be group or character" );
-#T     elif IsBound( arg[1].testRelativelySM ) then
-#T       return arg[1].testRelativelySM;
-#T #T Attribute ??
-#T     fi;
-#T 
-#T     if IsGroup( arg[1] ) then
-#T       G:= arg[1];
-#T       Info( InfoMonomial, 1,
-#T             "TestRelativelySM called with group ", GroupString( G, "G" ) );
-#T     elif IsCharacter( arg[1] ) then
-#T       G:= UnderlyingGroup( arg[1] );
-#T       chi:= ValuesOfClassFunction( arg[1] );
-#T       Info( InfoMonomial, 1,
-#T             "TestRelativelySM called with character ",
-#T             CharacterString( G ) );
-#T     fi;
-#T 
-#T     # step 2:
-#T     # Get the interesting normal subgroups.
-#T 
-#T     # We want to consider normal subgroups and factor groups.
-#T     # If this test  yields a solution we can avoid to compute
-#T     # the character table of 'G'.
-#T     # But if the character table of 'G' is already known we use it
-#T     # and store the factor groups.
-#T 
-#T     if   Length( arg ) = 1 then
-#T 
-#T       # If a normal subgroup <N> is abelian or has nilpotent factor group
-#T       # then <G> is relatively SM w.r. to <N>, so consider only the other
-#T       # normal subgroups.
-#T 
-#T       if IsBound( G.charTable ) then
-#T 
-#T         nsg:= NormalSubgroups( G.charTable );
-#T         newnsg:= [];
-#T         for n in nsg do
-#T           if not CharTableOps.IsNilpotentFactor( G.charTable, n ) then
-#T             N:= NormalSubgroupClasses( G, n );
-#T #T geht das?
-#T #T        if IsSubset( n, centre ) and
-#T             if not IsAbelian( N ) then
-#T               Add( newnsg, N );
-#T             fi;
-#T           fi;
-#T         od;
-#T         nsg:= newnsg;
-#T 
-#T       else
-#T 
-#T         nsg:= NormalSubgroups( G );
-#T         nsg:= Filtered( nsg, x -> not IsAbelian( x ) and
-#T                                   not IsNilpotent( G / x ) );
-#T 
-#T       fi;
-#T 
-#T     elif Length( arg ) = 2 then
-#T 
-#T       nsg:= [];
-#T 
-#T       if IsList( arg[2] ) then
-#T 
-#T         if not CharTableOps.IsNilpotentFactor( G.charTable, arg[2] ) then
-#T           N:= NormalSubgroupClasses( arg[2] );
-#T           if not IsAbelian( N ) then
-#T             nsg[1]:= N;
-#T           fi;
-#T         fi;
-#T 
-#T       elif IsGroup( arg[2] ) then
-#T 
-#T         N:= arg[2];
-#T         if not IsAbelian( N ) and not IsNilpotent( G / N ) then
-#T           nsg[1]:= N;
-#T         fi;
-#T 
-#T       else
-#T         Error( "second argument must be normal subgroup or classes list" );
-#T       fi;
-#T 
-#T     fi;
-#T 
-#T     # step 3:
-#T     # Test whether all characters are relatively SM for all interesting
-#T     # normal subgroups.
-#T 
-#T     if IsEmpty( nsg ) then
-#T 
-#T       test:= rec( isRelativelySM := true,
-#T                   comment        :=
-#T           "normal subgroups are abelian or have nilpotent factor group" );
-#T 
-#T     else
-#T 
-#T       t:= CharacterTable( G );
-#T       if IsGroup( arg[1] ) then
-#T 
-#T         # Compute representatives of orbits of characters.
-#T         orbits:= OrbitRepresentativesCharacters( Irr( t ) );
-#T         orbits:= orbits{ [ 2 .. Length( orbits ) ] };
-#T 
-#T       else
-#T         orbits:= [ chi ];
-#T       fi;
-#T 
-#T       # Loop over all normal subgroups in 'nsg' and all
-#T       # irreducible characters in 'orbits' until a not rel. SM
-#T       # character is found.
-#T       found:= false;
-#T       i:= 1;
-#T       while ( not found ) and i <= Length( nsg ) do
-#T 
-#T         N:= nsg[i];
-#T         j:= 1;
-#T         while ( not found ) and j <= Length( orbits ) do
-#T 
-#T #T use the kernel or centre here!!
-#T #T if N does not contain the centre of chi then we need not test?
-#T #T Isn't it sufficient to consider the factor modulo
-#T #T the product of 'N' and kernel of 'chi'?
-#T           chi:= orbits[j];
-#T 
-#T           # Is the restriction of 'chi' to 'N' irreducible?
-#T           # This means we can choose $H = G$.
-#T           n:= ClassesOfNormalSubgroup( G, N );
-#T           fus:= FusionConjugacyClasses( N, G );
-#T           norm:= Sum( n, c -> SizesConjugacyClasses( CharacterTable( G ) )[c] * chi[c]
-#T                                         * GaloisCyc( chi[c], -1 ), 0 );
-#T   
-#T           if norm = Size( N ) then
-#T 
-#T             test:= rec( isRelativelySM := true,
-#T                         comment        := "irreducible restriction",
-#T                         character      := CharacterByValues( G, chi ) );
-#T 
-#T           else
-#T 
-#T             # If there is a subnormal subgroup $H$ from where <chi> is
-#T             # induced then $H$ is contained in a maximal normal subgroup
-#T             # of $G$ that contains <N>.
-#T 
-#T             # So compute all maximal subgroups ...
-#T             newnsg:= MaximalNormalSubgroups( CharTable( G ) );
-#T 
-#T             # ... containing <N> ...
-#T             newnsg:= Filtered( newnsg, x -> IsSubsetSet( x, n ) );
-#T 
-#T             # ... from where <chi> possibly can be induced.
-#T             newnsg:= List( newnsg,
-#T                            x -> TestInducedFromNormalSubgroup(
-#T                                    CharacterByValues( G, chi ),
-#T                                    NormalSubgroupClasses( G, x ) ) );
-#T 
-#T             induced:= false;
-#T             k:= 1;
-#T             while not induced and k <= Length( newnsg ) do
-#T 
-#T               check:= newnsg[k];
-#T               if check.isInduced then
-#T 
-#T                 # check whether the constituent is relatively SM w.r. to <N>
-#T                 isrelSM:= TestRelativelySM( check.character, N );
-#T                 if isrelSM.isRelativelySM then
-#T                   induced:= true;
-#T                 fi;
-#T 
-#T               fi;
-#T               k:= k+1;
-#T 
-#T             od;
-#T 
-#T             if induced then
-#T               test:= rec( isRelativelySM := true,
-#T                           comment := "suitable character found"
-#T                          );
-#T               if IsBound( isrelSM.character ) then
-#T                 test.character:= isrelSM.character;
-#T               fi;
-#T             else
-#T               test:= rec( isRelativelySM := false,
-#T                           comment := "all possibilities checked" );
-#T             fi;
-#T 
-#T           fi;
-#T 
-#T           if not test.isRelativelySM then
-#T 
-#T             found:= true;
-#T             test.character:= chi;
-#T             test.normalSubgroup:= N;
-#T 
-#T           fi;
-#T 
-#T           j:= j+1;
-#T 
-#T         od;
-#T 
-#T         i:= i+1;
-#T 
-#T       od;
-#T 
-#T       if not found then
-#T 
-#T         # All characters are rel. SM w.r. to all normal subgroups.
-#T         test:= rec( isRelativelySM := true,
-#T                     comment        := "all possibilities checked" );
-#T       fi;
-#T 
-#T     fi;
-#T 
-#T     if Length( arg ) = 1 then
-#T 
-#T       # The result depends only on the group resp. character,
-#T       # we may store it.
-#T       arg[1].testRelativelySM:= test;
-#T 
-#T     fi;
-#T 
-#T     Info( InfoMonomial, 1, "TestRelativelySM returns with '", test, "'" );
-#T     return test;
-#T end;
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  IsRelativelySM( <chi> )
-#T #M  IsRelativelySM( <G> )
-#T ##
-#T IsRelativelySM := chi_or_G -> TestRelativelySM( chi_or_G ).isRelativelySM );
 
 
 #############################################################################
 ##
-#M  IsMinimalNonmonomial( <G> ) . . . . . . . . . . . . . . . . . for a group
+#A  TestRelativelySM( <G> )
+#A  TestRelativelySM( <chi> )
+#F  TestRelativelySM( <G>, <N> )
+#F  TestRelativelySM( <chi>, <N> )
+##
+##  The algorithm for a character <chi> and a normal subgroup <N>
+##  proceeds as follows.
+##  If <N> is abelian or has nilpotent factor then <chi> is relatively SM
+##  with respect to <N>.
+##  Otherwise we check whether <chi> restricts irreducibly to <N>; in this
+##  case we also get a positive answer.
+##  Otherwise a subnormal subgroup from that <chi> is induced must be
+##  contained in a maximal normal subgroup of <N>.  So we get all maximal
+##  normal subgroups containing <N> from that <chi> can be induced, take a
+##  character that induces to <chi>, and check recursively whether it is
+##  relatively subnormally monomial with respect to <N>.
+##
+##  For a group $G$ we consider only representatives of character orbits.
+##
+BindGlobal( "TestRelativelySMFun", function( arg )
+
+    local test,      # result record
+          G,         # argument, group
+          chi,       # argument, character of `G'
+          N,         # argument, normal subgroup of `G'
+          n,         # classes in `N'
+          t,         # character table of `G'
+          nsg,       # list of normal subgroups of `G'
+          newnsg,    # filtered list of normal subgroups
+          orbits,    # orbits on `t.irreducibles'
+          found,     # not relatively SM character found?
+          i,         # loop over `nsg'
+          j,         # loop over characters
+          fus,       # fusion of conjugacy classes `N' in `G'
+          norm,      # norm of restriction of `chi' to `N'
+          isrelSM,   # is the constituent relatively SM?
+          check,     #
+          induced,   # is a subnormal subgroup found from where
+                     # the actual character can be induced?
+          k;         # loop over `newnsg'
+
+    # step 1:
+    # Check the arguments.
+    if     Length( arg ) < 1 or 2 < Length( arg )
+        or not ( IsGroup( arg[1] ) or IsCharacter( arg[1] ) ) then
+      Error( "first argument must be a group or a character" );
+    elif HasTestRelativelySM( arg[1] ) then
+      return TestRelativelySM( arg[1] );
+    fi;
+
+    if IsGroup( arg[1] ) then
+      G:= arg[1];
+      Info( InfoMonomial, 1,
+            "TestRelativelySM called with group ", GroupString( G, "G" ) );
+    elif IsCharacter( arg[1] ) then
+      G:= UnderlyingGroup( arg[1] );
+      chi:= ValuesOfClassFunction( arg[1] );
+      Info( InfoMonomial, 1,
+            "TestRelativelySM called with character ",
+            CharacterString( arg[1], "chi" ) );
+    fi;
+
+    # step 2:
+    # Get the interesting normal subgroups.
+
+    # We want to consider normal subgroups and factor groups.
+    # If this test  yields a solution we can avoid to compute
+    # the character table of `G'.
+    # But if the character table of `G' is already known we use it
+    # and store the factor groups.
+
+    if   Length( arg ) = 1 then
+
+      # If a normal subgroup <N> is abelian or has nilpotent factor group
+      # then <G> is relatively SM w.r. to <N>, so consider only the other
+      # normal subgroups.
+
+      if HasOrdinaryCharacterTable( G ) then
+
+        nsg:= ClassPositionsOfNormalSubgroups( CharacterTable( G ) );
+        newnsg:= [];
+        for n in nsg do
+          if not CharacterTable_IsNilpotentFactor( CharacterTable( G ),
+                     n ) then
+            N:= NormalSubgroupClasses( CharacterTable( G ), n );
+#T geht das?
+#T        if IsSubset( n, centre ) and
+            if not IsAbelian( N ) then
+              Add( newnsg, N );
+            fi;
+          fi;
+        od;
+        nsg:= newnsg;
+
+      else
+
+        nsg:= NormalSubgroups( G );
+        nsg:= Filtered( nsg, x -> not IsAbelian( x ) and
+                                  not IsNilpotentGroup( G / x ) );
+
+      fi;
+
+    elif Length( arg ) = 2 then
+
+      nsg:= [];
+
+      if IsList( arg[2] ) then
+
+        if not CharacterTable_IsNilpotentFactor( CharacterTable( G ),
+                   arg[2] ) then
+          N:= NormalSubgroupClasses( CharacterTable( G ), arg[2] );
+          if not IsAbelian( N ) then
+            nsg[1]:= N;
+          fi;
+        fi;
+
+      elif IsGroup( arg[2] ) then
+
+        N:= arg[2];
+        if not IsAbelian( N ) and not IsNilpotentGroup( G / N ) then
+          nsg[1]:= N;
+        fi;
+
+      else
+        Error( "second argument must be normal subgroup or classes list" );
+      fi;
+
+    fi;
+
+    # step 3:
+    # Test whether all characters are relatively SM for all interesting
+    # normal subgroups.
+
+    if IsEmpty( nsg ) then
+
+      test:= rec( isRelativelySM := true,
+                  comment        :=
+          "normal subgroups are abelian or have nilpotent factor group" );
+
+    else
+
+      t:= CharacterTable( G );
+      if IsGroup( arg[1] ) then
+
+        # Compute representatives of orbits of characters.
+        orbits:= OrbitRepresentativesCharacters( Irr( t ) );
+        orbits:= orbits{ [ 2 .. Length( orbits ) ] };
+
+      else
+        orbits:= [ chi ];
+      fi;
+
+      # Loop over all normal subgroups in `nsg' and all
+      # irreducible characters in `orbits' until a not rel. SM
+      # character is found.
+      found:= false;
+      i:= 1;
+      while ( not found ) and i <= Length( nsg ) do
+
+        N:= nsg[i];
+        j:= 1;
+        while ( not found ) and j <= Length( orbits ) do
+
+#T use the kernel or centre here!!
+#T if N does not contain the centre of chi then we need not test?
+#T Isn't it sufficient to consider the factor modulo
+#T the product of `N' and kernel of `chi'?
+          chi:= orbits[j];
+
+          # Is the restriction of `chi' to `N' irreducible?
+          # This means we can choose $H = G$.
+          n:= ClassPositionsOfNormalSubgroup( OrdinaryCharacterTable( G ),
+                                              N );
+          fus:= FusionConjugacyClasses( OrdinaryCharacterTable( N ),
+                                        OrdinaryCharacterTable( G ) );
+          norm:= Sum( n,
+              c -> SizesConjugacyClasses( CharacterTable( G ) )[c] * chi[c]
+                   * GaloisCyc( chi[c], -1 ), 0 );
+
+          if norm = Size( N ) then
+
+            test:= rec( isRelativelySM := true,
+                        comment        := "irreducible restriction",
+                        character      := Character( G, chi ) );
+
+          else
+
+            # If there is a subnormal subgroup $H$ from where <chi> is
+            # induced then $H$ is contained in a maximal normal subgroup
+            # of $G$ that contains <N>.
+
+            # So compute all maximal subgroups ...
+            newnsg:= ClassPositionsOfMaximalNormalSubgroups(
+                         CharacterTable( G ) );
+
+            # ... containing <N> ...
+            newnsg:= Filtered( newnsg, x -> IsSubsetSet( x, n ) );
+
+            # ... from where <chi> possibly can be induced.
+            newnsg:= List( newnsg,
+                           x -> TestInducedFromNormalSubgroup(
+                                 Character( G, chi ),
+                                 NormalSubgroupClasses( CharacterTable( G ),
+                                                        x ) ) );
+
+            induced:= false;
+            k:= 1;
+            while not induced and k <= Length( newnsg ) do
+
+              check:= newnsg[k];
+              if check.isInduced then
+
+                # check whether the constituent is relatively SM w.r. to <N>
+                isrelSM:= TestRelativelySM( check.character, N );
+                if isrelSM.isRelativelySM then
+                  induced:= true;
+                fi;
+
+              fi;
+              k:= k+1;
+
+            od;
+
+            if induced then
+              test:= rec( isRelativelySM := true,
+                          comment := "suitable character found"
+                         );
+              if IsBound( isrelSM.character ) then
+                test.character:= isrelSM.character;
+              fi;
+            else
+              test:= rec( isRelativelySM := false,
+                          comment := "all possibilities checked" );
+            fi;
+
+          fi;
+
+          if not test.isRelativelySM then
+
+            found:= true;
+            test.character:= chi;
+            test.normalSubgroup:= N;
+
+          fi;
+
+          j:= j+1;
+
+        od;
+
+        i:= i+1;
+
+      od;
+
+      if not found then
+
+        # All characters are rel. SM w.r. to all normal subgroups.
+        test:= rec( isRelativelySM := true,
+                    comment        := "all possibilities checked" );
+      fi;
+
+    fi;
+
+    Info( InfoMonomial, 1, "TestRelativelySM returns with `", test, "'" );
+    return test;
+end );
+
+InstallMethod( TestRelativelySM,
+    "for a character",
+    true,
+    [ IsClassFunction ], 0,
+    TestRelativelySMFun );
+
+InstallOtherMethod( TestRelativelySM,
+    "for a group",
+    true,
+    [ IsGroup ], 0,
+    TestRelativelySMFun );
+
+InstallOtherMethod( TestRelativelySM,
+    "for a character, and an object",
+    true,
+    [ IsClassFunction, IsObject ], 0,
+    TestRelativelySMFun );
+
+InstallOtherMethod( TestRelativelySM,
+    "for a group, and an object",
+    true,
+    [ IsGroup, IsObject ], 0,
+    TestRelativelySMFun );
+
+
+#############################################################################
+##
+#M  IsRelativelySM( <chi> )
+#M  IsRelativelySM( <G> )
+##
+InstallMethod( IsRelativelySM,
+    "for a character",
+    true,
+    [ IsClassFunction ], 0,
+    chi -> TestRelativelySM( chi ).isRelativelySM );
+
+InstallOtherMethod( IsRelativelySM,
+    "for a group",
+    true,
+    [ IsGroup ], 0,
+    G -> TestRelativelySM( G ).isRelativelySM );
+
+
+#############################################################################
+##
+##  4. Minimal Nonmonomial Groups
+##
+
+
+#############################################################################
+##
+#M  IsMinimalNonmonomial( <G> ) . . . . . . . . . . .  for a (solvable) group
+##
+##  We use the classification by van der Waall.
 ##
 InstallMethod( IsMinimalNonmonomial,
-    "method for a group",
+    "for a (solvable) group",
     true,
     [ IsGroup ], 0,
     function( K )
 
     local F,          # Fitting subgroup
-          factsize,   # index of 'F' in 'K'
-          facts,      # prime factorization of the order of 'F'
-          p,          # prime dividing the order of 'F'
-          m,          # 'F' is of order $p ^ m $
+          factsize,   # index of `F' in `K'
+          facts,      # prime factorization of the order of `F'
+          p,          # prime dividing the order of `F'
+          m,          # `F' is of order $p ^ m $
           syl,        # Sylow subgroup
-          sylgen,     # one generator of 'syl'
+          sylgen,     # one generator of `syl'
           gens,       # generators list
-          C,          # centre of 'K' in dihedral case
+          C,          # centre of `K' in dihedral case
           fc,         # element in $F C$
-          q;          # half of 'factsize' in dihedral case
+          q;          # half of `factsize' in dihedral case
+
+    # Check whether `K' is solvable.
+    if not IsSolvableGroup( K ) then
+      TryNextMethod();
+    fi;
 
     # Compute the Fitting factor of the group.
     F:= FittingSubgroup( K );
@@ -2037,7 +2103,7 @@ InstallMethod( IsMinimalNonmonomial,
 
     # None of the structure conditions is satisfied.
     return false;
-    end );
+end );
 
 
 #############################################################################
@@ -2047,24 +2113,24 @@ InstallMethod( IsMinimalNonmonomial,
 InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
 
     local K,          # free group
-          Kgens,      # free generators of 'K'
-          rels,       # relators of 'K'
-          name,       # name of 'K'
+          Kgens,      # free generators of `K'
+          rels,       # relators of `K'
+          name,       # name of `K'
           t,          # number with suitable multiplicative order
           form,       # matrix of the commutator form
           x,          # indeterminate
-          val,        # one entry in 'form'
+          val,        # one entry in `form'
           i,          # loop
           j,          # loop
           v,          # coefficient vector
           rhs,        # right hand side of a relator when viewed as relation
-          q,          # another name for 'factsize'
+          q,          # another name for `factsize'
           2m,         # exponent of size of Frattini factor of group $F$
-          m,          # half of '2m'
+          m,          # half of `2m'
           facts,      # factors of cylotomic polynomial
-          coeff,      # coefficients vector of one factor in 'facts'
-          inv,        # inverse of first in 'coeff'
-          f,          # 'GF(2)'
+          coeff,      # coefficients vector of one factor in `facts'
+          inv,        # inverse of first in `coeff'
+          f,          # `GF(2)'
           s,          # exponent of centre (minus 1) in dihedral case
           W,          # part of matrix of an order 2 automorphism
           Winv,       # part of matrix of an order 2 automorphism
@@ -2149,13 +2215,13 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
 
       m:= 2m / 2;
 
-      # The 'q'-th cyclotomic polynomial splits over the field with
-      # 'p' elements into factors of degree '2*m'.
+      # The `q'-th cyclotomic polynomial splits over the field with
+      # `p' elements into factors of degree `2*m'.
       facts:= Factors( CyclotomicPolynomial( GF(p), q ) );
 
       # Take the coefficients i$a_1, a_2, \ldots, a_{2m}, 1$ of a factor.
       coeff:= IntVecFFE(
-          - CoefficientsOfUnivariateLaurentPolynomial( facts[1] )[1] );
+          - CoefficientsOfLaurentPolynomial( facts[1] )[1] );
 
       # Compute the vector $\epsilon$.
       v:= [];
@@ -2281,9 +2347,9 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
       # the sign plays no role here.)
       f:= GF(2);
       facts:= Factors( CyclotomicPolynomial( f, q ) );
-      coeff:= CoefficientsOfUnivariateLaurentPolynomial( facts[1] )[1];
+      coeff:= CoefficientsOfLaurentPolynomial( facts[1] )[1];
 
-      Atr:= MutableNullMat( m, m, f );
+      Atr:= NullMat( m, m, f );
       for i in [ 1 .. m-1 ] do
         Atr[i+1][i]:= One( f );
       od;
@@ -2306,7 +2372,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
       Winv  := List( Winv, IntVecFFE );
       coeff := IntVecFFE( coeff );
 
-      # The action of $t$ is described by 'W' and its inverse.
+      # The action of $t$ is described by `W' and its inverse.
       for i in [ s+3 .. s+m+2 ] do
         rhs:= One( K );
         for j in [ 1 .. m ] do
@@ -2359,7 +2425,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
       fi;
 
       facts:= Factors( CyclotomicPolynomial( GF(p), t ) );
-      coeff:= CoefficientsOfUnivariateLaurentPolynomial( facts[1] )[1];
+      coeff:= CoefficientsOfLaurentPolynomial( facts[1] )[1];
       inv:= Int( coeff[1]^-1 );
       coeff:= IntVecFFE( coeff );
 
@@ -2382,7 +2448,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
       form[1][1]:= -1;
       x:= Indeterminate( GF(p) );
       for i in [ 2 .. m ] do
-        val:= CoefficientsOfUnivariateLaurentPolynomial(
+        val:= CoefficientsOfLaurentPolynomial(
                   x^(i+m-2) mod facts[1] );
         val:= - Int( ShiftedCoeffs( val[1], val[2] )[1] );
         for j in [ i .. m ] do
@@ -2458,7 +2524,5 @@ end );
 
 #############################################################################
 ##
-#E  ctblmono.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

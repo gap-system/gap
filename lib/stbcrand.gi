@@ -97,7 +97,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
     #param[6] = minimum number of random points from orbit to plug in to check
     #           whether given word is identity on orbit
 
-    degree := LargestMovedPointPerms( S.generators );
+    degree := LargestMovedPoint( S.generators );
 
     # prepare input of construction
     if IsBound(options.base)  then
@@ -1317,10 +1317,9 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
        leader,    # first point in orbit of temp2
        block,     # block containing leader
        point,     # another point from block
-       ll,        # length of cycle of leader under newgen
        pos;       # position of set in blks
 
- n := LargestMovedPointPerms(S.generators);
+ n := LargestMovedPoint(S.generators);
  list := ListStabChain(S); 
  len := Length(list); 
  result := ();
@@ -1526,7 +1525,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
 #param[6] = minimum number of random points from orbit to plug in to check 
 #           whether given word is identity on orbit
 
-        degree := LargestMovedPointPerms( Union( G.generators, gens ) );
+        degree := LargestMovedPoint( Union( G.generators, gens ) );
 
         # prepare input of construction
         if IsBound(options.base) then 

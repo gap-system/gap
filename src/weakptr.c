@@ -365,7 +365,9 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 void MarkWeakPointerObj( Obj wp) 
 {
   Int i;
-  for (i = 1; i <= LengthWPObj(wp); i++)
+  /* can't use the stored length here, in case we
+     are in the middle of copying */
+  for (i = 1; i <= (SIZE_BAG(wp)/sizeof(Obj))-1; i++)
     MarkBagWeakly(ELM_WPOBJ(wp,i));
 }
 
@@ -435,6 +437,27 @@ Obj CopyObjWPObj (
     return copy;
 }
 
+/****************************************************************************
+**
+*F  MakeImmutableWPObj( <obj> ) . . . . . . . . . . make immutable in place
+**
+*/
+
+void MakeImmutableWPObj( Obj obj )
+{
+  UInt i;
+  Obj elm;
+  
+  /* remove any weak dead bags */
+  for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++)
+    {
+      elm = ELM_WPOBJ(obj,i);
+      if (elm != 0 && IS_WEAK_DEAD_BAG(elm)) 
+	ELM_WPOBJ(obj,i) = 0;
+    }
+  /* Change the type */
+  RetypeBag( obj, T_PLIST+IMMUTABLE);
+}
 
 /****************************************************************************
 **
@@ -616,6 +639,7 @@ static Int InitKernel (
     CleanObjFuncs[ T_WPOBJ           ] = CleanObjWPObj;
     CleanObjFuncs[ T_WPOBJ + COPYING ] = CleanObjWPObjCopy;
 
+    MakeImmutableObjFuncs[ T_WPOBJ ] = MakeImmutableWPObj;
     /* return success                                                      */
     return 0;
 }

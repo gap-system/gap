@@ -12,25 +12,30 @@ Revision.grpreps_gd :=
 ##
 #O  AbsolutIrreducibleModules( <G>, <F>, <dim> )
 ##
-DeclareOperation( 
-     "AbsolutIrreducibleModules",
-     [ IsGroup, IsField, IsInt ] );
+##  returns a list of length 2. The first entry is a generating system of
+##  <G>. The second entry is a list of all absolute irreducible modules of
+##  <G> over the field <F> in dimension <dim>, given as MeatAxe modules
+##  (see~"GModuleByMats").
+DeclareOperation( "AbsolutIrreducibleModules", [ IsGroup, IsField, IsInt ] );
 
 #############################################################################
 ##
 #O  IrreducibleModules( <G>, <F>, <dim> )
 ##
-DeclareOperation( 
-     "IrreducibleModules",
-     [ IsGroup, IsField, IsInt ] );
+##  returns a list of length 2. The first entry is a generating system of
+##  <G>. The second entry is a list of all irreducible modules of
+##  <G> over the field <F> in dimension <dim>, given as MeatAxe modules
+##  (see~"GModuleByMats").
+DeclareOperation( "IrreducibleModules", [ IsGroup, IsField, IsInt ] );
 
 #############################################################################
 ##
 #O  RegularModule( <G>, <F> )
 ##
-DeclareOperation( 
-     "RegularModule",
-     [ IsGroup, IsField ] );
+##  returns a list of length 2. The first entry is a generating system of
+##  <G>. The second entry is the regular module of <G> over <F>, given as a
+##  MeatAxe modules (see~"GModuleByMats").
+DeclareOperation( "RegularModule", [ IsGroup, IsField ] );
 
 #############################################################################
 DeclareGlobalFunction( "RegularModuleByGens" );

@@ -1,0 +1,119 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  rws.msk                GAP documentation                Andrew Solomon
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Rewriting Systems}
+
+Rewriting systems in {\GAP} are a framework for dealing with 
+the very general task of rewriting elements of a free (or *term*) algebra
+in some normal form.  Although most rewriting systems currently in use
+are *string rewriting systems* (where the algebra has only one 
+binary operation which is associative) the framework in {\GAP}
+is general enough to encompass the task of rewriting algebras of
+any signature from groups to semirings.
+
+Rewriting systems are already implemented in  {\GAP} 
+for finitely presented semigroups and for pc groups. The use of these 
+particular rewriting systems is described in the corresponding chapters.
+We describe here only the general framework of rewriting systems with 
+a particular emphasis on material which would be 
+helpful for a  developer implementing a rewriting system. 
+
+We fix some definitions and terminology for the rest of this chapter.
+Let <T> be a term algebra in some signature. 
+A *term rewriting system* for <T> is a set of ordered pairs of 
+elements of <T> of the form <(l, r)>. Viewed as a set of relations, the 
+rewriting system determines a presentation for a quotient algebra <A> of <T>. 
+
+When we take into account the fact that
+the relations are expressed as *ordered* pairs, we have a way of 
+*reducing* the elements of <T>. Suppose an element <u> of <T> has a 
+subword <l> and <(l,r)> is a rule of the rewriting system, then
+we can replace the subterm <l> of <u> by the term <r> and obtain a new 
+word <v>. We say that we have *rewritten* <u> as <v>. 
+Note that <u> and <v> represent the same 
+element of <A>.
+If <u> can not be rewritten using any rule of the rewriting system
+we sat that <u> is *reduced*. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations on rewriting systems}
+
+\Declaration{IsRewritingSystem}
+
+\Declaration{Rules}
+
+\Declaration{OrderOfRewritingSystem}
+
+\Declaration{ReducedForm}
+
+\Declaration{IsConfluent}
+
+\Declaration{ConfluentRws}
+
+\Declaration{IsReduced}
+
+\Declaration{ReduceRules}
+
+\Declaration{AddRule}
+
+\Declaration{AddRuleReduced}
+
+\Declaration{MakeConfluent}
+
+% Don't know what to make of these.
+\Declaration{GeneratorsOfRws}
+
+\Declaration{AddGenerators}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations on elements of the algebra}
+
+In this section let <u> denote an element of the term algebra
+<T> representing <[u]> in  the quotient algebra <A>.
+
+\Declaration{ReducedProduct}
+
+The remaining operations are defined similarly when they 
+are defined (as determined by the  signature  of the term algebra).
+\Declaration{ReducedSum}
+\Declaration{ReducedOne}
+\Declaration{ReducedAdditiveInverse}
+\Declaration{ReducedComm}
+\Declaration{ReducedConjugate}
+\Declaration{ReducedDifference}
+\Declaration{ReducedInverse}
+\Declaration{ReducedLeftQuotient}
+\Declaration{ReducedPower}
+\Declaration{ReducedQuotient}
+\Declaration{ReducedScalarProduct}
+\Declaration{ReducedZero}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties of rewriting systems}
+
+The following properties may be used to identify the 
+type of term algebra over which the rewriting system is defined.
+
+\Declaration{IsBuiltFromAdditiveMagmaWithInverses}
+\Declaration{IsBuiltFromMagma}
+\Declaration{IsBuiltFromMagmaWithOne}
+\Declaration{IsBuiltFromMagmaWithInverses}
+\Declaration{IsBuiltFromSemigroup}
+\Declaration{IsBuiltFromGroup}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Developing rewriting systems}
+
+\FileHeader{rws}[2]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

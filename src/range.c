@@ -961,8 +961,8 @@ Int             IsRange (
         isRange = 1;
     }
 
-    /* if <list> is not a list, it is not a range                        */
-    else if ( ! IS_LIST( list ) ) {
+    /* if <list> is not a list, it is not a range at the moment        */
+    else if ( ! IS_SMALL_LIST( list ) ) {
         isRange = 0;
     }
 
@@ -1201,6 +1201,18 @@ Obj FuncIS_RANGE_REP (
     return (IS_RANGE( obj ) ? True : False);
 }
 
+/****************************************************************************
+**
+*F  MakeImmutableRange( <range> )
+**
+*/
+
+void MakeImmutableRange( Obj range )
+{
+  RetypeBag( range, IMMUTABLE_TNUM(TNUM_OBJ(range)));
+}
+
+
 
 /****************************************************************************
 **
@@ -1254,6 +1266,7 @@ static Int HasFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_HOMOG,    1,
     T_RANGE_NSORT,              FN_IS_NHOMOG,   0,
     T_RANGE_NSORT,              FN_IS_TABLE,    0,
+    T_RANGE_NSORT,              FN_IS_RECT,    0,
     T_RANGE_NSORT,              FN_IS_SSORT,    0,
     T_RANGE_NSORT,              FN_IS_NSORT,    1,
 
@@ -1265,6 +1278,7 @@ static Int HasFiltTab [] = {
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    1,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   0,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    0,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_RECT,    0,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    0,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    1,
 
@@ -1276,6 +1290,7 @@ static Int HasFiltTab [] = {
     T_RANGE_SSORT,              FN_IS_HOMOG,    1,
     T_RANGE_SSORT,              FN_IS_NHOMOG,   0,
     T_RANGE_SSORT,              FN_IS_TABLE,    0,
+    T_RANGE_SSORT,              FN_IS_RECT,    0,
     T_RANGE_SSORT,              FN_IS_SSORT,    1,
     T_RANGE_SSORT,              FN_IS_NSORT,    0,
 
@@ -1287,6 +1302,7 @@ static Int HasFiltTab [] = {
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    1,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   0,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    0,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_RECT,    0,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    1,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    0,
 
@@ -1308,6 +1324,7 @@ static Int SetFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_HOMOG,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NHOMOG,   -1,
     T_RANGE_NSORT,              FN_IS_TABLE,    -1,
+    T_RANGE_NSORT,              FN_IS_RECT,    -1,
     T_RANGE_NSORT,              FN_IS_SSORT,    -1,
     T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
 
@@ -1319,6 +1336,7 @@ static Int SetFiltTab [] = {
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   -1,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    -1,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_RECT,    -1,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    -1,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_NSORT+IMMUTABLE,
 
@@ -1330,6 +1348,7 @@ static Int SetFiltTab [] = {
     T_RANGE_SSORT,              FN_IS_HOMOG,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NHOMOG,   -1,
     T_RANGE_SSORT,              FN_IS_TABLE,    -1,
+    T_RANGE_SSORT,              FN_IS_RECT,    -1,
     T_RANGE_SSORT,              FN_IS_SSORT,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NSORT,    -1,
 
@@ -1341,6 +1360,7 @@ static Int SetFiltTab [] = {
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   -1,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    -1,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_RECT,    -1,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    -1,
 
@@ -1364,6 +1384,7 @@ static Int ResetFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_HOMOG,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NHOMOG,   T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_TABLE,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_RECT,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_SSORT,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
 
@@ -1375,6 +1396,7 @@ static Int ResetFiltTab [] = {
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_RECT,    T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_NSORT+IMMUTABLE,
 
@@ -1386,6 +1408,7 @@ static Int ResetFiltTab [] = {
     T_RANGE_SSORT,              FN_IS_HOMOG,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NHOMOG,   T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_TABLE,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_RECT,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_SSORT,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NSORT,    T_RANGE_SSORT,
 
@@ -1397,6 +1420,7 @@ static Int ResetFiltTab [] = {
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_RECT,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    T_BLIST_SSORT+IMMUTABLE,
 
@@ -1494,6 +1518,10 @@ static Int InitKernel (
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = CleanRange;
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
 
+    /* Make immutable methods */
+    MakeImmutableObjFuncs[ T_RANGE_NSORT ] = MakeImmutableRange;
+    MakeImmutableObjFuncs[ T_RANGE_SSORT ] = MakeImmutableRange;
+    
     /* install the print method                                            */
     PrintObjFuncs[ T_RANGE_NSORT            ] = PrintRange;
     PrintObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = PrintRange;

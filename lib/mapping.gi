@@ -62,7 +62,14 @@ InstallGlobalFunction( GeneralMappingsFamily, function( FS, FR )
     od;
 
     # Construct the family.
-    Fam:= NewFamily( "GeneralMappingsFamily", IsGeneralMapping );
+    if CanEasilyCompareElementsFamily(FR) 
+       and CanEasilyCompareElementsFamily(FS) then
+      Fam:= NewFamily( "GeneralMappingsFamily", IsGeneralMapping ,
+                       CanEasilyCompareElements,
+                       CanEasilyCompareElements);
+    else
+      Fam:= NewFamily( "GeneralMappingsFamily", IsGeneralMapping );
+    fi;
     SetFamilyRange(  Fam, FR );
     SetFamilySource( Fam, FS );
 
@@ -179,15 +186,23 @@ InstallGlobalFunction( Image, function ( arg )
            and IsSubset( Source( map ), elm ) then
 
         if IsDomain( elm ) or IsSSortedList( elm ) then
-          return ImagesSet( map, elm );
+	  if HasSource(map) and IsIdenticalObj(Source(map),elm) then
+	    return ImagesSource( map );
+	  else
+	    return ImagesSet( map, elm );
+	  fi;
         elif IsHomogeneousList( elm ) then
           return ImagesSet( map, Set( elm ) );
         fi;
 
-      fi;
+      # image of the empty list
+      elif IsList( elm ) and IsEmpty( elm ) then
 
+        return [];
+
+      fi;
     fi;
-    Error( "usage: Image(<map>), Image(<map>,<elm>), Image(<map>,<coll>" );
+    Error( "usage: Image(<map>), Image(<map>,<elm>), Image(<map>,<coll>)" );
 end );
 
 
@@ -232,6 +247,11 @@ InstallGlobalFunction( Images, function ( arg )
             return ImagesSet( map, Set( elm ) );
           fi;
 
+        # image of the empty list
+        elif IsList( elm ) and IsEmpty( elm ) then
+
+          return [];
+
         fi;
     fi;
     Error("usage: Images(<map>), Images(<map>,<elm>), Images(<map>,<coll>)");
@@ -247,8 +267,7 @@ end );
 InstallGlobalFunction( PreImage, function ( arg )
 
     local   map,        # gen. mapping <map>, first argument
-            img,        # element <img>, second argument
-            pre;        # preimage of <img> under <map>, result
+            img;        # element <img>, second argument
 
     # preimage of the range under <map>, which may be a general mapping
     if Length( arg ) = 1  then
@@ -273,11 +292,16 @@ InstallGlobalFunction( PreImage, function ( arg )
         elif     CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) )
              and IsSubset( Range( map ), img ) then
 
-          if IsDomain( img ) or IsSSortedList( map ) then
+          if IsDomain( img ) or IsSSortedList( img ) then
             return PreImagesSet( map, img );
           elif IsHomogeneousList( img ) then
             return PreImagesSet( map, Set( img ) );
           fi;
+
+        # preimage of the empty list
+        elif IsList( img ) and IsEmpty( img ) then
+
+          return [];
 
         fi;
     fi;
@@ -321,11 +345,16 @@ InstallGlobalFunction( PreImages, function ( arg )
         elif     CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) )
              and IsSubset( Range( map ), img ) then
 
-          if IsDomain( img ) or IsSSortedList( map ) then
+          if IsDomain( img ) or IsSSortedList( img ) then
             return PreImagesSet( map, img );
           elif IsHomogeneousList( img ) then
             return PreImagesSet( map, Set( img ) );
           fi;
+
+        # preimage of the empty list
+        elif IsList( img ) and IsEmpty( img ) then
+
+          return [];
 
         fi;
     fi;
@@ -375,7 +404,11 @@ InstallGlobalFunction( CompositionMapping, function ( arg )
         # Compute the composition.
         new := CompositionMapping2( nxt, com );
 
-        # Maintain properties (cheap tests only).
+        # Maintain properties
+        # (Do only *cheap* tests, otherwise one could attempt to check
+        # `IsSubset( Source( nxt ), ImagesSource( com ) )' in the case
+        # of `IsTotal', and to check in the case of `IsSurjective' whether
+        # `IsSubset( Range( com ), PreImagesRange( nxt ) )' holds.)
         if     HasIsSingleValued( com ) and IsSingleValued( com )
            and HasIsSingleValued( nxt ) and IsSingleValued( nxt ) then
           SetIsSingleValued( new, true );
@@ -384,16 +417,26 @@ InstallGlobalFunction( CompositionMapping, function ( arg )
            and HasIsInjective( nxt ) and IsInjective( nxt ) then
           SetIsInjective( new, true );
         fi;
-        if     IsIdenticalObj( Source( nxt ), Range( com ) ) then
+
+        if     HasIsTotal( com ) and IsTotal( com )
+           and HasIsTotal( nxt ) and IsTotal( nxt ) 
+	   and ((HasImagesSource(com) and
+	   CanComputeIsSubset(Source(nxt),ImagesSource(com)) and
+	   IsSubset(Source(nxt),ImagesSource(com)))
+	   or (HasRange(com) and
+	   CanComputeIsSubset(Source(nxt),Range(com)) and
+	   IsSubset(Source(nxt),Range(com))) ) then
+          SetIsTotal( new, true );
+        fi;
+
+        if  HasRange(com) and  IsIdenticalObj(Source(nxt),Range(com)) then
           if     HasIsTotal( com ) and IsTotal( com )
              and HasIsTotal( nxt ) and IsTotal( nxt ) then
             SetIsTotal( new, true );
-#T it would be sufficient to have `IsSubset( Source( nxt ), ImagesSource( com ) )'
           fi;
           if     HasIsSurjective( com ) and IsSurjective( com )
              and HasIsSurjective( nxt ) and IsSurjective( nxt ) then
             SetIsSurjective( new, true );
-#T it would be sufficient to have `IsSubset( Range( com ), PreImagesRange( nxt ) )'
           fi;
         fi;
 
@@ -451,7 +494,11 @@ InstallGlobalFunction( CompositionMapping, function ( arg )
 
     od;
 
-    # return the composition
+    if IsIdenticalObj( Source( com ), Range( com ) ) then
+      SetIsEndoGeneralMapping( com, true );
+    fi;
+
+    # Return the composition.
     return com;
 end );
 
@@ -742,13 +789,11 @@ InstallOtherMethod( \+,
 ##
 #M  \*( <map1>, <map2> )  . . . . . . . . . . . . .  for two general mappings
 ##
-InstallMethod( \*,
-    "for two general mappings",
-    FamSource2EqFamRange1,
+InstallMethod( \*, "for two general mappings", FamSource2EqFamRange1,
     [ IsGeneralMapping, IsGeneralMapping ], 0,
-    function( map1, map2 )
-    return CompositionMapping( map2, map1 );
-    end );
+function( map1, map2 )
+  return CompositionMapping( map2, map1 );
+end );
 
 
 #############################################################################
@@ -782,9 +827,9 @@ InstallOtherMethod( \^,
 
 #############################################################################
 ##
-#M  One( <map> )  . . . . . . . . . . . . . . . . . . . . .  identity mapping
+#M  OneOp( <map> )  . . . . . . . . . . . . . . . . . . . .  identity mapping
 ##
-InstallOtherMethod( One,
+InstallOtherMethod( OneOp,
     "for a general mapping",
     true,
     [ IsGeneralMapping ], 0,
@@ -799,9 +844,9 @@ InstallOtherMethod( One,
 
 #############################################################################
 ##
-#M  Zero( <map> ) . . . . . . . . . . . . . . . . . . . . . . .  zero mapping
+#M  ZeroOp( <map> ) . . . . . . . . . . . . . . . . . . . . . .  zero mapping
 ##
-InstallOtherMethod( Zero,
+InstallOtherMethod( ZeroOp,
     "for a general mapping",
     true,
     [ IsGeneralMapping ], 0,
@@ -810,9 +855,9 @@ InstallOtherMethod( Zero,
 
 #############################################################################
 ##
-#M  Inverse( <map> )  . . . . . . . . . . delegate to `InverseGeneralMapping'
+#M  InverseOp( <map> )  . . . . . . . . . delegate to `InverseGeneralMapping'
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseOp,
     "for a general mapping",
     true,
     [ IsGeneralMapping ], 0,
@@ -820,6 +865,9 @@ InstallMethod( Inverse,
     if IsEndoGeneralMapping( map ) and IsBijective( map ) then
       return InverseGeneralMapping( map );
     else
+      Info(InfoWarning,1,
+        "The mapping must be bijective and have source=range\n",
+	"#I  You might want to use `InverseGeneralMapping'");
       return fail;
     fi;
     end );
@@ -902,7 +950,7 @@ InstallMethod( ImagesElm,
     function( map, elm )
     local imgs, pair;
     imgs:= [];
-    for pair in AsList( UnderlyingRelation( map ) ) do
+    for pair in GeneratorsOfDomain( UnderlyingRelation( map ) ) do
       if pair[1] = elm then
         AddSet( imgs, pair[2] );
       fi;
@@ -931,6 +979,14 @@ InstallMethod( ImagesSet,
     return imgs;
     end );
 
+InstallMethod( ImagesSet,
+    "for general mapping, and empty list",
+    true,
+    [ IsGeneralMapping, IsList and IsEmpty ], 0,
+    function( map, elms )
+    return [];
+    end );
+
 
 #############################################################################
 ##
@@ -950,7 +1006,8 @@ InstallMethod( ImagesSource,
 InstallMethod( ImagesSource,
     "for surjective general mapping (delegate to `Range')",
     true,
-    [ IsGeneralMapping and IsSurjective ], SUM_FLAGS,
+    [ IsGeneralMapping and IsSurjective ],
+    SUM_FLAGS, # immediately delegate, don;'t try anything else
     Range );
 
 
@@ -976,7 +1033,7 @@ InstallMethod( ImagesRepresentative,
     FamSourceEqFamElm,
     [ IsNonSPGeneralMapping, IsObject ], 0,
     function( map, elm )
-    local   rep,        # representative, result
+    local  
             imgs;       # all images of <elm> under <map>
 
     # get all images of <elm> under <map>
@@ -1049,7 +1106,7 @@ InstallMethod( PreImagesElm,
     function( map, elm )
     local preimgs, pair;
     preimgs:= [];
-    for pair in AsList( UnderlyingRelation( map ) ) do
+    for pair in GeneratorsOfDomain( UnderlyingRelation( map ) ) do
       if pair[2] = elm then
         AddSet( preimgs, pair[1] );
       fi;
@@ -1078,6 +1135,14 @@ InstallMethod( PreImagesSet,
     return primgs;
     end );
 
+InstallMethod( PreImagesSet,
+    "for general mapping, and empty list",
+    true,
+    [ IsGeneralMapping, IsList and IsEmpty ], 0,
+    function( map, elms )
+    return [];
+    end );
+
 
 #############################################################################
 ##
@@ -1097,7 +1162,8 @@ InstallMethod( PreImagesRange,
 InstallMethod( PreImagesRange,
     "for total general mapping (delegate to `Source')",
     true,
-    [ IsGeneralMapping and IsTotal ], SUM_FLAGS,
+    [ IsGeneralMapping and IsTotal ],
+    SUM_FLAGS, # immediately delegate, don't try anything else
     Source );
 
 
@@ -1221,8 +1287,18 @@ InstallMethod( SetUnderlyingGeneralMapping,
     true,
     [ IsDomain and IsTupleCollection and HasAsList
       and IsAttributeStoringRep,
-      IsGeneralMapping ],
-    2*SUM_FLAGS + 1,  # higher than the system setter!
+      IsGeneralMapping ], 0,
+    function( rel, map )
+    SetIsConstantTimeAccessGeneralMapping( map, true );
+    TryNextMethod();
+    end );
+
+InstallMethod( SetUnderlyingGeneralMapping,
+    "for an underlying relation and a general mapping",
+    true,
+    [ IsDomain and IsTupleCollection and HasGeneratorsOfDomain
+      and IsAttributeStoringRep,
+      IsGeneralMapping ], 0,
     function( rel, map )
     SetIsConstantTimeAccessGeneralMapping( map, true );
     TryNextMethod();
@@ -1232,10 +1308,11 @@ InstallMethod( SetUnderlyingGeneralMapping,
 #############################################################################
 ##
 #M  SetAsList( <rel>, <tuples> )
+#M  SetGeneratorsOfDomain( <rel>, <tuples> )
 ##
 ##  Make sure that <map> gets the flag `IsConstantTimeAccessGeneralMapping'
-##  if <rel> knows its `AsList', where <map> is the underlying general
-##  mapping of <rel>.
+##  if <rel> knows its `AsList' or `GeneratorsOfDomain' value,
+##  where <map> is the underlying general mapping of <rel>.
 ##
 InstallMethod( SetAsList,
     "for an underlying relation and a list of tuples",
@@ -1243,7 +1320,20 @@ InstallMethod( SetAsList,
     [ IsDomain and IsTupleCollection and HasUnderlyingGeneralMapping
       and IsAttributeStoringRep,
       IsTupleCollection ],
-    2*SUM_FLAGS + 1,  # higher than the system setter!
+    0,
+    function( rel, tuples )
+    SetIsConstantTimeAccessGeneralMapping( UnderlyingGeneralMapping( rel ),
+        true );
+    TryNextMethod();
+    end );
+
+InstallMethod( SetGeneratorsOfDomain,
+    "for an underlying relation and a list of tuples",
+    IsIdenticalObj,
+    [ IsDomain and IsTupleCollection and HasUnderlyingGeneralMapping
+      and IsAttributeStoringRep,
+      IsTupleCollection ],
+    0,
     function( rel, tuples )
     SetIsConstantTimeAccessGeneralMapping( UnderlyingGeneralMapping( rel ),
         true );
@@ -1313,7 +1403,7 @@ InstallMethod( \<,
     map2:= UnderlyingGeneralMapping( rel2 );
 
     # find the first element where the images differ
-    elms := EnumeratorSorted( PreImagesRange( map1 ) );
+    elms := EnumeratorSorted( Union(PreImagesRange(map1),PreImagesRange(map2)));
     i := 1;
     while i <= Length( elms )
           and ImagesElm( map1, elms[i] ) = ImagesElm( map2, elms[i] )  do
@@ -1326,6 +1416,7 @@ InstallMethod( \<,
                < EnumeratorSorted( ImagesElm( map2, elms[i] ) );
 #T note that we do not have a generic `\<' method for domains !
     end );
+
 
 
 #############################################################################
@@ -1426,7 +1517,19 @@ InstallMethod( Size,
 
 #############################################################################
 ##
-#E  mapping.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  IsGeneratorsOfMagmaWithInverses( <mappinglist> )
+##
+##  All members of the collection have same source, all have same range.
+##  Check that all are invertible.
+##
+InstallMethod( IsGeneratorsOfMagmaWithInverses,
+    "for a collection of general mappings",
+    true,
+    [ IsGeneralMappingCollection ], 0,
+    mappinglist -> ForAll( mappinglist, map -> Inverse( map ) <> fail ) );
 
-
+    
+#############################################################################
+##
+#E
 

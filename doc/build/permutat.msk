@@ -9,47 +9,35 @@
 %%
 \Chapter{Permutations}
 
-{\GAP} offers a data type *permutation* to describe the elements of permutation groups.
+{\GAP} offers a data type *permutation* to describe the elements
+of permutation groups.
 
-The points on  which permutations   in  {\GAP} operate  are the  positive
+The points on  which permutations   in  {\GAP} act  are the  positive
 integers less than  $2^{28}-1$,  and the image   of a point <i> under   a
-permutation <p> is written $i^p$,  which is expressed  as `<i> ^ <p>'  in
-{\GAP}. (This operation is also implemented by the function `OnPoints', see
-"OnPoints".)
-If `<i> ^ $p\ne i$', we say that <i> is *moved* by~<p>, otherwise
-it is _fixed_. Permutations in {\GAP} are  entered and displayed in cycle
+permutation <p> is written $i^p$, which is expressed as `<i>^<p>' in
+{\GAP}.
+(This action is also implemented by the function `OnPoints',
+see~"OnPoints".)
+If `<i>^$p\ne i$', we say that <i> is *moved* by~<p>, otherwise
+it is *fixed*. Permutations in {\GAP} are  entered and displayed in cycle
 notation, such as `(1,2,3)(4,5)'.
 
+The preimage of the point <i> under the permutation <p> can be compputed
+as `<i> / <p>', without constructing the inverse of <p>.
+
+For arithmetic operations for permutations and their precedence,
+see~"Arithmetic Operations for Elements".
+
 In the  names of the  {\GAP} functions  that deal with  permutations, the
-word  `Permutation' is usually abbreviated  to `Perm', to  save typing. For
-example,   the category  test  function  for permutations is called
+word  `Permutation' is usually abbreviated  to `Perm', to  save typing.
+For example,   the category  test  function  for permutations is called
 `IsPerm'.
 
 \Declaration{IsPerm}
 \Declaration{IsPermCollection}
 \Declaration{PermutationsFamily}
 
-Internally, {\GAP}  stores a permutation as a  list of the  <d> images of
-the  integers  $1,\ldots, d$,  where the ``internal  degree'' <d>  is the
-largest integer moved by the permutation or bigger. When a permutation is
-read  in  in  cycle  notation, <d> is  always  set  to  the largest moved
-integer,   but a bigger   <d> can  result  from  a multiplication of  two
-permutations, because the product is  not shortened if it fixes~<d>.  The
-images are either all stored as 16-bit integers or all as 32-bit integers
-(actually as {\GAP} immediate integers less  than $2^{28}$), depending on
-whether  $d\le 65536$  or not. This  means that  the identity permutation
-`()'  takes <4m> bytes  if it was calculated as   `(1, \dots, <m>) \* (1,
-\dots, <m>) ^ -1'. It  can take even more  because the internal list  has
-sometimes room for more than <d> images.  For example, the maximal degree
-of   any permutation in  {\GAP}  is  $m  = 2^{22}-1024 =  4{,}193{,}280$,
-because  bigger permutations  would have  an  internal list with room for
-more than $2^{22}$ images, requiring  more than $2^{24}$~bytes. $2^{24}$,
-however, is  the  largest possible size   of  an object that  the  {\GAP}
-storage manager can deal with.
-
-Permutations  do  not belong to  a specific group.   That means
-that one can work  with permutations without defining a permutation group
-that contains them. 
+\FileHeader[1]{permutat.g}
 
 \beginexample
 gap> (1,2,3);
@@ -62,8 +50,12 @@ gap> OnPoints(17,(2,5,17,9,8));
 9
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Comparison of permutations}
+The operation `Permuted' (see~"Permuted") can be used to permute the entries
+of a list according to a permutation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparison of Permutations}
 
 \>`<p_1> = <p_2>'{equality test}!{for permutations}
 \>`<p_1> \< <p_2>'{precedence test}!{for permutations}
@@ -73,30 +65,38 @@ have the same images under both permutations.
 
 The permutation $p_1$ is smaller than $p_2$ if $p_1\not=p_2$ and
 $i^{p_1}\<i^{p_2}$ where $i$ is the smallest point with
-$i^{p_1}\not=i^{p_2}$. Therefore the identity permutation is the smallest
-permutation.
+$i^{p_1}\not=i^{p_2}$.
+Therefore the identity permutation is the smallest permutation.
+(see also~"Comparison Operations for Elements")
+
+Permutations can be compared with certain other {\GAP} objects,
+see~"Comparisons" for the details.
 
 \beginexample
 gap> (1,2,3) = (2,3,1);
 true
 gap> (1,2,3) * (2,3,4) = (1,3)(2,4);
 true
-gap> (1,2,3)<(1,3,2);
+gap> (1,2,3) < (1,3,2);      # 1^(1,2,3) = 2 < 3 = 1^(1,3,2)
 true
+gap> (1,3,2,4) < (1,3,4,2);  # 2^(1,3,2,4) = 4 > 1 = 2^(1,3,4,2)
+false
 \endexample
 
 \Declaration{SmallestGeneratorPerm}
+\beginexample
+gap> SmallestGeneratorPerm( (1,4,3,2) );
+(1,2,3,4)
+\endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Moved points of permutations}
 
-\Declaration{SmallestMovedPointPerm}
-\Declaration{LargestMovedPointPerm}
-\Declaration{NrMovedPointsPerm}
-\Declaration{MovedPointsPerms}
-\Declaration{NrMovedPointsPerms}
-\Declaration{SmallestMovedPointPerms}
-\Declaration{LargestMovedPointPerms}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Moved Points of Permutations}
+
+\Declaration{SmallestMovedPoint}
+\Declaration{LargestMovedPoint}
+\Declaration{MovedPoints}
+\Declaration{NrMovedPoints}
 
 \beginexample
 gap> SmallestMovedPointPerm((4,5,6)(7,2,8));
@@ -105,17 +105,20 @@ gap> LargestMovedPointPerm((4,5,6)(7,2,8));
 8
 gap> NrMovedPointsPerm((4,5,6)(7,2,8));    
 6
-gap> MovedPointsPerms([(2,3,4),(7,6,3),(5,47)]);
+gap> MovedPoints([(2,3,4),(7,6,3),(5,47)]);
 [ 2, 3, 4, 5, 6, 7, 47 ]
-gap> NrMovedPointsPerms([(2,3,4),(7,6,3),(5,47)]);
+gap> NrMovedPoints([(2,3,4),(7,6,3),(5,47)]);
 7
-gap> SmallestMovedPointPerms([(2,3,4),(7,6,3),(5,47)]);
+gap> SmallestMovedPoint([(2,3,4),(7,6,3),(5,47)]);
 2
-gap> LargestMovedPointPerms([(2,3,4),(7,6,3),(5,47)]);
+gap> LargestMovedPoint([(2,3,4),(7,6,3),(5,47)]);
 47
+gap> LargestMovedPoint([()]);
+0
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Sign and Cycle Structure}
 
 \Declaration{SignPerm}
@@ -127,8 +130,9 @@ gap> CycleStructurePerm((1,2,3)(4,5,9,7,8));
 [ , 1,, 1 ]
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Creating permutations}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creating Permutations}
 
 \Declaration{ListPerm}
 \Declaration{PermList}
@@ -146,5 +150,8 @@ gap> RestrictedPerm((1,2)(3,4),[3..5]);
 (3,4)
 \endexample
 
-\Declaration{Permuted}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
 

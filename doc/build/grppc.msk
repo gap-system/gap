@@ -1,107 +1,553 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %A  grppc.msk                   GAP documentation            Alexander Hulpke
+%A                                                               Bettina Eick
 %%
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %%
-\Chapter{PcGroups}
+\Chapter{Pc Groups}
 
-PcGroups are groups given by a finite polycyclic presentation. The
-generators in such a presentation form a pcgs for the group. Arithmetic in
-such groups is performed using a collection process and is thus much quicker
-than for ordinary finitely presented groups. This collection process also
-permits to bring every element in a normal form.
+%
+% Wunsch von Herrn Neubueser: PrintPcPresentation
+%
+PcGroups are polycyclic groups that use the polycyclic presentation for
+element arithmetic. This presentation gives them a ``natural'' pcgs, the
+`FamilyPcgs' (see~"FamilyPcgs") with respect to which pcgs operations as
+described in chapter~"Polycyclic Groups" are particularly efficient.
 
+Let $G$ be a polycyclic group with pcgs $P = (g_1, \ldots, g_n)$
+and corresponding relative orders $(r_1, \ldots, r_n)$. Recall that the
+$r_i$ are positive integers or infinity and let $I$ be the set of indices
+$i$ with $r_i$ a positive integer. Then $G$ has a finite presentation
+on the generators $g_1, \ldots, g_n$ with relations of the following
+form.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Constructing PcGroups}
+$$ g_i^{r_i} = g_{i+1}^{a(i,i,i+1)} \cdots g_n^{a(i,i,n)} 
+   \hbox{ for } 1 \leq i \leq n \hbox{ and } i \in I$$
+$$ g_i^{-1} g_j g_i = g_{i+1}^{a(i,j,i+1)} \cdots g_n^{a(i,j,n)} 
+   \hbox{ for } 1 \leq i \< j \leq n$$
 
-\Declaration{PcGroupFpGroup}
-\beginexample
-gap> f:=FreeGroup("a","b","c","d");;a:=f.1;;b:=f.2;;c:=f.3;;d:=f.4;;         
-gap> rels:=[a^2,b^3,c^2,d^2,Comm(b,a)/b,Comm(c,a)/d,Comm(d,a),
-> Comm(c,b)/(c*d),Comm(d,b)/c,Comm(d,c)];
-[ a^2, b^3, c^2, d^2, b^-1*a^-1*b*a*b^-1, c^-1*a^-1*c*a*d^-1, d^-1*a^-1*d*a, 
-  c^-1*b^-1*c*b*d^-1*c^-1, d^-1*b^-1*d*b*c^-1, d^-1*c^-1*d*c ]
-gap> g:=f/rels; 
-Group( [ a, b, c, d ], ... )
-gap> p:=PcGroupFpGroup(g);
-Group( [ a, b, c, d ], ... )
-gap> p.1=g.1;
-false
-gap> g.2*g.1;
-b*a
-gap> p.2*p.1;
-a*b^2
-\endexample
+For infinite groups we need additionally
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Words in Finite Polycyclic Groups}
+$$ g_i^{-1} g_j^{-1} g_i = g_{i+1}^{b(i,j,i+1)} \cdots g_n^{b(i,j,n)} 
+   \hbox{ for } 1 \leq i \< j \leq n \hbox{ and } j \not \in I$$
+$$ g_i g_j g_i^{-1} = g_{i+1}^{c(i,j,i+1)} \cdots g_n^{c(i,j,n)} 
+   \hbox{ for } 1 \leq i \< j \leq n \hbox{ and } i \not \in I$$
+$$ g_i g_j^{-1} g_i^{-1} = g_{i+1}^{d(i,j,i+1)} \cdots g_n^{d(i,j,n)} 
+   \hbox{ for } 1 \leq i \< j \leq n \hbox{ and } i, j, \not \in I$$
 
-Elements of PcGroups are displayed as words in the generators which are in
-normal form, that is they are a product of the generators corresponding to
-the exponent vector with respect to the pcgs formed by the generators.
+Here the right hand sides are assumed to be words in normal
+form; that is, for $k \in I$ we have for all exponents 
+$0 \leq a(i,j,k), b(i,j,k), c(i,j,k), d(i,j,k) \< r_k$.
 
-\>`<pcword>=<pcword>'{equality!pcwords}
+A finite presentation of this type is called a *power-conjugate
+presentation* and a *pc group* is a polycyclic group defined
+by a power-conjugate presentation. Instead of conjugates we could
+just as well work with commutators and then the presentation would
+be called a *power-commutator* presentation. Both types of presentation
+are abbreviated as *pc presentation*. Note that a pc presentation is a 
+rewriting system.
 
-Two words in a PcGroup are equal if and only if they correspond to the same
-exponent vector.
-
-\>`<pcword>\<<pcword>'{smaller!pcwords}
-
-The words are sorted by their exponent vectors. This yields a pure
-lexicographical ordering.
-
-\beginexample
-gap> AsListSorted(p);
-[ <identity> of ..., a, a*b, a*b*c, a*b*c*d, a*b*d, a*b^2, a*b^2*c, 
-  a*b^2*c*d, a*b^2*d, a*c, a*c*d, a*d, b, b*c, b*c*d, b*d, b^2, b^2*c, 
-  b^2*c*d, b^2*d, c, c*d, d ]
-\endexample
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Pcgs for PcGroups}
-
-PcGroups immediately posess a distinguished Pcgs given by the policyclic
+Clearly, whenever a group $G$ with pcgs $P$ is given, then we can
+write down the corresponding pc presentation. On the other hand,
+one may just write down a presentation on $n$ abstract generators
+$g_1, \ldots, g_n$ with relations of the above form and define a 
+group $H$ by this. Then the subgroups $C_i = \langle g_i, \ldots, g_n 
+\rangle$ of $H$ form a subnormal series whose factors are cyclic
+or trivial. In the case that all factors are non-trivial, we say
+that the pc presentation of $H$ is *confluent*. Note that GAP 4
+can only work correctly with pc groups defined by a confluent pc 
 presentation.
+ 
+At the current level of implementation GAP can only deal with
+finite pc groups. This will be extended in near future.
+
+%%  The Pc groups were designed and implemented by Frank Celler and
+%%  Werner Nickel, the code for Two-Cohomology and Extensions is due to
+%%  Bettina Eick who also wrote the Random Isomorphism test together with Hans
+%%  Ulrich Besche.
+
+Algorithms for pc groups use the methods for polycyclic groups described in
+chapter~"Polycyclic Groups".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The family pcgs}
+
+Clearly, the generators of a power-conjugate presentation of
+a pc group $G$ form a pcgs of the pc group. This pcgs is called
+the *family pcgs*.
 
 \Declaration{FamilyPcgs}
 \Declaration{IsFamilyPcgs}
+\Declaration{InducedPcgsWrtFamilyPcgs}
+\Declaration{IsParentPcgsFamilyPcgs}
+
+In GAP 3 the family pcgs had been the only pcgs allowed for a
+pc group. Note that this has changed in GAP 4 where a pc group
+may have several independent polycyclic generating sequences.
+
+However, the elementary operations for a non-family pcgs may 
+not be as efficient as the elementary operations for the family
+pcgs.
+
+This can have a notable influence on the performance of algorithms for
+polycyclic groups. Many algorithms require a pcgs that corresponds to an
+elementary abelian series (see~"PcgsElementaryAbelianSeries") or even a
+special pcgs (see~"Special Pcgs"). If the family pcgs has the required
+properties, it will be used for these purposes, if not {\GAP} has to work
+with respect to a new pcgs which is *not* the family pcgs and thus takes
+longer for elementary calculations like `ExponentsOfPcElement'.
+
+Therefore, if the family pcgs chosen for arithmetic is not of importance it
+might be worth to *change* to another, nicer, pcgs to speed up calculations.
+This can be achieved, for example, by using the `Range' of the isomorphism
+obtained by `IsomorphismSpecialPcGroup' (see~"IsomorphismSpecialPcGroup").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Computing an isomorphic PcGroup for a finite group}
+\Section{Elements of pc groups}
+
+The elements of a pc group $G$ are always represented as words
+in normal form with respect to the family pcgs of $G$. 
+Thus it is straightforward to compare elements of pc group,
+since this boils down to a mere comparison of exponent vectors
+with respect to the family pcgs. In particular, the word problem
+is efficiently solvable in pc groups.
+
+\>`<pcword> = <pcword>'{equality!pcwords}
+\>`<pcword> \< <pcword>'{smaller!pcwords}
+
+However, multiplication and inversion of elements in pc groups
+is not as straightforward as in arbitrary finitely presented groups
+where a simple concatenation or reversion of the corresponding
+words is sufficient (but one cannot solve the word problem). 
+
+To multiply to elements in a pc group, we
+first concatenate the corresponding words and then use an algorithm
+called `collection' to transform the new word into a word in normal
+form.
+
+\beginexample
+gap> g := FamilyPcgs( SmallGroup( 24, 12 ) );
+[ f1, f2, f3, f4 ]
+gap> g[4] * g[1];
+f1*f3
+gap> (g[2] * g[3])^-1;
+f2^2*f3*f4
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Pc groups versus fp groups}
+
+In theory pc groups are finitely presented groups.  In practice the 
+arithmetic in pc groups is different from the arithmetic in fp 
+groups. Thus for technical reasons the pc groups in GAP do not form 
+a subcategory of the fp groups and hence the methods for fp groups 
+cannot be applied to pc groups in general.
+
+\Declaration{IsPcGroup}
+
+\beginexample
+gap> G := SmallGroup( 24, 12 );
+<pc group of size 24 with 4 generators>
+gap> IsPcGroup( G );
+true
+gap> IsFpGroup( G );
+false
+\endexample
+
+Note that it is possible to convert a pc group to a fp group in GAP.
+The following function computes the power-commutator presentation defined
+by <pcgs>. The string <str> can be used to give a name to the generators
+of the fp group.
+
+\> IsomorphismFpGroupByPcgs( <pcgs>, <str> )
+
+\beginexample
+gap> p := FamilyPcgs( SmallGroup( 24, 12 ) );
+[ f1, f2, f3, f4 ]
+gap> iso := IsomorphismFpGroupByPcgs( p, "g" );
+[ f1, f2, f3, f4 ] -> [ g1, g2, g3, g4 ]
+gap> F := Image( iso );
+<fp group on the generators [ g1, g2, g3, g4 ]>
+gap> RelatorsOfFpGroup( F );
+[ g1^2, g2^-1*g1^-1*g2*g1*g2^-1, g3^-1*g1^-1*g3*g1*g4^-1*g3^-1, 
+  g4^-1*g1^-1*g4*g1*g4^-1*g3^-1, g2^3, g3^-1*g2^-1*g3*g2*g4^-1*g3^-1, 
+  g4^-1*g2^-1*g4*g2*g3^-1, g3^2, g4^-1*g3^-1*g4*g3, g4^2 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Constructing Pc Groups}
+
+If necessary, you can supply GAP with a pc presentation
+by hand. (Although this is the most tedious way to input a pc group.)
+Note that the pc presentation has to be confluent in order to
+work with the pc group in GAP.
+
+One way is to define a finitely presented group with a 
+pc presentation in GAP and then convert this presentation
+into a pc group. Note that this does not work for arbitrary presentations
+of polycyclic groups, see Chapter "Quotient Methods" for further information.
+
+\Declaration{PcGroupFpGroup}
+
+\beginexample
+gap> F := FreeGroup("a","b","c","d");;
+gap> a := F.1;; b := F.2;; c := F.3;; d := F.4;;         
+gap> rels := [a^2, b^3, c^2, d^2, Comm(b,a)/b, Comm(c,a)/d, Comm(d,a),
+>             Comm(c,b)/(c*d), Comm(d,b)/c, Comm(d,c)];
+[ a^2, b^3, c^2, d^2, b^-1*a^-1*b*a*b^-1, c^-1*a^-1*c*a*d^-1, d^-1*a^-1*d*a, 
+  c^-1*b^-1*c*b*d^-1*c^-1, d^-1*b^-1*d*b*c^-1, d^-1*c^-1*d*c ]
+gap> G := F / rels; 
+<fp group on the generators [a,b,c,d]>
+gap> H := PcGroupFpGroup( G );
+<pc group of size 24 with 4 generators>
+\endexample
+
+Equivalently to the above method one can initiate a collector of
+a pc group by hand and use it to define a pc group. In GAP there
+are different collectors for different collecting strategies; at
+the moment, there are two collectors to choose from: the single
+collector for finite pc groups and the combinatorial collector
+for finite $p$-groups. See \cite{Sims94} for further information
+on collecting strategies.
+
+A collector is initiated by underlying free group to the pc presented 
+group and the relative orders of the pc series. Then one adds the right
+hand sides of the power and the commutator or conjugate relations one by 
+one. Note that omitted relators are assumed to be trivial.
+
+\>SingleCollector( <fgrp>, <relorders> )
+\>CombinatorialCollector( <fgrp>, <relorders> )
+
+Then the right hand sides of the pc presentation have to be declared.
+Let $f_1, \ldots, f_n$ be the generators of the underlying free group
+<fgrp>. 
+
+\> SetConjugate( <coll>, <i>, <j>, <w> )
+
+set the conjugate $f_j^{f_i}$ to equal <w> where <w> is a word
+in $f_{i+1}, \ldots, f_n$ and $i\<j$.
+
+\> SetCommutator( <coll>, <i>, <j>, <w> )
+
+set the commutator of $f_j$ and $f_i$ to equal <w> where <w> is a word
+in $f_{i+1}, \ldots, f_n$ and $i\<j$.
+
+\> SetPower( <coll>, <i>, <w> )
+
+set the power $f_i^{r_i}$ to equal <w> where <w> is a word
+in $f_{i+1}, \ldots, f_n$.
+
+Finally, the collector has to be converted to a group.
+
+\> GroupByRws( <coll> )
+\> GroupByRwsNC( <coll> )
+
+creates a group from a rewriting system. In the first version it
+is checked whether the rewriting system is confluent, in the second
+version this is assumed to be true.
+
+\> IsConfluent( <G> ) 
+
+checks whether the pc group <G> has been build from a collector with
+a confluent power-commutator presentation.
+
+\beginexample
+gap> F := FreeGroup( 2 );;
+gap> coll1 := SingleCollector( F, [2,3] );
+<<single collector, 8 Bits>>
+gap> SetConjugate( coll1, 2, 1, F.2 );  
+gap> SetPower( coll1, 1, F.2 );
+gap> G1 := GroupByRws( coll1 );
+<pc group of size 6 with 2 generators>
+gap> IsConfluent(G1);
+true
+gap> IsAbelian(G1);
+true
+
+gap> coll2 := SingleCollector( F, [2,3] );
+<<single collector, 8 Bits>>
+gap> SetConjugate( coll2, 2, 1, F.2^2 );
+gap> G2 := GroupByRws( coll2 );
+<pc group of size 6 with 2 generators>
+gap> IsAbelian(G2); 
+false
+\endexample
+
+With the above methods a pc group with arbitrary defining pcgs can be
+constructed. However, for almost all applications within GAP we need
+to have a pc group whose defining pcgs is a prime order pcgs. Hence
+the following functions are useful.
+
+\Declaration{IsomorphismRefinedPcGroup}
+\Declaration{RefinedPcGroup}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Computing Pc Groups}
+
+Another possibility to get a pc group in GAP is to convert a 
+polycyclic group given by some other representation to a pc group.
+For finitely presented groups there are various quotient methods 
+available. For all other types of groups we use the following procedures.
+
+\Declaration{PcGroupWithPcgs}
+
+returns a pc group with family pcgs corresponding to <pcgs>.
+
+\beginexample
+gap> G := Group( (1,2,3), (3,4,1) );;
+gap> PcGroupWithPcgs( Pcgs(G) );
+<pc group of size 12 with 3 generators>
+
+gap> G := SymmetricGroup( 5 );
+Sym( [ 1 .. 5 ] )
+gap> H := Subgroup( G, [(1,2,3,4,5), (3,4,5)] );
+Group([ (1,2,3,4,5), (3,4,5) ])
+gap> modu := ModuloPcgs( G, H );
+[ (4,5) ]
+gap> PcGroupWithPcgs(modu);
+<pc group of size 2 with 1 generators>
+\endexample
 
 \Declaration{IsomorphismPcGroup}
 
 \beginexample
-gap> g:=Group((1,2,3),(2,3,4));;
-gap> iso:=IsomorphismPcGroup(g);
-Pcgs([ (2,4,3), (1,3)(2,4), (1,2)(3,4) ]) -> [ f1, f2, f3 ]
-gap> p:=Image(iso);
-Group( [ f1, f2, f3 ], ... )
+gap> G := Group( (1,2,3), (3,4,1) );;
+gap> iso := IsomorphismPcGroup( G );
+Pcgs([ (2,4,3), (1,2)(3,4), (1,3)(2,4) ]) -> [ f1, f2, f3 ]
+gap> H := Image( iso );
+<pc group of size 12 with 3 generators>
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Saving a PcGroup}
+\Declaration{IsomorphismSpecialPcGroup}
 
-As printing a polycyclic group does not display the presentation, one cannot
-simply print a PcGroup to a file to save it.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Saving a Pc Group}
+
+As printing a polycyclic group does not display the presentation, 
+one cannot simply print a pc group to a file to save it. For this
+purpose we need the following function.
 
 \Declaration{GapInputPcGroup}
 
 \beginexample
-ap> s:=GapInputPcGroup(p,"G");;
-gap> PrintTo("savefile",s);
-gap> Read("savefile");
-A group of order 12 has been defined.
-It is called G
-gap> G;
-Group( [ f1, f2, f3 ], ... )
-gap> G=p;
+gap> G := SmallGroup( 24, 12 );
+<pc group of size 24 with 4 generators>
+gap> PrintTo( "save", GapInputPcGroup( G, "H" ) );
+gap> Read( "save" );
+#I A group of order 24 has been defined.
+#I It is called H
+gap> H = G;
 false
-gap> IsomorphismGroups(p,G);
-[ f1, f2 ] -> [ f1, f3 ]
+gap> IdGroup( H ) = IdGroup( G );
+true
 \endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Pc Groups}
+
+All the operations described in Chapters "Groups" and "Polycyclic 
+Groups" apply to a pc group. Nearly all methods for pc groups are 
+methods for groups with pcgs as described in Chapter "Polycyclic
+groups". The only method with is special for pc groups is a method
+to compute intersections of subgroups, since here a pcgs of a parent
+group is needed and this can only by guaranteed within pc groups.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{2-Cohomology and Extensions}
+
+One of the most interesting applications of pc groups is the possibility
+to compute with extensions of these groups by elementary abelian groups;
+that is, $H$ is an extension of $G$ by $M$, if there exists a normal 
+subgroup $N$ in $H$ which is isomorphic to $M$ such that $H/N$ is
+isomorphic to $G$.
+
+Pc groups are particularly suited for such applications, since the
+2-cohomology can be computed efficiently for such groups and,
+moreover, extensions of pc groups by elementary abelian groups can
+be represented as pc groups again.
+
+To define the elementary abelian group $M$ together with an action
+of $G$ on $M$ we consider $M$ as a meataxe module for $G$ over a finite
+field. For further information on meataxe modules see Chapter "The MeatAxe".
+Note that the matrices definining the module must correspond to the 
+pcgs of the group <G>.
+
+\Declaration{TwoCoboundaries}
+\Declaration{TwoCocycles}
+\Declaration{TwoCohomology}
+
+\beginexample
+gap> G := SmallGroup( 4, 2 ); 
+<pc group of size 4 with 2 generators> 
+gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );
+[ [ <a GF2 vector of length 1> ], [ <a GF2 vector of length 1> ] ]
+gap> M := GModuleByMats( mats, GF(2) );
+rec( field := GF(2), isMTXModule := true, dimension := 1, 
+  generators := [ <an immutable 1x1 matrix over GF2>, 
+      <an immutable 1x1 matrix over GF2> ] )
+gap> TwoCoboundaries( G, M );
+[  ]
+gap> TwoCocycles( G, M );                                    
+[ [ Z(2)^0, 0*Z(2), 0*Z(2) ], [ 0*Z(2), Z(2)^0, 0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), Z(2)^0 ] ]
+gap> cc := TwoCohomology( G, M );;
+gap> cc.cohom;
+<linear mapping by matrix, VectorSpace( GF(2), 
+[ [ Z(2)^0, 0*Z(2), 0*Z(2) ], [ 0*Z(2), Z(2)^0, 0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), Z(2)^0 ] ] ) -> ( GF(2)^3 )>
+\endexample
+
+\Declaration{Extensions}
+\Declaration{Extension}
+\>SplitExtension( <G>, <M> )
+
+returns the split extension of <G> by the <G>-module <M>. 
+
+\beginexample
+gap> G := SmallGroup( 4, 2 );;
+gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );;
+gap> M := GModuleByMats( mats, GF(2) );;
+gap> co := TwoCocycles( G, M );;
+gap> Extension( G, M, co[2] );
+<pc group of size 8 with 3 generators>
+gap> SplitExtension( G, M );
+<pc group of size 8 with 3 generators>
+gap> Extensions( G, M );
+[ <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators> ]
+gap> List(last, IdGroup);
+[ [ 8, 5 ], [ 8, 2 ], [ 8, 3 ], [ 8, 3 ], [ 8, 2 ], [ 8, 2 ], [ 8, 3 ], 
+  [ 8, 4 ] ]
+\endexample
+
+Note that the extensions returned by `Extensions' are computed up to
+equivalence, but not up to isomorphism.
+
+There exists an action of the subgroup of *compatible pairs* in
+$Aut(G) \times Aut(M)$ which acts on the second cohomology group.
+2-cocycles which ly in the same orbit under this action define
+isomorphic extensions of $G$. However, there may be isomorphic 
+extensions of $G$ corresponding to cocycles in different orbits.
+
+\Declaration{CompatiblePairs}
+\Declaration{ExtensionRepresentatives}
+
+\beginexample
+gap> G := SmallGroup( 4, 2 );;
+gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );;
+gap> M := GModuleByMats( mats, GF(2) );;
+gap> A := AutomorphismGroup( G );;
+gap> B := GL( 1, 2 );;
+gap> D := DirectProduct( A, B );
+<group with 6 generators>
+gap> P := CompatiblePairs( G, M, D );
+<group of size 6 with 2 generators>
+gap> ExtensionRepresentatives( G, M, P );
+[ <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators> ]
+gap> Extensions( G, M );
+[ <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators>, 
+  <pc group of size 8 with 3 generators> ]
+\endexample
+
+See also the forthcoming share package on `Group Construction Methods'.
+
+Finally we note that for the computation of split extensions it is not
+necessary that <M> must correspond to an elementary abelian group. Here
+it is possible to construct split extensions of arbitrary pc groups.
+
+\>SplitExtensions( <G>, <aut>, <N> )
+
+returns the split extensions of the pc group <G> by the pc group <N>.
+<aut> should be a homomorphism from <G> into $Aut(N)$.
+
+In the following example we construct the holomorph of $Q_8$ as split
+extension of $Q_8$ by $S_4$.
+
+\beginexample
+gap> N := SmallGroup( 8, 4 );
+<pc group of size 8 with 3 generators>
+gap> IsAbelian( N );
+false
+gap> A := AutomorphismGroup( N );
+<group of size 24 with 4 generators>
+gap> iso := IsomorphismPcGroup( A );
+CompositionMapping( Pcgs([ (1,6,4,3), (1,2,6)(3,4,5), (1,4)(3,6), (2,5)(3,6) 
+ ]) -> [ f1, f2, f3, f4 ], <action homomorphism> )
+gap> H := Image( iso );
+Group( [ f1*f2, f2^2*f3, f4,f3 ] )
+gap> G := Subgroup( H, Pcgs(H){[1,2]} );
+Group([ f1, f2 ])
+gap> inv := InverseGeneralMapping( iso );
+InverseGeneralMapping( CompositionMapping( Pcgs(
+[ (1,6,4,3), (1,2,6)(3,4,5), (1,4)(3,6), (2,5)(3,6) ]) -> [ f1, f2, f3, f4 
+ ], <action homomorphism> ) )
+gap> K := SplitExtension( G, inv, N );
+<pc group of size 192 with 7 generators>
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Coding a Pc Presentation}
+
+If one wants to store a large number of pc groups, then it can be useful
+to store them in a compressed format, since pc presentations can be 
+space consuming. Here we introduce a method to code and decode pc 
+presentations by integers. To decode a given code the size of the 
+underlying pc group is needed as well. For the full definition and 
+the coding and decoding 
+procedures see \cite{BescheEick98}. This method is used with the small 
+groups library, see Section "Small Groups".
+
+\Declaration{CodePcgs}
+\Declaration{CodePcGroup}
+\Declaration{PcGroupCode}
+\Declaration{PcGroupCodeRec}
+
+\beginexample
+gap> G := SmallGroup( 24, 12 );;
+gap> p := Pcgs( G );;
+gap> code := CodePcgs( p );
+5790338948
+gap> H := PcGroupCode( code, 24 );
+<pc group of size 24 with 4 generators>
+gap> map := GroupHomomorphismByImages( G, H, p, FamilyPcgs(H) );
+Pcgs([ f1, f2, f3, f4 ]) -> Pcgs([ f1, f2, f3, f4 ])
+gap> IsBijective(map);
+true
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Random Isomorphism Testing}
+
+The generic isomorphism test for groups may be applied to pc groups
+as well. However, this test is often quite time consuming. Here we
+describe another method to test isomorphism by a probabilistic approach.
+
+This method takes a list of groups and a non-negative integer as
+input. The output is a sublist of the input list where only isomorphic 
+copies have been removed. The integer gives a certain amount of control
+over the probability to detect all isomorphisms. If it is 0, then nothing 
+will be done at all. The larger the integer is, the larger is the probability 
+of finding all isomorphisms. However, due to the underlying method we can
+not guarantee that the algorithm finds all isomorphisms, no matter how
+large $n$ is.
+
+\Declaration{RandomIsomorphismTest}
 

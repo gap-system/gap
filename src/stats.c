@@ -50,6 +50,9 @@ const char * Revision_stats_c =
 #include        "stats.h"               /* statements                      */
 #undef  INCLUDE_DECLARATION_PART
 
+#ifdef SYS_IS_MAC_MWC
+#include        "macintr.h"              /* Mac interrupt handlers	      */
+#endif
 
 /****************************************************************************
 **
@@ -449,7 +452,7 @@ UInt            ExecFor (
     body = ADDR_STAT(stat)[2];
 
     /* special case for lists                                              */
-    if ( IS_LIST( list ) ) {
+    if ( IS_SMALL_LIST( list ) ) {
 
         /* loop over the list, skipping unbound entries                    */
         i = 1;
@@ -554,7 +557,7 @@ UInt            ExecFor2 (
     body2 = ADDR_STAT(stat)[3];
 
     /* special case for lists                                              */
-    if ( IS_LIST( list ) ) {
+    if ( IS_SMALL_LIST( list ) ) {
 
         /* loop over the list, skipping unbound entries                    */
         i = 1;
@@ -667,7 +670,7 @@ UInt            ExecFor3 (
     body3 = ADDR_STAT(stat)[4];
 
     /* special case for lists                                              */
-    if ( IS_LIST( list ) ) {
+    if ( IS_SMALL_LIST( list ) ) {
 
         /* loop over the list, skipping unbound entries                    */
         i = 1;
@@ -1262,6 +1265,17 @@ UInt            ExecBreak (
     return 4;
 }
 
+/****************************************************************************
+**
+*F  ExecEmpty( <stat> ) . . . . . execute an empty statement
+**
+**  Does nothing
+*/
+UInt ExecEmpty( Stat stat )
+{
+  return 0;
+}
+
 
 /****************************************************************************
 **
@@ -1481,7 +1495,16 @@ UInt ExecIntrStat (
 
     /* and now for something completely different                          */
     SET_BRK_CURR_STAT( stat );
-    ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+
+    if ( SyStorOverrun != 0 ) {
+      SyStorOverrun = 0; /* reset */
+      ErrorReturnVoid(
+        "exceeded the permitted memory (`-o' command line option)",
+	0L, 0L, "you can return" );
+    }
+    else {
+      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+    }
 
     /* continue at the interrupted statement                               */
     return EXEC_STAT( stat );
@@ -1502,6 +1525,7 @@ UInt ExecIntrStat (
 **  'ExecStatFuncs'  to point to  'ExecIntrStat',  which changes  the entries
 **  back, calls 'Error', and redispatches after a return from the break-loop.
 */
+#if !SYS_MAC_MWC
 void InterruptExecStat ( void )
 {
     UInt                i;              /* loop variable                   */
@@ -1526,7 +1550,7 @@ void InterruptExecStat ( void )
         ExecStatFuncs[i] = ExecIntrStat;
     }
 }
-
+#endif
 
 /****************************************************************************
 **
@@ -1542,6 +1566,10 @@ void ClearError ( void )
             ExecStatFuncs[i] = RealExecStatFuncs[i];
         }
     }
+
+#ifdef SYS_IS_MAC_MWC
+	ActivateIntr ();   /* re-enable Mac interrupt check */
+#endif
 
     /* reset <NrError>                                                     */
     NrError = 0;
@@ -1754,6 +1782,16 @@ void            PrintBreak (
 
 /****************************************************************************
 **
+*F  PrintEmpty(<stat>)
+**
+*/
+void             PrintEmpty( Stat stat )
+{
+  Pr( ";", 0L, 0L);
+}
+
+/****************************************************************************
+**
 *F  PrintInfo(<stat>)  . . . . . . . . . . . . . . . print an info-statement
 **
 **  'PrintInfo' prints the info-statement <stat>.
@@ -1779,7 +1817,7 @@ void            PrintInfo (
     }
 
     /* print the closing parenthesis                                       */
-    Pr(" %2<)",0L,0L);
+    Pr(" %2<);",0L,0L);
 }
 
 /****************************************************************************
@@ -1931,7 +1969,12 @@ static Int InitKernel (
     ExecStatFuncs [ T_ASSERT_3ARGS   ] = ExecAssert3Args;
     ExecStatFuncs [ T_RETURN_OBJ     ] = ExecReturnObj;
     ExecStatFuncs [ T_RETURN_VOID    ] = ExecReturnVoid;
+    ExecStatFuncs [ T_EMPTY          ] = ExecEmpty;
 
+    /* install printers for non-statements                                */
+    for ( i = 0; i < sizeof(PrintStatFuncs)/sizeof(PrintStatFuncs[0]); i++ ) {
+        PrintStatFuncs[i] = PrintUnknownStat;
+    }
     /* install printing functions for compound statements                  */
     PrintStatFuncs[ T_SEQ_STAT       ] = PrintSeqStat;
     PrintStatFuncs[ T_SEQ_STAT2      ] = PrintSeqStat;
@@ -1962,6 +2005,7 @@ static Int InitKernel (
     PrintStatFuncs[ T_ASSERT_3ARGS   ] = PrintAssert3Args;
     PrintStatFuncs[ T_RETURN_OBJ     ] = PrintReturnObj;
     PrintStatFuncs[ T_RETURN_VOID    ] = PrintReturnVoid;
+    PrintStatFuncs[ T_EMPTY          ] = PrintEmpty;
 
     /* return success                                                      */
     return 0;

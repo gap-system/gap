@@ -17,6 +17,18 @@ Revision.basismut_gi :=
 
 #############################################################################
 ##
+#M  ShallowCopy( <MB> ) . . . . . . . . . . . . . . . . . for a mutable basis
+##
+InstallMethod( ShallowCopy,
+    "generic method for mutable basis",
+    true,
+    [ IsMutableBasis ], 0,
+    MB -> ShallowCopy( BasisVectors( MB ) ) );
+
+
+
+#############################################################################
+##
 #M  NrBasisVectors( <MB> )  . . . . . . . . . . . . . . . for a mutable basis
 ##
 ##  The default method constructs the basis vctors, and returns the length of
@@ -34,23 +46,59 @@ InstallMethod( NrBasisVectors,
 
 #############################################################################
 ##
+#M  ImmutableBasis( <MB>, <V> )
+##
+##  This method is needed for the case that one wants to construct a basis
+##  of <V>, and successive closures of mutable bases are needed to get a
+##  mutable basis; from this one then creates the immutable basis,
+##  and wants the particular object <V> to be the underlying module.
+##
+InstallMethod( ImmutableBasis,
+    "for mutable basis, and free left module",
+    IsIdenticalObj,
+    [ IsMutableBasis, IsFreeLeftModule ], 0,
+    function( MB, V )
+
+    local B, vectors;
+
+    B:= ImmutableBasis( MB );
+
+    if not IsIdenticalObj( UnderlyingLeftModule( B ), V ) then
+
+      # If `V' does not know left module generators yet,
+      # we store them now.
+      vectors:= BasisVectors( B );
+      UseBasis( V, vectors );
+
+      # We cannot simply replace the module;
+      # for example if `B' is handled by nice/ugly vectors
+      # then the module is needed to construct these vectors!
+      B:= BasisWithReplacedLeftModule( B, V );
+      SetBasis( V, B );
+
+    fi;
+    return B;
+    end );
+
+
+#############################################################################
+##
 #R  IsMutableBasisByImmutableBasisRep( <B> )
 ##
 ##  The default case of a mutable basis stores an immutable basis,
 ##  and constructs a new one whenever the mutable basis is changed.
 ##
-DeclareRepresentation(
-    "IsMutableBasisByImmutableBasisRep",
-    IsComponentObjectRep and IsMutable,
+DeclareRepresentation( "IsMutableBasisByImmutableBasisRep",
+    IsComponentObjectRep,
     [ "immutableBasis", "leftActingDomain" ] );
 
 
 #############################################################################
 ##
-#M  MutableBasisByGenerators( <R>, <vectors> )
-#M  MutableBasisByGenerators( <R>, <vectors>, <zero> )
+#M  MutableBasis( <R>, <vectors> )
+#M  MutableBasis( <R>, <vectors>, <zero> )
 ##
-InstallMethod( MutableBasisByGenerators,
+InstallMethod( MutableBasis,
     "generic method for ring and collection",
     true,
     [ IsRing, IsCollection ], 0,
@@ -58,22 +106,23 @@ InstallMethod( MutableBasisByGenerators,
     local B;
 
     if ForAll( vectors, IsZero ) then
-      return MutableBasisByGenerators( R, [], vectors[1] );
+      return MutableBasis( R, [], vectors[1] );
     fi;
 
     B:= rec(
-             immutableBasis   := BasisOfDomain(
+             immutableBasis   := Basis(
                                      LeftModuleByGenerators( R, vectors ) ),
              leftActingDomain := R
             );
 
     return Objectify( NewType( FamilyObj( vectors ),
                                    IsMutableBasis
+                               and IsMutable
                                and IsMutableBasisByImmutableBasisRep ),
                       B );
     end );
 
-InstallOtherMethod( MutableBasisByGenerators,
+InstallOtherMethod( MutableBasis,
     "generic method for ring, list, and object",
     true,
     [ IsRing, IsList, IsObject ], 0,
@@ -81,7 +130,7 @@ InstallOtherMethod( MutableBasisByGenerators,
     local B;
 
     B:= rec(
-             immutableBasis   := BasisOfDomain(
+             immutableBasis   := Basis(
                                      LeftModuleByGenerators( R, vectors,
                                                              zero ) ),
              leftActingDomain := R
@@ -89,6 +138,7 @@ InstallOtherMethod( MutableBasisByGenerators,
 
     return Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                    IsMutableBasis
+                               and IsMutable
                                and IsMutableBasisByImmutableBasisRep ),
                       B );
     end );
@@ -119,10 +169,10 @@ InstallMethod( PrintObj,
     [ IsMutableBasis and IsMutableBasisByImmutableBasisRep ], 0,
     function( MB )
     if NrBasisVectors( MB )  = 0 then
-      Print( "MutableBasisByGenerators( ", MB!.leftActingDomain, ", [], ",
+      Print( "MutableBasis( ", MB!.leftActingDomain, ", [], ",
              Zero( UnderlyingLeftModule( MB!.immutableBasis ) ), " )" );
     else
-      Print( "MutableBasisByGenerators( ", MB!.leftActingDomain, ", ",
+      Print( "MutableBasis( ", MB!.leftActingDomain, ", ",
              BasisVectors( MB!.immutableBasis ), " )" );
     fi;
     end );
@@ -146,7 +196,8 @@ InstallOtherMethod( BasisVectors,
 InstallMethod( CloseMutableBasis,
     "for mutable basis represented by an immutable basis, and vector",
     IsCollsElms,
-    [ IsMutableBasis and IsMutableBasisByImmutableBasisRep, IsVector ], 0,
+    [ IsMutableBasis and IsMutable and IsMutableBasisByImmutableBasisRep,
+      IsVector ], 0,
     function( MB, v )
     local V, B, vectors;
     B:= MB!.immutableBasis;
@@ -155,7 +206,7 @@ InstallMethod( CloseMutableBasis,
       vectors:= Concatenation( BasisVectors( B ), [ v ] );
       V:= LeftModuleByGenerators( LeftActingDomain( V ), vectors );
       UseBasis( V, vectors );
-      MB!.immutableBasis := BasisOfDomain( V );
+      MB!.immutableBasis := Basis( V );
     fi;
     end );
 
@@ -189,7 +240,7 @@ InstallMethod( ImmutableBasis,
 #R  IsMutableBasisViaNiceMutableBasisRep( <B> )
 ##
 DeclareRepresentation( "IsMutableBasisViaNiceMutableBasisRep",
-    IsComponentObjectRep and IsMutable,
+    IsComponentObjectRep,
     [ "leftModule", "niceMutableBasis", "zero" ] );
 
 
@@ -199,7 +250,7 @@ DeclareRepresentation( "IsMutableBasisViaNiceMutableBasisRep",
 ##
 ##  *Note* that <vectors> must be a collection.
 ##  (This must be guaranteed by the installations of this function as
-##  method of `MutableBasisByGenerators'.)
+##  method of `MutableBasis'.)
 ##
 InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod2,
     function( R, vectors )
@@ -214,13 +265,7 @@ InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod2,
     if not IsHandledByNiceBasis( M ) then
       Error( "<M> is not handled via nice bases" );
     fi;
-    PrepareNiceFreeLeftModule( M );
-#T is this an argument against binding `NiceVector' to a module?
-#T (would a homomorphism be more elegant?)
-
-    nice:= MutableBasisByGenerators( R,
-                                     List( vectors,
-                                           v -> NiceVector( M, v ) ) );
+    nice:= MutableBasis( R, List( vectors, v -> NiceVector( M, v ) ) );
 
     B:= rec(
              niceMutableBasis  := nice,
@@ -229,6 +274,7 @@ InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod2,
 
     return Objectify( NewType( FamilyObj( vectors ),
                                    IsMutableBasis
+                               and IsMutable
                                and IsMutableBasisViaNiceMutableBasisRep ),
                       B );
 end );
@@ -250,11 +296,7 @@ InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod3,
     # handled by nice bases.
     if IsHandledByNiceBasis( M ) then
 
-      PrepareNiceFreeLeftModule( M );
-#T is this an argument against binding `NiceVector' to a module?
-#T (would a homomorphism be more elegant?)
-
-      B.niceMutableBasis:= MutableBasisByGenerators( R,
+      B.niceMutableBasis:= MutableBasis( R,
                                        List( vectors,
                                              v -> NiceVector( M, v ) ),
                                        NiceVector( M, zero ) );
@@ -269,6 +311,7 @@ InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod3,
 
     return Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                    IsMutableBasis
+                               and IsMutable
                                and IsMutableBasisViaNiceMutableBasisRep ),
                       B );
 end );
@@ -303,12 +346,12 @@ InstallMethod( PrintObj,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep ], 0,
     function( MB )
     if IsBound( MB!.niceMutableBasis ) then
-      Print( "MutableBasisByGenerators( ",
+      Print( "MutableBasis( ",
              LeftActingDomain( MB!.leftModule ), ", ",
              BasisVectors( MB!.niceMutableBasis ), ", ",
              Zero( LeftActingDomain( MB!.leftModule ) ), " )" );
     else
-      Print( "MutableBasisByGenerators( ",
+      Print( "MutableBasis( ",
              LeftActingDomain( MB!.leftModule ), ", [], ",
              Zero( LeftActingDomain( MB!.leftModule ) ), " )" );
     fi;
@@ -359,7 +402,8 @@ InstallMethod( NrBasisVectors,
 InstallMethod( CloseMutableBasis,
     "for mutable basis repres. by a nice mutable basis, and vector",
     IsCollsElms,
-    [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep, IsVector ], 0,
+    [ IsMutableBasis and IsMutable and IsMutableBasisViaNiceMutableBasisRep,
+      IsVector ], 0,
     function( MB, v )
     local R, M;
     if IsBound( MB!.niceMutableBasis ) then
@@ -374,7 +418,7 @@ InstallMethod( CloseMutableBasis,
         Error( "<M> must be handled via nice bases" );
       fi;
       MB!.leftModule:= M;
-      MB!.niceMutableBasis:= MutableBasisByGenerators( R,
+      MB!.niceMutableBasis:= MutableBasis( R,
                                        [ NiceVector( M, v ) ] );
 
     fi;
@@ -419,7 +463,6 @@ InstallMethod( ImmutableBasis,
       vectors:= List( BasisVectors( nice ), v -> UglyVector( M, v ) );
       if not IsEmpty( vectors ) then
         M:= LeftModuleByGenerators( LeftActingDomain( M ), vectors );
-        PrepareNiceFreeLeftModule( M );
         SetNiceFreeLeftModule( M, UnderlyingLeftModule( nice ) );
       fi;
 
@@ -431,11 +474,11 @@ InstallMethod( ImmutableBasis,
       vectors:= [];
 
     fi;
-    return BasisByGeneratorsNC( M, vectors );
+    return BasisNC( M, vectors );
     end );
 
 
 #############################################################################
 ##
-#E  basismut.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

@@ -11,6 +11,12 @@
 Revision.trans_grp:=
   "@(#)$Id$";
 
+#############################################################################
+##
+## tell GAP about the component
+##
+DeclareComponent("trans","1.0");
+
 Unbind(TRANSGRP);
 Unbind(TRANSPROPERTIES);
 
@@ -212,18 +218,18 @@ TRANSSELECT := [];
 TRANSSIZES  := [];
 
 if not IsBound(TRANSDEGREES) then
-  TRANSDEGREES := 23;
+  TRANSDEGREES :=7;
+  HideGlobalVariables("dir","fnam");
+  dir:= DirectoriesLibrary( "trans" );
+  fnam:=Filename( dir, Concatenation("trans",String(TRANSDEGREES+1),".grp"));
+  while fnam<>fail and IsReadableFile(fnam) do
+    TRANSDEGREES:=TRANSDEGREES+1;
+    fnam:=Filename( dir, Concatenation("trans",String(TRANSDEGREES+1),".grp"));
+  od;
+  UnhideGlobalVariables("dir","fnam");
 fi;
 
-#V force global variables T and F to be assigned to avoid syntax errors
-if not IsBound(T) then 
-  T:="dummyT";
-fi;
-if not IsBound(F) then 
-  F:="dummyF";
-fi;
-
-TransGrpLoad := function(deg,nr)
+BIND_GLOBAL("TransGrpLoad",function(deg,nr)
 local Tbak,Fbak,flg,sel,i,fname;
   if IsBound(TRANSGRP[deg]) and (nr=0 or IsBound(TRANSGRP[deg][nr])) then
     return;
@@ -232,10 +238,9 @@ local Tbak,Fbak,flg,sel,i,fname;
     Error("transitive groups are known only of degree up to ",
 	  TRANSDEGREES);
   else
-    if IsBound(T) then Tbak:=T;fi;
-    if IsBound(F) then Fbak:=F;fi;
-    T:=true;
-    F:=false;
+    HideGlobalVariables("T","F");
+    BIND_GLOBAL("T",true);
+    BIND_GLOBAL("F",false);
     fname:=Concatenation("trans",String(deg));
     if deg>15 and not IsPrime(deg) then
       if not IsBound(TRANSGRP[deg]) then
@@ -264,8 +269,7 @@ local Tbak,Fbak,flg,sel,i,fname;
 
     ReadGapRoot( Concatenation( "trans/", fname, ".grp" ));
 
-    if IsBound(Tbak) then T:=Tbak;fi;
-    if IsBound(Fbak) then F:=Fbak;fi;
+    UnhideGlobalVariables("T","F");
 
     if deg>15 and not IsPrime(deg) then
       sel:=Difference(Filtered([1..Length(TRANSGRP[deg])],
@@ -277,9 +281,9 @@ local Tbak,Fbak,flg,sel,i,fname;
     fi;
     ForAll(TRANSPROPERTIES[deg]{sel},i->IsBound(i[5]) and IsBlist(i[5]));
   fi;
-end;
+end);
 
-TRANSGrp := function(deg,nr)
+BIND_GLOBAL("TRANSGrp",function(deg,nr)
   if not IsBound(TRANSGRP[deg]) or not IsBound(TRANSGRP[deg][nr]) then
     TransGrpLoad(deg,nr);
   fi;
@@ -290,9 +294,9 @@ TRANSGrp := function(deg,nr)
     return "fail";
   fi;
   return TRANSGRP[deg][nr];
-end;
+end);
 
-TRANSProperties := function(deg,nr)
+BIND_GLOBAL("TRANSProperties",function(deg,nr)
   if not IsBound(TRANSPROPERTIES[deg]) or
     not IsBound(TRANSPROPERTIES[deg][nr]) then
     TransGrpLoad(deg,nr);
@@ -304,7 +308,17 @@ TRANSProperties := function(deg,nr)
     return "fail";
   fi;
   return TRANSPROPERTIES[deg][nr];
-end;
+end);
+
+InstallGlobalFunction(NrTransitiveGroups, function(deg)
+  if not(deg in [1..TRANSDEGREES]) then
+    return fail;
+  fi;
+  if not IsBound(TRANSLENGTHS[deg]) then
+    TransGrpLoad(deg,0);
+  fi;
+  return TRANSLENGTHS[deg];
+end);
 
 InstallGlobalFunction( TransitiveGroup, function(deg,num)
   local gens,i,l,g,s;
@@ -323,7 +337,7 @@ InstallGlobalFunction( TransitiveGroup, function(deg,num)
   s:=Factorial(deg);
   if TRANSProperties(deg,num)[1]=s then
     if deg=1 then
-      g:=Group(());
+      g:=GroupByGenerators( [], () );
     else
       g:=SymmetricGroup(deg);
     fi;
@@ -346,7 +360,7 @@ InstallGlobalFunction( TransitiveGroup, function(deg,num)
         fi;
       fi;
     od;
-    g:=Group(gens,());
+    g:= GroupByGenerators( gens, () );
     if l[s]<>"" then
       SetName(g,l[s]);
     else
@@ -361,7 +375,7 @@ CntOp := function(grp,orb,op)
 local l,i;
   l:=[];
   for i in orb do
-    Add(l,SignPermGroup(Operation(grp,i,op))*Length(i));
+    Add(l,SignPermGroup(Action(grp,i,op))*Length(i));
   od;
   l:=Collected(l);
   for i in [1..Length(l)] do
@@ -416,18 +430,19 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
         =CntOp(grp,Orbits(grp,Combinations(dom,3),OnSets),OnSets) );
   fi;
 
-  if Length(cand)>1 and IsSolvableGroup(grp)
-     and not HasConjugacyClasses(grp) then
-    t:=[];
-    aiso:=IsomorphismPcGroup(grp);
-    a:=Image(aiso,grp);
-    for i in ConjugacyClasses(a) do
-      s:=ConjugacyClass(grp,PreImagesRepresentative(aiso,Representative(i)));
-      SetStabilizerOfExternalSet(s,PreImage(aiso,Centralizer(i)));
-      Add(t,s);
-    od;
-    SetConjugacyClasses(grp,t);
-  fi;
+  Pcgs(grp); # try to enforce solvable calculations further on.
+#  if Length(cand)>1 and IsSolvableGroup(grp)
+#     and not HasConjugacyClasses(grp) then
+#    t:=[];
+#    aiso:=IsomorphismPcGroup(grp);
+#    a:=Image(aiso,grp);
+#    for i in ConjugacyClasses(a) do
+#      s:=ConjugacyClass(grp,PreImagesRepresentative(aiso,Representative(i)));
+#      SetStabilizerOfExternalSet(s,PreImage(aiso,Centralizer(i)));
+#      Add(t,s);
+#    od;
+#    SetConjugacyClasses(grp,t);
+#  fi;
 
   if Length(cand)>1 then
     s:=List(CycleStructuresGroup(grp),i->i=1);
@@ -472,38 +487,36 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
     if IsSolvableGroup(grp) then
       s:=Filtered([1..Length(cand)],i->IsSolvableGroup(p[i]));
       cand:=cand{s};
-      aiso:=IsomorphismPcGroup(grp);
-      grp:=Image(aiso,grp);
-
-      piso:=List(p{s},IsomorphismPcGroup);
-      p:=List([1..Length(s)],i->Image(piso[i],p[s[i]]));
-    else
-      aiso:=IdentityMapping(grp);
-      piso:=List(p,IdentityMapping);
+#      aiso:=IsomorphismPcGroup(grp);
+#      grp:=Image(aiso,grp);
+#
+#      piso:=List(p{s},IsomorphismPcGroup);
+#      p:=List([1..Length(s)],i->Image(piso[i],p[s[i]]));
+      p:=p{s}; 
+      List(p,Pcgs); # enforce Pcgs use
+#    else
+#      aiso:=IdentityMapping(grp);
+#      piso:=List(p,IdentityMapping);
     fi;
 
     # Klassen
     t:=Collected(List(ConjugacyClasses(grp),
-                      i->[CycleStructurePerm(PreImagesRepresentative(aiso,
-		          Representative(i))),Size(i)]));
+                      i->[CycleStructurePerm(Representative(i)),Size(i)]));
     s:=Filtered([1..Length(cand)],i->Collected(List(
            ConjugacyClasses(p[i]),
-           j->[CycleStructurePerm(PreImagesRepresentative(piso[i],
-	                          Representative(j))),Size(j)]))=t);
+           j->[CycleStructurePerm(Representative(j)),Size(j)]))=t);
     cand:=cand{s};
     p:=p{s};
   fi;  
 
   # maximal subgroups
-  if IsPcGroup(grp) and Length(cand)>1 then
-    t:=Collected(List(Filtered(List(MaximalSubgroupClassReps(grp),
-                i->PreImage(aiso,i)),
-                i->Length(Orbits(i,MovedPoints(PreImage(aiso,grp))))=1),
+  if IsSolvableGroup(grp) and Length(cand)>1 then
+    t:=Collected(List(Filtered(MaximalSubgroupClassReps(grp),
+                i->Length(Orbits(i,MovedPoints(grp)))=1),
 		TransitiveIdentification));
     s:=Filtered([1..Length(cand)],
-        k->Collected(List(Filtered(List(MaximalSubgroupClassReps(p[k]),
-	        i->PreImage(piso[k],i)),
-                i->Length(Orbits(i,MovedPoints(PreImage(piso[k],p[k]))))=1),
+        k->Collected(List(Filtered(MaximalSubgroupClassReps(p[k]),
+                i->Length(Orbits(i,MovedPoints(p[k])))=1),
 		TransitiveIdentification))=t);
     cand:=cand{s};
     p:=p{s};
@@ -518,13 +531,13 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
     p:=p{s};
   fi;  
 
-  if Length(cand)>1 and Size(grp)<10000 then
+  if Length(cand)>1 and Size(grp)<3000 then
     # Subgroups
     Print("#I  Subgroups ",cand,"\n");
-    t:=Collected(List(ConjugacyClassesSubgroups(grp),
+    t:=Collected(List(ConjugacyClassesSubgroups(Group(GeneratorsOfGroup(grp))),
                       i->[Size(Representative(i)),Size(i)]));
     s:=Filtered([1..Length(cand)],i->Collected(List(
-           ConjugacyClassesSubgroups(p[i]),
+           ConjugacyClassesSubgroups(Group(GeneratorsOfGroup(p[i]))),
            i->[Size(Representative(i)),Size(i)]))=t);
     cand:=cand{s};
     p:=p{s};
@@ -534,10 +547,10 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
     # now finally the hard test: Test for conjugacy
     Print("#I  Conjugacy Test",cand,"\n");
     s:=SymmetricGroup(Maximum(dom));
-    if IsSolvableGroup(grp) then
-      grp:=PreImage(aiso,grp);
-      p:=List([1..Length(p)],i->PreImage(piso[i],p[i]));
-    fi; 
+#    if IsSolvableGroup(grp) then
+#      grp:=PreImage(aiso,grp);
+#      p:=List([1..Length(p)],i->PreImage(piso[i],p[i]));
+#    fi; 
     grp:=AsSubgroup(s,grp);
     p:=List(p,i->AsSubgroup(s,i));
     s:=Filtered([1..Length(cand)],i->IsConjugate(s,grp,p[i]));
@@ -552,21 +565,11 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
   fi;
 end);
 
-STGSelFunc := function(a,b)
-  if IsFunction(b) then
-    return b(a);
-  elif IsList(b) then
-   return a in b;
- else
-   return a=b;
- fi;
-end;
-
 #############################################################################
 ##
 #F  SelectTransitiveGroups(arglis,alle)  . . . . . selection function
 ##
-SelectTransitiveGroups := function(arglis,alle)
+BIND_GLOBAL("SelectTransitiveGroups",function(arglis,alle)
 local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   l:=Length(arglis)/2;
   if not IsInt(l) then
@@ -682,21 +685,21 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   od;
 
   return grp;
-end;
+end);
 
 #############################################################################
 ##
 #F  AllTransitiveGroups( <fun>, <res>, ... ) . . . . . . . selection function
 ##
-AllTransitiveGroups := function ( arg )
+BIND_GLOBAL("AllTransitiveGroups",function ( arg )
   return SelectTransitiveGroups(arg,true);
-end;
+end);
 
 #############################################################################
 ##
 #F  OneTransitiveGroup( <fun>, <res>, ... ) . . . . . . . selection function
 ##
-OneTransitiveGroup := function ( arg )
+BIND_GLOBAL("OneTransitiveGroup",function ( arg )
 local sel;
   sel:=SelectTransitiveGroups(arg,false);
   if sel=[] then
@@ -704,9 +707,9 @@ local sel;
   else
     return sel;
   fi;
-end;
+end);
 
 #############################################################################
 ##
-#E  trans.grp
-##
+#E
+

@@ -1,0 +1,141 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  magma.msk                  GAP documentation                Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Magmas}
+
+This chapter deals with domains (see~"Domains and their Elements")
+that are closed under multiplication `\*'.
+Following~\cite{Bourbaki70}, we call them *magmas* in {\GAP}.
+Together with the domains closed under addition `+', (see~"Additive Magmas"),
+they are the basic algebraic structures;
+every semigroup (see~"Semigroups"), monoid (see~"Monoids"),
+group (see~"Groups"), ring (see~"Rings"),
+or field (see~"Fields and Division Rings") is a magma.
+In the cases of a *magma-with-one* or *magma-with-inverses*,
+additional multiplicative structure is present, see~"Magma Categories".
+For functions to create free magmas, see~"Free Magmas".
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Magma Categories}
+
+\Declaration{IsMagma}
+\Declaration{IsMagmaWithOne}
+\Declaration{IsMagmaWithInversesIfNonzero}
+\Declaration{IsMagmaWithInverses}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Magma Generation}
+
+\Declaration{Magma}
+\Declaration{MagmaWithOne}
+\Declaration{MagmaWithInverses}
+
+The underlying operations for which methods can be installed are the
+following.
+
+\Declaration{MagmaByGenerators}
+\Declaration{MagmaWithOneByGenerators}
+\Declaration{MagmaWithInversesByGenerators}
+
+Substructures of a magma can be formed as follows.
+
+\Declaration{Submagma}
+\Declaration{SubmagmaWithOne}
+\Declaration{SubmagmaWithInverses}
+
+The following functions can be used to regard a collection as a magma.
+
+\Declaration{AsMagma}
+\Declaration{AsSubmagma}
+
+
+The following function creates a new magma which is the original
+magma with a zero adjoined.
+\Declaration{InjectionZeroMagma}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Magmas Defined by Multiplication Tables}
+
+The most elementary (but of course usually not recommended) way to implement
+a magma with only few elements is via a multiplication table.
+
+\Declaration{MagmaByMultiplicationTable}
+\Declaration{MagmaWithOneByMultiplicationTable}
+\Declaration{MagmaWithInversesByMultiplicationTable}
+\Declaration{MagmaElement}
+\Declaration{MultiplicationTable}
+\beginexample
+gap> l:= [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3) ];;
+gap> a:= MultiplicationTable( l );
+[ [ 1, 2, 3, 4 ], [ 2, 1, 4, 3 ], [ 3, 4, 1, 2 ], [ 4, 3, 2, 1 ] ]
+gap> m:= MagmaByMultiplicationTable( a );
+<magma with 4 generators>
+gap> One( m );
+m1
+gap> elm:= MagmaElement( m, 2 );  One( elm );  elm^2;
+m2
+m1
+m1
+gap> Inverse( elm );
+m2
+gap> AsGroup( m );
+<group of size 4 with 2 generators>
+gap> a:= [ [ 1, 2 ], [ 2, 2 ] ];
+[ [ 1, 2 ], [ 2, 2 ] ]
+gap> m:= MagmaByMultiplicationTable( a );
+<magma with 2 generators>
+gap> One( m );  Inverse( MagmaElement( m, 2 ) );     
+m1
+fail
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Attributes and Properties for Magmas}
+
+\Declaration{GeneratorsOfMagma}
+\Declaration{GeneratorsOfMagmaWithOne}
+\Declaration{GeneratorsOfMagmaWithInverses}
+
+\index{centraliser}\index{center}
+\Declaration{Centralizer}
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));;
+gap> Centralizer(g,(1,2,3));
+Group( [ (1,2,3) ] )
+gap> Centralizer(g,Subgroup(g,[(1,2,3)]));
+Group([ (1,2,3) ])
+gap> Centralizer(g,Subgroup(g,[(1,2,3),(1,2)]));
+Group(())
+\endexample
+
+
+\Declaration{Centre}
+\Declaration{IsAssociative}
+\Declaration{IsCentral}
+\Declaration{IsCommutative}
+\Declaration{MultiplicativeNeutralElement}
+\Declaration{MultiplicativeZero}
+\Declaration{IsMultiplicativeZero}
+\Declaration{SquareRoots}
+\Declaration{TrivialSubmagmaWithOne}
+
+*Note* that `IsAssociative' and `IsCommutative' always refer to the
+multiplication of a domain.
+If a magma <M> has also an additive structure, e.g., if <M> is a ring
+(see~"Rings"), then the addition `+' is always assumed to be associative and
+commutative, see~"Arithmetic Operations for Elements".
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

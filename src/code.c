@@ -218,8 +218,11 @@ Stat PopSeqStat (
     Stat                stat;           /* single statement                */
     UInt                i;              /* loop variable                   */
 
+    if (nr == 0 ) {
+      body = NewStat(T_EMPTY, 0);
+    }
     /* special case for a single statement                                 */
-    if ( nr == 1 ) {
+    else if ( nr == 1 ) {
         body = PopStat();
     }
 
@@ -366,6 +369,71 @@ void PushBinaryOp (
 
 /****************************************************************************
 **
+*F  CodeFuncCallOptionsBegin() . . . . . . . . . . . . .  code options, begin
+*F  CodeFuncCallOptionsBeginElmName(<rnam>). . .  code options, begin element
+*F  CodeFuncCallOptionsBeginElmExpr() . .. . . . .code options, begin element
+*F  CodeFuncCallOptionsEndElm() . . .. .  . . . . . code options, end element
+*F  CodeFuncCallOptionsEndElmEmpty() .. .  . . . . .code options, end element
+*F  CodeFuncCallOptionsEnd(<nr>)  . . . . . . . . . . . . . code options, end
+**
+**  The net effect of all of these is to leave a record expression on the stack
+**  containing the options record. It will be picked up by
+**  CodeFuncCallEnd()
+**
+*/
+void            CodeFuncCallOptionsBegin ( void )
+{
+}
+
+void            CodeFuncCallOptionsBeginElmName (
+    UInt                rnam )
+{
+    /* push the record name as integer expressions                         */
+    PushExpr( INTEXPR_INT( rnam ) );
+}
+
+void            CodeFuncCallOptionsBeginElmExpr ( void )
+{
+  /* The expression is on the stack where we want it */
+}
+
+void            CodeFuncCallOptionsEndElm ( void )
+{
+}
+
+void            CodeFuncCallOptionsEndElmEmpty ( void )
+{
+  /* The default value is true */
+      PushExpr( NewExpr( T_TRUE_EXPR, 0L ) );
+}
+
+void            CodeFuncCallOptionsEnd ( UInt nr )
+{
+    Expr                record;         /* record, result                  */
+    Expr                entry;          /* entry                           */
+    Expr                rnam;           /* position of an entry            */
+    UInt                i;              /* loop variable                   */
+
+    /* allocate the record expression                                      */
+    record = NewExpr( T_REC_EXPR,      nr * 2 * sizeof(Expr) );
+    
+
+    /* enter the entries                                                   */
+    for ( i = nr; 1 <= i; i-- ) {
+        entry = PopExpr();
+        rnam  = PopExpr();
+        ADDR_EXPR(record)[2*(i-1)]   = rnam;
+        ADDR_EXPR(record)[2*(i-1)+1] = entry;
+    }
+
+    /* push the record                                                     */
+    PushExpr( record );
+
+}
+
+
+/****************************************************************************
+**
 
 *F  CodeBegin() . . . . . . . . . . . . . . . . . . . . . . . start the coder
 *F  CodeEnd( <error> )  . . . . . . . . . . . . . . . . . . .  stop the coder
@@ -431,7 +499,7 @@ UInt CodeEnd (
 /****************************************************************************
 **
 *F  CodeFuncCallBegin() . . . . . . . . . . . . . . code function call, begin
-*F  CodeFuncCallEnd( <funccall>, <nr> ) . . . . . . . code function call, end
+*F  CodeFuncCallEnd( <funccall>, <options>, <nr> )  code function call, end
 **
 **  'CodeFuncCallBegin'  is an action to code  a function call.  It is called
 **  by the reader  when it encounters the parenthesis  '(', i.e., *after* the
@@ -441,7 +509,8 @@ UInt CodeEnd (
 **  the reader when  it  encounters the parenthesis  ')',  i.e.,  *after* the
 **  argument expressions are read.   <funccall> is 1  if  this is a  function
 **  call,  and 0  if  this  is  a procedure  call.    <nr> is the   number of
-**  arguments.
+**  arguments. <options> is 1 if options were present after the ':' in which
+**  case the options have been read already.
 */
 void CodeFuncCallBegin ( void )
 {
@@ -449,12 +518,15 @@ void CodeFuncCallBegin ( void )
 
 void CodeFuncCallEnd (
     UInt                funccall,
+    UInt                options,
     UInt                nr )
 {
     Expr                call;           /* function call, result           */
     Expr                func;           /* function expression             */
     Expr                arg;            /* one argument expression         */
     UInt                i;              /* loop variable                   */
+    Expr                opts = 0;       /* record literal for the options  */
+    Expr                wrapper;        /* wrapper for calls with options  */
 
     /* allocate the function call                                          */
     if ( funccall && nr <= 6 ) {
@@ -470,6 +542,10 @@ void CodeFuncCallEnd (
         call = NewExpr( T_PROCCALL_XARGS,    SIZE_NARG_CALL(nr) );
     }
 
+    /* get the options record if any */
+    if (options)
+      opts = PopExpr();
+    
     /* enter the argument expressions                                      */
     for ( i = nr; 1 <= i; i-- ) {
         arg = PopExpr();
@@ -479,6 +555,16 @@ void CodeFuncCallEnd (
     /* enter the function expression                                       */
     func = PopExpr();
     FUNC_CALL(call) = func;
+
+    /* wrap up the call with the options */
+    if (options)
+      {
+	wrapper = NewExpr( funccall ? T_FUNCCALL_OPTS : T_PROCCALL_OPTS, 
+			   2*sizeof(Expr));
+	ADDR_EXPR(wrapper)[0] = opts;
+	ADDR_EXPR(wrapper)[1] = call;
+	call = wrapper;
+      }
 
     /* push the function call                                              */
     if ( funccall ) {
@@ -795,6 +881,12 @@ void CodeForEndBody (
     Stat                stat1;          /* single statement of body        */
     UInt                i;              /* loop variable                   */
 
+    /* fix up the case of no statements */
+    if ( 0 == nr ) {
+      PushStat( NewStat( T_EMPTY, 0) );
+      nr = 1;
+    }
+
     /* collect the statements into a statement sequence if necessary       */
     if ( 3 < nr ) {
         PushStat( PopSeqStat( nr ) );
@@ -879,11 +971,14 @@ void CodeWhileEndBody (
     Stat                stat1;          /* single statement of body        */
     UInt                i;              /* loop variable                   */
 
-    /* collect the statements into a statement sequence if necessary       */
-    if ( nr == 0 ) {
-        ErrorQuit( "Error, statement expected between while/od", 
-                   0L, 0L );
+
+    /* fix up the case of no statements */
+    if ( 0 == nr ) {
+      PushStat( NewStat( T_EMPTY, 0) );
+      nr = 1;
     }
+    
+    /* collect the statements into a statement sequence if necessary       */
     if ( 3 < nr ) {
         PushStat( PopSeqStat( nr ) );
         nr = 1;
@@ -966,11 +1061,12 @@ void CodeRepeatEnd ( void )
     tmp = PopExpr();
     nr = INT_INTEXPR( tmp );
 
-    /* collect the statements into a statement sequence if necessary       */
-    if ( nr == 0 ) {
-        ErrorQuit( "Error, statement expected between repeat/until", 
-                   0L, 0L );
+    /* fix up the case of no statements */
+    if ( 0 == nr ) {
+      PushStat( NewStat( T_EMPTY, 0) );
+      nr = 1;
     }
+    /* collect the statements into a statement sequence if necessary       */
     if ( 3 < nr ) {
         PushStat( PopSeqStat( nr ) );
         nr = 1;
@@ -2626,6 +2722,19 @@ void CodeIsbComObjExpr ( void )
     PushExpr( expr );
 }
 
+
+/****************************************************************************
+**
+*F  CodeEmpty()  . . . . code an empty statement
+**
+*/
+
+extern void CodeEmpty( void )
+{
+  Stat stat;
+  stat = NewStat(T_EMPTY, 0);
+  PushStat( stat );
+}
 
 /****************************************************************************
 **

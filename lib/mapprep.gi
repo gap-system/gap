@@ -41,7 +41,7 @@ Revision.mapprep_gi :=
 DeclareRepresentation( "IsDefaultGeneralMappingRep",
     IsGeneralMapping and HasSource and HasRange,
     [] );
-#T methods to handle attributes 'One', 'Inverse', and 'InverseGeneralMapping', 
+#T methods to handle attributes 'One', 'Inverse', and 'InverseGeneralMapping',
 #T 'ImagesSource', 'PreImagesRange'?
 
 
@@ -80,7 +80,7 @@ InstallMethod( Range,
     "for default general mapping",
     true,
     [ IsGeneralMapping and IsDefaultGeneralMappingRep ],
-    2*SUM_FLAGS + 1,  # higher than the system getter!
+    GETTER_FLAGS + 1,  # higher than the system getter!
     map -> DataType( TypeObj( map ) )[2] );
 
 
@@ -92,7 +92,7 @@ InstallMethod( Source,
     "for default general mapping",
     true,
     [ IsGeneralMapping and IsDefaultGeneralMappingRep ],
-    2*SUM_FLAGS + 1,  # higher than the system getter!
+    GETTER_FLAGS + 1,  # higher than the system getter!
     map -> DataType( TypeObj( map ) )[1] );
 
 
@@ -107,7 +107,6 @@ InstallMethod( Source,
 ##
 DeclareRepresentation( "IsCompositionMappingRep",
     IsGeneralMapping and IsAttributeStoringRep, [ "map1", "map2" ] );
-#T better list object?
 
 
 #############################################################################
@@ -121,12 +120,7 @@ InstallMethod( CompositionMapping2,
     function( map2, map1 )
     local com;        # composition of <map1> and <map2>, result
 
-    # Check that the source of 'map2' is a subset of the range of 'map1'
-    if not IsSubset( Range( map1 ), Source( map2 ) ) then
-      Error( "source of 'map2' must be a subset of the range of 'map1'" );
-    fi;
-
-    # make the general mapping
+    # Make the general mapping.
     if IsSPGeneralMapping( map1 ) and IsSPGeneralMapping( map2 ) then
       com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
                                                     Range( map2 ),
@@ -139,29 +133,13 @@ InstallMethod( CompositionMapping2,
                      rec() );
     fi;
 
-    # enter the identifying information
+    # Enter the identifying information.
+    # (Maintenance of useful information is dealt with by the
+    # wrapper function `CompositionMapping'.)
     com!.map1:= map1;
     com!.map2:= map2;
 
-    # enter useful information
-    if     HasIsInjective( map1 ) and IsInjective( map1 )
-       and HasIsInjective( map2 ) and IsInjective( map2 ) then
-      SetIsInjective( com, true );
-    fi;
-    if     HasIsSingleValued( map1 ) and IsSingleValued( map1 )
-       and HasIsSingleValued( map2 ) and IsSingleValued( map2 ) then
-      SetIsSingleValued( com, true );
-    fi;
-    if     HasIsSurjective( map1 ) and IsSurjective( map1 )
-       and HasIsSurjective( map2 ) and IsSurjective( map2 ) then
-      SetIsSurjective( com, true );
-    fi;
-    if     HasIsTotal( map1 ) and IsTotal( map1 )
-       and HasIsTotal( map2 ) and IsTotal( map2 ) then
-      SetIsTotal( com, true );
-    fi;
-
-    # return the composition
+    # Return the composition.
     return com;
     end );
 
@@ -223,7 +201,8 @@ InstallMethod( IsSurjective,
     function( com )
     if   not IsSurjective( com!.map2 ) then
       return false;
-    elif IsSurjective( com!.map1 ) then
+    elif IsSurjective( com!.map1 ) and
+         IsSubset( Range( com!.map1 ), PreImagesRange( com!.map2 ) ) then
       return true;
     fi;
     TryNextMethod();
@@ -241,7 +220,8 @@ InstallMethod( IsTotal,
     function( com )
     if not IsTotal( com!.map1 ) then
       return false;
-    elif IsTotal( com!.map2 ) then
+    elif IsTotal( com!.map2 ) and
+         IsSubset( Source( com!.map2 ), ImagesSource( com!.map1 ) ) then
       return true;
     fi;
     TryNextMethod();
@@ -475,20 +455,20 @@ InstallMethod( ViewObj,
     [ IsCompositionMappingRep ], 100,
     function( com )
     Print( "CompositionMapping( " );
-    View( com!.map1 );
-    Print( ", " );
     View( com!.map2 );
+    Print( ", " );
+    View( com!.map1 );
     Print( " )" );
     end );
- 
+
 InstallMethod( PrintObj,
     "for a composition mapping",
     true,
     [ IsCompositionMappingRep ], 100,
     function( com )
-    Print( "CompositionMapping( ", com!.map1, ", ", com!.map2, " )" );
+    Print( "CompositionMapping( ", com!.map2, ", ", com!.map1, " )" );
     end );
- 
+
 
 #############################################################################
 ##
@@ -500,7 +480,7 @@ InstallMethod( PrintObj,
 #R  IsMappingByFunctionRep( <map> )
 ##
 DeclareRepresentation( "IsMappingByFunctionRep",
-    IsNonSPGeneralMapping and IsMapping and IsAttributeStoringRep,
+    IsMapping and IsAttributeStoringRep,
     [ "fun" ] );
 #T really attribute storing ??
 
@@ -515,21 +495,62 @@ DeclareRepresentation( "IsMappingByFunctionWithInverseRep",
 #T 1996/10/10 fceller where to put non-reps, 4th position?
     [ "fun", "invFun" ] );
 
+#############################################################################
+##
+#R  IsNonSPMappingByFunctionRep( <map> )
+##
+DeclareRepresentation( "IsNonSPMappingByFunctionRep",
+    IsNonSPGeneralMapping and IsMappingByFunctionRep, [] );
+
+#############################################################################
+##
+#R  IsNonSPMappingByFunctionWithInverseRep( <map> )
+##
+DeclareRepresentation( "IsNonSPMappingByFunctionWithInverseRep",
+        IsMappingByFunctionWithInverseRep and IsNonSPMappingByFunctionRep,
+    [ "fun", "invFun" ] );
+
+#############################################################################
+##
+#R  IsSPMappingByFunctionRep( <map> )
+##
+DeclareRepresentation( "IsSPMappingByFunctionRep",
+    IsSPGeneralMapping and IsMappingByFunctionRep, [] );
+
+#############################################################################
+##
+#R  IsSPMappingByFunctionWithInverseRep( <map> )
+##
+DeclareRepresentation( "IsSPMappingByFunctionWithInverseRep",
+        IsMappingByFunctionWithInverseRep and IsSPMappingByFunctionRep,
+    [ "fun", "invFun" ] );
+
 
 #############################################################################
 ##
 #F  MappingByFunction( <D>, <E>, <fun> )  . . . . .  create map from function
 #F  MappingByFunction( <D>, <E>, <fun>, <invfun> )
 ##
-BindGlobal( "MappingByFunction", function ( arg )
+InstallGlobalFunction( MappingByFunction, function ( arg )
     local   map;        # mapping <map>, result
+
+
+		if not Length(arg) in [3,4] then
+			# signal an error
+      Error( "usage: MappingByFunction( <D>, <E>, <fun>[, <inv>] )" );
+		fi;
+
+		# ensure that the source and range are domains
+		if not (IsDomain(arg[1]) and IsDomain(arg[2])) then
+			Error("MappingByFunction: Source and Range must be domains");
+		fi;
 
     # no inverse function given
     if Length(arg) = 3  then
 
       # make the general mapping
       map:= Objectify( TypeOfDefaultGeneralMapping( arg[1], arg[2],
-                               IsMappingByFunctionRep
+                               IsNonSPMappingByFunctionRep
                            and IsSingleValued
                            and IsTotal ),
                        rec( fun:= arg[3] ) );
@@ -539,14 +560,11 @@ BindGlobal( "MappingByFunction", function ( arg )
 
       # make the mapping
       map:= Objectify( TypeOfDefaultGeneralMapping( arg[1], arg[2],
-                               IsMappingByFunctionWithInverseRep
+                               IsNonSPMappingByFunctionWithInverseRep
                            and IsBijective ),
                        rec( fun    := arg[3],
                             invFun := arg[4] ) );
 
-    # otherwise signal an error
-    else
-      Error( "usage: MappingByFunction( <D>, <E>, <fun>[, <inv>] )" );
     fi;
 
     # return the mapping
@@ -659,7 +677,7 @@ InstallMethod( ViewObj,
     true,
     [ IsMappingByFunctionRep ], 0,
     function ( map )
-    Print( "GeneralMappingByFunction( " );
+    Print( "MappingByFunction( " );
     View( Source( map ) );
     Print( ", " );
     View( Range( map ) );
@@ -673,7 +691,7 @@ InstallMethod( PrintObj,
     true,
     [ IsMappingByFunctionRep ], 0,
     function ( map )
-    Print( "GeneralMappingByFunction( ",
+    Print( "MappingByFunction( ",
            Source( map ), ", ", Range( map ), ", ",
            map!.fun, " )" );
     end );
@@ -735,7 +753,7 @@ DeclareRepresentation( "IsInverseGeneralMappingRep",
 #M  InverseGeneralMapping( <map> ) . for a general mapping with known inverse
 ##
 InstallImmediateMethod( InverseGeneralMapping,
-    IsGeneralMapping and HasInverse, 0,
+    IsGeneralMapping and HasInverse and IsAttributeStoringRep, 0,
     function( map )
     if Inverse( map ) <> fail then
       return Inverse( map );
@@ -756,14 +774,14 @@ InstallMethod( InverseGeneralMapping,
     function ( map )
     local   inv;
 
-    # make the mapping
+    # Make the mapping.
     inv:= Objectify( TypeOfDefaultGeneralMapping( Range( map ),
                                                   Source( map ),
                              IsInverseGeneralMappingRep
                          and IsAttributeStoringRep ),
                      rec() );
 
-    # if possible, enter preimage and image
+    # If possible, enter preimage and image.
     if HasImagesSource( map ) then
       SetPreImagesRange( inv, ImagesSource( map ) );
     fi;
@@ -771,6 +789,24 @@ InstallMethod( InverseGeneralMapping,
       SetImagesSource( inv, PreImagesRange( map ) );
     fi;
 
+    # Maintain important properties.
+    if HasIsSingleValued( map ) then
+      SetIsInjective( inv, IsSingleValued( map ) );
+    fi;
+    if HasIsInjective( map ) then
+      SetIsSingleValued( inv, IsInjective( map ) );
+    fi;
+    if HasIsTotal( map ) then
+      SetIsSurjective( inv, IsTotal( map ) );
+    fi;
+    if HasIsSurjective( map ) then
+      SetIsTotal( inv, IsSurjective( map ) );
+    fi;
+    if HasIsEndoGeneralMapping( map ) then
+      SetIsEndoGeneralMapping( inv, IsEndoGeneralMapping( map ) );
+    fi;
+
+    # Maintain the maintainings w.r.t. multiplication.
     if HasRespectsMultiplication( map ) then
       SetRespectsMultiplication( inv, RespectsMultiplication( map ) );
     fi;
@@ -780,6 +816,7 @@ InstallMethod( InverseGeneralMapping,
       SetRespectsOne( inv, RespectsOne( map ) );
     fi;
 
+    # Maintain the maintainings w.r.t. addition.
     if HasRespectsAddition( map ) then
       SetRespectsAddition( inv, RespectsAddition( map ) );
     fi;
@@ -789,12 +826,19 @@ InstallMethod( InverseGeneralMapping,
       SetRespectsZero( inv, RespectsZero( map ) );
     fi;
 
-#T there is an asymmetry of resp. sc. mult.?
+    # Maintain respecting of scalar multiplication.
+    # (Note the slight asymmetry, depending on the coefficient domains.)
+    if     HasRespectsScalarMultiplication( map )
+       and   LeftActingDomain( Source( map ) )
+           = LeftActingDomain( Range( map ) ) then
+      SetRespectsScalarMultiplication( inv,
+          RespectsScalarMultiplication( map ) );
+    fi;
 
-    # we know the inverse general mapping of the inverse general mapping ;-)
+    # We know the inverse general mapping of the inverse general mapping ;-).
     SetInverseGeneralMapping( inv, map );
 
-    # return the inverse general mapping
+    # Return the inverse general mapping.
     return inv;
     end );
 
@@ -1060,7 +1104,7 @@ BindGlobal( "ImmediateImplicationsIdentityMapping", function( idmap )
       SetRespectsAddition( idmap, true );
       if IsAdditiveMagmaWithZero( source ) then
 	SetRespectsZero( idmap, true );
-	if IsAdditiveMagmaWithInverses( source ) then
+	if IsAdditiveGroup( source ) then
 	  SetRespectsAdditiveInverses( idmap, true );
 
           # linear structure
@@ -1110,12 +1154,13 @@ InstallMethod( IdentityMapping,
 InstallMethod( \^,
     "for identity mapping and integer",
     true,
-    [ IsGeneralMapping and IsOne, IsInt ], SUM_FLAGS,
-    function ( id, n )
+    [ IsGeneralMapping and IsOne, IsInt ],
+    SUM_FLAGS, # can't do better
+  function ( id, n )
     return id;
-    end );
+  end );
 
-    
+
 #############################################################################
 ##
 #M  ImageElm( <idmap>, <elm> )  . . . . . .  for identity mapping and element
@@ -1123,12 +1168,13 @@ InstallMethod( \^,
 InstallMethod( ImageElm,
     "for identity mapping and object",
     FamSourceEqFamElm,
-    [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
-    function ( id, elm )
+    [ IsGeneralMapping and IsOne, IsObject ],
+    SUM_FLAGS, # can't do better
+  function ( id, elm )
     return elm;
-    end );
+  end );
 
-    
+
 #############################################################################
 ##
 #M  ImagesElm( <idmap>, <elm> )  . . . . . . for identity mapping and element
@@ -1136,12 +1182,13 @@ InstallMethod( ImageElm,
 InstallMethod( ImagesElm,
     "for identity mapping and object",
     FamSourceEqFamElm,
-    [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
-    function ( id, elm )
+    [ IsGeneralMapping and IsOne, IsObject ],
+    SUM_FLAGS, # can't do better
+  function ( id, elm )
     return [ elm ];
-    end );
+  end );
 
-    
+
 #############################################################################
 ##
 #M  ImagesSet( <idmap>, <coll> ) . . . .  for identity mapping and collection
@@ -1149,12 +1196,13 @@ InstallMethod( ImagesElm,
 InstallMethod( ImagesSet,
     "for identity mapping and collection",
     CollFamSourceEqFamElms,
-    [ IsGeneralMapping and IsOne, IsCollection ], SUM_FLAGS,
-    function ( id, elms )
+    [ IsGeneralMapping and IsOne, IsCollection ],
+    SUM_FLAGS, # can't do better
+  function ( id, elms )
     return elms;
-    end );
+  end );
 
-    
+
 #############################################################################
 ##
 #M  ImagesRepresentative( <idmap>, <elm> )   for identity mapping and element
@@ -1162,10 +1210,11 @@ InstallMethod( ImagesSet,
 InstallMethod( ImagesRepresentative,
     "for identity mapping and object",
     FamSourceEqFamElm,
-    [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
-    function ( id, elm )
+    [ IsGeneralMapping and IsOne, IsObject ],
+    SUM_FLAGS, # can't do better
+  function ( id, elm )
     return elm;
-    end );
+  end );
 
 
 #############################################################################
@@ -1175,10 +1224,11 @@ InstallMethod( ImagesRepresentative,
 InstallMethod( PreImageElm,
     "for identity mapping and object",
     FamRangeEqFamElm,
-    [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
-    function ( id, elm )
+    [ IsGeneralMapping and IsOne, IsObject ],
+    SUM_FLAGS, # can't do better
+  function ( id, elm )
     return elm;
-    end );
+  end );
 
 
 #############################################################################
@@ -1188,10 +1238,11 @@ InstallMethod( PreImageElm,
 InstallMethod( PreImagesElm,
     "for identity mapping and object",
     FamRangeEqFamElm,
-    [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
-    function ( id, elm )
+    [ IsGeneralMapping and IsOne, IsObject ],
+    SUM_FLAGS, # can't do better
+  function ( id, elm )
     return [ elm ];
-    end );
+  end );
 
 
 #############################################################################
@@ -1201,10 +1252,11 @@ InstallMethod( PreImagesElm,
 InstallMethod( PreImagesSet,
     "for identity mapping and collection",
     CollFamRangeEqFamElms,
-    [ IsGeneralMapping and IsOne, IsCollection ], SUM_FLAGS,
-    function ( id, elms )
+    [ IsGeneralMapping and IsOne, IsCollection ],
+    SUM_FLAGS, # can't do better
+  function ( id, elms )
     return elms;
-    end );
+  end );
 
 
 #############################################################################
@@ -1214,10 +1266,11 @@ InstallMethod( PreImagesSet,
 InstallMethod( PreImagesRepresentative,
     "for identity mapping and object",
     FamRangeEqFamElm,
-    [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
-    function ( id, elm )
+    [ IsGeneralMapping and IsOne, IsObject ],
+    SUM_FLAGS, # can't do better
+  function ( id, elm )
     return elm;
-    end );
+  end );
 
 
 #############################################################################
@@ -1229,11 +1282,11 @@ InstallMethod( ViewObj,
     "for identity mapping",
     true,
     [ IsGeneralMapping and IsOne ], SUM_FLAGS,
-    function ( id )
+  function ( id )
     Print( "IdentityMapping( " );
     View( Source( id ) );
     Print( " )" );
-    end );
+  end );
 
 InstallMethod( PrintObj,
     "for identity mapping",
@@ -1249,13 +1302,17 @@ InstallMethod( PrintObj,
 #M  CompositionMapping2( <map>, <idmap> ) .  for gen. mapping and id. mapping
 ##
 InstallMethod( CompositionMapping2,
-    "for general mapping and identity mapping",
-    FamSource1EqFamRange2,
-    [ IsGeneralMapping, IsGeneralMapping and IsOne ],
-    SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
-    function ( map, id )
-    return map;
-    end );
+  "for general mapping and identity mapping", FamSource1EqFamRange2,
+  [ IsGeneralMapping, IsGeneralMapping and IsOne ],
+  SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
+function ( map, id )
+  if not IsSubset(Range(id),Source(map)) then
+    # if the identity is defined on something smaller, we need to take a
+    # true `CompositionMapping'.
+    TryNextMethod();
+  fi;
+  return map;
+end );
 
 
 #############################################################################
@@ -1263,13 +1320,17 @@ InstallMethod( CompositionMapping2,
 #M  CompositionMapping2( <idmap>, <map> ) .  for id. mapping and gen. mapping
 ##
 InstallMethod( CompositionMapping2,
-    "for identity mapping and general mapping",
-    FamSource1EqFamRange2,
-    [ IsGeneralMapping and IsOne, IsGeneralMapping ],
-    SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
-    function( id, map )
-    return map;
-    end );
+  "for identity mapping and general mapping",FamSource1EqFamRange2,
+  [ IsGeneralMapping and IsOne, IsGeneralMapping ],
+  SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
+function( id, map )
+  if not IsSubset(Source(id),ImagesSource(map)) then
+    # if the identity is defined on something smaller, we need to take a
+    # true `CompositionMapping'.
+    TryNextMethod();
+  fi;
+  return map;
+end );
 
 
 #############################################################################
@@ -1308,7 +1369,7 @@ BindGlobal( "ImmediateImplicationsZeroMapping", function( zeromap )
       SetRespectsAddition( zeromap, true );
       if IsAdditiveMagmaWithZero( source ) then
 	SetRespectsZero( zeromap, true );
-	if IsAdditiveMagmaWithInverses( source ) then
+	if IsAdditiveGroup( source ) then
 	  SetRespectsAdditiveInverses( zeromap, true );
 	fi;
       fi;
@@ -1339,6 +1400,7 @@ InstallMethod( ZeroMapping,
     # make the mapping
     zero := Objectify( TypeOfDefaultGeneralMapping( S, R,
                                   IsSPGeneralMapping
+                              and IsAdditiveElementWithInverse
                               and IsAttributeStoringRep
                               and IsZero ),
                        rec() );
@@ -1566,5 +1628,5 @@ InstallMethod( IsSurjective,
 
 #############################################################################
 ##
-#E  mapprep.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

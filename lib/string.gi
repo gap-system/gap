@@ -15,6 +15,43 @@ Revision.string_gi :=
 
 #############################################################################
 ##
+#F  IsDigitChar(<c>)
+##
+BIND_GLOBAL("CHARS_DIGITS",Immutable(SSortedList("0123456789")));
+
+InstallGlobalFunction(IsDigitChar,x->x in CHARS_DIGITS);
+
+
+#############################################################################
+##
+#F  IsUpperAlphaChar(<c>)
+##
+BIND_GLOBAL("CHARS_UALPHA",
+  Immutable(SSortedList("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
+
+InstallGlobalFunction(IsUpperAlphaChar,x->x in CHARS_UALPHA);
+
+
+#############################################################################
+##
+#F  IsLowerAlphaChar(<c>)
+##
+BIND_GLOBAL("CHARS_LALPHA",
+  Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz")));
+
+InstallGlobalFunction(IsLowerAlphaChar,x->x in CHARS_LALPHA);
+
+
+#############################################################################
+##
+#F  IsAlphaChar(<c>)
+##
+InstallGlobalFunction(IsAlphaChar,
+  x->x in CHARS_LALPHA or x in CHARS_UALPHA);
+
+
+#############################################################################
+##
 #F  DaysInYear( <year> )  . . . . . . . . .  days in a year, knows leap-years
 ##
 InstallGlobalFunction(DaysInYear , function ( year )
@@ -204,7 +241,7 @@ end);
 
 ############################################################################
 ##
-#F  WordAlp( <alpha>, <nr> ) . . . . . .  <nr>-th word over alphabet <alpha>
+#F  WordAlp( <alpha>, <nr> )  . . . . . .  <nr>-th word over alphabet <alpha>
 ##
 ##  returns  a string  that  is the <nr>-th  word  over the alphabet <alpha>,
 ##  w.r.  to word  length   and  lexicographical order.   The  empty  word is
@@ -232,24 +269,20 @@ end);
 #F  LowercaseString( <string> ) . . . string consisting of lower case letters
 ##
 InstallGlobalFunction(LowercaseString , function( str )
+local result, i, pos;
 
-    local alp, ALP, result, i, pos;
-
-    alp:= "abcdefghijklmnopqrstuvwxyz";
-    ALP:= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     result:= "";
     for i in str do
-      pos:= Position( ALP, i );
+      pos:= Position( CHARS_UALPHA, i );
       if pos = fail then
         Add( result, i );
       else
-        Add( result, alp[ pos ] );
+        Add( result, CHARS_LALPHA[ pos ] );
       fi;
     od;
     ConvertToStringRep( result );
     return result;
 end);
-
 
 
 #############################################################################
@@ -273,7 +306,7 @@ function( str )
             m := m * -1;
             d := i+1;
         else
-            s := Position( "0123456789", str[i] );
+            s := Position( CHARS_DIGITS, str[i] );
             if s <> fail  then
                 z := 10 * z + (s-1);
             else
@@ -287,7 +320,7 @@ end );
 
 #############################################################################
 ##
-#M  Rat( <str> )  . . . . . . . . . . . . . . . .  rational described by <str>
+#M  Rat( <str> )  . . . . . . . . . . . . . . . . rational described by <str>
 ##
 InstallOtherMethod( Rat,
     "for strings",
@@ -321,7 +354,7 @@ function( string )
         elif string[i] = '.' and not IsRat(d)  then
             d := 1;
         else
-            s := Position( "0123456789", string[i] );
+            s := Position( CHARS_DIGITS, string[i] );
             if s <> false  then
                 z := 10 * z + (s-1);
             else
@@ -345,7 +378,117 @@ end );
 
 #############################################################################
 ##
+#M  ViewObj(<string>)
+##
+InstallMethod(ViewObj,"strings",true,[IsString and IsFinite],0,
+function(s)
+local i;
+  Print("\"");
+  for i in s do
+    if i in VIEW_STRING_SPECIAL_CHARACTERS[1] then
+      Print("\\",VIEW_STRING_SPECIAL_CHARACTERS[2]{
+        [PositionSorted(VIEW_STRING_SPECIAL_CHARACTERS[1],i)]});
+    else
+      Print([i]);
+    fi;
+  od;
+  Print("\"");
+end);
 
-#E  string.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+InstallMethod(ViewObj,"empty strings",true,[IsString and IsEmpty],0,
+function(e)
+  if TNUM_OBJ_INT(e) in TNUM_EMPTY_STRING then
+    Print("\"\"");
+  else
+    Print("[  ]");
+  fi;
+end);
 
+
+#############################################################################
+##
+#M  SplitString( <string>, <seps>, <wspace> ) . . . . . . . .  split a string
+##
+InstallMethod( SplitString,
+        "for three strings",
+        true,
+        [ IsString, IsString, IsString ], 0,
+function( string, seps, wspace )
+    local   substrings,  a,  z;
+
+    ##  store the substrings in a list.
+    substrings := [];
+
+    ##  a is the position after the last seperator/white space.
+    a := 1;
+    z := 0;
+
+    for z in [1..Length( string )] do
+        ##  Whenever we encounter a separator or a white space, the substring
+        ##  starting after the last seperator/white space is cut out.  The
+        ##  only difference between white spaces and seperators is that white
+        ##  spaces don't seperate empty strings.  
+        if string[z] in wspace then
+            if a < z then
+                Add( substrings, string{[a..z-1]} );
+            fi;
+            a := z+1;
+        elif string[z] in seps then
+            Add( substrings, string{[a..z-1]} );
+            a := z+1;
+        fi;
+    od;
+
+    ##  Pick up a substring at the end of the string.  Note that a trailing
+    ##  separator does not produce an empty string.
+    if a <= z  then
+        Add( substrings, string{[a..z]} );
+    fi;
+    return substrings;
+end );
+
+InstallMethod( SplitString,
+        "for a string and two characters",
+        true,
+        [ IsString, IsChar, IsChar ], 0,
+function( string, d1, d2 )
+    return SplitString( string, [d1], [d2] );
+end );
+
+InstallMethod( SplitString,
+        "for two strings and a character",
+        true,
+        [ IsString, IsString, IsChar ], 0,
+function( string, seps, d )
+    return SplitString( string, seps, [d] );
+end );
+
+InstallMethod( SplitString,
+        "for a string, a character and a string",
+        true,
+        [ IsString, IsChar, IsString ], 0,
+function( string, d, wspace )
+    return SplitString( string, [d], wspace );
+end );
+
+InstallOtherMethod( SplitString,
+        "for two strings",
+        true,
+        [ IsString, IsString ], 0,
+function( string, seps )
+        return SplitString( string, seps, "" );
+end );
+
+InstallOtherMethod( SplitString,
+        "for a string and a character",
+        true,
+        [ IsString, IsChar ], 0,
+function( string, d )
+        return SplitString( string, [d], "" );
+end );
+
+
+#############################################################################
+##
+#E
 

@@ -54,14 +54,18 @@ extern char * In;
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
 #include        "vector.h"              /* functions for plain vectors     */
+#include        "vecffe.h"              /* functions for fin field vectors */
 #include        "blister.h"             /* boolean lists                   */
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 #include        "vecgf2.h"              /* functions for GF2 vectors       */
+#include        "vec8bit.h"             /* functions for other compressed
+					   GF(q) vectors                   */
 
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
 #include        "objscoll.h"            /* single collector                */
+#include        "objccoll.h"            /* combinatorial collector         */
 #include        "objcftl.h"             /* from the left collect           */
 
 #include        "dt.h"                  /* deep thought                    */
@@ -91,6 +95,15 @@ extern char * In;
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
 
+#ifdef GAPMPI
+#include        "gapmpi.h"              /* GAPMPI			   */
+#endif
+
+#ifdef SYS_IS_MAC_MWC
+#include        "macintr.h"              /* Mac interrupt handlers	      */
+#endif
+
+#include        "iostream.h"
 
 /****************************************************************************
 **
@@ -134,6 +147,13 @@ UInt Time;
 */
 UInt BreakOnError = 1;
 
+/****************************************************************************
+**
+*V  ErrorCount  . . . . . . . .  . . . . .how many times have we had an error
+**                             note that this includes cases where the break
+**                             loop was skipped.
+*/
+UInt ErrorCount = 0;
 
 
 /****************************************************************************
@@ -210,6 +230,8 @@ int main (
         }
         func = READ_AS_FUNC();
         crc  = SyGAPCRC(SyCompileInput);
+	if (SyStrlen(SyCompileOptions) != 0)
+	  SetCompileOpts(SyCompileOptions);
         type = CompileFunc(
 			   SyCompileOutput,
                             func,
@@ -249,6 +271,7 @@ int main (
             if ( ! DualSemicolon ) {
                 ViewObjHandler( ReadEvalResult );
             }
+	    
         }
 
         /* handle return-value or return-void command                      */
@@ -267,6 +290,10 @@ int main (
 	  UserHasQUIT = 1;
 	  break;
 	}
+	
+	/* stop the stopwatch                                          */
+	AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
+	
 	UserHasQuit = 0;	/* quit has done its job if we are here */
 
     }
@@ -373,7 +400,7 @@ Obj FuncSizeScreen (
     UInt                nr;             /* number of lines on the screen   */
 
     /* check the arguments                                                 */
-    while ( ! IS_LIST(args) || 1 < LEN_LIST(args) ) {
+    while ( ! IS_SMALL_LIST(args) || 1 < LEN_LIST(args) ) {
         args = ErrorReturnObj(
             "Function: number of arguments must be 0 or 1 (not %d)",
             LEN_LIST(args), 0L,
@@ -389,7 +416,7 @@ Obj FuncSizeScreen (
     /* otherwise check the argument                                        */
     else {
         size = ELM_LIST( args, 1 );
-        while ( ! IS_LIST(size) || 2 < LEN_LIST(size) ) {
+        while ( ! IS_SMALL_LIST(size) || 2 < LEN_LIST(size) ) {
             size = ErrorReturnObj(
                 "SizeScreen: <size> must be a list of length 2",
                 0L, 0L,
@@ -463,7 +490,7 @@ Obj FuncWindowCmd (
     Char *          qtr;
 
     /* check arguments                                                     */
-    while ( ! IS_LIST(args) ) {
+    while ( ! IS_SMALL_LIST(args) ) {
 	args = ErrorReturnObj( "argument list must be a list (not a %s)",
             (Int)TNAM_OBJ(args), 0L,
             "you can return a list of arguments" );
@@ -617,6 +644,30 @@ Int  ErrorLLevel;
 extern Obj BottomLVars;
 
 
+void DownEnvInner( Int depth )
+{
+  /* if we really want to go up                                          */
+  if ( depth < 0 && -ErrorLLevel <= -depth ) {
+    depth = 0;
+    ErrorLVars = ErrorLVars0;
+    ErrorLLevel = 0;
+  }
+  else if ( depth < 0 ) {
+    depth = -ErrorLLevel + depth;
+    ErrorLVars = ErrorLVars0;
+    ErrorLLevel = 0;
+  }
+  
+  /* now go down                                                         */
+  while ( 0 < depth
+	  && ErrorLVars != BottomLVars
+	  && PTR_BAG(ErrorLVars)[2] != BottomLVars ) {
+    ErrorLVars = PTR_BAG(ErrorLVars)[2];
+    ErrorLLevel--;
+    depth--;
+  }
+}
+  
 Obj FuncDownEnv (
     Obj                 self,
     Obj                 args )
@@ -638,31 +689,35 @@ Obj FuncDownEnv (
         return 0;
     }
 
-    /* if we really want to go up                                          */
-    if ( depth < 0 && -ErrorLLevel <= -depth ) {
-        depth = 0;
-        ErrorLVars = ErrorLVars0;
-        ErrorLLevel = 0;
-    }
-    else if ( depth < 0 ) {
-        depth = -ErrorLLevel + depth;
-        ErrorLVars = ErrorLVars0;
-        ErrorLLevel = 0;
-    }
-
-    /* now go down                                                         */
-    while ( 0 < depth
-         && ErrorLVars != BottomLVars
-         && PTR_BAG(ErrorLVars)[2] != BottomLVars ) {
-        ErrorLVars = PTR_BAG(ErrorLVars)[2];
-        ErrorLLevel--;
-        depth--;
-    }
+    DownEnvInner( depth);
 
     /* return nothing                                                      */
     return 0;
 }
 
+Obj FuncUpEnv (
+    Obj                 self,
+    Obj                 args )
+{
+    Int                 depth;
+    if ( LEN_LIST(args) == 0 ) {
+        depth = 1;
+    }
+    else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
+        depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+    }
+    else {
+        ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
+        return 0;
+    }
+    if ( ErrorLVars == 0 ) {
+        Pr( "not in any function\n", 0L, 0L );
+        return 0;
+    }
+
+    DownEnvInner(-depth);
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -680,7 +735,7 @@ Obj FuncWhere (
 
     /* evaluate the argument                                               */
     if ( LEN_LIST(args) == 0 ) {
-        depth = 10;
+        depth = 5;
     }
     else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
         depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
@@ -692,13 +747,13 @@ Obj FuncWhere (
 
     currLVars = CurrLVars;
 
-    if ( ErrorLVars != 0 ) {
+    if ( ErrorLVars != 0  && ErrorLVars != BottomLVars ) {
         SWITCH_TO_OLD_LVARS( ErrorLVars );
         SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
         while ( CurrLVars != BottomLVars && 0 < depth ) {
             call = BRK_CALL_TO();
             if ( call == 0 ) {
-                Pr( "<corrupted call value> ", 0L, 0L );
+                Pr( "<compiled or corrupted call value> ", 0L, 0L );
             }
 #if T_PROCCALL_0ARGS
             else if ( T_PROCCALL_0ARGS <= TNUM_STAT(call)
@@ -762,13 +817,17 @@ Obj ErrorMode (
     ExecStatus          status;
     char                prompt [16];
 
+    ErrorCount++;
+    if (ErrorCount >= ((UInt)1)<<NR_SMALL_INT_BITS)
+      ErrorCount = 0;
+    
     /* ignore all errors when testing or quitting                          */
     if ( ( TestInput != 0 && TestOutput == Output ) || ! BreakOnError ) {
         if ( msg != (Char*)0 ) {
             Pr( msg, arg1, arg2 );
         }
         else if ( args != (Obj)0 ) {
-            Pr( "Error ", 0L, 0L );
+            Pr( "Error : ", 0L, 0L );
             FuncPrint( (Obj)0, args );
         }
         Pr( "\n", 0L, 0L );
@@ -798,12 +857,8 @@ Obj ErrorMode (
     if ( CurrStat != 0 ) {
         Pr( " at\n", 0L, 0L );
         PrintStat( CurrStat );
-        Pr( "\n", 0L, 0L );
-	CALL_0ARGS(OnBreak);
     }
-    else {
-        Pr( "\n", 0L, 0L );
-    }
+    Pr( "\n", 0L, 0L );
 
     /* try to open input for a break loop                                  */
     if ( mode == 'q' || ! OpenInput( "*errin*") ) {
@@ -815,6 +870,11 @@ Obj ErrorMode (
         ReadEvalError();
     }
     ClearError();
+
+    /* Call the OnBreak function. This can't be done earlier, because
+       there seems to be no safe way to handle errors in it, unless we
+       are about to enter a break r-e-v loop*/
+    CALL_0ARGS(OnBreak);
 
     /* print the sencond message                                           */
     Pr( "Entering break read-eval-print loop, ", 0L, 0L );
@@ -844,7 +904,7 @@ Obj ErrorMode (
         /* read and evaluate one command                                   */
         ClearError();
         DualSemicolon = 0;
-        status = ReadEvalCommand();
+        status = ReadEvalDebug();
 	UserHasQuit = 0;	/* it is enough for quit
 				 to have got us here */
 
@@ -989,6 +1049,18 @@ void ErrorQuitIntSmallPos (
         (Int)TNAM_OBJ(obj), 0L );
 }
 
+/****************************************************************************
+**
+*F  ErrorQuitIntPos( <obj> ) . . . . . . .  not a positive small integer
+*/
+void ErrorQuitIntPos (
+    Obj                 obj )
+{
+    ErrorQuit(
+        "<obj> must be a positive integer (not a %s)",
+        (Int)TNAM_OBJ(obj), 0L );
+}
+
 
 /****************************************************************************
 **
@@ -1070,7 +1142,17 @@ Obj FuncError (
     return ErrorMode( (Char*)0, 0L, 0L, args, "you can return", 'x' );
 }
 
+/****************************************************************************
+**
+*F  FuncErrorCount( <self> ) . . . . . . . . . . . . .return the error count
+**
+*/
 
+Obj FuncErrorCount( Obj self )
+{
+  return INTOBJ_INT(ErrorCount);
+}
+ 
 /****************************************************************************
 **
 
@@ -1110,7 +1192,7 @@ void Complete (
         crc1 = SyGAPCRC( CSTR_STRING(filename) );
         if ( crc != crc1 ) {
             ErrorQuit(
-                "Error, crc value of \"%s\" does not match completion file",
+ "Error, Rebuild completion files! (Crc value of\n\"%s\" does not match.)",
                 (Int)CSTR_STRING(filename), 0L );
             return;
         }
@@ -1333,6 +1415,8 @@ Obj FuncCOM_FILE (
         if ( res ) {
             Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
         }
+	info->isGapRootRelative = 1;
+	RecordLoadedModule(info, CSTR_STRING(filename));
         return INTOBJ_INT(1);
     }
 
@@ -1349,6 +1433,8 @@ Obj FuncCOM_FILE (
         if ( res ) {
             Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
         }
+	info->isGapRootRelative = 1;
+	RecordLoadedModule(info, CSTR_STRING(filename));
         return INTOBJ_INT(2);
     }
 
@@ -1737,7 +1823,12 @@ Obj FuncLOAD_DYN (
     info->isGapRootRelative = 0;
     res = (info->initKernel)(info);
     UpdateCopyFopyInfo();
+
+    /* Start a new executor to run the outer function of the module
+       in global context */
+    ExecBegin( BottomLVars );
     res = res || (info->initLibrary)(info);
+    ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
         Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
     }
@@ -1812,7 +1903,11 @@ Obj FuncLOAD_STAT (
     info->isGapRootRelative = 0;
     res = (info->initKernel)(info);
     UpdateCopyFopyInfo();
+    /* Start a new executor to run the outer function of the module
+       in global context */
+    ExecBegin( BottomLVars );
     res = res || (info->initLibrary)(info);
+    ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
         Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
     }
@@ -1939,9 +2034,9 @@ Obj FuncGASMAN (
     Char                buf[100];
 
     /* check the argument                                                  */
-    while ( ! IS_LIST(args) || LEN_LIST(args) == 0 ) {
+    while ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
         args = ErrorReturnObj(
-            "usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\" )",
+            "usage: GASMAN( \"display\"|\"displayshort\"|\"clear\"|\"collect\"|\"message\"|\"partial\" )",
             0L, 0L,
             "you can return a list of arguments" );
     }
@@ -1966,6 +2061,28 @@ again:
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( k = 0; k < 256; k++ ) {
                 if ( InfoBags[k].name != 0 ) {
+                    buf[0] = '\0';
+                    SyStrncat( buf, InfoBags[k].name, 40 );
+                    Pr("%40s ",    (Int)buf, 0L );
+                    Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
+                                   (Int)(InfoBags[k].sizeLive/1024));
+                    Pr("%8d %8d\n",(Int)InfoBags[k].nrAll,
+                                   (Int)(InfoBags[k].sizeAll/1024));
+                }
+            }
+        }
+
+        /* if request give a short display of the statistics                */
+        if ( SyStrcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
+            Pr( "%40s ", (Int)"type",  0L          );
+            Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
+            Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
+            for ( k = 0; k < 256; k++ ) {
+                if ( InfoBags[k].name != 0 && 
+                     (InfoBags[k].nrLive != 0 ||
+                      InfoBags[k].sizeLive != 0 ||
+                      InfoBags[k].nrAll != 0 ||
+                      InfoBags[k].sizeAll != 0) ) {
                     buf[0] = '\0';
                     SyStrncat( buf, InfoBags[k].name, 40 );
                     Pr("%40s ",    (Int)buf, 0L );
@@ -2047,6 +2164,7 @@ Obj FuncSHALLOW_SIZE (
 **
 *F  FuncTNUM_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TNUM_OBJ'
 */
+
 Obj FuncTNUM_OBJ (
     Obj                 self,
     Obj                 obj )
@@ -2069,6 +2187,14 @@ Obj FuncTNUM_OBJ (
     return res;
 }
 
+Obj FuncTNUM_OBJ_INT (
+    Obj                 self,
+    Obj                 obj )
+{
+
+  
+    return  INTOBJ_INT( TNUM_OBJ(obj) ) ;
+}
 
 /****************************************************************************
 **
@@ -2270,9 +2396,9 @@ void FillInVersion (
         q = module->name;
         while ( *p && *q && *p == *q ) { p++; q++; }
         if ( *q || *p != '.' ) {
-            fputs( "#W  corrupt version info '", stderr );
-            fputs( rev_c, stderr );
-            fputs( "'\n", stderr );
+            FPUTS_TO_STDERR( "#W  corrupt version info '" );
+            FPUTS_TO_STDERR( rev_c );
+            FPUTS_TO_STDERR( "'\n" );
         }
     }
     h_ver = ExtractRevision( rev_h, &name );
@@ -2281,9 +2407,9 @@ void FillInVersion (
         q = module->name;
         while ( *p && *q && *p == *q ) { p++; q++; }
         if ( *q || *p != '.' ) {
-            fputs( "#W  corrupt version info '", stderr );
-            fputs( rev_h, stderr );
-            fputs( "'\n", stderr );
+            FPUTS_TO_STDERR( "#W  corrupt version info '" );
+            FPUTS_TO_STDERR( rev_h );
+            FPUTS_TO_STDERR( "'\n" );
         }
     }
     module->version = c_ver*100000+h_ver;
@@ -2666,7 +2792,26 @@ Obj FuncExportToKernelFinished (
 
 /****************************************************************************
 **
+*F  FuncSleep( <self>, <secs> )
+**
+*/
 
+Obj FuncSleep( Obj self, Obj secs )
+{
+  Int s = INT_INTOBJ(secs);
+  if (s > 0)
+    SySleep((UInt)s);
+  
+  /* either we uised up the time, or we were interrupted. */
+  if (SyIsIntr())
+    ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
+		    "you can return to continue as if the sleep was finished");
+  
+  return (Obj) 0;
+}
+
+/****************************************************************************
+**
 *V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
 */
 Obj Revisions;
@@ -2692,6 +2837,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "DownEnv", -1, "args",
       FuncDownEnv, "src/gap.c:DownEnv" },
+
+    { "UpEnv", -1, "args",
+      FuncUpEnv, "src/gap.c:UpEnv" },
 
     { "Where", -1, "args",
       FuncWhere, "src/gap.c:Where" },
@@ -2729,6 +2877,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "TNUM_OBJ", 1, "object",
       FuncTNUM_OBJ, "src/gap.c:TNUM_OBJ" },
 
+    { "TNUM_OBJ_INT", 1, "object",
+      FuncTNUM_OBJ_INT, "src/gap.c:TNUM_OBJ_INT" },
+
     { "XTNUM_OBJ", 1, "object",
       FuncXTNUM_OBJ, "src/gap.c:XTNUM_OBJ" },
 
@@ -2746,6 +2897,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "WindowCmd", 1, "arg-list",
       FuncWindowCmd, "src/gap.c:WindowCmd" },
+
+    { "ErrorCount", 0, "",
+      FuncErrorCount, "src/gap.c:ErrorCount" },
+
+    { "Sleep", 1, "secs",
+      FuncSleep, "src/gap.c:Sleep" },
 
     { 0 }
 
@@ -2771,6 +2928,7 @@ static Int InitKernel (
 
     /* list of exit functions                                              */
     InitGlobalBag( &AtExitFunctions, "src/gap.c:AtExitFunctions" );
+    InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -2787,8 +2945,10 @@ static Int InitKernel (
 
 
     /* establish Fopy of ViewObj                                           */
-    ImportFuncFromLibrary(  "ViewObj", 0L ); 
-    ImportFuncFromLibrary(  "OnBreak", &OnBreak );
+    ImportFuncFromLibrary(  "ViewObj", 0L );
+
+    /* Also of OnBreak, but we don't want it made ReadOnly                 */
+    InitFopyGVar(  "OnBreak", &OnBreak );
 
     /* return success                                                      */
     return 0;
@@ -2802,6 +2962,41 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
+  UInt var;
+  Obj string;
+    Char *              version = "v4r0p0 1999/04/29";
+  
+    /* create a revision record                                            */
+    Revisions = NEW_PREC(0);
+    var = GVarName( "Revision" );
+    MakeReadWriteGVar(var);
+    AssGVar( var, Revisions );
+    MakeReadOnlyGVar(var);
+
+    /* version info                                                        */
+    string = NEW_STRING( SyStrlen(version) );
+    SyStrncat( CSTR_STRING(string), version, SyStrlen(version) );
+    var = GVarName( "VERSRC" );
+    MakeReadWriteGVar(var);
+    AssGVar( var, string );
+    MakeReadOnlyGVar(var);
+
+    /* library name and other stuff                                        */
+    var = GVarName( "QUIET" );
+    MakeReadWriteGVar(var);
+    AssGVar( var, (SyQuiet  ? True : False) );
+    MakeReadOnlyGVar(var);
+
+    var = GVarName( "BANNER" );
+    MakeReadWriteGVar(var);
+    AssGVar( var, (SyBanner ? True : False) );
+    MakeReadOnlyGVar(var);
+
+    var = GVarName( "DEBUG_LOADING" );
+    MakeReadWriteGVar(var);
+    AssGVar( var, (SyDebugLoading ? True : False) );
+    MakeReadOnlyGVar(var);
+
     /* construct the `ViewObj' variable                                    */
     ViewObjGVar = GVarName( "ViewObj" ); 
 
@@ -2833,34 +3028,13 @@ static Int InitLibrary (
     CompLists = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CompLists, 0 );
 
-    /* create a revision record                                            */
-    Revisions = NEW_PREC(0);
-    var = GVarName( "Revision" );
-    AssGVar( var, Revisions );
-    MakeReadOnlyGVar(var);
-
-    /* version info                                                        */
-    string = NEW_STRING( SyStrlen(version) );
-    SyStrncat( CSTR_STRING(string), version, SyStrlen(version) );
-    var = GVarName( "VERSRC" );
-    AssGVar( var, string );
-    MakeReadOnlyGVar(var);
-
-    /* library name and other stuff                                        */
-    var = GVarName( "QUIET" );
-    AssGVar( var, (SyQuiet  ? True : False) );
-    MakeReadOnlyGVar(var);
-
-    var = GVarName( "BANNER" );
-    AssGVar( var, (SyBanner ? True : False) );
-    MakeReadOnlyGVar(var);
-
-    var = GVarName( "DEBUG_LOADING" );
-    AssGVar( var, (SyDebugLoading ? True : False) );
-    MakeReadOnlyGVar(var);
 
     var = GVarName( "CHECK_FOR_COMP_FILES" );
     AssGVar( var, (SyCheckForCompletion ? True : False) );
+    MakeReadOnlyGVar(var);
+
+    var = GVarName( "DO_AUTOLOAD_PACKAGES" );
+    AssGVar( var, (SyAutoloadSharePackages ? True : False) );
     MakeReadOnlyGVar(var);
 
     /* list of exit functions                                              */
@@ -2968,10 +3142,12 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoPlist,
     InitInfoSet,
     InitInfoVector,
+    InitInfoVecFFE,
     InitInfoBlist,
     InitInfoRange,
     InitInfoString,
     InitInfoGF2Vec,
+    InitInfoVec8bit,
 
     /* free and presented groups                                           */
     InitInfoFreeGroupElements,
@@ -2979,6 +3155,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoTietze,
     InitInfoPcElements,
     InitInfoSingleCollector,
+    InitInfoCombiCollector,
     InitInfoPcc,
     InitInfoDeepThought,
     InitInfoDTEvaluation,
@@ -2993,9 +3170,15 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     /* input and output                                                    */
     InitInfoStreams,
     InitInfoSysFiles,
+    InitInfoIOStream,
 
     /* main module                                                         */
     InitInfoGap,
+
+#ifdef GAPMPI
+    /* GAPMPI module							   */
+    InitInfoGapmpi,
+#endif
 
     0
 };
@@ -3090,6 +3273,8 @@ void RecordLoadedModule (
 */
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 
+static Obj POST_RESTORE_FUNCS;
+
 void InitializeGap (
     int *               pargc,
     char *              argv [] )
@@ -3100,10 +3285,15 @@ void InitializeGap (
 
 
     /* initialize the basic system and gasman                              */
+#ifdef GAPMPI
+    /* GAPMPI needs to call MPI_Init() first to remove command line args */
+    InitGapmpi( pargc, &argv, &BreakOnError );
+#endif
+
     InitSystem( *pargc, argv );
 
     InitBags( SyAllocBags, SyStorMin,
-              0, (Bag*)pargc, SyStackAlign,
+              0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
               SyCacheSize, 0, SyAbortBags );
     InitMsgsFuncBags( SyMsgsBags );
 
@@ -3111,14 +3301,14 @@ void InitializeGap (
     /* get info structures for the build in modules                        */
     for ( i = 0;  InitFuncsBuiltinModules[i];  i++ ) {
         if ( NrModules == MAX_MODULES ) {
-            fputs( "panic: too many builtin modules\n", stderr );
+            FPUTS_TO_STDERR( "panic: too many builtin modules\n" );
             SyExit(1);
         }
         Modules[NrModules++] = InitFuncsBuiltinModules[i]();
 #       ifdef DEBUG_LOADING
-            fputs( "#I  InitInfo(builtin ", stderr );
-            fputs( Modules[NrModules-1]->name, stderr );
-            fputs( ")\n", stderr );
+            FPUTS_TO_STDERR( "#I  InitInfo(builtin " );
+            FPUTS_TO_STDERR( Modules[NrModules-1]->name );
+            FPUTS_TO_STDERR( ")\n" );
 #       endif
     }
     NrBuiltinModules = NrModules;
@@ -3127,18 +3317,21 @@ void InitializeGap (
     for ( i = 0;  i < NrBuiltinModules;  i++ ) {
         if ( Modules[i]->initKernel ) {
 #           ifdef DEBUG_LOADING
-                fputs( "#I  InitKernel(builtin ", stderr );
-                fputs( Modules[i]->name, stderr );
-                fputs( ")\n", stderr );
+                FPUTS_TO_STDERR( "#I  InitKernel(builtin " );
+                FPUTS_TO_STDERR( Modules[i]->name );
+                FPUTS_TO_STDERR( ")\n" );
 #           endif
             ret =Modules[i]->initKernel( Modules[i] );
             if ( ret ) {
-                fputs( "#I  InitKernel(builtin ", stderr );
-                fputs( Modules[i]->name, stderr );
-                fputs( ") returned non-zero value\n", stderr );
+                FPUTS_TO_STDERR( "#I  InitKernel(builtin " );
+                FPUTS_TO_STDERR( Modules[i]->name );
+                FPUTS_TO_STDERR( ") returned non-zero value\n" );
             }
         }
     }
+
+    InitGlobalBag(&POST_RESTORE_FUNCS, "gap.c: POST_RESTORE_FUNCS");
+    InitCopyGVar( "POST_RESTORE_FUNCS", &POST_RESTORE_FUNCS);
 
     /* you should set 'COUNT_BAGS' as well                                 */
 #   ifdef DEBUG_LOADING
@@ -3163,6 +3356,10 @@ void InitializeGap (
         }
 #   endif
 
+#ifdef SYS_IS_MAC_MWC
+	ActivateIntr ();
+#endif
+
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
         TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
@@ -3174,19 +3371,43 @@ void InitializeGap (
         for ( i = 0;  i < NrModules;  i++ ) {
             if ( Modules[i]->postRestore ) {
 #               ifdef DEBUG_LOADING
-                    fputs( "#I  PostRestore(builtin ", stderr );
-                    fputs( Modules[i]->name, stderr );
-                    fputs( ")\n", stderr );
+                    FPUTS_TO_STDERR( "#I  PostRestore(builtin " );
+                    FPUTS_TO_STDERR( Modules[i]->name );
+                    FPUTS_TO_STDERR( ")\n" );
 #               endif
                 ret = Modules[i]->postRestore( Modules[i] );
                 if ( ret ) {
-                    fputs( "#I  PostRestore(builtin ", stderr );
-                    fputs( Modules[i]->name, stderr );
-                    fputs( ") returned non-zero value\n", stderr );
+                    FPUTS_TO_STDERR( "#I  PostRestore(builtin " );
+                    FPUTS_TO_STDERR( Modules[i]->name );
+                    FPUTS_TO_STDERR( ") returned non-zero value\n" );
                 }
             }
         }
 	SyRestoring = NULL;
+
+	/* call the post restore functions */
+	if (POST_RESTORE_FUNCS != (Obj) 0
+	    && IS_SMALL_LIST(POST_RESTORE_FUNCS))
+	  {
+	    UInt len;
+	    UInt i;
+	    Obj func;
+	    Obj ret;
+	    len = LEN_LIST(POST_RESTORE_FUNCS);
+	    for (i = 1; i <= len; i++)
+	      {
+		func = ELM0_LIST(POST_RESTORE_FUNCS, i);
+		if (func != (Obj) 0 && IS_FUNC(func))
+		  {
+		    ret = CALL_0ARGS(func);
+		    if (ret == Fail)
+		      {
+			FPUTS_TO_STDERR("panic -- post restore function returned fail");
+			SyExit(i);
+		      }
+		  }
+	      }
+	  }
     }
 
     /* otherwise call library initialisation                               */
@@ -3197,18 +3418,20 @@ void InitializeGap (
 #       ifdef DEBUG_HANDLER_REGISTRATION
             CheckAllHandlers();
 #       endif
+
+	SyInitializing = 1;    
         for ( i = 0;  i < NrBuiltinModules;  i++ ) {
             if ( Modules[i]->initLibrary ) {
 #               ifdef DEBUG_LOADING
-                    fputs( "#I  InitLibrary(builtin ", stderr );
-                    fputs( Modules[i]->name, stderr );
-                    fputs( ")\n", stderr );
+                    FPUTS_TO_STDERR( "#I  InitLibrary(builtin " );
+                    FPUTS_TO_STDERR( Modules[i]->name );
+                    FPUTS_TO_STDERR( ")\n" );
 #               endif
                 ret = Modules[i]->initLibrary( Modules[i] );
                 if ( ret ) {
-                    fputs( "#I  InitLibrary(builtin ", stderr );
-                    fputs( Modules[i]->name, stderr );
-                    fputs( ") returned non-zero value\n", stderr );
+                    FPUTS_TO_STDERR( "#I  InitLibrary(builtin " );
+                    FPUTS_TO_STDERR( Modules[i]->name );
+                    FPUTS_TO_STDERR( ") returned non-zero value\n" );
                 }
             }
         }
@@ -3219,15 +3442,15 @@ void InitializeGap (
     for ( i = 0;  i < NrModules;  i++ ) {
         if ( Modules[i]->checkInit ) {
 #           ifdef DEBUG_LOADING
-                fputs( "#I  CheckInit(builtin ", stderr );
-                fputs( Modules[i]->name, stderr );
-                fputs( ")\n", stderr );
+                FPUTS_TO_STDERR( "#I  CheckInit(builtin " );
+                FPUTS_TO_STDERR( Modules[i]->name );
+                FPUTS_TO_STDERR( ")\n" );
 #           endif
             ret = Modules[i]->checkInit( Modules[i] );
             if ( ret ) {
-                fputs( "#I  CheckInit(builtin ", stderr );
-                fputs( Modules[i]->name, stderr );
-                fputs( ") returned non-zero value\n", stderr );
+                FPUTS_TO_STDERR( "#I  CheckInit(builtin " );
+                FPUTS_TO_STDERR( Modules[i]->name );
+                FPUTS_TO_STDERR( ") returned non-zero value\n" );
             }
         }
     }
@@ -3269,6 +3492,7 @@ void InitializeGap (
             }
         }
     }
+    SyInitializing = 0;
     for ( i = 0; i < sizeof(SyInitfiles)/sizeof(SyInitfiles[0]); i++ ) {
         if ( SyInitfiles[i][0] != '\0' ) {
             if ( OpenInput( SyInitfiles[i] ) ) {
@@ -3291,6 +3515,10 @@ void InitializeGap (
             }
         }
     }
+
+    if (SyBreakSuppress)
+      BreakOnError = 0;
+
 }
 
 

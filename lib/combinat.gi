@@ -1518,6 +1518,22 @@ InstallGlobalFunction(PartitionTuples,function( n, r )
 
 end);
 
+InstallGlobalFunction(NrPartitionTuples, function(n, k)
+  local   res,  l,  pp,  r,  a,  pr,  b;
+  res := 0;
+  for l in [1..k] do
+    pp := Partitions(n, l);
+    r := Binomial(k, l);
+    for a in pp do
+      pr := 1;
+      for b in a do
+        pr := pr * NrPartitions(b);
+      od;
+      res := res + r * NrArrangements(a, l) * pr;
+    od;
+  od;
+  return res;
+end);
 
 #############################################################################
 ##

@@ -9,6 +9,12 @@
 
 gap> START_TEST("$Id$");
 
+# we don't want `GroupString' to display the number of generators as this
+# may differ. We get the sizes anyhow from the composition factors. Thus
+# install a dummy method
+gap> InstallMethod(GroupString, "for a group", true, [ IsGroup,IsString ], 0,
+> function( G,nam )return "Group";end);
+
 # missing (?):
 # bbox
 # dim8p3
@@ -288,7 +294,7 @@ Group
 Group
  | Z(2)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 375234700595146883504949480652800, 1024, 1 ]
 
 
@@ -309,7 +315,7 @@ Group
 Group
  | Z(1103)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 1215506, 607753, 31987, 1103, 1 ]
 
 
@@ -679,7 +685,7 @@ gap> DisplayCompositionSeries( g );
 Group
  | Co(2)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 42305421312000, 1 ]
 
 
@@ -756,7 +762,7 @@ gap> DisplayCompositionSeries( g );
 Group
  | Co(3)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 495766656000, 1 ]
 
 
@@ -815,7 +821,7 @@ Group
 Group
  | Z(2)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 43252003274489856000, 21626001637244928000, 1072718335180800, 490497638400, 
   2048, 2, 1 ]
 
@@ -986,7 +992,7 @@ gap> DisplayCompositionSeries( g );
 Group
  | A(9,2) = L(10,2) 
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 366440137299948128422802227200, 1 ]
 
 
@@ -1014,7 +1020,7 @@ gap> DisplayCompositionSeries( g );
 Group
  | HJ = J(2) = F(5-)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 604800, 1 ]
 
 
@@ -1076,7 +1082,7 @@ Group
 Group
  | Z(2)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 40320, 2, 1 ]
 
 
@@ -1096,7 +1102,7 @@ gap> DisplayCompositionSeries( g );
 Group
  | M(11)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 7920, 1 ]
 
 
@@ -1162,7 +1168,7 @@ Group
  | A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4) = U(2,\
 4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U(2,5)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 2985984000000, 1492992000000, 746496000000, 12441600000, 777600000, 1 ]
 
 
@@ -1317,7 +1323,7 @@ Group
 Group
  | Z(3)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 1088391168, 544195584, 181398528, 45349632, 22674816, 2519424, 839808, 
   13122, 6561, 1 ]
 
@@ -1608,7 +1614,7 @@ gap> DisplayCompositionSeries( g );
 Group
  | Suz
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 448345497600, 1 ]
 
 
@@ -1826,14 +1832,31 @@ Group
 Group
  | 2A(2,3) = U(3,3)
 Group
-gap> List( ChiefSeriesPermGroup( g ), Size );
+gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 36578304, 6048, 1 ]
 
 
-gap> STOP_TEST( "grpprmcs.tst", 10000 );
+# $A_5 \times A_5$ in primitive action on $60$ points
+# (direct factors corresponding to left and right regular action)
+
+gap> g:= AlternatingGroup( 5 );;
+gap> e:= AsList( g );;
+gap> gens:= GeneratorsOfGroup( g );;
+gap> p:= List( gens, i -> PermList( List( e, j -> Position( e, i*j ) ) ) );;
+gap> q:= List( gens, i -> PermList( List( e, j -> Position( e, j*i ) ) ) );;
+gap> h:= Group( Concatenation( p, q ) );
+<permutation group with 4 generators>
+gap> IsPrimitive( h, [ 1 .. 60 ] );
+true
+gap> CompositionSeries( h );
+[ <permutation group of size 3600 with 4 generators>, 
+  <permutation group of size 60 with 2 generators>, Group(()) ]
+
+
+gap> STOP_TEST( "grpprmcs.tst", 21790865000 );
 
 
 #############################################################################
 ##
-#E  grpprmcs.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

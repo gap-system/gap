@@ -97,10 +97,20 @@ gap> Conductor( NF( 17, [ 3 ] ) );
 gap> Conductor( NF( 15, [ 3 ] ) );
 15
 
-gap> # Subfields( CF(15) );           # needs conjugacy classes of subgroups ...
-gap> # Subfields( NF( 15, [ 14 ] ) );
+gap> Subfields( CF(15) );
+[ Rationals, CF(3), CF(5), NF(5,[ 1, 4 ]), CF(15), NF(15,[ 1, 2, 4, 8 ]), 
+  NF(15,[ 1, 4 ]), NF(15,[ 1, 14 ]) ]
+gap> Subfields( NF( 15, [ 14 ] ) );
+[ Rationals, NF(5,[ 1, 4 ]), NF(15,[ 1, 14 ]) ]
 
-gap> # FieldExtension( ... ) !!
+gap> x:= Indeterminate( Rationals );; pol:= x^2 + x + 1;;
+gap> FieldExtension( Rationals, pol );
+CF(3)
+gap> FieldExtension( CF(5), pol );    
+AsField( CF(5), CF(15) )
+gap> x:= Indeterminate( Rationals );; pol:= x^2 - x - 1;;
+gap> FieldExtension( Rationals, pol );
+NF(5,[ 1, 4 ])
 
 gap> Conjugates( CF( CF(3), 15 ), E(15) );
 [ E(15), E(15)^4, E(15)^7, E(15)^13 ]
@@ -308,9 +318,10 @@ gap> Size( g );
 gap> IsAbelian( g );
 true
 
-gap> STOP_TEST( "fldabnum.tst", 13810000 );
+gap> STOP_TEST( "fldabnum.tst", 71667500 );
 
 
 #############################################################################
 ##
-#E  fldabnum.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

@@ -23,86 +23,6 @@ Revision.modulmat_gi :=
 
 #############################################################################
 ##
-#M  LeftModuleByGenerators( <R>, <mats> ) . . . . . construct a matrix module
-##
-InstallMethod( LeftModuleByGenerators,
-    "for ring and list of matrices (elements in the same family)",
-    IsElmsCollColls,
-    [ IsRing, IsCollection ], 0,
-    function( R, mats )
-    local V;
-
-    V:= Objectify( NewType( FamilyObj( mats ),
-                                IsLeftModule
-                            and IsMatrixModuleRep
-                            and IsAttributeStoringRep ),
-                   rec() );
-    SetLeftActingDomain( V, R );
-    SetGeneratorsOfLeftModule( V, AsList( mats ) );
-
-    # Set the vector dimension.
-    V!.vectordim:= DimensionsMat( mats[1] );
-
-    return V;
-    end );
-
-
-#############################################################################
-##
-#M  LeftModuleByGenerators( <R>, <mats> ) . . . construct a Lie matrix module
-##
-InstallMethod( LeftModuleByGenerators,
-    "for ring and list of matrices (elements in the same family)",
-    IsElmsCollLieColls,
-    [ IsRing, IsCollection ], 0,
-    function( R, mats )
-    local V;
-
-    V:= Objectify( NewType( FamilyObj( mats ),
-                                IsLeftModule
-                            and IsMatrixModuleRep
-                            and IsAttributeStoringRep ),
-                   rec() );
-    SetLeftActingDomain( V, R );
-    SetGeneratorsOfLeftModule( V, AsList( mats ) );
-
-    # Set the vector dimension.
-    V!.vectordim:= DimensionsMat( mats[1] );
-
-    return V;
-    end );
-
-
-#############################################################################
-##
-#M  LeftModuleByGenerators( <R>, <mats>, <zero> ) . construct a matrix module
-##
-InstallOtherMethod( LeftModuleByGenerators,
-    "for ring, list of matrices (over the ring), and matrix",
-    function( FamR, Fammats, Famzero )
-        return    IsElmsColls( FamR, Famzero )
-               or IsElmsLieColls( FamR, Famzero );
-    end,
-    [ IsRing, IsHomogeneousList, IsMatrix ], 0,
-    function( R, mats, zero )
-    local V;
-
-    V:= Objectify( NewType( FamilyObj( mats ),
-                                IsLeftModule
-                            and IsMatrixModuleRep
-                            and IsAttributeStoringRep ),
-                   rec() );
-    SetLeftActingDomain( V, R );
-    SetGeneratorsOfLeftModule( V, AsList( mats ) );
-    SetZero( V, zero );
-    V!.vectordim:= DimensionsMat( mats[1] );
-
-    return V;
-    end );
-
-
-#############################################################################
-##
 #F  FullMatrixModule( <R>, <m>, <n> )
 ##
 ##  Let $E_{i,j}$ be the matrix with value 1 in row $i$ and $column $j$, and
@@ -111,7 +31,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 ##  $j$ ranging from 1 to <m> and <n>, respectively.
 ##
 ##  `FullMatrixModule' returns a module of ordinary matrices
-##  (not of Lie matrices).
+##  (not of Lie matrices, see~"IsOrdinaryMatrix").
 ##
 InstallGlobalFunction( FullMatrixModule, function( R, m, n )
 
@@ -129,7 +49,6 @@ InstallGlobalFunction( FullMatrixModule, function( R, m, n )
                                                      FamilyObj( R ) ) ),
                                   IsFreeLeftModule
                               and IsGaussianSpace
-                              and IsMatrixModuleRep
                               and IsFullMatrixModule
                               and IsAttributeStoringRep ),
                      rec() );
@@ -137,13 +56,12 @@ InstallGlobalFunction( FullMatrixModule, function( R, m, n )
       M:= Objectify( NewType( CollectionsFamily( CollectionsFamily(
                                                      FamilyObj( R ) ) ),
                                   IsFreeLeftModule
-                              and IsMatrixModuleRep
                               and IsFullMatrixModule
                               and IsAttributeStoringRep ),
                      rec() );
     fi;
     SetLeftActingDomain( M, R );
-    M!.vectordim:= [ m, n ];
+    SetDimensionOfVectors( M, [ m, n ] );
 
     return M;
 end );
@@ -169,16 +87,33 @@ InstallOtherMethod( \^,
 
 #############################################################################
 ##
+#M  IsMatrixModule( <M> )
+##
+InstallMethod( IsMatrixModule,
+    "for a free left module",
+    true,
+    [ IsFreeLeftModule ], 0,
+    function( M )
+    local gens;
+    gens:= GeneratorsOfLeftModule( M );
+    return    ( IsEmpty( gens ) and IsMatrix( Zero( M ) ) )
+           or ForAll( gens, IsMatrix );
+    end );
+
+
+#############################################################################
+##
 #M  IsFullMatrixModule( M )
 ##
 InstallMethod( IsFullMatrixModule,
     "for matrix module",
     true,
-    [ IsFreeLeftModule and IsMatrixModuleRep ], 0,
-    M ->     Dimension( M ) = M!.vectordim[1] * M!.vectordim[2]
+    [ IsFreeLeftModule ], 0,
+    M ->     IsMatrixModule( M )
+         and Dimension( M ) = Product( DimensionOfVectors( M ) )
          and ForAll( GeneratorsOfLeftModule( M ),
                      v -> IsSubset( LeftActingDomain( M ), v ) ) );
-     
+
 
 #############################################################################
 ##
@@ -187,8 +122,8 @@ InstallMethod( IsFullMatrixModule,
 InstallMethod( Dimension,
     "for full matrix module",
     true,
-    [ IsFreeLeftModule and IsMatrixModuleRep and IsFullMatrixModule ], 0,
-    M -> M!.vectordim[1] * M!.vectordim[2] );
+    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
+    M -> Product( DimensionOfVectors( M ) ) );
 
 
 #############################################################################
@@ -198,10 +133,11 @@ InstallMethod( Dimension,
 InstallMethod( Random,
     "for full matrix module",
     true,
-    [ IsFreeLeftModule and IsMatrixModuleRep and IsFullMatrixModule ], 0,
+    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
     function( M )
     local random;
-    random:= RandomMat( M!.vectordim[1], M!.vectordim[2],
+    random:= DimensionOfVectors( M );
+    random:= RandomMat( random[1], random[2],
                         LeftActingDomain( M ) );
     if IsLieObjectCollection( M ) then
       random:= LieObject( random );
@@ -215,11 +151,12 @@ InstallMethod( Random,
 #F  StandardGeneratorsOfFullMatrixModule( <M> )
 ##
 InstallGlobalFunction( StandardGeneratorsOfFullMatrixModule, function( M )
-    local R, one, m, n, zeromat, gens, i, j, gen;
+    local R, one, dims, m, n, zeromat, gens, i, j, gen;
     R:= LeftActingDomain( M );
     one:= One( R );
-    m:= M!.vectordim[1];
-    n:= M!.vectordim[2];
+    dims:= DimensionOfVectors( M );
+    m:= dims[1];
+    n:= dims[2];
     zeromat:= NullMat( m, n, R );
     gens:= [];
     for i in [ 1 .. m ] do
@@ -245,7 +182,7 @@ end );
 InstallMethod( GeneratorsOfLeftModule,
     "for full matrix module",
     true,
-    [ IsFreeLeftModule and IsMatrixModuleRep and IsFullMatrixModule ], 0,
+    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
     StandardGeneratorsOfFullMatrixModule );
 
 
@@ -256,11 +193,14 @@ InstallMethod( GeneratorsOfLeftModule,
 InstallMethod( ViewObj,
     "for full matrix module",
     true,
-    [ IsFreeLeftModule and IsMatrixModuleRep and IsFullMatrixModule ], 0,
-    function( M )                            
-    Print( "( " );                          
-    View( LeftActingDomain( M ) );            
-    Print( "^", M!.vectordim, " )" );                   
+    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
+    function( M )
+    if IsLieObjectCollection( M ) then
+      TryNextMethod();
+    fi;
+    Print( "( " );
+    View( LeftActingDomain( M ) );
+    Print( "^", DimensionOfVectors( M ), " )" );
     end );
 
 
@@ -271,9 +211,12 @@ InstallMethod( ViewObj,
 InstallMethod( PrintObj,
     "for full matrix module",
     true,
-    [ IsFreeLeftModule and IsMatrixModuleRep and IsFullMatrixModule ], 0,
+    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
     function( M )
-    Print( "( ", LeftActingDomain( M ), "^", M!.vectordim, " )" );
+    if IsLieObjectCollection( M ) then
+      TryNextMethod();
+    fi;
+    Print( "( ", LeftActingDomain( M ), "^", DimensionOfVectors( M ), " )" );
     end );
 
 
@@ -285,10 +228,10 @@ InstallMethod( \in,
     "for full matrix module",
     IsElmsColls,
     [ IsObject,
-      IsFreeLeftModule and IsMatrixModuleRep and IsFullMatrixModule ], 0,
+      IsFreeLeftModule and IsFullMatrixModule ], 0,
     function( mat, M )
     return     IsMatrix( mat )
-           and DimensionsMat( mat ) = M!.vectordim
+           and DimensionsMat( mat ) = DimensionOfVectors( M )
            and ForAll( mat, row -> IsSubset( LeftActingDomain( M ), row ) );
     end );
 
@@ -335,7 +278,7 @@ InstallMethod( Coefficients,
     local V, R;
     V:= UnderlyingLeftModule( B );
     R:= LeftActingDomain( V );
-    if     DimensionsMat( mat ) = V!.vectordim
+    if     DimensionsMat( mat ) = DimensionOfVectors( V )
        and ForAll( mat, row -> IsSubset( R, row ) ) then
       return Concatenation( mat );
     else
@@ -346,12 +289,12 @@ InstallMethod( Coefficients,
 
 #############################################################################
 ##
-#M  BasisOfDomain( <M> )  . . . . . . . . . . . . . .  for full matrix module
+#M  Basis( <M> )  . . . . . . . . . . . . . . . . . .  for full matrix module
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for full matrix module",
     true,
-    [ IsFreeLeftModule and IsMatrixModuleRep and IsFullMatrixModule ],
+    [ IsFreeLeftModule and IsFullMatrixModule ],
     SUM_FLAGS,
     CanonicalBasis );
 
@@ -370,5 +313,5 @@ InstallMethod( IsCanonicalBasisFullMatrixModule,
 
 #############################################################################
 ##
-#E  modulmat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

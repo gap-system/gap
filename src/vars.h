@@ -34,7 +34,6 @@ const char * Revision_vars_h =
 
 /****************************************************************************
 **
-
 *F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
 **
 **  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,

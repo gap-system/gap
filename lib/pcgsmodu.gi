@@ -16,12 +16,9 @@ Revision.pcgsmodu_gi :=
 
 #############################################################################
 ##
-
 #R  IsModuloPcgsRep
 ##
-DeclareRepresentation(
-    "IsModuloPcgsRep",
-    IsPcgsDefaultRep,
+DeclareRepresentation( "IsModuloPcgsRep", IsPcgsDefaultRep,
     [ "moduloDepths", "moduloMap", "numerator", "denominator",
       "depthMap" ] );
 
@@ -30,16 +27,40 @@ DeclareRepresentation(
 ##
 #R  IsModuloTailPcgsRep
 ##
-DeclareRepresentation(
-    "IsModuloTailPcgsRep",
-    IsModuloPcgsRep,
+DeclareRepresentation( "IsModuloTailPcgsRep", IsModuloPcgsRep,
     [ "moduloDepths", "moduloMap", "numerator", "denominator",
       "depthMap" ] );
 
-                               
 #############################################################################
 ##
+#R  IsNumeratorParentForExponentsRep(<obj>)
+##
+##  modulo pcgs in this representation can use the numerator parent for
+##  computing exponents
+DeclareRepresentation( "IsNumeratorParentForExponentsRep",
+    IsModuloPcgsRep,
+    [ "moduloDepths", "moduloMap", "numerator", "denominator",
+      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
 
+#############################################################################
+##
+#R  IsSubsetInducedNumeratorModuloTailPcgsRep(<obj>)
+##
+DeclareRepresentation( "IsSubsetInducedNumeratorModuloTailPcgsRep",
+    IsModuloTailPcgsRep,
+    [ "moduloDepths", "moduloMap", "numerator", "denominator",
+      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
+
+#############################################################################
+##
+#R  IsModuloTailPcgsByListRep(<obj>)
+##
+DeclareRepresentation( "IsModuloTailPcgsByListRep", IsModuloTailPcgsRep,
+    [ "moduloDepths", "moduloMap", "numerator", "denominator",
+      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
+
+#############################################################################
+##
 #M  IsBound[ <pos> ]
 ##
 InstallMethod( IsBound\[\],
@@ -110,35 +131,99 @@ function( pcgs, pos )
 end );
 
 
+#AH: 3-5-99: this is nowhere used
+# #############################################################################
+# ##
+# #M  ModuloParentPcgs( <pcgs> )
+# ##
+# InstallMethod( ModuloParentPcgs,
+#     true,
+#     [ IsPcgs ],
+#     0,
+#     pcgs -> ParentPcgs( pcgs ) mod pcgs );
+
 #############################################################################
 ##
-
-#M  ModuloParentPcgs( <pcgs> )
+#M  ModuloTailPcgsByList( <home>, <list>, <taildepths> )
 ##
-InstallMethod( ModuloParentPcgs,
-    true,
-    [ IsPcgs ],
-    0,
-    pcgs -> ParentPcgs( pcgs ) mod pcgs );
+InstallGlobalFunction( ModuloTailPcgsByList,
+function( home, factor, wm )
+local   wd,  filter,  new,  i;
 
+  if IsSubset(home,factor) then
+    wd:=List(factor,i->Position(home,i));
+  else
+    wd:=List(factor,i->DepthOfPcElement(home,i));
+  fi;
+
+  # check which filter to use
+  filter := IsModuloPcgs and IsModuloTailPcgsRep 
+	    and IsModuloTailPcgsByListRep;
+
+  if IsSubset(home,factor) then
+    filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep;
+  fi;
+
+  if Length(wd)=Length(Set(wd)) then
+    # the depths are all different. We can get the exponetnts from the
+    # parent pcgs
+    filter:=filter and IsNumeratorParentForExponentsRep;
+  fi;
+
+  if HasIsParentPcgsFamilyPcgs(home) 
+      and IsParentPcgsFamilyPcgs(home) then
+    filter:=filter and IsNumeratorParentPcgsFamilyPcgs;
+  fi;
+
+  if IsPrimeOrdersPcgs(home)  then
+      filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs
+                       and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+  elif IsFiniteOrdersPcgs(home)  then
+      filter := filter and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+  fi;
+
+  # construct a pcgs from <pcs>
+  new := PcgsByPcSequenceCons(
+	      IsPcgsDefaultRep,
+	      filter,
+	      FamilyObj(OneOfPcgs(home)),
+	      factor,[]);
+
+  SetRelativeOrders(new,RelativeOrders(home){wd});
+  # store other useful information
+  new!.moduloDepths := wm;
+
+  # setup the maps
+  new!.moduloMap := [];
+  for i  in [ 1 .. Length(wm) ]  do
+      new!.moduloMap[wm[i]] := i;
+  od;
+  new!.depthMap := [];
+  for i  in [ 1 .. Length(wd) ]  do
+      new!.depthMap[wd[i]] := i;
+  od;
+
+  new!.numeratorParent:=home;
+  new!.depthsInParent:=wd;
+  new!.parentZeroVector:=home!.zeroVector;
+
+  # and return
+  return new;
+end);
 
 #############################################################################
 ##
 #M  ModuloPcgsByPcSequenceNC( <home>, <pcs>, <modulo> )
 ##
-InstallMethod( ModuloPcgsByPcSequenceNC,
-    "generic method",
-    true,
-    [ IsPcgs,
-      IsList,
-      IsInducedPcgs ],
-    0,
+InstallMethod( ModuloPcgsByPcSequenceNC, "generic method for pcgs mod pcgs",
+    true, [ IsPcgs, IsList, IsPcgs ], 0,
 
 function( home, list, modulo )
-    local   pcgs,  wm,  wp,  wd,  pcs,  filter,  new,  i;
+    local   pcgs,  wm,  wp,  wd,  pcs,  filter,  new,  i,depthsInParent;
 
     # <list> is a pcgs for the sum of <list> and <modulo>
-    if IsPcgs(list) and ParentPcgs(modulo) = list  then
+    if IsPcgs(list) and (ParentPcgs(modulo) = list or IsSubset(list,modulo)) 
+      then
         pcgs := list;
         wm   := List( modulo, x -> DepthOfPcElement( pcgs, x ) );
         wp   := [ 1 .. Length(list) ];
@@ -162,34 +247,63 @@ function( home, list, modulo )
     fi;
 
     # check which filter to use
-    filter := IsModuloPcgs;
+    filter := IsModuloPcgs and 
+	      HasDenominatorOfModuloPcgs and HasNumeratorOfModuloPcgs;
+
+    depthsInParent:=fail; # do not set by default
     if IsEmpty(wd) or wd[Length(wd)] = Length(wd)  then
         filter := filter and IsModuloTailPcgsRep;
+	# are we even: tail mod further tail?
+        if IsSubsetInducedPcgsRep(pcgs) and IsModuloTailPcgsRep(pcgs)
+	  and IsBound(pcgs!.depthsInParent) then
+	  filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep;
+	  depthsInParent:=pcgs!.depthsInParent;
+	  # is everything even family induced?
+	  if HasIsParentPcgsFamilyPcgs(pcgs) 
+	     and IsParentPcgsFamilyPcgs(pcgs) then
+	    filter:=filter and IsNumeratorParentPcgsFamilyPcgs;
+	  fi;
+	elif HasIsFamilyPcgs(pcgs) and IsFamilyPcgs(pcgs) then
+	  # the same if the enumerator is not induced but actually the
+	  # familypcgs
+	  filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep
+		  and IsNumeratorParentPcgsFamilyPcgs;
+	  depthsInParent:=[1..Length(pcgs)]; # not stored in FamilyPcgs
+	fi;
     else
-        filter := filter and IsModuloPcgsRep;
+      if Length(wd)=Length(Set(wd)) and IsSubset(list,modulo) then
+	# the depths are all different and the modulus is just a tail. We
+	# can get the exponents from the parent pcgs.
+	filter:=filter and IsNumeratorParentForExponentsRep;
+	if not IsBound(pcgs!.depthsInParent) then
+	  pcgs!.depthsInParent:=List(pcgs,i->DepthOfPcElement(Parent(pcgs),i));
+	fi;
+	depthsInParent:=pcgs!.depthsInParent;
+      else
+	filter := filter and IsModuloPcgsRep;
+      fi;
     fi;
-    if IsFiniteOrdersPcgs(pcgs)  then
-        filter := filter and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+    if IsPrimeOrdersPcgs(home)  then
+	filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs
+			and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+    elif IsFiniteOrdersPcgs(home)  then
+	filter := filter and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
     fi;
-    if IsPrimeOrdersPcgs(pcgs)  then
-        filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs;
-    fi;
+
+    # store the one and other information
 
     # construct a pcgs from <pcs>
     new := PcgsByPcSequenceCons(
                IsPcgsDefaultRep,
                filter,
                FamilyObj(OneOfPcgs(pcgs)),
-               pcs );
+               pcs,
+	       [DenominatorOfModuloPcgs, modulo,
+		NumeratorOfModuloPcgs, pcgs ]);
 
-    # store the one and other information
-    SetOneOfPcgs( new, OneOfPcgs(pcgs) );
-    SetRelativeOrders( new, RelativeOrders(pcgs){wd} );
-
+    SetRelativeOrders(new,RelativeOrders(pcgs){wd});
     # store other useful information
     new!.moduloDepths := wm;
-    SetDenominatorOfModuloPcgs( new, modulo );
-    SetNumeratorOfModuloPcgs(   new, pcgs   );
 
     # setup the maps
     new!.moduloMap := [];
@@ -200,6 +314,12 @@ function( home, list, modulo )
     for i  in [ 1 .. Length(wd) ]  do
         new!.depthMap[wd[i]] := i;
     od;
+
+    if depthsInParent<>fail then
+      new!.numeratorParent:=ParentPcgs(pcgs);
+      new!.depthsInParent:=depthsInParent{wd};
+      new!.parentZeroVector:=ParentPcgs(pcgs)!.zeroVector;
+    fi;
 
     # and return
     return new;
@@ -313,7 +433,6 @@ end);
 
 #############################################################################
 ##
-
 #M  DepthOfPcElement( <modulo-pcgs>, <elm>, <min> )
 ##
 InstallOtherMethod( DepthOfPcElement,
@@ -340,13 +459,8 @@ end );
 #M  ExponentOfPcElement( <modulo-pcgs>, <elm>, <pos> )
 ##
 InstallOtherMethod( ExponentOfPcElement,
-    "pcgs modulo pcgs, ExponentsOfPcElement",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
-    [ IsModuloPcgs,
-      IsObject,
-      IsPosInt ],
-    0,
-
+    "pcgs modulo pcgs, ExponentsOfPcElement", IsCollsElmsX,
+    [ IsModuloPcgs, IsObject, IsPosInt ], 0,
 function( pcgs, elm, pos )
     return ExponentsOfPcElement(pcgs,elm)[pos];
 end );
@@ -357,13 +471,8 @@ end );
 #M  ExponentsOfPcElement( <pcgs>, <elm>, <poss> )
 ##
 InstallOtherMethod( ExponentsOfPcElement,
-    "pcgs modulo pcgs with positions, falling back to ExponentsOfPcElement",
-    IsCollsElmsX,
-    [ IsModuloPcgs,
-      IsObject,
-      IsList ],
-    0,
-
+  "pcgs mod. pcgs,range, falling back to Exp.OfPcElement", IsCollsElmsX,
+    [ IsModuloPcgs, IsObject, IsList ], 0,
 function( pcgs, elm, pos )
     return ExponentsOfPcElement(pcgs,elm){pos};
 end );
@@ -373,11 +482,7 @@ end );
 ##
 #M  IsFiniteOrdersPcgs( <modulo-pcgs> )
 ##
-InstallOtherMethod( IsFiniteOrdersPcgs,
-    true,
-    [ IsModuloPcgs ],
-    0,
-
+InstallOtherMethod( IsFiniteOrdersPcgs, true, [ IsModuloPcgs ], 0,
 function( pcgs )
     return ForAll( RelativeOrders(pcgs), x -> x <> 0 and x <> infinity );
 end );
@@ -403,12 +508,8 @@ end );
 #M  LeadingExponentOfPcElement( <modulo-pcgs>, <elm> )
 ##
 InstallOtherMethod( LeadingExponentOfPcElement,
-    "pcgs modulo pcgs, ExponentsOfPcElement",
-    IsCollsElms,
-    [ IsModuloPcgs,
-      IsObject ],
-    0,
-
+    "pcgs modulo pcgs, use ExponentsOfPcElement", IsCollsElms,
+    [ IsModuloPcgs, IsObject ], 0,
 function( pcgs, elm )
     local   exp,  dep;
 
@@ -425,47 +526,36 @@ end );
 
 #############################################################################
 ##
-#M  PcElementByExponents( <pcgs>, <empty-list> )
+#M  PcElementByExponentsNC( <pcgs>, <empty-list> )
 ##
-InstallOtherMethod( PcElementByExponents,
-    "generic method for empty lists",
-    true,
-    [ IsModuloPcgs,
-      IsList and IsEmpty ],
-    0,
-
+InstallOtherMethod( PcElementByExponentsNC, "generic method for empty lists",
+    true, [ IsModuloPcgs, IsList and IsEmpty ], 0,
 function( pcgs, list )
-    if Length(list) <> Length(pcgs)  then
-        Error( "<list> and <pcgs> have different lengths" );
-    fi;
     return OneOfPcgs(pcgs);
 end );
 
 
 #############################################################################
 ##
-#M  PcElementByExponents( <pcgs>, <list> )
+#M  PcElementByExponentsNC( <pcgs>, <list> )
 ##
-InstallOtherMethod( PcElementByExponents,
-    "generic method",
-    true,
-    [ IsModuloPcgs,
-      IsRowVector and IsCyclotomicCollection ],
-    0,
-
+InstallOtherMethod( PcElementByExponentsNC, "generic method: modulo", true,
+    [ IsModuloPcgs, IsRowVector and IsCyclotomicCollection ], 0,
 function( pcgs, list )
     local   elm,  i;
 
-    elm := OneOfPcgs(pcgs);
-    if Length(list) <> Length(pcgs)  then
-        Error( "<list> and <pcgs> have different lengths" );
-    fi;
+    elm := fail;
 
     for i  in [ 1 .. Length(list) ]  do
-        if list[i] <> 0  then
-            elm := elm * pcgs[i] ^ list[i];
-        fi;
+      if list[i]=1  then
+	if elm=fail then elm := pcgs[i];
+	else elm := elm * pcgs[i];fi;
+      elif list[i] <> 0  then
+	if elm=fail then elm := pcgs[i] ^ list[i];
+	else elm := elm * pcgs[i] ^ list[i];fi;
+      fi;
     od;
+    if elm=fail then elm := OneOfPcgs(pcgs);fi;
 
     return elm;
 
@@ -474,28 +564,26 @@ end );
 
 #############################################################################
 ##
-#M  PcElementByExponents( <pcgs>, <ffe-list> )
+#M  PcElementByExponentsNC( <pcgs>, <ffe-list> )
 ##
-InstallOtherMethod( PcElementByExponents,
-    "generic method",
-    true,
-    [ IsModuloPcgs,
-      IsRowVector and IsFFECollection ],
-    0,
-
+InstallOtherMethod( PcElementByExponentsNC, "generic method: modulo, FFE",
+    true, [ IsModuloPcgs, IsRowVector and IsFFECollection ], 0,
 function( pcgs, list )
-    local   elm,  i;
+    local   elm,  i,z;
 
-    elm := OneOfPcgs(pcgs);
-    if Length(list) <> Length(pcgs)  then
-        Error( "<list> and <pcgs> have different lengths" );
-    fi;
+    elm := fail;
 
     for i  in [ 1 .. Length(list) ]  do
-        if list[i] <> 0  then
-            elm := elm * pcgs[i] ^ IntFFE(list[i]);
-        fi;
+      z :=IntFFE(list[i]);
+      if z=1 then
+	if elm=fail then elm := pcgs[i] ;
+	else elm := elm * pcgs[i] ; fi;
+      elif z>1 then
+	if elm=fail then elm := pcgs[i] ^ z;
+	else elm := elm * pcgs[i] ^ z;fi;
+      fi;
     od;
+    if elm=fail then elm := OneOfPcgs(pcgs);fi;
 
     return elm;
 
@@ -504,15 +592,12 @@ end );
 
 #############################################################################
 ##
-#M  PcElementByExponents( <pcgs>, <basis>, <empty-list> )
+#M  PcElementByExponentsNC( <pcgs>, <basis>, <empty-list> )
 ##
-InstallOtherMethod( PcElementByExponents,
-    "generic method for empty lists",
-    true,
-    [ IsModuloPcgs,
-      IsList and IsEmpty,
-      IsList and IsEmpty ],
-    0,
+InstallOtherMethod( PcElementByExponentsNC,
+    "generic method for empty list as basis or basisindex, modulo", true,
+    [ IsModuloPcgs, IsList and IsEmpty, IsList ],
+    SUM_FLAGS, #this is better than everything else
 
 function( pcgs, basis, list )
     return OneOfPcgs(pcgs);
@@ -521,23 +606,14 @@ end );
 
 #############################################################################
 ##
-#M  PcElementByExponents( <pcgs>, <basis>, <list> )
+#M  PcElementByExponentsNC( <pcgs>, <basis>, <list> )
 ##
-InstallOtherMethod( PcElementByExponents,
-    "generic method",
-    true,
-    [ IsModuloPcgs,
-      IsList,
-      IsRowVector and IsCyclotomicCollection ],
-    0,
-
+InstallOtherMethod( PcElementByExponentsNC, "generic method: modulo, basis",
+    IsFamFamX, [IsModuloPcgs,IsList,IsRowVector and IsCyclotomicCollection], 0,
 function( pcgs, basis, list )
     local   elm,  i;
 
     elm := OneOfPcgs(pcgs);
-    if Length(list) <> Length(basis)  then
-        Error( "<list> and <basis> have different lengths" );
-    fi;
 
     for i  in [ 1 .. Length(list) ]  do
         if list[i] <> 0  then
@@ -549,32 +625,25 @@ function( pcgs, basis, list )
 
 end );
 
-
 #############################################################################
 ##
-#M  PcElementByExponents( <pcgs>, <basis>, <list> )
+#M  PcElementByExponentsNC( <pcgs>, <basis>, <list> )
 ##
-InstallOtherMethod( PcElementByExponents,
-    "generic method",
-    true,
-    [ IsModuloPcgs,
-      IsList,
-      IsRowVector and IsFFECollection ],
-    0,
-
+InstallOtherMethod( PcElementByExponentsNC,
+    "generic method: modulo, basis, FFE", IsFamFamX,
+    [ IsModuloPcgs, IsList, IsRowVector and IsFFECollection ], 0,
 function( pcgs, basis, list )
     local   elm,  i,  z;
 
     elm := OneOfPcgs(pcgs);
-    if Length(list) <> Length(basis)  then
-        Error( "<list> and <basis> have different lengths" );
-    fi;
 
     for i  in [ 1 .. Length(list) ]  do
         z := IntFFE(list[i]);
-        if z <> 0  then
-            elm := elm * basis[i] ^ z;
-        fi;
+	if z=1 then
+	  elm := elm * basis[i] ;
+	elif z>1 then
+	  elm := elm * basis[i] ^ z;
+	fi;
     od;
 
     return elm;
@@ -643,23 +712,17 @@ function( pcgs, elm )
     fi;
 end );
 
-
 #############################################################################
 ##
 #M  ExponentsOfPcElement( <modulo-pcgs>, <elm> )
 ##
-InstallOtherMethod( ExponentsOfPcElement,
-    "pcgs modulo pcgs",
-    IsCollsElms,
-    [ IsModuloPcgs and IsModuloPcgsRep,
-      IsObject ],
-    0,
-
+InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs", IsCollsElms,
+    [ IsModuloPcgs and IsModuloPcgsRep, IsObject ], 0,
 function( pcgs, elm )
     local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr;
 
     id  := OneOfPcgs(pcgs);
-    exp := List( pcgs, x -> 0 );
+    exp := ListWithIdenticalEntries(Length(pcgs),0);
     den := DenominatorOfModuloPcgs(pcgs);
     num := NumeratorOfModuloPcgs(pcgs);
     if not IsPrimeOrdersPcgs(num)  then TryNextMethod();  fi;
@@ -671,6 +734,7 @@ function( pcgs, elm )
 
     while elm <> id  do
         d := DepthOfPcElement( num, elm );
+
         if IsBound(mm[d])  then
             ll  := LeadingExponentOfPcElement( num, elm );
             lr  := LeadingExponentOfPcElement( num, den[mm[d]] );
@@ -685,34 +749,167 @@ function( pcgs, elm )
     return exp;
 end );
 
-
 #############################################################################
 ##
-#M  ExponentsOfPcElement( <tail-pcgs>, <elm> )
+#M  ExponentsOfPcElement( <modulo-pcgs>, <elm>, <subrange> )
 ##
-InstallOtherMethod( ExponentsOfPcElement,
-    "pcgs modulo tail-pcgs",
-    IsCollsElms,
-    [ IsModuloPcgs and IsModuloTailPcgsRep,
-      IsObject ],
-    0,
-        
-function( pcgs, elm )
-    return ExponentsOfPcElement(
-        NumeratorOfModuloPcgs(pcgs), elm, pcgs!.depthMap );
+InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs, subrange",
+    IsCollsElmsX, [ IsModuloPcgs and IsModuloPcgsRep, IsObject,IsList ], 0,
+function( pcgs, elm,range )
+    local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr,max;
+
+    if not IsSSortedList(range) then
+      TryNextMethod(); # the range may be unsorted or contain duplicates,
+      # then we would have to be more clever.
+    fi;
+    max:=Maximum(range);
+
+    id  := OneOfPcgs(pcgs);
+    exp := ListWithIdenticalEntries(Length(pcgs),0);
+    den := DenominatorOfModuloPcgs(pcgs);
+    num := NumeratorOfModuloPcgs(pcgs);
+    if not IsPrimeOrdersPcgs(num)  then TryNextMethod();  fi;
+
+    wm  := pcgs!.moduloDepths;
+    mm  := pcgs!.moduloMap;
+    pm  := pcgs!.depthMap;
+    ros := RelativeOrders(num);
+
+    while elm <> id  do
+      d := DepthOfPcElement( num, elm );
+      if IsBound(pm[d]) and pm[d]>max then
+	# we have reached the maximum of the range we asked for. Thus we
+	# can stop calculating exponents now, all further exponents would
+	# be discarded anyhow.
+	# Note that the depthMap is sorted!
+	elm:=id;
+      else
+        if IsBound(mm[d])  then
+            ll  := LeadingExponentOfPcElement( num, elm );
+            lr  := LeadingExponentOfPcElement( num, den[mm[d]] );
+            elm := LeftQuotient( den[mm[d]]^(ll / lr mod ros[d]), elm );
+        else
+            ll := LeadingExponentOfPcElement( num, elm );
+            lr := LeadingExponentOfPcElement( num, pcgs[pm[d]] );
+            exp[pm[d]] := ll / lr mod ros[d];
+            elm := LeftQuotient( pcgs[pm[d]]^exp[pm[d]], elm );
+        fi;
+      fi;
+    od;
+    exp:=exp{range};
+    return exp;
 end );
 
 
 #############################################################################
 ##
-
-#M  GroupByPcgs( <modulo-pcgs> )
+#M  ExponentsOfPcElement( <tail-pcgs>, <elm> )
 ##
-InstallOtherMethod( GroupByPcgs,
-    "pcgs modulo pcgs",
-    true,
-    [ IsModuloPcgs ],
-    0,
+InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo tail-pcgs", IsCollsElms,
+    [ IsModuloPcgs and IsModuloTailPcgsRep, IsObject ], 0,
+function( pcgs, elm )
+    return ExponentsOfPcElement(
+        NumeratorOfModuloPcgs(pcgs), elm, pcgs!.depthMap );
+end );
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <tail-pcgs>, <elm>, <subrange> )
+##
+InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo tail-pcgs, subrange",
+    IsCollsElmsX, [ IsModuloPcgs and IsModuloTailPcgsRep, IsObject,IsList ], 0,
+function( pcgs, elm,range )
+    return ExponentsOfPcElement(
+        NumeratorOfModuloPcgs(pcgs), elm, pcgs!.depthMap{range} );
+end );
+
+#############################################################################
+##
+#M  ExponentOfPcElement( <tail-pcgs>, <elm>, <pos> )
+##
+InstallOtherMethod( ExponentOfPcElement,
+    "pcgs modulo tail-pcgs, ExponentsOfPcElement",IsCollsElmsX,
+    [ IsModuloPcgs and IsModuloTailPcgsRep,
+      IsObject,
+      IsPosInt ], 0,
+function( pcgs, elm, pos )
+    return ExponentOfPcElement(
+        NumeratorOfModuloPcgs(pcgs), elm, pcgs!.depthMap[pos] );
+end );
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <subset-induced,modulo-tail-pcgs>, <elm> )
+##
+InstallOtherMethod( ExponentsOfPcElement,
+    "subset induced pcgs modulo tail-pcgs", IsCollsElms,
+    [ IsModuloPcgs and IsModuloTailPcgsRep
+      and IsNumeratorParentForExponentsRep, IsObject ], 0,
+function( pcgs, elm )
+    return
+      ExponentsOfPcElement(pcgs!.numeratorParent,elm,pcgs!.depthsInParent);
+end );
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <subset-induced,modulo-tail-pcgs>,<elm>,<subrange> )
+##
+InstallOtherMethod( ExponentsOfPcElement,
+    "subset induced pcgs modulo tail-pcgs, subrange",
+    IsCollsElmsX,
+    [ IsModuloPcgs and IsModuloTailPcgsRep
+      and IsNumeratorParentForExponentsRep, IsObject,IsList ], 0,
+function( pcgs, elm, range )
+    return
+      ExponentsOfPcElement(pcgs!.numeratorParent,elm,pcgs!.depthsInParent{range});
+end );
+
+#############################################################################
+##
+#M  ExponentsOfRelativePower( <subset-induced,modulo-tail-pcgs>, <> )
+##
+InstallOtherMethod( ExponentsOfRelativePower,
+    "subset induced pcgs modulo tail-pcgs", true,
+    [ IsModuloPcgs and IsModuloTailPcgsRep
+      and IsNumeratorParentForExponentsRep, IsPosInt ], 0,
+function( pcgs, ind )
+  return ExponentsOfRelativePower(ParentPcgs(pcgs!.numeratorParent),
+    pcgs!.depthsInParent[ind]) # depth of the element in the parent
+                                {pcgs!.depthsInParent};
+end );
+
+#############################################################################
+##
+#M  ExponentsOfConjugate( <subset-induced,modulo-tail-pcgs>, <> )
+##
+InstallOtherMethod( ExponentsOfConjugate,
+    "subset induced pcgs modulo tail-pcgs", true,
+    [ IsModuloPcgs and IsModuloTailPcgsRep
+      and IsNumeratorParentForExponentsRep, IsPosInt,IsPosInt ], 0,
+function( pcgs, i,j )
+  return ExponentsOfConjugate(ParentPcgs(pcgs!.numeratorParent),
+    pcgs!.depthsInParent[i], # depth of the element in the parent
+    pcgs!.depthsInParent[j]) # depth of the element in the parent
+                                {pcgs!.depthsInParent};
+end );
+
+#############################################################################
+##
+#M  ExponentsConjugateLayer( <mpcgs>,<elm>,<e> )
+##
+InstallMethod( ExponentsConjugateLayer,"default: compute brute force",
+  IsCollsElmsElms,[IsModuloPcgs,IsMultiplicativeElementWithInverse,
+                   IsMultiplicativeElementWithInverse],0,
+function(m,elm,e)
+  return ExponentsOfPcElement(m,elm^e);
+end);
+
+
+#############################################################################
+##
+#M  PcGroupWithPcgs( <modulo-pcgs> )
+##
+InstallMethod( PcGroupWithPcgs, "pcgs modulo pcgs", true, [ IsModuloPcgs ], 0,
 
 function( pcgs )
 
@@ -725,18 +922,40 @@ function( pcgs )
 end );
 
 
-
 #############################################################################
 ##
 #M  GroupOfPcgs( <modulo-pcgs> )
 ##
-InstallOtherMethod( GroupOfPcgs,
-  true,
-  [ IsModuloPcgs ],
-  0,
-
+InstallOtherMethod( GroupOfPcgs, true, [ IsModuloPcgs ], 0,
 function( pcgs )
   return GroupOfPcgs( NumeratorOfModuloPcgs( pcgs ) );
+end );
+
+#############################################################################
+##
+#M  NumeratorOfModuloPcgs( <modolo-tail-pcgs-by-list-rep> )
+##
+InstallMethod( NumeratorOfModuloPcgs,
+    "modolo-tail-pcgs-by-list-rep", true,
+    [ IsModuloPcgs and IsModuloTailPcgsByListRep],0,
+function( mpcgs )
+local home;
+  home:=mpcgs!.numeratorParent;
+  return InducedPcgsByPcSequenceNC(home,
+           Concatenation(mpcgs!.pcSequence,home{mpcgs!.moduloDepths}));
+end );
+
+#############################################################################
+##
+#M  DenominatorOfModuloPcgs( <modolo-tail-pcgs-by-list-rep> )
+##
+InstallMethod( DenominatorOfModuloPcgs,
+    "modolo-tail-pcgs-by-list-rep", true,
+    [ IsModuloPcgs and IsModuloTailPcgsByListRep],0,
+function( mpcgs )
+local home;
+  home:=mpcgs!.numeratorParent;
+  return InducedPcgsByPcSequenceNC(home,home{mpcgs!.moduloDepths});
 end );
 
 #############################################################################
@@ -745,10 +964,10 @@ end );
 ##
 InstallMethod(NumeratorOfModuloPcgs,"for pcgs",true,[IsPcgs],0,
 function(pcgs)
-if IsModuloPcgs(pcgs) and not IsPcgs(pcgs) then
-  TryNextMethod();
-fi;
-return pcgs;
+  if IsModuloPcgs(pcgs) and not IsPcgs(pcgs) then
+    TryNextMethod();
+  fi;
+  return pcgs;
 end);
 
 
@@ -758,10 +977,10 @@ end);
 ##
 InstallMethod(DenominatorOfModuloPcgs,"for pcgs",true,[IsPcgs],0,
 function(pcgs)
-if IsModuloPcgs(pcgs) and not IsPcgs(pcgs) then
-  TryNextMethod();
-fi;
-return InducedPcgsByGeneratorsNC(pcgs,[]);
+  if IsModuloPcgs(pcgs) and not IsPcgs(pcgs) then
+    TryNextMethod();
+  fi;
+  return InducedPcgsByGeneratorsNC(pcgs,[]);
 end);
 
 
@@ -772,8 +991,10 @@ end);
 ##
 InstallMethod(ModuloPcgs,"for groups",IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,H)
-  G:=InducedPcgsWrtHomePcgs(G);
-  return G mod InducedPcgs(G,H);
+local home;
+  home:=HomePcgs(G);
+  G:=InducedPcgs(home,G);
+  return G mod InducedPcgs(home,H);
 end);
 
 #############################################################################

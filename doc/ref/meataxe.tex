@@ -1,17 +1,30 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  meataxe.tex                 GAP documentation        Alexander Hulpke
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file contains a description of the MeatAxe functions.
+%%
+
 \Chapter{The MeatAxe}
 
 The MeatAxe \cite{Par84} is a tool for the examination of submodules of a
-group algebra. It is a basic tool for the examination of group action on
+group algebra. It is a basic tool for the examination of group actions on
 finite-dimensional modules.
 
+{\GAP} uses the improved MeatAxe of Derek Holt and Sarah Rees.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{MeatAxe modules}
+\Section{MeatAxe Modules}
 
 \>GModuleByMats(<gens>,<field>)
 \>GModuleByMats(<emptygens>,<dim>,<field>)
 
 creates a MeatAxe module over <field> from a list of invertible matrices 
-<gens> which reflect a groups action. If the list of generators is empty,
+<gens> which reflect a group's action. If the list of generators is empty,
 the dimension must be given as second argument.
 
 MeatAxe routines are on a level with Gaussian elimination. Therefore they do
@@ -20,11 +33,13 @@ MeatAxe, a module is a record with components
 \beginitems
 `generators'&A list of matrices which represent a group operation on a
 finite dimensional row vector space.
+
 `dimension'&The field over which the vector space is defined.
+
 `field'&The field over which the vector space is defined.
 \enditems
 Once a module has been created its entries may not be changed. A MeatAxe may
-creat a new component <NameOfMeatAxe> in which it can store private
+create a new component <NameOfMeatAxe> in which it can store private
 information. By a MeatAxe ``submodule'' or ``factor module'' we denote
 actually the *induced action* on the submodule, respectively factor module.
 Therefore the submodules or factor modules are again MeatAxe modules. The
@@ -33,7 +48,7 @@ modules, but to obtain the complete relation to the original module, the
 bases used are needed as well.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Selecting a different MeatAxe}
+\Section{Selecting a Different MeatAxe}
 
 All MeatAxe routines are accessed via the global variable `MTX', which is a
 record whose components hold the various functions. It is possible to have
@@ -42,14 +57,15 @@ routines in an own global variable and assigning `MTX' to this variable
 selects the corresponding MeatAxe.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Accessing a module}
+\Section{Accessing a Module}
 
-Even though a MeatAxe module is a record its components should never be
-accessed outside of MeatAxe functions, but the following operations be used:
+Even though a MeatAxe module is a record, its components should never be
+accessed outside of MeatAxe functions. Instead the following operations
+should be used:
 
 \>MTX.Generators(<module>)
 
-returns a list of matrix generators of <module>
+returns a list of matrix generators of <module>.
 
 \>MTX.Dimension(<module>)
 
@@ -60,7 +76,7 @@ returns the dimension in which the matrices act.
 returns the field over which <module> is defined.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Irreducibility tests}
+\Section{Irreducibility Tests}
 
 \>MTX.IsIrreducible(<module>) AST
 
@@ -79,23 +95,24 @@ algebraic closure of $K$.)
 returns the degree of the splitting field as extension of the prime field.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Finding submodules}
+\Section{Finding Submodules}
 
 \>MTX.ProperSubmoduleBasis(<module>) F
 
-returns the action on a proper submodule and `fail' if none exists.
+returns the action on a proper submodule and `fail' if no proper submodule
+exists.
 
 \>MTX.BasesSubmodules(<module>) F
 
-returns a list containing a basis for every submodule
+returns a list containing a basis for every submodule.
 
 \>MTX.BasesMinimalSubmodules(<module>) F
 
-returns a list of bases of all minimal submodules
+returns a list of bases of all minimal submodules.
 
 \>MTX.BasesMaximalSubmodules(<module>) F
 
-returns a list of bases of all maximal submodules
+returns a list of bases of all maximal submodules.
 
 \>MTX.BasesMinimalSupermodules(<module>,<sub>) F
 
@@ -105,7 +122,7 @@ the basis <sub>.
 \>MTX.BasesCompositionSeries(<module>) F
 
 returns a list of bases of submodules in a composition series in ascending
-order
+order.
 
 \>MTX.CompositionFactors(<module>) F
 
@@ -117,7 +134,7 @@ returns a list giving all irreducible composition factors with their
 frequencies.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Induced actions}
+\Section{Induced Actions}
 
 \>MTX.InducedActionSubmodule(<module>,<sub>) F
 \>MTX.InducedActionSubmoduleNB(<module>,sub) F
@@ -142,15 +159,15 @@ factor action and 4 for action of the full module
 on a subspace adapted basis.
 The routine returns the computed results in a list in sequence
 (<sub>,<quot>,<both>,<basis>) where <basis> is a basis for the whole space,
-extending <sub>. (If <type> specifies not all actions, the returned list
-is shorter.)
+extending <sub>. (Actions which are not computed are omitted, so the
+returned list may be shorter.)
 If no <type> is given, it is assumed to be 7.
 The basis given in <sub> must be normed!
 
 All these routines return `fail' if <sub> is not a proper subspace.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Module homomorphisms}
+\Section{Module Homomorphisms}
 
 \>MTX.IsEquivalent(<module>1,module2) F
 
@@ -158,9 +175,9 @@ tests two irreducible modules for equivalence.
 
 \>MTX.Isomorphism(<module1>,<module2>) F
 
-returns an isomorphism from <module1> to <module2> (if any exists) and 
-`fail' otherwise. It needs that one of the modules is known to be
-ireducible. It implicitly assumes that the same group is acting, otherwise
+returns an isomorphism from <module1> to <module2> (if one exists) and 
+`fail' otherwise. It requires that one of the modules is known to be
+irreducible. It implicitly assumes that the same group is acting, otherwise
 the results are unpredictable.
 The isomorphism is given by a matrix $M$, whose rows give the images of the
 standard basis vectors of module2 in the standard basis of module1. That is,
@@ -196,11 +213,11 @@ returns the module action on a random irreducible submodule.
 \>SMTX.GoodElementGModule(<module>) F
 
 finds an element with minimal possible nullspace dimension if <module>
-is known to be irreducible
+is known to be irreducible.
 
 \>SMTX.SortHomGModule(<module1>,<module2>,<homs>) F
 
-Function to sort the output of `Homomorphisms'
+Function to sort the output of `Homomorphisms'.
 
 \>SMTX.MinimalSubGModules(<module1>,<module2>[,<max>])
 
@@ -209,11 +226,11 @@ isomorphic to the irreducible module  <module1>.
 
 \>SMTX.Setter(<string>)
 
-returns a setter function for the component {\tt smashMeataxe.(string)}.
+returns a setter function for the component `smashMeataxe.(string)'.
 
 \>SMTX.Getter(<string>)
 
-returns a getter function for the component {\tt smashMeataxe.(string)}.
+returns a getter function for the component `smashMeataxe.(string)'.
 
 \>SMTX.IrreducibilityTest(<module>)
 
@@ -230,11 +247,11 @@ neither sets an absolute irreducibility flag, nor tests it.
 
 returns the basis of a minimal submodule of <module> containing the
 indicated composition factor. It assumes `Distinguish' has been called
-already
+already.
 
 \>SMTX.MatrixSum(<matrices1>,<matrices2>)
 
-creates the direct sum of two matrix lists
+creates the direct sum of two matrix lists.
 
 \>SMTX.CompleteBasis(<module>,<pbasis>)
 
@@ -253,27 +270,27 @@ Basis of a submodule
 
 \>SMTX.AlgEl
 
-list `[newgens,coefflist]' giving an algebra element used for chopping
+list `[newgens,coefflist]' giving an algebra element used for chopping.
 
 \>SMTX.AlgElMat
 
-matrix thereof
+matrix of `SMTX.AlgEl'.
 
 \>SMTX.AlgElCharPol
 
-minimal polynomial thereof
+minimal polynomial of `SMTX.AlgEl'.
 
 \>SMTX.AlgElCharPolFac
 
-used factor thereof
+used factor of `SMTX.AlgEl'.
 
 \>SMTX.AlgElNullspaceVec
 
-nullspace of the matrix evaluated under this factor
+nullspace of the matrix evaluated under this factor.
 
 \>SMTX.AlgElNullspaceDimension
 
-dimension thereof
+dimension of the nullspace.
 
 \>SMTX.CentMat
 

@@ -11,7 +11,7 @@
 
 Every {\GAP} object has a *type*.
 Types are used to decide whether an operation is admissible or possible,
-and if yes, how it is performed.
+and if so, how it is performed.
 
 For example, the types determine whether two objects can be multiplied
 and what function is called to compute the product.
@@ -394,7 +394,6 @@ $a \* b = - ( b \* a )$, $a \* ( b + c ) = a \* b + a \* c$,
 and $( a + b ) \* c = a \* c + b \* c$, respectively,
 for all $a$, $b$, $c$ in the domain.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Filters}
 
@@ -455,14 +454,20 @@ For implications between filters, see the sections "Filters",
 "Logical Implications", "Creating Categories",
 "Creating Representations", "Creating Attributes and Properties".
 
+Technical remark:
+Filters which are not explicitly set are guaranteed to be `false'.
+Therefore, if `IsProp' is a property, creating a type with the filter
+`IsProp' yields a type for which the property is known to be true. Creating
+a type with the tester filter `HasIsProp' *without* giving the property
+filter will yield a type for which the property is known to be false.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Types}
 
 For an object <obj>, its *type* is formed by the following data.
 The family of <obj>,
-the filters in that <obj> lies,
-and, optionally, defining data of the type.
+the filters in which <obj> lies,
+and, possibly, defining data of the type.
 
 Two types are equal if and only if the two families are identical,
 the filters are equal, and, if present, also the defining data of the

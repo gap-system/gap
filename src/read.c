@@ -41,6 +41,8 @@ const char * Revision_read_c =
 #undef  INCLUDE_DECLARATION_PART
 
 
+#include         <assert.h>
+
 /****************************************************************************
 **
 
@@ -149,11 +151,68 @@ void            ReadFuncExpr1 (
 **        |  <Var> '[' <Expr> ']'
 **        |  <Var> '{' <Expr> '}'
 **        |  <Var> '.' <Ident>
-**        |  <Var> '(' [ <Expr> { ',' <Expr> } ] ')'
+**        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
 extern Obj ExprGVars;
 extern Obj ErrorLVars;
 extern Obj BottomLVars;
+
+/* This function reads the options part at the end of a function call
+   The syntax is
+
+   <options> := <option> [, <options> ]
+   <option>  := <Ident> | '(' <Expr> ')' [ ':=' <Expr> ]
+
+   empty options lists are handled further up
+*/
+void ReadFuncCallOption( TypSymbolSet follow )
+{
+  volatile UInt       rnam;           /* record component name           */
+  if ( Symbol == S_IDENT ) {
+    rnam = RNamName( Value );
+    Match( S_IDENT, "identifier", S_COMMA | follow );
+    if ( ! READ_ERROR() ) { IntrFuncCallOptionsBeginElmName( rnam ); }
+  }
+  else if ( Symbol == S_LPAREN ) {
+    Match( S_LPAREN, "(", S_COMMA | follow );
+    ReadExpr( follow, 'r' );
+    Match( S_RPAREN, ")", S_COMMA | follow );
+    if ( ! READ_ERROR() ) { IntrFuncCallOptionsBeginElmExpr(); }
+  }
+  else {
+    SyntaxError("identifier expected");
+  }
+  if ( Symbol == S_ASSIGN )
+    {
+      Match( S_ASSIGN, ":=", S_COMMA | follow );
+      ReadExpr( S_COMMA | S_RPAREN|follow, 'r' );
+      if ( ! READ_ERROR() ) { IntrFuncCallOptionsEndElm(); }
+    }
+  else
+    {
+      if ( ! READ_ERROR() ) { IntrFuncCallOptionsEndElmEmpty(); }
+    }
+  return;
+}
+
+void ReadFuncCallOptions( TypSymbolSet follow )
+{
+  volatile UInt nr;
+  if ( ! READ_ERROR() ) { IntrFuncCallOptionsBegin( ); }
+  ReadFuncCallOption( follow);
+  nr = 1;
+  while ( Symbol == S_COMMA )
+    {
+      Match(S_COMMA, ",", follow );
+      ReadFuncCallOption( follow );
+      nr++;
+    }
+  IntrFuncCallOptionsEnd( nr );
+  return;
+}
+
+extern UInt IntrCoding;		/* needed for error recovery in some
+				 places */
 
 void ReadCallVarAss (
     TypSymbolSet        follow,
@@ -170,6 +229,9 @@ void ReadCallVarAss (
     volatile UInt       level = 0;      /* number of '{}' selectors        */
     volatile UInt       rnam  = 0;      /* record component name           */
     volatile UInt       narg  = 0;      /* number of arguments             */
+    volatile Obj        func;
+    extern   UInt       IntrIgnoring;
+    
 
     /* all variables must begin with an identifier                         */
     if ( Symbol != S_IDENT ) {
@@ -208,23 +270,26 @@ void ReadCallVarAss (
       lvars = lvars0;
       nest = 0;
       while ( type == ' ' && lvars != 0 && lvars != BottomLVars ) {
-        nams = NAMS_FUNC( PTR_BAG(lvars)[0] );
-	indx = LEN_LIST( nams );
-	if (indx >= 1024)
+	nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
+	if (nams != (Obj) 0)
 	  {
-	    Pr("Warning; Ignoring local names after 1024th in search for %s\n",
-	       (Int) Value,
-	       0L);
-	    indx = 1023;
-	  }
-        for ( ; 1 <= indx; indx-- ) {
-	  if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
-	    type = 'd';
-	    
-	    /* Ultrix 4.2 cc get's confused if the UInt is missing     */
-	    var = ((UInt) nest0 << 20) + ((UInt)nest << 10) + indx;
-	    break;
-	  }
+	    indx = LEN_LIST( nams );
+	    if (indx >= 1024)
+	      {
+		Pr("Warning; Ignoring local names after 1024th in search for %s\n",
+		   (Int) Value,
+		   0L);
+		indx = 1023;
+	      }
+	    for ( ; 1 <= indx; indx-- ) {
+	      if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+		type = 'd';
+		
+		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
+		var = ((UInt) nest0 << 20) + ((UInt)nest << 10) + indx;
+		break;
+	      }
+	    }
         }
         lvars = ENVI_FUNC( PTR_BAG( lvars )[0] );
         nest++;
@@ -257,8 +322,13 @@ void ReadCallVarAss (
     /* if this was actually the beginning of a function literal            */
     /* then we are in the wrong function                                   */
     if ( Symbol == S_MAPTO ) {
-        ReadFuncExpr1( follow );
-        return;
+      if (mode == 'r' || mode == 'x')
+	{
+	  ReadFuncExpr1( follow );
+	  return;
+	}
+      else
+	SyntaxError("function literal in impossible context");
     }
 
     /* check whether this is an unbound global variable                    */
@@ -269,6 +339,7 @@ void ReadCallVarAss (
       && VAL_GVAR(var) == 0 
       && ELM_PLIST(ExprGVars,var) == 0
       && CompNowFuncs == 0
+      && ! IntrIgnoring
       && ! SyCompilePlease )
     {
         SyntaxError("warning: unbound global variable");
@@ -300,7 +371,8 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrElmRecExpr();             level=0; }
         else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
         else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
-        else if ( type == 'c' ) { IntrFuncCallEnd( 1UL, narg ); level=0; }
+        else if ( type == 'c' || type == 'C' )
+	  { IntrFuncCallEnd( 1UL, type == 'C', narg ); level=0; }
 
         /* <Var> '[' <Expr> ']'  list selector                             */
         if ( Symbol == S_LBRACK ) {
@@ -379,7 +451,7 @@ void ReadCallVarAss (
             Match( S_LPAREN, "(", follow );
             if ( ! READ_ERROR() ) { IntrFuncCallBegin(); }
             narg = 0;
-            if ( Symbol != S_RPAREN ) {
+            if ( Symbol != S_RPAREN && Symbol != S_COLON) {
                 ReadExpr( S_RPAREN|follow, 'r' );
                 narg++;
             }
@@ -388,8 +460,16 @@ void ReadCallVarAss (
                 ReadExpr( S_RPAREN|follow, 'r' );
                 narg++;
             }
-            Match( S_RPAREN, ")", follow );
-            type = 'c';
+	    type = 'c';
+	    if (Symbol == S_COLON ) {
+	      Match( S_COLON, ":", follow );
+	      if ( Symbol != S_RPAREN ) /* save work for empty options */
+		{
+		  ReadFuncCallOptions(S_RPAREN | follow);
+		  type = 'C';
+		}
+	    }
+	    Match( S_RPAREN, ")", follow );
         }
 
     }
@@ -413,21 +493,21 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrElmRecExpr();             }
         else if ( type == '!' ) { IntrElmComObjName( rnam );      }
         else if ( type == '|' ) { IntrElmComObjExpr();            }
-        else if ( type == 'c' ) {
+        else if ( type == 'c' || type == 'C') {
             if ( mode == 'x' && Symbol == S_SEMICOLON ) {
-                IntrFuncCallEnd( 0UL, narg );
+                IntrFuncCallEnd( 0UL, type == 'C', narg );
             }
             else {
-                IntrFuncCallEnd( 1UL, narg );
+                IntrFuncCallEnd( 1UL, type == 'C', narg );
             }
         }
     }
 
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && Symbol == S_ASSIGN) ) {
-        if ( type != 'c' ) {
+        if ( type != 'c' && type != 'C') {
             Match( S_ASSIGN, ":=", follow );
-            if ( CountNams == 0 ) { CurrLHSGVar = var; }
+            if ( CountNams == 0 || !IntrCoding ) { CurrLHSGVar = var; }
             ReadExpr( follow, 'r' );
         }
         if ( READ_ERROR() ) {}
@@ -447,7 +527,8 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrAssRecExpr();             }
         else if ( type == '!' ) { IntrAssComObjName( rnam );      }
         else if ( type == '|' ) { IntrAssComObjExpr();            }
-        else if ( type == 'c' ) { IntrFuncCallEnd( 0UL, narg ); }
+        else if ( type == 'c' || type == 'C' )
+	  { IntrFuncCallEnd( 0UL, type == 'C', narg ); }
     }
 
     /*  if we need an unbind                                               */
@@ -733,6 +814,8 @@ void ReadRecExpr (
 **                             <Statments>
 **                'end'
 */
+
+
 void ReadFuncExpr (
     TypSymbolSet        follow )
 {
@@ -829,9 +912,7 @@ void ReadFuncExpr (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0 ) {
-        extern UInt IntrCoding;
-
+    else if ( nrError == 0 && IntrCoding ) {
         CodeEnd(1);
         IntrCoding--;
         CurrLVars = currLVars;
@@ -893,9 +974,7 @@ void ReadFuncExpr1 (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0 ) {
-        extern UInt IntrCoding;
-
+    else if ( nrError == 0  && IntrCoding ) {
         CodeEnd(1);
         IntrCoding--;
         CurrLVars = currLVars;
@@ -1288,6 +1367,20 @@ void ReadUnbind (
 
 /****************************************************************************
 **
+*F  ReadEmpty( <follow> )  . . . . . . . . . . . . . .read an empty statement
+**
+**  'ReadEmpty' reads  an empty statement.  The argument is actually ignored
+**
+**  <Statment> :=  ';'
+*/
+void ReadEmpty (
+    TypSymbolSet        follow )
+{
+  IntrEmpty();
+}
+
+/****************************************************************************
+**
 *F  ReadInfo( <follow> )  . . . . . . . . . . . . . .  read an info statement
 **
 **  'ReadInfo' reads  an info statement.  In  case of an  error  it skips all
@@ -1442,6 +1535,8 @@ void ReadIf (
 **                     <Statments>
 **                 'od' ';'
 */
+
+
 void ReadFor (
     TypSymbolSet        follow )
 {
@@ -1477,15 +1572,17 @@ void ReadFor (
         IntrForEnd();
     }
 
-    /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0  ) {
-        extern UInt IntrCoding;
-
-        CodeEnd(1);
-        IntrCoding--;
-        CurrLVars = currLVars;
-        PtrLVars  = PTR_BAG( CurrLVars );
-        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+    /* an error has occured *after* the 'IntrForEndBody'                  */
+    /* If we hadn't actually come out of coding the body, we need
+       to recover. Otherwise it was probably an error in executing the body and
+       we just return */
+    else if ( nrError == 0  && IntrCoding ) {
+      CodeEnd(1);
+      IntrCoding--;
+      CurrLVars = currLVars;
+      PtrLVars  = PTR_BAG( CurrLVars );
+      PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+      
     }
 }
 
@@ -1529,10 +1626,11 @@ void ReadWhile (
         IntrWhileEnd();
     }
 
-    /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0 ) {
-        extern UInt IntrCoding;
-
+    /* an error has occured *after* the 'IntrWhileEndBody'                 */
+    /* If we hadn't actually come out of coding the body, we need
+       to recover. Otherwise it was probably an error in executing the body and
+       we just return */
+    else if ( nrError == 0 && IntrCoding ) {
         CodeEnd(1);
         IntrCoding--;
         CurrLVars = currLVars;
@@ -1581,9 +1679,10 @@ void ReadRepeat (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0 ) {
-        extern UInt IntrCoding;
-
+    /* If we hadn't actually come out of coding the body, we need
+       to recover. Otherwise it was probably an error in executing the body and
+       we just return */
+    else if ( nrError == 0 && IntrCoding ) {
         CodeEnd(1);
         IntrCoding--;
         CurrLVars = currLVars;
@@ -1682,11 +1781,6 @@ void            ReadQuit (
     /* skip the quit symbol                                                */
     Match( S_QUIT, "quit", follow );
 
-    /* 'quit' is not allowed in functions                                  */
-    if ( CountNams != 0 ) {
-        SyntaxError("'quit' must not be used in functions");
-    }
-
     /* interpret the quit                                                  */
     if ( ! READ_ERROR() ) { IntrQuit(); }
 }
@@ -1705,11 +1799,6 @@ void            ReadQUIT (
 {
     /* skip the quit symbol                                                */
     Match( S_QQUIT, "QUIT", follow );
-
-    /* 'quit' is not allowed in functions                                  */
-    if ( CountNams != 0 ) {
-        SyntaxError("'QUIT' must not be used in functions");
-    }
 
     /* interpret the quit                                                  */
     if ( ! READ_ERROR() ) { IntrQUIT(); }
@@ -1748,17 +1837,20 @@ UInt ReadStats (
     while ( IS_IN( Symbol, STATBEGIN|S_SEMICOLON ) ) {
 
         /* read a statement                                                */
-        if      ( Symbol == S_IDENT  ) { ReadCallVarAss(follow,'s'); nr++; }
-        else if ( Symbol == S_UNBIND ) { ReadUnbind(    follow    ); nr++; }
-        else if ( Symbol == S_INFO   ) { ReadInfo(      follow    ); nr++; }
-        else if ( Symbol == S_ASSERT ) { ReadAssert(    follow    ); nr++; }
-        else if ( Symbol == S_IF     ) { ReadIf(        follow    ); nr++; }
-        else if ( Symbol == S_FOR    ) { ReadFor(       follow    ); nr++; }
-        else if ( Symbol == S_WHILE  ) { ReadWhile(     follow    ); nr++; }
-        else if ( Symbol == S_REPEAT ) { ReadRepeat(    follow    ); nr++; }
-        else if ( Symbol == S_BREAK  ) { ReadBreak(     follow    ); nr++; }
-        else if ( Symbol == S_RETURN ) { ReadReturn(    follow    ); nr++; }
-        else if ( Symbol == S_TRYNEXT) { ReadTryNext(   follow    ); nr++; }
+        if      ( Symbol == S_IDENT  ) ReadCallVarAss(follow,'s');
+        else if ( Symbol == S_UNBIND ) ReadUnbind(    follow    );
+        else if ( Symbol == S_INFO   ) ReadInfo(      follow    ); 
+        else if ( Symbol == S_ASSERT ) ReadAssert(    follow    );
+        else if ( Symbol == S_IF     ) ReadIf(        follow    );
+        else if ( Symbol == S_FOR    ) ReadFor(       follow    );
+        else if ( Symbol == S_WHILE  ) ReadWhile(     follow    ); 
+        else if ( Symbol == S_REPEAT ) ReadRepeat(    follow    );
+        else if ( Symbol == S_BREAK  ) ReadBreak(     follow    );
+        else if ( Symbol == S_RETURN ) ReadReturn(    follow    );
+        else if ( Symbol == S_TRYNEXT) ReadTryNext(   follow    );
+	else if ( Symbol == S_QUIT   ) ReadQuit(      follow    );
+	else                           ReadEmpty(     follow    );
+	nr++;
         Match( S_SEMICOLON, ";", follow );
     
     }
@@ -1826,7 +1918,7 @@ ExecStatus ReadEvalCommand ( void )
     ReadTop     = 0;
     ReadTilde   = 0;
     CurrLHSGVar = 0;
-    IntrBegin();
+    IntrBegin( BottomLVars );
 
     /* read an expression or an assignment or a procedure call             */
     if      ( Symbol == S_IDENT  ) { ReadExpr(   S_SEMICOLON|S_EOF, 'x' ); }
@@ -1845,9 +1937,151 @@ ExecStatus ReadEvalCommand ( void )
     else if (Symbol==S_TRYNEXT   ) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_QUIT      ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_QQUIT     ) { ReadQUIT(   S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_SEMICOLON ) { ReadEmpty(  S_SEMICOLON|S_EOF      ); }
 
     /* otherwise try to read an expression                                 */
-    else                        { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
+    /* Unless the statement is empty, in which case do nothing             */
+    else                           { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
+
+    /* every statement must be terminated by a semicolon                   */
+    if ( Symbol != S_SEMICOLON ) {
+        SyntaxError( "; expected");
+    }
+
+    /* check for dual semicolon                                            */
+    if ( *In == ';' ) {
+        GetSymbol();
+        DualSemicolon = 1;
+    }
+    else {
+        DualSemicolon = 0;
+    }
+
+    /* end the interpreter                                                 */
+    if ( ! READ_ERROR() ) {
+        type = IntrEnd( 0UL );
+    }
+    else {
+        IntrEnd( 1UL );
+        type = STATUS_ERROR;
+    }
+
+    /* switch back to the old reader context                               */
+    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+    StackNams   = stackNams;
+    CountNams   = countNams;
+    ReadTop     = readTop;
+    ReadTilde   = readTilde;
+    CurrLHSGVar = currLHSGVar;
+
+    /* copy the result (if any)                                            */
+    ReadEvalResult = IntrResult;
+
+    /* return whether a return-statement or a quit-statement were executed */
+    return type;
+}
+
+/****************************************************************************
+**
+*F  ReadEvalDebug() . . . . . . . . . .read one command in debugging context
+**
+**  'ReadEvalDebug' reads one command and interprets it immediately, in the
+**  context of the currently executing function, which it finds from CurrLVars
+**
+**  It does not expect the  first symbol of its input  already read and  wont
+**  read the  first symbol of the  next  input.
+**
+*/
+
+void RecreateStackNams( void )
+{
+  Obj lvars = CurrLVars;
+  Obj nams;
+  UInt i;
+  while (lvars != BottomLVars && lvars != (Obj)0)
+    {
+      nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
+      if (nams != (Obj) 0)
+	{
+	  GROW_PLIST(StackNams, ++CountNams);
+	  SET_ELM_PLIST( StackNams, CountNams, nams);
+	  SET_LEN_PLIST( StackNams, CountNams);
+	}
+      lvars = ENVI_FUNC(PTR_BAG(lvars)[0]);
+    }
+
+  /* At this point we have the stack upside down, so invert it */
+  for (i = 1; i <= CountNams/2; i++)
+    {
+      nams = ELM_PLIST(StackNams, i);
+      SET_ELM_PLIST( StackNams,
+		     i,
+		     ELM_PLIST(StackNams, CountNams + 1 -i));
+      SET_ELM_PLIST( StackNams,
+		     CountNams + 1 -i,
+		     nams);
+    }
+}
+
+ExecStatus ReadEvalDebug ( void )
+{
+    ExecStatus          type;
+    Obj                 stackNams;
+    UInt                countNams;
+    UInt                readTop;
+    UInt                readTilde;
+    UInt                currLHSGVar;
+    jmp_buf             readJmpError;
+
+    /* get the first symbol from the input                                 */
+    Match( Symbol, "", 0UL );
+
+    /* if we have hit <end-of-file>, then give up                          */
+    if ( Symbol == S_EOF )  { return STATUS_EOF; }
+
+    /* print only a partial prompt from now on                             */
+    Prompt = "> ";
+
+    /* remember old reader context                                     */
+    stackNams   = StackNams;
+    countNams   = CountNams;
+    readTop     = ReadTop;
+    readTilde   = ReadTilde;
+    currLHSGVar = CurrLHSGVar;
+    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+    /* intialize everything and begin an interpreter                       */
+    StackNams   = NEW_PLIST( T_PLIST, 16 );
+    CountNams   = 0;
+    ReadTop     = 0;
+    ReadTilde   = 0;
+    CurrLHSGVar = 0;
+    RecreateStackNams();
+    
+    IntrBegin( ErrorLVars );
+
+    /* read an expression or an assignment or a procedure call             */
+    if      ( Symbol == S_IDENT  ) { ReadExpr(   S_SEMICOLON|S_EOF, 'x' ); }
+
+    /* otherwise read a statement                                          */
+    else if (Symbol==S_UNBIND    ) { ReadUnbind( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_INFO      ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_ASSERT    ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol== S_SAVEWS   ) { ReadSaveWS( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_IF        ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_FOR       ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_WHILE     ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_REPEAT    ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_BREAK     ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_RETURN    ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_TRYNEXT   ) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_QUIT      ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_QQUIT     ) { ReadQUIT(   S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_SEMICOLON ) { ReadEmpty(  S_SEMICOLON|S_EOF      ); }
+
+    /* otherwise try to read an expression                                 */
+    /* Unless the statement is empty, in which case do nothing             */
+    else                           { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
 
     /* every statement must be terminated by a semicolon                   */
     if ( Symbol != S_SEMICOLON ) {
@@ -1936,7 +2170,7 @@ UInt ReadEvalFile ( void )
     ReadTop     = 0;
     ReadTilde   = 0;
     CurrLHSGVar = 0;
-    IntrBegin();
+    IntrBegin(BottomLVars);
 
     /* check for local variables                                           */
     nloc = 0;

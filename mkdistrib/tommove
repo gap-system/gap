@@ -1,0 +1,16 @@
+#!/bin/csh
+# move the larger `tom' files in a `tomx' directory, keep only the smaller
+# ones.
+echo "moving the tom directory"
+mv ${DISTNAME}/tom ${DISTNAME}/tomx
+mkdir ${DISTNAME}/tom
+foreach i (tma12.tom tmadmin.tmd tmadmin.tmi tmalt1.tom tmalt1mx.tom tmaltc.tom\
+tmesym.tom tmhsmcl.tom tmhsmclm.tom tmjank.tom tmjankmx.tom tmlin2.tom\
+tmlin2a.tom tmlin2mx.tom tmlino.tom tmlinoa.tom tmlinoam.tom tmlinomx.tom\
+tmm24.tom tmmath.tom tmmathmx.tom tmprimar.tom tms10m1.tom tms10m2.tom\
+tms11.tom tmsym1.tom tmsym1mx.tom tmsymc.tom tmsymp.tom tmsympa.tom\
+tmsympam.tom tmtw.tom tmtwmx.tom tmunit.tom tmunita.tom tmunitam.tom\
+tmunitc.tom tmunitcm.tom tmunitmx.tom tmutw.tom tmutwa.tom tmutwam.tom\
+tmutwmx.tom tmstdrd.tom)
+mv ${DISTNAME}/tomx/$i  ${DISTNAME}/tom/$i
+end

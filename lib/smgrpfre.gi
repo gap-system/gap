@@ -29,7 +29,7 @@ InstallMethod( IsWholeFamily,
     "method for a free semigroup",
     true,
     [ IsSemigroup and IsAssocWordCollection ], 0,
-    S -> IsSubset( GeneratorsMagmaFamily( ElementsFamily( FamilyObj( S ) ) ),
+    S -> IsSubset( MagmaGeneratorsOfFamily( ElementsFamily( FamilyObj(S) ) ),
                    GeneratorsOfMagma( S ) ) );
 
 
@@ -53,7 +53,7 @@ InstallMethod( IsWholeFamily,
 ##  Let $m^{\prime} = \sum_{i=1}^l c_i n^{i-1}$, with $1 \leq c_i \leq n$.
 ##  Then this word is $s_{c_1} s_{c_2} \cdots s_{c_l}$.
 ##
-FreeSemigroup_NextWordExp := function( iter )
+BindGlobal( "FreeSemigroup_NextWordExp", function( iter )
 
     local counter,
           len,
@@ -112,22 +112,21 @@ FreeSemigroup_NextWordExp := function( iter )
 
     iter!.word:= word;
     iter!.exp:= maxexp;
-end;
+end );
 
 
 #############################################################################
 ##
-#R  IsFreeSemigroupIterator
+#R  IsFreeSemigroupIteratorRep
 ##
-DeclareRepresentation( "IsFreeSemigroupIterator",
-    IsIterator,
+DeclareRepresentation( "IsFreeSemigroupIteratorRep", IsComponentObjectRep,
     [ "family", "nrgenerators", "exp", "word", "counter", "length" ] );
 
 
 InstallMethod( NextIterator,
-    "method for iterator of a free semigroup",
+    "for mutable iterator of a free semigroup",
     true,
-    [ IsFreeSemigroupIterator ], 0,
+    [ IsIterator and IsMutable and IsFreeSemigroupIteratorRep ], 0,
     function( iter )
 
     local word;
@@ -137,16 +136,29 @@ InstallMethod( NextIterator,
     return word;
     end );
 
-
 InstallMethod( IsDoneIterator,
-    "method for iterator of a free semigroup",
+    "for iterator of a free semigroup",
     true,
-    [ IsFreeSemigroupIterator ], 0,
+    [ IsIterator and IsFreeSemigroupIteratorRep ], 0,
     ReturnFalse );
+
+InstallMethod( ShallowCopy,
+    "for iterator of a free semigroup",
+    true,
+    [ IsIterator and IsFreeSemigroupIteratorRep ], 0,
+    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
+            rec(
+                family         := iter!.family,
+                nrgenerators   := iter!.nrgenerators,
+                exp            := iter!.exp,
+                word           := ShallowCopy( iter!.word ),
+                counter        := ShallowCopy( iter!.counter ),
+                length         := iter!.length
+               ) ) );
 
 
 InstallMethod( Iterator,
-    "method for iterator of a free semigroup",
+    "for a free semigroup",
     true,
     [ IsAssocWordCollection and IsWholeFamily ], 0,
     function( S )
@@ -167,7 +179,10 @@ InstallMethod( Iterator,
                 length         := 1
                );
 
-    return Objectify( NewType( IteratorsFamily, IsFreeSemigroupIterator ),
+    return Objectify( NewType( IteratorsFamily,
+                                   IsIterator
+                               and IsMutable
+                               and IsFreeSemigroupIteratorRep ),
                       iter );
     end );
 
@@ -176,7 +191,7 @@ InstallMethod( Iterator,
 ##
 #M  Enumerator( <S> ) . . . . . . . . . . . . enumerator for a free semigroup
 ##
-FreeMonoid_ElementNumber := function( enum, nr )
+BindGlobal( "FreeMonoid_ElementNumber", function( enum, nr )
 
     local n,
           l,
@@ -226,13 +241,16 @@ FreeMonoid_ElementNumber := function( enum, nr )
       nr:= ( nr - c ) / n;
       c:= nr mod n;
     od;
+    if maxexp < exp then
+      maxexp:= exp;
+    fi;
     Add( word, exp );
 
     # Return the element.
     return ObjByExtRep( enum!.family, 1, maxexp, word );
-    end;
+end );
 
-FreeMonoid_NumberElement := function( enum, elm, zero )
+BindGlobal( "FreeMonoid_NumberElement", function( enum, elm, zero )
 
     local l,
           len,
@@ -272,7 +290,7 @@ FreeMonoid_NumberElement := function( enum, elm, zero )
     od;
 
     return nr;
-end;
+end );
 
 
 #############################################################################
@@ -387,9 +405,9 @@ InstallMethod( Random,
 
 #############################################################################
 ##
-#M  GeneratorsMagmaFamily( <F> )
+#M  MagmaGeneratorsOfFamily( <F> )
 ##
-InstallMethod( GeneratorsMagmaFamily,
+InstallMethod( MagmaGeneratorsOfFamily,
     "method for a family of free semigroup elements",
     true,
     [ IsAssocWordFamily ], 0,
@@ -403,6 +421,7 @@ InstallMethod( GeneratorsMagmaFamily,
 #F  FreeSemigroup( <rank>, <name> )
 #F  FreeSemigroup( <name1>, <name2>, ... )
 #F  FreeSemigroup( <names> )
+#F  FreeSemigroup( infinity, <name>, <init> )
 ##
 InstallGlobalFunction( FreeSemigroup, function( arg )
 
@@ -415,12 +434,16 @@ InstallGlobalFunction( FreeSemigroup, function( arg )
       names:= InfiniteListOfNames( "s" );
     elif Length( arg ) = 2 and arg[1] = infinity then
       names:= InfiniteListOfNames( arg[2] );
+    elif Length( arg ) = 3 and arg[1] = infinity then
+      names:= InfiniteListOfNames( arg[2], arg[3] );
     elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( "s", String(i) ) );
+      MakeImmutable( names );
     elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( arg[2], String(i) ) );
+      MakeImmutable( names );
     elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
       names:= arg;
     elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1]) then
@@ -437,11 +460,12 @@ InstallGlobalFunction( FreeSemigroup, function( arg )
 
     # Make the semigroup.
     if IsFinite( names ) then
-      S:= SemigroupByGenerators( GeneratorsMagmaFamily( F ) );
+      S:= SemigroupByGenerators( MagmaGeneratorsOfFamily( F ) );
     else
       S:= SemigroupByGenerators( InfiniteListOfGenerators( F ) );
     fi;
 
+		SetIsFreeSemigroup(S,true);
     SetIsWholeFamily( S, true );
     SetIsTrivial( S, false );
     return S;
@@ -450,7 +474,24 @@ end );
 
 #############################################################################
 ##
-#E  smgrpfre.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  ViewObj( <S> )  . . . . . . . . . . . . . . . . . .  for a free semigroup
+##
+InstallMethod( ViewObj,
+    "for a free semigroup containing the whole family",
+    true,
+    [ IsSemigroup and IsAssocWordCollection and IsWholeFamily ], 0,
+    function( S )
+    if VIEWLEN * 10 < Length( GeneratorsOfMagma( S ) ) then
+      Print( "<free semigroup with ", Length( GeneratorsOfMagma( S ) ),
+             " generators>" );
+    else
+      Print( "<free semigroup on the generators ",
+             GeneratorsOfMagma( S ), ">" );
+    fi;
+end );
 
 
+#############################################################################
+##
+#E
 

@@ -8,10 +8,10 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the implementation of immutable empty row vectors.
-##  An empty row vector is an empty list whose family is a collections
-##  family.
+##  An empty row vector is an immutable empty list whose family is
+##  a collections family.
 ##  Empty row vectors are different if their families are different,
-##  especially the ordinary empty list '[]' is different from every empty
+##  especially the ordinary empty list `[]' is different from every empty
 ##  row vector.
 ##
 ##  The first case where empty row vectors turned out to be necessary was
@@ -32,7 +32,5 @@ DeclareAttribute( "EmptyRowVector", IsFamily );
 
 #############################################################################
 ##
-#E  rvecempt.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

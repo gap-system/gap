@@ -240,19 +240,21 @@ InstallMethod( IsCommutative,
 ##  are also `GeneratorsOfRingWithOne'.
 ##
 InstallImmediateMethod( GeneratorsOfRing,
-    IsRing and HasGeneratorsOfMagma, 0,
+    IsRing and HasGeneratorsOfMagma and IsAttributeStoringRep, 0,
     GeneratorsOfMagma );
 
 InstallImmediateMethod( GeneratorsOfRing,
-    IsRing and HasGeneratorsOfAdditiveMagmaWithInverses, 0,
+    IsRing and HasGeneratorsOfAdditiveMagmaWithInverses
+           and IsAttributeStoringRep, 0,
     GeneratorsOfAdditiveMagmaWithInverses );
 
 InstallImmediateMethod( GeneratorsOfRingWithOne,
-    IsRingWithOne and HasGeneratorsOfMagmaWithOne, 0,
+    IsRingWithOne and HasGeneratorsOfMagmaWithOne
+                  and IsAttributeStoringRep, 0,
     GeneratorsOfMagmaWithOne );
 
 InstallImmediateMethod( GeneratorsOfRingWithOne,
-    IsRingWithOne and HasGeneratorsOfRing, 0,
+    IsRingWithOne and HasGeneratorsOfRing and IsAttributeStoringRep, 0,
     GeneratorsOfRing );
 
 
@@ -574,7 +576,6 @@ InstallMethod( IsSubset,
 #############################################################################
 ##
 #M  Enumerator( <R> ) . . . . . . . . . . . . . set of the elements of a ring
-#M  EnumeratorSorted( <R> ) . . . . . . . . . . set of the elements of a ring
 ##
 ##  We must be careful to call `GeneratorsOfRing' only if ring generators are
 ##  known; if we have only ideal generators then a different `Enumerator'
@@ -627,20 +628,9 @@ InstallMethod( Enumerator,
     [ IsRing and HasGeneratorsOfRing ], 0,
     EnumeratorOfRing );
 
-InstallMethod( EnumeratorSorted,
-    "generic method for a ring with known generators",
-    true,
-    [ IsRing and HasGeneratorsOfRing ], 0,
-    EnumeratorOfRing );
 
 InstallMethod( Enumerator,
     "generic method for a ring-with-one with known generators",
-    true,
-    [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
-    EnumeratorOfRing );
-
-InstallMethod( EnumeratorSorted,
-    "generic method for a ring with known generators",
     true,
     [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     EnumeratorOfRing );
@@ -719,7 +709,8 @@ InstallMethod( ClosureRing,
 InstallMethod( ClosureRing,
     "for a ring containing the whole family, and a ring element",
     IsCollsElms,
-    [ IsRing and IsWholeFamily, IsRingElement ], SUM_FLAGS,
+    [ IsRing and IsWholeFamily, IsRingElement ],
+    SUM_FLAGS, # can't do better
     function( R, r )
     return R;
     end );
@@ -758,7 +749,8 @@ InstallMethod( ClosureRing,
 InstallMethod( ClosureRing,
     "for a ring cont. the whole family, and a collection",
     IsIdenticalObj,
-    [ IsRing and IsWholeFamily, IsCollection ], SUM_FLAGS,
+    [ IsRing and IsWholeFamily, IsCollection ],
+    SUM_FLAGS, # can't do better
     function( R, S )
     return R;
     end );
@@ -766,10 +758,10 @@ InstallMethod( ClosureRing,
 
 #############################################################################
 ##
-#M  ClosureRing( <R>, <list> )  . . . . . . . . . . . . . . . closure of ring
+#M  ClosureRing( <R>, <C> ) . . . . . . . . . . . . . . . . . closure of ring
 ##
 InstallMethod( ClosureRing,
-    "for ring and list of elements",
+    "for ring and collection of elements",
     IsIdenticalObj,
     [ IsRing, IsCollection ], 0,
     function( R, list )
@@ -786,11 +778,27 @@ InstallMethod( ClosureRing,
 #M  Quotient( <r>, <s> )  . . . . . . . . . . .  delegate to the default ring
 ##
 InstallOtherMethod( Quotient,
-    "for two ring elements",
+    "for two ring elements (delegate to three argument version",
     IsIdenticalObj,
     [ IsRingElement, IsRingElement ], 0,
     function( r, s )
     return Quotient( DefaultRing( [ r, s ] ), r, s );
+    end );
+
+InstallMethod( Quotient,
+    "for a ring and two ring elements",
+    IsCollsElmsElms,
+    [ IsRing, IsRingElement, IsRingElement ], 0,
+    function( R, r, s )
+    local quo;
+    quo:= Inverse( s );
+    if quo <> fail then
+      quo:= r * quo;
+      if not quo in R then
+        quo:= fail;
+      fi;
+    fi;
+    return quo;
     end );
 
 
@@ -888,7 +896,7 @@ InstallMethod( Associates,
     IsCollsElms,
     [ IsRing, IsRingElement ], 0,
     function( R, r );
-    return AsListSorted( Enumerator( Units( R ) ) * r );
+    return AsSSortedList( Enumerator( Units( R ) ) * r );
     end );
 
 
@@ -1092,9 +1100,10 @@ InstallMethod( PowerMod,
 #F  Gcd( <R>, <list> )
 ##
 InstallGlobalFunction( Gcd, function ( arg )
-    local   R, ns, i, gcd;
+    local tested, R, ns, i, gcd;
 
     # get and check the arguments (what a pain)
+    tested:= false;
     if   Length(arg) = 0  then
         Error("usage: Gcd( [<R>,] <r1>, <r2>... )");
     elif Length(arg) = 1  then
@@ -1108,20 +1117,24 @@ InstallGlobalFunction( Gcd, function ( arg )
     else
         R := DefaultRing( arg );
         ns := arg;
+        tested:= true;
     fi;
     if not IsList( ns )  or IsEmpty(ns)  then
         Error("usage: Gcd( [<R>,] <r1>, <r2>... )");
     fi;
     if not IsBound( R )  then
         R := DefaultRing( ns );
-    else
+    elif not tested then
         if not IsSubset( R, ns ) then
             Error("<ns> must be a subset of <R>");
         fi;
     fi;
-    if not IsEuclideanRing( R )  then
-        Error("<R> must be a Euclidean ring");
-    fi;
+#T We do not want to require `R' to be euclidean,
+#T for example multivariate polynomial rings are legal rings here.
+#T (Perhaps a weaker test would be appropriate, for example for UFD?)
+#T    if not IsEuclideanRing( R )  then
+#T        Error("<R> must be a Euclidean ring");
+#T    fi;
 
     # compute the gcd by iterating
     gcd := ns[1];
@@ -1273,9 +1286,10 @@ InstallMethod( GcdRepresentationOp,
 #F  Lcm( <R>, <list> )
 ##
 InstallGlobalFunction( Lcm, function ( arg )
-    local   ns,  R,  lcm,  i;
+    local tested, ns,  R,  lcm,  i;
 
     # get and check the arguments (what a pain)
+    tested:= false;
     if   Length(arg) = 0  then
         Error("usage: Lcm( [<R>,] <r1>, <r2>... )");
     elif Length(arg) = 1  then
@@ -1289,20 +1303,24 @@ InstallGlobalFunction( Lcm, function ( arg )
     else
         R := DefaultRing( arg );
         ns := arg;
+        tested:= true;
     fi;
     if not IsList( ns )  or IsEmpty(ns)  then
         Error("usage: Lcm( [<R>,] <r1>, <r2>... )");
     fi;
     if not IsBound( R )  then
         R := DefaultRing( ns );
-    else
+    elif not tested then
         if not IsSubset( R, ns ) then
             Error("<ns> must be a subset of <R>");
         fi;
     fi;
-    if not IsEuclideanRing( R )  then
-        Error("<R> must be a Euclidean ring");
-    fi;
+#T We do not want to require `R' to be euclidean,
+#T for example multivariate polynomial rings are legal rings here.
+#T (Perhaps a weaker test would be appropriate, for example for UFD?)
+#T    if not IsEuclideanRing( R )  then
+#T        Error("<R> must be a Euclidean ring");
+#T    fi;
 
     # compute the least common multiple
     lcm := ns[1];
@@ -1325,7 +1343,7 @@ InstallOtherMethod( LcmOp,
     IsIdenticalObj,
     [ IsRingElement, IsRingElement ], 0,
     function( r, s )
-    return Lcm( DefaultRing( [ r, s ] ), r, s );
+    return LcmOp( DefaultRing( [ r, s ] ), r, s );
     end );
 
 InstallMethod( LcmOp,
@@ -1338,7 +1356,7 @@ InstallMethod( LcmOp,
     if r = Zero( R ) and s = Zero( R ) then
       return r;
     elif r in R and s in R then
-      return StandardAssociate( R, Quotient( R, r, Gcd( R, r, s ) ) * s );
+      return StandardAssociate( R, Quotient( R, r, GcdOp( R, r, s ) ) * s );
     else
       Error( "<r> and <s> must lie in <R>" );
     fi;
@@ -1373,5 +1391,5 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#E  ring.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

@@ -17,7 +17,6 @@
 const char * Revision_compiler_c =
    "@(#)$Id$";
 
-
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
@@ -97,6 +96,59 @@ Int CompCheckTypes = 1;
 */
 Int CompCheckListElements = 1;
 
+/****************************************************************************
+**
+*V  CompOptNames . .  names for all the compiler options passed by gac
+**
+*/
+
+struct CompOptStruc { Char *extname;
+  Int *variable;
+  Int val;};
+
+struct CompOptStruc CompOptNames[] = {
+  { "FAST_INT_ARITH", &CompFastIntArith, 1 },
+  { "FAST_PLAIN_LISTS", &CompFastPlainLists, 1 },
+  { "FAST_LIST_FUNCS", &CompFastListFuncs, 1 },
+  { "NO_CHECK_TYPES", &CompCheckTypes, 0 },
+  { "NO_CHECK_LIST_ELMS", &CompCheckListElements, 0 }};
+
+#define N_CompOpts  (sizeof(CompOptNames)/sizeof(struct CompOptStruc))
+
+
+/****************************************************************************
+**
+*F  SetCompileOpts( <string> ) . . parse the compiler options from <string>
+**                                 and set the appropriate variables
+**                                 unrecognised options are ignored for now
+*/
+#include <ctype.h>
+
+void SetCompileOpts( Char *opts )
+{
+  Char *s = opts;
+  Int i;
+  while (*s)
+    {
+      while (isspace(*s))
+	s++;
+      for (i = 0; i < N_CompOpts; i++)
+	{
+	  if (0 == SyStrncmp(CompOptNames[i].extname,
+			     s,
+			     SyStrlen(CompOptNames[i].extname)))
+	    {
+	      *(CompOptNames[i].variable) = CompOptNames[i].val;
+	      break;
+	    }
+	}
+      while (*s && *s != ',')
+	s++;
+      if (*s == ',')
+	s++;
+    }
+  return;
+}
 
 /****************************************************************************
 **
@@ -254,10 +306,12 @@ typedef UInt4           LVar;
 #define W_BOUND                 ((1L<<3) | W_UNKNOWN)
 #define W_INT                   ((1L<<4) | W_BOUND)
 #define W_INT_SMALL             ((1L<<5) | W_INT)
-#define W_INT_SMALL_POS         ((1L<<6) | W_INT_SMALL)
+#define W_INT_POS               ((1L<<6) | W_INT)
 #define W_BOOL                  ((1L<<7) | W_BOUND)
 #define W_FUNC                  ((1L<<8) | W_BOUND)
 #define W_LIST                  ((1L<<9) | W_BOUND)
+
+#define W_INT_SMALL_POS         (W_INT_SMALL | W_INT_POS)
 
 void            SetInfoCVar (
     CVar                cvar,
@@ -436,7 +490,7 @@ void            FreeTemp (
 
     /* check that deallocations happens in the correct order               */
     if ( temp != CTEMP_INFO( info ) && CompPass == 2 ) {
-        Pr("PROBLEM: freeing t_%d, should be t_%d\n",temp,CTEMP_INFO(info));
+        Pr("PROBLEM: freeing t_%d, should be t_%d\n",(Int)temp,CTEMP_INFO(info));
     }
 
     /* free the temporary                                                  */
@@ -522,10 +576,16 @@ UInt            GetLevlHVar (
     /* walk up                                                             */
     levl = 0;
     info = INFO_FEXP( CURR_FUNC );
-    if ( NHVAR_INFO(info) != 0 ) levl++;
+#if 0
+    if ( NHVAR_INFO(info) != 0 ) 
+#endif
+      levl++;
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
-        if ( NHVAR_INFO(info) != 0 ) levl++;
+#if 0
+        if ( NHVAR_INFO(info) != 0 ) 
+#endif
+	  levl++;
     }
 
     /* return level (the number steps to go up)                            */
@@ -892,6 +952,21 @@ void CompCheckIntSmallPos (
     }
 }
 
+/****************************************************************************
+**
+*F  CompCheckIntPos( <obj> ) emit code to check that <obj> is a position
+*/
+void CompCheckIntPos (
+    CVar                obj )
+{
+    if ( ! HasInfoCVar( obj, W_INT_POS ) ) {
+        if ( CompCheckTypes ) {
+            Emit( "CHECK_INT_POS( %c )\n", obj );
+        }
+        SetInfoCVar( obj, W_INT_POS );
+    }
+}
+
 
 /****************************************************************************
 **
@@ -1143,6 +1218,28 @@ CVar CompFunccallXArgs (
     return result;
 }
 
+/****************************************************************************
+**
+*F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_FUNCCALL_OPTS
+*/
+CVar CompFunccallOpts(
+		      Expr expr)
+{
+  CVar opts = CompExpr(ADDR_STAT(expr)[0]);
+  GVar pushOptions;
+  GVar popOptions;
+  CVar result;
+  pushOptions = GVarName("PushOptions");
+  popOptions = GVarName("PopOptions");
+  CompSetUseGVar(pushOptions, COMP_USE_GVAR_FOPY);
+  CompSetUseGVar(popOptions, COMP_USE_GVAR_FOPY);
+  Emit("CALL_1ARGS( GF_PushOptions, %c );\n", opts);
+  if (IS_TEMP_CVAR( opts) ) FreeTemp( TEMP_CVAR( opts ));
+  result = CompExpr(ADDR_STAT(expr)[1]);
+  Emit("CALL_0ARGS( GF_PopOptions );\n");
+  return result;
+}
+     
 
 /****************************************************************************
 **
@@ -1480,7 +1577,7 @@ CVar CompEqBool (
 
     /* emit the code                                                       */
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
-        Emit( "%c = (Obj)(((Int)%c) == ((Int)%c));\n", val, left, right);
+        Emit( "%c = (Obj)(UInt)(((Int)%c) == ((Int)%c));\n", val, left, right);
     }
     else {
         Emit( "%c = (Obj)(UInt)(EQ( %c, %c ));\n", val, left, right );
@@ -2283,6 +2380,7 @@ CVar CompIntExpr (
         siz = SIZE_EXPR(expr);
         if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
             Emit( "%c = NewBag( T_INTPOS, %d );\n", val, siz-sizeof(UInt2) );
+	    SetInfoCVar(val, W_INT_POS);
         }
         else {
             Emit( "%c = NewBag( T_INTNEG, %d );\n", val, siz-sizeof(UInt2) );
@@ -3051,20 +3149,20 @@ CVar CompElmList (
 
     /* compile and check the position expression                           */
     pos = CompExpr( ADDR_EXPR(expr)[1] );
-    CompCheckIntSmallPos( pos );
+    CompCheckIntPos( pos );
 
     /* emit the code to get the element                                    */
     if (        CompCheckListElements &&   CompFastPlainLists ) {
-        Emit( "C_ELM_LIST_FPL( %c, %c, %i )\n", elm, list, pos );
+        Emit( "C_ELM_LIST_FPL( %c, %c, %c )\n", elm, list, pos );
     }
     else if (   CompCheckListElements && ! CompFastPlainLists ) {
-        Emit( "C_ELM_LIST( %c, %c, %i );\n", elm, list, pos );
+        Emit( "C_ELM_LIST( %c, %c, %c );\n", elm, list, pos );
     }
     else if ( ! CompCheckListElements &&   CompFastPlainLists ) {
-        Emit( "C_ELM_LIST_NLE_FPL( %c, %c, %i );\n", elm, list, pos );
+        Emit( "C_ELM_LIST_NLE_FPL( %c, %c, %c );\n", elm, list, pos );
     }
     else {
-        Emit( "C_ELM_LIST_NLE( %c, %c, %i );\n", elm, list, pos );
+        Emit( "C_ELM_LIST_NLE( %c, %c, %c );\n", elm, list, pos );
     }
 
     /* we know that we have a value                                        */
@@ -3136,7 +3234,7 @@ CVar CompElmListLev (
     level = (Int)(ADDR_EXPR(expr)[2]);
 
     /* emit the code to select the elements from several lists (to <lists>)*/
-    Emit( "ElmListLevel( %c, %i, %d );\n", lists, pos, level );
+    Emit( "ElmListLevel( %c, %c, %d );\n", lists, pos, level );
 
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( pos   ) )  FreeTemp( TEMP_CVAR( pos   ) );
@@ -3196,10 +3294,10 @@ CVar CompIsbList (
 
     /* compile and check the position expression                           */
     pos = CompExpr( ADDR_EXPR(expr)[1] );
-    CompCheckIntSmallPos( pos );
+    CompCheckIntPos( pos );
 
     /* emit the code to test the element                                   */
-    Emit( "%c = (ISB_LIST( %c, %i ) ? True : False);\n", isb, list, pos );
+    Emit( "%c = C_ISB_LIST( %c, %c );\n", isb, list, pos );
 
     /* we know that the result is boolean                                  */
     SetInfoCVar( isb, W_BOOL );
@@ -3626,6 +3724,7 @@ CVar CompIsbComObjExpr (
     SetInfoCVar( isb, W_BOOL );
 
     /* free the temporaries                                                */
+    if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
     /* return the result                                                   */
@@ -3788,6 +3887,26 @@ void CompProccallXArgs (
     if ( IS_TEMP_CVAR( func ) )  FreeTemp( TEMP_CVAR( func ) );
 }
 
+/****************************************************************************
+**
+*F  CompProccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_PROCCALL_OPTS
+*/
+void CompProccallOpts(
+		      Stat stat)
+{
+  CVar opts = CompExpr(ADDR_STAT(stat)[0]);
+  GVar pushOptions;
+  GVar popOptions;
+  pushOptions = GVarName("PushOptions");
+  popOptions = GVarName("PopOptions");
+  CompSetUseGVar(pushOptions, COMP_USE_GVAR_FOPY);
+  CompSetUseGVar(popOptions, COMP_USE_GVAR_FOPY);
+  Emit("CALL_1ARGS( GF_PushOptions, %c );\n", opts);
+  if (IS_TEMP_CVAR( opts) ) FreeTemp( TEMP_CVAR( opts ));
+  CompStat(ADDR_STAT(stat)[1]);
+  Emit("CALL_0ARGS( GF_PopOptions );\n");
+}
+     
 
 /****************************************************************************
 **
@@ -4130,7 +4249,7 @@ void CompFor (
 
         /* emit the code for the loop                                      */
         /* (plenty ugly because of iterator handling)                      */
-        Emit( "if ( IS_LIST(%c) ) {\n", list );
+        Emit( "if ( IS_SMALL_LIST(%c) ) {\n", list );
         Emit( "%c = (Obj)(UInt)1;\n", islist );
         Emit( "%c = INTOBJ_INT(1);\n", lidx );
         Emit( "}\n" );
@@ -4347,6 +4466,7 @@ void CompReturnObj (
     obj = CompExpr( ADDR_STAT(stat)[0] );
 
     /* emit code to remove stack frame                                     */
+    Emit( "RES_BRK_CURR_STAT();\n" );
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
 
     /* emit code to return from function                                   */
@@ -4370,6 +4490,7 @@ void CompReturnVoid (
     }
 
     /* emit code to remove stack frame                                     */
+    Emit( "RES_BRK_CURR_STAT();\n");
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
 
     /* emit code to return from function                                   */
@@ -4557,7 +4678,7 @@ void CompAssList (
 
     /* compile and check the position expression                           */
     pos = CompExpr( ADDR_STAT(stat)[1] );
-    CompCheckIntSmallPos( pos );
+    CompCheckIntPos( pos );
 
     /* compile the right hand side                                         */
     rhs = CompExpr( ADDR_STAT(stat)[2] );
@@ -4565,14 +4686,14 @@ void CompAssList (
     /* emit the code                                                       */
     if ( CompFastPlainLists ) {
         if ( HasInfoCVar( rhs, W_INT_SMALL ) ) {
-            Emit( "C_ASS_LIST_FPL_INTOBJ( %c, %i, %c )\n", list, pos, rhs );
+            Emit( "C_ASS_LIST_FPL_INTOBJ( %c, %c, %c )\n", list, pos, rhs );
         }
         else {
-            Emit( "C_ASS_LIST_FPL( %c, %i, %c )\n", list, pos, rhs );
+            Emit( "C_ASS_LIST_FPL( %c, %c, %c )\n", list, pos, rhs );
         }
     }
     else {
-        Emit( "C_ASS_LIST( %c, %i, %c );\n", list, pos, rhs );
+        Emit( "C_ASS_LIST( %c, %c, %c );\n", list, pos, rhs );
     }
 
     /* free the temporaries                                                */
@@ -4648,7 +4769,7 @@ void CompAssListLev (
     level = (Int)(ADDR_STAT(stat)[3]);
 
     /* emit the code                                                       */
-    Emit( "AssListLevel( %c, %i, %c, %d );\n", lists, pos, rhss, level );
+    Emit( "AssListLevel( %c, %c, %c, %d );\n", lists, pos, rhss, level );
 
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( rhss  ) )  FreeTemp( TEMP_CVAR( rhss  ) );
@@ -4717,10 +4838,10 @@ void CompUnbList (
 
     /* compile and check the position expression                           */
     pos = CompExpr( ADDR_STAT(stat)[1] );
-    CompCheckIntSmallPos( pos );
+    CompCheckIntPos( pos );
 
     /* emit the code                                                       */
-    Emit( "UNB_LIST( %c, %i );\n", list, pos );
+    Emit( "C_UNB_LIST( %c, %c );\n", list, pos );
 
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
@@ -5140,7 +5261,17 @@ void CompUnbComObjExpr (
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 }
 
-
+/****************************************************************************
+**
+*F  CompEmpty( <stat> )  . . . . . . . . . . . . . . . . . . . . . . . T_EMPY
+*/
+void CompEmpty (
+    Stat                stat )
+{
+  Emit("\n/* ; */\n");
+  Emit(";");
+}
+  
 /****************************************************************************
 **
 *F  CompInfo( <stat> )  . . . . . . . . . . . . . . . . . . . . . . .  T_INFO
@@ -5345,6 +5476,7 @@ void CompFunc (
 
     /* emit the code for the higher variables                              */
     Emit( "Bag oldFrame;\n" );
+    Emit( "OLD_BRK_CURR_STAT\n");
 
     /* emit the code to get the arguments for xarg functions               */
     if ( 6 < narg ) {
@@ -5355,7 +5487,13 @@ void CompFunc (
     }
 
     /* emit the code to switch to a new frame for outer functions          */
+#if 1
+    /* Try and get better debugging by always doing this */
+    if (1) {
+#else
+      /* this was the old code */
     if ( NHVAR_INFO(info) != 0 ) {
+#endif
         Emit( "\n/* allocate new stack frame */\n" );
         Emit( "SWITCH_TO_NEW_FRAME(self,%d,0,oldFrame);\n",NHVAR_INFO(info));
         for ( i = 1; i <= narg; i++ ) {
@@ -5370,6 +5508,11 @@ void CompFunc (
         Emit( "SWITCH_TO_OLD_FRAME(ENVI_FUNC(self));\n" );
     }
 
+    /* emit the code to save and zero the "current statement" information
+     so that the break loop behaves */
+    Emit( "REM_BRK_CURR_STAT();\n");
+    Emit( "SET_BRK_CURR_STAT(0);\n");
+    
     /* we know all the arguments have values                               */
     for ( i = 1; i <= narg; i++ ) {
         SetInfoCVar( CVAR_LVAR(i), W_BOUND );
@@ -5383,6 +5526,7 @@ void CompFunc (
 
     /* emit the code to switch back to the old frame and return            */
     Emit( "\n/* return; */\n" );
+    Emit( "RES_BRK_CURR_STAT();\n" );
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
     Emit( "return 0;\n" );
     Emit( "}\n" );
@@ -5507,6 +5651,7 @@ Int CompileFunc (
     Emit( "static Int InitLibrary ( StructInitInfo * module )\n" );
     Emit( "{\n" );
     Emit( "Obj func1;\n" );
+    Emit( "Obj body1;\n" );
     Emit( "\n/* Complete Copy/Fopy registration */\n" );
     Emit( "UpdateCopyFopyInfo();\n" );
     Emit( "\n/* global variables used in handlers */\n" );
@@ -5541,6 +5686,9 @@ Int CompileFunc (
     Emit( "func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);\n" );
     Emit( "ENVI_FUNC( func1 ) = CurrLVars;\n" );
     Emit( "CHANGED_BAG( CurrLVars );\n" );
+    Emit( "body1 = NewBag( T_BODY, 0);\n" );
+    Emit( "BODY_FUNC( func1 ) = body1;\n" );
+    Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );
     Emit( "\n/* return success */\n" );
     Emit( "return 0;\n" );
@@ -5830,6 +5978,8 @@ static Int InitKernel (
     CompExprFuncs[ T_ISB_COMOBJ_NAME ] = CompIsbComObjName;
     CompExprFuncs[ T_ISB_COMOBJ_EXPR ] = CompIsbComObjExpr;
 
+    CompExprFuncs[ T_FUNCCALL_OPTS   ] = CompFunccallOpts;
+    
     /* enter the boolean expression compilers into the table               */
     for ( i = 0; i < 256; i++ ) {
         CompBoolExprFuncs[ i ] = CompUnknownBool;
@@ -5933,7 +6083,9 @@ static Int InitKernel (
     CompStatFuncs[ T_INFO            ] = CompInfo;
     CompStatFuncs[ T_ASSERT_2ARGS    ] = CompAssert2;
     CompStatFuncs[ T_ASSERT_3ARGS    ] = CompAssert3;
+    CompStatFuncs[ T_EMPTY           ] = CompEmpty;
 
+    CompStatFuncs[ T_PROCCALL_OPTS   ] = CompProccallOpts;
     /* return success                                                      */
     return 0;
 }

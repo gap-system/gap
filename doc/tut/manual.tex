@@ -28,19 +28,7 @@
 %F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
 %%
 \TitlePage{
-%  \centerline{Contributions to}\bigskip
-  \centerline{\titlefont GAP 4}\medskip
-%  \centerline{\titlefont ---}\medskip
-  \centerline{\titlefont A Tutorial}\vfill
-%  \centerline{\secfont by}\vfill
-  \centerline{\secfont The GAP Group}\bigskip
-  \centerline{\secfont Lehrstuhl D f\accent127ur Mathematik}\medskip
-  \centerline{\secfont RWTH, 52056 Aachen, Germany}\bigskip
-  \centerline{\secfont and}\bigskip
-  \centerline{\secfont School of Mathematical and Computational Sciences}
-    \medskip
-  \centerline{\secfont University of St.~Andrews, North Haugh, St.~Andrews,
-              Fife KY16 9SS, Scotland}
+\input ../ref/tutcover.tex
 }
 %
 %
@@ -60,8 +48,8 @@
 %F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \FrontMatter
-\input copyrigh
-\input preface
+\immediate\write\citeout{\bs bibdata{mrabbrev,../manual}}
+\input ../ref/copyrigh
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,23 +57,28 @@
 %F  Chapters  . . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \Chapters
+\Input{preface}
 \Input{introduc}
 \Input{lists}
-\Input{records}
 \Input{function}
 \Input{group}
 \Input{algvspc}
 \Input{domain}
 \Input{opers}
 \Input{migrat}
+% create chapter index entry for authors
+\PseudoInput{authors}{Authors}
+
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %F  Appendices  . . . . . . . . . . . .  Extending GAP 4 Reference Manual
 %%
+% fill doublepage before appendix
+\ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
 \Appendices
-\Answers
+%\Answers
 \Bibliography
 \Index
 %

@@ -80,24 +80,22 @@ InstallMethod( Generators, "for an algebra-with-one", true,
 ##  Laurent polynomials via the new attributes `ULPCoefficients' and
 ##  `ULPValuation'.
 ##
-DeclareAttribute( "ULPCoefficients",
-    IsUnivariateLaurentPolynomial );
+DeclareAttribute( "ULPCoefficients", IsLaurentPolynomial );
 
 InstallMethod( ULPCoefficients,
     "for a univariate Laurent polynomial",
     true,
-    [ IsUnivariateLaurentPolynomial ], 0,
-    pol -> CoefficientsOfUnivariateLaurentPolynomial( pol )[1] );
+    [ IsLaurentPolynomial ], 0,
+    pol -> CoefficientsOfLaurentPolynomial( pol )[1] );
 
 
-DeclareAttribute( "ULPValuation",
-    IsUnivariateLaurentPolynomial );
+DeclareAttribute( "ULPValuation", IsLaurentPolynomial );
 
 InstallMethod( ULPValuation,
     "for a univariate Laurent polynomial",
     true,
-    [ IsUnivariateLaurentPolynomial ], 0,
-    pol -> CoefficientsOfUnivariateLaurentPolynomial( pol )[2] );
+    [ IsLaurentPolynomial ], 0,
+    pol -> CoefficientsOfLaurentPolynomial( pol )[2] );
 
 
 #############################################################################
@@ -108,11 +106,11 @@ InstallMethod( ULPValuation,
 #T  with representation `IsAttributeStoringRep' ?
 ##  shall be accessible as `<obj>.<name>'.
 ##
-ATTR_GETTERS := [];
-ATTR_SETTERS := [];
-ATTR_TESTERS := [];
+BindGlobal( "ATTR_GETTERS", [] );
+BindGlobal( "ATTR_SETTERS", [] );
+BindGlobal( "ATTR_TESTERS", [] );
 
-AssociateNameWithAttribute :=
+BindGlobal( "AssociateNameWithAttribute",
     function( name, filter, getter, setter, tester, mutflag )
     local ALP, alp;
     ALP := "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -124,7 +122,7 @@ AssociateNameWithAttribute :=
     ATTR_GETTERS[ RNamObj(name) ] := getter;
     ATTR_SETTERS[ RNamObj(name) ] := setter;
     ATTR_TESTERS[ RNamObj(name) ] := tester;
-end;
+end );
 
 InstallAttributeFunction( AssociateNameWithAttribute );
 
@@ -134,12 +132,12 @@ InstallAttributeFunction( AssociateNameWithAttribute );
 ##  Handle the cases where component names are not obtained from the name of
 ##  the operation by turning the first letter to lowercase.
 ##
-AssociateNameAttribute := function ( name, getter )
+BindGlobal( "AssociateNameAttribute", function ( name, getter )
     AssociateNameWithAttribute( name, Ignore,
         getter, Setter(getter), Tester(getter), true );
-end;
+end );
 
-AssociateNameAttribute( "elements", AsListSorted );
+AssociateNameAttribute( "elements", AsSSortedList );
 AssociateNameAttribute( "isAbelian", IsCommutative );
 AssociateNameAttribute( "field", LeftActingDomain );
 
@@ -161,6 +159,8 @@ AssociateNameAttribute( "identity", One );
 
 AssociateNameAttribute( "coefficients", ULPCoefficients );
 AssociateNameAttribute( "valuation", ULPValuation );
+
+AssociateNameAttribute( "vectordim", DimensionOfVectors );
 
 
 #############################################################################
@@ -288,7 +288,7 @@ AssociateNameAttribute( "bijection", Comp3BijectionToOldGroup );
 #F  AgGroup
 #F  FpGroup
 ##
-ConversionFunctionFromIsomorphism := function(isomop)
+BindGlobal( "ConversionFunctionFromIsomorphism", function( isomop )
   return
     function(G)
     local isom,img;
@@ -297,11 +297,14 @@ ConversionFunctionFromIsomorphism := function(isomop)
       SetComp3BijectionToOldGroup(img,InverseGeneralMapping(isom));
       return img;
     end;
-end;
+end );
 
-PermGroup := ConversionFunctionFromIsomorphism(IsomorphismPermGroup);
-AgGroup := ConversionFunctionFromIsomorphism(IsomorphismPcGroup);
-FpGroup := ConversionFunctionFromIsomorphism(IsomorphismFpGroup);
+BindGlobal( "PermGroup",
+    ConversionFunctionFromIsomorphism( IsomorphismPermGroup ) );
+BindGlobal( "AgGroup",
+    ConversionFunctionFromIsomorphism( IsomorphismPcGroup ) );
+BindGlobal( "FpGroup",
+    ConversionFunctionFromIsomorphism( IsomorphismFpGroup ) );
 
 
 #############################################################################
@@ -416,8 +419,8 @@ DeclareGlobalVariable( "OPERATION_RNAM",
     "list of operations, OPERATION_RNAM[n] = op. with name NameRNam(n)");
 InstallFlushableValue( OPERATION_RNAM, [] );
 
-RENAMED_OPERATIONS := [];
-Add( RENAMED_OPERATIONS, [ "Elements", AsListSorted ] );
+BindGlobal( "RENAMED_OPERATIONS", [] );
+Add( RENAMED_OPERATIONS, [ "Elements", AsSSortedList ] );
 Add( RENAMED_OPERATIONS, [ "IsAbelian", IsCommutative ] );
 Add( RENAMED_OPERATIONS, [ "Print", PrintObj ] );
 Add( RENAMED_OPERATIONS, [ "\=", EQ ] );
@@ -450,7 +453,7 @@ Add( RENAMED_OPERATIONS, [ "InverseMapping", InverseGeneralMapping ] );
 ##
 #F  OperationByString( <s> )  . . . . . . . . . . . . operation with name <s>
 ##
-OperationByString := function( s )
+BindGlobal( "OperationByString", function( s )
     local n, p;
 
     # Treat "\<" in a special way because it is different from "<".
@@ -480,7 +483,7 @@ OperationByString := function( s )
       fi;
     fi;
     return OPERATION_RNAM[n];
-end;
+end );
 
 
 #############################################################################
@@ -512,8 +515,8 @@ InstallMethod( \=,
 ##
 #V  OperationsRecordFamily
 ##
-OperationsRecordFamily := NewFamily( "OperationsRecordFamily",
-    IsOperationsRecord );
+BindGlobal( "OperationsRecordFamily", NewFamily( "OperationsRecordFamily",
+    IsOperationsRecord ) );
 
 
 #############################################################################
@@ -531,11 +534,11 @@ OperationsRecordFamily := NewFamily( "OperationsRecordFamily",
 ##  We need components for all {\GAP}~3 dispatchers that correspond to
 ##  simple functions in {\GAP}~4.
 ##
-OPS := Objectify( NewType( OperationsRecordFamily, IsOperationsRecord ),
-                  rec() );
+BindGlobal( "OPS",
+    Objectify( NewType( OperationsRecordFamily, IsOperationsRecord ),
+               rec( FILTER     := IsObject,
+                    COMPONENTS := rec() ) ) );
 SetName( OPS, "OPS" );
-OPS!.FILTER:= IsObject;
-OPS!.COMPONENTS := rec();
 
 
 #############################################################################
@@ -544,9 +547,9 @@ OPS!.COMPONENTS := rec();
 ##  Several components that were available in {\GAP}~3 have no analogue in
 ##  {\GAP}~4, they show up in the lines starting with a comment sign.
 ##
-COPS := OPS!.COMPONENTS;
+BindGlobal( "COPS", OPS!.COMPONENTS );
 
-COPS.AbsoluteIrreducibilityTest := AbsoluteIrreducibilityTest;
+# COPS.AbsoluteIrreducibilityTest := AbsoluteIrreducibilityTest;
 COPS.AffineOperation := function( G, x, y, z )
    return AffineOperation( GeneratorsOfGroup( G ), x, y, z); end;
 # COPS.AgGroup := AgGroup;
@@ -731,7 +734,7 @@ COPS.UnitalAlgebra := AlgebraWithOne;
 COPS.UnitalSubalgebra := SubalgebraWithOne;
 # COPS.Weight := Weight;
 
-OPS := Immutable( OPS );
+MakeImmutable( OPS );
 
 
 #############################################################################
@@ -741,7 +744,7 @@ OPS := Immutable( OPS );
 ##
 ##  The returned object <oprec> is a component object with components
 ##  `FILTER' and `COMPONENTS'.
-##  The former is the property associated with <oprec>,
+##  The former is the filter associated with <oprec>,
 ##  the latter is a plain record whose components are the ones that had been
 ##  explicitly assigned to <oprec>.
 ##  *Note* that there will be for example no component `"Size"' in <oprec>
@@ -750,25 +753,24 @@ OPS := Immutable( OPS );
 ##  the operation `Size' itself if `<oprec>!.COMPONENTS' has no component
 ##  `"Size"'.
 ##
-OperationsRecord := function( arg )
+BindGlobal( "OperationsRecord", function( arg )
 
     local name,     # name of the operations record, first argument
-          prop,     # new property associated with the operations record
+          filt,     # new filter associated with the operations record
           oprec,    # the operations record, result
           parent;   # operations record from which the new one shall inherit
 
-    # Create the property that is associated with the new operations record.
+    # Create the filter that is associated with the new operations record.
     name:= arg[1];
-    prop:= NewProperty( Concatenation( "Has", name ), IsObject );
-    Print( "Has", name, " := NewProperty( \"Has", name,
-           "\", IsObject );\n" );
+    filt:= NewFilter( Concatenation( "Has", name ) );
+    Print( "Has", name, " := NewFilter( \"Has", name, "\" );\n" );
 
     # Create the new operations record.
     oprec:= Objectify( NewType( OperationsRecordFamily,
                                 IsOperationsRecord ),
                        rec() );
     SetName( oprec,name );
-    oprec!.FILTER:= prop;
+    oprec!.FILTER:= filt;
 
     # Handle inheritance.
     if Length( arg ) = 2 then
@@ -782,12 +784,12 @@ OperationsRecord := function( arg )
         oprec!.COMPONENTS:= ShallowCopy( parent!.COMPONENTS );
 
         # Handle inheritance also on the level of filters.
-        InstallTrueMethod( arg[2]!.FILTER, prop );
-        Print( "# Every object with `", NameFunction( prop ),
+        InstallTrueMethod( arg[2]!.FILTER, filt );
+        Print( "# Every object with `", NameFunction( filt ),
                "' shall have also `", NameFunction( parent!.FILTER ),
                "'.\n",
                "InstallTrueMethod( ", NameFunction( parent!.FILTER ),
-               ", ", NameFunction( prop ), " );\n" );
+               ", ", NameFunction( filt ), " );\n" );
 
       else
 
@@ -800,7 +802,7 @@ OperationsRecord := function( arg )
     fi;
 
     return oprec;
-end;
+end );
 
 
 #############################################################################
@@ -956,7 +958,8 @@ InstallMethod( \.\:\=,
       # Also note that we use the rank `SUM_FLAGS' in order to override
       # (hopefully) all methods for objects without operations record.
       InstallOtherMethod( op,
-          Concatenation( "for object with `", Name( oprec ), "' as first argument" ),
+          Concatenation( "for object with `", Name( oprec ),
+                         "' as first argument" ),
           true,
           flags, SUM_FLAGS,
           method );
@@ -968,7 +971,8 @@ InstallMethod( \.\:\=,
              " `InstallMethod' should be used.\n",
              "# It might be useful to replace the rank `SUM_FLAGS' by `0'.\n",
              "InstallOtherMethod( ", NameFunction( op ), ",\n",
-             "    \"for object with `", Name( oprec ), "' as first argument\",\n",
+             "    \"for object with `", Name( oprec ),
+             "' as first argument\",\n",
              "    true,\n",
              "    ", flagsnames, ", SUM_FLAGS,\n",
              "    ", oprec, ".", n , " );\n\n" );
@@ -981,7 +985,8 @@ InstallMethod( \.\:\=,
 
         # Install the second method.
         InstallOtherMethod( op,
-            Concatenation( "for object with `", Name( oprec ), "' as second argument" ),
+            Concatenation( "for object with `", Name( oprec ),
+                "' as second argument" ),
             true,
             [ IsObject, oprec!.FILTER ], SUM_FLAGS + 1,
             method );
@@ -992,10 +997,12 @@ InstallMethod( \.\:\=,
                "' is the right operand;\n",
                "# since this case has priority on GAP 3, the method is\n",
                "# installed with higher rank `SUM_FLAGS + 1'.\n",
-               "InstallOtherMethod( ", NameFunction( op ), "\n",
-               "    \"for object with `", Name( oprec ), "' as second argument\",\n",
+               "InstallOtherMethod( ", NameFunction( op ), ",\n",
+               "    \"for object with `", Name( oprec ),
+               "' as second argument\",\n",
                "    true,\n",
-               "    [ IsObject, ", NameFunction( oprec!.FILTER ), " ], SUM_FLAGS + 1,\n",
+               "    [ IsObject, ", NameFunction( oprec!.FILTER ),
+               " ], SUM_FLAGS + 1,\n",
                "    ", oprec, ".", n, " );\n\n" );
       fi;
 
@@ -1010,7 +1017,9 @@ InstallMethod( \.\:\=,
 ##  For an operations record, `RecFields' is the return value of `RecNames'
 ##  when called with `<oprec>!.COMPONENTS'.
 ##
-RecFields := function( obj )
+MakeReadWriteGlobal( "RecFields" );
+UnbindGlobal( "RecFields" );
+BindGlobal( "RecFields", function( obj )
     if IsOperationsRecord( obj ) then
       return RecNames( obj!.COMPONENTS );
     elif IsRecord( obj ) then
@@ -1018,7 +1027,8 @@ RecFields := function( obj )
     else
       Error( "<obj> must be a record" );
     fi;
-end;
+end );
+
 
 #############################################################################
 ##
@@ -1026,7 +1036,9 @@ end;
 ##
 ##  true records and component objects may be considered as `GAP3-records'.
 ##
-IsRec := obj -> IsRecord(obj) or IsComponentObjectRep(obj);
+MakeReadWriteGlobal( "IsRec" );
+UnbindGlobal( "IsRec" );
+BindGlobal( "IsRec", obj -> IsRecord( obj ) or IsComponentObjectRep( obj ) );
 
 
 #############################################################################
@@ -1034,132 +1046,129 @@ IsRec := obj -> IsRecord(obj) or IsComponentObjectRep(obj);
 ##  Make the predefined operations record of {\GAP}~3 available, all with
 ##  value `OPS'.
 ##
-AgGroupHomomorphismOps := OPS;
-AgGroupOps := OPS;
-AlgebraElementsOps := OPS;
-AlgebraHomomorphismByImagesOps := OPS;
-AlgebraHomomorphismOps := OPS;
-AlgebraOps := OPS;
-AlternatingPermGroupOps := OPS;
-BasisClassFunctionsSpaceOps := OPS;
-BasisMatAlgebraOps := OPS;
-BasisQuotientRowSpaceOps := OPS;
-BasisRowSpaceOps := OPS;
-BlocksHomomorphismOps := OPS;
-BrauerTableOps := OPS;
-CanonicalBasisQuotientRowSpaceOps := OPS;
-CanonicalBasisRowSpaceOps := OPS;
-CharTableOps := OPS;
-CharacterOps := OPS;
-ClassFunctionOps := OPS;
-ClassFunctionsOps := OPS;
-CliffordRecordOps := OPS;
-CliffordTableOps := OPS;
-CompositionAlgebraHomomorphismOps := OPS;
-CompositionFieldHomomorphismOps := OPS;
-CompositionGroupHomomorphismOps := OPS;
-CompositionHomomorphismOps := OPS;
-CompositionMappingOps := OPS;
-ConjugacyClassGroupOps := OPS;
-ConjugationGroupHomomorphismOps := OPS;
-CyclotomicFieldOps := OPS;
-CyclotomicsOps := OPS;
-DirectProductElementOps := OPS;
-DirectProductOps := OPS;
-DirectProductPermGroupOps := OPS;
-DomainOps := OPS;
-EmbeddingDirectProductOps := OPS;
-EmbeddingDirectProductPermGroupOps := OPS;
-EmbeddingSemidirectProductOps := OPS;
-FactorModuleOps := OPS;
-FieldElementsOps := OPS;
-FieldHomomorphismOps := OPS;
-FieldMatricesOps := OPS;
-FieldOps := OPS;
-FiniteFieldElementsOps := OPS;
-FiniteFieldMatricesOps := OPS;
-FiniteFieldOps := OPS;
-FpAlgebraElementOps := OPS;
-FpAlgebraElementsOps := OPS;
-FpAlgebraOps := OPS;
-FreeModuleOps := OPS;
-FrobeniusAutomorphismOps := OPS;
-GaussianIntegersAsAdditiveGroupOps := OPS;
-GaussianIntegersOps := OPS;
-GaussianRationalsAsRingOps := OPS;
-GaussianRationalsOps := OPS;
-GroupHomomorphismByFunctionOps := OPS;
-GroupHomomorphismByImagesOps := OPS;
-GroupHomomorphismOps := OPS;
-GroupOps := OPS;
-IdentityAlgebraHomomorphismOps := OPS;
-IdentityFieldHomomorphismOps := OPS;
-IdentityGroupHomomorphismOps := OPS;
-InverseMappingOps := OPS;
-MOCTableOps := OPS;
-MappingByFunctionOps := OPS;
-MappingOps := OPS;
-MappingsOps := OPS;
-MatAlgebraOps := OPS;
-MatGroupOps := OPS;
-MatricesOps := OPS;
-ModuleCosetOps := OPS;
-ModuleOps := OPS;
-MolienSeriesOps := OPS;
-NFAutomorphismOps := OPS;
-NullAlgebraOps := OPS;
-NumberFieldOps := OPS;
-NumberRingOps := OPS;
-OperationHomomorphismAlgebraOps := OPS;
-OperationHomomorphismModuleOps := OPS;
-OperationHomomorphismUnitalAlgebraOps := OPS;
-OpsOps := OPS;
-PermAutomorphismGroupOps := OPS;
-PermGroupHomomorphismByImagesOps := OPS;
-PermGroupHomomorphismByImagesPermGroupOps := OPS;
-PermGroupOps := OPS;
-PreliminaryLatticeOps := OPS;
-PresentationOps := OPS;
-ProjectionDirectProductOps := OPS;
-ProjectionDirectProductPermGroupOps := OPS;
-ProjectionSemidirectProductOps := OPS;
-ProjectionSubdirectProductOps := OPS;
-ProjectionSubdirectProductPermGroupOps := OPS;
-QuotientRowSpaceOps := OPS;
-QuotientSpaceOps := OPS;
-RationalClassGroupOps := OPS;
-RationalsAsRingOps := OPS;
-RationalsOps := OPS;
-RingElementsOps := OPS;
-RingOps := OPS;
-RowModuleOps := OPS;
-RowSpaceOps := OPS;
-STMappingOps := OPS;
-SemiEchelonBasisMatAlgebraOps := OPS;
-SemiEchelonBasisQuotientRowSpaceOps := OPS;
-SemiEchelonBasisRowSpaceOps := OPS;
-SemidirectProductElementOps := OPS;
-SemidirectProductOps := OPS;
-SpaceCosetRowSpaceOps := OPS;
-StandardBasisMatAlgebraOps := OPS;
-StandardBasisModuleOps := OPS;
-SubdirectProductOps := OPS;
-SubdirectProductPermGroupOps := OPS;
-SymmetricPermGroupOps := OPS;
-TransConstHomomorphismOps := OPS;
-UnitalAlgebraHomomorphismOps := OPS;
-UnitalAlgebraOps := OPS;
-UnitalMatAlgebraOps := OPS;
-VectorSpaceOps := OPS;
-VirtualCharacterOps := OPS;
-WreathProductElementOps := OPS;
-WreathProductOps := OPS;
+BindGlobal( "AgGroupHomomorphismOps", OPS );
+BindGlobal( "AgGroupOps", OPS );
+BindGlobal( "AlgebraElementsOps", OPS );
+BindGlobal( "AlgebraHomomorphismByImagesOps", OPS );
+BindGlobal( "AlgebraHomomorphismOps", OPS );
+BindGlobal( "AlgebraOps", OPS );
+BindGlobal( "AlternatingPermGroupOps", OPS );
+BindGlobal( "BasisClassFunctionsSpaceOps", OPS );
+BindGlobal( "BasisMatAlgebraOps", OPS );
+BindGlobal( "BasisQuotientRowSpaceOps", OPS );
+BindGlobal( "BasisRowSpaceOps", OPS );
+BindGlobal( "BlocksHomomorphismOps", OPS );
+BindGlobal( "BrauerTableOps", OPS );
+BindGlobal( "CanonicalBasisQuotientRowSpaceOps", OPS );
+BindGlobal( "CanonicalBasisRowSpaceOps", OPS );
+BindGlobal( "CharTableOps", OPS );
+BindGlobal( "CharacterOps", OPS );
+BindGlobal( "ClassFunctionOps", OPS );
+BindGlobal( "ClassFunctionsOps", OPS );
+BindGlobal( "CliffordRecordOps", OPS );
+BindGlobal( "CliffordTableOps", OPS );
+BindGlobal( "CompositionAlgebraHomomorphismOps", OPS );
+BindGlobal( "CompositionFieldHomomorphismOps", OPS );
+BindGlobal( "CompositionGroupHomomorphismOps", OPS );
+BindGlobal( "CompositionHomomorphismOps", OPS );
+BindGlobal( "CompositionMappingOps", OPS );
+BindGlobal( "ConjugacyClassGroupOps", OPS );
+BindGlobal( "ConjugationGroupHomomorphismOps", OPS );
+BindGlobal( "CyclotomicFieldOps", OPS );
+BindGlobal( "CyclotomicsOps", OPS );
+BindGlobal( "DirectProductElementOps", OPS );
+BindGlobal( "DirectProductOps", OPS );
+BindGlobal( "DirectProductPermGroupOps", OPS );
+BindGlobal( "DomainOps", OPS );
+BindGlobal( "EmbeddingDirectProductOps", OPS );
+BindGlobal( "EmbeddingDirectProductPermGroupOps", OPS );
+BindGlobal( "EmbeddingSemidirectProductOps", OPS );
+BindGlobal( "FactorModuleOps", OPS );
+BindGlobal( "FieldElementsOps", OPS );
+BindGlobal( "FieldHomomorphismOps", OPS );
+BindGlobal( "FieldMatricesOps", OPS );
+BindGlobal( "FieldOps", OPS );
+BindGlobal( "FiniteFieldElementsOps", OPS );
+BindGlobal( "FiniteFieldMatricesOps", OPS );
+BindGlobal( "FiniteFieldOps", OPS );
+BindGlobal( "FpAlgebraElementOps", OPS );
+BindGlobal( "FpAlgebraElementsOps", OPS );
+BindGlobal( "FpAlgebraOps", OPS );
+BindGlobal( "FreeModuleOps", OPS );
+BindGlobal( "FrobeniusAutomorphismOps", OPS );
+BindGlobal( "GaussianIntegersAsAdditiveGroupOps", OPS );
+BindGlobal( "GaussianIntegersOps", OPS );
+BindGlobal( "GaussianRationalsAsRingOps", OPS );
+BindGlobal( "GaussianRationalsOps", OPS );
+BindGlobal( "GroupHomomorphismByFunctionOps", OPS );
+BindGlobal( "GroupHomomorphismByImagesOps", OPS );
+BindGlobal( "GroupHomomorphismOps", OPS );
+BindGlobal( "GroupOps", OPS );
+BindGlobal( "IdentityAlgebraHomomorphismOps", OPS );
+BindGlobal( "IdentityFieldHomomorphismOps", OPS );
+BindGlobal( "IdentityGroupHomomorphismOps", OPS );
+BindGlobal( "InverseMappingOps", OPS );
+BindGlobal( "MOCTableOps", OPS );
+BindGlobal( "MappingByFunctionOps", OPS );
+BindGlobal( "MappingOps", OPS );
+BindGlobal( "MappingsOps", OPS );
+BindGlobal( "MatAlgebraOps", OPS );
+BindGlobal( "MatGroupOps", OPS );
+BindGlobal( "MatricesOps", OPS );
+BindGlobal( "ModuleCosetOps", OPS );
+BindGlobal( "ModuleOps", OPS );
+BindGlobal( "MolienSeriesOps", OPS );
+BindGlobal( "NFAutomorphismOps", OPS );
+BindGlobal( "NullAlgebraOps", OPS );
+BindGlobal( "NumberFieldOps", OPS );
+BindGlobal( "NumberRingOps", OPS );
+BindGlobal( "OperationHomomorphismAlgebraOps", OPS );
+BindGlobal( "OperationHomomorphismModuleOps", OPS );
+BindGlobal( "OperationHomomorphismUnitalAlgebraOps", OPS );
+BindGlobal( "OpsOps", OPS );
+BindGlobal( "PermAutomorphismGroupOps", OPS );
+BindGlobal( "PermGroupHomomorphismByImagesOps", OPS );
+BindGlobal( "PermGroupHomomorphismByImagesPermGroupOps", OPS );
+BindGlobal( "PermGroupOps", OPS );
+BindGlobal( "PreliminaryLatticeOps", OPS );
+BindGlobal( "PresentationOps", OPS );
+BindGlobal( "ProjectionDirectProductOps", OPS );
+BindGlobal( "ProjectionDirectProductPermGroupOps", OPS );
+BindGlobal( "ProjectionSemidirectProductOps", OPS );
+BindGlobal( "ProjectionSubdirectProductOps", OPS );
+BindGlobal( "ProjectionSubdirectProductPermGroupOps", OPS );
+BindGlobal( "QuotientRowSpaceOps", OPS );
+BindGlobal( "QuotientSpaceOps", OPS );
+BindGlobal( "RationalClassGroupOps", OPS );
+BindGlobal( "RationalsAsRingOps", OPS );
+BindGlobal( "RationalsOps", OPS );
+BindGlobal( "RingElementsOps", OPS );
+BindGlobal( "RingOps", OPS );
+BindGlobal( "RowModuleOps", OPS );
+BindGlobal( "RowSpaceOps", OPS );
+BindGlobal( "STMappingOps", OPS );
+BindGlobal( "SemiEchelonBasisMatAlgebraOps", OPS );
+BindGlobal( "SemiEchelonBasisQuotientRowSpaceOps", OPS );
+BindGlobal( "SemiEchelonBasisRowSpaceOps", OPS );
+BindGlobal( "SemidirectProductElementOps", OPS );
+BindGlobal( "SemidirectProductOps", OPS );
+BindGlobal( "SpaceCosetRowSpaceOps", OPS );
+BindGlobal( "StandardBasisMatAlgebraOps", OPS );
+BindGlobal( "StandardBasisModuleOps", OPS );
+BindGlobal( "SubdirectProductOps", OPS );
+BindGlobal( "SubdirectProductPermGroupOps", OPS );
+BindGlobal( "SymmetricPermGroupOps", OPS );
+BindGlobal( "TransConstHomomorphismOps", OPS );
+BindGlobal( "UnitalAlgebraHomomorphismOps", OPS );
+BindGlobal( "UnitalAlgebraOps", OPS );
+BindGlobal( "UnitalMatAlgebraOps", OPS );
+BindGlobal( "VectorSpaceOps", OPS );
+BindGlobal( "VirtualCharacterOps", OPS );
+BindGlobal( "WreathProductElementOps", OPS );
+BindGlobal( "WreathProductOps", OPS );
 
 
 #############################################################################
 ##
-#E  compat3b.g  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-
+#E
 

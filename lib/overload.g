@@ -11,8 +11,8 @@
 ##  operations, that is, operations for which the meaning of the result
 ##  depends on the arguments.
 ##
-##  Examples are 'IsSolvable' and 'IsNilpotent' (where we have methods for
-##  groups and for algebras), and 'Kernel' (which in the case of a group
+##  Examples are `IsSolvable' and `IsNilpotent' (where we have methods for
+##  groups and for algebras), and `Kernel' (which in the case of a group
 ##  homomorphism means the elements mapped to the identity of the range,
 ##  in the case of a ring homomorphism means those mapped to the zero,
 ##  and in the case of a group character means those mapped to the
@@ -22,9 +22,9 @@
 ##  and an algebra.
 ##
 ##  Such non-qualified operations should be kept to a minimum.
-##  (Remember the problems we had with 'NewObject'.)
+##  (Remember the problems we had with `NewObject'.)
 ##
-##  Note that operations such as 'IsCommutative' are not of this type,
+##  Note that operations such as `IsCommutative' are not of this type,
 ##  since the result means the same for any multiplicative structure.
 ##  
 ##  The key requirement is that no object ever exists which inherits from
@@ -33,14 +33,12 @@
 ##  of the relevant categories which decides which meaning applies,
 ##  otherwise the meaning of the operation is at the mercy of the ranking
 ##  system.
-##  Examples for this are `Kernel' and `CoKernel' for general mappings
-##  that respect both addition and  multiplication.
 ##
 ##  The guideline for the implementation is the following.
 ##  Non-qualified operations with one argument aren't attributes or
 ##  properties.
 ##  For each different meaning of the argument there are a corresponding
-##  attribute (e.g. 'IsSolvableGroup') and a method that delegates to this
+##  attribute (e.g. `IsSolvableGroup') and a method that delegates to this
 ##  attribute.
 ##  In the library one calls the attributes directly, and the non-qualified
 ##  operation is thought only as a shorthand for the user.
@@ -58,34 +56,40 @@ Revision.overload_g :=
 #O  CoKernel( <obj> )
 ##
 ##  is the cokernel of a general mapping that respects multiplicative or
-##  additive structure (but not both) ...
+##  additive structure (or both, so we have to check) ...
 ##
 DeclareOperation( "CoKernel", [ IsObject ] );
 
 InstallMethod( CoKernel, true,
-    [ IsGeneralMapping and RespectsMultiplication and RespectsOne ], 0,
-    CoKernelOfMultiplicativeGeneralMapping );
-
-InstallMethod( CoKernel, true,
-    [ IsGeneralMapping and RespectsAddition and RespectsZero ], 0,
-    CoKernelOfAdditiveGeneralMapping );
-
-InstallMethod( CoKernel, true,
-    [ IsGeneralMapping and RespectsAddition and RespectsZero
-                       and RespectsMultiplication and RespectsOne ], 0,
-    map -> Error( "specify additive or multiplicative cokernel of <map>" ) );
+    [ IsGeneralMapping ], 0,
+    function( map )
+    if RespectsAddition( map ) and RespectsZero( map ) then
+      return CoKernelOfAdditiveGeneralMapping( map );
+    elif RespectsMultiplication( map ) and RespectsOne( map ) then
+      return CoKernelOfMultiplicativeGeneralMapping( map );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################
 ##
 #O  Degree( <obj> )
 ##
-##  is the degree of a polynomial, a character ...
+##  is the degree of a univariate Laurent polynomial, a character ...
 ##
 DeclareOperation( "Degree", [ IsObject ] );
 
 InstallMethod( Degree, true, [ IsClassFunction ], 0, DegreeOfCharacter );
-
+InstallMethod( Degree, true, [ IsRationalFunction ], 0,
+    function( ratfun )
+    if IsLaurentPolynomial( ratfun ) then
+      return DegreeOfLaurentPolynomial( ratfun );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 #############################################################################
 ##
@@ -93,10 +97,25 @@ InstallMethod( Degree, true, [ IsClassFunction ], 0, DegreeOfCharacter );
 ##
 DeclareOperation( "DerivedSeries", [ IsObject ] );
 
+# DerivedSeriesOfAlgebra no longer exists! (There are the functions 
+# LieDerivedSeries and PowerSubalgebraSeries). 
+#
 InstallMethod( DerivedSeries, true, [ IsAlgebra ], 0,
-    DerivedSeriesOfAlgebra );
+  function( A )
+    if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
+      Error(
+"you can't use DerivedSeries( <L> ) for a Lie algebra <L>, you may want to try LieDerivedSeries( <L> ) instead");
+    else
+      Error(
+"you can't use DerivedSeries( <A> ) for an algebra <A>, you may want to try PowerSubalgebraSeries( <A> ) instead");
+    fi;
+  end
+);
+
 InstallMethod( DerivedSeries, true, [ IsGroup   ], 0,
     DerivedSeriesOfGroup   );
+
+
 
 
 #############################################################################
@@ -125,58 +144,9 @@ InstallOtherMethod( Eigenvalues, true,
 
 #############################################################################
 ##
-#O  Induced( <chi>, <G> )
-#O  Induced( <chi>, <tbl> )
-#O  Induced( <chars>, <G> )
-#O  Induced( <chars>, <tbl> )
-#O  Induced( <subtbl>, <tbl>, <chars> )
-#O  Induced( <subtbl>, <tbl>, <chars>, <specification> )
-#O  Induced( <subtbl>, <tbl>, <chars>, <fusionmap> )
-##
-##  delegates to 'InducedClassFunction' or ...
-##
-DeclareOperation( "Induced", [ IsObject, IsObject ] );
-
-InstallMethod( Induced, true,
-    [ IsClassFunctionWithGroup, IsGroup ], 0,
-    InducedClassFunction );
-
-InstallMethod( Induced, true,
-    [ IsClassFunction, IsNearlyCharacterTable ], 0,
-    InducedClassFunction );
-
-InstallMethod( Induced, true,
-    [ IsList and IsEmpty, IsGroup ], 0,
-    InducedClassFunctions );
-
-InstallMethod( Induced, true,
-    [ IsClassFunctionWithGroupCollection, IsGroup ], 0,
-    InducedClassFunctions );
-
-InstallMethod( Induced, true,
-    [ IsClassFunctionCollection, IsNearlyCharacterTable ], 0,
-    InducedClassFunctions );
-
-InstallOtherMethod( Induced, true,
-    [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsHomogeneousList ], 0,
-    InducedClassFunctions );
-
-InstallOtherMethod( Induced, true,
-    [ IsNearlyCharacterTable, IsNearlyCharacterTable,
-      IsHomogeneousList, IsString ], 0,
-    InducedClassFunctions );
-
-InstallOtherMethod( Induced, true,
-    [ IsNearlyCharacterTable, IsNearlyCharacterTable,
-      IsHomogeneousList, IsHomogeneousList and IsCyclotomicCollection ], 0,
-    InducedClassFunctions );
-
-
-#############################################################################
-##
 #O  IsIrreducible( <obj> )
 ##
-##  is 'true' if <obj> is an irreducible ring element or an irreducible
+##  is `true' if <obj> is an irreducible ring element or an irreducible
 ##  character or an irreducible module ...
 ##
 ##  (Note that we must be careful since characters are also ring elements,
@@ -202,7 +172,7 @@ InstallMethod( IsIrreducible, true, [ IsRingElement ], 0,
 ##
 #O  IsMonomial( <obj> )
 ##
-##  is 'true' if <obj> is a monomial group or a monomial character or
+##  is `true' if <obj> is a monomial group or a monomial character or
 ##  a monomial representation or a monomial matrix or a monomial number ...
 ##
 DeclareOperation( "IsMonomial", [ IsObject ] );
@@ -215,25 +185,41 @@ InstallMethod( IsMonomial, true, [ IsMatrix ], 0,
     IsMonomialMatrix );
 InstallMethod( IsMonomial, true, [ IsPosInt ], 0,
     IsMonomialNumber );
+InstallMethod( IsMonomial, true, [ IsOrdinaryTable ], 0,
+    IsMonomialCharacterTable );
 
 
 #############################################################################
 ##
 #O  IsNilpotent( <obj> )
 ##
-##  is 'true' if <obj> is a nilpotent group or a nilpotent algebra or ...
+##  is `true' if <obj> is a nilpotent group or a nilpotent algebra or ...
 ##
 DeclareOperation( "IsNilpotent", [ IsObject ] );
+Add(SOLVABILITY_IMPLYING_FUNCTIONS,IsNilpotent);
 
-InstallMethod( IsNilpotent, true, [ IsAlgebra ], 0, IsNilpotentAlgebra );
-InstallMethod( IsNilpotent, true, [ IsGroup   ], 0, IsNilpotentGroup   );
+# IsNilpotentAlgebra is now called IsLieNilpotent.
+#
+InstallMethod( IsNilpotent, true, [ IsAlgebra ], 0,
+  function(A)
+    if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
+      Error("you can't use IsNilpotent( <L> ) for a Lie algebra <L>, you may want to try IsLieNilpotent( <L> ) instead");
+    else
+      Error("you can't use IsNilpotent( <A> ) for an algebra <A>");
+    fi;
+  end
+);
+
+InstallMethod( IsNilpotent, true, [ IsGroup ], 0, IsNilpotentGroup   );
+InstallMethod( IsNilpotent, true, [ IsOrdinaryTable ], 0,
+    IsNilpotentCharacterTable );
 
 
 #############################################################################
 ##
 #O  IsSimple( <obj> )
 ##
-##  is 'true' if <obj> is a simple group or a simple algebra or ...
+##  is `true' if <obj> is a simple group or a simple algebra or ...
 ##
 DeclareOperation( "IsSimple", [ IsObject ] );
 
@@ -249,11 +235,24 @@ InstallMethod( IsSimple, true, [ IsOrdinaryTable ], 0,
 ##
 #O  IsSolvable( <obj> )
 ##
-##  is 'true' if <obj> is a solvable group or a solvable algebra or ...
+##  is `true' if <obj> is a solvable group or ...
 ##
 DeclareOperation( "IsSolvable", [ IsObject ] );
+Add(SOLVABILITY_IMPLYING_FUNCTIONS,IsSolvable);
 
-InstallMethod( IsSolvable, true, [ IsAlgebra ], 0, IsSolvableAlgebra );
+# IsSolvableAlgebra is now called IsLieSolvable.
+#
+InstallMethod( IsSolvable, true, [ IsAlgebra ], 0,
+  function(A)
+    if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
+      Error(
+"you can't use IsSolvable( <L> ) for a Lie algebra <L>, you may want to try IsLieSolvable( <L> ) instead");
+    else
+      Error("you can't use IsSolvable( <A> ) for an algebra <A>");
+    fi;
+  end
+);
+
 InstallMethod( IsSolvable, true, [ IsGroup   ], 0, IsSolvableGroup   );
 InstallMethod( IsSolvable, true, [ IsOrdinaryTable ], 0,
     IsSolvableCharacterTable );
@@ -263,12 +262,14 @@ InstallMethod( IsSolvable, true, [ IsOrdinaryTable ], 0,
 ##
 #O  IsSupersolvable( <obj> )
 ##
-##  is 'true' if <obj> is a supersolvable group or a supersolvable algebra
+##  is `true' if <obj> is a supersolvable group or a supersolvable algebra
 ##  or ...
 ##
 DeclareOperation( "IsSupersolvable", [ IsObject ] );
 
 InstallMethod( IsSupersolvable, true, [ IsGroup ], 0, IsSupersolvableGroup );
+InstallMethod( IsSupersolvable, true, [ IsOrdinaryTable ], 0,
+    IsSupersolvableCharacterTable );
 
 
 #############################################################################
@@ -278,6 +279,8 @@ InstallMethod( IsSupersolvable, true, [ IsGroup ], 0, IsSupersolvableGroup );
 DeclareOperation( "IsPerfect", [ IsObject ] );
 
 InstallMethod( IsPerfect, true, [ IsGroup ], 0, IsPerfectGroup );
+InstallMethod( IsPerfect, true, [ IsOrdinaryTable ], 0,
+    IsPerfectCharacterTable );
 
 
 #############################################################################
@@ -285,23 +288,22 @@ InstallMethod( IsPerfect, true, [ IsGroup ], 0, IsPerfectGroup );
 #O  Kernel( <obj> )
 ##
 ##  is the kernel of a general mapping that respects multiplicative or
-##  additive structure (but not both),
+##  additive structure (or both, so we must check),
 ##  or the kernel of a character ...
 ##
 DeclareOperation( "Kernel", [ IsObject ] );
 
 InstallMethod( Kernel, true,
-    [ IsGeneralMapping and RespectsMultiplication and RespectsOne ], 0,
-    KernelOfMultiplicativeGeneralMapping );
-
-InstallMethod( Kernel, true,
-    [ IsGeneralMapping and RespectsAddition and RespectsZero ], 0,
-    KernelOfAdditiveGeneralMapping );
-
-InstallMethod( Kernel, true,
-    [ IsGeneralMapping and RespectsAddition and RespectsZero
-                       and RespectsMultiplication and RespectsOne ], 0,
-    map -> Error( "specify additive or multiplicative kernel of <map>" ) );
+    [ IsGeneralMapping ], 0,
+    function( map )
+    if RespectsAddition( map ) and RespectsZero( map ) then
+      return KernelOfAdditiveGeneralMapping( map );
+    elif RespectsMultiplication( map ) and RespectsOne( map ) then
+      return KernelOfMultiplicativeGeneralMapping( map );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 InstallMethod( Kernel, true, [ IsClassFunction ], 0, KernelOfCharacter );
 
@@ -312,53 +314,32 @@ InstallMethod( Kernel, true, [ IsClassFunction ], 0, KernelOfCharacter );
 ##
 DeclareOperation( "LowerCentralSeries", [ IsObject ] );
 
+# LowerCentralSeries is now called LieLowerCentralSeries. 
+#
 InstallMethod( LowerCentralSeries, true, [ IsAlgebra ], 0,
-    LowerCentralSeriesOfAlgebra );
+  function(A)
+    if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
+      Error("you can't use LowerCentralSeries( <L> ) for a Lie algebra <L>, you may want to try LieLowerCentralSeries( <L> ) instead");
+    else
+      Error("you can't use LowerCentralSeries( <A> ) for an algebra <A>");
+    fi;
+  end
+);
+
 InstallMethod( LowerCentralSeries, true, [ IsGroup   ], 0,
     LowerCentralSeriesOfGroup   );
 
 
 #############################################################################
 ##
-#O  Restricted( <chi>, <H> )
-#O  Restricted( <chi>, <tbl> )
-#O  Restricted( <chars>, <H> )
-#O  Restricted( <chars>, <tbl> )
+#O  Rank( <obj> )
 ##
-##  delegates to 'RestrictedClassFunction' or ...
+##  is the rank of a matrix or ...
 ##
-DeclareOperation( "Restricted", [ IsObject, IsObject ] );
+DeclareOperation( "Rank", [ IsObject ] );
 
-Inflated := Restricted;
-
-InstallMethod( Restricted, true,
-    [ IsClassFunction, IsGroup ], 0,
-    RestrictedClassFunction );
-
-InstallMethod( Restricted, true,
-    [ IsClassFunction, IsNearlyCharacterTable ], 0,
-    RestrictedClassFunction );
-
-InstallMethod( Restricted, true,
-    [ IsClassFunctionCollection, IsGroup ], 0,
-    RestrictedClassFunctions );
-
-InstallMethod( Restricted, true,
-    [ IsClassFunctionCollection, IsNearlyCharacterTable ], 0,
-    RestrictedClassFunctions );
-
-InstallOtherMethod( Restricted, true,
-    [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsHomogeneousList ], 0,
-    RestrictedClassFunctions );
-
-InstallOtherMethod( Restricted, true,
-    [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsMatrix,
-      IsString ], 0,
-    RestrictedClassFunctions );
-
-InstallOtherMethod( Restricted, true,
-    [ IsMatrix, IsList and IsCyclotomicCollection ], 0,
-    RestrictedClassFunctions );
+InstallMethod( Rank, true, [ IsMatrix ], 0,
+    RankMat );
 
 
 #############################################################################
@@ -367,15 +348,23 @@ InstallOtherMethod( Restricted, true,
 ##
 DeclareOperation( "UpperCentralSeries", [ IsObject ] );
 
+# UpperCentralSeriesOfAlgebra is now called LieUpperCentralSeries.
+#
 InstallMethod( UpperCentralSeries, true, [ IsAlgebra ], 0,
-    UpperCentralSeriesOfAlgebra );
+  function(A)
+    if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
+      Error("you can't use UpperCentralSeries( <L> ) for a Lie algebra <L>, you may want to try LieUpperCentralSeries( <L> ) instead");
+    else
+      Error("you can't use UpperCentralSeries( <A> ) for an algebra <A>");
+    fi;
+  end
+);
+
 InstallMethod( UpperCentralSeries, true, [ IsGroup   ], 0,
     UpperCentralSeriesOfGroup   );
 
 
 #############################################################################
 ##
-#E  overload.g  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

@@ -53,13 +53,13 @@ end);
 ##  Double Coset calculation for PcGroups, inductive scheme, according to
 ##  Mike Slattery
 ##
-DoubleCosetsPcGroup := function(G,A,B)
-local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
+BindGlobal("DoubleCosetsPcGroup",function(G,A,B)
+local r,st,nr,nst,ind,sff,f,m,i,j,ao,Npcgs,v,isi,
       wbase,neubas,wproj,wg,W,x,mats,U,flip,dr,en,sf,u,
-      Hpcgs,Upcgs,prime,dim,one,zero,iso,affsp,kpcgs,
-      wgr,sp,lgf,ll,lgw;
+      Hpcgs,Upcgs,prime,dim,one,zero,affsp,
+      wgr,sp,lgf,ll,Aind;
 
-  Info(InfoCoset,1,"A(f)fine version");
+  Info(InfoCoset,1,"Affine version");
   # if a is small and b large, compute cosets b\G/a and take inverses of the
   # representatives: Since we compute stabilizers in B and a chain down to
   # A, this is remarkable faster
@@ -76,10 +76,8 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 
   # force elementary abelian Series
 
-  sp:=SpecialPcgs(G);
-  #eas:=ElementaryAbelianSeries(G);
-  lgf:=LGFirst(sp);
-  lgw:=LGWeights(sp);
+  sp:=PcgsElementaryAbelianSeries(G);
+  lgf:=IndicesNormalSteps(sp);
   ll:=Length(lgf);
   #eas:=[];
   #for i in [1..Length(lgf)] do
@@ -88,24 +86,32 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 
   r:=[One(G)];
   st:=[B];
+  Aind:=InducedPcgs(sp,A);
   for ind in [2..ll] do
     Info(InfoCoset,2,"step ",ind);
-    kpcgs:=InducedPcgsByPcSequenceNC(sp,sp{[lgf[ind]..Length(sp)]});
-    Npcgs:=InducedPcgsByPcSequenceNC(sp,sp{[lgf[ind-1]..Length(sp)]}) mod kpcgs;
+    #kpcgs:=InducedPcgsByPcSequenceNC(sp,sp{[lgf[ind]..Length(sp)]});
+    #Npcgs:=InducedPcgsByPcSequenceNC(sp,sp{[lgf[ind-1]..Length(sp)]}) mod kpcgs;
+    Npcgs:=ModuloTailPcgsByList(sp,sp{[lgf[ind-1]..lgf[ind]-1]},
+                                   [lgf[ind]..Length(sp)]);
 
-    Hpcgs:=InducedPcgsByGenerators(sp,Concatenation(GeneratorsOfGroup(A),
-                                                    kpcgs));
-    Hpcgs:=CanonicalPcgs(Hpcgs) mod kpcgs;
-    sff:=SumFactorizationFunctionPcgs(sp,Hpcgs,Npcgs,kpcgs);
+    #Hpcgs:=InducedPcgsByGenerators(sp,Concatenation(GeneratorsOfGroup(A),
+    #                                                kpcgs));
+    #Hpcgs:=CanonicalPcgs(Hpcgs) mod kpcgs;
+
+    Hpcgs:=Filtered(Aind,i->DepthOfPcElement(sp,i)<lgf[ind]);
+
+    sff:=SumFactorizationFunctionPcgs(sp,Hpcgs,Npcgs,
+       #negative depth: clean out
+       -lgf[ind]);
 
     #fsn:=Factors(Index(eas[ind-1],eas[ind]));
     dim:=lgf[ind]-lgf[ind-1];
-    prime:=lgw[lgf[ind-1]][3];
+    prime:=RelativeOrders(sp)[lgf[ind-1]];
 
     f:=GF(prime);
     one:=One(f);
     zero:=Zero(f);
-    v:=IdentityMat(dim,One(f));
+    v:= Immutable( IdentityMat(dim,one) );
 
     # compute complement W
     if Length(sff.intersection)=0 then
@@ -125,7 +131,7 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 
       wg:=[];
       for i in wbase do
-	Add(wg,PcElementByExponents(Npcgs,i));
+	Add(wg,PcElementByExponentsNC(Npcgs,i));
       od;
 
       W:=false;
@@ -138,15 +144,16 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 
 	# build matrices
 	mats:=[];
-	Upcgs:=InducedPcgsByGenerators(sp,GeneratorsOfGroup(U));
+	Upcgs:=InducedPcgs(sp,U);
         for u in Upcgs do
           m:=[]; 
           for j in wg do
-	    Add(m,Concatenation((ExponentsOfPcElement(Npcgs,j^u)*one)*wproj,
+	    Add(m,Concatenation((ExponentsConjugateLayer(Npcgs,j,u)*one)*wproj,
 	                        [zero])); 
 	  od;
 	  Add(m,Concatenation((ExponentsOfPcElement(Npcgs,
 	                         sff.factorization(u).n)*one)*wproj,[one])); 
+	  m:=ImmutableMatrix(prime,m);
 	  Add(mats,m);
 	od;
 	# modify later: if U trivial
@@ -156,8 +163,9 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 	  ao:=ExternalSet(U,affsp,Upcgs,mats);
 	  ao:=ExternalOrbits(ao);
 	  ao:=rec(representatives:=List(ao,i->
-	    PcElementByExponents(Npcgs,(Representative(i){dr})*wbase)),
+	    PcElementByExponentsNC(Npcgs,(Representative(i){dr})*wbase)),
 	          stabilizers:=List(ao,StabilizerOfExternalSet));
+
 	else
 
 	  if W=false then
@@ -178,6 +186,7 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
                   stabilizers:=List(W,i->U)
 	      ); 
 	fi;
+
 	for j in [1..Length(ao.representatives)] do
 	  Add(nr,ao.representatives[j]*x);
 	  # we will finally just need the stabilizers size and not the
@@ -199,19 +208,16 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 
   for i in [1..Length(r)] do
     if flip then
-      f:=DoubleCoset(B,r[i]^(-1),A);
+      f:=[r[i]^(-1),sf/Size(st[i])];
     else
-      f:=DoubleCoset(A,r[i],B);
+      f:=[r[i],sf/Size(st[i])];
     fi;
     r[i]:=f;
-    #IGNORE_IMMEDIATE_METHODS:=true;
-    SetSize(f,sf/Size(st[i]));
-    #IGNORE_IMMEDIATE_METHODS:=false;
   od;
   return r;
-end;
+end);
 
-InstallMethod(DoubleCosetsNC,"Pc",true,
+InstallMethod(DoubleCosetRepsAndSizes,"Pc",true,
   [IsPcGroup,IsPcGroup,IsPcGroup],0,
 function(G,U,V)
   if Size(G)<=500 then
@@ -221,12 +227,14 @@ function(G,U,V)
   fi;
 end);
 
+
 #############################################################################
 ##
-#R  IsRightTransversalPcGroup . . . . . . . . . right transversal of pc group
+#R  IsRightTransversalPcGroupRep  . . . . . . . right transversal of pc group
 ##
-DeclareRepresentation( "IsRightTransversalPcGroup", IsRightTransversal,
-      [ "group", "subgroup", "transversal", "canonReps" ] );
+DeclareRepresentation( "IsRightTransversalPcGroupRep", IsRightTransversalRep,
+    [ "transversal", "canonReps" ] );
+
 
 #############################################################################
 ##
@@ -237,14 +245,16 @@ InstallMethod( RightTransversalOp, "PC",IsIdenticalObj,
 function( G, U )
 local elements, g, u, e, i,t,depths,gens,p;
 
-  t := Objectify(NewType(FamilyObj(G),IsRightTransversalPcGroup),
+  t := Objectify( NewType( FamilyObj( G ),
+                               IsList and IsDuplicateFreeList
+                           and IsRightTransversalPcGroupRep ),
           rec( group :=G,
             subgroup :=U,
 	    canonReps:=[]));
 
   elements := [One(G)];
   p := Pcgs( G );
-  depths:=List( InducedPcgsByGenerators( p, GeneratorsOfGroup( U ) ),
+  depths:=List( InducedPcgs( p,  U  ),
                 i->DepthOfPcElement(p,i));
   gens:=Filtered(p, i->not DepthOfPcElement(p,i) in depths);
   for g in Reversed(gens ) do
@@ -260,19 +270,21 @@ local elements, g, u, e, i,t,depths,gens,p;
   return t;
 end);
 
-InstallMethod(\[\],"for Pc groups",true,[IsRightTransversalPcGroup,
-        IsPosInt ],0,
+InstallMethod(\[\],"for Pc transversals",true,
+    [ IsList and IsRightTransversalPcGroupRep, IsPosInt ],0,
 function(t,num)
   return t!.transversal[num];
 end );
 
-InstallMethod(AsList,"for Pc groups",true,[IsRightTransversalPcGroup],0,
+InstallMethod(AsList,"for Pc transversals",true,
+    [ IsList and IsRightTransversalPcGroupRep ],0,
 function(t)
   return t!.transversal;
 end );
 
-InstallMethod(PositionCanonical,"RT",true,
-  [IsRightTransversalPcGroup,IsObject],0,
+InstallMethod(PositionCanonical,"RT",IsCollsElms,
+    [ IsList and IsRightTransversalPcGroupRep,
+    IsMultiplicativeElementWithInverse ],0,
 function(t,elm)
 local i;
   elm:=CanonicalRightCosetElement(t!.subgroup,elm);
@@ -289,6 +301,7 @@ local i;
   od;
   return fail;
 end);
+
 
 #############################################################################
 ##

@@ -1,9 +1,10 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
-    @msfiles = ("exa");
-    @gdfiles = ("exa");
+    @msfiles = ();
+    @gdfiles = ();
     $DIR = ".";
     $LIB=".";
+    $check=0;
 
 if ( @ARGV && $ARGV[0] =~ /-f/  )
   {
@@ -42,6 +43,18 @@ if ( @ARGV && $ARGV[0] =~ /-f/  )
               $ms =~ s/\(|\)|;|\n|"| //g;
               @gdfiles = split /,/, $ms;
 	   }
+         elsif ( $line =~ /check/ ) {
+	     # the manual builder should produce a file `notfound'.
+	     $check=1;
+	   }
+         elsif ( $line =~ /=/ ) {
+	     # assignement of variable
+	     @varass=split/=/, $line;
+	     $key=$varass[0];
+	     @varass=split/\n/, $varass[1];
+	     $defaults{$key}=$varass[0];
+	   }
+
       }
   }    
 
@@ -72,25 +85,27 @@ sub read_table
 {
   foreach $file ( @gdfiles )
   {
-
-  if ($file =~ /\.g/ ) {
+  $readon = 0;
+  if ($file =~ /\.g/ || $file =~ /\.tbd/ || $file =~ /\.tmd/ ) {
     print "reading $LIB/$file\n";
-    open( GDF, "$LIB/$file" );
+    if ( open( GDF, "$LIB/$file" ) ) {$readon=1;}
+    $currread=$file;
     }
   else {
     print "reading $LIB/$file.gd\n";
-    open( GDF, "$LIB/$file.gd" );
+    if ( open( GDF, "$LIB/$file.gd" ) ) {$readon = 1;}
+    $currread="$file.gd";
   }
 
-  while ( $line = <GDF> )
+  while ( ($readon) && ($line = <GDF>) )
    {
-     if ( $line =~ /#[CAPOFMVR]/ ) 
+     if ( $line =~ /#[CAPOFVR]/ ) 
        {       
           $nfun = 0;
           @code = ();
           @fdec = ();
           @ldes = ();
-          while ( $line =~ /#[CAPOFMVR]/ )
+          while ( $line =~ /#[CAPOFVR]/ )
 	    {
 	       ++$nfun;
 
@@ -145,6 +160,11 @@ sub read_table
 
 	  @words = split /\(/, $fdec[1];
 	  $key = $words[0];
+          $key .= "@"; $key .= $file; 
+
+          if ( ( %{ $tab{$key} } ) ) {
+	    print "DUPLICATE DEFINITION OF $key";
+	  }
 
 	  @args = ();
 	  $args[0] = $nfun;
@@ -159,6 +179,7 @@ sub read_table
                    $w = $aa[1];
                    @aa = split /\)/, $w;
                    $w = $aa[0];
+		   if (!$w){ $w= " ";}
                    @aa = split /,/, $w;
                    $noa = 0;
 
@@ -178,7 +199,7 @@ sub read_table
 	    {
                if ( !( $line =~ /^#T/ ) )
                  {
-                   $line =~ s/#//g;
+                   $line =~ s/^[#]*//g;
 		   # remove two leading spaces
 		   $line =~ s/^ //g;
 		   $line =~ s/^ //g;
@@ -284,6 +305,7 @@ sub read_table
           $tab{$key}{ldes} = [ @ldes ]; 
           $tab{$key}{impl} = [ @impl ];
 	  $tab{$key}{ipmt} = [ @ipmt ];
+	  $tab{$key}{file} = $currread;
 
        
        }
@@ -326,6 +348,9 @@ sub read_table
               if ( $line =~ /##/ )
 		{
                   $line =~ s/#//g;
+		  # remove 1 or two leading spaces
+                  $line =~ s/^ //g;
+                  $line =~ s/^ //g;
                   $htxt .= $line;
 	        }
 	    }
@@ -337,11 +362,12 @@ sub read_table
    if ( open( GIF, "$LIB/$file.gi" ) )
      { 
        print "reading $LIB/$file.gi\n";
+       $currread="$file.gi";
        $key = ""; $gide="";
        $first = 1;
        while ( $line = <GIF> )
          {
-           if ( $line =~ /#[CAPOFMV]/ )
+           if ( $line =~ /#[CAPOFVRM]/ )
 	     {
                if ( $first == 1 )
              	 {      
@@ -353,7 +379,7 @@ sub read_table
 		     }
                    @words = split /\(/, $line;
                    $key = $words[0];
-                   $key =~ s/#[CAPOFMVR]| //g;
+                   $key =~ s/#[CAPOFVRM]| //g;
                    $gide = "";
 		   
                    @mlines = ();
@@ -372,37 +398,7 @@ sub read_table
            elsif ( $first == 0 )
              { $first =1; } 
 
-           if ( $line =~ /InstallMethod\(/ ) 
-             { 
-                ++$insm;
-                $meth[0] = $insm;
-                $foundres = 0;
-                while ( $foundres == 0 )
-		  {
-                    while ( !( $line =~ /\[/ ) )
-                      {
-                         $line = <GIF>;                      
-                      }
-                    $met = "  ".$line;
-                    while ( !( $line =~ /\]/ ) )
-	 	      {
-                        $line = <GIF>;
-		        $met .= $line;
-                      }
-                    $met =~ s/\\\[//g;
-                    if ( $met =~ /\[/ )
-		      {		      
-                        @words = split /\[|\]/, $met;
-                        $met = $words[1];
-                        $met =~ s/,|\n/ /g;
-                        $meth[$insm] = $met;
-                        $foundres = 1;
-                      }
-                    else { $line = <GIF>; }
-                  }          
-             } 
-
-	  
+	   
 # The next lines of code handle the #M declarations that must go into the 
 # manual from the .gi file. We assume:
 #
@@ -416,16 +412,21 @@ sub read_table
 # NUMBER will be replaced by the number (integer) that reflects the position
 # of this declaration in the list of all declarations.
 
-           if ( $line =~ /InstallOtherMethod/ )
+           if ( ($line =~ /InstallOtherMethod/ or $line =~ /InstallMethod/))
 	     {
 	       ++$insm;
                $argres = "";
+
                if ( $insm <= $nom )
-	         {
+ 	         {
 		   $foundres = 0;
 		   $hascom = 0;
-                   while ( !( ($line = <GIF>) =~ /end.*\);/ ) )
+                   $end = 0;
+                   $occurass = 0;
+
+                   while ( $end == 0 )
                      {
+		       if ( $line =~ /:=/ ) { $occurass = 1; }
                        if ( $line =~ /^(#\+)/ )
 	                 {
 			    $hascom = 1;
@@ -454,6 +455,11 @@ sub read_table
                                  $foundres = 1;
                               }
 			 }
+			 if ( ( $line =~ /\);/ && $occurass == 0 ) 
+                               || $line =~ /end.*\);/ )
+			   {  $end = 1; }  
+                         else
+			   { $line = <GIF>; }
 		     }
 
                    if ( $hascom == 1 )
@@ -556,7 +562,7 @@ sub read_table
 		      {
                          while ( !( $line =~ /\[/ ) )
                            {
-                              $line = <GIF>;                      
+                              $line = <GIF>; 
                            }
                          $met = "  ".$line;
                          while ( !( $line =~ /\]/ ) )
@@ -573,7 +579,7 @@ sub read_table
                               $meth[$insm] = $met;
                               $foundres = 1;
                            }
-                         else { $line = <GDF>; }
+                         else { $line = <GIF>; }
                       }          
 		 }
 
@@ -606,11 +612,11 @@ sub read_table
          {
 	   if ( $tab{$key} ) { $tab{$key}{gdes} = $gdes; }
 
-           if ( $line =~ /#[CAPOFMVR]/ )
+           if ( $line =~ /#[CAPOFVR]/ )
 	     {
 	       @words = split /\(/, $line;
                $key = $words[0];
-               $key =~ s/#[CAPOFMVR]| //g;
+               $key =~ s/#[CAPOFVR]| //g;
                $gdes = "";
              }  
    
@@ -643,8 +649,18 @@ sub make_tex
 
    foreach $ff (@msfiles)
    {
-     open( MSK, "$ff.msk" );
-     open( TEX, ">$DIR/$ff.tex" );
+   if( !open( MSK, "$ff.msk" ) ) {
+       print "Cannot open manual skeleton file $ff.msk\n";
+       exit;
+   }
+
+   # if the `tex' file does already exist, make it writable
+   chmod 0644, "$DIR/$ff.tex";
+
+   if( !open( TEX, ">$DIR/$ff.tex" ) ) {
+       print "Cannot open TeX ouput file $DIR/$ff.tex.\n";
+       exit;
+   }
 
    print "Composing the TEX file $ff.tex\n";
    print TEX "% This file was created automatically from $ff.msk.\n";
@@ -652,26 +668,138 @@ sub make_tex
 
    while ( $line = <MSK> )
      {
+
+       # treat the {{...}} replacements
+       while ( $line =~ /{{([^}]*)}}/ ) {
+	 $key = $1;
+	 if ( $key =~ /date/ ) {
+	   $replace=`date +"%d %B %Y"`;
+	 }
+	 elsif ( $defaults{$key} ) {
+	   $replace=$defaults{$key};
+	  }
+	  else {
+	    die "$key has no replacement value"; 
+	  }
+	 $line =~ s/{{$key}}/$replace/;
+       }
+
+
+       # now deal with the `Declaration' mechanism.
        if ( $line =~ /\\Declaration/ )
          {
+	   $sube = "";
+           if ( $line =~ /!/ )
+	     {
+		 @words = split /!\{/, $line;
+                 @ww = split /\}/, $words[1];
+                 $sube = "!{".$ww[0]."}";
+             }
       	   @words = split /\{/, $line;
 	   $key = $words[1];
+           $key =~ s/!//g;
 	   $key =~ s/\}//g;
 	   $key =~ s/ |\n//g;
 
-           while ( !( %info = %{ $tab{$key} } ) )
+           if ( $key =~ /\[/ ){
+	       @newwds = split /\[/, $key;
+               $key = $newwds[0];
+               $fff = $newwds[1];
+               $fff =~ s/\]//g;
+           } else {
+               $fff = "";
+           } 
+
+           @kkk = keys %tab;
+           $nokeys = 0;
+
+           %info = 0;
+
+           foreach $k ( @kkk ){
+               @newwds = split /@/, $k;
+               $kk = $newwds[0];
+
+	       if ( $kk =~ $key && $key =~ $kk ){
+	
+		   if ( $fff ) {
+		       if ( $k =~ $fff ) {
+			   %info = %{ $tab{$k} };
+                           $tab{$k}{used} = 1;
+                           $nokeys++;
+		       }
+		   } else {  # so there was no gd file specified in the decl.
+		       if ( $nokeys > 0 ){ 
+                         print "MORE THAN ONE DECLARATION of $key";
+                         #exit;
+		       } else {
+                         %info = %{ $tab{$k} };
+                         $tab{$k}{used}= 1;
+                         $nokeys++;
+		     }
+		   }
+	       }
+	   }
+ 
+           while ( !( %info ) )
 	     {
-       	       print "$key not found in the database\n";
+       	       print "$key NOT FOUND IN THE DATABASE!!\n";
+               print "PLEASE CHECK THIS SINCE IT MAY LEAD TO OMMISSION OF MATERIAL!!\n";
                if ( eof MSK ) { exit; }
                while ( !( ( $line = <MSK> )  =~ /\\Declaration/ ) )
                  {
                     if ( eof MSK ) { exit; }
  		 }
+	       $sube = "";
+               if ( $line =~ /!/ )
+	         {
+		   @words = split /!\{/, $line;
+                   @ww = split /\}/, $words[1];
+                   $sube = "!{".$ww[0]."}";
+                 }
       	       @words = split /\{/, $line;
 	       $key = $words[1];
+               $key =~ s/!//g;
 	       $key =~ s/\}//g;
 	       $key =~ s/ |\n//g;
-              }                    
+
+               if ( $key =~ /\[/ ){
+	          @newwds = split /\[/, $key;
+                  $key = $newwds[0];
+                  $fff = $newwds[1];
+                  $fff =~ s/\]//g;
+               } else {
+                  $fff = "";
+               }  
+               @kkk = keys %tab;
+               $nokeys = 0;
+
+               foreach $k  ( @kkk ){
+                   @newwds = split /@/, $k;
+                   $kk = $newwds[0];
+	           if ( $kk =~ $key && $key =~ $kk ){
+		       if ( $fff ) {
+		           if ( $k =~ $fff ) {
+			       %info = %{ $tab{$k} };
+                               $tab{$k}{used} = 1;
+                               $nokeys++;
+		           }
+	               } else {  # so there was no gd file specified.
+       		           if ( $nokeys > 0 ){ 
+                             print "MORE THAN ONE DECLARATION of $key";
+                             exit;
+		           } else {
+                              %info = %{ $tab{$k} };
+                              $tab{$k}{used} = 1;
+                              $nokeys++;
+		          }
+		        }
+		   }
+	       }
+ 
+
+             }                    
+
+           # $tab{$key}{used} = 1;
 
            @code = @{ $info{code} };     
 	   @fdec = @{ $info{fdec} };
@@ -719,7 +847,18 @@ sub make_tex
                 $fd =~ s/,/, /g;
 #was: print TEX "\\>$fd $code[$k]$st$ts$mut $ldes[$k]\n";
 # (the description line is usually garbled)
-            	print TEX "\\>$fd $code[$k]$st$ts$mut\n";
+		if  ( $fd =~ /[(]/ ) {
+		  if ($fff) {
+                    $fd =~ /([a-zA-Z]*)/;
+                    my $lab = $1;
+                    print TEX "\\>`$fd'\{$lab.$fff\}@\{`$lab.$fff'\}$sube ",
+                              "$code[$k]$st$ts$mut\n";
+                  } else {
+                    print TEX "\\>$fd$sube $code[$k]$st$ts$mut\n";
+                  }
+#  print TEX "\\>$fd$sube $code[$k]$st$ts$mut\n";}
+		} else {
+		  print TEX "\\>`$fd'{$fd@`$fd'}$sube $code[$k]$st$ts$mut\n";}
 
 	      }
 
@@ -862,6 +1001,9 @@ sub make_tex
            $file = $words[1];
            $file =~ s/ //g;
            $clef = "_h".$file;
+	   if (!$tab{$clef}){
+	       print "THERE DOES NOT SEEM TO BE A HEADER IN $file.gd\n";
+           }
            print TEX $tab{$clef}{$hnum}."\n";
          }
 
@@ -884,11 +1026,29 @@ sub make_tex
        else { print TEX $line; }    
      }
 
+    # change the permission  to forbid writing
+    chmod 0444, "$DIR/$ff.tex";
+
+   } 
+
+   if ( ! $check==0 ) {
+    if( !open( ERR, ">notfound" ) ) {
+	print "Cannot open `notfound'\n";
+	exit;
+    }
+    
+    @kk = sort(keys %tab);
+    foreach $key (@kk) {
+	if ( ! $tab{$key}{used} ){
+	    print ERR "$tab{$key}{file}: \t$key\n";
+	}
+    }
+    print "\n\nThe file `notfound' contains a list of unused declarations\n";
   }
 }
 
 
- make_tex();
+make_tex();
  
 
 

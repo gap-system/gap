@@ -22,10 +22,20 @@ DeclareInfoClass("InfoTuples");
 
 #############################################################################
 ##
+#R  IsDefaultTupleRep ( <obj> ) . . . . .  representation as component object
+##
+DeclareRepresentation( "IsDefaultTupleRep", 
+                             IsPositionalObjectRep and IsTuple, [] );
+
+
+#############################################################################
+##
 #V  TUPLES_FAMILIES . . . . . . . . . . . . . . . list of all tuples families
 ##
 
 EmptyTuplesFamily := NewFamily( "TuplesFamily([])", IsTuple , IsTuple );
+EmptyTuplesFamily!.defaultTupleType:=NewType(EmptyTuplesFamily,
+                                             IsDefaultTupleRep );
 
 SetComponentsOfTuplesFamily(EmptyTuplesFamily, []);
 
@@ -43,7 +53,8 @@ InstallMethod( TuplesFamily,
         fam -> fam = CollectionsFamily(FamilyOfFamilies), 
         [ IsCollection ], 0,
         function( famlist )
-    local n, tupfams, freepos, len, i, fam, tuplespos, tuplesfam;
+local n, tupfams, freepos, len, i, fam, tuplespos,
+      tuplesfam,filter,filter2;
 
     n := Length(famlist);
     if not IsBound(TUPLES_FAMILIES[n+1]) then
@@ -71,10 +82,20 @@ InstallMethod( TuplesFamily,
       tuplesfam:= tupfams[ tuplespos ];
     else
       Info( InfoTuples, 1, "Created new tuples family, length ", n );
+      filter:=IsTuple;
+      filter2:=IsTupleFamily;
+      if ForAll(famlist,i->CanEasilySortElements(i)) then
+        filter:=filter and CanEasilySortElements;
+        filter2:=filter2 and CanEasilySortElements;
+      elif ForAll(famlist,i->CanEasilyCompareElements(i)) then
+        filter:=filter and CanEasilyCompareElements;
+        filter2:=filter2 and CanEasilyCompareElements;
+      fi;
       tuplesfam:= NewFamily( "TuplesFamily( <<famlist>> )", 
-                             IsTuple , IsTuple, IsTupleFamily );
+                             IsTuple , filter,filter2);
       SetComponentsOfTuplesFamily( tuplesfam, Immutable( famlist ) );
       SetElmWPObj( tupfams, freepos, tuplesfam );
+      tuplesfam!.defaultTupleType:=NewType(tuplesfam,  IsDefaultTupleRep );
     fi;
 
     return tuplesfam;
@@ -175,7 +196,6 @@ end);
 #M  <tuple1> =  <tuple2>. . . . . . . . . . . . . . . . . . . . . . comparison
 ##
 ##
-
 InstallMethod( \=,
     "for two tuples",
     IsIdenticalObj, [ IsTuple, IsTuple ], 0,
@@ -190,14 +210,21 @@ InstallMethod( \=,
 end);
 
 
-
-#############################################################################
+##############################################################################
 ##
-#R  IsDefaultTupleRep ( <obj> ) . . . . .  representation as component object
+#M  CanEasilyCompareElements(<tup>)
 ##
-
-DeclareRepresentation( "IsDefaultTupleRep", 
-                             IsComponentObjectRep and IsTuple, [] );
+##
+InstallMethod( CanEasilyCompareElements, "for tuple", true, [IsTuple], 0,
+function(tup)
+local i;
+  for i in [1..Length(tup)] do
+    if not CanEasilyCompareElements(tup[i]) then
+      return false;
+    fi;
+  od;
+  return true;
+end);
 
 
 #############################################################################
@@ -214,8 +241,8 @@ InstallMethod( TupleNC,
         function( fam, objlist )
     local t;
     Assert(2, ComponentsOfTuplesFamily( fam ) = List(objlist, FamilyObj));
-    t := Objectify( NewType(fam,  IsDefaultTupleRep ), 
-         List(objlist, Immutable) );
+    t := Objectify( fam!.defaultTupleType,
+         PlainListCopy(List(objlist, Immutable)) );
     Info(InfoTuples,3,"Created a new Tuple ",t);
     return t;
 end);
@@ -254,7 +281,7 @@ end);
 ##
 #M  Inverse( <tuple> )
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseOp,
     "for a tuple",
     true, [ IsTuple ], 0,
 function( elm )
@@ -265,7 +292,7 @@ end );
 ##
 #M  One( <tuple> )
 ##
-InstallMethod( One,
+InstallMethod( OneOp,
     "for a tuple",
     true, [ IsTuple ], 0,
 function( elm )
@@ -287,7 +314,7 @@ end );
 
 ##############################################################################
 ##
-#M  \^( <tuple>, <tuple> ) 
+#M  \^( <tuple>, <integer> ) 
 ##
 InstallMethod( \^,
     "for tuple, and integer",

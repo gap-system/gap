@@ -11,15 +11,16 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Chapter{Attributes and their Methods}
+\Chapter{Operations and Methods}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Attributes}
 
 In the  preceding chapters, we have  seen how to obtain information about
 mathematical objects in {\GAP}: We have to pass the object as an argument
-to a function, e.g., `Size( <G> )', and the function will return a value,
-in our example an integer  which is the  size of the group <G>. Computing
+to a function. For example, if <G> is a group one can call
+`Size( <G> )', and the function will return a value,
+in our example an integer  which is the  size of <G>. Computing
 the size  of a  group generally  requires  a substantial amount  of work,
 therefore it seems desirable to store the size somewhere once it has been
 calculated. You should imagine that {\GAP} stores  the size in some place
@@ -33,68 +34,71 @@ This means that the  behavior  of the  function  `Size' has to  depend on
 whether the size for the argument <G> is already known,  and if not, that
 the size  must be  stored after it  has been  calculated. These two extra
 tasks are  done  by two other   functions that accompany `Size(   <G> )',
-namely the *tester*  `Tester( Size )( <G>  )'  and the  *setter* `Setter(
-Size )( <G>, <size> )'. The tester returns `true' or `false' according to
-whether <G>  already knows its  size, and  the setter  puts <size> into a
-place from where <G> can directly look  it up. The function `Size' itself
-is called the  *getter*, and from the  preceding  discussion we see  that
-there must really be two getters, or rather two *methods* for the getter:
-The  first method is   used when the   tester returns `false';  it is the
-method which first does the real computation and then executes the setter
-with   the computed value.  The second  method is  used   when the tester
-returns `true'; it simply returns the stored value. This second method is
-also called the *system getter*.
-\beginexample
-    gap> G := Group( (1,2,3,4,5,6,7,8), (1,2) );; Size( G ); time;
-    40320
-    3583   # this may of course vary on your machine
-    gap> Size( G ); time;
-    40320
-    0
-\endexample
+namely the *tester* `HasSize( <G> )'
+and the *setter* `SetSize( <G>, <size> )'.
+The tester returns `true' or `false' according to
+whether <G> has already stored its size, and the setter puts <size> into
+a place from where <G> can directly look it up.
+The function `Size' itself is called the *getter*,
+and from the preceding discussion we see
+that there must really be at least two *methods* for the getter:
+One method is used when the tester returns `false';
+it is the method which first does the real computation and then executes
+the setter with the computed value.
+A second method is used when the tester returns `true';
+it simply returns the stored value.
+This second method is also called the *system getter*.
+{\GAP} functions for which several methods can be available
+are called *operations*, so `Size' is an example of an operation.
+\begintt
+gap> G := Group( (1,2,3,4,5,6,7,8), (1,2) );; Size( G ); time;
+40320
+90   # this may of course vary on your machine
+gap> Size( G ); time;
+40320
+0
+\endtt
 The convenient thing  for the user  is that  {\GAP} automatically chooses
-the right method  for the getter, i.e.,  it calls the real-work getter at
+the right method  for the getter, i.e.,  it calls a real-work getter at
 most once  and the system getter  in all subsequent occurrences. *At most
 once* because the value of a function call like `Size( <G> )' can also be
-set for <G>  before the getter  is called at all; to  do this you  simply
-call the setter directly. By the way: for  most attributes the tester has
-an alias like `HasSize' for `Tester( Size )' and the setter is also known
-as `SetSize'.
+set for <G>  before the getter  is called at all;
+for example, one can call the setter directly if one knows the size.
 
-Every *attribute* in  {\GAP} is represented by  a triple  of a getter,  a
+The size of a group is an example of a class of things  which in {\GAP}
+are called *attributes*.
+Every attribute in  {\GAP} is represented by  a triple  of a getter,  a
 setter   and a  tester.  When a  new  attribute  is  declared, all  three
 functions are created together and  the getter contains references to the
 other two.  This is necessary because when  the getter is called, it must
 first  consult the tester,   and perhaps execute the  setter  in the end.
 Therefore the getter could be implemented as follows:
 \begintt
-    getter := function( obj )
-    local   value;
-|_
-        if tester( obj )  then
-            value := system_getter( obj );
-|_
-        else
-            value := real_work_getter( obj );
-            setter( obj, value );
-        fi;
-|_
-        return value;
-    end;
+getter := function( obj )
+local   value;
+    if tester( obj )  then
+        value := system_getter( obj );
+    else
+        value := real_work_getter( obj );
+        setter( obj, value );
+    fi;
+    return value;
+end;
 \endtt
 The  only  function which  depends on   the  mathematical  nature  of the
 attribute  is  the  real-work getter,  and this   is  of course  what the
 programmer of  an  attribute has to  install.  In both cases,  the getter
 returns  the same value, which  we also call  the  value of the attribute
 (properly: the value of the attribute for the object `obj').
+By the way:
+The names for setter and tester of an attribute are always composed from
+the prefix `Set' resp.~`Has' and the name of the getter.
 
-\exercise  What  do you think:  Is  the {\GAP} function  `Random' also an
-attribute?
-
-\answer Of course  not, because then the  first random element of a group
-would be stored by  the setter and returned over  and  over again by  the
-system getter every  time `Random' is  called in  the sequel.  Not a very
-random behavior.
+As a (not typical) example, note that the {\GAP} function `Random',
+although it takes only one argument, is of course *not* an attribute,
+because otherwise the first random element of a group would be stored by
+the setter and returned over and over again by the system getter
+every time `Random' is called in the sequel.)
 
 There is a general important rule about attributes: *Once the value of an
 attribute for an object has been set, it cannot be reset, i.e., it cannot
@@ -103,26 +107,28 @@ the getter but also for the setter: If an object already has an attribute
 value stored, i.e., if the tester  returns `true', the setter simply does
 nothing.
 \beginexample
-    gap> SetSize( G, 0 ); Size( G );
-    40320
+gap> G := SymmetricGroup(8);; Size(G);
+40320
+gap> SetSize( G, 0 ); Size( G );
+40320
 \endexample
 
-\exercise Experiment  with {\GAP} to  find out whether immutability of an
-object prevents a setter from setting a previously unset value.
-
-\answer It does  not. That an  object like a  group is constant  does not
-mean  that   additional information cannot    be entered. Such additional
-information does not change the mathematical identity of the object.
+%\exercise Experiment  with {\GAP} to  find out whether immutability of an
+%object prevents a setter from setting a previously unset value.
+%
+%\answer It does  not. That an  object like a  group is constant  does not
+%mean  that   additional information cannot    be entered. Such additional
+%information does not change the mathematical identity of the object.
 
 {\bf  Summary.} In this section  we have introduced attributes as triples
 of getter, setter   and tester and    we have explained how  these  three
-functions work together behind  the  scenes to provide automatic  storage
+functions work together behind  the  scene to provide automatic  storage
 and look-up of  values that have once been  calculated. We have seen that
-there  are  several  methods for  the   same function  among which {\GAP}
+there can be several methods for  the   same function  among which {\GAP}
 automatically selects an appropriate one.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Properties and filters}\null
+\Section{Properties and Filters}\null
 
 \atindex{properties}{|indexit}\atindex{filters}{|indexit}%
 \index{methods!selection}%
@@ -146,88 +152,85 @@ several simple filters.
 Since they allow only two values, the bits which represent filters can be
 compared very quickly, and the scheme by which {\GAP} chooses the method,
 e.g., for a getter or a setter (as we have seen in the previous section),
-is mostly based  on the examiniation of filters,  not on the examiniation
+is mostly based  on the examination of filters,  not on the examination
 of other  attribute   values. Details  of   this *method selection*   are
-described  in chapter~"prg:chapter  Method  Selection" of the programming
-manual.
+described in chapter~"prg:Method Selection" of ``Programming in GAP''.
 
-We  only present the following  rule  of the  thumb here: Each  installed
-method for an attribute, say `Size(  <obj> )', has a ``required filter'',
-which is made  up from certain simple filters  which must yield `true'
-for <obj> if this method is to be applicable. To execute a call of `Size(
-<obj>   )', {\GAP} selects  the  applicable  method whose required filter
-combines the most  simple filters because  it thinks that the more  an
-algorithm requires of <obj>, the more efficient  it will be. For example,
-if <obj>  is a permutation group  that is not  (known to be)  solvable, a
-method  with required filter   `IsPermGroup  and IsSolvableGroup'  is not
-applicable,  hence a  method with  required  filter `IsPermGroup' will be
-chosen. On  other  hand, if <obj>  was  known to be   solvable, the first
-method with required filter  `IsPermGroup  and IsSolvableGroup' would  be
-selected. It may happen that a  method fails although the required filter
-is  `true' for the  argument. In such  cases, the method will execute the
-statement  `TryNextMethod();' then the  next   applicable method will  be
+We  only present the following  rule  of  thumb here:
+Each installed method for an attribute, say `Size',
+has a ``required filter'', which is made  up from certain simple filters
+which must yield `true' for the argument <obj> for this method to be
+applicable.
+To execute a call of `Size( <obj> )', {\GAP} selects among all applicable
+methods the one whose required filter combines the most simple filters;
+the idea behind is that the more an algorithm requires of <obj>,
+the more efficient it is expected to be.
+For example, if <obj> is a permutation group that is not (known to be)
+solvable,
+a method  with required filter `IsPermGroup and IsSolvableGroup' is not
+applicable, whereas a method with required filter `IsPermGroup' can be
 chosen.
+On the other hand, if <obj> was  known to be solvable,
+the method with required filter `IsPermGroup and IsSolvableGroup'
+would be preferred to the one with required filter `IsPermGroup'.
 
+It may happen that a method is applicable for a given argument
+but cannot compute the desired value.
+In such cases, the method will execute the statement `TryNextMethod();',
 \indextt{TryNextMethod}%
-\exercise How  can  `TryNextMethod()' be used   to exploit  the potential
-solvability of a permutation group?
-
-\answer Suppose  there is a method for  solvable permutation groups which
-is far superior to the general method and which  is able to return `fail'
-if the  group is not solvable  (rather than end up  in an infinite loop).
-Then one can install a  method with  required filter `IsPermGroup'  which
-looks like
+and {\GAP} calls the next applicable method.
+For example, \cite{Sims90b} describes an algorithm to compute the size
+of a solvable permutation group, which can be used also to decide
+whether or not a permutation group is solvable.
+Suppose that the function `size_solvable' implements this algorithm,
+and that is returns the order of the group if it is solvable and
+`fail' otherwise.
+Then we can install the following method for `Size' with required
+filter `IsPermGroup'.
 \begintt
-    function( G )
-    local  value;
-        value := solvable_method( G );
-        if value <> fail  then  return value;
-                          else  TryNextMethod();  fi;
-    end;
+function( G )
+local  value;
+    value := size_solvable( G );
+    if value <> fail  then  return value;
+                      else  TryNextMethod();  fi;
+end;
 \endtt
-This method would then be tried on every permutation group (whether known
+This method can then be tried on every permutation group (whether known
 to be  solvable or  not),  and it would  include a  mandatory solvability
-test.  {\GAP} pursues  such  a strategy for   `Size',  using the solvable
-method from \cite{Sims90b}.
+test.
 
-\edef\solsimsex{\the\chapno.\the\exno}%
 If no applicable method  (or no next applicable  method) is found, {\GAP}
-stops with an error message either like
+stops with an error message of the form 
 \begintt
-    Error argument for 'Size' must have categories '
-    [ "IsListOrCollection" ]' at ...
+For debugging hints type ?Recovery from NoMethodFound
+Error no 1st choice method found for `Size' on 1 arguments at....
 \endtt
-or like
-\begintt
-    Error no method found for operation 'Size' with 1 argument at ...
-\endtt
-The  first variant occurs  if the  argument to   `Size' was of  the wrong
-category, e.g., if you asked for `Size( 1 )'. Every {\GAP} object belongs
-to  a  number of     categories,   e.g., `IsInt(   1    ) =  true',   but
-`IsListOrCollection( 1 ) = false', and  the latter is required by `Size'.
-The  second variant   occurs if the   category  was right, e.g.,   if the
-argument  was a list  or collection,  but there  was no applicable method
-installed. If these remarks sound rather mysterious  to you, you can find
-the details in  sections~"prg:Categories" and~"prg:Applicable Methods and
-Method Selection" in the programming manual.
 
-{\bf  Summary.}  In   this section  we  have   specialized  attributes to
-properties and then generalized them again to  filters. The values of the
-filters for an object has govern how the  object is treated in the method
-selection.
+You would get an error message as above if you asked for `Size( 1 )'. 
+The message simply says that there is no method installed for calculating
+the size of `1'. Section "ref:Recovery from NoMethodFound-Errors" of
+the reference manual contains more information on how to deal with 
+these messages.
+
+{\bf Summary.} In this section we have introduced properties as special
+attributes, and filters as the general concept behind property getters
+and attribute testers.
+The values of the filters of an object govern how the object is treated
+in the selection of methods for operations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Immediate and true methods}\null
+\Section{Immediate and True Methods}\null
 
 \index{methods!immediate}\index{methods!true}%
-In exercise~\solsimsex\ we have mentioned that the operation `Size' has a
+In the example in Section~"Properties and Filters",
+we have mentioned that the operation `Size' has a
 method  for solvable permutation  groups that is  so  far superior to the
-method for  general permutation groups that  it seems worthwile to try it
+method for  general permutation groups that  it seems worthwhile to try it
 even if nothing  is  known about solvability   of the group of which  the
 `Size' is to   be  calculated. There are   other  examples where  certain
 methods  are even ``cheaper'' to  execute. For example,  if the size of a
 group is known  it is easy to check  whether  it is  odd, and  if so, the
-Feit-Thomposon  theorem allows us to set  `IsSolvableGroup' to `true' for
+Feit-Thompson  theorem allows us to set  `IsSolvableGroup' to `true' for
 this group.   {\GAP} utilizes   this  celebrated  theorem  by  having  an
 *immediate  method* for `IsSolvableGroup'  with required filter `HasSize'
 which checks parity of the size and either sets `IsSolvableGroup' or does
@@ -237,9 +240,6 @@ changes, so solvability of a group will automatically be detected when an
 odd size has been calculated for it (and therefore the value of `HasSize'
 for that group has changed to `true').
 
-How immediate methods  are  installed   is described in    "prg:Immediate
-Methods" in the programming manual.
-
 Some methods are  even more immediate,   because they do not  require any
 calculation  at all: They  allow a filter to  be set if another filter is
 also set. In other words,   they  model a mathematical implication   like
@@ -248,57 +248,58 @@ implications  can be installed  in {\GAP}  as  *true methods*. To execute
 true methods, {\GAP} only needs to do  some bookkeeping with its filters,
 therefore true methods are much faster than immediate methods.
 
-How true methods are installed is described in "prg:Logical Implications"
-in the programming manual.
+How immediate and true methods are installed is described in 
+"prg:Immediate Methods" and "prg:Logical Implications"
+in ``Programming in GAP''.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations and method selection}\null
+\Section{Operations and Method Selection}\null
 
 \index{operations}%
 The method selection  is not only  used to  select  methods for attribute
 getters but also for arbitrary *operations*, which can have more than one
 argument.  In this case,   there is a   required filter for each argument
-(which must yield `true'  for the corresponding  arguments), and a method
-may  also  require  a certain   relation   between the families  of   the
-arguments. For example, the methods for  `ConjugateGroup( <grp>, <elm> )'
+(which must yield `true'  for the corresponding  arguments).
+
+Additionally, a method with at least two arguments may require a certain
+relation between the arguments,
+which is expressed in terms of the *families* of the arguments.
+For example, the methods for  `ConjugateGroup( <grp>, <elm> )'
 require that <elm>  lies in the family   of elements from  which <grp> is
 made, i.e., that  the family of  <elm> equals the ``elements family''  of
-<grp>.   For  permutation groups,  the  situation   is   quite easy:  all
-permutations form  one family, `PermutationsFamily', and  all permutation
-groups belong to the `CollectionsFamily( PermutationsFamily )' (and so do
-all    sets of permutations, e.g.,     cosets of permutation groups). For
-further information, see "prg:Families" in the programming manual.
-\beginexample
-    gap> ElementsFamily( CollectionsFamily( PermutationsFamily ) );
-    NewFamily( "PermutationsFamily", [ 27 ],
-               [ 27, 86, 89, 92, 96, 100, 106, 111 ] )
-    gap> last = PermutationsFamily;
-    true
-\endexample
+<grp>.
 
-\exercise Why does {\GAP} refuse to compute `One( FreeGroup( 1 ) ) * One(
-FreeGroup(  1   )   )'? (Look   at  the   family   relation  required for
-multiplication.)
+For permutation groups, the situation is quite easy:
+all permutations form  one family, `PermutationsFamily',
+and each collection of permutations,
+for example each permutation group, each coset of a permutation group,
+or each dense list of permutations,
+lies in `CollectionsFamily( PermutationsFamily )'.
 
-\answer Every call of  `FreeGroup' constructs a new  family of free group
-elements, so both `One's belong   to different families. The methods  for
-multiplication, however, require that the families of their arguments are
-the same.
+For other kinds of group elements, the situation can be different.
+Every call of `FreeGroup' constructs a new family of free group elements.
+{\GAP} refuses to compute `One( FreeGroup( 1 ) ) * One( FreeGroup( 1 ) )'
+because the two operands of the multiplication lie in different families
+and no method is installed for this case.
+
+For further information on family relations,
+see "ref:Families" in the reference manual.
 
 \indextt{KnownPropertiesOfObject}\indextt{KnownTruePropertiesOfObject}%
 \indextt{KnownAttributesOfObject}%
-If  you want to know   which properties are   already known for an object
-<obj>,  or  which properties  are  known  to  be true,   you can use  the
-functions        `KnownPropertiesOfObject(     <obj>    )'         resp.\
-`KnownTruePropertiesOfObject( <obj> )'. This will  print a list of  names
-of  properties.  These names are  also   the identifiers  of the property
-getters, by which  you can  retrieve  the value  of  the properties  (and
-confirm that they are really `true').  Analogously, there is the function
-`KnownAttributesOfObject' which lists the names  of the known attributes,
+If you want to know  which properties are already known for an object
+<obj>, or which properties are known to be true, you can use the
+functions `KnownPropertiesOfObject(<obj>)' resp.
+`KnownTruePropertiesOfObject( <obj> )'. This will print a list of names
+of properties. These names are also the identifiers of the property
+getters, by which you can retrieve the value of the properties (and
+confirm that they are really `true'). Analogously, there is the function
+`KnownAttributesOfObject' which lists the names of the known attributes,
 leaving out the properties.
 
 \indextt{ApplicableMethod}%
-Since {\GAP} lets you  know what it already  knows about an object, it is
+Since {\GAP} lets you know what it already  knows about an object, it is
 only natural  that   it also  lets   you know what  methods  it considers
 applicable for a certain method, and in  what order it  will try them (in
 case `TryNextMethod()'  occurs).   `ApplicableMethod( <opr>, [   $arg_1$,
@@ -307,58 +308,53 @@ $arg_2$, \dots\ ]  )' returns the  first  applicable method for the  call
 <opr>, [ \dots\ ], 0, <nr> )' returns the <nr>th applicable method (i.e.,
 the one  that would be  chosen  after  $<nr>-1$ `TryNextMethod's) and  if
 `<nr>  = "all"', the sorted list  of  all applicable methods is returned.
-For  details,  see "prg:Applicable Methods  and  Method Selection" in the
-programming manual.
+For  details,  see "prg:Applicable Methods  and  Method Selection" in
+``Programming in GAP''.
 
 \indextt{TraceMethods}%
 If you want to see which methods  are chosen for certain operations while
 {\GAP}  code is being executed,  you can call the function `TraceMethods'
 with a list of these operations as arguments.
 \beginexample
-    gap> TraceMethods( [ Size ] );
-    gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
-    |#I  Size: method for a permutation group
-    |#I  Setter(Size): system setter
-    |#I  Size: system getter
-    |#I  Size: system getter
-    6
+gap> TraceMethods( [ Size ] );
+gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
+#I  Size: method for a permutation group
+#I  Setter(Size): system setter
+#I  Size: system getter
+#I  Size: system getter
+6
 \endexample
 The system getter is called once to fetch  the freshly computed value for
 returning  to the user.  The  second  call is  triggered by  an immediate
 method. To  find out  by which,  we can trace   the immediate  methods by
 saying `TraceImmediateMethods( true )'.
 \beginexample
-    gap> TraceImmediateMethods( true );
-    gap> g:= Group( (1,2,3), (1,2) );;
-    |#I  immediate: IsFinitelyGeneratedGroup
-|_
-    gap> Size( g );
-    |#I  Size: method for a permutation group
-    |#I  immediate: IsNonTrivial
-    |#I  immediate: IsNonTrivial
-    |#I  immediate: IsFinitelyGeneratedGroup
-    |#I  immediate: IsCyclic
-    |#I  immediate: IsFinitelyGeneratedGroup
-    |#I  immediate: IsNonTrivial
-|_
-    |#I  Setter(Size): system setter
-    |#I  Size: system getter
-    |#I  immediate: IsPerfectGroup
-    |#I  Size: system getter
-    |#I  immediate: IsEmpty
-    6
-|_
-    gap> TraceImmediateMethods( false );
-    gap> UntraceMethods( [ Size ] );
+gap> TraceImmediateMethods( true );
+gap> g:= Group( (1,2,3), (1,2) );;
+#I  immediate: Size
+#I  immediate: IsCyclic
+#I  immediate: IsCommutative
+#I  immediate: IsTrivial
+gap> Size( g );
+#I  Size: for a permutation group
+#I  immediate: IsNonTrivial
+#I  immediate: Size
+#I  immediate: IsNonTrivial
+#I  Setter(Size): system setter
+#I  Size: system getter
+#I  immediate: IsPerfectGroup
+#I  Size: system getter
+#I  immediate: IsEmpty
+6
+gap> TraceImmediateMethods( false );
+gap> UntraceMethods( [ Size ] );
 \endexample
 The last two lines switch off tracing  again. We now  see that the system
-getter was called by the immediate method for `IsPerfectGroup'. The group
-`g' was   known to be finitely   generated  already before the   size was
-computed,   therefore the   calls     of   the  immediate    method   for
-`IsFinitelyGeneratedGroup' after the  call of `Size' have other arguments
-than~`g'. Also the above-mentioned immediate method for `IsSolvableGroup'
+getter was called by the immediate method for `IsPerfectGroup'. 
+Also the above-mentioned immediate method for `IsSolvableGroup'
 was not used because the solvability of `g'  was already found out during
-the size calculation (cf. exercise~\solsimsex).
+the size calculation
+(cf.~the example in Section~"Properties and Filters").
 
 {\bf Summary.}  In this section  and the  last we have  looked some  more
 behind the  scenes and seen  that {\GAP} automatically executes immediate
@@ -367,15 +363,6 @@ available.  We  have seen how   this  can be  supervised  by tracing  the
 methods.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Local Variables:
-% mode:               text
-% mode:               outline-minor
-% outline-regexp:     "\\\\Chapter\\|\\\\Section\\|\\\\stars"
-% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
-% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
-% fill-column:        73
-% End:
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E  opers.tex . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+

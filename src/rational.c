@@ -85,6 +85,14 @@ const char * Revision_rational_c =
 #define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
 #define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
 
+#if 0
+#define CHECK_RAT(rat) if (TNUM_OBJ(rat) == T_RAT && \
+			   GcdInt(NUM_RAT(rat),DEN_RAT(rat)) != INTOBJ_INT(1)) \
+                             ErrorQuit("bad rational",0L,0L)
+#else
+#define CHECK_RAT(rat)
+#endif
+
 
 /****************************************************************************
 **
@@ -101,6 +109,7 @@ Obj             TypeRat (
     Obj                 rat )
 {
     Obj                 num;
+    CHECK_RAT(rat);
     num = NUM_RAT(rat);
     if ( IS_INTOBJ(num) ) {
         if ( 0 < INT_INTOBJ(num) ) {
@@ -154,6 +163,8 @@ Int             EqRat (
     Obj                 numL, denL;     /* numerator and denominator left  */
     Obj                 numR, denR;     /* numerator and denominator right */
 
+    CHECK_RAT(opL);
+    CHECK_RAT(opR);
     /* get numerator and denominator of the operands                       */
     if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
@@ -201,6 +212,8 @@ Int             LtRat (
     Obj                 numL, denL;     /* numerator and denominator left  */
     Obj                 numR, denR;     /* numerator and denominator right */
 
+    CHECK_RAT(opL);
+    CHECK_RAT(opR);
     /* get numerator and denominator of the operands                       */
     if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
@@ -241,6 +254,8 @@ Obj             SumRat (
     Obj                 numS, denS;     /* numerator and denominator sum   */
     Obj                 sum;            /* sum                             */
 
+    CHECK_RAT(opL);
+    CHECK_RAT(opR);
     /* get numerator and denominator of the operands                       */
     if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
@@ -289,6 +304,7 @@ Obj             SumRat (
     }
 
     /* return the result                                                   */
+    CHECK_RAT(sum);
     return sum;
 }
 
@@ -313,11 +329,13 @@ Obj             AInvRat (
 {
     Obj                 res;
     Obj                 tmp;
+    CHECK_RAT(op);
     res = NewBag( T_RAT, 2 * sizeof(Obj) );
     tmp = AINV( NUM_RAT(op) );
     NUM_RAT(res) = tmp;
     DEN_RAT(res) = DEN_RAT(op);
     CHANGED_BAG(res);
+    CHECK_RAT(res);
     return res;
 }
 
@@ -339,6 +357,8 @@ Obj             DiffRat (
     Obj                 numD, denD;     /* numerator and denominator diff  */
     Obj                 dif;            /* diff                            */
 
+    CHECK_RAT(opL);
+    CHECK_RAT(opR);
     /* get numerator and denominator of the operands                       */
     if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
@@ -387,6 +407,7 @@ Obj             DiffRat (
     }
 
     /* return the result                                                   */
+    CHECK_RAT(dif);
     return dif;
 }
 
@@ -408,6 +429,8 @@ Obj             ProdRat (
     Obj                 numP, denP;     /* numerator and denominator prod  */
     Obj                 prd;            /* prod                            */
 
+    CHECK_RAT(opL);
+    CHECK_RAT(opR);
     /* get numerator and denominator of the operands                       */
     if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
@@ -454,6 +477,7 @@ Obj             ProdRat (
     }
 
     /* return the result                                                   */
+    CHECK_RAT(prd);
     return prd;
 }
 
@@ -480,7 +504,11 @@ extern  Obj             QuoRat (
 Obj             InvRat (
     Obj                 op )
 {
-    return QuoRat( INTOBJ_INT( 1L ), op );
+  Obj res;
+    CHECK_RAT(op);
+    res = QuoRat( INTOBJ_INT( 1L ), op );
+    CHECK_RAT(res);
+    return res;
 }
 
 
@@ -501,6 +529,8 @@ Obj             QuoRat (
     Obj                 numQ, denQ;     /* numerator and denominator Qrod  */
     Obj                 quo;            /* Qrod                            */
 
+    CHECK_RAT(opL);
+    CHECK_RAT(opR);
     /* get numerator and denominator of the operands                       */
     if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
@@ -563,14 +593,15 @@ Obj             QuoRat (
         quo = numQ;
     }
 
-    /* return the result                                                   */
+    /* return the result */
+    CHECK_RAT(quo);
     return quo;
 }
 
 
 /****************************************************************************
 **
-*F  ModRat( <opL>, <opL> )  . . . . . . . . remainder of fraction mod integer
+*F  ModRat( <opL>, <opR> )  . . . . . . . . remainder of fraction mod integer
 **
 **  'ModRat' returns the remainder  of the fraction  <opL> modulo the integer
 **  <opR>.  The remainder is always an integer.
@@ -584,7 +615,7 @@ Obj             QuoRat (
 **
 **  Note  that the remainder will  not exist if $s$  is not relative prime to
 **  $n$.  However note that $4 / 6$  mod $32$ does  exist (and is $22$), even
-**  though $6$ is not invertable modulo $32$, because the $2$ cancels.
+**  though $6$ is not invertible modulo $32$, because the $2$ cancels.
 **
 **  Another possible  definition of $r/s$ mod $n$  would be  a rational $t/s$
 **  such that $0 \<= t/s \< n$ and $r/s - t/s$ is a multiple of $n$.  This is
@@ -613,10 +644,10 @@ Obj             ModRat (
         a  = c;  aL = cL;
     }
 
-    /* check whether the denominator really was invertable mod <opR>       */
+    /* check whether the denominator really was invertible mod <opR>       */
     if ( a != INTOBJ_INT( 1L ) ) {
         opR = ErrorReturnObj(
-            "Rational operations: denominator must be invertable",
+            "Rational operations: denominator must be invertible",
             0L, 0L,
             "you can return a new right operand" );
         return QUO( opL, opR );
@@ -641,6 +672,7 @@ Obj             PowRat (
     Obj                 numP, denP;     /* numerator and denominator power */
     Obj                 pow;            /* power                           */
 
+    CHECK_RAT(opL);
     /* raise numerator and denominator seperately                          */
     numP = PowInt( NUM_RAT(opL), opR );
     denP = PowInt( DEN_RAT(opL), opR );
@@ -695,6 +727,7 @@ Obj             PowRat (
     }
 
     /* return the result                                                   */
+    CHECK_RAT(pow);
     return pow;
 }
 

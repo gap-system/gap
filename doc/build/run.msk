@@ -1,0 +1,644 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  install.msk               GAP documentation              Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                     & Alexander Hulpke
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file contains the  description of the installation procedure and
+%%  command line options for various operating systems.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Running GAP}
+
+\index{options}
+
+This chapter informs about command line options for {\GAP} under UNIX
+(see~"Command Line Options", "Advanced Features of GAP"),
+the `.gaprc' file (see~"The .gaprc file"),
+completion files (see~"Completion Files"),
+the {\GAP} compiler (see~"The Compiler", "Suitability for Compilation",
+"Compiling Library Code"),
+and how to save and load a {\GAP} workspace
+(see~"Saving and Loading a Workspace").
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Command Line Options}
+
+\index{features!under UNIX}\index{UNIX!features}
+\index{options!under UNIX}\index{UNIX!options}
+When you start {\GAP} under UNIX, you may specify a number of  options on
+the command-line to change  the default behaviour  of {\GAP}.  All  these
+options  start with a  hyphen `-', followed by a  single letter.  Options
+must not be   grouped, e.g.,  `gap  -gq' is   illegal, use   `gap -g  -q'
+instead.  Some options  require an argument, this  must follow the option
+and  must be separated   by a <space>, e.g.,  `gap   -m 256k', it is  not
+correct to say `gap -m256k' instead.
+
+{\GAP} for UNIX will distinguish between upper and lower case options.
+
+As is described in Chapter~"Installing GAP" (see "Installation of GAP for
+UNIX"), usually you  will not execute {\GAP}  directly.  Instead  you will
+call a shell script, with the name `gap',  which in turn executes {\GAP}.
+This shell script sets some options which are  necessary to make {\GAP} work on
+your  system.  This means that the   default settings mentioned below may
+not be what you experience when you execute {\GAP} on your system.
+
+`-h'
+
+The  options  `-h' tells {\GAP}   to print  a   summary of all  available
+options.  {\GAP} exits after printing the summary,  all other options are
+ignored.
+
+`-b'
+
+The option `-b'  tells {\GAP} to  suppress the banner.  That  means  that
+{\GAP} immediately prints the prompt.  This is useful  when, after a
+while, you get tired of the banner.
+
+`-q'
+
+The option  `-q' tells {\GAP} to be  quiet.  This means that  {\GAP} does
+not display the banner nor the prompt `gap>'.  This is useful if you want
+to run {\GAP} as a filter with  input and output  redirection and want to
+avoid the banner and the prompts appearing in the output file.
+
+`-e'
+
+The option `-e' tells {\GAP} not to quit when receiving a `<ctr>-D' on an
+empty input line (see~"quit").
+This option  should not be used when the input is a file or pipe.
+
+`-f'
+
+The option `-f' tells {\GAP} to enable the line  editing and history (see
+"Line Editing").
+
+In general  line editing will  be enabled if the input  is connected to a
+terminal.  There are rare circumstances, for  example when using a remote
+session with a corrupted telnet implementation, when this detection fails.
+Try using `-f' in this case to enable line editing.
+
+`-n'
+
+The option  `-n'  tells {\GAP}  to disable  the line editing  and history
+(see "Line Editing").
+
+You may want to do this if the command line  editing is incompatible with
+another program that is used to run {\GAP}.  For example if {\GAP} is run
+from inside a GNU Emacs shell window, `-n' should be used since otherwise
+every input line will be echoed twice, once by Emacs and once by {\GAP}.
+
+`-x <length>'
+
+With this option  you can tell  {\GAP}  how long lines  are.  {\GAP} uses
+this value to decide when to split long lines.
+
+The default value is 80, unless another value can be obtained from the
+Operating System, which is the right value if you have a standard
+ASCII terminal.  If you have a larger monitor, or use a smaller font,
+or redirect the output to a printer, you may want to increase this
+value.
+
+`-y <length>'
+
+With this option   you can tell {\GAP} how   many lines your  screen has.
+{\GAP} uses this value to decide after how many lines  of on-line help it
+should wait.
+
+The default value is 24, unless another value can be obtained from the
+Operating System, which is the right  value if you have a standard
+ASCII terminal.  If you have a larger monitor, or use  a smaller font, or
+redirect the output to a printer, you may want to increase this value.
+
+`-g'
+
+The option  `-g' tells {\GAP} to print a information message every time a
+full garbage collection is performed.
+
+\begintt
+#G  FULL 44580/2479kb live   57304/4392kb dead   734/4096kb free
+\endtt
+
+For example, this tells you that there are 44580 live objects that
+survived a full garbage collection, that 57304 unused objects were
+reclaimed by it, and that 734 KBytes from a total allocated memory of
+4096 KBytes are available afterwards.
+
+`-g -g'
+
+If  you  give the option `-g'  twice,  {\GAP} prints a information message
+every time a partial or full garbage collection is performed.
+
+\begintt
+#G  PART 9405/961kb+live   7525/1324kb+dead   2541/4096kb free
+\endtt
+
+For  example,  this  tells you  that  9405  objects survived  the partial
+garbage collection and  7525 objects were  reclaimed, and that 2541 KBytes
+from a total allocated memory of 4096 KBytes are available afterwards.
+
+`-m <memory>'
+
+The option `-m' tells {\GAP} to allocate <memory>  bytes at startup time.
+If the last character of <memory> is `k' or `K' it is taken as KBytes and
+if the last character is `m' or `M' <memory> is taken as MBytes.
+
+Under UNIX the default amount of memory allocated  by {\GAP} is 8 MBytes.
+The amount of memory  should be large  enough so that computations do not
+require  too  many  garbage  collections.  On the   other hand,  if {\GAP}
+allocates more virtual memory than  is physically available, it will spend
+most of  the  time  paging.  
+
+`-o <memory>'
+
+The option `-o' tells {\GAP} to allocate  at most <memory> bytes.  If the
+last character of <memory> is `k' or `K' it is taken as KBytes and if the
+last character is `m' or `M' <memory> is taken as MBytes.
+
+Under UNIX the default amount is 128 MBytes.  If more than this amount is
+required  during the {\GAP} session,  {\GAP} prints an error messages and
+enters a break loop.
+
+`-l <pathname>'
+
+The option `-l' tells  {\GAP}  that the  {\GAP} root directory  (see "GAP Root
+Directory") is <pathname>.  By default <pathname> is './', i.e., the root
+directory is normally   expected  to be the   current  directory.  {\GAP}
+searches for the library   files  which contain the functions   initially
+known to  {\GAP},  in the   subdirectory `lib/'  of  the  root directory.
+<pathname> should end with a   pathname separator, i.e., '/', but  {\GAP}
+will silently   add one  if  it is  missing.  {\GAP}   will read the file
+'<pathname>/lib/init.g' during startup.  If  {\GAP} cannot find this file
+it will print the following warning
+
+\begintt
+gap: hmm, I cannot find 'lib/init.g' maybe use option '-l <gaproot>'?
+\endtt
+
+It is not possible  to use {\GAP} without the  library files, so you must
+not  ignore this warning.  You  should leave {\GAP}   and start it again,
+specifying the correct root path using the '-l' option.
+
+It  is  also possible  to  specify several  alternative library  paths by
+separating them  with semicolons  ';'.  This is explained  in detail in
+"GAP Root Directory". Note that no whitespace is permitted before or
+after the semicolons.
+
+`-r'
+
+The option `-r'  tells {\GAP}  not to  read the user  supplied `~/.gaprc'
+files.
+
+`-L <filename>'
+
+The option `-L' tells {\GAP} to load a saved workspace. See
+section~"Saving and Loading a Workspace".
+
+`<filename> ...'
+
+Further arguments are taken as filenames of files that are read by {\GAP}
+during startup, after the system  and private init   files are read,  but
+before the first prompt is  printed.  The files are read  in the order in
+which they appear on the command line.   {\GAP} only accepts 14 filenames
+on the command  line.  If a  file cannot  be opened {\GAP}  will print an
+error message and will abort.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Advanced Features of GAP}
+
+The following options are in general not needed  for the normal operation
+of {\GAP}.  They are mostly used for debugging.
+
+`-a <memory>' 
+
+GASMAN, the storage manager of {\GAP} uses `sbrk' to get blocks of memory
+from (certain) operating systems and it is required that subsequent calls
+to `sbrk' produce  adjacent blocks of memory  in this case because {\GAP}
+only wants to  deal with one large  block  of memory.  If the  C function
+`malloc' is called for whatever reason, it is likely that `sbrk' will no
+longer produce adjacent blocks, therefore GAP does not use `malloc' itself.
+
+However some operating systems insist on calling `malloc' to create a
+buffer when a file is opened, or for some other reason.  In order to
+catch these cases GAP preallocates a block of memory with `malloc'
+which is immediately freed. The amount preallocated can be controlled
+with the `-a' option.  If the last character of <memory> is `k' or `K'
+it is taken as KBytes and if the last character is `m' or `M' <memory>
+is taken as MBytes.
+
+'-A' 
+
+By default, some share packages (see "Share Packages") are loaded, if
+present, into the {\GAP} session when it starts. This option disables
+(actually toggles) this behaviour, which can be useful for debugging
+or testing.
+
+'-B <architecture>'
+
+Execuable binary files that form part of {\GAP} or of a share package
+are kept in a subdirectory of the 'bin' dirctory with in the {\GAP} or 
+package root directory. The subdirectory name is determined from the
+operating system, processor and compiler details when {\GAP}
+(resp. the package) is installed. Under rare circumstances, it may be
+necessary to override this name, and this can be done using the '-B'
+option.
+
+
+`-D'
+
+The `-D' option tells {\GAP} to print short  messages when it is reading
+or completing files or loading modules.
+
+\begintt
+#I  READ_GAP_ROOT: loading 'lib/kernel.g' as GAP file
+\endtt
+
+tells   you  that   {\GAP}  has  started    to  read the   library   file
+``lib/kernel.g''.
+
+\begintt
+#I  READ_GAP_ROOT: loading 'lib/kernel.g' statically
+\endtt
+
+tells you that {\GAP}  has used the compiled  version of the library file
+``lib/kernel.g''.  This compiled    module was statically linked to   the
+{\GAP} kernel at the time the kernel was created.
+
+\begintt
+#I  READ_GAP_ROOT: loading 'lib/kernel.g' dynamically
+\endtt
+
+tells you that {\GAP} has loaded the compiled version of the library file
+``lib/kernel.g''.   This compiled module  was  dynamically loaded to  the
+{\GAP} kernel at runtime from a corresponding `.so' file.
+
+\begintt
+#I  completing 'lib/domain.gd'
+\endtt
+
+tells you   that {\GAP} has   completed the file  ``lib/domain.gd''.  See
+"Completion Files" for more information about completion of files.
+
+`-M'
+
+The `-M' option  tells  {\GAP}  not to check   for,  nor to  use,  compiled
+versions of library files.
+
+`-N'
+
+The `-N' option tells  {\GAP}  not to check   for, nor to use,   completion
+files, see "Completion Files".
+
+'-O'
+
+The '-O' option enables a {\GAP 3} compatibility mode, in which (for
+instance) the values 'false' and 'fail' are identified. Use of this
+mode is not recommended other than as a transitional step in porting
+{\GAP 3} code to {\GAP 4}, because the {\GAP 4} library may not work
+reliably in this mode.
+
+'-T'
+
+The '-T' option suppresses the usual break loop behaviour of
+{\GAP}. With this option {\GAP} behaves as if the user 'quit'
+immediately from every break loop. This is intended for automated
+testing of {\GAP}.
+
+`-X'
+
+The `-X' option  tells {\GAP} to do a consistency check of the library
+file and the corresponding completion   file when reading the  completion
+file.
+
+`-Y'
+
+The `-Y' option tells {\GAP}  to do a  consistency check of the library
+file and  the corresponding completion  file  when completing the library
+file.
+
+`-i <filename>'
+
+The `-i' changes the name of the init file from the default ``init.g'' to
+<filename>.
+
+
+Additional options, '-C', '-U', '-P', '-W' amd '-z' are used
+internally in the {\GAP} compiler and/or on specific operating systems.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The .gaprc file}
+
+\index{gap.rc}\index{.gaprc}
+When you start {\GAP}, it looks for the file with the name `.gaprc' in
+your home directory.
+If such a file is found it is read after
+`<libname>/init.g', but before any of the files mentioned on the command
+line are read. You can use this file for your private customizations.
+For example, if you have a file containing functions or data that you
+always need, you could read this from `.gaprc'. Or if you find some of
+the names in the library too long, you could define abbreviations for
+those names in `.gaprc'. The following sample `.gaprc' file does both.
+
+\begintt
+Read("/usr/you/dat/mygroups.grp");
+Ac := Action;
+AcHom := ActionHomomorphism;
+RepAc := RepresentativeAction;
+\endtt
+
+\index{GAP3}
+If you have already a `.gaprc' file for \GAP~3, its settings might not be
+compatible with \GAP~4. In this case it has to be removed.  On UNIX Systems
+the following `.gaprc' file can be used to load alternatively a `.gap3rc' or
+a `.gap4rc' file from your home directory.
+
+\begintt
+if IsBound(Permutations) then
+  # GAP 3
+  Exec("echo \"READ(\\\"`pwd ~`/.gap3rc\\\");\" > /tmp/jJj");
+else
+  # GAP 4
+  Exec("echo \"READ(\\\"`pwd ~`/.gap4rc\\\");\" > /tmp/jJj");
+fi;
+Read("/tmp/jJj");
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Completion Files}
+
+The standard distribution of {\GAP} already  contains completion files so
+in general *you do not need to create these files by yourself*.
+
+When starting, {\GAP} reads  in the  whole  library.  As this takes  some
+time, library files are normally condensed into  completion files.  These
+completion files contain the  basic skeleton of  the library but  not the
+function bodies.   When a function  body is required, for example because
+you  want   to  execute the  corresponding    function, the  library file
+containing the function body is completed.
+
+Completion files reduce the startup time of {\GAP} drastically.  However,
+this technique also means that the information stored in the completion
+files and the library must  be  consistent.
+If you   change  a library  file  without recreating the completion files
+disaster is bound to happen.
+
+Bugfixes distributed for {\GAP} will also update the completion files.
+Therefore you only need to update them if you have changed the library
+by yourself.
+
+However, if you are modifying a library file  a more convenient way is to
+use the `-X' option that allows you (in most cases) to use the completion
+files   for the unchanged  parts of  library   files and avoids using the
+completion files for the changed parts.
+After you have finished modifying the library files you can recreate the
+completion files using:
+
+\>CreateCompletionFiles() F
+\)CreateCompletionFiles( <path> ) F
+
+To create  completion files you must  have write permissions to `<path>',
+which defaults to the  first root directory.   Start {\GAP} with the `-N'
+option (to  suppress the reading  of any existing completion files), then
+execute the command `CreateCompletionFiles( <path> );', where <path> is a
+string giving a   path to the home   directory of  {\GAP} (the  directory
+containing the `lib' directory).
+
+This produces, in addition to lots of informational output,
+the completion files.
+
+\begintt
+    $ gap4 -N
+    gap> CreateCompletionFiles();
+    #I  converting "gap4/lib/read2.g" to "gap4/lib/read2.co"
+    #I    parsing "gap4/lib/process.gd"
+    #I    parsing "gap4/lib/listcoef.gi"
+    ...
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Compiler}
+
+\index{gac}
+The {\GAP} compiler {\sf GAC} creates C code from {\GAP} code and
+then calls the system's C compiler to produce machine code from it. This can
+result in a speedup (see section~"Suitability for Compilation" for more
+details).
+
+%%  The compiler works only on UNIX systems. It was written by
+%%  Ferenc~R{\'a}k{\'o}czi and Martin Sch{\"o}nert.
+
+To use the compiler to produce dynamically loadable modules,
+call it with the '-d' option:
+\begintt
+M193 /home/ahulpke > gap4/bin/gac -d test.g
+gap4/bin/i386-ibm-linux-gcc2/gap -C /tmp/5827_test.c test.g Init_Dynamic
+gcc -fpic -ansi -Wall -O2 -o /tmp/5827_test.o -I
+gap4/bin/i386-ibm-linux-gcc2/../../src -c /tmp/5827_test.c
+ld -Bshareable -x -o test.so /tmp/5827_test.o
+rm -f /tmp/5827_test.o
+rm -f /tmp/5827_test.c
+\endtt
+This produces a file `<file>.so'.
+
+\>LoadDynamicModule( <filename> ) F
+\)LoadDynamicModule( <filename>, <crc> )
+
+To load a compiled file, the command `LoadDynamicModule' is used. This
+command loads <filename> as module. If given, the CRC checksum <crc> must
+match the value of the module (see "CRC Numbers").
+
+\begintt
+gap> LoadDynamicModule("./test.so");
+gap> CrcFile("test.g");
+2906458206
+gap> LoadDynamicModule("./test.so",1);
+Error <crc> mismatch (or no support for dynamic loading) at
+Error( "<crc> mismatch (or no support for dynamic loading)" );
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk> quit;
+gap> LoadDynamicModule("./test.so",2906458206);
+\endtt
+
+If you want to see or modify the intermediate C code, you can also instruct
+the compiler to produce only the C files by using the option `-C' instead of
+`-d'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Suitability for Compilation}
+
+Typically algorithms spend large parts of their runtime only in small parts
+of the code. The design of {\GAP} reflects this situation with kernel 
+methods for many time critical calculations such as matrix or permutation
+arithmetic.
+
+Compiling an algorithm whose time critical parts are already in the kernel
+of course will give disappointing results: Compilation will only speed up
+the parts that are not already in the kernel and if they make us a small
+part of the runtime, the overall gain is small.
+
+Routines that benefit from compilation are those which do extensive
+operations with basic data types, such as lists or small integers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Compiling Library Code}
+
+The most tempting code to compile is probably the library. This  section
+describes the mechanism used to make {\GAP} recognize compiled versions of 
+library files. Note however that there is no point in compiling the whole
+library as typically only few functions benefit from compilation as
+described in section~"Suitability for Compilation".
+
+All files that come with {\GAP} are read using the internal function
+`READ_GAP_ROOT'. This function then checks whether a compiled version of the
+file exists and if its CRC number (see~"CRC Numbers") matches the file.
+If it does, the compiled version is loaded.  Otherwise the file is read.
+You can start {\GAP} with the `-D -N' option to see information printed
+about this process.
+
+To make {\GAP} find the compiled versions, they must be
+put in the `bin/<systemname>/compiled' directory (<systemname> is the name
+you gave for compilation, for example `i386-ibm-linux-gcc2'). They have
+to be called according to the following scheme: 
+Suppose the file is `humpty/dumpty.gi' in the {\GAP} home
+directory. Then the compiled version will be
+`bin/<systemname>/compiled/humpty/gi/dumpty.so'. That is, the directory
+hierarchy is mirrored under the `compiled' directory. A further directory
+level is added for the suffix of the file,
+and the suffix of the compiled version of the file is set to `.so'
+(as produced by the compiler).
+
+For example we show how
+to compile the `combinat.gi' file on a Linux machine.  Suppose we are in
+the home directory of the gap distribution.
+
+\begintt
+bin/gac -d lib/combinat.gi
+\endtt
+
+creates a file `combinat.so'. We now put it in the right place, creating
+also the necessary directories:
+
+\begintt
+mkdir bin/i386-ibm-linux-gcc2/compiled
+mkdir bin/i386-ibm-linux-gcc2/compiled/lib
+mkdir bin/i386-ibm-linux-gcc2/compiled/lib/gi
+mv combinat.so bin/i386-ibm-linux-gcc2/compiled/lib/gi
+\endtt
+
+If you now start {\GAP} and look, for example, at the function `Binomial',
+defined in `combinat.gi', you see it is indeed compiled:
+\begintt
+gap> Print(Binomial);
+function ( <<arg-1>>, <<arg-2>> )
+    <<compiled code>>
+end
+\endtt
+
+The command line option `-M'  disables the loading of compiled modules and
+always reads code from the library.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CRC Numbers}
+
+\index{crc}
+CRC (cyclic redundancy check) numbers provide a certain method of doing
+checksums. They are used by {\GAP} to check whether
+files have changed.
+Whenever files are ``condensed'' -- for example for completion files
+("Completion Files") or when compiling files ("The compiler") -- such a
+checksum is computed implicitly and stored within the condensed file.
+
+When reading a condensed version of the file instead of the original one,
+the CRC checksum can be used to check whether the original has been changed
+in the meantime.
+
+\>CrcFile( <filename> ) F
+
+can be used to compute a CRC checksum for the file with name <filename>.
+
+\begintt
+gap> CrcFile("lib/morpheus.gi");
+2705743645
+\endtt
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Saving and Loading a Workspace}
+
+\index{save}
+\index{load}
+
+\>SaveWorkspace( <filename> ) F
+
+will save a ``snapshot'' image of the current {\GAP} workspace in the file
+<filename>. This image then can be loaded by another copy of {\GAP} which
+then will behave as at the point when `SaveWorkspace' was called. 
+
+\begintt
+gap> a:=1;
+gap> SaveWorkspace("savefile");
+true
+gap> quit;
+\endtt
+
+`SaveWorkspace' can only be used at the main `gap>' prompt. It cannot
+be included in the body of a loop or function, or called from a break loop.
+
+\>`-L <filename>'{load}
+
+A saved workspace can be loaded by starting {\GAP} with the option `-L'.
+This will start {\GAP} and load the workspace.
+
+\begintt
+you@unix> gap -L savefile
+gap> a;
+1
+\endtt
+
+Under UNIX, it is possible to compress savefiles using `gzip'. Compression
+typically reduces the size of a workspace by a factor 3 or 4.
+If {\GAP} is started with a compressed savefile (omit the `.gz' ending),
+it will try to locate `gzip' on the system and uncompress the file
+automatically while reading it.
+\begintt
+you@unix> gzip -9 savefile
+you@unix> gap -L savefile
+gap> a;
+1
+\endtt
+
+We cannot guarantee that saved workspaces are portable between different
+system architectures or over different versions of GAP or its library.
+
+If compiled modules had been loaded into {\GAP} before the workspace
+was saved, they will be loaded into the new {\GAP} session during the
+workspace loading process. If they are not available then the load
+will fail. Additional compiled modules will *not* be used, even if
+they are available, although they may be loaded later using `Reread'
+(see "Reread").
+`SaveWorkspace' may sometimes produce warning messages, as in
+
+\begintt
+gap> SaveWorkspace("b5");
+#W bad bag id 4 found, 0 saved
+#W bad bag id 20 found, 0 saved
+true
+\endtt
+
+A small number of such messages can probably be ignored (they arise
+because the garbage collector may not always collect all dead objects, 
+and dead objects may contain data that 'SaveWorkspace' does not know how 
+to process). 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

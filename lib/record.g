@@ -9,27 +9,27 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for records.
-##  Compared to {\GAP} 3, where records were used to represent domains and
-##  all kinds of external arithmetic objects, in {\GAP} 4 there is no
+##  Compared to {\GAP}~3, where records were used to represent domains and
+##  all kinds of external arithmetic objects, in {\GAP}~4 there is no
 ##  important role for records.
 ##  So the standard library provided only methods for `PrintObj', `String',
 ##  `\=', and `\<', and the latter two are not installed to compare records
 ##  with objects in other families.
 ##
-##  In order to achieve a special behaviour of records as in {\GAP} 3 such
+##  In order to achieve a special behaviour of records as in {\GAP}~3 such
 ##  that a record can be regarded as equal to objects in other families
 ##  or such that a record can be compared via `\<' with objects in other
 ##  families, one can load the file `compat3c.g'.
-##  
+##
 Revision.record_g :=
     "@(#)$Id$";
 
 
 #############################################################################
 ##
-#C  IsRecord  . . . . . . . . . . . . . . . . . . . . . . category of records
-#C  IsRecordCollection
-#C  IsRecordCollColl
+#C  IsRecord(<obj>)
+#C  IsRecordCollection(<obj>)
+#C  IsRecordCollColl(<obj>)
 ##
 DeclareCategoryKernel( "IsRecord", IsObject, IS_REC );
 DeclareCategoryCollections( "IsRecord" );
@@ -89,11 +89,39 @@ DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 
 #############################################################################
 ##
-#F  RecNames(<obj>)
+#A  RecNames( <rec> )
 ##
 ##  returns a list of strings corresponding to the names of the record
 ##  components of the record <rec>.
-DeclareSynonym( "RecNames", REC_NAMES );
+##
+DeclareAttribute( "RecNames", IsRecord );
+
+
+#############################################################################
+##
+#M  RecNames( <record> )  . . . . . . . . . . . . . . . . names of components
+##
+InstallMethod( RecNames,
+    "for a record in internal representation",
+    true,
+    [ IsRecord and IsInternalRep ], 0,
+    REC_NAMES );
+
+InstallOtherMethod( RecNames,
+    "for a component object",
+    true,
+    [ IsComponentObjectRep ], 0,
+    REC_NAMES_COMOBJ );
+
+
+#############################################################################
+##
+#A  NamesOfComponents( <comobj> )
+##
+##  For a component object <comobj>, `NamesOfComponents' returns a list of
+##  strings, which are the names of components currently bound in <comobj>.
+##
+DeclareSynonymAttr( "NamesOfComponents", RecNames );
 
 
 #############################################################################
@@ -137,7 +165,36 @@ InstallMethod( String,
     Append( str, " )" );
     ConvertToStringRep( str );
     return str;
-    end );
+end );
+
+
+#############################################################################
+##
+#m  ViewObj( <record> ) . . . . . . . . . . . . . . .for a record (default)
+##
+##
+InstallMethod( ViewObj,
+    "record",
+    true,
+    [ IsRecord ], 0,
+    function( record )
+    local nam, com, i;
+    Print("\>\>rec( \>\>");
+    com := false;
+    i := 1;
+    for nam in RecNames( record ) do
+        if com then
+            Print("\<,\< \>\>");
+        else
+            com := true;
+        fi;
+        SET_PRINT_OBJ_INDEX(i);
+        i := i+1;
+        Print(nam, " := ");
+        ViewObj(record.(nam));
+    od;
+    Print(" \<\<\<\<)");
+end);
 
 
 #############################################################################
@@ -164,9 +221,65 @@ InstallMethod( \<,
     LT_PREC );
 
 
+# methods to catch error cases
+
 #############################################################################
 ##
-#E  record.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#m  \.
+##
+InstallMethod(\.,"catch error",true,[IsObject,IsObject],0,
+function(obj,nr)
+local msg;
+  msg:=Concatenation(", illegal access to record component `obj.",
+        NameRNam(nr),"'\n",
+  "of the object <obj>. (Objects by default do not have record components.\n",
+  "The error might be a relic from translated GAP3 code.)      ");
+  Error(msg);
+end);
 
+#############################################################################
+##
+#m  IsBound\.
+##
+InstallMethod(IsBound\.,"catch error",true,[IsObject,IsObject],0,
+function(obj,nr)
+local msg;
+  msg:=Concatenation(", illegal access to record component `IsBound(obj.",
+        NameRNam(nr),")'\n",
+  "of the object <obj>. (Objects by default do not have record components.\n",
+  "The error might be a relic from translated GAP3 code.)      ");
+  Error(msg);
+end);
 
+#############################################################################
+##
+#m  Unbind\.
+##
+InstallMethod(Unbind\.,"catch error",true,[IsObject,IsObject],0,
+function(obj,nr)
+local msg;
+  msg:=Concatenation(", illegal access to record component `Unbind(obj.",
+        NameRNam(nr),")'\n",
+  "of the object <obj>. (Objects by default do not have record components.\n",
+  "The error might be a relic from translated GAP3 code.)      ");
+  Error(msg);
+end);
+
+#############################################################################
+##
+#m  \.\:\=
+##
+InstallMethod(\.\:\=,"catch error",true,[IsObject,IsObject,IsObject],0,
+function(obj,nr,elm)
+local msg;
+  msg:=Concatenation(", illegal assignement to record component `obj.",
+        NameRNam(nr),"'\n",
+  "of the object <obj>. (Objects by default cannot have record components.\n",
+  "The error might be a relic from translated GAP3 code.)      ");
+  Error(msg);
+end);
+
+#############################################################################
+##
+#E
 

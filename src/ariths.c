@@ -56,13 +56,18 @@ ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  ZeroObject( <obj> ) . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj ZeroAttr;
+Obj ZeroOp;
 
 Obj ZeroObject (
     Obj                 obj )
 
 {
-    return DoAttribute( ZeroAttr, obj );
+  Obj val;
+  val = DoOperation1Args( ZeroOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -74,7 +79,12 @@ Obj VerboseZeroObject (
     Obj                 obj )
 
 {
-    return DoVerboseAttribute( ZeroAttr, obj );
+  Obj val;
+  val = DoVerboseOperation1Args( ZeroOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -121,12 +131,17 @@ ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  AInvObj( <obj> )  . . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj AInvAttr;
+Obj AInvOp;
 
 Obj AInvObject (
     Obj                 obj )
 {
-    return DoAttribute( AInvAttr, obj );
+  Obj val;
+  val = DoOperation1Args( AInvOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("AInvOp: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -137,7 +152,12 @@ Obj AInvObject (
 Obj VerboseAInvObject (
     Obj                 obj )
 {
-    return DoVerboseAttribute( AInvAttr, obj );
+  Obj val;
+  val = DoVerboseOperation1Args( AInvOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("AInvOp: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -184,12 +204,17 @@ ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  OneObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj OneAttr;
+Obj OneOp;
 
 Obj OneObject (
     Obj                 obj )
 {
-    return DoAttribute( OneAttr, obj );
+  Obj val;
+  val = DoOperation1Args( OneOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("OneOp: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -200,7 +225,12 @@ Obj OneObject (
 Obj VerboseOneObject (
     Obj                 obj )
 {
-    return DoVerboseAttribute( OneAttr, obj );
+  Obj val;
+  val = DoVerboseOperation1Args( OneOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("OneOp: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -247,12 +277,17 @@ ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  InvObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj InvAttr;
+Obj InvOp;
 
 Obj InvObject (
     Obj                 obj )
 {
-    return DoAttribute( InvAttr, obj );
+  Obj val;
+  val = DoOperation1Args( InvOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("InvOp: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -263,7 +298,12 @@ Obj InvObject (
 Obj VerboseInvObject (
     Obj                 obj )
 {
-    return DoVerboseAttribute( InvAttr, obj );
+  Obj val;
+  val = DoVerboseOperation1Args( InvOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("InvOp: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -582,7 +622,12 @@ Obj SumObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoOperation2Args( SumOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( SumOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("SUM: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -594,7 +639,12 @@ Obj VerboseSumObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoVerboseOperation2Args( SumOper, opL, opR );
+  Obj val;
+  val = DoVerboseOperation2Args( SumOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("SUM: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -673,7 +723,12 @@ Obj DiffObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoOperation2Args( DiffOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( DiffOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("DIFF: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -685,7 +740,12 @@ Obj VerboseDiffObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoVerboseOperation2Args( DiffOper, opL, opR );
+  Obj val;
+  val = DoVerboseOperation2Args( DiffOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("DIFF: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -764,7 +824,12 @@ Obj ProdObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoOperation2Args( ProdOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( ProdOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("PROD: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -776,7 +841,12 @@ Obj VerboseProdObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoVerboseOperation2Args( ProdOper, opL, opR );
+  Obj val;
+  val = DoVerboseOperation2Args( ProdOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("PROD: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -840,6 +910,8 @@ Obj QuoDefault (
 {
     Obj                 tmp;
     tmp = INV( opR );
+    if (!IS_MUTABLE_OBJ(opR) && IS_MUTABLE_OBJ(tmp))
+      MakeImmutable(tmp);
     return PROD( opL, tmp );
 }
 
@@ -854,7 +926,12 @@ Obj QuoObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoOperation2Args( QuoOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( QuoOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("QUO: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -866,7 +943,12 @@ Obj VerboseQuoObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoVerboseOperation2Args( QuoOper, opL, opR );
+  Obj val;
+  val = DoVerboseOperation2Args( QuoOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("QUO: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -945,6 +1027,8 @@ Obj LQuoDefault (
 {
     Obj                 tmp;
     tmp = INV( opL );
+    if (!IS_MUTABLE_OBJ(opL) && IS_MUTABLE_OBJ(tmp))
+      MakeImmutable(tmp);
     return PROD( tmp, opR );
 }
 
@@ -959,7 +1043,12 @@ Obj LQuoObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoOperation2Args( LQuoOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( LQuoOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("LeftQuotient: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -971,7 +1060,12 @@ Obj VerboseLQuoObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoVerboseOperation2Args( LQuoOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( LQuoOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("LeftQuotient: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -1064,7 +1158,12 @@ Obj PowObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoOperation2Args( PowOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( PowOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("POW: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -1076,7 +1175,13 @@ Obj VerbosePowObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoVerboseOperation2Args( PowOper, opL, opR );
+   
+  Obj val;
+  val = DoVerboseOperation2Args( PowOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("POW: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -1171,7 +1276,12 @@ Obj CommObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoOperation2Args( CommOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( CommOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("Comm: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -1183,7 +1293,12 @@ Obj VerboseCommObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoVerboseOperation2Args( CommOper, opL, opR );
+  Obj val;
+  val = DoVerboseOperation2Args( CommOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("Comm: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -1263,7 +1378,12 @@ Obj ModObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoOperation2Args( ModOper, opL, opR );
+  Obj val;
+  val = DoOperation2Args( ModOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("mod: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -1275,7 +1395,12 @@ Obj VerboseModObject (
     Obj                 opL,
     Obj                 opR )
 {
-    return DoVerboseOperation2Args( ModOper, opL, opR );
+  Obj val;
+  val = DoVerboseOperation2Args( ModOper, opL, opR );
+  while (val == 0)
+    val = ErrorReturnObj("mod: method should have returned a value", 0L, 0L,
+			 "you can supply a result to continue");
+  return val;
 }
 
 
@@ -1334,17 +1459,6 @@ Obj FuncMOD (
 */
 static StructGVarAttr GVarAttrs [] = {
 
-    { "ZERO", "op", &ZeroAttr,
-      FuncZERO, "src/ariths.c:ZERO" },
-
-    { "AINV", "op", &AInvAttr,
-      FuncAINV, "src/ariths.c:AINV" },
-
-    { "ONE", "op", &OneAttr,
-      FuncONE, "src/ariths.c:ONE" },
-
-    { "INV", "op", &InvAttr,
-      FuncINV, "src/ariths.c:INV" },
 
     { 0 }
 
@@ -1390,6 +1504,17 @@ static StructGVarOper GVarOpers [] = {
     { "MOD", 2, "opL, opR", &ModOper,
       FuncMOD, "src/ariths.c:MOD" },
 
+    { "ZERO", 1, "op", &ZeroOp,
+      FuncZERO, "src/ariths.c:ZERO" },
+
+    { "AINV", 1, "op", &AInvOp,
+      FuncAINV, "src/ariths.c:AINV" },
+
+    { "ONE", 1, "op", &OneOp,
+      FuncONE, "src/ariths.c:ONE" },
+
+    { "INV", 1, "op", &InvOp,
+      FuncINV, "src/ariths.c:INV" },
     { 0 }
 
 };

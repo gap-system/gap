@@ -9,24 +9,37 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Creating New Objects}
 
-The first sections of this chapter explain how filters are created,
-see~"Creating Categories", "Creating Representations",
-"Creating Attributes and Properties", "Creating Other Filters".
+This chapter is divided into three parts.
 
-Section~"Creating Operations" describes how operations are created.
+In the first part, it is explained how to create
+filters (see~"Creating Categories", "Creating Representations",
+"Creating Attributes and Properties", "Creating Other Filters"),
+operations (see~"Creating Operations"),
+families (see~"Creating Families"),
+types (see~"Creating Types"),
+and objects with given type (see~"Creating Objects").
 
-Then the sections~"Creating Families", "Creating Types",
-and~"Creating Objects" describe how families, types,
-and objects are created.
+In the second part, first a few small examples are given,
+for dealing with the usual cases of
+component objects (see~"Component Objects")
+and positional objects (see~"Positional Objects"),
+and for the implementation of new kinds of lists
+(see~"Implementing New List Objects");
+Finally, the external representation of objects is introduced
+(see~"External Representation"),
+as a tool for representation independent access to an object.
 
-A small example of the implementation of list objects is given
-in Section~"Implementing New List Objects".
+The third part deals with some rules concerning the organization
+of the {\GAP} library;
+namely, some commands for creating global variables are explained
+(see~"Global Variables in the Library")
+that correspond to the ones discussed in the first part of the chapter,
+and the idea of distinguishing declaration and implementation part
+of {\GAP} packages is outlined (see~"Declaration and Implementation Part").
 
-Section~"External Representation" introduces the external representation
-of objects.
-
-Finally, Section~"Declaration and Implementation Part" explains some
-rules for the organization of {\GAP} packages.
+See also Chapter~"An Example -- Residue Class Rings" for examples
+how the functions from the first part are used,
+and why it is useful to have a declaration part and an implementation part.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,17 +48,23 @@ rules for the organization of {\GAP} packages.
 \>NewCategory( <name>, <super> )
 
 `NewCategory' returns a new category <cat> that has the name <name> and
-is contained in the filter <super>, see~"Filters".
+is contained in the filter <super>,
+see~"ref:Filters" in the Reference Manual.
 This means that every object in <cat> lies automatically also in <super>.
 We say also that <super> is an implied filter of <cat>.
 
 For example, if one wants to create a category of group elements
-then <super> should be `IsMultiplicativeElementWithInverses' or a
+then <super> should be `IsMultiplicativeElementWithInverse' or a
 subcategory of it.
 If no specific supercategory of <cat> is known,
 <super> may be `IsObject'.
 
-The incremental rank (see~"Filters") of <cat> is 1.
+*@Eventually tools will be provided to display hierarchies of
+categories etc.,
+which will help to choose <super> appropriately.@*
+
+The incremental rank (see~"ref:Filters" in the Reference Manual)
+of <cat> is 1.
 
 Two functions that return special kinds of categories are of importance.
 
@@ -65,13 +84,15 @@ For a category <cat>,
 `CategoryFamily' returns the *family category* of <cat>.
 This is a category in that all families lie that know from their
 creation that all their elements are in the category <cat>,
-see "Creating Families".
+see~"Creating Families".
 
 For example, a family of tuples is in the category
 `CategoryFamily( IsTuple )',
 and one can distinguish such a family from others by this category.
 So it is possible to install methods for operations that require one
 argument to be a family of tuples.
+
+`CategoryFamily' is quite technical, and in fact of minor importance.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,6 +105,14 @@ argument to be a family of tuples.
 This means that every object in <rep> lies automatically also in <super>.
 We say also that <super> is an implied filter of <rep>.
 
+Each representation in {\GAP} is a subrepresentation of exactly one
+of the four representations `IsInternalRep', `IsDataObjectRep',
+`IsComponentObjectRep', `IsPositionalObjectRep'.
+The data describing objects in the former two can be accessed only via
+{\GAP} kernel functions, the data describing objects in the latter two
+is accessible also in library functions, see~"Component Objects"
+and~"Positional Objects" for the details.
+
 The third argument <slots> is a list either of integers or of strings.
 In the former case, <rep> must be `IsPositionalObjectRep' or a
 subrepresentation of it, and <slots> tells what positions of the objects
@@ -94,10 +123,16 @@ components that objects in the representation <rep> may have.
 The admissible positions resp. component names of <super> need not be
 be listed in <slots>.
 
-The incremental rank (see~"Filters") of <rep> is 1.
+The incremental rank (see~"ref:Filters" in the Reference Manual)
+of <rep> is 1.
 
-Note that none of the positions resp. component names is compulsory for
-an object in the representation <rep>.
+Note that for objects in the representation <rep>,
+of course some of the component names and positions reserved via <slots>
+may be unbound.
+
+Examples for the use of `NewRepresentation' can be found
+in~"Component Objects", "Positional Objects", and also
+in~"A Second Attempt to Implement Elements of Residue Class Rings".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -106,9 +141,10 @@ an object in the representation <rep>.
 \>NewAttribute( <name>, <filt> )
 \)NewAttribute( <name>, <filt>, <rank> )
 
-`NewAttribute' returns a new attribute <attr> with name <name>.
-The filter <filt> describes the involved filters of <attr>,
-see~"Filters".
+`NewAttribute' returns a new attribute <attr> with name <name>
+(see also~"ref:Attributes" in the Reference Manual).
+The filter <filt> describes the involved filters of <attr>
+(see~"ref:Filters" in the Reference Manual).
 That is, the argument for <attr> is expected to lie in <filt>.
 
 Each method for <attr> that does *not* require its argument to lie
@@ -125,7 +161,8 @@ but there is also a method for `Size' that is applicable to
 a character table, which is neither a list nor a collection.
 
 The optional third argument <rank> denotes the incremental rank
-(see~"Filters") of the tester of <attr>, the default value is 1.
+(see~"ref:Filters" in the Reference Manual) of the tester of <attr>,
+the default value is 1.
 
 \>NewAttribute( <name>, <filt>, "mutable" )
 \)NewAttribute( <name>, <filt>, "mutable", <rank> )
@@ -134,21 +171,23 @@ If the third argument is the string `"mutable"', the stored values of the
 new attribute are not forced to be immutable.
 This is useful for an attribute whose value is some partial information
 that may be completed later.
-For example, there is an attribute for the list of all Sylow subgroups
-of a group that have been computed already,
+For example, there is an attribute `ComputedSylowSubgroups' for the list
+holding those Sylow subgroups of a group that have been computed already
+by the function `SylowSubgroup',
 and this list is mutable because one may want to enter groups into it
 as they are computed.
 
 \>NewProperty( <name>, <filt> )
 \)NewProperty( <name>, <filt>, <rank> )
 
-`NewProperty' returns a new property <prop> with name <name>.
+`NewProperty' returns a new property <prop> with name <name>
+(see also~"ref:Properties" in the Reference Manual).
 The filter <filt> describes the involved filters of <prop>.
 As in the case of attributes, <filt> is not implied by <prop>.
 
 The optional third argument <rank> denotes the incremental rank
-(see~"Filters") of the property <prop> itself, i.e. *not* of its tester,
-the default value is 1.
+(see~"ref:Filters" in the Reference Manual) of the property <prop> itself,
+i.e. *not* of its tester, the default value is 1.
 
 Each method that is installed for an attribute or a property
 via `InstallMethod' must require exactly one argument,
@@ -158,8 +197,9 @@ argument of `NewAttribute' resp. `NewProperty'.
 As for any operation (see~"Creating Operations"),
 for attributes and properties one can install a method taking an argument
 that does not lie in <filt> via `InstallOtherMethod',
-but unlike other operations, attributes and properties do not admit
-to install methods for more than one argument.
+or a method for more than one argument;
+in the latter case,
+clearly the result value is *not* stored in any of the arguments.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -168,20 +208,11 @@ to install methods for more than one argument.
 \>NewFilter( <name> )
 \)NewFilter( <name>, <rank> )
 
-It is also possible (but rarely used) to create a simple filter
-(see~"Filters") that is not a category, a representation,
-or an attribute or property.
-Such a new filter with name <name> is returned by `NewFilter'.
+`NewFilter' returns a simple filter with name <name>
+(see~"ref:Other Filters" in the Reference Manual).
 The optional second argument <rank> denotes the incremental rank
-(see~"Filters") of the filter, the default value is 1.
-
-Suppose <filt> is a filter returned by `NewFilter'.
-Contrary to categories and representations, it is not necessary that
-each object knows at the time of its creation whether or not it lies in
-<filt>.
-Contrary to attributes and properties, one cannot install methods to
-compute the value of <filt> for an object, and also `Setter' and
-`Tester' do not work for <filt>.
+(see~"ref:Filters" in the Reference Manual) of the filter,
+the default value is 1.
 
 In order to change the value of <filt> for an object <obj>,
 one can use logical implications (see~"Logical Implications") or
@@ -190,19 +221,14 @@ the functions
 \>SetFilterObj( <obj>, <filt> )
 \>ResetFilterObj( <obj>, <filt> )
 
-`SetFilterObj' sets the value of <filt> for <obj> to `true',
-`ResetFilterObj' sets the value of <filt> for <obj> to `false'.
+`SetFilterObj' sets the value of <filt> (and of all filters implied by
+<filt>) for <obj> to `true',
+
+`ResetFilterObj' sets the value of <filt> for <obj> to `false' (but implied
+filters of <filt> are not touched. This might create inconsistent situations
+if applied carelessly).
+
 The default value of <filt> for each object is `false'.
-
-Filters created by `NewFilter' are usually used similar to attribute
-testers in the sense that a `true' value indicates that certain methods
-are applicable, independent of the attribute value itself.
-
-Note that there need not be an abstract definition of such a filter
-that would admit to compute whether or not an object lies in the filter;
-usually there are just some situations in which the filter value is set
-to `true', either via a logical implication or by a call to
-`SetFilterObj'.
 
 %T Categories and representations should not be operations,
 %T the same for filters made by `NewFilter'!
@@ -231,22 +257,126 @@ of arguments than the length of <args-filts>.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Creating Families}
 
+Families are probably the least obvious part of the {\GAP} type system,
+so some remarks about the role of families are necessary.
+When one uses {\GAP} as it is, one will (better: should) not meet
+families at all.
+The two situations where families come into play are the following.
+
+First, since families are used to describe relations between arguments of
+operations in the method selection mechanism
+(see Chapter~"Method Selection",
+and also "ref:Types of Objects" in the Reference Manual),
+one has to prescribe such a relation in each method installation
+(see~"Method Installation");
+usual relations are `ReturnTrue' (which means that any relation of the
+actual arguments is admissible), `IsIdenticalObj' (which means that
+there are two arguments that lie in the same family),
+and `IsCollsElms' (which means that there are two arguments,
+the first being a collection of elements that lie in the same family
+as the second argument).
+
+Second ---and this is the more complicated situation---
+whenever one creates a new kind of objects,
+one has to decide what its family shall be.
+If the new object shall be equal to existing objects,
+for example if it is just represented in a different way,
+there is no choice:
+The new object must lie in the same family as all objects
+that shall be equal to it.
+So only if the new object is different (w.r.t.~the equality ``='')
+from all other {\GAP} objects, we are likely to create a new family
+for it.
+Note that enlarging an existing family by such new objects
+may be problematic because of implications that have been
+installed for all  objects of the family in question.
+The choice of families depends on the applications one has in mind.
+For example, if the new objects in question are not likely to be
+arguments of operations for which family relations are relevant
+(for example binary arithmetic operations),
+one could create one family for all such objects,
+and regard it as ``the family of all those {\GAP} objects that would
+in fact not need a family''.
+On the other extreme, if one wants to create domains of the new objects
+then one has to choose the family in such a way that all intended
+elements of a domain do in fact lie in the same family.
+(Remember that a domain is a collection, see Chapter~"ref:Domains"
+in the Reference Manual, and that a collection consists of elements
+in the same family, see~"ref:Collections" and "ref:Families" in the
+Reference Manual.)
+
+Let us look at an example.
+Suppose that no permutations are available in {\GAP},
+and that we want to implement permutations.
+Clearly we want to support permutation groups,
+but it is not a priori clear how to distribute the new permutations
+into families.
+We can put all permutations into one family;
+this is how in fact permutations are implemented in {\GAP}.
+But it would also be possible to put all permutations of a given degree
+into a family of their own;
+this would for example mean that for each degree,
+there would be distinguished trivial permutations,
+and that the stabilizer of the point `5' in the symmetric group on the
+points $`1', `2', \ldots, `5'$ is not regarded as equal to the
+symmetric group on $`1', `2', `3', `4'$.
+Note that the latter approach would have the advantage that it is
+no problem to construct permutations and permutation groups acting on
+arbitrary (finite) sets,
+for example by constructing first the symmetric group on the set
+and then generating any desired permutation group as a subgroup of this
+symmetric group.
+
+So one aspect concerning a reasonable choice of families is
+to make the families large enough for being able to form interesting
+domains of elements in the family.
+But on the other hand,
+it is useful to choose the families small enough for admitting
+meaningful relations between objects.
+For example, the elements of different free groups in {\GAP}
+lie in different families;
+the multiplication of free group elements is installed only for the
+case that the two operands lie in the same family,
+with the effect that one cannot erroneously form the product of
+elements from different free groups.
+In this case, families appear as a tool for providing useful
+restrictions.
+
+As another example, note that an element and a collection containing
+this element never lie in the same family,
+by the general implementation of collections;
+namely, the family of a collection of elements in the family <Fam>
+is the collections family of <Fam> (see~"CollectionsFamily").
+This means that for a collection, we need not (because we cannot)
+decide about its family.
+
+
 \>NewFamily( <name> )
 \)NewFamily( <name>, <req> )
 \)NewFamily( <name>, <req>, <imp> )
+\)NewFamily( <name>, <req>, <imp>, <famfilter> )
 
 `NewFamily' returns a new family <fam> with name <name>.
 The argument <req>, if present, is a filter of which <fam> shall be a
 subset.
 If one tries to create an object in <fam> that does not lie in the filter
 <req>, an error message is printed.
-Also the argument <imp>, if present, is a filter of that <fam> shall be a
-subset.
+Also the argument <imp>, if present,
+is a filter of which <fam> shall be a subset.
 Any object that is created in the family <fam> will lie automatically in
 the filter <imp>.
 
+The filter <famfilter>, if given, specifies a filter that will hold for the
+family <fam> (not for objects in <fam>).
+
+Families are always represented as component objects
+(see~"Component Objects").
+This means that components can be used to store and access
+useful information about the family.
+
 There are a few functions in {\GAP} that construct families.
 As an example, consider
+(see also~"ref:Collection Families" in the Reference Manual)
 
 \>CollectionsFamily( <fam> )
 
@@ -265,7 +395,11 @@ If <fam> is a collections family then
 
 \>ElementsFamily( <fam> )
 
-returns the family with collections family <fam>.
+returns the unique family with collections family <fam>;
+note that by definition,
+all elements in a collection lie in the same family,
+so `ElementsFamily( <fam> )' is the family of each element
+in any collection that has the family <fam>.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -279,11 +413,15 @@ and the filter <filt>.
 The optional third argument <data> is any object that denotes defining
 data of the desired type.
 
+For examples where `NewType' is used, see~"Component Objects",
+"Positional Objects",
+and the example in Chapter~"An Example -- Residue Class Rings".
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Creating Objects}
 
-\>Objectify( <type>, <data> )
+\>Objectify( <type>, <data> ) F
 
 New objects are created by `Objectify'.
 <data> is a list or a record, and <type> is the type that the desired
@@ -298,6 +436,34 @@ if <data> is a record then `Objectify' turns it into a component object
 
 `Objectify' does also return the object that it made out of <data>.
 
+For examples where `Objectify' is used, see~"Component Objects",
+"Positional Objects",
+and the example in Chapter~"An Example -- Residue Class Rings".
+
+Attribute assignments will change the type of an object. If you create many
+objects code of the form
+\begintt
+o:=Objectify(type,rec())
+SetMyAttribute(o,value);
+\endtt
+will take much time for type changes. You can avoid this by setting the
+attributes immediatley while the object is created:
+
+\>ObjectifyWithAttributes(<obj>,<type>,<Attr1>,<val1>[,<Attr2>,<val2>...]) F
+
+changes the type of object <obj> to type <type> and sets
+attribute <Attr1> set to <val1>, attribute
+<Attr2> set to <val2> and so forth.
+
+If the filter list of <type> includes that these attributes are set (and for
+propertries also includes the value of the property) and if no special
+setter methods are installed for any of the involved attributes this is done
+simultaneously without type changes which may give a substantial speedup.
+
+If the conditions of the last sentence are nort fulfilled, instead an
+ordinary `Objectify' with subsequential `Setter' calls for the attributes is
+performed.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Component Objects}
 
@@ -307,17 +473,31 @@ Such an object <cobj> is built from subobjects that can be accessed via
 `<cobj>!.<name>', similar to components of a record.
 Also analogously to records, values can be assigned to components of
 <cobj> via `<cobj>!.<name>:= <val>'.
+For the creation of component objects, see~"Creating Objects".
 
-Note that it is possible to add components and to change the values of
-components even if <cobj> claims that it is immutable, i.e., if <cobj>
-is not in the category `IsMutable'.
+\>NamesOfComponents( <comobj> ) F
 
-So one must be *very careful* when `!.' is used.
-In particular, <name> must be among the admissible component names for
-the representation of <cobj>, see~"Creating Representations".
+For a component object <comobj>, `NamesOfComponents' returns a list of
+strings, which are the names of components currently bound in <comobj>.
+
+One must be *very careful* when using the `!.' operator,
+in order to interpret the component in the right way,
+and even more careful when using the assignment to components using `!.',
+in order to keep the information stored in <cobj> consistent.
+
+First of all, in the access or assignment to a component as shown above,
+<name> must be among the admissible component names
+for the representation of <cobj>, see~"Creating Representations".
+Second, preferably only few low level functions should use `!.',
+whereas this operator should not occur in ``user interactions''.
+
+Note that even if <cobj> claims that it is immutable, i.e., if <cobj>
+is not in the category `IsMutable', access and assignment via `!.' work.
+This is necessary for being able to store newly discovered information
+in immutable objects.
 
 The following example shows the implementation of an iterator
-(see~"Iterators") for the domain of integers,
+(see~"ref:Iterators" in the Reference Manual) for the domain of integers,
 which is represented as component object.
 See~"Positional Objects" for an implementation using positional objects.
 
@@ -326,38 +506,64 @@ that is, $a_n = n/2$ if $n$ is even,
 and $a_n = (1-n)/2$ otherwise.
 
 \begintt
-    IsIntegersIteratorRep := NewRepresentation( "IsIntegersIteratorRep",
-        IsComponentObjectRep, [ "counter" ] );
+IsIntegersIteratorCompRep := NewRepresentation( "IsIntegersIteratorRep",
+    IsComponentObjectRep, [ "counter" ] );
+\endtt
 
-    InstallMethod( Iterator,
-        "method for `Integers'",
-        true,
-        [ IsIntegers ], 0,
-        function( Integers )
-        return Objectify( NewType( IteratorsFamily,
-                                       IsIterator
-                                   and IsIntegersIteratorRep ),
-                          rec( counter := 0 ) );
-        end );
+The above command creates a new representation (see~"NewRepresentation")
+`IsIntegersIteratorCompRep',
+as a subrepresentation of `IsComponentObjectRep',
+and with one admissible component `counter'.
+So no other components than `counter' will be needed.
 
-    InstallMethod( IsDoneIterator,
-        "method for iterator of `Integers'",
-        true,
-        [ IsIterator and IsIntegersIteratorRep ], 0,
-        ReturnFalse );
+\begintt
+InstallMethod( Iterator,
+    "method for `Integers'",
+    [ IsIntegers ],
+    function( Integers )
+    return Objectify( NewType( IteratorsFamily,
+                                   IsIterator
+                               and IsIntegersIteratorCompRep ),
+                      rec( counter := 0 ) );
+    end );
+\endtt
 
-    InstallMethod( NextIterator,
-        "method for iterator of `Integers'",
-        true,
-        [ IsIntegersIterator ], 0,
-        function( iter )
-        iter!.counter:= iter!.counter + 1;
-        if iter!.counter mod 2 = 0 then
-          return iter!.counter / 2;
-        else
-          return ( 1 - iter!.counter ) / 2;
-        fi;
-        end );
+After the above method installation, one can already ask for
+`Iterator( Integers )'.
+Note that exactly the domain of integers is described by
+the filter `IsIntegers'.
+
+By the call to `NewType', the returned object lies in the family
+containing all iterators, which is `IteratorsFamily',
+it lies in the category `IsIterator' and in the representation
+`IsIntegersIteratorCompRep';
+furthermore, it has the component `counter' with value `0'.
+
+What is missing now are methods for the two basic operations
+of iterators, namely `IsDoneIterator' and `NextIterator'.
+The former must always return `false', since there are infinitely
+many integers.
+The latter must return the next integer in the iteration,
+and update the information stored in the iterator,
+that is, increase the value of the component `counter'.
+
+\begintt
+InstallMethod( IsDoneIterator,
+    "method for iterator of `Integers'",
+    [ IsIterator and IsIntegersIteratorCompRep ],
+    ReturnFalse );
+
+InstallMethod( NextIterator,
+    "method for iterator of `Integers'",
+    [ IsIntegersIteratorCompRep ],
+    function( iter )
+    iter!.counter:= iter!.counter + 1;
+    if iter!.counter mod 2 = 0 then
+      return iter!.counter / 2;
+    else
+      return ( 1 - iter!.counter ) / 2;
+    fi;
+    end );
 \endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -369,60 +575,108 @@ Such an object <pobj> is built from subobjects that can be accessed via
 `<pobj>![<pos>]', similar to positions in a list.
 Also analogously to lists, values can be assigned to positions of
 <pobj> via `<pobj>![<pos>]:= <val>'.
+For the creation of positional objects, see~"Creating Objects".
 
-Note that it is possible to add entries and to change the values of
-positions even if <pobj> claims that it is immutable, i.e., if <pobj>
-is not in the category `IsMutable'.
+One must be *very careful* when using the `![]' operator,
+in order to interpret the position in the right way,
+and even more careful when using the assignment to positions using `![]',
+in order to keep the information stored in <pobj> consistent.
 
-So one must be *very careful* when `![]' is used.
-In particular, <pos> must be among the admissible positions for
-the representation of <pobj>, see~"Creating Representations".
+First of all, in the access or assignment to a position as shown above,
+<pos> must be among the admissible positions
+for the representation of <pobj>, see~"Creating Representations".
+Second, preferably only few low level functions should use `![]',
+whereas this operator should not occur in ``user interactions''.
+
+Note that even if <pobj> claims that it is immutable, i.e., if <pobj>
+is not in the category `IsMutable', access and assignment via `![]' work.
+This is necessary for being able to store newly discovered information
+in immutable objects.
 
 The following example shows the implementation of an iterator
-(see~"Iterators") for the domain of integers,
+(see~"ref:Iterators" in the Reference Manual) for the domain of integers,
 which is represented as positional object.
-See~"Component Objects" for an implementation using component objects.
+See~"Component Objects" for an implementation using component objects,
+and more details.
 
 \begintt
-    IsIntegersIteratorRep := NewRepresentation( "IsIntegersIteratorRep",
-        IsPositionalObjectRep, [ 1 ] );
-
-    InstallMethod( Iterator,
-        "method for `Integers'",
-        true,
-        [ IsIntegers ], 0,
-        function( Integers )
-        return Objectify( NewType( IteratorsFamily,
-                                       IsIterator
-                                   and IsIntegersIteratorRep ),
-                          [ 1 ] );
-        end );
-
-    InstallMethod( IsDoneIterator,
-        "method for iterator of `Integers'",
-        true,
-        [ IsIterator and IsIntegersIteratorRep ], 0,
-        ReturnFalse );
-
-    InstallMethod( NextIterator,
-        "method for iterator of `Integers'",
-        true,
-        [ IsIntegersIterator ], 0,
-        function( iter )
-        iter![1]:= iter![1] + 1;
-        if iter![1] mod 2 = 0 then
-          return iter![1] / 2;
-        else
-          return ( 1 - iter![1] ) / 2;
-        fi;
-        end );
+IsIntegersIteratorPosRep := NewRepresentation( "IsIntegersIteratorRep",
+    IsPositionalObjectRep, [ 1 ] );
 \endtt
+
+The above command creates a new representation (see~"NewRepresentation")
+`IsIntegersIteratorPosRep',
+as a subrepresentation of `IsComponentObjectRep',
+and with only the first position being admissible for storing data.
+
+\begintt
+InstallMethod( Iterator,
+    "method for `Integers'",
+    [ IsIntegers ],
+    function( Integers )
+    return Objectify( NewType( IteratorsFamily,
+                                   IsIterator
+                               and IsIntegersIteratorRep ),
+                      [ 0 ] );
+    end );
+\endtt
+
+After the above method installation, one can already ask for
+`Iterator( Integers )'.
+Note that exactly the domain of integers is described by
+the filter `IsIntegers'.
+
+By the call to `NewType', the returned object lies in the family
+containing all iterators, which is `IteratorsFamily',
+it lies in the category `IsIterator' and in the representation
+`IsIntegersIteratorPosRep';
+furthermore, the first position has value `0'.
+
+What is missing now are methods for the two basic operations
+of iterators, namely `IsDoneIterator' and `NextIterator'.
+The former must always return `false', since there are infinitely
+many integers.
+The latter must return the next integer in the iteration,
+and update the information stored in the iterator,
+that is, increase the value stored in the first position.
+
+\begintt
+InstallMethod( IsDoneIterator,
+    "method for iterator of `Integers'",
+    [ IsIterator and IsIntegersIteratorPosRep ],
+    ReturnFalse );
+
+InstallMethod( NextIterator,
+    "method for iterator of `Integers'",
+    [ IsIntegersIteratorPosRep ],
+    function( iter )
+    iter![1]:= iter![1] + 1;
+    if iter![1] mod 2 = 0 then
+      return iter![1] / 2;
+    else
+      return ( 1 - iter![1] ) / 2;
+    fi;
+    end );
+\endtt
+
+It should be noted that one can of course install both the methods shown
+in Section~"Component Objects" and "Positional Objects".
+The call `Iterator( Integers )' will cause one of the methods to be
+selected, and for the returned iterator, which will have one of the
+representations we constructed, the right `NextIterator' method
+will be chosen.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Implementing New List Objects}
 
-A list in {\GAP} is an object in the category `IsList'.
-Basic operations for lists are `Length', `\\[\\]', and `IsBound\\[\\]'.
+This section gives some hints for the quite usual situation that one wants
+to implement new objects that are lists.
+More precisely, one either wants to deal with lists that have additional
+features, or one wants that some objects also behave as lists.
+
+A *list* in {\GAP} is an object in the category `IsList'.
+Basic operations for lists are `Length', `\\[\\]', and `IsBound\\[\\]'
+(see~"ref:Basic Operations for Lists" in the Reference Manual).
 
 Note that the access to the position <pos> in the list <list>
 via `<list>[<pos>]' is handled by the call `\\[\\]( <list>, <pos> )'
@@ -488,42 +742,69 @@ are not equal w.r.t. '`='' because they lie in different families.
 An operation is defined for elements rather than for objects in the sense
 that if the arguments are replaced by objects that are equal to the old
 arguments w.r.t. the equivalence relation '`='' then the result must be
-equal to the old result w.r.t. '`=''.
+equal to the old result w.r.t.~'`=''.
 
 But the implementation of many methods is representation dependent in the
 sense that certain representation dependent subobjects are accessed.
 
 For example, a method that implements the addition of univariate
 polynomials may access coefficients lists of its arguments
-only if they are really stored, 
-in the case of sparsely represented polynomials a different approach is
-needed.
+only if they are really stored,
+while in the case of sparsely represented polynomials a different approach
+is needed.
 
 In spite of this, for many operations one does not want to write an own
-method for each tuple of representations of the arguments,
-for example because there is no way to take advantage of the given
-representation of objects,
-or because one wants to install one representation independent method
-first, and then add specific methods as they are needed to gain more
-efficiency.
+method for each possible representations of each argument,
+for example because none of the methods could in fact take advantage
+of the actually given representations of the objects.
+Another reason could be that one wants to install first a representation
+independent method, and then add specific methods as they are needed to
+gain more efficiency, by really exploiting the fact that the arguments
+have certain representations.
 
-For this purpose,
+For the purpose of admitting representation independent code,
 one can define an *external representation* of objects in a given family,
 install methods to compute this external representation for each
 representation of the objects,
-and then for other operations install methods that use only the external
-representation.
+and then use this external representation of the objects whenever they
+occur.
 
-The external representation of an object <obj> does in general *not* lie
-in the same family as <obj>,
-it only encodes the object <obj> in such a way that from this data and
-the family of <obj> one can create an object that is equal to <obj>.
+We cannot provide conversion functions that allow us to first convert
+any object in question to one particular ``standard representation'',
+and then access the data in the way defined for this representation,
+simply because it may be impossible to choose such a ``standard
+representation'' uniformly for all objects in the given family.
+
+So the aim of an external representation of an object <obj> is a
+different one, namely to describe the data from which <obj> is composed.
+In particular, the external representation of <obj> is *not* one possible
+(``standard'') representation of <obj>,
+in fact the external representation of <obj> is in general different
+from <obj> w.r.t.~'`='',
+first  of all because the external representation of <obj> does in general
+not lie in the same family as <obj>.
+
+For example the external representation of a rational function is a list
+of length two or three, the first entry being the zero coefficient,
+the second being a list describing the coefficients and monomials of the
+numerator, and the third, if bound, being a list describing the coefficients
+and monomials of the denominator.
+In particular, the external representation of a polynomial is a list
+and not a polynomial.
+
+The other way round, the external representation of <obj> encodes <obj>
+in such a way that from this data and the family of <obj>,
+one can create an object that is equal to <obj>.
 Usually the external representation of an object is a list or a record.
-For example, a polynomial may have a suitable coefficients list as
-external representation;
-note that is may be necessary to have the zero coefficient as part of
-the external representation of polynomials if the family of the
-polynomials does not determine the zero coefficients uniquely.
+
+Although the external representation of <obj> is by definition independent
+of the actually available representations for <obj>,
+it is usual that a representation of <obj> exists for which the
+computation of the external representation is obtained by just
+``unpacking'' <obj>,
+in the sense that the desired data is stored in a component or a position
+of <obj>, if <obj> is a component object (see~"Component Objects")
+or a positional object (see~"Positional Objects").
 
 To implement an external representation means to install methods for the
 following two operations.
@@ -541,10 +822,149 @@ But it is *not* required that equal objects have equal external
 representations.
 
 Note that if one defines a new representation of objects for which an
-external representation exists already
+external representation does already exist
 then one *must* install a method to compute this external representation
 for the objects in the new representation.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mutability and Copying}
+
+Any {\GAP} Object is either mutable or immutable. This can be tested
+with the Operation `IsMutable'. The intended meaning of (im)mutability
+is a mathematical one:  an immutable Object should never change in
+such a way that it represents a different Element. Objects *may*
+change in other ways, for instance to store more information, or
+represent an element in a different way.
+
+Immutability is enforced in different ways for built-in objects (like
+records, or lists) and for external objects (made using `Objectify').
+
+For built-in objects which are immutable, the kernel will prevent
+you from changing them. Thus
+
+\beginexample
+gap> l := [1,2,4];
+[ 1, 2, 4 ]
+gap> MakeImmutable(l);
+gap> l[3] := 5;
+Lists Assignment: <list> must be a mutable list
+not in any function
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return and ignore the assignment to continue
+brk> 
+\endexample
+
+For external Objects, the situation is different. An external Object which
+claims to be immutable (ie its Type does not contain `IsMutable')
+should not admit any Methods which change the Element it represents.
+The kernel does *not* prevent the use of `!.' and `![' to change the
+underlying data structure.
+This is used for instance by the code that stores Attribute values for reuse.
+In general, these `!' operations should only be used in Methods
+which depend on the Representation of the Object. Furthermore, we would *not*
+recommend users to install Methods which depend on the Representations of
+Objects created by the library or by share packages, as there is certainly no
+guarantee of the representations being the same in future versions of {\GAP}.
+
+Here we see an immutable Object (the group $S_4$), in which we improperly
+install a new component.
+
+\beginexample
+gap> g := SymmetricGroup(IsPermGroup,4);
+Sym( [ 1 .. 4 ] )
+gap> IsMutable(g);
+false
+gap> NamesOfComponents(g);
+[ "GeneratorsOfMagmaWithInverses", "Size", "MovedPoints", "NrMovedPoints" ]
+gap> g!.silly := "rubbish";
+"rubbish"
+gap> NamesOfComponents(g);
+[ "GeneratorsOfMagmaWithInverses", "Size", "MovedPoints", "NrMovedPoints", 
+  "silly" ]
+gap> g!.silly;
+"rubbish"
+\endexample
+
+On the other hand, if we form an immutable externally represented list, we
+find that there is no Method for changing it using list assignment
+
+\beginexample
+gap> e := Enumerator(g);
+<enumerator of perm group>
+gap> IsMutable(e);
+false
+gap> IsList(e);
+true
+gap> e[3];
+(1,4)(2,3)
+gap> e[3] := false;
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error no 1st choice method found for `ASS_LIST' on 3 arguments at
+\endexample
+
+When we consider copying Objects, another filter `IsCopyable', enters
+the game and we find that `ShallowCopy' and `StructuralCopy' behave quite
+differently. Objects can be divided for this purpose into three:
+mutable Objects, immutable but copyable Objects, and non-copyable
+objects (called constants).
+
+A mutable or copyable  Object should have a Method for the Operation
+`ShallowCopy', which should make a new mutable Object, sharing its top-level
+subobjects with the original. The exact definition of top-level subobject may
+be defined by the implementor for new kinds of Object.
+
+`ShallowCopy' applied to a constant simply returns the constant.
+
+`StructuralCopy' is expected to be much less used than
+`ShallowCopy'. Applied to a mutable object, it returns a new mutable
+object which shares no mutable sub-objects with the input. Applied to
+an immutable Object (even a copyable one), it just returns the
+object. It is not an Operation (indeed, it's a rather special kernel
+function).
+
+\beginexample
+gap> e1 := StructuralCopy(e);
+<enumerator of perm group>
+gap> IsMutable(e1);
+false
+gap> e2 := ShallowCopy(e);
+[ (), (1,2)(3,4), (1,4)(2,3), (1,3)(2,4), (2,3,4), (1,2,4), (1,4,3), (1,3,2), 
+  (2,4,3), (1,2,3), (1,4,2), (1,3,4), (3,4), (1,2), (1,4,2,3), (1,3,2,4), 
+  (2,3), (1,2,4,3), (1,4), (1,3,4,2), (2,4), (1,2,3,4), (1,4,3,2), (1,3) ]
+gap> 
+\endexample
+
+There are two other related functions: `Immutable', which makes a new
+immutable object which shares no mutable subobjects with its input and
+`MakeImmutable' which changes an object and its mutable subobjects *in
+place* to be immutable. It should only be used on "new" Objects that
+you have just created, and which cannot share mutable subobjects with
+anything else.
+
+Both `Immutable' and `MakeImmutable' work on external objects by just
+reseting the `IsMutable' filter in the Object's type. This should make
+ineligible any methods that might change the Object. As a consequence,
+you must allow for the possibility of immutable versions of any
+objects you create.
+
+So, if you are implementing your own external Objects. The rules amount to the
+following:
+
+\beginitems
+1. &You decide if your Objects should be mutable or copyable or constants, by
+fixing whether their Type includes `IsMutable' or `IsCopyable'.
+
+2. &You install Methods for your objects respecting that decision:
+
+\beginitems
+\* &for constants -- no methods that change the underlying elements
+
+\* &for copyables -- a method for ShallowCopy
+
+\* &for mutables  -- you may have methods that change the underlying elements
+		   these should explicitly require IsMutable
+\enditems
+\enditems
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Global Variables in the Library}
@@ -552,43 +972,97 @@ for the objects in the new representation.
 Global variables in the {\GAP} library are usually read-only in order to
 avoid that they are overwritten by chance.
 
-\>BindGlobal( <name>, <val> )
+\>BindGlobal( <name>, <val> ) F
 
 sets the global variable named by the string <name> to the value <val>,
 and makes it read-only.
-An error is given if <name> already had a value bound.
+An error is given if the global variable corresponding to <name>
+already had a value bound.
 
-The different types of filters that are used in the library are
+The different types of filters (see Sections~"Creating Categories",
+"Creating Representations", "Creating Attributes and Properties",
+"Creating Other Filters") that are used in the {\GAP} library are
 assigned by the following functions which make the variables automatically
 read-only.
 The only other difference between `New<Something>' and
 `Declare<Something>' is that `DeclareAttribute' and `DeclareProperty'
 also bind read-only global variables with names `Has<name>' and `Set<name>'
-for the tester and setter of the attribute.
+for the tester and setter of the attribute,
+see Section~"ref:Setter and Tester for Attributes" in the Reference Manual.
+For the meaning of the arguments of `Declare<Something>',
+see~"NewAttribute", "NewCategory", "NewFilter", "NewProperty",
+and "NewOperation".
 
-\>DeclareAttribute( <name>, <filt>[, "mutable"][, <rank>] )
-\>DeclareCategory( <name>, <super> )
-\>DeclareFilter( <name>, <rank> )
-\>DeclareProperty( <name>, <filt>[, <rank>] )
+\>DeclareAttribute( <name>, <filt>[, "mutable"][, <rank>] ) F
+\>DeclareCategory( <name>, <super> ) F
+\>DeclareFilter( <name>, <rank> ) F
+\>DeclareProperty( <name>, <filt>[, <rank>] ) F
 
 Also operations and other global functions used in the {\GAP} library
 are assigned to read-only variables, with the following functions.
 
-\>DeclareOperation( <name>, <args-filts> )
-\>DeclareGlobalFunction( <name> )
+\>DeclareOperation( <name>, <args-filts> ) F
+\>DeclareGlobalFunction( <name> ) F
 
 {\GAP} functions that are not operations and that are intended to be
-called by users should be notified to {\GAP} in the declaration part via
-`DeclareGlobalFunction', which returns a function that serves as a
-placeholder for the function that will be installed later,
+called by users should be notified to {\GAP} in the declaration part
+of the respective package
+(see Section~"Declaration and Implementation Part")
+via `DeclareGlobalFunction', which returns a function that serves as a
+place holder for the function that will be installed later,
 and that will print an error message if it is called.
 A global function declared with `DeclareGlobalFunction' can be given its
 value <func> via
 
-\>InstallGlobalFunction( <gvar>, <func> )
+\>InstallGlobalFunction( <gvar>, <func> ) F
 
 where <gvar> is the variable named with the <name> argument of the call
 to `DeclareGlobalFunction'.
+
+(Note that <func> must be a function which has *not* been declared as a
+`GlobalFunction' itself. Otherwise completion files
+(see~"ref:Completion Files" in the reference manual) get confused!)
+
+For global variables that are *not* functions,
+instead of using `BindGlobal' one can also declare the variable with
+
+\>DeclareGlobalVariable( <name>[, <description>] ) F
+
+which creates a new global variable named by the string <name>.
+If the second argument <description> is entered then this must be
+a string that describes the meaning of the global variable.
+`DeclareGlobalVariable' shall be used in the declaration part of the
+respective package (see~"Declaration and Implementation Part"),
+values can then be assigned to the new variable with `InstallValue' or
+`InstallFlushableValue', in the implementation part
+(again, see~"Declaration and Implementation Part").
+
+\>InstallValue( <gvar>, <value> ) F
+\>InstallFlushableValue( <gvar>, <value> ) F
+
+`InstallValue' assigns the value <value> to the global variable <gvar>.
+`InstallFlushableValue' does the same but additionally provides that
+each call of `FlushCaches' (see~"FlushCaches")
+will assign a structural copy of <value> to <gvar>.
+
+`InstallValue' does *not* work if <value> is an ``immediate object''
+(i.e., an internally represented small integer or finite field element).
+Furthermore, `InstallFlushableValue' works only if <value> is a list.
+(Note that `InstallFlushableValue' makes sense only for *mutable*
+global variables.)
+
+\>FlushCaches() O
+
+`FlushCaches' resets the value of each global variable that has
+been declared with `DeclareGlobalVariable' and for which the initial
+value has been set with `InstallFlushableValue' to this initial value.
+
+`FlushCaches' should be used only for debugging purposes,
+since the involved global variables include for example lists that store
+finite fields and cyclotomic fields used in the current {\GAP} session,
+in order to avoid that these fields are constructed anew in each call
+to `GF' and `CF' (see~"ref:GaloisField" and~"ref:CyclotomicField"
+in the Reference Manual).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -630,8 +1104,34 @@ Calls to the following functions belong to the implementation part.
 `NewType',
 `Objectify'.
 
+Whenever both a `New<Something>' and a `Declare<Something>' variant
+of a function exist (see~"Global Variables in the Library"),
+the use of `Declare<Something>' is recommended
+because this protects the variables in question from being overwritten.
+Note that there are *no* functions `DeclareFamily' and `DeclareType'
+since families and types are created dynamically,
+hence usually no global variables are associated to them.
+Further note that `DeclareRepresentation' is regarded to belong to the
+implementation part,
+because usually representations of objects are accessed only in very
+few places, and all code that involves a particular representation
+is contained in one file;
+additionally, representations of objects are often not interesting
+for the user, so there is no need to provide a user interface
+or documentation about representations.
+
+It should be emphasized that ``declaration'' means only an explicit
+notification of mathematical or technical terms or of concepts to {\GAP}.
+For example, declaring a category or property with name `IsInteresting'
+does of course not tell {\GAP} what this shall mean,
+and it is necessary to implement possibilities to create objects that
+know already that they lie in `IsInteresting' in the case that it is a
+category, or to install implications or methods in order to
+compute for a given object whether `IsInteresting' is `true' or `false'
+for it in the case that `IsInteresting' is a property.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%E  create.tex
+%E
 

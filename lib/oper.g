@@ -9,15 +9,17 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file defines operations and such.
+##  This file defines operations and such. Some functions have moved
+##  to oper1.g so as to be compiled in the default kernel
 ##
 Revision.oper_g :=
     "@(#)$Id$";
 
 
+INSTALL_METHOD := false;
+
 #############################################################################
 ##
-
 #V  CATS_AND_REPS
 ##
 ##  a list of filter numbers of categories and representations
@@ -77,19 +79,44 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 ##
 #V  OPERATIONS
 ##
+##  is a list that stores all {\GAP} operations at the odd positions,
+##  and the corresponding list of requirements at the even positions.
+##  More precisely, if the operation `OPERATIONS[<n>]' has been declared
+##  by several calls of `DeclareOperation',
+##  with second arguments <req1>, <req2>, \ldots,
+##  each being a list of filters, then `OPERATIONS[ <n>+1 ]' is the list
+##  $`[' <flags1>, <flags2>, \ldots, `]'$,
+##  where <flagsi> is the list of flags of the filters in <reqi>.
+##
 BIND_GLOBAL( "OPERATIONS", [] );
 
 
 #############################################################################
 ##
-#V  SUM_FLAGS
+#V  WRAPPER_OPERATIONS
 ##
-BIND_GLOBAL( "SUM_FLAGS", 2000 );
+##  is a list that stores all those {\GAP} operations for which the default
+##  method is to call a related operation if necessary,
+##  and to store and look up the result using an attribute.
+##  An example is `SylowSubgroup', which calls `SylowSubgroupOp' if the
+##  required Sylow subgroup is not yet stored in `ComputedSylowSubgroups'.
+##
+BIND_GLOBAL( "WRAPPER_OPERATIONS", [] );
 
 
 #############################################################################
 ##
+#F  IsNoImmediateMethodsObject(<obj>)
+##
+##  If this filter is set immediate methods will be ignored for <obj>. This
+##  can be crucial for performance for objects like PCGS, of which many are
+##  created, which are collections, but for which all those immediate
+##  methods for `IsTrivial' et cetera do not really make sense.
+BIND_GLOBAL("IsNoImmediateMethodsObject",
+  NewFilter("IsNoImmediateMethodsObject"));
 
+#############################################################################
+##
 #V  IGNORE_IMMEDIATE_METHODS
 ##
 ##  is usually `false'.  Only inside a call of `RunImmediateMethods' it is
@@ -97,175 +124,6 @@ BIND_GLOBAL( "SUM_FLAGS", 2000 );
 ##  from recursion.
 ##
 IGNORE_IMMEDIATE_METHODS := false;
-
-
-#############################################################################
-##
-
-#F  WITH_HIDDEN_IMPS_FLAGS( <flags> )
-##
-HIDDEN_IMPS := [];
-WITH_HIDDEN_IMPS_FLAGS_CACHE      := [];
-WITH_HIDDEN_IMPS_FLAGS_COUNT      := 0;
-WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
-WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT  := 0;
-
-BIND_GLOBAL( "CLEAR_HIDDEN_IMP_CACHE", function( filter )
-    local   i, flags;
-
-    flags := FLAGS_FILTER(filter);
-    for i  in [ 1, 3 .. LEN_LIST(WITH_HIDDEN_IMPS_FLAGS_CACHE)-1 ]  do
-        if IsBound(WITH_HIDDEN_IMPS_FLAGS_CACHE[i])  then
-          if IS_SUBSET_FLAGS(WITH_HIDDEN_IMPS_FLAGS_CACHE[i+1],flags)  then
-            Unbind(WITH_HIDDEN_IMPS_FLAGS_CACHE[i]);
-            Unbind(WITH_HIDDEN_IMPS_FLAGS_CACHE[i+1]);
-          fi;
-      fi;
-    od;
-end );
-
-
-Unbind( WITH_HIDDEN_IMPS_FLAGS );
-BIND_GLOBAL( "WITH_HIDDEN_IMPS_FLAGS", function ( flags )
-    local   with,  changed,  imp,  hash;
-
-    hash := 2 * ( HASH_FLAGS(flags) mod 1009 ) + 1;
-    if IsBound(WITH_HIDDEN_IMPS_FLAGS_CACHE[hash])  then
-        if IS_IDENTICAL_OBJ(WITH_HIDDEN_IMPS_FLAGS_CACHE[hash],flags)  then
-            WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT :=
-              WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT + 1;
-            return WITH_HIDDEN_IMPS_FLAGS_CACHE[hash+1];
-        fi;
-    fi;
-
-    WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS+1;
-    with := flags;
-    changed := true;
-    while changed  do
-        changed := false;
-        for imp in HIDDEN_IMPS  do
-            if        IS_SUBSET_FLAGS( with, imp[2] )
-              and not IS_SUBSET_FLAGS( with, imp[1] )
-            then
-                with := AND_FLAGS( with, imp[1] );
-                changed := true;
-            fi;
-        od;
-    od;
-
-    WITH_HIDDEN_IMPS_FLAGS_CACHE[hash  ] := flags;
-    WITH_HIDDEN_IMPS_FLAGS_CACHE[hash+1] := with;
-    return with;
-end );
-
-
-
-#############################################################################
-##
-#F  InstallHiddenTrueMethod( <filter>, <filters> )
-##
-BIND_GLOBAL( "InstallHiddenTrueMethod", function ( filter, filters )
-    local   imp;
-
-    imp := [];
-    imp[1] := FLAGS_FILTER( filter );
-    imp[2] := FLAGS_FILTER( filters );
-    ADD_LIST( HIDDEN_IMPS, imp );
-end );
-
-
-#############################################################################
-##
-#F  WITH_IMPS_FLAGS( <flags> )
-##
-IMPLICATIONS := [];
-WITH_IMPS_FLAGS_CACHE      := [];
-WITH_IMPS_FLAGS_COUNT      := 0;
-WITH_IMPS_FLAGS_CACHE_HIT  := 0;
-WITH_IMPS_FLAGS_CACHE_MISS := 0;
-
-BIND_GLOBAL( "CLEAR_IMP_CACHE", function()
-    WITH_IMPS_FLAGS_CACHE := [];
-end );
-
-
-BIND_GLOBAL( "WITH_IMPS_FLAGS", function ( flags )
-    local   with,  changed,  imp,  hash,  hash2,  i;
-
-    hash := HASH_FLAGS(flags) mod 11001;
-    for i  in [ 0 .. 3 ]  do
-        hash2 := 2 * ((hash+31*i) mod 11001) + 1;
-        if IsBound(WITH_IMPS_FLAGS_CACHE[hash2])  then
-            if IS_IDENTICAL_OBJ(WITH_IMPS_FLAGS_CACHE[hash2],flags) then
-                WITH_IMPS_FLAGS_CACHE_HIT := WITH_IMPS_FLAGS_CACHE_HIT + 1;
-                return WITH_IMPS_FLAGS_CACHE[hash2+1];
-            fi;
-        else
-            break;
-        fi;
-    od;
-    if i = 3  then
-        WITH_IMPS_FLAGS_COUNT := ( WITH_IMPS_FLAGS_COUNT + 1 ) mod 4;
-        i := WITH_IMPS_FLAGS_COUNT;
-        hash2 := 2*((hash+31*i) mod 11001) + 1;
-    fi;
-
-    WITH_IMPS_FLAGS_CACHE_MISS := WITH_IMPS_FLAGS_CACHE_MISS + 1;
-    with := flags;
-    changed := true;
-    while changed  do
-        changed := false;
-        for imp in IMPLICATIONS  do
-            if        IS_SUBSET_FLAGS( with, imp[2] )
-              and not IS_SUBSET_FLAGS( with, imp[1] )
-            then
-                with := AND_FLAGS( with, imp[1] );
-                changed := true;
-            fi;
-        od;
-    od;
-
-    WITH_IMPS_FLAGS_CACHE[hash2  ] := flags;
-    WITH_IMPS_FLAGS_CACHE[hash2+1] := with;
-    return with;
-end );
-
-
-#############################################################################
-##
-#F  InstallTrueMethod( <to>, <from> )
-##
-BIND_GLOBAL( "InstallTrueMethod", function ( filter, filters )
-    local   imp;
-
-    imp := [];
-    imp[1] := FLAGS_FILTER( filter );
-    imp[2] := FLAGS_FILTER( filters );
-    ADD_LIST( IMPLICATIONS, imp );
-    InstallHiddenTrueMethod( filter, filters );
-
-    # clear the caches because we do not if <filters> is new
-    CLEAR_HIDDEN_IMP_CACHE( filters );
-    CLEAR_IMP_CACHE();
-end );
-
-
-#############################################################################
-##
-#F  InstallTrueMethodNewFilter( <to>, <from> )
-##
-##  If <from> is a new filter than  it cannot occur in  the cache.  Therefore
-##  we do not flush the cache.  <from> should a basic  filter not an `and' of
-##  filters. This should only be used in the "type.g".
-##
-BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( filter, filters )
-    local   imp;
-    imp := [];
-    imp[1] := FLAGS_FILTER( filter );
-    imp[2] := FLAGS_FILTER( filters );
-    ADD_LIST( IMPLICATIONS, imp );
-    InstallHiddenTrueMethod( filter, filters );
-end );
 
 
 #############################################################################
@@ -358,6 +216,11 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 
     for j  in relev  do
 
+      # adjust `IMM_FLAGS'
+      IMM_FLAGS:= SUB_FLAGS( IMM_FLAGS, FLAGS_FILTER( FILTERS[j] ) );
+#T here it would be better to subtract a flag list
+#T with `true' exactly at position `j'!
+
       # Find the place to put the new method.
       if not IsBound( IMMEDIATES[j] ) then
           IMMEDIATES[j]:= [];
@@ -427,6 +290,10 @@ end );
 ##
 #F  TraceImmediateMethods( <flag> )
 ##
+##  If <flag> is true, tracing for all immediate methods is turned on.
+##  If <flag> is false it is turned off.
+##  (There is no facility to trace *specific* immediate methods.)
+##
 TRACE_IMMEDIATE_METHODS := false;
 
 BIND_GLOBAL( "TraceImmediateMethods", function( flag )
@@ -438,326 +305,6 @@ BIND_GLOBAL( "TraceImmediateMethods", function( flag )
 end );
 
 
-#############################################################################
-##
-#F  RunImmediateMethods( <obj>, <flags> )
-##
-##  applies immediate  methods  for the   object <obj>  for that  the  `true'
-##  position in the Boolean list <flags> mean  that the corresponding filters
-##  have been found out recently.   So possible consequences of other filters
-##  are not checked.
-##
-RUN_IMMEDIATE_METHODS_CHECKS := 0;
-RUN_IMMEDIATE_METHODS_HITS   := 0;
-
-BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
-
-    local   flagspos,   # list of `true' positions in `flags'
-            tried,      # list of numbers of methods that have been used
-            type,       # type of `obj', used to notice type changes
-            j,          # loop over `flagspos'
-            imm,        # immediate methods for filter `j'
-            i,          # loop over `imm'
-            res,        # result of an immediate method
-            newflags;   # newly  found filters
-
-    # Avoid recursive calls from inside a setter.
-    if IGNORE_IMMEDIATE_METHODS then return; fi;
-
-    flagspos := SHALLOW_COPY_OBJ(TRUES_FLAGS(flags));
-    tried    := [];
-    type     := TYPE_OBJ( obj );
-    flags    := type![2];
-
-    # Check the immediate methods for all in `flagspos'.
-    # (Note that new information is handled via appending to that list.)
-    for j  in flagspos  do
-
-        # Loop over those immediate methods
-        # - that require `flags[j]' to be `true',
-        # - that are applicable to `obj',
-        # - whose result is not yet known to `obj',
-        # - that have not yet been tried in this call of 
-        #   `RunImmediateMethods'.
-
-        if IsBound( IMMEDIATES[j] ) then
-            imm := IMMEDIATES[j];
-            for i  in [ 0, 7 .. LEN_LIST(imm)-7 ]  do
-    
-                if        IS_SUBSET_FLAGS( flags, imm[i+4] )
-                  and not IS_SUBSET_FLAGS( flags, imm[i+3] )
-                  and not imm[i+6] in tried
-                then
-    
-                    # Call the method, and store that it was used.
-                    res := IMMEDIATE_METHODS[ imm[i+6] ]( obj );
-                    ADD_LIST( tried, imm[i+6] );
-                    RUN_IMMEDIATE_METHODS_CHECKS :=
-                        RUN_IMMEDIATE_METHODS_CHECKS+1;
-    
-                    if res <> TRY_NEXT_METHOD  then
-                        if TRACE_IMMEDIATE_METHODS  then
-                            Print( "#I  immediate: ", imm[i+7], "\n" );
-                        fi;
-    
-                        # Call the setter, without running immediate methods.
-                        IGNORE_IMMEDIATE_METHODS := true;
-                        imm[i+2]( obj, res );
-                        IGNORE_IMMEDIATE_METHODS := false;
-                        RUN_IMMEDIATE_METHODS_HITS :=
-                            RUN_IMMEDIATE_METHODS_HITS+1;
-                              
-                        # If `obj' has noticed the new information,
-                        # add the numbers of newly known filters to
-                        # `flagspos', in order to call their immediate
-                        # methods later.
-                        if not IS_IDENTICAL_OBJ( TYPE_OBJ(obj), type ) then
-
-                          type := TYPE_OBJ(obj);
-                          newflags := SHALLOW_COPY_OBJ(TRUES_FLAGS(type![2]));
-                          SUBTR_SET( newflags, TRUES_FLAGS(flags) );
-                          APPEND_LIST_INTR( flagspos, newflags );
-                          flags := type![2];
-
-                        fi;
-                    fi;
-                fi;
-            od;
-
-        fi;
-    od;
-end );
-
-
-#############################################################################
-##
-#F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
-##
-BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
-    function( opr, info, rel, flags, rank, method )
-    local   methods,  narg,  i,  k,  tmp, replace, match, j;
-    
-    # add the number of filters required for each argument
-    if opr in CONSTRUCTORS  then
-        if 0 < LEN_LIST(flags)  then
-            rank := rank - RankFilter( flags[ 1 ] );
-        fi;
-    else
-        for i  in flags  do
-            rank := rank + RankFilter( i );
-        od;
-    fi;
-
-    # get the methods list
-    narg := LEN_LIST( flags );
-    methods := METHODS_OPERATION( opr, narg );
-
-    # set the name
-    if info = false  then
-        info := NAME_FUNC(opr);
-    else
-        k := SHALLOW_COPY_OBJ(NAME_FUNC(opr));
-        APPEND_LIST_INTR( k, ": " );
-        APPEND_LIST_INTR( k, info );
-        info := k;
-        CONV_STRING(info);
-    fi;
-    
-    # find the place to put the new method
-    i := 0;
-    while i < LEN_LIST(methods) and rank < methods[i+(narg+3)]  do
-        i := i + (narg+4);
-    od;
-
-    # Now is a good time to see if the method is already there 
-    if REREADING then
-        replace := false;
-        k := i;
-        while k < LEN_LIST(methods) and 
-          rank = methods[k+narg+3] do
-            if info = methods[k+narg+4] then
-               
-                # ForAll not available
-                match := false;
-                for j in [1..narg] do
-                    match := match and methods[k+j+1] = flags[j];
-                od;
-                if match then
-                    replace := true;
-                    i := k;
-                    break;
-                fi;
-            fi;
-            k := k+narg+4;
-        od;
-    fi;
-    # push the other functions back
-    if not REREADING or not replace then
-        methods{[i+1..LEN_LIST(methods)]+(narg+4)}
-          := methods{[i+1..LEN_LIST(methods)]};
-    fi;
-
-    # install the new method
-    if   rel = true  then
-        methods[i+1] := RETURN_TRUE;
-    elif rel = false  then
-        methods[i+1] := RETURN_FALSE;
-    elif IS_FUNCTION(rel)  then
-        if CHECK_INSTALL_METHOD  then
-            tmp := NARG_FUNC(rel);
-            if tmp <> AINV(1) and tmp <> narg  then
-                Error(NAME_FUNC(opr),": <famrel> must accept ",
-		      narg, " arguments");
-            fi;
-        fi;
-        methods[i+1] := rel;
-    else
-        Error(NAME_FUNC(opr),
-	      ": <famrel> must be a function, `true', or `false'" );
-    fi;
-
-    # install the filters
-    for k  in [ 1 .. narg ]  do
-        methods[i+k+1] := flags[k];
-    od;
-
-    # install the method
-    if   method = true  then
-        methods[i+(narg+2)] := RETURN_TRUE;
-    elif method = false  then
-        methods[i+(narg+2)] := RETURN_FALSE;
-    elif IS_FUNCTION(method)  then
-        if CHECK_INSTALL_METHOD  then
-            tmp := NARG_FUNC(method);
-            if tmp <> AINV(1) and tmp <> narg  then
-               Error(NAME_FUNC(opr),": <method> must accept ",
-	             narg, " arguments");
-           fi;
-       fi;
-        methods[i+(narg+2)] := method;
-	if CHECK_INSTALL_METHOD  then
-            tmp := NARG_FUNC(method);
-            if tmp <> AINV(1) and tmp <> narg  then
-               Error(NAME_FUNC(opr),"<method> must accept ",
-	             narg, " arguments" );
-            fi;
-        fi;
-    else
-        Error(NAME_FUNC(opr),
-	      ": <method> must be a function, `true', or `false'" );
-    fi;
-    methods[i+(narg+3)] := rank;
-
-    methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
-
-    # flush the cache
-    CHANGED_METHODS_OPERATION( opr, narg );
-end );
-
-
-#############################################################################
-##
-#F  INSTALL_METHOD( <oper>, ... ) . . . . . . . . install a method for <oper>
-##
-BIND_GLOBAL( "INSTALL_METHOD",
-    function( opr, info, rel, filters, rank, method, check )
-    local   tmp,  tmp2,  req,  i,  imp,  flags;
-    
-    # check whether <opr> really is an operation
-    if not IS_OPERATION(opr)  then
-        Error( "<opr> is not an operation" );
-    fi;
-    
-    # check whether this really installs an implication
-    if    FLAGS_FILTER(opr) <> false
-      and (rel = true or rel = RETURN_TRUE)
-      and LEN_LIST(filters) = 1
-      and (method = true or method = RETURN_TRUE)
-    then
-        Error(NAME_FUNC(opr), ": use `InstallTrueMethod' for <opr>" );
-    fi;
-
-    # check <info>
-    if info <> false and not IS_STRING(info)  then
-        Error(NAME_FUNC(opr), ": <info> must be a string or `false'" );
-    fi;
-    
-    # compute the flags lists for the filters
-    flags := [  ];
-    for i  in filters  do
-        ADD_LIST( flags, FLAGS_FILTER( i ) );
-    od;
-    
-    # test if <check> is true
-    if CHECK_INSTALL_METHOD and check  then
-
-        # find the operation
-        req := false;
-        for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
-            if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
-                req := OPERATIONS[i+1];
-                break;
-            fi;
-        od;
-        if req = false  then
-            Error( "unknown operation ", NAME_FUNC(opr) );
-        fi;
-        if LEN_LIST(filters) <> LEN_LIST(req)  then
-            Error( "expecting ", LEN_LIST(req), " arguments for operation ",
-                   NAME_FUNC(opr) );
-        fi;
-
-        # do check with implications
-        imp := [];
-        for i  in flags  do
-            ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
-        od;
-
-        # check the requirements
-        for i  in [ 1 .. LEN_LIST(req) ]  do
-            if not IS_SUBSET_FLAGS( imp[i], req[i] )  then
-                tmp  := NamesFilter(req[i]);
-                tmp2 := NamesFilter(imp[i]);
-                Error( Ordinal(i), " argument of ", NAME_FUNC(opr),
-                       " must have ", tmp, " not ", tmp2 );
-            fi;
-        od;
-    fi;
-    
-    INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
-end );
-
-
-#############################################################################
-##
-#F  InstallMethod( <opr>, <relation>, <filters>, <rank>, <method> )
-##
-BIND_GLOBAL( "InstallMethod", function ( arg )
-    if 6 = LEN_LIST(arg)  then
-        INSTALL_METHOD(arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],true);
-    elif 5 = LEN_LIST(arg)  then
-        INSTALL_METHOD(arg[1],false,arg[2],arg[3],arg[4],arg[5],true);
-    else
-      Error("usage: InstallMethod( <opr>, <rel>, <fil>, <rk>, <method>) for ",
-	NAME_FUNC(arg[1]));
-    fi;
-end );
-
-
-#############################################################################
-##
-#F  InstallOtherMethod( <opr>, <relation>, <filters>, <rank>, <method> )
-##
-BIND_GLOBAL( "InstallOtherMethod", function ( arg )
-    if 6 = LEN_LIST(arg)  then
-        INSTALL_METHOD(arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],false);
-    elif 5 = LEN_LIST(arg)  then
-        INSTALL_METHOD(arg[1],false,arg[2],arg[3],arg[4],arg[5],false);
-    else
-        Error( "usage: InstallOtherMethod( <opr>, <rel>, <fil>, <rk>, ",
-               "<method> ) for ",NAME_FUNC(arg[1]) );
-    fi;
-end );
 
 
 #############################################################################
@@ -765,15 +312,18 @@ end );
 #F  NewOperation( <name>, <filters> )
 ##
 BIND_GLOBAL( "NewOperation", function ( name, filters )
-    local   oper,  filt,  i;
+    local   oper,  filt,  filter;
 
     oper := NEW_OPERATION( name );
     filt := [];
-    for i  in filters  do
-        ADD_LIST( filt, FLAGS_FILTER(i) );
+    for filter  in filters  do
+        if not IS_OPERATION( filter ) then
+          Error( "<filter> must be an operation" );
+        fi;
+        ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
     ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, filt );
+    ADD_LIST( OPERATIONS, [ filt ] );
     return oper;
 end );
 
@@ -783,16 +333,19 @@ end );
 #F  NewConstructor( <name>, <filters> )
 ##
 BIND_GLOBAL( "NewConstructor", function ( name, filters )
-    local   oper,  filt,  i;
+    local   oper,  filt,  filter;
 
     oper := NEW_CONSTRUCTOR( name );
     filt := [];
-    for i  in filters  do
-        ADD_LIST( filt, FLAGS_FILTER(i) );
+    for filter  in filters  do
+        if not IS_OPERATION( filter ) then
+          Error( "<filter> must be an operation" );
+        fi;
+        ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
     ADD_LIST( CONSTRUCTORS, oper );
     ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   filt );
+    ADD_LIST( OPERATIONS,   [ filt ] );
     return oper;
 end );
 
@@ -802,7 +355,69 @@ end );
 #F  DeclareOperation( <name>, <filters> )
 ##
 BIND_GLOBAL( "DeclareOperation", function ( name, filters )
-    BIND_GLOBAL( name, NewOperation( name, filters ) );
+
+    local gvar, pos, filt, filter;
+
+    if ISB_GVAR( name ) then
+
+      gvar:= VALUE_GLOBAL( name );
+
+      # Check that the variable is in fact an operation.
+      if not IS_OPERATION( gvar ) then
+        Error( "variable `", name, "' is not bound to an operation" );
+      fi;
+
+      # The operation has already been declared.
+      # If it was created as attribute or property,
+      # and if the new declaration is unary
+      # then ask for re-declaration as attribute or property.
+      # (Note that the values computed for objects matching the new
+      # requirements will be stored.)
+      if LEN_LIST( filters ) = 1 and FLAG2_FILTER( gvar ) <> 0 then
+
+        # `gvar' is an attribute (tester) or property (tester).
+        pos:= POS_LIST_DEFAULT( FILTERS, gvar, 0 );
+        if pos = 0 then
+
+          # `gvar' is an attribute.
+          Error( "operation `", name,
+                 "' was created as an attribute, use`DeclareAttribute'" );
+
+        elif    INFO_FILTERS[ pos ] in FNUM_TPRS
+             or INFO_FILTERS[ pos ] in FNUM_ATTS then
+
+          # `gvar' is an attribute tester or property tester.
+          Error( "operation `", name,
+                 "' is an attribute tester or property tester" );
+
+        else
+
+          # `gvar' is a property.
+          Error( "operation `", name,
+                 "' was created as a property, use`DeclareProperty'" );
+
+        fi;
+
+      fi;
+
+      # Add the new requirements.
+      filt := [];
+      for filter  in filters  do
+        if not IS_OPERATION( filter ) then
+          Error( "<filter> must be an operation" );
+        fi;
+        ADD_LIST( filt, FLAGS_FILTER( filter ) );
+      od;
+
+      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+      ADD_LIST( OPERATIONS[ pos+1 ], filt );
+
+    else
+
+      # The operation is new.
+      BIND_GLOBAL( name, NewOperation( name, filters ) );
+
+    fi;
 end );
 
 
@@ -810,16 +425,25 @@ end );
 ##
 #F  DeclareOperationKernel( <name>, <filters>, <kernel-oper> )
 ##
+##  This function must not be used to re-declare an operation
+##  that has already been declared.
+##
 BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
-    local   filt,  i;
+    local   filt,  filter;
+
+    # This will yield an error if `name' is already bound.
+    BIND_GLOBAL( name, oper );
 
     filt := [];
-    for i  in filters  do
-        ADD_LIST( filt, FLAGS_FILTER(i) );
+    for filter  in filters  do
+        if not IS_OPERATION( filter ) then
+          Error( "<filter> must be an operation" );
+        fi;
+        ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
+
     ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, filt );
-    BIND_GLOBAL( name, oper );
+    ADD_LIST( OPERATIONS, [ filt ] );
 end );
 
 
@@ -828,7 +452,43 @@ end );
 #F  DeclareConstructor( <name>, <filters> )
 ##
 BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
-    BIND_GLOBAL( name, NewConstructor( name, filters ) );
+
+    local gvar, pos, filt, filter;
+
+    if ISB_GVAR( name ) then
+
+      gvar:= VALUE_GLOBAL( name );
+
+      # Check that the variable is in fact an operation.
+      if not IS_OPERATION( gvar ) then
+        Error( "variable `", name, "' is not bound to an operation" );
+      fi;
+
+      # The constructor has already been declared.
+      # If it was not created as a constructor
+      # then ask for re-declaration as an ordinary operation.
+      if not gvar in CONSTRUCTORS then
+        Error( "operation `", name, "' was not created as a constructor" );
+      fi;
+
+      # Add the new requirements.
+      filt := [];
+      for filter  in filters  do
+        if not IS_OPERATION( filter ) then
+          Error( "<filter> must be an operation" );
+        fi;
+        ADD_LIST( filt, FLAGS_FILTER( filter ) );
+      od;
+
+      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+      ADD_LIST( OPERATIONS[ pos+1 ], filt );
+
+    else
+
+      # The operation is new.
+      BIND_GLOBAL( name, NewConstructor( name, filters ) );
+
+    fi;
 end );
 
 
@@ -836,17 +496,26 @@ end );
 ##
 #F  DeclareConstructorKernel( <name>, <filter>, <kernel-oper> )
 ##
+##  This function must not be used to re-declare a constructor
+##  that has already been declared.
+##
 BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
-    local   filt,  i;
+    local   filt,  filter;
+
+    # This will yield an error if `name' is already bound.
+    BIND_GLOBAL( name, oper );
 
     filt := [];
-    for i  in filters  do
-        ADD_LIST( filt, FLAGS_FILTER(i) );
+    for filter  in filters  do
+        if not IS_OPERATION( filter ) then
+          Error( "<filter> must be an operation" );
+        fi;
+        ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
+
     ADD_LIST( CONSTRUCTORS, oper );
     ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   filt );
-    BIND_GLOBAL( name, oper );
+    ADD_LIST( OPERATIONS,   [ filt ] );
 end );
 
 
@@ -871,8 +540,9 @@ BIND_GLOBAL( "InstallAttributeFunction", function ( func )
 end );
 
 BIND_GLOBAL( "RUN_ATTR_FUNCS",
-    function ( name, filter, getter, setter, tester, mutflag )
-    local    func;
+    function ( filter, getter, setter, tester, mutflag )
+    local    name, func;
+    name:= NAME_FUNC( getter );
     for func in ATTR_FUNCS do
         func( name, filter, getter, setter, tester, mutflag );
     od;
@@ -884,8 +554,14 @@ end );
 ##
 #F  DeclareAttributeKernel( <name>, <filter>, <getter> )  . . . new attribute
 ##
+##  This function must not be used to re-declare an attribute
+##  that has already been declared.
+##
 BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     local setter, tester, nname;
+
+    # This will yield an error if `name' is already bound.
+    BIND_GLOBAL( name, getter );
 
     # construct setter and tester
     setter := SETTER_FILTER( getter );
@@ -893,14 +569,16 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
 
     # add getter, setter and tester to the list of operations
     ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
     ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter), [] ] );
+    ADD_LIST( OPERATIONS,
+              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_OBJECT ) ] ] );
     ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
 
     # store the information about the filter
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
     INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
 
     # clear the cache because <filter> is something old
@@ -908,17 +586,17 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     CLEAR_HIDDEN_IMP_CACHE( tester );
 
     # run the attribute functions
-    RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
+    RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the ranks
     RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
 
-    # and make the assignments
-    BIND_GLOBAL( name, getter );
+    # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
     BIND_GLOBAL( nname, setter );
     nname:= "Has"; APPEND_LIST_INTR( nname, name );
     BIND_GLOBAL( nname, tester );
+
 end );
 
 
@@ -942,11 +620,16 @@ end );
 ##  If no third argument is given then the rank of the tester is 1.
 ##
 BIND_GLOBAL( "NewAttribute", function ( arg )
-    local   name, filter, mutflag, getter, setter, tester;
+    local   name, filter, flags, mutflag, getter, setter, tester;
 
     # construct getter, setter and tester
     name   := arg[1];
     filter := arg[2];
+
+    if not IS_OPERATION( filter ) then
+      Error( "<filter> must be an operation" );
+    fi;
+    flags:= FLAGS_FILTER( filter );
 
     # the mutability flags is the third one (which can also be the rank)
     mutflag := LEN_LIST(arg) = 3 and arg[3] = "mutable";
@@ -966,22 +649,23 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     tester := TESTER_FILTER( getter );
 
     ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, [ [ flags ] ] );
     ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter),FLAGS_FILTER(IS_OBJECT) ] );
+    ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ] );
     ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, [ [ flags ] ] );
 
     # install the default functions
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
 
     # the <tester> is newly made, therefore  the cache cannot contain a  flag
     # list involving <tester>
     InstallHiddenTrueMethod( filter, tester );
-    #CLEAR_HIDDEN_IMP_CACHE();
+    # CLEAR_HIDDEN_IMP_CACHE();
 
     # run the attribute functions
-    RUN_ATTR_FUNCS( name, filter, getter, setter, tester, mutflag );
+    RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
 
     # store the rank
     if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
@@ -1000,125 +684,89 @@ end );
 #F  DeclareAttribute( <name>, <filter> [,"mutable"] [,<rank>] ) new attribute
 ##
 BIND_GLOBAL( "DeclareAttribute", function ( arg )
-    local attr, name, nname;
-    attr:= CALL_FUNC_LIST( NewAttribute, arg );
+
+    local attr, name, nname, gvar, pos, filter;
+
     name:= arg[1];
-    BIND_GLOBAL( name, attr );
-    nname:= "Set"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, SETTER_FILTER( attr ) );
-    nname:= "Has"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
+
+    if ISB_GVAR( name ) then
+
+      gvar:= VALUE_GLOBAL( name );
+
+      # Check that the variable is in fact an operation.
+      if not IS_OPERATION( gvar ) then
+        Error( "variable `", name, "' is not bound to an operation" );
+      fi;
+
+      # The attribute has already been declared.
+      # If it was not created as an attribute
+      # then ask for re-declaration as an ordinary operation.
+      # (Note that the values computed for objects matching the new
+      # requirements cannot be stored.)
+      if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
+
+        # `gvar' is not an attribute (tester) and not a property (tester),
+        # or `gvar' is a filter;
+        # in any case, `gvar' is not an attribute.
+        Error( "operation `", name, "' was not created as an attribute,",
+               " use`DeclareOperation'" );
+
+      fi;
+
+      # Add the new requirements.
+      filter:= arg[2];
+      if not IS_OPERATION( filter ) then
+        Error( "<filter> must be an operation" );
+      fi;
+
+      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+      ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+
+      # also set the extended range for the setter
+      pos:= POS_LIST_DEFAULT( OPERATIONS, Setter(gvar), pos );
+      ADD_LIST( OPERATIONS[ pos+1 ],
+                [ FLAGS_FILTER( filter),OPERATIONS[pos+1][1][2] ] );
+
+    else
+
+      # The attribute is new.
+      attr:= CALL_FUNC_LIST( NewAttribute, arg );
+      BIND_GLOBAL( name, attr );
+      nname:= "Set"; APPEND_LIST_INTR( nname, name );
+      BIND_GLOBAL( nname, SETTER_FILTER( attr ) );
+      nname:= "Has"; APPEND_LIST_INTR( nname, name );
+      BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
+
+    fi;
 end );
 
 
 #############################################################################
 ##
-#M  default attribute getter and setter methods
+#V  LENGTH_SETTER_METHODS_2
 ##
-##  There are the following three default getter methods.  The first requires
-##  only `IsObject', and signals what categories the attribute requires.  The
-##  second requires the category part  of the attribute's requirements, tests
-##  the property  getters of the  requirements, and -if  they  are `true' and
-##  afterwards  stored in  the object-  calls the  attribute operation again.
-##  The third requires  the  attribute's requirements,  and  signals that  no
-##  method was found.
+##  is the current length of `METHODS_OPERATION( <attr>, 2 )'
+##  for an attribute <attr> for which no individual setter methods
+##  are installed.
+##  (This is used for `ObjectifyWithAttributes'.)
 ##
-##  The default setter method does nothing.
-##
-##  Note that we do *not* install any  default getter method for an attribute
-##  that requires only   `IsObject'.  (The error  message  is printed by  the
-##  method selection in this case.)  Also the second and third default method
-##  are  installed   only if the   property  getter  part of  the attribute's
-##  requirements is nontrivial.
-##  
-InstallAttributeFunction(
-    function ( name, filter, getter, setter, tester, mutflag )
-    local flags, cats, props, i;
-    if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then
+LENGTH_SETTER_METHODS_2 := 0;
 
-        flags := FLAGS_FILTER( filter );
 
-        InstallOtherMethod( getter,
-            true, [ IS_OBJECT ], 0,
-            function ( obj )
-            local filt, hascats, i;
-            filt:= [];
-            hascats:= true;
-            for i in [ 1 .. LEN_FLAGS(flags) ] do
-                if ELM_FLAGS(flags,i) and i in CATS_AND_REPS  then
-                    if not FILTERS[i]( obj ) then
-                        hascats:= false;
-                    fi;
-                    ADD_LIST( filt, NAME_FUNC( FILTERS[i] ) );
-                fi;
-            od;
-            if not hascats then
-                Error( "argument for `", name,
-                       "' must have categories `", filt, "'" );
-            else
-                Error( "no method found for operation ", name );
-            fi;
-	    # catch `return'
-	    repeat
-	      Error("you cannot use `return;' here, use `quit;'");
-	    until false;
-	  end
-        );
-
-        cats  := IS_OBJECT;
-        props := [];
-        for i in [ 1 .. LEN_FLAGS(flags) ] do
-            if ELM_FLAGS(flags,i)  then
-                if i in CATS_AND_REPS  then
-                    cats:= cats and FILTERS[i];
-                elif i in NUMBERS_PROPERTY_GETTERS  then
-                    ADD_LIST( props, FILTERS[i] );
-                fi;
-            fi;
-        od;
-        if 0 < LEN_LIST(props) then
-          InstallOtherMethod( getter,
-              true, [ cats ], 0,
-              function ( obj )
-              local prop;
-              for prop in props do
-                if not ( prop( obj ) and Tester( prop )( obj ) ) then
-                  Error( "<obj> must have the properties in <props>" );
-		  # catch `return'
-		  repeat
-		    Error("you cannot use `return;' here, use `quit;'");
-		  until false;
-                fi;
-              od;
-              return getter( obj );
-              end
-          );
-  
-          InstallMethod( getter,
-              true, [ filter ], 0,
-              function ( obj )
-              Error( "no method found for operation ", name );
-              end
-          );
-        fi;
-    fi;
-    end );
-
-InstallAttributeFunction(
-    function ( name, filter, getter, setter, tester, mutflag )
-    InstallOtherMethod( setter,
-        true, [ IS_OBJECT, IS_OBJECT ], 0,
-        function ( obj, val )
-        end );
-    end );
 
 
 #############################################################################
 ##
 #F  DeclarePropertyKernel( <name>, <filter>, <getter> ) . . . .  new property
 ##
+##  This function must not be used to re-declare a property
+##  that has already been declared.
+##
 BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     local setter, tester, nname;
+
+    # This will yield an error if `name' is already bound.
+    BIND_GLOBAL( name, getter );
 
     # construct setter and tester
     setter := SETTER_FILTER( getter );
@@ -1129,14 +777,16 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
 
     # add getter, setter and tester to the list of operations
     ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
     ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ] );
+    ADD_LIST( OPERATIONS,
+              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_BOOL ) ] ] );
     ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
 
     # install the default functions
     FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
     FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
     INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
@@ -1148,14 +798,13 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     CLEAR_HIDDEN_IMP_CACHE( tester );
 
     # run the attribute functions
-    RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
+    RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the ranks
     RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
     RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
 
-    # and make the assignments
-    BIND_GLOBAL( name, getter );
+    # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
     BIND_GLOBAL( nname, setter );
     nname:= "Has"; APPEND_LIST_INTR( nname, name );
@@ -1172,10 +821,15 @@ end );
 ##  the property getter has this rank, otherwise its rank is 1.
 ##
 BIND_GLOBAL( "NewProperty", function ( arg )
-    local   name, filter, getter, setter, tester;
+    local   name, filter, flags, getter, setter, tester;
 
     name   := arg[1];
     filter := arg[2];
+
+    if not IS_OPERATION( filter ) then
+      Error( "<filter> must be an operation" );
+    fi;
+    flags:= FLAGS_FILTER( filter );
 
     # construct getter, setter and tester
     getter := NEW_PROPERTY(  name );
@@ -1184,29 +838,30 @@ BIND_GLOBAL( "NewProperty", function ( arg )
 
     # add getter, setter and tester to the list of operations
     ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, [ [ flags ] ] );
     ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ] );
+    ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_BOOL ) ] ] );
     ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, [ [ flags ] ] );
 
     # store the property getters
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
     # install the default functions
     FILTERS[ FLAG1_FILTER( getter ) ] := getter;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
     FILTERS[ FLAG2_FILTER( getter ) ] := tester;
     INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
 
-    # the <tester> and  <getter> are newly  made, therefore the cache  cannot
+    # the <tester> and  <getter> are newly  made, therefore the cache cannot
     # contain a flag list involving <tester> or <getter>
     InstallHiddenTrueMethod( tester, getter );
     InstallHiddenTrueMethod( filter, tester );
-    #CLEAR_HIDDEN_IMP_CACHE();
+    # CLEAR_HIDDEN_IMP_CACHE();
 
     # run the attribute functions
-    RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
+    RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the rank
     if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
@@ -1226,15 +881,55 @@ end );
 #F  DeclareProperty( <name>, <filter> [,<rank>] ) . . . . . . .  new property
 ##
 BIND_GLOBAL( "DeclareProperty", function ( arg )
-    local prop, name, nname;
-    prop:= CALL_FUNC_LIST( NewProperty, arg );
+
+    local prop, name, nname, gvar, pos, filter;
+
     name:= arg[1];
-    BIND_GLOBAL( name, prop );
-    nname:= "Set"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, SETTER_FILTER( prop ) );
-    nname:= "Has"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, TESTER_FILTER( prop ) );
+
+    if ISB_GVAR( name ) then
+
+      gvar:= VALUE_GLOBAL( name );
+
+      # Check that the variable is in fact an operation.
+      if not IS_OPERATION( gvar ) then
+        Error( "variable `", name, "' is not bound to an operation" );
+      fi;
+
+      # The property has already been declared.
+      # If it was not created as a property
+      # then ask for re-declaration as an ordinary operation.
+      # (Note that the values computed for objects matching the new
+      # requirements cannot be stored.)
+      if FLAG1_FILTER( gvar ) = 0 or FLAG2_FILTER( gvar ) = 0 then
+
+        # `gvar' is not a property (tester).
+        Error( "operation `", name, "' was not created as a property,",
+               " use`DeclareOperation'" );
+
+      fi;
+
+      # Add the new requirements.
+      filter:= arg[2];
+      if not IS_OPERATION( filter ) then
+        Error( "<filter> must be an operation" );
+      fi;
+
+      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+      ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+
+    else
+
+      # The property is new.
+      prop:= CALL_FUNC_LIST( NewProperty, arg );
+      BIND_GLOBAL( name, prop );
+      nname:= "Set"; APPEND_LIST_INTR( nname, name );
+      BIND_GLOBAL( nname, SETTER_FILTER( prop ) );
+      nname:= "Has"; APPEND_LIST_INTR( nname, name );
+      BIND_GLOBAL( nname, TESTER_FILTER( prop ) );
+
+    fi;
 end );
+
 
 
 #############################################################################
@@ -1273,26 +968,21 @@ end );
 
 ##ViewObj := VIEW_OBJ;
 
-DeclareOperationKernel( "ViewObj",
-    [ IS_OBJECT ],
-    VIEW_OBJ );
+DeclareOperationKernel( "ViewObj", [ IS_OBJECT ], VIEW_OBJ );
+
+
 
 
 #############################################################################
 ##
-#M  ViewObj( <obj> )  . . . . . . . . . . . . default methods uses `PrintObj'
-##
-InstallMethod( ViewObj,
-    "default method using `PrintObj'",
-    true,
-    [ IS_OBJECT ],
-    0,
-    PRINT_OBJ );
-
-
-#############################################################################
-##
-#F  View( <obj1>, ... ) . . . . . . . . . . . . . . . . . . . .  view objects
+#F  View( <obj1>, <obj2>... ) . . . . . . . . . . . . . . . . .  view objects
+##  
+##  `View' shows the objects <obj1>, <obj2>... etc. *in a short form*
+##  on the standard output.
+##  `View' is called in the read--eval--print loop,
+##  thus the output looks exactly like the representation of the
+##  objects shown by the main loop.
+##  Note that no space or newline is printed between the objects.
 ##
 BIND_GLOBAL( "View", function( arg )
     local   obj;
@@ -1302,21 +992,24 @@ BIND_GLOBAL( "View", function( arg )
     od;
 end );
 
+
 #############################################################################
 ##
 #F  ViewLength( <len> )
 ##
 ##  `View' will usually display objects in short form if they would need
-##  more than <len> lines. The standard is 3
+##  more than <len> lines.
+##  The default is 3.
 ##
-VIEWLEN:=3;
-BIND_GLOBAL("ViewLength",function(arg)
-  if LEN_LIST(arg)=0 then
+VIEWLEN := 3;
+
+BIND_GLOBAL( "ViewLength", function(arg)
+  if LEN_LIST( arg ) = 0 then
     return VIEWLEN;
   else
-    VIEWLEN:=arg[1];
+    VIEWLEN:= arg[1];
   fi;
-end);
+end );
 
 
 #############################################################################
@@ -1371,7 +1064,11 @@ end );
 
 #############################################################################
 ##
-#F  TraceMethods( <method1>, ... )
+#F  TraceMethods( <oprs> )
+##
+##  After the call of `TraceMethods' with a list <oprs> of operations,
+##  whenever a method of one of the operations in <oprs> is called the
+##  information string used in the installation of the method is printed.
 ##
 BIND_GLOBAL( "TraceMethods", function( arg )
     local   fun;
@@ -1388,7 +1085,9 @@ end );
 
 #############################################################################
 ##
-#F  UntraceMethods( <method1>, ... )
+#F  UntraceMethods( <oprs>)
+##
+##  turns the tracing off for all operations in <oprs>.
 ##
 BIND_GLOBAL( "UntraceMethods", function( arg )
     local   fun;
@@ -1406,15 +1105,19 @@ end );
 #############################################################################
 ##
 #F  DeclareGlobalFunction( <name>, <info> ) . .  create a new global function
-#F  InstallGlobalFunction( <oper>, <func> ) . . . . install a global function
+#F  InstallGlobalFunction( <oprname>[, <info>], <func> )
+#F  InstallGlobalFunction( <oper>[, <info>], <func> )
 ##
 ##  Global functions of the {\GAP} library must be distinguished from other
 ##  global variables (see `variable.g') because of the completion mechanism.
 ##
+BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", [] );
+
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     local   name;
 
     name := arg[1];
+    ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
     BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
 end );
 
@@ -1429,44 +1132,18 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
         oper := arg[1];
         func := arg[2];
     fi;
+    if IS_STRING( oper ) then
+      oper:= VALUE_GLOBAL( oper );
+    fi;
+    if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
+      Error("you cannot install a global function for another global ",
+            "function,\nuse `DeclareSynonym' instead!");
+    fi;
     INSTALL_METHOD_ARGS( oper, func );
 end );
 
-#############################################################################
-##
-#F  RedispatchOnCondition(<oper>,<fampred>,<reqs>,<cond>,<val>)
-##
-##  This function installs a method for operation <oper> under the
-##  conditions <fampred> and <reqs> which has value <val>.
-##  If not all the filters in <cond> are already known,
-##  they are explicitly tested and if they are fulfilled the operation is
-##  dispatched again. Otherwise the method exist with `TryNextMethod'. This
-##  can be used to enforce tests like `IsFinite' in situations when all
-##  existing methods require this property.
-##  <cond> may have unbound entries in which case the corresponding argument
-##  is ignored.
-CallFuncList:="2b defined";
-BIND_GLOBAL("RedispatchOnCondition",function(oper,fampred,reqs,cond,val)
-local re,i;
-  InstallOtherMethod(oper,"fallback method to test conditions",
-                     fampred,reqs,val,
-  function(arg)
-    re:=false;
-    for i in [1..LEN_LIST(reqs)] do
-      re:=re or (IsBound(cond[i]) and (not Tester(cond[i])(arg[i]))
-        and cond[i](arg[i])); # force test
-    od;
-    if re then
-      # at least one property was found out, redispatch
-      return CallFuncList(oper,arg);
-    else
-      TryNextMethod(); # all filters hold already, go away
-    fi;
-  end);
-
-end);
 
 #############################################################################
 ##
-#E  oper.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

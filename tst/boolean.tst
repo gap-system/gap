@@ -50,7 +50,7 @@ false
 gap> false and false;
 false
 
-gap> STOP_TEST( "boolean.tst", 10000 );
+gap> STOP_TEST( "boolean.tst", 300000 );
 
 #############################################################################
 ##

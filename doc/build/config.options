@@ -1,0 +1,4 @@
+@msfiles = ("options");
+@gdfiles = ("options");
+$DIR = "../ref";
+$LIB = "../../lib"; 

@@ -13,7 +13,7 @@
 Revision.grppccom_gi:=
     "@(#)$Id$";
 
-HomomorphismsSeries:=function(G,h)
+BindGlobal("HomomorphismsSeries",function(G,h)
 local r,img,i,gens,img2;
   r:=ShallowCopy(h);
   img:=Image(h[Length(h)],G);
@@ -27,7 +27,7 @@ local r,img,i,gens,img2;
     img:=img2;
   od;
   return r;
-end;
+end);
 
 # test function for relators
 OCTestRelators:=function(ocr)
@@ -47,7 +47,7 @@ end;
 ##  normalizers in <S>.
 ##
 InstallGlobalFunction( COAffineBlocks, function( S, Spcgs,mats )
-  local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root;
+local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root;
 
   # The affine operation of <S> is described via <mats> as
   #
@@ -85,7 +85,9 @@ InstallGlobalFunction( COAffineBlocks, function( S, Spcgs,mats )
     od;
     v:=v*one;
     w:=ShallowCopy( v );
+    ConvertToVectorRep(w,p);
     v:=Concatenation(v,[one]);
+    ConvertToVectorRep(v,p);
     O:=OrbitStabilizer( S,v, Spcgs,mats);
     for v  in O.orbit  do
         n:=1;
@@ -114,7 +116,7 @@ end );
 ##  Correct the blockstabilizer and return the stabilizer of <H> in <S>
 ##
 InstallGlobalFunction( CONextCentralizer, function( ocr, Spcgs, H )
-  local   gens,  pnt,  i;
+local   gens,  pnt,  i;
 
   # Get the generators of <S> and correct them.
   Info(InfoComplement,2,"CONextCentralizer: correcting blockstabilizer" );
@@ -144,7 +146,7 @@ end );
 ##  returned as list of records rec( complement, centralizer ).
 ##
 InstallGlobalFunction( CONextCocycles, function( cor, ocr, S )
-  local   K, N, Z, SN, B, L, LL, tau, phi, mats, i,SNpcgs;
+local   K, N, Z, SN, B, L, LL, tau, phi, mats, i,SNpcgs;
 
   # Try to split <K> over <M>, if it does not split return.
   Info(InfoComplement,2,"CONextCocycles: computing cocycles" );
@@ -177,7 +179,7 @@ InstallGlobalFunction( CONextCocycles, function( cor, ocr, S )
   # If  the  one  cohomology  group  is trivial, there is only one class of
   # complements.  Correct  the  blockstabilizer and return. If we only want
   # normal complements, this case cannot happen, as cobounds are trivial.
-  SN:=Subgroup( S, Filtered(GeneratorsOfGroup(S),i-> not i in N));
+  SN:=SubgroupNC( S, Filtered(GeneratorsOfGroup(S),i-> not i in N));
   if Dimension(ocr.oneCoboundaries)=Dimension(ocr.oneCocycles)  then
       Info(InfoComplement,2,"CONextCocycles: H^1 is trivial" );
       K:=ocr.complement;
@@ -364,7 +366,7 @@ end );
 ##  Get the conjugacy classes of complements in case <ocr.module> is central.
 ##
 InstallGlobalFunction( CONextCentral, function( cor, ocr, S )
-  local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
+local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
 
   # Try to split <ocr.group>
   K:=ocr.group;
@@ -400,7 +402,7 @@ InstallGlobalFunction( CONextCentral, function( cor, ocr, S )
   # If  the  one  cohomology  group  is trivial, there is only one class of
   # complements.  Correct  the  blockstabilizer and return. If we only want
   # normal complements, this cannot happen, as the cobounds are trivial.
-  SN:=Subgroup( S, Filtered(GeneratorsOfGroup(S),i-> not i in N));
+  SN:=SubgroupNC( S, Filtered(GeneratorsOfGroup(S),i-> not i in N));
   if Dimension(ocr.oneCoboundaries)=Dimension(ocr.oneCocycles)  then
       Info(InfoComplement,2,"CONextCocycles: H^1 is trivial" );
       K:=ocr.complement;
@@ -534,7 +536,7 @@ end );
 ##  S: fuser, K: Complements in, M: Complements to
 ##
 InstallGlobalFunction( CONextComplements, function( cor, S, K, M )
-local   L,  p,  C,  ocr;
+local   p, ocr;
 
   Assert(1,IsSubgroup(K,M));
 
@@ -584,7 +586,7 @@ local   L,  p,  C,  ocr;
       if IsBound(cor.condition) and not cor.condition(cor, K)  then
 	return [];
       fi;
-      S:=Subgroup( S, Filtered(GeneratorsOfGroup(S),i->not i in M));
+      S:=SubgroupNC( S, Filtered(GeneratorsOfGroup(S),i->not i in M));
       S:=CONextCentralizer( ocr,
 	InducedPcgs(cor.pcgs,S), K );
       return [rec( complement:=K, centralizer:=S )];
@@ -667,7 +669,7 @@ local r,a,a0,FG,nextStep,C,found,i,time,hpcgs,ipcgs;
     # ourselves.
     ipcgs:=InducedPcgs(cor.home,E[i]);
     hpcgs:=cor.home mod ipcgs;
-    FG:=GroupByPcgs(hpcgs);
+    FG:=PcGroupWithPcgs(hpcgs);
     a:=GroupHomomorphismByImagesNC(G,FG,cor.home,
       Concatenation(FamilyPcgs(FG),List(ipcgs,i->One(FG))));
     SetKernelOfMultiplicativeGeneralMapping( a, E[i] );
@@ -787,7 +789,7 @@ Assert(1,cor.pcgs=cor.hpcgs[nr+1]);
   Info(InfoComplement,1,"  starting search, time=",Runtime()-time);
   found:=false;
   nextStep( TrivialSubgroup( FG[1] ),
-            Subgroup( FG[1], cor.generators ), 1 );
+            SubgroupNC( FG[1], cor.generators ), 1 );
 
   # some timings
   Info(InfoComplement,1,"Complements: ",Length(C)," complement(s) found, ",
@@ -816,44 +818,56 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
   home:=HomePcgs(G);
   pcgs:=home;
   # Get the elementary abelian series through <N>.
-  E:=ElementaryAbelianSeries( [G,N,TrivialSubgroup(G)] );
-  E:=Filtered(E,i->IsSubgroup(N,i));
+  E:=ElementaryAbelianSeriesLargeSteps( [G,N,TrivialSubgroup(G)] );
+  E:=Filtered(E,i->IsSubset(N,i));
 
   # we require that the subgroups of E are subgroups of the Pcgs-Series
 
   if Length(InducedPcgs(home,G))<Length(home) # G is not the top group
      # nt not in series
      or ForAny(E,i->Size(i)>1 and
-       not i=Subgroup(G,home{[DepthOfPcElement(home,
+       not i=SubgroupNC(G,home{[DepthOfPcElement(home,
                                     InducedPcgs(home,i)[1])..Length(home)]}))
      then
+
     Info(InfoComplement,2,"Computing better pcgs" );
     # create a better pcgs
-#T It should be possible to use the other pcgs instead of computing a new pc
-#T group! AH
+
     pcgs:=InducedPcgs(home,G) mod InducedPcgs(home,N);
     for i in [2..Length(E)] do
       pcgs:=Concatenation(pcgs,
          InducedPcgs(home,E[i-1]) mod InducedPcgs(home,E[i]));
     od;
-    pcgs:=PcgsByPcSequenceCons(IsPcgsDefaultRep,
-      IsPcgs and IsPrimeOrdersPcgs,FamilyObj(One(G)),pcgs);
-    H:=GroupByPcgs(pcgs);
-    home:=pcgs; # this is our new home pcgs
-    a:=GroupHomomorphismByImagesNC(G,H,pcgs,GeneratorsOfGroup(H));
-    E:=List(E,i->Image(a,i));
-    if IsFunction(fun) then
-      fun2:=function(x)
-	      return fun(PreImage(a,x));
-            end;
+
+    if not IsPcGroup(G) then
+      # for non-pc groups arbitrary pcgs may become unfeasibly slow, so
+      # convert to a pc group in this case
+      pcgs:=PcgsByPcSequenceCons(IsPcgsDefaultRep,
+	IsPcgs and IsPrimeOrdersPcgs,FamilyObj(One(G)),pcgs,[]);
+
+      H:=PcGroupWithPcgs(pcgs);
+      home:=pcgs; # this is our new home pcgs
+      a:=GroupHomomorphismByImagesNC(G,H,pcgs,GeneratorsOfGroup(H));
+      E:=List(E,i->Image(a,i));
+      if IsFunction(fun) then
+	fun2:=function(x)
+		return fun(PreImage(a,x));
+	      end;
+      else
+	pcgs:=home;
+	fun2:=fun;
+      fi;
+      Info(InfoComplement,2,"transfer back" );
+      return List( COComplementsMain( H, Image(a,N), all, fun2 ), x -> rec(
+	    complement :=PreImage( a, x.complement ),
+	      centralizer:=PreImage( a, x.centralizer ) ) );
     else
-      pcgs:=home;
-      fun2:=fun;
+      pcgs:=PcgsByPcSequenceNC(FamilyObj(home[1]),pcgs);
+      IsPrimeOrdersPcgs(pcgs); # enforce setting
+      H:= GroupByGenerators( pcgs );
+      home:=pcgs;
     fi;
-    Info(InfoComplement,2,"transfer back" );
-    return List( COComplementsMain( H, Image(a,N), all, fun2 ), x -> rec(
-          complement :=PreImage( a, x.complement ),
-            centralizer:=PreImage( a, x.centralizer ) ) );
+
   fi;
 
   # if <G> and <N> are coprime <G> splits over <N>

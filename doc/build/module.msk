@@ -6,13 +6,39 @@
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %%
-\Chapter{Modules}
+\PreliminaryChapter{Modules}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Generating modules}
 
 \Declaration{IsLeftOperatorAdditiveGroup}
 \Declaration{IsLeftModule}
+
+\beginexample
+gap> V:= FullRowSpace( Rationals, 3 );
+( Rationals^3 )
+gap> IsLeftModule( V );
+true
+\endexample
+
 \Declaration{GeneratorsOfLeftOperatorAdditiveGroup}
 \Declaration{GeneratorsOfLeftModule}
+
+\beginexample
+gap> V:= FullRowSpace( Rationals, 3 );;
+gap> GeneratorsOfLeftModule( V );
+[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
+\endexample
+
 \Declaration{AsLeftModule}
+
+\beginexample
+gap> coll:= [ [0*Z(2),0*Z(2)], [Z(2),0*Z(2)], [0*Z(2),Z(2)], [Z(2),Z(2)] ];
+[ <a GF2 vector of length 2>, <a GF2 vector of length 2>, 
+  <a GF2 vector of length 2>, <a GF2 vector of length 2> ]
+gap> AsLeftModule( GF(2), coll );
+<vector space of dimension 2 over GF(2)>
+\endexample
 
 \Declaration{IsRightOperatorAdditiveGroup}
 \Declaration{IsRightModule}
@@ -21,33 +47,102 @@
 
 \Declaration{LeftModuleByGenerators}
 
+\beginexample
+gap> coll:= [ [Z(2),0*Z(2)], [0*Z(2),Z(2)], [Z(2),Z(2)] ];;
+gap> V:= LeftModuleByGenerators( GF(16), coll );
+<vector space over GF(2^4), with 3 generators>
+\endexample
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Submodules}
 
 \Declaration{Submodule}
+
+\beginexample
+gap> coll:= [ [Z(2),0*Z(2)], [0*Z(2),Z(2)], [Z(2),Z(2)] ];;
+gap> V:= LeftModuleByGenerators( GF(16), coll );; 
+gap> W:= Submodule( V, [ coll[1], coll[2] ] );
+<vector space over GF(2^4), with 2 generators>
+gap> Parent( W ) = V;
+true
+\endexample
+
 \Declaration{SubmoduleNC}
 \Declaration{ClosureLeftModule}
+
+\beginexample
+gap> V:= LeftModuleByGenerators( Rationals, [ [ 1, 0, 0 ], [ 0, 1, 0 ] ] );
+<vector space over Rationals, with 2 generators>
+gap> ClosureLeftModule( V, [ 1, 1, 1 ] );
+<vector space over Rationals, with 3 generators>
+\endexample
+
 \Declaration{TrivialSubmodule}
+
+\beginexample
+gap> V:= LeftModuleByGenerators( Rationals, [ [ 1, 0, 0 ], [ 0, 1, 0 ] ] );;
+gap> TrivialSubmodule( V );
+<vector space over Rationals, with 0 generators>
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Free Modules}
 
 \Declaration{IsFreeLeftModule}
 \Declaration{FreeLeftModule}
-\Declaration{AsFreeLeftModule}
+
+\beginexample
+gap> V:= FreeLeftModule( Rationals, [ [ 1, 0, 0 ], [ 0, 1, 0 ] ], "basis" );
+<vector space of dimension 2 over Rationals>
+\endexample
+
+%W \Declaration{AsFreeLeftModule}
+
 \Declaration{Dimension}
+
+\beginexample
+gap> V:= FreeLeftModule( Rationals, [ [ 1, 0 ], [ 0, 1 ], [ 1, 1 ] ] );;       
+gap> Dimension( V );
+2
+\endexample
+
 \Declaration{IsFiniteDimensional}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\beginexample
+gap> V:= FreeLeftModule( Rationals, [ [ 1, 0 ], [ 0, 1 ], [ 1, 1 ] ] );;
+gap> IsFiniteDimensional( V );
+true
+\endexample
 
 \Declaration{UseBasis}
 
-\Declaration{IsRowModuleRep}
-\Declaration{IsMatrixModuleRep}
+\beginexample
+gap> V:= FreeLeftModule( Rationals, [ [ 1, 0 ], [ 0, 1 ], [ 1, 1 ] ] );;
+gap> UseBasis( V, [ [ 1, 0 ], [ 1, 1 ] ] );
+gap> V;
+<vector space of dimension 2 over Rationals> # now V knows its dimension
+\endexample
+
+
+\Declaration{IsRowModule}
+\Declaration{IsMatrixModule}
 \Declaration{IsFullRowModule}
 \Declaration{FullRowModule}
+
+\beginexample
+gap> V:= FullRowModule( Integers, 5 );
+( Integers^5 )
+\endexample
+
 \Declaration{IsFullMatrixModule}
 \Declaration{FullMatrixModule}
+
+\beginexample
+gap> FullMatrixModule( GaussianIntegers, 3, 6 );
+( GaussianIntegers^[ 3, 6 ] )
+\endexample
+
+
 \Declaration{IsHandledByNiceBasis}
 

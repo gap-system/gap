@@ -179,8 +179,10 @@ Obj             SuccFF;
 #define TYPE_FF(ff)             (ELM_PLIST( TypeFF, ff ))
 */
 Obj             TypeFF;
+Obj             TypeFF0;
 
 Obj             TYPE_FFE;
+Obj             TYPE_FFE0;
 
 
 /****************************************************************************
@@ -513,7 +515,7 @@ FF              FiniteField (
     UInt                d )
 {
     FF                  ff;             /* finite field, result            */
-    Obj                 bag;            /* successor table bag             */
+    Obj                 bag1, bag2;     /* successor table bags            */
     FFV *               succ;           /* successor table                 */
     FFV *               indx;           /* index table                     */
     UInt                q;              /* size of finite field            */
@@ -538,10 +540,10 @@ FF              FiniteField (
     /* allocate a bag for the finite field and one for a temporary         */
     q = 1;
     for ( i = 1; i <= d; i++ ) q *= p;
-    bag  = NewBag( T_PERM2, q * sizeof(FFV) );
-    indx = (FFV*)ADDR_OBJ( bag );
-    bag  = NewBag( T_PERM2, q * sizeof(FFV) );
-    succ = (FFV*)ADDR_OBJ( bag );
+    bag1  = NewBag( T_PERM2, q * sizeof(FFV) );
+    bag2  = NewBag( T_PERM2, q * sizeof(FFV) );
+    indx = (FFV*)ADDR_OBJ( bag1 );
+    succ = (FFV*)ADDR_OBJ( bag2 );
 
     /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
     /*N 1990/02/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
@@ -592,9 +594,14 @@ FF              FiniteField (
     /* enter the finite field in the tables                                */
     ASS_LIST( CharFF, ff, INTOBJ_INT(p) );
     ASS_LIST( DegrFF, ff, INTOBJ_INT(d) );
-    ASS_LIST( SuccFF, ff, bag );
-    bag = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
-    ASS_LIST( TypeFF, ff, bag );
+    ASS_LIST( SuccFF, ff, bag2 );
+    CHANGED_BAG(SuccFF);
+    bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
+    ASS_LIST( TypeFF, ff, bag1 );
+    CHANGED_BAG(TypeFF);
+    bag1 = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
+    ASS_LIST( TypeFF0, ff, bag1 );
+    CHANGED_BAG(TypeFF0);
 
     /* return the finite field                                             */
     return ff;
@@ -731,6 +738,9 @@ Obj FunDEGREE_FFE_DEFAULT (
 Obj             TypeFFE (
     Obj                 ffe )
 {
+  if (VAL_FFE(ffe) == 0)
+    return TYPE_FF0( FLD_FFE( ffe ) );
+  else
     return TYPE_FF( FLD_FFE( ffe ) );
 }
 
@@ -1588,6 +1598,12 @@ Obj             PowFFEInt (
         vR = -vR;
     }
 
+    /* catch the case when vL is zero.                                     */
+    if( vL == 0 ) return NEW_FFE( fX, (vR == 0 ? 1 : 0 ) );
+
+    /* reduce vR modulo the order of the multiplicative group first.       */
+    vR %= *sX;
+
     /* compute and return the result                                       */
     vX = POW_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
@@ -1603,7 +1619,7 @@ Obj PowFFEFFE (
     Obj                 opR )
 {
     /* get the field for the result                                        */
-    while ( CHAR_FF( FLD_FFE(opL) ) != CHAR_FF( FLD_FFE(opR) ) ) {
+    if ( CHAR_FF( FLD_FFE(opL) ) != CHAR_FF( FLD_FFE(opR) ) ) {
         opR = ErrorReturnObj(
           "FFE operations: characteristic of conjugating element must be %d",
           (Int)CHAR_FF(FLD_FFE(opL)), 0L,
@@ -1947,6 +1963,7 @@ static Int InitKernel (
 
     /* install the kind function                                           */
     ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
+    ImportFuncFromLibrary( "TYPE_FFE0", &TYPE_FFE0 );
     TypeObjFuncs[ T_FFE ] = TypeFFE;
 
     /* create the fields and integer conversion bags                       */
@@ -1954,6 +1971,7 @@ static Int InitKernel (
     InitGlobalBag( &DegrFF, "src/finfield.c:DegrFF" );
     InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
     InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
+    InitGlobalBag( &TypeFF0, "src/finfield.c:TypeFF0" );
     InitGlobalBag( &IntFF, "src/finifield.c:IntFF" );
 
     /* install the functions that handle overflow                          */
@@ -2018,6 +2036,9 @@ static Int InitLibrary (
 
     TypeFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( TypeFF, 0 );
+
+    TypeFF0 = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( TypeFF0, 0 );
 
     IntFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( IntFF, 0 );

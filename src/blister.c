@@ -144,11 +144,11 @@ Obj TypeBlist (
     kinds  = TYPES_LIST_FAM( family );
 
     /* get the kind, if it is not known, compute it                        */
-    kind = ELM0_LIST( kinds, ktype-T_BLIST+1 );
+    kind = ELM0_LIST( kinds, (Int)(ktype-T_BLIST+1) );
     if ( kind == 0 ) {
         kind = CALL_2ARGS( TYPE_LIST_HOM,
                            family, INTOBJ_INT(ktype-T_BLIST+1) );
-        ASS_LIST( kinds, ktype-T_BLIST+1, kind );
+        ASS_LIST( kinds, (Int)(ktype-T_BLIST+1), kind );
     }
 
     /* return the kind                                                     */
@@ -996,8 +996,8 @@ Int IsBlist (
         isBlist = 1;
     }
 
-    /* if <list> is not a list, its not a boolean list (convert to list)   */
-    else if ( ! IS_LIST( list ) ) {
+    /* if <list> is not a small list, its not a boolean list (convert to list)   */
+    else if ( ! IS_SMALL_LIST( list ) ) {
         isBlist = 0;
     }
 
@@ -1045,7 +1045,7 @@ Int IsBlistConv (
     }
 
     /* if <list> is not a list, its not a boolean list (convert to list)   */
-    else if ( ! IS_LIST(list) ) {
+    else if ( ! IS_SMALL_LIST(list) ) {
         isBlist = 0;
     }
 
@@ -1281,21 +1281,22 @@ Obj FuncBLIST_LIST (
     long                s, t;           /* elements of a range             */
 
     /* get and check the arguments                                         */
-    while ( ! IS_LIST(list) ) {
+    while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "BlistList: <list> must be a list (not a %s)",
+            "BlistList: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can return a small list for <list>" );
     }
-    while ( ! IS_LIST(sub) ) {
+    while ( ! IS_SMALL_LIST(sub) ) {
         sub = ErrorReturnObj(
-            "BlistList: <sub> must be a list (not a %s)",
+            "BlistList: <sub> must be a small list (not a %s)",
             (Int)TNAM_OBJ(sub), 0L,
-            "you can return a list for <sub>" );
+            "you can return a small list for <sub>" );
     }
 
     /* for a range as subset of a range, it is extremly easy               */
-    if ( IS_RANGE(list) && IS_RANGE(sub) ) {
+    if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
+          && GET_INC_RANGE( sub ) == 1) {
 
         /* allocate the boolean list and get pointer                       */
         lenList  = GET_LEN_RANGE( list );
@@ -1309,6 +1310,7 @@ Obj FuncBLIST_LIST (
         t = INT_INTOBJ( GET_ELM_RANGE( sub, 1 ) );
         if ( s <= t )  i = t - s + 1;
         else           i = 1;
+
         if ( i + lenSub - 1 <= lenList )  j = i + lenSub - 1;
         else                              j = lenList;
 
@@ -1323,7 +1325,7 @@ Obj FuncBLIST_LIST (
     }
 
     /* for a list as subset of a range, we need basically no search        */
-    else if ( IS_RANGE(list)
+    else if ( IS_RANGE(list) && GET_INC_RANGE( list) == 1
           && (T_PLIST <= TNUM_OBJ(sub)
            && TNUM_OBJ(sub) <= T_PLIST_CYC_SSORT) ) {
 
@@ -1530,11 +1532,11 @@ Obj FuncLIST_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
-    while ( ! IS_LIST( list ) ) {
+    while ( ! IS_SMALL_LIST( list ) ) {
         list = ErrorReturnObj(
-            "ListBlist: <list> must be a list (not a %s)",
+            "ListBlist: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can return a small list for <list>" );
     }
     /* get and check the second argument                                   */
     while ( ! IsBlistConv( blist ) ) {
@@ -1907,10 +1909,21 @@ Obj FuncSUBTR_BLIST (
 
     /* return nothing, this function is a procedure */ return 0; }
 
+
 /****************************************************************************
 **
 **
+*F  MakeImmutableBlist( <blist> )
+*/
 
+void MakeImmutableBlist( Obj blist )
+{
+  RetypeBag(blist, IMMUTABLE_TNUM(TNUM_OBJ(blist)));
+}
+
+/****************************************************************************
+**
+**
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -2346,6 +2359,7 @@ static Int InitKernel (
         PosListFuncs    [ t1 +IMMUTABLE ] = PosBlist;
         PlainListFuncs  [ t1            ] = PlainBlist;
         PlainListFuncs  [ t1 +IMMUTABLE ] = PlainBlist;
+	MakeImmutableObjFuncs [ t1      ] = MakeImmutableBlist;
     }
     IsSSortListFuncs[ T_BLIST_NSORT            ] = IsSSortBlistNot;
     IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = IsSSortBlistNot;

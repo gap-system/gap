@@ -11,22 +11,37 @@ BUILD = ../../etc/buildman.pe
 
 default: ._all
 
-all: ._all
+all:
+	rm -f ._*
+	make ._all
+
+test: 
+	$(BUILD) -f config.testall
 
 ._all: ../ref/manual.dvi
 	touch ._all
 
-../ref/manual.dvi: ._coll ._groups ._grppc ._rings ._number ._mapping \
-     ._oper ._ratfun ._grplib ._alg ._linalg ._fp
+../ref/manual.dvi: ._coll ._basic ._groups ._grppc ._rings ._number \
+	._mapping ._oper ._ratfun ._grplib ._alg ._linalg ._fp \
+	._install ._environ ._options ._system ._relation ._rws ._trans \
+	._fpsemi ._tom ._ctbl ._grpchain ._prog
 	(cd ../ref;tex manual)
 	fgrep "undefined" ../ref/manual.log
 
-._coll: config.coll coll.msk lists.msk string.msk domain.msk record.msk \
-      combinat.msk boolean.msk
+._system: config.system streams.msk
+	$(BUILD) -f config.system
+	touch ._system
+
+._coll: config.coll coll.msk lists.msk string.msk record.msk domain.msk\
+	combinat.msk boolean.msk
 	$(BUILD) -f config.coll
 	touch ._coll
 
-._groups: config.groups groups.msk grpprod.msk
+._basic: config.basic addmagma.msk magma.msk monoid.msk semigrp.msk
+	$(BUILD) -f  config.basic
+	touch ._basic
+
+._groups: config.groups groups.msk grpprod.msk grpmat.msk
 	$(BUILD) -f config.groups
 	touch ._groups
 
@@ -34,11 +49,12 @@ all: ._all
 	$(BUILD) -f config.grppc
 	touch ._grppc
 
-._fp: config.fp wordass.msk grpfp.msk pres.msk
+._fp: config.fp word.msk wordass.msk grpfp.msk pres.msk
 	$(BUILD) -f config.fp
 	touch ._fp
 
-._rings: config.rings rings.msk module.msk fields.msk fieldfin.msk vspc.msk
+._rings: config.rings rings.msk module.msk fields.msk fieldfin.msk \
+	fldabnum.msk vspc.msk
 	$(BUILD) -f config.rings
 	touch ._rings
 
@@ -46,7 +62,8 @@ all: ._all
 	$(BUILD) -f config.linalg
 	touch ._linalg
 
-._number: config.number integers.msk numtheor.msk padics.msk cyclotom.msk
+._number: config.number integers.msk numtheor.msk rational.msk cyclotom.msk \
+	unknown.msk padics.msk
 	$(BUILD) -f config.number
 	touch ._number
 
@@ -58,7 +75,11 @@ all: ._all
 	$(BUILD) -f config.oper
 	touch ._oper
 
-._ratfun: config.ratfun ratfun.msk
+._options: config.options options.msk
+	$(BUILD) -f config.options
+	touch ._options
+
+._ratfun: config.ratfun ratfun.msk algfld.msk
 	$(BUILD) -f config.ratfun
 	touch ._ratfun
 
@@ -66,6 +87,50 @@ all: ._all
 	$(BUILD) -f config.grplib
 	touch ._grplib
 
-._alg: config.alg algebra.msk alglie.msk
+._alg: config.alg algebra.msk alglie.msk mgmring.msk
 	$(BUILD) -f config.alg
 	touch ._alg
+
+._environ: config.environ language.msk debug.msk objects.msk types.msk mloop.msk function.msk
+	$(BUILD) -f config.environ
+	touch ._environ
+
+._install: config.install install.msk run.msk sharepkg.msk
+	$(BUILD) -f config.install
+	touch ._install
+
+._relation: config.relation relation.msk
+	$(BUILD) -f config.relation
+	touch ._relation
+
+._rws: config.rws rws.msk
+	$(BUILD) -f config.rws
+	touch ._rws
+
+._trans: config.trans trans.msk
+	$(BUILD) -f config.trans
+	touch ._trans
+
+._fpsemi: config.fpsemi fpsemi.msk
+	$(BUILD) -f config.fpsemi
+	touch ._fpsemi
+
+._tom: config.tom tom.msk
+	$(BUILD) -f config.tom
+	touch ._tom
+
+._ctbl: config.ctbl ctbl.msk ctblfuns.msk ctbllibr.msk ctblmaps.msk \
+        ctblmono.msk
+	$(BUILD) -f config.ctbl
+	touch ._ctbl
+
+._grpchain: config.grpchain hash2.msk quogphom.msk gptransv.msk \
+        grpchain.msk
+	$(BUILD) -f config.grpchain
+	touch ._grpchain
+
+._prog: config.prog intrfc.msk
+	$(BUILD) -f config.prog
+	(cd ../prg;tex manual)
+	touch ._prog
+

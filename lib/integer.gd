@@ -15,41 +15,57 @@
 Revision.integer_gd :=
     "@(#)$Id$";
 
-#############################################################################
-##
-##  defined in the kernel, just for the manual
-#F  IsInt(<obj>)
-##
-##  tests whether `obj' is an integer
-
-#  DeclareGlobalFunction("IsInt");
-
-
 
 #############################################################################
 ##
-#C  IsIntegers(<obj>)
-##  is the defining category for `Integers'
+#C  IsIntegers( <obj> )
+#C  IsPositiveIntegers( <obj> )
+#C  IsNonnegativeIntegers( <obj> )
+##
+##  are the defining categories for the domains `Integers',
+##  `PositiveIntegers', and `NonnegativeIntegers'.
+##
 DeclareCategory( "IsIntegers", IsEuclideanRing and IsFLMLOR );
+
+DeclareCategory( "IsPositiveIntegers", IsSemiringWithOne );
+
+DeclareCategory( "IsNonnegativeIntegers", IsSemiringWithOneAndZero );
+
 
 #############################################################################
 ##
 #V  Integers  . . . . . . . . . . . . . . . . . . . . .  ring of the integers
-##  is the ring of integers.
+#V  PositiveIntegers  . . . . . . . . . . . . . semiring of positive integers
+#V  NonnegativeIntegers . . . . . . . . . .  semiring of nonnegative integers
+##
+##  These global variables represent the ring of integers and the semirings
+##  of positive and nonnegative integers, respectively.
+##
 DeclareGlobalVariable( "Integers", "ring of integers" );
+
+DeclareGlobalVariable( "PositiveIntegers", "semiring of positive integers" );
+
+DeclareGlobalVariable( "NonnegativeIntegers",
+    "semiring of nonnegative integers" );
 
 
 #############################################################################
 ##
-#C  IsGaussianIntegers  . . . . . . . defining category of `GaussianIntegers'
-##  is the defining category for `GaussianIntegers'
+#C  IsGaussianIntegers( <obj> )
+##
+##  is the defining category for the domain `GaussianIntegers'.
+##
 DeclareCategory( "IsGaussianIntegers", IsEuclideanRing and IsFLMLOR );
+
 
 #############################################################################
 ##
 #V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
-##  is the ring of Gaussian integers. This is the subring $Z[i]$ of the
-##  complex numbers, where $i$ is a root of -1.
+##
+##  is the ring of Gaussian integers.
+##  This is the subring $Z[i]$ of the complex numbers,
+##  where $i$ is a square root of $-1$.
+##
 DeclareGlobalVariable( "GaussianIntegers", "ring of Gaussian integers" );
 
 
@@ -62,17 +78,7 @@ DeclareGlobalVariable( "GaussianIntegers", "ring of Gaussian integers" );
 ##  This is used in `IsPrimeInt' and `FactorsInt' to cast out small primes
 ##  quickly.
 ##
-Primes := Immutable(
-  [   2,  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
-     67, 71, 73, 79, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,
-    157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,
-    257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,
-    367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,
-    467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,
-    599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,
-    709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,
-    829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,
-    967,971,977,983,991,997 ] );
+DeclareGlobalVariable( "Primes", "list of the 168 primes less than 1000" );
 
 
 #############################################################################
@@ -90,182 +96,13 @@ Primes := Immutable(
 ##  Instead, it is not uncommon to factor the same integer twice.
 ##  Likewise, once we have tested that $2^{31}-1$ is prime, factoring
 ##  $2^{62}-1$ is very cheap, because the former divides the latter.
-#T I do not catch the point: $2^{62}-1$ is not a prime because $62$ is not
-#T a prime, no matter whether we have tested whether $2^{31}-1$ is prime ...
 ##
-##  This list is initialized to contain all the prime factors of the integers
-##  $2^n-1$ with $n < 201$,  $3^n-1$ with $n < 101$,  $5^n-1$ with $n < 101$,
-##  $7^n-1$ with $n < 91$, $11^n-1$ with $n < 79$, and $13^n-1$ with $n < 37$
-##  that are larger than $10^7$.
+##  This list is initialized to contain at least all those prime factors of
+##  the integers $2^n-1$ with $n \< 201$, $3^n-1$ with $n \< 101$,
+##  $5^n-1$ with $n \< 101$, $7^n-1$ with $n \< 91$, $11^n-1$ with $n \< 79$,
+##  and $13^n-1$ with $n \< 37$ that are larger than $10^7$.
 ##
-DeclareGlobalVariable( "Primes2",
-    "sorted list of large primes" );
-InstallFlushableValue( Primes2, [
-10047871, 10567201, 10746341, 12112549, 12128131, 12207031, 12323587,
-12553493, 12865927, 13097927, 13264529, 13473433, 13821503, 13960201,
-14092193, 14597959, 15216601, 15790321, 16018507, 18837001, 20381027,
-20394401, 20515111, 20515909, 21207101, 21523361, 22253377, 22366891,
-22996651, 23850061, 25781083, 26295457, 28325071, 28878847, 29010221,
-29247661, 29423041, 29866451, 32234893, 32508061, 36855109, 41540861,
-42521761, 43249589, 44975113, 47392381, 47763361, 48544121, 48912491,
-49105547, 49892851, 51457561, 55527473, 56409643, 56737873, 59302051,
-59361349, 59583967, 60816001, 62020897, 65628751, 69566521, 75068993,
-76066181, 85280581, 93507247, 96656723, 97685839,
-106431697, 107367629, 109688713, 110211473, 112901153, 119782433, 127540261,
-134818753, 134927809, 136151713, 147300841, 160465489, 164511353, 177237331,
-183794551, 184481113, 190295821, 190771747, 193707721, 195019441, 202029703,
-206244761, 212601841, 212885833, 228511817, 231769777, 234750601, 272010961,
-283763713, 297315901, 305175781, 308761441, 319020217, 359390389, 407865361,
-420778751, 424256201, 432853009, 457315063, 466344409, 510810301, 515717329,
-527093491, 529510939, 536903681, 540701761, 550413361, 603926681, 616318177,
-632133361, 715827883, 724487149, 745988807, 815702161, 834019001, 852133201,
-857643277, 879399649,
-1001523179, 1036745531, 1065264019, 1106131489, 1169382127, 1390636259,
-1503418321, 1527007411, 1636258751, 1644512641, 1743831169, 1824179209,
-1824726041, 1826934301, 1866013003, 1990415149, 2127431041, 2147483647,
-2238236249, 2316281689, 2413941289, 2481791513, 2550183799, 2576743207,
-2664097031, 2767631689, 2903110321, 2931542417, 3158528101, 3173389601,
-3357897971, 4011586307, 4058036683, 4278255361, 4375578271, 4562284561,
-4649919401, 4698932281, 4795973261, 4885168129, 5960555749, 6809710909,
-7068569257, 7151459701, 7484047069, 7685542369, 7830118297, 7866608083,
-8209475377, 8831418697, 9598959833,
-10879733611, 11898664849, 12447002677, 13455809771, 13564461457, 13841169553,
-13971969971, 14425532687, 15085812853, 15768033143, 15888756269, 16148168401,
-17154094481, 17189128703, 19707683773, 22434744889, 23140471537, 23535794707,
-24127552321, 25480398173, 25829691707, 25994736109, 27669118297, 27989941729,
-28086211607, 30327152671, 32952799801, 33057806959, 35532364099, 39940132241,
-43872038849, 45076044553, 47072139617, 50150933101, 54410972897, 56625998353,
-60726444167, 61070817601, 62983048367, 70845409351, 76831835389, 77158673929,
-77192844961, 78009515593, 83960385389, 86950696619, 88959882481, 99810171997,
-115868130379, 125096112091, 127522693159, 128011456717, 128653413121,
-131105292137, 152587500001, 158822951431, 159248456569, 164504919713,
-165768537521, 168749965921, 229890275929, 241931001601, 269089806001,
-282429005041, 332207361361, 374857981681, 386478495679, 392038110671,
-402011881627, 441019876741, 447600088289, 487824887233, 531968664833,
-555915824341, 593554036769, 598761682261, 641625222857, 654652168021,
-761838257287, 810221830361, 840139875599, 918585913061,
-1030330938209, 1047623475541, 1113491139767, 1133836730401, 1273880539247,
-1534179947851, 1628744948329, 1654058017289, 1759217765581, 1856458657451,
-2098303812601, 2454335007529, 2481357870461, 2549755542947, 2663568851051,
-2879347902817, 2932031007403, 3138426605161, 3203431780337, 3421169496361,
-3740221981231, 4363953127297, 4432676798593, 4446437759531, 4534166740403,
-4981857697937, 5625767248687, 6090817323763, 6493405343627, 6713103182899,
-6740339310641, 7432339208719, 8090594434231, 8157179360521, 8737481256739,
-8868050880709, 9361973132609, 9468940004449, 9857737155463,
-10052678938039, 10979607179423, 13952598148481, 15798461357509,
-18158209813151, 22125996444329, 22542470482159, 22735632934561,
-23161037562937, 23792163643711, 24517014940753, 24587411156281,
-28059810762433, 29078814248401, 31280679788951, 31479823396757,
-33232924804801, 42272797713043, 44479210368001, 45920153384867,
-49971617830801, 57583418699431, 62911130477521, 67280421310721,
-70601370627701, 71316922984999, 83181652304609, 89620825374601,
-110133112994711, 140737471578113, 145295143558111, 150224123975857,
-204064664440913, 205367807127911, 242099935645987, 270547105429567,
-303567967057423, 332584516519201, 434502978835771, 475384700124973,
-520518327319589, 560088668384411, 608459012088799, 637265428480297,
-643170158708221, 707179356161321, 926510094425921, 990643452963163,
-1034150930241911, 1066818132868207, 1120648576818041, 1357105535093947,
-1416258521793067, 1587855697992791, 1611479891519807, 1628413557556843,
-1958423494433591, 2134387368610417, 2646507710984041, 2649263870814793,
-2752135920929651, 2864226125209369, 4889988840047743, 5420506947192709,
-6957533874046531, 9460375336977361, 9472026608675509,
-12557612956332313, 13722816749522711, 14436295738510501, 18584774046020617,
-18624275418445601, 20986207825565581, 21180247636732981, 22666879066355177,
-27145365052629449, 46329453543600481, 50544702849929377, 59509429687890001,
-60081451169922001, 70084436712553223, 76394148218203559, 77001139434480073,
-79787519018560501, 96076791871613611,
-133088039373662309, 144542918285300809, 145171177264407947,
-153560376376050799, 166003607842448777, 177722253954175633,
-196915704073465747, 316825425410373433, 341117531003194129,
-380808546861411923, 489769993189671059, 538953023961943033,
-581283643249112959, 617886851384381281, 625552508473588471,
-645654335737185721, 646675035253258729, 658812288653553079,
-768614336404564651, 862970652262943171, 909456847814334401,
-1100876018364883721, 1195857367853217109, 1245576402371959291,
-1795918038741070627, 2192537062271178641, 2305843009213693951,
-2312581841562813841, 2461243576713869557, 2615418118891695851,
-2691614274040036601, 3011347479614249131, 3358335487319458201,
-3421093417510114543, 3602372010909260861, 3747607031112307667,
-3999088279399464409, 4710883168879506001, 5079304643216687969,
-5559917315850179173, 5782172113400990737, 6106505825833677713,
-6115909044841454629, 9213624084535989031, 9520972806333758431,
-10527743181888260981, 14808607715315782481, 18446744069414584321,
-26831423036065352611, 32032215596496435569, 34563155350221618511,
-36230454570129675721, 58523123221688392679, 82064241848634269407,
-86656268566282183151, 87274497124602996457,
-157571957584602258799, 162715052426691233701, 172827552198815888791,
-195489390796456327201, 240031591394168814433, 344120456368919234899,
-358475907408445923469, 846041103974872866961,
-2519545342349331183143, 3658524738455131951223, 3976656429941438590393,
-5439042183600204290159, 8198241112969626815581,
-11600321878916922053491, 12812432238302009985937, 17551032119981679046729,
-18489605314740987765913, 27665283091695977275201, 42437717969530394595211,
-57912614113275649087721, 61654440233248340616559, 63681511996418550459487,
-105293313660391861035901, 155285743288572277679887, 201487636602438195784363,
-231669654363683130095909, 235169662395069356312233, 402488219476647465854701,
-535347624791488552837151, 604088623657497125653141, 870035986098720987332873,
-950996059627210897943351,
-1412900479108654932024439, 1431185706701868962383741,
-2047572230657338751575051, 2048568835297380486760231,
-2741672362528725535068727, 3042645634792541312037847,
-3745603812007166116831643, 4362139336229068656094783,
-4805345109492315767981401, 5042939439565996049162197,
-7289088383388253664437433, 8235109336690846723986161,
-9680647790568589086355559, 9768997162071483134919121,
-9842332430037465033595921,
-11053036065049294753459639, 11735415506748076408140121,
-13842607235828485645766393, 17499733663152976533452519,
-26273701844015319144827917, 75582488424179347083438319,
-88040095945103834627376781,
-100641220283951395639601683, 140194179307171898833699259,
-207617485544258392970753527, 291280009243618888211558641,
-303309617049998388989376043, 354639323684545612988577649,
-618970019642690137449562111, 913242407367610843676812931,
-7222605228105536202757606969, 7248808599285760001152755641,
-8170509011431363408568150369, 8206973609150536446402438593,
-9080418348371887359375390001,
-14732265321145317331353282383, 15403468930064931175264655869,
-15572244900182528777225808449, 18806327041824690595747113889,
-21283620033217629539178799361, 37201708625305146303973352041,
-42534656091583268045915654719, 48845962828028421155731228333,
-123876132205208335762278423601, 134304196845099262572814573351,
-172974812463239310024750410929, 217648180992721729506406538251,
-227376585863531112677002031251,
-1786393878363164227858270210279, 2598696228942460402343442913969,
-2643999917660728787808396988849, 3340762283952395329506327023033,
-5465713352000770660547109750601,
-28870194250662203210437116612769, 70722308812401674174993533367023,
-78958087694609321439660131899631, 88262612316754526107621113329689,
-162259276829213363391578010288127, 163537220852725398851434325720959,
-177635683940025046467781066894531,
-2679895157783862814690027494144991, 3754733257489862401973357979128773,
-5283012903770196631383821046101707, 5457586804596062091175455674392801,
-10052011757370829033540932021825161, 11419697846380955982026777206637491,
-38904276017035188056372051839841219,
-1914662449813727660680530326064591907, 7923871097285295625344647665764672671,
-9519524151770349914726200576714027279,
-10350794431055162386718619237468234569,
-170141183460469231731687303715884105727,
-1056836588644853738704557482552056406147,
-6918082374901313855125397665325977135579,
-235335702141939072378977155172505285655211,
-360426336941693434048414944508078750920763,
-1032670816743843860998850056278950666491537,
-1461808298382111034194027645506019619578037,
-79638304766856507377778616296087448490695649,
-169002145064468556765676975247413756542145739,
-8166146875847876762859119015147004762656450569,
-18607929421228039083223253529869111644362732899,
-33083146850190391025301565142735000331370209599,
-138497973518827432485604572537024087153816681041,
-673267426712748387612994804392183645147042355211,
-1489459109360039866456940197095433721664951999121,
-4884164093883941177660049098586324302977543600799,
-466345922275629775763320748688970211803553256223529,
-26828803997912886929710867041891989490486893845712448833,
-153159805660301568024613754993807288151489686913246436306439,
-1051153199500053598403188407217590190707671147285551702341089650185945215953
-] );
+DeclareGlobalVariable( "Primes2", "sorted list of large primes" );
 
 
 #############################################################################
@@ -273,34 +110,24 @@ InstallFlushableValue( Primes2, [
 #F  AbsInt( <n> ) . . . . . . . . . . . . . . .  absolute value of an integer
 ##
 ##  `AbsInt' returns the absolute value of the integer <n>, i.e., <n> if <n>
-##  is positive, -<n> if <n> is negative and 0 if <n> is 0 (see "SignInt").
+##  is positive, -<n> if <n> is negative and 0 if <n> is 0.
 ##
-AbsInt :=function ( n )
-    if 0 <= n  then return  n;
-    else            return -n;
-    fi;
-end;
+##  `AbsInt' is a special case of the general operation `EuclideanDegree'
+##  see~"EuclideanDegree").
+##
+DeclareGlobalFunction( "AbsInt" );
 #T attribute `Abs' ?
 #T should be internal method!
 
 
 #############################################################################
 ##
-##  defined in the kernel, just for the manual
-#F  QuoInt(<n>,<m>)
-##
-##  returns the integral part of the quotient <n>/<m>.
-
-#  DeclareGlobalFunction("QuoInt");
-
-#############################################################################
-##
 #F  BestQuoInt( <n>, <m> )
 ##
-##  `BestQuoInt'  returns the best quotient <q>  of the integers <n> and <m>.
-##  This is the quotient such that `<n>-<q>\*<m>' has minimal absolute value.
+##  `BestQuoInt' returns the best quotient <q> of the integers <n> and <m>.
+##  This is the quotient such that `<n>-<q>*<m>' has minimal absolute value.
 ##  If there are two quotients whose remainders have the same absolute value,
-##  then the quotient with the smaller absolute value is choosen.
+##  then the quotient with the smaller absolute value is chosen.
 ##
 DeclareGlobalFunction( "BestQuoInt" );
 
@@ -328,21 +155,23 @@ DeclareGlobalFunction( "ChineseRem" );
 #F  CoefficientsQadic( <i>, <q> ) . . . . . .  <q>-adic representation of <i>
 ##
 ##  returns the <q>-adic representation of the integer <i> as a list <l> of
-##  coefficients. $i=sum_{j=0} q^j\cdot l[j+1]$.
+##  coefficients where $i = \sum_{j=0} q^j \cdot l[j+1]$.
 ##
 DeclareGlobalFunction( "CoefficientsQadic" );
+
 
 #############################################################################
 ##
 #F  CoefficientsMultiadic( <ints>, <int> )
 ##
-##  returns the multiadic expansion modulo the integers given in <ints>
-##  (ascending order).
-##  It returns a list of coefficients in *reverse* order than <ints>.
+##  returns the multiadic expansion of the integer <int> modulo the integers
+##  given in <ints> (in ascending order).
+##  It returns a list of coefficients in the *reverse* order to that in <ints>.
 ##
 #T  The syntax is quite weird and should be adapted according to
-##  `CoefficientsQadic'.
+#T  `CoefficientsQadic'.
 DeclareGlobalFunction( "CoefficientsMultiadic" );
+
 
 #############################################################################
 ##
@@ -355,10 +184,9 @@ DeclareGlobalFunction( "CoefficientsMultiadic" );
 ##  Since the  set of divisors of 0 is infinite calling `DivisorsInt( 0 )'
 ##  causes an error.
 ##
-##  `DivisorsInt' may call `FactorsInt' (see "FactorsInt") to obtain the
-##  prime factors.
-##  `Sigma' (see "Sigma") computes the sum, `Tau' (see "Tau") the number of
-##  positive divisors.
+##  `DivisorsInt' may call `FactorsInt' to obtain the prime factors.
+##  `Sigma' and `Tau' (see~"Sigma" and "Tau") compute the sum and the
+##  number of positive divisors, respectively.
 ##
 DeclareGlobalFunction( "DivisorsInt");
 
@@ -366,6 +194,7 @@ DeclareGlobalFunction( "DivisorsInt");
 #############################################################################
 ##
 #F  FactorsInt( <n> ) . . . . . . . . . . . . . . prime factors of an integer
+#F  FactorsInt( <n> : RhoTrials := <trials>)
 ##
 ##  `FactorsInt' returns a list of prime factors of the integer <n>.
 ##
@@ -374,7 +203,7 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  The first element has the same sign as <n>, the others are positive.
 ##  For any integer <n> it holds that `Product( FactorsInt( <n> ) ) = <n>'.
 ##
-##  Note that `FactorsInt' uses a probable-primality test (see "IsPrimeInt").
+##  Note that `FactorsInt' uses a probable-primality test (see~"IsPrimeInt").
 ##  Thus `FactorsInt' might return a list which contains composite integers.
 ##
 ##  The time taken by   `FactorsInt'  is approximately  proportional to   the
@@ -386,8 +215,10 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  $10^{10}$.    If <n>    contains   multiple  factors   larger  than  that
 ##  `FactorsInt' may not be able to factor <n> and will then signal an error.
 ##
-##  The general ring operation `Factors' will call `FactorsInt' for
-##  integers.
+##  `FactorsInt' is used in a method for the general operation `Factors'.
+##
+##  In the second form, FactorsInt calls FactorsRho with a limit of <trials>
+##  on the number of trials is performs. The  default is 8192.
 ##
 DeclareGlobalFunction( "FactorsInt" );
 
@@ -396,10 +227,26 @@ DeclareGlobalFunction( "FactorsInt" );
 ##
 #F  Gcdex( <m>, <n> ) . . . . . . . . . . greatest common divisor of integers
 ##
-##  returns the extended gcd of <m> and <n>. This is a record with
-##  components `gcd' and `coeff1' to `coeff4', such that
-##  $`gcd'=`coeff1'\cdot m+`coeff2'\cdot n$ and
-##  $0=`coeff3'\cdot m+`coeff4'\cdot n$.
+##  returns a record <g> describing the extended greatest common divisor of
+##  <m> and <n>.
+##  The component `gcd' is this gcd,
+##  the components `coeff1' and `coeff2' are integer cofactors such that
+##  `<g>.gcd =  <g>.coeff1 * <m> + <g>.coeff2 * <n>',
+##  and the components `coeff3' and `coeff4' are integer cofactors such that
+##  `0 = <g>.coeff3 * <m> + <g>.coeff4 * <n>'.
+##
+##  If <m> and <n> both are nonzero, `AbsInt( <g>.coeff1 )' is less than or
+##  equal to `AbsInt(<n>) / (2 * <g>.gcd)' and `AbsInt( <g>.coeff2 )' is less
+##  than or equal to `AbsInt(<m>) / (2 * <g>.gcd)'.
+##  
+##  If <m> or <n> or both are zero `coeff3' is `-<n> / <g>.gcd' and
+##  `coeff4' is `<m> / <g>.gcd'.
+##  
+##  The coefficients always form a unimodular matrix, i.e.,
+##  the determinant `<g>.coeff1 * <g>.coeff4 - <g>.coeff3 * <g>.coeff2'
+##  is $1$ or $-1$.
+#T not documented in the GAP 3 manual,
+#T shall this be an official function in GAP 4?
 ##
 DeclareGlobalFunction( "Gcdex" );
 
@@ -410,9 +257,7 @@ DeclareGlobalFunction( "Gcdex" );
 ##
 ##  tests if the integer <n> is divisible by 2.
 ##
-IsEvenInt := function( n )
-    return n mod 2 = 0;
-end;
+DeclareGlobalFunction( "IsEvenInt" );
 
 
 #############################################################################
@@ -421,29 +266,36 @@ end;
 ##
 ##  tests if the integer <n> is not divisible by 2.
 ##
-IsOddInt := function( n )
-    return n mod 2 = 1;
-end;
+DeclareGlobalFunction( "IsOddInt" );
 
 
 #############################################################################
 ##
 #F  IsPrimeInt( <n> ) . . . . . . . . . . . . . . . . . . .  test for a prime
+#F  IsProbablyPrimeInt( <n> ) . . . . . . . . . . . . . . .  test for a prime
 ##
 ##  `IsPrimeInt' returns `false'  if it can  prove that <n>  is composite and
 ##  `true' otherwise.
 ##  By  convention `IsPrimeInt(0) = IsPrimeInt(1) = false'
 ##  and we define `IsPrimeInt( -<n> ) = IsPrimeInt( <n> )'.
 ##
-##  `IsPrimeInt' will return  `true' for all   prime $n$.  `IsPrimeInt'  will
+##  `IsPrimeInt' will return  `true' for every prime $n$.  `IsPrimeInt'  will
 ##  return `false' for all composite $n \< 10^{13}$ and for all composite $n$
 ##  that have   a factor  $p \<  1000$.   So for  integers $n    \< 10^{13}$,
 ##  `IsPrimeInt' is  a    proper primality test.    It  is  conceivable  that
 ##  `IsPrimeInt' may  return `true' for some  composite $n > 10^{13}$, but no
 ##  such $n$ is currently known.  So for integers $n > 10^{13}$, `IsPrimeInt'
-##  is a  probable-primality test.  If composites  that fool  `IsPrimeInt' do
-##  exist,  they would be  extremly rare, and finding one  by  pure chance is
+##  is a  probable-primality test. Therefore `IsPrimeInt' will issue a
+##  warning when called with an argument $>10^{13}$. (The function
+##  `IsProbablyPrimeInt' will do the same calculations but not issue a
+##  warning.)
+##
+##  If composites  that fool  `IsPrimeInt' do
+##  exist,  they would be  extremely rare, and finding one  by  pure chance
+##  might be 
 ##  less likely than finding a bug in {\GAP}.
+##  We would appreciate being informed about any example of a composite
+##  number <n> for which `IsPrimeInt' returns `true'.
 ##
 ##  `IsPrimeInt' is a deterministic algorithm, i.e., the computations involve
 ##  no random numbers, and repeated calls will always return the same result.
@@ -456,12 +308,12 @@ end;
 ##  The time taken by `IsPrimeInt' is approximately proportional to the third
 ##  power  of  the number  of  digits of <n>.   Testing numbers  with several
 ##  hundreds digits is quite feasible.
-
-##  The general ring operation `IsPrime' will call `IsPrimeInt' for
-##  integers.
+##
+##  `IsPrimeInt' is a method for the general operation `IsPrime'.
 ##
 UnbindGlobal( "IsPrimeInt" );
 DeclareGlobalFunction( "IsPrimeInt" );
+DeclareGlobalFunction( "IsProbablyPrimeInt" );
 
 
 #############################################################################
@@ -486,7 +338,9 @@ DeclareGlobalFunction( "IsPrimePowerInt" );
 ##
 #F  LcmInt( <m>, <n> )  . . . . . . . . . . least common multiple of integers
 ##
-##  returns the Lcm of the integers <m> and <n>.
+##  returns the least common multiple of the integers <m> and <n>.
+##
+##  `LcmInt' is a method used by the general function `Lcm'.
 ##
 DeclareGlobalFunction( "LcmInt" );
 
@@ -497,31 +351,12 @@ DeclareGlobalFunction( "LcmInt" );
 ##
 ##  `LogInt'   returns  the  integer part  of  the logarithm of  the positive
 ##  integer  <n> with  respect to   the positive integer   <base>, i.e.,  the
-##  largest  positive integer <exp> such  that $base^{exp}  \<= n$.  `LogInt'
+##  largest positive integer <exp> such  that $base^{exp} \leq  n$.  `LogInt'
 ##  will signal an error if either <n> or <base> is not positive.
 ##
+##  `LogInt' is a method for the general operation `Log' (see~"Log").
+##
 DeclareGlobalFunction( "LogInt" );
-
-
-#############################################################################
-##
-#F  MoebiusMu( <n> )  . . . . . . . . . . . . . .  Moebius inversion function
-##
-##  `MoebiusMu'  computes the value  of  Moebius  inversion function for  the
-##  integer <n>.   This  is 0 for  integers  which are not squarefree,  i.e.,
-##  which are divided by a square $r^2$.  Otherwise it is 1 if <n> has a even
-##  number and -1 if <n> has an odd number of prime factors.
-##
-##  The importance   of $\mu$ stems  from the   so called  inversion formula.
-##  Suppose $f(n)$  is a function  defined on the  positive integers and  let
-##  $g(n)=\sum_{d \mid n}{f(d)}$. Then $f(n)=\sum_{d \mid n}{\mu(d) g(n/d)}$.
-##  As a special case we have  $\phi(n) = \sum_{d  \mid n}{\mu(d) n/d}$ since
-##  $n = \sum_{d \mid n}{\phi(d)}$ (see "Phi").
-##
-##  `MoebiusMu' usually   spends  all of   its    time   factoring <n>   (see
-##  "FactorsInt").
-##
-DeclareGlobalFunction( "MoebiusMu" );
 
 
 #############################################################################
@@ -539,9 +374,15 @@ DeclareGlobalFunction( "NextPrimeInt" );
 
 #############################################################################
 ##
-#F  PowerModInt(<r>,<e>,<m>)  . . . . . . power of one integer modulo another
+#F  PowerModInt( <r>, <e>, <m> )  . . . . power of one integer modulo another
 ##
 ##  returns $r^e\pmod{m}$ for integers <r>,<e> and <m> ($e\ge 0$).
+##  Note that using `<r> ^ <e> mod <m>' will generally  be slower,
+##  because it can not reduce intermediate results the way `PowerModInt'
+##  does but would compute `<r>^<e>' first and then reduce the result
+##  afterwards.
+##
+##  `PowerModInt' is a method for the general operation `PowerMod'.
 ##
 DeclareGlobalFunction( "PowerModInt" );
 
@@ -564,7 +405,7 @@ DeclareGlobalFunction( "PrevPrimeInt" );
 #F  PrimePowersInt( <n> ) . . . . . . . . . . . . . . . . prime powers of <n>
 ##
 ##  returns the prime factorization of the integer <n> as a list
-##  $[p_1,e_1,\ldots,p_n,e_n]$ with $n=\prod{i=1}^n p_i^{e_i}$.
+##  $[ p_1, e_1, \ldots, p_n, e_n ]$ with $n = \prod_{i=1}^n p_i^{e_i}$.
 ##
 DeclareGlobalFunction( "PrimePowersInt" );
 
@@ -578,8 +419,8 @@ DeclareGlobalFunction( "PrimePowersInt" );
 ##  If the optional integer argument <k> is not given it defaults to 2, i.e.,
 ##  `RootInt' returns the integer part of the square root in this case.
 ##
-##  If  <n> is positive  `RootInt' returns  the  largest positive integer $r$
-##  such that $r^k \<=  n$.  If <n>  is negative and  <k>  is  odd  `RootInt'
+##  If  <n> is positive, `RootInt' returns  the  largest positive integer $r$
+##  such that $r^k \leq n$.  If <n>  is negative and  <k>  is  odd  `RootInt'
 ##  returns `-RootInt( -<n>,  <k> )'.  If  <n> is negative   and <k> is  even
 ##  `RootInt' will cause an error.  `RootInt' will also cause an error if <k>
 ##  is 0 or negative.
@@ -589,46 +430,12 @@ DeclareGlobalFunction( "RootInt" );
 
 #############################################################################
 ##
-#F  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
-##
-##  `Sigma' returns the sum of the positive divisors of the integer <n>.
-##
-##  `Sigma' is a multiplicative arithmetic function, i.e., if $n$ and $m$ are
-##  relative prime we have $\sigma(n m) = \sigma(n) \sigma(m)$.
-##
-##  Together with the formula $\sigma(p^e) = (p^{e+1}-1) / (p-1)$ this allows
-##  us to compute $\sigma(n)$.
-##
-##  Integers  $n$ for which $\sigma(n)=2 n$ are called perfect.  Even perfect
-##  integers are exactly of the form $2^{n-1}(2^n-1)$ where $2^n-1$ is prime.
-##  Primes of the form  $2^n-1$ are called *Mersenne  primes*, the known ones
-##  are obtained for $n =$ 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521,
-##  607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701,
-##  23209,  44497, 86243, 110503, 132049,  216091, 756839, and 859433.  It is
-##  not known whether odd  perfect integers  exist, however \cite{BC89}  show
-##  that any such integer must have at least 300 decimal digits.
-##
-##  `Sigma' usually spends most of its time factoring <n> (see "FactorsInt").
-##
-DeclareGlobalFunction( "Sigma" );
-
-
-#############################################################################
-##
 #F  SignInt( <n> )  . . . . . . . . . . . . . . . . . . .  sign of an integer
 ##
 ##  `SignInt' returns the sign of the integer <n>, i.e., 1 if <n> is
-##  positive, -1 if <n> is negative and 0 if <n> is 0 (see "AbsInt").
+##  positive, -1 if <n> is negative and 0 if <n> is 0.
 ##
-SignInt := function ( n )
-    if   0 =  n  then
-        return 0;
-    elif 0 <= n  then
-        return 1;
-    else
-        return -1;
-    fi;
-end;
+DeclareGlobalFunction( "SignInt" );
 #T attribute `Sign' (also for e.g. permutations)?
 #T should be internal method!
 
@@ -648,24 +455,9 @@ DeclareGlobalFunction( "SmallestRootInt" );
 
 #############################################################################
 ##
-#F  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
-##
-##  `Tau' returns the number of the positive divisors of the integer <n>.
-##
-##  `Tau' is a multiplicative arithmetic function, i.e., if $n$ and  $m$  are
-##  relative prime we have $\tau(n m) = \tau(n) \tau(m)$.
-##  Together with the formula $\tau(p^e) = e+1$ this allows us to compute
-##  $\tau(n)$.
-##  `Tau' usually spends most of its time factoring <n> (see "FactorsInt").
-##
-DeclareGlobalFunction( "Tau" );
-
-
-#############################################################################
-##
 #F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
 ##
-##  Prints the prime factorization of the integer <n> in human-readable
+##  prints the prime factorization of the integer <n> in human-readable
 ##  form.
 ##
 DeclareGlobalFunction( "PrintFactorsInt" );
@@ -675,6 +467,4 @@ DeclareGlobalFunction( "PrintFactorsInt" );
 ##
 #E  integer.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
 

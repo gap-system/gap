@@ -942,4 +942,5 @@ TEXT1,
 LIBTABLE.LOADSTATUS.ctbmathi:="userloaded";
 #############################################################################
 ##
-#E  ctbmathi.tbl. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

@@ -9,32 +9,254 @@
 %%
 \Chapter{Number Theory}
 
-{\GAP} provides a couple of elementary number theoretic functions. Most of
-these deal with the group of integers modulo <m> under multiplication. This
-group is called the *prime residue group*.
+\index{prime residue group}
+
+\FileHeader{numtheor}[1]
+
+\Declaration{InfoNumtheor}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Prime Residues}
 
 \Declaration{PrimeResidues}
-\Declaration{OrderMod}
-\Declaration{LogMod}
+\index{prime residue group}
 
-\Declaration{PrimitiveRootMod}
-\Declaration{IsPrimitiveRootMod}
+\beginexample
+gap> PrimeResidues( 0 );  PrimeResidues( 1 );  PrimeResidues( 20 );
+[  ]
+[ 0 ]
+[ 1, 3, 7, 9, 11, 13, 17, 19 ]
+\endexample
 
 \Declaration{Phi}
+\index{order!of the prime residue group}%
+\index{prime residue group!order}\index{Eulers totient function}
+
+\beginexample
+gap> Phi( 12 );  Phi( 2^13-1 );  Phi( 2^15-1 );
+4
+8190        # which proves that 2^(13)-1 is a prime
+27000
+\endexample
+
 \Declaration{Lambda}
+\index{Carmichaels lambda function}\index{prime residue group!exponent}%
+\index{exponent!of the prime residue group}
+
+\beginexample
+gap> Lambda( 10 );
+4
+gap> Lambda( 30 );
+4
+gap> Lambda( 561 );
+80        # 561 is the smallest Carmichael number
+\endexample
+
+\Declaration{GeneratorsPrimeResidues}
+
+\beginexample
+gap> GeneratorsPrimeResidues( 1 );
+rec( primes := [  ], exponents := [  ], generators := [  ] )
+gap> GeneratorsPrimeResidues( 4*3 );
+rec( primes := [ 2, 3 ], exponents := [ 2, 1 ], generators := [ 7, 5 ] )
+gap> GeneratorsPrimeResidues( 8*9*5 );
+rec( primes := [ 2, 3, 5 ], exponents := [ 3, 2, 1 ],
+  generators := [ [ 271, 181 ], 281, 217 ] )
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Primitive Roots and Discrete Logarithms}
+
+\Declaration{OrderMod}
+\index{multiplicative order of an integer}
+
+\beginexample
+gap> OrderMod( 2, 7 );  OrderMod( 3, 7 );
+3
+6        # 3 is a primitive root modulo 7
+\endexample
+
+\Declaration{LogMod}
+\index{logarithm!discrete}
+
+\beginexample
+gap> l:= LogMod( 2, 5, 7 );  5^l mod 7 = 2;
+4
+true
+gap> LogMod( 1, 3, 3 );  LogMod( 2, 3, 3 );
+0
+fail
+\endexample
+
+\Declaration{PrimitiveRootMod}
+\index{primitive root modulo an integer}%
+\index{prime residue group!generator}%
+\index{generator!of the prime residue group}
+
+\beginexample
+gap> PrimitiveRootMod( 409 );  PrimitiveRootMod( 541, 2 );
+21        # largest primitive root for a prime less than 2000
+10
+gap> PrimitiveRootMod( 337, 327 );  PrimitiveRootMod( 30 );
+fail        # 327 is the largest primitive root mod 337
+fail        # there exists no primitive root modulo 30
+\endexample
+
+\Declaration{IsPrimitiveRootMod}
+\index{test!for a primitive root}%
+\index{prime residue group!generator}%
+\index{generator!of the prime residue group}
+
+\beginexample
+gap> IsPrimitiveRootMod( 2, 541 ); IsPrimitiveRootMod( -539, 541 );
+true
+true        # same computation as above
+gap> IsPrimitiveRootMod( 4, 541 );
+false
+gap> ForAny( [1..29], r -> IsPrimitiveRootMod( r, 30 ) );
+false        # there does not exist a primitive root modulo 30
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Roots Modulo Integers}
+
 \Declaration{Jacobi}
+\index{quadratic residue}%
+\index{residue!quadratic}
+
+\beginexample
+gap> Jacobi( 11, 35 );
+1         # 9^2 = 11 mod 35
+gap> Jacobi( 6, 35 );
+-1        # thus there is no r such that r^2 = 6 mod 35
+gap> Jacobi( 3, 35 );
+1         # even though there is no r with r^2 = 3 mod 35
+\endexample
+
 \Declaration{Legendre}
+\index{quadratic residue}%
+\index{residue!quadratic}
+
+\beginexample
+gap> Legendre( 5, 11 );
+1         # 4^2 = 5 mod 11
+gap> Legendre( 6, 11 );
+-1        # thus there is no r such that r^2 = 6 mod 11
+gap> Legendre( 3, 35 );
+-1        # thus there is no r such that r^2 = 3 mod 35
+\endexample
 
 \Declaration{RootMod}
+\index{quadratic residue}%
+\index{residue!quadratic}%
+\index{root!of an integer modulo another}
+
+\beginexample
+gap> RootMod( 64, 1009 );
+1001        # note 'RootMod' does not return 8 in this case but -8
+gap> RootMod( 64, 3, 1009 );
+518
+gap> RootMod( 64, 5, 1009 );
+656
+gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
+>          x -> x mod 1009 );
+[ 1001, 8 ]        # set of all square roots of 64 mod 1009
+\endexample
+
 \Declaration{RootsMod}
+
+\beginexample
+gap> RootsMod( 1, 7*31 );   # the same as `RootsUnityMod( 7*31 )'
+[ 1, 92, 125, 216 ]
+gap> RootsMod( 7, 7*31 );
+[ 21, 196 ]
+gap> RootsMod( 5, 7*31 );
+[  ]
+gap> RootsMod( 1, 5, 7*31 );
+[ 1, 8, 64, 78, 190 ]
+\endexample
+
 \Declaration{RootsUnityMod}
+\index{modular roots}%
+\index{root!of 1 modulo an integer}
+
+\beginexample
+gap> RootsUnityMod( 7*31 );  RootsUnityMod( 3, 7*31 );
+[ 1, 92, 125, 216 ]
+[ 1, 25, 32, 36, 67, 149, 156, 191, 211 ]
+gap> RootsUnityMod( 5, 7*31 );
+[ 1, 8, 64, 78, 190 ]
+gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
+>          x -> x mod 1009 );
+[ 1001, 8 ]        # set of all square roots of 64 mod 1009
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Multiplicative Arithmetic Functions}
 
 \Declaration{Sigma}
+
+\begintt
+gap> Sigma( 0 );
+Error, Sigma: <n> must not be 0
+\endtt
+\beginexample
+gap> Sigma( 1 );  Sigma( 1009 );  Sigma( 8128 ) = 2*8128;
+1
+1010        # thus 1009 is a prime
+true        # thus 8128 is a perfect number
+\endexample
+
+
 \Declaration{Tau}
+
+\begintt
+gap> Tau( 0 );
+Error, Tau: <n> must not be 0
+\endtt
+\beginexample
+gap> Tau( 1 );  Tau( 1013 );  Tau( 8128 );  Tau( 36 );
+1
+2        # thus 1013 is a prime
+14
+9        # the result is odd if and only if the argument is a perfect square
+\endexample
+
 \Declaration{MoebiusMu}
+
+\beginexample
+gap> MoebiusMu( 60 );  MoebiusMu( 61 );  MoebiusMu( 62 );
+0
+-1
+1
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Miscellaneous}
+
 \Declaration{TwoSquares}
+\index{representation!as a sum of two squares}
+
+\beginexample
+gap> TwoSquares( 5 ); TwoSquares( 11 );
+[ 1, 2 ]
+fail            # no representation exists
+gap> TwoSquares( 16 );  TwoSquares( 45 );
+[ 0, 4 ]
+[ 3, 6 ]        # 3 is the minimal possible gcd because 9 divides 45
+gap> TwoSquares( 125 );  TwoSquares( 13*17 );
+[ 2, 11 ]        # not [ 5, 10 ] because this has not minimal gcd
+[ 5, 14 ]        # [10,11] would be the other possible representation
+gap> TwoSquares( 848654483879497562821 );
+[ 6305894639, 28440994650 ]        # 848654483879497562821 is prime
+\endexample
 
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  
+%E  numtheor.msk  . . . . . . . . . . . . . . . . . . . . . . . ends here
 

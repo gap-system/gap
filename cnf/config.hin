@@ -12,8 +12,6 @@
 *D  debug flags (user edit-able)
 */
 
-/* define as maximal recursion depth of GAP functions calls                */
-/* #define DEBUG_RECURSION 5000 */
 
 
 /* * * * * * * * * *  saving/loading the workspace * * * * * * * * * * * * */
@@ -69,6 +67,9 @@
 /* define as empty if `inline' does not work                                */
 #undef inline
 
+/* define if most significant bits have smallest addresses                 */
+#undef WORDS_BIGENDIAN
+
 /* define as least offset which is still safe for an unaligned access      */
 #define C_LONG_ALIGN		@C_LONG_ALIGN@
 
@@ -89,6 +90,9 @@
 
 /* define as 1 if you have the include file "termio.h"                     */
 #define HAVE_TERMIO_H		0
+
+/* define as 1 if you have the include file "termios.h"                    */
+#define HAVE_TERMIOS_H		0
 
 /* define as 1 if you have the include file "sgtty.h"                      */
 #define HAVE_SGTTY_H		0
@@ -233,3 +237,12 @@
 
 /* define as 1 if you have `unlink'                                        */
 #define HAVE_UNLINK             0
+
+/****************************************************************************
+**
+*D  miscellaneous
+*/
+
+/* define if this is the Cygwin32 port */
+#define SYS_IS_CYGWIN32          0
+

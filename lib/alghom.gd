@@ -36,7 +36,8 @@ Revision.alghom_gd :=
 ##  the result will be multivalued.
 ##  Hence, in general it is not a mapping.
 ##  For constructing a linear map that is not
-##  necessarily multiplicative, we refer to `LeftModuleHomomorphismByImages'.
+##  necessarily multiplicative, we refer to `LeftModuleHomomorphismByImages'
+##  ("ref:leftmodulehomomorphismbyimages").
 ##  
 DeclareOperation( "AlgebraGeneralMappingByImages",
     [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ] );
@@ -145,6 +146,8 @@ DeclareOperation( "AlgebraWithOneHomomorphismByImagesNC",
 ##
 ##  is the homomorphism of algebras provided by the natural
 ##  projection map of <A> onto the quotient algebra <A>/<I>.
+##  This map can be used to take pre-images in the original algebra from
+##  elements in the quotient.
 ##
 DeclareOperation( "NaturalHomomorphismByIdeal",
     [ IsFLMLOR, IsFLMLOR ] );
@@ -157,17 +160,18 @@ DeclareOperation( "NaturalHomomorphismByIdeal",
 ##
 ##  `OperationAlgebraHomomorphism' returns an algebra homomorphism from the
 ##  $F$-algebra <A> into a matrix algebra over $F$ that describes the
-##  $F$-linear action of <A> on the basis <B> of a free left module resp.
-##  on the free left module <V> (in which case a basis of <V> is chosen),
-##  via the operation <opr>.
+##  $F$-linear action of <A> on the basis <B> of a free left module 
+##  respectively on the free left module <V> (in which case some basis of <V> 
+##  is chosen), via the operation <opr>.
 ##
 ##  The homomorphism need not be surjective.
 ##  The default value for <opr> is `OnRight'.
 ##
 ##  If <A> is an algebra-with-one then the operation homomorphism is an
 ##  algebra-with-one homomorphism because the identity of <A> must act
-##  trivially.
-##  (Of course this holds especially if <D> is in the kernel of the action.)
+##  as the identity.
+##
+#T  (Of course this holds especially if <D> is in the kernel of the action.)
 ##
 DeclareOperation( "OperationAlgebraHomomorphism",
     [ IsFLMLOR, IsBasis, IsFunction ] );
@@ -225,7 +229,7 @@ DeclareSynonymAttr( "IsomorphismMatrixAlgebra", IsomorphismMatrixFLMLOR );
 ##
 ##  is an element of the algebra <A> that maps the vector <v>
 ##  to the vector <w> under the linear operation described by the function
-##  <opr>.
+##  <opr>. If no such element exists then `fail' is returned.
 ##
 #T Would it be desirable to put this under `RepresentativeOperation'?
 #T (look at the code before you agree ...)

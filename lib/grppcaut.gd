@@ -6,7 +6,7 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.grppcaut_gd :=
-    "@(#)$Id: ";
+    "@(#)$Id$";
 
 #############################################################################
 ##

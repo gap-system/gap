@@ -10,6 +10,37 @@ Revision.randiso_gi :=
 
 #############################################################################
 ##
+#F FingerprintFF( G ) 
+##
+FingerprintFF := function( G )
+    local orb, ord, res, po, i, typ;
+
+    res := [ ];
+    for orb in Orbits( G, AsList( G ) ) do
+        ord := Order( orb[ 1 ] );
+        typ := [ ord, Length( orb ) ];
+        po := Set( FactorsInt( ord ) );
+        i := 1;
+        repeat
+            if not Primes[ i ] in po then
+                Add( typ, orb[ 1 ] ^ Primes[ i ]  in orb );
+            fi;
+            i := i + 1;
+        until Primes[ i ] > ord or i > 10;
+        Add( res, typ );
+    od;
+    res := Collected( res );
+    if Size( G ) mod 64 = 0 and Size( G ) mod 512 <> 0 then
+        Add( res, IdGroup( SylowSubgroup( G, 2 ) )[ 2 ] );
+    fi;
+    if Size( G ) mod 81 = 0 and Size( G ) mod 2187 <> 0 then
+        Add( res, IdGroup( SylowSubgroup( G, 3 ) )[ 2 ] );
+    fi;
+    return Flat( res );
+end;
+
+#############################################################################
+##
 #F OmegaAndLowerPCentralSeries( G )
 ##
 InstallMethod( OmegaAndLowerPCentralSeries, 
@@ -18,8 +49,8 @@ InstallMethod( OmegaAndLowerPCentralSeries,
                [IsPcGroup], 
                0,
 function( G )
-    local spec, first, i, ser1, ser2, ser3, pcgs, new, U, V, L, 
-          pcgsU, pcgsL, pcgsUL, pcgsV, gensV, gens, N, sizes, j, I;
+    local spec, first, i, ser1, ser2, pcgs, new, U, L, 
+          pcgsU, pcgsL, pcgsUL, gens, N, sizes, j;
 
     # first get LG series
     spec  := InducedPcgsWrtSpecialPcgs( G );
@@ -98,13 +129,20 @@ function( G )
     return new;
 end );
 
+InstallMethod( OmegaAndLowerPCentralSeries,
+  "general case: warn that no method available",true,[IsGroup],0,
+function(G)
+  Error("sorry, group identification is currently only",
+        " available for pc groups.");
+end);
+
 
 #############################################################################
 ##
 #F RelatorsCode( <code>, <size>, <gens> )
 ##
 RelatorsCode := function( code, size, gens )
-    local F, n1, f, l, mi, n, t1, indices, rels, g, i, uc, ll, rr,
+    local n1, f, l, mi, n, indices, rels, g, i, uc, ll, rr,
           t, j, z, z2;
 
     # get indices
@@ -178,12 +216,12 @@ end;
 ##
 #F PcGroupCode( <code>, <size> )
 ##
-PcGroupCode := function( code, size )
+InstallGlobalFunction( PcGroupCode, function( code, size )
     local F, gens; 
 
     # catch trivial case
     if size = 1 then
-        return Image( IsomorphismPcGroup( Group(()) ) );
+        return Image( IsomorphismPcGroup( GroupByGenerators( [], () ) ) );
     fi;
 
     # create free group
@@ -192,68 +230,14 @@ PcGroupCode := function( code, size )
 
     # usual case
     return PcGroupFpGroup( F / RelatorsCode( code, size, gens ) );
-end;
-
-#############################################################################
-##
-#F PcGroup768Code( <code>, <nilp-type>, <auto>, <rank> )
-##
-PcGroup768Code := function( code, nilp, aut, rank )
-    local F, gens, rels, i, j, tar, rel; 
-
-    # create free group
-    F := FreeGroup( 9 );
-    gens := GeneratorsOfGroup( F );
-
-    # usual case
-    if nilp = -1 then
-        return PcGroupFpGroup( F / RelatorsCode( code, 768, gens ) );
-    fi;
-
-    # nilpotent groups of size 768
-    if nilp = 0 then
-        rels := RelatorsCode( code, 256, gens{[ 1 .. 8 ]} );
-        Add( rels, gens[ 9 ]^3 );
-        return PcGroupFpGroup( F / rels );
-    fi;
-
-    if nilp = 2 then
-        rels := RelatorsCode( code, 256, gens{[ 1 .. 8 ]} );
-        Add( rels, gens[ 9 ]^3 );
-        aut := CoefficientsMultiadic( List( [ 1 .. rank ], x -> 2 ), aut );
-        for i in [ 1 .. rank ] do
-            if aut[ i ] = 1 then
-                Add( rels, Comm( gens[ 9 ], gens[ i ] ) / gens[ 9 ] );
-            fi;
-        od;
-        return PcGroupFpGroup( F / rels );
-    fi;
-
-    # 3-nilpotent groups of size 768
-    rels := RelatorsCode( code, 256, gens{[ 2 .. 9 ]} );
-    Add( rels, gens[ 1 ]^3 );
-    aut := CoefficientsMultiadic( [ 257,257,257,257,257,257,257,257 ], aut )
-             - 1;
-    for i in [ 1 .. 8 ] do
-        tar := CoefficientsMultiadic( [ 2,2,2,2,2,2,2,2 ], aut[ i ] );
-        rel := gens[ 1 ] ^ -1 * gens[ i + 1 ] ^ -1 * gens [ 1 ];
-        for j in [ 1 .. 8 ] do
-            if tar[ j ] = 1 then 
-                rel := rel * gens[ j + 1 ];
-            fi;
-        od;
-        Add( rels, rel );
-    od;
-    return PcGroupFpGroup( F / rels );
-
-end;
+end );
 
 #############################################################################
 ##
 #F CodePcgs( <pcgs> ) 
 ##
-CodePcgs := function( pcgs )
-    local code, indices, l, mi, i, base, nt, r, j, e, size;
+InstallGlobalFunction( CodePcgs, function( pcgs )
+    local code, indices, l, mi, i, base, nt, r, j, size;
 
     # basic structures
     l := Length( pcgs );
@@ -294,50 +278,55 @@ CodePcgs := function( pcgs )
     od;
 
     # code now non-trivial words
-    e := Enumerator( GroupOfPcgs( pcgs ) );
+    indices := List( [ 1 .. l ], x-> Product( indices{[ x + 1 .. l ]} ) );
     size := Size( GroupOfPcgs( pcgs ) );
     for i in nt do
-        code := code + base * (Position( e, i ) - 1 );
+        code := code + base * ( indices * ExponentsOfPcElement( pcgs, i ) );
         base := base * size;
     od;
     return code;
-end;
+end );
 
 #############################################################################
 ##
 #F CodePcGroup( <G> ) 
 ##
-CodePcGroup := function( G )
+InstallGlobalFunction( CodePcGroup, function( G )
     return CodePcgs( Pcgs( G ) );
-end;
+end );
 
 #############################################################################
 ##
 #F PcGroupCodeRec( coderec )
 ##
-PcGroupCodeRec := function( r )
+InstallGlobalFunction( PcGroupCodeRec, function( r )
     local H, pcgs, n;
     H := PcGroupCode( r.code, r.order );
 
     # add some information
-    SetIsFrattiniFree( H, r.isFrattiniFree );
-
-    pcgs := Pcgs(H);
-    n    := Length( pcgs );
-    SetFittingSubgroup( H, Subgroup( H, pcgs{[r.first[2]..n]} ) );
-    SetFrattiniSubgroup( H, Subgroup( H, pcgs{[r.first[3]..n]} ) );
-
-    if r.isFrattiniFree then
-        SetSocle( H, Subgroup( H, pcgs{[r.first[2]..n]} ) );
-        SetSocleComplement( H, Subgroup( H, pcgs{[1..r.first[2]-1]} ) );
+    if IsBound( r.isFrattiniFree ) then
+        SetIsFrattiniFree( H, r.isFrattiniFree );
     fi;
 
-    SetIsNilpotentGroup( H, r.first[2]=1 );
-    if not IsBool( r.socledim ) then
-        SetIsSupersolvableGroup( H, ForAll( r.socledim, x -> x=1 ) );
+    if IsBound( r.first ) then
+        pcgs := Pcgs(H);
+        n    := Length( pcgs );
+        SetFittingSubgroup( H, Subgroup( H, pcgs{[r.first[2]..n]} ) );
+        SetFrattiniSubgroup( H, Subgroup( H, pcgs{[r.first[3]..n]} ) );
+
+        if r.isFrattiniFree then
+            SetSocle( H, Subgroup( H, pcgs{[r.first[2]..n]} ) );
+            SetSocleComplement( H, Subgroup( H, pcgs{[1..r.first[2]-1]} ) );
+        fi;
+
+        SetIsNilpotentGroup( H, r.first[2]=1 );
+        if not IsBool( r.socledim ) and 
+           not HasIsSupersolvableGroup( H ) then
+            SetIsSupersolvableGroup( H, ForAll( r.socledim, x -> x=1 ) );
+        fi;
     fi;
     return H;
-end;
+end );
 
 #############################################################################
 ##
@@ -448,9 +437,10 @@ end;
 ##
 #F RandomSpecialPcgsCoded( G )
 ##
-RandomSpecialPcgsCoded := function( G )
+## Returns a random code defining a special pcgs of <G>.  
+InstallGlobalFunction( RandomSpecialPcgsCoded, function( G )
     local pcgs, l, weights, first, primes, sylow, npcs, i, s, n, p, S,
-          layer, sub, seq, pcgssys, ppcs, npcgs, pfirst, j, d, k;
+          seq, pcgssys, ppcs, pfirst, j, d, k;
 
     # compute the special pcgs
     pcgs := SpecialPcgs( G );
@@ -510,5 +500,142 @@ RandomSpecialPcgsCoded := function( G )
 
     # return code only
     return CodePcgs( seq );
-end;
+end );
+
+#############################################################################
+##
+#F RandomIsomorphismTest( list, n )
+##
+InstallGlobalFunction( RandomIsomorphismTest, function( list, n )
+    local codes, conds, code, found, i, j, k, l, rem, c;
+
+    # catch trivial case
+    if Length( list ) = 1 or Length( list ) = 0 then return list; fi;
+
+    # unpack
+    for i in [1..Length(list)] do
+        list[i].group := PcGroupCode( list[i].code, list[i].order );
+    od;
+
+    # set up
+    codes := List( list, x -> [x.code] );
+    conds := List( list, x -> 0 );
+    rem   := Length( list );
+    c := 0;
+
+    while Minimum( conds ) <= n and rem > 1 do
+        for i in [1..Length(list)] do
+            if Length( codes[i] ) > 0 then
+                code := RandomSpecialPcgsCoded( list[i].group );
+                if code in codes[i] then
+                    conds[i] := conds[i]+1;
+                fi;
+
+                found := false;
+                j     := 1;
+                while not found and j <= Length( list ) do
+                    if j <> i then
+                        if code in codes[j] then
+                            found := true;
+                        else 
+                            j := j + 1;
+                        fi;
+                    else 
+                        j := j + 1;
+                    fi;
+                od;
+
+                if found then
+                    k := Minimum( i, j );
+                    l := Maximum( i, j );
+                    codes[k] := Union( codes[k], codes[l] );
+                    codes[l] := [];
+                    conds[k] := 0;
+                    conds[l] := n+1;
+                    rem := rem - 1;
+                else
+                    AddSet( codes[i], code );
+                fi;
+            fi;
+        od;
+
+		# just for information
+        c := c+1;
+        if c mod 10 = 0 then
+            Info( InfoRandIso, 3, "     ", c, " loops, ", 
+                  rem, " groups ", 
+                  conds{ Filtered( [ 1 .. Length( list ) ],
+		  x -> Length( codes[ x ] ) > 0 ) }," doubles ",
+	 	  List( codes{ Filtered( [ 1 .. Length( list ) ],
+		  x -> Length( codes[ x ] ) > 0 ) }, Length ),
+		  " presentations");
+        fi;
+    od;
+    
+    # cut out information
+    for i in [1..Length(list)] do
+        Unbind( list[i].group );
+    od;
+
+    # and return
+    return list{ Filtered( [1..Length(codes)], x -> Length(codes[x])>0 ) };
+end );
+
+#############################################################################
+##
+#F ReducedByIsomorphisms( list ) 
+##
+InstallGlobalFunction( ReducedByIsomorphisms, function( list )
+    local subl, fins, i, fin, j, done,H;
+
+    # the trivial cases
+    if Length( list ) = 0 then return list; fi;
+
+    if Length( list ) = 1 then 
+        list[1].isUnique := true;
+        return list; 
+    fi;
+ 
+    Info( InfoRandIso, 1, "  reduce ", Length(list), " groups " );
+
+    # first split the list
+    Info( InfoRandIso, 2, "   Iso: split list by invariants ");
+    done  := [];
+    subl  := [];
+    fins  := [];
+    for i in [1..Length(list)] do
+        if list[i].isUnique then 
+            Add( done, list[i] );
+        else
+            H   := PcGroupCode( list[i].code, list[i].order );
+            fin := FingerprintFF( H );
+            fin := Concatenation( list[i].extdim, fin ); 
+            j   := Position( fins, fin );
+            if IsBool( j ) then
+                Add( subl, [list[i]] );
+                Add( fins, fin );
+            else
+                Add( subl[j], list[i] );
+            fi;
+        fi;
+    od;
+
+    # now remove isomorphic copies
+    for i in [1..Length(subl)] do
+        Info( InfoRandIso, 2, "   Iso: reduce list of length ", 
+                               Length(subl[i]));
+        subl[i] := RandomIsomorphismTest( subl[i], 10 );
+        if Length( subl[i] ) = 1 then
+            subl[i][1].isUnique := true;
+            Add( done, subl[i][1] );
+            Unbind( subl[i] );
+        fi;
+    od;
+
+    subl := Compacted( subl );
+    Sort( subl, function( x, y ) return Length(x)<Length(y); end );
+   
+    # return 
+    return Concatenation( done, subl );
+end );
 

@@ -30,7 +30,11 @@ local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
 
   # AH still: Try to find a more simple presentation if available.
 
-  q:=Image(h,G);
+  if Source(h)=G then
+    q:=ImagesSource(h);
+  else
+    q:=Image(h,G);
+  fi;
   fpi:=IsomorphismFpGroup(q);
   Info(InfoComplement,2,"using a presentation with ",
        Length(fpi!.genimages)," generators");
@@ -38,6 +42,7 @@ local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
                RelatorsOfFpGroup(Range(fpi)),
 	       List(fpi!.genimages,i->PreImagesRepresentative(fpi,i))];
 
+  Assert(1,ForAll(factorpres[3],i->Image(h,PreImagesRepresentative(h,i))=i));
   # initialize
   com:=[G];
   comgens:=[List(factorpres[3],i->PreImagesRepresentative(h,i))];
@@ -61,7 +66,7 @@ local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
       nlcomgens:=[];
       nlcen:=[];
       # compute complements
-      ocr:=rec(group:=com[j],
+      ocr:=rec(group:=ClosureGroup(com[j],s[i-1]),
                generators:=comgens[j],
 	       modulePcgs:=fpcgs,
 	       factorpres:=factorpres

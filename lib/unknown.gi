@@ -40,8 +40,8 @@ DeclareRepresentation( "IsUnknownDefaultRep",
 ##
 #V  UnknownsType
 ##
-UnknownsType := NewType( CyclotomicsFamily,
-    IsUnknown and IsUnknownDefaultRep );
+BindGlobal( "UnknownsType", NewType( CyclotomicsFamily,
+    IsUnknown and IsUnknownDefaultRep ) );
 
 
 #############################################################################
@@ -64,7 +64,7 @@ InstallMethod( Unknown,
 ##
 #M  Unknown( )  . . . . . . . . . . . . . . . . . . . construct a new unknown
 ##
-InstallOtherMethod( Unknown,
+InstallMethod( Unknown,
     "for empty argument",
     true,
     [], 0,
@@ -329,7 +329,5 @@ InstallMethod( String,
 
 #############################################################################
 ##
-#E  unknown.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

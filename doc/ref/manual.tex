@@ -27,18 +27,7 @@
 %F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
 %%
 \TitlePage{
-  \centerline{\titlefont GAP 4}\medskip
-%  \centerline{\titlefont ---}\medskip
-  \centerline{\titlefont Reference Manual}\vfill
-%  \centerline{\secfont by}\vfill
-  \centerline{\secfont The GAP Group}\bigskip
-  \centerline{\secfont Lehrstuhl D f\accent127ur Mathematik}\medskip
-  \centerline{\secfont RWTH, 52056 Aachen, Germany}\bigskip
-  \centerline{\secfont and}\bigskip
-  \centerline{\secfont School of Mathematical and Computational Sciences}
-    \medskip
-  \centerline{\secfont University of St.~Andrews, North Haugh, St.~Andrews,
-              Fife KY16 9SS, Scotland}
+\input refcover.tex
 }
 %
 %
@@ -59,61 +48,114 @@
 %F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \FrontMatter
-\immediate\write\citeout{\bs bibdata{mrabbrev,algebra,../manual}}
-\input ../tut/copyrigh
+\immediate\write\citeout{\bs bibdata{mrabbrev,../manual}}
+\input ../ref/copyrigh
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%F  Chapters  . . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
+%F  Chapters  . . . . . . . . . . . . . . . . . .  GAP 4 Reference Manual
 %%
 \Chapters
-\Input{environm}
+\Input{about}
+\Input{help}
+\Input{run}
 \Input{language}
+\Input{function}
+%
+\Input{mloop}
+\Input{debug}
+\Input{options}
 \Input{files}
 \Input{streams}
 \Input{process}
-\Input{debug}
-\Input{speedup}
+%
+\Input{objects}
+\Input{types}
+%
 \Input{integers}
+\Input{numtheor}
 \Input{rational}
+\Input{combinat}
 \Input{cyclotom}
+\Input{unknown}
+%
 \Input{boolean}
-\Input{coll}
+%
 \Input{lists}
+\Input{blist}
 \Input{vector}
 \Input{matrix}
 \Input{matint}
 \Input{string}
+%
 \Input{record}
-\Input{combinat}
+%
+\Input{coll}
 \Input{domain}
+\Input{mapping}
+\Input{relation}
+\Input{magma}
+%
+\Input{word}
+\Input{wordass}
+\Input{rws}
+%
+\Input{groups}
+\Input{grphomom}
+\Input{grpoper}
+\Input{permutat}
+\Input{grpperm}
+\Input{grpmat}
+\Input{pcgs}
+\Input{grppc}
+\Input{grpfp}
+\Input{pres}
+\Input{grpprod}
+\Input{grplib}
+%
+\Input{semigrp}
+\Input{monoid}
+\Input{fpsemi}
+\Input{trans}
+%
+\Input{addmagma}
 \Input{rings}
 \Input{module}
 \Input{fields}
 \Input{fieldfin}
+\Input{fldabnum}
 \Input{vspc}
-\Input{numtheor}
-\Input{groups}
-\Input{grpoper}
-\Input{permutat}
-\Input{grpperm}
-\Input{pcgs}
-\Input{grppc}
-\Input{wordass}
-\Input{grpfp}
-\Input{pres}
-\Input{mapping}
-\Input{grphomom}
-\Input{grpprod}
-\Input{grplib}
-\Input{ratfun}
-\Input{numfield}
 \Input{algebra}
 \Input{alglie}
+\Input{mgmring}
+%
+\Input{ratfun}
+\Input{algfld}
 \Input{padics}
 \Input{meataxe}
+%
+\Input{tom}
+%
+\Input{ctbl}
+\Input{ctblfuns}
+\Input{ctblmaps}
+\Input{ctblmono}
+\Input{ctbllibr}
+%
+\Input{hash2}
+\Input{quogphom}
+\Input{gptransv}
+\Input{grpchain}
+%
 \Input{install}
+\Input{sharepkg}
+% create chapter index entry for copyright
+\PseudoInput{copyrigh}{Copyright}
+
+% fill doublepage before appendix
+\ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
+
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -121,7 +163,6 @@
 %F  Appendices  . . . . . . . . . . . .  Extending GAP 4 Reference Manual
 %%
 \Appendices
-\input glossary
 \Bibliography
 \Index
 %
@@ -135,4 +176,4 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%E  manual.tex	. . . . . . . . . . . . . . . . . . . . . . . . ends here
+%E  manual.tex  . . . . . . . . . . . . . . . . . . . . . . . . ends here

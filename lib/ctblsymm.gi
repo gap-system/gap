@@ -380,7 +380,7 @@ end );
 ##
 #V  CharTableSymmetric  . . . .  generic character table of symmetric groups.
 ##
-CharTableSymmetric := rec(
+InstallValue( CharTableSymmetric, Immutable( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -388,7 +388,7 @@ CharTableSymmetric := rec(
     size:=
         Factorial,
     specializedname:=
-        ( n -> Concatenation( "S", String(n) ) ),
+        ( n -> Concatenation( "Sym(", String(n), ")" ) ),
     text:=
         "generic character table for symmetric groups",
     classparam:=
@@ -478,14 +478,14 @@ CharTableSymmetric := rec(
         end,
     domain:=
         IsPosInt
-    );
+    ) ) );
 
 
 #############################################################################
 ##
 #V  CharTableAlternating  . .  generic character table of alternating groups.
 ##
-CharTableAlternating := rec(
+InstallValue( CharTableAlternating, Immutable( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -493,7 +493,7 @@ CharTableAlternating := rec(
     size:=
         ( n -> Factorial(n)/2 ),
     specializedname:=
-        ( n -> Concatenation( "A", String(n) ) ),
+        ( n -> Concatenation( "Alt(", String(n), ")" ) ),
     text:=
         "generic character table for alternating groups",
     classparam:=
@@ -626,7 +626,7 @@ CharTableAlternating := rec(
             end ] ],
     domain:=
         ( n -> IsInt(n) and n > 1 )
-    );
+    ) ) );
 
 
 #############################################################################
@@ -705,7 +705,7 @@ end );
 ##
 #V  CharTableWeylB  . . . . generic character table of Weyl groups of type B.
 ##
-CharTableWeylB := rec(
+InstallValue( CharTableWeylB, Immutable( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -754,14 +754,14 @@ CharTableWeylB := rec(
         n -> MatCharsWreathSymmetric( CharacterTable( "Cyclic", 2 ), n),
     domain:=
         IsPosInt
-    );
+    ) ) );
 
 
 #############################################################################
 ##
 #V  CharTableWeylD  . . . . generic character table of Weyl groups of type D.
 ##
-CharTableWeylD := rec(
+InstallValue( CharTableWeylD, Immutable( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -888,7 +888,7 @@ CharTableWeylD := rec(
             end ] ],
     domain:=
         ( n -> IsInt(n) and n > 1 )
-    );
+    ) ) );
 
 
 #############################################################################
@@ -967,9 +967,9 @@ end );
 
 #############################################################################
 ##
-#F  CharTableWreathSymmetric( <sub>, <n> )  . . . character table of G wr Sn.
+#F  CharacterTableWreathSymmetric( <sub>, <n> )  . .  char. table of G wr Sn.
 ##
-InstallGlobalFunction( CharTableWreathSymmetric, function( sub, n )
+InstallGlobalFunction( CharacterTableWreathSymmetric, function( sub, n )
 
     local i, j,             # loop variables
           tbl,              # character table, result
@@ -988,23 +988,21 @@ InstallGlobalFunction( CharTableWreathSymmetric, function( sub, n )
       Error( "<sub> must be an ordinary character table" );
     fi;
 
-    # Make the object.
-    tbl:= rec( underlyingCharacteristic:= 0 );
-    ConvertToLibraryCharacterTableNC( tbl );
-
-    # Set the values of 'Size', 'Identifier', \ldots
-    SetSize( tbl, sub.size^n*Factorial(n) );
+    # Make a record, and set the values of `Size', `Identifier', \ldots
     ident:= Concatenation( Identifier( sub ), "wrS", String(n) );
     ConvertToStringRep( ident );
-    SetIdentifier( tbl, ident );
 
-    # \ldots, 'ClassParameters', \ldots
+    tbl:= rec( UnderlyingCharacteristic := 0,
+               Size                     := Size( sub )^n * Factorial( n ),
+               Identifier               := ident );
+
+    # \ldots, `ClassParameters', \ldots
     nccs:= NrConjugacyClasses( sub );
     parts:= Immutable( PartitionTuples(n, nccs) );
     nccl:= Length(parts);
-    SetClassParameters( tbl, parts );
+    tbl.ClassParameters:= parts;
 
-    # \ldots, 'OrdersClassRepresentatives', \ldots
+    # \ldots, `OrdersClassRepresentatives', \ldots
     subcentralizers:= SizesCentralizers( sub );
     suborders:= OrdersClassRepresentatives( sub );
     orders:= [];
@@ -1016,33 +1014,32 @@ InstallGlobalFunction( CharTableWreathSymmetric, function( sub, n )
 	 fi;
        od;
     od;
-    SetOrdersClassRepresentatives( tbl, orders );
+    tbl.OrdersClassRepresentatives:= orders;
 
-    # \ldots, 'SizesCentralizers', 'IrredInfo', \ldots
-    SetSizesCentralizers( tbl, List( parts,
-        p -> CentralizerWreath( subcentralizers, p ) ) );
-    SetIrredInfo( tbl, List( parts, p -> rec( charparam:= p ) ) );
+    # \ldots, `SizesCentralizers', `CharacterParameters', \ldots
+    tbl.SizesCentralizers:= List( parts,
+        p -> CentralizerWreath( subcentralizers, p ) );
+    tbl.CharacterParameters:= parts;
 
-    # \ldots, 'ComputedPowerMaps', \ldots
-    powermap:= ComputedPowerMaps( tbl );
-    for prime in Set( Factors( Size( tbl ) ) ) do
+    # \ldots, `ComputedPowerMaps', \ldots
+    tbl.ComputedPowerMaps:= [];
+    powermap:= tbl.ComputedPowerMaps;
+    for prime in Set( Factors( tbl.Size ) ) do
        spm:= PowerMap( sub, prime );
        powermap[prime]:= List( [ 1 .. nccl ],
            i -> Position(parts, PowerWreath(spm, parts[i], prime)) );
     od;
 
-    # \ldots and 'Irr'.
-    SetIrr( tbl, List( MatCharsWreathSymmetric( sub, n ),
-                       vals -> CharacterByValues( tbl, vals ) ) );
+    # \ldots and `Irr'.
+    tbl.Irr:= MatCharsWreathSymmetric( sub, n );
 
     # Return the table.
+    ConvertToLibraryCharacterTableNC( tbl );
     return tbl;
 end );
 
 
 #############################################################################
 ##
-#E  ctblsymm.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

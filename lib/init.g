@@ -46,34 +46,29 @@ infinity := "2b defined";
 ##  This cannot be inside "kernel.g" because it is needed to read "kernel.g".
 ##
 ReplacedString := function ( string, old, new )
-    local  res,  i,  k,  l;
-    res := [];
-    k := 1;
-    l := false;
-    for i  in [1..LEN_LIST(string)]  do
-        if string{[i..i+LEN_LIST(old)-1]} = old  then
-            l := i;
-        fi;
-        if string[i] = ';'  then
-            if l <> false  then
-                APPEND_LIST_INTR( res, string{[k..l-1]} );
-                APPEND_LIST_INTR( res, new );
-                APPEND_LIST_INTR( res, string{[l+LEN_LIST(old)..i]} );
-            else
-                APPEND_LIST_INTR( res, string{[k..i]} );
-            fi;
-            k := i + 1;
-            l := false;
-        fi;
-    od;
-    if l <> false  then
-        APPEND_LIST_INTR( res, string{[k..l-1]} );
-        APPEND_LIST_INTR( res, new );
-        APPEND_LIST_INTR( res, string{[l+LEN_LIST(old)..LEN_LIST(string)]} );
+local  res,  i, lo,r;
+  lo:=LEN_LIST(old)-1;
+  i:=1;
+  r:=true;
+  while i+lo<=LEN_LIST(string) do
+    if string{[i..i+lo]}=old  then
+      res := [];
+      APPEND_LIST_INTR( res, string{[1..i-1]} );
+      APPEND_LIST_INTR( res, new );
+      APPEND_LIST_INTR( res, string{[i+lo+1..LEN_LIST(string)]} );
+      string:=res;
+      i:=i+LEN_LIST(new); # do not replace the same letters again
+      r:=false;
     else
-        APPEND_LIST_INTR( res, string{[k..LEN_LIST(string)]} );
+      i:=i+1;
     fi;
-    return res;
+  od;
+  if r then 
+    # ensure the result is always a new string -- even if no replacement
+    # took place.
+    string:= SHALLOW_COPY_OBJ( string );
+  fi;
+  return string;
 end;
 
 
@@ -105,18 +100,6 @@ ReadGapRoot := function( name )
 end;
 
 
-#############################################################################
-##
-#F  ReadAndCheckFunc( <path>[,<libname>] )   create a read and check function
-##
-##  'ReadAndCheckFunc' creates a function that  reads in a file named <name>,
-##  this  name  must   include an extension.     The file  must  also  define
-##  'Revision.<name_ext>'.
-##  If a second argument 'libname' is given, GAP just prints a warning that 
-##  the library <libname> was not found when the file cannot be read and
-##  returns 'true' or 'false' according to the read status.
-##  This can be used for partial reading of the library.
-##
 IS_READ_OR_COMPLETE := false;
 
 READED_FILES := [];
@@ -130,63 +113,6 @@ RANK_FILTER_STORE        := Error;	# defined in "filter.g"
 RANK_FILTER              := Error;	# defined in "filter.g"
 RankFilter               := Error;      # defined in "filter.g"
 
-
-ReadAndCheckFunc := function( arg )
-    local    path,  prefix;
-
-    path := IMMUTABLE_COPY_OBJ(arg[1]);
-    if LEN_LIST(arg) = 1  then
-        prefix := IMMUTABLE_COPY_OBJ("");
-    else
-        prefix := IMMUTABLE_COPY_OBJ(arg[2]);
-    fi;
-    return function( arg )
-        local  name,  ext,  libname, error;
-
-	error:=false;
-	name:=arg[1];
-        # create a filename from <path> and <name>
-        libname := SHALLOW_COPY_OBJ(path);
-        APPEND_LIST_INTR( libname, "/" );
-        APPEND_LIST_INTR( libname, name );
-
-        # we are completing, store the filename and filter ranks
-        if IS_READ_OR_COMPLETE  then
-            ADD_LIST( READED_FILES, libname );
-            RANK_FILTER_LIST_CURRENT := [];
-            RANK_FILTER_COUNT := 0;
-            ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
-            error:=not READ_GAP_ROOT(libname);
-            Unbind(RANK_FILTER_LIST_CURRENT);
-            Unbind(RANK_FILTER_COUNT);
-        else
-            error:=not READ_GAP_ROOT(libname);
-        fi;
-
-	if error then
-	  if LEN_LIST( arg )=1 then
-	    Error( "the library file '", name, "' must exist and ",
-		   "be readable");
-	  else
-	    Print("#W  The library file '",name,"' was not available\n",
-	          "#W  The library of ",arg[2]," is not installed!\n");
-	    return false;
-	  fi;
-	else
-	  # check the revision entry
-          ext := SHALLOW_COPY_OBJ(prefix);
-	  APPEND_LIST_INTR(ext,ReplacedString( name, ".", "_" ));
-	  if not IsBound(Revision.(ext))  then
-	      Print( "#W  revision entry missing in \"", name, "\"\n" );
-	  fi;
-        fi;
-
-      if LEN_LIST(arg)>1 then
-	return true;
-      fi;
-
-    end;
-end;
 
 
 #############################################################################
@@ -276,70 +202,123 @@ end;
 
 #############################################################################
 ##
-
-#F  ReadLib( <name> ) . . . . . . . . . . . . . . . . . . . . . library files
+##  We will need this stuff to be able to bind global variables. Thus it
+##  must be done first.
 ##
-ReadLib := ReadAndCheckFunc("lib");
-
+ReadGapRoot( "lib/kernel.g" );
+ReadGapRoot( "lib/global.g" );
+ReadGapRoot( "lib/system.g" );
 
 #############################################################################
 ##
-#F  ReadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
+## print the banner (but not on the Macintosh version)
 ##
-ReadGrp := ReadAndCheckFunc("grp");
-
-
-#############################################################################
-##
-#F  ReadTbl( <name> ) . . . . . . . . . . . . . . . .  character tables files
-##
-ReadTbl := ReadAndCheckFunc("tbl");
-
-
-#############################################################################
-##
-#F  ReadTom( <name> ) . . . . . . . . . . . . . . . . .  table of marks files
-##
-ReadTom := ReadAndCheckFunc("tom");
-
-
-#############################################################################
-##
-#F  ReadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
-##
-ReadSmall := ReadAndCheckFunc("small");
-
-
-#############################################################################
-##
-#F  ReadIdLib( <name> ) . . . . . . . . . . . . .  small groups library files
-##
-ReadIdLib := ReadAndCheckFunc("small/idlib");
-
-
-#############################################################################
-##
-#F  ReadPrim( <name> )  . . . . . . . . . primitive perm groups library files
-##
-ReadPrim := ReadAndCheckFunc("prim");
-
-
-#############################################################################
-##
-#F  ReadTrans( <name> ) . . . . . . . .  transitive perm groups library files
-##
-ReadTrans := ReadAndCheckFunc("trans");
-
-
-#############################################################################
-##
-
-#F  Banner  . . . . . . . . . . . . . . . . . . . . . . . print a nice banner
-##
-if not QUIET and BANNER then
-P := function(a) Print( a, "\n" );  end;
 ReadGapRoot( "lib/version.g" );
+if not QUIET and BANNER then
+  if not ARCH_IS_MAC() then
+    P := function(a) Print("   ", a, "\n" );  end;
+    ReadGapRoot( "lib/banner.g" );
+    Print("   Loading the library. Please be patient, this may take a while.\n");
+  else
+    Print("Loading the library. Please be patient, this may take a while.\n\n");
+  fi;
 fi;
+
+#############################################################################
+##
+#F  ReadAndCheckFunc( <path>[,<libname>] )
+##
+##  'ReadAndCheckFunc' creates a function that  reads in a file named <name>,
+##  this  name  must   include an extension.     The file  must  also  define
+##  'Revision.<name_ext>'.
+##  If a second argument 'libname' is given, GAP just prints a warning that 
+##  the library <libname> was not found when the file cannot be read and
+##  returns 'true' or 'false' according to the read status.
+##  This can be used for partial reading of the library.
+##
+BIND_GLOBAL("ReadAndCheckFunc",function( arg )
+  local  path,  prefix;
+
+    path := IMMUTABLE_COPY_OBJ(arg[1]);
+
+    if LEN_LIST(arg) = 1  then
+        prefix := IMMUTABLE_COPY_OBJ("");
+    else
+        prefix := IMMUTABLE_COPY_OBJ(arg[2]);
+    fi;
+
+    return function( arg )
+        local  name,  ext,  libname, error;
+
+	error:=false;
+	name:=arg[1];
+        # create a filename from <path> and <name>
+        libname := SHALLOW_COPY_OBJ(path);
+        APPEND_LIST_INTR( libname, "/" );
+        APPEND_LIST_INTR( libname, name );
+
+        # we are completing, store the filename and filter ranks
+        if IS_READ_OR_COMPLETE  then
+            ADD_LIST( READED_FILES, libname );
+            RANK_FILTER_LIST_CURRENT := [];
+            RANK_FILTER_COUNT := 0;
+            ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
+            error:=not READ_GAP_ROOT(libname);
+            Unbind(RANK_FILTER_LIST_CURRENT);
+            Unbind(RANK_FILTER_COUNT);
+        else
+            error:=not READ_GAP_ROOT(libname);
+        fi;
+
+	if error then
+	  if LEN_LIST( arg )=1 then
+	    Error( "the library file '", name, "' must exist and ",
+		   "be readable");
+	  else
+# we don't print a warning here but instead list the components at the end
+#	    Print("#W  The library file '",name,"' was not available\n",
+#	          "#W  The library of ",arg[2]," is not installed!\n");
+	    return false;
+	  fi;
+	elif path<>"pkg" then
+	  # check the revision entry
+          ext := SHALLOW_COPY_OBJ(prefix);
+	  APPEND_LIST_INTR(ext,ReplacedString( name, ".", "_" ));
+	  if not IsBound(Revision.(ext))  then
+	      Print( "#W  revision entry missing in \"", name, "\"\n" );
+	  fi;
+        fi;
+
+      if LEN_LIST(arg)>1 then
+	return true;
+      fi;
+
+    end;
+end);
+
+#############################################################################
+##
+#F  ReadLib( <name> ) . . . . . . . . . . . . . . . . . . . . . library files
+#F  ReadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
+#F  ReadTbl( <name> ) . . . . . . . . . . . . . . . .  character tables files
+#F  ReadTom( <name> ) . . . . . . . . . . . . . . . . .  table of marks files
+#F  ReadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
+#F  ReadTrans( <name> ) . . . . . . . .  transitive perm groups library files
+#F  ReadPrim( <name> )  . . . . . . . . . primitive perm groups library files
+#F  DoReadPkg( <name> )  . . . . . . . . . read a package AS17/10/98
+##
+##  ReadPkg has to be a wrapper because it may not be executed while reading
+##  `init.g' the first time. AH
+##
+BIND_GLOBAL("ReadLib",ReadAndCheckFunc("lib"));
+BIND_GLOBAL("ReadGrp",ReadAndCheckFunc("grp"));
+BIND_GLOBAL("ReadTbl",ReadAndCheckFunc("tbl"));
+BIND_GLOBAL("ReadTom",ReadAndCheckFunc("tom"));
+BIND_GLOBAL("ReadSmall",ReadAndCheckFunc("small"));
+BIND_GLOBAL("ReadTrans",ReadAndCheckFunc("trans"));
+BIND_GLOBAL("ReadPrim",ReadAndCheckFunc("prim"));
+BIND_GLOBAL("DoReadPkg",ReadAndCheckFunc("pkg"));
+
 
 #############################################################################
 ##
@@ -350,24 +329,42 @@ NONAVAILABLE_FUNC:=function(arg)
 end;
 IdGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
 SmallGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-AllSmallGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-PrimitiveGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+NumberSmallGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+AllGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+OneGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+IdsOfAllGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded      
+Gap3CatalogueIdGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+PrimitiveGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded           
 NrAffinePrimitiveGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-NrSolvableAffinePrimitiveGroups:=NONAVAILABLE_FUNC; 
+NrSolvableAffinePrimitiveGroups:=NONAVAILABLE_FUNC;
 
 #############################################################################
+##  
+##  Initialize functions for the source of small group lib and id library
 ##
-#V  SMALL_AVAILABLE  variables for data libraries. Will be set during loading
-#V  PRIM_AVAILABLE
+SMALL_AVAILABLE := x -> fail;
+ID_AVAILABLE := x -> fail;                                  
+  
+#############################################################################
+##                              
+#V  PRIM_AVAILABLE   variables for data libraries. Will be set during loading
 #V  TRANS_AVAILABLE
-#V  TBL_AVAILABLE
+#V  TBL_AVAILABLE                                                            
 #V  TOM_AVAILABLE
-SMALL_AVAILABLE:=false;
 PRIM_AVAILABLE:=false;
 TRANS_AVAILABLE:=false;
 TBL_AVAILABLE:=false;
 TOM_AVAILABLE:=false;
 
+#############################################################################
+##
+#F  DeclareComponent(<componentname>,<versionstring>)
+#V  LOADED_COMPONENTS
+##
+LOADED_COMPONENTS:=rec();
+BIND_GLOBAL("DeclareComponent",function(name,version)
+  LOADED_COMPONENTS.(name):=version;
+end);
 
 #############################################################################
 ##
@@ -381,12 +378,41 @@ ExportToKernelFinished();
 ReadOrComplete( "lib/read2.g" );
 ReadOrComplete( "lib/read3.g" );
 
+#############################################################################
+##
+#F  NamesGVars()  . . . . . . . . . . . list of names of all global variables
+##
+##  This function returns an immutable (see~"Mutability and Copyability")
+##  sorted (see~"Sorted Lists and Sets") list of all the global                
+##  variable names known to the system.  This includes names of variables
+##  which were bound but have now been unbound and some other names which
+##  have never been bound but have become known to the system by various
+##  routes.                                                           
+##
+##  We need this BEFORE we read profile.g
+##
+BindGlobal( "NamesGVars", function()
+    local names;
+    names:= Set( IDENTS_GVAR() );
+    MakeImmutable( names );
+    return names;
+end );
+
+
+
 # help system, profiling
 ReadOrComplete( "lib/read4.g" );
 
 #T  1996/09/01 M.Schoenert this helps performance
 IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
 HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
+
+# we cannot complete the following command because printing may mess up the
+# backslash-masked characters!
+BIND_GLOBAL("VIEW_STRING_SPECIAL_CHARACTERS",
+  # The first list is sorted an contains special characters. The second list
+  # contains characters that should instead be printed after a `\'.
+  Immutable([ "\c\b\n\r\"\\", "cbnr\"\\" ]));
 
 ReadOrComplete( "lib/read5.g" );
 
@@ -407,13 +433,10 @@ ReadOrComplete( "lib/read8.g" );
 
 #############################################################################
 ##
-#X  Read library of groups of order up to 1000 without 512 and 768
+#X  Read library of groups of small order
 #X  Read identification routine
 ##
-SMALL_AVAILABLE:=ReadSmall( "small.gd","small groups" );
-SMALL_AVAILABLE:=SMALL_AVAILABLE and ReadSmall( "smallgrp.g","small groups" );
-SMALL_AVAILABLE:=SMALL_AVAILABLE and ReadSmall( "idgroup.g",
-                                       "small group identification" );
+ReadSmall( "readsml.g","small groups" );
 
 #############################################################################
 ##
@@ -422,18 +445,20 @@ SMALL_AVAILABLE:=SMALL_AVAILABLE and ReadSmall( "idgroup.g",
 TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
 TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
                                         "transitive groups" );
+TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
+                                        "transitive groups" );
 
 #############################################################################
 ##
 #X  Read primitive groups library
 ##
 PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.grp",
-                                     "irreducible solvable groups" );
-PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
-                                     "primitive groups" );
 PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.grp",
                                      "primitive groups" );
+PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
+                                     "primitive groups" );
+ReadPrim( "irredsol.grp","irreducible solvable groups" );
+ReadPrim( "cohorts.grp","irreducible solvable groups" );
 
 #############################################################################
 ##
@@ -450,41 +475,56 @@ TBL_AVAILABLE:=TBL_AVAILABLE and ReadTbl( "ctadmin.tbi","character tables");
 TOM_AVAILABLE:=ReadTom( "tmadmin.tmd","tables of marks");
 TOM_AVAILABLE:=TOM_AVAILABLE and ReadTom( "tmadmin.tmi","tables of marks");
 
-#############################################################################
-##
-
-#F  NamesGVars()  . . . . . . . . . . . list of names of all global variables
-##
-NamesGVars := function()
-    return Immutable( Set( IDENTS_GVAR() ) );
-end;
-
 
 #############################################################################
 ##
-#F  NamesSystemGVars()  . . . . . .  list of names of system global variables
+##  Display version, loaded components and packages
 ##
-NAMES_SYSTEM_GVARS := ShallowCopy(IDENTS_GVAR());
-Add( NAMES_SYSTEM_GVARS, "NamesGVars" );
-Add( NAMES_SYSTEM_GVARS, "NamesUserGVars" );
-Add( NAMES_SYSTEM_GVARS, "NamesSystemGVars" );
-Add( NAMES_SYSTEM_GVARS, "NAMES_SYSTEM_GVARS" );
-NAMES_SYSTEM_GVARS := Immutable(Set(NAMES_SYSTEM_GVARS));
-
-NamesSystemGVars := function()
-    return NAMES_SYSTEM_GVARS;
+INITIAL_SYSTEM_INFORMATION:=function()
+local PL,P,COMPONENTNAME;
+  if not QUIET then
+    Print("GAP4, Version: ",VERSION," of ",DATE,", ", GAP_ARCHITECTURE, "\n" );
+    if BANNER then
+      if LOADED_COMPONENTS<>rec() then
+	Print("Components:  ");
+	PL:=11;
+	P:=false;
+	for COMPONENTNAME in RecNames(LOADED_COMPONENTS) do
+	  if P<>false then
+	    Print(", ");
+	  fi;
+	  if PL>60 then
+	    Print("\n             ");
+	    PL:=11;
+	  fi;
+	  Print(COMPONENTNAME,"\c");
+	  PL:=PL+Length(COMPONENTNAME)+2;
+	  P:=true;
+	od;
+	Print("  installed.\n");
+      fi;
+      if LOADED_PACKAGES<>rec() then
+	Print("Packages:    ");
+	PL:=11;
+	P:=false;
+	for COMPONENTNAME in RecNames(LOADED_PACKAGES) do
+	  if P<>false then
+	    Print(", ");
+	  fi;
+	  if PL>60 then
+	    Print("\n             ");
+	    PL:=11;
+	  fi;
+	  Print(COMPONENTNAME,"\c");
+	  PL:=PL+Length(COMPONENTNAME)+2;
+	  P:=true;
+	od;
+	Print("  installed.\n");
+      fi;
+    fi;
+  fi;
 end;
-
-
-#############################################################################
-##
-#F  NamesUserGVars()  . . . . . . . .  list of names of user global variables
-##
-NamesUserGVars := function()
-    return Immutable( Filtered( Difference( NamesGVars(), 
-        NamesSystemGVars() ), ISB_GVAR ) );
-end;
-
+Add(POST_RESTORE_FUNCS,INITIAL_SYSTEM_INFORMATION);
 
 #############################################################################
 ##
@@ -492,9 +532,85 @@ end;
 ##
 if false = fail then ReadLib( "compat3d.g" ); fi;
 
+# determine which packages to load
+AUTOLOAD_PACKAGES:= AutoloadablePackagesList();
 
 #############################################################################
 ##
-
-#E  init.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##  Read the .gaprc file
 ##
+READ(GAP_RC_FILE);
+
+#############################################################################
+##
+##  Autoload packages
+##
+IS_IN_AUTOLOAD:=true;
+for COMPONENTNAME in AUTOLOAD_PACKAGES do
+  Info(InfoWarning,2,"autoloading:",COMPONENTNAME,"\n");
+  RequirePackage(COMPONENTNAME);
+od;
+IS_IN_AUTOLOAD:=false;
+
+#############################################################################
+##
+##  Display version, loaded components and packages
+##
+INITIAL_SYSTEM_INFORMATION();
+
+#############################################################################
+##
+##  Finally, deal with the lists of global variables.
+##  This must be done at the end of this file,
+##  since the variables defined in packages are regarded as system variables.
+##  (But also the variables defined in the file `GAP_RC_FILE' are regarded as
+##  system variables this way; is this inconvenient?)
+##
+
+
+#############################################################################
+##
+#F  NamesSystemGVars()  . . . . . .  list of names of system global variables
+##
+##  This function returns an immutable sorted list of all the global        
+##  variable names created by the {\GAP} library when {\GAP} was started.
+##
+NAMES_SYSTEM_GVARS := Filtered( IDENTS_GVAR(), ISB_GVAR );
+Add( NAMES_SYSTEM_GVARS, "NamesUserGVars" );
+Add( NAMES_SYSTEM_GVARS, "NamesSystemGVars" );
+Add( NAMES_SYSTEM_GVARS, "NAMES_SYSTEM_GVARS" );
+Add( NAMES_SYSTEM_GVARS, "last" );
+Add( NAMES_SYSTEM_GVARS, "last2" );
+Add( NAMES_SYSTEM_GVARS, "last3" );
+Add( NAMES_SYSTEM_GVARS, "time" );
+NAMES_SYSTEM_GVARS := Set( NAMES_SYSTEM_GVARS );
+MakeImmutable( NAMES_SYSTEM_GVARS );
+MakeReadOnlyGlobal( "NAMES_SYSTEM_GVARS" );
+
+BIND_GLOBAL( "NamesSystemGVars", function()
+    return NAMES_SYSTEM_GVARS;
+end);
+
+
+#############################################################################
+##
+#F  NamesUserGVars()  . . . . . . . .  list of names of user global variables
+##
+##  This function returns an immutable sorted list of the global variable
+##  names created since the library was read, to which a value is
+##  currently bound.                                                         
+##
+BIND_GLOBAL( "NamesUserGVars", function()
+    local names;
+    names:= Filtered( Difference( NamesGVars(), NamesSystemGVars() ),
+                      ISB_GVAR );
+    MakeImmutable( names );
+    return names;
+end);
+
+
+#############################################################################
+##
+#E
+##
+

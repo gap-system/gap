@@ -15,15 +15,12 @@ Revision.grpffmat_gd :=
 
 #############################################################################
 ##
-
 #C  IsFFEMatrixGroup
 ##
-IsFFEMatrixGroup := IsFFECollCollColl and IsMatrixGroup;
-
+DeclareSynonym( "IsFFEMatrixGroup", IsFFECollCollColl and IsMatrixGroup );
 
 #############################################################################
 ##
-
 #M  IsFinite( <ffe-mat-grp> )
 ##
 ##  NOTE:    The following implication    only  holds  if  there no  infinite
@@ -32,19 +29,24 @@ IsFFEMatrixGroup := IsFFECollCollColl and IsMatrixGroup;
 InstallTrueMethod( IsFinite,
     IsFFEMatrixGroup and IsFinitelyGeneratedGroup );
 
-
-#############################################################################
-##
-#M  IsHandledByNiceMonomorphism( <ffe-mat-grp> )
-##
-InstallTrueMethod( IsHandledByNiceMonomorphism,
-    IsFFEMatrixGroup and IsFinite );
-
 DeclareGlobalFunction( "NicomorphismOfFFEMatrixGroup" );
 
+#############################################################################
+##
+#F  ProjectiveActionOnFullSpace(<G>,<f>,<n>)
+##
+##  returns the image of the projective acion of <G> on $<f>^<n>$, which
+##  must be finite.
+##
+DeclareGlobalFunction("ProjectiveActionOnFullSpace");
 
 #############################################################################
 ##
+#F  ConjugacyClassesOfNaturalGroup 
+##
+DeclareGlobalFunction( "ConjugacyClassesOfNaturalGroup" );
 
+#############################################################################
+##
 #E  grpffmat.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

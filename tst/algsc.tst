@@ -52,8 +52,8 @@ gap> AdditiveInverse( v ); -v;
 (-1)*v.2+(-1)*v.4
 (-1)*v.2+(-1)*v.4
 
-gap> b:= BasisOfDomain( a );
-CanonicalBasis( <algebra of dimension 4 over Rationals> )
+gap> b:= Basis( a );
+Basis( <algebra of dimension 4 over Rationals>, ... )
 gap> Coefficients( b, v );
 [ 0, 1, 0, 1 ]
 gap> w:= LinearCombination( b, [ 1, 2, 3, 4 ] );
@@ -148,15 +148,15 @@ gap> IsAssociative( l1 );
 false
 gap> Dimension( l1 );
 10
-gap> ucs:= UpperCentralSeriesOfAlgebra( l1 );
+gap> ucs:= LieUpperCentralSeries( l1 );
 [ <Lie algebra over Rationals, with 0 generators> ]
-gap> lcs:= LowerCentralSeriesOfAlgebra( l1 );
+gap> lcs:= LieLowerCentralSeries( l1 );
 [ <Lie algebra of dimension 10 over Rationals> ]
-gap> IsSolvableAlgebra( l1 );
+gap> IsLieSolvable( l1 );
 false
-gap> IsNilpotentAlgebra( l1 );
+gap> IsLieNilpotent( l1 );
 false
-gap> IsAbelianLieAlgebra( l1 );
+gap> IsLieAbelian( l1 );
 false
 gap> c:= LieCentre( l1 );
 <Lie algebra of dimension 0 over Rationals>
@@ -168,11 +168,11 @@ gap> s1:= Subalgebra( l1, [ gens[1] ] );
 <Lie algebra over Rationals, with 1 generators>
 gap> Dimension( s1 );
 1
-gap> IsSolvableAlgebra( s1 );
+gap> IsLieSolvable( s1 );
 true
-gap> IsNilpotentAlgebra( s1 );
+gap> IsLieNilpotent( s1 );
 true
-gap> IsAbelianLieAlgebra( s1 );
+gap> IsLieAbelian( s1 );
 true
 gap> LieCentre( s1 );
 <two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
@@ -193,7 +193,8 @@ gap> KappaPerp( l1, ps );
 <vector space of dimension 6 over Rationals>
 
 gap> b:= Basis( l1 );
-CanonicalBasis( <Lie algebra of dimension 10 over Rationals> )
+Basis( <Lie algebra of dimension 10 over Rationals>, 
+[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10 ] )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -335,6 +336,7 @@ Basis( VectorSpace( Rationals,
  ] )
 
 
+
 #############################################################################
 ##
 ##  Expl. 3: Second example of Willem de Graaf
@@ -445,17 +447,17 @@ gap> IsAssociative( l2 );
 false
 gap> Dimension( l2 );
 15
-gap> ucs:= UpperCentralSeriesOfAlgebra( l2 );
-[ <two-sided ideal in <Lie algebra of dimension 15 over Rationals>,
+gap> ucs:= LieUpperCentralSeries( l2 );
+[ <two-sided ideal in <Lie algebra of dimension 15 over Rationals>, 
       (dimension 1)>, <Lie algebra over Rationals, with 0 generators> ]
-gap> lcs:= LowerCentralSeriesOfAlgebra( l2 );
+gap> lcs:= LieLowerCentralSeries( l2 );
 [ <Lie algebra of dimension 15 over Rationals>, 
   <Lie algebra of dimension 14 over Rationals> ]
-gap> IsSolvableAlgebra( l2 );
+gap> IsLieSolvable( l2 );
 false
-gap> IsNilpotentAlgebra( l2 );
+gap> IsLieNilpotent( l2 );
 false
-gap> IsAbelianLieAlgebra( l2 );
+gap> IsLieAbelian( l2 );
 false
 gap> LieCentre( l2 );
 <two-sided ideal in <Lie algebra of dimension 15 over Rationals>, (dimension 1
@@ -471,11 +473,11 @@ gap> s2:= Subalgebra( l2, [ gens[1] ] );
 <Lie algebra over Rationals, with 1 generators>
 gap> Dimension( s2 );
 1
-gap> IsSolvableAlgebra( s2 );
+gap> IsLieSolvable( s2 );
 true
-gap> IsNilpotentAlgebra( s2 );
+gap> IsLieNilpotent( s2 );
 true
-gap> IsAbelianLieAlgebra( s2 );
+gap> IsLieAbelian( s2 );
 true
 gap> LieCentre( s2 );
 <two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
@@ -491,13 +493,14 @@ gap> LieNormalizer( l2, ps );
 <Lie algebra of dimension 10 over Rationals>
 
 gap> Print( KappaPerp( l2, ps ), "\n" );
-VectorSpace( Rationals, [ v.1, v.2+(1/2)*v.11+(-1/2)*v.12, v.3,
-  v.4+(-1/2)*v.11+(3/2)*v.12, v.5+(2/3)*v.14+(-1/3)*v.15,
-  v.6+(2)*v.14+(-1)*v.15, v.7+(-1/9)*v.14+(-1/9)*v.15,
-  v.8+(-1/3)*v.14+(2/3)*v.15, v.9, v.10, v.13+(-8/3)*v.14+(4/3)*v.15 ] )
+VectorSpace( Rationals, [ v.1, v.3, (-3)*v.5+v.6, v.5+(3)*v.7+v.8, v.9, v.10, 
+  (3)*v.2+v.4+v.11, v.2+v.4+v.12, (4)*v.5+v.13, v.5+(-3)*v.7+v.14, 
+  (-1)*v.5+(-6)*v.7+v.15 ] )
 
 gap> b:= Basis( l2 );
-CanonicalBasis( <Lie algebra of dimension 15 over Rationals> )
+Basis( <Lie algebra of dimension 15 over Rationals>, 
+[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14, 
+  v.15 ] )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, -2, -6, 0, 0, 0, 0, 0, 0, 8, 4, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -607,16 +610,16 @@ gap> IsAssociative( l3 );
 false
 gap> Dimension( l3 );
 14
-gap> ucs:= UpperCentralSeriesOfAlgebra( l3 );
+gap> ucs:= LieUpperCentralSeries( l3 );
 [ <Lie algebra over Rationals, with 0 generators> ]
-gap> lcs:= LowerCentralSeriesOfAlgebra( l3 );
+gap> lcs:= LieLowerCentralSeries( l3 );
 [ <Lie algebra of dimension 14 over Rationals>, 
   <Lie algebra of dimension 10 over Rationals> ]
-gap> IsSolvableAlgebra( l3 );
+gap> IsLieSolvable( l3 );
 true
-gap> IsNilpotentAlgebra( l3 );
+gap> IsLieNilpotent( l3 );
 false
-gap> IsAbelianLieAlgebra( l3 );
+gap> IsLieAbelian( l3 );
 false
 gap> LieCentre( l3 );
 <Lie algebra of dimension 0 over Rationals>
@@ -628,11 +631,11 @@ gap> s3:= Subalgebra( l3, [ gens[1] ] );
 <Lie algebra over Rationals, with 1 generators>
 gap> Dimension( s3 );
 1
-gap> IsSolvableAlgebra( s3 );
+gap> IsLieSolvable( s3 );
 true
-gap> IsNilpotentAlgebra( s3 );
+gap> IsLieNilpotent( s3 );
 true
-gap> IsAbelianLieAlgebra( s3 );
+gap> IsLieAbelian( s3 );
 true
 gap> LieCentre( s3 );
 <two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
@@ -654,7 +657,9 @@ gap> KappaPerp( l3, ps );
 <Lie algebra of dimension 14 over Rationals>
 
 gap> b:= Basis( l3 );
-CanonicalBasis( <Lie algebra of dimension 14 over Rationals> )
+Basis( <Lie algebra of dimension 14 over Rationals>, 
+[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14 
+ ] )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -1, -1, -1 ], 
   [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -718,9 +723,9 @@ gap> z:= Zero( t );
 gap> Random( t );
 <zero of trivial s.c. algebra>
 gap> b:= Basis( t );
-CanonicalBasis( <algebra of dimension 0 over Rationals> )
+Basis( <algebra of dimension 0 over Rationals>, [  ] )
 gap> coeff:= Coefficients( b, z );
-<empty row vector>
+[  ]
 gap> LinearCombination( b, coeff );
 <zero of trivial s.c. algebra>
 gap> LinearCombination( b, [] );
@@ -732,7 +737,7 @@ true
 
 
 #############################################################################
-gap> STOP_TEST( "algsc.tst", 867313307 );
+gap> STOP_TEST( "algsc.tst", 498385000 );
 
 
 #############################################################################

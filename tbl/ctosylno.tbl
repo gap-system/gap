@@ -398,7 +398,7 @@ MOT("3^(1+2):D8",
 "origin: Ostermann, tests: 1.o.r., pow[2,3]\n",
 "Sylow 3 normalizer in sporadic Mathieu group M24,\n",
 "Sylow 3 normalizer in sporadic Held group He,\n",
-"14th maximal subgroup (novelty) in M12.2"
+"5th maximal subgroup (novelty) in M12.2"
 ],
 [216,24,12,12,108,18,18,12,12,6,6,12,12],
 [,[1,1,1,1,5,6,7,2,5,6,7,9,9],[1,2,3,4,1,1,1,8,2,3,4,8,8]],
@@ -504,6 +504,8 @@ permchars:=(),
 permclasses:=(),
 text:="")]);
 ARC("3^2:Q8","tomidentifier","3^2:Q8");
+ARC("3^2:Q8","tomfusion",rec(map:=[1,2,3,4,5,6],
+text:="unique up to table automorphisms"));
 ALN("3^2:Q8",["M22N3"]);
 
 MOT("3^2:Q8.2",
@@ -729,7 +731,8 @@ ALN("4^3.D8",["ONN2"]);
 MOT("5^(1+2):(24:2)",
 [
 "origin: Ostermann, tests: 1.o.r., pow[2,3,5]\n",
-"Sylow 5 normalizer in sporadic Conway group Co3,"
+"Sylow 5 normalizer in sporadic Conway group Co3,\n",
+"10th maximal subgroup in McL.2"
 ],
 [6000,240,40,120,48,48,40,1500,50,120,24,24,8,8,60,10,24,24,30,20,20,24,24,24,
 24,30],
@@ -766,6 +769,15 @@ ARC("5^(1+2):(24:2)","CAS",[rec(name:="c3n5",
 permchars:=(),
 permclasses:=(),
 text:="")]);
+ARC("5^(1+2):(24:2)","tomidentifier","5^(1+2)+:3:8.2");
+ALF("5^(1+2):(24:2)","McL.2",[1,2,20,3,5,5,21,6,7,8,23,23,11,11,13,25,16,16,
+18,28,29,32,32,33,33,19],[
+"fusion map is unique up to table automorphisms"
+]);
+ALF("5^(1+2):(24:2)","U3(5).3.2",[1,2,22,11,4,4,23,5,6,13,9,9,25,25,10,26,15,
+15,16,28,29,19,20,20,19,21],[
+"fusion map is unique up to table automorphisms"
+]);
 ALN("5^(1+2):(24:2)",["Co3N5","c3n5"]);
 
 MOT("5^(1+2):(8.2)",
@@ -798,6 +810,10 @@ ARC("5^(1+2):(8.2)","CAS",[rec(name:="hsn5",
 permchars:=(1,4,3,7,2,8,6),
 permclasses:=( 2, 7, 5)( 3, 8, 6,14,16)( 4, 9,10,11,12,13)(15,17),
 text:="origin: Ostermann")]);
+ARC("5^(1+2):(8.2)","tomidentifier","5^(1+2)+:8:2");
+ARC("5^(1+2):(8.2)","tomfusion",rec(map:=[1,7,8,9,2,16,5,5,10,10,12,12,4,23,
+23,3,18],
+text:="unique up to table automorphisms"));
 ALF("5^(1+2):(8.2)","U3(5).2",[1,5,6,7,2,11,4,4,10,10,15,15,13,18,19,12,
 16],[
 "fusion map is unique up to table automorphisms"
@@ -977,7 +993,10 @@ ARC("5^2:(4xS3)","CAS",[rec(name:="suzn5",
 permchars:=(),
 permclasses:=(),
 text:="")]);
-ALN("5^2:(4xS3)",["SuzN5","suzd3","J2.2M8","J2.2N5"]);
+ALF("5^2:(4xS3)","J2.2",[1,2,3,3,5,19,19,19,19,8,7,10,14,13,24,24],[
+"fusion is unique up to table automorphisms"
+]);
+ALN("5^2:(4xS3)",["SuzN5","suzd3","J2.2N5"]);
 
 MOT("5^2:4A4",
 [
@@ -2994,4 +3013,5 @@ ALN:= NotifyCharTableName;
 
 #############################################################################
 ##
-#E  ctosylno.tbl. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

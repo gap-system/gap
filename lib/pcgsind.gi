@@ -29,7 +29,7 @@ DeclareRepresentation(
 ##
 DeclareRepresentation(
     "IsSubsetInducedPcgsRep",
-    IsInducedPcgsRep, [] );
+    IsInducedPcgsRep, ["parentZeroVector"] );
 
 
 #############################################################################
@@ -43,7 +43,6 @@ DeclareRepresentation(
 
 #############################################################################
 ##
-
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <empty-list> )
 ##
 InstallMethod( InducedPcgsByPcSequenceNC,
@@ -67,7 +66,7 @@ function( pcgs, pcs )
                IsPcgsDefaultRep,
                IsPcgs and IsInducedPcgs and IsInducedPcgsRep,
                efam,
-               pcs );
+               pcs,[] );
 
     # we know the relative orders
     SetIsPrimeOrdersPcgs( igs, true );
@@ -76,22 +75,18 @@ function( pcgs, pcs )
 
     # store the parent
     SetParentPcgs( igs, pcgs );
-    SetOneOfPcgs( igs, OneOfPcgs( pcgs ) );
 
     # check for special pcgs
     if HasIsSpecialPcgs( pcgs ) and IsSpecialPcgs( pcgs ) then
         SetIsInducedPcgsWrtSpecialPcgs( igs, true );
     fi;
 
-    if HasIsGenericPcgs( pcgs ) and IsGenericPcgs( pcgs ) then 
-        SetIsGenericPcgs( igs, true );
-        return igs; 
-    fi;
-
     # store depthMap
     igs!.depthMapFromParent := [];
     igs!.depthMapFromParent[Length(pcgs)+1] := 1;
     igs!.depthsInParent := [];
+    igs!.tailStart := Length(pcgs)+1;
+    SetLeadCoeffsIGS(igs,[]);
 
     # and return
     return igs;
@@ -103,21 +98,17 @@ end );
 ##
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
 ##
-InstallMethod( InducedPcgsByPcSequenceNC,
-    "pcgs, homogeneous list",
-    IsIdenticalObj,
-    [ IsPcgs,
-      IsCollection and IsHomogeneousList ],
-    0,
-
+InstallMethod( InducedPcgsByPcSequenceNC, "pcgs, homogeneous list",
+    IsIdenticalObj, [ IsPcgs, IsCollection and IsHomogeneousList ], 0,
 function( pcgs, pcs )
-    local   efam,  filter,  j,  l,  i,  m,  d,  igs,  tmp;
+    local   efam,  filter,  j,  l,  i,  m,  d,  igs,  tmp,susef,attl,
+    igsdepthMapFromParent,igsdepthsInParent;
 
     # get the elements family
     efam := FamilyObj( OneOfPcgs( pcgs ) );
 
     # check which filter to use
-    filter := IsPcgs and IsInducedPcgsRep;
+    filter := IsPcgs and IsInducedPcgsRep and IsInducedPcgs;
     j := 1;
     l := Length(pcgs);
     i := 1;
@@ -133,20 +124,32 @@ function( pcgs, pcs )
         fi;
     od;
     if m < i  then
+	susef:=true;
         filter := filter and IsCanonicalPcgs and IsSubsetInducedPcgsRep;
         if 0 < Length(pcgs) and pcgs[Length(pcgs)-Length(pcs)+1]=pcs[1]  then
             filter := filter and IsTailInducedPcgsRep;
         fi;
+    else
+      susef:=false;
     fi;
     if HasIsFamilyPcgs(pcgs) and IsFamilyPcgs(pcgs)  then
         filter := filter and IsParentPcgsFamilyPcgs;
     fi;
-    filter := filter and IsInducedPcgs;
+
     if HasIsPrimeOrdersPcgs(pcgs) and IsPrimeOrdersPcgs(pcgs)  then
-        filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs;
-    fi;
-    if HasIsFiniteOrdersPcgs(pcgs) and IsFiniteOrdersPcgs(pcgs)  then
+        filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs
+                         and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+    elif HasIsFiniteOrdersPcgs(pcgs) and IsFiniteOrdersPcgs(pcgs)  then
         filter := filter and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+    fi;
+
+    # store the parent
+    attl:=[ParentPcgs,pcgs];
+    filter:=filter and HasParentPcgs;
+
+    # check for special pcgs
+    if HasIsSpecialPcgs( pcgs ) and IsSpecialPcgs( pcgs ) then
+      filter:=filter and IsInducedPcgsWrtSpecialPcgs;
     fi;
 
     # construct a pcgs from <pcs>
@@ -154,39 +157,49 @@ function( pcgs, pcs )
                IsPcgsDefaultRep,
                filter,
                efam,
-               pcs );
-
-    # store the parent
-    SetParentPcgs( igs, pcgs );
-    SetOneOfPcgs( igs, OneOfPcgs( pcgs ) );
-
-    # check for special pcgs
-    if HasIsSpecialPcgs( pcgs ) and IsSpecialPcgs( pcgs ) then
-        SetIsInducedPcgsWrtSpecialPcgs( igs, true );
-    fi;
-
-    # now return if we have a generic pcgs
-    if HasIsGenericPcgs( pcgs ) and IsGenericPcgs( pcgs ) then
-        SetIsGenericPcgs( igs, true );
-        return igs;
-    fi;
+               pcs,attl );
 
     # store other useful information
-    igs!.depthMapFromParent := [];
-    igs!.depthsInParent := [];
-    if IsSubsetInducedPcgsRep(igs)  then
-        igs!.depthsInParent := d;
+    igsdepthMapFromParent := [];
+    igsdepthsInParent := [];
+    if susef then
+        igsdepthsInParent := d;
         for i  in [ 1 .. Length(pcs) ]  do
-            igs!.depthMapFromParent[d[i]] := i;
+            igsdepthMapFromParent[d[i]] := i;
         od;
     else
         for i  in [ 1 .. Length(pcs) ]  do
             tmp := DepthOfPcElement( pcgs, pcs[i] );
-            igs!.depthsInParent[i] := tmp;
-            igs!.depthMapFromParent[tmp] := i;
+            igsdepthsInParent[i] := tmp;
+            igsdepthMapFromParent[tmp] := i;
         od;
     fi;
-    igs!.depthMapFromParent[Length(pcgs)+1] := Length(pcs)+1;
+    igsdepthMapFromParent[Length(pcgs)+1] := Length(pcs)+1;
+
+    # the depth must be compatible with the parent
+    tmp := 0;
+    for i  in [ 1 .. Length(igsdepthsInParent) ]  do
+        if tmp >= igsdepthsInParent[i]  then
+            Error( "depths are not compatible with parent pcgs" );
+        fi;
+        tmp := igsdepthsInParent[i];
+    od;
+
+    # if we know the relative orders use them
+    if HasRelativeOrders(pcgs)  then
+      tmp := RelativeOrders(pcgs);
+      tmp := tmp{igsdepthsInParent};
+      SetRelativeOrders(igs,tmp);
+      #Add(attl,RelativeOrders);
+      #Add(attl,tmp);
+      #filter:=filter and HasRelativeOrders;
+    fi;
+
+    igs!.depthMapFromParent := igsdepthMapFromParent;
+    igs!.depthsInParent := igsdepthsInParent;
+    if susef then
+      igs!.parentZeroVector:= pcgs!.zeroVector;
+    fi;
 
     # store tail start
     if IsTailInducedPcgsRep(igs)  then
@@ -199,27 +212,28 @@ function( pcgs, pcs )
         igs!.tailStart := i;
     fi;
 
-    # the depth must be compatible with the parent
-    tmp := 0;
-    for i  in [ 1 .. Length(igs!.depthsInParent) ]  do
-        if tmp >= igs!.depthsInParent[i]  then
-            Error( "depths are not compatible with parent pcgs" );
-        fi;
-        tmp := igs!.depthsInParent[i];
-    od;
-
-    # if we know the relative orders use them
-    if HasRelativeOrders(pcgs)  then
-        tmp := RelativeOrders(pcgs);
-        tmp := tmp{igs!.depthsInParent};
-        SetRelativeOrders( igs, tmp );
-    fi;
-
     # and return
     return igs;
     
 end );
 
+#############################################################################
+##
+#M  LeadCoeffsIGS( <igs> )
+##
+InstallMethod(LeadCoeffsIGS,"generic",true,
+  [IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs],0,
+function(igs)
+local i,lc;
+  lc := [];
+  for i in [1..Length(ParentPcgs(igs))] do
+    if IsBound(igs!.depthMapFromParent[i]) then
+      lc[i] := LeadingExponentOfPcElement(ParentPcgs(igs),
+                                      igs[igs!.depthMapFromParent[i]]);
+    fi;
+  od;
+  return lc;
+end);
 
 #############################################################################
 ##
@@ -255,7 +269,6 @@ end );
 
 #############################################################################
 ##
-
 #M  InducedPcgsByPcSequenceAndGenerators( <pcgs>, <ind>, <gens> )
 ##
 InstallMethod( InducedPcgsByPcSequenceAndGenerators,
@@ -397,7 +410,8 @@ function( pcgs, sub, gens )
     else
         igs := Filtered( igs, x -> x <> id );
     fi;
-    return InducedPcgsByPcSequenceNC( pcgs, igs );
+    pcgs:=InducedPcgsByPcSequenceNC( pcgs, igs );
+    return pcgs;
 
 end );
 
@@ -560,6 +574,12 @@ InstallMethod( CanonicalPcgsByGeneratorsWithImages,
 function( pcgs, gens, imgs )
     local new, ros, cgs, img, i, exp, j;
 
+    # in most cases we are mapping the pcgs itself
+    if gens=pcgs then
+      # nothing needs to be done
+      return [pcgs,imgs];
+    fi;
+
     # get the induced one first
     new := InducedPcgsByGeneratorsWithImages( pcgs, gens, imgs );
 
@@ -595,16 +615,24 @@ end );
 
 InstallOtherMethod( CanonicalPcgsByGeneratorsWithImages,
     true,
-    [ IsPcgs and IsPrimeOrdersPcgs,
-      IsList and IsEmpty,
-      IsList and IsEmpty ],
-    0,
-
+#   [ IsPcgs and IsPrimeOrdersPcgs,
+#     IsList and IsEmpty,
+#     IsList and IsEmpty ],
+#   0,
+#T this caused problems when one of the lists did not know that it is empty
+#T (this happened for example if the list `gens' is a pcgs)
+    [ IsPcgs, IsList, IsList ], 0,
 function( pcgs, gens, imgs )
     local igs;
-    igs := InducedPcgsByPcSequenceNC( pcgs, gens );
-    return [igs, imgs];
+
+    if IsPrimeOrdersPcgs( pcgs ) and IsEmpty( gens ) and IsEmpty( imgs ) then
+      igs := InducedPcgsByPcSequenceNC( pcgs, gens );
+      return [igs, imgs];
+    else
+      TryNextMethod();
+    fi;
 end );
+
 
 #############################################################################
 ##
@@ -613,7 +641,7 @@ end );
 
 
 #############################################################################
-InstallOtherMethod( InducedPcgsByGeneratorsNC,
+InstallOtherMethod( InducedPcgsByGeneratorsNC,"pcgs, empty list",
     true,
     [ IsPcgs,
       IsList and IsEmpty ],
@@ -625,17 +653,24 @@ end );
 
 
 #############################################################################
-InstallMethod( InducedPcgsByGeneratorsNC,
+InstallMethod( InducedPcgsByGeneratorsNC,"prime order pcgs, collection",
     function( p, l )
         return IsIdenticalObj( ElementsFamily(p), ElementsFamily(l) );
     end,
-    [ IsPcgs and IsPrimeOrdersPcgs,
-      IsCollection ],
-    0,
-
+    [ IsPcgs and IsPrimeOrdersPcgs, IsCollection ], 0,
 function( pcgs, gens )
-    return InducedPcgsByPcSequenceAndGenerators(
-        pcgs, [], gens );
+local l;
+  # test the (apparently frequent) case of generators that are a subset of
+  # the pcgs. This test requires only to compare elements, so it should be
+  # comparatively cheap. AH
+  if IsSubset(pcgs!.pcSequence,gens) then
+    l:=List(gens,i->Position(pcgs!.pcSequence,i));
+    # ordered, duplicate-free?
+    if l=Set(l) and IsSubset(l,[l[1]..Length(pcgs!.pcSequence)]) then
+      return InducedPcgsByPcSequenceNC( pcgs, gens );
+    fi;
+  fi;
+  return InducedPcgsByPcSequenceAndGenerators( pcgs, [], gens );
 end );
 
 
@@ -658,7 +693,7 @@ end );
 
 
 #############################################################################
-InstallMethod( InducedPcgsByGenerators,
+InstallMethod( InducedPcgsByGenerators,"pcgs, collection",
     function( p, l )
         return IsIdenticalObj( ElementsFamily(p), ElementsFamily(l) );
     end,
@@ -700,11 +735,12 @@ end );
 
 #############################################################################
 ##
-
 #F  HOMOMORPHIC_IGS( <pcgs>, <list> )
 ##
 HOMOMORPHIC_IGS := function( arg )
     local   pcgs,  list,  id,  pag,  g,  dg,  obj;
+
+    Info(InfoWarning,1,"HOMOMORPHIC_IGS is potentially wrong! Do not use!");
 
     pcgs := arg[1];
     list := arg[2];
@@ -757,8 +793,10 @@ end;
 ##
 #F  NORMALIZE_IGS( <pcgs>, <list> )
 ##
-NORMALIZE_IGS := function( pcgs, list )
+InstallGlobalFunction(NORMALIZE_IGS,function( pcgs, list )
     local   ros,  dep,  i,  j,  exp;
+
+    Info(InfoWarning,1,"NORMALIZE_IGS is potentially wrong! Do not use!");
 
     # normalize the leading exponents to one
     ros := RelativeOrders(pcgs);
@@ -778,12 +816,11 @@ NORMALIZE_IGS := function( pcgs, list )
         od;
     od;
 
-end;
+end);
 
 
 #############################################################################
 ##
-
 #M  CanonicalPcgs( <igs> )
 ##
 InstallMethod( CanonicalPcgs,
@@ -829,11 +866,9 @@ end );
 ##
 #M  CanonicalPcgs( <cgs> )
 ##
-InstallMethod( CanonicalPcgs,
-    "canonical pcgs",
-    true,
-    [ IsInducedPcgs and IsCanonicalPcgs ],
-    SUM_FLAGS,
+InstallOtherMethod( CanonicalPcgs,"of an canonical pcgs",
+    true, [ IsCanonicalPcgs ],
+    SUM_FLAGS, # the best we can do
     x -> x );
 
 
@@ -1146,8 +1181,8 @@ function( pcgs, n, u )
 
     # the parent must match
     if pcgs <> ParentPcgs(n) or pcgs <> ParentPcgs(u)  
-      # and the depthInParent given
-      or not IsBound(u!.depthInParent) then
+      # and the depthsInParent given
+      or not IsBound(u!.depthsInParent) then
         TryNextMethod();
     fi;
 
@@ -1179,6 +1214,10 @@ end );
 CANONICAL_PC_ELEMENT := function( pcgs, elm )
     local   pa,  map,  ros,  tal,  g,  d,  ll,  lr;
 
+    # catch empty case
+    if IsEmpty(pcgs) then
+      return elm;
+    fi;
     pa  := ParentPcgs(pcgs);
     map := pcgs!.depthMapFromParent;
     ros := RelativeOrders(pa);
@@ -1241,12 +1280,13 @@ InstallMethod( ExponentOfPcElement,
     0,
 
 function( pcgs, elm, pos )
-    local   pa,  map,  id,  exp,  ros,  d,  ll,  lr;
+    local   pa,  map,  id,  exp,  ros,  d,  ll,  lr,lc;
 
     pa  := ParentPcgs(pcgs);
     map := pcgs!.depthMapFromParent;
+    lc  := LeadCoeffsIGS(pcgs);
     id  := OneOfPcgs(pcgs);
-    exp := List( pcgs, x -> 0 );
+    exp := ListWithIdenticalEntries(Length( pcgs),0);
     ros := RelativeOrders(pa);
     while elm <> id  do
         d := DepthOfPcElement( pa, elm );
@@ -1254,12 +1294,14 @@ function( pcgs, elm, pos )
             Error( "<elm> lies not in group defined by <pcgs>" );
         fi;
         ll := LeadingExponentOfPcElement( pa, elm );
-        lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
+        #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
+        lr := lc[d];
         exp := ll / lr mod ros[d];
         if map[d] = pos  then
             return exp;
         else
-            elm := LeftQuotient( pcgs[map[d]]^exp, elm );
+            #elm := LeftQuotient( pcgs[map[d]]^exp, elm );
+            elm := LeftQuotientPowerPcgsElement( pcgs,map[d],exp, elm );
         fi;
     od;
     return 0;
@@ -1278,12 +1320,13 @@ InstallMethod( ExponentsOfPcElement,
     0,
 
 function( pcgs, elm )
-    local   pa,  map,  id,  exp,  ros,  d,  ll,  lr;
+    local   pa,  map,  id,  exp,  ros,  d,  ll,  lr,lc;
 
     pa  := ParentPcgs(pcgs);
     map := pcgs!.depthMapFromParent;
+    lc  := LeadCoeffsIGS(pcgs);
     id  := OneOfPcgs(pcgs);
-    exp := List( pcgs, x -> 0 );
+    exp := ListWithIdenticalEntries(Length( pcgs),0);
     ros := RelativeOrders(pa);
     while elm <> id  do
         d := DepthOfPcElement( pa, elm );
@@ -1291,57 +1334,136 @@ function( pcgs, elm )
             Error( "<elm> lies not in group defined by <pcgs>" );
         fi;
         ll := LeadingExponentOfPcElement( pa, elm );
-        lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
+        #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
+        lr := lc[d];
         exp[map[d]] := ll / lr mod ros[d];
-        elm := LeftQuotient( pcgs[map[d]]^exp[map[d]], elm );
+        #elm := LeftQuotient( pcgs[map[d]]^exp[map[d]], elm );
+        elm := LeftQuotientPowerPcgsElement( pcgs,map[d],exp[map[d]], elm );
     od;
     return exp;
 end );
 
+#############################################################################
+##
+#M  ExponentsOfPcElement( <igs>, <elm>, <subrange> )
+##
+InstallOtherMethod( ExponentsOfPcElement,
+    "induced pcgs, subrange",
+    IsCollsElmsX,
+    [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
+      IsObject,IsList ], 0,
+
+function( pcgs, elm,range )
+    local   pa,  map,  id,  exp,  ros,  d,  ll,  lr,lc,max;
+
+    if not IsSSortedList(range) then
+      TryNextMethod(); # the range may be unsorted or contain duplicates,
+      # then we would have to be more clever.
+    fi;
+    if Length(range)=0 then return [];fi;
+    max:=Maximum(range);
+
+    pa  := ParentPcgs(pcgs);
+    map := pcgs!.depthMapFromParent;
+    lc  := LeadCoeffsIGS(pcgs);
+    id  := OneOfPcgs(pcgs);
+    exp := ListWithIdenticalEntries(Length( pcgs),0);
+    ros := RelativeOrders(pa);
+    while elm <> id  do
+        d := DepthOfPcElement( pa, elm );
+	if map[d]>max then
+	  # we have reached the maximum of the range we asked for. Thus we
+	  # can stop calculating exponents now, all further exponents would
+	  # be discarded anyhow
+	  elm:=id;
+	else
+	  if not IsBound(map[d])  then
+	      Error( "<elm> lies not in group defined by <pcgs>" );
+	  fi;
+	  ll := LeadingExponentOfPcElement( pa, elm );
+	  #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
+	  lr := lc[d];
+	  exp[map[d]] := ll / lr mod ros[d];
+	  #elm := LeftQuotient( pcgs[map[d]]^exp[map[d]], elm );
+	  elm := LeftQuotientPowerPcgsElement( pcgs,map[d],exp[map[d]], elm );
+        fi;
+    od;
+    exp:=exp{range};
+    return exp;
+end );
 
 #############################################################################
 ##
 #M  SiftedPcElement( <igs>, <elm> )
 ##
-InstallMethod( SiftedPcElement,
-    IsCollsElms,
+InstallMethod( SiftedPcElement,"for induced pcgs", IsCollsElms,
     [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
-      IsObject ],
-    0,
-
+      IsObject ], 0,
 function( pcgs, elm )
-    local   pa,  map,  id,  d;
+local   pa, l, map,  d,lc,ro,tail;
 
-    pa  := ParentPcgs(pcgs);
-    map := pcgs!.depthMapFromParent;
-    id  := OneOfPcgs(pcgs);
-    while elm <> id  do
-        d := DepthOfPcElement( pa, elm );
-        if not IsBound(map[d])  then
-            return elm;
-        fi;
-        elm := ReducedPcElement( pa, elm, pcgs[map[d]] );
-    od;
-    return elm;
+  pa  := ParentPcgs(pcgs);
+  l:=Length(pa);
+  d := DepthOfPcElement( pa, elm );
+  if d>l then
+    return elm; # no depth in parent => elm is one
+  fi;
+
+  map := pcgs!.depthMapFromParent;
+  lc  := LeadCoeffsIGS(pcgs);
+  ro  := RelativeOrders(pa);
+
+  # stop level for tails
+  if IsTailInducedPcgsRep(pcgs) then
+    tail:=pcgs!.tailStart;
+  else
+    tail:=infinity;
+  fi;
+
+  while d<=l do
+    if not IsBound(map[d])  then
+	return elm;
+    elif d>=tail then
+      # from this level on every level in the parent is also in the pcgs,
+      # so we can clean out completely
+      return OneOfPcgs(pcgs);
+    fi;
+    elm := LeftQuotientPowerPcgsElement(pcgs,map[d],
+		  (LeadingExponentOfPcElement(pa,elm)/lc[d] mod ro[d]) 
+	    ,elm);
+    d := DepthOfPcElement( pa, elm );
+  od;
+  return elm;
 end );
 
 
 #############################################################################
 ##
-
 #M  ExponentsOfPcElement( <sub-igs>, <elm> )
 ##
 InstallMethod( ExponentsOfPcElement,
     "subset of induced pcgs",
     IsCollsElms,
     [ IsPcgs and IsSubsetInducedPcgsRep and IsPrimeOrdersPcgs,
-      IsObject ],
-    0,
-
+      IsObject ], 0,
 function( pcgs, elm )
-    return ExponentsOfPcElement(ParentPcgs(pcgs), elm){pcgs!.depthsInParent};
+    return ExponentsOfPcElement(ParentPcgs(pcgs),elm,pcgs!.depthsInParent);
 end );
 
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <sub-igs>, <elm>, <subrange> )
+##
+InstallOtherMethod( ExponentsOfPcElement,
+    "subset of induced pcgs, subrange",
+    IsCollsElmsX,
+    [ IsPcgs and IsSubsetInducedPcgsRep and IsPrimeOrdersPcgs,
+      IsObject,IsList ], 0,
+function( pcgs, elm,range )
+    return
+      ExponentsOfPcElement(ParentPcgs(pcgs),elm,pcgs!.depthsInParent{range});
+end );
 
 #############################################################################
 ##
@@ -1363,16 +1485,13 @@ end );
 ##
 #M  ExtendedPcgs( <pcgs>, <img> )
 ##
-InstallMethod( ExtendedPcgs,
-    "induced pcgs",
-    IsIdenticalObj,
-    [ IsInducedPcgs,
-      IsList ],
-    0,
-
+InstallMethod( ExtendedPcgs, "induced pcgs", IsIdenticalObj,
+    [ IsInducedPcgs, IsList ], 0,
 function( kern, img )
-    return InducedPcgsByPcSequenceAndGenerators(
-                   ParentPcgs( kern ), kern, img );
+local p;
+  p:=ParentPcgs(kern);
+  img:=Concatenation(img,kern);
+  return InducedPcgsByPcSequenceNC( p, img );
 end );
 
 
@@ -1385,9 +1504,130 @@ end );
 ##  possible for some modulo pcgs).
 InstallGlobalFunction( CorrespondingGeneratorsByModuloPcgs,
     function(pcgs,l)
-local e,s,d,o,j,bj,bjo;
-  l:=ShallowCopy(l);
-  e:=List(l,i->ExponentsOfPcElement(pcgs,i));
+local e,s,d,o,j,bj,bjo,ro,max,id,seen,wseen,igs,chain,new,old,u,up,uw,cw,x,c;
+
+  # start with a non-commutative Gauss
+
+  # get relative orders and composition length
+  ro  := RelativeOrders(pcgs);
+  max := Length(pcgs);
+
+  # get the identity
+  id := OneOfPcgs(pcgs);
+
+  # and keep a list of seen weights
+  wseen := BlistList( [ 1 .. max ], [] );
+
+  # the induced generating sequence will be collected into <igs>
+  igs := List( [ 1 .. max ], x -> id );
+
+  # <chain> gives a chain of trailing weights
+  chain := max+1;
+
+  # <new> contains a list of generators
+  new := Reversed( Difference( Set(l), [id] ) );
+  # <seen> holds a list of words already seen
+  seen := Union( new, [id] );
+
+  # start putting <new> into <igs>
+  while 0 < Length(new)  do
+    old := Reversed(new);
+    new := [];
+    for u  in old  do
+      uw := DepthOfPcElement( pcgs, u );
+
+      # if <uw> has reached <chain>, we can ignore <u>
+      if uw < chain  then
+	up := [];
+	repeat
+	  if igs[uw] <> id  then
+#T we may not replace by elements of pcgs because that might change the
+#T group.
+#	    if chain <= uw+1  then
+#	      # all powers would be cancelled out
+#	      u := id;
+#	    else
+	      u:=u/igs[uw]^((LeadingExponentOfPcElement(pcgs,u)
+		             / LeadingExponentOfPcElement(pcgs,igs[uw]))
+		      mod ro[uw] );
+#	    fi;
+	  else
+	    AddSet( seen, u );
+	    wseen[uw] := true;
+	    Add( up, u );
+	    if chain <= uw+1  then
+	      u := id;
+	    else
+	      u := u ^ ro[uw];
+	    fi;
+	  fi;
+	  if u <> id  then
+	    uw := DepthOfPcElement( pcgs, u );
+	  fi;
+	until u = id or chain <= uw;
+
+	# add the commutators with the powers of <u>
+	for u  in up  do
+	  for x in igs  do
+	    if x<>id and ( DepthOfPcElement(pcgs,x) + 1 < chain
+		        or DepthOfPcElement(pcgs,u) + 1 < chain ) then
+	      c := Comm( u, x );
+	      if not c in seen  then
+		cw := DepthOfPcElement( pcgs, c );
+		wseen[cw] := true;
+		AddSet( new, c );
+		AddSet( seen, c );
+	      fi;
+	    fi;
+	  od;
+	od;
+
+	# enter the generators <up> into <igs>
+	for x  in up  do
+	  igs[DepthOfPcElement(pcgs,x)] := x;
+	od;
+
+#T we may not replace by elements of pcgs because that might change the
+#T group.
+#	# update the chain
+#	while 1 < chain and wseen[chain-1]  do
+#	  chain := chain-1;
+#	od;
+#
+#	for i  in [ chain .. max ]  do
+#	  if igs[i] = id  then
+#	    igs[i] := pcgs[i];
+#	    for j  in [ 1 .. chain-1 ]  do
+#	      c := Comm( igs[i], igs[j] );
+#	      if not c in seen  then
+#		AddSet( seen, c );
+#		AddSet( new, c );
+#		wseen[DepthOfPcElement(pcgs,c)] := true;
+#	      fi;
+#	    od;
+#	  fi;
+#	od;
+
+      fi;
+    od;
+  od;
+
+    igs := Filtered( igs, x -> x <> id );
+
+#T we may not replace by elements of pcgs because that might change the
+#T group.
+# 
+# if <chain> has reached one, we have the whole group
+#  for i  in [ chain .. max ]  do
+#      igs[i] := pcgs[i]; # on the lowermost levels we can even get the
+#      # original pcgs elements
+#  od;
+#  if chain = 1  then
+#    igs := List( [ 1 .. max ], x -> pcgs[x] );
+#  else
+#  fi;
+
+  e:=List(igs,i->ExponentsOfPcElement(pcgs,i));
   s:=0;
   d:=1;
   while d<=Length(pcgs) do
@@ -1407,28 +1647,27 @@ local e,s,d,o,j,bj,bjo;
     if bj<>0 then
       # we found a pivot, move to top
       s:=s+1;
-      j:=l[bj]; l[bj]:=l[s];l[s]:=j;
+      j:=igs[bj]; igs[bj]:=igs[s];igs[s]:=j;
       j:=e[bj]; e[bj]:=e[s];e[s]:=j;
-      #norm
+      #change norm
       if bjo<>1 then
         bjo:=1/bjo mod o; # inverse order
-	l[s]:=l[s]^bjo;
-	e[s]:=ExponentsOfPcElement(pcgs,l[s]);
+	igs[s]:=igs[s]^bjo;
+	e[s]:=ExponentsOfPcElement(pcgs,igs[s]);
       fi;
       # clean out
       for j in [1..Length(e)] do
         if j<>s and e[j][d]<>0 then
-	  l[j]:=l[j]/l[s]^e[j][d];
-	  e[j]:=ExponentsOfPcElement(pcgs,l[j]);
+	  igs[j]:=igs[j]/igs[s]^e[j][d];
+	  e[j]:=ExponentsOfPcElement(pcgs,igs[j]);
 	fi;
       od;
     fi;
     d:=d+1;
   od;
-  return l{[1..s]};
+  return igs{[1..s]};
 end );
 
 #############################################################################
 ##
-
 #E  pcgsind.gi 	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here

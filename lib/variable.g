@@ -79,7 +79,7 @@ end );
 ##
 ##  All methods for `FlushCaches' must be installed that they clear the
 ##  cache and then return on `TryNextMethod', thus one call to `FlushCaches'
-##  allows to run all methods.
+##  allows one to run all methods.
 ##
 DeclareOperation( "FlushCaches", [] );
 # This method is just that one method is callable. It is installed first, so
@@ -89,14 +89,14 @@ InstallMethod(FlushCaches,"return method",true,[],0,function()end);
 
 #############################################################################
 ##
-#F  DeclareGlobalVariable( <name>, <description> )
+#F  DeclareGlobalVariable( <name>[, <description>] )
 ##
 ##  `DeclareGlobalVariable' creates a new global variable named by the
 ##  string <name>.
-##  The second argumant <description> must be a string that describes the
-##  meaning of the global variable.
-##  Values can be assigned to the new variable with `InstallGlobal' or
-##  `InstallFlushableGlobal'.
+##  If the second argument <description> is entered then this must be
+##  a string that describes the meaning of the global variable.
+##  Values can be assigned to the new variable with `InstallValue' or
+##  `InstallFlushableValue'.
 ##
 BIND_GLOBAL( "DeclareGlobalVariable", function( arg )
     BIND_GLOBAL( arg[1], NewToBeDefinedObj(arg[1]) );
@@ -112,7 +112,10 @@ end );
 ##  `InstallFlushableValue' does the same but additionally provides that
 ##  each call of `FlushCaches' will assign a structural copy of <value>
 ##  to <gvar>.
-##  `InstallFlushableValue' works only if <value> is a list.
+##
+##  `InstallValue' does *not* work if <value> is an ``immediate object''
+##  (i.e., an internally represented small integer or finite field element).
+##  Furthermore, `InstallFlushableValue' works only if <value> is a list.
 ##
 ##  Using `DeclareGlobalVariable' and `InstallFlushableValue' has several
 ##  advantages, compared to simple assignments.
@@ -121,14 +124,14 @@ end );
 ##  2. The implementation of `FlushCaches' is not prescribed,
 ##     at least it is hidden in the function `InstallFlushableValue'.
 ##  3. It is possible to access the `#V' global variables from within GAP,
-##     perhaps separately for each package;
+##     perhaps separately for each package.
 ##     Note that the assignments of other global variables via
 ##     `DeclareOperation', `DeclareProperty' etc. would admit this already.
 #T     (This would raise the question whether also immutable `#V' variables
 #T     shall be defined via a function call.)
 ##
 ##  (Note that `InstallFlushableValue' makes sense only for *mutable*
-##  global variables.)
+##  global lists.)
 ##
 BIND_GLOBAL( "InstallValue", CLONE_OBJ );
 
@@ -168,5 +171,5 @@ end );
 #############################################################################
 ##
 
-#E  variable.g 	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

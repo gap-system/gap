@@ -51,12 +51,12 @@ InstallGlobalFunction( DisplayCompositionSeries, function( S )
     # display the composition series
     Print( GroupString( S[1], "G" ), "\n" );
     for i  in [2..Length(S)]  do
-	if Parent(S[i])=S[i-1] then
-	  f:=Image( NaturalHomomorphismByNormalSubgroupInParent( S[ i ] ) );
-	else
-	  f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
-	fi;
-        Print( " | ",IsomorphismTypeFiniteSimpleGroup(f),"\n");
+	#if Parent(S[i])=S[i-1] then
+	#  f:=Image( NaturalHomomorphismByNormalSubgroupInParent( S[ i ] ) );
+	#else
+	f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
+        #fi;
+        Print( " | ",IsomorphismTypeFiniteSimpleGroup(f).name,"\n");
         if i < Length(S)  then
             Print( GroupString( S[i], "S" ), "\n" );
         else
@@ -72,7 +72,8 @@ end );
 ##  `CompositionSeriesPermGroup' returns the composition series of <G>  as  a
 ##  list.
 ##
-##  The subgroups in this list have a slightly modified `FactorGroup' method,
+##  The subgroups in this list have a slightly modified
+##  `NaturalHomomorphismByNormalSubgroup' method,
 ##  which notices if you compute the factor group of one subgroup by the next
 ##  and return the factor group as a  primitive  permutation  group  in  this
 ##  case (which is also computed by the function below).  The  factor  groups
@@ -112,10 +113,10 @@ InstallMethod( CompositionSeries,
             tchom,      # transitive constituent homomorphism applied to
                         # intransitive workgroup
             bhom,       # block homomorphism applied to imprimitive workgroup
+	    fahom,	# factor homomorphism to store
             bl,         # block system in workgroup
             D,          # derived subgroup of workgroup
             top,        # index of D in workgroup
-            g,          # element in a generator list
             lenhomlist, # length of homlist
             i, s,  t,   #
             fac,        # factor group as permutation group
@@ -130,11 +131,12 @@ InstallMethod( CompositionSeries,
             t := AsSubgroup( s, list[ i ] );
             fac := CyclicGroup( IsPermGroup,
                            RelativeOrders( pcgs )[ i - 1 ] );
-            Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,
-                    GroupHomomorphismByImagesNC( s, fac,
-                    pcgs{ [ i - 1 .. Length( pcgs ) ] },
-                    Concatenation( GeneratorsOfGroup( fac ),
-                    List( [ i .. Length( pcgs ) ], k -> One( fac ) ) ) ) );
+            fahom:=GroupHomomorphismByImagesNC( s, fac,
+		 pcgs{ [ i - 1 .. Length( pcgs ) ] },
+		 Concatenation( GeneratorsOfGroup( fac ),
+		 List( [ i .. Length( pcgs ) ], k -> One( fac ) ) ) );
+            Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+	    AddNaturalHomomorphismsPool(s,t,fahom);
             list[ i ] := t;
             s := t;
         od;
@@ -160,7 +162,7 @@ InstallMethod( CompositionSeries,
             # if workgroup is not transitive
             workgrouporbit:= StabChainMutable( workgroup ).orbit;
             if Length(workgrouporbit) < lastpt   then
-                tchom := OperationHomomorphism(workgroup,workgrouporbit);
+                tchom := ActionHomomorphism(workgroup,workgrouporbit);
                 Add(homlist,tchom);
                 workgroup := Image(tchom,workgroup);
             else
@@ -168,7 +170,7 @@ InstallMethod( CompositionSeries,
 
                 # if workgroup is not primitive
                 if Length(bl) > 1  then
-                    bhom := OperationHomomorphism(workgroup,bl,OnSets);
+                    bhom := ActionHomomorphism(workgroup,bl,OnSets);
                     workgroup := Image(bhom,workgroup);
                     Add(homlist,bhom);
                 else
@@ -225,9 +227,10 @@ InstallMethod( CompositionSeries,
         fac := GroupByGenerators( factors[i-1] );
         SetSize( fac, factorsize[i-1] );
         SetIsSimpleGroup( fac, true );
-        Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,
-                GroupHomomorphismByImagesNC( s, fac,
-                        normals[i-1], factors[i-1] ) );
+	fahom:=GroupHomomorphismByImagesNC( s, fac,
+                        normals[i-1], factors[i-1] );
+        Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+        AddNaturalHomomorphismsPool(s, t,fahom);
         Add( list, t );
         s := t;
     od;
@@ -238,9 +241,10 @@ InstallMethod( CompositionSeries,
     fac := GroupByGenerators( factors[Length(normals)] );
     SetSize( fac, factorsize[Length(normals)] );
     SetIsSimpleGroup( fac, true );
-    Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,
-            GroupHomomorphismByImagesNC( s, fac,
-                    normals[Length(normals)], factors[Length(normals)] ) );
+    fahom:=GroupHomomorphismByImagesNC( s, fac,
+                    normals[Length(normals)], factors[Length(normals)] );
+    Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+    AddNaturalHomomorphismsPool(s, t,fahom);
     Add( list, t );
 
     # return output
@@ -267,7 +271,7 @@ InstallGlobalFunction( NonPerfectCSPG,
             orderlist,    # prime factors of order
             g, p,         # generators of workup, oldworkup
             h,            # a power of g
-            i, j;         # loop variables
+            i;         # loop variables
 
     # number of primes in factor <workgroup> / <derived subgroup>
     listlength := Length(FactorsInt(top));
@@ -365,7 +369,8 @@ InstallGlobalFunction( PerfectCSPG,
             kernel,     # output
             ready,      # boolean variable indicating whether normal subgroup
                         # was found
-            chainK;
+            chainK,
+            list;
 
     while not IsSimpleGroup(K)  do
         whichcase := CasesCSPG(K);
@@ -413,15 +418,17 @@ InstallGlobalFunction( PerfectCSPG,
                kerelement := Product(word);
                N := NormalClosure(K, SubgroupNC(K,[kerelement]));
             else
-               H := NormalizerStabCSPG(K);
+               list := NormalizerStabCSPG(K);
+               H := list[1];
+               chainK := list[2];
                if whichcase[1] = 2 then
-                 stab2 := Stabilizer( K, [ chainK.orbit[1],
+                  stab2 := Stabilizer( K, [ chainK.orbit[1],
                                            chainK.stabilizer.orbit[1] ],
                                   OnTuples);
                   H := CentralizerNormalCSPG( H, stab2 );
                else
                   L := Orbit( H, StabChainMutable( H ).orbit[1] );
-                  tchom := OperationHomomorphism(H,L);
+                  tchom := ActionHomomorphism(H,L);
                   op := Image( tchom );
                   H := PreImages(tchom,PCore(op,FactorsInt(whichcase[2])[1]));
                   H := Centre(H);
@@ -464,7 +471,7 @@ InstallGlobalFunction( PerfectCSPG,
 
     # case when we found last factor of original group
     else
-        kernel := Group(());
+        kernel := GroupByGenerators( [], () );
     fi;
 
     return kernel;
@@ -490,7 +497,7 @@ InstallGlobalFunction( CasesCSPG, function(G)
             g,          # order of G
             primes,     # list of primes in prime decomposition of degree
             output,     # output of routine
-            n,m,o,p,i,  # loop variables
+            n,m,o,p,  # loop variables
             tab1,       # table of orders of primitive groups
             tab2,       # table of orders of perfect transitive groups
             base;       # prime occuring in order of outer automorphism
@@ -498,6 +505,11 @@ InstallGlobalFunction( CasesCSPG, function(G)
 
     g := Size(G);
     degree := LargestMovedPoint(G);
+    if degree>2^20 then
+      # see comment before the composition series method
+      Error("degree too big");
+    fi;
+
     output := [];
 
     # case of two regular normal subgroups
@@ -603,13 +615,13 @@ InstallGlobalFunction( FindNormalCSPG, function ( G, whichcase )
     if len mod whichcase[3] = 0 and len <= whichcase[3]*(whichcase[2]-1) then
 
         # take action of stabgroup on shortest orbit
-        tchom := OperationHomomorphism(stabgroup,orbits[where]);
+        tchom := ActionHomomorphism(stabgroup,orbits[where]);
         K := Image(tchom,stabgroup);
         bl := MaximalBlocks(K,[1..len]);
 
         # take action on blocks
         if Length(bl) > 1  then
-            bhom := OperationHomomorphism(K,bl,OnSets);
+            bhom := ActionHomomorphism(K,bl,OnSets);
             K := Image(bhom,K);
             kernel := KernelOfMultiplicativeGeneralMapping(
                           CompositionMapping(bhom,tchom));
@@ -699,11 +711,9 @@ InstallGlobalFunction( NinKernelCSPG,
             stab,       # stabilizer of first two base points
             H,HOld,     # subgroups of G
             G1,H1,      # stabilizer chains of G, HOld
-            g,          # loop variable: generator of subgroups of G
             block,      # set of cosets of G1[i]; G1[i] is represented on
                         # images of block
             newrep,     # blocks of imprimitivity in
-            oldnewrep,  # the representation of G1[i]
             bhom,       # block hom. and
             tchom;      # transisitive const. hom. applied to G1[i]
 
@@ -749,11 +759,11 @@ InstallGlobalFunction( NinKernelCSPG,
     # find primitive action on images of block
     newrep := MaximalBlocks( G, StabChainMutable( G ).orbit, block );
     if Length(newrep) > 1 then
-        bhom := OperationHomomorphism(G,newrep,OnSets);
+        bhom := ActionHomomorphism(G,newrep,OnSets);
         Add(homlist,bhom);
         G := Image(bhom,G);
     else
-        tchom:=OperationHomomorphism(G, StabChainMutable( G ).orbit);
+        tchom:=ActionHomomorphism(G, StabChainMutable( G ).orbit);
         Add(homlist,tchom);
         G := Image(tchom,G);
     fi;
@@ -907,10 +917,12 @@ end );
 
 #############################################################################
 ##
-#F  NormalizerStabCSPG()  . . . . . . . . .  normalizer of 2 point stabilizer
+#F  NormalizerStabCSPG( <G> ) . . . . . . .  normalizer of 2 point stabilizer
 ##
-##  given primitive, perfect group which has regular normal subgroup
-##  with nontrivial centralizer, the output is N_G(G_{xy})
+##  Given a primitive, perfect group <G> which has a regular normal subgroup
+##  with nontrivial centralizer,
+##  the output is a list of length two, the first entry being N_G(G_{xy})
+##  and the second entry being a stabilizer chain of <G>.
 ##
 InstallGlobalFunction( NormalizerStabCSPG, function(G)
     local   n,          # degree of G
@@ -958,7 +970,7 @@ InstallGlobalFunction( NormalizerStabCSPG, function(G)
     chainstab2 := chainstab.stabilizer;
 
     # compute normalizer. Method: Beals-Seress, Lemma 7.1
-    L := Difference( [1..n], MovedPointsPerms( chainstab2.generators ) );
+    L := Difference( [1..n], MovedPoints( chainstab2.generators ) );
     yL := Intersection( L, chainstab.orbit );
 
     # initialize normalizer to G_{xy}
@@ -989,7 +1001,7 @@ InstallGlobalFunction( NormalizerStabCSPG, function(G)
     normalizer.stabChain.stabilizer:=normalizer.stabChain2;
 
     normalizer := GroupStabChain( Parent( G ), normalizer.stabChain, true );
-    return normalizer;
+    return [normalizer, chainG];
 end );
 
 
@@ -1531,6 +1543,7 @@ InstallMethod( RadicalGroup,
                         # acting on pieces of H
             GG,         # the image of G at this action
             hom,        # the homomorphism from G to GG
+	    map,	# natural homomorphism for radical.
             solvable;   # list of generators for the radical
 
     if IsTrivial(workgroup)  then
@@ -1625,7 +1638,7 @@ InstallMethod( RadicalGroup,
     # the radical is the kernel of homomorphisms applied to workgroup
     lenhomlist := Length(homlist);
     if lenhomlist = 0  then
-        solvable := [()];
+	return TrivialSubgroup(workgroup);
     else
         solvable := [];
         for i in [1..lenhomlist] do
@@ -1639,7 +1652,25 @@ InstallMethod( RadicalGroup,
         od;
     fi;
 
-    return SubgroupNC(workgroup,solvable);
+    # construct the natural hom.
+    map:=[];
+    for i in GeneratorsOfGroup(workgroup) do
+      g:=i;
+      for j in [1..lenhomlist] do
+        g:=ImageElm(homlist[j],g);
+      od;
+      Add(map,g);
+    od;
+
+    solvable:=SubgroupNC(workgroup,solvable);
+    g:=Group(map,());
+    SetSize(g,Index(workgroup,solvable));
+    SetRadicalGroup(g,TrivialSubgroup(g));
+    map:=GroupHomomorphismByImagesNC(workgroup,g,
+                                     GeneratorsOfGroup(workgroup),map);
+    SetKernelOfMultiplicativeGeneralMapping(map,solvable);
+    AddNaturalHomomorphismsPool(workgroup,solvable,map);
+    return solvable;
 end );
 
 
@@ -1657,8 +1688,6 @@ InstallMethod( Centre,
     function(G)
     local   n,          # degree of G
             orbits,     # list of orbits of G
-            list,       # ordering of permutation domain
-                        # such that G orbits are consecutive
             base,       # lexicographically smallest (in list) base of G
             i,j,        # loop variables
             reps,       # array recording which orbit of G the points in
@@ -1676,11 +1705,10 @@ InstallMethod( Centre,
             GGG,        # the image of GG at tchom2
             hgens,      # list of generators for the direct product of
                         # centralizers of GG in Sym(orbit), for orbits of GG
-            order,      # order of Group(hgens,())
+            order,      # order of `GroupByGenerators( hgens, () )'
             centr,      # the centralizer of GG in Sym(orbit)
             inverse2,   # inverse of the conjugating permutation of tchom2
             g,          # generator of centr
-            image,      # generator of centr, as it acts on domain
             cent;       # center of GG
 
     if IsTrivial(G)  then
@@ -1730,7 +1758,7 @@ InstallMethod( Centre,
     if n = len then
        GG := G;
     else
-       tchom := OperationHomomorphism(G,domain);
+       tchom := ActionHomomorphism(G,domain);
        GG := Image(tchom,G);
     fi;
 
@@ -1759,13 +1787,14 @@ InstallMethod( Centre,
         else
            orbit := OnTuples(orbits[i],tchom!.conperm);
         fi;
-        tchom2 := OperationHomomorphism(GG,orbit);
+        tchom2 := ActionHomomorphism(GG,orbit);
         GGG := Image(tchom2,GG);
         chainGG:= StabChainOp( GG, [ orbit[1] ] );
         chainGGG:= StabChainMutable( GGG );
         chainGGG.stabFxdPnts:=[ orbit[1]^tchom2!.conperm,
-            OnTuples( Difference(orbit, MovedPointsPerms
-                ( chainGG.stabilizer.generators ) ), tchom2!.conperm ) ];
+            OnTuples( Difference(orbit,
+                      MovedPoints( chainGG.stabilizer.generators ) ),
+                      tchom2!.conperm ) ];
         centr := CentralizerTransSymmCSPG( GGG, chainGGG );
         if not IsEmpty( GeneratorsOfGroup( centr ) ) then
            order := order * Size( centr );
@@ -1874,7 +1903,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
        GG := G;
        NN := N;
     else
-       tchom := OperationHomomorphism(G,domain);
+       tchom := ActionHomomorphism(G,domain);
        GG := Image(tchom,G);
        NN := Image(tchom,N);
     fi;
@@ -1899,7 +1928,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
             orbit := OnTuples(orbits[i],tchom!.conperm);
         fi;
         # restrict GG, NN to orbit
-        tchom2 := OperationHomomorphism(GG,orbit);
+        tchom2 := ActionHomomorphism(GG,orbit);
         GGG := Image(tchom2,GG);
         NNN := Image(tchom2,NN);
 
@@ -2013,7 +2042,7 @@ InstallGlobalFunction( CentralizerNormalTransCSPG, function(G,N)
 
     # orbits contains the orbits of the centralizer of N in S_n;
     # so C_G(N) must fix setwise the elements of orbits
-    bhom := OperationHomomorphism(G,orbits,OnSets);
+    bhom := ActionHomomorphism(G,orbits,OnSets);
     GG := KernelOfMultiplicativeGeneralMapping( bhom );
     if IsTrivial(GG)  then
         return TrivialSubgroup( Parent(G) );
@@ -2079,7 +2108,7 @@ InstallGlobalFunction( CentralizerNormalTransCSPG, function(G,N)
 
     # compute centralizer of N in first orbit; centralizer in other orbits
     # is obtained from identification between orbits
-    tchom := OperationHomomorphism( N, chainN.orbit );
+    tchom := ActionHomomorphism( N, chainN.orbit );
     inverse := tchom!.conperm^(-1);
     img:= Image( tchom, N );
     centr := CentralizerTransSymmCSPG( img, StabChainMutable( img ) );
@@ -2144,7 +2173,6 @@ InstallGlobalFunction( CentralizerTransSymmCSPG, function( G, chainG )
                         # eventually, orbitx=L
             y,          # a point in L
             z,          # loop variable running through permutation domain
-            i,          # loop variable
             h,          # a coset representative of G, written as word in the
                         # generators
             gens,       # list of generators for the centralizer
@@ -2168,7 +2196,7 @@ InstallGlobalFunction( CentralizerTransSymmCSPG, function( G, chainG )
        n := LargestMovedPoint(G);
        x := chainG.orbit[1];
        L := Difference( [ 1 .. n ],
-                        MovedPointsPerms( chainG.stabilizer.generators ) );
+                        MovedPoints( chainG.stabilizer.generators ) );
     fi;
 
     Ginverses := GInverses( chainG );
@@ -2210,7 +2238,6 @@ InstallGlobalFunction( IntersectionNormalClosurePermGroup,
             n,          # maximum of degrees of G,H
             i,j,        # loop variables
             conperm,    # perm exchanging first and second n points
-            extended,   # action of generators of G,H on 2n points
             newgens,    # set of extended generators
             options,    # options record for stabilizer computation
             group;      # the group generated by newgens
@@ -2439,10 +2466,10 @@ end );
 
 #############################################################################
 ##
-#F  ChiefSeriesPermGroup([<H>,]<G>[,<through>])
+#F  ChiefSeriesOfGroup( [<H>, ]<G>[, <through>] )
 ##
-InstallGlobalFunction( ChiefSeriesPermGroup, function(arg)
-local G,H,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
+InstallGlobalFunction( ChiefSeriesOfGroup, function(arg)
+local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
       through;
   G:=arg[1];
   H:=G;
@@ -2464,27 +2491,31 @@ local G,H,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
   while Size(U)>1 do
     # get maximal normal subgroup
     cs:=CompositionSeries(U);
-    cs:=cs[2];
+    # add composition factors which are normal
+    n:=2;
+    while n<=Length(cs) and Length(through)=0 and IsNormal(H,cs[n]) do
+      U:=cs[n];
+      Add(nser,U);
+      n:=n+1;
+    od;
 
-    if Length(through)>0 then
-      if Size(U)=Size(through[1]) then
-        through:=through{[2..Length(through)]};
-      fi;
-      if Length(through)>0 and not IsSubgroup(cs,through[1]) then
-	# enforce way through
-	Info(InfoGroup,1,"force");
-	n:=NaturalHomomorphismByNormalSubgroup(U,through[1]);
-	cs:=CompositionSeries(Image(n));
-	cs:=cs[2];
-	cs:=PreImage(n,cs);
-      fi;
-    fi;
+    if n<=Length(cs) then
+      cs:=cs[n];
 
-    if IsNormal(H,cs) then
-      # step is normal
-      Add(nser,cs);
-      n:=cs;
-    else
+      if Length(through)>0 then
+	if Size(U)=Size(through[1]) then
+	  through:=through{[2..Length(through)]};
+	fi;
+	if Length(through)>0 and not IsSubgroup(cs,through[1]) then
+	  # enforce way through
+	  Info(InfoGroup,1,"force");
+	  n:=NaturalHomomorphismByNormalSubgroup(U,through[1]);
+	  cs:=CompositionSeries(Image(n));
+	  cs:=cs[2];
+	  cs:=PreImage(n,cs);
+	fi;
+      fi;
+
       n:=Core(H,cs);
       #o:=GroupOnSubgroupsOrbit(H,cs);
       #Info(InfoGroup,1,"orblen=",Length(o));
@@ -2565,6 +2596,9 @@ local G,H,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
 	# intermediate normal subgroup possible
 	Add(nser,n);
       fi;
+
+    else
+      n:=cs[n-1];
     fi;
     Info(InfoGroup,1,"Step ",Index(U,n));
     U:=n;
@@ -2575,24 +2609,45 @@ end );
 
 #############################################################################
 ##
-#M  ChiefSeries
+#M  ChiefSeries( <G> )
 ##
-InstallMethod(ChiefSeries,"perm group",true,[IsPermGroup],0,
-  ChiefSeriesPermGroup);
-
-InstallMethod(ChiefSeriesUnderAction,"perm group",true,[IsPermGroup,
-              IsPermGroup],0,
-  ChiefSeriesPermGroup);
-
-InstallMethod(ChiefSeriesThrough,"perm group",true,[IsPermGroup,
-              IsList],0,
-  ChiefSeriesPermGroup);
-
-InstallOtherMethod(ChiefSeriesThrough,"perm group under perm group action",
-              true,[IsPermGroup,IsPermGroup,IsList],0,
-  ChiefSeriesPermGroup);
+InstallMethod( ChiefSeries,
+    "generic method for a group",
+    true,
+    [ IsGroup ], 0,
+    ChiefSeriesOfGroup );
 
 
 #############################################################################
 ##
-#E  grpprmcs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  ChiefSeriesUnderAction( <G>, <H> )
+##
+InstallMethod( ChiefSeriesUnderAction,
+    "generic method for two groups",
+    true,
+    [ IsGroup, IsGroup ], 0,
+    ChiefSeriesOfGroup );
+
+
+#############################################################################
+##
+#M  ChiefSeriesThrough( <G>, <list> )
+#M  ChiefSeriesThrough( <G>, <H>, <list> )
+##
+InstallMethod( ChiefSeriesThrough,
+    "generic method for a group and a list",
+    true,
+    [ IsGroup, IsList ], 0,
+    ChiefSeriesOfGroup );
+
+InstallOtherMethod( ChiefSeriesThrough,
+    "generic method for two groups and a list",
+    true,
+    [ IsGroup, IsGroup, IsList ], 0,
+    ChiefSeriesOfGroup );
+
+
+#############################################################################
+##
+#E
+

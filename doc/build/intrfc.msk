@@ -1,0 +1,659 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  intrfc.msk              GAP manual                   Alexander Hulpke
+%W                                                       Andrew Solomon
+%%
+%H  @(#)$Id$
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Examples of Extending the System}
+
+This chapter gives a few examples of how one can extend the functionality of
+{\GAP}.
+
+They are arranged in ascending difficulty. We show how to install new
+methods, add new operations and attributes and how to implement new features
+using categories and representations.  (As we do not introduce completely
+new kinds of objects in these example it will not be necessary to declare
+any families.)
+Finally we show a simple way how to create new objects with an own
+arithmetic.
+
+The examples given are all very rudimentary -- no particular error checks
+are performed and the user interface sometimes is quite clumsy.
+
+
+Even more complex examples that create whole classes of objects anew will be
+given in the following two chapters "An Example -- Residue Class Rings" and
+"An Example -- Designing Arithmetic Operations".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Addition of a Method}
+
+The easiest case is the addition of a new algorithm as a method for an
+existing operation for the existing structures.
+
+For example, assume we wanted to implement a better method for computing the
+exponent of a nilpotent group (it is the product of the exponents of the
+sylow subgroups).
+
+The first task is to find which operation is used by {\GAP} (it is `Exponent')
+and how it is declared.  We can find this in the reference manual (in our
+particular case in section~"ref:Numerical Group Attributes") and the
+declaration in the library file `lib/grp.gd' (The easiest way to find the
+place of the declaration is usually to `grep' over all `.gd' and `.g' files,
+see section~"ext:Library Files" of ``Extending Gap''.)
+
+In our example the declaration in the library is:
+\begintt
+DeclareAttribute("Exponent",IsGroup);
+\endtt
+
+Similarly we find that the filter `IsNilpotentGroup' 
+represents the concept of being nilpotent.
+
+We then write a function that implements the new algorithm which takes the
+right set of arguments and install it as a method. In our example this
+installation would be:
+\begintt
+InstallMethod(Exponent,"for nilpotent groups",
+  [IsGroup and IsNilpotent],
+function(G)
+  [function body omitted]
+end);
+\endtt
+
+We have left out the optional rank argument of `InstallMethod',
+which normally is a wise choice -- {\GAP}
+automatically uses an internal ranking based on the filters that is only
+offset by the given rank. So our method will certainly be ``better'' than
+a method that has been installed for mere groups or for solvable groups but
+will be ranked lower than the library method for abelian groups.
+
+That's all. Using `ApplicableMethod' (see~"ref:ApplicableMethod") we can
+check for an nilpotent group that indeed our new method will be used.
+
+When testing, remember that the method selection will not check for
+properties that are not known. (This is done internally by checking the
+property tester first.) Therefore the method would not be applicable
+for the group `g' in the following definition but only for the --
+mathematically identical but endowed with more knowledge by {\GAP} -- group
+`h'. (Section~"Enforcing Property Tests" shows a way around this.)
+\begintt
+gap> g:=Group((1,2),(1,3)(2,4));;
+gap> h:=Group((1,2),(1,3)(2,4));;
+gap> IsNilpotentGroup(h); # enforce test
+true
+gap> HasIsNilpotentGroup(g);
+false
+gap> HasIsNilpotentGroup(h);
+true
+\endtt
+\bigskip
+
+Lets now look at a slightly more complicated example:
+We want to implement a better method for computing 
+normalizers in a nilpotent permutation group.
+(Such an algorithm can be found for example in \cite{luksrakocziwright97}.)
+
+We already know `IsNilpotentGroup', the filter `IsPermGroup' 
+represent the concepts of being a group of permutations.
+
+{\GAP} uses `Normalizer' to compute normalizers, however the declaration is
+a bit more complicated. In the library we find
+\begintt
+InParentFOA( "Normalizer", IsGroup, IsObject, NewAttribute );
+\endtt
+
+The full mechanism of `InParentFOA' is described in
+chapter~"ext:Function-Operation-Attribute Triples" of ``Extending {\GAP}'',
+however for our purposes it is sufficient to know that for such a function
+the actual work is done by an operation `NormalizerOp' (and all the
+complications are just there to be able to remember certain results) and that
+the declaration of this operation is given by the first arguments, it would
+be:
+\begintt
+DeclareOperation( "NormalizerOp", [IsGroup, IsObject] );
+\endtt
+
+This time we decide to enter a non-default family predicate in the call to
+`InstallMethod'.
+We could just leave it out as in the previous call;
+this would yield the default value, the function `ReturnTrue' of arbitrary
+many arguments which always returns `true'.
+However, then the method might be called in some cases of inconsistent input
+(for example matrix groups in different characteristics) that ought to fall
+through the method selection to raise an error.
+
+In our situation, we want the second group to be a subgroup of the first, so
+necessarily both must have the same family and we can use `IsIdenticalObj'
+as family predicate.
+
+Now we can install the method. Again this manual is lazy and does not show
+you the actual code:
+\begintt
+InstallMethod(NormalizerOp,"for nilpotent permutation groups",IsIdenticalObj,
+  [IsPermGroup and IsNilpotentGroup,
+   IsPermGroup and IsNilpotentGroup],
+function(G,U)
+  [ function body omitted ]
+end);
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Extending the Range of Definition of an Existing Operation}
+
+It might be that the operation has been defined so far only for a set of
+objects that is too restrictive for our purposes (or we want to install a
+method that takes another number of arguments). If this is the case,
+the call to `InstallMethod' causes an error message. We can avoid this by
+using `InstallOtherMethod' instead of `InstallMethod'.
+
+%T better explain re-declaration!
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Enforcing Property Tests}
+
+As mentioned above, {\GAP} does not check unknown properties to test whether
+a method might be applicable. In some cases one wants to enforce this,
+however, because the gain from knowing the property outweights the cost of
+its determination.
+
+In this situation one has to install a method *without* the additional
+property (so it can be tried even if the property is not yet known) and at high
+rank (so it will be used before other methods). The first thing to do in the
+actual function then is to test the property and to bail out with
+`TryNextMethod()' if it turns out to be `false'.
+
+The above `Exponent' example thus would become:
+%T The above example mentioned nilpotency ...
+\begintt
+InstallMethod(Exponent,"test abelianity", [IsGroup],
+  50,# enforced high rank
+function(G)
+  if not IsAbelian(G) then
+    TryNextMethod();
+  fi;
+  [remaining function body omitted]
+end);
+\endtt
+
+The value ``50'' used in this example is quite arbitrary. A better way is to
+use values that are given by the system inherently: We want this method
+still to be ranked as high, *as if it had* the `IsAbelian' requirement. So
+we have {\GAP} compute the extra rank of this:
+\begintt
+InstallMethod(Exponent,"test abelianity", [IsGroup],
+  # enforced absolute rank of `IsGroup and IsAbelian' installation: Subtract
+  # the rank of `IsGroup' and add the rank of `IsGroup and IsAbelian':
+  SIZE_FLAGS(FLAGS_FILTER(IsGroup and IsAbelian))
+  -SIZE_FLAGS(FLAGS_FILTER(IsGroup)),
+function(G)
+\endtt
+the slightly complicated construction of addition and subtraction is
+necessary because `IsGroup' and `IsAbelian' might imply the *same*
+elementary filters which we otherwise would count twice.
+\bigskip
+
+A somehow similar situation occurs with matrix groups. Most methods for
+matrix groups are only applicable if the group is known to be finite.
+
+However we should not enforce a finiteness test early (someone else later might
+install good methods for infinite groups while the finiteness test would be
+too expensive) but just before {\GAP} would give a ``no method found''
+error. This is done by redispatching, see~"Redispatching". For example to
+enforce such a final finiteness test for normalizer calculations could be
+done by:
+\begintt
+RedispatchOnCondition(NormalizerOp,IsIdenticalObj,
+  [IsMatrixGroup,IsMatrixGroup],[IsFinite,IsFinite],0);
+\endtt
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Adding a new Operation}
+
+The next step is to add own operations. As an example we take the Sylow
+normalizer in a group of a given prime. This operation gets two arguments,
+the first has to be a group, the second a prime number.
+
+There is a function `IsPrimeInt', but no property for being prime (which
+would be pointless as integers cannot store property values anyhow). So the
+second argument gets specified only as positive integer:
+\begintt
+SylowNormalizer:=NewOperation("SylowNormalizer",[IsGroup,IsPosInt]);
+\endtt
+(Note that we are using `NewOperation' instead of `DeclareOperation' as used
+in the library. The only difference is that `DeclareOperation' saves typing,
+but protects the variables against overwriting. When testing code (when one
+probably wants to change things) this might be restricting. If this does not
+bother you, you can use
+\begintt
+DeclareOperation("SylowNormalizer",[IsGroup,IsPosInt]);
+\endtt
+as well.)
+
+The filters `IsGroup' and `IsPosInt' given are *only* used to test that
+`InstallMethod' installes methods with suitable arguments and will be
+completely ignored when using `InstallOtherMethod'. Technically one could
+therefore simply use `IsObject' for all arguments in the declaration. The
+main point of using more specific filters here is to help documenting with
+which arguments the function is to be used (so for example a call
+`SylowNormalizer(5,G)' would be invalid).
+
+Of course initially there are no useful methods for newly declared
+operations, but you will have to write and install them yourself.
+
+If the operation only takes one argument and has reproducible results
+without side effects, it might be worth declaring it as an attribute
+instead.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Adding a new Attribute}
+
+Now we look at an example of how to add a new attribute. As example we
+consider the set of all primes that divide the size of a group.
+
+First we have to declare the attribute:
+\begintt
+PrimesDividingSize:=NewAttribute("PrimesDividingSize",IsGroup);
+\endtt
+This implicitly declares attribute tester and setter, it is convenient
+however to assign these to variables as well:
+\begintt
+HasPrimesDividingSize:=Tester(PrimesDividingSize);
+SetPrimesDividingSize:=Setter(PrimesDividingSize);
+\endtt
+Alternatively, there is a declaration command that executes all three
+assignments simultaneously and protects the variables against overwriting:
+\begintt
+DeclareAttribute("PrimesDividingSize",IsGroup);
+\endtt
+
+Next we have to install method(s) for the attribute that compute its value.
+(This is not strictly necessary. We could use the attribute also without
+methods only for storing and retreiving information, but calling it for objects
+for which the value is not known would produce a ``No method found'' error.)
+For this purpose we can imagine the attribute simply as an one-argument
+operation:
+\begintt
+InstallMethod(PrimesDividingSize,"for finite groups",
+  [IsGroup and IsFinite],
+function(G)
+  if Size(G)=1 then return [];
+  else return Set(Factors(Size(G)));fi;
+end);
+\endtt
+The function installed *must* always return a value (or call
+`TryNextMethod'. If the object is in the represenattion
+`IsAttributeStoringRep' this return value once computed will be automatically
+stored and retrieved if the attribute is called a second time. We don't have
+to call setter or tester ourselves. (This storage happens by {\GAP}
+internally calling the attribute setter with the return value of the
+function. Retreival is by a high-ranking method which is installed under the
+condition `HasPrimesDividingSize'. This method was installed automatically
+when the attribute was declared.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Adding a new Representation}
+
+Next, we look at the implementation of a new representation of existing
+objects. In most cases we want to implement this representation only for
+efficiency reasons while keeping all the existing functionality.
+
+For example, assume we wanted (following \cite{wielandt69})
+to implement permutation groups defined by relations.
+
+Next, we have to decide a few basics about the representation. All existing
+permutation groups in the library are attribute storing and we probably want
+to keep this for our new objects. Thus the representation must be a
+subrepresentation of `IsComponentObjectRep and IsAttributeStoringRep'.
+Furthermore we want each object to be a permutation group and we can imply
+this directly in the representation.
+
+We also decide that we store the degree (the largest point that might be
+moved)
+in a component `degree' and the defining relations in a component
+`relations' (we do not specify the format of relations here. In an actual
+implementation one would have to design this as well, but it does not affect
+the declarations this chapter is about).
+\begintt
+IsPermutationGroupByRelations:=NewRepresentation(
+  "IsPermutationGroupByRelations",
+  IsComponentObjectRep and IsAttributeStoringRep and IsPermGroup,
+  ["degree","relations"]);
+\endtt
+(If we wanted to implement sparse matrices we might for example rather
+settle for a positional object in which we store a list of the nonzero
+entries.)
+
+We can make the new representation a subrepresentation of an existion one.
+In such a case of course we have to provide all structure of this ``parent''
+representation as well.
+
+Next we need to check in which family our new objects will be. This will be
+the same family as of every other permutation group, namely the
+`CollectionsFamily(PermutationsFamily)' (where the family
+`PermutationsFamily=FamilyObj((1,2,3))' has been defined already in the
+library).
+
+Now we can write a function to create our new objects. Usually it is helpful
+to look at functions from the library that are used in similar situations (for
+example `GroupByGenerators' in our case) to make sure we have not forgotten
+any further requirements in the declaration we might have to add here.
+However in most cases the function is straightforward:
+\begintt
+PermutationGroupByRelations:=function(degree,relations)
+local g
+  g:=Objectify(NewType(CollectionsFamily(PermutationsFamily),
+		       IsPermutationGroupByRelations),
+               rec(degree:=degree,relations:=relations));
+end;
+\endtt
+
+It also is a good idea to install a `Print' (possibly also a `View') method
+-- otherwise testing becomes quite hard:
+\begintt
+InstallMethod(PrintObj,"for perm grps. given by relations",
+  [IsPermutationGroupByRelations],
+function(G)
+  Print("PermutationGroupByRelations(", G!.degree,",",G!.relations,")");
+end);  
+\endtt
+
+Next we have to write enough methods for the new representation so that the
+existing algorithms can be used. In particular we will have to implement
+methods for all operations for which library or kernel provides methods for
+the existing (alternative) representations. In our particular case there are
+no such methods. (If we would have implemented sparse matrices we
+would have had to implement methods for the list access and assignment
+functions, see "ref:Basic Operations for Lists" in the reference manual.)
+However the existing way permutation groups are represented is by
+generators. To be able to use the existing machinery we want to be able to
+obtain a generating set also for groups in our new representation. This can
+be done (albeit not very effectively) by a stabilizer calculation in the
+symmetric group given by the `degree' component. The operation function to
+use is probably a bit complicated and will depend on the format of the
+`relations' (we have not specified in this example). In the following
+method we use `operationfunction' as a placeholder;
+\begintt
+InstallMethod(GeneratorsOfGroup,"for perm grps. given by relations",
+  [IsPermutationGroupByRelations],
+function(G)
+local S,U;
+  S:=SymmetricGroup(G!.degree);
+  U:=Stabilizer(S,G!.relations,  operationfunction );
+  return GeneratorsOfGroup(U);
+end);
+\endtt
+This is all we *must* do. Of course for performance reasons one might want
+to install methods for further operations as well.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Components versus Attributes}
+
+In the last section we introduced two new components, `G!.degree' and
+`G!.relations'. Technically, we could have used attributes instead.
+There is no clear distinction which variant is to be preferred: An attribute
+expresses part of the functionality available to certain objects (and thus
+could be computed later and probably even for a wider class of objects), a
+component is just part of the internal definition of an object.
+
+So if the data is ``of general interest'', if we want the user to have
+access to it, attributes are preferrable. They provide a clean interface and
+their immutability makes it safe to hand the data to a user who potentially
+could corrupt a components entries.
+
+On the other hand more ``technical'' data (say the encoding of a sparse
+matrix) is better hidden from the user in a component, as declaring it as an
+attribute would not give any advantage.
+
+Ressource-wise, attributes need more memory (the attribute setter and
+tester are implicitly declared, and two filter bits are required), the
+attribute access is one further function call in the kernel, thus components
+might be an immeasurable bit faster.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Adding new Concepts}
+
+Finally we look how to implement a new concept for existing objects and fit
+this in the method selection. Three examples that will be made more explicit
+below would be groups for which a ``length'' of elements (as a word in
+certain generators) is defined, groups that can be decomposed as a
+semidirect product and M-groups.
+
+In each case we have two possibilities for the declaration. We can either declare it
+as a property or as a category. Both are eventually filter and in this way
+indistinguishable for the method selection. The distinction is rather
+conceptual and mainly reflects whether we want existing objects to be part
+of our new concept or not.
+
+\beginitems
+Property:&
+Properties also are attributes:
+If a property value is not known for an object, {\GAP} tries to find a
+method to compute the property value. If no suitable method is found, an
+error is raised.
+
+Category:&
+An object is in a category if it has been created in it. Testing the
+category for an object simply returns this value. Existing objects cannot
+enter a new category later in life. This means that in most cases one has to
+write own code to create objects in a new category.
+
+&If we want to implement a completely new concept so that new
+operations are defined only for the new objects -- for example bialgebras
+for which a second scalar multiplication is defined -- usually a category is
+chosen.
+
+&Technically, the behaviour of the category `IsXYZ', declared as subcategory
+of `IsABC' is therefore exactly the same as if we would declare `IsXYZ' to
+be a property for `IsABC' and install the following method:
+\begintt
+InstallMethod(IsXYZ,"return false if not known",[IsABC],ReturnFalse);
+\endtt
+&(The words `category' also has a
+well-defined mathematical meaning, but this does not need to concern us at
+this point.
+The set of objects which is defined to be a (\GAP)-category does
+not need to be a category in the mathematical sense, vice versa not every
+mathematical category is declared as a (\GAP) category.)
+\enditems
+Eventually the coice between category and property often  becomes a matter of
+taste or style.
+
+Sometimes there is even a third possiblity (if you have {\GAP} 3 experience
+this might reflect most closely ``an object whose operations record is
+{`XYOps'}''): We might want to indicate this new concept simply by the fact
+that certain attributes are set. In this case we could simply use the
+respective attribute tester(s).
+
+The examples given below each give a short argument why the
+respective solution was chosen, but one could argue as well for other
+choices.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Example: M-groups}
+
+%T add a sentence that the library contains this already;
+%T the name of the library function is `IsMonomialGroup'
+
+M-groups are finite groups for which all irreducible complex
+representations are induced from linear representations of subgroups, it
+turns out that they are all solvable and that every supersolvable group is
+an M-group. See \cite{Isa76} for further details.
+
+Solvability and supersolvability both are testable properties. We therefore
+declare `IsMGroup' as a property for solvable groups:
+\begintt
+IsMGroup:=NewProperty("IsMGroup",IsSolvableGroup);
+\endtt
+The filter `IsSolvableGroup' in this declaration *only* means that methods
+for `IsMGroup' by default can only be installed for groups that are (and
+know to be) solvable (though they could be installed for more general
+situations using `InstallOtherMethod'). It does not yet imply that M-groups
+are solvable. We must do this deliberatly via an implication and we use the
+same technique to imply that every supersolvable group is an M-group.
+\begintt
+InstallTrueMethod(IsSolvableGroup,IsMGroup);
+InstallTrueMethod(IsMGroup,IsSupersolvableGroup);
+\endtt
+%T The library is more accurate:
+%T Monomiality is defined only for *finite* groups,
+%T whereas infinite groups might be supersolvable!
+
+Now we might install a method that tests for solvable groups whether they
+are M-groups:
+\begintt
+InstallMethod(IsMGroup,"for solvable groups",[IsSolvableGroup],
+function(G)
+  [... code omitted. The function must return `true' or `false' ...]
+end);
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Example: Groups with a word length}
+
+Our second example is that of groups for whose elements a `word length'
+is defined. (We assume that the word length is only defined in the context
+of the group with respect to a preselected generating set
+but not for single elements alone. However we will not delve into any
+details of how this length is defined and how it could be computed.)
+
+Having a word length is a feature which enables other operations (for
+example a ``word length'' function). This is exactly what categories are
+intended for and therefore we use one.
+
+First, we declare the category. All objects in this category are groups and
+so we inherit the supercategory `IsGroup':
+\begintt
+DeclareCategory("IsGroupWithWordLength",IsGroup);
+\endtt
+
+We also define the operation which is ``enabled'' by this category, the word
+length of a group element, which is defined for a group and an element
+(remember that group elements are described by the category 
+`IsMultiplicativeElementWithInverse'):
+\begintt
+DeclareOperation("WordLengthOfElement",[IsGroupWithWordLength,
+  IsMultiplicativeElementWithInverse]);
+\endtt
+We then would proceed by installing methods to compute the word length in
+concrete cases and might for example add further operations to get shortest
+words in cosets.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Example: Groups with a decomposition as semidirect product}
+
+The third example is groups which have a (nontrivial) decomposition as a
+semidirect product. If this information has been found out, we want to be
+able to use it in algorithms. (Thus we do not only need the fact *that*
+there is a decomposition, but also the decomposition itself.)
+
+We also want this to be applicable to every group and not only for groups
+which have been explicitly constructed via `SemidirectProduct'.
+
+Instead we simply declare an attribute `SemidirectProductDecomposition' for
+groups.
+(again, in this manual we don't go in the details of how such an
+decomposition would look like).
+\beginexample
+DeclareAttribute("SemidirectProductDecomposition",IsGroup);
+\endexample
+If a decomposition has been found, it can be stored in a group using
+`SetSemidirectProductDecomposition'. (At the moment all groups in {\GAP} are
+attribute storing.)
+
+Methods that rely on the existence of such a decomposition then get
+installed for the tester filter `HasSemidirectProductDecomposition'.
+%T but this filter expresses the *knowledge* of a decomposition,
+%T not the *existence*!!
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creating Own Arithmetic Objects}
+
+Finally let's look at a way to create new objects with a user-defined
+arithmetic such that one can form for example groups, rings or vector spaces
+of these elements. This topic is discussed in much more detail in
+chapter~"An Example -- Designing Arithmetic Operations", in this section we
+present a simple approach that may be useful to get started but does not
+permit you to exploit all potential features.
+
+The basic design is that the user designs some way to represent her objects
+in terms of {\GAP}s built-in types, for example as a list or a record. 
+We call this the ``defining data'' of the new objects.
+Also provided are functions that perform arithmetic on thid ``defining
+data'', that is they take objects of this form and return objects that
+represent the result of the operation. The function
+`ArithmeticElementCreator' then is called to provide a wrapping such that
+proper new {\GAP}-objects are created which can be multiplied etc. with the
+default infix operations such as `\\*'.
+
+\Declaration{ArithmeticElementCreator}
+
+As the first example we look at subsets of $\{1\ldots,4\}$ and define an
+``addition'' as union and ``multiplication'' as intersection.
+These operations are both commutative and we want the resulting elements to
+know this.
+
+We therefore use the following specification:
+\beginexample
+gap> # the whole set
+gap> w := [1,2,3,4];
+[ 1, 2, 3, 4 ]
+gap> PosetElementSpec :=rec(
+>   # name of the new elements
+>   ElementName := "PosetOn4",
+>   # arithmetic operations
+>   One := a -> w,
+>   Zero := a -> [],
+>   Multiplication := function(a, b) return Intersection(a, b); end,
+>   Addition := function(a, b) return Union(a, b); end,
+>   AdditiveInverse := a -> Filtered(w, x->(not x in a)),
+>   # Mathematical properties of the elements
+>   MathInfo := IsCommutativeElement and IsAdditivelyCommutativeElement
+> );;
+gap> mkposet := ArithmeticElementCreator(PosetElementSpec);
+function( x ) ... end
+\endexample
+
+Now we can create new elements, perform arithmetic on them and form domains:
+\beginexample
+gap> a := mkposet([1,2,3]);
+[ 1, 2, 3 ]
+gap> CategoriesOfObject(a);
+[ "IsExtAElement", "IsNearAdditiveElement", "IsNearAdditiveElementWithZero", 
+  "IsNearAdditiveElementWithInverse", "IsExtLElement", "IsExtRElement", 
+  "IsMultiplicativeElement", "IsMultiplicativeElementWithOne", 
+  "IsAdditivelyCommutativeElement", "IsCommutativeElement", "IsPosetOn4" ]
+gap> a=[1,2,3];
+false
+gap> UnderlyingElement(a)=[1,2,3];
+true
+gap> b:=mkposet([2,3,4]); 
+[ 2, 3, 4 ]
+gap> a+b;
+[ 1, 2, 3, 4 ]
+gap> a*b;
+[ 2, 3 ]
+gap> s:=Semigroup(a,b);
+<semigroup with 2 generators>
+gap> Size(s);
+3
+\endexample
+
+The categories `IsPosetOn4' and `IsPosetOn4Collection' can be used to
+install methods specific to the new objects.
+\beginexample
+gap> IsPosetOn4Collection(s);
+true
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

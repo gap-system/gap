@@ -16,18 +16,23 @@ gap> Size(G3);
 1
 gap> Pcgs(G3);;
 
+gap> g:=Group((1,2,9)(3,4,5)(6,7,8), (1,4,7)(2,5,8)(3,6,9));;
+gap> h:=Group((1,2,9)(3,4,5)(6,7,8));;
+gap> (g<h)=(AsSSortedList(g)<AsSSortedList(h));
+true
+
 gap> g:=Group( (1,2,3), (2,3)(4,5) );;
 gap> IsSolvable(g);
 true
 gap> RepresentativeOperation(g,(2,5,3), (2,3,4));
 (2,3)(4,5)
-gap> g:=Group(( 9,11,10), ( 2, 3, 4),  (14,17,15), (13,16)(15,17), 
-gap> ( 8,12)(10,11), ( 5, 7)(10,11), (15,16,17), (10,11,12));;
+gap> g:=Group( ( 9,11,10), ( 2, 3, 4),  (14,17,15), (13,16)(15,17), 
+>              ( 8,12)(10,11), ( 5, 7)(10,11), (15,16,17), (10,11,12) );;
 gap> Sum(ConjugacyClasses(g),Size)=Size(g);
 true
-gap> g:= Group((4,8,12),(2,10)(4,8),(1,10)(2,5)(3,12)(4,7)(6,9)(8,11),
-> (1,7)(3,9)(5,11)(6,10));;
-gap> e:=ElementaryAbelianSeries(DerivedSeries(g));;
+gap> g:= Group( (4,8,12),(2,10)(4,8),(1,10)(2,5)(3,12)(4,7)(6,9)(8,11),
+>               (1,7)(3,9)(5,11)(6,10) );;
+gap> e:=ElementaryAbelianSeriesLargeSteps(DerivedSeries(g));;
 gap> List(e,Size);
 [ 2592, 324, 162, 81, 1 ]
 gap> ForAll([1..Length(e)-1],i->HasElementaryAbelianFactorGroup(e[i],e[i+1]));
@@ -67,7 +72,7 @@ gap> List(perf,Size);
 [ 60, 960, 30720, 1 ]
 
 # that's all, folks
-gap> STOP_TEST( "grpperm.tst", 692757480 );
+gap> STOP_TEST( "grpperm.tst", 3718162500 );
 
 #############################################################################
 ##

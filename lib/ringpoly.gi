@@ -5,7 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods  for attributes, properties and operations
 ##  for polynomial rings.
@@ -17,9 +17,9 @@ Revision.ringpoly_gi :=
 #############################################################################
 ##
 #M  GiveNumbersNIndeterminates(<ratfunfam>,<count>,<names>,<avoid>)
-GiveNumbersNIndeterminates := function(rfam,cnt,nam,avoid)
+BindGlobal("GiveNumbersNIndeterminates",function(rfam,cnt,nam,avoid)
 local idn,i,nbound;
-  avoid:=List(avoid,IndeterminateNumberOfUnivariateLaurentPolynomial);
+  avoid:=List(avoid,IndeterminateNumberOfLaurentPolynomial);
   idn:=[];
   i:=1;
   while Length(idn)<cnt do
@@ -35,7 +35,7 @@ local idn,i,nbound;
     i:=i+1;
   od;
   return idn;
-end;
+end);
 
 #############################################################################
 ##
@@ -53,7 +53,7 @@ InstallMethod( PolynomialRing,"indetlist", true, [ IsRing, IsList ], 0,
 function( r, n )
     local   efam,  rfun,  zero,  one,  ind,  i,  type,  prng;
 
-    if not IsInt(n[1]) then
+    if IsEmpty(n) or not IsInt(n[1]) then
       TryNextMethod();
     fi;
 
@@ -62,6 +62,20 @@ function( r, n )
 
     # get the rational functions of the elements family
     rfun := RationalFunctionsFamily(efam);
+
+    # cache univariate rings - they might be created often
+    if not IsBound(rfun!.univariateRings) then
+      rfun!.univariateRings:=[];
+    fi;
+
+    if Length(n)=1 
+      # some bozo might put in a ridiculous number
+      and n[1]<10000 
+      # only cache for the prime field
+      and IsField(r) and DegreeOverPrimeField(r)=1
+      and IsBound(rfun!.univariateRings[n[1]]) then
+      return rfun!.univariateRings[n[1]];
+    fi;
 
     # first the indeterminates
     zero := Zero(r);
@@ -93,6 +107,8 @@ function( r, n )
             type := type and IsFiniteFieldPolynomialRing;
         elif IsRationals(r) then
             type := type and IsRationalsPolynomialRing;
+        elif IsAbelianNumberField( r ) then
+          type:= type and IsAbelianNumberFieldPolynomialRing;
         fi;
     fi;
     prng := Objectify( NewType( CollectionsFamily(rfun), type ), rec() );
@@ -118,6 +134,13 @@ function( r, n )
     # set the generators left operator ring-with-one if the rank is one
     if IsRingWithOne(r) then
         SetGeneratorsOfLeftOperatorRingWithOne( prng, ind );
+    fi;
+
+
+    if Length(n)=1 and n[1]<10000 
+      # only cache for the prime field
+      and IsField(r) and DegreeOverPrimeField(r)=1 then
+      rfun!.univariateRings[n[1]]:=prng;
     fi;
 
     # and return
@@ -312,12 +335,12 @@ function( p, R )
     fi;
 
     # get the external representation
-    ext := ExtRepOfObj(NumeratorOfRationalFunction(p))[2];
+    ext := ExtRepPolynomialRatFun(p);
 
     # and the indeterminates and coefficients ring of <R>
     crng := CoefficientsRing(R);
     inds := Set( List( IndeterminatesOfPolynomialRing(R),
-                       x -> ExtRepOfObj(x)[2][1][1] ) );
+                       x -> ExtRepPolynomialRatFun(x)[1][1] ) );
 
     # first check the indeterminates
     for exp  in ext{[ 1, 3 .. Length(ext)-1 ]}  do
@@ -349,15 +372,30 @@ InstallMethod( DefaultRingByGenerators,
     0,
 
 function( gens )
-    local   ind,  cfs,  g,  ext,  exp,  i;
+    local   ind,  cfs,  g,  ext,  exp,  i,univ;
 
     if not ForAll( gens, IsPolynomial )  then
         TryNextMethod();
     fi;
-    ind := [];
-    cfs := [];
+    # the indices of the non-constant functions that have an indeterminate
+    # number
+    g:=Filtered([1..Length(gens)],
+      i->HasIndeterminateNumberOfUnivariateRationalFunction(gens[i]) and
+         HasCoefficientsOfLaurentPolynomial(gens[i]));
+
+    univ:=gens{g};
+    gens:=gens{Difference([1..Length(gens)],g)};
+
+    # univariate indeterminates set
+    ind := Set(List(univ,IndeterminateNumberOfUnivariateRationalFunction));
+    cfs := []; # univariate coefficients set
+    for g in univ do
+      UniteSet(cfs,CoefficientsOfUnivariateLaurentPolynomial(g)[1]);
+    od;
+
+    # the nonunivariate ones
     for g  in gens  do
-        ext := ExtRepOfObj(NumeratorOfRationalFunction(g))[2];
+        ext := ExtRepPolynomialRatFun(g);
         for exp  in ext{[ 1, 3 .. Length(ext)-1 ]}  do
             for i  in exp{[ 1, 3 .. Length(exp)-1 ]}  do
                 AddSet( ind, i );
@@ -374,32 +412,38 @@ function( gens )
     fi;
 
     if Length(ind)=0 then
-      # this can only happen if the polynomials are univariate
-      ind:=[IndeterminateNumberOfUnivariateLaurentPolynomial(gens[1])];
+      # this can only happen if the polynomials are constant. Enforce Indet 1
+      return PolynomialRing( DefaultField(cfs), [1] );
+    else
+      return PolynomialRing( DefaultField(cfs), ind );
     fi;
-
-    return PolynomialRing( DefaultField(cfs), ind );
-    
 end );
 
 #############################################################################
 ##
 #M  MinimalPolynomial( <ring>, <elm> )
-#M  CharacteristicPolynomial( <ring>, <elm> )
 ##
-InstallOtherMethod( MinimalPolynomial,"supply indeterminate 1",true,
-    [ IsRing, IsMultiplicativeElement and IsAdditiveElement],0,
+InstallOtherMethod( MinimalPolynomial,"supply indeterminate 1",
+    [ IsRing, IsMultiplicativeElement and IsAdditiveElement ],
 function(r,e)
   return MinimalPolynomial(r,e,1);
 end);
 
-InstallOtherMethod( CharacteristicPolynomial,"supply indeterminate 1",true,
-    [ IsRing, IsMultiplicativeElement and IsAdditiveElement],0,
-function(r,e)
-  return CharacteristicPolynomial(r,e,1);
-end);
 
 #############################################################################
 ##
-#E  ringpoly.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  StandardAssociate( <pring>, <upol> )
 ##
+InstallMethod(StandardAssociate,"normalize leading coefficient",IsCollsElms,
+  [IsPolynomialRing, IsPolynomial],0,
+function(R,f)
+local c;
+  c:=LeadingCoefficient(f);
+  return f*StandardAssociate(CoefficientsRing(R),c)/c;
+end);
+
+
+#############################################################################
+##
+#E
+

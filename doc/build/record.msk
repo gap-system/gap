@@ -19,11 +19,11 @@ abbreviate *value of a component* to *element*. We also say that a
 record *contains* its elements. You can access and change the elements
 of a record using its name.
 
-Record literals are written by writing down the components in order
-between `rec(' and `)', and separating them by commas `,'. Each
-component consists of the name, the assignment operator `:=', and the
-value. The *empty record*, i.e., the record with no components, is
-written as `rec()'.
+Record literals are written by writing down the components in order between
+``{`rec('}'' and ``{`)'}'', and separating them by commas ``{`,'}''. Each
+component consists of the name, the assignment operator `:=', and the value.
+The *empty record*, i.e., the record with no components, is written as
+`rec()'.
 
 \beginexample
 gap> rec( a := 1, b := "2" ); # a record with two components
@@ -65,7 +65,7 @@ construct (see "Accessing Record Elements" and "Record Assignment").
 
 \index{accessing!record elements}
 
-\>`<rec>.<name>'{record!component access}
+\>`<rec>.<name>'{record!component access} O
 
 The above construct evaluates to the value of the record component with
 the name <name> in the record <rec>. Note that the <name> is not
@@ -79,7 +79,7 @@ gap> r.b;
 2
 \endexample
 
-\>`<rec>.(<name>)'{record!component variable}
+\>`<rec>.(<name>)'{record!component variable} O
 
 This construct is similar to the above construct. The difference is that
 the second operand <name> is evaluated. It must evaluate to a string or
@@ -106,7 +106,7 @@ rec(
 
 \index{assignment!to a record}
 
-\>`<rec>.<name> := <obj>'{record!component assignement}
+\>`<rec>.<name> := <obj>'{record!component assignment} O
 
 The record assignment assigns the object <obj>, which may be an object of
 arbitrary type, to the record component with the name <name>, which must
@@ -128,11 +128,9 @@ rec(
   c := 3 ) 
 \endexample
 
-Note that assigning to a record changes the record. The ability to
-change an object is only available for lists and records (see "Identical
-Records").
+Note that assigning to a record changes the record.
 
-The function `IsBound' (see "IsBound") can be used to test if a record
+The function `IsBound' can be used to test if a record
 has a component with a certain name, the function `Unbind' (see "Unbind")
 can be used to remove a component with a certain name again.
 
@@ -143,11 +141,11 @@ gap> IsBound(r.d);
 false
 gap> Unbind(r.b);r;
 rec(
-  a := 1,
+  a := 10,
   c := 3 )
 \endexample
 
-\>`<rec>.(<name>) := <obj>'{record!component variable assignement}
+\>`<rec>.(<name>) := <obj>'{record!component variable assignment} O
 
 This construct is similar to the above construct. The difference is that
 the second operand <name> is evaluated. It must evaluate to a string or
@@ -159,23 +157,8 @@ string, equal to <name>.
 \Section{Identical Records}
 
 With the record assignment (see "Record Assignment") it is possible to
-change a record. The ability to change an object is only available for
-lists and records. This section describes the semantic consequences of
-this fact.
-
-You may think that in the following example the second assignment changes
-the integer, and that therefore the above sentence, which claimed that
-only records and lists can be changed, is wrong.
-
-\begintt
-i := 3;
-i := i + 1;
-\endtt
-
-But in this example not the *integer* `3' is changed by adding one to it.
-Instead the *variable* `i' is changed by assigning the value of `i+1',
-which happens to be `4', to `i'. The same thing happens in the following
-example
+change a record.  This section describes the semantic consequences of this
+fact which are essentially the same as for lists (see~"Identical Lists").
 
 \begintt
 r := rec( a := 1 );
@@ -294,10 +277,10 @@ r1.b := 2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Comparisons of Records}
 
-\>`<rec1> = <rec2>'{equality!of records}
-\>`<rec1> \<> <rec2>'{inequality!of records}
+\>`<rec1> = <rec2>'{equality!of records} O
+\>`<rec1> \<> <rec2>'{inequality!of records} O
 
-Usually two records are considered equal, if for each component of one
+Two records are considered equal, if for each component of one
 record the other record has a component of the same name with an equal
 value and vice versa.
 
@@ -312,8 +295,8 @@ gap> rec( a := 1 ) = 1;
 false
 \endexample
 
-\>`<rec1> \< <rec2>'{ordering!of records}
-\>`<rec1> \<= <rec2>'{ordering!of records}
+\>`<rec1> \< <rec2>'{ordering!of records} O
+\>`<rec1> \<= <rec2>'{ordering!of records} O
 
 To compare records we imagine that the components of both records are
 sorted according to their names. Then the records are compared
@@ -335,17 +318,15 @@ gap> rec( a := 1 ) < rec( a := 0, b := 2 );
 false # the `a' elements are compared first and 0 is less than 1
 gap> rec( b := 1 ) < rec( b := 0, a := 2 );
 true # the `a'-s are compared first and unbound is less than 2
-gap> rec( a := 1 ) < 1;
-false # other objects are less than records
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{IsBound and Unbind for records}
+\Section{IsBound and Unbind for Records}
 
-\){\fmark `IsBound( <rec>.<name> )'}
+\){\fmark `IsBound( <rec>.<name> )'} O
 
 `IsBound' returns `true' if the record <rec> has a
-component with the name <name>, which must be an ident and `false'
+component with the name <name> (which must be an identifier) and `false'
 otherwise. <rec> must evaluate to a record, otherwise an error is
 signalled.
 
@@ -357,7 +338,7 @@ gap> IsBound( r.c );
 false
 \endexample
 
-\){\fmark `Unbind( <rec>.<name> )'}
+\){\fmark `Unbind( <rec>.<name> )'} O
 
 `Unbind' deletes the component with the name <name> in
 the record <rec>. That is, after execution of `Unbind', <rec> no longer
@@ -381,7 +362,7 @@ supposed to return `false' and there would be no way to tell `Unbind' which
 component to remove.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Record access operations}
+\Section{Record Access Operations}
 
 Internally, record accesses are done using the operations listed in this
 section. For the records implemented in the kernel, kernel methods are
@@ -389,7 +370,7 @@ provided for all these operations but otherwise it is possible to install
 methods for these operations for any object. This
 permits objects to simulate record behavior.
 
-To same memory, records do not store a list of all component names, but only
+To save memory, records do not store a list of all component names, but only
 numbers identifying the components. There numbers are called *RNams*. {\GAP}
 keeps a list of all RNams that are used and provides functions to translate
 RNams to strings that give the component names and vice versa.
@@ -407,10 +388,10 @@ possible to pass a positive integer <int> in which case the decimal expansion of
 <int> is used as a string.
 
 \beginexample
-gap> NameRNam(753); 
-"chappos"
+gap> NameRNam(798); 
+"BravaisSupergroups"
 gap> RNamObj("blubberflutsch");
-1922
+2075
 gap> NameRNam(last);
 "blubberflutsch"
 \endexample
@@ -418,17 +399,21 @@ gap> NameRNam(last);
 The correspondence between Strings and RNams is not predetermined ab initio,
 but RNams are assigned to component names dynamically on a
 ``first come, first serve'' basis. Therefore, depending on the version of
-the library you are using and on the assignements done so far, the *same*
+the library you are using and on the assignments done so far, the *same*
 component name may be represented by *different* RNams in different runs of
 {\GAP}.
 
-\> `\\.(<obj>,<rnam>)'{record component!operation}
-\> `IsBound\\.(<obj>,<rnam>)'{record boundness test!operation}
-\> `\\.\\:\\=(<obj>,<rnam>)'{record assignement!operation}
-\> `Unbind\\.(<obj>,<rnam>)'{record unbind!operation}
+The following operations are called for record accesses to arbitrary
+objects. If applicable methods are installed, they are called when the
+object is accessed as a record.
+
+\> `\\.(<obj>,<rnam>)'{record component!operation} O
+\> `IsBound\\.(<obj>,<rnam>)'{record boundness test!operation} O
+\> `\\.\\:\\=(<obj>,<rnam>)'{record assignment!operation} O
+\> `Unbind\\.(<obj>,<rnam>)'{record unbind!operation} O
 
 These operations implement component access, test for element boundness,
-component assignement and removal of the component represented by the RNam
+component assignment and removal of the component represented by the RNam
 <rnam>.
 
 The component identifier <rnam> is always declared as `IsPosInt'.

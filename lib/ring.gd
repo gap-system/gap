@@ -15,61 +15,54 @@ Revision.ring_gd :=
 
 #############################################################################
 ##
-#P  IsLDistributive( <R> )
+#P  IsNearRing( <R> )
 ##
-##  is `true' if the relation $a * ( b + c ) = ( a * b ) + ( a * c )$
-##  holds for all elements $a$, $b$, $c$ in the ring <R>,
-##  and `false' otherwise.
+##  A *near-ring* in {\GAP} is a near-additive group
+##  (see~"IsNearAdditiveGroup") that is also a semigroup (see~"IsSemigroup"),
+##  such that addition `+' and multiplication `\*' are right distributive
+##  (see~"IsRDistributive").
+##  Any associative ring (see~"IsRing") is also a near-ring.
 ##
-DeclareProperty( "IsLDistributive", IsRingElementCollection );
-
-InstallSubsetMaintainedMethod( IsLDistributive,
-    IsRingElementCollection and IsLDistributive,
-    IsRingElementCollection );
-
-InstallFactorMaintainedMethod( IsLDistributive,
-    IsRingElementCollection and IsLDistributive,
-    IsCollection,
-    IsRingElementCollection );
+DeclareSynonymAttr( "IsNearRing",
+    IsNearAdditiveGroup and IsMagma and IsRDistributive and IsAssociative );
 
 
 #############################################################################
 ##
-#P  IsRDistributive( <R> )
+#P  IsNearRingWithOne( <R> )
 ##
-##  is `true' if the relation $( a + b ) * c = ( a * c ) + ( b * c )$
-##  holds for all elements $a$, $b$, $c$ in the ring <R>,
-##  and `false' otherwise.
+##  A *near-ring-with-one* in {\GAP} is a near-ring (see~"IsNearRing")
+##  that is also a magma-with-one (see~"IsMagmaWithOne").
 ##
-DeclareProperty( "IsRDistributive", IsRingElementCollection );
-
-InstallSubsetMaintainedMethod( IsRDistributive,
-    IsRingElementCollection and IsRDistributive,
-    IsRingElementCollection );
-
-InstallFactorMaintainedMethod( IsRDistributive,
-    IsRingElementCollection and IsRDistributive,
-    IsCollection,
-    IsRingElementCollection );
+##  Note that the identity and the zero of a near-ring-with-one need *not* be
+##  distinct.
+##  This means that a near-ring that consists only of its zero element can be
+##  regarded as a near-ring-with-one.
+##
+DeclareSynonymAttr( "IsNearRingWithOne", IsNearRing and IsMagmaWithOne );
 
 
 #############################################################################
 ##
-#P  IsDistributive( <R> )
+#A  AsNearRing( <C> )
 ##
-##  is `true' if the ring <R> is both left and right distributive,
-##  and `false' otherwise.
+##  If the elements in the collection <C> form a near-ring then `AsNearRing'
+##  returns this near-ring, otherwise `fail' is returned.
 ##
-DeclareSynonymAttr( "IsDistributive", IsLDistributive and IsRDistributive );
+DeclareAttribute( "AsNearRing", IsNearRingElementCollection );
 
 
 #############################################################################
 ##
-#C  IsRing( <R> )
+#P  IsRing( <R> )
 ##
-##  A ring in {\GAP} is an additive group that is also a magma,
-##  such that addition and multiplication are distributive.
-##  (The multiplication need *not* be associative.)
+##  A *ring* in {\GAP} is an additive group (see~"IsAdditiveGroup")
+##  that is also a magma (see~"IsMagma"),
+##  such that addition `+' and multiplication `\*' are distributive.
+##
+##  The multiplication need *not* be associative (see~"IsAssociative").
+##  For example, a Lie algebra (see~"Lie Algebras") is regarded as a
+##  ring in {\GAP}.
 ##
 DeclareSynonymAttr( "IsRing",
     IsAdditiveGroup and IsMagma and IsDistributive );
@@ -77,12 +70,10 @@ DeclareSynonymAttr( "IsRing",
 
 #############################################################################
 ##
-#C  IsRingWithOne( <R> )
+#P  IsRingWithOne( <R> )
 ##
-##  A ring-with-one in {\GAP} is an additive group that is also a
-##  magma-with-one,
-##  such that addition and multiplication are distributive.
-##  (The multiplication need *not* be associative.)
+##  A *ring-with-one* in {\GAP} is a ring (see~"IsRing")
+##  that is also a magma-with-one (see~"IsMagmaWithOne").
 ##
 ##  Note that the identity and the zero of a ring-with-one need *not* be
 ##  distinct.
@@ -95,127 +86,7 @@ DeclareSynonymAttr( "IsRing",
 ##  in the sense that each factor of a ring-with-one is again a
 ##  ring-with-one.
 ##
-DeclareSynonymAttr( "IsRingWithOne",
-    IsAdditiveGroup and IsMagmaWithOne and IsDistributive );
-
-
-#############################################################################
-##
-#C  IsUniqueFactorizationRing( <R> )
-##
-##  A ring <R> is  called a *unique factorization ring* if it is an integral
-##  ring, and every element has a unique factorization into irreducible
-##  elements, i.e., a  unique representation as product  of irreducibles (see
-##  "IsIrreducibleRingElement").
-##  Unique in this context means unique up to permutations of the factors and
-##  up to multiplication of the factors by units (see "Units").
-##
-##  (Note that we cannot install a subset maintained method for this category
-##  since the factorization of an element needs not exist in a subring.
-##  As an example, consider the subring $4 \N + 1$ of the ring $4 \Z + 1$;
-##  in the subring, the element $3 \cdot 3 \cdot 11 \cdot 7$ has the two
-##  factorizations $33 \cdot 21 = 9 \cdot 77$, but in the large ring there
-##  is the unique factorization $(-3) \cdot (-3) \cdot (-11) \cdot (-7)$,
-##  and it is easy to see that every element in $4 \Z + 1$ has a unique
-##  factorization.)
-##
-DeclareCategory( "IsUniqueFactorizationRing", IsRing );
-
-
-#############################################################################
-##
-#C  IsEuclideanRing( <R> )
-##
-##  A ring $R$ is called a Euclidean ring if it is an integral ring and there
-##  exists a function $\delta$, called the Euclidean degree, from $R-\{0_R\}$
-##  to the nonnegative integers, such that for every pair $r \in R$ and
-##  $s \in  R-\{0_R\}$ there exists an element $q$ such that either
-##  $r - q s = 0_R$ or $\delta(r - q s) \< \delta( s )$.
-##  The existence of this division with remainder implies that the Euclidean
-##  algorithm can be applied to compute a greatest common divisor of two
-##  elements, which in turn implies that $R$ is a unique factorization ring.
-##
-#T more general: new category ``valuated domain''?
-##
-DeclareCategory( "IsEuclideanRing",
-    IsRingWithOne and IsUniqueFactorizationRing );
-
-
-#############################################################################
-##
-#P  IsAnticommutative( <R> )
-##
-##  is `true' if the relation $a * b = - b * a$
-##  holds for all elements $a$, $b$ in the ring <R>,
-##  and `false' otherwise.
-##
-DeclareProperty( "IsAnticommutative", IsRing );
-
-InstallSubsetMaintainedMethod( IsAnticommutative,
-    IsRing and IsAnticommutative, IsRing );
-
-InstallFactorMaintainedMethod( IsAnticommutative,
-    IsRing and IsAnticommutative, IsCollection, IsRing );
-
-
-#############################################################################
-##
-#P  IsIntegralRing( <R> )
-##
-##  A ring-with-one <R> is integral if it is commutative, contains no
-##  nontrivial zero divisors,
-##  and if its identity is distinct from its zero.
-##
-DeclareProperty( "IsIntegralRing", IsRing );
-
-InstallSubsetMaintainedMethod( IsIntegralRing,
-    IsRing and IsIntegralRing, IsRing and IsNonTrivial );
-
-InstallTrueMethod( IsIntegralRing,
-    IsRing and IsMagmaWithInversesIfNonzero and IsNonTrivial );
-InstallTrueMethod( IsIntegralRing,
-    IsUniqueFactorizationRing and IsNonTrivial );
-
-
-#############################################################################
-##
-#P  IsJacobianRing( <R> )
-##
-##  is `true' if the Jacobi identity holds in <R>, and `false' otherwise.
-##  The Jacobi identity means that $x * y * z + z * x * y + y * z * x$
-##  is the zero element of <R>, for all elements $x$, $y$, $z$ in <R>.
-##
-DeclareProperty( "IsJacobianRing", IsRing );
-
-InstallTrueMethod( IsJacobianRing,
-    IsJacobianElementCollection and IsRing );
-
-InstallSubsetMaintainedMethod( IsJacobianRing,
-    IsRing and IsJacobianRing, IsRing );
-
-InstallFactorMaintainedMethod( IsJacobianRing,
-    IsRing and IsJacobianRing, IsCollection, IsRing );
-
-
-#############################################################################
-##
-#P  IsZeroSquaredRing( <R> )
-##
-##  is `true' if $a * a$ is the zero element of the ring <R>
-##  for all $a$ in <R>, and `false' otherwise.
-##
-DeclareProperty( "IsZeroSquaredRing", IsRing );
-
-InstallTrueMethod( IsAnticommutative, IsRing and IsZeroSquaredRing );
-
-InstallTrueMethod( IsZeroSquaredRing,
-    IsZeroSquaredElementCollection and IsRing );
-
-InstallSubsetMaintainedMethod( IsZeroSquaredRing,
-    IsRing and IsZeroSquaredRing, IsRing );
-
-InstallFactorMaintainedMethod( IsZeroSquaredRing,
-    IsRing and IsZeroSquaredRing, IsCollection, IsRing );
+DeclareSynonymAttr( "IsRingWithOne", IsRing and IsMagmaWithOne );
 
 
 #############################################################################
@@ -233,7 +104,8 @@ DeclareAttribute( "AsRing", IsRingElementCollection );
 #A  GeneratorsOfRing( <R> )
 ##
 ##  `GeneratorsOfRing' returns a list of elements such that the ring <R> is
-##  the closure of these elements under addition and multiplication.
+##  the closure of these elements under addition, multiplication,
+##  and taking additive inverses.
 ##
 DeclareAttribute( "GeneratorsOfRing", IsRing );
 
@@ -242,13 +114,272 @@ DeclareAttribute( "GeneratorsOfRing", IsRing );
 ##
 #A  GeneratorsOfRingWithOne( <R> )
 ##
-##  `GeneratorsOfRing' returns a list of elements such that the ring <R> is
-##  the closure of these elements under addition, multiplication, and taking
+##  `GeneratorsOfRingWithOne' returns a list of elements
+##  such that the ring <R> is the closure of these elements
+##  under addition, multiplication, taking additive inverses, and taking
 ##  the identity element `One( <R> )'.
 ##
-##  <R> itself need *not* known to be a ring-with-one.
+##  <R> itself need *not* be known to be a ring-with-one.
 ##
 DeclareAttribute( "GeneratorsOfRingWithOne", IsRingWithOne );
+
+
+#############################################################################
+##
+#O  RingByGenerators( <C> ) . . . . . . .  ring gener. by elements in a coll.
+##
+##  `RingByGenerators' returns the ring generated by the elements in the
+##  collection <C>,
+##  i.~e., the closure of <C> under addition, multiplication,
+##  and taking additive inverses.
+##
+DeclareOperation( "RingByGenerators", [ IsCollection ] );
+
+
+#############################################################################
+##
+#O  DefaultRingByGenerators( <coll> ) . . . . default ring containing a coll.
+##
+DeclareOperation( "DefaultRingByGenerators", [ IsCollection ] );
+
+
+#############################################################################
+##
+#F  Ring( <r> ,<s>, ... )  . . . . . . . . . . ring generated by a collection
+#F  Ring( <coll> ) . . . . . . . . . . . . . . ring generated by a collection
+##
+##  In the first form `Ring' returns the smallest ring that
+##  contains all the elements <r>, <s>... etc.
+##  In the second form `Ring' returns the smallest ring that
+##  contains all the elements in the collection <coll>.
+##  If any element is not an element of a ring or if the elements lie in no
+##  common ring an error is raised.
+##
+##  `Ring' differs from `DefaultRing' (see~"DefaultRing") in that it returns
+##  the smallest ring in which the elements lie, while `DefaultRing' may
+##  return a larger ring if that makes sense.
+##
+DeclareGlobalFunction( "Ring" );
+
+
+#############################################################################
+##
+#O  RingWithOneByGenerators( <coll> )
+##
+##  `RingWithOneByGenerators' returns the ring-with-one generated by the
+##  elements in the collection <coll>, i.~e., the closure of <coll> under
+##  addition, multiplication, taking additive inverses,
+##  and taking the identity of an element.
+##
+DeclareOperation( "RingWithOneByGenerators", [ IsCollection ] );
+
+
+#############################################################################
+##
+#F  RingWithOne( <r>, <s>, ... )  . . ring-with-one generated by a collection
+#F  RingWithOne( <C> )  . . . . . . . ring-with-one generated by a collection
+##
+##  In the first form `RingWithOne' returns the smallest ring with one that
+##  contains all the elements <r>, <s>... etc.
+##  In the second form `RingWithOne' returns the smallest ring with one that
+##  contains all the elements in the collection <C>.
+##  If any element is not an element of a ring or if the elements lie in no
+##  common ring an error is raised.
+##
+DeclareGlobalFunction( "RingWithOne" );
+
+
+#############################################################################
+##
+#F  DefaultRing( <r> ,<s>, ... )  . . .  default ring containing a collection
+#F  DefaultRing( <coll> ) . . . . . . .  default ring containing a collection
+##
+##  In the first form `DefaultRing' returns a ring that contains
+##  all the elements <r>, <s>, ... etc.
+##  In the second form `DefaultRing' returns a ring that contains
+##  all the elements in the collection <coll>.
+##  If any element is not an element of a ring or if the elements lie in no
+##  common ring an error is raised.
+##
+##  The ring returned by `DefaultRing' need not be the smallest ring in which
+##  the elements lie.
+##  For example for elements from cyclotomic fields,
+##  `DefaultRing' may return the ring of integers of the smallest cyclotomic
+##  field in which the elements lie, which need not be the smallest ring
+##  overall, because the elements may in fact lie in a smaller number field
+##  which is itself not a cyclotomic field.
+##
+##  (For the exact definition of the default ring of a certain type of
+##  elements, look at the corresponding method installation.)
+##
+##  `DefaultRing' is used by the ring functions like `Quotient', `IsPrime',
+##  `Factors', or `Gcd' if no explicit ring is given.
+##
+##  `Ring' (see~"Ring") differs from `DefaultRing' in that it returns the
+##  smallest ring in which the elements lie, while `DefaultRing' may return
+##  a larger ring if that makes sense.
+##
+DeclareGlobalFunction( "DefaultRing" );
+
+
+#############################################################################
+##
+#F  Subring( <R>, <gens> ) . . . . . . . . subring of <R> generated by <gens>
+#F  SubringNC( <R>, <gens> ) . . . . . . . subring of <R> generated by <gens>
+##
+##  returns the ring with parent <R> generated by the elements in
+##  <gens>. When the second form, `SubringNC' is used, it is *not* checked
+##  whether all elements in <gens> lie in <R>. 
+##
+DeclareGlobalFunction( "Subring" );
+DeclareGlobalFunction( "SubringNC" );
+
+
+#############################################################################
+##
+#F  SubringWithOne( <R>, <gens> )   .  subring-with-one of <R> gen. by <gens>
+#F  SubringWithOneNC( <R>, <gens> ) .  subring-with-one of <R> gen. by <gens>
+##
+##  returns the ring with one with parent <R> generated by the elements in
+##  <gens>. When the second form, `SubringNC' is used, it is *not* checked
+##  whether all elements in <gens> lie in <R>. 
+##
+DeclareGlobalFunction( "SubringWithOne" );
+DeclareGlobalFunction( "SubringWithOneNC" );
+
+
+#############################################################################
+##
+#O  ClosureRing( <R>, <r> )
+#O  ClosureRing( <R>, <S> )
+##
+##  For a ring <R> and either an element <r> of its elements family or a ring
+##  <S>, `ClosureRing' returns the ring generated by both arguments.
+##
+DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
+
+
+#############################################################################
+##
+#C  IsUniqueFactorizationRing( <R> )
+##
+##  A ring <R> is called a *unique factorization ring* if it is an integral
+##  ring (see~"IsIntegralRing"),
+##  and every element has a unique factorization into irreducible elements,
+##  i.e., a  unique representation as product  of irreducibles (see
+##  "IsIrreducibleRingElement").
+##  Unique in this context means unique up to permutations of the factors and
+##  up to multiplication of the factors by units (see~"Units").
+##
+##  (Note that we cannot install a subset maintained method for this category
+##  since the factorization of an element needs not exist in a subring.
+##  As an example, consider the subring $4 \N + 1$ of the ring $4 \Z + 1$;
+##  in the subring, the element $3 \cdot 3 \cdot 11 \cdot 7$ has the two
+##  factorizations $33 \cdot 21 = 9 \cdot 77$, but in the large ring there
+##  is the unique factorization $(-3) \cdot (-3) \cdot (-11) \cdot (-7)$,
+##  and it is easy to see that every element in $4 \Z + 1$ has a unique
+##  factorization.)
+##
+DeclareCategory( "IsUniqueFactorizationRing", IsRing );
+
+
+#############################################################################
+##
+#C  IsEuclideanRing( <R> )
+##
+##  A ring $R$ is called a Euclidean ring if it is an integral ring and
+##  there exists a function $\delta$, called the Euclidean degree, from
+##  $R-\{0_R\}$ to the nonnegative integers, such that for every pair $r \in
+##  R$ and $s \in  R-\{0_R\}$ there exists an element $q$ such that either
+##  $r - q s = 0_R$ or $\delta(r - q s) \< \delta( s )$. In {\GAP} the
+##  euclidean degree $\delta$ is implicitly built into an ring and cannot be
+##  changed.  The existence of this division with remainder implies that the
+##  Euclidean algorithm can be applied to compute a greatest common divisor
+##  of two elements, which in turn implies that $R$ is a unique
+##  factorization ring.
+##
+#T more general: new category ``valuated domain''?
+##
+DeclareCategory( "IsEuclideanRing",
+    IsRingWithOne and IsUniqueFactorizationRing );
+
+
+#############################################################################
+##
+#P  IsAnticommutative( <R> )
+##
+##  is `true' if the relation $a * b = - b * a$
+##  holds for all elements $a$, $b$ in the ring <R>,
+##  and `false' otherwise.
+##
+DeclareProperty( "IsAnticommutative", IsRing );
+
+InstallSubsetMaintenance( IsAnticommutative,
+    IsRing and IsAnticommutative, IsRing );
+
+InstallFactorMaintenance( IsAnticommutative,
+    IsRing and IsAnticommutative, IsObject, IsRing );
+
+
+#############################################################################
+##
+#P  IsIntegralRing( <R> )
+##
+##  A ring-with-one <R> is integral if it is commutative, contains no
+##  nontrivial zero divisors,
+##  and if its identity is distinct from its zero.
+##
+DeclareProperty( "IsIntegralRing", IsRing );
+
+InstallSubsetMaintenance( IsIntegralRing,
+    IsRing and IsIntegralRing, IsRing and IsNonTrivial );
+
+InstallTrueMethod( IsIntegralRing,
+    IsRing and IsMagmaWithInversesIfNonzero and IsNonTrivial );
+InstallTrueMethod( IsIntegralRing,
+    IsUniqueFactorizationRing and IsNonTrivial );
+
+
+#############################################################################
+##
+#P  IsJacobianRing( <R> )
+##
+##  is `true' if the Jacobi identity holds in <R>, and `false' otherwise.
+##  The Jacobi identity means that $x \* (y \* z) + z \* (x \* y) + 
+##  y \* (z \* x)$
+##  is the zero element of <R>, for all elements $x$, $y$, $z$ in <R>.
+##
+DeclareProperty( "IsJacobianRing", IsRing );
+
+InstallTrueMethod( IsJacobianRing,
+    IsJacobianElementCollection and IsRing );
+
+InstallSubsetMaintenance( IsJacobianRing,
+    IsRing and IsJacobianRing, IsRing );
+
+InstallFactorMaintenance( IsJacobianRing,
+    IsRing and IsJacobianRing, IsObject, IsRing );
+
+
+#############################################################################
+##
+#P  IsZeroSquaredRing( <R> )
+##
+##  is `true' if $a * a$ is the zero element of the ring <R>
+##  for all $a$ in <R>, and `false' otherwise.
+##
+DeclareProperty( "IsZeroSquaredRing", IsRing );
+
+InstallTrueMethod( IsAnticommutative, IsRing and IsZeroSquaredRing );
+
+InstallTrueMethod( IsZeroSquaredRing,
+    IsZeroSquaredElementCollection and IsRing );
+
+InstallSubsetMaintenance( IsZeroSquaredRing,
+    IsRing and IsZeroSquaredRing, IsRing );
+
+InstallFactorMaintenance( IsZeroSquaredRing,
+    IsRing and IsZeroSquaredRing, IsObject, IsRing );
 
 
 #############################################################################
@@ -263,17 +394,6 @@ DeclareAttribute( "GeneratorsOfRingWithOne", IsRingWithOne );
 ##  It is easy to see that the set of units forms a multiplicative group.
 ##
 DeclareAttribute( "Units", IsRing );
-
-
-#############################################################################
-##
-#O  ClosureRing( <R>, <r> )
-#O  ClosureRing( <R>, <S> )
-##
-##  For a ring <R> and either an element <r> of its elements family or a ring
-##  <S>, `ClosureRing' returns the ring generated by both arguments.
-##
-DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
 
 
 #############################################################################
@@ -642,26 +762,27 @@ DeclareOperation( "GcdRepresentationOp",
 #F  Lcm( <R>, <list> )
 #F  Lcm( <r1>, <r2>, ... )
 #F  Lcm( <list> )
+#T optional ``1'' in list version?
 ##
 ##  In the first two forms `Lcm' returns the least common multiple of the
 ##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
 ##  <list> in the ring <R>.
 ##  In the second two forms `Lcm' returns the least common multiple of the
 ##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
-##  <list> in their default ring (see "DefaultRing").
+##  <list> in their default ring (see~"DefaultRing").
 ##
-##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that `Gcd'
-##  (see "Gcd") can be applied to its elements.
-##  `Lcm' returns the standard associate (see "StandardAssociate") of the
+##  <R> must be a Euclidean ring (see~"IsEuclideanRing") so that `Gcd'
+##  (see~"Gcd") can be applied to its elements.
+##  `Lcm' returns the standard associate (see~"StandardAssociate") of the
 ##  least common multiples.
 ##
 ##  A least common multiple of the elements $r_1$, $r_2$... etc. of the
 ##  ring $R$ is an element of smallest Euclidean degree
-##  (see "EuclideanDegree") that is a multiple of $r_1$, $r_2$... etc.
+##  (see~"EuclideanDegree") that is a multiple of $r_1$, $r_2$... etc.
 ##  We define $lcm( r, 0_R ) = lcm( 0_R, r ) = StandardAssociate( r )$
 ##  and $Lcm( 0_R, 0_R ) = 0_R$.
 ##
-##  `Lcm' uses the equality $lcm(m,n) = m\*n / gcd(m,n)$ (see "Gcd").
+##  `Lcm' uses the equality $lcm(m,n) = m\*n / gcd(m,n)$ (see~"Gcd").
 ##
 DeclareGlobalFunction( "Lcm" );
 
@@ -681,118 +802,5 @@ DeclareOperation( "LcmOp",
 
 #############################################################################
 ##
-#O  RingByGenerators( <coll> )  . . . . .  ring gener. by elements in a coll.
-##
-##  `RingByGenerators' returns the ring generated by the elements in the
-##  collection <coll>, i.~e., the closure of <coll> under addition and
-##  multiplication.
-##
-DeclareOperation( "RingByGenerators", [ IsCollection ] );
-
-
-#############################################################################
-##
-#O  DefaultRingByGenerators( <coll> ) . . . . default ring containing a coll.
-##
-DeclareOperation( "DefaultRingByGenerators", [ IsCollection ] );
-
-
-#############################################################################
-##
-#F  Ring( <r> ,<s>, ... )  . . . . . . . . . . ring generated by a collection
-#F  Ring( <coll> ) . . . . . . . . . . . . . . ring generated by a collection
-##
-##  In the first form `Ring' returns the smallest ring that
-##  contains all the elements <r>, <s>... etc.
-##  In the second form `Ring' returns the smallest ring that
-##  contains all the elements in the collection <coll>.
-##  If any element is not an element of a ring or if the elements lie in no
-##  common ring an error is raised.
-##
-##  `Ring' differs from `DefaultRing' (see "DefaultRing") in that it returns
-##  the smallest ring in which the elements lie, while `DefaultRing' may
-##  return a larger ring if that makes sense.
-##
-DeclareGlobalFunction( "Ring" );
-
-
-#############################################################################
-##
-#O  RingWithOneByGenerators( [ <z>, ... ] )
-##
-##  `RingWithOneByGenerators' returns the ring-with-one generated by the
-##  elements in the collection <coll>, i.~e., the closure of <coll> under
-##  addition, multiplication, and taking the identity of an element.
-##
-DeclareOperation( "RingWithOneByGenerators", [ IsCollection ] );
-
-
-#############################################################################
-##
-#F  RingWithOne( <r>, <s>, ... )  . . ring-with-one generated by a collection
-#F  RingWithOne( <coll> ) . . . . . . ring-with-one generated by a collection
-##
-##  In the first form `RingWithOne' returns the smallest ring with one that
-##  contains all the elements <r>, <s>... etc.
-##  In the second form `RingWithOne' returns the smallest ring with one that
-##  contains all the elements in the collection <coll>.
-##  If any element is not an element of a ring or if the elements lie in no
-##  common ring an error is raised.
-##
-DeclareGlobalFunction( "RingWithOne" );
-
-
-#############################################################################
-##
-#F  DefaultRing( <r> ,<s>, ... )  . . .  default ring containing a collection
-#F  DefaultRing( <coll> ) . . . . . . .  default ring containing a collection
-##
-##  In the first form `DefaultRing' returns a ring that contains
-##  all the elements <r>, <s>, ... etc.
-##  In the second form `DefaultRing' returns a ring that contains
-##  all the elements in the collection <coll>.
-##  If any element is not an element of a ring or if the elements lie in no
-##  common ring an error is raised.
-##
-##  The ring returned by `DefaultRing' need not be the smallest ring in which
-##  the elements lie.
-##  For example for elements from cyclotomic fields `DefaultRing' may return
-##  the ring of integers of the smallest cyclotomic field in which the elements
-##  lie, which need not be the smallest ring overall, because the elements may
-##  in fact lie in a smaller number field which is not a cyclotomic field.
-##
-##  (For the exact definition of the default ring of a certain type of elements
-##  look at the corresponding method installation.)
-##
-##  `DefaultRing' is used by the ring functions like `Quotient', `IsPrime',
-##  `Factors', or `Gcd' if no explicit ring is given.
-##
-##  `Ring' (see "Ring") differs from `DefaultRing' in that it returns the
-##  smallest ring in which the elements lie, while `DefaultRing' may return a
-##  larger ring if that makes sense.
-##
-DeclareGlobalFunction( "DefaultRing" );
-
-
-#############################################################################
-##
-#F  Subring( <R>, <gens> ) . . . . . . . . subring of <R> generated by <gens>
-#F  SubringNC( <R>, <gens> ) . . . . . . . subring of <R> generated by <gens>
-##
-DeclareGlobalFunction( "Subring" );
-DeclareGlobalFunction( "SubringNC" );
-
-
-#############################################################################
-##
-#F  SubringWithOne( <R>, <gens> )   .  subring-with-one of <R> gen. by <gens>
-#F  SubringWithOneNC( <R>, <gens> ) .  subring-with-one of <R> gen. by <gens>
-##
-DeclareGlobalFunction( "SubringWithOne" );
-DeclareGlobalFunction( "SubringWithOneNC" );
-
-
-#############################################################################
-##
-#E  ring.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

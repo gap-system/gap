@@ -11,31 +11,49 @@
 
 \index{type!boolean}\index{logical}
 
-The two main *boolean*  values are `true' and `false'.  They stand for the
-*logical* values of the same name. They appear mainly as values of the
-conditions in `if'-statements and `while'-loops.
-
-{\GAP} provides a third boolean value, `fail'. This is used as a return
-value by functions to indicate that they cannot return a proper result.
-
+The two main *boolean* values are `true' and `false'.
+They stand for the *logical* values of the same name.
+They appear as values of the conditions in `if'-statements
+and `while'-loops.
+Booleans are also important as return values of *filters* (see~"Filters")
+such as `IsFinite' and `IsBool'.
 Note that it is a convention that the name of a function that
-tests a  property, and returns `true' and  `false' according to the
-outcome, starts with `Is', as in `IsBool'.
+returns `true' or `false' according to the outcome, starts with `Is'.
+
+For technical reasons, also the value `fail' (see~"Fail")
+is regarded as a boolean.
 
 \Declaration{IsBool}
-
 \beginexample
-gap> IsBool( true );
+gap> IsBool( true );  IsBool( false );  IsBool( 17 );
 true
-gap> IsBool( false );
 true
-gap> IsBool( 17 );
 false
 \endexample
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Fail}
+
+\>`fail'{fail} V
+
+The value `fail' is used to indicate situations when an operation could
+not be performed for the given arguments, either because of shortcomings of
+the arguments or because of restrictions in the implementation or
+computability. So for example `Position' (see "Position") will return `fail'
+if the point searched for is not in the list.
+
+`fail' is simply an object that is different from every other object than
+itself.
+
+For technical reasons, `fail' is a boolean value.
+But note that `fail' cannot be used to form boolean expressions with
+`and', `or', and `not' (see~"Operations for Booleans" below),
+and `fail' cannot appear in boolean lists (see Chapter~"Boolean Lists").
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Comparisons of Booleans}
-
 
 \>`<bool1> = <bool2>'{comparisons!of booleans}
 \>`<bool1> \<> <bool2>'{comparisons!of booleans}
@@ -47,13 +65,13 @@ to `true' if the two boolean values <bool1> and <bool2> are different and
 `false' otherwise. This operation is also called the *exclusive or*, because
 its value is `true' if exactly one of <bool1> or <bool2> is `true'.
 
-You can compare boolean values with objects of other types. Of course
-they are never equal.
+You can compare boolean values with objects of other types.
+Of course they are never equal.
 
 \beginexample
 gap> true = false;
 false
-gap> false = (true = false);
+gap> false = (true = fail);
 true
 gap> true <> 17;
 true 
@@ -62,13 +80,15 @@ true
 \>`<bool1> \< <bool2>'{ordering!booleans}
 
 The ordering of boolean values is defined by `true \< false \< fail'.
+For the comparison of booleans with other {\GAP} objects,
+see Section~"Comparisons".
 
 \beginexample
-gap> true<false;
+gap> true < false;  fail >= false;
 true
-gap> fail>=false;
 true
 \endexample
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations for Booleans}%
@@ -78,7 +98,7 @@ true
 
 The following boolean operations are only applicable to `true' and `false'.
 
-`<bool1> or <bool2>'{or}
+\>`<bool1> or <bool2>'{or}
 
 The logical operator `or' evaluates to `true' if at least one of the two
 boolean operands <bool1> and <bool2> is `true' and to `false' otherwise.
@@ -135,15 +155,16 @@ gap> false and 17;
 false  # is no error, because `17' is never looked at
 \endexample
 
-
 \>`<fil1> and <fil2>'{and!for filters}
 
 `and' can also be applied to filters. It returns a filter that tests
 `<fil1>(x) and <fil2>(x)'
 
 \beginexample
-gap> IsPosRat and IsInt;
-function ( obj ) ... end
+gap> andfilt:= IsPosRat and IsInt;;
+gap> andfilt( 17 );  andfilt( 1/2 );
+true
+false
 \endexample
 
 \>`not <bool>'{not}
@@ -158,8 +179,15 @@ operators `=', `\<', `in', etc.
 
 \beginexample
 gap> true and false;
+false
 gap> not true;
 false
 gap> not false;
 true
 \endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

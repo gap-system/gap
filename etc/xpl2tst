@@ -1,0 +1,66 @@
+#!/bin/sh
+#############################################################################
+##
+#W  xpl2tst                    GAP utilities                    Thomas Breuer
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This script produces a testfile from an example file.
+##
+##  Leave code enclosed in beginexample-endexample for GAP,
+##  turn other text into comments,
+##  treat START_TEST and STOP_TEST in a special way..
+##
+awk -v "INFILE=$1" \
+    'BEGIN {
+         printf( "# This file was created from %s, do not edit!\n", INFILE )
+     }
+
+     # Each block of lines between \beginexample and \endexample is left
+     # as it is.
+     /^\\beginexample/ {
+         getline
+         while ( substr( $0, 1, 11 ) != "\\endexample" ) {
+             print( $0 );
+             getline
+         }
+         getline;
+         while ( substr( $0, 1, 13 ) == "\\beginexample" ) {
+             getline
+             while ( substr( $0, 1, 11 ) != "\\endexample" ) {
+                 print( $0 );
+                 getline
+             }
+             getline
+         }
+     }
+
+     # Replace percent symbols by hash symbols.
+     /^%/ && ! /START_TEST/ && ! /STOP_TEST/ {
+         line = $0;
+         gsub( "%", "#", line );
+         print( line )
+     }
+
+     # Leave empty lines empty.
+     /^$/ {
+         print( $0 )
+     }
+
+     # Indent by hashes if a line does not match.
+     ! /^%/ && ! /^$/ && ! /^\\beginexample/ {
+         print( "##  ", $0 )
+     }
+
+     # Deal with the START_TEST and STOP_TEST statements.
+     /^% gap> START_TEST/ || /^% gap> STOP_TEST/ {
+         print( substr( $0, 3 ) )
+     }' < $1 > $2
+
+
+#############################################################################
+##
+#E
+

@@ -16,9 +16,9 @@ Revision.grppccom_gd :=
 
 #############################################################################
 ##
-#F  InfoComplement
+#V  InfoComplement
 ##
-##  Information function for the complement routines
+##  Info class for the complement routines.
 DeclareInfoClass("InfoComplement");
 
 #############################################################################

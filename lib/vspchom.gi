@@ -43,6 +43,10 @@ Revision.vspchom_gi :=
 #T \= methods for m.b.m. and g.m.b.i. (if bases coincide, compare data)
 #T parent dependencies for nat. hom.
 
+#T put bases into mappings;
+#T check that they are really bases of source/range!
+
+
 #############################################################################
 ##
 ##  1. methods for linear general mappings given by images
@@ -283,7 +287,7 @@ MakeImagesInfoLinearGeneralMappingByImages := function( map )
 
     preimage:= PreImagesRange( map );
 
-    if IsGaussianRowSpaceRep( Source( map ) ) then
+    if IsGaussianRowSpace( Source( map ) ) then
 #T operation MakeImagesInfo( map, source )
 #T to leave this to the method selection ?
 #T or flag `IsFromGaussianSpace' ?
@@ -293,7 +297,7 @@ MakeImagesInfoLinearGeneralMappingByImages := function( map )
       # given by `ech.coeffs'.
 
       ech:= SemiEchelonMatTransformation( map!.generators );
-      map!.basispreimage       := Immutable( SemiEchelonBasisByGeneratorsNC(
+      map!.basispreimage       := Immutable( SemiEchelonBasisNC(
                                       preimage, ech.vectors ) );
       map!.corelations         := Immutable( ech.relations );
       map!.imagesbasispreimage := Immutable( ech.coeffs * map!.genimages );
@@ -301,10 +305,10 @@ MakeImagesInfoLinearGeneralMappingByImages := function( map )
     else
 
       # Delegate the work to the associated row space.
-      B:= BasisOfDomain( preimage );
+      B:= Basis( preimage );
       ech:= SemiEchelonMatTransformation( List( map!.generators,
                      x -> Coefficients( B, x ) ) );
-      map!.basispreimage       := Immutable( BasisByGeneratorsNC(
+      map!.basispreimage       := Immutable( BasisNC(
                                       preimage,
                                       List( ech.vectors,
                                         x -> LinearCombination( B, x ) ) ) );
@@ -332,14 +336,14 @@ MakePreImagesInfoLinearGeneralMappingByImages := function( map )
 
     image:= ImagesSource( map );
 
-    if IsGaussianRowSpaceRep( Range( map ) ) then
+    if IsGaussianRowSpace( Range( map ) ) then
 
       # The preimages of the basis vectors are obtained on
       # forming the linear combinations of preimages of genimages
       # given by `ech.coeffs'.
 
       ech:= SemiEchelonMatTransformation( map!.genimages );
-      map!.basisimage          := Immutable( SemiEchelonBasisByGeneratorsNC(
+      map!.basisimage          := Immutable( SemiEchelonBasisNC(
                                       image, ech.vectors ) );
       map!.relations           := Immutable( ech.relations );
       map!.preimagesbasisimage := Immutable( ech.coeffs * map!.generators );
@@ -347,10 +351,10 @@ MakePreImagesInfoLinearGeneralMappingByImages := function( map )
     else
 
       # Delegate the work to the associated row space.
-      B:= BasisOfDomain( image );
+      B:= Basis( image );
       ech:= SemiEchelonMatTransformation( List( map!.genimages,
                      x -> Coefficients( B, x ) ) );
-      map!.basisimage          := Immutable( BasisByGeneratorsNC(
+      map!.basisimage          := Immutable( BasisNC(
                                       image,
                                       List( ech.vectors,
                                         x -> LinearCombination( B, x ) ) ) );
@@ -602,9 +606,9 @@ InstallMethod( \*,
 
 #############################################################################
 ##
-#M  AdditiveInverse( <map> )  . . . . . . . . . . . . . . for linear g.m.b.i.
+#M  AdditiveInverseOp( <map> )  . . . . . . . . . . . . . for linear g.m.b.i.
 ##
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
     "for linear g.m.b.i.",
     true,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
@@ -718,7 +722,12 @@ InstallMethod( CompositionMapping2,
 ##  If both general mappings respect zero, additive inverses, scalar
 ##  multiplication then the sum also does.
 ##
-SumOfGMBIAndGeneralMapping := function( map1, map2 )
+InstallOtherMethod( \+,
+    "for linear g.m.b.i. and general mapping",
+    IsIdenticalObj,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep,
+      IsGeneralMapping ], 0,
+    function( map1, map2 )
 
     local gens,
           genimages,
@@ -728,9 +737,8 @@ SumOfGMBIAndGeneralMapping := function( map1, map2 )
     if    Source( map1 ) <> Source( map2 )
        or Range( map1 ) <> Range( map2 ) then
       Error( "<map1> and <map2> must have same source and range" );
-    elif  PreImagesRange( map1 ) <> PreImagesRange( map2 )
-       or ImagesSource( map1 ) <> ImagesSource( map2 ) then
-      Error( "<map1> and <map2> must have same (pre)image" );
+    elif  PreImagesRange( map1 ) <> PreImagesRange( map2 ) then
+      Error( "<map1> and <map2> must have same preimage" );
     fi;
 
     if     IsLinearGeneralMappingByImagesDefaultRep( map2 )
@@ -772,15 +780,7 @@ SumOfGMBIAndGeneralMapping := function( map1, map2 )
 
     # Return the sum.
     return sum;
-end;
-
-
-InstallOtherMethod( \+,
-    "for linear g.m.b.i. and general mapping",
-    IsIdenticalObj,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep,
-      IsGeneralMapping ], 0,
-    SumOfGMBIAndGeneralMapping );
+end );
 
 InstallOtherMethod( \+,
     "for general mapping and linear g.m.b.i.",
@@ -788,8 +788,59 @@ InstallOtherMethod( \+,
     [ IsGeneralMapping,
       IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
     function( map1, map2 )
-    return SumOfGMBIAndGeneralMapping( map2, map1 );
-    end );
+
+    local gens,
+          genimages,
+          sum;
+
+    # Check that the linear mappings can be added.
+    if    Source( map1 ) <> Source( map2 )
+       or Range( map1 ) <> Range( map2 ) then
+      Error( "<map1> and <map2> must have same source and range" );
+    elif  PreImagesRange( map1 ) <> PreImagesRange( map2 ) then
+      Error( "<map1> and <map2> must have same preimage" );
+    fi;
+
+    if     IsLinearGeneralMappingByImagesDefaultRep( map1 )
+       and map1!.generators = map2!.generators then
+
+      # If the generators in both general mappings are the same,
+      # it suffices to add the images.
+      gens      := map1!.generators;
+      genimages := map1!.genimages + map2!.genimages;
+
+    else
+
+      # Compute images of the generators of `map1' under `map2'.
+      # (Note that both general mappings must be described in terms of
+      # `generators' in order to keep the meaning of `corelations'.)
+      gens:= map2!.generators;
+      genimages:=   List( map2!.generators,
+                          v -> ImagesRepresentative( map1, v ) )
+                  + map2!.genimages;
+
+    fi;
+
+    # Construct the linear general mapping.
+    sum:= LeftModuleGeneralMappingByImages(
+              Source( map1 ), Range( map1 ), gens, genimages );
+
+    # Maintain images info (only if `gens' is not a basis).
+    if     IsLinearGeneralMappingByImagesDefaultRep( sum )
+       and IsLinearGeneralMappingByImagesDefaultRep( map1 )
+       and not IsBound( sum!.basispreimage  )
+       and IsBound( map1!.basispreimage )
+       and IsBound( map2!.basispreimage )
+       and map1!.basispreimage = map2!.basispreimage then
+      sum!.basispreimage       := map1!.basispreimage;
+      sum!.corelations         := map1!.corelations;
+      sum!.imagesbasispreimage :=
+          map1!.imagesbasispreimage + map2!.imagesbasispreimage;
+    fi;
+
+    # Return the sum.
+    return sum;
+end );
 
 
 #############################################################################
@@ -800,7 +851,12 @@ InstallOtherMethod( \+,
 ##  advantage from the fact that `generators' and `basispreimage' components
 ##  need not be distinguished since the `corelations' component is empty.
 ##
-SumOfMBIAndMapping := function( map1, map2 )
+InstallOtherMethod( \+,
+    "for linear m.b.i. and mapping",
+    IsIdenticalObj,
+    [ IsMapping and IsLinearGeneralMappingByImagesDefaultRep,
+      IsMapping ], 0,
+    function( map1, map2 )
 
     local gens,
           genimages,
@@ -860,15 +916,7 @@ SumOfMBIAndMapping := function( map1, map2 )
 
     # Return the sum.
     return sum;
-end;
-
-
-InstallOtherMethod( \+,
-    "for linear m.b.i. and mapping",
-    IsIdenticalObj,
-    [ IsMapping and IsLinearGeneralMappingByImagesDefaultRep,
-      IsMapping ], 0,
-    SumOfMBIAndMapping );
+    end );
 
 InstallOtherMethod( \+,
     "for mapping and linear m.b.i.",
@@ -876,7 +924,64 @@ InstallOtherMethod( \+,
     [ IsMapping,
       IsMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
     function( map1, map2 )
-    return SumOfMBIAndMapping( map2, map1 );
+
+    local gens,
+          genimages,
+          sum;
+
+    # Check that the linear mappings can be added.
+    if    Source( map1 ) <> Source( map2 )
+       or Range( map1 ) <> Range( map2 ) then
+      Error( "<map1> and <map2> must have same source and range" );
+    elif  PreImagesRange( map1 ) <> PreImagesRange( map2 )
+       or ImagesSource( map1 ) <> ImagesSource( map2 ) then
+      Error( "<map1> and <map2> must have same (pre)image" );
+    fi;
+
+    if     IsBound( map2!.basispreimage ) then
+
+      # Use the basis in the construction.
+      gens:= map2!.basispreimage;
+
+      if     IsLinearGeneralMappingByImagesDefaultRep( map1 )
+         and IsBound( map1!.basispreimage )
+         and map1!.basispreimage = map2!.basispreimage then
+
+        genimages := map1!.imagesbasispreimage + map2!.imagesbasispreimage;
+
+      else
+
+        genimages:=   List( gens, v -> ImagesRepresentative( map1, v ) )
+                    + map2!.imagesbasispreimage;
+
+      fi;
+
+    elif     IsLinearGeneralMappingByImagesDefaultRep( map1 )
+         and map1!.generators = map2!.generators then
+
+      # If the generators in both general mappings are the same,
+      # it suffices to add the images.
+      gens      := map1!.generators;
+      genimages := map1!.genimages + map2!.genimages;
+
+    else
+
+      # Compute images of the generators of `map2' under `map1'.
+      # (Note that both general mappings must be described in terms of
+      # `generators' in order to keep the meaning of `corelations'.)
+      gens:= map2!.generators;
+      genimages:=   List( map2!.generators,
+                          v -> ImagesRepresentative( map1, v ) )
+                  + map2!.genimages;
+
+    fi;
+
+    # Construct the linear mapping.
+    sum:= LeftModuleHomomorphismByImagesNC(
+              Source( map1 ), Range( map1 ), gens, genimages );
+
+    # Return the sum.
+    return sum;
     end );
 
 
@@ -1013,8 +1118,8 @@ MakePreImagesInfoLinearMappingByMatrix := function( map )
           B;
 
     ech:= SemiEchelonMatTransformation( map!.matrix );
-    B:= BasisOfDomain( Range( map ) );
-    map!.basisimage          := Immutable( BasisByGeneratorsNC(
+    B:= Basis( Range( map ) );
+    map!.basisimage          := Immutable( BasisNC(
                                     ImagesSource( map ),
                                     List( ech.vectors,
                                       x -> LinearCombination( B, x ) ) ) );
@@ -1150,7 +1255,8 @@ InstallMethod( PrintObj,
 InstallMethod( NaturalHomomorphismBySubspace,
     "for left module and trivial left module",
     IsIdenticalObj,
-    [ IsFreeLeftModule, IsFreeLeftModule and IsTrivial ], SUM_FLAGS,
+    [ IsFreeLeftModule, IsFreeLeftModule and IsTrivial ],
+    SUM_FLAGS, # better than everything else
     function( V, W )
     return IdentityMapping( V );
     end );
@@ -1158,14 +1264,9 @@ InstallMethod( NaturalHomomorphismBySubspace,
 
 #############################################################################
 ##
-#M  NaturalHomomorphismBySubspace( <V>, <W> ) . . . for two free left modules
+#F  NaturalHomomorphismBySubspaceOntoFullRowSpace( <V>, <W> )
 ##
-##  return a left module m.b.m.
-##
-InstallMethod( NaturalHomomorphismBySubspace,
-    "for two finite dimensional free left modules",
-    IsIdenticalObj,
-    [ IsFreeLeftModule, IsFreeLeftModule ], 0,
+InstallGlobalFunction( NaturalHomomorphismBySubspaceOntoFullRowSpace,
     function( V, W )
 
     local F,
@@ -1183,13 +1284,8 @@ InstallMethod( NaturalHomomorphismBySubspace,
     # Check that the modules are finite dimensional.
     if not IsFiniteDimensional( V ) or not IsFiniteDimensional( W ) then
       TryNextMethod();
-    fi;
-
-    # If `V' is equal to `W', return a zero mapping.
-    if not IsSubset( V, W ) then
+    elif not IsSubset( V, W ) then
       Error( "<W> must be contained in <V>" );
-    elif Dimension( V ) = Dimension( W ) then
-      return ZeroMapping( V, FullRowModule( LeftActingDomain( V ), 0 ) );
     fi;
 
     # If the left acting domains are different, adjust them.
@@ -1200,17 +1296,26 @@ InstallMethod( NaturalHomomorphismBySubspace,
       W:= AsLeftModule( F, W );
     fi;
 
+    # If `V' is equal to `W', return a zero mapping.
+    if Dimension( V ) = Dimension( W ) then
+      return ZeroMapping( V, FullRowModule( F, 0 ) );
+    fi;
+
     # Compute a basis of `V' through a basis of `W'.
-    Wvectors:= BasisVectors( BasisOfDomain( W ) );
-    mb:= MutableBasisByGenerators( F, Wvectors );
+    Wvectors:= BasisVectors( Basis( W ) );
+    if IsEmpty( Wvectors ) then
+      mb:= MutableBasis( F, Wvectors, Zero( W ) );
+    else
+      mb:= MutableBasis( F, Wvectors );
+    fi;
     compl:= [];
-    for gen in BasisVectors( BasisOfDomain( V ) ) do
+    for gen in BasisVectors( Basis( V ) ) do
       if not IsContainedInSpan( mb, gen ) then
         Add( compl, gen );
         CloseMutableBasis( mb, gen );
       fi;
     od;
-    B:= BasisByGeneratorsNC( V, Concatenation( Wvectors, compl ) );
+    B:= BasisNC( V, Concatenation( Wvectors, compl ) );
 
     # Compute the linear mapping by images.
     img:= FullRowModule( F, Length( compl ) );
@@ -1235,6 +1340,19 @@ InstallMethod( NaturalHomomorphismBySubspace,
 
     return nathom;
     end );
+
+
+#############################################################################
+##
+#M  NaturalHomomorphismBySubspace( <V>, <W> ) . . . for two free left modules
+##
+##  return a left module m.b.m.
+##
+InstallMethod( NaturalHomomorphismBySubspace,
+    "for two finite dimensional free left modules",
+    IsIdenticalObj,
+    [ IsFreeLeftModule, IsFreeLeftModule ], 0,
+    NaturalHomomorphismBySubspaceOntoFullRowSpace );
 
 
 #############################################################################
@@ -1293,9 +1411,9 @@ InstallMethod( \*,
 
 #############################################################################
 ##
-#M  AdditiveInverse( <map> )  . . . . . . . . . . . . . . . for linear m.b.m.
+#M  AdditiveInverseOp( <map> )  . . . . . . . . . . . . . . for linear m.b.m.
 ##
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
     "for linear m.b.m.",
     true,
     [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ], 0,
@@ -1356,7 +1474,7 @@ InstallMethod( CompositionMapping2,
       if not IsFiniteDimensional( BR ) then
         TryNextMethod();
       fi;
-      BR:= BasisOfDomain( BR );
+      BR:= Basis( BR );
       mat2:= List( BasisVectors( map1!.basisrange ),
                  v -> Coefficients( BR, ImagesRepresentative( map2, v ) ) );
 
@@ -1384,9 +1502,7 @@ InstallMethod( CompositionMapping2,
 ##
 SumOfMBMAndMapping := function( map1, map2 )
 
-    local gens,
-          genimages,
-          sum;
+    local sum;
 
     # Check that the linear mappings can be added.
     if    Source( map1 ) <> Source( map2 )
@@ -1422,6 +1538,43 @@ SumOfMBMAndMapping := function( map1, map2 )
     return sum;
 end;
 
+SumOfMappingAndMBM := function( map1, map2 )
+
+    local sum;
+
+    # Check that the linear mappings can be added.
+    if    Source( map1 ) <> Source( map2 )
+       or Range( map1 ) <> Range( map2 ) then
+      Error( "<map1> and <map2> must have same source and range" );
+    fi;
+
+    if    IsLinearMappingByMatrixDefaultRep( map1 )
+       and map1!.basissource = map2!.basissource
+       and map1!.basisrange  = map2!.basisrange then
+
+      # If the bases in both mappings are the same,
+      # it suffices to add the matrices.
+      sum:= LeftModuleHomomorphismByMatrix(
+                map1!.basissource,
+                map1!.matrix + map2!.matrix,
+                map1!.basisrange );
+
+    else
+
+      # Compute images of the generators of `map2' under `map1'.
+      sum:= LeftModuleHomomorphismByMatrix(
+                map2!.basissource,
+                List( BasisVectors( map2!.basissource ),
+                      v -> Coefficients( map2!.basisrange,
+                               ImagesRepresentative( map1, v ) ) )
+                + map2!.matrix,
+                map2!.basisrange );
+
+    fi;
+
+    # Return the sum.
+    return sum;
+end;
 
 InstallOtherMethod( \+,
     "for linear m.b.m. and mapping",
@@ -1435,9 +1588,7 @@ InstallOtherMethod( \+,
     IsIdenticalObj,
     [ IsMapping,
       IsMapping and IsLinearMappingByMatrixDefaultRep ], 0,
-    function( map1, map2 )
-    return SumOfMBMAndMapping( map2, map1 );
-    end );
+    SumOfMappingAndMBM );
 
 
 #############################################################################
@@ -1456,9 +1607,7 @@ InstallMethod( \+,
     IsIdenticalObj,
     [ IsMapping and IsLinearGeneralMappingByImagesDefaultRep,
       IsMapping and IsLinearMappingByMatrixDefaultRep ], 0,
-    function( map1, map2 )
-    return SumOfMBMAndMapping( map2, map1 );
-    end );
+    SumOfMappingAndMBM );
 
 
 #############################################################################
@@ -1469,214 +1618,84 @@ InstallMethod( \+,
 
 #############################################################################
 ##
-#R  IsLinearMappingsSpaceDefaultRep
-##
-##  is the representation of vector spaces of linear mappings
-##  that are handled via nice bases.
-##  The associated basis is computed using the matrices w.r.t. fixed bases
-##  of preimage and image.
-##
-##  'basissource' : \\
-##     basis of the source of each mapping in the space
-##
-##  'basisrange' : \\
-##     basis of the range of each mapping in the space
-##
-##  We have
-##  'List( <V>!.basissource,
-##         x -> Coefficients( <V>!.basisrange,
-##                            ImagesRepresentative( <v>, x ) ) )'
-##  the nice vector of $<v> \in <V>$,
-##  and
-##  'LeftModuleHomomorphismByMatrix( <V>!.basissource,
-##                                   <M>,
-##                                   <V>!.basisrange )'
-##  the ugly vector of the matrix <M>.
-##
-##  (Note that we cannot expect that the elements of the space are
-##  represented via matrices.
-##  If they are, and if the bases are the right ones, we may use the
-##  stored matrices, of course.)
-##
-DeclareRepresentation( "IsLinearMappingsSpaceDefaultRep",
-    IsAttributeStoringRep and IsHandledByNiceBasis,
-    [ "basissource", "basisrange" ] );
-
-
-#############################################################################
-##
-#M  IsFiniteDimensional( <A> )  . . . . .  hom FLMLORs are finite dimensional
-##
-InstallTrueMethod( IsFiniteDimensional,
-    IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep );
-
-
-#############################################################################
-##
-#M  PrepareNiceFreeLeftModule( <V> )  . . . .  for a space of linear mappings
-##
-InstallMethod( PrepareNiceFreeLeftModule,
-    "for vector space of linear mappings",
-    true,
-    [ IsVectorSpace and IsLinearMappingsSpaceDefaultRep ], 0,
-    Ignore );
-
-
-#############################################################################
-##
+#M  NiceFreeLeftModuleInfo( <V> ) . . . . . .  for a space of linear mappings
 #M  NiceVector( <V>, <v> )  . .  for space of lin. mappings, and lin. mapping
-##
-##  is the matrix in `NiceFreeLeftModule( <V> )' that corresponds
-##  to the vector <v> of <V>.
-##
-InstallOtherMethod( NiceVector,
-    "for space of linear mappings, and linear mapping",
-    IsCollsElms,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep,
-      IsMapping ], 0,
-    function( V, v )
-    local M, i, c;
-    M:= [];
-    for i in BasisVectors( V!.basissource ) do
-      c:= Coefficients( V!.basisrange, ImagesRepresentative( v, i ) );
-      if c = fail then
-        return fail;
-      fi;
-      Add( M, c );
-    od;
-    return M;
-    end );
-
-
-InstallMethod( NiceVector,
-    "for space of linear mappings, and linear mapping by matrix",
-    IsCollsElms,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep,
-      IsMapping and IsLinearMappingByMatrixDefaultRep ], 0,
-    function( V, v )
-    local M, i, c;
-    if V!.basissource = v!.basissource and V!.basisrange = v!.basisrange then
-      return v!.matrix;
-    else
-      TryNextMethod();
-    fi;
-    end );
-
-
-#############################################################################
-##
 #M  UglyVector( <V>, <mat> )  . . .  for space of linear mappings, and matrix
 ##
-InstallMethod( UglyVector,
-    "for space of linear mappings, and matrix",
-    true,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep, IsMatrix ], 0,
-    function( V, mat )
-    return LeftModuleHomomorphismByMatrix( V!.basissource,
-                                           mat, V!.basisrange );
-    end );
+InstallHandlingByNiceBasis( "IsLinearMappingsModule", rec(
+    detect := function( F, gens, V, zero )
+      local S, R;
+      if not IsGeneralMappingCollection( V ) then
+        return false;
+      fi;
+      gens:= AsList( gens );
+      if IsEmpty( gens ) then
+        S:= Source( zero );
+        R:= Range(  zero );
+      else
+        S:= Source( gens[1] );
+        R:= Range(  gens[1] );
+      fi;
 
+      # Check that the mappings have left modules as source and range.
+      if    not IsLeftModule( S )
+         or not IsLeftModule( R )
+         or not ForAll( gens, IsMapping ) then
+        return false;
+      fi;
 
-#############################################################################
-##
-#M  LeftModuleByGenerators( <F>, <gens> ) . . create space of linear mappings
-##
-InstallMethod( LeftModuleByGenerators,
-    "for division ring and collection of linear mappings",
-    true,
-    [ IsDivisionRing, IsGeneralMappingCollection ] , 0,
-    function( F, gens )
-    local V, S, R;
+      # Check that all generators have the same source and range,
+      # and that source and range are in fact left modules.
+      if    ForAny( gens, map -> Source( map ) <> S )
+         or ForAny( gens, map -> Range( map ) <> R ) then
+        return false;
+      fi;
+      return true;
+      end,
 
-    # Check that the mappings have left modules as source and range.
-    gens:= AsList( gens );
-    if IsEmpty( gens ) then
-      Error( "need at least one element" );
-    fi;
-    S:= Source( gens[1] );
-    R:= Range(  gens[1] );
-    if    not IsLeftModule( S )
-       or not IsLeftModule( R )
-       or not ForAll( gens, IsMapping ) then
-      TryNextMethod();
-    fi;
+    NiceFreeLeftModuleInfo := function( V )
+      local F, z, S, R;
+      F:= LeftActingDomain( V );
+      z:= Zero( V );
+      S:= Source( z );
+      R:= Range( z );
 
-    # Check that all generators have the same source and range.
-    if   ForAny( gens, map -> Source( map ) <> S ) then
-      Error( "all mappings in <gens> must have same source" );
-    elif ForAny( gens, map -> Range( map ) <> R ) then
-      Error( "all mappings in <gens> must have same range" );
-    fi;
+      # Write `S' and `R' over `F' (necessary for the nice left module).
+      if LeftActingDomain( S ) <> F then
+        S:= AsLeftModule( F, S );
+        R:= AsLeftModule( F, R );
+      fi;
 
-    # Write `S' and `R' over `F' (necessary for the nice left module).
-    if LeftActingDomain( S ) <> F then
-      S:= AsLeftModule( F, S );
-      R:= AsLeftModule( F, R );
-    fi;
+      return rec( basissource := Basis( S ),
+                  basisrange  := Basis( R ) );
+      end,
 
-    V:= Objectify( NewType( FamilyObj( gens ),
-                                IsFreeLeftModule
-                            and IsLeftActedOnByDivisionRing
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-    SetLeftActingDomain( V, F );
-    SetGeneratorsOfLeftModule( V, gens );
+    NiceVector := function( V, v )
+      local info, M, i, c;
+      info:= NiceFreeLeftModuleInfo( V );
+      if     IsLinearMappingByMatrixDefaultRep( v )
+         and info.basissource = v!.basissource
+         and info.basisrange = v!.basisrange then
+        M:= v!.matrix;
+      else
+        M:= [];
+        for i in BasisVectors( info.basissource ) do
+          c:= Coefficients( info.basisrange, ImagesRepresentative( v, i ) );
+          if c = fail then
+            return fail;
+          fi;
+          Add( M, c );
+        od;
+      fi;
+      return M;
+      end,
 
-    V!.basissource := BasisOfDomain( S );
-    V!.basisrange  := BasisOfDomain( R );
-
-    return V;
-    end );
-
-
-#############################################################################
-##
-#M  LeftModuleByGenerators( <F>, <gens>, <zero> )
-##
-InstallOtherMethod( LeftModuleByGenerators,
-    "for division ring and collection of linear mappings",
-    true,
-    [ IsDivisionRing, IsHomogeneousList, IsGeneralMapping ], 0,
-    function( F, gens, zero )
-    local S, R, V;
-
-    # Check that the mappings have left modules as source and range.
-    gens:= AsList( gens );
-    S:= Source( zero );
-    R:= Range(  zero );
-    if    not IsLeftModule( S )
-       or not IsLeftModule( R )
-       or not ForAll( gens, IsMapping ) then
-      TryNextMethod();
-    fi;
-
-    # Check that all generators have the same source and range.
-    if   ForAny( gens, map -> Source( map ) <> S ) then
-      Error( "all mappings in <gens> must have same source" );
-    elif ForAny( gens, map -> Range( map ) <> R ) then
-      Error( "all mappings in <gens> must have same range" );
-    fi;
-
-    # Write `S' and `R' over `F' (necessary for the nice left module).
-    if LeftActingDomain( S ) <> F then
-      S:= AsLeftModule( F, S );
-      R:= AsLeftModule( F, R );
-    fi;
-
-    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
-                                IsFreeLeftModule
-                            and IsLeftActedOnByDivisionRing
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-    SetLeftActingDomain( V, F );
-    SetGeneratorsOfLeftModule( V, AsList( gens ) );
-    SetZero( V, zero );
-
-    V!.basissource := BasisOfDomain( S );
-    V!.basisrange  := BasisOfDomain( R );
-
-    return V;
-    end );
+    UglyVector := function( V, mat )
+      local info;
+      info:= NiceFreeLeftModuleInfo( V );
+      return LeftModuleHomomorphismByMatrix( info.basissource,
+                                             mat, info.basisrange );
+      end ) );
 
 
 #############################################################################
@@ -1789,394 +1808,16 @@ InstallOtherMethod( RingWithOneByGenerators,
 
 #############################################################################
 ##
-#M  FLMLORByGenerators( <F>, <maps> )
-#M  FLMLORByGenerators( <F>, <empty>, <zero> )
-#M  FLMLORByGenerators( <F>, <maps>, <zero> )
+#M  IsGeneratorsOfFLMLOR( <F>, <maps> )
+#M  IsGeneratorsOfFLMLORWithOne( <F>, <maps> )
 ##
-InstallMethod( FLMLORByGenerators,
-    "for division ring and list of linear mappings",
-    true,
-    [ IsDivisionRing, IsGeneralMappingCollection and IsList ], 0,
-    function( F, maps )
-    local S, A;
+#T  check that sources and ranges coincide:
+#T  if   ForAny( maps, map -> Source( map ) <> S or Range( map ) <> S ) then
 
-    # Check that all entries in `maps' are linear mappings with same
-    # source and range.
-    S:= Source( maps[1] );
-    if   ForAny( maps, map -> Source( map ) <> S or Range( map ) <> S ) then
-      Error( "all entries in <maps> must have same source and range" );
-    elif LeftActingDomain( S ) <> F then
-      S:= AsLeftModule( F, S );
-    fi;
+#T  add implication that a FLMLOR of mappings is associative!
 
-    A:= Objectify( NewType( FamilyObj( maps ),
-                                IsFLMLOR
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorRing( A, AsList( maps ) );
-
-    A!.basissource := BasisOfDomain( S );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
-
-InstallOtherMethod( FLMLORByGenerators,
-    "for division ring, empty list, and zero mapping",
-    true,
-    [ IsDivisionRing, IsList and IsEmpty, IsGeneralMapping ], 0,
-    function( F, empty, zero )
-    local A;
-
-    # Check whether this method is the right one.
-    if Source( zero ) <> Range( zero ) or not IsZero( zero ) then
-      Error( "<zero> must be a zero mapping" );
-    fi;
-
-    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
-                                IsFLMLOR
-                            and IsLinearMappingsSpaceDefaultRep
-                            and IsTrivial ),
-                   rec() );
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftModule( A, empty );
-    SetZero( A, zero );
-
-    A!.basissource := BasisOfDomain( Source( zero ) );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
-
-InstallOtherMethod( FLMLORByGenerators,
-    "for division ring, list of mappings, and mapping",
-    true,
-    [ IsDivisionRing, IsGeneralMappingCollection and IsList,
-      IsGeneralMapping ], 0,
-    function( F, maps, zero )
-    local S, A;
-
-    # Check whether this method is the right one.
-    if Source( zero ) <> Range( zero ) or not IsZero( zero ) then
-      Error( "<zero> must be a zero mapping" );
-    fi;
-    # Check that all entries in `maps' are linear mappings with same
-    # source and range.
-    S:= Source( zero );
-    if    S <> Range( zero )
-       or ForAny( maps, map -> Source( map ) <> S or Range( map ) <> S ) then
-      Error( "all entries in <maps> must have same source and range" );
-    elif LeftActingDomain( S ) <> F then
-      S:= AsLeftModule( F, S );
-    fi;
-
-    A:= Objectify( NewType( FamilyObj( maps ),
-                                IsFLMLOR
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorRing( A, AsList( maps ) );
-    SetZero( A, zero );
-
-    A!.basissource := BasisOfDomain( Source( zero ) );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
-
-
-#############################################################################
-##
-#M  FLMLORWithOneByGenerators( <F>, <maps> )
-#M  FLMLORWithOneByGenerators( <F>, <empty>, <zero> )
-#M  FLMLORWithOneByGenerators( <F>, <maps>, <zero> )
-##
-InstallMethod( FLMLORWithOneByGenerators,
-    "for division ring and list of linear mappings",
-    true,
-    [ IsDivisionRing, IsGeneralMappingCollection and IsList ], 0,
-    function( F, maps )
-    local S, A;
-
-    # Check that all entries in `maps' are linear mappings with same
-    # source and range.
-    S:= Source( maps[1] );
-    if   ForAny( maps, map -> Source( map ) <> S or Range( map ) <> S ) then
-      Error( "all entries in <maps> must have same source and range" );
-    elif LeftActingDomain( S ) <> F then
-      S:= AsLeftModule( F, S );
-    fi;
-
-    A:= Objectify( NewType( FamilyObj( maps ),
-                                IsFLMLORWithOne
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( maps ) );
-
-    A!.basissource := BasisOfDomain( S );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
-
-InstallOtherMethod( FLMLORWithOneByGenerators,
-    "for division ring, empty list, and zero mapping",
-    true,
-    [ IsDivisionRing, IsList and IsEmpty, IsGeneralMapping ], 0,
-    function( F, empty, zero )
-    local A;
-
-    # Check whether this method is the right one.
-    if Source( zero ) <> Range( zero ) or not IsZero( zero ) then
-      Error( "<zero> must be a zero mapping" );
-    fi;
-
-    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
-                                IsFLMLORWithOne
-                            and IsLinearMappingsSpaceDefaultRep
-                            and IsAssociative ),
-                   rec() );
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorRingWithOne( A, empty );
-    SetZero( A, zero );
-
-    A!.basissource := BasisOfDomain( Source( zero ) );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
-
-InstallOtherMethod( FLMLORWithOneByGenerators,
-    "for division ring, list of mappings, and mapping",
-    true,
-    [ IsDivisionRing, IsGeneralMappingCollection and IsList,
-      IsGeneralMapping ], 0,
-    function( F, maps, zero )
-    local S, A;
-
-    # Check whether this method is the right one.
-    if Source( zero ) <> Range( zero ) or not IsZero( zero ) then
-      Error( "<zero> must be a zero mapping" );
-    fi;
-    # Check that all entries in `maps' are linear mappings with same
-    # source and range.
-    S:= Source( zero );
-    if    S <> Range( zero )
-       or ForAny( maps, map -> Source( map ) <> S or Range( map ) <> S ) then
-      Error( "all entries in <maps> must have same source and range" );
-    elif LeftActingDomain( S ) <> F then
-      S:= AsLeftModule( F, S );
-    fi;
-
-    A:= Objectify( NewType( FamilyObj( maps ),
-                                IsFLMLORWithOne
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( maps ) );
-    SetZero( A, zero );
-
-    A!.basissource := BasisOfDomain( Source( zero ) );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
-
-
-#############################################################################
-##
-#M  TwoSidedIdealByGenerators( <A>, <maps> )
-#M  LeftIdealByGenerators( <A>, <maps> )
-#M  RightIdealByGenerators( <A>, <maps> )
-##
-InstallMethod( TwoSidedIdealByGenerators,
-    "for FLMLOR of general mappings, and list of linear mappings",
-    IsIdenticalObj,
-    [ IsFLMLOR and IsGeneralMappingCollection,
-      IsGeneralMappingCollection and IsList ], 0,
-    function( A, maps )
-    local I;
-
-    I:= Objectify( NewType( FamilyObj( A ),
-                                IsFLMLOR
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
-    SetLeftActingRingOfIdeal( I, A );
-    SetRightActingRingOfIdeal( I, A );
-    SetGeneratorsOfTwoSidedIdeal( A, maps );
-
-    I!.basissource := A!.basissource;
-    I!.basisrange  := A!.basisrange;
-
-    # Return the result.
-    return I;
-    end );
-
-InstallMethod( LeftIdealByGenerators,
-    "for FLMLOR of general mappings, and list of linear mappings",
-    IsIdenticalObj,
-    [ IsFLMLOR and IsGeneralMappingCollection,
-      IsGeneralMappingCollection and IsList ], 0,
-    function( A, maps )
-    local I;
-
-    I:= Objectify( NewType( FamilyObj( A ),
-                                IsFLMLOR
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
-    SetLeftActingRingOfIdeal( I, A );
-    SetGeneratorsOfLeftIdeal( A, maps );
-
-    I!.basissource := A!.basissource;
-    I!.basisrange  := A!.basisrange;
-
-    # Return the result.
-    return I;
-    end );
-
-InstallMethod( RightIdealByGenerators,
-    "for FLMLOR of general mappings, and list of linear mappings",
-    IsIdenticalObj,
-    [ IsFLMLOR and IsGeneralMappingCollection,
-      IsGeneralMappingCollection and IsList ], 0,
-    function( A, maps )
-    local I;
-
-    I:= Objectify( NewType( FamilyObj( A ),
-                                IsFLMLOR
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
-    SetRightActingRingOfIdeal( I, A );
-    SetGeneratorsOfRightIdeal( A, maps );
-
-    I!.basissource := A!.basissource;
-    I!.basisrange  := A!.basisrange;
-
-    # Return the result.
-    return I;
-    end );
-
-
-#############################################################################
-##
-#M  FLMLORWithOneByGenerators( <F>, <maps> )
-#M  FLMLORWithOneByGenerators( <F>, <empty>, <zero> )
-#M  FLMLORWithOneByGenerators( <F>, <maps>, <zero> )
-##
-InstallMethod( FLMLORWithOneByGenerators,
-    "for division ring and list of linear mappings",
-    true,
-    [ IsDivisionRing, IsGeneralMappingCollection and IsList ], 0,
-    function( F, maps )
-    local S, A;
-
-    # Check that all entries in `maps' are linear mappings with same
-    # source and range.
-    S:= Source( maps[1] );
-    if   ForAny( maps, map -> Source( map ) <> S or Range( map ) <> S ) then
-      Error( "all entries in <maps> must have same source and range" );
-    elif LeftActingDomain( S ) <> F then
-      S:= AsLeftModule( F, S );
-    fi;
-
-    A:= Objectify( NewType( FamilyObj( maps ),
-                                IsFLMLORWithOne
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( maps ) );
-
-    A!.basissource := BasisOfDomain( S );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
-
-InstallOtherMethod( FLMLORWithOneByGenerators,
-    "for division ring, empty list, and zero mapping",
-    true,
-    [ IsDivisionRing, IsList and IsEmpty, IsGeneralMapping ], 0,
-    function( F, empty, zero )
-    local A;
-
-    # Check whether this method is the right one.
-    if Source( zero ) <> Range( zero ) or not IsZero( zero ) then
-      Error( "<zero> must be a zero mapping" );
-    fi;
-
-    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
-                                IsFLMLORWithOne
-                            and IsLinearMappingsSpaceDefaultRep
-                            and IsAssociative ),
-                   rec() );
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorRingWithOne( A, empty );
-    SetZero( A, zero );
-
-    A!.basissource := BasisOfDomain( Source( zero ) );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
-
-InstallOtherMethod( FLMLORWithOneByGenerators,
-    "for division ring, list of mappings, and mapping",
-    true,
-    [ IsDivisionRing, IsGeneralMappingCollection and IsList,
-      IsGeneralMapping ], 0,
-    function( F, maps, zero )
-    local S, A;
-
-    # Check whether this method is the right one.
-    if Source( zero ) <> Range( zero ) or not IsZero( zero ) then
-      Error( "<zero> must be a zero mapping" );
-    fi;
-    # Check that all entries in `maps' are linear mappings with same
-    # source and range.
-    S:= Source( zero );
-    if    S <> Range( zero )
-       or ForAny( maps, map -> Source( map ) <> S or Range( map ) <> S ) then
-      Error( "all entries in <maps> must have same source and range" );
-    elif LeftActingDomain( S ) <> F then
-      S:= AsLeftModule( F, S );
-    fi;
-
-    A:= Objectify( NewType( FamilyObj( maps ),
-                                IsFLMLORWithOne
-                            and IsLinearMappingsSpaceDefaultRep ),
-                   rec() );
-
-    SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( maps ) );
-    SetZero( A, zero );
-
-    A!.basissource := BasisOfDomain( Source( zero ) );
-    A!.basisrange  := A!.basissource;
-
-    # Return the result.
-    return A;
-    end );
+#T  for ideals construction, inherit the info?
+#T    SetNiceFreeLeftModuleInfo( I, NiceFreeLeftModuleInfo( A ) );
 
 
 #############################################################################
@@ -2192,9 +1833,9 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
 InstallMethod( IsFullHomModule,
     "for space of linear mappings",
     true,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep ], 0,
-    V -> Dimension( V ) = Dimension( UnderlyingLeftModule( V!.basissource ) )
-             * Dimension( UnderlyingLeftModule( V!.basisrange ) ) );
+    [ IsFreeLeftModule and IsGeneralMappingCollection ], 0,
+    V -> Dimension( V ) = Dimension( UnderlyingLeftModule( NiceFreeLeftModuleInfo( V ).basissource ) )
+             * Dimension( UnderlyingLeftModule( NiceFreeLeftModuleInfo( V ).basisrange ) ) );
 
 
 #############################################################################
@@ -2204,10 +1845,10 @@ InstallMethod( IsFullHomModule,
 InstallMethod( Dimension,
     "for full hom space of linear mappings",
     true,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep
+    [ IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ], 0,
-    V ->   Dimension( UnderlyingLeftModule( V!.basissource ) )
-         * Dimension( UnderlyingLeftModule( V!.basisrange  ) ) );
+    V ->   Dimension( UnderlyingLeftModule( NiceFreeLeftModuleInfo( V ).basissource ) )
+         * Dimension( UnderlyingLeftModule( NiceFreeLeftModuleInfo( V ).basisrange  ) ) );
 
 
 #############################################################################
@@ -2217,17 +1858,44 @@ InstallMethod( Dimension,
 InstallMethod( Random,
     "for full hom space of linear mappings",
     true,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep
+    [ IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ], 0,
     function( M )
     local BS, BR;
-    BS:= M!.basissource;
-    BR:= M!.basisrange;
+    BR:= NiceFreeLeftModuleInfo( M );
+    BS:= BR.basissource;
+    BR:= BR.basisrange;
 
     return LeftModuleHomomorphismByMatrix( BS,
                RandomMat( Dimension( UnderlyingLeftModule( BS ) ),
                           Dimension( UnderlyingLeftModule( BR ) ),
                           LeftActingDomain( M ) ),
+               BR );
+    end );
+
+
+#############################################################################
+##
+#M  Representative( <M> ) . . . . . . . for full hom space of linear mappings
+##
+##  This method is necessary for example for computing the `Zero' value of
+##  <M>.  Note that <M> does in general *not* store any generators!
+##
+InstallMethod( Representative,
+    "for full hom space of linear mappings",
+    true,
+    [ IsFreeLeftModule and IsGeneralMappingCollection
+      and IsFullHomModule ], 0,
+    function( M )
+    local BS, BR;
+    BR:= NiceFreeLeftModuleInfo( M );
+    BS:= BR.basissource;
+    BR:= BR.basisrange;
+
+    return LeftModuleHomomorphismByMatrix( BS,
+               NullMat( Dimension( UnderlyingLeftModule( BS ) ),
+                        Dimension( UnderlyingLeftModule( BR ) ),
+                        LeftActingDomain( M ) ),
                BR );
     end );
 
@@ -2240,13 +1908,14 @@ StandardGeneratorsOfFullHomModule := function( M )
 
     local BS, BR, R, one, m, n, zeromat, gens, i, j, gen;
 
-    BS:= M!.basissource;
-    BR:= M!.basisrange;
+    BR:= NiceFreeLeftModuleInfo( M );
+    BS:= BR.basissource;
+    BR:= BR.basisrange;
     R:= LeftActingDomain( M );
     one:= One( R );
     m:= Dimension( UnderlyingLeftModule( BS ) );
     n:= Dimension( UnderlyingLeftModule( BR ) );
-    zeromat:= MutableNullMat( m, n, R );
+    zeromat:= NullMat( m, n, R );
     gens:= [];
     for i in [ 1 .. m ] do
       for j in [ 1 .. n ] do
@@ -2262,7 +1931,7 @@ end;
 InstallMethod( GeneratorsOfLeftModule,
     "for full hom space of linear mappings",
     true,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep
+    [ IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ], 0,
     StandardGeneratorsOfFullHomModule );
 
@@ -2273,27 +1942,29 @@ InstallMethod( GeneratorsOfLeftModule,
 #M  PrintObj( <M> ) . . . . . . . . . . for full hom space of linear mappings
 ##
 ViewFullHomModule := function( M )
-    if IsIdenticalObj( M!.basissource, M!.basisrange ) then
+    local info;
+    info:= NiceFreeLeftModuleInfo( M );
+    if IsIdenticalObj( info.basissource, info.basisrange ) then
       Print( "End( ", LeftActingDomain( M ), ", ",
-             UnderlyingLeftModule( M!.basissource  ), " )" );
+             UnderlyingLeftModule( info.basissource  ), " )" );
     else
       Print( "Hom( ", LeftActingDomain( M ), ", ",
-             UnderlyingLeftModule( M!.basissource ), ", ",
-             UnderlyingLeftModule( M!.basisrange  ), " )" );
+             UnderlyingLeftModule( info.basissource ), ", ",
+             UnderlyingLeftModule( info.basisrange  ), " )" );
     fi;
 end;
 
 InstallMethod( ViewObj,
     "for full hom space of linear mappings",
     true,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep
+    [ IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ], SUM_FLAGS,
     ViewFullHomModule );
 
 InstallMethod( PrintObj,
     "for full hom space of linear mappings",
     true,
-    [ IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep
+    [ IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ], SUM_FLAGS,
     ViewFullHomModule );
 
@@ -2306,11 +1977,13 @@ InstallMethod( \in,
     "for full hom space of linear mappings",
     IsElmsColls,
     [ IsGeneralMapping,
-      IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep
+      IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ], 0,
     function( map, M )
-    return     Source( map ) = UnderlyingLeftModule( M!.basissource )
-           and Range(  map ) = UnderlyingLeftModule( M!.basisrange  )
+    local info;
+    info:= NiceFreeLeftModuleInfo( M );
+    return     Source( map ) = UnderlyingLeftModule( info.basissource )
+           and Range(  map ) = UnderlyingLeftModule( info.basisrange  )
            and IsLeftModuleHomomorphism( map );
     end );
 
@@ -2320,19 +1993,20 @@ InstallMethod( \in,
 #M  IsPseudoCanonicalBasisFullHomModule( <B> )  . . . . for a full hom module
 ##
 InstallMethod( IsPseudoCanonicalBasisFullHomModule,
-    "for a full hom module",
+    "for a basis of a full hom module",
     true,
     [ IsBasis ], 0,
     function( B )
-    local V;
+    local V, info;
     V:= UnderlyingLeftModule( B );
-    if IsLinearMappingsSpaceDefaultRep( V ) then
+    if IsGeneralMappingCollection( V ) then
       if not IsFullHomModule( V ) then
         return false;
       fi;
+      info:= NiceFreeLeftModuleInfo( V );
       return List( BasisVectors( B ),
-                   map -> List( BasisVectors( V!.basissource ),
-                                v -> Coefficients( V!.basisrange,
+                   map -> List( BasisVectors( info.basissource ),
+                                v -> Coefficients( info.basisrange,
                                  ImagesRepresentative( map, v ) ) ) )
              = StandardGeneratorsOfFullHomModule( V );
     else
@@ -2361,18 +2035,19 @@ InstallOtherMethod( Coefficients,
     IsCollsElms,
     [ IsBasis and IsPseudoCanonicalBasisFullHomModule, IsGeneralMapping ], 0,
     function( B, map )
-    local V, R;
+    local V, R, info;
     V:= UnderlyingLeftModule( B );
-    if not IsLinearMappingsSpaceDefaultRep( V ) then
+    if not IsGeneralMappingCollection( V ) then
       TryNextMethod();
     fi;
     R:= LeftActingDomain( V );
-    if     Source( map ) = UnderlyingLeftModule( V!.basissource )
-       and Range(  map ) = UnderlyingLeftModule( V!.basisrange  )
+    info:= NiceFreeLeftModuleInfo( V );
+    if     Source( map ) = UnderlyingLeftModule( info.basissource )
+       and Range(  map ) = UnderlyingLeftModule( info.basisrange  )
        and IsLeftModuleHomomorphism( map ) then
       return Concatenation(
-                  List( BasisVectors( V!.basissource ),
-                        v -> Coefficients( V!.basisrange,
+                  List( BasisVectors( info.basissource ),
+                        v -> Coefficients( info.basisrange,
                                  ImagesRepresentative( map, v ) ) ) );
     else
       return fail;
@@ -2385,20 +2060,21 @@ InstallMethod( Coefficients,
     [ IsBasis and IsPseudoCanonicalBasisFullHomModule,
       IsMapping and IsLinearMappingByMatrixDefaultRep ], 0,
     function( B, map )
-    local V, R;
+    local V, R, info;
     V:= UnderlyingLeftModule( B );
-    if not IsLinearMappingsSpaceDefaultRep( V ) then
+    if not IsGeneralMappingCollection( V ) then
       TryNextMethod();
     fi;
     R:= LeftActingDomain( V );
-    if     map!.basissource = V!.basissource
-       and map!.basisrange  = V!.basisrange then
+    info:= NiceFreeLeftModuleInfo( V );
+    if     map!.basissource = info.basissource
+       and map!.basisrange  = info.basisrange then
       return Concatenation( map!.matrix );
-    elif   Source( map ) = UnderlyingLeftModule( V!.basissource )
-       and Range(  map ) = UnderlyingLeftModule( V!.basisrange  ) then
+    elif   Source( map ) = UnderlyingLeftModule( info.basissource )
+       and Range(  map ) = UnderlyingLeftModule( info.basisrange  ) then
       return Concatenation(
-                  List( BasisVectors( V!.basissource ),
-                        v -> Coefficients( V!.basisrange,
+                  List( BasisVectors( info.basissource ),
+                        v -> Coefficients( info.basisrange,
                                  ImagesRepresentative( map, v ) ) ) );
     else
       return fail;
@@ -2408,9 +2084,9 @@ InstallMethod( Coefficients,
 
 #############################################################################
 ##
-#M  BasisOfDomain( <M> )  . . . . . . . . . . . . . . . . for full hom module
+#M  Basis( <M> )  . . . . . . . . . . . . . . . . . . . . for full hom module
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for full hom space of linear mappings",
     true,
     [ IsFreeLeftModule and IsFullHomModule ], 100,
@@ -2455,13 +2131,14 @@ InstallMethod( Hom,
                                 ElementsFamily( FamilyObj( W ) ) ) ),
                                 IsFreeLeftModule
                             and IsFullHomModule
-                            and IsLinearMappingsSpaceDefaultRep ),
+                            and IsLinearMappingsModule
+                            and IsGeneralMappingCollection ),
                    rec() );
 
     SetLeftActingDomain( M, F );
-
-    M!.basissource := BasisOfDomain( V );
-    M!.basisrange  := BasisOfDomain( W );
+    SetNiceFreeLeftModuleInfo( M, rec(
+                                       basissource := Basis( V ),
+                                       basisrange  := Basis( W ) ) );
 
     return M;
     end );
@@ -2491,7 +2168,7 @@ InstallMethod( End,
     fi;
 
     n:= Dimension( V );
-    gens:= MutableNullMat( n, n, F );
+    gens:= NullMat( n, n, F );
     gens:= [ gens, List( gens, ShallowCopy ) ];
     one:= One( F );
 
@@ -2501,12 +2178,15 @@ InstallMethod( End,
     for i in [ 2 .. n ] do
       gens[2][i][i-1]:= one;
     od;
-    B:= BasisOfDomain( V );
+    B:= Basis( V );
     gens:= List( gens, mat -> LeftModuleHomomorphismByMatrix( B, mat, B ) );
 
     # Construct the FLMLOR.
     A:= AlgebraWithOneByGenerators( F, gens );
     SetIsFullHomModule( A, true );
+    SetNiceFreeLeftModuleInfo( A, rec(
+                                       basissource := B,
+                                       basisrange  := B ) );
 
     # Return the FLMLOR.
     return A;
@@ -2518,7 +2198,5 @@ InstallMethod( End,
 
 #############################################################################
 ##
-#E  vspchom.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

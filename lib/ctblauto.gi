@@ -106,7 +106,6 @@ end );
 ##
 ##  `MatAutomorphismsFamily' returns a stabilizer chain for the closure of
 ##  $K$ ...
-
 ##
 ##  for a family <rows> of rows with representative (i.e., sorted vector)
 ##  <famrep> and corresponding permutations
@@ -129,7 +128,8 @@ end );
 ##  Note: The returned group has a base compatible with the base of $G$,
 ##        i.e. not a reduced base (used for "TransformingPermutationFamily")
 ##
-MatAutomorphismsFamily := function( chainG, K, family, permutations )
+BindGlobal( "MatAutomorphismsFamily",
+    function( chainG, K, family, permutations )
 
     local famlength,             # number of rows in the family
           nonbase,               # points not in the base of `chainG'
@@ -175,7 +175,7 @@ MatAutomorphismsFamily := function( chainG, K, family, permutations )
       return true;
     end;
 
-    K:= ListSorted( K );
+    K:= SSortedList( K );
     for gen in chainG.generators do
       if ForAll( permutations, x -> stabilizes( family, gen, x ) ) then
         AddSet( K, gen );
@@ -221,7 +221,7 @@ MatAutomorphismsFamily := function( chainG, K, family, permutations )
       # Make `points' a subset of $S.orbit ^ s$ of those points which
       # correspond to cosets that might contain elements satisfying <prop>.
       # Make this set as small as possible with reasonable effort!
-      points:= ListSorted( OnTuples( S.orbit, s ) );
+      points:= SSortedList( OnTuples( S.orbit, s ) );
 
       # Improvement in our special situation:
       # For the basepoint `$b$ = S.orbit[1]' we have
@@ -316,7 +316,7 @@ MatAutomorphismsFamily := function( chainG, K, family, permutations )
       # Make `points' a subset of $S.orbit$ of those points which
       # correspond to cosets that might contain elements satisfying <prop>.
       # Make this set as small as possible with reasonable effort!
-      points := ListSorted( S.orbit );
+      points := SSortedList( S.orbit );
 
       # Improvement in our special situation:
       # For the basepoint `$b$ = S.orbit[1]', we have
@@ -387,14 +387,24 @@ MatAutomorphismsFamily := function( chainG, K, family, permutations )
 
     FindSubgroupProperty( chainG, chainK, allowed );
     return chainK;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  MatAutomorphisms( <mat>, <maps>, <subgroup> )
+#M  MatrixAutomorphisms( <mat>[, <maps>, <subgroup>] )
 ##
-InstallGlobalFunction( MatAutomorphisms, function( mat, maps, subgroup )
+InstallMethod( MatrixAutomorphisms,
+    "for a matrix",
+    true,
+    [ IsMatrix ], 0,
+    mat -> MatrixAutomorphisms( mat, [], Group( () ) ) );
+
+InstallMethod( MatrixAutomorphisms,
+    "for matrix, list of maps, and subgroup",
+    true,
+    [ IsMatrix, IsList, IsPermGroup ], 0,
+    function( mat, maps, subgroup )
 
     local fam,             # result of `FamiliesOfRows'
           nonfixedpoints,  # positions of not nec. fixed columns
@@ -416,7 +426,7 @@ InstallGlobalFunction( MatAutomorphisms, function( mat, maps, subgroup )
     # Check the arguments.
 
     if IsPermGroup( subgroup ) then
-      subgroup:= ListSorted( GeneratorsOfGroup( subgroup ) );
+      subgroup:= SSortedList( GeneratorsOfGroup( subgroup ) );
     elif     IsList( subgroup )
          and ( IsEmpty( subgroup ) or IsPermCollection( subgroup ) ) then
       subgroup:= ShallowCopy( subgroup );
@@ -467,7 +477,7 @@ InstallGlobalFunction( MatAutomorphisms, function( mat, maps, subgroup )
       od;
       for j in [ 1 .. Length( nonfixedpoints ) ] do
         colfam:= nonfixedpoints[j];
-        values:= ListSorted( row{ colfam } );
+        values:= SSortedList( row{ colfam } );
         nonfixedpoints[j]:= Filtered( colfam, x -> row[x] = values[1] );
         for k in [ 2 .. Length( values ) ] do
           Add( nonfixedpoints, Filtered( colfam, x -> row[x] = values[k] ) );
@@ -480,7 +490,7 @@ InstallGlobalFunction( MatAutomorphisms, function( mat, maps, subgroup )
     if IsEmpty( nonfixedpoints ) then
       Info( InfoMatrix, 2,
             "MatAutomorphisms: return trivial group without hard test" );
-      return Group( () );
+      return GroupByGenerators( [], () );
     fi;
     
     # Step 4:
@@ -542,20 +552,32 @@ InstallGlobalFunction( MatAutomorphisms, function( mat, maps, subgroup )
 
       fi;
     od;
+
     return GroupStabChain( G );
-end );
+    end );
 
 
 #############################################################################
 ##
-#F  TableAutomorphisms( <tbl>, <characters> )
-#F  TableAutomorphisms( <tbl>, <characters>, \"closed\" )
+#M  TableAutomorphisms( <tbl>, <characters> )
+#M  TableAutomorphisms( <tbl>, <characters>, \"closed\" )
 ##
-InstallGlobalFunction( TableAutomorphisms, function( arg )
+InstallMethod( TableAutomorphisms,
+    "for a character table and a list of characters",
+    true,
+    [ IsCharacterTable, IsList ], 0,
+    function( tbl, characters )
+    return TableAutomorphisms( tbl, characters, "" );
+    end );
 
-    local tbl,          # character table, first argument
-          characters,   # list of characters, second argument
-          subgroup,     # known subgroup,
+
+InstallMethod( TableAutomorphisms,
+    "for a character table, a list of characters, and a string",
+    true,
+    [ IsCharacterTable, IsList, IsString ], 0,
+    function( tbl, characters, closed )
+
+    local subgroup,     # known subgroup,
                         # is trivial in the case of two arguments,
                         # otherwise is the group of Galois automorphisms
           maut,         # matrix automorphisms of `characters'
@@ -565,28 +587,18 @@ InstallGlobalFunction( TableAutomorphisms, function( arg )
           powermap,     # list of relevant power maps
           admissible;   # generators that commute with all power maps
 
-    # Get and check the arguments.
-    if not Length( arg ) in [ 2, 3 ] or not IsNearlyCharacterTable( arg[1] )
-       or not IsList( arg[2] )
-       or ( Length( arg ) = 3 and arg[3] <> "closed" ) then
-      Error( "usage: TableAutomorphisms( <tbl>, <characters> ) resp.\n",
-      "              TableAutomorphisms( <tbl>, <characters>, \"closed\" )" );
-    fi;
-
-    tbl:= arg[1];
-    characters:= arg[2];
-    if Length( arg ) = 3 then
-      subgroup:= Group( GaloisMat( TransposedMat( characters ) ).generators,
-                        () );
+    if closed = "closed" then
+      subgroup:= GroupByGenerators(
+          GaloisMat( TransposedMat( characters ) ).generators, () );
     else
-      subgroup:= Group( () );
+      subgroup:= GroupByGenerators( [], () );
     fi;
 
     # Compute the matrix automorphisms.
-    maut:= MatAutomorphisms( characters, 
-                             [ OrdersClassRepresentatives( tbl ),
-                               SizesCentralizers( tbl ) ],
-                             subgroup );
+    maut:= MatrixAutomorphisms( characters, 
+                                [ OrdersClassRepresentatives( tbl ),
+                                  SizesCentralizers( tbl ) ],
+                                subgroup );
     gens:= GeneratorsOfGroup( maut );
     nccl:= NrConjugacyClasses( tbl );
 
@@ -611,7 +623,7 @@ InstallGlobalFunction( TableAutomorphisms, function( arg )
                        perm -> ForAll( powermap, 
                                  x -> ForAll( [ 1 .. nccl ],
                                         y -> x[ y^perm ] = x[y]^perm ) ),
-                                     Group( admissible, () ) );
+                                     GroupByGenerators( admissible, () ) );
 
     else
       admissible:= GroupByGenerators( admissible, () );
@@ -619,7 +631,7 @@ InstallGlobalFunction( TableAutomorphisms, function( arg )
 
     # Return the result.
     return admissible;
-end );
+    end );
 
 
 #############################################################################
@@ -655,8 +667,8 @@ end );
 ##            equivalent to respecting <family>, so the calculation of
 ##            <fam1> and <fam2> must respect <family>, too!
 ##
-TransformingPermutationFamily := function( chainG, K, fam1, fam2, bij_col,
-                                           family )
+BindGlobal( "TransformingPermutationFamily",
+    function( chainG, K, fam1, fam2, bij_col, family )
 
     local permutations,           # translate `fam1' with `bij_col'
           allowed,                # list of lists of admissible points
@@ -692,7 +704,7 @@ TransformingPermutationFamily := function( chainG, K, fam1, fam2, bij_col,
         return s;
       fi;                                                            
     
-      points:= ListSorted( OnTuples( S.orbit, s ) );
+      points:= SSortedList( OnTuples( S.orbit, s ) );
 
       for i in [ 1 .. Length( permutations ) ] do
         union:= [];
@@ -740,14 +752,18 @@ TransformingPermutationFamily := function( chainG, K, fam1, fam2, bij_col,
 
     # Search through the whole group $G = G * Id$ for an element with <prop>.
     return ElementPropertyCoset( chainG, (), K, allowed );
-end;
+    end );
 
 
 #############################################################################
 ##
-#F  TransformingPermutations( <mat1>, <mat2> )
+#M  TransformingPermutations( <mat1>, <mat2> )
 ##
-InstallGlobalFunction( TransformingPermutations, function( mat1, mat2 )
+InstallMethod( TransformingPermutations,
+    "for two matrices",
+    true,
+    [ IsMatrix, IsMatrix ], 0,
+    function( mat1, mat2 )
 
     local i, j, k,        # loop variables
           fam1,
@@ -774,7 +790,9 @@ InstallGlobalFunction( TransformingPermutations, function( mat1, mat2 )
     if Length( mat1 ) <> Length( mat2 ) then
       return fail;
     elif IsEmpty( mat1 ) then
-      return rec( columns:= (), rows:= (), group:= Group( () ) );
+      return rec( columns := (),
+                  rows    := (),
+                  group   := GroupByGenerators( [], () ) );
     fi;
     
     # Step 1:
@@ -812,8 +830,8 @@ InstallGlobalFunction( TransformingPermutations, function( mat1, mat2 )
         for j in [ 1 .. Length( bij_col[1] ) ] do
           preimage:= bij_col[1][j];
           image:=    bij_col[2][j];
-          values:= ListSorted( row1{ preimage } );
-          if values <> ListSorted( row2{ image } ) then
+          values:= SSortedList( row1{ preimage } );
+          if values <> SSortedList( row2{ image } ) then
             Info( InfoMatrix, 2,
                   "TransformingPermutations: ",
                   "no bijection of column families" );
@@ -861,8 +879,8 @@ InstallGlobalFunction( TransformingPermutations, function( mat1, mat2 )
         for j in [ 1 .. Length( bij_col[1] ) ] do
           preimage:= bij_col[1][j];
           image:=    bij_col[2][j];
-          values:= ListSorted( row1{ preimage } );
-          if values <> ListSorted( row2{ image } ) then
+          values:= SSortedList( row1{ preimage } );
+          if values <> SSortedList( row2{ image } ) then
             Info( InfoMatrix, 2,
                   "TransformingPermutations: ",
                   "no bijection of column families" );
@@ -974,14 +992,17 @@ InstallGlobalFunction( TransformingPermutations, function( mat1, mat2 )
                 rows    := Sortex( List( mat1, x -> Permuted( x, bij_col ) ) )
                            / Sortex( ShallowCopy( mat2 ) ),
                 group   := GroupStabChain( G ) ); 
-end );
+    end );
 
 
 #############################################################################
 ##
-#F  TransformingPermutationsCharacterTables( <tbl1>, <tbl2> )
+#M  TransformingPermutationsCharacterTables( <tbl1>, <tbl2> )
 ##
-InstallGlobalFunction( TransformingPermutationsCharacterTables,
+InstallMethod( TransformingPermutationsCharacterTables,
+    "for two character tables",
+    true,
+    [ IsCharacterTable, IsCharacterTable ], 0,
     function( tbl1, tbl2 )
 
     local irr1, irr2,    # lists of irreducible characters of the tables
@@ -1036,7 +1057,7 @@ InstallGlobalFunction( TransformingPermutationsCharacterTables,
                          perm -> ForAll( powermap2, 
                                    x -> ForAll( [ 1 .. nccl ],
                                           y -> x[y^perm] = x[y]^perm ) ),
-                                       Group( admissible, () ) );
+                                       GroupByGenerators( admissible, () ) );
       fi;
 
       # Store the automorphisms.
@@ -1081,10 +1102,10 @@ InstallGlobalFunction( TransformingPermutationsCharacterTables,
 
     # Return the result.
     return trans;
-end );
+    end );
 
 
 #############################################################################
 ##
-#E  ctblauto.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

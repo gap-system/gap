@@ -4,7 +4,8 @@
 ##
 #H  $Id$
 ##
-#Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  St. Andrews
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains functions that compute Hermite and Smith normal forms 
 ##  of integer matrices, with or without the HNF/SNF  expressed as the linear 
@@ -14,39 +15,12 @@
 Revision.matint_gi :=
     "$Id$";
 
-#############################################################################
-##
-#F  CopyMat ( <array> ) . . . . . .  returns a fully mutable copy of a matrix
-##
-CopyMat:=function(A)
-
-return List(A,ShallowCopy);
-
-end;
-
-
-#############################################################################
-##
-#F  Round( <Rational> ) . . . . the nearest integer to the rational parameter
-##
-Round := function( r )
-   if IsInt(r) then
-      return r;
-   fi;
-   if DenominatorRat(r) = 2 then
-      return Int(r);
-   fi;
-   if r < 0 
-      then return Int(r - 1/2);
-      else return Int(r + 1/2);
-   fi;
-end;
 
 ##############################################################################
 ##
-#F  rBest( <rec>, <row>, <index>)  ......... an auxiliary function for NormHnf
+#F  MatInt_BestRow( <rec>, <row>, <index>)  ......... an auxiliary function for NormHnf
 ##
-rBest := function( A, i, h ) 
+BindGlobal("MatInt_BestRow", function( A, i, h ) 
 
 local j, # row index; goes between i and the last row A.m
       r, # index of the row with the minimum norm so far
@@ -68,22 +42,25 @@ local j, # row index; goes between i and the last row A.m
 	 fi;
       fi;
    od;
+Info(InfoMatInt,4,"MatInt_BestRow returning ",r);
 
    return r;
-end;
+end);
 
 ##############################################################################
 ##
 #F  NormHnf( <array> [, <bool/rat>]) ... the Hermite NF of the first parameter
 ##
-NormHnf := function( arg )
+BindGlobal("NormHnf", function( arg )
 
 local  A, # a record (number or rows, no of columns, int matrix)
        h, # head (first nonzero) of the pivot row
  i, j, k, # local indexes
  r, t, q,qq, # auxiliary variables
 enf_flag, # set to true if the user wishes Echelon form only
-frac;
+frac; # off-diagonal reduction coefficient
+
+
     if not IsMatrix(arg[1]) then
        PrintTo("*errout*", "use: NormHnf( <array> [, <bool/ frac> ]);\n");
        return fail;
@@ -99,10 +76,11 @@ frac;
        fi;
     fi;
 
-    A := rec( T := CopyMat(arg[1]), m := Length(arg[1]), n := Length(arg[1][1]) );
+    A := rec( T :=arg[1], m := Length(arg[1]), n := Length(arg[1][1]) );
 
     i := 1;
     while i <= A.m do
+Info(InfoMatInt,2,"NormHnf - i:= ",i);
        h := A.n;
        j := i;
        while j <= A.m and h > i do
@@ -113,7 +91,7 @@ frac;
 	 j := j + 1;
        od;
 
-       k := rBest(A, i, h);
+       k := MatInt_BestRow(A, i, h);
 
        repeat
           if k <> i then # swap row i and k
@@ -125,10 +103,10 @@ frac;
           t := A.T[i][h]; # the pivot
 
           for j in [i+1 .. A.m] do 
-	     q := Round(A.T[j][h]/t);
+	     q := RoundCycDown(A.T[j][h]/t);
 	
              if q <> 0 then
-                A.T[j] := A.T[j] - A.T[i]*q;
+	       AddRowVector(A.T[j],A.T[i],-q);
              fi;
           od;
 
@@ -145,7 +123,7 @@ frac;
              fi;
           od;
 
-          k := rBest(A, i + 1, h);
+          k := MatInt_BestRow(A, i + 1, h);
        until k = 0;
        i := i + 1;
    od;
@@ -165,22 +143,23 @@ frac;
 	    qq:=t mod r;
 	    q := (t - qq)/r;
             if qq>frac*r then q:=q+1;	fi;
-	    A.T[i] := A.T[i] - q*A.T[j];
+	AddRowVector(A.T[i],A.T[j],-q);
 	 od;
       od;
    fi;
-   return A.T{[1 .. A.m]};
-end;
+   return A.T;      
+#return same size as orig.  If only want non-zero rows return A.T{[1 .. A.m]};
+end);
 
 ##############################################################################
 ##
 #F  CaCHnf( <array> ) .................. the Hermite NF of the first parameter
 ##
-CaCHnf := function( A )
+BindGlobal("CaCHnf",function( H )
 
-local h, i, j, k, l, m, n, q, t, v, H;
+local h, i, j, k, l, m, n, q, t, v, A;
 
-
+   A:=MutableCopyMat(H);
    m := Length(A);
    n := Length(A[1]);
 
@@ -194,26 +173,31 @@ local h, i, j, k, l, m, n, q, t, v, H;
    if i > m then
       return [];
    fi;
+for t in [1..m] do
+  if t<>i then 
+   Unbind(H[t]);
+  fi;
+od;
 
-   H := [ A[i] ];
+#   H := [ A[i] ];
    k := 1;
 
    while i <= m do
       # add row i of A to H
-      v := CopyMat(A[i]);
+      v := MutableCopyMat(A[i]);
 
       h := PositionNot(v,0);
       for j in [1 .. k] do
          if PositionNot(H[j],0) = h then
             repeat
-               q := Round(v[h]/H[j][h]);
+               q := RoundCycDown(v[h]/H[j][h]);
                if q <> 0 then
-                  v := v - q*H[j];
+	AddRowVector(v,H[j],-q);
                fi;
 
                if v[h] <> 0 then
-                  q := Round(H[j][h]/v[h]);
-                  H[j] := H[j] - q*v;
+                  q := RoundCycDown(H[j][h]/v[h]);
+	AddRowVector(H[j],v,-q);
                   if H[j][h] = 0 then 
                      if v[h] < 0 
                         then t := -v;
@@ -257,20 +241,23 @@ local h, i, j, k, l, m, n, q, t, v, H;
             if not IsInt(q) and H[j][h] < 0 then
                q := q - SignInt(H[l][h]);
             fi;
-            q := Int(q);
-            H[j] := H[j] - q*H[l];
+            q := Int(q);	
+            AddRowVector(H[j],H[l],-q);
          od;
       od;
       i := i + 1;
    od;
+for i in [Length(H)+1..m] do
+  Add(H,List([1..n],x->0));
+od;
    return H;
-end;
+end);
 
 #############################################################################
 ##
 #F  LcNormHnf( <array> [,< Bool/Rat >] )  . the HNF and the tranforming matrix
 ##
-LcNormHnf := function( arg )
+BindGlobal("LcNormHnf" , function( arg )
 
 local  A, # a record (number or rows, no of columns, int matrix)
        P, # unimodular matrix, such that A.T = P*arg[1]
@@ -295,11 +282,12 @@ frac;
        fi;
     fi;
 
-    A := rec( T := CopyMat(arg[1]), m := Length(arg[1]), n := Length(arg[1][1]) );
-    P := CopyMat(IdentityMat(A.m));
+    A := rec( T := MutableCopyMat(arg[1]), m := Length(arg[1]), n := Length(arg[1][1]) );
+    P := IdentityMat(A.m);
 
     i := 1;
     while i <= A.m do
+Info(InfoMatInt,2,"LcNormHnf - i:= ",i);
        h := A.n;
        j := i;
        while j <= A.m and h > i do
@@ -310,7 +298,7 @@ frac;
 	 j := j + 1;
        od;
 
-       k := rBest(A, i, h);
+       k := MatInt_BestRow(A, i, h);
 
        repeat
           if k <> i then # swap row i and k
@@ -323,11 +311,11 @@ frac;
           t := A.T[i][h]; # the pivot
 
           for j in [i+1 .. A.m] do 
-	     q := Round(A.T[j][h]/t);
+	     q := RoundCycDown(A.T[j][h]/t);
 	
              if q <> 0 then
-                A.T[j] := A.T[j] - A.T[i]*q;
-                P[j] := P[j] - q*P[i];
+	AddRowVector(A.T[j],A.T[i],-q);
+	AddRowVector(P[j],P[i],-q);
              fi;
           od;
 
@@ -347,7 +335,7 @@ frac;
              fi;
           od;
 
-          k := rBest(A, i + 1, h);
+          k := MatInt_BestRow(A, i + 1, h);
        until k = 0;
        i := i + 1;
    od;
@@ -368,25 +356,26 @@ frac;
             qq:=t mod r;
 	    q := (t - qq)/r;
             if qq>frac*r then q:=q+1;fi;
-	    A.T[i] := A.T[i] - q*A.T[j];
-            P[i]   := P[i] - q*P[j];
+	AddRowVector(A.T[i],A.T[j],-q);
+	AddRowVector(P[i],P[j],-q);
 	 od;
       od;
    fi;
-   return rec( hermite := A.T{[1 .. A.m]}, transformer := P );
-end;
+   return rec( normal := A.T, rowtrans := P );
+end);
 
 #############################################################################
 #F LcCaCHnf implements Chou & Collins strategy for computing the
 ## hermite normal form of an integer matrix with transforming matrix
 ##
-LcCaCHnf := function( A )
+BindGlobal("LcCaCHnf",  function( mat )
 
-local h, i, j, k, l, m, n, q, t, v, H, P;
+local A,h, i, j, k, l, m, n, q, t, v, H, P;
 
+   A:=MutableCopyMat(mat);
    m := Length(A);
    n := Length(A[1]);
-   P := CopyMat(IdentityMat(m));
+   P := IdentityMat(m);
 
    # skip initial all zero rows
    i := 1;
@@ -396,7 +385,7 @@ local h, i, j, k, l, m, n, q, t, v, H, P;
 
    # if i > m there is nothing left; return a null vector
    if i > m then
-      return rec(hermite := [], transformer := P);
+      return rec(normal := [], rowtrans := P);
    fi;
 
    if A[i][PositionNot(A[i],0)] < 0 
@@ -410,29 +399,23 @@ local h, i, j, k, l, m, n, q, t, v, H, P;
 
    while i <= m do
       # add row i of A to H
-      v := CopyMat(A[i]);
-      # Error("Break point 1");
-
+      v := MutableCopyMat(A[i]);
       h := PositionNot(v,0);
       for j in [1 .. k] do
          if PositionNot(H[j],0) = h then
             repeat
-               q := Round(v[h]/H[j][h]);
+               q := RoundCycDown(v[h]/H[j][h]);
+
                if q <> 0 then
-                  # Error("break point 1.5");
-                  v := v - q*H[j];
-                  # Error("break point 1.7");
-                  P[i] := P[i] - q*P[j];
-                  # Error("break point 2");
+	AddRowVector(v,H[j],-q);
+	AddRowVector(P[i],P[j],-q);
                fi;
 
                if v[h] <> 0 then
-                  q := Round(H[j][h]/v[h]);
-                  H[j] := H[j] - q*v;
-                  P[j] := P[j] - q*P[i];
-                  # Error("break point 3");
-                  if H[j][h] = 0 then 
-                     # Error("break point 4");
+                  q := RoundCycDown(H[j][h]/v[h]);
+	AddRowVector(H[j],v,-q);
+	AddRowVector(P[j],P[i],-q);
+                   if H[j][h] = 0 then 
                      if v[h] < 0 then 
                         t := -v; v := H[j]; H[j] := t;
                         t := -P[i]; P[i] := P[j]; P[j] := t;
@@ -440,9 +423,9 @@ local h, i, j, k, l, m, n, q, t, v, H, P;
                         t :=  v; v := H[j]; H[j] := t;
                         t := P[i]; P[i] := P[j]; P[j] := t;
                      fi;
-                     # Error("Break point 5");
                   fi;
                fi;
+
             until v[h] = 0;
             h := PositionNot(v,0);
          elif PositionNot(H[j],0) > h then
@@ -459,7 +442,6 @@ local h, i, j, k, l, m, n, q, t, v, H, P;
 
       if h <= n then
          k := k + 1;
-         # Error("break point 6");
          if v[h] < 0 then
             v    := -v;
             P[i] := -P[i];
@@ -468,7 +450,6 @@ local h, i, j, k, l, m, n, q, t, v, H, P;
             t := P[i]; P[i] := P[k]; P[k] := t;
          fi;
          H[k] := v;
-         # Error("break point 7");
       fi;
 
       if H[k][PositionNot(H[k],0)] < 0 then
@@ -487,27 +468,25 @@ local h, i, j, k, l, m, n, q, t, v, H, P;
                q := q - SignInt(H[l][h]);
             fi;
             q := Int(q);
-            P[j] := P[j] - q*P[l];
-            H[j] := H[j] - q*H[l];
+            AddRowVector(P[j],P[l],-q);
+            AddRowVector(H[j],H[l],-q);
          od;
       od;
       i := i + 1;
    od;
-   return rec(hermite := H, transformer := P);
-end;
 
+for i in [Length(H)+1..m] do
+  Add(H,List([1..n],x->0));
+od;
+   return rec(normal := H, rowtrans := P);
+end);
 
-##############################################################################
-##
-#F  LcLLLHnfPrint1( <array> [, <rat>] ) .......... debuging print-out routine 
-##
-if not IsBound(LcLLLHnfPrint1) then LcLLLHnfPrint1 := Ignore; fi;
 
 ##############################################################################
 ##
 #F  LcLLLHnf( <array> [, <rat>] ) .. the Hermite NF and the tranforming matrix
 ##
-LcLLLHnf := function(arg)
+BindGlobal("LcLLLHnf", function(arg)
 
 local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
           c, # current column
@@ -523,14 +502,15 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
 
    RED := function( l )
       if b[l][c] <> 0 then
-         q := Round(b[k][c]/b[l][c]);
+         q := RoundCycDown(b[k][c]/b[l][c]);
       else
-         q := Round(mu[k][l]);
+         q := RoundCycDown(mu[k][l]);
       fi;
 
       if q <> 0 then # \ldots and subtract $q b_l$ from $b_k$;
-         b[k] := b[k] - q * b[l];
-         P[k] := P[k] - q * P[l];
+
+        AddRowVector(b[k],b[l],-q);
+        AddRowVector(P[k],P[l],-q);
 
          # adjust 'mu', \ldots
          mu[k][l] := mu[k][l] - q;
@@ -546,10 +526,10 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
       PrintTo("*errout*", "use: LLLHnf(<array> [, <sensitivity> ]);\n");
    fi;
 
-   b := CopyMat( arg[1] );
+   b := MutableCopyMat( arg[1] );
    m := Length(b);
    n := Length(b[1]);
-   P := CopyMat(IdentityMat(m));
+   P := IdentityMat(m);
 
    if IsBound(arg[2]) and IsRat(arg[2]) then
       alpha := arg[2];
@@ -578,7 +558,7 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
 
    while c <= n do
       # step 1, initialize
-      LcLLLHnfPrint1("Starting column ", c, " ...");
+  
 
       k := 2;
       while k <= m - s do
@@ -647,7 +627,7 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
          k := k + 1;
          # step 4, Finished?
       od;
-      LcLLLHnfPrint1(" done\n");
+     
 
       s    := s + 1;
       kmax := kmax - 1;
@@ -681,8 +661,8 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
                else q := Int(q);
             fi;
          fi;
-         b[i] := b[i] - q*b[j];
-         P[i] := P[i] - q*P[j];
+       AddRowVector(b[i],b[j],-q);
+       AddRowVector(P[i],P[j],-q);
       od;
    od;
 
@@ -707,9 +687,10 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
 
       for j in [s-1, s-2 .. 1] do
          # RED(j), however we want to avoid testing column c
-         q := Round(mu[k][j]);
-         if q <> 0 then
-            P[k] := P[k] - q*P[j];
+         q := RoundCycDown(mu[k][j]);
+         if q <> 0 then       
+
+        AddRowVector(P[k],P[j],-q);
             for i in [1 .. j-1] do
                if mu[j][i] <> 0 then
                   mu[k][i] := mu[k][i] - q*mu[j][i];
@@ -718,9 +699,15 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
          fi;
       od;
    od;
+b:=Reversed(b{[s .. m]});
+for k in [Length(b)+1..m] do
+  Add(b,List([1..n],x->0));
+od;
 
-   return rec( hermite := Reversed(b{[s .. m]}), transformer := Reversed(P));
-end;
+ return rec( normal := b, rowtrans := Reversed(P));
+
+ #  return rec( normal := Reversed(b{[s .. m]}), rowtrans := Reversed(P));
+end);
 
 #############################################################################
 ##
@@ -731,7 +718,7 @@ end;
 ##
 #F  MatMax ( <array> )  . . . . . returns the value of the element with the
 ##                                largest absolute value in matrix A
-MatMax := function(A, f)
+BindGlobal("MatMax", function(A, f)
 
 local i, j, e, x;
 
@@ -743,271 +730,14 @@ local i, j, e, x;
       od;
    od;
    return x;
-end;
+end);
 
-#############################################################################
-##
-#F  CaCReducePrint1     . . debuging function for Chou & Collins SNF method
-##
-if not IsBound(CaCReducePrint1)  then  CaCReducePrint1 := Ignore; fi;
-
-#############################################################################
-##
-#F  NormReducePrint1    . . debuging function for the norm driven SNF method
-##
-if not IsBound(NormReducePrint1) then NormReducePrint1 := Ignore; fi;
 
 ##############################################################################
 ##
-#F  ApproxRootRat( <Rational> [, <Rational>] )  . . . . . . . Approximate Square root of a rational
+#F  NormDiagonalize( <array> )  . . . .  a norm driven integer matrix diagonalization  algorithm
 ##
-ApproxRootRat := function( arg )
-
-local x, a, b, c, eps;
-
-   if Length(arg) < 1 or not IsRat(arg[1]) or arg[1] < 0 then
-      PrintTo("*errout*", "Use: ApproxRootRat( <rational> );\n");
-      return 0;
-   fi;
-
-if arg[1]<1 then return 0;fi;
-
-   if IsBound(arg[2]) and IsRat(arg[2]) 
-      then eps := arg[2];
-      else eps := 1/5;
-   fi;
-   x := arg[1];
-   a := 0;
-   b := x;
-   c := (a + b)/2;
-   while AbsInt(c^2 - x) > eps do
-      if c^2 > x 
-         then b := c;
-         else a := c;
-      fi;
-
-   c := (a + b)/2;
-
-   od;
-   return c;
-end;
-
-##############################################################################
-##
-#F  DebugML3(  )  . . . . .  a debuging (printing) function for the local MLLL
-##
-if not IsBound(DebugML3) then DebugML3 := Ignore; fi;
-
-##############################################################################
-##
-#F  ML3( <array> [, <rational>] )  . . a local variant of the MLLL algorithm
-##
-ML3 := function( arg )
-
-local mmu,       # buffer $\mu$
-      alpha,     # sensitivity $alpha$ (default $alpha = \frac{3}{4}$)
-      kmax,      # $k_{max}$
-      b,         # list $b$ of vectors
-      mu,        # matrix $\mu$ of scalar products
-      B,         # list $B$ of norms of $b^{\ast}$
-      BB,        # buffer $B$
-      q,         # buffer $q$ for function 'RED'
-      i,         # loop variable $i$
-      j,         # loop variable $j$
-      k,         # loop variable $k$
-      l,         # loop variable $l$
-      n,         # number of vectors in $b$
-      RED,       # reduction subprocedure; 'RED( l )'
-                 # means 'RED( k, l )' in Cohen's book
-      r;         # number of zero vectors found up to now
-
-   RED := function( l )
-
-      q := Round(mu[k][l]);
-      if q <> 0 then
-         DebugML3("sub(", k, ", ", l, ", ", q, ");\n");
-         b[k] := b[k] - q * b[l];
-
-         # adjust mu's
-         mu[k][l] := mu[k][l] - q;
-         for i in [ r+1 .. l-1 ] do  
-            if mu[l][i] <> 0 then
-               mu[k][i] := mu[k][i] - q * mu[l][i];
-            fi;
-         od;
-      fi;
-   end;
-    
-
-   if Length(arg) < 1 or Length(arg) > 2 or not IsMatrix(arg[1]) then
-      PrintTo("*errout*", "use: ML3(<array> [, <sensitivity> ]);\n");
-   fi;
-   b := CopyMat(arg[1]);
-   if IsBound(arg[2]) and IsRat(arg[2]) then
-      alpha := arg[2];
-      if alpha < 1/4 or alpha > 1 then
-         PrintTo("*errout*", "Badly specified sensitivity. Using the default\n");
-         alpha := 3/4;
-      fi;
-   else
-      alpha := 3/4;
-   fi;
-
-   # step 1 (Initialize \ldots
-   n    := Length( b );
-   k    := 2;
-   kmax := 1;
-   mu   := [];
-   r    := 0;
-
-   # do some clever pre-processing. Right now, just sort b, lengthwise
-   b := CopyMat( b );
-   Sort(b, function(x, y) return x*x < y*y; end);
-
-   # and handle the case of leading zero vectors in the input.)
-   i := 1;
-   while i <= n and ForAll( b[i], x -> x = 0 ) do
-      i := i+1;
-   od;
-
-   # remove zero vectors, so that we don't need to swap them later
-   if i > n then
-      r := n;
-      k := n+1;
-   elif i > 1 then
-      for j in [i .. n] do
-         b[j-i+1] := b[j];
-      od;
-      for j in [n-i+2 .. n] do
-         Unbind( b[j] );
-      od;
-      n := n - i + 1;
-   fi;
-
-   B  := [ b[1] * b[1] ];
-
-   while k <= n do
-      # step 2 (Incremental Gram-Schmidt)
-      if k > kmax then
-         kmax  := k;
-         mu[k] := [];
-         for j in [ r+1 .. k-1 ] do
-            mmu := b[k] * b[j];
-            for i in [ r+1 .. j-1 ] do
-              mmu := mmu - mu[j][i] * mu[k][i];
-            od;
-            mu[k][j] := mmu;
-         od;
-         for j in [ r+1 .. k-1 ] do
-            if B[j] = 0 
-               then mu[k][j] := 0;
-               else mu[k][j] := mu[k][j] / B[j];
-            fi;
-         od;
-
-         B[k] := b[k] * b[k];
-         for j in [ r+1 .. k-1 ] do
-            B[k] := B[k] - mu[k][j]^2 * B[j];
-         od;
-         DebugML3("B[", k, "] = ", B[k], "\n");
-      fi;
-
-      # step 3 (Test LLL condition)
-      RED( k-1 );
-      while B[k] < ( alpha - mu[k][k-1] * mu[k][k-1] ) * B[k-1] do
-         # Execute Sub-algorithm SWAPG( k ):
-         DebugML3("swap(", k, ", ", k-1, ");\n");
-         q      := b[k];
-         b[k]   := b[k-1];
-         b[k-1] := q;
-
-         # and if k > 2, for all j such that 1 <= j <= k-2
-         # exchange mu[k,j] with mu[k-1,j].
-         for j in [ r+1 .. k-2 ] do
-            q          := mu[k][j];
-            mu[k][j]   := mu[k-1][j];
-            mu[k-1][j] := q;
-         od;
-
-         mmu := mu[k][k-1];
-         BB  := B[k] + mmu^2 * B[k-1];
-
-         # Now, in the case B = 0 (i.e. B_k = 0 and  mu = 0),
-         if BB = 0 then
-            # exchange $B_k$ and $B_{k-1}$
-            B[k]   := B[k-1];
-            B[k-1] := 0;
-
-            # and for i = k+1, k+2, \ldots, k_{max}
-            # exchange mu_{i,k} and mu_{i,k-1}.
-            for i in [ k+1 .. kmax ] do
-               q          := mu[i][k];
-               mu[i][k]   := mu[i][k-1];
-               mu[i][k-1] := q;
-            od;
-
-         # In the case B_k = 0 and mu <> 0,
-         elif B[k] = 0 and mmu <> 0 then
-            B[k-1]     := BB;
-            mu[k][k-1] := 1 / mmu;
-
-            # and for i = k+1, k+2, \ldots, k_{max}
-            # set mu_{i,k-1} :=  mu_{i,k-1} / mu.
-            for i in [ k+1 .. kmax ] do
-               mu[i][k-1] := mu[i][k-1] / mmu; 
-            od;
-
-         # Finally, in the case $B_k \not= 0$,
-         else
-            q          := B[k-1] / BB;
-            mu[k][k-1] := mmu * q;
-            B[k]       := B[k] * q;
-            B[k-1]     := BB;
-
-            for i in [ k+1 .. kmax ] do
-               q          := mu[i][k];
-               mu[i][k]   := mu[i][k-1] - mmu * q;
-               mu[i][k-1] := q + mu[k][k-1] * mu[i][k];
-            od;
-         fi;
-
-         # Decrease, if possible, k
-
-         if k > 2 then 
-            k := k-1; 
-            DebugML3("backtrack(", k, ");\n");
-         fi;
-
-         RED( k-1 );
-      od;
-
-      if B[ r+1 ] = 0 then
-         r := r+1;
-         DebugML3("remove(", r, ");\n");
-         # Unbind( b[r] );
-      fi;
-
-      for l in [ k-2, k-3 .. r+1 ] do
-        RED( l );
-      od;
-
-      k := k+1;
-
-      DebugML3("forward(", k, ");\n");
-   od;
-
-   while r < n and ForAll( b[ r+1 ], x -> x = 0 ) do
-      r := r+1;
-   od;
-
-   return b{ [ r+1 .. n ] };
-end;
-
-##############################################################################
-##
-#F  NormReduce( <array> )  . . . .  a norm driven Smith normal form algorithm
-##
-NormReduce := function( S )
+BindGlobal("NormDiagonalize", function( S )
 
 local t, # a temporary variable, for row swaps and such
     RNm, # row norms
@@ -1050,7 +780,6 @@ local t, # a temporary variable, for row swaps and such
          fi;
       od;
   
-
       # eliminate all zero rows, by decreasing m suitably
       while RNm[m] = 0 do
          m := m - 1;
@@ -1058,6 +787,8 @@ local t, # a temporary variable, for row swaps and such
    
       if d = m then
          S[d][d] := Gcd(S[d]{[d .. n]});
+         # clean out the last row.
+         S[d]{[d+1..n]} := [d+1..n] * 0;
          return;
       elif d > m then
          return;
@@ -1096,27 +827,28 @@ local t, # a temporary variable, for row swaps and such
             t := S[k][d]; S[k][d] := S[k][CId]; S[k][CId] := t;
          od;
       fi;
-       #Error(" break point 1");
 
       # pivot in place; proceed to zero the d-th row and column
+Info(InfoMatInt,3,"NormDiagonalize - working on column ",d);
       done := false;
       repeat
          # row operations first 
          for k in [d+1 .. m] do
-            q := Round(S[k][d]/S[d][d]);
+            q := RoundCycDown(S[k][d]/S[d][d]);
             if q <> 0 then
-               S[k] := CopyMat(S[k] - q*S[d]);
+	AddRowVector(S[k],S[d],-q);
             fi;
          od;
-#Error("1");
+
          # column operations follow
          
          for k in [d+1 .. n] do
-            q := Round(S[d][k]/S[d][d]);
-            if q <> 0 then # subtract column d from column k, q times
-               for j in [d .. m] do
-                  S[j][k] := S[j][k] - q*S[j][d];
-               od;
+            q := RoundCycDown(S[d][k]/S[d][d]);
+            if q <> 0 then 
+              # subtract column d from column k, q times
+              for j in [d .. m] do
+                S[j][k] := S[j][k] - q*S[j][d];
+              od;
             fi;
          od;
 
@@ -1125,7 +857,6 @@ local t, # a temporary variable, for row swaps and such
          for k in [d .. n] do
             CNm[k] := S{[d .. m]}[k]*S{[d .. m]}[k];
          od;
-          #Error("break point 2");
 
          # find the best pivot in the d-th row
          CMn := 0;
@@ -1145,7 +876,7 @@ local t, # a temporary variable, for row swaps and such
                fi;
             fi;
          od;
-         #Error("break point 3");
+   
          if CMn = 0 then
             if RMn = 0 then
                done := true;
@@ -1171,25 +902,24 @@ local t, # a temporary variable, for row swaps and such
       if S[d][d] < 0 then
          S[d][d] := -S[d][d];
       fi;
-      NormReducePrint1("Divisor no. ", d, " is ", S[d][d], "\n");
+      
       d := d + 1;
-       #Error("break point 4");
    until d > m;
-   #Error("break point 5");
-end;
+end);
 
 ##############################################################################
 ##
-#F  Diagonal( <array> )  . . . .  collects diagonal entries and ensures their
+#F  DiagToSNF( <array> )  . . . .  collects diagonal entries and ensures their
 ##                                divisibility cond for the diagonal matrix S
-Diagonal := function( S )
+BindGlobal("DiagToSNF", function( S )
 
-local g, i, L, n;
+local g, i, L, n,z;
 
-   L := [ ];
+   L := [ ];z:=0;
    for i in [1 .. Minimum(Length(S), Length(S[1])) ] do
      if S[i][i] <> 0 then
         Add(L, AbsInt(S[i][i]));
+   else z:=z+1;
      fi;
    od;
    n := Length(L);
@@ -1201,6 +931,8 @@ local g, i, L, n;
          i    := i - 1;
       od;
       L[i] := g;
+      Info(InfoMatInt,3,"DiagToSNF: ",i);
+      Info(InfoMatInt,4,"DiagToSNF: ",L);
       if i = 1 then i := 2; fi;
       if L[i] mod L[i-1] <> 0 then
          g      := Gcd(L[i], L[i-1]);
@@ -1211,42 +943,51 @@ local g, i, L, n;
             i    := i - 1;
          od;
          L[i] := g;
+      Info(InfoMatInt,3,"DiagToSNF: ",i);
+      Info(InfoMatInt,4,"DiagToSNF: ",L);
       fi;
-      i := i + 1;
+      if i = 1 or L[i] mod L[i-1] = 0 then
+          i := i + 1;
+      fi;
    od;
+L{[n+1..n+z]}:=List([1..z],x->0);
    return L;
-end;
+end);
 
 ##############################################################################
 ##
 #F  NormSnf( <array> )  . . . . . . Computes the Smith Normal form of matrix A
 ##
-NormSnf := function( A )
+BindGlobal("NormSnf", function( S )
 
-local S, # integer matrix
-	  M, # temp matrix
-	m;  # counter
-
-   if not IsMatrix(A) then
+    local  M,  # temp matrix
+           n,  # length of leading diagonal
+           m;  # counter
+    
+   if not IsMatrix(S) then
       PrintTo("*errout*", "Use: NormSnf( <matrix> );\n");
       return fail;
-   fi;
+  fi;
+  
+  n := Minimum(Length(S), Length(S[1]));
  
-  M:=MutableNullMat(Length(A),Length(A[1]));
-   S := CopyMat(A);
-   NormReduce( S );
-   S:=Diagonal(S);
-   for m in [1..Length(S)] do
-     M[m][m]:=S[m];
-  od;
-   return  M ;
-end;
+   M:=NullMat(Length(S),Length(S[1]));
+   NormDiagonalize( S );
+   M:=DiagToSNF(S);
+   for m in [1..Length(M)] do
+     S[m][m]:=M[m];
+   od;
+   for m in [Length(M)+1..n] do
+     S[m][m]:=0;
+   od;  
+   return  S;
+end);
 
 ##############################################################################
 ##
-#F  CaCReduce( <array> )  . . . . . diagonalizes a matrix using Chou & Collins
+#F  CaCDiagonalize( <array> )  . . . . . diagonalizes a matrix using Chou & Collins
 ##
-CaCReduce := function( S )
+BindGlobal("CaCDiagonalize", function( S )
 
 local h, # point to the first nonzero in the current row
       H, # heads of vectors, i.e., indices of the leading nonzeros
@@ -1279,6 +1020,7 @@ local h, # point to the first nonzero in the current row
       i := 1;
       while ForAll(S[i], e -> e = 0) do
          i := i + 1;
+
       od;
       if i > 1 then
          S := S{[i .. m]};
@@ -1298,15 +1040,15 @@ local h, # point to the first nonzero in the current row
          for j in [1 .. i-1] do
             if H[j] = h then
                repeat
-                  q := Round(S[i][h]/S[j][h]);
+                  q := RoundCycDown(S[i][h]/S[j][h]);
                   if q <> 0 then
-                     S[i] := S[i] - q*S[j];
+	AddRowVector(S[i],S[j],-q);
                   fi;
 
                   if S[i][h] <> 0 then
                      modfd := true;
-                     q := Round(S[j][h]/S[i][h]);
-                     S[j] := S[j] - q*S[i];
+                     q := RoundCycDown(S[j][h]/S[i][h]);
+	   AddRowVector(S[j],S[i],-q);
                      if S[j][h] = 0 then 
                         if S[i][h] < 0 
                            then t := -S[i];
@@ -1359,42 +1101,573 @@ local h, # point to the first nonzero in the current row
                   fi;
                   q := Int(q);
                   if q <> 0 then
-                     S[j] := S[j] - q*S[k];
+	AddRowVector(S[j],S[k],-q);
                      dirty := true;
                   fi;
                od;
             od;
          fi;
-         CaCReducePrint1("Done:", i, "\n");
+        
       od;
       # transpose S and swap m and n
-      S := TransposedMat(S);
+      S := MutableTransposedMat(S);
       t := m; m := n; n := t;
    until not dirty;
    return S;
-end;
+end);
 
 ##############################################################################
 ##
 #F  CaCSnf( <array> )  . . . . . . . Computes the Smith Normal form of matrix A
 ##
-CaCSnf := function( A )
+BindGlobal("CaCSnf", function( S )
 
-local S, # integer matrix
-	 m,M; # temporary variables
-
-   if not IsMatrix(A) then
-      PrintTo("*errout*", "Use: NormSnf( <matrix> );\n");
+local  m,M,N;# temporary variable
+  
+   if not IsMatrix(S) then
+      PrintTo("*errout*", "Use: CaCSnf( <matrix> );\n");
       return fail;
    fi;
-   S := CopyMat(A);
-  S:=Diagonal(S);
 
-  M:=MutableNullMat(Length(A),Length(A[1])); 
-   for m in [1..Length(S)] do
-     M[m][m]:=S[m];
+   N:=NullMat(Length(S),Length(S[1]));
+
+   CaCDiagonalize(S);
+   M:=DiagToSNF(S);
+  
+   for m in [1..Length(M)] do
+     N[m][m]:=M[m];
+      S[m]:=N[m];
   od;
-   return CaCReduce( S );
+   return  S ;
+end);
+
+########################################################
+##
+##  	auxiliary + main code for all in one function
+##
+##  split 
+##  rgcd
+##  mgcdex
+##  bezout
+##  SNFofREF
+##
+##  NormalFormIntMat
+##
+##
+
+########################################################
+#
+# split(<N>,<a>) - returns product of prime factors of N which are not factors of a.
+#
+BindGlobal("split",function(N,a)
+
+local x,t;
+
+x:=a;
+t:=N;
+
+while x<>1 do
+  x:=GcdInt(x,t);
+  t:=QuoInt(t,x);
+od;
+
+return t;
+
+end);
+
+################################################
+#
+#   rgcd(<N>,<a>) - Returns smallest nonnegative c such that
+#		   gcd(N,a+c) = 1
+#
+BindGlobal("rgcd",function(N,a)
+
+local k,r,d,i,c,g,q;
+
+if N=1 then return 0; fi;
+k := 1;
+r:=[(a-1) mod N];
+d:=[N];
+c:=0;
+while true do
+  for i in [1..k] do r[i]:=(r[i]+1) mod d[i]; od;
+  i:=PositionProperty(r,x->x<=0);
+  if i=fail then
+    g:=1;i:=0; 
+    while g=1 and i<k do
+       i:=i+1;
+       g:=GcdInt(r[i],d[i]);
+    od;
+    if g=1 then return c; fi;
+    q:=split(QuoInt(d[i],g),g);
+    if q>1 then
+      k:=k+1;
+      r[k]:=r[i] mod q;
+      d[k]:=q;
+    fi;
+    r[i]:=0;
+    d[i]:=g;    
+  fi;
+  c:=c+1;
+od;
+
+end);
+
+#######################################################
+# 
+#  mgcdex(<N>,<a>,<v>) - Returns c[1],c[2],...c[k] such that
+#
+#   gcd(N,a+c[1]*b[1]+...+c[n]*b[k]) = gcd(N,a,b[1],b[2],...,b[k])
+#
+BindGlobal("mgcdex", function(N,a,v)
+
+local h,g,M,c,i,d,b,l;
+
+l:=Length(v);
+c:=[]; M:=[];
+h := N;
+for i in [1..l] do
+  g := h;
+  h:=GcdInt(g,v[i]);  
+  M[i]:=QuoInt(g,h);
+od;
+h:=GcdInt(a,h);
+g:=QuoInt(a,h);
+
+for i in [l,l-1..1] do
+  b:=QuoInt(v[i],h);
+  d:=split(M[i],b);
+  if d=1 then
+    c[i]:=0;
+  else
+    c[i]:=rgcd(d,g/b mod d);
+    g:=g+c[i]*b;
+  fi;
+od;
+
+return c;
+
+end);
+
+
+
+
+#####################################################
+#
+#  bezout(a,b,c,d) - returns row transform , P, to transform, A, to hnf :
+#
+#  PA=H;
+#
+#  [ s  t ] [ a  b ]   [ e  f ] 
+#  [      ] [      ] = [       ]   
+#  [ u  v ] [ c  d ]   [    g ]
+#
+BindGlobal("bezout", function(a,b,c,d)
+   local e,f,g,q;
+
+   e := Gcdex(a,c);
+   f := e.coeff1*b+e.coeff2*d;
+   g := e.coeff3*b+e.coeff4*d;
+   if g<0 then
+      e.coeff3 := -e.coeff3;
+      e.coeff4 := -e.coeff4;
+      g := -g; 
+   fi;
+   if g>0 then
+      q := QuoInt(f-(f mod g),g);
+      e.coeff1 := e.coeff1-q*e.coeff3;
+      e.coeff2 := e.coeff2-q*e.coeff4;
+   fi;
+   return e;
+
+end);
+
+#####################################################
+##
+## SNFofREF - fast SNF of REF matrix
+##
+##
+InstallGlobalFunction(SNFofREF , function(R)
+local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
+
+Info(InfoMatInt,1,"SNFofREF - initializing work matrix");
+n := Length(R);
+m := Length(R[1]);
+
+piv := List(R,x->PositionProperty(x,y->y<>0));
+r := PositionProperty(piv,x->x=fail);
+if r=fail then
+   r := Length(piv);
+else
+   r := r-1;  
+   piv := piv{[1..r]}; 
+fi;
+Append(piv,Difference([1..m],piv));
+
+T := NullMat(n,m);
+for j in [1..m] do
+  for i in [1..Minimum(r,j)] do T[i][j]:=R[i][piv[j]]; od;
+od;
+
+si := 1;
+A := [];
+d := 2;
+for k in [1..m] do
+Info(InfoMatInt,2,"SNFofREF - working on column ",k);
+   if k<=r then
+      d := d*AbsInt(T[k][k]);
+      Apply(T[k],x->x mod (2*d));
+   fi;
+
+   t := Minimum(k,r);
+   for i in [t-1,t-2..si] do
+      t := mgcdex(A[i],T[i][k],[T[i+1][k]])[1];
+      if t<>0 then
+         AddRowVector(T[i],T[i+1],t); 
+         Apply(T[i],x->x mod A[i]); 
+      fi;
+   od;
+
+   for i in [si..Minimum(k-1,r)] do
+      g := Gcdex(A[i],T[i][k]);
+      T[i][k] := 0;
+      if g.gcd<>A[i] then
+         b := QuoInt(A[i],g.gcd);
+         A[i] := g.gcd;
+         for ii in [i+1..Minimum(k-1,r)] do
+            AddRowVector(T[ii],T[i],-g.coeff2*QuoInt(T[ii][k],A[i]) mod A[ii]);
+            T[ii][k] := b*T[ii][k];
+
+            Apply(T[ii],x->x mod A[ii]);
+         od;
+         if k<=r then 
+            t := g.coeff2*QuoInt(T[k][k],g.gcd);
+            AddRowVector(T[k],T[i],-t);
+            T[k][k]:=b*T[k][k];
+         fi;
+         Apply(T[i],x->x mod A[i]);
+         if A[i]=1 then si := i+1; fi;
+      fi;
+   od;
+
+   if k<=r then 
+      A[k] := AbsInt(T[k][k]);
+      Apply(T[k],x->x mod A[k]);
+   fi;
+
+od;
+
+for i in [1..r] do T[i][i] := A[i]; od;
+
+return T;
+
+end);
+
+###########################################################
+#
+# NFIM(<mat>,<options>)
+#
+# Options bit values:
+#
+# 1  - Triangular / Smith
+# 2  - No / Yes  Reduce off diag entries
+# 4  - No / Yes  Row Transforms 
+# 8  - No / Yes  Col Transforms
+#
+# Compute a Triangular, Hermite or Smith form of the n x m 
+# integer input matrix A.  Optionally, compute n x n / m x m
+# unimodular transforming matrices which satisfy Q C A = H 
+# or  Q C A B P = S.
+#
+# Triangular / Hermite :
+#
+# Let I be the min(r+1,n) x min(r+1,n) identity matrix with r = rank(A).
+# Then Q and C can be written using a block decomposition as
+#
+#             [ Q1 |   ]  [ C1 | C2 ]
+#             [----+---]  [----+----]  A  =  H.
+#             [ Q2 | I ]  [    | I  ]
+#
+# Smith :
+#
+#  [ Q1 |   ]  [ C1 | C2 ]     [ B1 |   ]  [ P1 | P2 ]
+#  [----+---]  [----+----]  A  [----+---]  [----+----] = S.
+#  [ Q2 | I ]  [    | I  ]     [ B2 | I ]  [ *  | I  ]
+#
+# * - possible non-zero entry in upper right corner...
+#				
+#
+BindGlobal("NFIM", function(arg)
+local c,i,j,n,m,r,c1,c2,t,g,gg,s,a,b,q,tmp,gt,inc,A,Q,C,B,P,flag,R,rp,opt,k,t1,t2,N,L,sig;
+
+if not Length(arg)=2 or not IsMatrix(arg[1]) or not IsInt(arg[2]) then 
+  Error("syntax is NFIM(<matrix>,<options>)"); 
+fi;
+
+#Parse options
+opt := List(CoefficientsQadic(arg[2],2),x->x=1);
+if Length(opt)<4 then 
+  opt{[Length(opt)+1..4]} := List([Length(opt)+1..4],x->false);
+fi;
+
+sig:=1;
+
+#Embed arg[1] in 2 larger "id" matrix
+n := Length(arg[1])+2;
+m := Length(arg[1][1])+2;
+A := [List([1..m],x->0)];
+for i in [2..n-1] do
+  A[i] := [0];
+  Append(A[i],arg[1][i-1]);
+  A[i][m] := 0;
+od;
+A[n] := List([1..m],x->0);
+A[1][1] := 1;
+A[n][m] := 1;
+
+if opt[3] then 
+  C := IdentityMat(n); 
+  Q := NullMat(n,n);
+  Q[1][1] := 1; 
+fi;
+
+if opt[1] and opt[4] then 
+  B := IdentityMat(m);
+  P := IdentityMat(m);
+fi;
+
+r := 0;
+c2 := 1;
+rp := [];
+while m>c2 do
+  Info(InfoMatInt,2,"NFIM - reached column ",c2," of ",m);
+  r := r+1;
+  c1 := c2;
+  rp[r] := c1;
+  if opt[3] then Q[r+1][r+1] := 1; fi;
+
+  j := c1+1;
+  while j<=m do
+    k := r+1;
+    while k<=n and A[r][c1]*A[k][j]=A[k][c1]*A[r][j] do k := k+1; od;
+    if k<=n then c2 := j; j := m; fi;
+    j := j+1;
+  od;
+  #Smith with some transforms..
+  if opt[1] and (opt[4] or opt[3]) and c2<m then
+    N := Gcd(Flat(A{[r..n]}[c2]));
+    L := [c1+1..c2-1];
+    Append(L,[c2+1..m-1]);
+    Add(L,c2);
+    for j in L do
+      if j=c2 then
+         b:=A[r][c2];a:=A[r][c1];
+         for i in [r+1..n] do
+           if b<>1 then
+             g:=Gcdex(b,A[i][c2]);
+             b:=g.gcd;
+             a:=g.coeff1*a+g.coeff2*A[i][c1];
+           fi; 
+         od;
+         N:=0;
+         for i in [r..n] do  
+          if N<>1 then N:=GcdInt(N,A[i][c1]-QuoInt(A[i][c2],b)*a);fi;
+         od;
+      else
+        c := mgcdex(N,A[r][j],A{[r+1..n]}[j]);
+        b := A[r][j]+c*A{[r+1..n]}[j];
+        a := A[r][c1]+c*A{[r+1..n]}[c1];
+      fi;
+      t := mgcdex(N,a,[b])[1];
+      tmp := A[r][c1]+t*A[r][j];
+      if tmp=0 or tmp*A[k][c2]=(A[k][c1]+t*A[k][j])*A[r][c2] then
+        t := t+1+mgcdex(N,a+t*b+b,[b])[1];
+      fi;
+      if t>0 then
+        for i in [1..n] do A[i][c1] := A[i][c1]+t*A[i][j]; od;
+        if opt[4] then B[j][c1] := B[j][c1]+t; fi;
+      fi;
+    od;
+    if A[r][c1]*A[k][c1+1]=A[k][c1]*A[r][c1+1] then
+      for i in [1..n] do A[i][c1+1] := A[i][c1+1]+A[i][c2]; od;
+      if opt[4] then B[c2][c1+1] := 1; fi; 
+    fi;
+    c2 := c1+1;
+  fi;
+
+  c := mgcdex(AbsInt(A[r][c1]),A[r+1][c1],A{[r+2..n]}[c1]);
+  for i in [r+2..n] do 
+    if c[i-r-1]<>0 then
+      AddRowVector(A[r+1],A[i],c[i-r-1]);
+      if opt[3] then 
+        C[r+1][i] := c[i-r-1];  
+        AddRowVector(Q[r+1],Q[i],c[i-r-1]); 
+      fi;
+    fi;
+  od;
+
+  i := r+1;
+  while A[r][c1]*A[i][c2]=A[i][c1]*A[r][c2] do i := i+1; od;
+  if i>r+1 then
+     c := mgcdex(AbsInt(A[r][c1]),A[r+1][c1]+A[i][c1],[A[i][c1]])[1]+1;;
+     AddRowVector(A[r+1],A[i],c);
+     if opt[3] then 
+       C[r+1][i] := C[r+1][i]+c; 
+       AddRowVector(Q[r+1],Q[i],c); 
+     fi;
+  fi;
+  
+  g := bezout(A[r][c1],A[r][c2],A[r+1][c1],A[r+1][c2]);
+  sig:=sig*SignInt(A[r][c1]*A[r+1][c2]-A[r][c2]*A[r+1][c1]);
+  A{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*A{[r,r+1]};
+  if opt[3] then 
+    Q{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*Q{[r,r+1]};
+  fi;
+
+  for i in [r+2..n] do
+    q := QuoInt(A[i][c1],A[r][c1]);
+    AddRowVector(A[i],A[r],-q);
+    if opt[3] then AddRowVector(Q[i],Q[r],-q); fi;
+    q := QuoInt(A[i][c2],A[r+1][c2]);
+    AddRowVector(A[i],A[r+1],-q);
+    if opt[3] then AddRowVector(Q[i],Q[r+1],-q); fi;
+  od;
+
+od; 
+rp[r+1] := m;
+Info(InfoMatInt,2,"NFIM - r,m,n=",r,m,n);
+if n=m and r+1<n then sig:=0;fi;
+
+#smith w/ NO transforms - farm the work out...
+if opt[1] and not (opt[3] or opt[4]) then
+  R:=rec(normal:=SNFofREF(A{[2..n-1]}{[2..m-1]}),rank:=r-1);
+   if n=m then R. signdet:=sig;fi;
+   return R;
+fi;
+
+# hermite or (smith w/ column transforms)
+if (not opt[1] and opt[2]) or (opt[1] and opt[4]) then
+  for i in [r, r-1 .. 1] do
+    Info(InfoMatInt,2,"NFIM - reducing row ",i);
+    for j in [i+1 .. r+1] do
+      q := QuoInt(A[i][rp[j]]-(A[i][rp[j]] mod A[j][rp[j]]),A[j][rp[j]]);
+      AddRowVector(A[i],A[j],-q);
+      if opt[3] then AddRowVector(Q[i],Q[j],-q); fi;
+    od;
+    if opt[1] and i<r then
+      for j in [i+1..m] do 
+        q := QuoInt(A[i][j],A[i][i]);
+        for k in [1..i] do A[k][j] := A[k][j]-q*A[k][i]; od;
+        if opt[4] then P[i][j] := -q; fi;      
+      od;
+    fi;
+  od;
+fi;
+
+#Smith w/ row but not col transforms
+if opt[1] and opt[3] and not opt[4] then
+  for i in [1..r-1] do
+    t := A[i][i];
+    A[i] := List([1..m],x->0);
+    A[i][i] := t;
+  od;
+  for j in [r+1..m-1] do
+    A[r][r] := GcdInt(A[r][r],A[r][j]);
+    A[r][j] := 0;
+  od;
+fi;
+
+#smith w/ col transforms
+if opt[1] and opt[4] and r<m-1 then
+  c := mgcdex(A[r][r],A[r][r+1],A[r]{[r+2..m-1]});
+  for j in [r+2..m-1] do
+    A[r][r+1] := A[r][r+1]+c[j-r-1]*A[r][j];
+    B[j][r+1] := c[j-r-1];
+    for i in [1..r] do P[i][r+1] := P[i][r+1]+c[j-r-1]*P[i][j]; od;
+  od;
+  P[r+1] := List([1..m],x->0);
+  P[r+1][r+1] := 1;
+  g := Gcdex(A[r][r],A[r][r+1]);
+  A[r][r] := g.gcd;
+  A[r][r+1] := 0;
+  for i in [1..r+1] do
+    t := P[i][r];
+    P[i][r] := P[i][r]*g.coeff1+P[i][r+1]*g.coeff2;
+    P[i][r+1] := t*g.coeff3+P[i][r+1]*g.coeff4;
+  od;
+  for j in [r+2..m-1] do  
+    q := QuoInt(A[r][j],A[r][r]);
+    for i in [1..r+1] do P[i][j] := P[i][j]-q*P[i][r]; od;
+    A[r][j] := 0;
+  od;
+  for i in [r+2..m-1] do
+    P[i] := List([1..m],x->0);
+    P[i][i] := 1;
+  od;
+fi;
+
+#row transforms finisher
+if opt[3] then for i in [r+2..n] do Q[i][i]:= 1; od; fi;
+
+R:=rec(normal:=A{[2..n-1]}{[2..m-1]});
+
+if opt[3] then 
+  R.rowC:=C{[2..n-1]}{[2..n-1]}; 
+  R.rowQ:=Q{[2..n-1]}{[2..n-1]}; 
+fi;
+
+if opt[1] and opt[4] then
+  R.colC:=B{[2..m-1]}{[2..m-1]}; 
+  R.colQ:=P{[2..m-1]}{[2..m-1]}; 
+fi;
+
+R.rank:=r-1;
+if n=m then R.signdet:=sig;fi;
+return R;
+
+end);
+
+
+#############################################################################
+##
+#F  NYI(arg)  . . . . . . . . . . . .  dummy not yet implemented yet function
+##
+NYI:=function(arg)
+
+   PrintTo("*errout*", "This function is not yet fully implemented. Sorry.\n");
+   return fail;
+end;
+
+
+#############################################################################
+##
+#F  IdTransReturn(mat)  . . . . . . . return relevant identity record for mat
+##
+IdTransReturn:=function(arg)
+
+local n,r;
+
+if Length(arg[1])>0 and IsList(arg[1][1]) then n:=Length(arg[1][1]);else n:=0;fi;
+
+r:=arg[1];
+
+if (IsBound(arg[2]) and arg[2]) or (IsBound(arg[3]) and arg[3]) then
+r:=         rec(
+	normal:=arg[1]
+	);
+
+  if arg[2] then 
+      r.rowtrans:=IdentityMat(Length(arg[1]));
+  fi;
+
+
+  if IsBound(arg[3]) and arg[3] then
+     r.coltrans:=IdentityMat(n);
+  fi;
+
+fi;
+return r;
+
 end;
 
 ##############################################################################
@@ -1402,15 +1675,16 @@ end;
 #F  LcNormSnf( <array> )  . . . . . Computes the Smith Normal form of matrix A
 ##
 LcNormSnf := function( arg )
-   PrintTo("*errout*", "LcNormSnf() is yet to be implemented. Sorry.\n");
+   PrintTo("*errout*", "This function (LcNormSnf) is yet to be implemented. Sorry.\n");
    return fail;
 end;
+
 ##############################################################################
 ##
 #F  LcCaCSnf( <array> )  . . . . . Computes the Smith Normal form of matrix A
 ##
 LcCaCSnf := function( arg )
-   PrintTo("*errout*", "LcCaCSnf() is yet to be implemented. Sorry.\n");
+   PrintTo("*errout*", "This function (LcCaCSnf) is yet to be implemented. Sorry.\n");
    return fail;
 end;
 
@@ -1419,7 +1693,7 @@ end;
 #F  LcLLLSnf( <array> )  . . . . . Computes the Smith Normal form of matrix A
 ##
 LcLLLSnf := function( arg )
-   PrintTo("*errout*", "LcLLLSnf() is yet to be implemented. Sorry.\n");
+   PrintTo("*errout*", "This function (LcLLLSnf) is yet to be implemented. Sorry.\n");
    return fail;
 end;
 
@@ -1429,11 +1703,31 @@ end;
 #F  HNFNormDriven(<mat>[,<trans>[,<reduction>]])
 ##
 InstallGlobalFunction( HNFNormDriven, function(arg)
+
+if Flat(arg[1])=[]  and ForAll(arg[1],x->Length(x)=Length(arg[1][1])) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2])]); fi;
+
+if not IsMatrix(arg[1]) then 
+  PrintTo("*errout*", "matrix required as argument\n");
+   return fail;
+fi;
+
+if ForAll( Flat(arg[1]) , x -> x = 0 ) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2])]); fi;
+
 if Length(arg)=1 then  return CallFuncList(NormHnf,arg);fi;
-if Length(arg)=2 then return CallFuncList(LcNormHnf,arg) ;fi;
+if Length(arg)=2 then 
+if arg[2]=1 then return CallFuncList(LcNormHnf,arg) ;
+  else 
+  PrintTo("*errout*", "Transformation matrix routine only  implemented for trans=1 for this routine at present. Sorry.\n");
+   return fail;
+  fi;
+fi;
+
 if Length(arg)>2 then
-  if arg[2] then return LcNormHnf(arg[1],arg[3]);
-  else return NormHnf(arg[1],arg[3]);
+  if arg[2]=1 then return LcNormHnf(arg[1],arg[3]);
+  elif arg[2]=0 then return NormHnf(arg[1],arg[3]);
+  else
+  PrintTo("*errout*", "Transformation matrix routine only  implemented for trans=1 for this routine at present. Sorry.\n");
+   return fail;
   fi;
 fi;
 end);
@@ -1443,10 +1737,26 @@ end);
 #F  HNFChouCollins(<mat>[,<trans>[,<reduction>]])
 ##
 InstallGlobalFunction( HNFChouCollins, function(arg)
+if Flat(arg[1])=[]  and ForAll(arg[1],x->Length(x)=Length(arg[1][1])) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2])]); fi;
+
+if not IsMatrix(arg[1]) then 
+  PrintTo("*errout*", "matrix required as argument\n");
+   return fail;
+fi;
+
+if ForAll( Flat(arg[1]) , x -> x = 0 ) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2])]); fi;
 if Length(arg)=1 then  return CaCHnf(arg[1]);fi;
-if Length(arg)=2 then return LcCaCHnf(arg[1],arg[2]);fi;
+if Length(arg)=2 then 
+  if arg[2]=1 then return LcCaCHnf(arg[1]);
+  elif arg[2]=0 then return CaCHnf(arg[1]);
+  else 
+  PrintTo("*errout*", "Transformation matrix routine only  implemented for trans=1 for this routine at present. Sorry.\n");
+   return fail;
+  fi;
+fi;
+
 if Length(arg)>2 then
-PrintTo("*errout*", "Different Reduction routines  not yet implemented. Sorry.\n");
+PrintTo("*errout*", "Different Reduction routines  not yet implemented for this routine. Try the Norm driven routine.\n");
    return fail;fi;
 end);
 
@@ -1455,51 +1765,218 @@ end);
 #F  HNFLLLDriven(<mat>[,<trans>[,<reduction>]])
 ##
 InstallGlobalFunction( HNFLLLDriven, function(arg)
-if Length(arg)=1 then  return LcLLLHnf(arg[1]).hermite;fi;
-if Length(arg)=2 then return LcLLLHnf(arg[1]);fi;
+local i,t;
+if Flat(arg[1])=[]   and ForAll(arg[1],x->Length(x)=Length(arg[1][1])) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2])]); fi;
+if not IsMatrix(arg[1]) then 
+  PrintTo("*errout*", "matrix required as argument\n");
+   return fail;
+fi;
+
+if ForAll( Flat(arg[1]) , x -> x = 0 ) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2])]); fi;
+if Length(arg)=1 then  
+t:= LcLLLHnf(arg[1]).normal;
+for i in [1..Length(arg[1])] do
+arg[1][i]:=t[i];
+od;
+return t; fi;
+
+if Length(arg)=2 then
+  if arg[2]=1 then return LcLLLHnf(arg[1]); 
+  else 
+  PrintTo("*errout*", "Transformation matrix routine only  implemented for trans=1 for this routine at present. Sorry.\n");
+   return fail;
+  fi;
+fi;
+
 if Length(arg)>2 then
-PrintTo("*errout*", "Different Reduction routines  not yet  implemented. Sorry.\n");
-   return fail;fi;
+PrintTo("*errout*", "Different Reduction routines  not yet  implemented for this routine.  Try the Norm driven routine. Sorry.\n");
+   return fail;
+fi;
 end);
 
 
 ############################################################################
 ##
-#F  SNFNormDriven(<mat>[,<trans>[,<reduction>]])
+#F  SNFNormDriven(<mat>[,<trans>])
 ##
 InstallGlobalFunction( SNFNormDriven, function(arg)
+if Flat(arg[1])=[]  and ForAll(arg[1],x->Length(x)=Length(arg[1][1])) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2]),IsBound(arg[2])]); fi;
+
+if not IsMatrix(arg[1]) then 
+  PrintTo("*errout*", "matrix required as argument\n");
+   return fail;
+fi;
+
+if  ForAll( Flat(arg[1]) , x -> x = 0 ) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2]),IsBound(arg[2])]); fi;
 if Length(arg)=1 then  return NormSnf(arg[1]);fi;
-if Length(arg)=2 then return LcNormSnf(arg[1],arg[2]);fi;
+if Length(arg)=2 then return LcNormSnf(arg);fi;
 end);
 
 #############################################################################
 ##
-#F  SNFChouCollins(<mat>[,<trans>[,<reduction>]])
+#F  SNFChouCollins(<mat>[,<trans>])
 ##
 InstallGlobalFunction( SNFChouCollins, function(arg)
-if Length(arg)=1 then  return CaCSnf(arg);fi;
+if Flat(arg[1])=[]  and ForAll(arg[1],x->Length(x)=Length(arg[1][1])) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2]),IsBound(arg[2])]); fi;
+
+if not IsMatrix(arg[1]) then 
+  PrintTo("*errout*", "matrix required as argument\n");
+   return fail;
+fi;
+
+if ForAll( Flat(arg[1]) , x -> x = 0 ) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2]),IsBound(arg[2])]); fi;
+ if Length(arg)=1 then  return CallFuncList(CaCSnf,[arg[1]]);fi;
 if Length(arg)=2 then return LcCaCSnf(arg);fi;
 end);
 
 #############################################################################
 ##
-#F  SNFLLLDriven(<mat>[,<trans>[,<reduction>]])
+#F  SNFLLLDriven(<mat>[,<trans>])
 ##
 InstallGlobalFunction( SNFLLLDriven, function(arg)
-if Length(arg)=1 then  return LcLLLSnf(arg[1]).hermite;fi;
-if Length(arg)=2 then return LcLLLSnf(arg[1]);fi;
+if Flat(arg[1])=[]   and ForAll(arg[1],x->Length(x)=Length(arg[1][1])) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2]),IsBound(arg[2])]); fi;
+
+if not IsMatrix(arg[1]) then 
+  PrintTo("*errout*", "matrix required as argument\n");
+   return fail;
+fi;
+
+if ForAll( Flat(arg[1]) , x -> x = 0 ) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2]),IsBound(arg[2])]); fi;
+#if Length(arg)=1 then  return LcLLLSnf(arg[1]).normal;fi;
+#if Length(arg)=2 then return LcLLLSnf(arg);fi;
+return NYI(arg);
 end);
 
 
 #############################################################################
 ##
-#O  TriangulizeIntegerMat(<mat>[,<trans>])
+#F  TriangulizeIntegerMat(<mat>[,<trans>])
 ##
 InstallGlobalFunction(TriangulizeIntegerMat, function(arg)
+if Flat(arg[1])=[]  and ForAll(arg[1],x->Length(x)=Length(arg[1][1])) then return  CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2])]); fi;
+
+if not IsMatrix(arg[1]) then 
+  PrintTo("*errout*", "matrix required as argument\n");
+   return fail;
+fi;
+
+if ForAll( Flat(arg[1]) , x -> x = 0 ) then return CallFuncList(IdTransReturn,[arg[1],IsBound(arg[2])]); fi;
 if Length(arg)=1 then return NormHnf(arg[1],true);fi;
-if Length(arg)=2 then return LcNormHnf(arg[1],arg[2]);fi;
+if Length(arg)=2 and arg[2]=1 then  return LcNormHnf(arg[1],true);fi;
+
+PrintTo("*errout*", " TriangulizeIntegerMat(<mat>[,<trans>]) is yet to be implemented for trans > 1. Sorry.\n");
+   return fail;
+
 end);
 
+#############################################################################
+##
+#F  NormalFormIntMat(<mat>,<options>)
+##
+InstallGlobalFunction(NormalFormIntMat,
+ 
+  function(mat,options)
+  local r,opt;
+  r:=NFIM(mat,options);
+  opt := List(CoefficientsQadic(options,2),x->x=1);
+  if Length(opt)<4 then 
+    opt{[Length(opt)+1..4]} := List([Length(opt)+1..4],x->false);
+  fi;
+
+  if opt[3] then
+    r.rowtrans:=r.rowQ*r.rowC;
+    Unbind(r.rowQ);
+    Unbind(r.rowC);
+  fi;
+
+  if opt[1] and opt[4] then  
+    r.coltrans:=r.colC*r.colQ;
+   Unbind(r.colQ);
+   Unbind(r.colC);
+  fi;
+   return r;
+end);
+
+#############################################################################
+##
+#F  DeterminantIntMat(<mat>)
+##
+InstallGlobalFunction(DeterminantIntMat,
+
+function(mat)
+
+local c,i,j,n,m,r,c1,c2,t,g,s,a,b,q,A,k,t1,t2,sig;
+
+sig:=1;
+
+#Embed mat in 2 larger "id" matrix
+n := Length(mat)+2;
+# Crossover point roughly 20x20 matrices, so farm the work if smaller..
+if n<22 then return DeterminantMat(mat);fi;
+m := Length(mat[1])+2;
+ 
+if not n=m then Error( "DeterminantIntMat: <mat> must be a square matrix" );fi;
+
+A := [List([1..m],x->0)];
+for i in [2..n-1] do
+  A[i] := [0];
+  Append(A[i],mat[i-1]);
+  A[i][m] := 0;
+od;
+A[n] := List([1..m],x->0);
+A[1][1] := 1;      A[n][m] := 1;
+
+r := 0;    c2 := 1;
+while m>c2 do
+  Info(InfoMatInt,2,"DeterminantIntMat - reached column ",c2," of ",m);
+  r := r+1;
+  c1 := c2;
+
+  j := c1+1;
+  while j<=m do
+    k := r+1;
+    while k<=n and A[r][c1]*A[k][j]=A[k][c1]*A[r][j] do k := k+1; od;
+    if k<=n then c2 := j; j := m; fi;
+    j := j+1;
+  od;
+
+  c := mgcdex(AbsInt(A[r][c1]),A[r+1][c1],A{[r+2..n]}[c1]);
+  for i in [r+2..n] do 
+    if c[i-r-1]<>0 then
+      AddRowVector(A[r+1],A[i],c[i-r-1]);
+    fi;
+  od;
+
+  i := r+1;
+  while A[r][c1]*A[i][c2]=A[i][c1]*A[r][c2] do 
+   i := i+1; 
+  od;
+
+  if i>r+1 then
+     c := mgcdex(AbsInt(A[r][c1]),A[r+1][c1]+A[i][c1],[A[i][c1]])[1]+1;;
+     AddRowVector(A[r+1],A[i],c);
+  fi;
+  
+  g := bezout(A[r][c1],A[r][c2],A[r+1][c1],A[r+1][c2]);
+  sig:=sig*SignInt(A[r][c1]*A[r+1][c2]-A[r][c2]*A[r+1][c1]);
+  if sig=0 then return 0;fi;
+ A{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*A{[r,r+1]};
+
+  for i in [r+2..n] do
+    q := QuoInt(A[i][c1],A[r][c1]);
+    AddRowVector(A[i],A[r],-q);
+    q := QuoInt(A[i][c2],A[r+1][c2]);
+    AddRowVector(A[i],A[r+1],-q);
+  od;
+od; 
+
+for i in [2..r+1] do
+  sig:=sig*A[i][i];
+od;
+
+return sig;
+
+end);
 
 #############################################################################
 ##
@@ -1507,7 +1984,12 @@ end);
 ##
 InstallMethod(SmithNormalFormIntegerMat,"basic norm driven algorithm",true,[IsMatrix],0,
 function(mat)
-return(SNFNormDriven(mat));
+return(Immutable(SNFNormDriven(MutableCopyMat(mat))));
+end);
+
+InstallOtherMethod(SmithNormalFormIntegerMat,"basic norm driven algorithm",true,[IsList],0,
+function(mat)
+return(Immutable(SNFNormDriven(MutableCopyMat(mat))));
 end);
 
 #############################################################################
@@ -1516,23 +1998,58 @@ end);
 ##
 InstallMethod(SmithNormalFormIntegerMatTransforms,"basic norm driven algorithm",true,[IsMatrix],0,
 function(mat)
-return(SNFNormDriven(mat,true));
+return(SNFNormDriven(mat,5));
+#return NYI(1);
+end);
+
+InstallOtherMethod(SmithNormalFormIntegerMatTransforms,"basic norm driven algorithm",true,[IsList],0,
+function(mat)
+return(SNFNormDriven(mat,5));
+#return NYI(1);
 end);
 
 #############################################################################
 ##
+#O  SmithNormalFormIntegerMatInverseTransforms(<mat>)
+##
+InstallMethod(SmithNormalFormIntegerMatInverseTransforms,"basic norm driven algorithm",true,[IsMatrix],0,
+function(mat)
+return(SNFNormDriven(mat,10));
+#return NYI(1);
+end);
+
+InstallOtherMethod(SmithNormalFormIntegerMatInverseTransforms,"basic norm driven algorithm",true,[IsList],0,
+function(mat)
+return(SNFNormDriven(mat,10));
+#return NYI(1);
+end);
+#############################################################################
+##
 #O  HermiteNormalFormIntegerMat(<mat>[,<reduction>])
 ##
-InstallMethod(HermiteNormalFormIntegerMat,"basic norm driven algorithm",true,[IsMatrix],0,
+InstallMethod(HermiteNormalFormIntegerMat,"basic norm driven algorithm",
+              true,[IsMatrix],0,
 function(arg)
-  return(HNFNormDriven(arg[1]));
+  return(Immutable(HNFNormDriven(MutableCopyMat(arg[1]))));
 end);
 
-InstallOtherMethod(HermiteNormalFormIntegerMat,"basic norm driven algorithm with reduction",true,[IsMatrix,IsRat],0,
+InstallOtherMethod(HermiteNormalFormIntegerMat,
+  "basic norm driven algorithm with reduction",true,[IsMatrix,IsRat],0,
 function(arg)
-  return(HNFNormDriven(arg[1], false, arg[2]));
+  return(Immutable(HNFNormDriven(MutableCopyMat(arg[1]), 0, arg[2])));
 end);
 
+InstallOtherMethod(HermiteNormalFormIntegerMat,"basic norm driven algorithm",
+              true,[IsList],0,
+function(arg)
+  return(Immutable(HNFNormDriven(ShallowCopy(arg[1]))));
+end);
+
+InstallOtherMethod(HermiteNormalFormIntegerMat,"basic norm driven algorithm",
+              true,[IsList,IsRat],0,
+function(arg)
+  return(Immutable(HNFNormDriven(ShallowCopy(arg[1]),0,arg[2])));
+end);
 
 #############################################################################
 ##
@@ -1540,13 +2057,50 @@ end);
 ##
 InstallMethod(HermiteNormalFormIntegerMatTransforms,"basic norm driven algorithm",true,[IsMatrix],0,
 function(arg)
-  return(HNFNormDriven(arg[1],false));
-
+  return(Immutable(HNFNormDriven(MutableCopyMat(arg[1]),1)));
 end);
 
 InstallOtherMethod(HermiteNormalFormIntegerMatTransforms,"basic norm driven algorithm",true,[IsMatrix,IsRat],0,
 function(arg)
-  return(HNFNormDriven(arg[1],true,arg[2]));
+  return(Immutable(HNFNormDriven(MutableCopyMat(arg[1]),1,arg[2])));
+end);
+
+InstallOtherMethod(HermiteNormalFormIntegerMatTransforms,"basic norm driven algorithm", true,[IsList],0,
+function(arg)
+  return(Immutable(HNFNormDriven(ShallowCopy(arg[1]),true)));
+end);
+
+InstallOtherMethod(HermiteNormalFormIntegerMatTransforms,"basic norm driven algorithm", true,[IsList,IsRat],0,
+function(arg)
+  return(Immutable(HNFNormDriven(ShallowCopy(arg[1]),true)));
+end);
+
+#############################################################################
+##
+#O  HermiteNormalFormIntegerMatInverseTransforms(<mat>[,<reduction>])
+##
+InstallMethod(HermiteNormalFormIntegerMatInverseTransforms,"basic norm driven algorithm",true,[IsMatrix],0,
+function(arg)
+#  return(HNFNormDriven(arg[1],4));
+return NYI(1);
+end);
+
+InstallOtherMethod(HermiteNormalFormIntegerMatInverseTransforms,"basic norm driven algorithm",true,[IsMatrix,IsRat],0,
+function(arg)
+#  return(HNFNormDriven(arg[1],4,arg[2]));
+return NYI(1);
+end);
+
+InstallOtherMethod(HermiteNormalFormIntegerMatInverseTransforms,"basic norm driven algorithm",true,[IsList],0,
+function(arg)
+#  return(HNFNormDriven(arg[1],4));
+return NYI(1);
+end);
+
+InstallOtherMethod(HermiteNormalFormIntegerMatInverseTransforms,"basic norm driven algorithm",true,[IsList,IsRat],0,
+function(arg)
+#  return(HNFNormDriven(arg[1],4));
+return NYI(1);
 end);
 
 
@@ -1556,8 +2110,14 @@ end);
 ##
 InstallMethod(TriangulizedIntegerMat,"basic norm driven algorithm",true,[IsMatrix],0,
 function(mat)
-return(TriangulizeIntegerMat(mat));
+return(Immutable(TriangulizeIntegerMat(MutableCopyMat(mat))));
 end);
+
+InstallOtherMethod(TriangulizedIntegerMat,"basic norm driven algorithm",true,[IsList],0,
+function(mat)
+return(Immutable(TriangulizeIntegerMat(ShallowCopy(mat))));
+end);
+
 
 #############################################################################
 ##
@@ -1565,6 +2125,27 @@ end);
 ##
 InstallMethod(TriangulizedIntegerMatTransforms,"basic norm driven algorithm",true,[IsMatrix],0,
 function(mat)
-return(TriangulizeIntegerMat(mat,true));
+return(Immutable(TriangulizeIntegerMat(MutableCopyMat(mat),1)));
 end);
 
+InstallOtherMethod(TriangulizedIntegerMatTransforms,"basic norm driven algorithm",true,[IsList],0,
+function(mat)
+return(Immutable(TriangulizeIntegerMat(ShallowCopy(mat),1)));
+end);
+
+
+#############################################################################
+##
+#O  TriangulizedIntegerMatInverseTransforms(<mat>)
+##
+InstallMethod(TriangulizedIntegerMatInverseTransforms,"basic norm driven algorithm",true,[IsMatrix],0,
+function(mat)
+#return(TriangulizeIntegerMat(mat,2));
+return NYI(1);
+end);
+
+InstallOtherMethod(TriangulizedIntegerMatInverseTransforms,"basic norm driven algorithm",true,[IsList],0,
+function(mat)
+#return(TriangulizeIntegerMat(mat,2));
+return NYI(1);
+end);

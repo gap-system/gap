@@ -124,7 +124,7 @@ function( efam, gens, orders )
     dt[PC_POWERS] := [];
 
     # and the rhs of the conjugates
-    dt[PC_CONJUGATES] := [];
+    dt[ PC_CONJUGATES ] := List( gens, g -> [] );
 
     # convert into a positional object
     type := NewType( fam, IsDeepThoughtCollectorRep and IsMutable );

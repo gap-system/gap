@@ -1,0 +1,186 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  semigrp.msk                GAP documentation                Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Semigroups}
+
+This chapter describes functions for creating semigroups
+and determining information about them.
+
+%%  Support for algebraic semigroup theory in GAP was designed by Andrew
+%%  Solomon, based on code by Goetz Pfeiffer, and was implemented by Isabel
+%%  Araujo, Robert Arthur, and Andrew Solomon.
+
+\Declaration{IsSemigroup}
+
+\Declaration{Semigroup}
+
+\beginexample
+gap> a:= Transformation([2, 3, 4, 1]);
+Transformation( [ 2, 3, 4, 1 ] )
+gap> b:= Transformation([2, 2, 3, 4]);
+Transformation( [ 2, 2, 3, 4 ] )
+gap> s:= Semigroup(a, b);
+<semigroup with 2 generators>
+\endexample
+
+\Declaration{Subsemigroup}
+
+\beginexample
+gap> a:=GeneratorsOfSemigroup(s)[1];
+Transformation( [ 2, 3, 4, 1 ] )
+gap> t:=Subsemigroup(s,[a]);
+<semigroup with 1 generator>
+\endexample
+
+\Declaration{SemigroupByGenerators}
+
+\Declaration{AsSemigroup}
+\Declaration{AsSubsemigroup}
+\Declaration{GeneratorsOfSemigroup}
+
+\beginexample
+gap> GeneratorsOfSemigroup(s);
+[ Transformation( [ 2, 3, 4, 1 ] ), Transformation( [ 2, 2, 3, 4 ] ) ]
+gap> GeneratorsOfSemigroup(t);
+[ Transformation( [ 2, 3, 4, 1 ] ) ]
+\endexample
+
+\Declaration{FreeSemigroup}
+
+\beginexample
+gap> f1 := FreeSemigroup( 3 );
+<free semigroup on the generators [ s1, s2, s3 ]>
+gap> f2 := FreeSemigroup( 3 , "generator" );
+<free semigroup on the generators [ generator1, generator2, generator3 ]>
+gap> f3 := FreeSemigroup( "gen1" , "gen2" );
+<free semigroup on the generators [ gen1, gen2 ]>
+gap> f4 := FreeSemigroup( ["gen1" , "gen2"] );
+<free semigroup on the generators [ gen1, gen2 ]>
+\endexample
+
+\Declaration{SemigroupByMultiplicationTable}
+
+The following functions determine information
+about semigroups:
+
+\Declaration{IsRegularSemigroup}
+\Declaration{IsRegularSemigroupElement}
+\Declaration{IsSimpleSemigroup}
+\Declaration{IsZeroSimpleSemigroup}
+\Declaration{IsZeroGroup}
+\Declaration{IsReesCongruenceSemigroup}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Making transformation semigroups}
+
+Cayley's Theorem gives special status to semigroups of
+transformations, and accordingly there are special functions
+to deal with them, and to create them from other finite
+semigroups.
+
+\Declaration{IsTransformationSemigroup}
+\Declaration{DegreeOfTransformationSemigroup}
+\Declaration{IsomorphismTransformationSemigroup}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ideals of semigroups}
+
+Ideals of semigroups are the same as ideals of the semigroup when 
+considered as a magma.
+For documentation on ideals for magmas see "Magma".
+
+\Declaration{SemigroupIdealByGenerators}
+\Declaration{ReesCongruenceOfSemigroupIdeal}
+\Declaration{IsLeftSemigroupIdeal}
+\Declaration{IsRightSemigroupIdealEnumerator}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Congruences}
+
+An equivalence or a congruence on a semigroup is the
+equivalence or congruence on the semigroup considered as a magma.
+So, to deal with equivalences and congruences on semigroups,
+magma funtions are used.
+For documentation on equivalences and congruences for magmas see "Magma".
+
+\Declaration{IsSemigroupCongruence}
+\Declaration{IsReesCongruence}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Quotients}
+
+Given a semigroup and a congruence on the semigroup, one
+can construct a new semigroup: the quotient semigroup.
+The following funtions deal with quotient semigroups in {\GAP}.
+
+
+
+\Declaration{IsQuotientSemigroup}
+\FileHeader{semiquo}[1]
+\Declaration{HomomorphismQuotientSemigroup}
+\Declaration{QuotientSemigroupPreimage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Green's Relations}
+
+Green's equivalence relations play a very important role in semigroup
+theory. In this section we describe how they can be used in {\GAP}.
+
+The five green's relations are <R>, <L>, <J>, <H>, <D>:
+two elements <x>, <y> from <S> are <R>-related if and only if
+$xS^1 = yS^1$, <L>-related if and only if $S^1x=S^1y$ and <J>-related
+if and only if $S^1xS^1=S^1yS^1$; finally, $H = R \wedge L$, and
+<D = R o L>.
+
+Recall that relations <R>, <L> and <J> induce a partial order among
+the elements of the semigroup: for two elements <x>, <y> from <S>,
+we say that <x> is  less than or equal to <y> in the order on <R>
+if $xS^1 \subseteq yS^1$;
+similarly, $x$ is less than or equal to $y$ under $L$ if
+$S^1x\subseteq S^1y$;
+finally <x> is less than or equal to <y> under <J> if
+$S^1xS^1 \subseteq S^1tS^1$.
+We extend this preorder to a partial order on equivalence classes in
+the natural way.
+
+\Declaration{GreensRRelation}
+\Declaration{IsGreensRelation}
+\Declaration{IsGreensClass}
+\Declaration{IsGreensLessThanOrEqual}
+\Declaration{RClassOfHClass}
+\Declaration{IsGreensRClassEnumerator}
+\Declaration{EggBoxOfDClass}
+\Declaration{DisplayEggBoxOfDClass}
+\Declaration{GreensRClassOfElement}
+\Declaration{GreensRClasses}
+\Declaration{GroupHClassOfGreensDClass}
+\Declaration{IsGroupHClass}
+\Declaration{IsRegularDClass}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rees Matrix Semigroups}
+
+\FileHeader{reesmat}[1]
+
+\Declaration{ReesMatrixSemigroup}
+\Declaration{ReesZeroMatrixSemigroup}
+\Declaration{IsReesMatrixSemigroup}
+\Declaration{IsReesZeroMatrixSemigroup}
+\Declaration{ReesMatrixSemigroupElement}
+\Declaration{IsReesMatrixSemigroupElement}
+\Declaration{SandwichMatrixOfReesMatrixSemigroup}
+\Declaration{RowIndexOfReesMatrixSemigroupElement}
+\Declaration{ReesZeroMatrixSemigroupElementIsZero}
+\Declaration{AssociatedReesMatrixSemigroupOfDClass}
+\Declaration{IsomorphismReesMatrixSemigroup}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%E
+%

@@ -17,13 +17,9 @@ Revision.numtheor_gi :=
 ##
 #F  PrimeResidues( <m> )  . . . . . . . integers relative prime to an integer
 ##
-##  'PrimeResidues' returns the set of integers from the range  $0..Abs(m)-1$
-##  that are relative prime to the integer <m>.
-##
-##  $Abs(m)$ must be less than $2^{28}$, otherwise the set would probably  be
-##  too large anyhow.
-##
-PrimeResiduesSmall := [[],[0],[1],[1,2],[1,3],[1,2,3,4],[1,5],[1,2,3,4,5,6]];
+BindGlobal( "PrimeResiduesSmall",
+    Immutable( [[],[0],[1],[1,2],[1,3],[1,2,3,4],[1,5],[1,2,3,4,5,6]] ) );
+
 InstallGlobalFunction( PrimeResidues, function ( m )
     local  residues, p, i;
 
@@ -48,12 +44,6 @@ end );
 ##
 #F  Phi( <m> )  . . . . . . . . . . . . . . . . . . . Eulers totient function
 ##
-##  'Phi' returns  the number of positive integers  less  than  the  positive
-##  integer <m> that are relativ prime to <m>.
-##
-##  Suppose that $m = p_1^{e_1} p_2^{e_2} .. p_k^{e_k}$.  Then  $\phi(m)$  is
-##  $p_1^{e_1-1} (p_1-1) p_2^{e_2-1} (p_2-1) ..  p_k^{e_k-1} (p_k-1)$.
-##
 InstallGlobalFunction( Phi, function ( m )
     local  phi, p;
 
@@ -75,14 +65,6 @@ end );
 #############################################################################
 ##
 #F  Lambda( <m> ) . . . . . . . . . . . . . . . . . . .  Carmichaels function
-##
-##  'Lambda' returns the exponent of the group  of  relative  prime  residues
-##  modulo the integer <m>.
-##
-##  Carmichaels theorem states that 'Lambda'  can  be  computed  as  follows:
-##  $Lambda(2) = 1$, $Lambda(4) = 2$ and $Lambda(2^e) = 2^{e-2}$ if $3 <= e$,
-##  $Lambda(p^e) = (p-1) p^{e-1}$ (i.e. $Phi(m)$) if $p$ is an odd prime  and
-##  $Lambda(n*m) = Lcm( Lambda(n), Lambda(m) )$ if $n, m$ are relative prime.
 ##
 InstallGlobalFunction( Lambda, function ( m )
     local  lambda, p, q, k;
@@ -113,10 +95,6 @@ end );
 #############################################################################
 ##
 #F  OrderMod( <n>, <m> )  . . . . . . . .  multiplicative order of an integer
-##
-##  'OrderMod' returns the multiplicative order of the integer <n> modulo the
-##  positive integer <m>.  If <n> and <m> are not relativ prime the order  if
-##  <n> is not defined and 'OrderInt' will return 0.
 ##
 #N  23-Apr-91 martin improve 'OrderMod' similar to 'IsPrimitiveRootMod'
 ##
@@ -157,9 +135,6 @@ end );
 #############################################################################
 ##
 #F  IsPrimitiveRootMod( <r>, <m> )  . . . . . . . . test for a primitive root
-##
-##  'IsPrimitiveRootMod' returns  'true' if the  integer <r>  is a  primitive
-##  root modulo the positive integer <m> and 'false' otherwise.
 ##
 InstallGlobalFunction( IsPrimitiveRootMod, function ( r, m )
     local   p,  facs,  pows,  i,  pow;
@@ -222,11 +197,6 @@ end );
 ##
 #F  PrimitiveRootMod( <m> ) . . . . . . . .  primitive root modulo an integer
 ##
-##  'PrimitiveRootMod' returns the smallest primitive root modulo the integer
-##  <m> and 'false' if no such primitive root exists.  If the optional second
-##  integer argument <start> is given 'PrimitiveRootMod' returns the smallest
-##  primitive root that is strictly larger than <start>.
-##
 InstallGlobalFunction( PrimitiveRootMod, function ( arg )
     local   root, m, p, start, mm;
 
@@ -238,14 +208,14 @@ InstallGlobalFunction( PrimitiveRootMod, function ( arg )
         m := arg[1];  start := arg[2];
         if m <= 0  then Error("<m> must be positive");  fi;
     else
-        Error("usage: PrimitiveRootMod( <m> [, <start>] )");
+        Error("usage: PrimitiveRootMod( <m>[, <start>] )");
     fi;
 
     # handle the trivial cases
-    if m = 2 and start = 1   then return 1;      fi;
-    if m = 2                 then return false;  fi;
-    if m = 4 and start <= 3  then return 3;      fi;
-    if m mod 4 = 0           then return false;  fi;
+    if m = 2 and start = 1   then return 1;     fi;
+    if m = 2                 then return fail;  fi;
+    if m = 4 and start <= 3  then return 3;     fi;
+    if m mod 4 = 0           then return fail;  fi;
 
     # handle even numbers
     if m mod 2 = 0  then
@@ -258,7 +228,7 @@ InstallGlobalFunction( PrimitiveRootMod, function ( arg )
     # check that $m$ is a prime power otherwise no primitive root exists
     p := SmallestRootInt( m );
     if not IsPrimeInt( p )  then
-        return false;
+        return fail;
     fi;
 
     # run through all candidates for a primitive root
@@ -274,19 +244,79 @@ InstallGlobalFunction( PrimitiveRootMod, function ( arg )
     od;
 
     # no primitive root found
-    return false;
+    return fail;
+end );
+
+
+#############################################################################
+##
+#F  GeneratorsPrimeResidues( <n> ) . . . . . . generators of the Galois group
+##
+InstallGlobalFunction( GeneratorsPrimeResidues, function( n )
+    local factors,     # collected list of prime factors of `n'
+          primes,      # list of prime divisors of `n'
+          exponents,   # exponents of the entries in `primes'
+          generators,  # generator(s) of the prime part `ppart' of residues
+          ppart,       # one prime part of `n'
+          rest,        # `n / ppart'
+          i,           # loop over the positions in `factors'
+          gcd;         # one coefficient in the output of `Gcdex'
+
+    if n = 1 then
+      return rec(
+                  primes     := [],
+                  exponents  := [],
+                  generators := []
+                 );
+    fi;
+
+    factors:= Collected( FactorsInt( n ) );
+
+    primes     := [];
+    exponents  := [];
+    generators := [];
+
+    # For each prime part `ppart',
+    # the generator must be congruent to a primitive root modulo `ppart',
+    # and congruent 1 modulo the rest `N/ppart'.
+
+    for i in [ 1 .. Length( factors ) ] do
+
+      primes[i]    := factors[i][1];
+      exponents[i] := factors[i][2];
+      ppart        := primes[i] ^ exponents[i];
+      rest         := n / ppart;
+
+      if primes[i] = 2 then
+
+        gcd:= Gcdex( ppart, rest ).coeff2 * rest;
+        if ppart mod 8 = 0 then
+          # Choose the generators `**' and `*5'.
+          generators[i]:= [ ( -2 * gcd + 1 ) mod n,   # generator `**'
+                            (  4 * gcd + 1 ) mod n ]; # generator `*5'
+        else
+          # Choose the generator `**'.
+          generators[i]:= ( -2 * gcd + 1 ) mod n;
+        fi;
+
+      else
+        generators[i] := ( ( PrimitiveRootMod( ppart ) - 1 )
+                           * Gcdex( ppart, rest ).coeff2 * rest + 1 ) mod n;
+      fi;
+
+    od;
+
+    return rec(
+                primes     := primes,
+                exponents  := exponents,
+                generators := generators
+               );
 end );
 
 
 #############################################################################
 ##
 #F  Jacobi( <n>, <m> ) . . . . . . . . . . . . . . . . . . . .  Jacobi symbol
-##
-##  'Jacobi'  returns  the  value of the  Jacobian symbol of the  integer <n>
-##  modulo the nonnegative integer <m>.
-##
-##  A description of the Jacobi symbol and related topics can  be  found  in:
-##  A. Baker, The theory of numbers, Cambridge University Press, 1984,  27-33
 ##
 #N  29-Apr-91 martin remember to change the description of 'Jacobi'
 ##
@@ -335,12 +365,6 @@ end );
 ##
 #F  Legendre( <n>, <m> )  . . . . . . . . . . . . . . . . . . Legendre symbol
 ##
-##  'Legendre' returns  the value of the Legendre  symbol of the  integer <n>
-##  modulo the positive integer <m>.
-##
-##  A description of the Legendre symbol and related topics can be found  in:
-##  A. Baker, The theory of numbers, Cambridge University Press, 1984,  27-33
-##
 InstallGlobalFunction( Legendre, function ( n, m )
     local  p, q, o;
 
@@ -382,15 +406,10 @@ end );
 
 #############################################################################
 ##
+#F  RootMod( <n>, <m> ) . . . . . . . . . . . . . . .  root modulo an integer
 #F  RootMod( <n>, <k>, <m> )  . . . . . . . . . . . .  root modulo an integer
 ##
-##  In the  second form  'RootMod' computes a  <k>th root  of the integer <n>
-##  modulo the positive integer <m>, i.e., a <r> such that $r^k = n$ mod <m>.
-##  If no such root exists 'RootMod' returns 'false'.
-##
-##  In the current implementation <k> must be a prime.
-##
-RootModPrime := function ( n, k, p )
+BindGlobal( "RootModPrime", function ( n, k, p )
     local   r,                  # <k>th root of <n> mod <p>, result
             kk,                 # largest power of <k> dividing <p>-1
             s,                  # cofactor for <r>
@@ -457,14 +476,14 @@ RootModPrime := function ( n, k, p )
 
     # otherwise $n$ has no root
     else
-        r := false;
+        r := fail;
 
     fi;
 
     # return the root $r$
     Info( InfoNumtheor, 1, "RootModPrime returns ", r );
     return r;
-end;
+end );
 
 RootModPrimePower := function ( n, k, p, l )
     local   r,                  # <k>th root of <n> mod <p>^<l>, result
@@ -484,15 +503,15 @@ RootModPrimePower := function ( n, k, p, l )
     # if $n$ is a multiple of $p^k$ return $p (\sqrt[k]{n/p^k} mod p^l/p^k)$
     elif n mod p^k = 0  then
         s := RootModPrimePower( n/p^k, k, p, l-k );
-        if s <> false  then
+        if s <> fail  then
             r := s * p;
         else
-            r := false;
+            r := fail;
         fi;
 
     # if $n$ is a multiple of $p$ but not of $p^k$ then no root exists
     elif n mod p = 0  then
-        r := false;
+        r := fail;
 
     # handle the case that the root may not lift
     elif k = p  then
@@ -509,7 +528,7 @@ RootModPrimePower := function ( n, k, p, l )
         t := PowerModInt( s, k-1, p^(l+1) );
         r := (s + (n - t * s) / (k * t)) mod p^l;
         if PowerModInt(r,k,p^l) <> n mod p^l  then
-            r := false;
+            r := fail;
         fi;
 
     # otherwise lift the root with Newton / Hensel
@@ -533,6 +552,7 @@ RootModPrimePower := function ( n, k, p, l )
     Info( InfoNumtheor, 1, "RootModPrimePower returns ", r );
     return r;
 end;
+MakeReadOnlyGlobal( "RootModPrimePower" );
 
 InstallGlobalFunction( RootMod, function ( arg )
     local   n,                  # <n>, first argument
@@ -568,9 +588,9 @@ InstallGlobalFunction( RootMod, function ( arg )
 
         # compute the root mod $p^l$
         s := RootModPrimePower( n, k, p, l );
-        if s = false  then
-            Info( InfoNumtheor, 1, "RootMod returns 'false'" );
-            return false;
+        if s = fail  then
+            Info( InfoNumtheor, 1, "RootMod returns 'fail'" );
+            return fail;
         fi;
 
         # combine $r$ (the root mod $qq$) with $s$ (the root mod $p^l$)
@@ -591,13 +611,7 @@ end );
 ##
 #F  RootsMod( <n>, <k>, <m> ) . . . . . . . . . . . . roots modulo an integer
 ##
-##  In the second form 'RootsMod' computes the <k>th roots of the integer <n>
-##  modulo the positive integer <m>, ie. the <r> such that $r^k = n$ mod <m>.
-##  If no such roots exist 'RootsMod' returns '[]'.
-##
-##  In the current implementation <k> must be a prime.
-##
-RootsModPrime := function ( n, k, p )
+BindGlobal( "RootsModPrime", function ( n, k, p )
     local   rr,                 # <k>th roots of <n> mod <p>, result
             r,                  # one particular <k>th root of <n> mod <p>
             kk,                 # largest power of <k> dividing <p>-1
@@ -679,7 +693,7 @@ RootsModPrime := function ( n, k, p )
     # return the roots $rr$
     Info( InfoNumtheor, 1, "RootsModPrime returns ", rr );
     return rr;
-end;
+end );
 
 RootsModPrimePower := function ( n, k, p, l )
     local   rr,                 # <k>th roots of <n> mod <p>^<l>, result
@@ -761,6 +775,7 @@ RootsModPrimePower := function ( n, k, p, l )
     Info( InfoNumtheor, 1, "RootsModPrimePower returns ", r );
     return rr;
 end;
+MakeReadOnlyGlobal( "RootsModPrimePower" );
 
 InstallGlobalFunction( RootsMod, function ( arg )
     local   n,                  # <n>, first argument
@@ -820,14 +835,10 @@ end );
 
 #############################################################################
 ##
-#F  RootsUnityMod(<k>,<m>)  . . . . . . . .  roots of unity modulo an integer
+#F  RootsUnityMod( <m> )  . . . . . . . . .  roots of unity modulo an integer
+#F  RootsUnityMod( <k>, <m> ) . . . . . . .  roots of unity modulo an integer
 ##
-##  'RootsUnityMod' returns a list of <k>-th roots of unity modulo a positive
-##  integer <m>, i.e., the list of all solutions <r> of <r>^<k> = 1 mod <m>.
-##
-##  In the current implementation <k> must be a prime.
-##
-RootsUnityModPrime := function ( k, p )
+BindGlobal( "RootsUnityModPrime", function ( k, p )
     local   rr,                 # <k>th roots of 1 mod <p>, result
             r,                  # <k>th root of unity mod <p>
             t,                  # <k>th root of unity mod <p>
@@ -866,7 +877,7 @@ RootsUnityModPrime := function ( k, p )
     # return the roots $rr$
     Info( InfoNumtheor, 1, "RootsUnityModPrime returns ", rr );
     return rr;
-end;
+end );
 
 RootsUnityModPrimePower := function ( k, p, l )
     local   rr,                 # <k>th roots of <n> mod <p>^<l>, result
@@ -918,6 +929,7 @@ RootsUnityModPrimePower := function ( k, p, l )
     Info( InfoNumtheor, 1, "RootsUnityModPrimePower returns ", r );
     return rr;
 end;
+MakeReadOnlyGlobal( "RootsUnityModPrimePower" );
 
 InstallGlobalFunction( RootsUnityMod, function ( arg )
     local   k,                  # <k>, optional first argument
@@ -983,7 +995,7 @@ InstallGlobalFunction( LogMod, function ( n, r, m )
         x := (x * r) mod m;
         l := l + 1;
         if l = m  then
-            return false;
+            return fail;
         fi;
     od;
     return l;
@@ -991,8 +1003,81 @@ end );
 
 
 #############################################################################
+##                                         
+#F  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
+##            
+InstallGlobalFunction( Sigma, function( n )
+    local  sigma, p, q, k;
+
+    # make <n> it nonnegative, handle trivial cases
+    if n < 0  then n := -n;  fi;
+    if n = 0  then Error("Sigma: <n> must not be 0");  fi;
+    if n < 8  then return Sum(DivisorsSmall[n+1]);  fi;
+
+    # loop over all prime $p$ factors of $n$
+    sigma := 1;
+    for p  in Set(FactorsInt(n))  do                                         
+
+        # compute $p^e$ and $k = 1+p+p^2+..p^e$                              
+        q := p;  k := 1 + p;
+        while n mod (q * p) = 0  do q := q * p;  k := k + q;  od;
+    
+        # combine with the value found so far      
+        sigma := sigma * k;
+    od;
+
+    return sigma;
+end );
+
+
+#############################################################################
+##                                         
+#F  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
+##            
+InstallGlobalFunction( Tau,function( n )
+    local  tau, p, q, k;
+
+    # make <n> it nonnegative, handle trivial cases
+    if n < 0  then n := -n;  fi;
+    if n = 0  then Error("Tau: <n> must not be 0");  fi;
+    if n < 8  then return Length(DivisorsSmall[n+1]);  fi;
+
+    # loop over all prime factors $p$ of $n$
+    tau := 1;
+    for p  in Set(FactorsInt(n))  do                                         
+
+        # compute $p^e$ and $k = e+1$                                        
+        q := p;  k := 2;
+        while n mod (q * p) = 0  do q := q * p;  k := k + 1;  od;
+    
+        # combine with the value found so far      
+        tau := tau * k;
+    od;
+
+    return tau;
+end );
+
+
+#############################################################################
+##                                         
+#F  MoebiusMu( <n> )  . . . . . . . . . . . . . .  Moebius inversion function
+##            
+InstallGlobalFunction( MoebiusMu, function ( n )
+    local  factors;
+
+    if n < 0  then n := -n;  fi;
+    if n = 0  then Error("MoebiusMu: <n> must be nonzero");  fi;
+    if n = 1  then return 1;  fi;
+
+    factors := FactorsInt( n );
+    if factors <> Set( factors )  then return 0;  fi;
+    return (-1) ^ Length(factors);
+end );                                                                        
+
+
+#############################################################################
 ##
-#F  TwoSquares(<n>) . .  representation of an integer as a sum of two squares
+#F  TwoSquares( <n> ) . . . . . repres. of an integer as a sum of two squares
 ##
 InstallGlobalFunction( TwoSquares, function ( n )
     local  c, d, p, q, l, x, y;
@@ -1019,7 +1104,7 @@ InstallGlobalFunction( TwoSquares, function ( n )
         elif p mod 4 = 3  and l mod 2 = 0  then
             c := c * p ^ (l/2);
         else # p mod 4 = 3  and l mod 2 = 1
-            return false;
+            return fail;
         fi;
     od;
 
@@ -1513,6 +1598,4 @@ end );
 #############################################################################
 ##
 #E  numtheor.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

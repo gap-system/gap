@@ -68,6 +68,7 @@ static Int      lastDef;                /*                                 */
 static Int      firstFree;              /*                                 */
 static Int      lastFree;               /*                                 */
 
+static Int      minGaps;                /* switch for marking mingaps      */
 static Int      nrdel;                  /*                                 */
 
 static Int      dedfst;                 /* position of first deduction     */
@@ -194,7 +195,7 @@ static void CompressDeductionList ()
     ptTable = &(ELM_PLIST(objTable,1)) - 1;
     j = 0;
     for ( i = dedfst; i < dedlst; i++ ) {
-        if ( INT_INTOBJ(ELM_PLIST(ptTable[dedgen[i]],dedcos[i])) != 0
+        if ( INT_INTOBJ(ELM_PLIST(ptTable[dedgen[i]],dedcos[i])) > 0
           && j < i )
         {
             dedgen[j] = dedgen[i];
@@ -204,7 +205,7 @@ static void CompressDeductionList ()
     }
 
     /* update the pointers                                                 */
-    dedfst = 1;
+    dedfst = 0;
     dedlst = j;
 
     /* check if we have at least one free position                         */
@@ -226,18 +227,18 @@ static void CompressDeductionList ()
 **  coincidence  cos2 = cos1.
 */
 static void HandleCoinc (
-    UInt                cos1,
-    UInt                cos2 )
+    Int                 cos1,
+    Int                 cos2 )
 {
-    Obj *               ptTable;        /* pointer to the coset table    */
+    Obj *               ptTable;          /* pointer to the coset table    */
     Obj *               ptNext;
     Obj *               ptPrev;
-    UInt                c1;
-    UInt                c2;
-    UInt                c3;
-    UInt                i;
-    UInt                firstCoinc;
-    UInt                lastCoinc;
+    Int                 c1;
+    Int                 c2;
+    Int                 c3;
+    Int                 i;
+    Int                 firstCoinc;
+    Int                 lastCoinc;
     Obj *               gen;
     Obj *               inv;
 
@@ -283,11 +284,11 @@ static void HandleCoinc (
 
             /* replace <cos2> by <cos1> in the column of <gen>^-1          */
             c2 = INT_INTOBJ( gen[cos2] );
-            if ( c2 != 0 ) {
+            if ( c2 > 0 ) {
                 c1 = INT_INTOBJ( gen[cos1] );
 
                 /* if the other entry is empty copy it                     */
-                if ( c1 == 0 )  {
+                if ( c1 <= 0 )  {
                     gen[cos1] = INTOBJ_INT( c2 );
                     gen[cos2] = INTOBJ_INT( 0 );
                     inv[c2]   = INTOBJ_INT( cos1 );
@@ -302,7 +303,7 @@ static void HandleCoinc (
                 else {
                     inv[c2]   = INTOBJ_INT( 0 );
                     gen[cos2] = INTOBJ_INT( 0 );
-                    if ( gen[cos1] == INTOBJ_INT( 0 ) ) {
+                    if ( gen[cos1] <= INTOBJ_INT( 0 ) ) {
                         gen[cos1] = INTOBJ_INT( cos1 );
                         if ( dedlst == dedSize )
                             CompressDeductionList( );
@@ -349,13 +350,17 @@ static void HandleCoinc (
 
                         /* <c1> is the rep of <c2> and its own rep.        */
                         ptPrev[c2] = INTOBJ_INT( c1 );
-
                     }
-
                 }
-
             }
 
+            /* save minimal gap flags                                      */
+            else if ( minGaps != 0 && c2 == -1 ) {
+                if ( gen[cos1] <= INTOBJ_INT( 0 ) ) {
+                    gen[cos1] = INTOBJ_INT( -1 );
+                }
+                gen[cos2] = INTOBJ_INT( 0 );
+            }
         }
 
         /* move the replaced coset to the free list                        */
@@ -371,7 +376,6 @@ static void HandleCoinc (
         ptNext[lastFree] = INTOBJ_INT( 0 );
 
         nrdel++;
-
     }
 }
 
@@ -385,15 +389,15 @@ Obj FuncMakeConsequences (
     Obj                 list )
 {
     Obj                 hdSubs;         /*                                 */
-    Obj                 objRels;         /*                                 */
-    Obj *               ptRel;        /* pointer to the relator bag      */
-    Obj *               ptNums;       /* pointer to this list            */
-    long                lp;             /* left pointer into relator       */
-    long                lc;             /* left coset to apply to          */
-    long                rp;             /* right pointer into relator      */
-    long                rc;             /* right coset to apply to         */
-    long                tc;             /* temporary coset                 */
-    long                i;              /* loop variable                   */
+    Obj                 objRels;        /*                                 */
+    Obj *               ptRel;          /* pointer to the relator bag      */
+    Obj *               ptNums;         /* pointer to this list            */
+    Int                 lp;             /* left pointer into relator       */
+    Int                 lc;             /* left coset to apply to          */
+    Int                 rp;             /* right pointer into relator      */
+    Int                 rc;             /* right coset to apply to         */
+    Int                 tc;             /* temporary coset                 */
+    Int                 i;              /* loop variable                   */
     Obj                 hdTmp;          /* temporary variable              */
 
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
@@ -411,6 +415,7 @@ Obj FuncMakeConsequences (
     lastFree  = INT_INTOBJ( ELM_PLIST( list, 7 ) );
     firstDef  = INT_INTOBJ( ELM_PLIST( list, 8 ) );
     lastDef   = INT_INTOBJ( ELM_PLIST( list, 9 ) );
+    minGaps   = INT_INTOBJ( ELM_PLIST( list, 12 ) );
 
     nrdel     = 0;
 
@@ -427,7 +432,7 @@ Obj FuncMakeConsequences (
         /* skip the deduction, if it got irrelevant by a coincidence       */
         hdTmp = ELM_PLIST( objTable, dedgen[dedfst] );
         hdTmp = ELM_PLIST( hdTmp, dedcos[dedfst] );
-        if ( INT_INTOBJ(hdTmp) == 0 ) {
+        if ( INT_INTOBJ(hdTmp) <= 0 ) {
             dedfst++;
             continue;
         }
@@ -457,30 +462,39 @@ Obj FuncMakeConsequences (
             }
 
             /* if a coincidence or deduction has been found, handle it     */
-            if ( lp == rp+1 && INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc ) {
-              if ( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ) != 0 ) {
-                  HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ), rc );
-              }
-              else if ( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ) != 0 ) {
-                  HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ), lc );
-              }
-              else {
-                  SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( rc ) );
-                  SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( lc ) );
-                  if ( dedlst == dedSize )
-                      CompressDeductionList();
-                  dedgen[ dedlst ] = INT_INTOBJ( ptNums[lp] );
-                  dedcos[ dedlst ] = lc;
-                  dedlst++;
+            if ( lp == rp + 1 ) {
+              if ( INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc ) {
+                if ( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ) > 0 ) {
+                    HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ), rc );
+                }
+                else if ( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ) > 0 ) {
+                    HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ), lc );
+                }
+                else {
+                    SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( rc ) );
+                    SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( lc ) );
+                    if ( dedlst == dedSize )
+                        CompressDeductionList();
+                    dedgen[ dedlst ] = INT_INTOBJ( ptNums[lp] );
+                    dedcos[ dedlst ] = lc;
+                    dedlst++;
+                }
               }
 
-              /* remove the completed subgroup generator                 */
+              /* remove the completed subgroup generator                   */
               SET_ELM_PLIST( hdSubs, i, 0 );
               if ( i == LEN_PLIST(hdSubs) ) {
                   while ( 0 < i  && ELM_PLIST(hdSubs,i) == 0 )
                       --i;
                   SET_LEN_PLIST( hdSubs, i );
+                  i++;
               }
+            }
+
+            /* if a minimal gap has been found, set a flag                 */
+            else if ( minGaps != 0 && lp == rp - 1 ) {
+                SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( -1 ) );
+                SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( -1 ) );
             }
           }
         }
@@ -510,10 +524,10 @@ Obj FuncMakeConsequences (
 
             /* if a coincidence or deduction has been found, handle it     */
             if ( lp == rp+1 && INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc ) {
-                if ( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ) != 0 ) {
+                if ( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ) > 0 ) {
                     HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ), rc );
                 }
-                else if ( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ) != 0 ) {
+                else if ( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ) > 0 ) {
                     HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ), lc );
                 }
                 else {
@@ -525,9 +539,13 @@ Obj FuncMakeConsequences (
                     dedcos[ dedlst ] = lc;
                     dedlst++;
                 }
-
             }
 
+            /* if a minimal gap has been found, set a flag                 */
+            else if ( minGaps != 0 && lp == rp - 1 ) {
+                SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( -1 ) );
+                SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( -1 ) );
+            }
         }
 
         dedfst++;

@@ -1,0 +1,266 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  ctbldiff.tex                                                Thomas Breuer
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+%%  Plain TeX file, format copied from Simon Norton's famous lists of
+%%  ATLAS Improvements
+%%
+
+\parskip 1ex plus 0.5ex minus 0.5ex
+\parindent0pt
+
+\font\sf=cmss10
+\def\GAP{{\sf GAP}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\centerline {\bf Changes in the {\GAP} Character Table Library}
+
+\bigbreak
+
+This list contains the changes in the {\GAP} character table library
+since the official upgrade for {\GAP}~3.4 in October 1996.
+We denote mathematical errors by {\bf ***} and new information
+by {\bf NEW}\null.
+We use {\bf C} to denote changes that are not obviously corrections;
+the number of these changes is kept small.
+
+\bigbreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\bf Release of {\GAP}~4.1 in July 1999}
+
+\bigbreak
+
+{\bf Brauer Tables}
+
+Changes are assigned to the simple group involved,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent=0pt\hsize=38em\strut#\strut}\cr
+***&^2E_6(2)&:&The faithful characters of $2.{}^2E_6(2)$ and
+$2.{}^2E_6(2).2$ mod $19$ were corrected.\cr
+% (by J"urgen M"uller)
+NEW&A_{13}&:&Indicators of $A_{13}$ and $S_{13}$ mod $2$ are now known.
+\cr
+NEW&A_{14}&:&The tables of $A_{14}$ mod $2$, $11$, $13$ and
+tables of $S_{14}$ mod $3$, $5$, $7$ are now known.\cr
+NEW&A_{15}&:&All Brauer tables of $S_{15}$ are now known.\cr
+% (by J"urgen M"uller)
+NEW&A_{16}&:&All Brauer tables of $S_{16}$ are now known.\cr
+% (by J"urgen M"uller)
+NEW&A_{17}&:&All Brauer tables except the $3$-modular one of $S_{17}$
+are now known.\cr
+% (by J"urgen M"uller)
+NEW&Co_2&:&The degree $156\,538$ character of $Co_2$ mod $2$ is now
+proved.\cr
+NEW&Co_3&:&One more indicator of $Co_3$ mod $2$ is now known.\cr
+***&Fi_{22}&:&The faithful characters of $6.Fi_{22}$ and $6.Fi_{22}.2$
+mod $5$
+were corrected.\cr
+***&L_3(4)&:&The faithful characters of $12_2.L_3(4)$ mod $7$ were
+corrected.\cr
+NEW&O_8^+(3)&:&The degree $50\,596$ characters of $O_8^+(3)$ mod $2$
+are now proved.
+Consequently, also the degree $101\,192$ of $O_8^+(3).2_1$ mod $2$,
+the degrees $50\,596$ and $101\,192$ of $O_8^+(3).2_2$ mod $2$,
+the degrees $50\,596$ and $151\,288$ of $O_8^+(3).3$ mod $2$,
+and the degree $202\,384$ of $O_8^+(3).4$ mod $2$ are now proved.\cr
+C&ON&:&The tables of $ON$ and $ON.2$ mod $19$ were changed
+in order to respect the choice of classes in Rob Wilson's
+``Atlas of Representations''.\cr
+NEW&ON&:&The tables of $ON$ mod $11$ and mod $31$ are now known,
+% (computed by Markus Ottensmann)
+as well as two new indicator values for $ON$ mod $2$.\cr
+C&Ru&:&The tables of $Ru$ and $2.Ru$ mod $5$ and mod $7$ were changed
+in order to respect the choice of classes in Rob Wilson's
+``Atlas of Representations''.\cr
+NEW&Ru&:&The tables of $Ru$ and $2.Ru$ mod $13$ and $29$ are now known,
+% (computed by Frank Roehr)
+as well as all indicator values of $Ru$ mod $2$.\cr
+***&S_6(3)&:&The characters of $S_6(3)$ and $2.S_6(3)$ were corrected.
+(The changes do not affect the tables of $S_6(3).2$ and $2.S_6(3).2$
+mod $7$.)\cr
+% (by J"urgen M"uller)
+***&Suz&:&The faithful characters of $6.Suz$ and $6.Suz.2$ mod $7$ were
+corrected.\cr
+% (bug reported by William Husen, correction by J"urgen M"uller)
+NEW&Th&:&The table of $Th$ mod $19$ is now known.\cr}
+
+\bigbreak
+
+{\bf Ordinary Tables}
+
+The following changes affect several ordinary tables.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad
+ \vtop{\parindent=0pt\hsize=43em\strut#\strut}\cr
+C&Whitespace at the end of {\tt InfoText} strings was removed.\cr
+NEW&Various class fusions were added.\cr
+NEW&Components {\tt tomidentifier} and {\tt tomfusion} were added
+in order to provide a (preliminary) interface to
+the library of tables of marks.\cr
+C&In the library tables of alternating and symmetric groups,
+the {\tt classtext} components
+(partitions parametrizing the conjugacy classes;
+in some cases, this had been hidden inside the {\tt CAS}
+component of the table)
+were replaced by values of the attribute {\tt ClassParameters}.\cr
+NEW&The tables of $L_2(q)$ were added for those values of $q$ for which
+the table of marks of $L_2(q)$ is now contained in the {\GAP} library.\cr
+NEW&In the library tables of symmetric groups,
+the partitions parametrizing the irreducible characters
+are stored on the tables,
+as value of the attribute {\tt CharacterParameters}.\cr
+C&The {\tt Identifier} values of a few tables have been changed.
+For example, the table of {\tt L4(3).2\^{}2} was previously known only as
+{\tt psl(4,3).v4}.
+The old names are still valid.\cr
+***&The character tables with identifiers {\tt iu332}, {\tt D2MJ4},
+and {\tt P4L82} were removed.
+The former two tables were incomplete, the latter one was wrong.\cr
+NEW&The ordinary tables of all maximal subgroups
+(and their class fusions)
+are now available for the groups $G_2(3)$, $J_3.2$, $2.M_{12}$,
+$M_{12}.2$, $M_{22}.2$, and $O_8^+(3)$.\cr}
+
+\medbreak
+
+The following changes are assigned to specific simple groups,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent=0pt\hsize=38em\strut#\strut}\cr
+***&A_6&:&The table automorphisms of $4.A_6.2_3$ were corrected.\cr
+NEW&Fi_{22}&:&The table of the maximal subgroup $2^7\!:\!S_6(2)$
+of $Fi_{22}.2$ was added.\cr
+% (computed by E. Mpono)
+NEW&Fi_{22}&:&The table of the maximal subgroup $2^6\!:\!U_4(2).2$
+of the maximal subgroup $2^6\!:\!S_6(2)$ of $Fi_{22}$ was added.\cr
+% (computed by E. Mpono)
+NEW&HS&:&The tables (and fusions) of several normalizers of chains of
+$p$-subgroups were added.\cr
+C&J_4&:&The classes and the characters of the maximal subgroup of type
+$2^{10}\!:\!L_5(2)$ were reordered,
+and the identifier was changed from {\tt l52m10} (from the CAS library)
+to {\tt 2\^{}10:L5(2)}.\cr
+% Make the old table available again, with the old name! (ctomaxi6.tbl)
+NEW&McL&:&The table of the seventh maximal subgroup of $McL.2$ was added.
+\cr
+C&O_8^+(2)&:&The classes and the characters of the maximal subgroup of
+type $2^6\!:\!A_8$ were reordered,
+and the identifier was changed from {\tt mo81p} (from the CAS library) to
+{\tt 2\^{}6:A8}.\cr
+% Make the old table available again, with the old name! (ctomisc2.tbl)
+% The same holds for the table with name `y' ! (ctomisc6.tbl)
+C&O_8^+(3)&:&The fusions from $O_7(3)$ and $3^6\!:\!L_4(3)$ were changed
+to the ones listed in the Atlas of Finite Groups.\cr
+NEW&O_{10}^+(2)&:&The table of the maximal subgroup $2^8\!:\!O_8^+(2)$
+was added.\cr
+NEW&S_{10}(2)&:&The table of the subgroup $2^8\!:\!S_8(2)$ was added.\cr
+NEW&U_4(3)&:&The tables of $2.U_4(3).(2^2)_{122}$ and $6_2.U_4(3).2_3'$
+were added.\cr}
+
+\bigbreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\bf Release of {\GAP}~4.2 in February 2000}
+
+\bigbreak
+
+{\bf Brauer Tables}
+
+Changes are assigned to the simple group involved,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent=0pt\hsize=38em\strut#\strut}\cr
+NEW&A_{14}&:&Table of $S_{14}$ mod $2$ is now known.\cr
+% (first computed by Dave Benson, added by J"urgen M"uller)
+***&A_{16}&:&Corrected principal block of the table of $S_{16}$ mod $2$.\cr
+NEW&ON&:&The tables of $3.ON$ mod $11$ and $31$ are now known.\cr
+C&ON&:&The tables of $3.ON$ and $3.ON.2$ mod $19$ were changed
+in order to respect the choice of classes in Rob Wilson's
+``Atlas of Representations''.\cr}
+% (concerning only irreducibles of $3.ON$ of degrees $45090$ and $77670$)
+
+\bigbreak
+
+{\bf Ordinary Tables}
+
+The following changes affect several ordinary tables.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad
+ \vtop{\parindent=0pt\hsize=43em\strut#\strut}\cr
+NEW&Various class fusions were added.\cr
+C&The {\tt galomorphisms} components which had been contained in only a few
+tables were removed.\cr
+***&The {\tt tomfusion} values of $L_2(25)$ and $2^5:S_6$ were corrected.\cr
+***&Element orders and power maps in the table with identifier
+{\tt s61p} were corrected.\cr
+***&The table with identifier {\tt 2.cenc1} was removed because it was
+inconsistent.\cr
+% no power maps possible ...
+C&Two instances of the table of $(A_6 \times A_6):2^2$ were unified.\cr
+C&The tables with identifiers {\tt J2.2M4}, {\tt 2\^{}(2+4):(3x3):2\^{}2},
+and {\tt 2\^{}(2+4):(S3xS3)} were unified;
+the identifiers {\tt J2.2M5} and {\tt 2\^{}(2+4):(S3xS3)} can be used to
+access the table.\cr
+NEW&The ordinary tables of all maximal subgroups
+(and their class fusions)
+are now available for the groups $S_6$, $J_2.2$, $McL.2$, $Suz.2$,
+$3.Suz$, $3.Suz.2$, $Sz(32)$.\cr}
+
+\medbreak
+
+The following changes are assigned to specific simple groups,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent=0pt\hsize=38em\strut#\strut}\cr
+NEW&A_6&:&The table of $12.A_6.2_3$ is now available.\cr
+***&Fi_{22}&:&The name of the table of the $7$-th maximal subgroup
+of $Fi_{22}$ was corrected from {\tt (2x2\^{}(1+8):U4(2)):2} to
+{\tt (2x2\^{}(1+8)):U4(2):2};
+analogously, {\tt (2x2\^{}(1+8):U4(2):2):2} was corrected to
+{\tt (2x2\^{}(1+8)):(U4(2):2x2)}.\cr
+C&U_3(5)&:&The table with identifier {\tt U3(5).S3} was removed;
+it is replaced by the table with identifier {\tt U3(5).3.2}
+whose cosets of the outer automorphism group are ordered as in the
+Atlas of Finite Groups.
+The identifier {\tt U3(5).S3} is now admissible for the table with
+identifier {\tt U3(5).3.2}.\cr
+***&U_4(3)&:&The table with identifier {\tt u4q3c} was removed;
+characters and power maps of this table were erroneous.
+Apparently the table was thought to be that of $3_2.U_4(3).2_3^{\prime}$,
+which can be accessed with the name {\tt 3\_2.U4(3).2\_3'}.\cr
+NEW&U_4(3)&:&The tables of $3_2.U_4(3).(2^2)_{133}$ and $U_4(3).(2^2)_{133}$
+are now available.\cr}
+
+\bigbreak
+
+Last update February 02nd, 2000.
+
+\bye
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

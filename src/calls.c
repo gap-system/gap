@@ -289,7 +289,7 @@ Obj DoFail0args (
     Obj                 argx;           /* arguments list (to continue)    */
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
-        NARG_FUNC( self ), 0L,
+        (Int)NARG_FUNC( self ), 0L,
         "you can return a list of arguments" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
@@ -306,7 +306,7 @@ Obj DoFail1args (
     Obj                 argx;           /* arguments list (to continue)    */
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
-        NARG_FUNC( self ), 1L,
+        (Int)NARG_FUNC( self ), 1L,
         "you can return a list of arguments" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
@@ -324,7 +324,7 @@ Obj DoFail2args (
     Obj                 argx;           /* arguments list (to continue)    */
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
-        NARG_FUNC( self ), 2L,
+        (Int)NARG_FUNC( self ), 2L,
         "you can return a list of arguments" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
@@ -343,7 +343,7 @@ Obj DoFail3args (
     Obj                 argx;           /* arguments list (to continue)    */
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
-        NARG_FUNC( self ), 3L,
+        (Int)NARG_FUNC( self ), 3L,
         "you can return a list of arguments" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
@@ -363,7 +363,7 @@ Obj DoFail4args (
     Obj                 argx;           /* arguments list (to continue)    */
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
-        NARG_FUNC( self ), 4L,
+        (Int)NARG_FUNC( self ), 4L,
         "you can return a list of arguments" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
@@ -384,7 +384,7 @@ Obj DoFail5args (
     Obj                 argx;           /* arguments list (to continue)    */
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
-        NARG_FUNC( self ), 5L,
+        (Int)NARG_FUNC( self ), 5L,
         "you can return a list of arguments" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
@@ -406,7 +406,7 @@ Obj DoFail6args (
     Obj                 argx;           /* arguments list (to continue)    */
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
-        NARG_FUNC( self ), 6L,
+        (Int)NARG_FUNC( self ), 6L,
         "you can return a list of arguments" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
@@ -423,7 +423,7 @@ Obj DoFailXargs (
     Obj                 argx;           /* arguments list (to continue)    */
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
-        NARG_FUNC( self ), LEN_LIST( args ),
+        (Int)NARG_FUNC( self ), LEN_LIST( args ),
         "you can return a list of arguments" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
@@ -977,7 +977,7 @@ static int IsLessHandlerInfo (
         case 2:
             return SyStrcmp(h1->cookie, h2->cookie) < 0;
         default:
-            ErrorQuit( "Invalid sort mode %u", byWhat, 0L );
+            ErrorQuit( "Invalid sort mode %u", (Int)byWhat, 0L );
             return 0; /* please lint */
     }
 }
@@ -1203,8 +1203,8 @@ Obj NewFunctionCT (
 {
     Obj                 name_o;         /* name as an object               */
     Obj                 nams_o;         /* nams as an object               */
-    Int                 len;            /* length                          */
-    Int                 i, k, l;        /* loop variables                  */
+    UInt                 len;            /* length                          */
+    UInt                 i, k, l;        /* loop variables                  */
 
 
     /* convert the arguments list to an object                             */
@@ -1226,7 +1226,7 @@ Obj NewFunctionCT (
         while ( nams_c[l]!=' ' && nams_c[l]!=',' && nams_c[l]!='\0' ) {
             l++;
         }
-        name_o = NEW_STRING( l-k );
+        name_o = NEW_STRING((l-k) );
         SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );
         RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
         SET_ELM_PLIST( nams_o, i, name_o );
@@ -1478,11 +1478,11 @@ Obj FuncCALL_FUNC_LIST (
     UInt                i;              /* loop variable                   */
 
     /* check that the second argument is a list                            */
-    while ( ! IS_LIST( list ) ) {
+    while ( ! IS_SMALL_LIST( list ) ) {
         list = ErrorReturnObj(
-            "CallFuncList: <list> must be a list",
+            "CallFuncList: <list> must be a small list",
             0L, 0L,
-            "you can return a list for <list>" );
+            "you can return a small list for <list>" );
     }
 
     /* check that the first argument is a function                         */

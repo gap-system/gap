@@ -27,19 +27,7 @@
 %F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
 %%
 \TitlePage{
-%  \centerline{Contributions to}\bigskip
-  \centerline{\titlefont GAP 4}\medskip
-%  \centerline{\titlefont ---}\medskip
-  \centerline{\titlefont Extending GAP}\vfill
-%  \centerline{\secfont by}\vfill
-  \centerline{\secfont The GAP Group}\bigskip
-  \centerline{\secfont Lehrstuhl D f\accent127ur Mathematik}\medskip
-  \centerline{\secfont RWTH, 52056 Aachen, Germany}\bigskip
-  \centerline{\secfont and}\bigskip
-  \centerline{\secfont School of Mathematical and Computational Sciences}
-    \medskip
-  \centerline{\secfont University of St.~Andrews, North Haugh, St.~Andrews,
-              Fife KY16 9SS, Scotland}
+\input ../ref/extcover.tex
 }
 %
 %
@@ -59,7 +47,8 @@
 %F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \FrontMatter
-\input ../tut/copyrigh
+\immediate\write\citeout{\bs bibdata{mrabbrev,../manual}}
+\input ../ref/copyrigh
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,11 +56,13 @@
 %F  Chapters  . . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \Chapters
+\Input{about}
 \Input{document}
-\Input{stbchain}
-\Input{foa}
+\Input{libform}
 \Input{sharepkg}
+\Input{foa}
 \Input{weakptr}
+\Input{stbchain}
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -14,60 +14,61 @@
 
 This  chapter describes  the  manual format  used to generate  the {\GAP}
 manual and the on-line help. The {\TeX} source of the manual is also used
-to generated the  on-line help. Therefore some  restriction  apply to the
+to generate the  on-line help. Therefore some  restrictions apply to the
 {\TeX} macros one should use. These restriction are described in sections
 "TeX Macros" and "Examples, Lists, and Verbatim".
 
-The first sections "Manual  Files"  and "Chapters and Sections"  describe
+The first sections "The main file"  and "Chapters and Sections"  describe
 the  general  layout of the  files  in case  you need to   write your own
 package documentation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Manual Files}
+\Section{The Main File}
 
-The main {\TeX} is called  ``manual.tex''.  This file should contain only
-the following commands:
+The main {\TeX} file is called ``manual.tex''.
+This file should contain only the following commands:
 
-\begintt
-  \input ../gapmacro.tex
-  \BeginningOfBook{name-of-book}
-    \UseReferences{book1}
-    ...
-    \UseReferences{bookn}
-    \TitlePage{title}
-    \TableOfContents
-    \FrontMatter
-      \Input{file1}
-      ...
-      \Input{filen}
-    \Chapters
-      \Input{file1}
-      ...
-      \Input{filen}
-    \Appendices
-      \Input{file1}
-      ...
-      \Input{filen}
-      \Answers
-      \Bibliography
-      \Index
-  \EndOfBook
-\endtt
+%\begintt
+\){\\input ../gapmacro.tex}
+\){\\BeginningOfBook\{<name-of-book>\}}
+\){\ \ \\UseReferences\{<book1>\}}
+\){\ \ ...}
+\){\ \ \\UseReferences\{<bookn>\}}
+\){\ \ \\TitlePage\{<title>\}}
+\){\ \ \\Colophon\{<text>\}}
+\){\ \ \\TableOfContents}
+\){\ \ \\FrontMatter}
+\){\ \ \ \ \\immediate\\write\\citeout\{\\bs bibdata\{<mybibliography>\}\}}
+\){\ \ \ \ \\Input\{<file1>\}}
+\){\ \ \ \ ...}
+\){\ \ \ \ \\Input\{<filen>\}}
+\){\ \ \\Chapters}
+\){\ \ \ \ \\Input\{<file1>\}}
+\){\ \ \ \ ...}
+\){\ \ \ \ \\Input\{<filen>\}}
+\){\ \ \\Appendices}
+\){\ \ \ \ \\Input\{<file1>\}}
+\){\ \ \ \ ...}
+\){\ \ \ \ \\Input\{<filen>\}}
+\){\ \ \ \ \\Bibliography}
+\){\ \ \ \ \\Index}
+\){\\EndOfBook}
+%\endtt
 
 The first  line inputs the  file ``gapmacro.tex''.  If  you are writing a
 share package  either copy this file or use a  relative path.  The former
 method will always work but requires you to keep the file consistent with
 the  system while  the latter  forces users to  change the ``manual.tex''
 file  if they are installing  a package in  a private location.  See also
-Section "ref:GAP Root Directory" in the reference manual.
+Section "ref:GAP Root Directory" in the Reference Manual.
 
-`\\BeginningOfBook' starts   the   book, `name-of-book'   is  used    for
+`\\BeginningOfBook' starts   the   book, <name-of-book>   is  used    for
 cross-references,  see "Labels  and References".   If  you are  writing a
 share package use the name of your package here.
 
-If   your manual   consists   of more    then    one book  the    command
+If   your manual   consists   of more    than    one book  the    command
 `\\UseReferences' can  be used to  load the labels  of the other books in
-case  cross-references  occur.  `booki'  is  the  path  of the  directory
+case  cross-references  occur.  <booki>  is  the  path  of the  directory
 containing  the book  whose  references you want  to   load.  If you  are
 writing a share package and you need to reference the main {\GAP} manual,
 use  `\\UseReferences' for each book  you want to reference.  However, as
@@ -76,26 +77,37 @@ package is not installed in the standard location.
 
 *Example*
 
-If your  ``manual.tex''  lives in  ``pkg/qwer/doc''  and you want  to use
+If your ``manual.tex'' file lives in ``pkg/qwer/doc'' and you want to use
 references to the tutorial use
 
 \begintt
-  \UseReferences{../../../doc/tut}
+\UseReferences{../../../doc/tut}
 \endtt
 
 `\\TitlePage' produces a page containing the `title'.
 
+`\\Colophon' produces a page following the title that can be used for more
+explicit author information, acknowledgements, dedications or whatsoever.
+
 `\\TableOfContents' produces a table of contents.
 
-`\\FrontMatter' starts the front matter  chapters like a copyright notice
-or a preface.
+`\\FrontMatter' starts the front matter chapters such as
+a copyright notice or a preface.
+
+The line
+\begintt
+\immediate\write\citeout{\bs bibdata{<mybibliography>}}
+\endtt
+is for users of Bib{\TeX}. It will use the file `<mybibliography>.bib' to
+fetch bibliography information.
+
 
 `\\Chapters'  starts the chapters  of the manual,  which are included via
-`\\Input'.  For the chapter format see Section "Chapters and Sections".
+`\\Input'.  For the chapter format, see Section~"Chapters and Sections".
 
-`\\Appendices'  starts the appendices.   `\\Answers'  produces an answers
-chapter, see  "Excersises  and  Answers".  `\\Bibliography'  produces   a
-bibliography, and `\\Index' an index.
+`\\Appendices'  starts the appendices.
+%`\\Answers'  produces an answers chapter, see  "Excersises  and  Answers".
+`\\Bibliography'  produces a bibliography, and `\\Index' an index.
 
 Finally `\\EndOfBook' closes the book.
 
@@ -103,42 +115,60 @@ Finally `\\EndOfBook' closes the book.
 
 Assume you have a share package ``qwert'' with two chapters ``Qwert'' and
 ``Extending  Qwert'', a copyright  notice,  a preface, no exercises, then
-your ``manual.tex'' would basically like:
+your ``manual.tex'' would basically look like:
 
 \begintt
-  \input gapmacro.tex
-  \BeginningOfBook{qwert}
-    \TitlePage{
-      \centerline{\titlefont The Share Package ``qwert''}
-      \centerline{\secfont by}
-      \centerline{\titlefont Q. Mustermensch}
-    }
-    \FrontMatter
-      \TableOfContents
-      \Input{copyrght}
-      \Input{preface}
-    \Chapters
-      \Input{qwert}
-      \Input{extend}
-    \Appendices
-      \Index
-  \EndOfBook
+\input gapmacro.tex
+\BeginningOfBook{qwert}
+  \TitlePage{
+    \centerline{\titlefont The Share Package ``qwert''}
+    \centerline{\secfont by}
+    \centerline{\titlefont Q. Mustermensch}
+  }
+  \TableOfContents
+  \FrontMatter
+    \Input{copyright}
+    \Input{preface}
+  \Chapters
+    \Input{qwert}
+    \Input{extend}
+  \Appendices
+    \Index
+\EndOfBook
 \endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Chapters and Sections}
 
-The  command `\\Chapter\{<chaptername>\}'  starts  a  new  chapter  named
-<chaptername>,  a chapter begins with an  introduction to the chapter and
-is  followed be sections     created with the    `\\Section\{<secname>\}'
-command.  The   strings  <chaptername> and  <secname>   are automatically
+The command `\\Chapter\{<chaptername>\}' starts a new chapter named
+<chaptername>, a chapter begins with an introduction to the chapter and
+is followed be sections created with the `\\Section\{<secname>\}'
+command. The strings <chaptername> and <secname> are automatically
 available as references.
+
+There must be *no further commands* on the same line as the `\\Chapter'
+or `\\Section' line,
+and there *must* be an empty line after a `\\Chapter' or `\\Section'
+command.
+This means that `\\index' commands referring to the chapter or section
+can be placed only after this empty line.
+
+The contents of each chapter must be in its own `.tex' file.
+
+To use the HTML converter, each `\\Section' line must be preceded by a line
+full of percentage signs.
+However the converter will stop converting a section whenever it his such a
+line, therefore do not add lines with 16 or more % signs which are *not*
+just before a `\\Section' command.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{TeX Macros}
 
-As the manual pages are  also used as on-line  help and are automatically
-converted to HTML  the use of special {\TeX}  commands should be avoided.
+As the manual pages are  also used as on-line help,
+and are automatically converted to HTML,
+the use of special {\TeX} commands should be avoided.
 The following macros can  be used to  structure  the text, the  mentioned
 fonts are used  when printing the manual,  however  the on-line help  and
 HTML are free to use other fonts or even colour.
@@ -146,128 +176,326 @@ HTML are free to use other fonts or even colour.
 \beginitems
 
 `{`text'}' &
-    sets the `text' in typewrite style. This is typically used to denoted
-    {\GAP}  commands like `for' or  variables like `false'  which are not
-    arguments to a function, see also `\<text>'.
+    sets the `text' in typewriter style.
+    This is typically used to denote {\GAP} keywords such as `for' and
+    `false' or variables that are not arguments to a function,
+    see also `\<text>'.
+    Use `\\\<' to get a ``less than'' sign.
 
 `{``text''}' &
     encloses the text in doublequotes.  In particular this does *not* set
     `text'    in typewriter   style,   use  `{`\{`text'\}'}' to   produce
     `{`text'}'.  Doublequotes are mainly used to mark a phrase which will
     be defined later or is used in an uncommon way.
-    
+
+`\\pif' &
+    sets a single apostrophe.
+
 `\<text>' &
     sets the text in italics.  This can also be used inside `\$...\$' and
-    `{`...'}'. Use `\\\<' to get a less than sign.  `\<text>' is  used to
-    denote  a  variable which is  an argument of a  function,  a  typical
-    application is the description of a function:
+    `{`...'}'.
+    Use `\\\<' to get a ``less than'' sign.
+    `\<text>' is used to denote a variable which is an argument of a
+    function, a typical application is the description of a function:
 \begintt
-        \>Group( <U> )
-        The function `Group' constructs a group $G$ isomorphic to <U>.
+\>Group( <U> )
+The function `Group' constructs a group isomorphic to <U>.
 \endtt
 
 `*text*' &
     sets the text in emphasized style.
 
 `\$a.b\$' &
-    inside math mode, you can use `.'  instead of `\\cdot'. Use `\\.' for
-    a  full  stop in `\$...\$'.   For   example, `\$a.b\$' produces $a.b$
+    Inside math mode, you can use `.' instead of `\\cdot'.
+    Use `\\.' for a full stop inside math mode.
+    For example, `\$a.b\$' produces $a.b$
     while `\$a\\.b\$' produces $a\.b$.
 
 `\\cite\{...\}' &
     produces  a     reference     to    a    bibliography   entry    (the
-    `\\cite[...]\{...\}' option of LaTeX is not supported).
+    `\\cite[...]\{...\}' option of La{\TeX} is *not* supported).
 
 `"ref"' &
-    produces  a reference  to a  label.  References  are generated by the
-    `\\Chapter', `\\Section', see "Labels and References".
+    produces a reference to a label.
+    Labels are generated by the commands `\\Chapter', `\\Section'
+    (see~"Labels and References").
 
 `\\index\{...\}' &
     defines an index entry.  Index entries are  also used for the section
-    index ``tutorial.six'' used by the on-line help.
+    index file `manual.six' used by the on-line help.
+    An exclamation mark (`!') may be used to indicate index subentries.
+
+`\\indextt\{...\}' &
+    is the same as `\\index\{...\}', except that the index entry
+    is printed in typewriter style.
 
 `\{\\GAP\}' &
     typesets {\GAP}.
 
 `\\>' &
-    *@explaination missing@*
+    produces a subsection for a function.
+    This macro uses the brackets of the function to parse the arguments
+    and therefore requires the function to use brackets and the arguments
+    to have none.
+    It also creates automatically an index entry.
+    The line following the `\\>' entry must either contain another `\\>'
+    entry (in which case the further entries are assumed to be variants
+    and do not start a new subsection) or must be empty.
+    The description text will follow this empty line.
+    Here is an example how to use `\\>'; the index entry is `Size'.
+\begintt
+\>Size( <obj> )
+\endtt
 
-`\\)' &
-    *@explaination missing@*
+`\\>{`<command>'}\{<label>\}' &
+    Works as `\\>' but will not use bracket matching but simply display
+    <command> as a header.
+    It will use <label> as an index entry.
+\begintt
+\>`<a> + <b>'{summation}
+\>`Size(<obj>)'{size}
+\endtt
+    In the first of the above examples, `\\>' cannot be used because
+    no brackets occur.
+    In the second example, the difference to the use of `\\>' is
+    that the index entry will be typeset as ``size'' instead of ``Size''.
 
+`\\>{`<command>'}\{<label>\}@\{<text>\}' &
+    Works as `\\>' but will not use bracket matching but simply display
+    <command> as a header.
+    It will use <label> for sorting the index entry which will be printed
+    as <text>.
+    Here are two examples.
+\begintt
+\>`Size(<obj>)'{size}@{`Size'}
+\>`Size(GL(<n>,<q>))'{size!gl}@{`Size(GL(<n>,<q>))'}
+\endtt
+
+`\\)\{\\fmark ...\}' &
+    is like `\\>' except that it produces no label and index entry.
+
+`\\URL\{<url>\}' &
+Prints the WWW URL <url>. In the HTML version this will be a HREF link.
+
+`\\Mailto\{<email>\}' &
+Prints the email address <email>. In the HTML version this will be a
+`mailto' link.
 \enditems
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Examples, Lists, and Verbatim}
 
+% produce itemized texts with 3pc hanging indentation
 In order  to   produce  a  list   of  items with   descriptions  use  the
 `\\beginitems', `\\enditems' environment.
 
-For examples, the   following  list describes   `base', `knownBase',  and
-`reduced'.  The different item/description pairs are separated by a blank
-line.
+For example, the   following  list describes   `base', `knownBase',  and
+`reduced'.
+The different item/description pairs must be separated by blank lines.
 
 \begintt
-  \beginitems
-    `base' &
-        must be a  list of points ...
+\beginitems
+`base' &
+    must be a  list of points ...
 
-    `knownBase' &
-        If a base for <G> is known in advance ...
+`knownBase' &
+    If a base for <G> is known in advance ...
 
-    `reduced' (default `true') &
-        If this is `true' the resulting stabilizer chain will be ...
-  \enditems
+`reduced' (default `true') &
+    If this is `true' the resulting stabilizer chain will be ...
+\enditems
 \endtt
 
-typesets the list:
-
+This will be printed as
 \beginitems
-  `base' &
-      must be a  list of points ...
+`base' &
+    must be a  list of points ...
 
-  `knownBase' &
-      If a base for <G> is known in advance ...
+`knownBase' &
+    If a base for <G> is known in advance ...
 
-  `reduced' (default `true') &
-      If this is `true' the resulting stabilizer chain will be ...
+`reduced' (default `true') &
+    If this is `true' the resulting stabilizer chain will be ...
 \enditems
 
-Example  {\GAP}  sessions    are  typeset  using the    `\\beginexample',
-`\\endexample' environment.  They should contain    the exact copy  of  a
-{\GAP} session using a line width of 73 and indented  by 4 blanks because
-the   manual checker     uses  the test   between  `\\beginexample'   and
-`\\endexample' to generate a test file.
+
+In order to produce a list in a more compact format,
+use the `\\beginlist', `\\endlist' environment.
+
+An example is the following list.
 
 \begintt
-  \beginexample
-      gap> 1+2;
-      3
-  \endexample
+\beginlist
+\item{(a)}
+    first entry
+\item{(b)}
+    second entry
+\item{(c)}
+    third entry
+\endlist
+\endtt
+
+It is printed as follows.
+\beginlist
+\item{(a)}
+    first entry
+\item{(b)}
+    second entry
+\item{(c)}
+    third entry
+\endlist
+
+% verbatim text in typewriter style
+Example {\GAP} sessions are typeset in typewriter style
+using the `\\beginexample', `\\endexample' environment.
+
+\begintt
+\beginexample
+gap> 1+2;
+3
+\endexample
 \endtt
 
 typesets the example
-
 \beginexample
-    gap> 1+2;
-    3
+gap> 1+2;
+3
 \endexample
 
-Other non-{\GAP} examples are typeset using the `\\begintt', `\\endtt'
-environment.
+Non-{\GAP} examples are typeset in typewriter style
+using the `\\begintt', `\\endtt' environment.
+
+The manual style will automatically indent examples. It also will break
+examples which become too long to fit on one page. If you want to encourage
+breaks at specific points in an example, end the example with `\\endexample'
+and immediately start a new example environment with `\\beginexample' on
+the next line.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Using TeX macros}
+\Section{Testing the Examples}
 
-As  described in "TeX Macros"  the use of  macros should be restricted to
+For purposes of automatically checking the manual,
+the {\GAP} examples in one chapter (the text between `\\beginexample'
+and `\\endexample') should produce the same output, up to line breaks
+and whitespace, whenever they are run in the same order
+immediately after starting {\GAP}
+(this will ensure that the global random number generator is initialized
+to the *same* values).
+For more details,
+see the last paragraph of~"tut:Starting and Leaving GAP" in the Tutorial.
+
+To permit this automatic running,
+examples that shall produce error messages should be put between
+`\\begintt' and `\\endtt'
+such that they will not be seen by this automatic test.
+
+The automatic test also requires that examples are not indented
+in the files;
+in the printed manual,
+the lines between `\\beginexample' and `\\endexample'
+and the lines between `\\begintt' and `\\endtt' are automatically
+indented.
+
+% mention how this test can be executed!
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Using TeX Macros}
+
+As  described in~"TeX Macros", the use of  macros should be restricted to
 the ones given in the previous sections.  However, in rare situations one
-might be forced  use  other {\TeX}, for  example  in order  to  typeset a
-lattice.  In this case you should provide  an alternative for the on-line
-help.
+might be forced to use other {\TeX} macros,
+for example  in order  to  typeset a lattice.
+In this case you should provide an alternative for the on-line help.
+This can be done by putting in guiding commands as {\TeX} comments:
 
-*@NOT SUPPORTED YET@*
+\begintt
+%display{tex}
+TeX version (only used by TeX manual)
+%display{html}
+%HTML version (only used by HTML manual)
+%display{text}
+%Text version (only used by the built-in manual browser)
+%enddisplay
+\endtt
 
+However, this use of special macros should be limited to a minimum.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Umlauts}
+To produce Umlauts use `\\accent127' and not the shorthand
+\beginverbatim
+\"
+\endverbatim
+Otherwise the HTML converter will not translate it properly.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Producing a Manual}
+
+To produce a manual you will need the following files:
+
+\beginitems
+`manual.tex'&
+    contains the body of the manual
+    (as described in Section~"The Main File")
+    and `\\Input' commands for other files.
+
+`gapmacro.tex'&
+    contains the macros for the manual.
+    It must be input by an `\\Input' statement in `manual.tex'.
+    You can either use the version in the `doc' directory of {\GAP}
+    (use a relative path then) or make a copy.
+
+`manual.mst'&
+    is used by `makeindex' to fetch index information.
+    It must reside in your manual directory.
+
+`GAPDOCPATH/manualindex'&
+    is used to call `makeindex'.
+    `GAPDOCPATH' is the path of the `doc' directory of your {\GAP}
+    distribution.
+\enditems
+
+For bibliography information you will need a file `manual.bbl'. If you
+intend to create it with Bib{\TeX}, you will need to indicate the
+appropriate `.bib' file (as described in section "The main file"). Then
+after running {\TeX} once over the manual, run Bib{\TeX} to create the
+`manual.bbl' file.
+
+Assuming that all necessary files are there,
+on a Unix system the following calls will then produce a file `manual.dvi'
+as well as a file `manual.six' which is used by the GAP help functions:
+
+Go to the directory holding the manual. Call
+\begintt
+tex manual
+\endtt
+to produce bibliography information. Unless you provide a `manual.bbl' file
+which is not produced by Bib{\TeX}, call
+\begintt
+bibtex manual
+\endtt
+to produce the `manual.bbl' file. Then run {\TeX} twice over the manual to
+fill all references and produce a stable table of contents:
+\begintt
+tex manual
+tex manual
+\endtt
+If you have sections which are named like commands, you may get messages
+about redefined labels. At this point you can ignore these.
+
+Now it is time to produce the index. Call
+\begintt
+GAPDOCPATH/manualindex manual
+\endtt
+to run `makeindex'. This produces a file `manual.ind'. Finally, once again
+run
+\begintt
+tex manual
+\endtt
+to incorporate the index. The manual is ready.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%E  document.tex  . . . . . . . . . . . . . . . . . . . . . . . ends here
+%E
+

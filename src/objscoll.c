@@ -53,6 +53,7 @@ const char * Revision_objscoll_c =
 #include        "objscoll.h"            /* single collector                */
 #undef  INCLUDE_DECLARATION_PART
 
+#include        "objccoll.h"            /* combinatorial collector         */
 
 /****************************************************************************
 **
@@ -194,7 +195,6 @@ Int C8Bits_VectorWord ( Obj vv, Obj v, Int num )
     return 0;
 }
 
-
 /****************************************************************************
 **
 *F  C8Bits_SingleCollectWord( <sc>, <vv>, <w> )
@@ -222,6 +222,69 @@ Int C8Bits_VectorWord ( Obj vv, Obj v, Int num )
 #define SC_POP_WORD() \
     sp--;  nw--;  lw--;  pw--;  ew--;  ge--
 
+
+/****************************************************************************
+**
+**  The following functions are  used to add  a word into the exponent vector
+**  without collection.  Two different cases occur:
+**
+**  Add   a word  into  the exponent  vector.   Here we   can  use the global
+**  exponent.
+**
+**  Add part  of a word  into the  exponent vector.   Here  we cannot use the
+**  global exponent because the beginning of  the word might not commute with
+**  the rest.
+**/
+static Int C8Bits_SAddWordIntoExpVec( Int *v, UInt1 *w, Int e, 
+                           Int ebits, UInt expm, 
+                           Obj *ro, Obj *pow, Int lpow ) {
+
+    UInt1 *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
+    Int        i;
+    Int        ex;
+    Int        start = 0;
+
+    for( ; w <= wend; w++ ) {
+        i = ((*w) >> ebits) + 1; 
+        v[ i ] += ((*w) & expm) * e;      /* overflow check necessary? */
+        if ( INT_INTOBJ(ro[i]) <= v[i] ) {
+            ex = v[i] / INT_INTOBJ(ro[i]);
+            v[i] -= ex * INT_INTOBJ(ro[i]);
+            if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                start = C8Bits_SAddWordIntoExpVec( 
+                    v, (UInt1*)DATA_WORD(pow[i]), ex,
+                    ebits, expm, ro, pow, lpow  );
+            }
+        }
+        if( start < i && v[i] ) start = i;
+    }
+    return start;
+}
+
+static Int C8Bits_SAddPartIntoExpVec( Int *v, UInt1 *w, UInt1 *wend,
+                           Int ebits, UInt expm, 
+                           Obj* ro, Obj *pow, Int lpow ) {
+
+    Int        i;
+    Int        ex;
+    Int        start = 0;
+
+    for( ; w <= wend; w++ ) {
+        i = ((*w) >> ebits) + 1; 
+        v[ i ] += ((*w) & expm);     /* overflow check necessary? */
+        if ( INT_INTOBJ(ro[i]) <= v[i] ) {
+            ex = v[i] / INT_INTOBJ(ro[i]);
+            v[i] -= ex * INT_INTOBJ(ro[i]);
+            if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                start = C8Bits_SAddWordIntoExpVec( 
+                    v, (UInt1*)DATA_WORD(pow[i]), ex,
+                    ebits, expm, ro, pow, lpow  );
+            }
+        }
+        if( start < i && v[i] ) start = i;
+    }
+    return start;
+}
 
 Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 {
@@ -257,12 +320,14 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     Int         max;        /* maximal stack size                          */
     Int         sp;         /* stack pointer                               */
-    Int         i;          /* loop variable                               */
+    Int         i, j;       /* loop variable                               */
     Int         gn;         /* current generator number                    */
     Int         ex;         /* current exponent                            */
     Int         start;      /* last non-trivial entry                      */
-
+    
     Obj         tmp;        /* temporary obj for power                     */
+
+    Int         resized = 0;/* indicates whether a Resize() happend        */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -303,23 +368,29 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     if ( SIZE_OBJ(vnw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vnw, sizeof(Obj)*(max+1) );
         RetypeBag( vnw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vlw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vlw, sizeof(Obj)*(max+1) );
         RetypeBag( vlw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vpw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vpw, sizeof(Obj)*(max+1) );
         RetypeBag( vpw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vew)/sizeof(Obj) < max+1 ) {
         ResizeBag( vew, sizeof(Obj)*(max+1) );
         RetypeBag( vew, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vge)/sizeof(Obj) < max+1 ) {
         ResizeBag( vge, sizeof(Obj)*(max+1) );
         RetypeBag( vge, T_STRING );
+        resized = 1;
     }
+    if( resized ) return -1;
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
@@ -393,19 +464,72 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
             /* we can move <gn> directly to the correct position           */
             if ( INT_INTOBJ(avc[gn]) == gn ) {
+              /*
+              *T  This if-statemant implies that the next two cases are never
+              *T  executed.  This is intended for the time being because we 
+              *T  need the single collector to work with pc-presentation
+              *T  whose rhs are not reduced while the next two if-case need
+              *T  reduced rhs.  This will be fixed at a later stage.
+              */
                 v[gn] += *ew;
                 *ew = 0;
                 if ( start <= gn )
                     start = gn;
             }
 
+            /* collect a whole word exponent pair                          */
+            else if( *pw == *nw && INT_INTOBJ(avc[gn]) == gn ) {
+              gn = C8Bits_SAddWordIntoExpVec( 
+                   v, *pw, *ge, ebits, expm, ro, pow, lpow  );
+              *pw = *lw;
+              *ew = *ge = 0;
+
+              if( start <= gn ) start = gn;
+              continue;
+            }
+
+            /* move the rest of a word directly into the correct positions */
+            else if( INT_INTOBJ(avc[gn]) == gn ) {
+              gn = C8Bits_SAddPartIntoExpVec( 
+                   v, *pw, *lw, ebits, expm, ro, pow, lpow  );
+              *pw = *lw;
+              *ew = 0;
+
+              if( start <= gn ) start = gn;
+              continue;
+            }
+
             /* we have to move <gn> step by step                           */
             else {
-                (*ew)--;
+                (*ew)--; v[gn]++;
+
                 i = INT_INTOBJ(avc[gn]);
                 if ( start < i )
                     i = start;
-                for ( ;  gn < i;  i-- ) {
+
+                /* Find the first position in v from where on ordinary
+                   collection  has to be applied.                          */
+                for( ; gn < i; i-- )
+                    if( v[i] && gn <= LEN_PLIST(cnj[i]) ) {
+                        tmp = ELM_PLIST( cnj[i], gn );
+                        if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) )
+                            break;
+                    }
+
+                /* Stack up this part of v if we run through the next 
+                   for-loop or if a power relation will be applied         */
+                if( gn < i || (INT_INTOBJ(ro[gn]) <= v[gn] &&
+                    gn <= lpow && pow[gn] && 0 < NPAIRS_WORD(pow[gn])) ) {
+                    j = INT_INTOBJ(avc[gn]);
+                    for( ; i < j; j-- )
+                        if( v[j] ) {
+                            SC_PUSH_WORD( gns[j], v[j] );
+                            v[j] = 0;
+                        }
+                }
+
+                if( gn < i ) {
+                  for ( ;  gn < i;  i-- ) {
                     if ( v[i] ) {
                         if ( LEN_PLIST(cnj[i]) < gn )
                             tmp = gns[i];
@@ -417,10 +541,11 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
                         SC_PUSH_WORD( tmp, v[i] );
                         v[i] = 0;
                     }
-                }
-                v[gn]++;
-                if ( start <= INT_INTOBJ(avc[gn]) )
+                  }
+                  if ( start <= INT_INTOBJ(avc[gn]) )
                     start = gn;
+                }
+                if( start <= gn ) start = gn;
             }
 
             /* check that the exponent is not too big                      */
@@ -678,6 +803,69 @@ Int C16Bits_VectorWord ( Obj vv, Obj v, Int num )
     sp--;  nw--;  lw--;  pw--;  ew--;  ge--
 
 
+/****************************************************************************
+**
+**  The following functions are  used to add  a word into the exponent vector
+**  without collection.  Two different cases occur:
+**
+**  Add   a word  into  the exponent  vector.   Here we   can  use the global
+**  exponent.
+**
+**  Add part  of a word  into the  exponent vector.   Here  we cannot use the
+**  global exponent because the beginning of  the word might not commute with
+**  the rest.
+**/
+static Int C16Bits_SAddWordIntoExpVec( Int *v, UInt2 *w, Int e, 
+                           Int ebits, UInt expm, 
+                           Obj *ro, Obj *pow, Int lpow ) {
+
+    UInt2 *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
+    Int        i;
+    Int        ex;
+    Int        start = 0;
+
+    for( ; w <= wend; w++ ) {
+        i = ((*w) >> ebits) + 1; 
+        v[ i ] += ((*w) & expm) * e;      /* overflow check necessary? */
+        if ( INT_INTOBJ(ro[i]) <= v[i] ) {
+            ex = v[i] / INT_INTOBJ(ro[i]);
+            v[i] -= ex * INT_INTOBJ(ro[i]);
+            if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                start = C16Bits_SAddWordIntoExpVec( 
+                    v, (UInt2*)DATA_WORD(pow[i]), ex,
+                    ebits, expm, ro, pow, lpow  );
+            }
+        }
+        if( start < i && v[i] ) start = i;
+    }
+    return start;
+}
+
+static Int C16Bits_SAddPartIntoExpVec( Int *v, UInt2 *w, UInt2 *wend,
+                           Int ebits, UInt expm, 
+                           Obj* ro, Obj *pow, Int lpow ) {
+
+    Int        i;
+    Int        ex;
+    Int        start = 0;
+
+    for( ; w <= wend; w++ ) {
+        i = ((*w) >> ebits) + 1; 
+        v[ i ] += ((*w) & expm);     /* overflow check necessary? */
+        if ( INT_INTOBJ(ro[i]) <= v[i] ) {
+            ex = v[i] / INT_INTOBJ(ro[i]);
+            v[i] -= ex * INT_INTOBJ(ro[i]);
+            if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                start = C16Bits_SAddWordIntoExpVec( 
+                    v, (UInt2*)DATA_WORD(pow[i]), ex,
+                    ebits, expm, ro, pow, lpow  );
+            }
+        }
+        if( start < i && v[i] ) start = i;
+    }
+    return start;
+}
+
 Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 {
     Int         ebits;      /* number of bits in the exponent              */
@@ -712,12 +900,14 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     Int         max;        /* maximal stack size                          */
     Int         sp;         /* stack pointer                               */
-    Int         i;          /* loop variable                               */
+    Int         i, j;       /* loop variable                               */
     Int         gn;         /* current generator number                    */
     Int         ex;         /* current exponent                            */
     Int         start;      /* last non-trivial entry                      */
 
     Obj         tmp;        /* temporary obj for power                     */
+
+    Int         resized = 0;/* indicates whether a Resize() happend        */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -758,23 +948,29 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     if ( SIZE_OBJ(vnw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vnw, sizeof(Obj)*(max+1) );
         RetypeBag( vnw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vlw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vlw, sizeof(Obj)*(max+1) );
         RetypeBag( vlw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vpw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vpw, sizeof(Obj)*(max+1) );
         RetypeBag( vpw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vew)/sizeof(Obj) < max+1 ) {
         ResizeBag( vew, sizeof(Obj)*(max+1) );
         RetypeBag( vew, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vge)/sizeof(Obj) < max+1 ) {
         ResizeBag( vge, sizeof(Obj)*(max+1) );
         RetypeBag( vge, T_STRING );
+        resized = 1;
     }
+    if( resized ) return -1;
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
@@ -848,19 +1044,72 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
             /* we can move <gn> directly to the correct position           */
             if ( INT_INTOBJ(avc[gn]) == gn ) {
+              /*
+              *T  This if-statemant implies that the next two cases are never
+              *T  executed.  This is intended for the time being because we 
+              *T  need the single collector to work with pc-presentation
+              *T  whose rhs are not reduced while the next two if-case need
+              *T  reduced rhs.  This will be fixed at a later stage.
+              */
                 v[gn] += *ew;
                 *ew = 0;
                 if ( start <= gn )
                     start = gn;
             }
 
+            /* collect a whole word exponent pair                          */
+            else if( *pw == *nw && INT_INTOBJ(avc[gn]) == gn ) {
+              gn = C16Bits_SAddWordIntoExpVec( 
+                   v, *pw, *ge, ebits, expm, ro, pow, lpow  );
+              *pw = *lw;
+              *ew = *ge = 0;
+
+              if( start <= gn ) start = gn;
+              continue;
+            }
+
+            /* move the rest of a word directly into the correct positions */
+            else if( INT_INTOBJ(avc[gn]) == gn ) {
+              gn = C16Bits_SAddPartIntoExpVec( 
+                   v, *pw, *lw, ebits, expm, ro, pow, lpow  );
+              *pw = *lw;
+              *ew = 0;
+
+              if( start <= gn ) start = gn;
+              continue;
+            }
+
             /* we have to move <gn> step by step                           */
             else {
-                (*ew)--;
+                (*ew)--; v[gn]++;
+
                 i = INT_INTOBJ(avc[gn]);
                 if ( start < i )
                     i = start;
-                for ( ;  gn < i;  i-- ) {
+
+                /* Find the first position in v from where on ordinary
+                   collection  has to be applied.                          */
+                for( ; gn < i; i-- )
+                    if( v[i] && gn <= LEN_PLIST(cnj[i]) ) {
+                        tmp = ELM_PLIST( cnj[i], gn );
+                        if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) )
+                            break;
+                    }
+
+                /* Stack up this part of v if we run through the next 
+                   for-loop or if a power relation will be applied         */
+                if( gn < i || (INT_INTOBJ(ro[gn]) <= v[gn] &&
+                    gn <= lpow && pow[gn] && 0 < NPAIRS_WORD(pow[gn])) ) {
+                    j = INT_INTOBJ(avc[gn]);
+                    for( ; i < j; j-- )
+                        if( v[j] ) {
+                            SC_PUSH_WORD( gns[j], v[j] );
+                            v[j] = 0;
+                        }
+                }
+
+                if( gn < i ) {
+                  for ( ;  gn < i;  i-- ) {
                     if ( v[i] ) {
                         if ( LEN_PLIST(cnj[i]) < gn )
                             tmp = gns[i];
@@ -872,10 +1121,11 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
                         SC_PUSH_WORD( tmp, v[i] );
                         v[i] = 0;
                     }
-                }
-                v[gn]++;
-                if ( start <= INT_INTOBJ(avc[gn]) )
+                  }
+                  if ( start <= INT_INTOBJ(avc[gn]) )
                     start = gn;
+                }
+                if( start <= gn ) start = gn;
             }
 
             /* check that the exponent is not too big                      */
@@ -1105,7 +1355,6 @@ Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
     return 0;
 }
 
-
 /****************************************************************************
 **
 *F  C32Bits_SingleCollectWord( <sc>, <vv>, <w> )
@@ -1133,6 +1382,69 @@ Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
 #define SC_POP_WORD() \
     sp--;  nw--;  lw--;  pw--;  ew--;  ge--
 
+
+/****************************************************************************
+**
+**  The following functions are  used to add  a word into the exponent vector
+**  without collection.  Two different cases occur:
+**
+**  Add   a word  into  the exponent  vector.   Here we   can  use the global
+**  exponent.
+**
+**  Add part  of a word  into the  exponent vector.   Here  we cannot use the
+**  global exponent because the beginning of  the word might not commute with
+**  the rest.
+**/
+static Int C32Bits_SAddWordIntoExpVec( Int *v, UInt4 *w, Int e, 
+                           Int ebits, UInt expm, 
+                           Obj *ro, Obj *pow, Int lpow ) {
+
+    UInt4 *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
+    Int        i;
+    Int        ex;
+    Int        start = 0;
+
+    for( ; w <= wend; w++ ) {
+        i = ((*w) >> ebits) + 1; 
+        v[ i ] += ((*w) & expm) * e;      /* overflow check necessary? */
+        if ( INT_INTOBJ(ro[i]) <= v[i] ) {
+            ex = v[i] / INT_INTOBJ(ro[i]);
+            v[i] -= ex * INT_INTOBJ(ro[i]);
+            if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                start = C32Bits_SAddWordIntoExpVec( 
+                    v, (UInt4*)DATA_WORD(pow[i]), ex,
+                    ebits, expm, ro, pow, lpow  );
+            }
+        }
+        if( start < i && v[i] ) start = i;
+    }
+    return start;
+}
+
+static Int C32Bits_SAddPartIntoExpVec( Int *v, UInt4 *w, UInt4 *wend,
+                           Int ebits, UInt expm, 
+                           Obj* ro, Obj *pow, Int lpow ) {
+
+    Int        i;
+    Int        ex;
+    Int        start = 0;
+
+    for( ; w <= wend; w++ ) {
+        i = ((*w) >> ebits) + 1; 
+        v[ i ] += ((*w) & expm);     /* overflow check necessary? */
+        if ( INT_INTOBJ(ro[i]) <= v[i] ) {
+            ex = v[i] / INT_INTOBJ(ro[i]);
+            v[i] -= ex * INT_INTOBJ(ro[i]);
+            if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                start = C32Bits_SAddWordIntoExpVec( 
+                    v, (UInt4*)DATA_WORD(pow[i]), ex,
+                    ebits, expm, ro, pow, lpow  );
+            }
+        }
+        if( start < i && v[i] ) start = i;
+    }
+    return start;
+}
 
 Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 {
@@ -1168,12 +1480,14 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     Int         max;        /* maximal stack size                          */
     Int         sp;         /* stack pointer                               */
-    Int         i;          /* loop variable                               */
+    Int         i, j;       /* loop variable                               */
     Int         gn;         /* current generator number                    */
     Int         ex;         /* current exponent                            */
     Int         start;      /* last non-trivial entry                      */
 
     Obj         tmp;        /* temporary obj for power                     */
+
+    Int         resized = 0;/* indicates whether a Resize() happend        */
 
     /* <start> is the first non-trivial entry in <v>                       */
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -1185,10 +1499,6 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
-    if ( 28 < ebits ) {
-        ErrorQuit( "number of exponent bits must be less than 29", 0L, 0L );
-        return 0;
-    }
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -1218,23 +1528,29 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     if ( SIZE_OBJ(vnw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vnw, sizeof(Obj)*(max+1) );
         RetypeBag( vnw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vlw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vlw, sizeof(Obj)*(max+1) );
         RetypeBag( vlw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vpw)/sizeof(Obj) < max+1 ) {
         ResizeBag( vpw, sizeof(Obj)*(max+1) );
         RetypeBag( vpw, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vew)/sizeof(Obj) < max+1 ) {
         ResizeBag( vew, sizeof(Obj)*(max+1) );
         RetypeBag( vew, T_STRING );
+        resized = 1;
     }
     if ( SIZE_OBJ(vge)/sizeof(Obj) < max+1 ) {
         ResizeBag( vge, sizeof(Obj)*(max+1) );
         RetypeBag( vge, T_STRING );
+        resized = 1;
     }
+    if( resized ) return -1;
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
@@ -1308,19 +1624,72 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
             /* we can move <gn> directly to the correct position           */
             if ( INT_INTOBJ(avc[gn]) == gn ) {
+              /*
+              *T  This if-statemant implies that the next two cases are never
+              *T  executed.  This is intended for the time being because we 
+              *T  need the single collector to work with pc-presentation
+              *T  whose rhs are not reduced while the next two if-case need
+              *T  reduced rhs.  This will be fixed at a later stage.
+              */
                 v[gn] += *ew;
                 *ew = 0;
                 if ( start <= gn )
                     start = gn;
             }
 
+            /* collect a whole word exponent pair                          */
+            else if( *pw == *nw && INT_INTOBJ(avc[gn]) == gn ) {
+              gn = C32Bits_SAddWordIntoExpVec( 
+                   v, *pw, *ge, ebits, expm, ro, pow, lpow  );
+              *pw = *lw;
+              *ew = *ge = 0;
+
+              if( start <= gn ) start = gn;
+              continue;
+            }
+
+            /* move the rest of a word directly into the correct positions */
+            else if( INT_INTOBJ(avc[gn]) == gn ) {
+              gn = C32Bits_SAddPartIntoExpVec( 
+                   v, *pw, *lw, ebits, expm, ro, pow, lpow  );
+              *pw = *lw;
+              *ew = 0;
+
+              if( start <= gn ) start = gn;
+              continue;
+            }
+
             /* we have to move <gn> step by step                           */
             else {
-                (*ew)--;
+                (*ew)--; v[gn]++;
+
                 i = INT_INTOBJ(avc[gn]);
                 if ( start < i )
                     i = start;
-                for ( ;  gn < i;  i-- ) {
+
+                /* Find the first position in v from where on ordinary
+                   collection  has to be applied.                          */
+                for( ; gn < i; i-- )
+                    if( v[i] && gn <= LEN_PLIST(cnj[i]) ) {
+                        tmp = ELM_PLIST( cnj[i], gn );
+                        if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) )
+                            break;
+                    }
+
+                /* Stack up this part of v if we run through the next 
+                   for-loop or if a power relation will be applied         */
+                if( gn < i || (INT_INTOBJ(ro[gn]) <= v[gn] &&
+                    gn <= lpow && pow[gn] && 0 < NPAIRS_WORD(pow[gn])) ) {
+                    j = INT_INTOBJ(avc[gn]);
+                    for( ; i < j; j-- )
+                        if( v[j] ) {
+                            SC_PUSH_WORD( gns[j], v[j] );
+                            v[j] = 0;
+                        }
+                }
+
+                if( gn < i ) {
+                  for ( ;  gn < i;  i-- ) {
                     if ( v[i] ) {
                         if ( LEN_PLIST(cnj[i]) < gn )
                             tmp = gns[i];
@@ -1332,10 +1701,11 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
                         SC_PUSH_WORD( tmp, v[i] );
                         v[i] = 0;
                     }
-                }
-                v[gn]++;
-                if ( start <= INT_INTOBJ(avc[gn]) )
+                  }
+                  if ( start <= INT_INTOBJ(avc[gn]) )
                     start = gn;
+                }
+                if( start <= gn ) start = gn;
             }
 
             /* check that the exponent is not too big                      */
@@ -1460,23 +1830,70 @@ FinPowConjCol C32Bits_SingleCollector = {
     C32Bits_Solution
 };
 
+/****************************************************************************
+**
+*F * * * * * * * * * * *  combinatorial collectors  * * * * * * * * * * * * *
+**
+**  Here the combinatorial collectors are setup.  They behave like single
+**  collectors and therefore can be used int the same way.
+*/
+
+/****************************************************************************
+**
+
+*V  C8Bits_CombiCollector
+*/
+FinPowConjCol C8Bits_CombiCollector = {
+    C8Bits_WordVectorAndClear,
+    C8Bits_VectorWord,
+    C8Bits_CombiCollectWord,
+    C8Bits_Solution
+};
+
+/****************************************************************************
+**
+
+*V  C16Bits_CombiCollector
+*/
+FinPowConjCol C16Bits_CombiCollector = {
+    C16Bits_WordVectorAndClear,
+    C16Bits_VectorWord,
+    C16Bits_CombiCollectWord,
+    C16Bits_Solution
+};
+
+/****************************************************************************
+**
+
+*V  C32Bits_CombiCollector
+*/
+FinPowConjCol C32Bits_CombiCollector = {
+    C32Bits_WordVectorAndClear,
+    C32Bits_VectorWord,
+    C32Bits_CombiCollectWord,
+    C32Bits_Solution
+};
 
 /****************************************************************************
 **
 
 *V  FinPowConjCollectors
 */
-FinPowConjCol * FinPowConjCollectors [3] =
+FinPowConjCol * FinPowConjCollectors [6] =
 {
 #define C8Bits_SingleCollectorNo        0
        &C8Bits_SingleCollector,
 #define C16Bits_SingleCollectorNo       1
        &C16Bits_SingleCollector,
 #define C32Bits_SingleCollectorNo       2
-       &C32Bits_SingleCollector
+       &C32Bits_SingleCollector,
+#define C8Bits_CombiCollectorNo         3
+       &C16Bits_CombiCollector,
+#define C16Bits_CombiCollectorNo        4
+       &C16Bits_CombiCollector,
+#define C32Bits_CombiCollectorNo        5
+       &C32Bits_CombiCollector
 };
-
-
 
 /****************************************************************************
 **
@@ -1969,16 +2386,16 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 }
 
 
+
+
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -2078,6 +2495,12 @@ static Int InitLibrary (
              INTOBJ_INT(SCP_COLLECTOR) );
     AssGVar( GVarName( "SCP_AVECTOR" ),
              INTOBJ_INT(SCP_AVECTOR) );
+    AssGVar( GVarName( "SCP_WEIGHTS" ),
+             INTOBJ_INT(SCP_WEIGHTS) );
+    AssGVar( GVarName( "SCP_CLASS" ),
+             INTOBJ_INT(SCP_CLASS) );
+    AssGVar( GVarName( "SCP_AVECTOR2" ),
+             INTOBJ_INT(SCP_AVECTOR2) );
 
     /* export collector number                                             */
     AssGVar( GVarName( "8Bits_SingleCollector" ),
@@ -2086,6 +2509,13 @@ static Int InitLibrary (
              INTOBJ_INT(C16Bits_SingleCollectorNo) );
     AssGVar( GVarName( "32Bits_SingleCollector" ),
              INTOBJ_INT(C32Bits_SingleCollectorNo) );
+
+    AssGVar( GVarName( "8Bits_CombiCollector" ),
+             INTOBJ_INT(C8Bits_CombiCollectorNo) );
+    AssGVar( GVarName( "16Bits_CombiCollector" ),
+             INTOBJ_INT(C16Bits_CombiCollectorNo) );
+    AssGVar( GVarName( "32Bits_CombiCollector" ),
+             INTOBJ_INT(C32Bits_CombiCollectorNo) );
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

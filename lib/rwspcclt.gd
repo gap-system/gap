@@ -11,38 +11,37 @@
 ##  and rws defined by a power/conjugate presentation.
 ##
 ##  Any  implementation  of  a collector must   at  least  specify  a  way to
-##  construct such a collector and must implement  methods for 'SetPower' and
-##  'CollectWordOrFail'.    A  power/commutator collector must also implement
-##  'SetCommutator',    a  power/conjugate  collector   'SetConjugate'.   The
-##  operation  'CollectWordOrFail'   allows a  collector to return  'fail' if
+##  construct such a collector and must implement  methods for `SetPower' and
+##  `CollectWordOrFail'.    A  power/commutator collector must also implement
+##  `SetCommutator',    a  power/conjugate  collector   `SetConjugate'.   The
+##  operation  `CollectWordOrFail'   allows a  collector to return  `fail' if
 ##  the     given   stacks    were too   small,    however     in  this  case
-##  'CollectWordOrFail'  is  responsible  for    enlarging the  stacks.   The
-##  default method for 'CollectWord' uses 'CollectWordOrFail' and copy.
+##  `CollectWordOrFail'  is  responsible  for    enlarging the  stacks.   The
+##  default method for `CollectWord' uses `CollectWordOrFail' and copy.
 ##
-##  The default method for 'ReducedForm' uses 'CollectWordOrFail' in order to
+##  The default method for `ReducedForm' uses `CollectWordOrFail' in order to
 ##  compute the reduced form.
 ##
 ##  Polycyclic rewriting systems   assume that the  underlying structures are
-##  groups, therefore they have the feature 'IsBuiltFromGroup'.
+##  groups, therefore they have the feature `IsBuiltFromGroup'.
 ##
 ##  Polycyclic rewriting systems must also specify how to construct a word in
 ##  the underlying   free group given an  exponent  vector.  The operation is
-##  'ObjExponents'.
+##  `ObjExponents'.
 ##
 ##  As in most applications  you will start with an  empty collector, fill in
 ##  most  of   the commutators  and   powers, and  then start  collecting,  a
 ##  collector can be  up    to  date  or out    of  date.  If   the   feature
-##  'IsUpToDatePolycyclicCollector'  is present,  then  'CollectWord' can  be
-##  used.  Otherwise 'UpdatePolycyclicCollector'  must be called before using
-##  'CollectWord'.
+##  `IsUpToDatePolycyclicCollector'  is present,  then  `CollectWord' can  be
+##  used.  Otherwise `UpdatePolycyclicCollector'  must be called before using
+##  `CollectWord'.
 ##
 ##  WARNING: you     must    *never* ever   install   an   implications   for
-##  'IsUpToDatePolycyclicCollector' because it is reset when the presentation
+##  `IsUpToDatePolycyclicCollector' because it is reset when the presentation
 ##  is changed.
 ##
 Revision.rwspcclt_gd :=
     "@(#)$Id$";
-
 
 #############################################################################
 ##
@@ -74,13 +73,10 @@ DeclareCategory(
 
 #############################################################################
 ##
-
 #A  RelativeOrders( <col> )
 ##
-DeclareAttribute(
-    "RelativeOrders",
-    IsObject );
-
+##  The list of relative orders corresponding to <col>.
+DeclareAttribute( "RelativeOrders", IsRewritingSystem );
 
 
 #############################################################################
@@ -158,6 +154,10 @@ DeclareOperation(
     "SetCommutatorNC",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
 
+DeclareOperation(
+    "SetCommutatorANC",
+    [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
+
 
 #############################################################################
 ##
@@ -171,6 +171,10 @@ DeclareOperation(
     "SetConjugateNC",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
 
+DeclareOperation(
+    "SetConjugateANC",
+    [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
+
         
 #############################################################################
 ##
@@ -182,6 +186,10 @@ DeclareOperation(
 
 DeclareOperation(
     "SetPowerNC",
+    [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
+
+DeclareOperation(
+    "SetPowerANC",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
 
 
@@ -200,9 +208,35 @@ DeclareOperation(
 
 #############################################################################
 ##
+#O  GetCommutatorNC( <col>, <h>, <g> )
+##
+DeclareOperation(
+        "GetCommutatorNC",
+        [ IsPolycyclicCollector, IsObject, IsObject ] );
+        
+#############################################################################
+##
+#O  GetConjugateNC( <col>, <h>, <g> )
+##
+DeclareOperation(
+        "GetConjugateNC",
+        [ IsPolycyclicCollector, IsObject, IsObject ] );
+        
+#############################################################################
+##
+#O  GetPowerNC( <col>, <g> )
+##
+DeclareOperation( 
+        "GetPowerNC",
+        [ IsPolycyclicCollector, IsObject ] );
+
+#############################################################################
+##
 
 #O  SingleCollector( <fgrp>, <orders> )
 ##
+##  creates a single collector to the free group <fgrp> and the relative
+##  orders <orders>.
 DeclareOperation(
     "SingleCollector",
     [ IsObject, IsObject ] );
@@ -215,7 +249,24 @@ DeclareOperation(
 DeclareOperation(
     "SingleCollectorByGenerators",
     [ IsFamily, IsList, IsList ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
+#T 1997/01/16 fceller was old `NewConstructor'
+
+#############################################################################
+##
+#O  CombinatorialCollector( <fgrp>, <orders> )
+##
+DeclareOperation(
+    "CombinatorialCollector",
+    [ IsObject, IsObject ] );
+
+
+#############################################################################
+##
+#O  CombinatorialCollectorByGenerators( <fam>, <gens>, <orders> )
+##
+DeclareOperation(
+    "CombinatorialCollectorByGenerators",
+    [ IsFamily, IsList, IsList ] );
 
 
 #############################################################################
@@ -234,6 +285,23 @@ DeclareOperation(
 DeclareOperation(
     "DeepThoughtCollectorByGenerators",
     [ IsFamily, IsList, IsList ] );
+
+
+#############################################################################
+##
+#O  EvaluateOverlapCBA  . . . . . . . . . . . . . evaluate a consistency test
+#O  EvaluateOverlapBNA  . . . . . . . . . . . . . evaluate a consistency test
+#O  EvaluateOverlapBAN  . . . . . . . . . . . . . evaluate a consistency test
+#O  EvaluateOverlapANA  . . . . . . . . . . . . . evaluate a consistency test
+##
+DeclareOperation( "EvaluateOverlapCBA",
+        [ IsPolycyclicCollector, IsList, IsList, IsInt, IsInt, IsInt ] );
+DeclareOperation( "EvaluateOverlapBNA",
+        [ IsPolycyclicCollector, IsList, IsList, IsInt, IsInt, IsInt ] );
+DeclareOperation( "EvaluateOverlapBAN",
+        [ IsPolycyclicCollector, IsList, IsList, IsInt, IsInt, IsInt ] );
+DeclareOperation( "EvaluateOverlapANA",
+        [ IsPolycyclicCollector, IsList, IsList, IsInt, IsInt ] );
 
 
 #############################################################################

@@ -11,7 +11,7 @@
 ##
 ##  The ordering of elements for nonprime $n$ is defined by the ordering of
 ##  the representatives.
-##  For primes smaller than 'MAXSIZE_GF_INTERNAL', the ordering of the
+##  For primes smaller than `MAXSIZE_GF_INTERNAL', the ordering of the
 ##  internal finite field elements must be respected, for larger primes
 ##  again the ordering of representatives is chosen.
 ##
@@ -27,21 +27,26 @@ Revision.zmodnz_gd :=
 #C  IsZmodpZObjSmall( <obj> )
 #C  IsZmodpZObjLarge( <obj> )
 ##
-##  The elements in the rings $Z / n Z$ are in the category 'IsZmodnZObj'.
-##  If $n$ is a prime then the elements are of course also in 'IsFFE',
-##  otherwise they are in 'IsZmodnZObjNonprime'.
-##  'IsZmodpZObj' is an abbreviation of 'IsZmodnZObj and IsFFE'.
-##  This category is the disjoint union of 'IsZmodpZObjSmall' and
-##  'IsZmodpZObjLarge', the former containing all elements with $n$ at most
-##  'MAXSIZE_GF_INTERNAL'.
+##  The elements in the rings $Z / n Z$ are in the category `IsZmodnZObj'.
+##  If $n$ is a prime then the elements are of course also in the category
+##  `IsFFE' (see~"IsFFE"), otherwise they are in `IsZmodnZObjNonprime'.
+##  `IsZmodpZObj' is an abbreviation of `IsZmodnZObj and IsFFE'.  This
+##  category is the disjoint union of `IsZmodpZObjSmall' and
+##  `IsZmodpZObjLarge', the former containing all elements with $n$ at most
+##  `MAXSIZE_GF_INTERNAL'.
 ##
 ##  The reasons to distinguish the prime case from the nonprime case are
-##  - that objects in 'IsZmodnZObjNonprime' have an external representation
-##    (namely the modulus in the range $[ 0, 1, ... n-1 ]$),
-##  - that the comparison of elements can be defined as comparison of the
+##  \beginlist
+##  \item{-}
+##    that objects in `IsZmodnZObjNonprime' have an external representation
+##    (namely the residue in the range $[ 0, 1, ... n-1 ]$),
+##  \item{-}
+##    that the comparison of elements can be defined as comparison of the
 ##    residues, and
-##  - that the elements lie in a family of type 'IsZmodnZObjNonprimeFamily'
-##    (note that for prime $n$, the family must be an 'IsFFEFamily').
+##  \item{-}
+##    that the elements lie in a family of type `IsZmodnZObjNonprimeFamily'
+##    (note that for prime $n$, the family must be an `IsFFEFamily').
+##  \endlist
 ##
 ##  The reasons to distinguish the small and the large case are
 ##  that for small $n$ the elements must be compatible with the internal
@@ -49,7 +54,7 @@ Revision.zmodnz_gd :=
 ##  comparison as comparison of residues for large $n$.
 ##
 ##  Note that we *cannot* claim that every finite field element of degree 1
-##  is in 'IsZmodnZObj', since finite field elements in internal
+##  is in `IsZmodnZObj', since finite field elements in internal
 ##  representation may not know that they lie in the prime field.
 ##
 DeclareCategory( "IsZmodnZObj", IsScalar );
@@ -69,8 +74,12 @@ DeclareCategoryFamily( "IsZmodnZObjNonprime" );
 #############################################################################
 ##
 #C  IsZmodnZObjNonprimeCollection( <obj> )
+#C  IsZmodnZObjNonprimeCollColl( <obj> )
+#C  IsZmodnZObjNonprimeCollCollColl( <obj> )
 ##
 DeclareCategoryCollections( "IsZmodnZObjNonprime" );
+DeclareCategoryCollections( "IsZmodnZObjNonprimeCollection" );
+DeclareCategoryCollections( "IsZmodnZObjNonprimeCollColl" );
 
 
 #############################################################################
@@ -78,16 +87,7 @@ DeclareCategoryCollections( "IsZmodnZObjNonprime" );
 #M  IsFinite( <R> ) . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
 InstallTrueMethod( IsFinite,
-    IsZmodnZObjNonprimeCollection and IsDomain );
-#T better generalize 'IsDuplicateFreeList' to 'IsDuplicateFree',
-#T and use this here?
-
-
-#############################################################################
-##
-#O  ZmodnZObj( <Fam>, <i> )
-##
-DeclareOperation( "ZmodnZObj", [ IsZmodnZObjNonprimeFamily, IsInt ] );
+    IsZmodnZObjNonprimeCollection and IsDuplicateFree );
 
 
 #############################################################################
@@ -109,9 +109,23 @@ InstallFlushableValue( Z_MOD_NZ, [ [], [] ] );
 #F  ZmodpZ( <p> )
 #F  ZmodpZNC( <p> )
 ##
-##  Each ring $\Z / n \Z$ contains the whole elements family if $n$ is not a
-##  prime, and is embedded into the family of finite field elements of
-##  characteristic $n$ otherwise.
+##  `ZmodnZ' returns a ring $R$ isomorphic to the residue class ring of the
+##  integers modulo the positive integer <n>.
+##  The element corresponding to the residue class of the integer $i$ in this
+##  ring can be obtained by $i \* `One'( R )$, and a representative of the
+##  residue class corresponding to the element $x \in R$ can be computed by
+##  $`Int'( x )$.
+##
+##  `ZmodnZ( <n> )' is equivalent to `Integers mod <n>'.
+##
+##  `ZmodpZ' does the same if the argument <p> is a prime integer,
+##  additionally the result is a field.
+##  `ZmodpZNC' omits the check whether <p> is a prime.
+##
+##  Each ring returned by these functions contains the whole family of its
+##  elements
+##  if $n$ is not a prime, and is embedded into the family of finite field
+##  elements of characteristic $n$ if $n$ is a prime.
 ##
 DeclareGlobalFunction( "ZmodnZ" );
 DeclareGlobalFunction( "ZmodpZ" );
@@ -120,5 +134,26 @@ DeclareGlobalFunction( "ZmodpZNC" );
 
 #############################################################################
 ##
-#E  zmodnz.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#O  ZmodnZObj( <Fam>, <i> )
+##
+##  creates an object in the residue class family <Fam> whose coset is
+##  represented by integer <i>.
+##
+DeclareOperation( "ZmodnZObj", [ IsZmodnZObjNonprimeFamily, IsInt ] );
+
+
+#############################################################################
+##
+#A  ModulusOfZmodnZObj( <obj> )
+##
+##  For an element <obj> in a residue class ring of integers modulo $n$
+##  (see~"IsZmodnZObj"), `ModulusOfZmodnZObj' returns the positive integer
+##  $n$.
+##
+DeclareAttribute( "ModulusOfZmodnZObj", IsZmodnZObj );
+
+
+#############################################################################
+##
+#E
 

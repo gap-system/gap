@@ -10,14 +10,24 @@
 Revision.gprdperm_gi :=
     "@(#)$Id$";
 
+
 #############################################################################
 ##
-#F  DirectProductOfPermGroups( <grps> ) . . . . direct product of perm groups
+#M  DirectProductOp( <grps>, <G> )  . . . . . . direct product of perm groups
 ##
-InstallGlobalFunction( DirectProductOfPermGroups, function( grps )
+InstallMethod( DirectProductOp,
+    "for a list of permutation groups, and a permutation group",
+    IsCollsElms,
+    [ IsList and IsPermCollColl, IsPermGroup ], 0,
+    function( grps, G )
     local   oldgrps,  olds,  news,  perms,  gens,
             deg,  grp,  old,  new,  perm,  gen,  D, info;
-    
+
+    # Check the arguments.
+    if ForAny( grps, x -> not IsGroup( x ) ) then
+      TryNextMethod();
+    fi;
+
     oldgrps := [  ];
     olds    := [  ];
     news    := [  ];
@@ -44,7 +54,7 @@ InstallGlobalFunction( DirectProductOfPermGroups, function( grps )
         od;
 
     od;
-    D := Group( gens );
+    D := GroupByGenerators( gens );
     info := rec( groups := oldgrps,
                  olds   := olds,
                  news   := news,
@@ -54,18 +64,19 @@ InstallGlobalFunction( DirectProductOfPermGroups, function( grps )
 
     SetDirectProductInfo( D, info );
     return D;
-end );
+    end );
+
 
 #############################################################################
 ##
 #M  Size( <D> ) . . . . . . . . . . . . . . . . . . . . . . of direct product
 ##
-InstallMethod( Size, true, [ IsPermGroup and HasDirectProductInfo ], 0,
-    function( D )
-    local info;
-    info := DirectProductInfo( D );
-    return Product( List( info.groups, x -> Size( x ) ) );
-end );
+InstallMethod( Size,
+    "for a permutation group that knows to be a direct product",
+    true,
+    [ IsPermGroup and HasDirectProductInfo ], 0,
+    D -> Product( List( DirectProductInfo( D ).groups, Size ) ) );
+
 
 #############################################################################
 ##
@@ -84,6 +95,24 @@ DeclareRepresentation( "IsEmbeddingWreathProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsInjective and
       IsSPGeneralMapping, [ "component" ] );
+
+#############################################################################
+##
+#R  IsEmbeddingImprimitiveWreathProductPermGroup( <hom> )
+##
+##  special for case of imprimitive wreath product
+DeclareRepresentation( "IsEmbeddingImprimitiveWreathProductPermGroup",
+      IsEmbeddingWreathProductPermGroup, [ "component" ] );
+
+#############################################################################
+##
+#R  IsEmbeddingProductActionWreathProductPermGroup( <hom> )
+##
+##  special for case of product action wreath product
+DeclareRepresentation(
+  "IsEmbeddingProductActionWreathProductPermGroup",
+    IsEmbeddingWreathProductPermGroup 
+    and IsGroupGeneralMappingByAsGroupGeneralMappingByImages,["component"]);
 
 #############################################################################
 ##
@@ -331,7 +360,7 @@ InstallMethod( SubdirectProduct, true,
     od;
 
     # and make the subdirect product
-    S := Group( gens );
+    S := GroupByGenerators( gens );
     SetParent( S, D );
 
     Dinfo := DirectProductInfo( D );
@@ -492,49 +521,65 @@ end );
 
 #############################################################################
 ##
-#M  WreathProduct( <G>, <H> ) . . . . .  wreath product of permutation groups
+#M  WreathProductImprimitiveAction( <G>, <H> [,<hom>] )
 ##
-InstallMethod( WreathProduct, true, [ IsObject, IsObject ], 0,
-    function( G, H )
-    local   alpha,      # operation homomorphism for <H>
-            I,          # image of <alpha>
-            grp,        # wreath product of <G> and <H>, result
-            gens,       # generators of the wreath product
-            gen,        # one generator
-            domG,       # domain of operation of <G>
-            degG,       # degree of <G>
-            domI,       # domain of operation of <I>
-            degI,       # degree of <I>
-            shift,      # permutation permuting the blocks
-	    perms,      # component permutating permutations
-	    basegens,   # generators of base subgroup
-	    hgens,	# complement generators
-	    components, # components (points) of base group
-            rans,       # list of arguments that have '.sCO.random'
-	    info,	# info record
-            i, k, l;    # loop variables
+InstallGlobalFunction(WreathProductImprimitiveAction,function( arg )
+local	G,H,	    # factors
+	GP,	    # preimage of <G> (if homomorphism)
+	Ggens,Igens,#permutation images of generators
+    	alpha,      # action homomorphism for <H>
+	permimpr,   # product is pure permutation groups imprimitive
+        I,          # image of <alpha>
+        grp,        # wreath product of <G> and <H>, result
+        gens,       # generators of the wreath product
+        gen,        # one generator
+        domG,       # domain of operation of <G>
+        degG,       # degree of <G>
+        domI,       # domain of operation of <I>
+        degI,       # degree of <I>
+        shift,      # permutation permuting the blocks
+	perms,      # component permutating permutations
+	basegens,   # generators of base subgroup
+	hgens,	# complement generators
+	components, # components (points) of base group
+        rans,       # list of arguments that have '.sCO.random'
+	info,	# info record
+        i, k, l;    # loop variables
 
+    G:=arg[1];
+    H:=arg[2];
     # get the domain of operation of <G> and <H>
     if IsPermGroup( G )  then
+	permimpr:=true;
         domG := MovedPoints( G );
+	GP:=G;
+	Ggens:=GeneratorsOfGroup(G);
     elif IsGroupHomomorphism( G )  and  IsPermGroup( Range( G ) )  then
+	permimpr:=false;
+	GP:=Source(G);
         domG := MovedPoints( Range( G ) );
+	Ggens:=List(GeneratorsOfGroup(GP),i->ImageElm(G,i));
         G := Image( G );
     else
         Error( "WreathProduct: <G> must be perm group or homomorphism" );
     fi;
     degG := Length( domG );
-    if IsPermGroup( H )  then
+
+    if Length(arg)=2 then
         domI := MovedPoints( H );
+	I := H;
         alpha := IdentityMapping( H );
-    elif IsGroupHomomorphism( H )  and  IsPermGroup( Range( H ) )  then
-        alpha := H;
-        domI := MovedPoints( Range( H ) );
-        H := Source( H );
+        Igens:=GeneratorsOfGroup(H);
+    elif IsGroupHomomorphism(arg[3]) and IsPermGroup(Range(arg[3])) then
+	permimpr:=false; # also will fail the permutation imprimitive case
+        alpha := arg[3];
+	I := Image( alpha );
+        domI := MovedPoints( Range( alpha) );
+        Igens:=List(GeneratorsOfGroup(H),i->ImageElm(alpha,i));
     else
         Error( "WreathProduct: <H> must be perm group or homomorphism" );
     fi;
-    I := Image( alpha );
+
     if IsEmpty( domI )  then
         domI := [ 1 ];
     fi;
@@ -548,7 +593,7 @@ InstallMethod( WreathProduct, true, [ IsObject, IsObject ], 0,
 	components[i]:=[(i-1)*degG+1..i*degG];
         shift := MappingPermListList( domG, components[i] );
 	Add(perms,shift);
-        for gen  in GeneratorsOfGroup( G )  do
+        for gen  in Ggens  do
             Add( gens, gen ^ shift );
         od;
     od;
@@ -557,7 +602,7 @@ InstallMethod( WreathProduct, true, [ IsObject, IsObject ], 0,
     # add the generators of <I>
     hgens:=[];
     if degG = 0 then degG := 1; fi;
-    for gen  in GeneratorsOfGroup( I )  do
+    for gen  in Igens  do
         shift := [];
         for i  in [1..degI]  do
             k := Position( domI, domI[i]^gen );
@@ -571,33 +616,47 @@ InstallMethod( WreathProduct, true, [ IsObject, IsObject ], 0,
     od;
 
     # make the group generated by those generators
-    grp := GroupByGenerators( gens, () );
+    grp := GroupWithGenerators( gens, () );
 
     # enter the size
     SetSize( grp, Size( G ) ^ degI * Size( I ) );
 
     # note random method
-    rans := Filtered( [ G, H ], i ->
+    rans := Filtered( [ G, I ], i ->
             IsBound( StabChainOptions( i ).random ) );
     if Length( rans ) > 0 then
         SetStabChainOptions( grp, rec( random :=
             Minimum( List( rans, i -> StabChainOptions( i ).random ) ) ) );
     fi;
-    info := rec( groups := [G,H],
-                 alpha  := alpha,
-                 perms  := perms,
-		 base   := SubgroupNC(grp,basegens),
-		 I      := I,
-		 degI   := degI,
-		 hgens  := hgens,
-		 components := components,
-                 embeddings := []);
+
+    info := rec( 
+      groups := [GP,H],
+      alpha  := alpha,
+      perms  := perms,
+      base   := SubgroupNC(grp,basegens),
+      basegens:=basegens,
+      I      := I,
+      degI   := degI,
+      hgens  := hgens,
+      components := components,
+      embeddingType := NewType(
+                 GeneralMappingsFamily(PermutationsFamily,PermutationsFamily),
+		 IsEmbeddingImprimitiveWreathProductPermGroup),
+      embeddings := [],
+      permimpr:=permimpr);
 
     SetWreathProductInfo( grp, info );
 
     # return the group
     return grp;
-end );
+end);
+
+InstallMethod( WreathProduct, true, [ IsPermGroup, IsPermGroup ], 0,
+  WreathProductImprimitiveAction);
+
+InstallOtherMethod( WreathProduct, true,
+ [ IsPermGroup, IsPermGroup, IsSPGeneralMapping ], 0,
+  WreathProductImprimitiveAction);
 
 #############################################################################
 ##
@@ -607,15 +666,17 @@ InstallMethod( Embedding, true,
   [ IsPermGroup and HasWreathProductInfo,
     IsPosInt ], 0,
 function( W, i )
-    local   emb, info;
+local   emb, info;
     info := WreathProductInfo( W );
     if IsBound( info.embeddings[i] ) then return info.embeddings[i]; fi;
     
     if i<=info.degI then
-      emb := Objectify( NewType( GeneralMappingsFamily( PermutationsFamily,
-							PermutationsFamily ),
-		     IsEmbeddingWreathProductPermGroup ),
-		     rec( component := i ) );
+      emb := Objectify( info.embeddingType , rec( component := i ) );
+      if IsBound(info.productType) and info.productType=true then
+        SetAsGroupGeneralMappingByImages(emb,GroupHomomorphismByImagesNC(
+	  info.groups[1],W,GeneratorsOfGroup(info.groups[1]),
+	  info.basegens[i]));
+      fi;
     elif i=info.degI+1 then
       emb:= GroupHomomorphismByImagesNC(info.I,W,GeneratorsOfGroup(info.I),
                                         info.hgens);
@@ -646,7 +707,7 @@ InstallMethod( Source, true, [ IsEmbeddingWreathProductPermGroup ], 0,
 #M  ImagesRepresentative( <emb>, <g> )  . . . . . . . . . . . .  of embedding
 ##
 InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsEmbeddingWreathProductPermGroup,
+        [ IsEmbeddingImprimitiveWreathProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
     return g ^ WreathProductInfo( Range( emb ) ).perms[ emb!.component ];
@@ -657,7 +718,7 @@ end );
 #M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
 ##
 InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-        [ IsEmbeddingWreathProductPermGroup,
+        [ IsEmbeddingImprimitiveWreathProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
     local info;
@@ -703,14 +764,24 @@ end );
 InstallOtherMethod( Projection, true,
   [ IsPermGroup and HasWreathProductInfo ],0,
 function( W )
-local  info,proj;
+local  info,proj,H;
   info := WreathProductInfo( W );
   if IsBound( info.projection ) then return info.projection; fi;
-  proj:=OperationHomomorphism(W,info.components,OnSets);
+
+  if IsBound(info.permimpr) and info.permimpr=true then
+    proj:=ActionHomomorphism(W,info.components,OnSets);
+  else
+    H:=info.groups[2];
+    proj:=List(info.basegens,i->One(H));
+    proj:=GroupHomomorphismByImagesNC(W,H,
+      Concatenation(info.basegens,info.hgens),
+      Concatenation(proj,GeneratorsOfGroup(H)));
+  fi;
+  SetKernelOfMultiplicativeGeneralMapping(proj,info.base);
+
   info.projection:=proj;
   return proj;
 end);
-
         
 #############################################################################
 ##
@@ -718,7 +789,7 @@ end);
 ##
 InstallGlobalFunction( WreathProductProductAction, function( G, H )
     local  W,  domG,  domI,  map,  I,  deg,  n,  N,  gens,  gen,  i,  list,
-           p,  adic,  q,  Val,  val,  rans;
+           p,  adic,  q,  Val,  val,  rans,basegens,hgens,info,degI;
     
     # get the domain of operation of <G> and <H>
     if IsPermGroup( G )  then
@@ -746,10 +817,12 @@ InstallGlobalFunction( WreathProductProductAction, function( G, H )
     if IsEmpty( domI )  then
         domI := [ 1 ];
     fi;
+    degI := Length( domI );
     n := Length( domI );
 
     N := deg ^ n;
     gens := [  ];
+    basegens:=List([1..n],i->[]);
     for gen  in GeneratorsOfGroup( G )  do
         val := 1;
         for i  in [ 1 .. n ]  do
@@ -760,10 +833,13 @@ InstallGlobalFunction( WreathProductProductAction, function( G, H )
                 Add( list, p +
                      ( Position( domG, domG[ q ] ^ gen ) - q ) * val );
             od;
-            Add( gens, PermList( list + 1 ) );
+            q:=PermList( list + 1 );
+            Add(gens,q);
+	    Add(basegens[i],q);
             val := Val;
         od;
     od;
+    hgens:=[];
     for gen  in GeneratorsOfGroup( I )  do
         list := [  ];
         for p  in [ 0 .. N - 1 ]  do
@@ -778,7 +854,9 @@ InstallGlobalFunction( WreathProductProductAction, function( G, H )
             od;
             Add( list, q );
         od;
-        Add( gens, PermList( list + 1 ) );
+        q:=PermList( list + 1 );
+        Add(gens,q);
+	Add(hgens,q);
     od;
     W := GroupByGenerators( gens, () );
     SetSize( W, Size( G ) ^ n * Size( I ) );
@@ -791,7 +869,128 @@ InstallGlobalFunction( WreathProductProductAction, function( G, H )
             Minimum( List( rans, i -> StabChainOptions( i ).random ) ) ) );
     fi;
 
+    info := rec( 
+      groups := [G,H],
+      alpha  := map,
+      I      := I,
+      degI   := degI,
+      productType:=true,
+      basegens := basegens,
+      base   := SubgroupNC(W,Flat(basegens)),
+      hgens  := hgens,
+      embeddingType := NewType(
+                 GeneralMappingsFamily(PermutationsFamily,PermutationsFamily),
+		 IsEmbeddingProductActionWreathProductPermGroup),
+      embeddings := []);
+
+    SetWreathProductInfo( W, info );
+
     return W;
 end );
 
+##############################################################################
+##
+#M  SemidirectProduct                                   for permutation groups
+##
+##  Original version by Derek Holt, 6/9/96, in first GAP3 version of xmod
+##
+InstallMethod( SemidirectProduct, "generic method for permutation groups",
+    true, [ IsPermGroup, IsGroupHomomorphism, IsPermGroup ], 0,
+function( R, map, S )
+
+    local P, genP, genR, genS, L2, L3, perm, r, s, ordS, genno, LS, LR, info;
+
+    # Take the action of R on S  by conjugation.
+    LS := AsSSortedList( S );
+    genP := [ ];
+    genR := GeneratorsOfGroup( R );
+    genS := GeneratorsOfGroup( S );
+    for r in genR do
+        L2 := List( LS, x -> Image( Image( map, r ), x ) );
+        L3 := List( L2, x -> Position( LS, x ) );
+        perm := PermList( L3 );
+        Add( genP, perm );
+    od;
+    # Check order of group at this stage, to see if the action is faithful.
+    # If not, adjoin the action of R as a permutation group.
+    P := Group( genP, () );
+    if ( Size( P ) <> Size( R ) ) then
+        ordS := Size( S );
+        LR := AsSSortedList( R );
+        genno := 0;
+        for r in genR do
+            L3 := List( ListPerm( r ), x -> x + ordS );
+            perm := PermList( Concatenation( [1..ordS], L3 ) );
+            genno := genno + 1;
+            genP[ genno ] := genP[ genno ] * perm;
+        od;
+    fi;
+    # Take the action of S on S by right multiplication.
+    for s in genS do
+        L2 := List( LS, x -> x*s );
+        L3 := List( L2, x -> Position( LS, x ) );
+        perm := PermList( L3 );
+        Add( genP, perm );
+    od;
+    P := Group( genP, () );
+    info := rec( groups := [ R, S ],
+                 lenlist := [ 0, Length( genR ), Length( genP ) ],
+                 embeddings := [ ],
+                 projections := true );
+    SetSemidirectProductInfo( P, info );
+    return P;
+end );
+
+##############################################################################
+##
+#M  Embedding                              for permutation semidirect products
+##
+InstallMethod( Embedding, "generic method for perm semidirect products",
+    true, [ IsPermGroup and HasSemidirectProductInfo, IsPosInt ], 0,
+function( D, i )
+    local  info, G, genG, imgs, hom;
+
+    info := SemidirectProductInfo( D );
+    if IsBound( info.embeddings[i] ) then
+        return info.embeddings[i];
+    fi;
+    G := info.groups[i];
+    genG := GeneratorsOfGroup( G );
+    imgs := GeneratorsOfGroup( D ){[info.lenlist[i]+1 .. info.lenlist[i+1]]};
+    hom := GroupHomomorphismByImages( G, D, genG, imgs );
+    SetIsInjective( hom, true );
+    info.embeddings[i] := hom;
+    return hom;
+end );
+
+##############################################################################
+##
+#M  Projection                             for permutation semidirect products
+##
+InstallOtherMethod( Projection, "generic method for perm semidirect products",
+    true, [ IsPermGroup and HasSemidirectProductInfo ], 0,
+function( D )
+    local  info, genD, G, genG, imgs, hom, ker, list;
+
+    info := SemidirectProductInfo( D );
+    if not IsBool( info.projections ) then
+        return info.projections;
+    fi;
+    G := info.groups[1];
+    genG := GeneratorsOfGroup( G );
+    genD := GeneratorsOfGroup( D );
+    list := [ info.lenlist[2]+1 .. info.lenlist[3] ];
+    imgs := Concatenation( genG, List( list, j -> () ) );
+    hom := GroupHomomorphismByImagesNC( D, G, genD, imgs );
+    SetIsSurjective( hom, true );
+    ker := Subgroup( D, genD{ list } );
+    SetKernelOfMultiplicativeGeneralMapping( hom, ker );
+    info.projections := hom;
+    return hom;
+end );
+
+
 #############################################################################
+##
+#E
+

@@ -141,7 +141,7 @@ end);
 #M  <info class> + <info class>
 #M  <info selector> + <info class>
 #M  <info class> + <info selector>
-#M  <info selector> + <info selector
+#M  <info selector> + <info selector>
 ##
 ##  Used to build up InfoSelectors, these are essentially just taking unions
 ##
@@ -227,20 +227,19 @@ end);
 BIND_GLOBAL( "InfoDecision", function(selectors, level)
     local usage;
     usage := "Usage : InfoDecision(<selectors>, <level>)";
-    if IsInfoClass(selectors) then
-        selectors := [selectors];
-    fi;
-    if not IsInfoSelector(selectors) 
-       or not IsInt(level)
-       or level <= 0
-    then
+    if not IsInt(level) or level <= 0 then
         Error(usage);
     fi;
     
-    # Now decide what to do and then do it, 
-    # note that we 'or' the classes together
-    
-    return ForAny(selectors, ic -> InfoLevel(ic) >= level);
+    if IsInfoClass(selectors) then
+        return InfoLevel(selectors) >= level;
+    elif IsInfoSelector(selectors)  then
+
+        # note that we 'or' the classes together
+        return ForAny(selectors, ic -> InfoLevel(ic) >= level);
+    else
+        Error(usage);
+    fi;
 end );
     
 #############################################################################
@@ -308,20 +307,34 @@ fi;
 ##
 #V  InfoWarning
 ##
-##  This info class has a default level of 1. Warnings can be switched
-##  off by setting its level to zero
+##  This info class has a default level of 1.
+##  Warnings can be switched off by setting its level to zero
 ##
 if not IsBound(InfoWarning) then
     DeclareInfoClass( "InfoWarning" );
     SetInfoLevel( InfoWarning, 1 );
+
+    # The call of `INFO_INSTALL' in `oper.g' (with level 2)
+    # is thought as a call to `InfoWarning'.
+    MAKE_READ_WRITE_GLOBAL( "INFO_INSTALL" );
+    INFO_INSTALL:= function( arg )
+        local string, i;
+        string:= [];
+        for i in [ 2 .. LEN_LIST( arg ) ] do
+          APPEND_LIST_INTR( string, arg[i] );
+        od;
+        Info( InfoWarning, arg[1], string );
+    end;
+    MAKE_READ_ONLY_GLOBAL( "INFO_INSTALL" );
 fi;
 
-        
 #############################################################################
 ##
-
-#E  info.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#V  InfoPerformance
 ##
-
-
-
+##  This info class has a default level of 1. It prints warnings about
+##  performance problems when doing things in particularly unsuitable ways.
+##  Warnings can be switched off by setting its level to zero
+##
+DeclareInfoClass( "InfoPerformance" );
+SetInfoLevel( InfoPerformance, 1 );

@@ -16,14 +16,6 @@ Revision.algfp_gi :=
 
 #############################################################################
 ##
-#R  IsPackedAlgebraElmDefaultRep
-##
-DeclareRepresentation( "IsPackedAlgebraElmDefaultRep",
-    IsPositionalObjectRep and IsRingElement, [ 1 ] );
-
-
-#############################################################################
-##
 #M  ElementOfFpAlgebra( <Fam>, <elm> )  . . . .  for family of f.p. alg.elms.
 ##
 InstallMethod(ElementOfFpAlgebra,
@@ -61,7 +53,7 @@ InstallMethod( ElementOfFpAlgebra,
 InstallMethod( ExtRepOfObj,
     "for f.p. algebra element",
     true,
-    [ IsElementOfFpAlgebra and IsPackedAlgebraElmDefaultRep ], 0,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
     elm -> ExtRepOfObj( elm![1] ) );
 
 
@@ -279,7 +271,8 @@ InstallGlobalFunction( FactorFreeAlgebraByRelators, function( F, rels )
     fam := NewFamily( "FamilyElementsFpAlgebra", IsElementOfFpAlgebra );
 
     # Create the default type for the elements.
-    fam!.defaultType := NewType( fam, IsPackedAlgebraElmDefaultRep );
+    fam!.defaultType := NewType( fam,
+                       IsElementOfFpAlgebra and IsPackedElementDefaultRep );
 
     fam!.freeAlgebra := F;
     fam!.relators := Immutable( rels );
@@ -333,6 +326,46 @@ end );
 
 #############################################################################
 ##
+#M  FreeGeneratorsOfFpAlgebra( <A> )
+##
+InstallMethod( FreeGeneratorsOfFpAlgebra,
+    "for a full f.p. algebra",
+    true,
+    [ IsSubalgebraFpAlgebra and IsFullFpAlgebra ], 0,
+    function( A )
+    A:= ElementsFamily( FamilyObj( A ) )!.freeAlgebra;
+    if IsMagmaWithOne( A ) then
+      return GeneratorsOfAlgebraWithOne( A );
+    else
+      return GeneratorsOfAlgebra( A );
+    fi;
+    end );
+
+
+############################################################################
+##
+#M  RelatorsOfFpAlgebra( <A> )
+##
+InstallMethod( RelatorsOfFpAlgebra,
+    "for a full f.p. algebra",
+    true,
+    [ IsSubalgebraFpAlgebra and IsFullFpAlgebra ], 0,
+    A -> ElementsFamily( FamilyObj( A ) )!.relators );
+
+
+#############################################################################
+##
+#A  FreeAlgebraOfFpAlgebra( <A> )
+##
+InstallMethod( FreeAlgebraOfFpAlgebra,
+    "for a full f.p. algebra",
+    true,
+    [ IsSubalgebraFpAlgebra and IsFullFpAlgebra ], 0,
+    A -> ElementsFamily( FamilyObj( A ) )!.freeAlgebra );
+
+
+#############################################################################
+##
 #M  IsFullFpAlgebra( <A> )
 ##
 InstallOtherMethod( IsFullFpAlgebra,
@@ -349,71 +382,96 @@ InstallOtherMethod( IsFullFpAlgebra,
 
 #############################################################################
 ##
-#M  \/( <F>, <rels> )  . . . . . . . for free algebra and list of relators
+#M  NaturalHomomorphismByIdeal( <F>, <I> )  . . . . . for free alg. and ideal
 ##
-InstallOtherMethod( \/,
-    "for free algebra and relators",
+InstallMethod( NaturalHomomorphismByIdeal,
+    "for free algebra and ideal",
     IsIdenticalObj,
-    [ IsFreeMagmaRing, IsCollection ], 0,
-    FactorFreeAlgebraByRelators );
+    [ IsMagmaRingModuloRelations, IsFLMLOR ], 0,
+    function( F, I )
 
-InstallOtherMethod( \/,
-    "for free algebra and empty list",
-    true,
-    [ IsFreeMagmaRing, IsEmpty ], 0,
-    FactorFreeAlgebraByRelators );
+    local image, hom;
+
+    image:= FactorFreeAlgebraByRelators( F, GeneratorsOfIdeal( I ) );
+
+    if IsMagmaWithOne( F ) then
+      hom:= AlgebraWithOneHomomorphismByImagesNC( F, image,
+                GeneratorsOfAlgebraWithOne( F ),
+                GeneratorsOfAlgebraWithOne( image ) );
+    else
+      hom:= AlgebraHomomorphismByImagesNC( F, image,
+                GeneratorsOfAlgebra( F ),
+                GeneratorsOfAlgebra( image ) );
+    fi;
+
+    SetIsSurjective( hom, true );
+
+    return hom;
+    end );
 
 
 #############################################################################
 ##
 #M  Print(<fp alg elm>)
 ##
-InstallMethod(PrintObj,"fp algebra elements",true,
-  [IsPackedAlgebraElmDefaultRep],0,
-function(e)
-  Print("[",e![1],"]");
-end);
+InstallMethod(PrintObj,
+    "fp algebra elements",
+    true,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
+    function( e )
+    Print( "[", e![1], "]" );
+    end );
 
 
 #############################################################################
 ##
-#M  \+(<fp alg elm>,<fp alg elm>)
+#M  \+( <fp alg elm>, <fp alg elm> )
 ##
-InstallMethod(\+,"fp algebra elements",IsIdenticalObj,
-  [IsPackedAlgebraElmDefaultRep,IsPackedAlgebraElmDefaultRep],0,
-function(a,b)
-  return ElementOfFpAlgebra(FamilyObj(a),a![1]+b![1]);
-end);
-
-#############################################################################
-##
-#M  \-(<fp alg elm>,<fp alg elm>)
-##
-InstallMethod(\-,"fp algebra elements",IsIdenticalObj,
-  [IsPackedAlgebraElmDefaultRep,IsPackedAlgebraElmDefaultRep],0,
-function(a,b)
-  return ElementOfFpAlgebra(FamilyObj(a),a![1]-b![1]);
-end);
-
-#############################################################################
-##
-#M  AdditiveInverse(<fp alg elm>)
-##
-InstallMethod(AdditiveInverse,"fp algebra elements",true,
-  [IsPackedAlgebraElmDefaultRep],0,
-function(a)
-  return ElementOfFpAlgebra(FamilyObj(a),AdditiveInverse(a![1]));
-end);
+InstallMethod( \+,
+    "fp algebra elements",
+    IsIdenticalObj,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep,
+      IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
+    function( a, b )
+    return ElementOfFpAlgebra( FamilyObj( a ), a![1] + b![1] );
+    end );
 
 
 #############################################################################
 ##
-#M  One( <fp alg elm> )
+#M  \-( <fp alg elm>, <fp alg elm> )
 ##
-InstallOtherMethod( One,
+InstallMethod( \-,
+    "fp algebra elements",
+    IsIdenticalObj,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep,
+      IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
+    function( a, b )
+    return ElementOfFpAlgebra( FamilyObj( a ), a![1] - b![1] );
+    end );
+
+
+#############################################################################
+##
+#M  AdditiveInverseOp( <fp alg elm> )
+##
+InstallMethod( AdditiveInverseOp,
+    "fp algebra element",
+    true,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
+    function( a )
+    return ElementOfFpAlgebra( FamilyObj( a ), AdditiveInverse( a![1] ) );
+    end );
+
+
+#############################################################################
+##
+#M  OneOp( <fp alg elm> )
+##
+InstallOtherMethod( OneOp,
     "for an f.p. algebra element",
     true,
-    [ IsElementOfFpAlgebra and IsPackedAlgebraElmDefaultRep ], 0,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
     function( elm )
     local one;
     one:= One( elm![1] );
@@ -426,44 +484,49 @@ InstallOtherMethod( One,
 
 #############################################################################
 ##
-#M  Zero( <fp alg elm>)
+#M  ZeroOp( <fp alg elm>)
 ##
-InstallMethod( Zero,
+InstallMethod( ZeroOp,
     "for an f.p. algebra element",
     true,
-    [ IsElementOfFpAlgebra and IsPackedAlgebraElmDefaultRep ], 0,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
     elm -> ElementOfFpAlgebra( FamilyObj( elm ), Zero( elm![1] ) ) );
 
 
 #############################################################################
 ##
-#M  \*(<fp alg elm>,<fp alg elm>)
+#M  \*( <fp alg elm>, <fp alg elm> )
 ##
-InstallMethod(\*,"fp algebra elements",IsIdenticalObj,
-  [IsPackedAlgebraElmDefaultRep,IsPackedAlgebraElmDefaultRep],0,
-function(a,b)
-  return ElementOfFpAlgebra(FamilyObj(a),a![1]*b![1]);
-end);
+InstallMethod( \*,
+    "fp algebra elements",
+    IsIdenticalObj,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep,
+      IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
+    function( a, b )
+    return ElementOfFpAlgebra( FamilyObj( a ), a![1] * b![1] );
+    end);
+
 
 #############################################################################
 ##
-#M  \*(<ring el>,<fp alg elm>)
+#M  \*( <ring el>, <fp alg elm> )
 ##
-InstallMethod(\*,"ring el *fp algebra el",IsRingsMagmaRings,
-  [IsRingElement,IsPackedAlgebraElmDefaultRep],0,
-function(a,b)
-  return ElementOfFpAlgebra(FamilyObj(b),a*b![1]);
-end);
+InstallMethod( \*,"ring el *fp algebra el",IsRingsMagmaRings,
+    [ IsRingElement, IsElementOfFpAlgebra and IsPackedElementDefaultRep ], 0,
+    function( a, b )
+    return ElementOfFpAlgebra( FamilyObj( b ), a * b![1] );
+    end);
+
 
 #############################################################################
 ##
-#M  \*(<fp alg elm>,<ring el>)
+#M  \*( <fp alg elm>, <ring el> )
 ##
-InstallMethod(\*,"fp algebra el*ring el",IsMagmaRingsRings,
-  [IsPackedAlgebraElmDefaultRep,IsRingElement],0,
-function(a,b)
-  return ElementOfFpAlgebra(FamilyObj(a),a![1]*b);
-end);
+InstallMethod( \*,"fp algebra el*ring el",IsMagmaRingsRings,
+    [ IsElementOfFpAlgebra and IsPackedElementDefaultRep, IsRingElement ], 0,
+    function( a, b )
+    return ElementOfFpAlgebra( FamilyObj( a ), a![1] * b );
+    end);
 
 #AH  Embedding can only be defined reasonably if a `One' different from
 #AH  the zero is present
@@ -472,6 +535,18 @@ end);
 #T so the ``embedding'' can be defined as a mapping from the ring
 #T to the algebra,
 #T but it is injective only if the `One' is not the `Zero'.
+
+
+#############################################################################
+##
+#M  IsomorphismMatrixFLMLOR( <A> )  . . . . . . . . . . . . for a f.p. FLMLOR
+##
+InstallMethod( IsomorphismMatrixFLMLOR,
+    "for a f.p. FLMLOR",
+    true,
+    [ IsFLMLOR and IsSubalgebraFpAlgebra ], 0,
+    A -> Error( "sorry, no method to compute a matrix algebra\n",
+                "for a (not nec. associative) f.p. algebra" ) );
 
 
 #############################################################################
@@ -488,6 +563,21 @@ InstallMethod( IsomorphismMatrixFLMLOR,
       and IsFullFpAlgebra ], 0,
     A  -> OperationAlgebraHomomorphism( A, [ [ Zero( A ) ] ], OnRight ) );
 #T change this: second argument should be the <A>-module itself!
+
+
+#############################################################################
+##
+#M  OperationAlgebraHomomorphism( <A>, <C>, <opr> )
+##
+InstallOtherMethod( OperationAlgebraHomomorphism,
+    "for a full f.p. associative FLMLOR, a collection, and a function",
+    true,
+    [ IsFLMLORWithOne and IsSubalgebraFpAlgebra and IsAssociative
+      and IsFullFpAlgebra, IsCollection, IsFunction ], 0,
+    function( A, C, opr )
+    Error( "this case will eventually be handled by the Vector Enumerator\n",
+           "which is not available yet" );
+    end );
 
 
 #############################################################################
@@ -545,45 +635,37 @@ InstallMethod( IsFiniteDimensional,
     end );
 
 
-InstallMethod( NiceVector,
-    "for f.p. algebra with known basis info, and a ring element",
-    IsCollsElms,
-    [ IsFreeLeftModule and IsElementOfFpAlgebraCollection,
-      IsRingElement ], 0,
-    function( A, a )
-    local hom;
-    hom:= NiceAlgebraMonomorphism( FamilyObj( a )!.wholeAlgebra );
-    if hom = fail then
-      TryNextMethod();
-    fi;
-    return ImagesRepresentative( hom, a );
-    end );
-
-InstallMethod( UglyVector,
-    "for f.p. algebra with known basis info, and a ring element",
-    true,
-    [ IsFreeLeftModule and IsElementOfFpAlgebraCollection,
-      IsRingElement ], 0,
-    function( A, r )
-    local hom;
-    hom:= NiceAlgebraMonomorphism(
-              ElementsFamily( FamilyObj( A ) )!.wholeAlgebra );
-    if hom = fail then
-      TryNextMethod();
-    fi;
-    return PreImagesRepresentative( hom, r );
-    end );
-
-
 #############################################################################
-##  
-#M  PrepareNiceFreeLeftModule( <V> )               
 ##
-##  We do not need additional data to perform `NiceVector' and `UglyVector'.
-##                                                           
-InstallMethod( PrepareNiceFreeLeftModule, true,
-    [ IsFreeLeftModule and IsElementOfFpAlgebraCollection ], 0,
-    Ignore );                                                                
+#M  NiceFreeLeftModuleInfo( <V> )
+#M  NiceVector( <V>, <v> )
+#M  UglyVector( <V>, <r> )
+##
+InstallHandlingByNiceBasis( "IsFpAlgebraElementsSpace", rec(
+    detect := function( F, gens, V, zero )
+      return IsElementOfFpAlgebraCollection( V ) and IsFreeLeftModule( V );
+      end,
+
+    NiceFreeLeftModuleInfo := ReturnTrue,
+
+    NiceVector := function( A, a )
+      local hom;
+      hom:= NiceAlgebraMonomorphism( FamilyObj( a )!.wholeAlgebra );
+      if hom = fail then
+        TryNextMethod();
+      fi;
+      return ImagesRepresentative( hom, a );
+      end,
+
+    UglyVector := function( A, r )
+      local hom;
+      hom:= NiceAlgebraMonomorphism(
+                ElementsFamily( FamilyObj( A ) )!.wholeAlgebra );
+      if hom = fail then
+        TryNextMethod();
+      fi;
+      return PreImagesRepresentative( hom, r );
+      end ) );
 
 
 #############################################################################
@@ -686,6 +768,5 @@ end );
 
 #############################################################################
 ##
-#E  algfp.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
 

@@ -39,7 +39,7 @@ const char * Revision_objscoll_h =
 #define SCP_MAX_STACK_SIZE         17   /* maximal stack size              */
 #define SCP_COLLECTOR              18   /* collector to use                */
 #define SCP_AVECTOR                19   /* avector                         */
-
+#define SCP_LAST          SCP_AVECTOR   /* last entry in a single coll.    */
 
 /****************************************************************************
 **

@@ -31,17 +31,17 @@ InstallMethod( ScalarProduct,
 ##
 #F  StandardScalarProduct( <L>, <x>, <y> )
 ##
-StandardScalarProduct:= function( L, x, y ) return x * y; end;
+InstallGlobalFunction( StandardScalarProduct, function( L, x, y )
+    return x * y;
+end );
 
 
 #############################################################################
 ##
 #M  InverseMatMod( <intmat>, <prime> )
 ##
-##  For a square integral matrix <intmat> and a prime <prime> (both is *not*
-##  checked!), `InverseMatMod' returns an integral matrix <mat> with
-##  `<mat> \* <intmat>' congruent to the identity matrix modulo <prime>,
-##  if such a matrix exists, and `false' otherwise.
+#T  Is this method really good?
+#T  (There is a generic method in `matrix.gi' that looks nicer.)
 ##
 InstallMethod( InverseMatMod,
     "method for a matrix, and an integer",
@@ -54,10 +54,8 @@ InstallMethod( InverseMatMod,
           intmatq, intmatqinv,  # matrix & inverse modulo p
           x,                    # solution of one iteration
           zline,                # help-line for exchange
-          nullv,                # zero-vector
           mult,                 # multiplication table of the field
-          inverse,              # list of inverses of field elements
-          val;
+          inverse;              # list of inverses of field elements
 
     n:= Length( intmat );
 
@@ -85,7 +83,7 @@ InstallMethod( InverseMatMod,
         intmatq[i][j]:= intmat[i][j] mod p;
       od;
     od;
-    intmatqinv := MutableIdentityMat( n );
+    intmatqinv := IdentityMat( n );
 
     for i in [ 1 .. n ] do
       j := i;
@@ -286,7 +284,7 @@ end );
 ##
 InstallGlobalFunction( DecompositionInt, function( A, B, depth )
 
-    local i, j,       # loop variables
+    local i,       # loop variables
           Aqinv,      # inverse of matrix modulo p
           b,          # vector
           sol,        # solution of one step
@@ -297,8 +295,7 @@ InstallGlobalFunction( DecompositionInt, function( A, B, depth )
           origA,      # store full argument `A' in case of column choice
           n,          # dimension
           choice,
-          coeff,
-          val;
+          coeff;
 
     # check input parameters
     if   Length( A ) > Length( A[1] ) then
@@ -454,6 +451,9 @@ InstallGlobalFunction( IntegralizedMat, function( arg )
     for row in A do
       introw:= [];
       coeffs:= row{ inforec.intcols };
+      if not ForAll( coeffs, IsInt ) then
+        coeffs:= fail;
+      fi;
       for col in inforec.irratcols do
         if coeffs <> fail then
           Append( introw, coeffs );
@@ -512,7 +512,7 @@ end );
 ##
 InstallGlobalFunction( Decomposition, function( A, B, depth_or_nonnegative )
 
-    local i, j, intA, row, intB, newintA, newintB, result, choice, inforec;
+    local i, intA, intB, newintA, newintB, result, choice, inforec;
 
     # Check the input parameters.
     if not ( IsInt( depth_or_nonnegative ) and depth_or_nonnegative >= 0 )
@@ -591,14 +591,7 @@ end );
 
 #############################################################################
 ##
-#F  LLLReducedBasis( <vectors> )
-#F  LLLReducedBasis( <vectors>, <y> )
-#F  LLLReducedBasis( <vectors>, \"linearcomb\" )
-#F  LLLReducedBasis( <vectors>, <y>, \"linearcomb\" )
-#F  LLLReducedBasis( <L>, <vectors> )
-#F  LLLReducedBasis( <L>, <vectors>, <y> )
-#F  LLLReducedBasis( <L>, <vectors>, \"linearcomb\" )
-#F  LLLReducedBasis( <L>, <vectors>, <y>, \"linearcomb\" )
+#F  LLLReducedBasis( [<L>, ]<vectors>[, <y>][, \"linearcomb\"][, <lllout>] )
 ##
 InstallGlobalFunction( LLLReducedBasis, function( arg )
 
@@ -618,6 +611,7 @@ InstallGlobalFunction( LLLReducedBasis, function( arg )
             l,         # loop variable $l$
             n,         # number of vectors in $b$
             lc,        # boolean: option `linearcomb'?
+            lllout,    # record with info about initial part of $b$
             scpr,      # scalar product of lattice `L'
             RED,       # reduction subprocedure; `RED( l )'
                        # means `RED( k, l )' in Cohen's book
@@ -681,51 +675,79 @@ InstallGlobalFunction( LLLReducedBasis, function( arg )
       y:= 3/4;
     fi;
 
-    # Get the other optional paramater.
-    lc:= false;
+    # Get the optional `\"linearcomb\"' parameter
+    # and the optional `lllout' record.
+    lc     := false;
+    lllout := false;
+
     for i in [ 2 .. Length( arg ) ] do
-      if arg[i] = "linearcomb" then lc:= true; fi;
+      if arg[i] = "linearcomb" then
+        lc:= true;
+      elif IsRecord( arg[i] ) then
+        lllout:= arg[i];
+      fi;
     od;
 
 
-    # step 1 (Initialize \ldots
-    n    := Length( b );
-    k    := 2;
-    kmax := 1;
-    mue  := [];
-    r    := 0;
+    # step 1 (Initialize.)
+    n := Length( b );
+    r := 0;
+    i := 1;
     if lc then
-      H:= MutableIdentityMat( n );
+      H:= IdentityMat( n );
     fi;
 
-    Info( InfoZLattice, 1,
-          "LLLReducedBasis called with ", n, " vectors, y = ", y );
+    if lllout = false or lllout.B = [] then
 
-    # \ldots and handle the case of leading zero vectors in the input.)
-    i:= 1;
-    while i <= n and ForAll( b[i], IsZero ) do
-#T better?
-      i:= i+1;
-    od;
-    if n < i then
+      k    := 2;
+      mue  := [ [] ];
+      kmax := 1;
 
-      r:= n;
-      k:= n+1;
-
-    elif 1 < i then
-
-      q    := b[i];
-      b[i] := b[1];
-      b[1] := q;
-      if lc then
-        q    := H[i];
-        H[i] := H[1];
-        H[1] := q;
+      # Handle the case of leading zero vectors in the input.
+      while i <= n and IsZero( b[i] ) do
+        i:= i+1;
+      od;
+      if n < i then
+  
+        r:= n;
+        k:= n+1;
+  
+      elif 1 < i then
+  
+        q    := b[i];
+        b[i] := b[1];
+        b[1] := q;
+        if lc then
+          q    := H[i];
+          H[i] := H[1];
+          H[1] := q;
+        fi;
+  
+      fi;
+  
+      if 0 < n then
+        B:= [ scpr( L, b[1], b[1] ) ];
+      else
+        B:= [];
       fi;
 
-    fi;
+      Info( InfoZLattice, 1,
+            "LLLReducedBasis called with ", n, " vectors, y = ", y );
+  
+    else
 
-    B  := [ scpr( L, b[1], b[1] ) ];
+      # Note that the first $k_{max}$ vectors are all nonzero.
+
+      mue  := List( lllout.mue, ShallowCopy );
+      kmax := Length( mue );
+      k    := kmax + 1;
+      B    := ShallowCopy( lllout.B );
+
+      Info( InfoZLattice, 1,
+            "LLLReducedBasis (incr.) called with ",
+            n, " = ", kmax, " + ", n - kmax, " vectors, y = ", y );
+
+    fi;
 
     while k <= n do
 
@@ -733,7 +755,7 @@ InstallGlobalFunction( LLLReducedBasis, function( arg )
 
       # If $k \leq k_{max}$ go to step 3.
       # Otherwise \ldots
-      if k > kmax then
+      if kmax < k then
 
         Info( InfoZLattice, 2,
               "LLLReducedBasis: Take ", Ordinal( k ), " vector" );
@@ -895,19 +917,36 @@ InstallGlobalFunction( LLLReducedBasis, function( arg )
 
     # Check whether the last calls of `RED' have produced new zero vectors
     # in `b'; unfortunately this cannot be read off from `B'.
-    while r < n and ForAll( b[ r+1 ], x -> x = 0 ) do
+    while r < n and IsZero( b[ r+1 ] ) do
+#T if this happens then is `B' outdated???
+#T but `B' contains the norms of the orthogonal basis,
+#T so this should be impossible!
+#T (but if it happens then also `LLLReducedGramMat' should be adjusted!)
+Print( "reached special case of increasing r in the last moment\n" );
+if B[r+1] <> 0 then
+  Print( "strange situation in LLL!\n" );
+fi;
       r:= r+1;
     od;
 
     Info( InfoZLattice, 1,
           "LLLReducedBasis returns basis of length ", n-r );
 
+    mue:= List( [ r+1 .. n ], i -> mue[i]{ [ r+1 .. i-1 ] } );
+    MakeImmutable( mue );
+    B:= B{ [ r+1 .. n ] };
+    MakeImmutable( B );
+
     if lc then
       return rec( basis          := b{ [ r+1 .. n ] },
                   relations      := H{ [  1  .. r ] },
-                  transformation := H{ [ r+1 .. n ] } );
+                  transformation := H{ [ r+1 .. n ] },
+                  mue            := mue,
+                  B              := B );
     else
-      return rec( basis          := b{ [ r+1 .. n ] } );
+      return rec( basis          := b{ [ r+1 .. n ] },
+                  mue            := mue,
+                  B              := B );
     fi;
 
 end );
@@ -915,8 +954,7 @@ end );
 
 #############################################################################
 ##
-#F  LLLReducedGramMat( <G> )  . . . . . . . . . . . . LLL reduced Gram matrix
-#F  LLLReducedGramMat( <G>, <y> )
+#F  LLLReducedGramMat( <G>[, <y>] ) . . . . . . . . . LLL reduced Gram matrix
 ##
 InstallGlobalFunction( LLLReducedGramMat, function( arg )
 
@@ -995,17 +1033,17 @@ InstallGlobalFunction( LLLReducedGramMat, function( arg )
       fi;
 
     else
-      Error( "usage: LLLReducedGramMat( <gram> [,<y>] )" );
+      Error( "usage: LLLReducedGramMat( <gram>[, <y>] )" );
     fi;
 
     # step 1 (Initialize \ldots
     n    := Length( gram );
     k    := 2;
     kmax := 1;
-    mue  := [];
+    mue  := [ [] ];
     r    := 0;
     ak   := [];
-    H    := MutableIdentityMat( n );
+    H    := IdentityMat( n );
 
     Info( InfoZLattice, 1,
           "LLLReducedGramMat called with matrix of length ", n,
@@ -1220,15 +1258,16 @@ InstallGlobalFunction( LLLReducedGramMat, function( arg )
     Info( InfoZLattice, 1,
           "LLLReducedGramMat returns matrix of length ", n-r );
 
+    mue:= List( [ r+1 .. n ], i -> mue[i]{ [ r+1 .. i-1 ] } );
+    MakeImmutable( mue );
+    B:= B{ [ r+1 .. n ] };
+    MakeImmutable( B );
+
     return rec( remainder      := gram,
-                relation       := H{ [  1  .. r ] },
+                relations      := H{ [  1  .. r ] },
                 transformation := H{ [ r+1 .. n ] },
-                scalarproducts := mue,
-                bsnorms        := B{ [ r+1 .. n ] }    );
-
-    # The components `scalarproducts' and `bsnorms' are used by
-    # `ShortestVectors'.
-
+                mue            := mue,
+                B              := B );
 end );
 
 
@@ -1240,20 +1279,9 @@ InstallGlobalFunction( ShortestVectors, function( arg )
 
     local
     # variables
-          n, i, checkpositiv, a, llg, nullv, m, c, q, anz, con, b, v,
+          n,  checkpositiv, a, llg, nullv, m, c, anz, con, b, v,
     # procedures
-          kur, srt, vschr;
-
-    # sub-procedures
-    kur := function(  )
-    local l;
-    for l in [1..n] do
-       v[l] := 0;
-    od;
-    anz := 0;
-    con := true;
-    srt( n, 0 );
-    end;
+          srt, vschr;
 
     # search for shortest vectors
     srt := function( d, dam )
@@ -1268,24 +1296,24 @@ InstallGlobalFunction( ShortestVectors, function( arg )
     else
        x := 0;
        for j in [d+1..n] do
-          x := x + v[j] * llg.scalarproducts[j][d];
+          x := x + v[j] * llg.mue[j][d];
        od;
        i := - Int( x );
-       if AbsInt( -x-i ) * 2 - 1 > 0 then
+       if AbsInt( -x-i ) * 2 > 1 then
           i := i - SignInt( x );
        fi;
        k := i + x;
-       q := ( m + 1/1000 - dam ) / llg.bsnorms[d];
-       if k * k - q < 0 then
+       q := ( m + 1/1000 - dam ) / llg.B[d];
+       if k * k < q then
           repeat
              i := i + 1;
              k := k + 1;
-          until k * k - q > 0 and k > 0;
+          until k * k > q and k > 0;
           i := i - 1;
           k := k - 1;
-          while k * k - q  < 0 and con do
+          while k * k < q and con do
              v[d] := i;
-             k1 := llg.bsnorms[d] * k * k + dam;
+             k1 := llg.B[d] * k * k + dam;
              srt( d-1, k1 );
              i := i - 1;
              k := k - 1;
@@ -1306,6 +1334,7 @@ InstallGlobalFunction( ShortestVectors, function( arg )
        od;
        if w < 0 then
           neg := true;
+#T better here check testpositiv and return!
        fi;
        c.vectors[anz][i] := w;
     od;
@@ -1340,18 +1369,23 @@ InstallGlobalFunction( ShortestVectors, function( arg )
     else
        checkpositiv := false;
     fi;
+
     a := arg[1];
     m := arg[2];
     n := Length( a );
     b := List( a, ShallowCopy );
-    c    := rec( vectors:=[],norms:=[]);
-    v    := [];
-    nullv := [];
-    for i in [1..n] do
-       nullv[i] := 0;
-    od;
-    llg:=LLLReducedGramMat(b);
-    kur();
+    c     := rec( vectors:= [], norms:= [] );
+    v     := ListWithIdenticalEntries( n, 0 );
+    nullv := ListWithIdenticalEntries( n, 0 );
+
+    llg:= LLLReducedGramMat( b );
+#T here check that the matrix is really regular
+#T (empty relations component)
+
+    anz := 0;
+    con := true;
+    srt( n, 0 );
+
     Info( InfoZLattice, 2,
           "ShortestVectors: ", Length( c.vectors ), " vectors found" );
     return c;
@@ -1369,18 +1403,18 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
     # variablen fuer Embed
           maxdim, M, D, s, phi, mult, m, x, t, x2, sumg, sumh,
           f, invg, sol, solcount, out,
-          l, g, nullv, i, j, k, n, kgv, a, IdMat, chpo,
+          l, g, i, j, k, n, a, IdMat, chpo,
     # booleans
-          positiv, checkpositiv, checkdim,
+          checkpositiv, checkdim,
     # prozeduren fuer Embed
           comp1, comp2, scp2, multiples, solvevDMtr,
           Dextend, Mextend, inca, rnew,
-          deca, algorithm;
+          deca;
 
     Symmatinv := function( b )
     # inverts symmetric matrices
 
-    local n, i, j, l, k, c, d, ba, B, kgv, kgv1;
+    local n, i, j, l, k, c, d, ba, B, kgv1;
     n := Length( b );
     c := List( IdMat, ShallowCopy );
     d := [];
@@ -1752,7 +1786,7 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
     od;
 
     # main program
-    IdMat := MutableIdentityMat( n );
+    IdMat := IdentityMat( n );
     invg  := Symmatinv( g );
     m     := invg.enuminator;
     invg  := invg.inverse;
@@ -1846,7 +1880,7 @@ end );
 #F  LLLint(<lat>) . . . . . . . . . . . . . . . . . . . .. . integer only LLL
 ##
 InstallGlobalFunction( LLLint, function( lat )
-    local b,mu,i,j,k,ka,dim,l,d,dkp,n,r,za,ne,nne,dkm,dkma,mue,muea,muk,mum,
+    local b,mu,i,j,k,dim,l,d,dkp,n,r,za,ne,nne,dkm,dkma,mue,muea,muk,mum,
           ca1,ca2,cb1,cb2,tw,sel,s,dkpv;
 
   b:= List( lat, ShallowCopy );
@@ -2033,7 +2067,5 @@ end );
 
 #############################################################################
 ##
-#E  zlattice.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

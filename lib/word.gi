@@ -72,10 +72,7 @@ InstallMethod( \*,
     function( x, y )
 
     local xx,    # external representation of `x'
-          l,     # current length of `xx', minus 1
-          yy,    # external representation of `y'
-          p,     # current first valid position in `yy'
-          len;   # total length of `yy' minus 1
+          yy;    # external representation of `y'
 
     # Treat the special cases that one argument is trivial.
     xx:= ExtRepOfObj( x );
@@ -216,12 +213,24 @@ InstallMethod( String,
 ##
 #M  ObjByExtRep( <F>, <descr> ) . . . . . .  for a nonassociative word family
 ##
+##  We have to distinguish the cases that the second argument is an integer
+##  (external representation of generators) and that it is a nested list of
+##  integers.
+##
 InstallMethod( ObjByExtRep,
-    "for a family of nonassociative words, and a homogeneous list",
+    "for a family of nonassociative words, and an integer",
     true,
-    [ IsNonassocWordFamily, IsObject ], 0,
-    function( F, descr )
-    return Objectify( F!.defaultType, [ descr ] );
+    [ IsNonassocWordFamily, IsInt ], 0,
+    function( F, pos )
+    return Objectify( F!.defaultType, [ pos ] );
+    end );
+
+InstallMethod( ObjByExtRep,
+    "for a family of nonassociative words, and a list",
+    true,
+    [ IsNonassocWordFamily, IsList ], 0,
+    function( F, list )
+    return Objectify( F!.defaultType, [ list ] );
     end );
 
 
@@ -238,9 +247,9 @@ InstallMethod( ExtRepOfObj,
 
 #############################################################################
 ##
-#M  One( <w> )  . . . . . . . . . . . . . . . . . for a nonass. word-with-one
+#M  OneOp( <w> )  . . . . . . . . . . . . . . . . for a nonass. word-with-one
 ##
-InstallMethod( One,
+InstallMethod( OneOp,
     "for a nonassoc. word-with-one",
     true,
     [ IsNonassocWordWithOne ], 0,
@@ -249,6 +258,6 @@ InstallMethod( One,
 
 #############################################################################
 ##
-#E  word.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 ##
 

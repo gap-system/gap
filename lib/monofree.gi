@@ -21,10 +21,10 @@ Revision.monofree_gi:=
 ##  magma generators of the family are among the monoid generators of <M>.
 ##
 InstallMethod( IsWholeFamily,
-    "method for a free monoid",
+    "for a free monoid",
     true,
     [ IsAssocWordWithOneCollection and IsMonoid ], 0,
-    M -> IsSubset( GeneratorsMagmaFamily( FamilyObj( M ) ),
+    M -> IsSubset( MagmaGeneratorsOfFamily( FamilyObj( M ) ),
                    GeneratorsOfMagmaWithOne( M ) ) );
 
 
@@ -37,7 +37,7 @@ InstallMethod( IsWholeFamily,
 ##  The only difference is the existence of the empty word.
 ##
 InstallMethod( Iterator,
-    "method for a free monoid",
+    "for a free monoid",
     true,
     [ IsAssocWordWithOneCollection and IsWholeFamily ], 0,
     function( M )
@@ -48,7 +48,7 @@ InstallMethod( Iterator,
       TryNextMethod();
     fi;
 
-    return Objectify( NewType( IteratorsFamily, IsFreeSemigroupIterator ),
+    return Objectify( NewType( IteratorsFamily, IsFreeSemigroupIteratorRep ),
             rec(
                  family       := ElementsFamily( FamilyObj( M ) ),
                  nrgenerators := Length( GeneratorsOfMagmaWithOne( M ) ),
@@ -65,24 +65,24 @@ InstallMethod( Iterator,
 ##
 #M  Enumerator( <M> ) . . . . . . . . . . . . .  enumerator for a free monoid
 ##
-DeclareRepresentation( "IsFreeMonoidEnumerator",
+DeclareRepresentation( "IsFreeMonoidEnumeratorRep",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "family", "nrgenerators" ] );
 
 InstallMethod( \[\],
-    "method for enumerator of a free monoid",
+    "for enumerator of a free monoid",
     true,
-    [ IsFreeMonoidEnumerator, IsPosInt ], 0,
+    [ IsFreeMonoidEnumeratorRep, IsPosInt ], 0,
     FreeMonoid_ElementNumber );
 
 InstallMethod( Position,
-    "method for enumerator of a free monoid",
+    "for enumerator of a free monoid",
     IsCollsElmsX,
-    [ IsFreeMonoidEnumerator, IsObject, IsZeroCyc ], 0,
+    [ IsFreeMonoidEnumeratorRep, IsObject, IsZeroCyc ], 0,
     FreeMonoid_NumberElement );
 
 InstallMethod( Enumerator,
-    "method for a free monoid",
+    "for a free monoid",
     true,
     [ IsAssocWordWithOneCollection and IsWholeFamily and IsMonoid ], 0,
     function( M )
@@ -94,7 +94,7 @@ InstallMethod( Enumerator,
       TryNextMethod();
     fi;
 
-    enum:= Objectify( NewType( FamilyObj( M ), IsFreeMonoidEnumerator ),
+    enum:= Objectify( NewType( FamilyObj( M ), IsFreeMonoidEnumeratorRep ),
            rec( family       := ElementsFamily( FamilyObj( M ) ),
                 nrgenerators := Length( GeneratorsOfMagmaWithOne( M ) ) ) );
     SetUnderlyingCollection( enum, M );
@@ -171,9 +171,9 @@ InstallOtherMethod( One,
 
 #############################################################################
 ##
-#A  GeneratorsMagmaFamily( <F> )
+#A  MagmaGeneratorsOfFamily( <F> )
 ##
-InstallMethod( GeneratorsMagmaFamily,
+InstallMethod( MagmaGeneratorsOfFamily,
     "method for a family of free monoid elements",
     true,
     [ IsAssocWordWithOneFamily ], 0,
@@ -197,6 +197,7 @@ InstallMethod( GeneratorsMagmaFamily,
 #F  FreeMonoid( <rank>, <name> )
 #F  FreeMonoid( <name1>, <name2>, ... )
 #F  FreeMonoid( <names> )
+#F  FreeMonoid( infinity, <name>, <init> )
 ##
 InstallGlobalFunction( FreeMonoid, function( arg )
 
@@ -209,12 +210,16 @@ InstallGlobalFunction( FreeMonoid, function( arg )
       names:= InfiniteListOfNames( "m" );
     elif Length( arg ) = 2 and arg[1] = infinity then
       names:= InfiniteListOfNames( arg[2] );
+    elif Length( arg ) = 3 and arg[1] = infinity then
+      names:= InfiniteListOfNames( arg[2], arg[3] );
     elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 <= arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( "m", String(i) ) );
+      MakeImmutable( names );
     elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 <= arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( arg[2], String(i) ) );
+      MakeImmutable( names );
     elif Length( arg ) = 1 and IsList( arg[1] ) and IsEmpty( arg[1] ) then
       names:= arg[1];
     elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
@@ -244,6 +249,8 @@ InstallGlobalFunction( FreeMonoid, function( arg )
       M:= MonoidByGenerators( InfiniteListOfGenerators( F ) );
     fi;
 
+		SetIsFreeMonoid(M,true);
+
     SetIsWholeFamily( M, true );
     SetIsTrivial( M, false );
 
@@ -254,7 +261,24 @@ end );
 
 #############################################################################
 ##
-#E  monofree.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  ViewObj( <M> )  . . . . . . . . . . . . . . . . . . . . for a free monoid
+##
+InstallMethod( ViewObj,
+    "for a free monoid containing the whole family",
+    true,
+    [ IsMonoid and IsAssocWordCollection and IsWholeFamily ], 0,
+    function( M )
+    if VIEWLEN * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
+      Print( "<free monoid with ", Length( GeneratorsOfMagmaWithOne( M ) ),
+             " generators>" );
+    else
+      Print( "<free monoid on the generators ",
+             GeneratorsOfMagmaWithOne( M ), ">" );
+    fi;
+end );
 
 
+#############################################################################
+##
+#E
 

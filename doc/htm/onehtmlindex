@@ -1,0 +1,63 @@
+# usage: onehtmlindex <letter> <file>
+# produces a file <file> composed from {ref,tut,ext,prg}/<file>.
+echo "<html><head><title>The GAP 4 Manual - Full Index $1</title></head>\
+<body bgcolor="ffffff"><h1>The GAP 4 Manual - Full Index $1</h1>\
+<p>\
+<a href="theindex.htm">_</A> <a href="indxA.htm">A</A> <a href="indxB.htm">B</A> <a href="indxC.htm">C</A> <a href="indxD.htm">D</A> <a href="indxE.htm">E</A> <a href="indxF.htm">F</A> <a href="indxG.htm">G</A> <a href="indxH.htm">H</A> <a href="indxI.htm">I</A> <a href="indxJ.htm">J</A> <a href="indxK.htm">K</A> <a href="indxL.htm">L</A> <a href="indxM.htm">M</A> <a href="indxN.htm">N</A> <a href="indxO.htm">O</A> <a href="indxP.htm">P</A> <a href="indxQ.htm">Q</A> <a href="indxR.htm">R</A> <a href="indxS.htm">S</A> <a href="indxT.htm">T</A> <a href="indxU.htm">U</A> <a href="indxV.htm">V</A> <a href="indxW.htm">W</A> <a href="indxX.htm">X</A> <a href="indxY.htm">Y</A> <a href="indxZ.htm">Z</A>\
+<ul>" > $2
+
+fgrep "<dt>" ref/$2 > tempfile
+awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+      while (rs!=0) {\
+	a=substr(str,rs+6);\
+	match(a,/>/);\
+	out=out substr(str,1,rs+5) "ref/" substr(a,1,RSTART) "R ";\
+	str=substr(a,RSTART+1);\
+        match(str,/href="/);rs=RSTART;\
+      }\
+      print out str;}'\
+  tempfile >tempfile2
+
+fgrep "<dt>" tut/$2 > tempfile
+awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+      while (rs!=0) {\
+	a=substr(str,rs+6);\
+	match(a,/>/);\
+	out=out substr(str,1,rs+5) "tut/" substr(a,1,RSTART) "T ";\
+	str=substr(a,RSTART+1);\
+        match(str,/href="/);rs=RSTART;\
+      }\
+      print out str;}'\
+  tempfile >>tempfile2
+
+fgrep "<dt>" ext/$2 > tempfile
+awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+      while (rs!=0) {\
+	a=substr(str,rs+6);\
+	match(a,/>/);\
+	out=out substr(str,1,rs+5) "ext/" substr(a,1,RSTART) "E ";\
+	str=substr(a,RSTART+1);\
+        match(str,/href="/);rs=RSTART;\
+      }\
+      print out str;}'\
+  tempfile >>tempfile2
+
+fgrep "<dt>" prg/$2 > tempfile
+awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+      while (rs!=0) {\
+	a=substr(str,rs+6);\
+	match(a,/>/);\
+	out=out substr(str,1,rs+5) "prg/" substr(a,1,RSTART) "P ";\
+	str=substr(a,RSTART+1);\
+        match(str,/href="/);rs=RSTART;\
+      }\
+      print out str;}'\
+  tempfile >>tempfile2
+
+sort tempfile2 >>$2
+
+echo "</ul><p>\
+[<a href="../index.html">Top</a>] [<a href="chapters.htm">Up</a>]<p>\
+<P>\
+<address>GAP 4 manual<br>\
+</address></body></html>" >>$2

@@ -390,7 +390,6 @@ InstallOtherMethod( Zero,
 #############################################################################
 ##
 #M  Enumerator( <I> ) . . . . . . . . . . . . . . . . . . . . .  for an ideal
-#M  EnumeratorSorted( <I> ) . . . . . . . . . . . . . . . . . .  for an ideal
 ##
 EnumeratorOfIdeal := function( I )
 
@@ -511,24 +510,6 @@ InstallMethod( Enumerator,
     [ IsRing and HasGeneratorsOfIdeal ], 0,
     EnumeratorOfIdeal );
 
-
-InstallMethod( EnumeratorSorted,
-    "generic method for a left ideal with known generators",
-    true,
-    [ IsRing and HasGeneratorsOfLeftIdeal ], 0,
-    EnumeratorOfIdeal );
-
-InstallMethod( EnumeratorSorted,
-    "generic method for a right ideal with known generators",
-    true,
-    [ IsRing and HasGeneratorsOfRightIdeal ], 0,
-    EnumeratorOfIdeal );
-
-InstallMethod( EnumeratorSorted,
-    "generic method for a two-sided ideal with known generators",
-    true,
-    [ IsRing and HasGeneratorsOfIdeal ], 0,
-    EnumeratorOfIdeal );
 
 
 #############################################################################
@@ -715,12 +696,35 @@ InstallMethod( \+,
 #M  \*( <r>, <R> )  . . . . . . . . . . . . . . . . . construct a right ideal
 #M  \*( <R>, <r> )  . . . . . . . . . . . . . . . . .  construct a left ideal
 ##
+##  If <r> is an element in <R> then the result is the right or left ideal in
+##  <R> spanned by <r>.
+##  If <r> is not contained in <R> then the product is in general not closed
+##  under multiplication, and the default is to return the strictly sorted
+##  (note that the result shall be regarded as equal to the result of a
+##  method that returns a domain object) list of elements.
+##  (If <R> is trivial then the result is also trivial.)
+##
 InstallMethod( \*,
     "for ring element and ring (construct a right ideal)",
     IsElmsColls,
     [ IsRingElement, IsRing ], 0,
     function( r, R )
-    return RightIdealByGenerators( R, [ r ] );
+    local z;
+    if r in R then
+      return RightIdealByGenerators( R, [ r ] );
+    fi;
+    if IsTrivial( R ) then
+      z:= Zero( R );
+      if r * z = z then
+        return R;
+      else
+        return [ r * z ];
+      fi;
+    elif IsFinite( R ) then
+      return Set( List( Enumerator( R ), elm -> r * elm ) );
+    else
+      TryNextMethod();
+    fi;
     end );
 
 InstallMethod( \*,
@@ -728,7 +732,22 @@ InstallMethod( \*,
     IsCollsElms,
     [ IsRing, IsRingElement ], 0,
     function( R, r )
-    return LeftIdealByGenerators( R, [ r ] );
+    local z;
+    if r in R then
+      return LeftIdealByGenerators( R, [ r ] );
+    fi;
+    if IsTrivial( R ) then
+      z:= Zero( R );
+      if z * r = z then
+        return R;
+      else
+        return [ z * r ];
+      fi;
+    elif IsFinite( R ) then
+      return Set( List( Enumerator( R ), elm -> elm * r ) );
+    else
+      TryNextMethod();
+    fi;
     end );
 
 

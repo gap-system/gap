@@ -15,10 +15,16 @@ const char * Revision_listoper_h =
    "@(#)$Id$";
 #endif
 
+/* These functions are exported because specialised methods may want to
+   fall back on them from other files (eg vec8bit) */
 
 extern  Obj             ProdListScl (
             Obj                 listL,
             Obj                 listR );
+
+extern Obj SumListList( Obj listL, Obj listR);
+extern Obj ProdListList( Obj listL, Obj listR);
+extern Obj DiffListList( Obj listL, Obj listR);
 
 
 /****************************************************************************

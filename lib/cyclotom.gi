@@ -15,7 +15,7 @@ Revision.cyclotom_gi :=
 
 #############################################################################
 ##
-#M  Conductor( <list> ) . . . . . . . . . . . . . . . . . . . . . for a list
+#M  Conductor( <list> ) . . . . . . . . . . . . . . . . . . . . .  for a list
 ##
 ##  (This works not only for lists of cyclotomics but also  for lists of
 ##  lists of cyclotomics etc.)
@@ -36,13 +36,14 @@ InstallOtherMethod( Conductor,
 
 #############################################################################
 ##
-#F  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+#M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
 ##
-InstallGlobalFunction( RoundCyc, function ( x )
+InstallMethod( RoundCyc, "general cyclotomic", true, [ IsCyclotomic],
+        0,  function ( x )
     local i, int, n, cfs, e;
     n:= Conductor( x );
     e:= E(n);
-    cfs:= COEFFS_CYC( x );
+    cfs:= ExtRepOfObj( x );
     int:= 0;
     for i in [ 1 .. n ]  do
       if cfs[i] < 0 then
@@ -54,8 +55,29 @@ InstallGlobalFunction( RoundCyc, function ( x )
     od;
     return int;
 end );
-#T operation `Round' ?
 
+#T operation `Round' ?
+#T made RoundCyc an operation at least 7/12/98 SL
+
+
+
+#############################################################################
+##
+#M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+##				rounding halves down
+##
+InstallMethod( RoundCycDown, "general cyclotomic", true, [ IsCyclotomic],
+        0,  function ( x )
+    local i, int, n, cfs, e;
+    n:= Conductor( x );
+    e:= E(n);
+    cfs:= ExtRepOfObj( x );
+    int:= 0;
+    for i in [ 1 .. n ]  do
+        int:= int + RoundCycDown( cfs[i]) * e^(i-1);
+    od;
+    return int;
+end );
 
 #############################################################################
 ##
@@ -66,6 +88,21 @@ InstallMethod( ComplexConjugate,
     true,
     [ IsCyc ], 0,
     cyc -> GaloisCyc( cyc, -1 ) );
+
+
+#############################################################################
+##
+#M  ExtRepOfObj( <cyc> )
+##
+#+  Let <cyc> be a cyclotomic with conductor <n>.
+#+  The external representation of <cyc> is defined as
+#+  `CoeffsCyc( <cyc>, <n> )'.
+##
+InstallMethod( ExtRepOfObj,
+    "for an internal cyclotomic",
+    true,
+    [ IsCyc and IsInternalRep ], 0,
+    COEFFS_CYC );
 
 
 #############################################################################
@@ -95,8 +132,7 @@ InstallGlobalFunction( CoeffsCyc, function( z, N )
       # `z' is an internal cyclotomic, and therefore it is represented
       # in the smallest possible cyclotomic field.
 
-      coeffs:= COEFFS_CYC( z );  # the internal function,
-                                 # returns `CoeffsCyc( z, Conductor( z ) )'
+      coeffs:= ExtRepOfObj( z ); # returns `CoeffsCyc( z, Conductor( z ) )'
       n:= Length( coeffs );
       quo:= N / n;
       if not IsInt( quo ) then
@@ -240,8 +276,8 @@ end );
 ##  (mainly to read tables produced by the `ctoc' script used to translate
 ##  character tables in CAS format to {\GAP})
 ##
-##  *Note*\: `CycList( COEFFS_CYC( <cyc> ) )' = <cyc>, but
-##          `COEFFS_CYC( CycList( <coeffs> ))' need not be equal to <coeffs>.
+##  *Note*\: `CycList( ExtRepOfObj( <cyc> ) )' = <cyc>, but
+##          `ExtRepOfObj( CycList(<coeffs>) )' need not be equal to <coeffs>.
 ##
 BindGlobal( "CycList", function( coeffs )
     local e, n;
@@ -267,6 +303,160 @@ InstallGlobalFunction( IsGaussRat,
     x -> IsCyc( x ) and (Conductor( x ) = 1 or Conductor( x ) = 4) );
 
 
+##############################################################################
+##
+#F  DescriptionOfRootOfUnity( <root> )
+##
+##  Let $\zeta$ denote the primitive $n$-th root of unity $`E'(n)$,
+##  and suppose that we know the coefficients of $\pm\zeta^i$ w.r.t.
+##  the $n$-th Zumbroich basis (see~"ZumbroichBasis").
+##  These coefficients are either all $1$ or all $-1$.
+##  More precisely, they arise in the base conversion from (formally)
+##  successively multiplying $\pm\zeta^i$ by
+##  $1 = - \sum_{j=1}^{p-1} \zeta^{jn/p}$,
+##  for suitable prime diviors $p$ of $n$,
+##  and then treating the summands $\pm\zeta^{i + jn/p}$ in the same way
+##  until roots in the basis are reached.
+##  It should be noted that all roots obtained this way are distinct.
+##
+##  Suppose the above procedure must be applied for the primes
+##  $p_1$, $p_2$, \ldots, $p_r$.
+##  Then $\zeta^i$ is equal to
+##  $(-1)^r \sum_{j_1=1}^{p_1-1} \cdots \sum_{j_r=1}^{p_r-1}
+##  \zeta^{i + \sum_{k=1}^r j_k n/p_k}$.
+##  The number of summands is $m = \prod_{k=1}^r (p_k-1)$.
+##  Since these root are all distinct, we can compute the sum $s$ of their
+##  exponents modulo $n$ from the known coefficients of $\zeta^i$,
+##  and we get $s \equiv m ( i + r n/2 ) \pmod{n}$.
+##  Either $m = 1$ or $m$ is even,
+##  hence this congruence determines $\zeta^i$ at most up to its sign.
+##
+##  Now suppose that $g = \gcd( m, n )$ is nontrivial.
+##  Then $i$ is determined only modulo $n/g$, and we have to decide which
+##  of the $g$ possible values $i$ is.
+##  This could be done by computing the values $j_{0,p}$ for one
+##  candidate $i$, where $p$ runs over the prime divisors $p$ of $n$
+##  for which $m$ is the product of $(p-1)$.
+##
+##  (Recall that each $n$-th root of unity is of the form
+##  $\prod_{p\in P} \prod_{k_p=1}^{\nu_p-1} \zeta^{j_{k,p}n/p^{k_p+1}}$,
+##  with $j_{0,p} \in \{ 0, 1, \ldots, p-1 \}$, $j_{k,2} \in \{ 0, 1 \}$
+##  for $k > 0$, and $j_{k,p} \in \{ -(p-1)/2, \ldots, (p-1)/2 \}$ for
+##  $p > 2$.
+##  The root is in the $n$-th Zumbroich basis if and only if $j_{0,2} = 0$
+##  and $j_{0,p} \not= 0$ for $p > 2$.)
+##
+##  But note that we do not have an easy access to the decomposition
+##  of $m$ into factors $(p-1)$,
+##  although in fact this decomposition is unique for $n \leq 65000$.
+##
+##  So the exponent is identified by dividing off one of the candidates
+##  and then identifying the quotient, which is a $g$-th or $2 g$-th
+##  root of unity.
+##  (Note that $g$ is small compared to $n$.
+##  $m$ divides the product of $(p-1)$ for prime divisors $p$
+##  that divide $n$ at least with exponent $2$.
+##  The maximum of $g$ for $n \leq 65000$ is $40$, so $2$ steps suffice
+##  for these values of $n$.)
+##
+InstallGlobalFunction( DescriptionOfRootOfUnity, function( root )
+
+    local coeffs,   # Zumbroich basis coefficients of `root'
+          n,        # conductor of `n'
+          sum,      # sum of exponents with nonzero coefficients
+          num,      # number of nonzero coefficients
+          i,        # loop variable
+          val,      # one coefficient
+          coeff,    # one nonzero coefficient (either `1' or `-1')
+          exp,      # candidate for the exponent
+          g,        # `Gcd( n, num )'
+          groot;    # root in recursion
+
+    # Handle the trivial cases that `root' is an integer.
+    if root = 1 then
+      return [ 1, 1 ];
+    elif root = -1 then
+      return [ 2, 1 ];
+    fi;
+    Assert( 1, not IsRat( root ) );
+
+    # Compute the Zumbroich basis coefficients,
+    # and number and sum of exponents with nonzero coefficient (mod `n').
+    coeffs:= ExtRepOfObj( root );
+    n:= Length( coeffs );
+    sum:= 0;
+    num:= 0;
+    for i in [ 1 .. n ] do
+      val:= coeffs[i];
+      if val <> 0 then
+        sum:= sum + i;
+        num:= num + 1;
+        coeff:= val;
+      fi;
+    od;
+    sum:= sum - num;
+
+    # `num' is equal to `1' if and only if `root' or its negative
+    # belongs to the basis.
+    # (The coefficient is equal to `-1' if and only if either
+    # `n' is a power of $2$ or
+    # `n' is odd and `root' is a primitive $2 `n'$-th root of unity.)
+    if num = 1 then
+      if coeff < 0 then
+        if n mod 2 = 0 then
+          sum:= sum + n/2;
+        else
+          sum:= 2*sum + n;
+          n:= 2*n;
+          sum:= sum mod n;
+        fi;
+      fi;
+      Assert( 1, root = E(n)^sum );
+      return [ n, sum ];
+    fi;
+
+    # Let $N$ be `n' if `n' is even, and equal to $2 `n'$ otherwise.
+    # The exponent is determined modulo $N / \gcd( N, `num' )$.
+    g:= GcdInt( n, num );
+    if g = 1 then
+
+      # If `n' and `num' are coprime then `root' is identified up to its sign.
+      exp:= ( sum / num ) mod n;
+      if root <> E(n)^exp then
+        exp:= 2*exp + n;
+        n:= 2*n;
+        exp:= exp mod n;
+      fi;
+
+    elif g = 2 then
+
+      # `n' is even, and again `root' is determined up to its sign.
+      exp:= ( sum / num ) mod ( n / 2 );
+      if root <> E(n)^exp then
+        exp:= ( exp + n / 2 ) mod n;
+      fi;
+
+    else
+
+      # Divide off one of the candidates.
+      # The quotient is a `g'-th or $2 `g'$-th root of unity,
+      # which can be identified by recursion.
+      exp:= ( sum / num ) mod ( n / g );
+      groot:= DescriptionOfRootOfUnity( root * E(n)^(n-exp) );
+      if n mod 2 = 1 and groot[1] mod 2 = 0 then
+        exp:= 2*exp;
+        n:= 2*n;
+      fi;
+      exp:= ( exp + groot[2] * n / groot[1] ) mod n;
+
+    fi;
+
+    # Return the result.
+    Assert( 1, root = E(n)^exp );
+    return [ n, exp ];
+end );
+
+
 #############################################################################
 ##
 #F  Atlas1( <n>, <i> )  . . . . . . . . . . . . . . . utility for EB, ..., EH
@@ -280,9 +470,7 @@ InstallGlobalFunction( IsGaussRat,
 ##        Chapter 7, Section 10)
 ##
 BindGlobal( "Atlas1", function( n, i )
-
-    local k, kpow, resultlist, atlas,
-          En;
+local k,atlas, En;
 
     if not IsInt( n ) or n < 1 then
       Error( "usage: EB(<n>), EC(<n>), ..., EH(<n>) with appropriate ",
@@ -333,20 +521,13 @@ InstallGlobalFunction( EH, n -> Atlas1( n, 8 ) );
 
 #############################################################################
 ##
-#F  NK( <n>, <k>, <deriv> ) . . . . . . . . utility for ATLAS irrationalities
+#F  NK( <n>, <k>, <d> ) . . . . . . . . . . utility for ATLAS irrationalities
 ##
-##  `NK( <n>, <k>, <deriv> )' is the $(<deriv>+1)$-th number
-##  of multiplicative order exactly <k> modulo <N>, chosen in the order of
-##  preference
-##  \[ 1, -1, 2, -2, 3, -3, 4, -4, \ldots .\]
-##  (see: Conway et al, ATLAS of finite groups, Oxford University Press 1985;
-##        Chapter 7, Section 10)
-##
-BindGlobal( "NK", function( n, k, deriv )
-    local i, nk;
+InstallGlobalFunction( NK, function( n, k, deriv )
+    local  nk;
     if n <= 2 or ( k in [ 2, 3, 5, 6, 7 ] and Phi( n ) mod k <> 0 )
               or k < 2 or k > 8 then
-      Error( "value does not exist" );
+      return fail;
     fi;
     if k mod 4 = 0 then
 
@@ -355,7 +536,7 @@ BindGlobal( "NK", function( n, k, deriv )
       # an automorphism of order 8 exists if 8 divides $p-1$ for an odd
       # prime divisor $p$ of `n', or if 32 divides `n';
       if ForAll(Set(FactorsInt(n)),x->(x-1) mod k<>0) and n mod (4*k)<>0 then
-        Error( "value does not exist" );
+        return fail;
       fi;
     fi;
     nk:= 1;
@@ -563,25 +744,52 @@ end );
 ##
 #F  ER( <n> ) . . . . ATLAS irrationality $r_{<n>}$ (pos. square root of <n>)
 ##
+##  Different from other {\ATLAS} irrationalities,
+##  `ER' (and its synonym `Sqrt') can be applied also to noninteger
+##  rationals.
+##
 InstallGlobalFunction( ER, function( n )
-    local factor;
-    if not IsInt( n ) then Error( "argument must be integer valued" ); fi;
-    if n = 0 then
-      return 0;
-    elif n < 0 then
-      factor:= E(4);
-      n:= -n;
+    local factor, factors, pair;
+
+    if IsInt( n ) then
+
+      if n = 0 then
+        return 0;
+      elif n < 0 then
+        factor:= E(4);
+        n:= -n;
+      else
+        factor:= 1;
+      fi;
+
+      # Split `n' into the product of a square and a squarefree number.
+      factors:= Collected( Factors( n ) );
+      n:= 1;
+      for pair in factors do
+        if pair[2] mod 2 = 0 then
+          factor:= factor * pair[1]^(pair[2]/2);
+        else
+          n:= n * pair[1];
+          if pair[2] <> 1 then
+            factor:= factor * pair[1]^((pair[2]-1)/2);
+          fi;
+        fi;
+      od;
+      if   n mod 4 = 1 then
+        return factor * ( 2 * EB(n) + 1 );
+      elif n mod 4 = 2 then
+        return factor * ( E(8) - E(8)^3 ) * ER( n / 2 );
+      elif n mod 4 = 3 then
+        return factor * (-E(4)) * ( 2 * EB(n) + 1 );
+      else
+        return factor * 2 * ER( n / 4 );
+      fi;
+
+    elif IsRat( n ) then
+      factor:= DenominatorRat( n );
+      return ER( NumeratorRat( n ) * factor ) / factor;
     else
-      factor:= 1;
-    fi;
-    if   n mod 4 = 1 then
-      return factor * ( 2 * EB(n) + 1 );
-    elif n mod 4 = 2 then
-      return factor * ( E(8) - E(8)^3 ) * ER( n / 2 );
-    elif n mod 4 = 3 then
-      return factor * (-E(4)) * ( 2 * EB(n) + 1 );
-    else
-      return factor * 2 * ER( n / 4 );
+      Error( "argument must be rational" );
     fi;
 end );
 
@@ -591,6 +799,17 @@ end );
 #F  EI( <n> ) . . . . ATLAS irrationality $i_{<n>}$ (the square root of -<n>)
 ##
 InstallGlobalFunction( EI, n -> E(4) * ER(n) );
+
+
+#############################################################################
+##
+#M  Sqrt( <rat> ) . . . . . . . . . . . . . . . . .  square root of rationals
+##
+InstallMethod( Sqrt,
+    "for a rational",
+    true,
+    [ IsRat ], 0,
+    ER );
 
 
 #############################################################################
@@ -642,7 +861,7 @@ InstallGlobalFunction( Quadratic, function( cyc )
                  );
     fi;
 
-    coeffs:= COEFFS_CYC( cyc );
+    coeffs:= ExtRepOfObj( cyc );
     facts:= FactorsInt( Length( coeffs ) );
     factsset:= Set( facts );
     two_part:= Number( facts, x -> x = 2 );
@@ -837,73 +1056,6 @@ end );
 
 #############################################################################
 ##
-#F  GeneratorsPrimeResidues( <n> ) . . . . . . generators of the Galois group
-##
-InstallGlobalFunction( GeneratorsPrimeResidues, function( n )
-    local factors,     # collected list of prime factors of `n'
-          primes,      # list of prime divisors of `n'
-          exponents,   # exponents of the entries in `primes'
-          generators,  # generator(s) of the prime part `ppart' of residues
-          ppart,       # one prime part of `n'
-          rest,        # `n / ppart'
-          pos,         # 1 if `n' is odd, 2 if `n' is even
-          i,           # loop over the positions in `factors'
-          gcd;         # one coefficient in the output of `Gcdex'
-
-    if n = 1 then
-      return rec(
-                  primes     := [],
-                  exponents  := [],
-                  generators := []
-                 );
-    fi;
-
-    factors:= Collected( FactorsInt( n ) );
-
-    primes     := [];
-    exponents  := [];
-    generators := [];
-
-    # For each prime part `ppart',
-    # the generator must be congruent to a primitive root modulo `ppart',
-    # and congruent 1 modulo the rest `N/ppart'.
-
-    for i in [ 1 .. Length( factors ) ] do
-
-      primes[i]    := factors[i][1];
-      exponents[i] := factors[i][2];
-      ppart        := primes[i] ^ exponents[i];
-      rest         := n / ppart;
-
-      if primes[i] = 2 then
-
-        gcd:= Gcdex( ppart, rest ).coeff2 * rest;
-        if ppart mod 8 = 0 then
-          # Choose the generators `**' and `*5'.
-          generators[i]:= [ ( -2 * gcd + 1 ) mod n,   # generator `**'
-                            (  4 * gcd + 1 ) mod n ]; # generator `*5'
-        else
-          # Choose the generator `**'.
-          generators[i]:= ( -2 * gcd + 1 ) mod n;
-        fi;
-
-      else
-        generators[i] := ( ( PrimitiveRootMod( ppart ) - 1 )
-                           * Gcdex( ppart, rest ).coeff2 * rest + 1 ) mod n;
-      fi;
-
-    od;
-
-    return rec(
-                primes     := primes,
-                exponents  := exponents,
-                generators := generators
-               );
-end );
-
-
-#############################################################################
-##
 #M  GaloisMat( <mat> )  . . . . . . . . . . . . . for a matrix of cyclotomics
 ##
 ##  Note that we must not mix up plain lists and class functions, since
@@ -932,7 +1084,6 @@ InstallMethod( GaloisMat,
           fusion,      # positions of `irrats' in `X'
           k, l, m,     # loop variables
           generator,
-          value,
           irratsimages,
           automs,
           family,
@@ -1073,9 +1224,9 @@ InstallMethod( GaloisMat,
               else
 
                 if not warned and 500 < Length( mat ) then
-                  Print( "#I GaloisMat: completion of <mat> will have",
-                         " more than 500 rows\n" );
-#T InfoWarning?
+                  Info( InfoWarning, 1,
+                        "GaloisMat: completion of <mat> will have",
+                        " more than 500 rows" );
                   warned:= true;
                 fi;
 
@@ -1186,37 +1337,237 @@ InstallMethod( RationalizedMat,
     end );
 
 
+InstallOtherMethod( RationalizedMat,
+    "for an empty list",
+    true,
+    [ IsList and IsEmpty ], 0,
+    empty -> [] );
+
+
 #############################################################################
 ##
-#M  GroupByGenerators( <cycs> ) . . . . . . . for a collection of cyclotomics
-#M  GroupByGenerators( <cycs>, <id> ) . . . . for a collection of cyclotomics
+#M  IsGeneratorsOfMagmaWithInverses( <cycs> ) . .  for a coll. of cyclotomics
 ##
 ##  Disallow to create groups of cyclotomics because the `\^' operator has
 ##  a meaning for cyclotomics that makes it not compatible with that for
 ##  groups.
 ##
-InstallMethod( GroupByGenerators,
-    "for a collection of cyclotomics (raise an error)",
+InstallMethod( IsGeneratorsOfMagmaWithInverses,
+    "for a collection of cyclotomics (return false)",
     true,
     [ IsCyclotomicCollection ],
-    SUM_FLAGS,
+    SUM_FLAGS, # override evrything else
     function( gens )
-    Error( "sorry, no groups of cyclotomics are allowed" );
-    end );
-
-InstallOtherMethod( GroupByGenerators,
-    "for a collection of cyclotomics (raise an error)",
-    IsCollsElms,
-    [ IsCyclotomicCollection, IsCyc ],
-    SUM_FLAGS,
-    function( gens, id )
-    Error( "sorry, no groups of cyclotomics are allowed" );
+    Info( InfoWarning, 1,
+          "no groups of cyclotomics allowed because of incompatible ^" );
+    return false;
     end );
 
 
 #############################################################################
 ##
-#E  cyclotom.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##  Functions for factorizing polynomials over fields of cyclotomics
+##  (For arbitrary number fields, the explicit embedding of the field of
+##  rationals may cause that the functions below do not work.)
+##
 
 
+#############################################################################
+##
+#M  FactorsSquarefree( <R>, <cycpol>, <opt> )
+##
+##  The function uses Algorithm~3.6.4 in~\cite{Coh93}.
+##  (The record <opt> is ignored.)
+##
+InstallMethod( FactorsSquarefree,
+    "for a polynomial over a field of cyclotomics",
+    true,
+    [ IsAbelianNumberFieldPolynomialRing, IsUnivariatePolynomial,
+      IsRecord ], 0,
+    function( R, U, opt )
+
+    local coeffring, theta, xind, yind, x, y, T, coeffs, G, powers, pow, i,
+          B, c, val, j, k, N;
+
+    if IsRationalsPolynomialRing( R ) then
+      TryNextMethod();
+    fi;
+
+    # Let $K = \Q(\theta)$ be a number field,
+    # $T \in \Q[X]$ the minimal monic polynomial of $\theta$.
+    # Let $U(X) be a monic squarefree polynomial in $K[x]$.
+    coeffring:= CoefficientsRing( R );
+    theta:= PrimitiveElement( coeffring );
+
+    xind:= IndeterminateNumberOfUnivariateRationalFunction( U );
+    if xind = 1 then
+      yind:= 2;
+    else
+      yind:= 1;
+    fi;
+    x:= Indeterminate( Rationals, xind );
+    y:= Indeterminate( Rationals, yind );
+
+    # Let $U(X) = \sum_{i=0}^m u_i X^i$ and write $u_i = g_i(\theta)$
+    # for some polynomial $g_i \in \Q[X]$.
+    # Set $G(X,Y) = \sum_{i=0}^m g_i(Y) X^i \in \Q[X,Y]$.
+    coeffs:= CoefficientsOfUnivariatePolynomial( U );
+    if ForAll( coeffs, IsRat ) then
+      G:= U;
+    else
+      powers:= [ 1 ];
+      pow:= 1;
+      for i in [ 2 .. DegreeOverPrimeField( coeffring ) - 1 ] do
+        pow:= pow * theta;
+        powers[i]:= pow;
+      od;
+      B:= Basis( coeffring, powers );
+      G:= Zero( U );
+      for i in [ 1 .. Length( coeffs ) ] do
+        if IsRat( coeffs[i] ) then
+          G:= G + coeffs[i] * x^i;
+        else
+          c:= Coefficients( B, coeffs[i] );
+          val:= c[1];
+          for j in [ 2 .. Length( c ) ] do
+            val:= val + c[j] * y^(j-1);
+          od;
+          G:= G + val * x^i;
+        fi;
+      od;
+    fi;
+
+    # Set $k = 0$.
+    k:= 0;
+
+    # Compute $N(X) = R_Y( T(Y), G(X - kY,Y) )$
+    # where $R_Y$ denotes the resultant with respect to the variable $Y$.
+    # If $N(X)$ is not squarefree, increase $k$.
+    T:= MinimalPolynomial( Rationals, theta, yind );
+    repeat
+      k:= k+1;
+      N:= Resultant( T, Value( U, x-k*y ), y );
+    until DegreeOfUnivariateLaurentPolynomial( Gcd( N, Derivative(N) ) ) = 0;
+
+    # Let $N = \prod_{i=1}^g N_i$ be a factorization of $N$.
+    # For $1 \leq i \leq g$, set $A_i(X) = \gcd( U(X), N_i(X + k \theta) )$.
+    # The desired factorization of $U(X)$ is $\prod_{i=1}^g A_i$.
+    R:= PolynomialRing( Rationals, [ xind ] );
+    return List( Factors( R, N ),
+                 f -> Gcd( R, U, Value( f, x + k*theta ) ) );
+    end );
+
+
+#############################################################################
+##
+#M  Factors( <R>, <cycpol> )  .  for a polynomial over a field of cyclotomics
+##
+InstallMethod( Factors,
+    "for a polynomial over a field of cyclotomics",
+    true,
+    [ IsAbelianNumberFieldPolynomialRing, IsUnivariatePolynomial ], 0,
+    function( R, pol )
+
+    local irrfacs, coeffring, i, factors, ind, coeffs, val,
+          lc, der, g, factor, q;
+
+    if IsRationalsPolynomialRing( R ) then
+      TryNextMethod();
+    fi;
+
+    # Check whether the desired factorization is already stored.
+    irrfacs:= IrrFacsPol( pol );
+    coeffring:= CoefficientsRing( R );
+    i:= PositionProperty( irrfacs, pair -> pair[1] = coeffring );
+    if i <> fail then
+      return irrfacs[i][2];
+    fi;
+
+    # Handle (at most) linear polynomials.
+    if DegreeOfLaurentPolynomial( pol ) < 2  then
+      factors:= [ pol ];
+      StoreFactorsPol( coeffring, pol, factors );
+      return factors;
+    fi;
+
+    # Compute the valuation, split off the indeterminate as a zero.
+    ind:= IndeterminateNumberOfLaurentPolynomial( pol );
+    coeffs:= CoefficientsOfLaurentPolynomial( pol );
+    val:= coeffs[2];
+    coeffs:= coeffs[1];
+    factors:= ListWithIdenticalEntries( val,
+                  IndeterminateOfUnivariateRationalFunction( pol ) );
+
+    if Length( coeffs ) = 1 then
+
+      # The polynomial is a power of the indeterminate.
+      factors[1]:= coeffs[1] * factors[1];
+      StoreFactorsPol( coeffring, pol, factors );
+      return factors;
+
+    elif Length( coeffs ) = 2 then
+
+      # The polynomial is a linear polynomial times a power of the indet.
+      factors[1]:= coeffs[2] * factors[1];
+      factors[ val+1 ]:= LaurentPolynomialByExtRep( FamilyObj( pol ),
+                             [ coeffs[1] / coeffs[2], 1 ], 0, ind );
+      StoreFactorsPol( coeffring, pol, factors );
+      return factors;
+
+    fi;
+
+    # We really have to compute the factorization.
+    # First split the polynomial into leading coefficient and monic part.
+    lc:= coeffs[ Length( coeffs ) ];
+    if lc <> 1 then
+      coeffs:= coeffs / lc;
+    fi;
+    if val = 0 then
+      pol:= pol / lc;
+    else
+      pol:= LaurentPolynomialByExtRep( FamilyObj( pol ), coeffs, 0, ind );
+    fi;
+
+    # Now compute the quotient of `pol' by the g.c.d. with its derivative,
+    # and factorize the squarefree part.
+    der:= Derivative( pol );
+    g:= Gcd( R, pol, der );
+    if DegreeOfLaurentPolynomial( g ) = 0 then
+      Append( factors, FactorsSquarefree( R, pol, rec() ) );
+    else
+      for factor in FactorsSquarefree( R, Quotient( R, pol, g ), rec() ) do
+        Add( factors, factor );
+        q:= Quotient( R, g, factor );
+        while q <> fail do
+          Add( factors, factor );
+          g:= q;
+          q:= Quotient( R, g, factor );
+        od;
+      od;
+    fi;
+
+    # Sort the factorization.
+    Sort( factors );
+
+    # Adjust the first factor by the constant term.
+    Assert( 2, DegreeOfLaurentPolynomial(g) = 0 );
+    if not IsOne( g ) then
+      lc:= g * lc;
+    fi;
+    if lc <> 1 then
+      factors[1]:= lc * factors[1];
+    fi;
+
+    # Store the factorization.
+    Assert( 2, Product( factors ) = pol );
+    StoreFactorsPol( coeffring, pol, factors );
+
+    # Return the factorization.
+    return factors;
+    end );
+
+
+#############################################################################
+##
+#E
 

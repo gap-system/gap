@@ -5,7 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for algebraic elements and their families
 ##
@@ -19,7 +19,7 @@ Revision.algfld_gi:=
 DeclareRepresentation(
   "IsAlgebraicExtensionDefaultRep", IsAlgebraicExtension and
   IsComponentObjectRep and IsAttributeStoringRep,
-  ["definingPolynomial","extFam"]);
+  ["extFam"]);
 
 #############################################################################
 ##
@@ -63,7 +63,9 @@ InstallMethod(AlgebraicElementsFamily,"generic",true,
   [IsField,IsUnivariatePolynomial],0,
 function(f,p)
 local fam,i;
-  if not IsIrreducibleRingElement(PolynomialRing(f),p) then
+  if not
+  IsIrreducibleRingElement(PolynomialRing(f,
+             [IndeterminateNumberOfLaurentPolynomial(p)]),p) then
     Error("<p> must be irreducible over f");
   fi;
   fam:=AlgebraicElementsFamilies(p);
@@ -73,7 +75,8 @@ local fam,i;
   fi;
 
   fam:=NewFamily("AlgebraicElementsFamily(...)",IsAlgebraicElement,
-         IsObject,IsAlgebraicElementFamily);
+         IsAlgebraicElement and CanEasilySortElements,
+	 IsAlgebraicElementFamily and CanEasilySortElements);
 
   # The two types
   fam!.baseType := NewType(fam,IsAlgBFRep);
@@ -85,12 +88,13 @@ local fam,i;
   fam!.baseOne:=One(f);
   fam!.poly:=p;
   fam!.polCoeffs:=CoefficientsOfUnivariatePolynomial(p);
-  fam!.deg:=DOULP(p);
-  i:=List([1..DOULP(p)],i->fam!.baseZero);
+  fam!.deg:=DegreeOfLaurentPolynomial(p);
+  i:=List([1..DegreeOfLaurentPolynomial(p)],i->fam!.baseZero);
   i[2]:=fam!.baseOne;
   fam!.primitiveElm:=ObjByExtRep(fam,i);
 
   SetIsUFDFamily(fam,true);
+  SetCoefficientsFamily(fam,FamilyObj(One(f)));
 
   # and set one and zero
   SetZero(fam,ObjByExtRep(fam,Zero(f)));
@@ -110,7 +114,7 @@ InstallMethod(AlgebraicExtension,"generic",true,
 function(f,p)
 local e,fam;
 
-  if DOULP(p)<=1 then
+  if DegreeOfLaurentPolynomial(p)<=1 then
     return f;
   fi;
 
@@ -118,14 +122,17 @@ local e,fam;
   e:=Objectify(NewType(CollectionsFamily(fam),IsAlgebraicExtensionDefaultRep),
                rec());
 
-  e!.definingPolynomial:=p;
+  fam!.wholeField:=e;
   e!.extFam:=fam;
   SetCharacteristic(e,Characteristic(f));
-  SetDegreeOverPrimeField(e,DOULP(p)*DegreeOverPrimeField(f));
+  SetDegreeOverPrimeField(e,DegreeOfLaurentPolynomial(p)*DegreeOverPrimeField(f));
+  SetIsFiniteDimensional(e,true);
   SetLeftActingDomain(e,f);
   SetGeneratorsOfField(e,[fam!.primitiveElm]);
   SetIsPrimeField(e,false);
   SetPrimitiveElement(e,fam!.primitiveElm);
+  SetDefiningPolynomial(e,p);
+  SetRootOfDefiningPolynomial(e,fam!.primitiveElm);
 
   if HasIsFinite(f) then
     if IsFinite(f) then
@@ -139,15 +146,27 @@ local e,fam;
     fi;
   fi;
 
-  SetIsFiniteDimensional(e,true);
-
   # AH: Noch VR-Eigenschaften!
+  SetDimension( e, DegreeOverPrimeField( e ) );
 
   SetOne(e,One(fam));
   SetZero(e,Zero(fam));
 
   return e;
 end);
+
+InstallOtherMethod(FieldByGenerators,"algebraic elements",true,
+  [IsAlgebraicElementCollection],0,
+function(l)
+  return FamilyObj(l[1])!.wholeField;
+end);
+
+#############################################################################
+##
+#M  FieldExtension     generically default on `AlgebraicExtension'.
+##
+InstallMethod(FieldExtension,"generic",true,
+  [IsField,IsUnivariatePolynomial],0,AlgebraicExtension);
 
 #############################################################################
 ##
@@ -202,7 +221,7 @@ end);
 
 #############################################################################
 ##
-#F  AlgExtElm      A 'nicer' ObjByExtRep, that shrinks/grows a list to the 
+#F  AlgExtElm      A `nicer' ObjByExtRep, that shrinks/grows a list to the 
 ##                 correct length and tries to get to the BaseField
 ##                 representation
 ##
@@ -290,7 +309,7 @@ function(a,b)
   return ObjByExtRep(FamilyObj(a),a![1]+b![1]);
 end);
 
-InstallMethod(\+,"AlgElm+FElm",true,[IsAlgExtRep,IsRingElement],0,
+InstallMethod(\+,"AlgElm+FElm",IsElmsCoeffs,[IsAlgExtRep,IsRingElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -299,7 +318,7 @@ local fam;
   return ObjByExtRep(fam,a);
 end);
 
-InstallMethod(\+,"FElm+AlgElm",true,[IsRingElement,IsAlgExtRep],0,
+InstallMethod(\+,"FElm+AlgElm",IsCoeffsElms,[IsRingElement,IsAlgExtRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -308,13 +327,13 @@ local fam;
   return ObjByExtRep(fam,b);
 end);
 
-InstallMethod(\+,"BFElm+FElm",true,[IsAlgBFRep,IsRingElement],0,
+InstallMethod(\+,"BFElm+FElm",IsCoeffsElms,[IsAlgBFRep,IsRingElement],0,
 function(a,b)
   b:=a![1]+b;
   return AlgExtElm(FamilyObj(a),b);
 end);
 
-InstallMethod(\+,"FElm+BFElm",true,[IsRingElement,IsAlgBFRep],0,
+InstallMethod(\+,"FElm+BFElm",IsElmsCoeffs,[IsRingElement,IsAlgBFRep],0,
 function(a,b)
   a:=b![1]+a;
   return AlgExtElm(FamilyObj(b),a);
@@ -322,14 +341,14 @@ end);
 
 #############################################################################
 ##
-#M  AdditiveInverse
+#M  AdditiveInverseOp
 ##
-InstallMethod(AdditiveInverse,"AlgElm",true,[IsAlgExtRep],0,
+InstallMethod( AdditiveInverseOp, "AlgElm",true,[IsAlgExtRep],0,
 function(a)
   return ObjByExtRep(FamilyObj(a),-a![1]);
 end);
 
-InstallMethod(AdditiveInverse,"BFElm",true,[IsAlgBFRep],0,
+InstallMethod( AdditiveInverseOp, "BFElm",true,[IsAlgBFRep],0,
 function(a)
   return ObjByExtRep(FamilyObj(a),-a![1]);
 end);
@@ -364,7 +383,7 @@ function(a,b)
   return ObjByExtRep(FamilyObj(a),a![1]*b![1]);
 end);
 
-InstallMethod(\*,"Alg*FElm",true,[IsAlgebraicElement,IsRingElement],0,
+InstallMethod(\*,"Alg*FElm",IsCoeffsElms,[IsAlgebraicElement,IsRingElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -372,7 +391,7 @@ local fam;
   return AlgExtElm(fam,b);
 end);
 
-InstallMethod(\*,"FElm*Alg",true,[IsRingElement,IsAlgebraicElement],0,
+InstallMethod(\*,"FElm*Alg",IsElmsCoeffs,[IsRingElement,IsAlgebraicElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -392,9 +411,9 @@ end);
 
 #############################################################################
 ##
-#M  Inverse
+#M  InverseOp
 ##
-InstallMethod(Inverse,"AlgElm",true,[IsAlgExtRep],0,
+InstallMethod( InverseOp, "AlgElm",true,[IsAlgExtRep],0,
 function(a)
 local i,fam,f,g,t,h,rf,rg,rh,z;
   fam:=FamilyObj(a);
@@ -429,10 +448,11 @@ local i,fam,f,g,t,h,rf,rg,rh,z;
     #  t:=t-1;
     #od;
   od;
+  rf:=1/f[Length(f)]*rf;
   return AlgExtElm(fam,rf);
 end);
 
-InstallMethod(Inverse,"BFElm",true,[IsAlgBFRep],0,
+InstallMethod( InverseOp, "BFElm",true,[IsAlgBFRep],0,
 function(a)
   return ObjByExtRep(FamilyObj(a),Inverse(a![1]));
 end);
@@ -651,6 +671,14 @@ end);
 #  m:=m/m[Length(m)];
 #  return UnivariatePolynomialByCoefficients(FamilyObj(fam!.baseZero),m,inum);
 #end);
+#T  The method might be installed since it avoids the computations with
+#T  a basis (used in the generic method).
+#T  But note:
+#T  In GAP 4, `MinimalPolynomial( <F>, <z> )' is a polynomial with
+#T  coefficients in <F>, *not* the min. pol. of an element <z> in <F>
+#T  with coefficients in `LeftActingDomain( <F> )'.
+#T  So the first argument will in general be `Rationals'!
+
 
 #############################################################################
 ##
@@ -662,34 +690,41 @@ end);
 #local fam,p;
 #  fam:=FamilyObj(One(f));
 #  p:=MinimalPolynomial(f,e);
-#  return p^(fam!.deg/DOULP(p));
+#  return p^(fam!.deg/DegreeOfLaurentPolynomial(p));
 #end);
+#T  See the comment about `MinimalPolynomial' above!
 
-#############################################################################
-##
-#M  Trace
-##
-InstallMethod(Trace,"Alg",true,
-  [IsAlgebraicExtension,IsScalar],0,
-function(f,e)
-local   p;
-  p:=CharacteristicPolynomial(f,e);
-  p:=CoefficientsOfUnivariatePolynomial(p);
-  return -p[Length(p)-1];
-end);
 
-#############################################################################
-##
-#M  Norm
-##
-InstallMethod(Norm,"Alg",true,
-  [IsAlgebraicExtension,IsScalar],0,
-function(f,e)
-local   p;
-  p:=CharacteristicPolynomial(f,e);
-  p:=CoefficientsOfUnivariatePolynomial(p);
-  return p[1]*(-1)^(Length(p)-1);
-end);
+# #############################################################################
+# ##
+# #M  Trace
+# ##
+# InstallMethod(Trace,"Alg",true,
+#   [IsAlgebraicExtension,IsScalar],0,
+# function(f,e)
+# local   p;
+#   p:=CharacteristicPolynomial(f,e);
+#   p:=CoefficientsOfUnivariatePolynomial(p);
+#   return -p[Length(p)-1];
+# end);
+# 
+# #############################################################################
+# ##
+# #M  Norm
+# ##
+# InstallMethod(Norm,"Alg",true,
+#   [IsAlgebraicExtension,IsScalar],0,
+# function(f,e)
+# local   p;
+#   p:=CharacteristicPolynomial(f,e);
+#   p:=CoefficientsOfUnivariatePolynomial(p);
+#   return p[1]*(-1)^(Length(p)-1);
+# end);
+#T The above two installations are obsolete since now the default methods
+#T for `Trace' and `Norm' use `TracePolynomial';
+#T the ``old'' default to use `Conjugates' is now restricted to the special
+#T case that the field has `IsFieldControlledByGaloisGroup'.
+
 
 #############################################################################
 ##
@@ -706,5 +741,111 @@ end);
 
 #############################################################################
 ##
-#E  algfld.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#F  MaxNumeratorCoeffAlgElm(<a>)
 ##
+InstallMethod(MaxNumeratorCoeffAlgElm,"rational",true,[IsRat],0,
+function(e)
+  return AbsInt(NumeratorRat(e));
+end);
+
+InstallMethod(MaxNumeratorCoeffAlgElm,"algebraic element",true,
+  [IsAlgebraicElement and IsAlgBFRep],0,
+function(e)
+  return MaxNumeratorCoeffAlgElm(e![1]);
+end);
+
+InstallMethod(MaxNumeratorCoeffAlgElm,"algebraic element",true,
+  [IsAlgebraicElement and IsAlgExtRep],0,
+function(e)
+  return Maximum(List(e![1],MaxNumeratorCoeffAlgElm));
+end);
+
+
+#############################################################################
+##
+##  Supply a canonical basis for algebraic extensions.
+##  (Subspaces of algebraic extensions could be easily handled via
+##  the nice/ugly vectors mechanism.)
+##
+
+
+#############################################################################
+##
+#M  Basis( <algext> )
+##
+InstallMethod( Basis,
+    "for an algebraic extension (call `CanonicalBasis')",
+    true,
+    [ IsAlgebraicExtension ], 0,
+    CanonicalBasis );
+
+
+#############################################################################
+##
+#R  IsCanonicalBasisAlgebraicExtension( <algext> )
+##
+DeclareRepresentation( "IsCanonicalBasisAlgebraicExtension",
+    IsBasis and IsCanonicalBasis and IsAttributeStoringRep, [] );
+
+
+#############################################################################
+##
+#M  CanonicalBasis( <algext> )  . . . . . . . . . . . for algebraic extension
+##
+##  The basis vectors are the first powers of the primitive element.
+##
+InstallMethod( CanonicalBasis,
+    "for an algebraic extension",
+    true,
+    [ IsAlgebraicExtension ], 0,
+    function( F )
+    local B;
+    B:= Objectify( NewType( FamilyObj( F ),
+                            IsCanonicalBasisAlgebraicExtension ),
+                   rec() );
+    SetUnderlyingLeftModule( B, F );
+    return B;
+    end );
+
+
+#############################################################################
+##
+#M  BasisVectors( <B> ) . . . . . . . . . . . . for canon. basis of alg. ext.
+##
+InstallMethod( BasisVectors,
+    "for canon. basis of an algebraic extension",
+    true,
+    [ IsCanonicalBasisAlgebraicExtension ], 0,
+    F -> List( [ 0 .. Dimension( F ) - 1 ], i -> PrimitiveElement( F )^i ) );
+
+
+#############################################################################
+##
+#M  Coefficients( <B>, <v> )  . . . . . . . . . for canon. basis of alg. ext.
+##
+InstallMethod( Coefficients,
+    "for canon. basis of an algebraic extension, and alg. element",
+    IsCollsElms,
+    [ IsCanonicalBasisAlgebraicExtension, IsAlgebraicElement ], 0,
+    function( B, v )
+    return ExtRepOfObj( v );
+    end );
+
+InstallMethod( Coefficients,
+    "for canon. basis of an algebraic extension, and scalar",
+    true,
+    [ IsCanonicalBasisAlgebraicExtension, IsScalar ], 0,
+    function( B, v )
+    B:= UnderlyingLeftModule( B );
+    if v in LeftActingDomain( B ) then
+      return Concatenation( [ v ], Zero( v ) * [ 1 .. Dimension( B )-1 ] );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+
+#############################################################################
+##
+#E
+

@@ -11,23 +11,33 @@
 ##  partitions. These  functions  are used in  the backtrack  algorithms  for
 ##  permutation groups.
 ##
-##  A partition is a record with the following components.
-##  points : a list of all points contained in the partition, such that
-##           points from the same cell are neighboured
-##  cellno : a list whose <i>th entry is the number of the cell which
-##           contains the point <i>
-##  firsts : a list such that <points[firsts[j]]> is the first point in
-##           <points> which is in cell <j>
-##  lengths: a list of the cell lengths
+##  A *partition* is a mutable record with the following components.
+##  \beginitems                             
+##  `points':  &
+##       a list of all points contained in the partition, such that
+##       points from the same cell are neighboured
+##
+##  `cellno': &
+##       a list whose <i>th entry is the number of the cell which
+##       contains the point <i>
+##
+##  `firsts': &
+##       a list such that <points[firsts[j]]> is the first point in
+##       <points> which is in cell <j>
+##
+##  `lengths': &
+##       a list of the cell lengths
+##  \enditems                             
 ##
 Revision.partitio_gi :=
     "@(#)$Id$";
+
 
 #############################################################################
 ##
 #F  Partition( <list> ) . . . . . . . . . . . . . . . . partition constructor
 ##
-Partition := function( list )
+BindGlobal( "Partition", function( list )
     local   P,  i,  c;
     
     P := rec( points := Concatenation( list ),
@@ -51,21 +61,23 @@ Partition := function( list )
         P.cellno{ list[ c ] } := c + 0 * list[ c ];
     od;
     return P;
-end;
+end );
+
 
 #############################################################################
 ##
 #F  IsEqualPartition( <P>, <Q> )  . . . . . . . . . . . . . . . equality test
 ##
-IsEqualPartition := function( P, Q )
+BindGlobal( "IsEqualPartition", function( P, Q )
     return P.cellno = Q.cellno;
-end;
+end );
+
 
 #############################################################################
 ##
 #F  OnPartitions( <P>, <g> )  . . . . . . . permutations acting on partitions
 ##
-OnPartitions := function( P, g )
+BindGlobal( "OnPartitions", function( P, g )
     local   Q,  i;
     
     Q := StructuralCopy( P );
@@ -77,39 +89,39 @@ OnPartitions := function( P, g )
         fi;
     od;
     return Q;
-end;
+end );
+
       
 #############################################################################
 ##
 #F  IsPartition( <P> )  . . . . . . . . . . . . test if object is a partition
 ##
-IsPartition := function( P )
-    return IsRecord( P )  and  IsBound( P.cellno );
-end;
+BindGlobal( "IsPartition", P -> IsRecord( P ) and IsBound( P.cellno ) );
+#T state this in the definition of a partition!
+
 
 #############################################################################
 ##
 #F  PointsPartition( <P> )  . . . . . . . . .  points involved in a partition
 ##
-PointsPartition := function( P )
-    return Set( P.points );
-end;
+BindGlobal( "PointsPartition", P -> Set( P.points ) );
+
 
 #############################################################################
 ##
 #F  NumberCells( <P> )  . . . . . . . . . . . . . . . . . . . number of cells
 ##
-NumberCells := function( P )
-    return Length( P.firsts );
-end;
+BindGlobal( "NumberCells", P -> Length( P.firsts ) );
+
 
 #############################################################################
 ##
 #F  Cell( <P>, <m> )  . . . . . . . . . . . . . . . . . . . . .  cell as list
 ##
-Cell := function( P, m )
+BindGlobal( "Cell", function( P, m )
     return P.points{ [ P.firsts[m] .. P.firsts[m] + P.lengths[m] - 1 ] };
-end;
+end );
+
 
 #############################################################################
 ##
@@ -118,7 +130,7 @@ end;
 ##  Returns a list of the points along in their  cell, ordered as these cells
 ##  are ordered
 ##
-Fixcells := function( P )
+BindGlobal( "Fixcells", function( P )
     local   fix,  i;
     
     fix := [  ];
@@ -128,7 +140,8 @@ Fixcells := function( P )
         fi;
     od;
     return fix;
-end;
+end );
+
 
 #############################################################################
 ##
@@ -144,8 +157,8 @@ end;
 ##  `true', at least one point will  move out. If <out> is  a number, at most
 ##  <out> points will move out.
 ##
-SplitCell := function( P, i, Q, j, g, out )
-    local   a,  b,  l,  B,  tmp,  m,  x,  k;
+BindGlobal( "SplitCell", function( P, i, Q, j, g, out )
+    local   a,  b,  l,  B,  tmp,  m,  x;
 
     a := P.firsts[ i ];
     b := a + P.lengths[ i ];
@@ -220,7 +233,8 @@ SplitCell := function( P, i, Q, j, g, out )
     P.lengths[ i ] := P.lengths[ i ] - P.lengths[ m ];
     
     return P.lengths[ m ];
-end;
+end );
+
 
 #############################################################################
 ##
@@ -232,7 +246,7 @@ end;
 ##  Returns the  number of the cell   from <a> was  taken out,  or `false' if
 ##  nothing was changed.
 ##
-IsolatePoint := function( P, a )
+BindGlobal( "IsolatePoint", function( P, a )
     local   i,  pos,  l,  m;
     
     i := P.cellno[ a ];
@@ -251,7 +265,8 @@ IsolatePoint := function( P, a )
     P.lengths[ m ] := 1;
     P.lengths[ i ] := P.lengths[ i ] - 1;
     return i;
-end;
+end );
+
 
 #############################################################################
 ##
@@ -268,7 +283,7 @@ end;
 ##
 ##  May behave undefined if there was no splitting before.
 ##
-UndoRefinement := function( P )
+BindGlobal( "UndoRefinement", function( P )
     local   M,  m;
     
     M := Length( P.firsts );
@@ -286,13 +301,14 @@ UndoRefinement := function( P )
     Unbind( P.lengths[ M ] );
     
     return m;
-end;
+end );
+
 
 #############################################################################
 
 #F  Cells( <Pi> ) . . . . . . . . . . . . . . . . . partition as list of sets
 ##
-Cells := function( Pi )
+BindGlobal( "Cells", function( Pi )
     local  cells,  i;
     
     cells := [  ];
@@ -300,7 +316,8 @@ Cells := function( Pi )
         cells[ i ] := Cell( Pi, i );
     od;
     return cells;
-end;
+end );
+
 
 #############################################################################
 ##
@@ -308,9 +325,10 @@ end;
 ##
 ##  Returns the first point of <P>[ <i> ] (should be a one-point cell).
 ##
-FixpointCellNo := function( P, i )
+BindGlobal( "FixpointCellNo", function( P, i )
     return P.points[ P.firsts[ i ] ];
-end;
+end );
+
 
 #############################################################################
 ##
@@ -321,7 +339,7 @@ end;
 ##
 ##  Adds this cell number to <old>.
 ##
-FixcellPoint := function( P, old )
+BindGlobal( "FixcellPoint", function( P, old )
     local   lens,  poss,  p;
     
     lens := P.lengths;
@@ -334,7 +352,8 @@ FixcellPoint := function( P, old )
         AddSet( old, p );
         return p;
     fi;
-end;
+end );
+
 
 #############################################################################
 ##
@@ -345,7 +364,7 @@ end;
 ##  lie   in cell <K>[j]  of a  partition whose `cellno'  entry is <cellno>).
 ##  Returns `false' if <K> and <I> are empty.
 ##
-FixcellsCell := function( P, cellno, conj, old )
+BindGlobal( "FixcellsCell", function( P, cellno, conj, old )
     local   K,  I,  i,  k,  start;
     
     K := [  ];  I := [  ];
@@ -361,34 +380,37 @@ FixcellsCell := function( P, cellno, conj, old )
     od;
     if Length( K ) = 0  then  return false;
                         else  return [ K, I ];  fi;
-end;
+end );
+
 
 #############################################################################
 ##
 
 #F  TrivialPartition( <Omega> ) . . . . . . . . . one-cell partition of a set
 ##
-TrivialPartition := function( Omega )
+BindGlobal( "TrivialPartition", function( Omega )
     return Partition( [ Omega ] );
-end;
+end );
+
 
 #############################################################################
 ##
 #F  OrbitsPartition( <G>, <Omega> ) partition determined by the orbits of <G>
 ##
-OrbitsPartition := function( G, Omega )
+BindGlobal( "OrbitsPartition", function( G, Omega )
     if IsGroup( G )  then
         return Partition( Orbits( G, Omega ) );
     else
         return Partition( OrbitsPerms( G.generators, Omega ) );
     fi;
-end;
+end );
+
 
 #############################################################################
 ##
 #F  SmallestPrimeDivisor( <size> )  . . . . . . . . .  smallest prime divisor
 ##
-SmallestPrimeDivisor := function( size )
+BindGlobal( "SmallestPrimeDivisor", function( size )
     local   i;
     
     i := 0;
@@ -401,7 +423,8 @@ SmallestPrimeDivisor := function( size )
         if i > Length( Primes )  then  return FactorsInt( size )[ 1 ];
                                  else  return Primes[ i ];              fi;
     fi;
-end;
+end );
+
 
 #############################################################################
 ##
@@ -413,7 +436,7 @@ end;
 ##  < SmallestPrimeDivisor(  <size>  )), leaves   these $n$  cells   unfused.
 ##  (<size> = 1 suppresses this extra feature.)
 ##
-CollectedPartition := function( P, size )
+BindGlobal( "CollectedPartition", function( P, size )
     local   lens,  C,  div,  typ,  p,  i;
 
     lens := P.lengths;
@@ -433,7 +456,10 @@ CollectedPartition := function( P, size )
         fi;
     od;
     return Partition( C );
-end;
+end );
 
 
 #############################################################################
+##
+#E
+

@@ -1,0 +1,728 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  types.msk                 GAP manual                    Thomas Breuer
+%W                                                       Martin Schoenert
+%%
+%H  @(#)$Id$
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Types of Objects}
+
+Every {\GAP} object has a *type*. The type of an object is the
+information which is used to decide whether an operation is admissible
+or possible with that object as an argument, and if so, how it is to
+be performed
+(see Chapter~"prg:Method Selection" in ``Programming in {\GAP}'').
+
+For example, the types determine whether two objects can be multiplied
+and what function is called to compute the product.  Analogously, the
+type of an object determines whether and how the size of the object
+can be computed. It is sometimes useful in discussing the type system,
+to identify types with the set of objects that have this type. Partial
+types can then also be regarded as sets, such that any type is the
+intersection of its parts.
+
+The type of an object consists of two main parts, which describe
+different aspects of the object.
+
+The *family* determines the relation of the object to other objects.
+For example, all permutations form a family.  Another family consists
+of all collections of permutations, this family contains the set of
+permutation groups as a subset.  A third family consists of all
+rational functions with coefficients in a certain family.
+
+The other part of a type is a collection of *filters* (actually stored
+as a bit-list indicating, from the complete set of possible filters,
+which are included in this particular type). These filters are all
+treated equally by the method selection, but, from the viewpoint of
+their creation and use, they can be divided (with a small number of
+unimportant exceptions) into categories, representations, attribute
+testers and properties. Each of these is described in more detail below.
+
+This chapter does not describe how types and their constituent parts
+can be created.  Information about this topic can be found in
+``Programming in {\GAP}'' in Section~"prg:Creating New Objects".)
+
+*Note:* Detailed understanding of the type system is not
+required to use {\GAP}. It can be helpful, however, to understand how things
+work and why {\GAP} behaves the way it does.
+
+%%  The type system of {\GAP} was devised by Thomas Breuer, Frank Celler, Steve
+%%  Linton and Martin Sch{\"o}nert,
+A discussion of the type system can be found in \cite{BreuerLinton98}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Families}
+
+The family of an object determines its relationship to other objects.
+
+More precisely, the families form a partition of all {\GAP} objects
+such that the following two conditions hold: objects that are equal
+w.r.t. `{`='}' lie in the same family; and the family of the result of
+an operation depends only on the families of its operands.
+
+The first condition means that a family can be regarded as a set of
+elements instead of a set of objects.  Note that this does not hold
+for categories and representations (see below), two objects that are
+equal w.r.t. `{`='}' need not lie in the same categories and
+representations.  For example, a sparsely represented matrix can be
+equal to a densely represented matrix.  Similarly, each domain is
+equal w.r.t. `{`='}' to the sorted list of its elements, but a domain
+is not a list, and a list is not a domain.
+
+
+\Declaration{FamilyObj}
+
+The family of the object <obj> is itself an object, its family is the
+`FamilyOfFamilies'.
+
+It should be emphasized that families may be created when they are
+needed.  For example, the family of elements of a finitely presented
+group is created only after the presentation has been constructed.
+Thus families are the dynamic part of the type system, that is, the
+part that is not fixed after the initialisation of {\GAP}.
+
+Families can be parametrized.  For example, the elements of each
+finitely presented group form a family of their own.  Here the family
+of elements and the finitely presented group coincide when viewed as
+sets.  Note that elements in different finitely presented groups lie
+in different families.  This distinction allows {\GAP} to forbid
+multiplications of elements in different finitely presented groups.
+
+As a special case, families can be parametrized by other families.  An
+important example is the family of *collections* that can be formed
+for each family.  A collection consists of objects that lie in the
+same family, it is either a nonempty dense list of objects from the
+same family or a domain.
+
+Note that every domain is a collection, that is, it is not possible to
+construct domains whose elements lie in different families.  For
+example, a polynomial ring over the rationals cannot contain the
+integer `0' because the family that contains the integers does not
+contain polynomials.  So one has to distinguish the integer zero from
+each zero polynomial.
+
+Let us look at this example from a different viewpoint.  A polynomial
+ring and its coefficients ring lie in different families, hence the
+coefficients ring cannot be embedded ``naturally'' into the polynomial
+ring in the sense that it is a subset.  But it is possible to allow,
+e.g., the multiplication of an integer and a polynomial over the
+integers.  The relation between the arguments, namely that one is a
+coefficient and the other a polynomial, can be detected from the
+relation of their families.  Moreover, this analysis is easier than in
+a situation where the rationals would lie in one family together with
+all polynomials over the rationals, because then the relation of
+families would not distinguish the multiplication of two polynomials,
+the multiplication of two coefficients, and the multiplication of a
+coefficient with a polynomial.  So the wish to describe relations
+between elements can be taken as a motivation for the introduction of
+families.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Filters}
+
+A *filter* is a special unary {\GAP} function that returns either `true'
+or `false', depending on whether or not the argument lies in the set defined
+by the filter.
+Filters are used to express different aspects of information about a {\GAP}
+object, which are described below
+(see~"Categories", "Representation", "Attributes",
+"Setter and Tester for Attributes", "Properties", "Other Filters").
+
+Presently any filter in {\GAP} is implemented as a function which
+corresponds to a set of positions in the bitlist which forms part of the
+type of each {\GAP} object, and returns `true' if and only if the bitlist
+of the type of the argument has the value `true' at all of these positions.
+
+The intersection (or meet) of two filters <filt1>, <filt2> is again a
+filter, it can be formed as
+
+\>`<filt1> and <filt2>'{and!for filters}
+
+For example, `IsList and IsEmpty' is a filter that returns `true' if
+its argument is an empty list, and `false' otherwise.  The filter
+`IsGroup' is defined as the intersection of the category
+`IsMagmaWithInverses' and the property `IsAssociative'.
+
+A filter that is not the meet of other filters is called a *simple
+filter*.
+For example, each attribute tester (see~"Setter and Tester for Attributes")
+is a simple filter.
+Each simple filter corresponds to a position in the bitlist currently
+used as part of the data structure representing a type.
+
+Every filter <filt> has a *rank*, which is used to define a ranking of
+the methods installed for an operation, see Section~"prg:Method
+Installation" in ``Programming in {\GAP}''.
+The rank of a filter can be accessed as
+
+\>RankFilter( <filt> ) F
+
+For simple filters, an *incremental rank* is defined when the filter is
+created, see the sections about the creation of filters
+"prg:Creating Categories", "prg:Creating Representations",
+"prg:Creating Attributes and Properties", "prg:Creating Other Filters"; all
+in ``Programming in {\GAP}''.
+For an arbitrary filter, its rank is given by the sum of the incremental
+ranks of the *involved* simple filters;
+in addition to the implied filters, these are also the required filters
+of attributes (again see the sections about the creation of filters).
+In other words, for the purpose of computing the rank and *only* for this
+purpose, attribute testers are treated as if they would imply the
+requirements of their attributes.
+% say something about the implementation via `InstallHiddenTrueMethod'?
+
+\>NamesFilter( <filt> ) F
+
+`NamesFilter' returns a list of names of the *implied* simple filters
+of the filter <filt>, these are all those simple filters <imp> such that
+every object in <filt> also lies in <imp>.
+For implications between filters, see "ShowImpliedFilters" as well as
+sections~"prg:Logical Implications", "prg:Creating Categories",
+"prg:Creating Representations", "prg:Creating Attributes and Properties" in
+``Programming in {\GAP}''
+
+\Declaration{ShowImpliedFilters}
+
+\begintt
+gap> ShowImpliedFilters(IsRationalFunction);
+Implies:
+   IsNearAdditiveElementWithInverse
+   IsAdditiveElement
+   IsMultiplicativeElementWithInverse
+
+
+May imply with:
++IsZero
++Tester(IsZero)
+   IsConstantRationalFunction
+   Tester(IsConstantRationalFunction)
+\endtt
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Categories}
+
+The *categories* of an object are filters (see~"Filters") determine what
+operations an object admits.
+For example, all integers form a category, all rationals form a category,
+and all rational functions form a category.
+An object which claims to lie in a certain category is accepting the
+requirement that it should have methods for certain operations (and
+perhaps that their behaviour should satisfy certain axioms).
+For example, an object lying in the category `IsList' must have methods
+for `Length', `IsBound\\[\\]' and the list element access operation
+`\\[\\]'.
+
+An object can lie in several categories.  For example, a row vector
+lies in the categories `IsList' and `IsVector'; each list lies in the
+category `IsCopyable', and depending on whether or not it is mutable,
+it may lie in the category `IsMutable'.  Every domain lies in the
+category `IsDomain'.
+
+Of course some categories of a mutable object may change when the
+object is changed.  For example, after assigning values to positions
+of a mutable non-dense list, this list may become part of the category
+`IsDenseList'.
+
+However, if an object is immutable then the set of categories it lies
+in is fixed.
+
+All categories in the library are created during initialization, in
+particular they are not created dynamically at runtime.
+
+The following list gives an overview of important categories of
+arithmetic objects.  Indented categories are to be understood as
+subcategories of the non indented category listed above it.
+\begintt
+    IsObject
+        IsExtLElement
+        IsExtRElement
+            IsMultiplicativeElement
+                IsMultiplicativeElementWithOne
+                    IsMultiplicativeElementWithInverse
+        IsExtAElement
+            IsAdditiveElement
+                IsAdditiveElementWithZero
+                    IsAdditiveElementWithInverse
+\endtt
+Every object lies in the category `IsObject'.
+
+The categories `IsExtLElement' and `IsExtRElement' contain objects
+that can be multiplied with other objects via `*' from the left and
+from the right, respectively.  These categories are required for the
+operands of the operation `*'.
+
+The category `IsMultiplicativeElement' contains objects that can be
+multiplied from the left and from the right with objects from the same
+family.  `IsMultiplicativeElementWithOne' contains objects <obj> for
+which a multiplicatively neutral element can be obtained by taking the
+zeroth power `<obj>^0'.  `IsMultiplicativeElementWithInverse' contains
+objects <obj> for which a multiplicative inverse can be obtained by
+forming `<obj>^-1'.
+
+Likewise, the categories `IsExtAElement', `IsAdditiveElement',
+`IsAdditiveElementWithZero', and `IsAdditiveElementWithInverse'
+contain objects that can be added via `+' to other objects, objects
+that can be added to objects of the same family, objects for which an
+additively neutral element can be obtained by multiplication with
+zero, and objects for which an additive inverse can be obtained by
+multiplication with `-1'.
+
+So a vector lies in `IsExtLElement', `IsExtRElement', and
+`IsAdditiveElementWithInverse'.  A ring element must additionally lie
+in `IsMultiplicativeElement'.
+
+As stated above it is not guaranteed by the categories of objects
+whether the result of an operation with these objects as arguments is
+defined.  For example, the category `IsMatrix' is a subcategory of
+`IsMultiplicativeElementWithInverse'.  Clearly not every matrix has a
+multiplicative inverse.  But the category `IsMatrix' makes each matrix
+an admissible argument of the operation `Inverse', which may sometimes
+return 'fail'.  Likewise, two matrices can be multiplied only if they
+are of appropriate shapes.
+
+Analogous to the categories of arithmetic elements, there are
+categories of domains of these elements.
+\begintt
+    IsObject
+        IsDomain
+            IsMagma
+                IsMagmaWithOne
+                    IsMagmaWithInversesIfNonzero
+                        IsMagmaWithInverses
+            IsAdditiveMagma
+                IsAdditiveMagmaWithZero
+                    IsAdditiveMagmaWithInverses
+            IsExtLSet
+            IsExtRSet
+\endtt
+Of course `IsDomain' is a subcategory of `IsObject'.  A domain that is
+closed under multiplication `*' is called a magma and it lies in the
+category `IsMagma'.  If a magma is closed under taking the identity,
+it lies in `IsMagmaWithOne', and if it is also closed under taking
+inverses, it lies in `IsMagmaWithInverses'.  The category
+`IsMagmaWithInversesIfNonzero' denotes closure under taking inverses
+only for nonzero elements, every division ring lies in this category.
+
+Note that every set of categories constitutes its own notion of
+generation, for example a group may be generated as a magma with
+inverses by some elements, but to generate it as a magma with one it
+may be necessary to take the union of these generators and their
+inverses.
+
+\Declaration{CategoriesOfObject}
+\beginexample
+gap> g:=Group((1,2),(1,2,3));;
+gap> CategoriesOfObject(g);
+[ "IsListOrCollection", "IsCollection", "IsExtLElement", 
+  "CategoryCollections(IsExtLElement)", "IsExtRElement", 
+  "CategoryCollections(IsExtRElement)", 
+  "CategoryCollections(IsMultiplicativeElement)", 
+  "CategoryCollections(IsMultiplicativeElementWithOne)", 
+  "CategoryCollections(IsMultiplicativeElementWithInverse)", 
+  "CategoryCollections(IsAssociativeElement)", 
+  "CategoryCollections(IsFiniteOrderElement)", "CategoryCollections(IS_PERM)",
+  "IsGeneralizedDomain", "IsMagma", "IsMagmaWithOne", 
+  "IsMagmaWithInversesIfNonzero", "IsMagmaWithInverses" ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Representation}
+
+The *representation* of an object is a set of filters (see~"Filters")
+that determines how an object is actually represented.
+For example, a matrix or a polynomial can be stored sparsely or
+densely; all dense polynomials form a representation. An object which
+claims to lie in a certain representation is accepting the requirement
+that certain fields in the data structure be present and have
+specified meanings.
+
+{\GAP} distinguishes four essentially different ways to represent
+objects.  First there are the representations `IsInternalRep' for
+internal objects such as integers and permutations, and
+`IsDataObjectRep' for other objects that are created and whose data
+are accessible only by kernel functions. The data structures
+underlying such objects cannot be manipulated at the {\GAP} level.
+
+All other objects are either in the representation
+`IsComponentObjectRep' or in the representation
+`IsPositionalObjectRep', see~"prg:Component Objects"
+and~"prg:Positional Objects" in ``Programming in {\GAP}''.
+
+An object can belong to several representations in the sense that it
+lies in several subrepresentations of `IsComponentObjectRep' or of
+`IsPositionalObjectRep'.  The representations to which an object
+belongs should form a chain and either two representations are disjoint
+or one is contained in the other.  So the subrepresentations of
+`IsComponentObjectRep' and `IsPositionalObjectRep' each form
+trees. In the language of Object Oriented Programming, we support only
+single inheritance for representations.
+
+These trees are typically rather shallow, since for one representation
+to be contained in another implies that all the components of the data
+structure implied by the containing representation, are present in,
+and have the same meaning in, the smaller representation (whose data
+structure presumably contains some additional components).
+
+Objects may change their representation, for example a mutable list
+of characters can be converted into a string.
+
+All representations in the library are created during initialization,
+in particular they are not created dynamically at runtime.
+
+Examples of subrepresentations of `IsPositionalObjectRep' are
+`IsModulusRep', which is used for residue classes in the ring of
+integers, and `IsDenseCoeffVectorRep', which is used for elements of
+algebras that are defined by structure constants.
+
+An important subrepresentation of `IsComponentObjectRep' is
+`IsAttributeStoringRep', which is used for many domains and some other
+objects.  It provides automatic storing of all attribute values (see
+below).
+
+\Declaration{RepresentationsOfObject}
+\beginexample
+gap> g:=Group((1,2),(1,2,3));;
+gap> RepresentationsOfObject(g);
+[ "IsComponentObjectRep", "IsAttributeStoringRep" ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Attributes}
+
+The attributes of an object are filters (see~"Filters") that describe
+knowledge about it.
+
+An attribute is a unary operation without side-effects.
+
+An object may store values of its attributes once they have been
+computed, and claim that it knows these values.  Note that ``store''
+and ``know'' have to be understood in the sense that it is very cheap
+to get such a value when the attribute is called again.
+
+The stored value of an attribute is in general immutable
+(see~"Mutability and Copyability"), except if the attribute had been
+specally constructed as ``mutable attribute''.
+
+It depends on the representation of an object (see~"Representation")
+which attribute values it stores.  An object in the representation
+`IsAttributeStoringRep' stores *all* attribute values once they are
+computed.  Moreover, for an object in this representation, subsequent
+calls to an attribute will return the *same* object; this is achieved
+via a special method for each attribute setter that stores the
+attribute value in an object in `IsAttributeStoringRep', and a special
+method for the attribute itself that fetches the stored attribute
+value.  (These methods are called the ``system setter'' and the
+``system getter'' of the attribute, respectively.)\index{system
+getter}\index{system setter}
+
+Note also that it is impossible to get rid of a stored attribute
+value because the system may have drawn conclusions from the old
+attribute value, and just removing the value might leave the data
+structures in an inconsistent state. If necessary, a new object can be
+constructed.
+
+Properties are a special form of attributes that have the value `true'
+or `false', see section~"Properties".
+
+All attributes in the library are created during initialization,
+in particular they are not created dynamically at runtime.
+
+Examples of attributes for multiplicative elements are `Inverse', `One',
+and `Order'.
+`Size' is an attribute for domains, `Centre' is an attribute for magmas,
+and `DerivedSubgroup' is an attribute for groups.
+
+\Declaration{KnownAttributesOfObject}
+\beginexample
+gap> g:=Group((1,2),(1,2,3));;Size(g);;
+gap> KnownAttributesOfObject(g);
+[ "Size", "One", "GeneratorsOfMagmaWithInverses", "Pcgs", "NrMovedPoints", 
+  "MovedPoints", "StabChainMutable", "StabChainOptions" ]
+\endexample
+
+Several attributes have methods for more than one argument.  For example
+`IsTransitive' (see~"IsTransitive.oprt") is an attribute for a $G$-set that
+can also be called for the two arguments, being a group $G$ and its operation
+domain.  If attributes are called with more than one argument then the
+return value is not stored in any of the arguments.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Setter and Tester for Attributes}
+
+\index{setter}\index{tester}
+For every attribute two further operations, the *attribute setter* and the
+*attribute tester* are defined.
+
+To check whether an object belongs to an attribute <attr>,
+the tester
+
+\>Tester( <attr> ) O
+
+of the attribute is used;
+this is a filter (see~"Filters") that returns `true' or `false',
+depending on whether or not the value of <attr> for the object is known.
+For example, `Tester( Size )( <obj> )' is `true' if the size of the object
+<obj> is known.
+
+To store a value for the attribute <attr> in an object,
+the setter
+
+\>Setter( <attr> ) O
+
+of the attribute is used.
+The setter is called automatically when the attribute value has been
+computed for the first time.
+One can also call the setter explicitly,
+for example, `Setter( Size )( <obj>, <val> )' sets <val> as size of the
+object <obj> if the size was not yet known.
+
+For each attribute <attr> that is declared with `DeclareAttribute'
+resp.~`DeclareProperty' (see~"prg:Global Variables in the Library" in
+``Programming in {\GAP}''),
+tester and setter are automatically made accessible by the names
+`Has<attr>' and `Set<attr>', respectively.
+For example, the tester for `Size' is called `HasSize',
+and the setter is called `SetSize'.
+
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));;Size(g);
+24
+gap> HasSize(g);
+true
+gap> SetSize(g,99);
+gap> Size(g);
+24
+\endexample
+
+For two properties <prop1> and <prop2>,
+the intersection `<prop1> and <prop2>' (see~"Filters") is again a property
+for which a setter and a tester exist.
+Setting the value of this intersection to `true' for a {\GAP} object
+means to set the values of <prop1> and <prop2> to `true' for this object.
+
+\beginexample
+gap> prop:= IsFinite and IsCommutative;
+<Operation "<<and-filter>>">
+gap> g:= Group( (1,2,3), (4,5) );;
+gap> Tester( prop )( g );
+false
+gap> Setter( prop )( g, true );
+gap> Tester( prop )( g );  prop( g );
+true
+true
+\endexample
+
+It is *not allowed* to set the value of such an intersection to `false'
+for an object.
+
+\begintt
+gap> Setter( prop )( Rationals, false );
+You cannot set an "and-filter" except to true
+not in any function
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return true to set all components true,
+but you might really want to reset just one component to continue
+\endtt
+
+
+\>AttributeValueNotSet( <attr>, <obj> ) F
+
+If the value of the attribute <attr> is already stored for <obj>,
+`AttributeValueNotSet' simply returns this value.
+Otherwise the value of `<attr>( <obj> )' is computed and returned
+*without storing it* in <obj>.
+This can be useful when ``large'' attribute values (such as element lists)
+are needed only once and shall not be stored in the object.
+\beginexample
+gap> HasAsSSortedList(g);
+false
+gap> AttributeValueNotSet(AsSSortedList,g);
+[ (), (3,4), (2,3), (2,3,4), (2,4,3), (2,4), (1,2), (1,2)(3,4), (1,2,3),
+  (1,2,3,4), (1,2,4,3), (1,2,4), (1,3,2), (1,3,4,2), (1,3), (1,3,4),
+  (1,3)(2,4), (1,3,2,4), (1,4,3,2), (1,4,2), (1,4,3), (1,4), (1,4,2,3),
+  (1,4)(2,3) ]
+gap> HasAsSSortedList(g);
+false
+\endexample
+
+\FileHeader{attr}[1]
+
+\Declaration{InfoAttributes}
+
+\Declaration{DisableAttributeValueStoring}
+
+\Declaration{EnableAttributeValueStoring}
+
+\beginexample
+gap> g := Group((1,2,3,4,5),(1,2,3));
+Group([ (1,2,3,4,5), (1,2,3) ])
+gap> KnownAttributesOfObject(g);
+[ "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
+  "LargestMovedPoint" ]
+gap> SetInfoLevel(InfoAttributes,3);
+gap> DisableAttributeValueStoring(Size);
+#I  Disabling value storing for Size
+gap> Size(g);
+60
+gap> KnownAttributesOfObject(g);
+[ "One", "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
+  "MovedPoints", "LargestMovedPoint", "NrMovedPoints", "StabChainMutable", 
+  "StabChainOptions" ]
+gap> Size(g);
+60
+gap> EnableAttributeValueStoring(Size);
+#I  Enabling value storing for Size
+gap> Size(g);
+60
+gap> KnownAttributesOfObject(g);
+[ "Size", "One", "GeneratorsOfMagmaWithInverses", 
+  "MultiplicativeNeutralElement", "MovedPoints", "LargestMovedPoint", 
+  "NrMovedPoints", "StabChainMutable", "StabChainOptions" ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties}
+
+The properties of an object are those of its attributes (see~"Attributes")
+whose values can only be `true' or `false'.
+
+The main difference between attributes and properties is that a
+property defines two sets of objects, namely the usual set of all
+objects for which the value is known, and the set of all objects for
+which the value is known to be `true'.
+
+(Note that it makes no sense to consider a third set, namely the set
+of objects for which the value of a property is `true' whether or not
+it is known, since there may be objects for which the containment in
+this set cannot be decided.)
+
+For a property <prop>, the containment of an object <obj> in the first
+set is checked again by applying `Tester( <prop> )' to <obj>,
+and <obj> lies in the second set if and only if
+`Tester( <prop> )( <obj> ) and <prop>( <obj> )' is `true'.
+
+If a property value is known for an immutable object then this value is
+also stored, as part of the type of the object.
+To some extent, property values of mutable objects also can be stored,
+for example a mutable list all of whose entries are immutable can store
+whether it is strictly sorted. When the object is mutated (for example
+by list assignment) the type may need to be adjusted.
+
+Important properties for domains are `IsAssociative', `IsCommutative',
+`IsAnticommutative', `IsLDistributive', and `IsRDistributive',
+which mean that the multiplication of elements in the domain satisfies
+$(a \* b ) \* c = a \* ( b \* c )$, $a \* b = b \* a$,
+$a \* b = - ( b \* a )$, $a \* ( b + c ) = a \* b + a \* c$,
+and $( a + b ) \* c = a \* c + b \* c$, respectively,
+for all $a$, $b$, $c$ in the domain.
+
+\Declaration{KnownPropertiesOfObject}
+\Declaration{KnownTruePropertiesOfObject}
+\beginexample
+gap> g:=Group((1,2),(1,2,3));;
+gap> KnownPropertiesOfObject(g);
+[ "IsFinite", "IsAssociative", "IsFinitelyGeneratedGroup", 
+  "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose" ]
+gap> Size(g);
+6
+gap> KnownPropertiesOfObject(g);
+[ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite", "IsAssociative", 
+  "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", "IsPerfectGroup", 
+  "IsSolvableGroup", "IsPolycyclicGroup", "KnowsHowToDecompose" ]
+gap> KnownTruePropertiesOfObject(g);
+[ "IsNonTrivial", "IsFinite", "IsAssociative", "IsFinitelyGeneratedGroup", 
+  "IsSubsetLocallyFiniteGroup", "IsSolvableGroup", "IsPolycyclicGroup", 
+  "KnowsHowToDecompose" ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Other Filters}
+
+There are situations where one wants to express a kind of knowledge
+that is based on some heuristic.
+
+For example, the filters (see~"Filters") `CanEasilyTestMembership' and
+`CanEasilyComputePcgs' are defined in the {\GAP} library.
+Note that such filters do not correspond to a mathematical concept,
+contrary to properties (see~"Properties").
+Also it need not be defined what ``easily'' means for an arbitrary {\GAP}
+object, and in this case one cannot compute the value for an arbitrary
+{\GAP} object.
+In order to access this kind of knowledge as a part of the type of an object,
+{\GAP} provides filters for which the value is `false' by default,
+and it is changed to `true' in certain situations,
+either explicitly (for the given object) or via a logical implication
+(see~"prg:Logical Implications" in ``Programming in {\GAP}'')
+from other filters.
+
+For example, a `true' value of `CanEasilyComputePcgs' for a group
+means that certain methods are applicable that use a pcgs
+(see~"Polycyclic Generating Systems") for the group.
+There are logical implications to set the filter value to `true'
+for permutation groups that are known to be solvable,
+and for groups that have already a (sufficiently nice) pcgs stored.
+In the case one has a solvable matrix group and wants to enable methods
+that use a pcgs, one can set the `CanEasilyComputePcgs' value to
+`true' for this particular group.
+
+A filter <filt> of the kind described here is different from
+the other filters introduced in the previous sections.
+In particular, <filt> is not a category (see~"Categories") or a property
+(see~"Properties") because its value may change for a given object,
+and <filt> is not a representation (see~"Representation") because it has
+nothing to do with the way an object is made up from some data.
+<filt> is similar to an attribute tester
+(see~"Setter and Tester for Attributes"),
+the only difference is that <filt> does not refer to an attribute value;
+note that <filt> is also used in the same way as an attribute tester;
+namely, the `true' value may be required for certain methods to be
+applicable.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Types}
+
+We stated above (see "Types of Objects") that, for an object <obj>,
+its *type* is formed from its family and its filters.  There is a also
+a third component, used in a few situations, namely defining data of
+the type.
+
+\Declaration{TypeObj}
+
+The type of an object is itself an object.
+
+Two types are equal if and only if the two families are identical,
+the filters are equal, and, if present, also the defining data of the
+types are equal.
+
+The last part of the type, defining data, has not been mentioned
+before and seems to be of minor importance.  It can be used, e.g., for
+cosets $U g$ of a group $U$, where the type of each coset may contain
+the group $U$ as defining data.  As a consequence, two such cosets mod
+$U$ and $V$ can have the same type only if $U = V$.  The defining data
+of the type <type> can be accessed as
+
+%
+% I wonder if we need type data at all
+%
+% The only other thing which uses it is the general mapping representation,
+% which is quite nice, but maybe not so important.
+%
+
+\>DataType( <type> ) F
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

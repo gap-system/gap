@@ -16,7 +16,6 @@ Revision.grppcint_gi :=
 
 #############################################################################
 ##
-
 #V  GS_SIZE . . . . . . . . . . . . . . . .  size from which on we use glasby
 ##
 GS_SIZE := 20;
@@ -24,7 +23,6 @@ GS_SIZE := 20;
 
 #############################################################################
 ##
-
 #F  GlasbyCover( <S>, <A>, <B>, <pcgsK> )
 ##
 ##  Glasby's  generalized  covering  algorithmus.  <S> := <H>/\<N> * <K>/\<N>
@@ -35,14 +33,17 @@ GlasbyCover := function( S, A, B, pcgsK )
     local   Am, Bm, z, i;
 
     # Decompose the intersection <H> /\ <K> /\ <N>.
-    Am := ShallowCopy( AsList( S.intersection ) );
+    Am :=  AsList( S.intersection );
     Bm := List( Am, x -> x / SiftedPcElement( pcgsK, x ) );
 
     # Now cover the other generators.
     for i  in [ 1 .. Length( A ) ]  do
-        z := S.factorization( A[i] ^ -1 * B[i] );
+        z := S.factorization(LeftQuotient( A[i], B[i]) );
         A[ i ] := A[ i ] * z.u;
-        B[ i ] := B[ i ] * ( z.n / SiftedPcElement( pcgsK, z.n ) ) ^ -1;
+
+	# what is the aim of this arithmetic? We can save one inversion
+        #B[ i ] := B[ i ] * ( z.n / SiftedPcElement( pcgsK, z.n ) ) ^ -1;
+        B[ i ] := B[ i ] * (SiftedPcElement( pcgsK, z.n )/z.n);
     od;
 
     # Concatenate them and return. The are not normalized.
@@ -62,26 +63,31 @@ end;
 
 #############################################################################
 ##
-#F  GlasbyStabilizer( <pcgs>, <A>, <B>, <pcgsS>, <pcgsR> );
+#F  GlasbyStabilizer( <pcgs>, <A>, <B>, <pcgsL>)
 ##
-GlasbyStabilizer := function( pcgs, A, B, pcgsS, pcgsR )
-    local   pcgsL,  f,  transl,  U,  matA,  pt;
+GlasbyStabilizer := function( pcgs, A, B, pcgsL )
+    local   f,  transl,  matA,  pt;
 
-    pcgsL := pcgsS mod pcgsR; 
     f     := GF( Order( pcgsL[1] ) );
-    B     := InducedPcgsByPcSequence( pcgs, B );
     
     transl := function( a ) 
         return ExponentsOfPcElement(pcgsL,SiftedPcElement(B,a)) * One(f);
     end;
 
-    A := InducedPcgsByPcSequence( pcgs, A );
-    U := SubgroupByPcgs( GroupOfPcgs(pcgs), A );
+    A := InducedPcgsByPcSequenceNC( pcgs, A );
+    #U := SubgroupByPcgs( GroupOfPcgs(pcgs), A );
     matA  := AffineOperationLayer( A, pcgsL, transl );
 
     pt := List( pcgsL, x -> Zero( f ) );
     Add( pt, One( f ) );
-    return Pcgs( Stabilizer( U, pt, A, matA, OnRight ) );
+    ConvertToVectorRep(pt,f);
+
+    # was: return Pcgs( Stabilizer( U, pt, A, matA, OnRight ) );
+    # we cannot simply return this pcgs here, as we cannot guarantee that
+    # the pcgs of this group will be compatible with the pcgs wrt. which we
+    # are computing.
+    #return InducedPcgs(pcgs, Stabilizer( U, pt, A, matA, OnRight ) );
+    return StabilizerPcgs(A, pt, matA, OnRight );
 end;
 
 
@@ -143,68 +149,90 @@ end;
 ##
 GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
     local m, G, first, weights, avoid, A, B, i, start, next, HmN, KmN, 
-          pcgsN, pcgsHmN, pcgsHF, pcgsKmN, pcgsKF, sum, pcgsS, pcgsR, C, D,
-          new, U, fam; 
+          sum, pcgsS, pcgsR, C, D,
+          new, U, deptH, deptK,pcgsL,depthS,depthN; 
 
     # compute a cgs for <H> and <K>
     G := GroupOfPcgs( pcgs );
     m := Length( pcgs );
-    fam := FamilyObj( OneOfPcgs( pcgs ) );
 
     # use the special pcgs
     first   := LGFirst( pcgs );
     weights := LGWeights( pcgs );
     avoid   := AvoidedLayers( pcgs, pcgsH, pcgsK );
 
+    deptH := List( pcgsH, x -> DepthOfPcElement( pcgs, x ) );
+    deptK := List( pcgsK, x -> DepthOfPcElement( pcgs, x ) );
+
     # go down the elementary abelian series. <A> < <H>, <B> < <K>.
     A := [ ];
     B := [ ];
+    depthN:=[1..m];
     for i in [ 1..Length(first)-1 ] do
         start := first[i];
         next  := first[i+1];
+	depthS := depthN;
+        depthN := [next..m];
         if not start in avoid then
-            HmN := Filtered( pcgsH, 
-                             x -> start <= DepthOfPcElement( pcgs, x ) and 
-                                  next > DepthOfPcElement( pcgs, x ) );
-            KmN := Filtered( pcgsK,
-                             x -> start <= DepthOfPcElement( pcgs, x ) and
-                                  next > DepthOfPcElement( pcgs, x ) );
+	    #pcgsN := InducedPcgsByPcSequenceNC( pcgs, pcgs{depthN} );
+            HmN := pcgsH{Filtered( [1..Length(deptH)], 
+                         x -> start <= deptH[x] and next > deptH[x] )};
+            KmN := pcgsK{Filtered( [1..Length(deptK)], 
+                         x -> start <= deptK[x] and next > deptK[x] )};
 
-            pcgsN   := InducedPcgsByPcSequenceNC( pcgs, pcgs{[next..m]} );
-            pcgsHmN := Concatenation( HmN, pcgsN );
-            pcgsHmN := InducedPcgsByPcSequenceNC( pcgs, pcgsHmN );
-            pcgsHF  := pcgsHmN mod pcgsN;
-            pcgsKmN := Concatenation( KmN, pcgsN );
-            pcgsKmN := InducedPcgsByPcSequenceNC( pcgs, pcgsKmN );
-            pcgsKF  := pcgsKmN mod pcgsN;
+            #pcgsHmN := Concatenation( HmN, pcgsN );
+            #pcgsHmN := InducedPcgsByPcSequenceNC( pcgs, pcgsHmN );
+            #pcgsHF  := pcgsHmN mod pcgsN;
+            #pcgsKmN := Concatenation( KmN, pcgsN );
+            #pcgsKmN := InducedPcgsByPcSequenceNC( pcgs, pcgsKmN );
+            #pcgsKF  := pcgsKmN mod pcgsN;
 
-            sum := SumFactorizationFunctionPcgs( pcgs, pcgsHF, pcgsKF, pcgsN );
+
+	    # SumFactorizationFunction takes *LISTS* as arguments 2,3, so we
+	    # don't need to make pcgs at all.
+            #pcgsHF := ModuloTailPcgsByList(pcgs,HmN,[next..m]);
+            #pcgsKF := ModuloTailPcgsByList(pcgs,KmN,[next..m]);
+            #sum := SumFactorizationFunctionPcgs( pcgs, pcgsHF, pcgsKF, pcgsN );
+
+	    # and `SFF' now takes a tail depth, so the expensive sifting to
+	    # find the identity can be ignored.
+            sum := SumFactorizationFunctionPcgs( pcgs, HmN, KmN, next );
 
             # Maybe there is nothing left to stabilize.
             if Length( sum.sum ) = next - start then
                 C := ShallowCopy( AsList( A ) );
                 D := ShallowCopy( AsList( B ) );
             else
-                pcgsS := InducedPcgsByPcSequenceNC( pcgs, pcgs{[start..m]} );
-                pcgsR := Concatenation( sum.sum, pcgsN );
-                pcgsR := InducedPcgsByPcSequenceNC( pcgs, pcgsR );
-                C := GlasbyStabilizer( pcgs, A, B, pcgsS, pcgsR );
+		# GlasbyStabilizer would make a pcgs out of it first anyhow
+	        B     := InducedPcgsByPcSequenceNC( pcgs, B );
+                if Length(sum.sum)>0 then
+		  pcgsS := InducedPcgsByPcSequenceNC( pcgs, pcgs{depthS} );
+		  pcgsR := Concatenation( sum.sum, pcgs{depthN} );
+		  pcgsR := InducedPcgsByPcSequenceNC( pcgs, pcgsR );
+		  pcgsL:=pcgsS mod pcgsR;
+                else
+		  pcgsL:=ModuloTailPcgsByList(pcgs,
+					      pcgs{Difference(depthS,depthN)},
+					      depthN);
+		  
+		fi;
+
+                C := GlasbyStabilizer( pcgs, A, B, pcgsL );
                 C := ShallowCopy( AsList( C ) );
-                B := Concatenation( B, pcgsN );
-                B := InducedPcgsByPcSequenceNC( pcgs, B );
+                #D := GlasbyShift( C, InducedPcgsByPcSequenceNC(pcgs, B) );
                 D := GlasbyShift( C, B );
                 D := ShallowCopy( AsList( D ) );
             fi;
 
             # Now we can cover <C> and <D>.
             GlasbyCover( sum, C, D, pcgsK );
-            A := C;
-            B := D;
+            A := ShallowCopy( C );
+            B := ShallowCopy( D ) ;
         fi;
     od;
 
     # <A> is the unnormalized intersection.
-    new := InducedPcgsByPcSequence( pcgs, A );
+    new := InducedPcgsByPcSequenceNC( pcgs, A );
     U   := SubgroupByPcgs( G, new );
     return U;
 end;
@@ -228,12 +256,12 @@ ZassenhausIntersection := function( pcgs, pcgsN, pcgsU )
                 Add( ins, g );
             fi;
         od;
-        new := InducedPcgsByPcSequence( pcgs, ins );
+        new := InducedPcgsByPcSequenceNC( pcgs, ins );
         ins := SubgroupByPcgs( GroupOfPcgs( pcgs ), new );
         return ins;
     else
         new := ExtendedIntersectionSumPcgs( pcgs, pcgsN, pcgsU, true );
-        new := InducedPcgsByPcSequence( pcgs, new.intersection );
+        new := InducedPcgsByPcSequenceNC( pcgs, new.intersection );
         ins := SubgroupByPcgs( GroupOfPcgs( pcgs ), new );
         return ins;
     fi;
@@ -242,7 +270,6 @@ end;
 
 #############################################################################
 ##
-
 #M  Intersection2( <U>, <V> )
 ##
 InstallMethod( Intersection2,
@@ -260,28 +287,33 @@ function( U, V )
     if home <> HomePcgs(V) then
         TryNextMethod();
     fi;
-    pcgs  := SpecialPcgs(home);
-    pcgsU := InducedPcgsByGeneratorsNC( pcgs, GeneratorsOfGroup(U) );
-    pcgsV := InducedPcgsByGeneratorsNC( pcgs, GeneratorsOfGroup(V) );
 
-    # check sizes and so on
-    if ForAll( pcgsU, x -> x in V ) then
+    # check for trivial cases
+    if IsInt(Size(V)/Size(U)) 
+       and ForAll( GeneratorsOfGroup(U), x -> x in V ) then
         return U;
-    elif ForAll( pcgsV, x -> x in U ) then
+    # here we can test Size(V)<Size(U): if they are the same the test before
+    # would have found out.
+    elif Size(V)<Size(U) and IsInt(Size(U)/Size(V)) 
+      and ForAll( GeneratorsOfGroup(V), x -> x in U ) then
         return V;
+    fi;
     
-    elif Size(U) < GS_SIZE  then
-        return Subgroup( GroupOfPcgs(home), 
-                         Filtered( AsList(U), x -> x in V and
+    G := GroupOfPcgs(home);
+    if Size(U) < GS_SIZE  then
+        return SubgroupNC( G, Filtered( AsList(U), x -> x in V and
                                                    x <> Identity(V) ) );
     elif Size(V) < GS_SIZE  then
-        return Subgroup( GroupOfPcgs( home ), 
-                         Filtered( AsList(V), x -> x in U  and
+        return SubgroupNC( G, Filtered( AsList(V), x -> x in U  and
                                                    x <> Identity(U) ) );
     fi;
 
+    # compute nice pcgs's
+    pcgs  := SpecialPcgs(home);
+    pcgsU := InducedPcgsWrtSpecialPcgs( U );
+    pcgsV := InducedPcgsWrtSpecialPcgs( V );
+
     # test if one the groups is known to be normal
-    G := GroupOfPcgs(home);
     if IsNormal( G, U ) then
         return ZassenhausIntersection( pcgs, pcgsU, pcgsV );
     elif IsNormal( G, V ) then
@@ -292,9 +324,24 @@ function( U, V )
 
 end );
 
+#############################################################################
+##
+#M  NormalIntersection( <G>, <U> )  . . . . . intersection with normal subgrp
+##
+InstallMethod( NormalIntersection,
+    "method for two groups with home pcgs",
+    IsIdenticalObj, [ IsGroup and HasHomePcgs, IsGroup and HasHomePcgs],
+function( G, H ) 
+local home;
+  home:=HomePcgs(G);
+  if home<>HomePcgs(H) then
+    TryNextMethod();
+  fi;
+  return ZassenhausIntersection(home,InducedPcgs(home,G),InducedPcgs(home,H));
+end );
+
 
 #############################################################################
 ##
-
 #E  grppcpint.gi  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

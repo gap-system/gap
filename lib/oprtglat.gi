@@ -44,7 +44,7 @@ end );
 InstallMethod(SubgroupsOrbitsAndNormalizers,"generic on list",true,
   [IsGroup,IsList,IsBool],0,
 function(G,dom,all)
-local  n,l,o,b,r,p,cl,i,sel;
+local  n,l,o,b,r,p,cl,i,sel,selz,gens,ti,t,tl;
 
   n:=Length(dom);
   l:=n;
@@ -56,24 +56,152 @@ local  n,l,o,b,r,p,cl,i,sel;
     n:=n-1;
     r:=rec(representative:=dom[p]);
     cl:=ConjugacyClassSubgroups(G,r.representative);
+    gens:=GeneratorsOfGroup(r.representative);
     r.normalizer:=StabilizerOfExternalSet(cl);
+    t:=RightTransversal(G,r.normalizer);
+    tl:=Length(t);
     sel:=Filtered([1..l],i->b[i]);
-    cl:=Enumerator(cl);
-    if Length(sel)>0 then
-      for i in cl do
-        p:=PositionProperty(sel,j->dom[j]=i);
+    selz:=Filtered(sel,i->Size(dom[i])=Size(r.representative));
+    if Length(selz)>0 then
+      i:=1;
+      while Length(sel)>0 and i<=tl do;
+	ti:=t[i];
+	p:=PositionProperty(sel,
+			    j->j in selz and ForAll(gens,k->k^ti in dom[j]));
 	if p<>fail then
 	  p:=sel[p];
 	  b[p]:=false;
 	  n:=n-1;
 	  RemoveSet(sel,p);
 	fi;
+	i:=i+1;
       od;
     fi;
     if all then
+      cl:=Enumerator(cl);
       r.elements:=cl;
     fi;
     Add(o,r);
+  od;
+  return o;
+end);
+
+InstallMethod(SubgroupsOrbitsAndNormalizers,"perm group on list",true,
+  [IsPermGroup,IsList,IsBool],0,
+function(G,dom,all)
+local  n,l,o,b,r,p,cl,i,sel,selz,gens,ti,t,tl;
+
+  n:=Length(dom);
+  l:=n;
+  o:=[];
+  b:=BlistList([1..l],[1..n]);
+  while n>0 do
+    p:=Position(b,true);
+    b[p]:=false;
+    n:=n-1;
+    r:=rec(representative:=dom[p]);
+    gens:=GeneratorsOfGroup(r.representative);
+    r.normalizer:=Normalizer(G,r.representative);
+    tl:=Index(G,r.normalizer);
+    sel:=Filtered([1..l],i->b[i]);
+    selz:=Filtered(sel,i->Size(dom[i])=Size(r.representative));
+    if tl<=50*Length(selz) then
+      t:=RightTransversal(G,r.normalizer);
+      if Length(selz)>0 then
+	i:=1;
+	while Length(sel)>0 and Length(selz)>0 and i<=tl do;
+	  ti:=t[i];
+	  p:=PositionProperty(sel,
+	                      j->j in selz and ForAll(gens,k->k^ti in dom[j]));
+	  if p<>fail then
+	    p:=sel[p];
+	    b[p]:=false;
+	    n:=n-1;
+	    RemoveSet(sel,p);
+	    RemoveSet(selz,p);
+	  fi;
+	  i:=i+1;
+	od;
+      fi;
+    else
+      for i in selz do
+        p:=RepresentativeAction(G,dom[i],r.representative,OnPoints);
+	if p<>fail then
+	  b[i]:=false;
+	  n:=n-1;
+	  RemoveSet(sel,i);
+	fi;
+      od;
+    fi;
+    if all then
+      cl:=ConjugacyClassSubgroups(G,r.representative);
+      SetStabilizerOfExternalSet(cl,r.normalizer);
+      cl:=Enumerator(cl);
+      r.elements:=cl;
+    fi;
+    Add(o,r);
+  od;
+  return o;
+end);
+
+InstallMethod(SubgroupsOrbitsAndNormalizers,"pc group on list",true,
+  [IsPcGroup,IsList,IsBool],0,
+function(G,dom,all)
+local  n,l,o,b,r,p,cl,i,sel,selz,allcano,cano,can2,p1;
+
+  allcano:=[];
+  n:=Length(dom);
+  l:=n;
+  o:=[];
+  b:=BlistList([1..l],[1..n]);
+  while n>0 do
+    p:=Position(b,true);
+    p1:=p;
+    b[p]:=false;
+    n:=n-1;
+    r:=rec(representative:=dom[p]);
+
+    sel:=Filtered([1..l],i->b[i]);
+    selz:=Filtered(sel,i->Size(dom[i])=Size(r.representative));
+
+    if Length(selz)>0 then
+
+      if IsBound(allcano[p1]) then
+	cano:=allcano[p1];
+      else
+	cano:=CanonicalSubgroupRepresentativePcGroup(G,r.representative);
+      fi;
+      r.normalizer:=ConjugateSubgroup(cano[2],cano[3]^-1);
+
+      cano:=cano[1];
+
+      for i in selz do
+	if IsBound(allcano[i]) then
+	  can2:=allcano[i];
+	else
+	  can2:=CanonicalSubgroupRepresentativePcGroup(G,dom[i]);
+	fi;
+	if can2[1]=cano then
+	  b[i]:=false;
+	  n:=n-1;
+	  RemoveSet(sel,i);
+	  Unbind(allcano[i]);
+	else
+	  allcano[i]:=can2;
+	fi;
+      od;
+    else
+      r.normalizer:=Normalizer(G,r.representative);
+    fi;
+
+    if all then
+      cl:=ConjugacyClassSubgroups(G,r.representative);
+      SetStabilizerOfExternalSet(cl,r.normalizer);
+      r.elements:=Enumerator(cl);
+    fi;
+
+    Add(o,r);
+    Unbind(allcano[p1]);
   od;
   return o;
 end);
@@ -84,7 +212,7 @@ end);
 InstallMethod(SubgroupsOrbitsAndNormalizers,"generic on record with list",true,
   [IsGroup,IsRecord,IsBool],0,
 function(G,r,all)
-local  n,l,o,b,dom,p,cl,i,s,j;
+local  n,o,dom,cl,i,s,j,t,ti,tl,gens;
 
   dom:=r.list;
   Unbind(r.list);
@@ -93,21 +221,28 @@ local  n,l,o,b,dom,p,cl,i,s,j;
   o:=[];
   while n>0 do
     r:=rec(representative:=dom[1]);
+    gens:=GeneratorsOfGroup(dom[1]);
     s:=Size(dom[1]);
     cl:=ConjugacyClassSubgroups(G,r.representative);
     r.normalizer:=StabilizerOfExternalSet(cl);
     cl:=Enumerator(cl);
+    t:=RightTransversal(G,r.normalizer);
+    tl:=Length(t);
 
-    for i in cl do
+    i:=1;
+    while i<=tl and Length(dom)>0 do
+      ti:=t[i];
       j:=2;
       while j<=Length(dom) do
-	if dom[j]=i then
+	if Size(dom[j])=s and ForAll(gens,k->k^ti in dom[j]) then
+	  # hit
 	  dom[j]:=dom[Length(dom)];
 	  Unbind(dom[Length(dom)]);
 	else
 	  j:=j+1;
 	fi;
       od;
+      i:=i+1;
     od;
 
     if all then
@@ -117,6 +252,33 @@ local  n,l,o,b,dom,p,cl,i,s,j;
   od;
   return o;
 end);
+
+#############################################################################
+##
+#M  StabilizerOp( <G>, <D>, <subgroup>, <U>, <V>, <OnPoints> )
+##
+##  subgroup stabilizer
+InstallMethod( StabilizerOp, "with domain, use normalizer", true,
+    [ IsGroup, IsList, IsGroup, IsList, IsList, IsFunction ], 
+    # raise over special methods for pcgs et. al.
+    200,
+function( G, D, sub, U, V, op )
+    if not U=V or op<>OnPoints then
+      TryNextMethod();
+    fi;
+    return Normalizer(G,sub);
+end );
+
+InstallOtherMethod( StabilizerOp, "use normalizer", true,
+    [ IsGroup, IsGroup, IsList, IsList, IsFunction ], 
+    # raise over special methods for pcgs et. al.
+    200,
+function( G, sub, U, V, op )
+    if not U=V or op<>OnPoints then
+      TryNextMethod();
+    fi;
+    return Normalizer(G,sub);
+end );
 
 #############################################################################
 ##

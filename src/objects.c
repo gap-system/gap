@@ -282,7 +282,6 @@ Obj ShallowCopyObjHandler (
 
 /****************************************************************************
 **
-
 *F  CopyObj( <obj>, <mut> ) . . . . . . . make a structural copy of an object
 **
 **  'CopyObj' only calls 'COPY_OBJ' and then 'CLEAN_OBJ'.
@@ -701,6 +700,72 @@ Obj MutableCopyObjHandler (
 {
     return CopyObj( obj, 1 );
 }
+
+/****************************************************************************
+**
+*F  MakeImmutable( <obj> . . . . . . . . . . make an object immutable inplace
+**
+**  Mark an object and all subobjects immutable in-place.
+**  May cause confusion if there are shared subobjects
+**
+*/
+
+void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
+
+
+void MakeImmutable( Obj obj )
+{
+  if (IS_MUTABLE_OBJ( obj ))
+    {
+      (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
+    }
+}
+
+void MakeImmutableError( Obj obj)
+{
+  ErrorQuit("No make immutable function installed for a %s",
+	    (Int)TNAM_OBJ(obj), 0L);
+}
+
+
+
+void MakeImmutableComObj( Obj obj)
+{
+  UInt i;
+  /* 
+  for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 2 ) {
+       MakeImmutable(ADDR_OBJ(obj)[i]);
+       CHANGED_BAG(obj);
+    }
+  */
+  CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+  
+}
+
+void MakeImmutablePosObj( Obj obj)
+{
+  UInt i;
+  /* 
+  for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 1 ) {
+       MakeImmutable(ADDR_OBJ(obj)[i]);
+       CHANGED_BAG(obj);
+    }
+  */
+  CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+  
+}
+
+void MakeImmutableDatObj( Obj obj)
+{
+  CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+}
+
+Obj FuncMakeImmutable( Obj self, Obj obj)
+{
+  MakeImmutable(obj);
+  return (Obj) 0;
+}
+
 
 
 /****************************************************************************
@@ -1236,8 +1301,8 @@ void SaveDatObj( Obj datobj)
   UInt len,i;
   UInt *ptr;
   SaveSubObj(TYPE_DATOBJ( datobj ));
-  len = (SIZE_OBJ(datobj)/sizeof(UInt) - 1);
-  ptr = (UInt *)ADDR_OBJ(datobj);
+  len = ((SIZE_OBJ(datobj)+sizeof(UInt)-1)/sizeof(UInt) - 1);
+  ptr = (UInt *)ADDR_OBJ(datobj)+1;
   for (i = 1; i <= len; i++)
     {
       SaveUInt(*ptr++);
@@ -1295,8 +1360,8 @@ void LoadDatObj( Obj datobj)
   UInt len,i;
   UInt *ptr;
   TYPE_DATOBJ( datobj ) = LoadSubObj();
-  len = (SIZE_OBJ(datobj)/sizeof(UInt) - 1);
-  ptr = (UInt *)ADDR_OBJ(datobj);
+  len = ((SIZE_OBJ(datobj)+sizeof(UInt)-1)/sizeof(UInt) - 1);
+  ptr = (UInt *)ADDR_OBJ(datobj)+1;
   for (i = 1; i <= len; i++)
     {
       *ptr ++ = LoadUInt();
@@ -1353,7 +1418,8 @@ Obj FuncCLONE_OBJ (
     }
 
     /* check <dst>                                                         */
-    if ( !REREADING && CALL_1ARGS( IsToBeDefinedObj, dst ) != True ) {
+    if ( (REREADING != True) &&
+	 (CALL_1ARGS( IsToBeDefinedObj, dst ) != True) ) {
         ErrorReturnVoid( "the destination must a `to-be-defined' (not a %s)",
                          (Int)TNAM_OBJ(dst), 0,
                          "you can `return' to skip the cloneing" );
@@ -1370,7 +1436,7 @@ Obj FuncCLONE_OBJ (
     RetypeBag( dst, TNUM_OBJ(src) );
     psrc = ADDR_OBJ(src);
     pdst = ADDR_OBJ(dst);
-    for ( i = SIZE_OBJ(src)/sizeof(Obj);  0 < i;  i-- ) {
+    for ( i = (SIZE_OBJ(src)+sizeof(Obj) - 1)/sizeof(Obj);  0 < i;  i-- ) {
         *pdst++ = *psrc++;
     }
     CHANGED_BAG(dst);
@@ -1474,6 +1540,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SET_PRINT_OBJ_INDEX", 1, "index",
       FuncSET_PRINT_OBJ_INDEX, "src/objects.c:SET_PRINT_OBJ_INDEX" },
+
+    { "MakeImmutable", 1, "obj",
+      FuncMakeImmutable, "src/objects.c:MakeImmutable" },
     
     { 0 }
 
@@ -1593,6 +1662,15 @@ static Int InitKernel (
     LoadObjFuncs[ T_COMOBJ ] = LoadComObj;
     LoadObjFuncs[ T_POSOBJ ] = LoadPosObj;
     LoadObjFuncs[ T_DATOBJ ] = LoadDatObj;
+
+    for (t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) 
+      MakeImmutableObjFuncs[t] = MakeImmutableError;
+    
+    /* install the makeimmutableing functions */
+    MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
+    MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;
+    MakeImmutableObjFuncs[ T_DATOBJ ] = MakeImmutableDatObj;
+      
 
     /* return success                                                      */
     return 0;

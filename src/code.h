@@ -70,7 +70,7 @@ extern  Stat *          PtrBody;
 **  As long as statements   are represented by  bags,  these types  must  not
 **  overlap with the object types, lest Gasman becomes confused.
 */
-#define FIRST_STAT_TNUM         0
+#define FIRST_STAT_TNUM         (0UL)
 
 #define T_PROCCALL_0ARGS        (FIRST_STAT_TNUM+ 0)
 #define T_PROCCALL_1ARGS        (FIRST_STAT_TNUM+ 1)
@@ -153,7 +153,11 @@ extern  Stat *          PtrBody;
 #define T_ASSERT_2ARGS          (FIRST_STAT_TNUM+75)
 #define T_ASSERT_3ARGS          (FIRST_STAT_TNUM+76)
 
-#define LAST_STAT_TNUM          T_ASSERT_3ARGS
+#define T_EMPTY                 (FIRST_STAT_TNUM+77)
+
+#define T_PROCCALL_OPTS        (FIRST_STAT_TNUM+ 78)
+
+#define LAST_STAT_TNUM          T_PROCCALL_OPTS
 
 
 /****************************************************************************
@@ -258,7 +262,7 @@ extern  Stat *          PtrBody;
 **  As long as  expressions  are represented by  bags,  these types must  not
 **  overlap with the object types, lest Gasman becomes confused.
 */
-#define FIRST_EXPR_TNUM         128
+#define FIRST_EXPR_TNUM         ((UInt)128)
 
 #define T_FUNCCALL_0ARGS        (FIRST_EXPR_TNUM+ 0)
 #define T_FUNCCALL_1ARGS        (FIRST_EXPR_TNUM+ 1)
@@ -345,7 +349,9 @@ extern  Stat *          PtrBody;
 #define T_ISB_COMOBJ_NAME       (FIRST_EXPR_TNUM+79)
 #define T_ISB_COMOBJ_EXPR       (FIRST_EXPR_TNUM+80)
 
-#define LAST_EXPR_TNUM          T_ISB_COMOBJ_EXPR
+#define T_FUNCCALL_OPTS         (FIRST_EXPR_TNUM+81)
+
+#define LAST_EXPR_TNUM          T_FUNCCALL_OPTS
 
 
 /****************************************************************************
@@ -497,7 +503,7 @@ extern  UInt            CodeEnd (
 /****************************************************************************
 **
 *F  CodeFuncCallBegin() . . . . . . . . . . . . . . code function call, begin
-*F  CodeFuncCallEnd(<funccall>,<nr>)  . . . . . . . . code function call, end
+*F  CodeFuncCallEnd(<funccall>,<options>, <nr>)  . code function call, end
 **
 **  'CodeFuncCallBegin'  is an action to code  a function call.  It is called
 **  by the reader  when it encounters the parenthesis  '(', i.e., *after* the
@@ -507,12 +513,14 @@ extern  UInt            CodeEnd (
 **  the reader when  it  encounters the parenthesis  ')',  i.e.,  *after* the
 **  argument expressions are read.   <funccall> is 1  if  this is a  function
 **  call,  and 0  if  this  is  a procedure  call.    <nr> is the   number of
-**  arguments.
+**  arguments. <options> is 1 if options were present after the ':' in which
+**  case the options have been read already.
 */
 extern  void            CodeFuncCallBegin ( void );
 
 extern  void            CodeFuncCallEnd (
             UInt                funccall,
+	    UInt                options,
             UInt                nr );
 
 
@@ -540,6 +548,35 @@ extern void CodeFuncExprBegin (
 extern void CodeFuncExprEnd (
             UInt                nr,
             UInt                mapsto );
+
+/****************************************************************************
+**
+*F  CodeFuncCallOptionsBegin() . . . . . . . . . . . . .  code options, begin
+*F  CodeFuncCallOptionsBeginElmName(<rnam>). . .  code options, begin element
+*F  CodeFuncCallOptionsBeginElmExpr() . .. . . . .code options, begin element
+*F  CodeFuncCallOptionsEndElm() . . .. .  . . . . . code options, end element
+*F  CodeFuncCallOptionsEndElmEmpty() .. .  . . . . .code options, end element
+*F  CodeFuncCallOptionsEnd(<nr>)  . . . . . . . . . . . . . code options, end
+**
+**  The net effect of all of these is to leave a record expression on the stack
+**  containing the options record. It will be picked up by
+**  CodeFuncCallEnd()
+**
+*/
+extern void            CodeFuncCallOptionsBegin ( void );
+
+
+extern void            CodeFuncCallOptionsBeginElmName (
+    UInt                rnam );
+
+extern void            CodeFuncCallOptionsBeginElmExpr ( void );
+
+extern void            CodeFuncCallOptionsEndElm ( void );
+
+
+extern void            CodeFuncCallOptionsEndElmEmpty ( void );
+
+extern void            CodeFuncCallOptionsEnd ( UInt nr );
 
 
 /****************************************************************************
@@ -1159,7 +1196,13 @@ extern  void            CodeIsbComObjName (
 
 extern  void            CodeIsbComObjExpr ( void );
 
+/****************************************************************************
+**
+*F  CodeEmpty()  . . . . code an empty statement
+**
+*/
 
+extern void CodeEmpty( void );
 
 /****************************************************************************
 **

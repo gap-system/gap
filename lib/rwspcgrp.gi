@@ -124,18 +124,28 @@ InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     0,
 
 function( rws )
-    local   fam,  pcs;
+    local   fam,  pcs, implied;
+
+    implied:=IsObject;
+
+# not sure whether this would work: Has the rewriting system the relative
+# Orders component? (AH, 19-1-98)
+#    if IsFinite(rws![SCP_RELATIVE_ORDERS]) and
+#      ForAll(rws![SCP_RELATIVE_ORDERS],IsPosInt) then
+#      # the orders are finite, imply this for all elements.
+#      implied:=implied and IsElementFinitePolycyclicGroup;
+#    fi;
 
     # create a new family in the category <IsElementsFamilyByRws>
     fam := NewFamily(
       "MultiplicativeElementsWithInversesFamilyByPolycyclicCollector(...)",
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsAssociativeElement,
-      IsObject,
-      IsElementsFamilyByRws );
+      implied and CanEasilySortElements,
+      IsElementsFamilyByRws and CanEasilySortElements );
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
+    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(rws) ) );
@@ -202,9 +212,9 @@ end );
 
 #############################################################################
 ##
-#M  Inverse( <IsNBitsPcWordRep> )
+#M  InverseOp( <IsNBitsPcWordRep> )
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseOp,
     "generic method for n bits pc word rep",
     true,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -308,12 +318,11 @@ InstallMethod( \^,
 
 #############################################################################
 ##
-
 #R  Is8BitsPcWordRep
 ##
 DeclareRepresentation(
     "Is8BitsPcWordRep",
-    IsNBitsPcWordRep, [] );
+    IsNBitsPcWordRep and IsKernelPcWord, [] );
 
 
 #############################################################################
@@ -329,21 +338,31 @@ InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     0,
 
 function( sc )
-    local   fam,  i,  pcs;
+    local   fam,  i,  pcs, implied;
+
+    implied:=IsObject;
+
+    if IsFinite(sc![SCP_RELATIVE_ORDERS]) and
+      ForAll(sc![SCP_RELATIVE_ORDERS],IsPosInt) then
+      # the orders are finite, imply this for all elements.
+      implied:=implied and IsElementFinitePolycyclicGroup;
+    fi;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily3( NewType( FamilyOfFamilies,
+    fam := NewFamily5( NewType( FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy8BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy8BitsSingleCollector(...)",
       IsMultiplicativeElementWithInverseByPolycyclicCollector
-      and IsAssociativeElement );
+      and IsAssociativeElement,
+      implied and CanEasilySortElements,
+      CanEasilySortElements);
 
     # store the rewriting system
     fam!.rewritingSystem := Immutable(sc);
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
+    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
     # create the special 8 bits type
     fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
@@ -369,7 +388,8 @@ function( sc )
 
     # this family has a defining pcgs
     pcs := List( GeneratorsOfRws(sc), x -> ElementByRws(fam,x) );
-    SetDefiningPcgs( fam, PcgsByPcSequenceNC( fam, pcs ) );
+    pcs:=PcgsByPcSequenceNC( fam, pcs ) ;
+    SetDefiningPcgs( fam, pcs);
 
     # that's it
     return fam;
@@ -409,7 +429,6 @@ function( obj )
     fam := UnderlyingFamily( FamilyObj(obj)!.rewritingSystem );
     return ObjByExtRep( fam, 8Bits_ExtRepOfObj(obj) );
 end );
-
 
 #############################################################################
 ##
@@ -471,12 +490,11 @@ InstallMethod( \<,
 
 #############################################################################
 ##
-
 #R  Is16BitsPcWordRep
 ##
 DeclareRepresentation(
     "Is16BitsPcWordRep",
-    IsNBitsPcWordRep, [] );
+    IsNBitsPcWordRep and IsKernelPcWord, [] );
 
 
 #############################################################################
@@ -492,23 +510,33 @@ InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     0,
 
 function( sc )
-    local   fam,  i,  pcs;
+    local   fam,  i,  pcs, implied;
+
+    implied:=IsObject;
+
+    if IsFinite(sc![SCP_RELATIVE_ORDERS]) and
+      ForAll(sc![SCP_RELATIVE_ORDERS],IsPosInt) then
+      # the orders are finite, imply this for all elements.
+      implied:=implied and IsElementFinitePolycyclicGroup;
+    fi;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily3( NewType( FamilyOfFamilies,
+    fam := NewFamily5( NewType( FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy16BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy16BitsSingleCollector(...)",
       IsMultiplicativeElementWithInverseByPolycyclicCollector
-      and IsAssociativeElement );
+      and IsAssociativeElement,
+      implied and CanEasilySortElements,
+      CanEasilySortElements);
 
     # store the rewriting system
     fam!.rewritingSystem := Immutable(sc);
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
+    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
-    # create the special 8 bits type
+    # create the special 16 bits type
     fam!.16BitsType := NewType( fam, Is16BitsPcWordRep );
 
     # copy the assoc word type
@@ -573,7 +601,6 @@ function( obj )
     return ObjByExtRep( fam, 16Bits_ExtRepOfObj(obj) );
 end );
 
-
 #############################################################################
 ##
 #M  ExtRepOfObj( <Is16BitsPcWordRep> )
@@ -622,7 +649,7 @@ InstallMethod( \=,
 #M  <Is16BitsPcWordRep> < <Is16BitsPcWordRep>
 ##
 InstallMethod( \<,
-    "for 8 bits pc word rep",
+    "for 16 bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is16BitsPcWordRep, 
@@ -634,12 +661,11 @@ InstallMethod( \<,
 
 #############################################################################
 ##
-
 #R  Is32BitsPcWordRep
 ##
 DeclareRepresentation(
     "Is32BitsPcWordRep",
-    IsNBitsPcWordRep, [] );
+    IsNBitsPcWordRep and IsKernelPcWord, [] );
 
 
 #############################################################################
@@ -655,23 +681,33 @@ InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     0,
 
 function( sc )
-    local   fam,  i,  pcs;
+    local   fam,  i,  pcs, implied;
+
+    implied:=IsObject;
+
+    if IsFinite(sc![SCP_RELATIVE_ORDERS]) and
+      ForAll(sc![SCP_RELATIVE_ORDERS],IsPosInt) then
+      # the orders are finite, imply this for all elements.
+      implied:=implied and IsElementFinitePolycyclicGroup;
+    fi;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily3( NewType( FamilyOfFamilies,
+    fam := NewFamily5( NewType( FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy32BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy32BitsSingleCollector(...)",
       IsMultiplicativeElementWithInverseByPolycyclicCollector
-      and IsAssociativeElement );
+      and IsAssociativeElement,
+      implied and CanEasilySortElements,
+      CanEasilySortElements);
 
     # store the rewriting system
     fam!.rewritingSystem := Immutable(sc);
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
+    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
-    # create the special 8 bits type
+    # create the special 32 bits type
     fam!.32BitsType := NewType( fam, Is32BitsPcWordRep );
 
     # copy the assoc word type
@@ -735,7 +771,6 @@ function( obj )
     fam := UnderlyingFamily( FamilyObj(obj)!.rewritingSystem );
     return ObjByExtRep( fam, 32Bits_ExtRepOfObj(obj) );
 end );
-
 
 #############################################################################
 ##
@@ -1133,5 +1168,5 @@ end );
 #############################################################################
 ##
 
-#E  rwspcgrp.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

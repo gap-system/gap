@@ -11,82 +11,60 @@ Revision.ghompcgs_gi :=
 
 #############################################################################
 ##
-
-#M  GroupHomomorphismByImagesNC( <G>, <H>, <gens>, <imgs> )
+#M  CompositionMapping2( <hom1>, <hom2> )
 ##
-##  Add NC later
-##
-InstallMethod( GroupHomomorphismByImagesNC, 
-    "generic method for pc homs",
-    true, 
-    [ IsPcGroup, IsPcGroup, IsList, IsList ],
-    0,
+InstallMethod( CompositionMapping2, "method for hom2 from pc group",
+  FamSource1EqFamRange2, [ IsGroupHomomorphism,
+  IsGroupGeneralMappingByPcgs and IsMapping and IsTotal ], 0,
+function( hom1, hom2 )
+local hom, pcgs, pcgsimgs, H, filter, G;
 
-function( G, H, gens, imgs )
-    local pcgs, U, hom, filter;
+    pcgs := hom2!.sourcePcgs;
 
-    pcgs  := CanonicalPcgsByGeneratorsWithImages( Pcgs(G), gens, imgs );
-    U     := Subgroup( H, pcgs[2] );
+    pcgsimgs := List( hom2!.sourcePcgsImages, 
+                      x -> ImageElm( hom1, x ) );
 
-    filter := IsPcGroupHomomorphismByImages and 
-              IsToPcGroupHomomorphismByImages;
+    G := Source( hom2 );
+    H := Range( hom1 );
 
-    hom := Objectify( 
-           NewType( 
-           GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
-                                  ElementsFamily( FamilyObj( H ) ) ),
-           filter ),
-           rec( generators       := gens, 
-                genimages        := imgs, 
-                sourcePcgs       := pcgs[1],
-                sourcePcgsImages := pcgs[2] ) );
-
-    SetSource        ( hom, G );
-    SetPreImagesRange( hom, G );
-
-    SetRange           ( hom, H );
-    SetImagesSource    ( hom, U );
-    SetCoKernelOfMultiplicativeGeneralMapping ( hom, TrivialSubgroup( H ) );
-
-    return hom;
-end );
-
-
-InstallMethod( GroupHomomorphismByImagesNC, 
-    "generic method for pc homs",
-    true, 
-    [ IsPcGroup, IsGroup, IsList, IsList ],
-    0,
-
-function( G, H, gens, imgs )
-    local pcgs, U, hom, filter;
-
-    # special treatment to allow 'IsomorphismFpGroup's
-    if IsSubgroupFpGroup(H) then
-      TryNextMethod();
+    filter:=IsGroupGeneralMappingByPcgs and IsMapping;
+    if IsSubset(Source(hom1),ImagesSource(hom2)) then 
+      filter:=filter and IsTotal; # we can transfer totality
+    fi;
+    
+    if IsPcGroup( G ) then
+      filter := filter and IsPcGroupGeneralMappingByImages;
     fi;
 
-    pcgs  := CanonicalPcgsByGeneratorsWithImages( Pcgs(G), gens, imgs );
-    U     := Subgroup( H, pcgs[2] );
+    if IsPcGroup( H ) then
+      filter := filter and IsToPcGroupGeneralMappingByImages;
+    fi;
 
-    filter := IsPcGroupHomomorphismByImages;
+    filter :=filter and HasSource and HasRange and
+#             HasCoKernelOfMultiplicativeGeneralMapping and
+              HasImagesSource;
 
-    hom := Objectify( 
-           NewType( 
-           GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
-                                  ElementsFamily( FamilyObj( H ) ) ),
-           filter ),
-           rec( generators       := gens, 
-                genimages        := imgs, 
-                sourcePcgs       := pcgs[1],
-                sourcePcgsImages := pcgs[2] ) );
+    hom:=rec( generators       := pcgs,
+	      genimages        := pcgsimgs,
+	      sourcePcgs       := pcgs,
+	      sourcePcgsImages := pcgsimgs,
+	      # precompute powers of the pcgs images
+	      sourcePcgsImagesPowers :=
+		List([1..Length(pcgs)],
+		    i->List([1..RelativeOrders(pcgs)[i]],
+			    j->pcgsimgs[i]^j))
+	      );
 
-    SetSource        ( hom, G );
-    SetPreImagesRange( hom, G );
-
-    SetRange           ( hom, H );
-    SetImagesSource    ( hom, U );
-    SetCoKernelOfMultiplicativeGeneralMapping ( hom, TrivialSubgroup( H ) );
+    ObjectifyWithAttributes(hom,
+	      NewType( 
+		GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
+					ElementsFamily( FamilyObj( H ) ) ),
+		filter ),
+	      Source,G,
+	      Range,H,
+              ImagesSource,SubgroupNC( H, pcgsimgs )
+#    ,CoKernelOfMultiplicativeGeneralMapping,TrivialSubgroup(H);
+		);
 
     return hom;
 end );
@@ -95,73 +73,133 @@ end );
 ##
 #M  CompositionMapping2( <hom1>, <hom2> )
 ##
-InstallMethod( CompositionMapping2,
-               "method for hom2 from pc group",
-               true,
-               [ IsGroupHomomorphism, IsPcGroupHomomorphismByImages ],
-               0,
+InstallMethod( CompositionMapping2, "method for two pc group automorphisms",
+  IsIdenticalObj, 
+  [ IsPcGroupHomomorphismByImages and IsToPcGroupHomomorphismByImages and
+    IsTotal and IsInjective and IsSurjective,
+    IsPcGroupHomomorphismByImages and IsToPcGroupHomomorphismByImages and
+    IsTotal and IsInjective and IsSurjective],0,
 
 function( hom1, hom2 )
-    local hom, gens, pcgs, imgs, pcgsimgs, H, U, filter, G;
+local fam,hom, pcgs, pcgsimgs, G;
 
-    gens := hom2!.generators;
-    pcgs := hom2!.sourcePcgs;
+  pcgs := hom2!.sourcePcgs;
+  pcgsimgs := List( hom2!.sourcePcgsImages, 
+		    x -> ImageElm(hom1, x ) );
 
-    imgs := List( hom2!.genimages, 
-                  x -> ImagesRepresentative( hom1, x ) );
-    pcgsimgs := List( hom2!.sourcePcgsImages, 
-                      x -> ImagesRepresentative( hom1, x ) );
+  G := Source( hom2 );
 
-    G := Source( hom2 );
-    H := Range( hom1 );
-    U := Subgroup( H, pcgsimgs );
+  fam:=FamilyObj(hom1);
+  if not IsBound(fam!.defaultAutomorphismType) then
+    fam!.defaultAutomorphismType:=NewType(fam,
+      IsPcGroupHomomorphismByImages and IsToPcGroupHomomorphismByImages and
+      IsTotal and IsInjective and IsSurjective and
+      HasSource and HasRange and HasImagesSource and HasPreImagesRange);
+  fi;
 
-    if IsPcGroup( H ) then
-        filter := IsPcGroupHomomorphismByImages and 
-                  IsToPcGroupHomomorphismByImages;
-    else
-        filter := IsPcGroupHomomorphismByImages;
-    fi;
+  hom:=rec( generators       := pcgs,
+	    genimages        := pcgsimgs,
+	    sourcePcgs       := pcgs,
+	    sourcePcgsImages := pcgsimgs,
+	    # precompute powers of the pcgs images
+	    sourcePcgsImagesPowers :=
+	      List([1..Length(pcgs)],
+		  i->List([1..RelativeOrders(pcgs)[i]],
+			  j->pcgsimgs[i]^j))
+	    );
 
-    hom := Objectify( 
-           NewType( 
-           GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
-                                  ElementsFamily( FamilyObj( H ) ) ),
-           filter ),
-           rec( generators       := gens,
-                genimages        := imgs,
-                sourcePcgs       := pcgs,
-                sourcePcgsImages := pcgsimgs ) );
+  ObjectifyWithAttributes(hom,
+            fam!.defaultAutomorphismType,
+	    Source,G,
+	    Range,G,
+	    ImagesSource,G,
+	    PreImagesRange,G
+		  );
 
-    SetSource        ( hom, G );
-    SetPreImagesRange( hom, G );
-
-    SetRange           ( hom, H );
-    SetImagesSource    ( hom, U );
-    SetCoKernelOfMultiplicativeGeneralMapping( hom, TrivialSubgroup( H ) );
-
-    return hom;
+  return hom;
 end );
 
 #############################################################################
 ##
-#M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . . . .  via images
+#M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . . . .  via pcgs
 ##
-InstallMethod( ImagesRepresentative, 
-               "method for homs from pc group",
-               true,
-               [ IsPcGroupHomomorphismByImages, IsObject ],
-               0,
-
+InstallMethod( ImagesRepresentative,
+    "for total GGMBPCGS, and mult.-elm.-with-inverse", FamSourceEqFamElm,
+        [ IsGroupGeneralMappingByPcgs and IsTotal,
+                                        # ^ because of `ExponentsOfPcElement'
+          IsMultiplicativeElementWithInverse ],
+        100,  # to override methods for `IsPerm( <elm> )'
 function( hom, elm )
-    local exp, img, i;
-    exp  := ExponentsOfPcElement( hom!.sourcePcgs, elm );
-    img  := Identity( Range( hom ) );
-    for i in [1..Length(hom!.sourcePcgsImages)] do
-        img := img * hom!.sourcePcgsImages[i]^exp[i];
-    od;
-    return img;
+local exp, img, i;
+  exp  := ExponentsOfPcElement( hom!.sourcePcgs, elm );
+  img  := One( Range( hom ) );
+  for i in [1..Length(hom!.sourcePcgsImages)] do
+    if exp[i]>0 then
+      img := img * hom!.sourcePcgsImagesPowers[i][exp[i]];
+    fi;
+  od;
+  return img;
 end );
+
+#############################################################################
+##
+#M  IsSingleValued( <hom> )  . . . . . . . . . . . .  via pcgs
+##
+InstallMethod( IsSingleValued, "for GMBPCGS: test relations",true,
+  [ IsGroupGeneralMappingByPcgs ],0,
+function(map)
+local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp;
+  pcgs:=map!.sourcePcgs;
+  pcgsimg:=map!.sourcePcgsImages;
+  r:=RelativeOrders(pcgs);
+  o:=One(Range(map));
+  for i in [1..Length(pcgs)] do
+    elm:=pcgs[i]^r[i];
+    exp  := ExponentsOfPcElement( pcgs, elm );
+    img  := o;
+    for k in [1..Length(pcgsimg)] do
+      if exp[k]>0 then
+	img := img * map!.sourcePcgsImagesPowers[k][exp[k]];
+      fi;
+    od;
+    if img<>pcgsimg[i]^r[i] then
+      return false;
+    fi;
+
+    for j in [i+1..Length(pcgs)] do
+      elm:=pcgs[j]^pcgs[i];
+      exp  := ExponentsOfPcElement( pcgs, elm );
+      img  := o;
+      for k in [1..Length(pcgsimg)] do
+	if exp[k]>0 then
+	  img := img * map!.sourcePcgsImagesPowers[k][exp[k]];
+	fi;
+      od;
+      if img<>pcgsimg[j]^pcgsimg[i] then
+	return false;
+      fi;
+    od;
+  od;
+
+  # we still need to test any additional generators. (This could happen
+  # easily, if the mapping is a general inverse.)
+  for i in [1..Length(map!.generators)] do
+    if not i in pcgs then
+      exp:=ExponentsOfPcElement(pcgs,map!.generators[i]);
+      img  := o;
+      for k in [1..Length(pcgsimg)] do
+	if exp[k]>0 then
+	  img := img * map!.sourcePcgsImagesPowers[k][exp[k]];
+	fi;
+      od;
+      if img<>map!.genimages[i] then
+        return false; # the extra generator would be mapped inconsistently.
+      fi;
+    fi;
+  od;
+
+  return true;
+end);
 
 #############################################################################
 ##
@@ -241,6 +279,7 @@ InversePcgs := function( hom )
         # add it
         hom!.rangePcgs := InducedPcgsByPcSequenceNC( pcgs, gensInv ); 
         hom!.rangePcgsPreimages := imgsInv;
+#T better MakeImmutable
         
         # we have the kernel also
         SetKernelOfMultiplicativeGeneralMapping( hom, SubgroupNC(Source(hom),
@@ -271,7 +310,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
 function( a )
 
     local   gensInv, imgsInv, gensKer, u, v, uw, vw, gens, imgs, idR, idD,
-            tmp, i, j, K, pcgs;
+            tmp, i, pcgs;
 
     idR := Identity( Range( a ) );
     idD := Identity( Source( a ) );
@@ -309,7 +348,7 @@ function( a )
             imgsInv[ uw ] := v;
         fi;
     od;
-    return Subgroup( Source( a ), Compacted( gensKer ) );
+    return SubgroupNC( Source( a ), Compacted( gensKer ) );
 end );
 
 #############################################################################
@@ -322,7 +361,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
                [ IsPcGroupHomomorphismByImages ],
                0,
 function( hom )
-    local S, idS, ggens, m, sk, im, gexps, x, y, i, j, k, l, K;
+    local S, idS, ggens, m, sk, im, gexps, x, y, k, l,j;
 
     S       := Source( hom );
     idS     := Identity( S );
@@ -360,19 +399,26 @@ function( hom )
     	    im[j] := ClosureGroup( im[j+1], Image( hom, ggens[j] ) );
         fi;
     od;
-    return Subgroup( S, sk );
+    return SubgroupNC( S, sk );
 end );
+
+#############################################################################
+##
+#M  IsInjective( <hom> )
+##
+InstallMethod( IsInjective, "method for homs from pc group", true,
+               [ IsPcGroupHomomorphismByImages ], 0,
+function(hom)
+  return Size(KernelOfMultiplicativeGeneralMapping(hom))=1;
+end);
 
 #############################################################################
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
-InstallMethod( PreImagesRepresentative, 
-               "method for pcgs hom", 
-               true,
-               [ IsToPcGroupHomomorphismByImages, IsObject ],
-               0,
-
+InstallMethod( PreImagesRepresentative, "method for pcgs hom", 
+  FamRangeEqFamElm,
+  [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
     local  pcgsR, exp, imgs, pre, i;  
 
@@ -384,14 +430,15 @@ function( hom, elm )
     imgs := hom!.rangePcgsPreimages;
     pre := Identity( Source( hom ) );
     for i in [1..Length(exp)] do
-        pre := pre * imgs[i]^exp[i];
+      if exp[i]>0 then
+	pre := pre * imgs[i]^exp[i];
+      fi;
     od;
     return pre;
 end); 
 
 #############################################################################
 ##
-
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . . . . . for pc groups
 ##
 InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
@@ -413,7 +460,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
         pcgsK := InducedPcgsByGenerators( pcgsG, GeneratorsOfGroup( N ) );
     fi;
     pcgsF := pcgsG mod pcgsK;
-    F := GroupByPcgs( pcgsF );
+    F := PcGroupWithPcgs( pcgsF );
     hom := Objectify( NewType( GeneralMappingsFamily
                    ( ElementsFamily( FamilyObj( G ) ),
                      ElementsFamily( FamilyObj( F ) ) ),
@@ -435,7 +482,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
     pcgsG := SpecialPcgs( G );
     pcgsN := InducedPcgsWrtSpecialPcgs( N ); 
     pcgsF := pcgsG mod pcgsN;
-    F     := GroupByPcgs( pcgsF );
+    F     := PcGroupWithPcgs( pcgsF );
     hom   := Objectify( NewType( GeneralMappingsFamily
                    ( ElementsFamily( FamilyObj( G ) ),
                      ElementsFamily( FamilyObj( F ) ) ),
@@ -482,13 +529,12 @@ end );
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . . . via depth map
 ##
 InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsNaturalHomomorphismPcGroupRep,
-          IsMultiplicativeElementWithInverse ], 0,
+    [ IsNaturalHomomorphismPcGroupRep, IsMultiplicativeElementWithInverse ],0,
     function( hom, elm )
     local   exp;
     
     exp := ExponentsOfPcElement( hom!.pcgsSource, elm );
-    return PcElementByExponents( hom!.pcgsRange, exp );
+    return PcElementByExponentsNC( hom!.pcgsRange, exp );
 end );
 
 #############################################################################
@@ -496,26 +542,28 @@ end );
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . via depth map
 ##
 InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-        [ IsNaturalHomomorphismPcGroupRep,
-          IsMultiplicativeElementWithInverse ], 0,
+  [ IsNaturalHomomorphismPcGroupRep,IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
     local   exp;
     
     exp := ExponentsOfPcElement( hom!.pcgsRange, elm );
-    return PcElementByExponents( hom!.pcgsSource, exp );
+    return PcElementByExponentsNC( hom!.pcgsSource, exp );
 end );
 
 #############################################################################
 ##
 #M  <hom1> = <hom2> . . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( \=, IsIdenticalObj, 
+InstallMethod( \=, "pc group homomorphisms",IsIdenticalObj, 
                [ IsPcGroupHomomorphismByImages, 
                  IsPcGroupHomomorphismByImages ], 1,
     function( hom1, hom2 )
     if    Source( hom1 ) <> Source( hom2 )
        or Range ( hom1 ) <> Range ( hom2 )  then
         return false;
+    fi;
+    if hom1!.sourcePcgs<>hom2!.sourcePcgs then
+      TryNextMethod();
     fi;
     return hom1!.sourcePcgsImages = hom2!.sourcePcgsImages;
 end );
@@ -524,24 +572,18 @@ end );
 ##
 #M  PrintObj( )
 ##
-InstallMethod( PrintObj,
-    "method for a PcGroupHomomorphisms",
-    true,
+InstallMethod( PrintObj, "method for a PcGroupHomomorphisms", true,
     [ IsPcGroupHomomorphismByImages ], 0,
-    function( map )
-    Print(map!.sourcePcgs, " -> ", map!.sourcePcgsImages );
-    end );
+function( map )
+  Print(map!.sourcePcgs, " -> ", map!.sourcePcgsImages );
+end );
 
 #############################################################################
 ##
 #M  NaturalIsomorphismByPcgs( <grp>, <pcgs> ) . . presentation through <pcgs>
 ##
-InstallMethod( NaturalIsomorphismByPcgs,
-    IsIdenticalObj,
-    [ IsGroup,
-      IsPcgs ],
-    0,
-
+InstallMethod( NaturalIsomorphismByPcgs,"for group and pcgs", IsIdenticalObj,
+    [ IsGroup, IsPcgs ], 0,
 function( grp, pcgs )
     local   new;
 
@@ -551,7 +593,7 @@ function( grp, pcgs )
     fi;
 
     # compute a new group and check the size
-    new := GroupByPcgs(pcgs);
+    new := PcGroupWithPcgs(pcgs);
     if Size(new) <> Size(grp)  then
         Error( "<pcgs> must generate <grp>" );
     fi;
@@ -566,6 +608,15 @@ end );
 
 #############################################################################
 ##
-
-#E  ghompcgs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  IsomorphismPcGroup( <G> ) . . . .  for pc group (return identity mapping)
 ##
+InstallMethod( IsomorphismPcGroup,
+    true,
+    [ IsPcGroup ], 0,
+    IdentityMapping );
+
+
+#############################################################################
+##
+#E
+

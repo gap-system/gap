@@ -10,17 +10,30 @@
 Revision.ghomperm_gd :=
     "@(#)$Id$";
 
+
+#############################################################################
+##
+#R  IsPermGroupGeneralMappingByImages(<map>)
+#R  IsPermGroupHomomorphismByImages(<map>)
+##
+##  is the representation for mappings that map from a perm group
 DeclareRepresentation( "IsPermGroupGeneralMappingByImages",
       IsGroupGeneralMappingByImages,
       [ "generators", "genimages" ] );
-IsPermGroupHomomorphismByImages := IsPermGroupGeneralMappingByImages
-                               and IsMapping;
+DeclareSynonym( "IsPermGroupHomomorphismByImages",
+    IsPermGroupGeneralMappingByImages and IsMapping );
 
+#############################################################################
+##
+#R  IsToPermGroupGeneralMappingByImages(<map>)
+#R  IsToPermGroupHomomorphismByImages(<map>)
+##
+##  is the representation for mappings that map to a perm group
 DeclareRepresentation( "IsToPermGroupGeneralMappingByImages",
       IsGroupGeneralMappingByImages,
       [ "generators", "genimages" ] );
-IsToPermGroupHomomorphismByImages := IsToPermGroupGeneralMappingByImages
-                                 and IsMapping;
+DeclareSynonym( "IsToPermGroupHomomorphismByImages",
+    IsToPermGroupGeneralMappingByImages and IsMapping );
 
 DeclareGlobalFunction( "AddGeneratorsGenimagesExtendSchreierTree" );
 DeclareGlobalFunction( "ImageSiftedBaseImage" );
@@ -34,5 +47,5 @@ DeclareGlobalFunction( "PreImageSetStabBlocksHomomorphism" );
 
 #############################################################################
 ##
-#E  ghomperm.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

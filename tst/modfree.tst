@@ -71,7 +71,7 @@ gap> v:= LeftModuleByGenerators( GF(2), [ [ Z(2), Z(2) ], [ Z(4), Z(4) ] ] );
 gap> Print(AsList( v ),"\n");
 [ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ], 
   [ Z(2^2)^2, Z(2^2)^2 ] ]
-gap> Print(AsListSorted( v ),"\n");
+gap> Print(AsSSortedList( v ),"\n");
 [ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ], 
   [ Z(2^2)^2, Z(2^2)^2 ] ]
 gap> IsSubset( v, w );
@@ -159,10 +159,10 @@ gap> FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ], [ 0, 0 ] );
 <free left module over Integers, with 2 generators>
 gap> FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ], [ 0, 0 ], "basis" );
 <free left module over Integers, with 2 generators>
-gap> IsRowModuleRep( f );
+gap> IsRowModule( f );
 true
-# gap> IsFullRowModule( f );
-# true
+gap> IsFullRowModule( f );
+true
 gap> FullRowModule( Integers, 27 );
 ( Integers^27 )
 gap> f:= FullRowModule( GF(27), 27 );
@@ -187,12 +187,12 @@ gap> BasisVectors( c );
 [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ]
 gap> Coefficients( c, [ 1, 2, 3, 4 ] );
 [ 1, 2, 3, 4 ]
-gap> BasisOfDomain( Integers^2 );
+gap> Basis( Integers^2 );
 CanonicalBasis( ( Integers^2 ) )
 
-gap> STOP_TEST( "modfree.tst", 28690858 );
+gap> STOP_TEST( "modfree.tst", 38792500 );
 
 #############################################################################
 ##
-#E  modfree.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

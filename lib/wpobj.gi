@@ -43,7 +43,7 @@ end);
 InstallMethod(\[\]\:\=, 
         "method for a weak pointer object",
         true,
-        [ IsWeakPointerObject, IsPosInt, IsObject ],
+        [ IsWeakPointerObject and IsMutable, IsPosInt, IsObject ],
         0,
         SetElmWPObj);
         
@@ -80,7 +80,7 @@ InstallMethod(IsBound\[\],
 InstallMethod(Unbind\[\], 
         "method for a weak pointer object",
         true,
-        [ IsWeakPointerObject, IsPosInt ],
+        [ IsWeakPointerObject and IsMutable, IsPosInt ],
         0,
         UnbindElmWPObj);
 
@@ -113,7 +113,7 @@ InstallMethod(PrintObj,
             fi;
         od;
     fi;
-    Print("] )");
+    Print(" ] )");
 end);
 
 #############################################################################
@@ -144,7 +144,7 @@ InstallMethod(ViewObj,
             fi;
         od;
     fi;
-    Print("] )");
+    Print(" ] )");
 end);
 
 
@@ -173,4 +173,8 @@ InstallMethod(ShallowCopy,
     return w;
 end);
 
+
+#############################################################################
+##
+#E
 

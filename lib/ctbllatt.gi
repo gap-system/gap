@@ -1,6 +1,7 @@
 #############################################################################
 ##
-#W  ctbllatt.gi                 GAP library                       Ansgar Kaup
+#W  ctbllatt.gi                 GAP library                     Thomas Breuer
+#W                                                                Ansgar Kaup
 ##
 #H  @(#)$Id$
 ##
@@ -16,7 +17,7 @@ Revision.ctbllatt_gi :=
 
 #############################################################################
 ##  
-#F  LLL( <tbl>, <characters> [, <y>] [, \"sort\"] [, \"linearcomb\"] )
+#F  LLL( <tbl>, <characters>[, <y>][, \"sort\"][, \"linearcomb\"] )
 ##
 InstallGlobalFunction( LLL, function( arg )
 
@@ -25,7 +26,9 @@ InstallGlobalFunction( LLL, function( arg )
           sorted,      # characters sorted by degree
           L,           # lattice gen. by the virtual characters
           i,           # loop variable
+          lllrb,       # result of `LLLReducedBasis'
           lll,         # result
+          v,           # loop over the LLL reduced basis
           perm,        # permutation arising from sorting characters
           y,           # optional argument <y>
           scpr;        # scalar product
@@ -53,47 +56,58 @@ InstallGlobalFunction( LLL, function( arg )
     fi;
 
     # 3. Call the LLL algorithm.
-    L:= LeftModuleByGenerators( Rationals, [ TrivialCharacter( tbl ) ] );
+    L:= AlgebraByGenerators( Rationals, [ TrivialCharacter( tbl ) ] );
     if "linearcomb" in arg then
-      lll:= ShallowCopy( LLLReducedBasis( L, characters, y, "linearcomb" ) );
+      lllrb:= LLLReducedBasis( L, characters, y, "linearcomb" );
     else
-      lll:= ShallowCopy( LLLReducedBasis( L, characters, y ) );
+      lllrb:= LLLReducedBasis( L, characters, y );
     fi;
 
-    # 4. Sort the relations and transformation if necessary.
-    if IsBound( perm ) and IsBound( lll.relations ) then
-      lll.relations:= List( lll.relations, x -> Permuted( x, perm ) );
-      lll.transformation:= List( lll.transformation,
-                                 x -> Permuted( x, perm ) );
+    # 4. Make a new result record.
+    lll:= rec( irreducibles := [],
+               remainders   := [],
+               norms        := [] );
+
+    # 5. Sort the relations and transformation if necessary.
+    if IsBound( lllrb.relations ) then
+      lll.relations      := lllrb.relations;
+      lll.transformation := lllrb.transformation;
+      if IsBound( perm ) then
+        lll.relations      := List( lll.relations,
+                                    x -> Permuted( x, perm ) );
+        lll.transformation := List( lll.transformation,
+                                    x -> Permuted( x, perm ) );
+      fi;
     fi;
 
-    # 5. Add the components used by the character table functions.
+    # 6. Add the components used by the character table functions.
     lll.irreducibles  := [];
     lll.remainders    := [];
     lll.norms         := [];
-    if IsBound( lll.transformation ) then
+    if IsBound( lllrb.transformation ) then
       lll.irreddecomp := [];
       lll.reddecomp   := [];
     fi;
 
-    for i in [ 1 .. Length( lll.basis ) ] do
+    for i in [ 1 .. Length( lllrb.basis ) ] do
 
-      if lll.basis[i][1] < 0 then 
-        lll.basis[i]:= AdditiveInverse( lll.basis[i] );
-        if IsBound( lll.transformation ) then
+      v:= lllrb.basis[i];
+      if v[1] < 0 then 
+        v:= AdditiveInverse( v );
+        if IsBound( lllrb.transformation ) then
           lll.transformation[i]:= AdditiveInverse( lll.transformation[i] );
         fi;
       fi;
-      scpr:= ScalarProduct( tbl, lll.basis[i], lll.basis[i] );
+      scpr:= ScalarProduct( tbl, v, v );
       if scpr = 1 then
-        Add( lll.irreducibles, CharacterByValues( tbl, lll.basis[i] ) );
-        if IsBound( lll.transformation ) then
+        Add( lll.irreducibles, Character( tbl, v ) );
+        if IsBound( lllrb.transformation ) then
           Add( lll.irreddecomp, lll.transformation[i] );
         fi;
       else
-        Add( lll.remainders, VirtualCharacterByValues( tbl, lll.basis[i] ) );
+        Add( lll.remainders, VirtualCharacter( tbl, v ) );
         Add( lll.norms, scpr );
-        if IsBound( lll.transformation ) then
+        if IsBound( lllrb.transformation ) then
           Add( lll.reddecomp,   lll.transformation[i] );
         fi;
       fi;
@@ -105,19 +119,19 @@ InstallGlobalFunction( LLL, function( arg )
             "LLL: ", Length( lll.irreducibles ), " irreducibles found" );
     fi;
 
-    # 6. Sort 'remainders' component if necessary.
+    # 7. Sort `remainders' and `reddecomp' components if necessary.
     if "sort" in arg then
       sorted:= SortedCharacters( tbl, lll.remainders, "degree" );
       perm:= Sortex( ShallowCopy( lll.remainders ) )
              / Sortex( ShallowCopy( sorted ) );
       lll.norms:= Permuted( lll.norms, perm );
+      lll.remainders:= sorted;
       if "linearcomb" in arg then
         lll.reddecomp:= Permuted( lll.reddecomp, perm );
       fi;
     fi;
 
     # 7. Unbind components not used for characters.
-    Unbind( lll.basis );
     Unbind( lll.transformation );
 
     # 8. Return the result.
@@ -739,7 +753,7 @@ InstallGlobalFunction( Decreased, function( arg )
 
     # number of columns
     n := Length( solmat[1] );
-    invmat := MutableIdentityMat( n );
+    invmat := IdentityMat( n );
     for i in [1..m] do  
        delline[i] := false;
     od;
@@ -1023,11 +1037,11 @@ InstallGlobalFunction( Decreased, function( arg )
             Info( InfoCharacterTable, 2,
                   "Decreased : computation of ",
                   Ordinal( Length( irred ) + 1 ), " character failed" );
-            return false;   
+            return fail;   
           else
 
     # irreducible character found
-            Add( irred, ShallowCopy( char1 ) );
+            Add( irred, Character( tbl, char1 ) );
           fi;
        else
 
@@ -1037,7 +1051,7 @@ InstallGlobalFunction( Decreased, function( arg )
           fi;
           if char <> nc then
              redcount := redcount + 1;
-             red[redcount] := ShallowCopy( char );
+             red[redcount] := ClassFunction( tbl, char );
              for i in [1..m] do  
                 remmat[i][redcount] := solmat[i][j];
                 if solmat[i][j] <> 0 then
@@ -1065,15 +1079,15 @@ end );
 #############################################################################
 ##
 #F  OrthogonalEmbeddingsSpecialDimension( <tbl>, <reducibles>, <grammat>,
-#F                                        [, \"positive\" ], <integer> )
+#F                                        [, \"positive\"], <dim> )
 ##
 InstallGlobalFunction( OrthogonalEmbeddingsSpecialDimension, function ( arg )  
     local  red, dim, reducibles, matrix, tbl, emb, dec, i, s, irred;
     # check input
     if Length( arg ) < 4 then
        Error( "please specify desired dimension\n",
-              "usage : Orthog...( <tbl>, <reducibles>,\n",
-              "<gram-matrix>, [, \"positive\" ], <integer> )" );
+              "usage : OrthogonalE...( <tbl>, <reducibles>,\n",
+              "<gram-matrix>[, \"positive\" ], <dim> )" );
     fi;
     if IsInt( arg[4] ) then
        dim := arg[4];
@@ -1330,13 +1344,13 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     if ScalarProduct( tbl, z[ 1 ], z[ 1 ] ) = 1 then
        irredcount := irredcount + 1;
        if z[ 1 ][ 1 ] > 0 then
-          irred[ irredcount ] := z[ 1 ];
+          irred[ irredcount ] := Character( tbl, z[ 1 ] );
        else
-          irred[ irredcount ] := -z[ 1 ];
+          irred[ irredcount ] := Character( tbl, -z[ 1 ] );
        fi;
        y1 := y{ [ blocks.begin[i] .. blocks.ende[i] ] };
        red := ReducedClassFunctions( tbl, z, y1 );
-       irred := Concatenation( irred, red.irreducibles );
+       Append( irred, List( red.irreducibles, x -> Character( tbl, x ) ) );
        irredcount := Length( irred );
        y2 := Concatenation( y2, red.remainders );
     fi;

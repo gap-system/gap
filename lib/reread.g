@@ -23,9 +23,9 @@ BindGlobal("Reread",
     REREADING := true;
     MakeReadOnlyGlobal("REREADING");
     if LEN_LIST(arg) > 1 then
-        res := CallFuncList(func,arg);
+        res := CallFuncList( Read, arg );
     else
-        CallFuncList(func,arg);
+        CallFuncList( Read, arg );
     fi;
     MakeReadWriteGlobal("REREADING");
     REREADING := false;
@@ -63,63 +63,59 @@ end);
 ##
 #F  RereadLib( <name> ) . . . . . . . . . . . . . . . . . . . . . library files
 ##
-RereadLib := RereadAndCheckFunc("lib");
+BIND_GLOBAL("RereadLib",RereadAndCheckFunc("lib"));
 
 
 #############################################################################
 ##
 #F  RereadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
 ##
-RereadGrp := RereadAndCheckFunc("grp");
+BIND_GLOBAL("RereadGrp",RereadAndCheckFunc("grp"));
 
 
 #############################################################################
 ##
 #F  RereadTbl( <name> ) . . . . . . . . . . . . . . . .  character tables files
 ##
-RereadTbl := RereadAndCheckFunc("tbl");
+BIND_GLOBAL("RereadTbl",RereadAndCheckFunc("tbl"));
 
 
 #############################################################################
 ##
 #F  RereadTom( <name> ) . . . . . . . . . . . . . . . . .  table of marks files
 ##
-RereadTom := RereadAndCheckFunc("tom");
+BIND_GLOBAL("RereadTom",RereadAndCheckFunc("tom"));
 
 
 #############################################################################
 ##
 #F  RereadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
 ##
-RereadSmall := RereadAndCheckFunc("small");
-
-
-#############################################################################
-##
-#F  RereadIdLib( <name> ) . . . . . . . . . . . . .  small groups library files
-##
-RereadIdLib := RereadAndCheckFunc("small/idlib");
+BIND_GLOBAL("RereadSmall",RereadAndCheckFunc("small"));
 
 
 #############################################################################
 ##
 #F  RereadPrim( <name> )  . . . . . . . . . primitive perm groups library files
 ##
-RereadPrim := RereadAndCheckFunc("prim");
+BIND_GLOBAL("RereadPrim",RereadAndCheckFunc("prim"));
 
 
 #############################################################################
 ##
 #F  RereadTrans( <name> ) . . . . . . . .  transitive perm groups library files
 ##
-RereadTrans := RereadAndCheckFunc("trans");
-
-
-
-
+BIND_GLOBAL("RereadTrans",RereadAndCheckFunc("trans"));
     
 
 #############################################################################
 ##
-#E  reread.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#F  DoRereadPkg( <name> ) . . . . . . . . . . . . . . . . . . . package files
 ##
+BIND_GLOBAL( "DoRereadPkg", RereadAndCheckFunc( "pkg" ) );
+    
+
+#############################################################################
+##
+#E
+

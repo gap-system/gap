@@ -22,6 +22,13 @@
 **  other modules just read from the  current input  and write to the current
 **  output file.
 **
+**  SL 5/99 I now plan to break the second abstraction in regard of output
+**  streams. Instead of all Print/View/etc output going via Pr to PutLine, etc.
+**  they will go via PrTo and PutLineTo. The extra argument of these will be
+**  of type KOutputStream, a pointer to a C structure (using a GAP object would
+**  be difficult in the early bootstrap, and because writing to a string stream
+**  may cause a garbage collection, which can be a pain).
+**
 **  The scanner relies on the functions  provided  by  the  operating  system
 **  dependent module 'system.c' for the low level input/output.
 */
@@ -50,6 +57,8 @@ const char * Revision_scanner_c =
 
 #include        "lists.h"               /* generic lists                   */
 #include        "string.h"              /* strings                         */
+
+#include        "opers.h"               /* DoFilter...                     */
 
 
 /****************************************************************************
@@ -230,7 +239,7 @@ typedef UInt            TypSymbolSet;
 **  maximal length of a  string.   'GetIdent', 'GetInt' and 'GetStr' truncate
 **  identifier, integers or strings after that many characters.
 */
-Char            Value [1024];
+Char            Value [1025];
 
 
 /****************************************************************************
@@ -580,6 +589,7 @@ UInt OpenInput (
     Input->isstream = 0;
     Input->file = file;
     Input->name[0] = '\0';
+    Input->echo = 0;
     SyStrncat( Input->name, filename, sizeof(Input->name) );
 
     /* start with an empty line and no symbol                              */
@@ -619,6 +629,7 @@ UInt OpenInputStream (
     Input->sline = 0;
     Input->name[0] = '\0';
     Input->file = -1;
+    Input->echo = 0;
     SyStrncat( Input->name, "stream", 6 );
 
     /* start with an empty line and no symbol                              */
@@ -1151,6 +1162,7 @@ UInt OpenOutput (
     Output->pos      = 0;
     Output->indent   = 0;
     Output->isstream = 0;
+    Output->format   = 1;
 
     /* variables related to line splitting, very bad place to split        */
     Output->spos    = 0;
@@ -1167,6 +1179,9 @@ UInt OpenOutput (
 **
 **  The same as 'OpenOutput' but for streams.
 */
+
+Obj PrintFormattingStatus;
+
 UInt OpenOutputStream (
     Obj                 stream )
 {
@@ -1177,6 +1192,7 @@ UInt OpenOutputStream (
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
     Output->stream   = stream;
+    Output->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True); 
     Output->line[0]  = '\0';
     Output->pos      = 0;
     Output->indent   = 0;
@@ -1221,7 +1237,7 @@ UInt CloseOutput ( void )
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
     if ( ! Output->isstream ) {
-        SyFclose( Output->file );
+      SyFclose( Output->file );
     }
 
     /* revert to previous output file and indicate success                 */
@@ -1422,6 +1438,7 @@ Char GetLine ( void )
             In[0] = '\377';  In[1] = '\0';
         }
 
+
         /* convert '?' at the beginning into 'HELP'                        */
         if ( In[0] == '?' ) {
             buf[0] = '\0';
@@ -1438,13 +1455,17 @@ Char GetLine ( void )
         }
 
         /* if neccessary echo the line to the logfile                      */
-        if ( ! Input->isstream ) {
-            if ( InputLog != 0 && ! Input->isstream ) {
-                if ( Input->file == 0 || Input->file == 2 ) {
-                    PutLine2( InputLog, In );
-                }
-            }
-        }
+	if( InputLog != 0 && Input->echo == 1)
+            if ( !(In[0] == '\377' && In[1] == '\0') ) 
+	    PutLine2( InputLog, In ); 
+
+		/*	if ( ! Input->isstream ) {
+	  if ( InputLog != 0 && ! Input->isstream ) {
+	    if ( Input->file == 0 || Input->file == 2 ) {
+	      PutLine2( InputLog, In );
+	    }
+	    }
+	    } */
 
     }
 
@@ -1862,9 +1883,12 @@ void GetSymbol ( void )
     case ')':   Symbol = S_RPAREN;                      GET_CHAR();  break;
     case ',':   Symbol = S_COMMA;                       GET_CHAR();  break;
 
-    case ':':   Symbol = S_ILLEGAL;                     GET_CHAR();
-                if ( *In == '\\' ) { GET_CHAR(); 
-                  if ( *In == '\n' ) { GET_CHAR(); } }
+    case ':':   Symbol = S_COLON;                       GET_CHAR();
+                if ( *In == '\\' ) {
+		  GET_CHAR(); 
+                  if ( *In == '\n' )
+		    { GET_CHAR(); }
+		}
                 if ( *In == '=' ) { Symbol = S_ASSIGN;  GET_CHAR(); break; }
                 break;
 
@@ -1928,17 +1952,26 @@ Obj WriteAllFunc;
 **
 *F  PutLine2( <output>, <line> )  . . . . . . . . . . . . print a line, local
 */
+
+
 void PutLine2(
     TypOutputFile *         output,
     Char *                  line )
 {
     Obj                     str;
+    UInt                    len;
 
     if ( output->isstream ) {
-        str = NEW_STRING( SyStrlen(line) );
-        SyStrncat( CSTR_STRING(str), line, SyStrlen(line) );
-        CALL_2ARGS( WriteAllFunc, output->stream, str );
-    }
+	len = SyStrlen(line);
+
+	/* Space for the null is allowed for in GAP strings */
+	str = NEW_STRING( len );
+
+	/* But we have to allow for it in SyStrncat */
+	SyStrncat( CSTR_STRING(str), line, len + 1 );
+	
+	CALL_2ARGS( WriteAllFunc, output->stream, str );
+      } 
     else {
         SyFputs( line, output->file );
     }
@@ -1947,12 +1980,12 @@ void PutLine2(
 
 /****************************************************************************
 **
-*F  PutLine() . . . . . . . . . . . . . . . . . . . . . . print a line, local
+*F  PutLineTo ( stream ) . . . . . . . . . . . . . . . . . print a line, local
 **
-**  'PutLine'  prints the current output line   'Output->line' to the current
-**  output 'Output'.  It  is  called from 'PutChr'.
+**  'PutLine'  prints the current output line   'stream->line' to <stream>
+**   It  is  called from 'PutChrTo'.
 **
-**  'PutLine' also compares the output line with the  next line from the test
+**  'PutLineTo' also compares the output line with the  next line from the test
 **  input file 'TestInput' if 'TestInput' is not 0.  If  this input line does
 **  not starts with 'gap>' and the rest  of the line  matches the output line
 **  then the output line is not printed and the input line is discarded.
@@ -1963,12 +1996,12 @@ void PutLine2(
 **  Finally 'PutLine' checks whether the user has hit '<ctr>-C' to  interrupt
 **  the printing.
 */
-void PutLine ( void )
+void PutLineTo ( KOutputStream stream )
 {
     Char *          p;
 
     /* if in test mode and the next input line matches print nothing       */
-    if ( TestInput != 0 && TestOutput == Output ) {
+    if ( TestInput != 0 && TestOutput == stream ) {
         if ( TestLine[0] == '\0' ) {
             if ( ! GetLine2( TestInput, TestLine, sizeof(TestLine) ) ) {
                 TestLine[0] = '\0';
@@ -1978,28 +2011,28 @@ void PutLine ( void )
         while ( TestLine <= p && ( *p == ' ' || *p == '\t' ) ) {
             p[1] = '\0';  p[0] = '\n';  p--;
         }
-        p = Output->line + (SyStrlen(Output->line)-2);
-        while ( Output->line <= p && ( *p == ' ' || *p == '\t' ) ) {
+        p = stream->line + (SyStrlen(stream->line)-2);
+        while ( stream->line <= p && ( *p == ' ' || *p == '\t' ) ) {
             p[1] = '\0';  p[0] = '\n';  p--;
         }
-        if ( ! SyStrcmp( TestLine, Output->line ) ) {
+        if ( ! SyStrcmp( TestLine, stream->line ) ) {
             TestLine[0] = '\0';
         }
         else {
-            PutLine2( Output, "+ " );
-            PutLine2( Output, Output->line );
+            PutLine2( stream, "+ " );
+            PutLine2( stream, Output->line );
         }
     }
 
     /* otherwise output this line                                          */
     else {
-        PutLine2( Output, Output->line );
+        PutLine2( stream, stream->line );
     }
 
     /* if neccessary echo it to the logfile                                */
-    if ( OutputLog != 0 && ! Output->isstream ) {
-        if ( Output->file == 1 || Output->file == 3 ) {
-            PutLine2( OutputLog, Output->line );
+    if ( OutputLog != 0 && ! stream->isstream ) {
+        if ( stream->file == 1 || stream->file == 3 ) {
+            PutLine2( OutputLog, stream->line );
         }
     }
 }
@@ -2007,17 +2040,18 @@ void PutLine ( void )
 
 /****************************************************************************
 **
-*F  PutChr( <ch> )  . . . . . . . . . . . . . . . print character <ch>, local
+*F  PutChrTo( <stream>, <ch> )  . . . . . . . . . print character <ch>, local
 **
-**  'PutChr' prints the single character <ch> to the current output file.
+**  'PutChrTo' prints the single character <ch> to the stream <stream>
 **
-**  'PutChr' buffers the  output characters until  either <ch> is  <newline>,
+**  'PutChrTo' buffers the  output characters until  either <ch> is  <newline>,
 **  <ch> is '\03' (<flush>) or the buffer fills up.
 **
-**  In the later case 'PutChr' has to decide where to  split the output line.
+**  In the later case 'PutChrTo' has to decide where to  split the output line.
 **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
 */
-void PutChr (
+void PutChrTo (
+    KOutputStream stream,
     Char                ch )
 {
     Int                 i;
@@ -2026,46 +2060,53 @@ void PutChr (
     /* '\01', increment indentation level                                  */
     if ( ch == '\01' ) {
 
-        /* if this is a better place to split the line remember it         */
-        if ( Output->indent < Output->pos
-          && SyNrCols-Output->pos  + 16*Output->indent
-          <= SyNrCols-Output->spos + 16*Output->sindent ) {
-            Output->spos     = Output->pos;
-            Output->sindent  = Output->indent;
-        }
-
-        Output->indent++;
-
+      if (!stream->format)
+	return;
+      
+      /* if this is a better place to split the line remember it         */
+      if ( stream->indent < stream->pos
+	   && SyNrCols-stream->pos  + 16*stream->indent
+	   <= SyNrCols-stream->spos + 16*stream->sindent ) {
+	stream->spos     = stream->pos;
+	stream->sindent  = stream->indent;
+      }
+      
+      stream->indent++;
+      
     }
 
     /* '\02', decrement indentation level                                  */
     else if ( ch == '\02' ) {
 
-        /* if this is a better place to split the line remember it         */
-        if ( Output->indent < Output->pos
-          && SyNrCols-Output->pos  + 16*Output->indent
-          <= SyNrCols-Output->spos + 16*Output->sindent ) {
-            Output->spos     = Output->pos;
-            Output->sindent  = Output->indent;
-        }
-
-        Output->indent--;
-
+      if (!stream -> format)
+	return;
+      
+      /* if this is a better place to split the line remember it         */
+      if ( stream->indent < stream->pos
+	   && SyNrCols-stream->pos  + 16*stream->indent
+	   <= SyNrCols-stream->spos + 16*stream->sindent ) {
+	stream->spos     = stream->pos;
+	stream->sindent  = stream->indent;
+      }
+      stream->indent--;
+      
     }
 
     /* '\03', print line                                                   */
     else if ( ch == '\03' ) {
 
         /* print the line                                                  */
-        Output->line[ Output->pos ] = '\0';
-        PutLine();
-
-        /* start the next line                                             */
-        Output->pos      = 0;
-
-        /* first character is a very bad place to split                    */
-        Output->spos     = 0;
-        Output->sindent  = 666;
+        if (stream->pos != 0)
+	  {
+	    stream->line[ stream->pos ] = '\0';
+	    PutLineTo(stream);
+	    
+	    /* start the next line                                         */
+	    stream->pos      = 0;
+	  }
+	/* first character is a very bad place to split                    */
+	stream->spos     = 0;
+	stream->sindent  = 666;
 
     }
 
@@ -2073,91 +2114,119 @@ void PutChr (
     else if ( ch == '\n' || ch == '\r' ) {
 
         /* put the character on the line and terminate it                  */
-        Output->line[ Output->pos++ ] = ch;
-        Output->line[ Output->pos   ] = '\0';
+        stream->line[ stream->pos++ ] = ch;
+        stream->line[ stream->pos   ] = '\0';
 
         /* print the line                                                  */
-        PutLine();
+        PutLineTo( stream );
 
-        /* indent for next line                                            */
-        Output->pos = 0;
-        for ( i = 0;  i < Output->indent; i++ )
-            Output->line[ Output->pos++ ] = ' ';
-
-        /* set up new split positions                                      */
-        Output->spos     = 0;
-        Output->sindent  = 666;
+	/* and dump it from the buffer */
+	stream->pos = 0;
+	if (stream -> format)
+	  {
+	    /* indent for next line                                            */
+	    for ( i = 0;  i < stream->indent; i++ )
+	      stream->line[ stream->pos++ ] = ' ';
+	    
+	    /* set up new split positions                                      */
+	    stream->spos     = 0;
+	    stream->sindent  = 666;
+	  }
 
     }
 
     /* normal character, room on the current line                          */
-    else if ( Output->pos < SyNrCols-2 ) {
+    else if ( stream->pos < SyNrCols-2 ) {
 
         /* put the character on this line                                  */
-        Output->line[ Output->pos++ ] = ch;
+        stream->line[ stream->pos++ ] = ch;
 
     }
 
-    /* if we are going to split at the end of the line, discard blanks     */
-    else if ( Output->spos == Output->pos && ch == ' ' ) {
-        ;
+    else
+      {
+        /* if we are going to split at the end of the line, and we are
+                                   formatting discard blanks */
+	if ( stream->format && stream->spos == stream->pos && ch == ' ' ) {
+	  ;
+	}
+
+	/* full line, acceptable split position                                */
+	else if ( stream->format && stream->spos != 0 ) {
+	  
+	  /* add character to the line, terminate it                         */
+	  stream->line[ stream->pos++ ] = ch;
+	  stream->line[ stream->pos++ ] = '\0';
+	  
+	  /* copy the rest after the best split position to a safe place     */
+	  for ( i = stream->spos; i < stream->pos; i++ )
+            str[ i-stream->spos ] = stream->line[ i ];
+	  
+	  /* print line up to the best split position                        */
+	  stream->line[ stream->spos++ ] = '\n';
+	  stream->line[ stream->spos   ] = '\0';
+	  PutLineTo( stream );
+	  
+	  /* indent for the rest                                             */
+	  stream->pos = 0;
+	  for ( i = 0; i < stream->sindent; i++ )
+            stream->line[ stream->pos++ ] = ' ';
+	  
+	  /* copy the rest onto the next line                                */
+	  for ( i = 0; str[ i ] != '\0'; i++ )
+            stream->line[ stream->pos++ ] = str[ i ];
+	  
+	  /* set new split position                                          */
+	  stream->spos     = 0;
+	  stream->sindent  = 666;
+	  
+	}
+	
+	/* full line, no splitt position                                       */
+	else {
+
+	  if (stream->format)
+	    {
+	      /* append a '\',*/
+	      stream->line[ stream->pos++ ] = '\\';
+	      stream->line[ stream->pos++ ] = '\n';
+	    }
+	  /* and print the line                                */
+	  stream->line[ stream->pos   ] = '\0';
+	  PutLineTo( stream );
+
+	  /* add the character to the next line                              */
+	  stream->pos = 0;
+	  stream->line[ stream->pos++ ] = ch;
+
+	  if (stream->format)
+	    {
+	      /* the first character is a very bad place to split                */
+	      stream->spos     = 0;
+	      stream->sindent  = 666;
+	    }
+	}
+
     }
+}
 
-    /* full line, acceptable split position                                */
-    else if ( Output->spos != 0 ) {
+/****************************************************************************
+**
+*F  FuncToggleEcho( )
+**
+*/
 
-        /* add character to the line, terminate it                         */
-        Output->line[ Output->pos++ ] = ch;
-        Output->line[ Output->pos++ ] = '\0';
-
-        /* copy the rest after the best split position to a safe place     */
-        for ( i = Output->spos; i < Output->pos; i++ )
-            str[ i-Output->spos ] = Output->line[ i ];
-
-        /* print line up to the best split position                        */
-        Output->line[ Output->spos++ ] = '\n';
-        Output->line[ Output->spos   ] = '\0';
-        PutLine();
-
-        /* indent for the rest                                             */
-        Output->pos = 0;
-        for ( i = 0; i < Output->sindent; i++ )
-            Output->line[ Output->pos++ ] = ' ';
-
-        /* copy the rest onto the next line                                */
-        for ( i = 0; str[ i ] != '\0'; i++ )
-            Output->line[ Output->pos++ ] = str[ i ];
-
-        /* set new split position                                          */
-        Output->spos     = 0;
-        Output->sindent  = 666;
-
-    }
-
-    /* full line, no splitt position                                       */
-    else {
-
-        /* append a '\', and print the line                                */
-        Output->line[ Output->pos++ ] = '\\';
-        Output->line[ Output->pos++ ] = '\n';
-        Output->line[ Output->pos   ] = '\0';
-        PutLine();
-
-        /* add the character to the next line                              */
-        Output->pos = 0;
-        Output->line[ Output->pos++ ] = ch;
-
-        /* the first character is a very bad place to split                */
-        Output->spos     = 0;
-        Output->sindent  = 666;
-
-    }
+Obj FuncToggleEcho( Obj self)
+{
+  Input->echo = 1 - Input->echo;
+  return (Obj)0;
 }
 
 
 /****************************************************************************
 **
 *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
+*F  PrTo( <stream>, <format>, <arg1>, <arg2> )  . . .  print formatted output
 **
 **  'Pr' is the output function. The first argument is a 'printf' like format
 **  string containing   up   to 2  '%'  format   fields,   specifing  how the
@@ -2188,8 +2257,12 @@ void PutChr (
 **  those compilers with a default integer size of 16 instead of 32 bit.  You
 **  must pass 0L if you don't make use of an argument to please lint.
 */
-void Pr (
-    const Char *    format,
+
+
+
+void PrTo (
+    KOutputStream     stream,   
+    const Char *      format,
     Int                 arg1,
     Int                 arg2 )
 {
@@ -2219,18 +2292,18 @@ void Pr (
                     prec--;
                     for ( n=1; n <= -(arg1/10); n*=10 )
                         prec--;
-                    while ( --prec > 0 )  PutChr(fill);
-                    PutChr('-');
+                    while ( --prec > 0 )  PutChrTo(stream, fill);
+                    PutChrTo(stream, '-');
                     for ( ; n > 0; n /= 10 )
-                        PutChr( (Char)(-((arg1/n)%10) + '0') );
+                        PutChrTo( stream, (Char)(-((arg1/n)%10) + '0') );
                     arg1 = arg2;
                 }
                 else {
                     for ( n=1; n<=arg1/10; n*=10 )
                         prec--;
-                    while ( --prec > 0 )  PutChr(fill);
+                    while ( --prec > 0 )  PutChrTo( stream, fill);
                     for ( ; n > 0; n /= 10 )
-                        PutChr( (Char)(((arg1/n)%10) + '0') );
+                        PutChrTo( stream, (Char)(((arg1/n)%10) + '0') );
                     arg1 = arg2;
                 }
             }
@@ -2241,12 +2314,12 @@ void Pr (
 	      /* handle the case of a missing argument                     */
 	        if (arg1 == 0)
 		  {
-		    PutChr('<');
-		    PutChr('n');
-		    PutChr('u');
-		    PutChr('l');
-		    PutChr('l');
-		    PutChr('>');
+		    PutChrTo(stream,'<');
+		    PutChrTo(stream,'n');
+		    PutChrTo(stream,'u');
+		    PutChrTo(stream,'l');
+		    PutChrTo(stream,'l');
+		    PutChrTo(stream,'>');
 		  }
 		else
 		  {
@@ -2256,11 +2329,11 @@ void Pr (
 		    }
 		    
 		    /* if wanted push an appropriate number of <space>-s       */
-		    while ( prec-- > 0 )  PutChr(' ');
+		    while ( prec-- > 0 )  PutChrTo(stream,' ');
 
 		    /* print the string                                        */
 		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      PutChr( *q );
+		      PutChrTo( stream, *q );
 		    }
 		  }
                 /* on to the next argument                                 */
@@ -2273,12 +2346,12 @@ void Pr (
 	      /* handle the case of a missing argument                     */
 	        if (arg1 == 0)
 		  {
-		    PutChr('<');
-		    PutChr('n');
-		    PutChr('u');
-		    PutChr('l');
-		    PutChr('l');
-		    PutChr('>');
+		    PutChrTo(stream, '<');
+		    PutChrTo(stream, 'n');
+		    PutChrTo(stream, 'u');
+		    PutChrTo(stream, 'l');
+		    PutChrTo(stream, 'l');
+		    PutChrTo(stream, '>');
 		  }
 		else
 		  {
@@ -2297,20 +2370,20 @@ void Pr (
 		    }
 
 		    /* if wanted push an appropriate number of <space>-s       */
-		    while ( prec-- > 0 )  PutChr(' ');
+		    while ( prec-- > 0 )  PutChrTo( stream,' ');
 
 		    /* print the string                                        */
 		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if      ( *q == '\n'  ) { PutChr('\\'); PutChr('n');  }
-		      else if ( *q == '\t'  ) { PutChr('\\'); PutChr('t');  }
-		      else if ( *q == '\r'  ) { PutChr('\\'); PutChr('r');  }
-		      else if ( *q == '\b'  ) { PutChr('\\'); PutChr('b');  }
-		      else if ( *q == '\01' ) { PutChr('\\'); PutChr('>');  }
-		      else if ( *q == '\02' ) { PutChr('\\'); PutChr('<');  }
-		      else if ( *q == '\03' ) { PutChr('\\'); PutChr('c');  }
-		      else if ( *q == '"'   ) { PutChr('\\'); PutChr('"');  }
-		      else if ( *q == '\\'  ) { PutChr('\\'); PutChr('\\'); }
-		      else                    { PutChr( *q );               }
+		      if      ( *q == '\n'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'n');  }
+		      else if ( *q == '\t'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'t');  }
+		      else if ( *q == '\r'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'r');  }
+		      else if ( *q == '\b'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'b');  }
+		      else if ( *q == '\01' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'>');  }
+		      else if ( *q == '\02' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'<');  }
+		      else if ( *q == '\03' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'c');  }
+		      else if ( *q == '"'   ) { PutChrTo( stream,'\\'); PutChrTo( stream,'"');  }
+		      else if ( *q == '\\'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'\\'); }
+		      else                    { PutChrTo( stream, *q );               }
 		    }
 		  }
 
@@ -2324,12 +2397,12 @@ void Pr (
 	      /* handle the case of a missing argument                     */
 	        if (arg1 == 0)
 		  {
-		    PutChr('<');
-		    PutChr('n');
-		    PutChr('u');
-		    PutChr('l');
-		    PutChr('l');
-		    PutChr('>');
+		    PutChrTo( stream,'<');
+		    PutChrTo( stream,'n');
+		    PutChrTo( stream,'u');
+		    PutChrTo( stream,'l');
+		    PutChrTo( stream,'l');
+		    PutChrTo( stream,'>');
 		  }
 		else
 		  {
@@ -2348,23 +2421,23 @@ void Pr (
 		    }
 
 		    /* if wanted push an appropriate number of <space>-s       */
-		    while ( prec-- > 0 )  PutChr(' ');
+		    while ( prec-- > 0 )  PutChrTo( stream,' ');
 		    
 		    /* print the string                                        */
 		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if      ( *q == '\n'  ) { PutChr('\\'); PutChr('n');  }
-		      else if ( *q == '\t'  ) { PutChr('\\'); PutChr('t');  }
-		      else if ( *q == '\r'  ) { PutChr('\\'); PutChr('r');  }
-		      else if ( *q == '\b'  ) { PutChr('\\'); PutChr('b');  }
-		      else if ( *q == '\01' ) { PutChr('\\'); PutChr('0');
-		      PutChr('1');                }
-		      else if ( *q == '\02' ) { PutChr('\\'); PutChr('0');
-		      PutChr('2');                }
-		      else if ( *q == '\03' ) { PutChr('\\'); PutChr('0');
-		      PutChr('3');                }
-		      else if ( *q == '"'   ) { PutChr('\\'); PutChr('"');  }
-		      else if ( *q == '\\'  ) { PutChr('\\'); PutChr('\\'); }
-		      else                    { PutChr( *q );               }
+		      if      ( *q == '\n'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'n');  }
+		      else if ( *q == '\t'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'t');  }
+		      else if ( *q == '\r'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'r');  }
+		      else if ( *q == '\b'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'b');  }
+		      else if ( *q == '\01' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'0');
+		      PutChrTo( stream,'1');                }
+		      else if ( *q == '\02' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'0');
+		      PutChrTo( stream,'2');                }
+		      else if ( *q == '\03' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'0');
+		      PutChrTo( stream,'3');                }
+		      else if ( *q == '"'   ) { PutChrTo( stream,'\\'); PutChrTo( stream,'"');  }
+		      else if ( *q == '\\'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'\\'); }
+		      else                    { PutChrTo( stream, *q );               }
 		    }
 		  }
                 /* on to the next argument                                 */
@@ -2377,12 +2450,12 @@ void Pr (
 	      /* handle the case of a missing argument                     */
 	        if (arg1 == 0)
 		  {
-		    PutChr('<');
-		    PutChr('n');
-		    PutChr('u');
-		    PutChr('l');
-		    PutChr('l');
-		    PutChr('>');
+		    PutChrTo( stream,'<');
+		    PutChrTo( stream,'n');
+		    PutChrTo( stream,'u');
+		    PutChrTo( stream,'l');
+		    PutChrTo( stream,'l');
+		    PutChrTo( stream,'>');
 		  }
 		else
 		  {
@@ -2410,7 +2483,7 @@ void Pr (
 		    }
 
 		    /* if wanted push an appropriate number of <space>-s       */
-		    while ( prec-- > 0 ) { PutChr(' '); }
+		    while ( prec-- > 0 ) { PutChrTo( stream,' '); }
 
 		    /* print the identifier                                    */
 		    q = (Char*)arg1;
@@ -2426,13 +2499,13 @@ void Pr (
 			 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
 			 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
 			 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-		      PutChr( '\\' );
+		      PutChrTo( stream, '\\' );
 		    }
 		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
 		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' ) {
-                        PutChr( '\\' );
+                        PutChrTo( stream, '\\' );
 		      }
-		      PutChr( *q );
+		      PutChrTo( stream, *q );
 		    }
 		  }
                 /* on to the next argument                                 */
@@ -2441,45 +2514,52 @@ void Pr (
 
             /* '%c' print a character                                      */
             else if ( *p == 'c' ) {
-                PutChr( (Char)arg1 );
+                PutChrTo( stream, (Char)arg1 );
                 arg1 = arg2;
             }
 
             /* '%%' print a '%' character                                  */
             else if ( *p == '%' ) {
-                PutChr( '%' );
+                PutChrTo( stream, '%' );
             }
 
             /* '%>' increment the indentation level                        */
             else if ( *p == '>' ) {
-                PutChr( '\01' );
+                PutChrTo( stream, '\01' );
                 while ( --prec > 0 )
-                    PutChr( '\01' );
+                    PutChrTo( stream, '\01' );
             }
 
             /* '%<' decrement the indentation level                        */
             else if ( *p == '<' ) {
-                PutChr( '\02' );
+                PutChrTo( stream, '\02' );
                 while ( --prec > 0 )
-                    PutChr( '\02' );
+                    PutChrTo( stream, '\02' );
             }
 
             /* else raise an error                                         */
             else {
                 for ( p = "%format error"; *p != '\0'; p++ )
-                    PutChr( *p );
+                    PutChrTo( stream, *p );
             }
 
         }
 
         /* not a '%' character, simply print it                            */
         else {
-            PutChr( *p );
+            PutChrTo( stream, *p );
         }
 
     }
 }
 
+void Pr (
+    const Char *      format,
+    Int                 arg1,
+    Int                 arg2 )
+{
+  PrTo(Output, format, arg1, arg2);
+}
 
 /****************************************************************************
 **
@@ -2490,10 +2570,38 @@ void Pr (
 
 /****************************************************************************
 **
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "ToggleEcho", 0, "",
+      FuncToggleEcho, "src/scanner.c:ToggleEcho" },
+
+    { 0 }
+
+};
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+/****************************************************************************
+**
 
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Char Cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
+static Char MoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
 
 static Int InitKernel (
     StructInitInfo *    module )
@@ -2502,6 +2610,7 @@ static Int InitKernel (
     Int                 i;
 
     Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
+    Input->echo = 1; /* echo stdin */
     Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
 
     InputLog  = 0;  OutputLog  = 0;
@@ -2516,16 +2625,29 @@ static Int InitKernel (
         InitGlobalBag(&(InputFiles[i].stream), &(Cookie[i][0]));
     }
 
+    /* also initialize the cookies for the GAP strings which hold the
+       latest lines read from the streams */
+    for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
+        MoreCookie[i][0] = 's';  MoreCookie[i][1] = 'l';  MoreCookie[i][2] = 'i';
+        MoreCookie[i][3] = 'n';  MoreCookie[i][4] = 'e';  MoreCookie[i][5] = ' ';
+        MoreCookie[i][6] = ' ';  MoreCookie[i][7] = '0'+i;
+        MoreCookie[i][8] = '\0';
+        InitGlobalBag(&(InputFiles[i].sline), &(MoreCookie[i][0]));
+    }
+
     /* tell GASMAN about the global bags                                   */
     InitGlobalBag(&(logFile.stream),        "src/scanner.c:logFile"        );
     InitGlobalBag(&(logStream.stream),      "src/scanner.c:logStream"      );
     InitGlobalBag(&(inputLogStream.stream), "src/scanner.c:inputLogStream" );
     InitGlobalBag(&(outputLogStream.stream),"src/scanner.c:outputLogStream");
 
+    
     /* import functions from the library                                   */
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );
     ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );
+    InitFopyGVar( "PrintFormattingStatus", &PrintFormattingStatus);
 
+    InitHdlrFuncsFromTable( GVarFuncs );
     /* return success                                                      */
     return 0;
 }
@@ -2543,7 +2665,7 @@ static StructInitInfo module = {
     0,                                  /* version                        */
     0,                                  /* crc                            */
     InitKernel,                         /* initKernel                     */
-    0,                                  /* initLibrary                    */
+    InitLibrary,                        /* initLibrary                    */
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */

@@ -252,6 +252,21 @@ void CleanPRecCopy (
     }
 }
 
+/****************************************************************************
+**
+*F  MakeImmutablePRec( <rec> )
+*/
+
+void MakeImmutablePRec( Obj rec)
+{
+  UInt len;
+  UInt i;
+  len = LEN_PREC( rec );
+  for ( i = 1; i <= len; i++ ) 
+    MakeImmutable(GET_ELM_PREC(rec,i));
+  RetypeBag(rec, IMMUTABLE_TNUM(TNUM_OBJ(rec)));
+}
+
 
 /****************************************************************************
 **
@@ -1078,9 +1093,11 @@ Obj FuncLT_PREC_DEFAULT (
         if ( LEN_PREC(left) < i )  return True;
 
         /* compare the names                                               */
+	/* The sense of this comparison is determined by the rule that
+	   unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
             if ( SyStrcmp( NAME_RNAM( GET_RNAM_PREC(left,i) ),
-                           NAME_RNAM( GET_RNAM_PREC(right,i) ) ) < 0 ) {
+                           NAME_RNAM( GET_RNAM_PREC(right,i) ) ) > 0 ) {
                 return True;
             }
             else {
@@ -1318,6 +1335,8 @@ static Int InitKernel (
 
     TypeObjFuncs[ T_PREC            ] = TypePRecMut;
     TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
+
+    MakeImmutableObjFuncs[ T_PREC   ] = MakeImmutablePRec;
 
     /* return success                                                      */
     return 0;

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  integer.gi                  GAP library                     Thomas Breuer 
+#W  integer.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 #W                                                            & Werner Nickel
 #W                                                           & Alice Niemeyer
@@ -33,6 +33,39 @@ SetLeftActingDomain( Integers, Integers );
 SetGeneratorsOfRing( Integers, [ 1 ] );
 SetGeneratorsOfLeftModule( Integers, [ 1 ] );
 SetUnits( Integers, [ -1, 1 ] );
+SetIsWholeFamily( Integers, false );
+
+
+#############################################################################
+##
+#V  NonnegativeIntegers . . . . . . . . . .  semiring of nonnegative integers
+##
+InstallValue( NonnegativeIntegers, Objectify( NewType(
+    CollectionsFamily( CyclotomicsFamily ),
+    IsNonnegativeIntegers and IsAttributeStoringRep ),
+    rec() ) );
+
+SetName( NonnegativeIntegers, "NonnegativeIntegers" );
+SetSize( NonnegativeIntegers, infinity );
+SetGeneratorsOfSemiringWithZero( NonnegativeIntegers, [ 1 ] );
+SetGeneratorsOfAdditiveMagmaWithZero( NonnegativeIntegers, [ 1 ] );
+SetIsWholeFamily( NonnegativeIntegers, false );
+
+
+#############################################################################
+##
+#V  PositiveIntegers  . . . . . . . . . . . . . semiring of positive integers
+##
+InstallValue( PositiveIntegers, Objectify( NewType(
+    CollectionsFamily( CyclotomicsFamily ),
+    IsPositiveIntegers and IsAttributeStoringRep ),
+    rec() ) );
+
+SetName( PositiveIntegers, "PositiveIntegers" );
+SetSize( PositiveIntegers, infinity );
+SetGeneratorsOfSemiring( PositiveIntegers, [ 1 ] );
+SetGeneratorsOfAdditiveMagma( PositiveIntegers, [ 1 ] );
+SetIsWholeFamily( PositiveIntegers, false );
 
 
 #############################################################################
@@ -51,6 +84,7 @@ SetSize( GaussianIntegers, infinity );
 SetGeneratorsOfRing( GaussianIntegers, [ E(4) ] );
 SetGeneratorsOfLeftModule( GaussianIntegers, [ 1, E(4) ] );
 SetUnits( GaussianIntegers, [ -1, 1, -E(4), E(4) ] );
+SetIsWholeFamily( GaussianIntegers, false );
 
 
 #############################################################################
@@ -68,10 +102,10 @@ DeclareRepresentation(
 #############################################################################
 ##
 
-#M  BasisOfDomain( Integers )
+#M  Basis( Integers )
 ##
-InstallMethod( BasisOfDomain,
-    "method for integers (use canonical basis)",
+InstallMethod( Basis,
+    "for integers (use canonical basis)",
     true,
     [ IsIntegers ], 0,
     CanonicalBasis );
@@ -82,7 +116,7 @@ InstallMethod( BasisOfDomain,
 #M  CanonicalBasis( Integers )
 ##
 InstallMethod( CanonicalBasis,
-    "method for Integers",
+    "for Integers",
     true,
     [ IsIntegers ], 0,
     function( Integers )
@@ -99,7 +133,7 @@ InstallMethod( CanonicalBasis,
     end );
 
 InstallMethod( Coefficients,
-    "method for the canonical basis of Integers",
+    "for the canonical basis of Integers",
     IsCollsElms,
     [ IsBasis and IsCanonicalBasis and IsCanonicalBasisIntegersRep,
       IsCyc ], 0,
@@ -114,10 +148,219 @@ InstallMethod( Coefficients,
 
 #############################################################################
 ##
+#V  Primes  . . . . . . . . . . . . . . . . . . . . . .  list of small primes
+##
+InstallValue( Primes,
+  [   2,  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+     67, 71, 73, 79, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,
+    157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,
+    257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,
+    367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,
+    467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,
+    599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,
+    709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,
+    829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,
+    967,971,977,983,991,997 ] );
+MakeImmutable( Primes );
+
+
+#############################################################################
+##
+#V  Primes2 . . . . . . . . . . . . . . . . . . . . . . additional prime list
+##
+##  Some primes in this list are taken from the tables of Richard Brent,
+##  which are available at
+##  ftp://ftp.comlab.ox.ac.uk/pub/Documents/techpapers/Richard.Brent/factors/
+##
+##  These primes were added for the purpose to admit checking the Conway
+##  polynomials available in `CONWAY_POLYNOMIALS' with {\GAP}.
+##
+InstallFlushableValue( Primes2, [
+10047871, 10567201, 10746341, 12112549, 12128131, 12207031, 12323587,
+12553493, 12865927, 13097927, 13264529, 13473433, 13821503, 13960201,
+14092193, 14597959, 15216601, 15790321, 16018507, 18837001, 20381027,
+20394401, 20515111, 20515909, 21207101, 21523361, 22253377, 22366891,
+22996651, 23850061, 25781083, 26295457, 28325071, 28878847, 29010221,
+29247661, 29423041, 29866451, 32234893, 32508061, 36855109, 41540861,
+42521761, 43249589, 44975113, 47392381, 47763361, 48544121, 48912491,
+49105547, 49892851, 51457561, 55527473, 56409643, 56737873, 59302051,
+59361349, 59583967, 60816001, 62020897, 63512437, 65628751, 69566521,
+75068993, 76066181, 85280581, 93507247, 96656723, 97685839,
+106431697, 107367629, 109688713, 110211473, 112901153, 119782433, 127540261,
+134818753, 134927809, 136151713, 147300841, 155072369, 160465489, 164511353,
+177237331, 183794551, 184481113, 190295821, 190771747, 193707721, 195019441,
+202029703, 206244761, 212601841, 212885833, 228511817, 231769777, 234750601,
+272010961, 280314943, 283763713, 297315901, 305175781, 308761441, 319020217,
+359390389, 407865361, 420778751, 424256201, 432853009, 457315063, 466344409,
+510810301, 515717329, 527093491, 529510939, 536903681, 540701761, 550413361,
+603926681, 616318177, 632133361, 715827883, 724487149, 745988807, 763539787,
+815702161, 834019001, 852133201, 857643277, 879399649, 909139159,
+1001523179, 1036745531, 1065264019, 1106131489, 1169382127, 1390636259,
+1503418321, 1527007411, 1636258751, 1644512641, 1743831169, 1824179209,
+1824726041, 1826934301, 1866013003, 1990415149, 2127357527, 2127431041,
+2147483647, 2238236249, 2316281689, 2413941289, 2481791513, 2550183799,
+2576743207, 2664097031, 2767631689, 2903110321, 2931542417, 3021012311,
+3158528101, 3173389601, 3357897971, 3652120847, 4011586307, 4058036683,
+4278255361, 4375578271, 4562284561, 4649919401, 4698932281, 4795973261,
+4885168129, 5960555749, 6622733113, 6630274723, 6809710909, 6860024417,
+7068569257, 7151459701, 7484047069, 7685542369, 7830118297, 7866608083,
+8209475377, 8831418697, 9598959833,
+10879733611, 11368765063, 11898664849, 12447002677, 13455809771, 13564461457,
+13841169553, 13971969971, 14425532687, 15085812853, 15768033143, 15888756269,
+16055056483, 16148168401, 17056050293, 17154094481, 17189128703, 19707683773,
+22434744889, 23140471537, 23535794707, 24127552321, 25194773531, 25480398173,
+25829691707, 25994736109, 27669118297, 27989941729, 28086211607, 30327152671,
+32952799801, 33057806959, 35532364099, 39940132241, 43872038849, 45076044553,
+47072139617, 50150933101, 54410972897, 56625998353, 56770350869, 60726444167,
+61070817601, 62983048367, 65247271367, 69238518539, 70845409351, 76831835389,
+77158673929, 77192844961, 78009515593, 83960385389, 86950696619, 87423871753,
+88959882481, 99810171997,
+115868130379, 125096112091, 127522693159, 128011456717, 128653413121,
+129924628343, 131105292137, 152587500001, 158822951431, 159248456569,
+164504919713, 165768537521, 168749965921, 213657222007, 229890275929,
+241931001601, 269089806001, 282429005041, 301077652751, 332207361361,
+368592716837, 374857981681, 386478495679, 392038110671, 402011881627,
+441019876741, 447600088289, 461587317509, 487824887233, 531968664833,
+555915824341, 593554036769, 598761682261, 641625222857, 654652168021,
+761838257287, 810221830361, 840139875599, 918585913061,
+1030330938209, 1047623475541, 1113491139767, 1133836730401, 1273880539247,
+1284297400723, 1408429185797, 1534179947851, 1628744948329, 1654058017289,
+1759217765581, 1856458657451, 2098303812601, 2454335007529, 2481357870461,
+2549755542947, 2663568851051, 2738039191709, 2879347902817, 2932031007403,
+3138426605161, 3203431780337, 3421169496361, 3740221981231, 4363953127297,
+4432676798593, 4446437759531, 4534166740403, 4981857697937, 5625767248687,
+6090817323763, 6493405343627, 6713103182899, 6740339310641, 7432339208719,
+8090594434231, 8157179360521, 8737481256739, 8868050880709, 9361973132609,
+9468940004449, 9857737155463,
+10052678938039, 10979607179423, 13952598148481, 15798461357509,
+15919793462773, 17175865789597, 18158209813151, 22125996444329,
+22542470482159, 22735632934561, 23161037562937, 23792163643711,
+24517014940753, 24587411156281, 28059810762433, 29078814248401,
+31280679788951, 31479823396757, 32688470798197, 33232924804801,
+42272797713043, 44479210368001, 45920153384867, 49971617830801,
+57583418699431, 62911130477521, 67280421310721, 70601370627701,
+71316922984999, 83181652304609, 89620825374601, 94404837727799,
+95052547721497,
+110133112994711, 140737471578113, 145295143558111, 150224123975857,
+160026187716961, 204064664440913, 205367807127911, 242099935645987,
+270547105429567, 303567967057423, 332584516519201, 434502978835771,
+475384700124973, 500805747488153, 520518327319589, 560088668384411,
+608459012088799, 637265428480297, 643170158708221, 707179356161321,
+866802946161469, 926510094425921, 990643452963163,
+1034150930241911, 1066818132868207, 1120648576818041, 1357105535093947,
+1416258521793067, 1587855697992791, 1611479891519807, 1628413557556843,
+1900857799450121, 1958423494433591, 2134387368610417, 2646507710984041,
+2649263870814793, 2752135920929651, 2864226125209369, 3208002856867129,
+4557772677741827, 4889988840047743, 5420506947192709, 6957533874046531,
+9460375336977361, 9472026608675509,
+11264087821629961, 12557612956332313, 13722816749522711, 14436295738510501,
+18584774046020617, 18624275418445601, 20986207825565581, 21180247636732981,
+22666879066355177, 27145365052629449, 32233368385529653, 39392783590192547,
+46329453543600481, 50544702849929377, 59509429687890001, 60081451169922001,
+70084436712553223, 76394148218203559, 77001139434480073, 79787519018560501,
+96076791871613611,
+133088039373662309, 144542918285300809, 145171177264407947,
+153560376376050799, 166003607842448777, 177722253954175633,
+196915704073465747, 316825425410373433, 341117531003194129,
+380808546861411923, 489769993189671059, 538953023961943033,
+581283643249112959, 617886851384381281, 625552508473588471,
+645654335737185721, 646675035253258729, 658812288653553079,
+768614336404564651, 862970652262943171, 909456847814334401,
+1100876018364883721, 1195857367853217109, 1245576402371959291,
+1795918038741070627, 2192537062271178641, 2305843009213693951,
+2312581841562813841, 2461243576713869557, 2615418118891695851,
+2691614274040036601, 3011347479614249131, 3358335487319458201,
+3421093417510114543, 3602372010909260861, 3747607031112307667,
+3999088279399464409, 4710883168879506001, 5079304643216687969,
+5559917315850179173, 5782172113400990737, 6106505825833677713,
+6115909044841454629, 9213624084535989031, 9520972806333758431,
+10527743181888260981, 14808607715315782481, 18446744069414584321,
+26831423036065352611, 32032215596496435569, 34563155350221618511,
+36230454570129675721, 58523123221688392679, 60912916512835721519,
+82064241848634269407, 86656268566282183151, 87274497124602996457,
+105668621839502584913, 157571957584602258799, 162715052426691233701,
+172827552198815888791, 195489390796456327201, 240031591394168814433,
+266834785363181152127, 344120456368919234899, 358475907408445923469,
+846041103974872866961,
+2519545342349331183143, 3658524738455131951223, 3793685967117002179453,
+3976656429941438590393, 5439042183600204290159, 8198241112969626815581,
+11600321878916922053491, 12812432238302009985937, 17551032119981679046729,
+18489605314740987765913, 27665283091695977275201, 42437717969530394595211,
+57912614113275649087721, 61654440233248340616559, 63681511996418550459487,
+105293313660391861035901, 155285743288572277679887, 201487636602438195784363,
+231669654363683130095909, 235169662395069356312233, 402488219476647465854701,
+535347624791488552837151, 604088623657497125653141, 870035986098720987332873,
+950996059627210897943351,
+1412900479108654932024439, 1431185706701868962383741,
+2047572230657338751575051, 2048568835297380486760231,
+2741672362528725535068727, 3042645634792541312037847,
+3745603812007166116831643, 4362139336229068656094783,
+4805345109492315767981401, 5042939439565996049162197,
+7289088383388253664437433, 8235109336690846723986161,
+9680647790568589086355559, 9768997162071483134919121,
+9842332430037465033595921,
+11053036065049294753459639, 11735415506748076408140121,
+13842607235828485645766393, 17499733663152976533452519,
+26273701844015319144827917, 75582488424179347083438319,
+88040095945103834627376781,
+100641220283951395639601683, 140194179307171898833699259,
+207617485544258392970753527, 291280009243618888211558641,
+303309617049998388989376043, 354639323684545612988577649,
+618970019642690137449562111, 913242407367610843676812931,
+7222605228105536202757606969, 7248808599285760001152755641,
+8170509011431363408568150369, 8206973609150536446402438593,
+9080418348371887359375390001,
+14732265321145317331353282383, 15403468930064931175264655869,
+15572244900182528777225808449, 18806327041824690595747113889,
+21283620033217629539178799361, 37201708625305146303973352041,
+42534656091583268045915654719, 48845962828028421155731228333,
+123876132205208335762278423601, 134304196845099262572814573351,
+172974812463239310024750410929, 217648180992721729506406538251,
+227376585863531112677002031251,
+1786393878363164227858270210279, 2598696228942460402343442913969,
+2643999917660728787808396988849, 3340762283952395329506327023033,
+5465713352000770660547109750601,
+28870194250662203210437116612769, 70722308812401674174993533367023,
+78958087694609321439660131899631, 88262612316754526107621113329689,
+162259276829213363391578010288127, 163537220852725398851434325720959,
+177635683940025046467781066894531,
+2679895157783862814690027494144991, 3754733257489862401973357979128773,
+5283012903770196631383821046101707, 5457586804596062091175455674392801,
+10052011757370829033540932021825161, 11419697846380955982026777206637491,
+38904276017035188056372051839841219,
+1914662449813727660680530326064591907, 7923871097285295625344647665764672671,
+9519524151770349914726200576714027279,
+10350794431055162386718619237468234569,
+170141183460469231731687303715884105727,
+1056836588644853738704557482552056406147,
+6918082374901313855125397665325977135579,
+235335702141939072378977155172505285655211,
+360426336941693434048414944508078750920763,
+1032670816743843860998850056278950666491537,
+1461808298382111034194027645506019619578037,
+79638304766856507377778616296087448490695649,
+169002145064468556765676975247413756542145739,
+8166146875847876762859119015147004762656450569,
+18607929421228039083223253529869111644362732899,
+33083146850190391025301565142735000331370209599,
+138497973518827432485604572537024087153816681041,
+673267426712748387612994804392183645147042355211,
+1489459109360039866456940197095433721664951999121,
+4884164093883941177660049098586324302977543600799,
+466345922275629775763320748688970211803553256223529,
+26828803997912886929710867041891989490486893845712448833,
+153159805660301568024613754993807288151489686913246436306439,
+1051153199500053598403188407217590190707671147285551702341089650185945215953
+] );
+IsSSortedList( Primes2 );
+
+
+#############################################################################
+##
 #F  BestQuoInt( <n>, <m> )
 ##
-##  'BestQuoInt' returns the best quotient <q> of the integers  <n> and  <m>.
-##  This is the quotient such that '<n>-<q>\*<m>' has minimal absolute value.
+##  `BestQuoInt' returns the best quotient <q> of the integers  <n> and  <m>.
+##  This is the quotient such that `<n>-<q>\*<m>' has minimal absolute value.
 ##  If there are two quotients whose remainders have the same absolute value,
 ##  then the quotient with the smaller absolute value is choosen.
 ##
@@ -227,18 +470,18 @@ end);
 ##
 #F  FactorsRho( <n>, <inc>, <cluster>, <limit> )   Pollards rho factorization
 ##
-##  'FactorsInt' does trial divisions by the primes less than 1000 to  detect
+##  `FactorsInt' does trial divisions by the primes less than 1000 to  detect
 ##  all composites with a factor less than 1000 and primes less than 1000000.
-##  After that it calls 'FactorsRho(<n>,1,16,8192)' to do the hard work.
+##  After that it calls `FactorsRho(<n>,1,16,8192)' to do the hard work.
 ##
-##  'FactorsRho'  will  return a  list  of factors   and a list  of composite
-##  number.   Usually  'FactorsInt'  factors  integers  with   prime  factors
+##  `FactorsRho'  will  return a  list  of factors   and a list  of composite
+##  number.   Usually  `FactorsInt'  factors  integers  with   prime  factors
 ##  $\<1000$ faster.     However  for   integers  with  no   factor  $\<1000$
-##  'FactorsRho' will be faster.
+##  `FactorsRho' will be faster.
 ##
-##  'FactorsRho' uses Pollards $\rho$ method to factor the integer $n = p q$.
+##  `FactorsRho' uses Pollards $\rho$ method to factor the integer $n = p q$.
 ##  For a small simple example lets assume we want to factor $667 = 23 * 29$.
-##  'FactorsRho' first calls 'IsPrimeInt' to avoid trying to factor a prime.
+##  `FactorsRho' first calls `IsPrimeInt' to avoid trying to factor a prime.
 ##
 ##  Then it uses the sequence defined by  $x_0=1, x_{i+1}=(x_i^2+1)$ mod $n$.
 ##  In our example this is $1, 2, 5, 26, 10, 101, 197, 124, 36, 630, .. $.
@@ -259,7 +502,7 @@ end);
 ##  Thus by taking the gcds of $n$ and $x_j-x_i$ for such pairs, we will find
 ##  the factor $p$ after approximately $2 \sqrt{p} \<= 2 \sqrt^4{n}$ steps.
 ##
-##  If $Gcd( n, x_j - x_i )$  is not a prime 'FactorsRho'  will  call  itself
+##  If $Gcd( n, x_j - x_i )$  is not a prime `FactorsRho'  will  call  itself
 ##  recursivly with a different value for <inc>, i.e., it  will try to factor
 ##  the gcd using a different sequence $x_{i+1} = (x_i^2 + inc)$ mod $n$.
 ##
@@ -268,8 +511,8 @@ end);
 ##  gcd  only every <cluster>  iteration.  This slightly increases the chance
 ##  that a gcd is composite, but reduces the runtime by a large amount.
 ##
-##  Finally 'FactorsRho' accepts an argument <limit>  which is the number  of
-##  iterations  performed by 'FactorsRho' before giving up. The default value
+##  Finally `FactorsRho' accepts an argument <limit>  which is the number  of
+##  iterations  performed by `FactorsRho' before giving up. The default value
 ##  is  8192  which corresponds to a few minutes  while guaranteing that  all
 ##  prime factors less than $10^6$ and most less than $10^9$ are found.
 ##
@@ -343,11 +586,17 @@ FactorsRho := function ( n, inc, cluster, limit )
     return [ factors, composite ];
 
 end;
+MakeReadOnlyGlobal( "FactorsRho" );
 
 
 #############################################################################
 ##
 #F  FactorsInt( <n> ) . . . . . . . . . . . . . . prime factors of an integer
+#F  FactorsInt( <n> : RhoTrials := <trials>) 
+##
+##  In the second form, FactorsRho is called with a limit of <trials>
+##  on the number of trials is performs. The  default is 8192.
+##
 InstallGlobalFunction(FactorsInt,function ( n )
     local  sign,  factors,  p,  tmp;
 
@@ -383,10 +632,15 @@ InstallGlobalFunction(FactorsInt,function ( n )
         return factors;
     fi;
 
-    # let 'FactorsRho' do the work
-    tmp := FactorsRho( n, 1, 16, 8192 );
+    # let `FactorsRho' do the work
+		if ValueOption("RhoTrials") <> fail then
+			tmp := FactorsRho( n, 1, 16,  ValueOption("RhoTrials") );
+		else
+			tmp := FactorsRho( n, 1, 16, 8192 );
+		fi;
     if 0 < Length(tmp[2])  then
-        Error( "sorry,  cannot factor ", tmp[2] );
+        Error( "sorry,  cannot factor ", tmp[2], 
+					" try increasing trials in Rho method by option RhoTrials" );
     fi;
     factors := Concatenation( factors, tmp[1] );
     Sort( factors );
@@ -421,19 +675,33 @@ end);
 
 #############################################################################
 ##
+#F  IsEvenInt( <n> )  . . . . . . . . . . . . . . . . . . test if <n> is even
+##
+InstallGlobalFunction( IsEvenInt, n -> n mod 2 = 0 );
+
+
+#############################################################################
+##
+#F  IsOddInt( <n> ) . . . . . . . . . . . . . . . . . . .  test if <n> is odd
+##
+InstallGlobalFunction( IsOddInt, n -> n mod 2 = 1 );
+
+
+#############################################################################
+##
 #F  IsPrimeInt( <n> ) . . . . . . . . . . . . . . . . . . .  test for a prime
 ##
-##  'IsPrimeInt' does trial divisions by the primes less  than 1000 to detect
+##  `IsPrimeInt' does trial divisions by the primes less  than 1000 to detect
 ##  composites with a factor less than 1000 and  primes  less  than  1000000.
 ##
-##  'IsPrimeInt' then checks that $n$ is a strong pseudoprime to the  base 2.
+##  `IsPrimeInt' then checks that $n$ is a strong pseudoprime to the  base 2.
 ##  This uses Fermats theorem which says $2^{n-1}=1$ mod $n$ for a prime $n$.
-##  If $2^{n-1}\<>1$ mod $n$, $n$ is composite, 'IsPrimeInt' returns 'false'.
+##  If $2^{n-1}\<>1$ mod $n$, $n$ is composite, `IsPrimeInt' returns `false'.
 ##  There are composite numbers for which $2^{n-1}=1$,  but they are  seldom.
 ##
-##  Then 'IsPrimeInt' checks that $n$ is a Lucas pseudoprime for $p$, choosen
+##  Then `IsPrimeInt' checks that $n$ is a Lucas pseudoprime for $p$, choosen
 ##  so that the discriminant $d=p^2/4-1$ is an  quadratic nonresidue mod $n$.
-##  I.e., 'IsPrimeInt' takes the root $a = p/2+\sqrt{d}$ of $x^2 - px + 1$ in
+##  I.e., `IsPrimeInt' takes the root $a = p/2+\sqrt{d}$ of $x^2 - px + 1$ in
 ##  the  ring $Z_n[\sqrt{d}] and computes the  traces of $a^n$ and $a^{n+1}$.
 ##  If $n$ is a prime, this  ring is the field of  order $n^2$ and raising to
 ##  the $n$th power is conjugation, so $trace(a^n)=p$ and $trace(a^{n+1})=2$.
@@ -445,9 +713,9 @@ end);
 ##  However, the trace test is equivalent and requires fewer multiplications.
 ##  Thanks to Daniel R. Grayson (dan@symcom.math.uiuc.edu)  for  telling  me.
 ##
-##  'IsPrimeInt' can be shown to return the correct answer for $n < 10^{13}$,
+##  `IsPrimeInt' can be shown to return the correct answer for $n < 10^{13}$,
 ##  by testing against R.G.E. Pinch's list of all pseudoprimes to base 2 less
-##  than $10^{13}$ ('ftp://cmms.cam.ac.uk/pub/rgep/PSP/psp13').
+##  than $10^{13}$ ('ftp://dpmms.cam.ac.uk/pub/rgep/PSP/psp13.gz').
 ##
 ##  Better descriptions of the algorithm and related topics can be found  in:
 ##  G. Miller, cf. Algorithms and Complexity ed. Traub, AcademPr, 1976, 35-36
@@ -470,9 +738,10 @@ TraceModQF := function ( p, k, n )
     fi;
     return trc;
 end;
+MakeReadOnlyGlobal( "TraceModQF" );
 
-InstallGlobalFunction(IsPrimeInt,function ( n )
-    local  p, e, o, x, i, d;
+InstallGlobalFunction( IsProbablyPrimeInt, function( n )
+    local  p, e, o, x, i;
 
     # make $n$ positive and handle trivial cases
     if n < 0         then n := -n;       fi;
@@ -484,7 +753,7 @@ InstallGlobalFunction(IsPrimeInt,function ( n )
     # faster than anything fancier because $n$ mod <small int> is very fast
     for p  in Primes  do
         if n mod p = 0  then return false;  fi;
-        if n < (p+1)^2  then AddSet(Primes2,n);  return true;   fi;
+        if n < (p+1)^2  then AddSet( Primes2, n );  return true;   fi;
     od;
 
     # do trial division by the other known primes
@@ -525,7 +794,6 @@ InstallGlobalFunction(IsPrimeInt,function ( n )
     # for a prime $n$ the trace of $(p/2+\sqrt{d})^n$ must be $p$
     # and the trace of $(p/2+\sqrt{d})^{n+1}$ must be 2
     if TraceModQF( p, n+1, n ) = [ 2, p ]  then
-        AddSet( Primes2, n );
         return true;
     fi;
 
@@ -533,14 +801,28 @@ InstallGlobalFunction(IsPrimeInt,function ( n )
     return false;
 end);
 
+InstallGlobalFunction(IsPrimeInt,function ( n )
+local p;
+  p:=IsProbablyPrimeInt(n);
+  if p then
+    if n>10^13 then
+      Info(InfoWarning,1,
+	"beyond the guaranteed bound of the probabilistic primality test");
+    fi;
+    if 1000 < n then
+      AddSet( Primes2, n );
+    fi;
+  fi;
+  return p;
+end);
+
 
 #############################################################################
 ##
 #F  IsPrimePowerInt( <n> )  . . . . . . . . . . . test for a power of a prime
 ##
-InstallGlobalFunction(IsPrimePowerInt,function ( n )
-    return IsPrimeInt( SmallestRootInt( n ) );
-end);
+InstallGlobalFunction( IsPrimePowerInt,
+    n -> IsPrimeInt( SmallestRootInt( n ) ) );
 
 
 #############################################################################
@@ -564,10 +846,14 @@ InstallGlobalFunction(LogInt,function ( n, base )
     local   log;
 
     # check arguments
-    if n    <= 0  then Error("<n> must be positive");  fi;
-    if base <= 1  then Error("<base> must be greater than 1");  fi;
+    if not IsInt(n) or n    <= 0  then 
+        Error("<n> must be a positive integer");  
+    fi;
+    if not IsInt(base) or base <= 1  then 
+        Error("<base> must be an integer greater thaan 1");  
+    fi;
 
-    # 'log(b)' returns $log_b(n)$ and divides 'n' by 'b^log(b)'
+    # `log(b)' returns $log_b(n)$ and divides `n' by `b^log(b)'
     log := function ( b )
         local   i;
         if b > n  then return 0;  fi;
@@ -577,23 +863,6 @@ InstallGlobalFunction(LogInt,function ( n, base )
     end;
 
     return log( base );
-end);
-
-
-#############################################################################
-##
-#F  MoebiusMu( <n> )  . . . . . . . . . . . . . .  Moebius inversion function
-##
-InstallGlobalFunction(MoebiusMu,function ( n )
-    local  factors;
-
-    if n < 0  then n := -n;  fi;
-    if n = 0  then Error("MoebiusMu: <n> must be nonzero");  fi;
-    if n = 1  then return 1;  fi;
-
-    factors := FactorsInt( n );
-    if factors <> Set( factors )  then return 0;  fi;
-    return (-1) ^ Length(factors);
 end);
 
 
@@ -660,7 +929,7 @@ end);
 ##
 #F  PrevPrimeInt( <n> ) . . . . . . . . . . . . . . .  previous smaller prime
 ##
-##  'PrevPrimeInt' returns the largest prime  which is strictly smaller  than
+##  `PrevPrimeInt' returns the largest prime  which is strictly smaller  than
 ##  the integer <n>.
 ##
 InstallGlobalFunction(PrevPrimeInt,function ( n )
@@ -714,7 +983,7 @@ InstallGlobalFunction(RootInt,function ( arg )
     # get the arguments
     if   Length(arg) = 1  then n := arg[1];  k := 2;
     elif Length(arg) = 2  then n := arg[1];  k := arg[2];
-    else Error("usage: 'Root( <n> )' or 'Root( <n>, <k> )'");
+    else Error("usage: `Root( <n> )' or `Root( <n>, <k> )'");
     fi;
 
     # check the arguments and handle trivial cases
@@ -741,30 +1010,28 @@ end);
 
 #############################################################################
 ##
-#F  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
+#F  AbsInt( <n> ) . . . . . . . . . . . . . . .  absolute value of an integer
 ##
-InstallGlobalFunction(Sigma,function ( n )
-    local  sigma, p, q, k;
+InstallGlobalFunction( AbsInt, function( n )
+    if 0 <= n  then return  n;
+    else            return -n;
+    fi;
+end );
 
-    # make <n> it nonnegative, handle trivial cases
-    if n < 0  then n := -n;  fi;
-    if n = 0  then Error("Sigma: <n> must not be 0");  fi;
-    if n < 8  then return Sum(DivisorsSmall[n+1]);  fi;
 
-    # loop over all prime $p$ factors of $n$
-    sigma := 1;
-    for p  in Set(FactorsInt(n))  do
-
-        # compute $p^e$ and $k = 1+p+p^2+..p^e$
-        q := p;  k := 1 + p;
-        while n mod (q * p) = 0  do q := q * p;  k := k + q;  od;
-
-        # combine with the value found so far
-        sigma := sigma * k;
-    od;
-
-    return sigma;
-end);
+#############################################################################
+##
+#F  SignInt( <n> )  . . . . . . . . . . . . . . . . . . .  sign of an integer
+##
+InstallGlobalFunction( SignInt, function( n )
+    if   0 =  n  then
+        return 0;
+    elif 0 <= n  then
+        return 1;
+    else
+        return -1;
+    fi;
+end );
 
 
 #############################################################################
@@ -811,48 +1078,21 @@ end);
 
 #############################################################################
 ##
-#F  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
-##
-InstallGlobalFunction(Tau,function ( n )
-    local  tau, p, q, k;
-
-    # make <n> it nonnegative, handle trivial cases
-    if n < 0  then n := -n;  fi;
-    if n = 0  then Error("Tau: <n> must not be 0");  fi;
-    if n < 8  then return Length(DivisorsSmall[n+1]);  fi;
-
-    # loop over all prime factors $p$ of $n$
-    tau := 1;
-    for p  in Set(FactorsInt(n))  do
-
-        # compute $p^e$ and $k = e+1$
-        q := p;  k := 2;
-        while n mod (q * p) = 0  do q := q * p;  k := k + 1;  od;
-
-        # combine with the value found so far
-        tau := tau * k;
-    od;
-
-    return tau;
-end);
-
-
-#############################################################################
-##
 #M  DefaultRingByGenerators( <elms> ) default ring generated by some integers
 ##
 InstallMethod( DefaultRingByGenerators,
-    "method that catches the cases of `Integers' and `GaussianIntegers'",
+    "method that catches the cases of `(Gaussian)Integers' and cycl. fields",
     true,
-    [ IsCyclotomicCollection ], SUM_FLAGS,
-    function ( elms )
-    if ForAll( elms, IsInt ) then
-      return Integers;
-    elif ForAll( elms, IsGaussInt ) then
-      return GaussianIntegers;
-    else
-      TryNextMethod();
-    fi;
+    [ IsCyclotomicCollection ], 
+    SUM_FLAGS, # test this before doing anything else
+    function( elms )
+      if ForAll( elms, IsInt ) then
+        return Integers;
+      elif ForAll( elms, IsGaussInt ) then
+        return GaussianIntegers;
+      else
+        return DefaultField( elms );
+      fi;
     end );
 
 
@@ -867,7 +1107,7 @@ DeclareRepresentation( "IsIntegersEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep, [] );
 
 InstallMethod( Enumerator,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers ], 0,
     function( Integers )
@@ -879,7 +1119,7 @@ InstallMethod( Enumerator,
     end );
 
 InstallMethod( \[\],
-    "method for enumerator of `Integers'",
+    "for enumerator of `Integers'",
     true,
     [ IsIntegersEnumerator, IsPosInt ], 0,
     function( e, n )
@@ -891,7 +1131,7 @@ InstallMethod( \[\],
     end );
 
 InstallMethod( Position,
-    "method for enumerator of `Integers'",
+    "for enumerator of `Integers'",
     true,
     [ IsIntegersEnumerator, IsCyc, IsZeroCyc ], 0,
     function( e, x, zero )
@@ -910,7 +1150,7 @@ InstallMethod( Position,
 #M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . . . absolut value
 ##
 InstallMethod( EuclideanDegree,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt ], 0,
     function ( Integers, n )
@@ -927,7 +1167,7 @@ InstallMethod( EuclideanDegree,
 #M  EuclideanQuotient( Integers, <n>, <m> )   . . . . . .  Euclidean quotient
 ##
 InstallMethod( EuclideanQuotient,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt, IsInt ], 0,
     function ( Integers, n, m )
@@ -940,7 +1180,7 @@ InstallMethod( EuclideanQuotient,
 #M  EuclideanRemainder( Integers, <n>, <m> )  . . . . . . Euclidean remainder
 ##
 InstallMethod( EuclideanRemainder,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt, IsInt ], 0,
     function ( Integers, n, m )
@@ -953,7 +1193,7 @@ InstallMethod( EuclideanRemainder,
 #M  Factors( Integers, <n> )  . . . . . . . . . . factorization of an integer
 ##
 InstallMethod( Factors,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt ], 0,
     function ( Integers, n )
@@ -966,7 +1206,7 @@ InstallMethod( Factors,
 #M  GcdOp( Integers, <n>, <m> ) . . . . . . . . . . . . . gcd of two integers
 ##
 InstallMethod( GcdOp,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt, IsInt ], 0,
     function ( Integers, n, m )
@@ -979,7 +1219,7 @@ InstallMethod( GcdOp,
 #M  IsIrreducibleRingElement( Integers, <n> )
 ##
 InstallMethod( IsIrreducibleRingElement,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt ], 0,
     function ( Integers, n )
@@ -992,7 +1232,7 @@ InstallMethod( IsIrreducibleRingElement,
 #M  IsPrime( Integers, <n> )  . . . . . .  test whether an integer is a prime
 ##
 InstallMethod( IsPrime,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt ], 0,
     function ( Integers, n )
@@ -1008,31 +1248,33 @@ InstallMethod( IsPrime,
 ##  $a_n = \frac{n}{2}$ if $n$ is even, and $a_n = \frac{1-n}{2}$
 ##  otherwise.
 ##
-DeclareRepresentation( "IsIntegersIterator",
-    IsIterator,
+DeclareRepresentation( "IsIntegersIteratorRep", IsComponentObjectRep,
     [ "structure", "counter" ] );
 
 InstallMethod( Iterator,
-    "method for `Integers'",
+    "for `Integers'",
     true,
     [ IsIntegers ], 0,
     function( Integers )
-    return Objectify( NewType( IteratorsFamily, IsIntegersIterator ),
+    return Objectify( NewType( IteratorsFamily,
+                                   IsIterator
+                               and IsMutable
+                               and IsIntegersIteratorRep ),
                       rec(
                            structure := Integers,
                            counter   := 0         ) );
     end );
 
 InstallMethod( IsDoneIterator,
-    "method for iterator of `Integers'",
+    "for iterator of `Integers'",
     true,
-    [ IsIntegersIterator ], 0,
+    [ IsIterator and IsIntegersIteratorRep ], 0,
     ReturnFalse );
 
 InstallMethod( NextIterator,
-    "method for iterator of `Integers'",
+    "for iterator of `Integers'",
     true,
-    [ IsIntegersIterator ], 0,
+    [ IsIterator and IsMutable and IsIntegersIteratorRep ], 0,
     function( iter )
     iter!.counter:= iter!.counter + 1;
     if iter!.counter mod 2 = 0 then
@@ -1042,13 +1284,21 @@ InstallMethod( NextIterator,
     fi;
     end );
 
+InstallMethod( ShallowCopy,
+    "for iterator of `Integers'",
+    true,
+    [ IsIterator and IsIntegersIteratorRep ], 0,
+    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
+                       rec( structure := Integers,
+                            counter   := iter!.counter ) ) );
+
 
 #############################################################################
 ##
 #M  LcmOp( Integers, <n>, <m> ) . . . . . . least common multiple of integers
 ##
 InstallMethod( LcmOp,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt, IsInt ], 0,
     function ( Integers, n, m )
@@ -1061,7 +1311,7 @@ InstallMethod( LcmOp,
 #M  Log( <n>, <base> )
 ##
 InstallMethod( Log,
-    "method for two integers",
+    "for two integers",
     true,
     [ IsInt, IsInt ], 0,
     LogInt );
@@ -1072,7 +1322,7 @@ InstallMethod( Log,
 #M  PowerMod( Integers, <r>, <e>, <m> ) . . . power of an integer mod another
 ##
 InstallMethod( PowerMod,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt, IsInt, IsInt ], 0,
     function ( Integers, r, e, m )
@@ -1085,7 +1335,7 @@ InstallMethod( PowerMod,
 #M  Quotient( <Integers>, <n>, <m> )  . . . . . . .  quotient of two integers
 ##
 InstallMethod( Quotient,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt, IsInt ], 0,
     function ( Integers, n, m )
@@ -1103,7 +1353,7 @@ InstallMethod( Quotient,
 #M  QuotientMod( Integers , <r>, <s>, <m> ) . . . . . . . quotient modulo <m>
 ##
 InstallMethod( QuotientMod,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt, IsInt, IsInt ], 0,
     function ( Integers, r, s, m )
@@ -1122,7 +1372,7 @@ InstallMethod( QuotientMod,
 #M  QuotientRemainder( Integers, <n>, <m> ) . . . . . . . . . . . quo and rem
 ##
 InstallMethod( QuotientRemainder,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt, IsInt ], 0,
     function ( Integers, n, m )
@@ -1132,10 +1382,48 @@ InstallMethod( QuotientRemainder,
 
 #############################################################################
 ##
+#M  Random( Integers )  . . . . . . . . . . . . . . . . . . .  random integer
+##
+##  returns pseudo random integers between $-10$ and $10$
+##  distributed according to a binomial distribution.
+##
+##  \begintt
+##  gap> Random( Integers );
+##  1
+##  gap> Random( Integers );
+##  -4
+##  \endtt
+##
+##  To generate uniformly distributed integers from a range, use the
+##  construct `Random( [ <low> .. <high> ] )'.
+##
+NrBitsInt := function ( n )
+    local   nr, nr64;
+    nr64:=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,
+           1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6];
+    nr := 0;
+    while 0 < n  do
+        nr := nr + nr64[ n mod 64 + 1 ];
+        n := QuoInt( n, 64 );
+    od;
+    return nr;
+end;
+
+InstallMethod( Random,
+    "for `Integers'",
+    true,
+    [ IsIntegers ], 0,
+    function( Integers )
+    return NrBitsInt( Random( [0..2^20-1] ) ) - 10;
+    end );
+
+
+#############################################################################
+##
 #M  Random( <low>, <high> )
 ##
 InstallOtherMethod( Random,
-    "method for two integers",
+    "for two integers",
     IsIdenticalObj,
     [ IsInt,
       IsInt ],
@@ -1168,54 +1456,10 @@ end );
 
 #############################################################################
 ##
-#M  Random( Integers )  . . . . . . . . . . . . . . . . . . .  random integer
-##
-NrBitsInt := function ( n )
-    local   nr, nr64;
-    nr64:=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,
-           1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6];
-    nr := 0;
-    while 0 < n  do
-        nr := nr + nr64[ n mod 64 + 1 ];
-        n := QuoInt( n, 64 );
-    od;
-    return nr;
-end;
-
-InstallMethod( Random,
-    "method for `Integers'",
-    true,
-    [ IsIntegers ], 0,
-    function( Integers )
-    return NrBitsInt( Random( [0..2^20-1] ) ) - 10;
-    end );
-
-
-#############################################################################
-##
-#M  DefaultRingByGenerators( <elms> )  . . default ring gen. by some integers
-##
-InstallMethod( DefaultRingByGenerators,
-    "method that treats the cases of 'Integers' and 'GaussianIntegers'",
-    true,
-    [ IsCyclotomicCollection ], SUM_FLAGS,
-    function ( elms )
-    if ForAll( elms, IsInt ) then
-      return Integers;
-    elif ForAll( elms, IsGaussInt ) then
-      return GaussianIntegers;
-    else
-      TryNextMethod();
-    fi;
-    end );
-
-
-#############################################################################
-##
 #M  Root( <n>, <k> )
 ##
 InstallMethod( Root,
-    "method for two integers",
+    "for two integers",
     true,
     [ IsInt, IsInt ], 0,
     RootInt );
@@ -1223,10 +1467,24 @@ InstallMethod( Root,
 
 #############################################################################
 ##
+#M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+##
+InstallMethod( RoundCyc, "Integer", true, [ IsInt], 0,  x->x );
+
+
+#############################################################################
+##
+#M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+##
+InstallMethod( RoundCycDown, "Integer", true, [ IsInt], 0,  x->x );
+
+
+#############################################################################
+##
 #M  StandardAssociate( Integers, <n> )  . . . . . . . . . . .  absolute value
 ##
 InstallMethod( StandardAssociate,
-    "method for integers",
+    "for integers",
     true,
     [ IsIntegers, IsInt ], 0,
     function ( Integers, n )
@@ -1243,7 +1501,7 @@ InstallMethod( StandardAssociate,
 #M  Valuation( <n>, <m> )
 ##
 InstallOtherMethod( Valuation,
-    "method for two integers",
+    "for two integers",
     IsIdenticalObj,
     [ IsInt,
       IsInt ],
@@ -1271,17 +1529,43 @@ end );
 #M  \in( <n>, <Integers> )  . . . . . . . . . .  membership test for integers
 ##
 InstallMethod( \in,
-    "method for integers",
+    "for integers",
     IsElmsColls,
-    [ IsInt, IsIntegers ], 0,
-    ReturnTrue );
+    [ IsCyclotomic, IsIntegers ], 0,
+    function( n, Integers )
+    return IsInt( n );
+    end );
+
+
+#############################################################################
+##
+#M  \in( <n>, <PositiveIntegers> )
+##
+InstallMethod( \in,
+    "for positive integers",
+    IsElmsColls,
+    [ IsCyclotomic, IsPositiveIntegers ], 0,
+    function( n, PositiveIntegers )
+    return IsPosInt( n );
+    end );
+
+
+#############################################################################
+##
+#M  \in( <n>, <NonnegativeIntegers> )
+##
+InstallMethod( \in,
+    "for nonnegative integers",
+    IsElmsColls,
+    [ IsCyclotomic, IsNonnegativeIntegers ], 0,
+    function( n, NonnegativeIntegers )
+    return IsPosInt( n ) or IsZeroCyc( n );
+    end );
 
 
 #############################################################################
 ##
 #F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
-##
-##  'PrintFactorsInt'  prints the prime decomposition of the given integer n.
 ##
 InstallGlobalFunction(PrintFactorsInt,function ( n )
     local decomp, i;
@@ -1307,10 +1591,23 @@ InstallGlobalFunction(PrintFactorsInt,function ( n )
     fi;
 end);
 
+#############################################################################
+##
+#M  Iterator( <posint> ) . . . . . . . . . . . . .give more informative error
+##
+##  This method is mainly there to trap the "natural" error 
+##  for i in 3 do ... od;
+##
+
+InstallOtherMethod(Iterator, "more helpful error for integers", true,     
+        [IsPosInt], 0, 
+        function(n) 
+    Error("You cannot loop over the integer ",n,
+          " did you mean the range [1..",n,"]");
+end);
 
 #############################################################################
 ##
-#E  integer.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 ##
-
 

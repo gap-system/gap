@@ -9,41 +9,60 @@
 %%
 \Chapter{Row Vectors}
 
-Row vectors are dense homogeneous lists of field elements.
+Just as in mathematics, a vector in {\GAP} is any object which
+supports appropriate addition and scalar multiplication operations
+(see "Vector Spaces"). As in mathematics, an especially important
+class of vectors are those represented by a list of coefficients with
+respect to some basis. These are called *row vectors*.
 
 \Declaration{IsRowVector}
 \beginexample
-gap> IsVector([1,2,3]);
+gap> IsRowVector([1,2,3]);
 true
 \endexample
 
-Because row vectos are just a special case of lists, all operations and
-functions for lists are applicable to matrices also (see chapter
-"Lists"). This especially includes accessing elements of a row vector (see
-"List Elements"), changing elements of a row vector (see "List Assignment"),
-and comparing row vectors (see "Comparisons of Lists").
+Because row vectors are just a special case of lists, all operations
+and functions for lists are applicable to row vectors as well (see
+chapter "Lists"). This especially includes accessing elements of a row
+vector (see "List Elements"), changing elements of a mutable row
+vector (see "List Assignment"), and comparing row vectors (see
+"Comparisons of Lists").
+
+Note that, unless your algorithms specifically require you to be able
+to change entries of your vectors, it is generally better and faster
+to work with immutable row vectors. See section "Mutability and
+Copyability" for more details.
+
+%%  The basic design of the row vector support in {\GAP} 4 is due to
+%%  Martin Sch{\"o}nert. Frank Celler added the special support for
+%%  vectors over the field of two elements; Steve Linton added special
+%%  support for vectors over fields of sizes between 3 and 256; and Werner
+%%  Nickel added special methods for vectors over large finite fields.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations for row vectors}
+\Section{Operators for Row Vectors}
 
-\>`<vec1> + <vec2>'{vector!addition}
+Since row vectors are lists, the arithmetic operations have the same
+definitions as for lists, which we nevertheless recall here, in the
+language of vectors.
 
-returns the sum of the two
-vectors <vec1> and <vec2>, which must have the same length and be defined
-over a common field. The sum is a new vector where each entry is the sum of
-the corresponding entries of the vectors. As an exception it is also
-possible to add an integer vector to a finite field vector, in which case
-the integers are interpreted as `<scalar> \*\ One(<GF>)'.
+\>`<vec1> + <vec2>'{vector!addition} O
 
-\>`<scalar> + <vec>'{scalar!addition}
-\>`<vec> + <scalar>'{scalar!addition}
+returns the sum of the two vectors <vec1> and <vec2>, which must have the
+same length and be defined over a common field. The sum is a new vector
+where each entry is the sum of the corresponding entries of the vectors. As
+an exception it is also possible to add an integer vector to a vector over
+the finite field <F>, in which case the integers are interpreted as
+`<scalar> \*\ One(<F>)'.
 
-returns a new vector
-where each entry is the sum of the scalar and the corresponding entry of
-the vector. The elements of <vec> must lie in a common field with <scalar>.
-As an exception it is also possible to add an integer scalar
-to a finite field vector, in which case the integer is interpreted as
-`<scalar> \* One(<GF>)'.
+\>`<scalar> + <vec>'{scalar!addition} O
+\>`<vec> + <scalar>'{scalar!addition} O
+
+returns a new vector where each entry is the sum of the scalar and the
+corresponding entry of the vector. The elements of <vec> must lie in a
+common field with <scalar>.  As an exception it is also possible to add an
+integer scalar to a vector over the finite field <F>, in which case the
+integer is interpreted as `<scalar> \* One(<F>)'.
 
 \beginexample
 gap> [ 1, 2, 3 ] + [ 1/2, 1/3, 1/4 ];
@@ -52,9 +71,9 @@ gap>  [ 1/2, 3/2, 1/2 ] + 1/2;
 [ 1, 2, 1 ]
 \endexample
 
-\>`<vec1> - <vec2>'{vector!subtraction}
-\>`<scalar> - <vec>'{scalar!subtraction}
-\>`<vec> - <scalar>'{scalar!subtraction}
+\>`<vec1> - <vec2>'{vector!subtraction} O
+\>`<scalar> - <vec>'{scalar!subtraction} O
+\>`<vec> - <scalar>'{scalar!subtraction} O
 
 The difference operator `-' returns the componentwise difference of its
 two operands and is defined subject to the same restrictions as `+'.
@@ -66,7 +85,7 @@ gap> [ 1/2, 3/2, 1/2 ] - 1/2;
 [ 0, 1, 0 ]
 \endexample
 
-`<vec1> * <vec2>'
+\>`<vec1> * <vec2>'{scalar product} O
 
 returns the standard scalar product of <vec1> and <vec2>, which must have
 the same length and be defined over the same field.
@@ -75,10 +94,10 @@ corresponding entries of the vectors. As an exception it is also
 possible to multiply an integer vector to a finite field vector, in which
 case the integers are interpreted as `<scalar> * One(<GF>)'.
 
-\>`<scalar> * <vec>'{scalar!multiplication}
-\>`<vec> * <scalar>'{scalar!multiplication}
+\>`<scalar> * <vec>'{scalar!multiplication} O
+\>`<vec> * <scalar>'{scalar!multiplication} O
 
-returns the scalar product of <scalar> and <vector>. 
+returns the product of <scalar> and <vector>. 
 The elements of <vec> must lie in a common field with <scalar>.
 The product is a new
 vector where each entry is the product of the scalar and the
@@ -93,95 +112,98 @@ gap> [ 1/2, 3/2, 1/2 ] * 2;
 [ 1, 3, 1 ]
 \endexample
 
-All arithmetic operations always return *immutable* vectors.
+For the mutability of results of arithmetic operations,
+see~"Mutability and Copyability".
 
 Further operations with vectors as operands are defined by the matrix
-operations (see "Operations for Matrices").
+operations (see~"Operators for Matrices").
 
+\Declaration{NormedRowVector}
 \beginexample
 gap> NormedRowVector([5,2,3]);
 [ 1, 2/5, 3/5 ]
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{More about Row Vectors}
-
-In  the  first section of this  chapter  we defined  a  vector  as a list
-without  holes   whose  elements  all come  from  a   common field.  This
-representation is quite nice to  use.  However, suppose that {\GAP} would
-have to check that a list is a  vector every time  this vector appears as
-operand in a addition or multiplication.  This would be quite wasteful.
-
-To avoid this a list that is a vector may, but need not, have an internal
-flag set that  tells the operations that  this  list is  indeed a vector.
-Then this operations do not  have to check  this operand and can  perform
-the operation  right away.  This section  tells you when a vector obtains
-this flag, so  you can write your  functions in such  a way that you make
-best use of this feature.
-
-The results of  vector  operations, i.e., binary operations  that involve
-vectors, are known by construction to be  vectors, and thus have the flag
-set upon creation.
-
-If the operand of one of the binary operation is a list that does not yet
-have the   flag set, those operations will   check  that this  operand is
-indeed a vector and set the flag if it is.  If it is not a vector and not
-a matrix an error is signalled.
-
-If the argument to `IsVector' is a list that does not  yet have this flag
-set, `IsVector' will  test if all elements come  from a common field.  If
-they do, `IsVector'  will set the flag.   Thus on the one hand `IsVector'
-is a test whether the argument is a vector.  On the other hand `IsVector'
-can be used as a hint to {\GAP} that a certain list is indeed a vector.
-
-If you  change  a vector, that does   have this flag set,  by assignment,
-`Add', or  `Append', the vectors will loose  its flag, even if the change
-is such that the resulting list is still a vector.  However if the vector
-is a vector over a finite  field and you assign an  element from the same
-finite field  the vector will keep its  flag.  Note that changing  a list
-that is not a vector will never set the  flag, even if the resulting list
-is  a vector.  Such a vector  will obtain the flag  only if it appears as
-operand in a binary operation, or is passed to `IsVector'.
-
-Vectors over  finite fields  have  one additional feature.   If  they are
-known  to be  vectors, not only do  they have  the flag set, but also are
-they represented differently.  This representation is much  more compact.
-Instead of storing every element separately and storing for every element
-separately in which field it lies, the field is only  stored once.   This
-representation takes up to 10 times less memory.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Row Vectors over finite fields}
+\Section{Row Vectors over Finite Fields}
 
-{\GAP} uses a compact format to store row vectors over GF(2).
+{\GAP} uses a compact formats to store row vectors over fields of
+order at most 256, based on those used by the Meat-Axe
+\cite{Rin93}. This format also permits extremely efficient vector
+arithmetic. On the other hand element access and assignment is
+significantly slower than for plain lists.
+
+Under some circumstances, for example if a list is entered on the
+command line, or made from the empty list by asssigning the positions
+in increasing order, then {\GAP} will automatically realise that it is 
+vector over a small finite field, and represent it accordingly.
+
 \beginexample
-gap> v:=[Z(2),0*Z(2)]; 
-<a GF2 vector of length 2>
-gap> v*Z(2);
-<an immutable GF2 vector of length 2>
+gap> [Z(2)]; 
+<a GF2 vector of length 1>
+gap> [Z(3),Z(9),Z(3)^2,Z(9)^4,Z(9)^3,Z(9)^7,Z(9)^2,Z(9)^5,Z(9),Z(3),Z(3)];
+< mutable compressed vector length 11 over GF(9) >
+gap> 
+gap> l := [];
+[  ]
+gap> l[1] := Z(2);
+Z(2)^0
+gap> l;        
+<a GF2 vector of length 1>
+gap> l[2] := Z(4);
+Z(2^2)
+gap> l;
+[ Z(2)^0, Z(2^2) ]
+gap> RepresentationsOfObject(l);
+[ "IsDataObjectRep", "Is8BitVectorRep" ]
 \endexample
+
+A vector in the special representation over $GF(2)$ is always viewed
+as `\<a GF2 vector of length ...>'. Over fields of orders 3 to 256, a
+vector of length 10 or less is viewed as the list of its coefficients, 
+but a longer one is abbreviated.
+
+There are some situations where {\GAP} cannot efficiently detect that
+a list has become a row vector over a finite field. The function
+`ConvertToVectorRep' will handle these situations.
+
+\Declaration{ConvertToVectorRep}
+
+In this example, we first creat a row vector ``by stealth'' and then
+force {\GAP} to rewrite it, first over GF(2) and then over GF(4).
+
+\beginexample
+gap> v := [1,Z(2),Z(2),0*Z(2)];
+[ 1, Z(2)^0, Z(2)^0, 0*Z(2) ]
+gap> v[1] := Z(2);
+Z(2)^0
+gap> v;           
+[ Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ]
+gap> RepresentationsOfObject(v);
+[ "IS_PLIST_REP", "IsInternalRep" ]
+gap> ConvertToVectorRep(v);
+2
+gap> v;
+<a GF2 vector of length 4>
+gap> ConvertToVectorRep(v,4);
+4
+gap> v;
+[ Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ]
+gap> RepresentationsOfObject(v);
+[ "IsDataObjectRep", "Is8BitVectorRep" ]
+\endexample
+
+
+
+
+\Declaration{NumberFFVector}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Coefficient list arithmetic}
+\Section{Coefficient List Arithmetic}
 
-A list of ring elements can be interpreted as a row vector or coefficients
-of a polynomial. There are a couple of functions that implement arithmetic
-operations based on these interpretations.
-
-\Declaration{ValuePol}
-\beginexample
-gap> ValuePol([1,2,3],4);
-57
-\endexample
-
-\Declaration{ProductPol}
-\beginexample
-gap> ProductPol([1,2,3],[4,5,6]);
-[ 4, 13, 28, 27, 18 ]
-\endexample
-
-\FileHeader{listcoef}[2]
+\FileHeader{listcoef}[1]
+\Declaration{AddRowVector}
 
 \Declaration{AddCoeffs}
 \beginexample
@@ -191,26 +213,74 @@ gap> l;
 [ 6, 8, 10, 4 ]
 \endexample
 
+\Declaration{MultRowVector}
+
 \Declaration{CoeffsMod}
 \beginexample
 gap> l:=[1,2,3,4];;CoeffsMod(l,2);
 [ 1, 0, 1 ]
 \endexample
 
-\Declaration{MultCoeffs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Shifting and Trimming Coefficient Lists}
+
+\FileHeader{listcoef}[3]
+\Declaration{LeftShiftRowVector}
+\Declaration{RightShiftRowVector}
+\Declaration{ShrinkRowVector}
+
+\Declaration{RemoveOuterCoeffs}
 \beginexample
-gap> a:=[];;l:=[1,2,3,4];;m:=[5,6,7];;
-gap> MultCoeffs(a,l,4,m,3);
-6
-gap> a;
-[ 5, 16, 34, 52, 45, 28 ]
+gap> l:=[1,1,2,1,2,1,1,2,1];;RemoveOuterCoeffs(l,1);
+2
+gap> l;
+[ 2, 1, 2, 1, 1, 2 ]
 \endexample
 
-\Declaration{PowerModCoeffs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Coding Theory}
+
+\FileHeader{listcoef}[4]
+
+\Declaration{WeightVecFFE}
+\Declaration{DistanceVecFFE}
+\Declaration{DistancesDistributionVecFFEsVecFFE}
+\Declaration{DistancesDistributionMatFFEVecFFE}
+\Declaration{AClosestVectorCombinationsMatFFEVecFFE}
+\Declaration{CosetLeadersMatFFE}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Vectors as coefficients of polynomials}
+
+
+A list of ring elements can be interpreted as a row vector or the list of
+coefficients of a polynomial. There are a couple of functions that implement
+arithmetic operations based on these interpretations. {\GAP} contains proper
+support for polynomials (see~"Polynomials and Rational Functions"), the
+operations described in this section are on a lower level.
+
+\FileHeader{listcoef}[2]
+
+\Declaration{ValuePol}
 \beginexample
-gap> l:=[1,2,3,4];;m:=[5,6,7];;PowerModCoeffs(l,5,m); 
-[ -839462813696/678223072849, -7807439437824/678223072849, 0 ]
+gap> ValuePol([1,2,3],4);
+57
 \endexample
+
+%\ Declaration{ProductPol}
+%\ beginexample
+%gap> ProductPol([1,2,3],[4,5,6]);
+%[ 4, 13, 28, 27, 18 ]
+%\ endexample
+
+%\ Declaration{MultCoeffs}
+%\ beginexample
+%gap> a:=[];;l:=[1,2,3,4];;m:=[5,6,7];;
+%gap> MultCoeffs(a,l,4,m,3);
+%6
+%gap> a;
+%[ 5, 16, 34, 52, 45, 28 ]
+%\ endexample
 
 \Declaration{ProductCoeffs}
 \beginexample
@@ -234,12 +304,10 @@ gap> l;
 [ 1, 0, 0, 0 ]
 \endexample
 
-\Declaration{RemoveOuterCoeffs}
+\Declaration{PowerModCoeffs}
 \beginexample
-gap> l:=[1,1,2,1,2,1,1,2,1];;RemoveOuterCoeffs(l,1);
-2
-gap> l;
-[ 2, 1, 2, 1, 1, 2 ]
+gap> l:=[1,2,3,4];;m:=[5,6,7];;PowerModCoeffs(l,5,m); 
+[ -839462813696/678223072849, -7807439437824/678223072849, 0 ]
 \endexample
 
 \Declaration{ShiftedCoeffs}
@@ -257,22 +325,7 @@ gap> l:=[1,0,0];;ShrinkCoeffs(l);l;
 \endexample
 
 
-
-\Declaration{AddRowVector}
-\Declaration{MultRowVector}
-\Declaration{LeftShiftRowVector}
-\Declaration{RightShiftRowVector}
-\Declaration{ShrinkRowVector}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Functions for coding theory}
+%%
+%E
 
-\FileHeader{listcoef}[2]
-
-\Declaration{WeightVecFFE}
-\Declaration{DistanceVecFFE}
-\Declaration{DistancesDistributionVecFFEsVecFFE}
-\Declaration{DistancesDistributionMatFFEVecFFE}
-\Declaration{AClosestVectorCombinationsMatFFEVecFFE}
-\Declaration{CosetLeadersMatFFE}

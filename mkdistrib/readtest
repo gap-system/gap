@@ -1,0 +1,42 @@
+#!/bin/sh
+
+exit 0
+
+
+#############################################################################
+##
+#W  compile							 Frank Celler
+##
+##  this shell script reads the test files
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# go into the test directoy and start gap
+cd ${DISTROOT}/${DISTNAME}/tst
+touch gap.core
+chmod 000 gap.core
+echo "$0: testing version $VERSION of $DATE"
+for file  in *.tst;  do
+    echo "+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +"
+    echo "$0: testing file '$file'"
+    echo "Print(\"\\n\"); ReadTest(\"$file\");" | \
+        ${GAPEXEC} \
+            -l ${DISTROOT}/${DISTNAME} -r -b -m 10m
+done
+
+rm -rf gap.core
+
+# do a "testall.g"
+#echo "+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +"
+#echo "$0: testing all"
+#echo "Print(\"\\n\"); Read(\"testall.g\");" | \
+#    ${GAPEXEC} -l ${DISTROOT}/${DISTNAME} -r -b -M -N -m 16m
+
+exit 0

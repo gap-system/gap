@@ -27,10 +27,9 @@ gap> Factorial( 30 );
 265252859812191058636308480000000 
 \endexample
 
-`PermutationsList'  (see   "PermutationsList") computes  the  set  of all
+`PermutationsList'  (see~"PermutationsList") computes  the  set  of all
 permutations of a list.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Binomial}
 
 \index{coefficient!binomial}\index{number!binomial}
@@ -41,7 +40,7 @@ gap> List( [0..4], k->Binomial( 4, k ) );
 gap> List( [0..6], n->List( [0..6], k->Binomial( n, k ) ) );;
 gap> PrintArray( last );
 [ [   1,   0,   0,   0,   0,   0,   0 ],    # the lower triangle is
-  [   1,   1,   0,   0,   0,   0,   0 ],    # called Pascal\'s triangle
+  [   1,   1,   0,   0,   0,   0,   0 ],    # called Pascal's triangle
   [   1,   2,   1,   0,   0,   0,   0 ],
   [   1,   3,   3,   1,   0,   0,   0 ],
   [   1,   4,   6,   4,   1,   0,   0 ],
@@ -55,7 +54,6 @@ gap> Binomial( 50, 10 );
 for multisets.  `Combinations' (see "Combinations")  computes the set  of
 all combinations of a multiset.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Bell}
 
 \index{number!Bell}
@@ -67,7 +65,6 @@ gap> Bell( 14 );
 190899322 
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Bernoulli}
 
 \index{sequence!bernoulli}
@@ -83,19 +80,18 @@ gap> Bernoulli( 50 );
 495057205241079648212477525/66  # and they grow fairly fast 
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Stirling1}
 
 \index{Stirling number of the first kind}%
 \index{number!Stirling, of the first kind}
 
 \beginexample
-gap> List( [0..4], k->Stirling1( 4, k ) );
-[ 0, 6, 11, 6, 1 ]    # Knuth calls this the trademark of $S_1$
+gap> List( [0..4], k -> Stirling1( 4, k ) );
+[ 0, 6, 11, 6, 1 ]    # Knuth calls this the trademark of S_1
 gap> List( [0..6], n->List( [0..6], k->Stirling1( n, k ) ) );;
 gap> PrintArray( last );
 [ [    1,    0,    0,    0,    0,    0,    0 ],    # Note the similarity
-  [    0,    1,    0,    0,    0,    0,    0 ],    # with Pascal\'s
+  [    0,    1,    0,    0,    0,    0,    0 ],    # with Pascal's
   [    0,    1,    1,    0,    0,    0,    0 ],    # triangle for the
   [    0,    2,    3,    1,    0,    0,    0 ],    # Binomial numbers
   [    0,    6,   11,    6,    1,    0,    0 ],
@@ -105,7 +101,6 @@ gap> Stirling1(50,10);
 101623020926367490059043797119309944043405505380503665627365376 
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Stirling2}
 
 \index{Stirling number of the second kind}%
@@ -113,11 +108,11 @@ gap> Stirling1(50,10);
 
 \beginexample
 gap> List( [0..4], k->Stirling2( 4, k ) );
-[ 0, 1, 7, 6, 1 ]    # Knuth calls this the trademark of $S_2$
+[ 0, 1, 7, 6, 1 ]    # Knuth calls this the trademark of S_2
 gap> List( [0..6], n->List( [0..6], k->Stirling2( n, k ) ) );;
 gap> PrintArray( last );
 [ [   1,   0,   0,   0,   0,   0,   0 ],    # Note the similarity with
-  [   0,   1,   0,   0,   0,   0,   0 ],    # Pascal\'s triangle for
+  [   0,   1,   0,   0,   0,   0,   0 ],    # Pascal's triangle for
   [   0,   1,   1,   0,   0,   0,   0 ],    # the Binomial numbers
   [   0,   1,   3,   1,   0,   0,   0 ],
   [   0,   1,   7,   6,   1,   0,   0 ],
@@ -148,7 +143,6 @@ selections without repetitions, `UnorderedTuples' (see "UnorderedTuples")
 computes  unordered  selections  with   repetitions  and `Tuples'    (see
 "Tuples") computes ordered selections with repetitions.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Arrangements}
 \Declaration{NrArrangements}
 
@@ -156,13 +150,13 @@ As an example of arrangements of a multiset, think  of the game Scrabble.
 Suppose you have the six characters of the word `settle'  and you have to
 make a four letter word.  Then the possibilities are given by
 
-\beginexample
+\begintt
 gap> Arrangements( ["s","e","t","t","l","e"], 4 );
 [ [ "e", "e", "l", "s" ], [ "e", "e", "l", "t" ],
   [ "e", "e", "s", "l" ], [ "e", "e", "s", "t" ],
   # 96 more possibilities
   [ "t", "t", "s", "e" ], [ "t", "t", "s", "l" ] ] 
-\endexample
+\endtt
 
 Can you find the five proper English words, where `lets' does  not count?
 Note that the fact that the  list  returned by `Arrangements' is a proper
@@ -179,7 +173,6 @@ selections without repetitions, `UnorderedTuples' (see "UnorderedTuples")
 computes  unordered   selections  with   repetitions  and  `Tuples'  (see
 "Tuples") computes ordered selections with repetitions.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{UnorderedTuples}
 \Declaration{NrUnorderedTuples}
 
@@ -187,7 +180,7 @@ As an example for unordered tuples think of a poker-like game played with
 5  dice.  Then each possible hand corresponds to an  unordered five-tuple
 from the set [1..6]
 
-\beginexample
+\begintt
 gap> NrUnorderedTuples( [1..6], 5 );
 252
 gap> UnorderedTuples( [1..6], 5 );
@@ -199,14 +192,13 @@ gap> UnorderedTuples( [1..6], 5 );
   [ 3, 3, 4, 4, 5 ], [ 3, 3, 4, 4, 6 ], [ 3, 3, 4, 5, 5 ],
   # 39 more tuples
   [ 5, 5, 6, 6, 6 ], [ 5, 6, 6, 6, 6 ], [ 6, 6, 6, 6, 6 ] ] 
-\endexample
+\endtt
 
 The function  `Combinations'  (see  "Combinations")   computes  unordered
 selections  without  repetitions,    `Arrangements' (see  "Arrangements")
 computes ordered   selections without  repetitions   and   `Tuples'  (see
 "Tuples") computes ordered selections with repetitions.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Tuples}
 \Declaration{NrTuples}
 
@@ -227,7 +219,6 @@ computes ordered selections without repetitions, and finally the function
 `UnorderedTuples' (see "UnorderedTuples")  computes unordered  selections
 with repetitions.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{PermutationsList}
 \Declaration{NrPermutationsList}
 
@@ -247,7 +238,6 @@ The function `Arrangements' (see "Arrangements") is the generalization of
 permutations.  `Derangements' (see "Derangements") computes  permutations
 that have no fixpoints.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Derangements}
 \Declaration{NrDerangements}
 
@@ -277,7 +267,6 @@ gap> NrDerangements( [1,2,2,3,3,3,4,4,4,4] );
 The function  `PermutationsList'  (see  "PermutationsList")  computes all
 permutations of a list.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{PartitionsSet}
 \Declaration{NrPartitionsSet}
 
@@ -299,7 +288,6 @@ gap> NrPartitionsSet( [1..10], 3 );
 Note  that `PartitionsSet' does currently  not support multisets and that
 there is currently no ordered counterpart.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Partitions}
 \Declaration{NrPartitions}
 
@@ -320,7 +308,6 @@ gap> NrPartitions( 100 );
 The function `OrderedPartitions' (see "OrderedPartitions") is the ordered
 counterpart of `Partitions'.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{OrderedPartitions}
 \Declaration{NrOrderedPartitions}
 
@@ -343,7 +330,6 @@ gap> NrOrderedPartitions(20);
 The function `Partitions' (see "Partitions") is the unordered counterpart
 of `OrderedPartitions'.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{RestrictedPartitions}
 \Declaration{NrRestrictedPartitions}
 
@@ -360,7 +346,6 @@ gap> NrRestrictedPartitions(50,[1,2,5,10,20,50]);
 The last example tells us that there are 451 ways to return 50 pence change
 using 1,2,5,10,20 and 50 pence coins.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{SignPartition}
 
 \beginexample
@@ -368,7 +353,6 @@ gap> SignPartition([6,5,4,3,2,1]);
 -1
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{AssociatedPartition}
 
 \beginexample
@@ -378,7 +362,6 @@ gap> AssociatedPartition([6]);
 [ 1, 1, 1, 1, 1, 1 ]
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{PowerPartition}
 
 \index{symmetric group!powermap}
@@ -388,8 +371,8 @@ gap> PowerPartition([6,5,4,3,2,1], 3);
 [ 5, 4, 2, 2, 2, 2, 1, 1, 1, 1 ]
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{PartitionTuples}
+\Declaration{NrPartitionTuples}
 
 \beginexample
 gap> PartitionTuples(3, 2);
@@ -400,7 +383,7 @@ gap> PartitionTuples(3, 2);
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Fibonacci and Lucas series}
+\Section{Fibonacci and Lucas Sequences}
 
 \Declaration{Fibonacci}
 
@@ -415,24 +398,23 @@ gap> Fibonacci( -10 );
 -55 
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Declaration{Lucas}
 
 \index{sequence!lucas}
 
 \beginexample
 gap> List( [0..10], i->Lucas(1,-2,i)[1] );
-[ 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341 ]  # $2^k - (-1)^k)/3$
+[ 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341 ]      # 2^k - (-1)^k)/3
 gap> List( [0..10], i->Lucas(1,-2,i)[2] );
-[ 2, 1, 5, 7, 17, 31, 65, 127, 257, 511, 1025 ]  # $2^k + (-1)^k$
+[ 2, 1, 5, 7, 17, 31, 65, 127, 257, 511, 1025 ]  # 2^k + (-1)^k
 gap> List( [0..10], i->Lucas(1,-1,i)[1] );
-[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]  # Fibonacci sequence
+[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]          # Fibonacci sequence
 gap> List( [0..10], i->Lucas(2,1,i)[1] );
-[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]  # the roots are equal 
+[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]             # the roots are equal 
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Permanent of a matrix}
+\Section{Permanent of a Matrix}
 
 \Declaration{Permanent}
 

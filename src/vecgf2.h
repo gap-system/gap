@@ -19,7 +19,7 @@ const char * Revision_vecgf2_h =
 *F  IS_GF2VEC_REP( <obj> )  . . . . . . check that <obj> is in GF2 vector rep
 */
 #define IS_GF2VEC_REP(obj) \
-  (TNUM_OBJ(obj)==T_DATOBJ && DoFilter(IsGF2VectorRep,obj))
+  (TNUM_OBJ(obj)==T_DATOBJ && DoFilter(IsGF2VectorRep,obj) == True)
 
 
 /****************************************************************************
@@ -186,6 +186,42 @@ const char * Revision_vecgf2_h =
 */
 #define SIZE_PLEN_GF2MAT(len)   ((len+2)*sizeof(Obj))
 
+/****************************************************************************
+**
+*V  TYPE_LIST_GF2VEC  . . . . . . . . . . . . . . type of a GF2 vector object
+*/
+extern Obj TYPE_LIST_GF2VEC;
+
+
+/****************************************************************************
+**
+*V  TYPE_LIST_GF2VEC_IMM  . . . . . .  type of an immutable GF2 vector object
+*/
+extern Obj TYPE_LIST_GF2VEC_IMM;
+
+/****************************************************************************
+**
+*V  TYPE_LIST_GF2VEC_IMM_LOCKED. . . .  type of an immutable GF2 vector object
+**                                          with locked representation
+*/
+extern Obj TYPE_LIST_GF2VEC_IMM_LOCKED;
+
+
+/****************************************************************************
+**
+*V  TYPE_LIST_GF2MAT  . . . . . . . . . . . . . . type of a GF2 matrix object
+*/
+extern Obj TYPE_LIST_GF2MAT;
+
+
+/****************************************************************************
+**
+*V  TYPE_LIST_GF2MAT_IMM  . . . . . .  type of an immutable GF2 matrix object
+*/
+extern Obj TYPE_LIST_GF2MAT_IMM;
+
+
+extern Obj IsGF2VectorRep;
 
 /****************************************************************************
 **

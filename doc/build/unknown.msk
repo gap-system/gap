@@ -1,0 +1,52 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  unknown.msk                  GAP documentation              Thomas Breuer
+%%
+%H  @(#)$Id$
+%%
+%Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Unknowns}
+
+\index{data type!unknown}
+
+\FileHeader[1]{unknown}
+
+\Declaration{Unknown}
+\Declaration{LargestUnknown}
+\Declaration{IsUnknown}
+
+\beginexample
+gap> Unknown();  List( [ 1 .. 20 ], i -> Unknown() );;  Unknown();
+Unknown(1)
+Unknown(22)     # There were created already 21 unknowns.
+gap> Unknown(2000);  Unknown();
+Unknown(2000)
+Unknown(2001)
+gap> LargestUnknown;
+2001
+gap> IsUnknown( Unknown );  IsUnknown( Unknown() );
+false
+true
+\endexample
+
+\FileHeader[2]{unknown}
+\beginexample                                                               
+gap> Unknown() >= Unknown();  Unknown(2) < Unknown(3);                      
+false                                                                       
+true                                                                        
+gap> Unknown() > 3;  Unknown() > E(3);                                      
+true                                                                        
+true                                                                        
+gap> Unknown() > Z(8);  Unknown() > [];                                     
+false                                                                       
+false                                                                       
+\endexample
+
+\FileHeader[3]{unknown}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

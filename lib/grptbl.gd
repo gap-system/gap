@@ -10,50 +10,34 @@
 ##  This file contains the implementation of magmas, monoids, and groups via
 ##  the multiplication table.
 ##
-##  Given a square matrix $A$ with $n$ rows such that all entries are in the
-##  range '[ 1 .. n ]' then $A$ defines a multiplication of the set
-##  $\{ m_1, m_2, \ldots, m_n \}$ as $m_i \* m_j = m_{A[i][j]}$.
-##
-##  The <i>-th element of such a magma <M> can be constructed via
-##  'MagmaElement( <M>, <i> )'.
-##
 Revision.grptbl_gd :=
     "@(#)$Id$";
 
 
 #############################################################################
 ##
-#C  IsMagmaByMultiplicationTable( <M> )
+#R  IsMagmaByMultiplicationTableObj( <obj> )
 ##
-DeclareCategory( "IsMagmaByMultiplicationTable", IsMagma );
-
-
-#############################################################################
-##
-#C  IsMagmaByMultiplicationTableObj( <obj> )
+##  At position 1 of the element $m_i$, the number $i$ is stored.
 ##
 DeclareRepresentation( "IsMagmaByMultiplicationTableObj",
-    IsMultiplicativeElement,
-    [] );
-
-
-#############################################################################
-##
-#C  IsMagmaByMultiplicationTableObjFamily( <F> )
-##
-DeclareCategoryFamily( "IsMagmaByMultiplicationTableObj" );
-
-
-#############################################################################
-##
-#F  MagmaElement( <M>, <i> ) . . . . . . . . . .  <i>-th element of magma <M>
-##
-DeclareGlobalFunction( "MagmaElement" );
+    IsPositionalObjectRep and IsMultiplicativeElementWithInverse,
+    [ 1 ] );
 
 
 #############################################################################
 ##
 #F  MagmaByMultiplicationTable( <A> )
+##
+##  For a square matrix <A> with $n$ rows such that all entries of <A> are
+##  in the range $[ 1 \.\. n ]$, `MagmaByMultiplicationTable' returns a magma
+##  $M$ with multiplication `\*' defined by $A$.
+##  That is, $M$ consists of the elements $m_1, m_2, \ldots, m_n$,
+##  and $m_i \* m_j = m_{A[i][j]}$.
+##
+##  The ordering of elements is defined by $m_1 \< m_2 \< \cdots \< m_n$,
+##  so $m_i$ can be accessed as `MagmaElement( <M>, <i> )',
+##  see~"MagmaElement".
 ##
 DeclareGlobalFunction( "MagmaByMultiplicationTable" );
 
@@ -62,6 +46,12 @@ DeclareGlobalFunction( "MagmaByMultiplicationTable" );
 ##
 #F  MagmaWithOneByMultiplicationTable( <A> )
 ##
+##  The only differences between `MagmaByMultiplicationTable' and
+##  `MagmaWithOneByMultiplicationTable' are that the latter returns a
+##  magma-with-one (see~"MagmaWithOne") if the magma described by the matrix
+##  <A> has an identity,
+##  and returns `fail' if not.
+##
 DeclareGlobalFunction( "MagmaWithOneByMultiplicationTable" );
 
 
@@ -69,12 +59,33 @@ DeclareGlobalFunction( "MagmaWithOneByMultiplicationTable" );
 ##
 #F  MagmaWithInversesByMultiplicationTable( <A> )
 ##
+##  The only differences between `MagmaByMultiplicationTable' and
+##  `MagmaWithInversesByMultiplicationTable' are that the latter returns a
+##  magma-with-inverses (see~"MagmaWithInverses") if each element in the
+##  magma described by the matrix <A> has an inverse,
+##  and returns `fail' if not.
+##
 DeclareGlobalFunction( "MagmaWithInversesByMultiplicationTable" );
 
 
 #############################################################################
 ##
+#F  MagmaElement( <M>, <i> ) . . . . . . . . . .  <i>-th element of magma <M>
+##
+##  For a magma <M> and a positive integer <i>, `MagmaElement' returns the
+##  <i>-th element of <M>, w.r.t.~the ordering `\<'.
+##  If <M> has less than <i> elements then `fail' is returned.
+##
+DeclareGlobalFunction( "MagmaElement" );
+
+
+#############################################################################
+##
 #F  SemigroupByMultiplicationTable( <A> )
+##
+##  returns the semigroup whose multiplication is defined by the square
+##  matrix <A> (see~"MagmaByMultiplicationTable") if such a semigroup exists.
+##  Otherwise `fail' is returned.
 ##
 DeclareGlobalFunction( "SemigroupByMultiplicationTable" );
 
@@ -83,6 +94,10 @@ DeclareGlobalFunction( "SemigroupByMultiplicationTable" );
 ##
 #F  MonoidByMultiplicationTable( <A> )
 ##
+##  returns the monoid whose multiplication is defined by the square
+##  matrix <A> (see~"MagmaByMultiplicationTable") if such a monoid exists.
+##  Otherwise `fail' is returned.
+##
 DeclareGlobalFunction( "MonoidByMultiplicationTable" );
 
 
@@ -90,17 +105,28 @@ DeclareGlobalFunction( "MonoidByMultiplicationTable" );
 ##
 #F  GroupByMultiplicationTable( <A> )
 ##
+##  returns the group whose multiplication is defined by the square
+##  matrix <A> (see~"MagmaByMultiplicationTable") if such a group exists.
+##  Otherwise `fail' is returned.
+##
 DeclareGlobalFunction( "GroupByMultiplicationTable" );
 
 
 #############################################################################
 ##
-#F  MultiplicationTable( <elmlist> )
+#F  MultiplicationTable( <elms> )
+##
+##  For a list <elms> of elements that form a magma $M$,
+##  `MultiplicationTable' returns a square matrix $A$ of positive integers
+##  such that $A[i][j] = k$ holds if and only if
+##  `<elms>[i] \* <elms>[j] = <elms>[k]'.
+##  This matrix can be used to construct a magma isomorphic to $M$,
+##  using `MagmaByMultiplicationTable'.
 ##
 DeclareGlobalFunction( "MultiplicationTable" );
 
 
 #############################################################################
 ##
-#E  grptbl.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

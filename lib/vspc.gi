@@ -24,8 +24,7 @@ Revision.vspc_gi :=
 ##
 InstallOtherMethod( SetLeftActingDomain,
     "method to set also 'IsLeftActedOnByDivisionRing'",
-    true,
-    [ IsAttributeStoringRep and IsLeftActedOnByRing, IsObject ], SUM_FLAGS+1,
+    [ IsAttributeStoringRep and IsLeftActedOnByRing, IsObject ],0,
     function( extL, D )
     if HasIsDivisionRing( D ) and IsDivisionRing( D ) then
       SetIsLeftActedOnByDivisionRing( extL, true );
@@ -40,8 +39,7 @@ InstallOtherMethod( SetLeftActingDomain,
 ##
 InstallMethod( IsLeftActedOnByDivisionRing,
     "method for external left set that is left acted on by a ring",
-    true,
-    [ IsExtLSet and IsLeftActedOnByRing ], 0,
+    [ IsExtLSet and IsLeftActedOnByRing ],
     function( M )
     if IsIdenticalObj( M, LeftActingDomain( M ) ) then
       TryNextMethod();
@@ -53,29 +51,12 @@ InstallMethod( IsLeftActedOnByDivisionRing,
 
 #############################################################################
 ##
-#F  Subspaces( <V> )
-#F  Subspaces( <V>, <k> )
-##
-InstallGlobalFunction( Subspaces, function( arg )
-    if   Length( arg ) = 1 and IsVectorSpace( arg[1] ) then
-      return SubspacesAll( arg[1] );
-    elif Length( arg ) = 2 and IsVectorSpace( arg[1] )
-                           and IsInt( arg[2] ) then
-      return SubspacesDim( arg[1], arg[2] );
-    else
-      Error( "usage: Subspaces( <V> ) resp. Subspaces( <V>, <dim> )" );
-    fi;
-end );
-
-
-#############################################################################
-##
 #M  AsSubspace( <V>, <W> )  . . . . . . . . . . . . . . for two vector spaces
 ##
 InstallMethod( AsSubspace,
     "method for two vector spaces",
     IsIdenticalObj,
-    [ IsVectorSpace, IsVectorSpace ], 0,
+    [ IsVectorSpace, IsVectorSpace ],
     function( V, W )
     local newW, feature;
 
@@ -102,8 +83,7 @@ InstallMethod( AsSubspace,
 ##
 InstallMethod( AsLeftModule,
     "method for a division ring and a vector space",
-    true,
-    [ IsDivisionRing, IsVectorSpace ], 0,
+    [ IsDivisionRing, IsVectorSpace ],
     function( F, V )
 
     local W,        # the space, result
@@ -113,7 +93,7 @@ InstallMethod( AsLeftModule,
           gens,     # generators of 'V'
           newgens;  # extended list of generators
 
-    if Characteristic( F ) <> Characteristic( V ) then
+    if Characteristic( F ) <> Characteristic( LeftActingDomain( V ) ) then
 
       # This is impossible.
       return fail;
@@ -186,8 +166,7 @@ InstallMethod( AsLeftModule,
 ##
 InstallMethod( ViewObj,
     "for vector space with known generators",
-    true,
-    [ IsVectorSpace and HasGeneratorsOfLeftModule ], 0,
+    [ IsVectorSpace and HasGeneratorsOfLeftModule ],
     function( V )
     Print( "<vector space over ", LeftActingDomain( V ), ", with ",
            Length( GeneratorsOfLeftModule( V ) ), " generators>" );
@@ -195,7 +174,6 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for vector space with known dimension",
-    true,
     [ IsVectorSpace and HasDimension ],
     1, # override method for known generators
     function( V )
@@ -205,8 +183,7 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for vector space",
-    true,
-    [ IsVectorSpace ], 0,
+    [ IsVectorSpace ],
     function( V )
     Print( "<vector space over ", LeftActingDomain( V ), ">" );
     end );
@@ -218,8 +195,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "method for vector space with left module generators",
-    true,
-    [ IsVectorSpace and HasGeneratorsOfLeftModule ], 0,
+    [ IsVectorSpace and HasGeneratorsOfLeftModule ],
     function( V )
     Print( "VectorSpace( ", LeftActingDomain( V ), ", ",
            GeneratorsOfLeftModule( V ) );
@@ -232,8 +208,7 @@ InstallMethod( PrintObj,
 
 InstallMethod( PrintObj,
     "method for vector space",
-    true,
-    [ IsVectorSpace ], 0,
+    [ IsVectorSpace ],
     function( V )
     Print( "VectorSpace( ", LeftActingDomain( V ), ", ... )" );
     end );
@@ -247,7 +222,7 @@ InstallMethod( PrintObj,
 InstallOtherMethod( \/,
     "method for vector space and collection",
     IsIdenticalObj,
-    [ IsVectorSpace, IsCollection ], 0,
+    [ IsVectorSpace, IsCollection ],
     function( V, vectors )
     if IsVectorSpace( vectors ) then
       TryNextMethod();
@@ -259,7 +234,7 @@ InstallOtherMethod( \/,
 InstallOtherMethod( \/,
     "generic method for two vector spaces",
     IsIdenticalObj,
-    [ IsVectorSpace, IsVectorSpace ], 0,
+    [ IsVectorSpace, IsVectorSpace ],
     function( V, W )
     return ImagesSource( NaturalHomomorphismBySubspace( V, W ) );
     end );
@@ -295,7 +270,7 @@ InstallGlobalFunction( Intersection2Spaces,
       VW:= LeftModuleByGenerators( LeftActingDomain( V ),
                             Concatenation( GeneratorsOfLeftModule( V ),
                                            GeneratorsOfLeftModule( W ) ) );
-      B:= BasisOfDomain( VW );
+      B:= Basis( VW );
 
       # Construct the coefficient subspaces corresponding to 'V' and 'W'.
       AV:= List( GeneratorsOfLeftModule( V ), x -> Coefficients( B, x ) );
@@ -336,7 +311,7 @@ end );
 InstallMethod( Intersection2,
     "method for two vector spaces",
     IsIdenticalObj,
-    [ IsVectorSpace, IsVectorSpace ], 0,
+    [ IsVectorSpace, IsVectorSpace ],
     Intersection2Spaces( AsLeftModule, SubspaceNC, VectorSpace ) );
 
 
@@ -347,12 +322,12 @@ InstallMethod( Intersection2,
 InstallMethod( ClosureLeftModule,
     "method for a vector space with basis, and a vector",
     IsCollsElms,
-    [ IsVectorSpace and HasBasisOfDomain, IsVector ], 0,
+    [ IsVectorSpace and HasBasis, IsVector ],
     function( V, w )
     local   B; # basis of 'V'
 
     # We can test membership easily.
-    B:= BasisOfDomain( V );
+    B:= Basis( V );
 #T why easily?
     if Coefficients( B, w ) = fail then
 
@@ -395,13 +370,12 @@ DeclareRepresentation(
 ##
 InstallMethod( PrintObj,
     "method for a subspaces domain",
-    true,
-    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ], 0,
+    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ],
     function( D )
     if IsInt( D!.dimension ) then
       Print( "Subspaces( ", D!.structure, ", ", D!.dimension, " )" );
     else
-      Print( "Subspaces( ", D!.structure, ", \"all\" )" );
+      Print( "Subspaces( ", D!.structure, " )" );
     fi;
     end );
 
@@ -412,17 +386,20 @@ InstallMethod( PrintObj,
 ##
 ##  The number of $k$-dimensional subspaces in a $n$-dimensional space over
 ##  the field with $q$ elements is
-##  \[ a(n,k) = \prod_{i=0}^{k-1} \frac{q^n-q^i}{q^k-q^i} =
-##              \prod_{i=0}^{k-1} \frac{q^{n-i}-1}{q^{k-i}-1}. \]
+##  $$
+##  a(n,k) = \prod_{i=0}^{k-1} \frac{q^n-q^i}{q^k-q^i} =
+##           \prod_{i=0}^{k-1} \frac{q^{n-i}-1}{q^{k-i}-1}.
+##  $$
 ##  We have the recursion
-##  \[ a(n,k+1) = a(n,k) \frac{q^{n-i}-1}{q^{i+1}-1}. \]
+##  $$
+##  a(n,k+1) = a(n,k) \frac{q^{n-i}-1}{q^{i+1}-1}.
+##  $$
 ##
 ##  (The number of all subspaces is $\sum_{k=0}^n a(n,k)$.)
 ##
 InstallMethod( Size,
     "method for a subspaces domain",
-    true,
-    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ], 0,
+    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ],
     function( D )
 
     local k,
@@ -506,8 +483,7 @@ InstallMethod( Size,
 ##
 InstallMethod( Enumerator,
     "method for a subspaces domain",
-    true,
-    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ], 0,
+    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ],
     function( D )
     local iter,    # iterator for 'D'
           elms;    # elements list, result
@@ -524,13 +500,13 @@ InstallMethod( Enumerator,
 
 #############################################################################
 ##
-#R  IsSubspacesSpaceIterator( <D> )
+#R  IsSubspacesSpaceIteratorRep( <D> )
 ##
 ##  uses the subspaces iterator for full row spaces and the mechanism of
 ##  associated row spaces.
 ##
-DeclareRepresentation( "IsSubspacesSpaceIterator",
-    IsComponentObjectRep and IsIterator,
+DeclareRepresentation( "IsSubspacesSpaceIteratorRep",
+    IsComponentObjectRep,
     [ "structure", "basis", "associatedIterator" ] );
 
 
@@ -539,15 +515,13 @@ DeclareRepresentation( "IsSubspacesSpaceIterator",
 #M  Iterator( <D> ) . . . . . . . . . . . . . . . . .  for a subspaces domain
 ##
 InstallMethod( IsDoneIterator,
-    "method for an iterator of a subspaces domain",
-    true,
-    [ IsSubspacesSpaceIterator ], 0,
+    "for an iterator of a subspaces domain",
+    [ IsIterator and IsSubspacesSpaceIteratorRep ],
     iter -> IsDoneIterator( iter!.associatedIterator ) );
 
 InstallMethod( NextIterator,
-    "method for an iterator of a subspaces domain",
-    true,
-    [ IsSubspacesSpaceIterator ], 0,
+    "for a mutable iterator of a subspaces domain",
+    [ IsIterator and IsMutable and IsSubspacesSpaceIteratorRep ],
     function( iter )
     local next;
     next:= NextIterator( iter!.associatedIterator );
@@ -557,18 +531,19 @@ InstallMethod( NextIterator,
     end );
 
 InstallMethod( Iterator,
-    "method for a subspaces domain",
-    true,
-    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ], 0,
+    "for a subspaces domain",
+    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ],
     function( D )
     local V;      # the vector space
 
     V:= D!.structure;
     return Objectify( NewType( IteratorsFamily,
-                               IsSubspacesSpaceIterator ),
+                                   IsIterator
+                               and IsMutable
+                               and IsSubspacesSpaceIteratorRep ),
                       rec(
                            structure          := V,
-                           basis              := BasisOfDomain( V ),
+                           basis              := Basis( V ),
                            associatedIterator := Iterator(
                       Subspaces( FullRowSpace( LeftActingDomain( V ),
                                                Dimension( V ) ),
@@ -576,19 +551,28 @@ InstallMethod( Iterator,
                           ) );
     end );
 
+InstallMethod( ShallowCopy,
+    "for an iterator of a subspaces domain",
+    [ IsIterator and IsSubspacesSpaceIteratorRep ],
+    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
+                rec(
+                     structure          := iter!.structure,
+                     basis              := iter!.basis,
+                     associatedIterator := ShallowCopy(
+                                               iter!.associatedIterator )
+                    ) ) );
+
 
 #############################################################################
 ##
-#M  SubspacesDim( <V>, <dim> )
-#M  SubspacesAll( <V> )
+#M  Subspaces( <V>, <dim> )
 ##
-InstallMethod( SubspacesDim,
-    "method for a vector space, and an integer",
-    true,
-    [ IsVectorSpace, IsInt ], 0,
+InstallMethod( Subspaces,
+    "for a vector space, and an integer",
+    [ IsVectorSpace, IsInt ],
     function( V, dim )
     if IsFinite( V ) then
-      return Objectify( NewType( CollectionsFamily( V ),
+      return Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
                                      IsSubspacesVectorSpace
                                  and IsSubspacesVectorSpaceDefaultRep ),
                         rec(
@@ -601,13 +585,17 @@ InstallMethod( SubspacesDim,
     fi;
     end );
 
-InstallMethod( SubspacesAll,
-    "method for a vector space",
-    true,
-    [ IsVectorSpace ], 0,
+
+#############################################################################
+##
+#M  Subspaces( <V> )
+##
+InstallMethod( Subspaces,
+    "for a vector space",
+    [ IsVectorSpace ],
     function( V )
     if IsFinite( V ) then
-      return Objectify( NewType( CollectionsFamily( V ),
+      return Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
                                      IsSubspacesVectorSpace
                                  and IsSubspacesVectorSpaceDefaultRep ),
                         rec(
@@ -623,7 +611,35 @@ InstallMethod( SubspacesAll,
 
 #############################################################################
 ##
-#E  vspc.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#F  IsSubspace( <V>, <U> ) . . . . . . . . . . . . . . . . . check <U> <= <V>
+##
+InstallGlobalFunction( IsSubspace, function( V, U )
+    return IsVectorSpace( U ) and IsSubset( V, U );
+end );
 
 
+#############################################################################
+##
+#M  IsVectorSpaceHomomorphism( <map> )
+##
+InstallMethod( IsVectorSpaceHomomorphism,
+    [ IsGeneralMapping ],
+    function( map )
+    local S, R, F;
+    S:= Source( map );
+    if not IsVectorSpace( S ) then
+      return false;
+    fi;
+    R:= Range( map );
+    if not IsVectorSpace( R ) then
+      return false;
+    fi;
+    F:= LeftActingDomain( S );
+    return ( F = LeftActingDomain( R ) ) and IsLinearMapping( F, map );
+    end );
+
+
+#############################################################################
+##
+#E
 

@@ -1,0 +1,4 @@
+@msfiles = ("hash2","quogphom","gptransv","grpchain");
+@gdfiles = ("dict","eigen","quogphom","gptransv","grpchain","rss","solmxgp");
+$DIR = "../ref";
+$LIB = "../../lib"; 

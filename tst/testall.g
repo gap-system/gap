@@ -7,7 +7,6 @@
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 
-
 #############################################################################
 ##
 #F  START_TEST( <id> )  . . . . . . . . . . . . . . . . . . . start test file
@@ -17,7 +16,11 @@ start_TEST := START_TEST;
 START_TIME := 0;
 STONE_NAME := "";
 
+
+
 START_TEST := function( name )
+    FlushCaches();
+    RANDOM_SEED(1);
     GASMAN("collect");
     START_TIME := Runtime();
     STONE_NAME := name;
@@ -43,7 +46,7 @@ STOP_TEST := function( file, fac )
 
     STONE_FILE  := file;
     STONE_RTIME := Runtime() - START_TIME;
-    if STONE_RTIME <> 0  then
+    if STONE_RTIME > 500  then
         STONE_STONE := QuoInt( fac, STONE_RTIME );
         STONE_SUM   := STONE_SUM + STONE_RTIME;
         STONE_FSUM  := STONE_FSUM + fac;
@@ -85,41 +88,63 @@ end;
 ##
 ##  The list can be produced using:
 ##
-##  grep -h "STOP_TEST" *.tst | 		\
-##    sed -e 's:^gap> STOP_TEST( ":[ ":' | 	\
-##    sed -e 's: );: ],:'
+##  grep -h "STOP_TEST" *.tst | sed -e 's:^gap> STOP_TEST( ":[ ":' | \
+##  sed -e 's: );: ],:'
 ##
 TEST_FILES := [
-[ "algmat.tst", 2275253357 ],
-[ "algsc.tst", 867313307 ],
-[ "boolean.tst", 10000 ],
+[ "alghom.tst", 57860000 ],
+[ "algmat.tst", 2140820000 ],
+[ "algsc.tst", 498385000 ],
+[ "boolean.tst", 300000 ],
 [ "combinat.tst", 39450000 ],
-[ "ctblmoli.tst", 2250828729 ],
-[ "cyclotom.tst", 6575144 ],
-[ "ffe.tst", 6757787 ],
-[ "fldabnum.tst", 13810000 ],
-[ "gaussian.tst", 597720 ],
-[ "grpfree.tst", 2390880 ],
-[ "grplatt.tst", 16802570813 ],
-[ "grpmat.tst", 1170544762 ],
-[ "grppc.tst", 17634147 ],
-[ "grppcnrm.tst", 4599810668 ],
-[ "grpperm.tst", 692757480 ],
-[ "listgen.tst", 298860 ],
-[ "mapping.tst", 15840238 ],
-[ "matblock.tst", 10000 ],
-[ "modfree.tst", 28690858 ],
-[ "morpheus.tst", 611773707 ],
-[ "onecohom.tst", 118948251 ],
-[ "rwspcgrp.tst", 807548686 ],
-[ "rwspcsng.tst", 1072342703 ],
+#[ "compat3.tst", 10000 ],
+[ "ctbldeco.tst", 75612500 ],
+[ "ctblfuns.tst", 612923095 ],
+[ "ctblj4.tst", 3000000000 ],
+[ "ctbllibr.tst", 200000000000 ],
+[ "ctblmoli.tst",495097500 ],
+[ "ctblmono.tst", 231440000 ],
+[ "ctblpope.tst", 6129230950 ],
+[ "ctblsolv.tst", 71667500 ],
+[ "cyclotom.tst", 7232500 ],
+[ "ffe.tst", 31560000 ],
+[ "fldabnum.tst", 71667500 ],
+[ "gaussian.tst",1315000 ],
+[ "grpconst.tst", 149383970000 ],
+[ "grpfree.tst", 2630000 ],
+[ "grplatt.tst", 7261430000 ],
+[ "grpmat.tst", 102570000 ],
+[ "grppc.tst", 82187500 ],
+[ "grppcnrm.tst", 2248650000 ],
+[ "grpperm.tst", 3718162500 ],
+[ "grpprmcs.tst", 21790865000 ],
+[ "listgen.tst", 5917500 ],
+[ "mapping.tst", 19067500 ],
+[ "matblock.tst", 1972500 ],
+[ "mgmring.tst", 21697500 ],
+[ "modfree.tst", 38792500 ],
+[ "morpheus.tst", 656842500 ],
+[ "onecohom.tst", 106515000 ],
+[ "ratfun.tst", 4602500 ],
+[ "relation.tst", 28930000 ],
+[ "rwspcgrp.tst", 374775000 ],
+[ "rwspcsng.tst", 503645000 ],
+[ "semigrp.tst", 88105000 ],
+[ "set.tst", 28930000 ],
 [ "unknown.tst", 320000 ],
-[ "vspchom.tst", 39749178 ],
-[ "vspcmali.tst", 51405100 ],
-[ "vspcmat.tst", 38554186 ],
-[ "vspcrow.tst", 24208100 ],
-[ "weakptr.tst", 32576255 ],
-[ "zmodnz.tst", 6575053 ],
+[ "vspchom.tst", 42737500 ],
+[ "vspcmali.tst", 51942500 ],
+[ "vspcmat.tst", 46682500 ],
+[ "vspcrow.tst", 205797500 ],
+[ "weakptr.tst", 37477500 ],
+[ "xgap.tst", 420142500 ],
+[ "zlattice.tst", 10000000 ],
+[ "zmodnz.tst", 10520000 ],
+[ "hash2.tst", 38260000 ],
+[ "quogphom.tst", 2760000 ],
+[ "eigen.tst", 1830000 ],
+[ "solmxgrp.tst", 800000000 ],
+[ "rss.tst", 183000000 ]
 ];
 
 Sort( TEST_FILES, function(a,b) return a[2] < b[2]; end );
@@ -129,7 +154,7 @@ Sort( TEST_FILES, function(a,b) return a[2] < b[2]; end );
 ##
 #X  read all test files
 ##
-Print("You should  start  GAP4  using:  `gap -N -M -m 16m'.  The  more\n");
+Print("You should start GAP4 using:  `gap -N -M -A -x 80 -r -m 30m'. The more\n");
 Print("GAP4stones you get, the faster your  system is.  The runtime of\n");
 Print("the following tests (in general)  increases.  You should expect\n");
 Print("about 10000 GAP4stones on a Pentium 5, 133 MHz,  about 28000 on\n");
@@ -153,11 +178,15 @@ for i  in [ 1 .. Length(TEST_FILES) ]  do
     else
         next := 0;
     fi;
+    Print("testing: ",name,"\n");
     ReadTest(name);
     SHOW_STONES(next);
 od;
 
 Print("-------------------------------------------\n");
+if STONE_COUNT=0 then
+  STONE_COUNT:=1;
+fi;
 Print( FormattedString("total",-16), "    ",
        FormattedString(RootInt(STONE_PROD,STONE_COUNT),8), "       ",
        FormattedString(STONE_SUM,8), "\n" );

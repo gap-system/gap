@@ -18,17 +18,17 @@ gap> START_TEST("$Id$");
 ##
 gap> z:= LeftModuleByGenerators( GF(3), [], [ [ 0*Z(9) ] ] );
 <vector space over GF(3), with 0 generators>
-gap> IsGaussianMatrixSpaceRep( z );
+gap> IsGaussianMatrixSpace( z );
 true
-gap> IsNonGaussianMatrixSpaceRep( z );
+gap> IsNonGaussianMatrixSpace( z );
 false
 
 gap> v:= LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ] );
 <vector space over GF(3^2), with 1 generators>
-gap> IsGaussianMatrixSpaceRep( v );
+gap> IsGaussianMatrixSpace( v );
 true
-gap> IsNonGaussianMatrixSpaceRep( v );
+gap> IsNonGaussianMatrixSpace( v );
 false
 gap> v = LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ], Zero( v ) );
@@ -37,9 +37,9 @@ true
 gap> w:= LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ] );
 <vector space over GF(3^2), with 1 generators>
-gap> IsGaussianMatrixSpaceRep( w );
+gap> IsGaussianMatrixSpace( w );
 false
-gap> IsNonGaussianMatrixSpaceRep( w );
+gap> IsNonGaussianMatrixSpace( w );
 true
 gap> w = LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ], Zero( w ) );
@@ -131,17 +131,17 @@ false
 gap> Z(3) * [ [ 0, 0 ], [ 0, 1 ] ] in v;
 true
 
-gap> BasisByGeneratorsNC( v,
+gap> BasisNC( v,
 >     [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
 >       [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] );
 SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
 [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
-gap> BasisOfDomain( v );
+gap> Basis( v );
 SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
 [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
-gap> SemiEchelonBasisOfDomain( v );
+gap> SemiEchelonBasis( v );
 SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
 [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
@@ -156,7 +156,7 @@ gap> b:= SemiEchelonBasis( v,
 SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
 [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
-gap> b:= SemiEchelonBasisByGeneratorsNC( v,
+gap> b:= SemiEchelonBasisNC( v,
 >         [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
 >           [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] );
 SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
@@ -179,12 +179,12 @@ gap> w:= LeftModuleByGenerators( GF(9),
 >           [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ],
 >           [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ] ] );
 <vector space over GF(3^2), with 3 generators>
-gap> BasisOfDomain( w );
+gap> Basis( w );
 Basis( <vector space over GF(3^2), with 3 generators>, ... )
-gap> b:= BasisByGenerators( w,
+gap> b:= Basis( w,
 >         [ [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ],
 >           [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ] );
-Basis( <vector space over GF(3^2), with 3 generators>,
+Basis( <vector space of dimension 2 over GF(3^2)>,
 [ [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ], [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ]
  ] )
 gap> IsBasisByNiceBasis( b );
@@ -332,7 +332,7 @@ gap> Print( BasisVectors( c ), "\n" );
 ##
 ##  7. Methods for mutable bases of Gaussian matrix spaces
 ##
-gap> mb:= MutableBasisByGenerators( Rationals,
+gap> mb:= MutableBasis( Rationals,
 >          [ [ [ 1, 1 ], [ 1, 1 ] ],
 >            [ [ 0, 1 ], [ 1, 1 ] ],
 >            [ [ 1, 1 ], [ 1, 1 ] ] ] );
@@ -345,7 +345,7 @@ false
 gap> BasisVectors( mb );
 [ [ [ 1, 1 ], [ 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ] ], [ [ E(4), 0 ], [ 0, 0 ] ] ]
 
-gap> mb:= MutableBasisByGenerators( Rationals,
+gap> mb:= MutableBasis( Rationals,
 >          [ [ [ 1, 1 ], [ 1, 1 ] ],
 >            [ [ 0, 1 ], [ 1, 1 ] ],
 >            [ [ 1, 1 ], [ 1, 1 ] ] ] );
@@ -364,7 +364,7 @@ SemiEchelonBasis( <vector space of dimension 4 over Rationals>,
 [ [ [ 1, 1 ], [ 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ] ], [ [ 0, 0 ], [ 1, 2 ] ], 
   [ [ 0, 0 ], [ 0, 1 ] ] ] )
 
-gap> mb:= MutableBasisByGenerators( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
+gap> mb:= MutableBasis( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
 <mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 4 ] ] );
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 5 ] ] );
@@ -377,16 +377,16 @@ gap> ImmutableBasis( mb );
 SemiEchelonBasis( <vector space of dimension 2 over Rationals>,
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] )
 
-gap> mb:= MutableBasisByGenerators( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
+gap> mb:= MutableBasis( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
 <mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 0 ], [ 0, 1 ] ] );
 gap> CloseMutableBasis( mb, [ [ 0, 1 ], [ 1, 0 ] ] );   
 gap> IsContainedInSpan( mb, [ [ 1, 1 ], [ 1, 1 ] ] );
 true
 
-gap> STOP_TEST( "vspcmat.tst", 38554186 );
+gap> STOP_TEST( "vspcmat.tst", 46682500 );
 
 #############################################################################
 ##
-#E  vspcmat.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

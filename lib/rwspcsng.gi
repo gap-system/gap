@@ -421,6 +421,32 @@ end );
 ##
 ##  required: <i> > <j>
 ##
+InstallMethod( SetConjugateANC,
+    "pow conj single collector",
+    IsIdenticalObjFamiliesColXXXXXXObj,
+    [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
+        and IsMutable,
+      IsInt,
+      IsInt,
+      IsMultiplicativeElementWithInverse ],
+    0,
+function( sc, i, j, rhs )
+
+    # if <i> and <j> commute unbind the entry
+    if rhs = sc![SCP_RWS_GENERATORS][i]  then
+        Unbind(sc![SCP_CONJUGATES][i][j]);
+
+    # install the rhs
+    else
+        sc![SCP_CONJUGATES][i][j] := rhs;
+        if not sc![SCP_IS_DEFAULT_TYPE](rhs)  then
+            Print( "#W  Warning: mixed types in collector\n" );
+            SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, false );
+        fi;
+    fi;
+
+end );
+
 SingleCollector_SetConjugateNC := function( sc, i, j, rhs )
 
     # if <i> and <j> commute unbind the entry
@@ -505,6 +531,28 @@ end );
 ##
 #M  SetPower( <sc>, <i>, <rhs> )
 ##
+InstallMethod( SetPowerANC,
+    "pow conj single collector",
+    IsIdenticalObjFamiliesColXXXObj,
+    [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
+        and IsMutable, 
+      IsInt,
+      IsMultiplicativeElementWithInverse ],
+    0,
+function( sc, i, rhs )
+    # enter the rhs
+    if 0 = NumberSyllables(rhs)  then
+        Unbind(sc![SCP_POWERS][i]);
+    else
+        sc![SCP_POWERS][i] := rhs;
+        if not sc![SCP_IS_DEFAULT_TYPE](rhs)  then
+            Print( "#  Warning: mixed types in collector\n" );
+            SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, false );
+        fi;
+    fi;
+
+end );
+
 SingleCollector_SetPowerNC := function( sc, i, rhs )
 
     # enter the rhs
@@ -575,6 +623,48 @@ function( sc, i, rhs )
 
 end );
 
+
+#############################################################################
+##
+#M  GetConjugateNC  . . . . . . .  conjugate relation from a single collector
+##
+InstallMethod( GetConjugateNC,
+        "finite pow-conj single collector",
+        true,
+        [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep,
+          IsInt, 
+          IsInt ],
+        0,
+function( coll, h, g )
+
+    if IsBound( coll![SCP_CONJUGATES][h] ) and
+       IsBound( coll![SCP_CONJUGATES][h][g] ) then
+        return coll![SCP_CONJUGATES][h][g];
+    fi;
+
+    # return the generators h.
+    return coll![SCP_RWS_GENERATORS][h];
+end );
+
+
+#############################################################################
+##
+#M  GetPowerNC  . . . . . . . . . . .  power relation from a single collector
+##
+InstallMethod( GetPowerNC,
+        true,
+        [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep,
+          IsInt ],
+        0,
+function( coll, g )
+
+    if IsBound( coll![SCP_POWERS][g] ) then
+        return coll![SCP_POWERS][g];
+    fi;
+
+    #  return the identity.
+    return AssocWord( coll![SCP_DEFAULT_TYPE], [] );
+end );
 
 #############################################################################
 ##
@@ -704,6 +794,11 @@ function( sc )
 end );
 
 
+#############################################################################
+##
+#M  UpdatePolycyclicCollector( <sc> )
+##
+##
 #############################################################################
 ##
 
@@ -1041,12 +1136,7 @@ InstallMethod( CollectWordOrFail,
 ##
 #M  ShallowCopy( <sc> )
 ##
-InstallMethod( ShallowCopy,
-    true,
-    [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep ],
-    0,
-
-function( sc )
+ShallowCopy_SingleCollector := function( sc )
     local   copy;
 
     # construct new single collector as list object
@@ -1100,8 +1190,13 @@ function( sc )
     SetFilterObj( copy, IsMutable );
     return copy;
 
-end );
+end;
 
+InstallMethod( ShallowCopy,
+    true,
+    [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep ],
+    0,
+    ShallowCopy_SingleCollector );
 
 #############################################################################
 ##

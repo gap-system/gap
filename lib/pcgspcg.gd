@@ -13,22 +13,18 @@
 Revision.pcgspcg_gd :=
     "@(#)$Id$";
 
-
 #############################################################################
 ##
-
 #P  IsFamilyPcgs( <pcgs> )
 ##
-DeclareProperty(
-    "IsFamilyPcgs",
-    IsPcgs );
-
-
-
-
+DeclareProperty( "IsFamilyPcgs", IsPcgs,
+  30 #familyPcgs is stronger than prime orders and some other properties
+     # (cf. rank for `IsParentPcgsFamilyPcgs' in pcgsind.gd)
+  );
+InstallTrueMethod(IsCanonicalPcgs,IsFamilyPcgs);
+InstallTrueMethod(IsParentPcgsFamilyPcgs,IsFamilyPcgs);
 
 #############################################################################
 ##
-
 #E  pcgspcg.gd	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

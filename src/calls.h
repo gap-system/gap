@@ -105,7 +105,7 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 #define NAMS_FUNC(func)         (*            (ADDR_OBJ(func) +10     ) )
 #define NAMI_FUNC(func,i)       ((Char*)ADDR_OBJ(ELM_LIST(NAMS_FUNC(func),i)))
 #define PROF_FUNC(func)         (*            (ADDR_OBJ(func) +11     ) )
-#define NLOC_FUNC(func)         (* (Int*)     (ADDR_OBJ(func) +12     ) )
+#define NLOC_FUNC(func)         (* (UInt*)    (ADDR_OBJ(func) +12     ) )
 #define BODY_FUNC(func)         (*            (ADDR_OBJ(func) +13     ) )
 #define ENVI_FUNC(func)         (*            (ADDR_OBJ(func) +14     ) )
 #define FEXS_FUNC(func)         (*            (ADDR_OBJ(func) +15     ) )

@@ -13,12 +13,12 @@ gap> START_TEST("$Id$");
 # An example of a non-homomorphism.
 gap> q:= QuaternionAlgebra( Rationals );
 <algebra-with-one of dimension 4 over Rationals>
-gap> f:= FullMatrixAlgebra( Rationals, 2 );
-<algebra-with-one over Rationals, with 2 generators>
 gap> gensq:= GeneratorsOfAlgebra( q );
 [ e, i, j, k ]
+gap> f:= FullMatrixAlgebra( Rationals, 2 );
+( Rationals^[ 2, 2 ] )
 gap> b:= Basis( f );
-CanonicalBasis( <algebra-with-one over Rationals, with 2 generators> )
+CanonicalBasis( ( Rationals^[ 2, 2 ] ) )
 gap> map:= AlgebraGeneralMappingByImages( q, f, gensq, b );;
 gap> ker:= KernelOfAdditiveGeneralMapping( map );
 <algebra over Rationals, with 60 generators>
@@ -48,10 +48,10 @@ gap> IsBijective( f );
 true
 
 
-gap> STOP_TEST( "alghom.tst", 33000000 );
+gap> STOP_TEST( "alghom.tst", 57860000 );
 
 
 #############################################################################
 ##
-#E  alghom.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

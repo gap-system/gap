@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  rational.msk                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Rational Numbers}
+
+The *rationals* form a very important field.  On the one hand it is the
+quotient field of the integers (see chapter~"Integers").
+On the other hand it is the prime field of the fields of characteristic zero
+(see chapter~"Abelian Number Fields").
+
+The former comment suggests the representation actually used.
+A rational is represented as a pair of integers, called  *numerator* and
+*denominator*.
+Numerator and denominator are *reduced*, i.e., their greatest common divisor
+is 1.
+If the denominator is 1, the rational is in fact an integer and is
+represented as such.
+The numerator holds the sign of the rational,
+thus the denominator is always positive.
+
+Because the underlying integer arithmetic can compute with arbitrary size
+integers, the  rational arithmetic is always exact, even for rationals
+whose numerators and denominators have thousands of digits.
+
+\beginexample
+gap> 2/3;
+2/3
+gap> 66/123;
+22/41    # numerator and denominator are made relatively prime
+gap> 17/-13;
+-17/13    # the numerator carries the sign
+gap> 121/11;
+11    # rationals with denominator 1 (after cancelling) are integers
+\endexample
+
+\Declaration{Rationals}
+\beginexample
+gap> Size( Rationals ); 2/3 in Rationals;
+infinity
+true
+\endexample
+
+\Declaration{IsRationals}
+
+`Rationals' is a subset of `Cyclotomics',
+so see chapter~"Cyclotomic Numbers" for arithmetic operations and comparison of
+rationals.
+Functions for the field `Rationals' can be found in
+chapters~"fields and
+division rings"
+and~"Abelian Number Fields".
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elementary Operations for Rationals}
+
+\Declaration{IsRat}
+\index{test!for a rational}
+\beginexample
+gap> IsRat( 2/3 );
+true
+gap> IsRat( 17/-13 );
+true
+gap> IsRat( 11 );
+true
+gap> IsRat( IsRat );
+false    # `IsRat' is a function, not a rational
+\endexample
+
+\Declaration{IsPosRat}
+\Declaration{IsNegRat}
+
+\Declaration{NumeratorRat}
+\index{numerator!of a rational}
+\beginexample
+gap> NumeratorRat( 2/3 );
+2
+gap> NumeratorRat( 66/123 );
+22    # numerator and denominator are made relatively prime
+gap> NumeratorRat( 17/-13 );
+-17    # the numerator holds the sign of the rational
+gap> NumeratorRat( 11 );
+11    # integers are rationals with denominator 1
+\endexample
+
+
+\Declaration{DenominatorRat}
+\index{denominator!of a rational}
+\beginexample
+gap> DenominatorRat( 2/3 );
+3
+gap> DenominatorRat( 66/123 );
+41    # numerator and denominator are made relatively prime
+gap> DenominatorRat( 17/-13 );
+13    # the denominator holds the sign of the rational
+gap> DenominatorRat( 11 );
+1    # integers are rationals with denominator 1
+\endexample
+
+\Declaration{Rat}
+

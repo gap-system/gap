@@ -262,9 +262,9 @@ InstallGlobalFunction( CollectorSQ, function( G, M, isSplit )
     r := ShallowCopy(Gcoll);
 
     # create module gens (the transposed is a technical detail)
-    r.module := List( M.generators, x -> TransposedMat(x) );
-    r.mone   := IdentityMat( M.dimension, M.field );
-    r.mzero  := NullMat( M.dimension, M.dimension, M.field );
+    r.module := List( M.generators, TransposedMat );
+    r.mone   := Immutable( IdentityMat( M.dimension, M.field ) );
+    r.mzero  := Immutable( NullMat( M.dimension, M.dimension, M.field ) );
 
     # add avoid 
     r.avoid := [];
@@ -455,7 +455,7 @@ end );
 #F  TwoCocyclesSQ( C, G, M )
 ##
 InstallGlobalFunction( TwoCocyclesSQ, function( C, G, M )
-    local   pairs, gi, gj, gk, i,  j,  k, w1, w2, eq, p, n;
+    local   pairs, i,  j,  k, w1, w2, eq, p, n;
             
     # get number of generators
     n := Length(Pcgs(G));
@@ -675,19 +675,20 @@ InstallMethod( TwoCohomology,
     0,
 
 function( G, M )
-    local C, co, cb, cc, pr;
+    local C, d, z, co, cb, pr;
     C := CollectorSQ( G, M, false );
+    d := Length( C.orders );
+    d := d * (d+1) / 2;
+    z := Flat( List( [1..d], x -> C.mzero[1] ) );
     co := TwoCocyclesSQ( C, G, M );
+    co := VectorSpace( M.field, co, z );
     cb := TwoCoboundariesSQ( C, G, M );
-    cc := BaseSteinitzVectors( co, cb ).factorspace;
+    cb := SubspaceNC( co, cb );
     pr := FpGroupPcGroupSQ( G );
     return rec( group := G,
-                pcgs := Pcgs( G ),
                 module := M,
                 collector := C,
-                cocycles := co,
-                coboundaries := cb,
-                cohomology := cc,
-                fpgens := GeneratorsOfGroup( pr.group ),
-                fprelators := pr.relators );
+                cohom := 
+                NaturalHomomorphismBySubspaceOntoFullRowSpace(co,cb),
+                presentation := FpGroupPcGroupSQ( G ) );
 end );

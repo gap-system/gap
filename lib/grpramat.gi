@@ -19,22 +19,109 @@ Revision.grpramat_gi :=
 InstallMethod( IsRationalMatrixGroup, true, [ IsCyclotomicMatrixGroup ], 0,
     G -> ForAll( Flat( GeneratorsOfGroup( G ) ), IsRat ) );
 
-#############################################################################
-##
-#M  IsIntegralMatrixGroup( G )
-##
-InstallMethod( IsIntegralMatrixGroup, true, [ IsCyclotomicMatrixGroup ], 0,
-    G -> ForAll( Flat( GeneratorsOfGroup( G ) ), IsInt ) );
-
-InstallTrueMethod( IsRationalMatrixGroup, IsIntegralMatrixGroup );
+InstallTrueMethod( IsRationalMatrixGroup, IsIntegerMatrixGroup );
 
 #############################################################################
 ##
-#M  InvariantLattice( G ) . . . . .Invariant lattice of rational matrix group
+#M  IsIntegerMatrixGroup( G )
+##
+InstallMethod( IsIntegerMatrixGroup, true, [ IsCyclotomicMatrixGroup ], 0,
+    function( G )
+    local gen;
+    gen := GeneratorsOfGroup( G );
+    return ForAll( Flat( gen ), IsInt ) and
+           ForAll( gen, g -> AbsInt( DeterminantMat( g ) ) = 1 ); 
+    end
+);
+
+#############################################################################
+##
+#M  GeneralLinearGroupCons(IsMatrixGroup,n,Integers)
+##
+InstallOtherMethod(GeneralLinearGroupCons,"some generators for GL_n(Z)",true,
+  [IsMatrixGroup,IsPosInt,IsIntegers],0,
+function(fil,n,ints)
+local gens,mat,G;
+  # permutations
+  gens:=List(GeneratorsOfGroup(SymmetricGroup(n)),i->PermutationMat(i,n));
+  # sign swapper
+  mat:= IdentityMat(n,1);
+  mat[1][1]:=-1;
+  Add(gens,mat);
+  # elementary addition
+  mat:= IdentityMat(n,1);
+  mat[1][2]:=1;
+  Add(gens,mat);
+  gens:=List(gens,Immutable);
+  G:= GroupByGenerators( gens, IdentityMat( n, 1 ) );
+  Setter(IsNaturalGLnZ)(G,true);
+  SetName(G,Concatenation("GL(",String(n),",Integers)"));
+  SetSize(G,infinity);
+  SetIsFinite(G,false);
+  return G;
+end);
+
+#############################################################################
+##
+#M  Normalizer( GLnZ, G ) . . . . . . . . . . . . . . . . .Normalizer in GLnZ
+##
+InstallMethod( NormalizerOp, IsIdenticalObj,
+    [ IsNaturalGLnZ, IsCyclotomicMatrixGroup ], 0, 
+function( GLnZ, G )
+    return NormalizerInGLnZ( G );
+end );
+
+#############################################################################
+##
+#M  Centralizer( GLnZ, G ) . . . . . . . . . . . . . . . .Centralizer in GLnZ
+##
+InstallMethod( CentralizerOp, IsIdenticalObj,
+    [ IsNaturalGLnZ, IsCyclotomicMatrixGroup ], 0, 
+function( GLnZ, G )
+    return CentralizerInGLnZ( G );
+end );
+
+#############################################################################
+##
+#M  CrystGroupDefaultAction . . . . . . . . . . . . . . RightAction initially
+##
+InstallValue( CrystGroupDefaultAction, RightAction );
+
+#############################################################################
+##
+#M  SetCrystGroupDefaultAction( <action> ) . . . . .RightAction or LeftAction
+##
+InstallGlobalFunction( SetCrystGroupDefaultAction, function( action )
+   if   action = LeftAction then
+       MakeReadWriteGlobal( "CrystGroupDefaultAction" );
+       CrystGroupDefaultAction := LeftAction;
+       MakeReadOnlyGlobal( "CrystGroupDefaultAction" );
+   elif action = RightAction then
+       MakeReadWriteGlobal( "CrystGroupDefaultAction" );
+       CrystGroupDefaultAction := RightAction;
+       MakeReadOnlyGlobal( "CrystGroupDefaultAction" );
+   else
+       Error( "action must be either LeftAction or RightAction" );
+   fi;
+end );
+
+#############################################################################
+##
+#M  IsBravaisGroup( <G> ) . . . . . . . . . . . . . . . . . . .IsBravaisGroup
+##
+InstallMethod( IsBravaisGroup, 
+    true, [ IsCyclotomicMatrixGroup ], 0,
+function( G )
+    return G = BravaisGroup( G );
+end );
+
+#############################################################################
+##
+#M  InvariantLattice( G ) . . . . .invariant lattice of rational matrix group
 ##
 InstallMethod( InvariantLattice, "for rational matrix groups", 
-  true, [ IsCyclotomicMatrixGroup ], 0,
- function( G )
+    true, [ IsCyclotomicMatrixGroup ], 0,
+function( G )
 
     local gen, dim, trn, rnd, tab, den;
 
@@ -52,7 +139,7 @@ InstallMethod( InvariantLattice, "for rational matrix groups",
     fi;
 
     dim := DimensionOfMatrixGroup( G );
-    trn := IdentityMat( dim );
+    trn := Immutable( IdentityMat( dim ) );
     rnd := Random( GeneratorsOfGroup( G ) );
 
     # refine lattice until it contains its image
@@ -68,15 +155,18 @@ InstallMethod( InvariantLattice, "for rational matrix groups",
         tab := List( gen, g -> trn * g * trn^-1 );
         if ForAny( tab, x -> not IsInt( TraceMat( x ) ) ) then
              return fail;
+#T This can never happen since `gen' is not changed, the traces have been
+#T checked already, and they are invariant under conjugation.
         fi;
         tab := Concatenation( tab ); 
         tab := Filtered( tab, vec -> ForAny( vec, x -> not IsInt( x ) ) );
 
         if Length( tab ) > 0 then
             den := Lcm( List( Flat( tab ), x -> DenominatorRat( x ) ) );
-            tab := Concatenation( den * IdentityMat( dim ), den * tab );
+            tab := Concatenation( den * Immutable( IdentityMat( dim ) ),
+                       den * tab );
             tab := HermiteNormalFormIntegerMat( tab ) / den;
-            trn := tab * trn;
+            trn := tab{[1..dim]} * trn;
         else
             den := 1;
         fi;         
@@ -86,43 +176,6 @@ InstallMethod( InvariantLattice, "for rational matrix groups",
     return trn;
 
 end );
-
-
-#############################################################################
-##
-#F  SizeOfMinkowskiKernel( grp ) . . . . . . . . . . . .SizeOfMinkowskiKernel
-##
-##  Size for group which has only diagonal elements, with +1 or -1 on 
-##  the diagonal. This is faster than NiceMethod for Size.
-##
-SizeOfMinkowskiKernel := function( grp )
-
-    local mat, dim, h, i, j, tmp;
-
-    mat := List( GeneratorsOfGroup( grp ), DiagonalOfMat );
-    dim := DimensionOfMatrixGroup( grp );
-    h := 1;
-    for i in [1..dim] do
-        for j in [h..Length(mat)] do
-            if mat[j][i] = -1 then
-                if IsBound( tmp ) then
-                    mat[j] := List( [1..dim], k -> mat[j][k]*tmp[k] );
-                else
-                    tmp := mat[j];
-                    if j > h then
-                        mat[j] := mat[h];
-                        mat[h] := tmp;
-                    fi;
-                    h := h+1;
-                fi;
-            fi;
-        od;
-        Unbind( tmp );
-    od;
-    return 2^(h-1);
-
-end;
-
 
 #############################################################################
 ##
@@ -142,7 +195,7 @@ function( G )
     fi;
 
     # if not integral, choose basis in which it is integral
-    if not IsIntegralMatrixGroup( G ) then
+    if not IsIntegerMatrixGroup( G ) then
         lat := InvariantLattice( G );
         if lat = fail then
              return false;
@@ -154,7 +207,7 @@ function( G )
 
     size  := 1;
     dim   := DimensionOfMatrixGroup( grp );
-    basis := IdentityMat( dim, GF( 2 ) );
+    basis := Immutable( IdentityMat( dim, GF( 2 ) ) );
     for i in [1..dim] do
         orb := [ basis[i] ];
         rep := [ One( grp ) ];
@@ -182,15 +235,31 @@ function( G )
                 fi;
             od;
         od;
-        grp  := Group( stb, One( grp ) );
+        grp  := GroupByGenerators( stb, One( grp ) );
         size := size * Length( orb );
     od;
-#    SetSize( G, size * Size( grp ) );
-    SetSize( G, size * SizeOfMinkowskiKernel( grp ) );
+
+    # if we arrive here, the group is finite
+    SetIsFinite( grp, true );
+    SetSize( G, size * Size( grp ) );
     return true;
 
 end );
 
+#############################################################################
+##
+#M  Size( G ) . . . . . . . . . . . . . . . . .Size for rational matrix group
+##
+InstallMethod( Size, "via Minkowski kernel (short but not too efficient)",
+  true, [ IsCyclotomicMatrixGroup ], 0,
+function( G )
+  if not IsRationalMatrixGroup( G ) then
+     TryNextMethod();
+  else
+     IsFinite( G );
+     return Size( G );
+  fi;
+end );
 
 
 # enforce redispatching on finiteness conditions

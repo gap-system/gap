@@ -26,14 +26,16 @@ DeclareCategoryKernel( "IsBool", IsObject, IS_BOOL );
 ##
 #V  BooleanFamily . . . . . . . . . . . . . . . . . . . .  family of booleans
 ##
-BooleanFamily := NewFamily(  "BooleanFamily", IS_BOOL );
+BIND_GLOBAL( "BooleanFamily",
+    NewFamily(  "BooleanFamily", IS_BOOL ) );
 
 
 #############################################################################
 ##
 #F  TYPE_BOOL . . . . . . . . . . . . . . . . . . . type of internal booleans
 ##
-TYPE_BOOL := NewType( BooleanFamily, IS_BOOL and IsInternalRep );
+BIND_GLOBAL( "TYPE_BOOL",
+    NewType( BooleanFamily, IS_BOOL and IsInternalRep ) );
 
 
 #############################################################################
@@ -41,7 +43,7 @@ TYPE_BOOL := NewType( BooleanFamily, IS_BOOL and IsInternalRep );
 #m  String( <bool> )  . . . . . . . . . . . . . . . . . . . . . for a boolean
 ##
 InstallMethod( String,
-    "method for a boolean",
+    "for a boolean",
     true,
     [ IsBool ], 0,
     function( bool )
@@ -52,7 +54,7 @@ InstallMethod( String,
     elif bool = fail  then
       return "fail";
     else
-      Error( "unknown boolean" );
+      Error( "unknown boolean <bool>" );
     fi;
     end );
 
@@ -60,5 +62,5 @@ InstallMethod( String,
 #############################################################################
 ##
 
-#E  boolean.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 ##

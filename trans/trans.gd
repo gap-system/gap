@@ -14,14 +14,21 @@ Revision.trans_gd:=
 
 #############################################################################
 ##
-#F TransitiveGroup(<deg>,<nr>)
+#F  TransitiveGroup(<deg>,<nr>)
 ##
 ##  returns the <nr>-th transitive  group of degree <deg>.  Both  <deg> and
 ##  <nr> must be  positive integers. The transitive groups of equal  degree
 ##  are  sorted with  respect to   their  size, so for  example
 ##  `TransitiveGroup(  <deg>, 1 )' is a  transitive group  of degree and
 ##  size <deg>, e.g, the cyclic  group  of size <deg>,   if <deg> is a
-##  prime. The arrangement of  the groups, the  generators and their names
-##  correspond to the lists in \cite{ConwayHulpkeMcKay98}
+##  prime.
 DeclareGlobalFunction("TransitiveGroup");
 
+#############################################################################
+##
+#F  NrTransitiveGroups(<deg>)
+##
+##  returns the number of transitive groups of degree <deg> stored in the
+##  library of transitive groups. The function returns `fail' if <deg> is
+##  beyond the range of the library.
+DeclareGlobalFunction("NrTransitiveGroups");

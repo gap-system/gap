@@ -53,7 +53,6 @@ const char * Revision_lists_c =
 
 /****************************************************************************
 **
-
 *F  IS_LIST(<obj>)  . . . . . . . . . . . . . . . . . . . is an object a list
 *V  IsListFuncs[<type>] . . . . . . . . . . . . . . . . . table for list test
 **
@@ -93,6 +92,66 @@ Int             IsListObject (
     return (DoFilter( IsListFilt, obj ) == True);
 }
 
+/****************************************************************************
+**
+*F  IS_SMALL_LIST(<obj>)  . . . . . . . . . . . . . . . . . . . is an object a list
+*V  IsListFuncs[<type>] . . . . . . . . . . . . . . . . . table for list test
+**
+**  'IS_SMALL_LIST' only calls the function pointed  to  by  'IsListFuncs[<type>]',
+**  passing <obj> as argument.
+**
+**  'IS_SMALL_LIST' is defined in the declaration part of this package as follows
+**
+**  This is, in some sense, a workaround for the not yet implemented features
+**  below (see LENGTH).
+** 
+#define IS_SMALL_LIST(obj)    (*IsSmallListFuncs[ TNUM_OBJ( (obj) ) ])( obj )
+*/
+Int             (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+
+Obj             IsSmallListFilt;
+Obj             HasIsSmallListFilt;
+Obj             LengthAttr;
+Obj             SetIsSmallList;
+
+Int             IsSmallListNot (
+    Obj                 obj )
+{
+    return 0L;
+}
+
+Int             IsSmallListYes (
+    Obj                 obj )
+{
+    return 1L;
+}
+
+Int             IsSmallListObject (
+    Obj                 obj )
+{
+  Obj len;
+  if (DoFilter(IsListFilt, obj) != True)
+    return 0;
+  if (DoFilter(HasIsSmallListFilt, obj) == True)
+    return DoFilter(IsSmallListFilt, obj) == True;
+  if (DoTestAttribute(LengthAttr, obj) == True)
+    {
+      len = DoAttribute(LengthAttr, obj);
+      if (IS_INTOBJ(len))
+	{
+	  CALL_2ARGS(SetIsSmallList, obj, True);
+	  return 1;
+	}
+      else
+	{
+	  CALL_2ARGS(SetIsSmallList, obj, False);
+	  return 0;
+	}
+    }
+  return 0;
+}
+
+
 
 /****************************************************************************
 **
@@ -124,7 +183,6 @@ Int             IsListObject (
 **  - 'ResetFilterObj' and 'SetFilterObj'  are implemented using a table  for
 **    internal types (NOT YET IMPLEMENTED)
 */
-Obj LengthAttr;
 
 Obj FuncLENGTH (
     Obj             self,
@@ -205,6 +263,50 @@ Int LenListObject (
     return INT_INTOBJ( len );
 }
 
+/****************************************************************************
+**
+*F  LENGTH(<list>)  . . . . . . . . . . . . . . . . . . .  length of a list
+*V  LengthFuncs[<type>]  . . . . . . . . . . . . . table of length functions
+**
+**  'LENGTH' returns the logical length of the list <list>  as a GAP object
+**  An error is signalled if <list> is not a list.
+**
+**  Note that  'LENGTH' is a  macro, so do  not call it with arguments that
+**  have sideeffects.
+**
+**  A package  implementing a list type <type>  must  provide such a function
+**  and install it in 'LengthFuncs[<type>]'.
+
+#define LENGTH(list)  ((*LengthFuncs[ TNUM_OBJ(list) ])( list )) 
+*/
+
+Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+
+Obj LengthError (
+    Obj                 list )
+{
+    list = ErrorReturnObj(
+        "Length: <list> must be a list (not a %s)",
+        (Int)TNAM_OBJ(list), 0L,
+        "you can return a list for <list>" );
+    return LENGTH( list );
+}
+
+
+Obj LengthObject (
+    Obj                 obj )
+{
+    return FuncLENGTH( LengthAttr, obj );
+}
+
+Obj LengthInternal (
+    Obj                 obj )
+{
+    return INTOBJ_INT(LEN_LIST(obj));
+}
+
+
+
 
 /****************************************************************************
 **
@@ -259,6 +361,63 @@ Int             IsbListObject (
     return (DoOperation2Args( IsbListOper, list, INTOBJ_INT(pos) ) == True);
 }
 
+/****************************************************************************
+**
+*F  ISBB_LIST(<list>,<pos>,<obj>)  . . . . . isbound for an element to a list
+*V  IsbbListFuncs[<type>]  . . . . . . . . .  . table of isbound functions
+*F  IsbbListError(<list>,<pos>,<obj>)  . . . . . . . error isbound function
+**
+**  'ISBB_LIST' only calls the  function pointed to by 'IsbbListFuncs[<type>]',
+**  passing <list>, <pos>, and <obj> as arguments.  If <type> is not the type
+**  of  a list, then 'IsbbListFuncs[<type>]'  points to 'IsbbListError',  which
+**  just signals an error.
+**
+**  'ISBB_LIST' is defined in the declaration part of this package as follows.
+**
+#define ISBB_LIST(list,pos,obj) \
+                        ((*IsbbListFuncs[TNUM_OBJ(list)])(list,pos,obj))
+*/
+Int            (*IsbbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos);
+
+Obj             FuncISBB_LIST (
+    Obj                 self,
+    Obj                 list,
+    Obj                 pos)
+{
+    return ISBB_LIST( list, pos ) ? True: False;
+}
+
+Int            IsbbListError (
+    Obj                 list,
+    Obj                 pos )
+{
+    list = ErrorReturnObj(
+        "Isbound: <list> must be a list (not a %s)",
+        (Int)TNAM_OBJ(list), 0L,
+        "you can return a list for <list>" );
+    return ISBB_LIST( list, pos );
+}
+
+Int            IsbbListInternal (
+    Obj                 list,
+    Obj                 pos)
+{
+  return 0;
+}
+
+
+/****************************************************************************
+**
+*F  IsbbListObject( <list>, <pos>, <obj> ) . . . . . . . assign to list object
+*/
+
+Int IsbbListObject (
+    Obj                 list,
+    Obj                 pos )
+{
+    return DoOperation2Args( IsbListOper, list, pos ) == True ? 1 : 0;
+}
+
 
 /****************************************************************************
 **
@@ -285,7 +444,7 @@ Obj (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 *V  Elm0vListFuncs[ <type> ]  . . . . . . . . .  table of selection functions
 **
 **  'ELMV0_LIST' does the same as 'ELM0_LIST', but the caller also guarantees
-**  that <list> is a list and that <pos> is less thatn or equal to the length
+**  that <list> is a list and that <pos> is less than  or equal to the length
 **  of <list>.
 */
 Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
@@ -364,7 +523,6 @@ Obj FuncELM0_LIST (
 
 /****************************************************************************
 **
-
 *V  ElmListFuncs[<type>]  . . . . . . . . . . .  table of selection functions
 **
 **  'ELM_LIST' returns the element at the position  <pos> in the list <list>.
@@ -379,6 +537,23 @@ Obj FuncELM0_LIST (
 **  the error.
 */
 Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+
+/****************************************************************************
+**
+*V  ElmbListFuncs[<type>]  . . . . . . . . . . .  table of selection functions
+**
+**  'ELMB_LIST' returns the element at the position  <pos> in the list <list>.
+**  An  error is signalled if  <list> is not a list,  if <pos> is larger than
+**  the length of <list>, or if <list>  has no assigned  object at <pos>.  It
+**  is the responsibility  of the caller to  ensure that <pos>  is a positive
+**  integer.
+**
+**  'ELMB_LIST' only calls the functions  pointed to by 'ElmbListFuncs[<type>]'
+**  passing <list> and <pos>  as arguments.  If  <type> is not  the type of a
+**  list, then 'ElmbListFuncs[<type>]' points to 'ElmbListError', which signals
+**  the error.
+*/
+Obj (*ElmbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
 
 
 /****************************************************************************
@@ -445,6 +620,65 @@ Obj ElmListObject (
     return elm;
 }
 
+/****************************************************************************
+**
+*F  ElmbListError( <list>, <pos> ) . . . . . . . . . . . . . . . error message
+*/
+Obj ElmbListError (
+    Obj                 list,
+    Obj                 pos )
+{
+    list = ErrorReturnObj(
+        "List Element: <list> must be a list (not a %s)",
+        (Int)TNAM_OBJ(list), 0L,
+        "you can return a list for <list>" );
+    return ELMB_LIST( list, pos );
+}
+
+/****************************************************************************
+**
+*F  ElmbListInternal( <list>, <pos> ) . . . . . . . . . . . . . error message
+*/
+Obj ElmbListInternal (
+    Obj                 list,
+    Obj                 pos )
+{
+  do {
+    pos = ErrorReturnObj(
+        "List Element: an internal list cannot have an element in such a position",
+        0L, 0L,
+        "you can return a new position" );
+  } while (!IS_INTOBJ(pos) || INT_INTOBJ(pos) < 0);
+  return ELM_LIST( list, INT_INTOBJ(pos) );
+}
+
+
+/****************************************************************************
+**
+*F  ElmbListObject( <list>, <pos>  . . . . . . . select an element from a list
+**
+**  `ElmbListObject' is the `ELMB_LIST',  function
+**  for objects.   'ElmbListObjects' selects the  element at position <pos> of
+**  list  object <list>.   It is the  responsibility  of the caller to ensure
+**  that <pos> is a positive integer.  The methods have to signal an error if
+**  <pos> is larger than the length of <list> or if the entry is not bound.
+*/
+
+Obj ElmbListObject (
+    Obj                 list,
+    Obj                 pos )
+{
+    Obj                 elm;
+
+    elm = DoOperation2Args( ElmListOper, list, pos );
+    while ( elm == 0 ) {
+        elm = ErrorReturnObj(
+            "List access method must return a value", 0L, 0L,
+            "you can return a value or quit" );
+    }
+    return elm;
+}
+
 
 /****************************************************************************
 **
@@ -455,7 +689,10 @@ Obj FuncELM_LIST (
     Obj                 list,
     Obj                 pos )
 {
+  if (IS_INTOBJ(pos))
     return ELM_LIST( list, INT_INTOBJ(pos) );
+  else
+    return ELMB_LIST(list, pos );
 }
 
 
@@ -535,7 +772,7 @@ Obj FuncELMS_LIST (
 **
 *F  ElmsListDefault( <list>, <poss> ) . . .  default function for `ELMS_LIST'
 **
-**  Create a new plain list as result.
+**  Create a new plain list as result. <list> must be small.
 */
 Obj ElmsListDefault (
     Obj                 list,
@@ -548,6 +785,7 @@ Obj ElmsListDefault (
     Int                 pos;            /* <position> as integer           */
     Int                 inc;            /* increment in a range            */
     Int                 i;              /* loop variable                   */
+    Obj                 p;
 
     /* general code                                                        */
     if ( ! IS_RANGE(poss) ) {
@@ -556,6 +794,7 @@ Obj ElmsListDefault (
         lenList = LEN_LIST( list );
 
         /* get the length of <positions>                                   */
+	/* OK because all positions lists are small                        */
         lenPoss = LEN_LIST( poss );
 
         /* make the result list                                            */
@@ -566,7 +805,13 @@ Obj ElmsListDefault (
         for ( i = 1; i <= lenPoss; i++ ) {
 
             /* get <position>                                              */
-            pos = INT_INTOBJ( ELMW_LIST( poss, i ) );
+	  p = ELMW_LIST( poss, i);
+	  while (!IS_INTOBJ(p))
+	    {
+	      p = ErrorReturnObj("List Elements: position is too large for this type of list",
+				 0L, 0L, "You can return a new position to continue");
+	    }
+            pos = INT_INTOBJ( p );
 
             /* select the element                                          */
             elm = ELM0_LIST( list, pos );
@@ -750,6 +995,64 @@ void            UnbListObject (
     DoOperation2Args( UnbListOper, list, INTOBJ_INT(pos) );
 }
 
+/****************************************************************************
+**
+*F  UNBB_LIST(<list>,<pos>,<obj>)  . . . . . . . . unbind an element to a list
+*V  UnbbListFuncs[<type>]  . . . . . . . . . . .  table of unbinding functions
+*F  UnbbListError(<list>,<pos>,<obj>)  . . . . . . . .error unbinding function
+**
+**  'UNBB_LIST' only calls the  function pointed to by 'UnbbListFuncs[<type>]',
+**  passing <list>, <pos>, and <obj> as arguments.  If <type> is not the type
+**  of  a list, then 'UnbbListFuncs[<type>]'  points to 'UnbbListError',  which
+**  just signals an error.
+**
+**  'UNBB_LIST' is defined in the declaration part of this package as follows.
+**
+#define UNBB_LIST(list,pos,obj) \
+                        ((*UnbbListFuncs[TNUM_OBJ(list)])(list,pos,obj))
+*/
+void            (*UnbbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
+
+Obj             FuncUNBB_LIST (
+    Obj                 self,
+    Obj                 list,
+    Obj                 pos )
+{
+    UNBB_LIST( list, pos );
+    return 0;
+}
+
+void            UnbbListError (
+    Obj                 list,
+    Obj                 pos )
+{
+    list = ErrorReturnObj(
+        "List Unbindment: <list> must be a list (not a %s)",
+        (Int)TNAM_OBJ(list), 0L,
+        "you can return a list for <list>" );
+    UNBB_LIST( list, pos );
+}
+
+void            UnbbListInternal (
+    Obj                 list,
+    Obj                 pos)
+{
+  /* large positions are already unbound */
+  return;
+}
+
+
+/****************************************************************************
+**
+*F  UnbbListObject( <list>, <pos>, <obj> ) . . . . . . . unbind  list object
+*/
+
+void UnbbListObject (
+    Obj                 list,
+    Obj                 pos )
+{
+    DoOperation2Args( UnbListOper, list, pos );
+}
 
 /****************************************************************************
 **
@@ -814,6 +1117,71 @@ void AssListObject (
 {
     DoOperation3Args( AssListOper, list, INTOBJ_INT(pos), obj );
 }
+/****************************************************************************
+**
+*F  ASSB_LIST(<list>,<pos>,<obj>)  . . . . . . . . assign an element to a list
+*V  AssbListFuncs[<type>]  . . . . . . . . . . . table of assignment functions
+*F  AssbListError(<list>,<pos>,<obj>)  . . . . . . . error assignment function
+**
+**  'ASSB_LIST' only calls the  function pointed to by 'AssbListFuncs[<type>]',
+**  passing <list>, <pos>, and <obj> as arguments.  If <type> is not the type
+**  of  a list, then 'AssbListFuncs[<type>]'  points to 'AssbListError',  which
+**  just signals an error.
+**
+**  'ASSB_LIST' is defined in the declaration part of this package as follows.
+**
+#define ASSB_LIST(list,pos,obj) \
+                        ((*AssbListFuncs[TNUM_OBJ(list)])(list,pos,obj))
+*/
+void            (*AssbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos, Obj obj );
+
+Obj             FuncASSB_LIST (
+    Obj                 self,
+    Obj                 list,
+    Obj                 pos,
+    Obj                 obj )
+{
+    ASSB_LIST( list, pos, obj );
+    return 0;
+}
+
+void            AssbListError (
+    Obj                 list,
+    Obj                 pos,
+    Obj                 obj )
+{
+    list = ErrorReturnObj(
+        "List Assignment: <list> must be a list (not a %s)",
+        (Int)TNAM_OBJ(list), 0L,
+        "you can return a list for <list>" );
+    ASSB_LIST( list, pos, obj );
+}
+
+void            AssbListInternal (
+    Obj                 list,
+    Obj                 pos,
+    Obj                 obj )
+{
+  do {
+    pos = ErrorReturnObj( "List assignment: you cannot assign to such a large position in an internal list",
+			  0, 0, "You can return a new positive small integer for  position" );
+  } while (!IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0);
+  ASS_LIST(list, INT_INTOBJ(pos), obj);
+}
+
+
+/****************************************************************************
+**
+*F  AssbListObject( <list>, <pos>, <obj> ) . . . . . . . assign to list object
+*/
+
+void AssbListObject (
+    Obj                 list,
+    Obj                 pos,
+    Obj                 obj )
+{
+    DoOperation3Args( AssListOper, list, pos, obj );
+}
 
 
 /****************************************************************************
@@ -865,6 +1233,7 @@ void            AsssListDefault (
     Obj                 objs )
 {
     Int                 lenPoss;        /* length of <positions>           */
+    Obj                 p;              /* <position> */
     Int                 pos;            /* <position> as integer           */
     Int                 inc;            /* increment in a range            */
     Obj                 obj;            /* one element from <objs>         */
@@ -880,13 +1249,17 @@ void            AsssListDefault (
         for ( i = 1; i <= lenPoss; i++ ) {
 
             /* get <position>                                              */
-            pos = INT_INTOBJ( ELMW_LIST( poss, i ) );
-
-            /* select the element                                          */
-            obj = ELMW_LIST( objs, i );
-
-            /* assign the element into <elms>                              */
-            ASS_LIST( list, pos, obj );
+	  p  = ELMW_LIST( poss, i );
+	  
+	  /* select the element                                          */
+	  obj = ELMW_LIST( objs, i );
+	  if (IS_INTOBJ(p) )
+	    {
+	      /* assign the element into <elms>                              */
+	      ASS_LIST( list, INT_INTOBJ(p), obj );
+	    }
+	  else
+	    ASSB_LIST(list, p, obj);
 
         }
 
@@ -1154,7 +1527,7 @@ Int             IsTableListDefault (
         return 0L;
     }
     fam = FAMILY_TYPE( TYPE_OBJ( elm ) );
-    len = LEN_LIST( elm );
+    /*     len = LEN_LIST( elm ); */
 
     /* loop over the entries of the list                                   */
     for ( i = 2; i <= lenList; i++ ) {
@@ -1162,9 +1535,9 @@ Int             IsTableListDefault (
         if ( elm == 0 || fam != FAMILY_TYPE( TYPE_OBJ( elm ) ) ) {
             return 0L;
         }
-        if ( ! IS_LIST( elm ) || LEN_LIST( elm ) != len ) {
+	/*        if ( ! IS_LIST( elm ) || LEN_LIST( elm ) != len ) {
             return 0L;
-        }
+	    } */
     }
 
     /* the list is equal length                                            */
@@ -1338,9 +1711,21 @@ Int             IsPossListDefault (
     /* loop over the entries of the list                                   */
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || ! IS_INTOBJ(elm) || INT_INTOBJ(elm) <= 0 ) {
-            return 0L;
-        }
+
+	/* if it's a hole then its not a poss list */
+        if ( elm == 0)
+	  return 0L;
+
+	/* if it's a small integer and non-positive then
+	   it's not a poss list */
+	if ( IS_INTOBJ(elm))
+	  if (INT_INTOBJ(elm) <= 0)
+	    return  0L;
+
+	/* or if it's not a small integer or a positive large integer then it's
+	   not a poss list */
+	else if (TNUM_OBJ(elm) != T_INTPOS)
+	  return 0L;
     }
 
     /* the list is a positions list                                        */
@@ -1485,7 +1870,7 @@ Obj FuncPOS_LIST_DEFAULT (
 */
 void            ElmListLevel (
     Obj                 lists,
-    Int                 pos,
+    Obj                 pos,
     Int                 level )
 {
     Int                 len;            /* length of <lists>               */
@@ -1503,8 +1888,11 @@ void            ElmListLevel (
             /* get the list                                                */
             list = ELM_PLIST( lists, i );
 
-            /* select the element                                          */
-            elm = ELM_LIST( list, pos );
+	    /* select the element                                          */
+	    if (IS_INTOBJ(pos))
+	      elm = ELM_LIST( list, INT_INTOBJ(pos) );
+	    else
+	      elm = ELMB_LIST(list, pos);
 
             /* replace the list with the element                           */
             SET_ELM_PLIST( lists, i, elm );
@@ -1607,7 +1995,7 @@ void            ElmsListLevel (
 */
 void            AssListLevel (
     Obj                 lists,
-    Int                 pos,
+    Obj                 pos,
     Obj                 objs,
     Int                 level )
 {
@@ -1646,7 +2034,10 @@ void            AssListLevel (
             obj = ELMW_LIST( objs, i );
 
             /* assign the element                                          */
-            ASS_LIST( list, pos, obj );
+	    if (IS_INTOBJ(pos))
+	      ASS_LIST( list, INT_INTOBJ(pos), obj );
+	    else
+	      ASSB_LIST(list, pos, obj);
 
         }
 
@@ -1942,7 +2333,7 @@ void            PrintPathList (
 **  The macro  `SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
-Int SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 
 
 /****************************************************************************
@@ -1957,7 +2348,7 @@ Int SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 **  The macro `RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
-Int ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 
 
 /****************************************************************************
@@ -1978,12 +2369,11 @@ Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 **
 **  The macro `CLEAR_PROPS_LIST' is used to clear all properties of a list.
 */
-Int ClearFiltsTNums [ LAST_REAL_TNUM ];
+UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 
 
 /****************************************************************************
 **
-
 *F  FuncSET_FILTER_LIST( <self>, <list>, <filter> ) . . . . . . .  set filter
 */
 Obj FuncSET_FILTER_LIST (
@@ -2302,6 +2692,11 @@ static Int InitKernel (
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
+    /* import small list machinery from the library */
+    ImportFuncFromLibrary("IsSmallList", &IsSmallListFilt);
+    ImportFuncFromLibrary("HasIsSmallList", &HasIsSmallListFilt);
+    ImportFuncFromLibrary("SetIsSmallList", &SetIsSmallList);
+
     /* make and install the 'IS_LIST' filter                               */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsListFuncs[ type ] = IsListNot;
@@ -2313,6 +2708,20 @@ static Int InitKernel (
         IsListFuncs[ type ] = IsListObject;
     }
 
+    /* make and install the 'IS_SMALL_LIST' filter                   */
+    /* non-lists are not small lists */
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
+        IsSmallListFuncs[ type ] = IsSmallListNot;
+    }
+    /* internal lists ARE small lists */
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
+        IsSmallListFuncs[ type ] = IsSmallListYes;
+    }
+    /* external lists need to be asked */
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
+        IsSmallListFuncs[ type ] = IsSmallListObject;
+    }
+
 
     /* make and install the 'LEN_LIST' function                            */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2320,6 +2729,17 @@ static Int InitKernel (
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         LenListFuncs[ type ] = LenListObject;
+    }
+
+    /* make and install the 'LENGTH' function                            */
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
+        LengthFuncs[ type ] = LengthError;
+    }
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
+        LengthFuncs[ type ] = LengthObject;
+    }
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
+        LengthFuncs[ type ] = LengthInternal;
     }
 
 
@@ -2333,6 +2753,18 @@ static Int InitKernel (
         IsbvListFuncs[ type ] = IsbListObject;
     }
 
+    /* make and install the 'ISBB_LIST' operation                           */
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
+        IsbbListFuncs[  type ] = IsbbListError;
+    }
+
+    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
+      IsbbListFuncs[ type ] = IsbbListInternal;
+    }
+    
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
+        IsbbListFuncs[  type ] = IsbbListObject;
+    }
 
     /* make and install the 'ELM0_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2356,6 +2788,20 @@ static Int InitKernel (
         ElmvListFuncs[ type ] = ElmListObject;
         ElmwListFuncs[ type ] = ElmListObject;
     }
+
+    /* make and install the 'ELMB_LIST' operation                           */
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
+        ElmbListFuncs[  type ] = ElmbListError;
+    }
+
+    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
+      ElmbListFuncs[ type ] = ElmbListInternal;
+    }
+    
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
+        ElmbListFuncs[  type ] = ElmbListObject;
+    }
+
 
 
     /* make and install the 'ELMS_LIST' operation                          */
@@ -2381,6 +2827,18 @@ static Int InitKernel (
         UnbListFuncs[ type ] = UnbListObject;
     }
 
+    /* make and install the 'UNBB_LIST' operation                           */
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
+        UnbbListFuncs[  type ] = UnbbListError;
+    }
+
+    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
+      UnbbListFuncs[ type ] = UnbbListInternal;
+    }
+    
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
+        UnbbListFuncs[  type ] = UnbbListObject;
+    }
 
     /* make and install the 'ASS_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2393,6 +2851,19 @@ static Int InitKernel (
         AssListFuncs[ type ] = AssListObject;
     }
 
+
+    /* make and install the 'ASSB_LIST' operation                           */
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
+        AssbListFuncs[  type ] = AssbListError;
+    }
+
+    for (type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
+      AssbListFuncs[ type ] = AssbListInternal;
+    }
+    
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
+        AssbListFuncs[  type ] = AssbListObject;
+    }
 
     /* make and install the 'ASSS_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {

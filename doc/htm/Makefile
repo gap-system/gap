@@ -6,23 +6,30 @@
 ##
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-BUILD = ../../etc/convert.pl
+BUILD = ../../etc/convert.pl -t
 
 default: all
 
-all: ref/chapters.htm ext/chapters.htm tut/chapters.htm prg/chapters.htm
+all: ref/chapters.htm ext/chapters.htm tut/chapters.htm prg/chapters.htm \
+	theindex.htm
 
-ref/chapters.htm: ../ref/manual.dvi
+ref/chapters.htm: ../ref/manual.dvi ../../etc/convert.pl
 	$(BUILD) -c ../ref ref
 
-ext/chapters.htm: ../ext/manual.dvi
+ext/chapters.htm: ../ext/manual.dvi ../../etc/convert.pl
 	$(BUILD) -c ../ext ext
 
-tut/chapters.htm: ../tut/manual.dvi
+tut/chapters.htm: ../tut/manual.dvi ../../etc/convert.pl
 	$(BUILD) -c ../tut tut
 
-prg/chapters.htm: ../prg/manual.dvi
+prg/chapters.htm: ../prg/manual.dvi ../../etc/convert.pl
 	$(BUILD) -c ../prg prg
+
+theindex.htm: ref/chapters.htm tut/chapters.htm ext/chapters.htm \
+	prg/chapters.htm ../../etc/convert.pl
+	chmod 755 allhtmlindex
+	chmod 755 onehtmlindex
+	./allhtmlindex
 
 ../ref/manual.dvi:
 	(cd ../ref;tex manual)
@@ -35,4 +42,13 @@ prg/chapters.htm: ../prg/manual.dvi
 
 ../prg/manual.dvi:
 	(cd ../prg;tex manual)
+
+webdoc: ../tut/manual.dvi ../ref/manual.dvi ../ext/manual.dvi ../prg/manual.dvi 
+	$(BUILD) -s ../tut tut
+	$(BUILD) -s ../ref ref
+	$(BUILD) -s ../ext ext
+	$(BUILD) -s ../prg prg
+	./allhtmlindex
+
+
 

@@ -1,0 +1,172 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  word.msk                    GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Words}
+
+\FileHeader[1]{word}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Categories of Words and Nonassociative Words}
+
+\index{abstract word}
+
+\Declaration{IsWord}
+\beginexample
+gap> m:= FreeMagmaWithOne( 2 );;  gens:= GeneratorsOfMagmaWithOne( m );
+[ x1, x2 ]
+gap> w1:= gens[1] * gens[2] * gens[1];
+((x1*x2)*x1)
+gap> w2:= gens[1] * ( gens[2] * gens[1] );
+(x1*(x2*x1))
+gap> w1 = w2;  IsAssociative( m );
+false
+false
+gap> IsWord( w1 );  IsAssocWord( w1 );  IsNonassocWord( w1 );
+true
+false
+true
+gap> s:= FreeMonoid( 2 );;  gens:= GeneratorsOfMagmaWithOne( s );
+[ m1, m2 ]
+gap> u1:= ( gens[1] * gens[2] ) * gens[1];
+m1*m2*m1
+gap> u2:= gens[1] * ( gens[2] * gens[1] );
+m1*m2*m1
+gap> u1 = u2;  IsAssociative( s );
+true
+true
+gap> IsWord( u1 );  IsAssocWord( u1 );  IsNonassocWord( u1 );
+true
+true
+false
+gap> a:= (1,2,3);;  b:= (1,2);;
+gap> w:= a*b*a;;  IsWord( w );
+false
+\endexample
+
+\Declaration{IsWordCollection}
+\beginexample
+gap> IsWordCollection( m );  IsWordCollection( s );
+true
+true
+gap> IsWordCollection( [ "a", "b" ] );
+false
+\endexample
+
+\Declaration{IsNonassocWord}
+\Declaration{IsNonassocWordCollection}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparison of Words}
+
+\FileHeader[2]{word}
+
+\beginexample
+gap> m:= FreeMagma( "a", "b" );;
+gap> x:= FreeMagma( "a", "b" );;
+gap> mgens:= GeneratorsOfMagma( m );
+[ a, b ]
+gap> xgens:= GeneratorsOfMagma( x );
+[ a, b ]
+gap> a:= mgens[1];;  b:= mgens[2];;
+gap> a = xgens[1];
+false
+gap> a*(a*a) = (a*a)*a;  a*b = b*a;  a*a = a*a;
+false
+false
+true
+gap> a < b;  b < a;  a < a*b;
+true
+false
+true
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Words}
+
+\FileHeader[3]{word}
+
+\Declaration{MappedWord}
+\beginexample
+gap> m:= FreeMagma( "a", "b" );;  gens:= GeneratorsOfMagma( m );;
+gap> a:= gens[1];  b:= gens[2];
+a
+b
+gap> w:= (a*b)*((b*a)*a)*b;
+(((a*b)*((b*a)*a))*b)
+gap> MappedWord( w, gens, [ (1,2), (1,2,3,4) ] );
+(2,4,3)
+gap> a:= (1,2);; b:= (1,2,3,4);;  (a*b)*((b*a)*a)*b;
+(2,4,3)
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Free Magmas}
+
+\FileHeader[4]{word}
+
+\Declaration{FreeMagma}
+\Declaration{FreeMagmaWithOne}
+
+\beginexample
+gap> FreeMagma( 3 );
+<free magma on the generators [ x1, x2, x3 ]>
+gap> FreeMagma( "a", "b" );
+<free magma on the generators [ a, b ]>
+gap> FreeMagma( infinity );
+<free magma with infinity generators>
+gap> FreeMagmaWithOne( 3 );
+<free magma-with-one on the generators [ x1, x2, x3 ]>
+gap> FreeMagmaWithOne( "a", "b" );
+<free magma-with-one on the generators [ a, b ]>
+gap> FreeMagmaWithOne( infinity );
+<free magma-with-one with infinity generators>
+\endexample
+
+Remember that the names of generators used for printing
+do not necessarily distinguish letters of the alphabet;
+so it is possible to create arbitrarily weird
+situations by choosing strange letter names.
+
+\beginexample
+gap> m:= FreeMagma( "x", "x" );  gens:= GeneratorsOfMagma( m );;
+<free magma on the generators [x,x]>
+gap> gens[1] = gens[2];
+false
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{External Representation for Nonassociative Words}
+
+\FileHeader[5]{word}
+
+\beginexample
+gap> m:= FreeMagma( 2 );;  gens:= GeneratorsOfMagma( m );
+[ x1, x2 ]
+gap> w:= ( gens[1] * gens[2] ) * gens[1];
+((x1*x2)*x1)
+gap> ExtRepOfObj( w );  ExtRepOfObj( gens[1] );
+[ [ 1, 2 ], 1 ]
+1
+gap>  ExtRepOfObj( w*w );
+[ [ [ 1, 2 ], 1 ], [ [ 1, 2 ], 1 ] ]
+gap> ObjByExtRep( FamilyObj( w ), 2 );
+x2
+gap> ObjByExtRep( FamilyObj( w ), [ 1, [ 2, 1 ] ] );
+(x1*(x2*x1))
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

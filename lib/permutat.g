@@ -13,10 +13,33 @@
 Revision.permutat_g :=
     "@(#)$Id$";
 
+#1
+##  Internally, {\GAP}  stores a permutation as a  list of the  <d> images of
+##  the  integers  $1,\ldots, d$,  where the ``internal  degree'' <d>  is the
+##  largest integer moved by the permutation or bigger. When a permutation is
+##  read  in  in  cycle  notation, <d> is  always  set  to  the largest moved
+##  integer,   but a bigger   <d> can  result  from  a multiplication of  two
+##  permutations, because the product is  not shortened if it fixes~<d>.  The
+##  images are either all stored as 16-bit integers or all as 32-bit integers
+##  (actually as {\GAP} immediate integers less  than $2^{28}$), depending on
+##  whether  $d\le 65536$  or not. This  means that  the identity permutation
+##  `()' takes $4<m>$ bytes if it was  calculated as  `(1, \dots, <m>) \* (1,
+##  \dots, <m>)^-1'. It  can take even more  because the internal list  has
+##  sometimes room for more than <d> images.  For example, the maximal degree
+##  of   any permutation in  {\GAP}  is  $m  = 2^{22}-1024 =  4{,}193{,}280$,
+##  because  bigger permutations  would have  an  internal list with room for
+##  more than $2^{22}$ images, requiring  more than $2^{24}$~bytes. $2^{24}$,
+##  however, is  the  largest possible size   of  an object that  the  {\GAP}
+##  storage manager can deal with.
+##
+##  Permutations  do  not belong to  a specific group.   That means
+##  that one can work  with permutations without defining a permutation group
+##  that contains them.
+
 
 #############################################################################
 ##
-#C  IsPerm(<obj>)
+#C  IsPerm( <obj> )
 ##
 DeclareCategoryKernel( "IsPerm",
     IsMultiplicativeElementWithInverse and IsAssociativeElement and
@@ -26,67 +49,116 @@ DeclareCategoryKernel( "IsPerm",
 
 #############################################################################
 ##
-#C  IsPermCollection(<obj>)
+#C  IsPermCollection( <obj> )
+#C  IsPermCollColl( <obj> )
 ##
-##  is the category for collections of permutations.
+##  are the categories for collections of permutations and collections of
+##  collections of permutations, respectively.
 ##
 DeclareCategoryCollections( "IsPerm" );
-
+DeclareCategoryCollections( "IsPermCollection" );
 
 
 #############################################################################
 ##
 #F  SmallestGeneratorPerm( <perm> )
 ##
-##  returns  the smallest  permutation that generates the  same cyclic group
-##  as the permutation   <p>. This is very efficient, even when <p> has
-##  large order.
+##  is the smallest permutation that generates the same cyclic group
+##  as the permutation <perm>.
+##  This is very efficient, even when <perm> has large order.
 
 # DeclareGlobalFunction( "SmallestGeneratorPerm");
 
 
 #############################################################################
 ##
-#A  SmallestMovedPointPerm( <perm> )  . . . . . . . . . . . .  smallest point
+#A  SmallestMovedPoint( <perm> )
+#A  SmallestMovedPoint( <C> )
 ##
-##  returns the smallest integer that is moved by <perm>.
+##  is the smallest positive integer that is moved by <perm>
+##  if such an integer exists, and `infinity' if `<perm> = ()'.
+##  For <C> a collection or list of permutations, the smallest value of
+##  `SmallestMovedPoint' for the elements of <C> is returned (and `infinity'
+##  if <C> is empty).
 ##
-DeclareAttribute( "SmallestMovedPointPerm", IsPerm );
+DeclareAttribute( "SmallestMovedPoint", IsPerm );
+DeclareAttribute( "SmallestMovedPoint", IsPermCollection );
+DeclareAttribute( "SmallestMovedPoint", IsList and IsEmpty );
+
+DeclareSynonymAttr( "SmallestMovedPointPerm", SmallestMovedPoint );
 
 
 #############################################################################
 ##
-#A  LargestMovedPointPerm( <perm> ) . . . . . . . . . . . . . . largest point
+#A  LargestMovedPoint( <perm> ) . . . . . . . . . . . . . . largest point
+#A  LargestMovedPoint( <C> )
 ##
-##  returns the largest integer that is moved by <perm>.
+##  For a permutation <perm>, this attribute contains
+##  the largest positive integer which is moved by <perm>
+##  if such an integer exists, and 0 if `<perm> = ()'.
+##  For <C> a collection or list of permutations, the largest value of
+##  `LargestMovedPoint' for the elements of <C> is returned (and 0 if <C> is
+##  empty).
 ##
-DeclareAttribute( "LargestMovedPointPerm", IsPerm );
+DeclareAttribute( "LargestMovedPoint", IsPerm );
+DeclareAttribute( "LargestMovedPoint", IsPermCollection );
+DeclareAttribute( "LargestMovedPoint", IsList and IsEmpty );
+
+DeclareSynonymAttr( "LargestMovedPointPerm", LargestMovedPoint );
 
 
 #############################################################################
 ##
-#A  NrMovedPointsPerm( <perm> ) . . . . . . . . . . .  number of moved points
+#A  NrMovedPoints( <perm> )
+#A  NrMovedPoints( <C> )
 ##
-##  returns the number of points that are moved by <perm>.
+##  is the number of positive integers that are moved by <perm>,
+##  respectively by at least one element in the collection <C>.
+##  (The actual moved points are returned by `MovedPoints',
+##  see~"MovedPoints")
 ##
-DeclareAttribute( "NrMovedPointsPerm", IsPerm );
+DeclareAttribute( "NrMovedPoints", IsPerm );
+DeclareAttribute( "NrMovedPoints", IsPermCollection );
+DeclareAttribute( "NrMovedPoints", IsList and IsEmpty );
+
+DeclareSynonymAttr( "NrMovedPointsPerm", NrMovedPoints );
+DeclareSynonymAttr( "DegreeAction", NrMovedPoints );
+DeclareSynonymAttr( "DegreeOperation", NrMovedPoints );
+
+
+#############################################################################
+##
+#A  MovedPoints( <perm> )
+#A  MovedPoints( <C> )
+##
+##  is the proper set of the positive integers moved by at least one
+##  permutation in the collection <C>, respectively by the permutation
+##  <perm>.
+##
+DeclareAttribute( "MovedPoints", IsPerm);
+DeclareAttribute( "MovedPoints", IsPermCollection );
+DeclareAttribute( "MovedPoints", IsList and IsEmpty );
 
 
 #############################################################################
 ##
 #A  SignPerm( <perm> )
 ##
-##  The *sign* of a permutation is defined as $-1^k$ where $k$ is the number
-##  of cycles of $k$ of even length.
+##  The *sign* of a permutation <perm> is defined as $(-1)^k$
+##  where $k$ is the number of cycles of <perm> of even length.
+##
+##  The sign is a homomorphism from the symmetric group onto the
+##  multiplicative  group $\{ +1, -1 \}$,
+##  the kernel of which is the alternating group.
 
-# DeclareAttribute("SignPerm",IsPerm );
+# DeclareAttribute( "SignPerm", IsPerm );
 
 
 #############################################################################
 ##
 #A  CycleStructurePerm( <perm> )  . . . . . . . . . . . . . . cycle structure
 ##
-##  returns the cycle structure (i.e. the numbers of cycles of different
+##  is the cycle structure (i.e. the numbers of cycles of different
 ##  lengths) of <perm>. This is encoded in a list <l> in the following form:
 ##  The <i>-th entry of <l> contains the number of cycles of <perm> of
 ##  length <i+1>. If <perm> contains no cycles of length <i+1> it is not
@@ -116,7 +188,9 @@ DeclareRepresentation( "IsPerm4Rep", IsInternalRep, [] );
 ##
 ##  is the family of all permutations.
 ##
-PermutationsFamily := NewFamily( "PermutationsFamily", IsPerm );
+BIND_GLOBAL( "PermutationsFamily",
+    NewFamily( "PermutationsFamily",
+    IsPerm,CanEasilySortElements,CanEasilySortElements ) );
 
 
 #############################################################################
@@ -137,7 +211,7 @@ BIND_GLOBAL( "TYPE_PERM4",
 
 #############################################################################
 ##
-#V  One . . . . . . . . . . . . . . . . . . . . . . . . .  one of permutation
+#v  One . . . . . . . . . . . . . . . . . . . . . . . . .  one of permutation
 ##
 SetOne( PermutationsFamily, () );
 
@@ -146,7 +220,7 @@ SetOne( PermutationsFamily, () );
 ##
 #F  PermList( <list> )
 ##
-##  returns the permutation <perm>  that moves points as described by the
+##  is the permutation <perm>  that moves points as described by the
 ##  list <list>.  That means that  `<i>^<perm>  = <list>[<i>]' if  <i> lies
 ##  between 1 and the length of <list>, and `<i>^<perm> = <i>' if <i> is
 ##  larger than  the length of  the list <list>. It will  signal an  error
@@ -155,38 +229,37 @@ SetOne( PermutationsFamily, () );
 ##  twice, or if <list> contains an integer not in the range
 ##  `[1..Length(<list>)]'.
 
-# DeclareGlobalFunction("PermList");
+# DeclareGlobalFunction( "PermList" );
+
 
 #############################################################################
 ##
 #F  ListPerm( <perm> )  . . . . . . . . . . . . . . . . . . .  list of images
 ##
-##  returns a list <list> that contains the images of the positive integers
-##  under the permutation   <perm>. That means that  `<list>[<i>] =
-##  <i>^<perm>',  where <i>  lies between 1   and the largest  point moved
-##  by <perm> (see "LargestMovedPointPerm").
+##  is a list <list> that contains the images of the positive integers
+##  under the permutation <perm>.
+##  That means that `<list>[<i>] = <i>^<perm>', where <i> lies between 1
+##  and the largest point moved by <perm> (see~"LargestMovedPoint").
 ##
-# DeclareGlobalFunction("ListPerm");
-
 BIND_GLOBAL( "ListPerm", function( perm )
-    local lst, i;
-    lst:= [];
-    for i in [ 1 .. LargestMovedPointPerm( perm ) ] do
-      lst[i]:= i ^ perm;
-    od;
-    return lst;
+    if IsOne( perm ) then
+      return [];
+    else
+      return OnTuples( [ 1 .. LargestMovedPoint( perm ) ], perm );
+    fi;
 end );
 
 
 #############################################################################
 ##
-#F  RestrictedPerm(<g>,<D>)  restriction of a permutation to an invariant set
+#F  RestrictedPerm(<perm>,<list>)  restriction of a perm. to an invariant set
 ##
-##  `RestrictedPerm' returns  the new permutation <new>  that operates on the
-##  points in the list <list> in the same  way as the permutation <perm>, and
-##  that fixes those points that are not in <list>.  <list> must be a list of
-##  positive integers  such that for each <i>  in <list> the image $i^{perm}$
-##  is also in <list>, i.e., it must be the union of cycles of <perm>.
+##  `RestrictedPerm' returns  the new permutation <new>  that acts on the
+##  points in the list <list> in the same  way as the permutation <perm>,
+##  and that fixes those points that are not in <list>.
+##  <list> must be a list of positive integers such that for each <i> in
+##  <list> the image `<i>^<perm>' is also in <list>,
+##  i.e., <list> must be the union of cycles of <perm>.
 ##
 BIND_GLOBAL( "RestrictedPerm", function( g, D )
     local   res, d, e, max;
@@ -226,15 +299,17 @@ end );
 
 #############################################################################
 ##
-#F  MappingPermListList(<src>,<dst>)  permutation mapping one list to another
+#F  MappingPermListList( <src>, <dst> ) . . perm. mapping one list to another
 ##
-##  returns   a   permutation    <perm>  such   that
-##  `<list1>[<i>]  ^ <perm> = <list2>[<i>]'.  <perm> fixes  all points larger
-##  then the maximum  of the  entries in <list1>   and <list2>. If  there are
-##  several     such    permutations,  it      is   not     specified   which
-##  `MappingPermListList' returns.   <list1> and  <list2>  must  be  lists of
-##  positive integers of the same length, and neither  may contain an element
-##  twice.
+##  Let <src> and <dst> be lists of positive integers of the same length,
+##  such that neither may contain an element twice.
+##  `MappingPermListList' returns a permutation <perm> such that
+##  `<src>[<i>]^<perm> = <dst>[<i>]'.
+##  <perm> fixes all points larger than the maximum of the entries in <src>
+##  and <dst>.
+##  If there are several such permutations, it is not specified which of them
+##  `MappingPermListList' returns.
+##
 BIND_GLOBAL( "MappingPermListList", function( src, dst )
 
     if not IsList(src) or not IsList(dst) or Length(src) <> Length(dst)  then
@@ -254,15 +329,15 @@ end );
 
 #############################################################################
 ##
-#M  SmallestMovedPointPerm( <perm> )  . . . . . . . . . . .  for permutations
+#m  SmallestMovedPoint( <perm> )  . . . . . . . . . . .  for permutations
 ##
-InstallMethod( SmallestMovedPointPerm,
+InstallMethod( SmallestMovedPoint,
     "for a permutation",
     true,
     [ IsPerm ], 0,
     function( p )
     local   i;
-    
+
     if IsOne(p)  then
         return infinity;
     fi;
@@ -276,9 +351,9 @@ end );
 
 #############################################################################
 ##
-#M  LargestMovedPointPerm( <perm> ) . . . . . . . .  for internal permutation
+#m  LargestMovedPoint( <perm> ) . . . . . . . .  for internal permutation
 ##
-InstallMethod( LargestMovedPointPerm,
+InstallMethod( LargestMovedPoint,
     "for an internal permutation",
     true,
     [ IsPerm and IsInternalRep ], 0,
@@ -287,9 +362,9 @@ InstallMethod( LargestMovedPointPerm,
 
 #############################################################################
 ##
-#M  NrMovedPointsPerm( <perm> ) . . . . . . . . . . . . . . . for permutation
+#m  NrMovedPoints( <perm> ) . . . . . . . . . . . . . . . for permutation
 ##
-InstallMethod( NrMovedPointsPerm,
+InstallMethod( NrMovedPoints,
     "for a permutation",
     true,
     [ IsPerm ], 0,
@@ -297,8 +372,8 @@ InstallMethod( NrMovedPointsPerm,
     local mov, pnt;
     mov:= 0;
     if perm <> () then
-      for pnt in [ SmallestMovedPointPerm( perm )
-                   .. LargestMovedPointPerm( perm ) ] do
+      for pnt in [ SmallestMovedPoint( perm )
+                   .. LargestMovedPoint( perm ) ] do
         if pnt ^ perm <> pnt then
           mov:= mov + 1;
         fi;
@@ -310,7 +385,7 @@ InstallMethod( NrMovedPointsPerm,
 
 #############################################################################
 ##
-#M  CycleStructurePerm( <perm> )  . . . . . . . . .  length of cycles of perm
+#m  CycleStructurePerm( <perm> )  . . . . . . . . .  length of cycles of perm
 ##
 InstallMethod( CycleStructurePerm,
     "default method",
@@ -329,7 +404,7 @@ function ( perm )
     if IsOne(perm) then
         cys := [];
     else
-        degree := LargestMovedPointPerm(perm);
+        degree := LargestMovedPoint(perm);
         mark := BlistList([1..degree], []);
         cys := [];
         for i in [1..degree] do
@@ -355,7 +430,7 @@ end );
 
 #############################################################################
 ##
-#M  String( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
+#m  String( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
 ##
 InstallMethod( String,
     "for a permutation",
@@ -368,7 +443,7 @@ InstallMethod( String,
         str := "()";
     else
         str := "";
-        for i  in [ 1 .. LargestMovedPointPerm( perm ) ]  do
+        for i  in [ 1 .. LargestMovedPoint( perm ) ]  do
             j := i ^ perm;
             while j > i  do j := j ^ perm;  od;
             if j = i and i ^ perm <> i  then
@@ -391,5 +466,16 @@ InstallMethod( String,
 
 #############################################################################
 ##
-#E  permutat.g	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  Order( <perm> ) . . . . . . . . . . . . . . . . .  order of a permutation
 ##
+InstallMethod( Order,
+    "for a permutation",
+    true,
+    [ IsPerm ], 0,
+    OrderPerm );
+
+
+#############################################################################
+##
+#E
+

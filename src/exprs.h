@@ -135,6 +135,9 @@ extern  void            PrintExpr (
             Expr                expr );
 
 
+extern void PrintRecExpr1 ( Expr expr ); /* needed for printing
+					  function calls with options */
+
 /****************************************************************************
 **
 *V  PrintExprFuncs[<type>]  . .  printing function for objects of type <type>

@@ -23,6 +23,7 @@ dnl ##
 AC_PROG_CC
 AC_C_CONST
 AC_C_INLINE
+AC_C_BIGENDIAN
 #
 # Assume that cross-compiling is for 32 bit systems 
 # (alpha/NT will have to wait)
@@ -41,7 +42,10 @@ AC_DEFINE_UNQUOTED( SYS_ARCH, "$target-$CC" )
 
 dnl This has to be left until after we know the system type
 GP_C_LONG_ALIGN
+GP_CFLAGS
+GP_LDFLAGS
 GP_PROG_CC_DYNFLAGS
+
 
 dnl #########################################################################
 dnl ##
@@ -49,7 +53,7 @@ dnl ## check for the existence of various header files
 dnl ##
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS( termio.h sgtty.h signal.h stdio.h unistd.h libc.h )
+AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h stdio.h unistd.h libc.h )
 
 
 dnl #########################################################################
@@ -164,6 +168,16 @@ case "$host" in
     AC_DEFINE( SPARC, 1)
    ;;
 esac
+
+
+
+case "$host" in 
+    *pc-cygwin* )
+    AC_DEFINE( SYS_IS_CYGWIN32, 1 )
+    ;;
+esac
+
+
 
 
 

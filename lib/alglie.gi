@@ -16,9 +16,9 @@ Revision.alglie_gi :=
 
 #############################################################################
 ##
-#M  UpperCentralSeriesOfAlgebra( <L> )  . . . . . . . . . . for a Lie algebra
+#M  LieUpperCentralSeries( <L> )  . . . . . . . . . . for a Lie algebra
 ##
-InstallMethod( UpperCentralSeriesOfAlgebra,
+InstallMethod( LieUpperCentralSeries,
     "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
@@ -49,9 +49,9 @@ InstallMethod( UpperCentralSeriesOfAlgebra,
 
 #############################################################################
 ##
-#M  LowerCentralSeriesOfAlgebra( <L> )  . . . . . . . . . . for a Lie algebra
+#M  LieLowerCentralSeries( <L> )  . . . . . . . . . . for a Lie algebra
 ##
-InstallMethod( LowerCentralSeriesOfAlgebra,
+InstallMethod( LieLowerCentralSeries,
     "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
@@ -62,7 +62,7 @@ InstallMethod( LowerCentralSeriesOfAlgebra,
 
     # Compute the series by repeated calling of `ProductSpace'.
     S := [ L ];
-    C := DerivedSubalgebra( L );
+    C := LieDerivedSubalgebra( L );
     while C <> S[ Length(S) ]  do
       Add( S, C );
       C:= ProductSpace( L, C );
@@ -73,11 +73,54 @@ InstallMethod( LowerCentralSeriesOfAlgebra,
     end );
 
 
+
 #############################################################################
 ##
-#M  IsSolvableAlgebra( <L> )  . . . . . . . . . . . . . . . for a Lie algebra
+#M  LieDerivedSubalgebra( <L> )
 ##
-InstallMethod( IsSolvableAlgebra,
+##  is the (Lie) derived subalgebra of the Lie algebra <L>.
+##  This is the ideal/algebra/subspace (equivalent in this case)
+##  generated/spanned by all products $uv$
+##  where $u$ and $v$ range over a basis of <L>. 
+##
+InstallMethod( LieDerivedSubalgebra,
+    "for a Lie algebra",
+    true,
+    [ IsAlgebra and IsLieAlgebra ], 0,
+    L -> ProductSpace( L, L ) );
+
+
+#############################################################################
+##
+#M  LieDerivedSeries( <L> )
+##
+InstallOtherMethod( LieDerivedSeries,
+    "for a Lie algebra",
+    true,
+    [ IsAlgebra and IsLieAlgebra ], 0,
+    function ( L )
+
+    local   S,          # (Lie) derived series of <L>, result
+            D;          # (Lie) derived subalgebras
+
+    # Compute the series by repeated calling of `LieDerivedSubalgebra'.
+    S := [ L ];
+    D := LieDerivedSubalgebra( L );
+    while D <> S[ Length(S) ]  do
+      Add( S, D );
+      D:= LieDerivedSubalgebra( D );
+    od;
+
+    # Return the series when it becomes stable.
+    return S;
+    end );
+
+
+#############################################################################
+##
+#M  IsLieSolvable( <L> )  . . . . . . . . . . . . . . . for a Lie algebra
+##
+InstallMethod( IsLieSolvable,
     "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
@@ -85,16 +128,16 @@ InstallMethod( IsSolvableAlgebra,
 
     local D;
 
-    D:= DerivedSeriesOfAlgebra( L );
+    D:= LieDerivedSeries( L );
     return Dimension( D[ Length( D ) ] ) = 0;
     end );
 
 
 #############################################################################
 ##
-#M  IsNilpotentAlgebra( <L> ) . . . . . . . . . . . . . . . for a Lie algebra
+#M  IsLieNilpotent( <L> ) . . . . . . . . . . . . . . . for a Lie algebra
 ##
-InstallMethod( IsNilpotentAlgebra,
+InstallMethod( IsLieNilpotent,
     "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
@@ -102,23 +145,23 @@ InstallMethod( IsNilpotentAlgebra,
 
     local D;
 
-    D:= LowerCentralSeriesOfAlgebra( L );
+    D:= LieLowerCentralSeries( L );
     return Dimension( D[ Length( D ) ] ) = 0;
     end );
 
 
 #############################################################################
 ##
-#M  IsAbelianLieAlgebra( <L> )  . . . . . . . . . . . . . . for a Lie algebra
+#M  IsLieAbelian( <L> )  . . . . . . . . . . . . . . for a Lie algebra
 ##
 ##  It is of course sufficient to check products of algebra generators,
 ##  no basis and structure constants of <L> are needed.
 ##  But if we have already a structure constants table we use it.
 ##
-InstallMethod( IsAbelianLieAlgebra,
+InstallMethod( IsLieAbelian,
     "for a Lie algebra with known basis",
     true,
-    [ IsAlgebra and IsLieAlgebra and HasBasisOfDomain ], 0,
+    [ IsAlgebra and IsLieAlgebra and HasBasis ], 0,
     function( L )
 
     local B,      # basis of `L'
@@ -126,7 +169,7 @@ InstallMethod( IsAbelianLieAlgebra,
           i,      # loop variable
           j;      # loop variable
 
-    B:= BasisOfDomain( L );
+    B:= Basis( L );
     if not HasStructureConstantsTable( B ) then
       TryNextMethod();
     fi;
@@ -142,7 +185,7 @@ InstallMethod( IsAbelianLieAlgebra,
     return true;
     end );
 
-InstallMethod( IsAbelianLieAlgebra,
+InstallMethod( IsLieAbelian,
     "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
@@ -218,7 +261,7 @@ InstallMethod( LieCentre,
       fi;
 
       # Construct the equation system.
-      B:= BasisOfDomain( A );
+      B:= Basis( A );
       T:= StructureConstantsTable( B );
       M:= [];
       zerovector:= [ 1 .. n*n ] * Zero( R );
@@ -265,7 +308,7 @@ InstallMethod( LieCentre,
 InstallMethod( LieCentralizer,
     "for an abelian Lie algebra and a vector space",
     IsIdenticalObj,
-    [ IsAlgebra and IsLieAlgebra and IsAbelianLieAlgebra,
+    [ IsAlgebra and IsLieAlgebra and IsLieAbelian,
       IsVectorSpace ], 0,
     function( A, S )
 
@@ -298,12 +341,12 @@ InstallMethod( LieCentralizer,
           pos;
 
     R:= LeftActingDomain( A );
-    B:= BasisOfDomain( A );
+    B:= Basis( A );
     T:= StructureConstantsTable( B );
     n:= Dimension( A );
     m:= Dimension( S );
     M:= [];
-    v:= List( BasisVectors( BasisOfDomain( S ) ),
+    v:= List( BasisVectors( Basis( S ) ),
                             x -> Coefficients( B, x ) );
 
     zerovector:= [ 1 .. n*m ] * Zero( R );
@@ -386,7 +429,7 @@ InstallMethod( LieNormalizer,
     fi;
 
     R:= LeftActingDomain( L );
-    B:= BasisOfDomain( L );
+    B:= Basis( L );
     T:= StructureConstantsTable( B );
     n:= Dimension( L );
     s:= Dimension( U );
@@ -395,13 +438,13 @@ InstallMethod( LieNormalizer,
       return L;
     fi;
 
-    v:= List( BasisVectors( BasisOfDomain( U ) ),
+    v:= List( BasisVectors( Basis( U ) ),
               x -> Coefficients( B, x ) );
 
     # The equations.
     # First the normalizer part, \ldots
 
-    A:= MutableNullMat( n + s*s, n*s, R );
+    A:= NullMat( n + s*s, n*s, R );
     for i in [ 1..n ] do
       for j in [ 1..n ] do
         cij:= T[i][j];
@@ -429,7 +472,7 @@ InstallMethod( LieNormalizer,
 
     # Extract the `normalizer part' of the solution.
     l:= Length(b);
-    bas:= MutableNullMat( l, n, R );
+    bas:= NullMat( l, n, R );
     for i in [ 1..l ] do
       for j in [ 1..n ] do
         bas[i][j]:= b[i][j];
@@ -477,7 +520,7 @@ InstallMethod( KappaPerp,
           bas;   # the basis of the solution space
 
     R:= LeftActingDomain( L );
-    B:= BasisOfDomain( L );
+    B:= Basis( L );
     n:= Dimension( L );
     s:= Dimension( U );
 
@@ -485,9 +528,9 @@ InstallMethod( KappaPerp,
       return L;
     fi;
 
-    v:= List( BasisVectors( BasisOfDomain( U ) ),
+    v:= List( BasisVectors( Basis( U ) ),
               x -> Coefficients( B, x ) );
-    A:= MutableNullMat( n, s, R );
+    A:= NullMat( n, s, R );
     kap:= KillingMatrix( B );
 
     # Compute the equations that define the subspace.
@@ -570,13 +613,13 @@ InstallMethod( AdjointMatrix,
 
 #############################################################################
 ##
-#M  Derivations( <B> )
+#M  RightDerivations( <B> )
 ##
 ##  Let $n$ be the dimension of $A$.
 ##  We start with $n^2$ indeterminates $D = [ d_{i,j} ]_{i,j}$ which
-##  means that $D$ maps $b_i$ to $\sum_{i=1}^n d_{ij} b_j$.
+##  means that $D$ maps $b_i$ to $\sum_{j=1}^n d_{ij} b_j$.
 ##
-##  (Note that this is column convention.)
+##  (Note that this is row convention.)
 ##
 ##  This leads to the following linear equation system in the $d_{ij}$.
 ##  $\sum_{k=1}^n ( c_{ijk} d_{km} - c_{kjm} d_{ik} - c_{ikm} d_{jk} ) = 0$
@@ -584,23 +627,29 @@ InstallMethod( AdjointMatrix,
 ##  The solution of this system gives us a vector space basis of the
 ##  algebra of derivations.
 ##
-InstallMethod( Derivations,
-    "for a basis of a Lie algebra",
+InstallMethod( RightDerivations,
+    "method for a basis of an algebra",
     true,
     [ IsBasis ], 0,
     function( B )
 
-    local T,           # structure constants table w.r. to `B'
+    local T,           # structure constants table w.r. to 'B'
           L,           # underlying Lie algebra
-          R,           # left acting domain of `L'
-          n,           # dimension of `L'
-          eqno,
+          R,           # left acting domain of 'L'
+          n,           # dimension of 'L'
+          eqno,offset,
           A,
           i, j, k, m,
           M;             # the Lie algebra of derivations
 
-    if not IsLieAlgebra( UnderlyingLeftModule( B ) ) then
-      Error( "<B> must be a basis of a Lie algebra" );
+    if not IsAlgebra( UnderlyingLeftModule( B ) ) then
+      Error( "<B> must be a basis of an algebra" );
+    fi;
+
+    if IsLieAlgebra( UnderlyingLeftModule( B ) ) then
+      offset:= 1;
+    else
+      offset:= 0;
     fi;
 
     T:= StructureConstantsTable( B );
@@ -616,10 +665,14 @@ InstallMethod( Derivations,
     # by the $d_{ij}$; the $((i-1) n + j)$-th row belongs to $d_{ij}$.
 
     # Construct the equation system.
-    A:= MutableNullMat( n^2, (n-1)*n*n/2, R );
+    if offset = 1 then
+      A:= NullMat( n^2, (n-1)*n*n/2, R );
+    else
+      A:= NullMat( n^2, n^3, R );
+    fi;
     eqno:= 0;
     for i in [ 1 .. n ] do
-      for j in [ i+1 .. n ] do
+      for j in [ offset*i+1 .. n ] do
         for m in [ 1 .. n ] do
           eqno:= eqno+1;
           for k in [ 1 .. n ] do
@@ -635,9 +688,9 @@ InstallMethod( Derivations,
     od;
 
     # Solve the equation system.
-    # Note that for $n = 1$ the matrix is empty.
+    # Note that if `L' is a Lie algebra and $n = 1$ the matrix is empty.
 
-    if n = 1 then
+    if n = 1 and offset = 1 then
       A:= [ [ One( R ) ] ];
     else
       A:= NullspaceMat( A );
@@ -649,7 +702,8 @@ InstallMethod( Derivations,
 
     # Construct the Lie algebra.
     if IsEmpty( A ) then
-      M:= AlgebraByGenerators( R, [], LieObject( NullMat( n, n, R ) ) );
+      M:= AlgebraByGenerators( R, [],
+              LieObject( Immutable( NullMat( n, n, R ) ) ) );
     else
       A:= List( A, LieObject );
       M:= AlgebraByGenerators( R, A );
@@ -658,7 +712,107 @@ InstallMethod( Derivations,
 
     # Return the derivations.
     return M;
-    end );
+end );
+
+
+#############################################################################
+##
+#M  LeftDerivations( <B> )
+##
+##  Let $n$ be the dimension of $A$.
+##  We start with $n^2$ indeterminates $D = [ d_{i,j} ]_{i,j}$ which
+##  means that $D$ maps $b_i$ to $\sum_{j=1}^n d_{ji} b_j$.
+##
+##  (Note that this is column convention.)
+##
+InstallMethod( LeftDerivations,
+    "method for a basis of an algebra",
+    true,
+    [ IsBasis ], 0,
+    function( B )
+
+    local T,           # structure constants table w.r. to 'B'
+          L,           # underlying Lie algebra
+          R,           # left acting domain of 'L'
+          n,           # dimension of 'L'
+          eqno,offset,
+          A,
+          i, j, k, m,
+          M;             # the Lie algebra of derivations
+
+    if not IsAlgebra( UnderlyingLeftModule( B ) ) then
+      Error( "<B> must be a basis of an algebra" );
+    fi;
+
+    if IsLieAlgebra( UnderlyingLeftModule( B ) ) then
+      offset:= 1;
+    else
+      offset:= 0;
+    fi;
+
+    T:= StructureConstantsTable( B );
+    L:= UnderlyingLeftModule( B );
+    R:= LeftActingDomain( L );
+    n:= Dimension( L );
+
+    if n = 0 then
+      return NullAlgebra( R );
+    fi;
+
+    # The rows in the matrix of the equation system are indexed
+    # by the $d_{ij}$; the $((i-1) n + j)$-th row belongs to $d_{ij}$.
+
+    # Construct the equation system.
+    if offset = 1 then
+      A:= NullMat( n^2, (n-1)*n*n/2, R );
+    else
+      A:= NullMat( n^2, n^3, R );
+    fi;
+    eqno:= 0;
+    for i in [ 1 .. n ] do
+      for j in [ offset*i+1 .. n ] do
+        for m in [ 1 .. n ] do
+          eqno:= eqno+1;
+          for k in [ 1 .. n ] do
+            A[ (m-1)*n+k ][eqno]:= A[ (m-1)*n+k ][eqno] + 
+                                        SCTableEntry( T,i,j,k );
+            A[ (k-1)*n+i ][eqno]:= A[ (k-1)*n+i ][eqno] - 
+                                        SCTableEntry( T,k,j,m );
+            A[ (k-1)*n+j ][eqno]:= A[ (k-1)*n+j ][eqno] - 
+                                        SCTableEntry( T,i,k,m );
+          od;
+        od;
+      od;
+    od;
+
+    # Solve the equation system.
+    # Note that if `L' is a Lie algebra and $n = 1$ the matrix is empty.
+
+    if n = 1 and offset = 1 then
+      A:= [ [ One( R ) ] ];
+    else
+      A:= NullspaceMat( A );
+    fi;
+
+    # Construct the generating matrices from the vectors.
+    A:= List( A, v -> List( [ 1 .. n ],
+                            i -> v{ [ (i-1)*n + 1 .. i*n ] } ) );
+
+    # Construct the Lie algebra.
+    if IsEmpty( A ) then
+      M:= AlgebraByGenerators( R, [],
+              LieObject( Immutable( NullMat( n, n, R ) ) ) );
+    else
+      A:= List( A, LieObject );
+      M:= AlgebraByGenerators( R, A );
+      UseBasis( M, A );
+    fi;
+
+    # Return the derivations.
+    return M;
+end );
+
+
 
 #############################################################################
 ##
@@ -720,49 +874,6 @@ InstallMethod( KillingMatrix,
     end );
 
 
-#############################################################################
-##
-#M  IsNilpotentElement( <L>, <x> )  . . . .  for a Lie algebra and an element
-##
-##  <x> is nilpotent if its adjoint matrix $A$ (w.r. to an arbitrary basis)
-##  is nilpotent.
-##  To check this, we only need to check whether $A^n$ (or a smaller power)
-##  is zero, where $n$ denotes the dimension of <L>.
-##
-InstallMethod( IsNilpotentElement,
-    "for a Lie algebra, and an element",
-    IsCollsElms,
-    [ IsAlgebra and IsLieAlgebra, IsRingElement ], 0,
-    function( L, x )
-
-    local B,     # a basis of `L'
-          A,     # adjoint matrix of `x w.r. to `B'
-          n,     # dimension of `L'
-          i,     # loop variable
-          zero;  # zero coefficient
-
-    B := BasisOfDomain( L );
-    A := AdjointMatrix( B, x );
-    n := Dimension( L );
-    i := 1;
-    zero:= Zero( A[1][1] );
-
-    if ForAll( A, x -> n < PositionNot( x, zero ) ) then
-      return true;
-    fi;
-
-    while i < n do
-      i:= 2 * i;
-      A:= A * A;
-      if ForAll( A, x -> n < PositionNot( x, zero ) ) then
-        return true;
-      fi;
-    od;
-
-    return false;
-    end );
-
-
 ##############################################################################
 ##
 #M  AdjointBasis( <B> )
@@ -798,19 +909,18 @@ InstallMethod( AdjointBasis,
     n:= Length( bb );
     F:= LeftActingDomain( UnderlyingLeftModule( B ) );
     adL:= [];
-    adLsp:= LeftModuleByGenerators( F, NullMat(n,n,F) );
+    adLsp:= MutableBasis( F, [ NullMat(n,n,F) ] );
 #T better declare the zero ?
     inds:= [];
     for i in [1..n] do
       adi:= AdjointMatrix( B, bb[i] );
-      if not ( adi in adLsp ) then
+      if not IsContainedInSpan( adLsp, adi ) then
         Add( adL, adi );
         Add( inds, i );
-        adLsp:= LeftModuleByGenerators( F, adL );
+        CloseMutableBasis( adLsp, adi );
       fi;
     od;
-    adLbas:= BasisByGenerators( adLsp, adL );
-#T better use mutable basis!
+    adLbas:= Basis( VectorSpace( F, adL ), adL );
 
     SetIndicesOfAdjointBasis( adLbas, inds );
 
@@ -845,7 +955,7 @@ InstallMethod( IsRestrictedLieAlgebra,
       return false;
     fi;
 
-    B:= BasisOfDomain( L );
+    B:= Basis( L );
 
     adL:= AdjointBasis( B );
 
@@ -1116,10 +1226,10 @@ InstallMethod( CartanSubalgebra,
         # `a' is a non nilpotent element of `K'.
         # We construct the generalized eigenspace of this element w.r.t.
         # the eigenvalue 0.  This is a subalgebra of `K' and of `L'.
-        A:= TransposedMat( AdjointMatrix( BasisOfDomain( K ), a));
+        A:= TransposedMat( AdjointMatrix( Basis( K ), a));
         A:= A ^ Dimension( K );
         bas:= NullspaceMat( A );
-        bas:= List( bas, x -> LinearCombination( BasisOfDomain( K ), x ) );
+        bas:= List( bas, x -> LinearCombination( Basis( K ), x ) );
         K:= SubalgebraNC( L, bas, "basis");
 
       od;
@@ -1139,10 +1249,10 @@ InstallMethod( CartanSubalgebra,
 
       # `K' will be the Engel subalgebra corresponding to `a'.
 
-      A:= TransposedMat( AdjointMatrix( BasisOfDomain( L ), a ) );
+      A:= TransposedMat( AdjointMatrix( Basis( L ), a ) );
       A:= A^n;
       bas:= NullspaceMat( A );
-      bas:= List( bas, x -> LinearCombination( BasisOfDomain( L ), x ) );
+      bas:= List( bas, x -> LinearCombination( Basis( L ), x ) );
       K:= SubalgebraNC( L, bas, "basis");
 
       # We locate a nonnilpotent element in this Engel subalgebra.
@@ -1160,7 +1270,7 @@ InstallMethod( CartanSubalgebra,
         # We do this by checking a few values of `c'
         # (At most `n' values of `c' will not yield a smaller subalgebra.)
 
-        sp:= VectorSpace( F, BasisVectors( BasisOfDomain(K) ), "basis");
+        sp:= VectorSpace( F, BasisVectors( Basis(K) ), "basis");
         found:= false;
         if Characteristic( F ) = 0 then
           c:= 0;
@@ -1178,10 +1288,10 @@ InstallMethod( CartanSubalgebra,
           newelt:= a+c*(b-a);
 
           # Calculate the Engel subalgebra belonging to `newelt'.
-          A:= TransposedMat( AdjointMatrix( BasisOfDomain( K ), newelt ) );
+          A:= TransposedMat( AdjointMatrix( Basis( K ), newelt ) );
           A:= A^Dimension( K );
           bas:= NullspaceMat( A );
-          bas:= List( bas, x -> LinearCombination( BasisOfDomain( K ), x ) );
+          bas:= List( bas, x -> LinearCombination( Basis( K ), x ) );
 
           # We have found a smaller subalgebra if the dimension is smaller
           # and new basis elements are contained in the old space.
@@ -1264,8 +1374,8 @@ InstallMethod( AdjointAssociativeAlgebra,
 
     if Dimension( K ) = 0 then
       return Algebra( F, [ [ [ Zero(F) ] ] ] );
-    elif IsAbelianLieAlgebra( L ) then
-      return Algebra( F, [ AdjointMatrix( BasisOfDomain( L ),
+    elif IsLieAbelian( L ) then
+      return Algebra( F, [ AdjointMatrix( Basis( L ),
                                           GeneratorsOfAlgebra( K )[1] ) ] );
     fi;
 
@@ -1274,10 +1384,10 @@ InstallMethod( AdjointAssociativeAlgebra,
     # Initialisations that ensure that the first step of the loop will select
     # a maximal linearly independent set of matrices of degree 1.
 
-    degree1:= List( BasisVectors( BasisOfDomain(K) ),
-                        x -> AdjointMatrix( BasisOfDomain(L), x ) );
+    degree1:= List( BasisVectors( Basis(K) ),
+                        x -> AdjointMatrix( Basis(L), x ) );
     posits  := [ [ 1, 1 ] ];
-    highdeg := [ MutableIdentityMat( n, F ) ];
+    highdeg := [ IdentityMat( n, F ) ];
     asbas   := [ Immutable( highdeg[1] ) ];
     lowinds := [ Dimension( K ) ];
 
@@ -1365,16 +1475,16 @@ InstallMethod( AdjointAssociativeAlgebra,
 
 ##############################################################################
 ##
-#M  NilRadical( <L> )
+#M  LieNilRadical( <L> )
 ##
 ##  Let $p$ be the characteristic of the coefficients field of <L>.
-##  If $p=0$ the we use the following characterisation of the nilradical:
+##  If $p=0$ the we use the following characterisation of the LieNilRadical:
 ##  Let $S$ be the solvable radical of <L>. And let $H$ be a Cartan subalgebra
 ##  of $S$. Decompose $S$ as $S = H \oplus S_1(H)$, where $S_1(H)$ is the
 ##  Fitting 1-component of the adjoint action of $H$ on $S$. Let $H*$ be the
 ##  associative algebra generated by $ad H$, then $S_1(H)$ is the intersection
 ##  of the spaces $H*^i( S )$ for $i>0$. Let $R$ be the radical of the
-##  algebra $H*$. Then the nilradical of <L> consists of $S_1(H)$ together
+##  algebra $H*$. Then the LieNilRadical of <L> consists of $S_1(H)$ together
 ##  with all elements $x$ in $H$ such that $ad x\in R$. This last space 
 ##  is also characterised as the space of all elements $x$ such that
 ##  $ad x$ lies in the vector space spanned by all nilpotent parts of all
@@ -1384,7 +1494,7 @@ InstallMethod( AdjointAssociativeAlgebra,
 ##  matrix algebra $A$ generated by $ad `L'$.
 ##  The nil radical is then equal to $\{ x\in L \mid ad x \in A \}$.
 ##
-InstallMethod( NilRadical,
+InstallMethod( LieNilRadical,
     "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
@@ -1414,10 +1524,10 @@ InstallMethod( NilRadical,
 
     if p = 0 then
 
-      # The nilradical of <L> is equal to
-      # the nilradical of its solvable radical.
+      # The LieNilRadical of <L> is equal to
+      # the LieNilRadical of its solvable radical.
 
-      S:= SolvableRadical( L );
+      S:= LieSolvableRadical( L );
       n:= Dimension( S );
 
       if n in [ 0, 1 ] then return S; fi;
@@ -1443,7 +1553,7 @@ InstallMethod( NilRadical,
       R:= RadicalOfAlgebra( AdjointAssociativeAlgebra( S, H ) );
       B:= BasisVectors( Basis( R ) );
 
-      eqs:= MutableNullMat(Dimension(H)+Dimension(R),n^2,F);
+      eqs:= NullMat(Dimension(H)+Dimension(R),n^2,F);
       for i in [1..n] do
         for j in [1..n] do
           for k in [1..Dimension(H)] do
@@ -1464,9 +1574,9 @@ InstallMethod( NilRadical,
     else
 
       n:= Dimension( L );
-      bv:= BasisVectors( BasisOfDomain(L) );
-      adL:= List( bv, x -> AdjointMatrix(BasisOfDomain(L),x) );
-      A:= AdjointAssociativeAlgebra( L );
+      bv:= BasisVectors( Basis(L) );
+      adL:= List( bv, x -> AdjointMatrix(Basis(L),x) );
+      A:= AdjointAssociativeAlgebra( L, L );
       R:= RadicalOfAlgebra( A );
 
       if Dimension( R ) = 0 then
@@ -1476,12 +1586,12 @@ InstallMethod( NilRadical,
 
       fi;
 
-      B:= BasisVectors( BasisOfDomain( R ) );
+      B:= BasisVectors( Basis( R ) );
       t:= Dimension( R );
 
       # Now we compute the intersection of `R' and `<ad L>'.
 
-      eqs:= MutableNullMat(n+t,n*n,F);
+      eqs:= NullMat(n+t,n*n,F);
       for i in [1..n] do
         for j in [1..n] do
           for k in [1..n] do
@@ -1503,7 +1613,7 @@ InstallMethod( NilRadical,
 
 ##############################################################################
 ##
-#M  SolvableRadical( <L> )
+#M  LieSolvableRadical( <L> )
 ##
 ##  In characteristic zero, the solvable radical of the Lie algebra <L> is
 ##  just the orthogonal complement of $[ <L> <L> ]$ w.r.t. the Killing form.
@@ -1513,7 +1623,7 @@ InstallMethod( NilRadical,
 ##  $R( <L> )$ denotes the solvable radical of $L$ and $NR( <L> )$ its
 ##  nil radical).
 ##
-InstallMethod( SolvableRadical,
+InstallMethod( LieSolvableRadical,
     "for a Lie algebra",
     true,
     [ IsLieAlgebra ], 0,
@@ -1528,12 +1638,12 @@ InstallMethod( SolvableRadical,
 
     if Characteristic( LeftActingDomain( L ) ) = 0 then
 
-      LL:= DerivedSubalgebra( L );
-      B:= BasisVectors( BasisOfDomain( KappaPerp( L, LL ) ) );
+      LL:= LieDerivedSubalgebra( L );
+      B:= BasisVectors( Basis( KappaPerp( L, LL ) ) );
 
     else
 
-      n:= NilRadical( L );
+      n:= LieNilRadical( L );
 
       if Dimension( n ) = 0 or Dimension( n ) = Dimension( L ) then
         return n;
@@ -1541,14 +1651,14 @@ InstallMethod( SolvableRadical,
 
       hom:= NaturalHomomorphismByIdeal( L, n );
       quo:= ImagesSource( hom );
-      r1:= SolvableRadical( quo );
-      B:= BasisVectors( BasisOfDomain( r1 ) );
+      r1:= LieSolvableRadical( quo );
+      B:= BasisVectors( Basis( r1 ) );
       B:= List( B, x -> PreImagesRepresentative( hom, x ) );
-      Append( B, BasisVectors( BasisOfDomain( n ) ) );
+      Append( B, BasisVectors( Basis( n ) ) );
 
     fi;
 
-    SetIsSolvableAlgebra( L, Length( B ) = Dimension( L ) );
+    SetIsLieSolvable( L, Length( B ) = Dimension( L ) );
 
     return IdealNC( L, B, "basis");
 
@@ -1581,14 +1691,12 @@ InstallMethod( DirectSumDecomposition,
           n,                # The dimension of `L'.
           m,                # An integer.
           set,              # A list of integers.
-          ready,            # A boolean.
           C,                # The centre of `L'.
           bvc,              # basis vectors of a basis of `C'
           D,                # The derived subalgebra of `L'.
           CD,               # The intersection of `C' and `D'.
           H,                # A Cartan subalgebra of `L'.
           BH,               # basis of `H'
-          basH,             # List of basis vectors of `H'.
           B,                # A list of bases of subspaces of `L'.
           cf,               # Coefficient list.
           comlist,          # List of commutators.
@@ -1599,18 +1707,17 @@ InstallMethod( DirectSumDecomposition,
           x,                # An element of `sp'.
           b,                # A list of basis vectors.
           bas,res,          # Bases of associative algebras.
-          u,i,j,k,l,        # Loop variables.
+          i,j,k,l,          # Loop variables.
           centralizer,      # The centralizer of `adL' in the matrix algebra.
           Rad,              # The radical of `centralizer'.
           M,mat,            # Matrices.
           facs,             # A list of factors of a polynomial.
-          hlist,            # List of polynomials.
           f,                # Polynomial.
           contained,        # Boolean variable.
           adL,              # A basis of the matrix space `ad L'.
           Q,                # The factor algebra `centralizer/Rad'
           q,                # Number of elements of the field of `L'.
-          ei,ni,e,E,        # Elements from `centralizer'
+          ei,ni,E,        # Elements from `centralizer'
           hom,              # A homomorphism.
           id,               # A list of idempotents.
           vv;               # A list of vectors.
@@ -1619,7 +1726,7 @@ InstallMethod( DirectSumDecomposition,
     F:= LeftActingDomain( L );
     n:= Dimension( L );
 
-    if RankMat( KillingMatrix( BasisOfDomain( L ) ) ) = n then
+    if RankMat( KillingMatrix( Basis( L ) ) ) = n then
 
       # The algorithm works as follows.
       # Let `H' be a Cartan subalgebra of `L'.
@@ -1639,8 +1746,8 @@ InstallMethod( DirectSumDecomposition,
       # If the field is small, then we use decomposable elements instead.
       
       H:= CartanSubalgebra( L );
-      BH:= BasisOfDomain( H );
-      BL:= BasisOfDomain( L );
+      BH:= Basis( H );
+      BL:= Basis( L );
 
       m:= (( n - Dimension(H) ) * ( n - Dimension(H) + 2 )) / 8;
 
@@ -1654,7 +1761,7 @@ InstallMethod( DirectSumDecomposition,
           M:= AdjointMatrix( BL, x );
           f:= CharacteristicPolynomial( F, M );
           f:= f/Gcd( f, Derivative( f ) );
-        until DegreeOfUnivariateLaurentPolynomial( f )
+        until DegreeOfLaurentPolynomial( f )
                   = Dimension( L ) - Dimension( H ) + 1;
 
       # We decompose the action of the splitting element:
@@ -1689,7 +1796,7 @@ InstallMethod( DirectSumDecomposition,
        # that we know the dimension of this algebra.
 
         bas:= List( BH, x -> AdjointMatrix( Basis( L ), x ) );
-        sp:= MutableBasisByGenerators( F, bas );
+        sp:= MutableBasis( F, bas );
   
         k:=1; l:=1;
         while k<=Length(bas) do
@@ -1703,7 +1810,7 @@ InstallMethod( DirectSumDecomposition,
                              else k:=k+1; l:=1;
           fi;
         od;
-        Add( bas, IdentityMat( Dimension( L ), F ) );
+        Add( bas, Immutable( IdentityMat( Dimension( L ), F ) ) );
 
        # Now `B' will be a list of subspaces of `L' stable under `H'. 
        # We stop once every element from `B' is irreducible.
@@ -1737,8 +1844,8 @@ InstallMethod( DirectSumDecomposition,
            # of the result is equal to the degree of `f' then `B[k]' is
            # irreducible. 
 
-              sp:= MutableBasisByGenerators( F, 
-                     [ IdentityMat( Dimension(B[k]), F ) ]  );
+              sp:= MutableBasis( F, 
+                     [ Immutable( IdentityMat( Dimension(B[k]), F ) ) ]  );
               for j in [1..Length(bas)] do              
                 mat:= [ ];
                 for i in [1..Length(b)] do
@@ -1754,7 +1861,7 @@ InstallMethod( DirectSumDecomposition,
               od;
               res:= BasisVectors( sp ); 
 
-              if Length( res ) = DegreeOfUnivariateLaurentPolynomial( f ) then
+              if Length( res ) = DegreeOfLaurentPolynomial( f ) then
   
                 # The space is irreducible.
   
@@ -1842,7 +1949,7 @@ InstallMethod( DirectSumDecomposition,
       od;
 
       return List( ideals,
-          I -> IdealNC( L, BasisVectors( BasisOfDomain( I ) ), "basis" ));
+          I -> IdealNC( L, BasisVectors( Basis( I ) ), "basis" ));
 
     else
 
@@ -1852,7 +1959,7 @@ InstallMethod( DirectSumDecomposition,
       # contained in the derived subalgebra of `L'.
 
       C:= LieCentre( L );
-      bvc:= BasisVectors( BasisOfDomain( C ) );
+      bvc:= BasisVectors( Basis( C ) );
 
       if Dimension( C ) = Dimension( L ) then
         
@@ -1862,12 +1969,12 @@ InstallMethod( DirectSumDecomposition,
 
       fi; 
                 
-      BL:= BasisOfDomain( L );
+      BL:= Basis( L );
       bvl:= BasisVectors( BL );
 
       if 0 < Dimension( C ) then
 
-        D:= DerivedSubalgebra( L );
+        D:= LieDerivedSubalgebra( L );
         CD:= Intersection2( C, D );
 
         if Dimension( CD ) < Dimension( C ) then
@@ -1876,8 +1983,8 @@ InstallMethod( DirectSumDecomposition,
 
           B1:=[];
           k:=1;
-          sp:= MutableBasisByGenerators( F,
-                   BasisVectors( BasisOfDomain( CD ) ), Zero( CD ) );
+          sp:= MutableBasis( F,
+                   BasisVectors( Basis( CD ) ), Zero( CD ) );
           while Length( B1 ) + Dimension( CD ) <> Dimension( C ) do
             x:= bvc[k];
             if not IsContainedInSpan( sp, x ) then
@@ -1890,11 +1997,11 @@ InstallMethod( DirectSumDecomposition,
           # The second ideal is a complement of the central component
           # in `L' containing `D'.
 #W next statement modified:
-          B2:= ShallowCopy( BasisVectors( BasisOfDomain( D ) ) );
+          B2:= ShallowCopy( BasisVectors( Basis( D ) ) );
           k:= 1;
           b:= ShallowCopy( B1 );
           Append( b, B2 );
-          sp:= MutableBasisByGenerators( F, b );
+          sp:= MutableBasis( F, b );
           while Length( B2 )+Length( B1 ) <> n do
             x:= bvl[k];
             if not IsContainedInSpan( sp, x ) then
@@ -1971,7 +2078,7 @@ InstallMethod( DirectSumDecomposition,
       ideals:= List( id, e -> List( TransposedMat( e ), v ->
                     LinearCombination( BL, v ) ) );
       ideals:= List( ideals, ii -> BasisVectors(
-                        BasisOfDomain( VectorSpace( F, ii ) ) ) );
+                        Basis( VectorSpace( F, ii ) ) ) );
 
       return List( ideals, ii ->
                      IdealNC( L, ii, "basis" ) );
@@ -1996,7 +2103,7 @@ InstallMethod( IsSimpleAlgebra,
     function( L )
     if Characteristic( LeftActingDomain( L ) ) <> 0 then
       TryNextMethod();
-    elif DeterminantMat( KillingMatrix( BasisOfDomain( L ) ) ) = 0 then
+    elif DeterminantMat( KillingMatrix( Basis( L ) ) ) = 0 then
       return false;
     else
       return Length( DirectSumDecomposition( L ) ) = 1;
@@ -2036,11 +2143,11 @@ InstallGlobalFunction( FindSl2, function( L, x )
 
     n:= Dimension( L );
     F:= LeftActingDomain( L );
-    B:= BasisOfDomain( L );
+    B:= Basis( L );
     T:= StructureConstantsTable( B );
 
     xc:= Coefficients( B, x );
-    eqs:= MutableNullMat( 2*n, 2*n, F );
+    eqs:= NullMat( 2*n, 2*n, F );
 
     # First we try to find elements `z' and `h' such that `[x,z]=h'
     # and `[h,x]=2x' (i.e., such that two of the three defining equations
@@ -2076,7 +2183,7 @@ InstallGlobalFunction( FindSl2, function( L, x )
     h:= LinearCombination( B, v{ [ n+1 .. 2*n ] } );
 
     R:= LieCentralizer( L, SubalgebraNC( L, [ x ] ) );
-    BR:= BasisOfDomain( R );
+    BR:= Basis( R );
     Rvecs:= BasisVectors( BR );
 
     # `ad h' maps `R' into `R'. `H' will be the matrix of that map.
@@ -2220,10 +2327,10 @@ InstallMethod( SemiSimpleType,
 
     H:= CartanSubalgebra( L );
     rk:= Dimension( H );
-    bas:= ShallowCopy( BasisVectors( BasisOfDomain( H ) ) );
-    sp:= MutableBasisByGenerators( LeftActingDomain( L ), bas );
+    bas:= ShallowCopy( BasisVectors( Basis( H ) ) );
+    sp:= MutableBasis( LeftActingDomain( L ), bas );
     k:= 1;
-    bvl:= BasisVectors( BasisOfDomain( L ) );
+    bvl:= BasisVectors( Basis( L ) );
     while Length( bas ) < Dimension( L ) do
       a:= bvl[k];
       if not IsContainedInSpan( sp, a ) then
@@ -2232,7 +2339,7 @@ InstallMethod( SemiSimpleType,
       fi;
       k:= k+1;
     od;
-    T:= StructureConstantsTable( BasisByGeneratorsNC( L, bas ) );
+    T:= StructureConstantsTable( BasisNC( L, bas ) );
 
     p:= Characteristic( LeftActingDomain( L ) );
 
@@ -2264,13 +2371,18 @@ InstallMethod( SemiSimpleType,
 
       K:= LieAlgebraByStructureConstants( LeftActingDomain( L ), S );
 
-      BK:= BasisOfDomain( K );
+      BK:= Basis( K );
       d:= DeterminantMat( KillingMatrix( BK ) );
       F:= LeftActingDomain( L );
+
+# `mp' will be a list of minimum polynomials of basis elements of the
+# Cartan subalgebra.
+
       mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> MinimalPolynomial( F, AdjointMatrix( BK, x ) ) );
+                 x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
+      mp:= List( mp, x -> x/Gcd( Derivative( x ), x ) );
       d:= d * Product( List( mp, p ->
-                   CoefficientsOfUnivariateLaurentPolynomial(p)[1][1] ) );
+                   CoefficientsOfLaurentPolynomial(p)[1][1] ) );
       p:= 5;
       s:=7;
 
@@ -2297,11 +2409,11 @@ InstallMethod( SemiSimpleType,
         od;
 
         K:= LieAlgebraByStructureConstants( F, S1 );
-        BK:= BasisOfDomain( K );
+        BK:= Basis( K );
         mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> MinimalPolynomial( F, AdjointMatrix( BK, x ) ) );
+                 x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
         s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
-                           DegreeOfUnivariateLaurentPolynomial ) )));
+                           DegreeOfLaurentPolynomial ) )));
 
         if p=65521 then p:= 1; fi;
 
@@ -2322,11 +2434,11 @@ InstallMethod( SemiSimpleType,
 
       F:= LeftActingDomain( L );
       K:= LieAlgebraByStructureConstants( F, T );
-      BK:= BasisOfDomain( K );
+      BK:= Basis( K );
       mp:= List( BasisVectors( BK ){[1..rk]},
-               x -> MinimalPolynomial( F, AdjointMatrix( BK, x ) ) );
+               x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
       s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
-                         DegreeOfUnivariateLaurentPolynomial ) )));
+                         DegreeOfLaurentPolynomial ) )));
       s:= s*Dimension( LeftActingDomain( L ) );
       if p^s > 2^16 then
         Info( InfoAlgebra, 1,
@@ -2342,7 +2454,7 @@ InstallMethod( SemiSimpleType,
 
     # We already know a Cartan subalgebra of `K'.
 
-    BK:= BasisOfDomain( K );
+    BK:= Basis( K );
     H:= SubalgebraNC( K, BasisVectors( BK ){ [ 1 .. rk ] }, "basis" );
     SetCartanSubalgebra( K, H );
 
@@ -2389,9 +2501,9 @@ InstallMethod( SemiSimpleType,
           # after the call of DirectSumDecomposition,
           # the root vectors are contained in the basis of `I'.
 
-          BI:= BasisOfDomain( I );
+          BI:= Basis( I );
           bvi:= BasisVectors( BI );
-          adH:= List( BasisVectors(BasisOfDomain(HI)), x->AdjointMatrix(BI,x));
+          adH:= List( BasisVectors(Basis(HI)), x->AdjointMatrix(BI,x));
 #T  better!
           R:=[];
           Rvecs:=[];
@@ -2408,7 +2520,7 @@ InstallMethod( SemiSimpleType,
 
           basH:= [ ];
           basR:= [ ];
-          sp:= MutableBasisByGenerators( F, [], Zero(I) );
+          sp:= MutableBasis( F, [], Zero(I) );
           i:= 1;
           while Length( basH ) < Dimension( HI ) do
             r:= R[i];
@@ -2431,9 +2543,9 @@ InstallMethod( SemiSimpleType,
           posR:= [ ];
           for r in R do
             if (not r in posR) and (not -r in posR) then
-              cf:= Zero( F );
+              cf:= 0;
               i:= 0;
-              while cf = Zero( F ) do
+              while cf = 0 do
                 i:= i+1;
                 cf:= CartanInteger( R, r, basR[i] );
               od;
@@ -2455,8 +2567,10 @@ InstallMethod( SemiSimpleType,
               for r2 in posR do
                 if r = r1+r2 then
                   issum:= true;
+                  break;
                 fi;
               od;
+              if issum then break; fi;
             od;
             if not issum then
               Add( fundR, r );
@@ -2524,7 +2638,7 @@ InstallMethod( NonNilpotentElement,
     fi;
 
     F:= LeftActingDomain( L );
-    bvecs:= BasisVectors( BasisOfDomain( L ) );
+    bvecs:= BasisVectors( Basis( L ) );
 
     if Characteristic( F ) <> 0 then
 
@@ -2612,6 +2726,48 @@ InstallMethod( NonNilpotentElement,
 
     end );
 
+############################################################################
+##
+#M  PrintObj( <R> ) . . . . . . . . . . . . . . . . . . for a root system
+##
+InstallMethod( PrintObj, 
+        "for a root system",
+        true, [ IsRootSystem ], 0, 
+        function( R )
+    
+        if HasCartanMatrix( R ) then     
+            Print("<root system of rank ",Length(SimpleSystem(R)),">");
+        else
+            Print("<root system>");
+        fi;
+        
+end );
+    
+    
+############################################################################
+##
+#M  \.( <R>, <name> ) . . . . . . . record component access for a root system
+##
+InstallMethod( \., 
+        "for a root system and a record component",
+        true, [ IsRootSystem, IsObject ], 0, 
+        function( R, name )
+    
+    name:= NameRNam( name );
+    if name = "roots" then
+        return Concatenation( PositiveRoots(R), NegativeRoots(R) );
+    elif name = "rootvecs" then
+        return Concatenation( PositiveRootVectors(R), 
+                       NegativeRootVectors(R) );
+    elif name = "fundroots" then
+        return SimpleSystem( R );
+    elif name = "cartanmat" then
+        return CartanMatrix(R);
+    else
+        TryNextMethod();
+    fi;
+end );
+
 
 ##############################################################################
 ##
@@ -2651,7 +2807,10 @@ InstallMethod( RootSystem,
           hts,        # A list of the heights of the root vectors
           sorh,       # The set `Set( hts )'
           sorR,       # The soreted set of roots
-          Rvecs;      # The root vectors.
+          R,          # The root system.
+          Rvecs,      # The root vectors.
+          x,y,        # Canonical generators.
+          noPosR;     # Number of positive roots.
 
     # Let `a' and `b' be two roots of the rootsystem `R'.
     # Let `s' and `t' be the largest integers such that `a-s*b' and `a+t*b'
@@ -2675,7 +2834,7 @@ InstallMethod( RootSystem,
 
     F:= LeftActingDomain( L );
 
-    if DeterminantMat( KillingMatrix( BasisOfDomain( L ) ) ) = Zero( F ) then
+    if DeterminantMat( KillingMatrix( Basis( L ) ) ) = Zero( F ) then
       Info( InfoAlgebra, 1, "the Killing form of <L> is degenerate" );
       return fail;
     fi;
@@ -2687,7 +2846,7 @@ InstallMethod( RootSystem,
     # Furthermore, `B' has maximal length w.r.t. this property.
 
     H:= CartanSubalgebra( L );
-    BL:= BasisOfDomain( L );
+    BL:= Basis( L );
     B:= [ ShallowCopy( BasisVectors( BL ) ) ];
     basH:= BasisVectors( Basis( H ) );
 
@@ -2696,7 +2855,7 @@ InstallMethod( RootSystem,
       newB:= [ ];
       for j in B do
 
-        V:= BasisOfDomain( VectorSpace( F, j, "basis" ) );
+        V:= Basis( VectorSpace( F, j, "basis" ), j );
         M:= List( j, x -> Coefficients( V, i*x ) );
         facs:= Factors( MinimalPolynomial( F, M ) );
 
@@ -2744,14 +2903,14 @@ InstallMethod( RootSystem,
       Add( S, a );
     od;
 
-    Rvecs:= Flat( B );
+    Rvecs:= List( B, x -> x[1] );
 
     # A set of roots `basR' is calculated such that the set
     # { [ x_r, x_{-r} ] | r\in R } is a basis of `H'.
 
     basH:= [ ];
     basR:= [ ];
-    sp:= MutableBasisByGenerators( F, [], Zero(L) );
+    sp:= MutableBasis( F, [], Zero(L) );
     i:=1;
     while Length( basH ) < Dimension( H ) do
       a:= S[i];
@@ -2789,9 +2948,9 @@ InstallMethod( RootSystem,
       i:=i+1;
     od;
 
-    # A positive root is called fundamental if it is not the sum of two other
+    # A positive root is called simple if it is not the sum of two other
     # positive roots.
-    # We calculate the set of fundamental roots.
+    # We calculate the set of simple roots `fundR'.
 
     fundR:= [ ];
     for a in posR do
@@ -2812,12 +2971,12 @@ InstallMethod( RootSystem,
 
     C:= List( fundR, i -> List( fundR, j -> CartInt( S, i, j ) ) );
 
-    # Every root can be written as a sum of the fundamental roots.
+    # Every root can be written as a sum of the simple roots.
     # The height of a root is the sum of the coefficients appearing
     # in that expression.
     # We order the roots according to increasing height.
 
-    V:= BasisByGeneratorsNC( VectorSpace( F, fundR ), fundR );
+    V:= BasisNC( VectorSpace( F, fundR ), fundR );
     hts:= List( posR, r -> Sum( Coefficients( V, r ) ) );
     sorh:= Set( hts );
 
@@ -2826,14 +2985,211 @@ InstallMethod( RootSystem,
       Append( sorR, Filtered( posR, r -> hts[Position(posR,r)] = sorh[i] ) );
     od;
     Append( sorR, -1*sorR );
+    Rvecs:= List( sorR, r -> Rvecs[ Position(S,r) ] );
+    
+    # We calculate a set of canonical generators of `L'. Those are elements
+    # x_i, y_i, h_i such that h_i=x_i*y_i, h_i*x_j = c_{ij} x_j,
+    # h_i*y_j = -c_{ij} y_j for i \in {1..rank}
+    
+    x:= Rvecs{[1..Length(C)]};
+    noPosR:= Length( Rvecs )/2;
+    y:= Rvecs{[1+noPosR..Length(C)+noPosR]};
+    for i in [1..Length(x)] do
+        V:= VectorSpace( LeftActingDomain(L), [ x[i] ] );
+        B:= Basis( V, [x[i]] );
+        y[i]:= y[i]*2/Coefficients( B, (x[i]*y[i])*x[i] )[1];
+    od;
+    
+    h:= List([1..Length(C)], j -> x[j]*y[j] );
+    
+    # Now we construct the root system, and install as many attributes
+    # as possible. The roots are represented als lists [ \alpha(h_1),....
+    # ,\alpha(h_l)], where the h_i form the `Cartan' part of the canonical
+    # generators.
+    
+    R:= Objectify( NewType( NewFamily( "RootSystemFam", IsObject ),
+                IsAttributeStoringRep and IsRootSystemFromLieAlgebra ), 
+                rec() );
+    SetCanonicalGenerators( R, [ x, y, h ] );
+    SetUnderlyingLieAlgebra( R, L );
+    SetPositiveRootVectors( R, Rvecs{[1..noPosR]});
+    SetNegativeRootVectors( R, Rvecs{[noPosR+1..2*noPosR]} );
+    SetCartanMatrix( R, C );
+    
+    posR:= [ ];
+    for i in [1..noPosR] do
+        B:= Basis( VectorSpace( F, [ Rvecs[i] ] ), [ Rvecs[i] ] );
+        posR[i]:= List( h, hj ->  Coefficients( B, hj*Rvecs[i] )[1] );
+    od;
+    
+    SetPositiveRoots( R, posR );
+    SetNegativeRoots( R, -posR ); 
+    SetSimpleSystem( R, posR{[1..Length(C)]} );
 
-    return rec(
-                roots     := sorR,
-                rootvecs  := List( sorR, r -> Rvecs[ Position(S,r) ] ),
-                fundroots := fundR,
-                cartanmat := C
-                );
+    return R;
+    
     end );
+    
+    
+##############################################################################
+##
+#M  CanonicalGenerators( <R> ) . . . . for a root system from a Lie algebra
+##
+InstallMethod( CanonicalGenerators,
+    "for a root system from a (semisimple) Lie algebra",
+    true,
+    [ IsRootSystemFromLieAlgebra ], 0,
+    function( R )
+
+    local   L, rank,  x,  y,  i,  V,  b,  c;
+    
+    L:= UnderlyingLieAlgebra( R );
+    rank:= Length( CartanMatrix( R ) );
+    x:= PositiveRootVectors( R ){[1..rank]};
+    y:= NegativeRootVectors( R ){[1..rank]};
+    for i in [1..Length(x)] do
+        V:= VectorSpace( LeftActingDomain(L), [ x[i] ] );
+        b:= Basis( V, [x[i]] );
+        c:= Coefficients( b, (x[i]*y[i])*x[i] )[1];
+        y[i]:= y[i]*2/c;
+    od;
+    
+    return [ x, y, List([1..rank], j -> x[j]*y[j] ) ];
+    
+end );
+
+#############################################################################
+##
+#M  ChevalleyBasis( <L> ) . . . . . . for a semisimple Lie algebra
+##
+InstallMethod( ChevalleyBasis,
+        "for a semisimple Lie algebra with a split Cartan subalgebra",
+        true, [ IsLieAlgebra ], 0,
+        function( L )
+    
+    local   R,  n,  cg,  b1p,  b1m,  b2p,  b2m,  k,  r,  i,  r1,  pos,  
+            b1,  b2,  f,  cfs,  bHa,  posRV,  negRV,  x,  y,  ha,  cf,  
+            F,  T,  K,  B, BK;    
+    
+    # We first calculate an automorphism `f' of `L' such that 
+    # F(L_{\alpha}) = L_{-\alpha}, and f(H)=H, and f acts as multiplication
+    # by -1 on H. For this we take the canonical generators of `L',
+    # map its `x'-part onto its `y' part (and vice versa), and map
+    # the `h'-part on minus itself. The automorphism is determined by this.
+    
+    R:= RootSystem( L );
+    n:= Length( PositiveRoots( R ) );
+    cg:= CanonicalGenerators( R );
+    
+    b1p:= ShallowCopy( cg[1] ); b1m:= ShallowCopy( cg[2] );
+    b2p:= ShallowCopy( cg[2] ); b2m:= ShallowCopy( cg[1] );
+   
+    k:= 1;
+    while k <= n do
+        r:= PositiveRoots( R )[k];
+        for i in [1..Length( CartanMatrix( R ) )] do
+            r1:= r + SimpleSystem( R )[i];
+            pos:= Position( PositiveRoots( R ), r1 );
+            if pos<>fail and not IsBound( b1p[pos] ) then 
+                
+                b1p[pos]:= cg[1][i]*b1p[k];
+                b1m[pos]:= cg[2][i]*b1m[k];
+                b2p[pos]:= cg[2][i]*b2p[k];
+                b2m[pos]:= cg[1][i]*b2m[k];
+            fi;
+        od;
+        k:= k+1;
+    od;
+    
+    b1:= b1p; Append( b1, b1m ); Append( b1, cg[3] );
+    b2:= b2p; Append( b2, b2m ); Append( b2, -cg[3] );
+    f:= LeftModuleHomomorphismByImages( L, L, b1, b2 );
+    
+    # Now for every positive root vector `x' we set `y= -Image( f, x )'.
+    # We compute a scalar `cf' such that `[x,y]=h', where `h' is the
+    # canonical Cartan element corresponding to the root (unquely determined).
+    # Then we have to multiply `x' and `y' by Sqrt( 2/cf ), in order to get
+    # elements of a Chevalley basis.
+
+    cfs:= [ ];
+    bHa:= [ ];
+    posRV:= [ ];
+    negRV:= [ ];
+    for i in [1..n] do
+        x:= PositiveRootVectors( R )[i];
+        y:= -Image( f, x );
+        ha:= x*y;
+        cf:= Coefficients( Basis( VectorSpace( LeftActingDomain(L),
+                     [x] ), [x] ), ha*x )[1];
+        if i <= Length( CartanMatrix( R ) ) then Add( bHa, (2/cf)*ha ); fi; 
+        Add( cfs, Sqrt( 2/cf ) );
+        posRV[i]:= x; negRV[i]:= y;
+    od;
+    
+    # In general the `cfs' will lie in a field extension of the ground field.
+    # We construct the Lie algebra over that field with the same structure 
+    # constants as `L'. Then we map the Chevalley basis elements into
+    # this new Lie algebra. Then we take the structure constants table of
+    # this new Lie algebra with respect to the Chevalley basis, and
+    # form a new Lie algebra over the same field as `L' with this table.
+    
+    F:= DefaultField( cfs );
+    T:= StructureConstantsTable( Basis( L ) );
+    K:= LieAlgebraByStructureConstants( F, T );
+    BK:= CanonicalBasis( K );
+    B:= [ ];
+    for i in [1..n] do
+        B[i]:= LinearCombination( BK, cfs[i]*Coefficients( Basis(L),
+                                                         posRV[i] ) );
+        B[n+i]:= LinearCombination( BK, cfs[i]*Coefficients( Basis(L), 
+                                                         negRV[i] ) );
+    od;
+    for i in [1..Length(bHa)] do
+        B[2*n+i]:= LinearCombination( BK, Coefficients( Basis(L), 
+                                                         bHa[i] ) );
+    od;
+    
+    T:= StructureConstantsTable( Basis( K, B ) );
+    K:= LieAlgebraByStructureConstants( LeftActingDomain(L), T );
+    B:= BasisVectors( CanonicalBasis( K ) );
+    
+    # Now the basis elements of `K' form a Chevalley basis. Furthermore,
+    # `K' is isomorphic to `L'. We construct the isomorphism, and map
+    # the basis elements of `K' into `L', thus getting a Chevalley basis
+    # in `L'.
+    
+    b1p:= B{[1..Length(CartanMatrix(R))]}; 
+    b1m:= B{[n+1..n+Length(CartanMatrix(R))]};
+    b2p:= ShallowCopy( cg[1] ); b2m:= ShallowCopy( cg[2] );
+   
+    k:= 1;
+    while k <= n do
+        r:= PositiveRoots( R )[k];
+        for i in [1..Length( CartanMatrix( R ) )] do
+            r1:= r + SimpleSystem( R )[i];
+            pos:= Position( PositiveRoots( R ), r1 );
+            if pos<>fail and not IsBound( b1p[pos] ) then 
+                
+                b1p[pos]:= b1p[i]*b1p[k];
+                b1m[pos]:= b1m[i]*b1m[k];
+                b2p[pos]:= b2p[i]*b2p[k];
+                b2m[pos]:= b2m[i]*b2m[k];
+            fi;
+        od;
+        k:= k+1;
+    od;
+    
+    b1:= b1p; Append( b1, b1m ); Append( b1, B{[2*n+1..Length(B)]} );
+    b2:= b2p; Append( b2, b2m ); Append( b2, cg[3] );
+    f:= LeftModuleHomomorphismByImages( K, L, b1, b2 );
+
+    return [ List( B{[1..n]}, x -> Image( f, x ) ), 
+             List( B{[n+1..2*n]}, y -> Image( f, y ) ),
+             cg[3] ];
+    
+    
+    end);
+
 
 
 #############################################################################
@@ -3042,10 +3398,11 @@ InstallMethod( UniversalEnvelopingAlgebra,
     # Enter data to handle elements.
     Fam:= ElementsFamily( FamilyObj( U ) );
     Fam!.normalizedType:= NewType( Fam,
-                                       IsPackedAlgebraElmDefaultRep
+                                       IsElementOfFpAlgebra
+                                   and IsPackedElementDefaultRep
                                    and IsNormalForm );
 
-    T:= StructureConstantsTable( BasisOfDomain( L ) );
+    T:= StructureConstantsTable( Basis( L ) );
     FamMon:= ElementsFamily( FamilyObj( UnderlyingMagma( F ) ) );
     FamFree:= ElementsFamily( FamilyObj( F ) );
 
@@ -3104,6 +3461,7 @@ InstallGlobalFunction( FreeLieAlgebra, function( arg )
     if   Length( arg ) = 2 and IsInt( arg[2] ) then
       names:= List( [ 1 .. arg[2] ],
                     i -> Concatenation( "x", String(i) ) );
+      MakeImmutable( names );
     elif     Length( arg ) = 2
          and IsList( arg[2] )
          and ForAll( arg[2], IsString ) then
@@ -3111,6 +3469,7 @@ InstallGlobalFunction( FreeLieAlgebra, function( arg )
     elif Length( arg ) = 3 and IsInt( arg[2] ) and IsString( arg[3] ) then
       names:= List( [ 1 .. arg[2] ],
                     x -> Concatenation( arg[3], String(x) ) );
+      MakeImmutable( names );
     elif ForAll( arg{ [ 2 .. Length( arg ) ] }, IsString ) then
       names:= arg{ [ 2 .. Length( arg ) ] };
     else
@@ -3136,6 +3495,7 @@ InstallGlobalFunction( FreeLieAlgebra, function( arg )
     F!.familyMagma := FamilyObj( M );
     F!.zeroRing    := zero;
 #T no !!
+    F!.names       := names;
 
     # Set the characteristic.
     if HasCharacteristic( R ) or HasCharacteristic( FamilyObj( R ) ) then
@@ -3377,6 +3737,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
 # wrap the list `todo' into an element of the free Lie algebra.
 
          todo:= List( todo, x -> [x[3],x[2]] );
+         Sort( todo, function( x, y) return x < y; end );
          tlist:= [];
          for i in [1..Length(todo)] do
            Append( tlist, todo[i] );
@@ -3387,14 +3748,1627 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
      end );
 
 
+##############################################################################
+##
+#M  ImageElm( <h>, <x> )
+#M  ImagesRepresentative( <h>, <x> )
+##
+##  A special method for calculating the (unique) image of an element <x>
+##  under an FptoSCAMorphism <h>. The fact that <h> knows the images of the 
+##  generators together with the fact that <h> is an algebra morphism is used
+##  (rather than the linearity of <h>).
+##
+BindGlobal( "FptoSCAMorphismImageElm", function( h, x )     
+       local EvalProduct,gens,imgs,im,e,k;
+
+       EvalProduct:= function( prod, ims )
+
+          if not IsList(prod) then 
+            return ims[prod];
+          else
+            return EvalProduct( prod[1], ims )*EvalProduct( prod[2], ims );
+          fi;
+       end;
+ 
+       gens:= h!.generators;
+       imgs:= h!.genimages;
+       e:= ExtRepOfObj(x)[2];
+       im:= 0*imgs[1];
+       k:= 1;
+       while k <= Length(e) do
+         im:= im + e[k+1]*EvalProduct( e[k], imgs );
+         k:= k+2;
+       od;
+       return im;
+end );
+
+InstallMethod( ImageElm,
+    "for Fp to SCA mapping, and element",
+    FamSourceEqFamElm,
+    [ IsFptoSCAMorphism, IsElementOfFpAlgebra ], 0,
+    FptoSCAMorphismImageElm );
+
+InstallMethod( ImagesRepresentative,
+    "for Fp to SCA mapping, and element",
+    FamSourceEqFamElm,
+    [ IsFptoSCAMorphism, IsElementOfFpAlgebra ], 0, 
+    FptoSCAMorphismImageElm );
+
 
 #############################################################################
 ##
-#E  alglie.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  Dimension( <FpL> )
+##
+##  A method for the dimension of a finitely-presented Lie algebra.
+##
+InstallMethod( Dimension,
+    "for a f.p. Lie algebra",
+    true,
+    [ IsLieAlgebra and IsSubalgebraFpAlgebra], 0,
+    function( L )
+      local h;
+      h:= NiceAlgebraMonomorphism( L );
+      if h <> fail then
+        return Dimension( Range( h ) );
+      else 
+        TryNextMethod();
+      fi;
+end);
+
+
+##############################################################################
+##
+#M  IsFiniteDimensional( <FpL> )
+##
+##  For finitely-presented Lie algebras.
+##
+InstallMethod( IsFiniteDimensional,
+    "for a f.p. Lie algebra",
+    true,
+    [ IsLieAlgebra and IsSubalgebraFpAlgebra], 0,
+    function( L )
+      local h;
+      h:= NiceAlgebraMonomorphism( L );
+      if h <> fail then
+        return Dimension( Range( h ) ) < infinity;
+      else 
+        TryNextMethod();
+      fi;
+end);
+
+##############################################################################
+##       
+##     FpLieAlgebraEnumeration( <arg> )                   Juergen Wisliceny
+##                                                        Willem de Graaf
+##
+## This function calculates a homomorphism of a finitely presented
+## Lie algebra onto a structure constants algebra. 
+## The algorithm is guaranteed to terminate when the algebra is finite 
+## dimensional. In full length the list <arg> contains `FpL', a
+## finitely presented Lie algebra, `MAX_WEIGHT', a bound on the length
+## of the monomials (used for nilpotent quotients), `weights' (a list
+## of weights of the variables) and finally a boolean indicating
+## whether the relations are homogeneous (if so then the nilpotent
+## quotient will be graded, the grading is set as an attribute of the
+## range of the homomorphism). 
+##
+## By a straightforward application of the Jacobi identity (see also the 
+## comments to the sub-function `LeftNormalization'), it can be seen that
+## the space of all commutators of degree `n' is spanned by all left
+## normed commutators (i.e., commutators of the form [[[[a,b],c],d]...]).
+## By antisymmetry we have that a and b can be chosen such that a > b.
+## This is the format for elements of the free Lie algebra used in the 
+## program. A left-normed commutator is represented by a list 
+## `[a,b,c,d,..]', meaning `[[[[a,b],c],d]...]'. A monomial is such a list 
+## together with a coefficient, e.g., `[ [a,b,c,d..], -2/3 ]'. Finally, a 
+## polynomial is a list of monomials.
+
+InstallGlobalFunction( FpLieAlgebraEnumeration, 
+
+     function( arg )
+
+local ReductionModuloTable,   #
+      LeftNormalization,      #
+      SubsVarInRels,          #
+      CollectPolynomial,      #    Sub-functions.
+      UpdateTable,            #
+      RemoveComm,             #
+      RemoveEntry,            #
+      SubstituteVariable,     #
+      Dcopy,                  #
+      gradorder,              #
+      grado,                  #
+
+      vg,                     # List of pairs (newly defined commutators)
+      i,j,k,l,s,              # Loop variables.
+      end_reached,            #
+      table_init,             #    Booleans
+      relation_found,         #
+      u,v,rr,                 # Lists of relations.
+      r,u1,r1,r2,k1,k2,k11,   # Polynomials, monomials etc.
+      S,_T,                   # Structure constants tables.
+      rowS,                   # A row of the multiplication table.
+      sij,tij,                # Entries of the multiplication table.
+      inds,                   # Indices (list of integers).
+      tab_pols,               # List of polynomials of degree two.
+      intrel,                 # Initial relations (after first conversion).
+      pp,                     # Ext rep of a polynomial.
+      cf,                     # Coefficient.
+      t1,t2,                  # Indices.
+      max,                    # Maximum.
+      R,                      # Lists of commtators that have been defined.
+      Rw1,                    # A new roe of `R'.
+      one,                    # One of the field.
+      zero,                   # Zero of the field.
+      d,                      # maximum of the list of (pseudo-)generators
+      e,                      # Flat(e) is the list of (pseudo-)generators 
+      w,ww,                   # Weights.
+      temp,
+      defs,                   # Definitions of generators in terms of other
+                              # generators.
+      FL,                     # The free Lie algebra.
+      rels,                   # Relators.
+      bound,                  # Bound for `w'.
+      gens,                   # Generators of `FpL'.
+      imgs,                   # Images.
+      map,                    # The map that is constructed.
+      im,                     # An image.
+      Fam,                    # Elements family of `FpL'. 
+      K,                      # Structure constants algebra.
+      FpL,wts,wght,pos,fle,weight,MAX_WEIGHT,genweights,comp_grad,is_hom,
+      bas,gradcomps,degs,bgc;
+   
+   FpL:= arg[1];
+   if Length( arg ) >= 2 then
+     MAX_WEIGHT:= arg[2];
+   else
+     MAX_WEIGHT:= infinity;
+   fi;
+
+   Fam:= ElementsFamily( FamilyObj( FpL ) );
+   FL:= Fam!.freeAlgebra;
+   rels:= Fam!.relators;
+
+   if Length( arg ) >= 3 then
+     genweights:= arg[3];
+   else
+     genweights:= List( GeneratorsOfAlgebra( FL ), x -> 1 );
+   fi;
+
+   if Length( arg ) = 4 then
+     is_hom:= arg[4];
+   else
+     is_hom:= false;
+   fi;
+
+   bound:= infinity;
+
+   _T:=[];
+   one:= One( LeftActingDomain( FL ) );
+   zero:= Zero( LeftActingDomain( FL ) );
+
+# Some small functions.....
+
+   Dcopy:= function( l )
+
+     # Deep copying, also copying the holes...
+
+     local m,i;
+
+     if not IsList(l) then return ShallowCopy(l); fi;
+     m:=[];
+     for i in [1..Length(l)] do
+       if IsBound(l[i]) then m[i]:= Dcopy(l[i]); fi;
+     od;
+     return m;
+   end;
+
+  
+##############################################################
+##############################################################
+# v, w are associative monomials. is v>w? 
+##
+##  v > w if and only if 1) Length(v)>Length(w) or
+##                       2) Length(v)=Length(w) and Length(v) > 1 and
+##                          v[2] > w[2] or
+##                       3) Length(v)=Length(w) and v[2]=w[2] and
+##                          v>w alphabetically.
+##
+
+   gradorder:=function(v,w)
+     local k,l;
+
+     k:=Length(v[1]); l:=Length(w[1]);
+     if k<>l then return k>l; 
+     elif k>1 and v[1][2]<>w[1][2] then return v[1][2]>w[1][2];
+     else return v>w;
+     fi;
+
+   end;
+
+   grado:= function( v, w )
+   # tries to mimic gradorder for monomials of deg 2.
+
+     if v[2]<>w[2] then return v[2]>w[2];
+                   else return v>w; 
+     fi;
+   end;
 
 
 
+########################################################################
+
+   CollectPolynomial:= function( r )
+
+     # A function that collects equal things together, and gets rid of
+     # things in the polynomial r that are zero.
+
+     local i,n,t;
+  
+     if r <> [ ] then 
+
+       # first regularize...
+       for i in r do
+         if Length(i[1])>1 and i[1][1]<i[1][2] then
+           t:=i[1][2]; i[1][2]:=i[1][1]; i[1][1]:=t;
+           i[2]:=-i[2];
+         fi;
+       od; 
+
+       Sort( r, gradorder );
+       n:= Length( r );
+
+       for i in [1..n-1] do
+         if r[i][2]=0*r[i][2] or 
+                    (Length(r[i][1])>1 and r[i][1][1]=r[i][1][2]) then
+  
+           #the thing is zero; get rid of it.
+  
+           Unbind(r[i]);
+         elif r[i][1] = r[i+1][1] then
+  
+           #the monomials are equal; collect them together.
+  
+           r[i+1][2]:=r[i][2]+r[i+1][2];
+           Unbind(r[i]);
+         fi;
+       od;
+       if r[n][2]=0*r[n][2] or 
+               (Length(r[n][1])>1 and r[n][1][1]=r[n][1][2]) then
+
+          #the thing is zero; get rid of it.
+           
+          Unbind(r[n]); 
+       fi;
+       r:= Filtered( r, x -> IsBound(x) );
+
+     fi;
+
+     return r;
+
+   end;
+
+
+   ReductionModuloTable := function( k )
+
+     # In this function a Lie polynomial `k' in standard form is 
+     # reduced by one step modulo the commutators already known by the
+     # table. So if [x_i,x_j]= c*z is a relation in the table, and `k'
+     # contains a monomial of the form [ [i,j,k,....], cf ] then this 
+     # monomial is replaced by [ [z,k,...], -c*cf ] 
+   
+     local i,j,k1,l,m,tst,t,s,cf,p,q,a;
+
+     a:= Dcopy( k );
+     for i in [1..Length(a)] do
+       l:=Length(a[i][1]);
+       if l>1 then
+         s:= a[i][1][1]; t:=a[i][1][2];
+         if s < t then
+           p:= t; q:= s;
+         else
+           p:=s; q:=t;
+         fi;
+         if IsBound( _T[p] ) and IsBound( _T[p][q] ) then
+           k1:= [ ];
+           tst:= _T[p][q];
+           if s <> p then cf:= -1;
+                     else cf:= 1; 
+           fi;
+           for j in [1..Length(tst[1])] do
+             Add( k1, [[tst[1][j]], cf*a[i][2]*tst[2][j]] );
+           od;
+           if l>2 then 
+             m:=a[i][1]{[3..l]};
+             for j in [1..Length(k1)] do
+               Append(k1[j][1],m);
+             od;
+           fi;
+           Unbind(a[i]);
+           Append(a,k1);
+         fi;
+       fi;
+     od;
+     a:=Filtered(a,x -> IsBound(x));
+     a:= CollectPolynomial( a );
+
+     if a = [ ] or a[1][2] = one then 
+       return a; 
+                               
+     else 
+       cf:= 1/a[1][2]; 
+       return List( a, x -> [x[1],x[2]*cf] );
+     fi;
+   end;
+
+   LeftNormalization:= function( rel )
+
+     # a left-normed monomial is of the form
+     #
+     #      [a,b,c,d,e,...], meaning [[[[[a,b],c],d],e],...]
+     #
+     # Using the Jacobi identity every commutator can be represented
+     # as a linear combination of left-normed commutators.
+     #
+     # In this function a polynomial `rel' is left normed.
+     # The Jacobi identity is applied successively to achieve this.
+     # This means that en expression of the form
+     #
+     #    [a,b,c,[d,e],f] (where a,b,c are generators (this part is already
+     #     `done') and [d,e] is any bracketed expression having d and e as
+     #     left and right subtrees,
+     #
+     # to a sum
+     #
+     #     [a,b,c,d,e,f] - [a,b,c,e,d,f].
+     #
+     # Justification:
+     #
+     #     [a,b,c,[d,e]]=[[[a,b],c],[d,e]] = [X,[d,e]] (with X=[[a,b],c])
+     #                  =-[d,[e,X]]-[e,[X,d]]
+     #                  =[[e,X],d]+[[X,d],e]
+     #                  =-[[X,e],d]+[[X,d],e].
+     #
+
+
+     local i,j,s,s1,s2,t,step_occurred;
+
+     step_occurred:= true;
+     while step_occurred do
+
+       # if there no longer occur any Jacobi steps, then we stop.
+
+       i:=0; 
+       step_occurred:= false;
+       while i < Length( rel ) do
+         i:=i+1; j:=0;
+         while j<Length(rel[i][1]) and not step_occurred do
+           j:=j+1;
+           if IsList(rel[i][1][j]) and Length(rel[i][1][j])=2 then
+             step_occurred:= true;
+             s:=rel[i][1]{[1..j-1]}; #i.e., the part already done (the X)
+             s1:=Concatenation(s,rel[i][1][j]);
+             s2:=Concatenation(s,[rel[i][1][j][2],rel[i][1][j][1]]);
+             t:=rel[i][1]{[j+1..Length(rel[i][1])]};
+             Append(s1,t); Append(s2,t); 
+             rel[i][1]:=Dcopy(s1);
+
+             # If j=1 (so if the tree starts with [x,y], then we didn't do 
+             # much other than changing the notation ([[x,y],b] -> [x,y,b]).
+
+             if j>1 then Add(rel,[s2,-rel[i][2]]); fi;
+           fi;
+         od;
+       od;
+     od;
+     return rel;
+   end;
+
+   SubsVarInRels:= function( rels, rs ) 
+
+     # Here `rs' is a relation of the form `var = othervars', and `rels' is
+     # a list of Lie polynomials. This function substitutes `var' 
+     # everywhere in the polynomials `rels'.
+
+     local i,j,p,s,s1,s2,result,rel,cf;
+
+     result:= [ ];
+
+     for rel in rels do
+
+       i:= 1;
+       while i <= Length(rel) do
+
+         p:= Position( rel[i][1], rs[1][1][1] ); 
+         if p <> fail then 
+
+           # s will be the polynomial that is gotten from r by substituting 
+           # `the rest of rs' for the variable rs[1][1][1] on the position p
+           # in r. 
+
+           s:= Dcopy( rs{[2..Length(rs)]} );
+           s1:= rel[i][1]{[1..p-1]}; 
+           s2:= rel[i][1]{[p+1..Length(rel[i][1])]};
+           for j in [1..Length(s)] do
+             s[j][1]:=Concatenation(s1,s[j][1],s2);
+           od;
+           s:= List( s, x -> [ x[1], -rel[i][2]*x[2] ] );
+           Append( rel, s );
+           Unbind( rel[i] );
+           rel:= Filtered( rel, x -> IsBound( x ) );
+
+         else
+           i:= i+1;
+         fi;
+
+       od;
+
+       #collect the result...
+
+       rel:= CollectPolynomial( rel );
+       if rel <> [ ] and rel[1][2] <> one then 
+         cf:= 1/rel[1][2];
+         rel:= List( rel, x -> [x[1],cf*x[2]] );
+       fi;
+       if rel <> [ ] then AddSet( result, rel ); fi;
+
+     od;
+     return result; 
+   end;
+
+   UpdateTable:= function( i, j, p )
+
+     # Sets the commutator [xi,xj] in the table equal to the polynomial `p'.
+
+     local inds,cfs,k,s,t;
+
+     inds:=[];
+     cfs:=[];
+     for k in [1..Length(p)] do
+       inds[k]:= p[k][1][1];
+       cfs[k]:=  p[k][2];
+    od;
+     if i < j then
+       s:= j; t:= i;
+     else
+       s:=i; t:= j;
+     fi;
+
+     if s = i then cfs:= -cfs; fi;
+     if not IsBound(_T[s]) then _T[s]:=[]; fi;
+      _T[s][t]:= [inds,cfs];
+
+   end; 
+
+   RemoveEntry:= function( k )
+
+     # Removes all occurences of the variable xk in the commutators 
+     # of the table.
+
+     local i;
+
+     Unbind(_T[k]);
+     for i in [1..Length(_T)] do
+       if IsBound( _T[i] ) then Unbind(_T[i][k]); fi;
+     od;
+   end;
+
+   RemoveComm:= function( k, l )
+
+     # Removes the commutator [xk,xl] from the table.
+
+      local s,t;
+      s:= Maximum( k, l ); t:= Minimum( k, l );
+      if IsBound(_T[s][t]) then Unbind(_T[s][t]); fi;
+   end;
+
+   SubstituteVariable:= function( coms, rel )
+
+     # Here `rel' is a polynomial of the form `var = othervars'; this
+     # function substitutes `var' for `othervar' in the commutators of
+     # the table prescribed by `coms'. 
+
+     local var,inds,i,cfs,c,Tij,pos,cf,ii,cc,ind,s,t;
+
+     var := rel[1][1][1];
+     inds:= [ ]; cfs:= [ ];
+     for i in [2..Length(rel)] do
+       Add( inds, rel[i][1][1] );
+       Add( cfs, -rel[i][2] );
+     od;
+     cfs:= cfs/rel[1][2];
+
+     for c in coms do
+    
+       s:= Maximum( c ); t:= Minimum( c );
+       Tij:= _T[s][t];
+       pos:= Position( Tij[1], var );
+       if pos <> fail then
+         Unbind( Tij[1][pos] );
+         cf:= Tij[2][pos];
+         if s <> c[1] then cf:= -cf; fi; 
+         Unbind( Tij[2][pos] );
+         Tij[1]:= Filtered( Tij[1], x -> IsBound(x) );
+         Tij[2]:= Filtered( Tij[2], x -> IsBound(x) );
+         Append( Tij[1], inds );
+         Append( Tij[2],  cf*cfs );
+         ii:= [ ]; cc:= [ ];
+         if Tij[1] <> [ ] then
+           SortParallel( Tij[1], Tij[2] );
+           ind:= Tij[1][1]; cf:= Tij[2][1];
+           ii:= [ ]; cc:= [ ];
+           for i in [2..Length(Tij[1])] do
+             if Tij[1][i] = ind then
+               cf:= Tij[2][i] + cf;
+             else
+               Add( ii, ind );
+               Add( cc, cf );
+               ind:= Tij[1][i];
+               cf:= Tij[2][i];
+             fi;
+           od;
+           Add( ii, ind ); Add( cc, cf );
+         fi;
+         _T[s][t]:= [ ii, cc ];
+       fi;
+
+     od;
+
+   end;
+
+   wght:= function( e, wts, var )
+
+      local p,q;
+
+      p:= PositionProperty( e, x -> var in x );
+      q:= Position( e[p], var );
+
+      return wts[p][q];
+   end;
+
+##############################################################################
+#
+# The program starts. First the relations are transformed into internal format.
+# That is: represented as lists of lists etc., and left-normalized.
+#
+
+   # `intrel' will be the set of relations, but represented in 
+   # `internal form'; meaning [ [ [[1,2],3], 1 ], [[4],-1] ], instead
+   # of (x1*x2)*x3-x4 etc.
+
+   intrel:= [ ];
+   for r in rels  do
+     pp:= Dcopy( ExtRepOfObj( r )[2] );
+     Add( intrel, List( [1,3..Length(pp)-1], x -> [ pp[x], pp[x+1] ] ) );
+   od;
+
+#############################################################################
+   # now we left normalize the relations, using `LeftNormalization', i.e.,
+   # the relations are written as [ [ [1,2,5], -1], [.....], [......],.... ]
+   # furthermore, all relations of degree at most two will go into `pr'
+   # (those will be used to initialize the table). All the others go into
+   # `u'. 
+
+   tab_pols:= [ ]; u:= [ ]; 
+
+   for r in intrel do
+     max:= 0; 
+     for j in [1..Length(r)] do 
+       if not IsList(r[j][1]) then  #transform [ i, cst ] into [ [i], cst ]
+         r[j][1]:= [ r[j][1] ]; 
+       fi;
+       if Length(Flat(r[j][1])) >= 2 and r[j][1][1]=r[j][1][2] then
+         Unbind(r[j]);
+       else
+         max:= Maximum( max, Length( Flat(r[j][1]) ) );
+       fi;
+     od;
+     r:= Filtered( r, x -> IsBound(x) );
+     r:= LeftNormalization( r );
+     r:= CollectPolynomial( r );
+     if not max = 0 then
+       if max <= 2 then
+         cf:= 1/r[1][2]; 
+         r:= List( r, x -> [x[1],cf*x[2]] );
+         Add( tab_pols, r);             # So if the relation only
+                                        # involves monomials of deg
+                                        # at most two, then this relation
+                                        # goes into the 'tab_pols'. 
+       else 
+         Add( u, r ); 
+       fi;
+     fi;
+   od;
+ 
+   e:= [ List( [1..Length( GeneratorsOfAlgebra( FL ) )], x -> x ), [ ] ];  
+   if MAX_WEIGHT < infinity then
+     wts:= [ genweights, [] ];
+     comp_grad:= true;
+   else
+     wts:= [ ];
+     comp_grad:= false;
+   fi;
+
+   if e[1] = [ ] then 
+     K:= LieAlgebraByStructureConstants( LeftActingDomain( FL ),
+                  EmptySCTable( 0, zero, "antisymmetric" ) );
+     gens:= GeneratorsOfAlgebra( FpL );
+     imgs:= List( gens, x -> Zero( K ) );
+     map:= Objectify( TypeOfDefaultGeneralMapping( FpL, K,
+                               IsSPGeneralMapping
+                           and IsAlgebraGeneralMapping
+                           and IsFptoSCAMorphism
+                           and IsAlgebraGeneralMappingByImagesDefaultRep ),
+                       rec(
+                            generators := gens,
+                            genimages  := imgs
+                           ) );
+     return map;
+   fi;
+
+   # `v' will be a history of relations, i.e., `v[w]' will be the relations
+   # as they were when the program was dealing with weight `w'. This is 
+   # used to reset the relations if a collision among variables is found.
+
+   v:= [ Dcopy( u ) ];  
+   d:= Maximum( e[1] );
+   R:= [ [], [] ];
+   end_reached:= false;
+   w:= 0; 
+   defs:= [ ];
+
+   while w < bound do
+
+     table_init:= false;
+
+     while not table_init do
+
+#######################################################################
+# Initialize the table....
+# Meaning: fill in all possible commutators of generators using the
+# relations, make definitions for the commutators that cannot be decided
+# upon by using the relations. If this leads to a relation among the variables,
+# then that relation is substituted first, and the process is started all
+# over again.
+   
+       relation_found:= false;
+
+       for r in tab_pols do
+
+         r1:= ReductionModuloTable( r );
+         if r1<>[] then
+
+           if Length(r1[1][1])=1 then 
+             relation_found:= true;
+             break;
+           else
+             for k in [2..Length(r1)] do
+               if Length(r1[k][1])=2 then
+                 d:=d+1; 
+                 Add(e[2],d);
+                 if comp_grad then
+                   Add(wts[2],wght(e,wts,r1[k][1][1])+
+                                               wght(e,wts,r1[k][1][2]) );
+                 fi; 
+                 UpdateTable( r1[k][1][1], r1[k][1][2], [ [[d],-one] ] );
+                 Add(R[2],r1[k][1]);
+                 r1[k][1]:=[d];
+               fi;
+             od;
+             UpdateTable( r1[1][1][1], r1[1][1][2], r1{[2..Length(r1)]} );
+           fi;
+           Add(R[2],r1[1][1]);
+
+         fi;
+       od;
+
+       if not relation_found then
+
+         # i.e., the previous loop has been executed without breaking 
+         # caused by finding a relation among the generators.
+
+         vg:=Difference( List( Combinations(e[1],2), x -> Reversed(x) ), 
+                                                                     R[2] );
+         Append( R[2], vg  );
+         for i in [1..Length(vg)] do
+           d:=d+1; 
+           Add(e[2],d);
+           if comp_grad then
+             Add(wts[2],wght(e,wts,vg[i][1])+wght(e,wts,vg[i][2]));
+           fi;
+           UpdateTable( vg[i][1], vg[i][2], [ [[d],-one] ] ); 
+         od;
+
+         rr:= [ ];
+         for i in [1..Length(u)] do
+           r:= Dcopy( u[i] );
+           while true do
+             r1:= ReductionModuloTable( r );
+             if r1 = r then break;
+                       else r:= r1;
+             fi;
+           od;
+           if r <> [ ] then
+             if Length(r[1][1]) = 1 and r[1][1][1] in e[1] then 
+               relation_found:= true;
+               break;
+             else 
+               Add( rr, r );
+             fi;
+           fi; 
+         od;
+       fi;
+       
+       if relation_found then
+
+         # i.e., a relation among the variables has been found in the
+         # previous piece of code.
+
+         w:= Position( List( e, x -> r1[1][1][1] in x ), true );
+         if w = 1 then
+           if comp_grad then
+             pos:= Position( e[1], r1[1][1][1] );
+             RemoveElmList( wts[1], pos );
+           fi;
+           RemoveSet( e[1], r1[1][1][1] );
+           Add( defs, r1 );
+           if e[1] = [ ] then 
+             K:= LieAlgebraByStructureConstants( LeftActingDomain( FL ),
+                      EmptySCTable( 0, zero, "antisymmetric" ) );
+             gens:= GeneratorsOfAlgebra( FpL );
+             imgs:= List( gens, x -> Zero( K ) );
+             map:= Objectify( TypeOfDefaultGeneralMapping( FpL, K,
+                                  IsSPGeneralMapping
+                              and IsAlgebraGeneralMapping
+                              and IsFptoSCAMorphism
+                              and IsAlgebraGeneralMappingByImagesDefaultRep ),
+                          rec(
+                              generators := gens,
+                              genimages  := imgs
+                             ) );
+             return map;
+           fi;
+           e[2]:= [ ];
+           if comp_grad then
+             wts[2]:= [ ];
+           fi;
+           tab_pols:= SubsVarInRels( tab_pols, r1 );
+           u:= SubsVarInRels( u, r1 );
+           _T:= [ ];
+           R:= [ [], [] ];
+         else
+           if comp_grad then
+             pos:= Position( e[w], r1[1][1][1] );
+             RemoveElmList( wts[w], pos );
+           fi;
+           RemoveSet( e[w], r1[1][1][1]);
+           u:= SubsVarInRels( v[w-1], r1 );
+           SubstituteVariable( R[w], r1 );
+         fi;
+
+       else
+         u:= rr;
+         table_init:= true;
+       fi;
+
+     od;
+
+
+##########################################################################
+#
+#  The table has been initialized, and the commutators of weight 2
+#  have been defined. Now the process of increasing the weight starts.
+# 
+
+     w:=1; 
+     while w < bound do
+
+       w:=w+1; 
+       Sort( R[w], grado );
+
+       if comp_grad then
+         fle:= Flat(e);
+         for i in [1..Length(fle)] do
+           for j in [i+1..Length(fle)] do
+             if wght(e,wts,fle[i])+wght(e,wts,fle[j])>MAX_WEIGHT then
+               UpdateTable( fle[i], fle[j], [] );
+             fi;
+           od;
+         od;
+       fi;
+
+#############################################################################
+# reduction modulo relations and Jacobi identity....
+#
+# In this function also _T is changed; but if the function
+# exits with a relation among the vars, then we change `_T' back to its
+# old value (the copy `S').
+#
+
+       S:= Dcopy( _T );
+       rr:= Dcopy( u );
+       Rw1:= [ ];                        
+       e[w+1]:= [ ];
+       if comp_grad then
+         wts[w+1]:= [ ];
+       fi;
+       d:= Maximum( Flat( e ) );
+       relation_found:= false;
+
+       for r in R[w] do
+           
+         t1:=r[1]; t2:=r[2];
+         if t1 > t2 then 
+           tij:= _T[t1][t2];
+         else 
+           tij:= ShallowCopy( _T[t2][t1] );
+           tij[2]:= -ShallowCopy( tij[2] );
+         fi;
+         r1:= List( [1..Length(tij[1])], k -> [ [tij[1][k]], tij[2][k] ] );
+
+         for j in e[1] do
+
+          # The Jacobi identity that will be inspected reads as
+          # [ [ t1, t2 ], j ] - [ [ t1, j ], t2 ] + [ [ t2, j ], t1 ] = 0
+          # This relation can be evaluated (using the partial table) to a 
+          # polynomial of degree <=2. This will lead to new definitions
+          # (in the case of deg. = 2), or collisions (in the case of
+          # deg. = 1). 
+
+           if t2 > j then
+
+             if t1 > j then 
+               tij:= _T[t1][j];
+             else 
+               tij:= ShallowCopy( _T[j][t1] );
+               tij[2]:= -ShallowCopy( tij[2] );
+             fi;
+             k1:= List( [1..Length(tij[1])], i->[ [tij[1][i],t2],-tij[2][i] ]);
+             if t2 > j then 
+               tij:= _T[t2][j];
+             else 
+               tij:= ShallowCopy( _T[j][t2] );
+               tij[2]:= -ShallowCopy( tij[2] );
+             fi;
+             k2:= List( [1..Length(tij[1])], i->[ [tij[1][i],t1],tij[2][i] ]);
+
+             r2:= Dcopy(r1);
+             for i in r2 do Add( i[1], j ); od;
+
+             k:= Concatenation( k1, k2, r2 );
+             k:= CollectPolynomial( k );
+             k:= ReductionModuloTable( k );
+
+             if k <> [ ] then 
+
+               # Produce a relation of the form a = c1*var1+c2*var2...
+               # by making new definitions. (Where a is either a commutator
+               # or a variable). 
+
+               i:= 2;
+               while i <= Length( k ) do
+
+                 if Length(k[i][1]) = 2 then
+                   if comp_grad then
+                     weight:= wght(e,wts,k[i][1][1])+ wght(e,wts,k[i][1][2]);
+                   else
+                     weight:= 0;
+                   fi;
+
+                   if weight <= MAX_WEIGHT then 
+                     if comp_grad then
+                       Add( wts[w+1], weight );
+                     fi;
+                     d:= d+1; 
+                     Add( e[w+1], d );
+                     UpdateTable( k[i][1][1], k[i][1][2], [ [[d],-one] ] );
+                     Add( Rw1, k[i][1] );
+                     k[i][1]:= [ d ];
+                   else
+                     RemoveElmList( k, i );
+                   fi;  
+                 fi;
+                 i:= i+1;
+               od;
+               k11:= k[1][1];
+
+               if Length(k11) = 2 then
+
+                # The `a' in the comment above is a commutator; hence a new
+                # entry for the table has been found.
+ 
+                 UpdateTable( k11[1], k11[2], k{[2..Length(k)]} );
+                 Add( Rw1, k11 );
+               elif Length(k11) = 1 then 
+
+                 ww:= 0;
+                 for i in [1..Length(e)] do 
+                   if k11[1] in e[i] then ww:=i; break; fi;
+                 od;
+
+                 if ww = w+1 then
+
+                # A collision (among the new basis elements) has been found.
+
+                   if comp_grad then
+                     pos:= Position( e[w+1], k11[1] );
+                     RemoveElmList( wts[w+1], pos );
+                   fi;
+                   RemoveSet( e[w+1], k11[1] );
+                   RemoveEntry( k11[1] );
+                   SubstituteVariable( Rw1, k );
+                   rr:= SubsVarInRels( rr, k );
+                 elif ww > 0 then 
+                   _T:=S;
+                   relation_found:= true;
+                   r1:= [ ww, k ];
+                   break;
+                 fi;
+               fi;
+               
+               i:= 0;
+               while i < Length(rr) do
+                   
+                 i:= i+1;  
+                 # Reduce the relations modulo the table and process them.
+
+                 while true do
+                   u1:= ReductionModuloTable( rr[i] );
+                   if u1 = rr[i] then break;
+                                 else rr[i]:=u1;
+                   fi;
+                 od;
+
+                 if rr[i]=[] then 
+                   Unbind( rr[i] );
+                 elif Length(rr[i][1][1])=1 then
+
+                   ww:= 0;
+                   temp:= rr[i][1][1][1];
+                   for l in [1..Length(e)] do 
+                     if temp in e[l] then ww:=l; break; fi;
+                   od;
+ 
+                   if ww = w+1 then
+                     if comp_grad then 
+                       pos:= Position( e[w+1],rr[i][1][1][1] );
+                       RemoveElmList( wts[w+1], pos );
+                     fi;
+                     RemoveSet(e[w+1],rr[i][1][1][1]);
+                     RemoveEntry(rr[i][1][1][1]);
+                     SubstituteVariable( Rw1, rr[i] );
+                     temp:= rr[i];
+                     RemoveElmList( rr, i );
+                     rr:= SubsVarInRels( rr, temp );
+                   elif ww > 0 then 
+                     _T:=S;
+                     relation_found:= true;
+                     r1:= [ww,rr[i]]; 
+                     break;
+                   fi;
+                 elif Length(rr[i][1][1])=2 then 
+                   max := 0;
+                   for s in rr[i] do
+                     ww:= 0; 
+                     for l in [1..Length(e)] do 
+                       if s[1][1] in e[l] then ww:=l; break; fi;
+                     od;
+                     if Length(s[1]) = 1 then 
+                       max:= Maximum(max,ww);
+                     else
+                       # We calculate the weight of `s[1][1]' + the weight
+                       # of `s[1][2]' i.e., the weight of `[s[1][1], s[1][2]]'
+                 
+                       for l in [1..Length(e)] do 
+                         if s[1][2] in e[l] then ww:=ww+l; break; fi;
+                       od; 
+                       max:= Maximum(max,ww); 
+                     fi;
+                   od;
+
+                   if max = w+1 then
+                     s:= 2;
+                     while s <= Length( rr[i] ) do
+                       if Length(rr[i][s][1]) = 2 then
+                         if wts <> [ ] then
+                           weight:= wght(e,wts,rr[i][s][1][1])+
+                                              wght(e,wts,rr[i][s][1][2] );
+                         else
+                           weight:= 0;
+                         fi;
+                         if weight <= MAX_WEIGHT then
+                           d:= d+1; 
+                           Add( e[w+1], d );
+                           if wts <> [ ] then
+                             Add( wts[w+1], weight );
+                           fi;
+                           UpdateTable( rr[i][s][1][1], rr[i][s][1][2],
+                                                            [ [[d], -one] ] );
+                           Add(Rw1,rr[i][s][1]);
+                           rr[i][s][1]:= [ d ];
+                         else
+                           RemoveElmList( rr[i], s );
+                         fi; 
+                       fi;
+                       s:= s+1;
+                     od;
+                     Add(Rw1,rr[i][1][1]); 
+                     UpdateTable( rr[i][1][1][1], rr[i][1][1][2], 
+                                                    rr[i]{[2..Length(rr[i])]});
+                     Unbind(rr[i]);
+                   fi;
+                 fi;
+
+               od; 
+               if relation_found then break; fi;
+               rr:=Filtered(rr,x -> IsBound(x));
+             fi;
+
+           fi;
+         od;
+       if relation_found then break; fi;
+       od;
+
+##########################################################################
+
+       if relation_found then 
+
+         # Here `r1[2]' is a relation among basis elements.
+         # `r1[1]' is the weight of the homogeneous component containing
+         # the first variable (variable of highest weight).
+
+         w:= r1[1];
+
+         if w = 1 then 
+
+           # A relation among the variables of weight 1 has been found.
+           # We reset everything and return to the point where the table
+           # is initialized. 
+     
+           if comp_grad then
+             pos:= Position( e[1], r1[2][1][1][1] );
+             RemoveElmList( wts[1], pos );
+           fi;
+           RemoveSet( e[1], r1[2][1][1][1] );
+           Add( defs, r1[2] );
+           if e[1]=[] then 
+             K:= LieAlgebraByStructureConstants( LeftActingDomain( FL ),
+                      EmptySCTable( 0, zero, "antisymmetric" ) );
+             gens:= GeneratorsOfAlgebra( FpL );
+             imgs:= List( gens, x -> Zero( K ) );
+             map:= Objectify( TypeOfDefaultGeneralMapping( FpL, K,
+                                  IsSPGeneralMapping
+                              and IsAlgebraGeneralMapping
+                              and IsFptoSCAMorphism
+                              and IsAlgebraGeneralMappingByImagesDefaultRep ),
+                          rec(
+                              generators := gens,
+                              genimages  := imgs
+                             ) );
+             return map;
+           fi;
+           e:=[ e[1], [] ];
+           if comp_grad then
+             wts:= [ wts[1], [] ];      
+           fi;
+           u:= SubsVarInRels( v[1], r1[2] ); 
+           tab_pols:= SubsVarInRels( tab_pols, r1[2] );
+           _T:=[];
+           R:=[ [ ], List( tab_pols, x -> x[1][1] ) ]; 
+           v[1]:= Dcopy( u );
+           
+           # We break to the principal loop.
+           break;
+         else
+
+# here `r1[2]' is of the form `var=something' where `var' is of weight
+# `w', and `w>1'. This means that `var' was introduced somewhere; namely
+# on level `w'. Hence the definition was [x_i,x_j]=var, where w(x_i)+
+# w(x_j)=w. Hence `var' only appears in tails (right hand sides) of commutators
+# of weight `>= w'. Now `var' is substituted in all products of weight `w',
+# and the program starts again on that level. 
+
+           if comp_grad then
+             pos:= Position( e[w], r1[2][1][1][1] );
+             RemoveElmList( wts[w], pos );
+           fi;
+           RemoveSet(e[w], r1[2][1][1][1]);
+           u:= SubsVarInRels( v[w-1], r1[2]);
+           v[w-1]:=u;
+           w:= w-1;
+           SubstituteVariable( R[w+1], r1[2] );
+           for i in [w+2..Length(e)] do e[i]:=[]; od;
+           for i in [w+2..Length(R)] do 
+             for j in [1..Length(R[i])] do
+               RemoveComm( R[i][j][1], R[i][j][2] );
+             od;
+             R[i]:= [ ];
+           od;
+
+         fi;
+
+       else
+
+        # Here Jacobi identities have been applied
+        # without finding collisions between variables.
+
+         if e[w] = [ ] and not end_reached then 
+           bound:= 2*w; end_reached:= true;
+         elif w = bound and not end_reached then
+           return fail;
+         fi;
+
+         R[w+1]:= Rw1; v[w]:= rr; u:= rr;
+      
+         if Flat( e ) = [ ] then 
+             K:= LieAlgebraByStructureConstants( LeftActingDomain( FL ),
+                      EmptySCTable( 0, zero, "antisymmetric" ) );
+             gens:= GeneratorsOfAlgebra( FpL );
+             imgs:= List( gens, x -> Zero( K ) );
+             map:= Objectify( TypeOfDefaultGeneralMapping( FpL, K,
+                                  IsSPGeneralMapping
+                              and IsAlgebraGeneralMapping
+                              and IsFptoSCAMorphism
+                              and IsAlgebraGeneralMappingByImagesDefaultRep ),
+                          rec(
+                              generators := gens,
+                              genimages  := imgs
+                             ) );
+             return map;
+         fi;
+
+         d:= Maximum( Flat( e ) );
+         vg:= [ ];
+         for i in e[w] do
+           for j in e[1] do
+             if i>j then AddSet( vg, [i,j] ); fi;
+           od;
+         od;
+         vg:= Difference( vg, R[w+1] );
+         Append( R[w+1], vg );
+
+         for i in [1..Length(vg)] do
+           if comp_grad then  
+             weight:= wght(e,wts,vg[i][1])+wght(e,wts,vg[i][2]);
+           else
+             weight:= 0;
+           fi;
+           if weight <= MAX_WEIGHT then 
+             d:= d+1; 
+             Add( e[w+1], d );
+             if comp_grad then  
+               Add( wts[w+1], weight );
+             fi;
+             Add( R[w+1], vg[i] );
+             UpdateTable( vg[i][1], vg[i][2], [ [[d],-1*one] ]);
+           else
+             UpdateTable( vg[i][1], vg[i][2], [ ] );
+           fi;
+         od;
+
+       fi;
+
+     od; # end of the loop in which `w' is successively increased.   
+   od;   # end of the main loop,
+
+   # Now we construct a table of structure constants from `_T'. 
+
+   e:=Filtered(e,x->x<>[]);
+   inds:=Flat(e);
+
+   S:=[];
+   for i in inds do
+     rowS:= [ ];
+     for j in inds do
+       if i=j then 
+         Add( rowS, [ [], [] ] );
+       else
+         if i < j then
+           tij:= ShallowCopy( _T[j][i] );
+           tij[2]:= -ShallowCopy( tij[2] );
+         else
+           tij:= _T[i][j];
+         fi;
+         sij:=[[],[]];
+         for k in [1..Length(tij[1])] do
+           sij[1][k]:= Position( inds, tij[1][k] );
+           sij[2][k]:= tij[2][k];
+         od;
+         Add( rowS, sij );
+       fi;
+     od;
+     Add( S, rowS );
+   od;
+   Add( S, -1 ); Add( S, zero );
+
+   K:= LieAlgebraByStructureConstants( LeftActingDomain( FL ), S );
+   if is_hom then
+     wts:= Flat( wts );
+     bas:= [1..Dimension(K)];
+     SortParallel( wts, bas );
+
+     gradcomps:= [ ];
+     degs:= [ ];
+     k:= 1;
+     while k <= Length(wts) do
+       bgc:= [ Basis( K )[bas[k]] ];
+       Add( degs, wts[k] );
+       while k < Length( wts ) and wts[k]=wts[k+1] do
+         k:= k+1;
+         Add( bgc, Basis(K)[bas[k]] );
+       od;
+       Add( gradcomps, VectorSpace( LeftActingDomain( K ), bgc ) );
+       k:= k+1;
+     od;
+
+     Add( gradcomps, Subspace( K, [ ] ) );
+
+     SetGrading( K, rec( min_degree:= Minimum( wts ),
+                    max_degree:= Maximum( wts ),
+                    source:= Integers,
+                    hom_components:= function( d )
+                                      if d in degs then
+                                        return gradcomps[Position(degs,d)];
+                                      else
+                                        return gradcomps[Length(gradcomps)];
+                                      fi;
+                                     end
+                  ) );
+
+   fi;
+
+
+   gens:= GeneratorsOfAlgebra( FpL );
+        
+   if Dimension( K ) = 0 then #trivial case
+     imgs:= List( gens, x -> Zero(K) );
+   else          
+     # We process the definitions, (of generators as linear combinations
+     # of other generators).
+     i:= Length( defs );
+     while i > 1 do
+       for j in [1..i-1] do
+         for k in [1..Length(defs[j])] do
+           if defs[j][k][1] = defs[i][1][1] then
+             Append( defs[j], List( defs[i]{[2..Length(defs[i])]}, x ->
+                                [ x[1], -defs[j][k][2]*x[2] ] )
+                   );
+             Unbind( defs[j][k] );
+           fi;
+         od;
+         defs[j]:= Filtered( defs[j], x -> IsBound( x ) );
+       od;
+       i:= i-1;
+     od;
+
+     imgs:= [ ];
+
+     #For every generator of the Fp Lie algebra we calculate an image...
+
+     for i in [1..Length(gens)] do
+       if i in e[1] then 
+         Add( imgs, Basis( K )[i] );
+       else
+         for j in [1..Length(defs)] do
+           if defs[j][1][1][1] = i then break; fi;
+         od;
+         im:= Zero( K );
+         for k in [2..Length(defs[j])] do
+           im:= im + -defs[j][k][2]*Basis( K )[defs[j][k][1][1]];
+         od;
+         Add (imgs, im );
+       fi;
+     od;
+   fi;
+
+# Construct the map...
+
+   map:= Objectify( TypeOfDefaultGeneralMapping( FpL, K,
+                               IsSPGeneralMapping
+                           and IsAlgebraGeneralMapping
+                           and IsFptoSCAMorphism
+                           and IsAlgebraGeneralMappingByImagesDefaultRep ),
+                       rec(
+                            generators := gens,
+                            genimages  := imgs
+                           ) );
+   return map;
+
+end );
+
+
+InstallMethod( NiceAlgebraMonomorphism,
+    "for a f.p. Lie algebra",
+    true,
+    [ IsLieAlgebra and IsSubalgebraFpAlgebra], 0, 
+
+    function( FpL )
+
+      return FpLieAlgebraEnumeration( FpL );
+
+end );
+
+
+InstallGlobalFunction( NilpotentQuotientOfFpLieAlgebra,
+
+    function( arg )
+
+      local FpL,L,weights,is_homogeneous,rels,weight,w,r,k,j,er,fol,maxw;
+     
+
+    # unwrapping the arguments...
+
+      if Length( arg ) = 2 then
+        FpL:= arg[1]; maxw:= arg[2];
+        L:= ElementsFamily( FamilyObj( FpL ) )!.freeAlgebra;
+        weights:= List( GeneratorsOfAlgebra( L ), x -> 1 ); 
+      elif Length( arg ) = 3 then
+        FpL:= arg[1]; maxw:= arg[2]; weights:= arg[3];
+      else
+        Error("Number of arguments must be two or three");
+      fi;      
+
+    # checking whether the relations are homogeneous; if so then
+    # the resulting structure constants Lie algebra will have a
+    # natural grading.
+
+      is_homogeneous:= true;
+      rels:= ElementsFamily( FamilyObj( FpL ) )!.relators;
+
+      for r in rels do
+
+        weight:= infinity;
+        er:= ExtRepOfObj( r )[2];
+        for k in [1,3..Length(er)-1] do
+          fol:= Flat( [ er[k] ] );
+          w:= 0;
+          for j in fol do
+            w:= w+weights[j];
+          od;
+          if weight = infinity then
+            weight:= w;
+          elif weight <> w then
+            is_homogeneous:= false;
+            break;
+          fi;
+        od;
+        if not is_homogeneous then break; fi;
+      od;
+
+      return FpLieAlgebraEnumeration( FpL, maxw, weights, is_homogeneous );
+
+
+end ); 
 
 
 
+##############################################################################
+##
+#F  FpLieAlgebraByCartanMatrix( <C> )
+##
+##
+InstallGlobalFunction( FpLieAlgebraByCartanMatrix, function( C )
+
+  local i,j,k,    # Loop variables.
+        l,        # The rank.
+        L,        # The free Lie algebra.
+        g,        # Generators of `L'.
+        x,h,y,    # Lists of generators of `L'.
+        rels,     # List of relations.
+        rx,ry;    # Relations.
+
+  l:= Length( C );
+  L:= FreeLieAlgebra( Rationals, 3*l );
+  g:= GeneratorsOfAlgebra( L );
+  x:= g{[1..l]};
+  h:= g{[l+1..2*l]};
+  y:= g{[2*l+1..3*l]};
+  
+  rels:= [ ];
+  for i in [1..l] do
+    for j in [i+1..l] do
+      Add( rels, h[i]*h[j] );
+    od; 
+  od;
+
+  for i in [1..l] do
+    for j in [1..l] do
+      if i=j then
+        Add( rels, x[i]*y[j]-h[i] );
+      else
+        Add( rels, x[i]*y[j] );
+      fi;
+    od;
+  od;
+
+  for i in [1..l] do
+    for j in [1..l] do
+      Add( rels, h[i]*x[j]-C[j][i]*x[j] );
+      Add( rels, h[i]*y[j]+C[j][i]*y[j] );
+    od;
+  od;
+
+  for i in [1..l] do
+    for j in [1..l] do
+      if i <> j then
+        rx:= x[j]; ry:= y[j];
+        for k in [1..1-C[j][i]] do
+          rx:= x[i]*rx; ry:= y[i]*ry;
+        od;
+        Add( rels, rx ); Add( rels, ry );
+      fi;
+    od;
+  od;
+
+  return L/rels;
+
+end );
+
+#############################################################################
+##
+#M  JenningsLieAlgebra( <G> )
+##
+##  The Jennings Lie algebra of the p-group G. 
+##
+##
+
+InstallMethod( JenningsLieAlgebra,
+                "for a p-group",
+                 true,
+                 [IsGroup], 0,
+
+ function ( G )
+
+    local J,         # Jennings series of G
+          Homs,      # Homomorphisms of J[i] onto the quotient J[i]/J[i+1] 
+          grades,    # List of the full images of the maps in Homs
+          gens,      # List of the generators of the quotients J[i]/J[i+1],
+                     # i.e., a basis of the Lie algebra.
+          pos,       # list of positions: if pos[j] = p, then the element
+                     # gens[i] belongs to grades[p]
+          i,j,k,     # loop variables
+          tempgens,
+          t,         # integer
+          T,         # multiplication table of the Lie algebra
+          dim,       # dimension of the Lie algebra
+          a,b,c,f,   # group elements
+          e,         # ext rep of a group element
+          co,        # entry of the multiplication table
+          p,         # the prime of G
+          F,         # ground field 
+          L,         # the Lie algebra to be constructed
+          pimgs,     # pth-power images
+          B,         # Basis of L 
+          vv, x,     # elements of L
+          comp,      # homogeneous component
+          grading;   # list of homogeneous components 
+
+    # We do not know the characteristic if `G' is trivial.
+    if IsTrivial( G ) then
+      Error( "<G> must be a nontrivial p-group" );
+    fi;
+
+    # Construct the homogeneous components of `L': 
+
+    J:=JenningsSeries ( G );
+    Homs:= List ( [1..Length(J)-1] , x -> 
+                  NaturalHomomorphismByNormalSubgroup ( J[x], J[x+1] ));
+    grades := List ( Homs , Range );
+    gens := [];
+    pos := [];
+    for i in [1.. Length(grades)] do
+        tempgens:= GeneratorsOfGroup( grades[i] );
+        Append ( gens , tempgens);
+        Append ( pos , List ( tempgens , x-> i ) );
+    od;
+
+    # Construct the field and the multiplication table:
+
+    dim:= Length(gens);
+    p:= PrimePGroup( G );
+    F:= GF( p );
+    T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
+    pimgs := [];
+    for i in [1..dim] do
+        a:= PreImagesRepresentative( Homs[pos[i]] , gens[i] );
+
+        # calculate the p-th power image of `a':
+
+        if pos[i]*p <= Length(Homs) then
+            Add( pimgs, Image( Homs[pos[i]*p], a^p) );
+        else
+            Add( pimgs, "zero" );
+        fi;
+
+        for j in [i+1.. dim] do
+            if pos[i]+pos[j] <= Length( Homs ) then
+   
+               # Calculate the commutator [a,b], and map the result into
+               # the right homogeneous component.
+
+                b:= PreImagesRepresentative( Homs[pos[j]] , gens[j] );
+                c:= Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b);
+                e:= ExtRepOfObj(c);
+                co:=[];
+                for k in [1,3..Length(e)-1] do
+                    if c in G then
+                        f:= GeneratorsOfGroup( G )[e[k]];
+                    else
+                        f:= GeneratorsOfGroup( grades[pos[i]+pos[j]] )[e[k]];
+                    fi;
+                    t:= Position( gens, f );
+                    Add( co, One( F )*e[k+1] );
+                    Add( co, t );
+                od;
+                SetEntrySCTable( T, i, j, co );
+            fi;
+            
+        od;
+    od;
+
+    L:= LieAlgebraByStructureConstants( F, T );
+
+    B:= Basis( L );
+
+    # Now we compute the natural grading of `L'.
+
+    grading:= [ ];
+    k:= 1;
+    while k <= Length( pos ) do
+      x:= pos[k];
+      comp:= [ ];
+      while k <= Length( pos ) and pos[k] = x do
+        Add( comp, B[k] );
+        k:= k+1;
+      od;
+      Add( grading, VectorSpace( F, comp ) );
+    od;
+
+    Add( grading, Subspace( L, [ ] ) );
+
+    SetGrading( L, rec( min_degree:= 1, 
+                        max_degree:= Length( grading ) - 1,
+                        source:= Integers,
+                        hom_components:= function( d )
+                                            if d in [1..Length(grading)] then
+                                              return grading[d];
+                                            else
+                                              return grading[Length(grading)];
+                                            fi;
+                                         end
+                      )
+              );
+
+    vv:= BasisVectors( B );
+    
+    # Set the pth-power images of the basis elements of `B':
+
+    for i in [1..Length(pimgs)] do
+        if pimgs[i] = "zero" then
+            pimgs[i]:= Zero( L );
+        else
+            e:= ExtRepOfObj( pimgs[i] );
+            x:= Zero( L );
+            for k in [1,3..Length(e)-1] do
+                if pimgs[i] in G then
+                    f:= GeneratorsOfGroup( G )[e[k]];
+                else
+                    f:= GeneratorsOfGroup( grades[pos[i]*p] )[e[k]];
+                fi;
+                t:= Position( gens, f );
+                x:= x+ One( F )*e[k+1]*vv[t];
+            od;
+            pimgs[i]:= x;
+        fi;
+    od;
+    SetPthPowerImages( B, pimgs );
+
+    return L;
+            
+end );
+
+
+#############################################################################
+##
+#E
 

@@ -16,7 +16,8 @@ Revision.csetgrp_gd:=
 ##
 #V  InfoCoset
 ##
-##  The information class for routines computing cosets and double cosets.
+##  The information function for coset and double coset operations is
+##  `InfoCoset'.
 DeclareInfoClass("InfoCoset");
 
 #############################################################################
@@ -55,11 +56,11 @@ DeclareAttribute("ComputedAscendingChains",IsGroup,
 #O  CanonicalRightCosetElement(U,g)    canonical representative of U*g 
 ##                                  (Representation dependent!)
 ##
-##  returns an element of the coset <Ug> which is independent of the
-##  representative <g> chosen. This can be used to compare cosets by comparing
-##  their canonical representatives. The representative chosen to be the
-##  canonical one is representative dependent and only guaranteed to remain the
-##  same within one {\GAP} session.
+##  returns a ``canonical'' representative of the coset <Ug> which is
+##  independent of the given representative <g>. This can be used to compare
+##  cosets by comparing their canonical representatives. The representative
+##  chosen to be the ``canonical'' one is representation dependent and only
+##  guaranteed to remain the same within one {\GAP} session.
 ##
 DeclareOperation("CanonicalRightCosetElement",
   [IsGroup,IsObject]);
@@ -74,13 +75,24 @@ DeclareCategory("IsDoubleCoset",
 
 #############################################################################
 ##
+#A  LeftActingGroup(<dcos>)
+#A  RightActingGroup(<dcos>)
+##
+##  return the two groups that define a double coset <dcos>.
+DeclareAttribute("LeftActingGroup",IsDoubleCoset);
+DeclareAttribute("RightActingGroup",IsDoubleCoset);
+
+#############################################################################
+##
 #O  DoubleCoset(<U>,<g>,<V>)
 ##
-##  The groups <U> and <V> must be subgroups of a common supergroup <G> of which
-##  <g> is an element. This command constructs the double coset <UgV> which is
-##  the set of all elements of the form $ugv$ for any $u\in<U>$, $v\in<V>$.
-##  For element operations like `in' a double coset behaves like a set of group
-##  elements.
+##  The groups <U> and <V> must be subgroups of a common supergroup <G> of
+##  which <g> is an element. This command constructs the double coset <UgV>
+##  which is the set of all elements of the form $ugv$ for any $u\in<U>$,
+##  $v\in<V>$.  For element operations such as `in', a double coset behaves
+##  like a set of group elements. The double coset stores <U> in the
+##  attribute `LeftActingGroup', <g> as `Representative', and <V> as
+##  `RightActingGroup'.
 DeclareOperation("DoubleCoset",[IsGroup,IsObject,IsGroup]);
 
 #############################################################################
@@ -90,20 +102,32 @@ DeclareOperation("DoubleCoset",[IsGroup,IsObject,IsGroup]);
 ##
 ##  computes a duplicate free list of all double cosets <UgV> for $<g>\in<G>$.
 ##  <U> and <V> must be subgroups of the group <G>.
-##  The NC version does not check the validity of the parameters.
+##  The NC version does not check whether <U> and <V> are both subgroups
+##  of <G>.
 ##
 DeclareGlobalFunction("DoubleCosets");
 DeclareOperation("DoubleCosetsNC",[IsGroup,IsGroup,IsGroup]);
 
 #############################################################################
 ##
+#O  DoubleCosetRepsAndSizes(<G>,<U>,<V>)
+##
+##  returns a list of souble coset representatives and their sizes, the
+##  entries are lists of the form $[<rep>,<size>]$. This operation is faster
+##  that `DoubleCosetsNC' because no double coset objects have to be
+##  created.
+DeclareOperation("DoubleCosetRepsAndSizes",[IsGroup,IsGroup,IsGroup]);
+
+#############################################################################
+##
 #A  RepresentativesContainedRightCosets(<D>)
 ##
-##  A double coset <UgV> can be considered as an union of right cosets $<U>h_i$.
-##  (it is the orbit of $<Ug>$ under right multiplication by $V$.) For a double
-##  coset <D>=<UgV> this returns a set of representatives $h_i$ such that
-##  $<D>=\bigcup_{h_i}<U>h_i$. The representatives returned are canonical
-##  for <U> (see "CanonicalRightCosetElement") and form a set.
+##  A double coset <UgV> can be considered as an union of right cosets
+##  $<U>h_i$.  (it is the union of the orbit of $<Ug>$ under right
+##  multiplication by $V$.) For a double coset <D>=<UgV> this returns a set
+##  of representatives $h_i$ such that $<D>=\bigcup_{h_i}<U>h_i$. The
+##  representatives returned are canonical for <U> (see
+##  "CanonicalRightCosetElement") and form a set.
 DeclareAttribute( "RepresentativesContainedRightCosets", IsDoubleCoset );
 
 #############################################################################
@@ -111,20 +135,21 @@ DeclareAttribute( "RepresentativesContainedRightCosets", IsDoubleCoset );
 #C  IsRightCoset(<obj>)
 ##
 ##  The category of right cosets.
-DeclareCategory("IsRightCoset",
-    IsDomain and IsExternalSet);
+DeclareCategory("IsRightCoset", IsDomain and IsExternalOrbit);
 
 #############################################################################
 ##
 #O  RightCoset(<U>,<g>)
 ##
-##  returns the right coset of <U> with representative <g>, which is 
-##  the set of all elements of the form $ug$ for any $u\in<U>$.
-##  <g> must be an element of a supergroup <G> which contains <U>.
-##  Right cosets are external orbits for the action of <U> which acts via
-##  `OnLeftInverse'.
-##  For element operations like `in' a right coset behaves like a set of group
-##  elements.
+##  returns the right coset of <U> with representative <g>, which is the set
+##  of all elements of the form $ug$ for all $u\in<U>$.  <g> must be an
+##  element of a larger group <G> which contains <U>. 
+##  For element operations such as `in' a right coset behaves like a set of
+##  group elements.
+##
+##  Right cosets are
+##  external orbits for the action of <U> which acts via `OnLeftInverse'. Of
+##  course the action of a larger group <G> on right cosets is via `OnRight'.
 DeclareOperation("RightCoset",[IsGroup,IsObject]);
 
 
@@ -133,34 +158,13 @@ DeclareOperation("RightCoset",[IsGroup,IsObject]);
 #O  RightCosets(<G>,<U>)
 #O  RightCosetsNC(<G>,<U>)
 ##
-##  computes a duplicate free list of right cosets $<U>g$ for $g\in<G>$. A set
-##  of representatives for the elements in this list forms a right transversal
-##  of <U> in <G>. (By inverting the representatives one obtains a list
-##  of left cosets.) The NC version does not check the parameters.
+##  computes a duplicate free list of right cosets $Ug$ for $g\in<G>$. A set
+##  of representatives for the elements in this list forms a right
+##  transversal of <U> in <G>. (By inverting the representatives one obtains
+##  a list of representatives of the left cosets of $U$.) The NC version
+##  does not check whether <U> is a subgroup of <G>.
 DeclareGlobalFunction("RightCosets");
 DeclareOperation("RightCosetsNC",[IsGroup,IsGroup]);
-
-#############################################################################
-##
-#A  RightCosetsDefaultType(<fam>)
-##
-##  If $U$ is a group and <fam> the family of <U>, this attribute stores the
-##  default type of right cosets of $U$. This is the type a right coset has once
-##  it is created without any further knowledge about its properties.
-##  The function is used to speed up the creation of large numbers of cosets
-##  which initially all have the same type.
-DeclareAttribute("RightCosetsDefaultType",IsFamily);
-
-#############################################################################
-##
-#A  DoubleCosetsDefaultType(<fam>)
-##
-##  If $U$ and <V> are groups and <fam> their family, this attribute stores the
-##  default type of double cosets $UgV$. This is the type a double coset has
-##  once it is created without any further knowledge about its properties.
-##  The function is used to speed up the creation of large numbers of cosets
-##  which initially all have the same type.
-DeclareAttribute("DoubleCosetsDefaultType",IsFamily);
 
 #############################################################################
 ##

@@ -1,0 +1,60 @@
+#!/bin/sh
+#############################################################################
+##
+#W  setvar							 Frank Celler
+##
+##  this shell script sets the variables
+##
+
+# where does the CVS directory live
+CVSROOT="/gap/CVS"
+# :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS
+
+#-----------------------------------------------------------------------------
+# everything below should be system independent.
+
+# binary directory
+BINDIR=`pwd`
+
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+
+# where to put the version
+DISTROOT=/scratch/gap4dist
+if [ \! -d ${DISTROOT} ];  then
+    mkdir $DISTROOT
+fi
+
+
+# what is *this moment*
+DATE=`date +"%d-%b-%Y"`
+
+
+# what is the next version
+#if [ \! -f ${DISTROOT}/VERSION ];  then
+#    echo "PANIC: cannot find the version file '${DISTROOT}/VERSION'"
+#    exit 1
+#fi
+#OLD_VERSION=`cat ${DISTROOT}/VERSION`
+#if [ -z ${OLD_VERSION} ];  then
+#    echo "PANIC: version file '${DISTROOT}/VERSION' is corrupted'"
+#    exit 1
+#fi
+#VERSION=`expr ${OLD_VERSION} + 1`
+VERSION="${1}"
+
+echo "Creating Version $VERSION"
+
+# where does the directory live
+RBVERSION="4r$VERSION"
+DISTNAME="gap$RBVERSION"
+LINUXPATH=bin/i686-pc-linux-gnu-gcc
+GAPEXEC=${DISTROOT}/${DISTNAME}/${LINUXPATH}/gap
+
+# the tar directory
+TARDIR=/scratch
+
+# export these variables
+export CVSROOT CVSBRANCH DISTROOT VERSION BINDIR DATE LINUXPATH GAPEXEC TARDIR DISTNAME RBVERSION
+
+

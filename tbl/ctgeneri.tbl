@@ -34,7 +34,7 @@ charparam:=[(n->[0..n-1])],
 powermap:=[function(n,k,pow) return [1,k*pow mod n];end],
 orders:=[function(n,k) return n/Gcd(n,k);end],
 irreducibles:=[[function(n,k,l) return E(n)^(k*l);end]],
-domain:=(n->IsInt(n) and n>0),
+domain:=IsPosInt,
 libinfo:=rec(firstname:="Cyclic",othernames:=[]),
 isGenericTable:=true
 );
@@ -100,7 +100,7 @@ irreducibles:=[[function(n,k,l) if k<2 then return 1;
                [function(n,k,l) return E(n/2)^(l*k)+E(n/2)^(-l*k);end,
                 function(n,k,l) return 0;end]],
 libinfo:=rec(firstname:="Dihedral",othernames:=[]),
-domain:=(n->IsInt(n) and n>0 and n mod 2=0),
+domain:=(n->IsPosInt(n) and n mod 2=0),
 isGenericTable:=true
 );
 
@@ -109,13 +109,13 @@ isGenericTable:=true
 ##
 #V  Generic character tables of Weyl groups.
 ##
-LIBTABLE.ctgeneri.("Symmetric"):= CharTableSymmetric;
+LIBTABLE.ctgeneri.("Symmetric"):= ShallowCopy( CharTableSymmetric );
 
-LIBTABLE.ctgeneri.("Alternating"):= CharTableAlternating;
+LIBTABLE.ctgeneri.("Alternating"):= ShallowCopy( CharTableAlternating );
 
-LIBTABLE.ctgeneri.("WeylB"):= CharTableWeylB;
+LIBTABLE.ctgeneri.("WeylB"):= ShallowCopy( CharTableWeylB );
 
-LIBTABLE.ctgeneri.("WeylD"):= CharTableWeylD;
+LIBTABLE.ctgeneri.("WeylD"):= ShallowCopy( CharTableWeylD );
 
 
 #############################################################################
@@ -186,7 +186,9 @@ irreducibles := [
                                    + E(q-1)^(k[1]*l[2]+k[2]*l[1]); end,
         function(q,k,l) return 0; end  ],
       [ function(q,k,l) return (q-1)*E(q^2-1)^(k*l*(q+1)); end,
+#T simplify!
         function(q,k,l) return -E(q^2-1)^(k*l*(q+1)); end,
+#T simplify!
         function(q,k,l) return 0; end,
         function(q,k,l) return -E(q^2-1)^(k*l)-E(q^2-1)^(k*l*q); end]],
 text:=Concatenation(
@@ -1173,4 +1175,5 @@ LIBTABLE.LOADSTATUS.ctgeneri:="userloaded";
 
 #############################################################################
 ##
-#E  ctgeneri.tbl. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

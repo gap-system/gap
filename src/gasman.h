@@ -37,6 +37,10 @@ const char * Revision_gasman_h =
    "@(#)$Id$";
 #endif
 
+/* This definition switches to the bigger bag header, supporting bags up to
+   4GB in length (lists limited to 1GB for other reasons) */
+
+#define NEWSHAPE
 
 /****************************************************************************
 **
@@ -95,8 +99,12 @@ typedef UInt * *        Bag;
 **  Note  that 'TNUM_BAG' is a macro, so do not call  it with arguments  that
 **  have sideeffects.
 */
+#ifdef NEWSHAPE
+#define TNUM_BAG(bag)   (*(*(bag)-3) & 0xFFL)
+#define FLAGS_BAG(bag)  (*(*(bag)-3) >> 16)
+#else
 #define TNUM_BAG(bag)   (*(*(bag)-2) & 0xFFL)
-
+#endif
 
 /****************************************************************************
 **
@@ -115,9 +123,8 @@ typedef UInt * *        Bag;
 **  Note that  'SIZE_BAG' is  a macro,  so do not call it with arguments that
 **  have sideeffects.
 */
-#define SIZE_BAG(bag)   (*(*(bag)-2) >> 8)
-
-
+#define SIZE_BAG(bag)   (*(*(bag)-2))
+#define LINK_BAG(bag)   (*(Bag *)(*(bag)-1))
 /****************************************************************************
 **
 *F  PTR_BAG(<bag>)  . . . . . . . . . . . . . . . . . . . .  pointer to a bag
@@ -222,7 +229,7 @@ extern  Bag *                   YoungBags;
 extern  Bag                     ChangedBags;
 
 #define CHANGED_BAG(bag)                                                    \
-                if ( PTR_BAG(bag) <= YoungBags                              \
+                if (   PTR_BAG(bag) <= YoungBags                              \
                   && PTR_BAG(bag)[-1] == (bag) ) {                          \
                     PTR_BAG(bag)[-1] = ChangedBags; ChangedBags = (bag);    }
 
@@ -811,7 +818,12 @@ extern Bag * GlobalByCookie(
 
 extern void StartRestoringBags( UInt nBags, UInt maxSize);
 
+#ifndef NEWSHAPE
 extern Bag NextBagRestoring( UInt sizetype);
+#else
+extern Bag NextBagRestoring( UInt size,  UInt type);
+#endif
+
 
 extern void FinishedRestoringBags( void );
 

@@ -37,49 +37,105 @@ InstallMethod( PrintObj,
 InstallMethod( \=,
     "for two elements of magma by mult. table",
     IsIdenticalObj,
-    [ IsMagmaByMultiplicationTableObj, IsMagmaByMultiplicationTableObj ], 0,
+    [ IsMagmaByMultiplicationTableObj,
+      IsMagmaByMultiplicationTableObj ], 0,
     function( x, y ) return x![1] = y![1]; end );
 
 InstallMethod( \<,
     "for two elements of magma by mult. table",
     IsIdenticalObj,
-    [ IsMagmaByMultiplicationTableObj, IsMagmaByMultiplicationTableObj ], 0,
+    [ IsMagmaByMultiplicationTableObj,
+      IsMagmaByMultiplicationTableObj ], 0,
     function( x, y ) return x![1] < y![1]; end );
 
 InstallMethod( \*,
     "for two elements of magma by mult. table",
     IsIdenticalObj,
-    [ IsMagmaByMultiplicationTableObj, IsMagmaByMultiplicationTableObj ], 0,
+    [ IsMagmaByMultiplicationTableObj,
+      IsMagmaByMultiplicationTableObj ], 0,
     function( x, y )
     local F;
     F:= FamilyObj( x );
     return F!.set[ F!.A[ x![1] ][ y![1] ] ];
     end );
 
-InstallMethod( Inverse,
-    "for element of magma by mult. table",
+
+#############################################################################
+##
+#M  OneOp( <elm> )
+##
+InstallMethod( OneOp,
+    "for an element in a magma by mult. table",
     true,
-    [     IsMagmaByMultiplicationTableObj
-      and IsMultiplicativeElementWithInverse ], 0,
-    x -> FamilyObj( x )!.inverse[ x![1] ] );
+    [ IsMagmaByMultiplicationTableObj ], 0,
+    function( elm )
+
+    local F, n, onepos, one;
+
+    F:= FamilyObj( elm );
+    n:= F!.n;
+
+    # Check that `F!.A' admits a left and right identity element.
+    onepos:= Position( F!.A, [ 1 .. n ] );
+    if onepos = fail or F!.A{ [ 1 .. n ] }[ onepos ] <> [ 1 .. n ] then
+      one:= fail;
+    else
+      one:= F!.set[ onepos ];
+    fi;
+
+    SetOne( F, one );
+
+    return one;
+    end );
 
 
 #############################################################################
 ##
-#M  ObjByExtRep( <F>, <i> )
+#M  InverseOp( <elm> )
 ##
-##  The external representation of the $i$-th element is the integer $i$.
-##
-InstallMethod( ObjByExtRep,
-    "for family of elements of magma by mult. table, and pos. integer",
+InstallMethod( InverseOp,
+    "for an element in a magma by mult. table",
     true,
-    [ IsMagmaByMultiplicationTableObjFamily, IsPosInt ], 0,
-    function( F, i )
-    if 0 < i and i <= F!.n then
-      return Objectify( NewType( F, IsMagmaByMultiplicationTableObj ), [i] );
-    else
-      Error( "<i> must be in the range `[ 1 .. ", F!.n, " ]'" );
+    [ IsMagmaByMultiplicationTableObj ], 0,
+    function( elm )
+
+    local F, i, one, onepos, inv, j, n, invpos;
+
+    F:= FamilyObj( elm );
+    i:= elm![1];
+
+    if IsBound( F!.inverse[i] ) then
+      return F!.inverse[i];
     fi;
+
+    # Check that `A' admits a left and right identity element.
+    # (This is uniquely determined.)
+    one:= One( elm );
+    if one = fail then
+      return fail;
+    fi;
+    onepos:= one![1];
+
+    # Check that `elm' has a left and right inverse.
+    # (If the multiplication is associative, this is uniquely determined.)
+    inv:= fail;
+    j:= 0;
+    n:= F!.n;
+    while j <= n do
+
+      invpos:= Position( F!.A[i], onepos, j );
+      if invpos <> fail and F!.A[ invpos ][i] = onepos then
+        inv:= F!.set[ invpos ];
+        break;
+      fi;
+
+      j:= invpos;
+
+    od;
+
+    F!.inverse[i]:= inv;
+
+    return inv;
     end );
 
 
@@ -88,54 +144,13 @@ InstallMethod( ObjByExtRep,
 #F  MagmaElement( <M>, <i> ) . . . . . . . . . .  <i>-th element of magma <M>
 ##
 InstallGlobalFunction( MagmaElement, function( M, i )
-    if not ( IsMagmaByMultiplicationTable( M ) and IsInt( i ) ) then
-      Error( "<M> must be a magma by multiplication table, <i> a position" );
+    M:= AsSSortedList( M );
+    if Length( M ) < i then
+      return fail;
+    else
+      return M[i];
     fi;
-    return ObjByExtRep( ElementsFamily( FamilyObj( M ) ), i );
 end );
-
-
-#############################################################################
-##
-#M  Enumerator( <M> )
-#M  EnumeratorSorted( <M> )
-##
-InstallMethod( Enumerator,
-    "for magma by mult. table",
-    true,
-    [ IsMagmaByMultiplicationTable ], 100,
-    M -> ElementsFamily( FamilyObj( M ) )!.set );
-
-InstallMethod( EnumeratorSorted,
-    "for magma by mult. table",
-    true,
-    [ IsMagmaByMultiplicationTable ], 100,
-    M -> ElementsFamily( FamilyObj( M ) )!.set );
-
-
-#############################################################################
-##
-#M  GeneratorsOfMagma( <M> )
-#M  GeneratorsOfMagmaWithOne( <M> )
-#M  GeneratorsOfMagmaWithInverses( <M> )
-##
-InstallMethod( GeneratorsOfMagma,
-    "for magma by mult. table",
-    true,
-    [ IsMagmaByMultiplicationTable ], 0,
-    AsListSorted );
-
-InstallMethod( GeneratorsOfMagmaWithOne,
-    "for magma-with-one by mult. table",
-    true,
-    [ IsMagmaByMultiplicationTable and IsMagmaWithOne], 0,
-    AsListSorted );
-
-InstallMethod( GeneratorsOfMagmaWithInverses,
-    "for magma-with-inverses by mult. table",
-    true,
-    [ IsMagmaByMultiplicationTable and IsMagmaWithInverses ], 0,
-    AsListSorted );
 
 
 #############################################################################
@@ -147,6 +162,7 @@ InstallGlobalFunction( MagmaByMultiplicationTable, function( A )
     local F,      # the family of objects
           n,      # dimension of `A'
           range,  # the range `[ 1 .. n ]'
+          elms,   # sorted list of elements
           M;      # the magma, result
 
     # Check that `A' is a valid multiplication table.
@@ -161,16 +177,17 @@ InstallGlobalFunction( MagmaByMultiplicationTable, function( A )
                        IsMagmaByMultiplicationTableObj );
         F!.n:= n;
         F!.A:= A;
-        F!.set:= Immutable( List( [ 1 .. n ], i -> ObjByExtRep( F, i ) ) );
-        SetIsSSortedList( F!.set, true );
+        elms:= Immutable( List( range,
+                   i -> Objectify( NewType( F,
+                            IsMagmaByMultiplicationTableObj ), [ i ] ) ) );
+        F!.set:= elms;
+        SetIsSSortedList( elms, true );
+        F!.inverse:= [];
 
         # Construct the magma.
-        M:= Objectify( NewType( CollectionsFamily( F ),
-                                    IsMagmaByMultiplicationTable
-                                and IsAttributeStoringRep ),
-                       rec() );
-#T call `MagmaByGenerators'?
+        M:= MagmaByGenerators( CollectionsFamily( F ), elms );
         SetSize( M, n );
+        SetAsSSortedList( M, elms );
 
         # Return the result.
         return M;
@@ -190,6 +207,7 @@ InstallGlobalFunction( MagmaWithOneByMultiplicationTable, function( A )
           n,      # dimension of `A'
           range,  # the range `[ 1 .. n ]'
           onepos, # position of the identity in `A'
+          elms,   # sorted list of elements
           M;      # the magma, result
 
     # Check that `A' is a valid multiplication table.
@@ -207,23 +225,24 @@ InstallGlobalFunction( MagmaWithOneByMultiplicationTable, function( A )
 
         # Construct the family of objects.
         F:= NewFamily( "MagmaByMultTableObj",
-                           IsMagmaByMultiplicationTableObj
-                       and IsMultiplicativeElementWithOne );
+                       IsMagmaByMultiplicationTableObj );
         F!.n:= n;
         F!.A:= A;
-        F!.set:= Immutable( List( [ 1 .. n ], i -> ObjByExtRep( F, i ) ) );
-        SetIsSSortedList( F!.set, true );
+        elms:= Immutable( List( range,
+                   i -> Objectify( NewType( F,
+                            IsMagmaByMultiplicationTableObj ), [ i ] ) ) );
+        F!.set:= elms;
+        SetIsSSortedList( elms, true );
+        F!.inverse:= [];
 
         # Store the identity.
         SetOne( F, F!.set[ onepos ] );
 
-        # Construct the magma with one.
-        M:= Objectify( NewType( CollectionsFamily( F ),
-                                    IsMagmaByMultiplicationTable
-                                and IsMagmaWithOne
-                                and IsAttributeStoringRep ),
-                       rec() );
+        # Construct the magma-with-one.
+        M:= MagmaWithOneByGenerators( CollectionsFamily( F ), elms );
         SetSize( M, n );
+        SetAsSSortedList( M, elms );
+        SetGeneratorsOfMagma( M, elms );
 
         # Return the result.
         return M;
@@ -246,6 +265,7 @@ InstallGlobalFunction( MagmaWithInversesByMultiplicationTable, function( A )
           inv,    # list of positions of inverses
           i,      # loop over the elements
           invpos, # position of one inverse
+          elms,   # sorted list of elements
           M;      # the magma, result
 
     # Check that `A' is a valid multiplication table.
@@ -276,24 +296,24 @@ InstallGlobalFunction( MagmaWithInversesByMultiplicationTable, function( A )
 
         # Construct the family of objects.
         F:= NewFamily( "MagmaByMultTableObj",
-                           IsMagmaByMultiplicationTableObj
-                       and IsMultiplicativeElementWithInverse );
+                       IsMagmaByMultiplicationTableObj );
         F!.n:= n;
         F!.A:= A;
-        F!.set:= Immutable( List( [ 1 .. n ], i -> ObjByExtRep( F, i ) ) );
-        SetIsSSortedList( F!.set, true );
+        elms:= Immutable( List( range,
+                   i -> Objectify( NewType( F,
+                            IsMagmaByMultiplicationTableObj ), [ i ] ) ) );
+        F!.set:= elms;
+        SetIsSSortedList( elms, true );
 
-        # Store identity and inverses.
+        # Store identity and inverses in the family.
         SetOne( F, F!.set[ onepos ] );
-        F!.inverse:= List( inv, i -> ObjByExtRep( F, i ) );
+        F!.inverse:= Immutable( elms{ inv } );
 
-        # Construct the magma with one.
-        M:= Objectify( NewType( CollectionsFamily( F ),
-                                    IsMagmaByMultiplicationTable
-                                and IsMagmaWithInverses
-                                and IsAttributeStoringRep ),
-                       rec() );
+        # Construct the magma-with-inverses.
+        M:= MagmaWithInversesByGenerators( CollectionsFamily( F ), elms );
         SetSize( M, n );
+        SetAsSSortedList( M, elms );
+        SetGeneratorsOfMagma( M, elms );
 
         # Return the result.
         return M;
@@ -364,5 +384,5 @@ end );
 
 #############################################################################
 ##
-#E  grptbl.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

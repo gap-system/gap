@@ -1,0 +1,299 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%A help.tex            GAP documentation                Martin Schoenert
+%
+%A @(#)$Id$
+%
+%Y Copyright 1990-1992, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+%
+\Chapter{The Help System}
+
+This chapter describes the {\GAP} help system.
+The help system lets you read the manual interactively.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Help}
+
+\>`?<section>'{getting help}
+
+The help command `?' displays the section with the name <section> on the
+screen. For example `?Help' will display this section on the screen.
+You should not type in the single quotes. They are only used in help
+sections to delimit text that you should enter into {\GAP} or that {\GAP}
+prints in response. When the whole section has been displayed the normal
+{\GAP} prompt `gap>' is shown and normal {\GAP} interaction resumes.
+
+When there are several manual sections that match <section> a list of topics
+as described under "Help Index" is displayed.
+
+Section~"Reading Sections" tells you what actions you can perform
+while you are reading a section. You tell {\GAP} to display this
+section by entering `?Reading Sections', without quotes.
+Section~"Format of Sections" describes the format of sections and the
+conventions used,
+"Browsing through the Sections" lists the commands you use to flip
+through sections, "Redisplaying a Section" describes how to read a
+section again, "Abbreviating Section Names" tells you how to avoid typing
+the long section names, and "Help Index" describes the index command.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Reading Sections}
+
+\index{help!scrolling}
+If the section is longer than the size of your screen, {\GAP} stops after
+displaying a full screen and displays
+
+\begintt
+-- <space> for more, <q> to quit --
+\endtt
+
+If you press <space> {\GAP} displays the next full screen of lines of the
+section and then stops again.
+This goes on until the whole section has been displayed,
+at which point {\GAP} will return immediately to the main {\GAP} loop.
+Pressing `f' has the same effect as <space>.
+
+You can also press `b' which will scroll back to the *previous* full screen
+of lines of the section.
+If you press `b' when {\GAP} is displaying the top of a section,
+{\GAP} will ring the bell.
+
+You can also press `q' to quit and return immediately back to the main
+{\GAP} loop without reading the rest of the section.
+
+The size of the screen is set using information obtained from the
+operating system, if possible, or to $24$ lines if not.
+If this does not produce the correct results for your system,
+you may wish to set the number of lines with the `-y <rows>' option
+(see~"Command Line Options") when you start {\GAP}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Format of Sections}
+
+\index{help!format}
+This section describes the format of sections when they are displayed on
+the screen and the special conventions used.
+For general conventions about manual sections and the format of sections
+in the printed manual, see~"Manual Conventions".
+
+As you can see, {\GAP} prints a header line
+containing the name of the section on the left and the name of the
+chapter on the right.
+
+(If this header line ends in `(not loaded)' the documentation belongs to a
+share package, which has not yet been loaded. See section~"Loading a Share
+Package" for further information.)
+
+\begintt
+<text>
+\endtt
+Text enclosed in angle brackets is used for arguments in the descriptions
+of functions and for other place holders. It means that you should not
+actually enter this text into {\GAP} but replace it by appropriate
+text depending on what you want to do. For example when we write that
+you should enter `?<section>' to see the section with the name <section>,
+<section> serves as a place holder, indicating that you can enter the
+name of the section that you want to see at this place.
+
+\begintt
+`text'
+\endtt
+Text enclosed in single quotes is used for names of variables and
+functions and other text that you may actually enter into your computer
+and see on your screen. The text enclosed in single quotes may contain
+place holders enclosed in angle brackets as described above. For example
+when the help text for `IsPrime' says that the form of the call is
+`IsPrime( <n> )' this means that you should actually
+enter the strings ``IsPrime('' and ``)'', without the quotes,
+but replace the `<n>' with the number (or expression)
+that you want to test.
+
+\begintt
+"text"
+\endtt
+Text enclosed in double quotes is used for cross references to other
+parts of the manual. So the text inside the double quotes is the name of
+another section of the manual. This is used to direct you to other
+sections that describe a topic or a function used in this section. So, 
+for example, "Browsing through the Sections" is a cross reference to the next
+section.
+
+\begintt
+> Oper( <arg1>, <arg2>[, <opt>] ) F
+\endtt
+starts a subsection on the command `Oper' that takes two arguments <arg1>
+and <arg2> and an optional third argument <opt>.
+
+The letter `F' at the end
+indicates that the command is a simple function.
+The letters `A', `P', `O', `C', `R', and `V' indicate
+``Attribute'', ``Property'', ``Operation'', ``Category'', ``Representation''
+(see Chapter~"Types of Objects"), or ``Variable'', respectively.
+
+`_' and `^'
+
+In mathematical formulas the underscore and the caret are used to denote
+subscription and superscription. Ordinarily they apply only to the very
+next character following, unless a whole expression enclosed in
+parentheses follows. So, for example, `x_1^(i+1)' denotes the variable `x'
+with subscript 1 raised to the power `i+1'.
+
+Longer examples are usually paragraphs of their own.
+Everything on the lines with the prompts `gap>' and `>', except
+the prompts themselves of course, is the input you have to type;
+everything else is {\GAP}'s response.
+
+\begintt
+gap> ?Format of Sections
+Format of Sections ______________________________________ Environment
+
+This section describes the format of sections when they are displayed
+on the screen and the special conventions used.
+... 
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Browsing through the Sections}
+
+\index{help!browsing}
+The help sections are organized like a book into chapters. This should
+not surprise you, since the same source is used both for the printed
+manual and the online help. Just as you can flip through the pages of a
+book there are special commands to browse through the help sections.
+
+\>`?>'{browsing forward}
+\>`?\<'{browsing backwards}
+
+The two help commands `?\<' and `?>' correspond to the flipping of pages.
+`?\<' takes you to the section preceding the current section and displays
+it, and `?>' takes you to the section following the current section.
+
+\>`?>>'{browsing forward one chapter}
+\>`?\<\<'{browsing backwards one chapter}
+
+`?\<\<' is like `?\<', only more so. It takes you back to the first
+section of the current chapter, which gives an overview of the sections
+described in this chapter. If you are already in this section `?\<\<'
+takes you to the first section of the previous chapter. `?>>' takes you
+to the first section of the next chapter.
+
+\>`?-'{browsing the previous section browsed}
+\>`?+'{browsing the next section browsed}
+
+{\GAP} remembers the sections that you have read. `?-' takes you to the
+one that you have read before the current one, and displays it again.
+Further applications of `?-' take you further back in this history. `?+' reverses this
+process, i.e., it takes you back to the section that you have read
+*after* the current one. It is important to note that `?-' and `?+' do
+*not* alter the history like the other help commands.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Changing the Way the Help Pages are Displayed}
+
+\index{HTML}
+\index{netscape}\index{lynx}\index{internet config}
+\index{less}\index{pager}
+
+If you have installed an html version of the manual you can
+alternatively use an html browser to display the manual sections. The
+command
+
+\>SetHelpViewer(<device>)
+
+will select a method described by the string <device> to display the help
+pages online. Currently <device> can be `"screen"' for the default built-in
+text browser, `"less"' (only under UNIX) to use `less' for paging,
+`"netscape"' for the netscape HTML browser and `"lynx"' for the
+lynx HTML browser. Both HTML browsers will only work under UNIX. 
+
+On an Apple Macintosh you can use an HTML browser by calling `SetHelpViewer'
+with the parameter `"Internet Config"'.
+See section~"Features of GAP for MacOS" for details about this.
+
+If you want the HTML help to be the default, you should call this function
+in your `.gaprc' file (see the sections on operating
+system dependent features in chapter "Installing GAP").
+
+Note that you need to set up the `symbol' font properly in your web browser
+to get a correct display of mathematical formulae (see section~"HTML Font
+Setup").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Redisplaying a Section}
+
+\index{help!redisplaying}
+
+\>`?'{browsing the same section again}
+
+The help command `?' followed by no section name redisplays the last help
+section again. So if you reach the bottom of a long help section and have
+already forgotten what was mentioned at the beginning, or, for example, the
+examples do not seem to agree with your interpretation of the
+explanations, use `?' to read the whole section again from the beginning.
+
+When `?' is used before any section has been read, {\GAP} displays a
+`Welcome to GAP'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Abbreviating Section Names}
+
+\index{help!abbreviating}
+Upper and lower case in <section> are not distinguished, so typing either
+`?Abbreviating Section Names' or `?abbreviating section names' will show
+the section you are currently reading.
+
+Each word in <section> may be abbreviated. So instead of typing
+`?abbreviating section names' you may also type `?abb sec nam', or even `?a
+s n'. You must not omit the spaces separating the words. For each word in
+the section name you must give at least the first character. As another
+example you may type `?el oper for int' instead of `?elementary operations
+for integers', which is especially handy when you can not remember whether
+it was `operations' or `operators'.
+
+If an abbreviation matches multiple section names a list of all these
+section names is displayed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Help Index}
+
+\>`??<topic>'{list help topics}
+
+The operator `??' looks up <topic> in {\GAP}'s index and prints all the
+index entries that contain the substring <topic>.
+Then you can decide which section is the one you are actually interested
+in and request this one.
+
+\begintt
+gap> ??read
+Help: several entries match this topic
+[1] reference:read
+[2] reference:reading sections
+[3] reference:readlib
+[4] reference:isreadablefile
+[5] reference:read
+...
+\endtt
+
+The first part of each line is a reference number.  Then follows the
+part of the manual which contains the section and finally the actual
+name of the (sub)section. All names are converted to lower case.
+
+The order of the sections corresponds to their order in the
+{\GAP} manual, so that related sections should be adjacent.
+
+You can then either refer to the desired subsection by its name or simply
+use `?<nr>' to look at the topic with the reference number <nr>. So in the
+above example `?3' would display the section on `ReadLib'.
+
+When referring to sections by their name you can usually omit the part
+of the manual unless several parts contain the same section names.
+
+If there are several subsections which have exactly the same name, a number
+in parentheses is added to the name to distinguish these.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

@@ -1457,7 +1457,7 @@ Obj Func16Bits_Less (
             /* got a difference                                            */
 
             /* get the generator mask                                      */
-            genm = ((1UL << (8-ebits)) - 1) << ebits;
+            genm = ((1UL << (16-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {
@@ -2425,7 +2425,7 @@ Obj Func32Bits_Less (
             /* got a difference                                            */
 
             /* get the generator mask                                      */
-            genm = ((1UL << (8-ebits)) - 1) << ebits;
+            genm = ((1UL << (32-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {

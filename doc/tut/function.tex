@@ -16,15 +16,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Functions}
 
-You have  already seen how to  use the functions   of the {\GAP} library,
-i.e., how to apply them to arguments.  This chapter  will show you how to
-write your own functions.
+You  have already  seen how to   use functions in the {\GAP}  library,
+i.e., how to apply them to arguments.
 
-In  this section  you will  see  how  to write  functions  in the  {\GAP}
-language.  You will also see  how to use  the `if' statement.   Functions
-may  have  local variables   which are  declared   in an  initial `local'
-statement in the function definition. Also loop constructions via
-`while' and `for' are discussed. Functions may call themselves.
+In this section  you will see  how to  write  functions in  the {\GAP}
+language.  You will also see how to use the `if' statement and declare
+local variables with the `local' statement in the function definition.
+Loop constructions via `while' and `for' are discussed further, as are
+recursive functions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Writing Functions}
@@ -33,10 +32,10 @@ Writing a function that prints `hello, world.'  on the screen is a simple
 exercise in {\GAP}.
 
 \beginexample
-    gap> sayhello:= function()
-    > Print("hello, world.\n");
-    > end;
-    function (  ) ... end
+gap> sayhello:= function()
+> Print("hello, world.\n");
+> end;
+function (  ) ... end
 \endexample
 
 This function when called will only execute the  `Print' statement in the
@@ -49,66 +48,68 @@ The function definition has the following syntax.
 
 \)\fmark function( <arguments> ) <statements> end
 
-A function definition starts with the keyword `function' followed  by the
-formal  parameter list <arguments> enclosed  in  parenthesis.  The formal
-parameter list  may be empty as in  the example.  Several  parameters are
-separated by commas.  Note that there  must be  *no* semicolon behind the
-closing   parenthesis.   The  function  definition  is  terminated by the
-keyword `end'.
+A function definition starts with the keyword `function' followed by
+the formal parameter list <arguments> enclosed in parenthesis '( )'.
+The formal parameter list may be empty as in the example.  Several
+parameters are separated by commas.  Note that there must be *no*
+semicolon behind the closing parenthesis.  The function definition is
+terminated by the keyword `end'.
 
-A {\GAP} function is an expression like an integer, a sum and a list.  It
-therefore  may be assigned to a  variable.   The terminating semicolon in
-the example does not belong to the function definition but terminates the
-assignment of the function to the name `sayhello'.  Unlike in the case of
-integers, sums, and lists the value  of the function `sayhello' is echoed
-in the abbreviated fashion `function ( )  ...  end'.  This shows the most
-interesting part of a function: its formal parameter list (which is empty
-in this example).  The  complete value of `sayhello'  is returned if  you
-use the function `Print'.
+A {\GAP} function is an expression  like an integer,  a sum or a list.
+Therefore it may be assigned to a variable.  The terminating semicolon
+in the  example   does not belong    to the  function  definition  but
+terminates the  assignment  of the  function to the  name  `sayhello'.
+Unlike in the case   of integers, sums, and  lists  the value of   the
+function `sayhello' is echoed in the abbreviated fashion `function ( )
+...   end'.  This shows the most  interesting part  of a function: its
+formal parameter list (which is empty  in this example).  The complete
+value of `sayhello' is returned if you use the function `Print'.
 
 \beginexample
-    gap> Print(sayhello, "\n");
-    function (  )
-        Print( "hello, world.\n" );
-        return;
-    end
+gap> Print(sayhello, "\n");
+function (  )
+    Print( "hello, world.\n" );
+    return;
+end
 \endexample
 
-Note the  additional newline character  `"\\n"' in the `Print' statement.
-It is printed after the object `sayhello' to start a new line.
+Note  the  additional   newline  character   `"\\n"'  in  the  `Print'
+statement.  It is  printed after the object  `sayhello' to start a new
+line. The extra `return'  statement is inserted  by {\GAP} to simplify
+the process of executing the function.
 
 The newly defined function `sayhello' is executed by calling `sayhello()'
 with an empty argument list.
 
 \beginexample
-    gap> sayhello();
-    hello, world.
+gap> sayhello();
+hello, world.
 \endexample
 
-This is however not a typical example as no  value is returned but only a
+However, this is not a typical example as no  value is returned but only a
 string is printed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{If Statements}
 
-In the following example we define a function `sign' which shall determine 
+In the following example we define a function `sign' which determines
 the sign of a number.
 
 \beginexample
-    gap> sign:= function(n)
-    >        if n < 0 then
-    >           return -1;
-    >        elif n = 0 then
-    >           return 0;
-    >        else
-    >           return 1;
-    >        fi;
-    >    end;
-    function ( n ) ... end
-    gap> sign(0); sign(-99); sign(11);
-    0
-    -1
-    1
+gap> sign:= function(n)
+>        if n < 0 then
+>           return -1;
+>        elif n = 0 then
+>           return 0;
+>        else
+>           return 1;
+>        fi;
+>    end;
+function ( n ) ... end
+gap> sign(0); sign(-99); sign(11);
+0
+-1
+1
 \endexample
 
 This example also introduces the `if' statement which is  used to execute
@@ -132,63 +133,68 @@ Fibonacci numbers are defined recursively by $f(1) = f(2) =  1$ and
 $f(n) =  f(n-1) + f(n-2)$ for $n \geq 3$.
 Since functions in {\GAP} may call themselves,
 a function `fib' that computes Fibonacci numbers can be implemented
-basically by typing the above equations.
+basically by typing the above equations. (Note however that this is a very
+inefficient way to compute $f(n)$.)
 
 \beginexample
-    gap> fib:= function(n)
-    >       if n in [1, 2] then
-    >          return 1;
-    >       else
-    >          return fib(n-1) + fib(n-2);
-    >       fi;
-    >    end;
-    function ( n ) ... end
-    gap> fib(15);
-    610
+gap> fib:= function(n)
+>       if n in [1, 2] then
+>          return 1;
+>       else
+>          return fib(n-1) + fib(n-2);
+>       fi;
+>    end;
+function ( n ) ... end
+gap> fib(15);
+610
 \endexample
 
 There should be additional tests for the  argument  `n' being  a positive
 integer.   This  function `fib' might  lead to strange  results if called
-with other arguments.  Try to insert the tests in this example.
+with other arguments.  Try inserting the necessary tests into this example.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Local Variables}
 
-In the next example we show an implementation of the function `swap'
-that takes a list and two integers <i> and <j>. The function makes
-a shallow copy of the list and swaps the elements on the positions
-<i> and <j>.
+A function `gcd' that computes the greatest common divisor of two
+integers by Euclid's algorithm will need a variable in addition to the
+formal arguments.
 
 \beginexample
-    gap> swap:= function( list, i, j )
-    >      local copy,c;
-    >      copy:= ShallowCopy( list );
-    >      c:= copy[i];
-    >      copy[i]:= copy[j];
-    >      copy[j]:= c;
-    >      return copy;
-    >      end;
-    function ( list, i, j ) ... end
-    gap> l:= [ 1, 2, 4, 3 ];; c:=9;;
-    gap> swap( l, 3, 4 );
-    [ 1, 2, 3, 4 ]
-    gap> c;
-    9
+gap> gcd:= function(a, b)
+>       local c;
+>       while b <> 0 do
+>          c:= b;
+>          b:= a mod b;
+>          a:= c;
+>       od;
+>       return c;
+>    end;
+function ( a, b ) ... end
+gap> gcd(30, 63);
+3
 \endexample
- 
 
-The additional  variables `copy'  and `c' are declared as  a  *local*  
-variable in the `local' statement  of the function definition.  The `local' 
-statement, if present, must  be the first  statement of  a function  
-definition. Following the `local' statement there is a list of variables
-separated by commas.
+The additional  variable `c'  is declared as  a  *local*  variable in the
+`local' statement  of the function definition.  The `local' statement, if
+present, must  be the first  statement of  a function  definition.   When
+several local variables are  declared in only one  `local' statement they
+are separated by commas.                                 
 
-The  variables `copy'  and `c' are indeed local variables, that is local to 
-the function `swap'. They can not be ``seen'' from the main loop; so 
-assignments to local variables will have *no* effect outside the function
-to which they belong. In the main loop we have assigned the value `9' to the
-variable `c'. Now the local nature of `c' in the function `swap' prevents  
-the value of the `c' in the main loop from being overwritten.
+The  variable `c'  is  indeed  a local  variable,  that  is local to  the
+function `gcd'.  If you try  to use the value of `c' in the main loop you
+will see that `c'  has no assigned value unless you have already assigned
+a value to the variable `c'  in  the  main loop.  In this case  the local
+nature of `c' in the function `gcd' prevents  the value of the `c' in the
+main loop from being overwritten.
+
+\beginexample
+gap> c:= 7;;
+gap> gcd(30, 63);
+3
+gap> c;
+7
+\endexample
 
 We say  that in a given scope an identifier identifies a unique variable.
 A *scope* is a lexical part of a program text.  There is the global scope
@@ -200,203 +206,85 @@ and the local declaration of the function.  The usage of an identifier in
 a program text refers to  the  variable in  the  innermost scope that has
 this identifier as its name.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{For and While Loops}
-
-\atindex{loops!for}{|indexit}\atindex{loops!while}{|indexit}%
-The next function calculates the product of a list of permutations `pp'.
-
-\beginexample
-    gap> product:= function( pp )
-    >        local prod,p;
-    >        prod:= ();        
-    >        for p in pp do
-    >          prod:= prod*p;    
-    >        od;
-    >        return prod;
-    >    end;
-    function ( pp ) ... end
-    gap> pp:= [ (1,3,2,6,8)(4,5,9), (1,6)(2,7,8), (1,5,7)(2,3,8,6),
-    >           (1,8,9)(2,3,5,6,4), (1,9,8,6,3,4,7,2)];;
-    gap> product( pp );
-    (1,8,4,2,3,6,5,9)
-\endexample
-
-First a  local variable `prod'  is initialized  to the identity permutation
-`()'. Then the loop variable `p' takes as its value one permutation after
-the other from the list `pp' and is multiplied with  the present value of
-`prod'  resulting in a  new value which  is then assigned  to `prod'. When
-`p' has looped through all elements of `pp', then the result is returned.
-The `for' loop has the following syntax
-
-\)\fmark for <var> in <list> do <statements> od;
-
-The  effect of the `for'  loop  is to execute the <statements> for  every
-element  of  the <list>.   A `for'  loop  is  a  statement  and therefore
-terminated by a semicolon.  The list of <statements>  is enclosed by  the
-keywords `do' and `od'  (reverse  `do').  A `for'  loop returns no value.
-
-The `for' loop can loop over any kind of list, even a list with holes.
-In many programming languages the `for' loop has the form `for <var> from 
-<first> to <last> do <statements> od;' But this is merely a special case of 
-the general `for' loop as defined above where the <list> in the loop body 
-is a range:
-
-\)\fmark for <var> in [<first>..<last>] do <statements>  od;
-
-You can for  instance loop over a range to compute the factorial $n!$
-of the number $n$ in the following way.
-
-\beginexample
-    gap> factorial := function( n )
-    >        local k,fac;                    
-    >        fac:= 1;
-    >        for k in [1..n] do
-    >          fac:= fac*k;
-    >        od;
-    >        return fac;
-    >    end;
-    function ( n ) ... end
-    gap> factorial( 15 );
-    1307674368000
-\endexample
-
-The  `while' loop has the following syntax
-
-\)\fmark while <condition> do <statements>  od; 
-
-The `while'  loop loops over the <statements>  as long as  the 
-<condition> evaluates  to  `true'. Like the `for' loop the `while' loop 
-is terminated by the keyword `od' followed by a semicolon.
-
-As an example we consider a function `gcd' for calculating the greatest 
-common divisor of two integers, using Euclid's algorithm. 
-
-\beginexample
-    gap> gcd:= function(a, b)
-    >       local c;
-    >       while b <> 0 do
-    >          c:= b;
-    >          b:= a mod b;
-    >          a:= c;
-    >       od;
-    >       return c;
-    >    end;
-    function ( a, b ) ... end
-    gap> gcd(30, 63);
-    3
-\endexample
-
-You have already seen that list objects may be  changed.   This holds  of
-course also for the  list in a loop body.  In most  cases  you have to be
-careful not  to change this list, but there are situations  where this is
-quite useful.  The following example  shows a quick way  to determine the
-primes smaller than 1000 by a sieve method.  Here we will make use of the
-function `Unbind' to delete entries from a list.
-\beginexample
-    gap> primes:= [];;
-    gap> numbers:= [2..1000];;
-    gap> for p in numbers do
-    >       Add(primes, p);
-    >       for n in numbers do
-    >          if n mod p = 0 then
-    >             Unbind(numbers[n-1]);
-    >          fi;
-    >       od;
-    >    od;
-\endexample
-The inner loop  removes all entries from `numbers' that are  divisible by
-the last detected prime `p'.  This is done by the function `Unbind' which
-deletes the binding of the list position  `numbers[n-1]' to the value `n'
-so that afterwards `numbers[n-1]' no longer has  an  assigned value.  The
-next  element encountered in `numbers'  by the outer  loop necessarily is
-the next prime.
-
-In a similar way it is possible to enlarge the list which is looped over.
-This yields a nice and short orbit  algorithm for the  action of a group,
-for example.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Recursion}
 
-We  have  already seen recursion  in the  function `fib' in "If Statements".
+We have already seen recursion in the function `fib'
+in Section~"If Statements".
 Here is another, slightly more complicated example.
 
-We will now write  a function to  determine the number of partitions of a
-positive integer.  A partition of a positive integer is a descending list
-of  numbers whose sum is the given integer.  For example $[4,2,1,1]$ is a
-partition of 8.  The complete set of all partitions of an integer $n$ may
-be divided into subsets with respect to the largest  element.  The number
-of  partitions of  $n$  therefore  equals  the  sum  of  the  numbers  of
-partitions  of $n-i$ with  elements less than  $i$ for all possible  $i$.
-More generally the  number of partitions of  $n$ with elements  less than
-$m$ is the sum  of  the numbers of partitions of $n-i$ with elements less
-than  $i$ for $i$ less than  $m$ and  $n$.  This description  yields  the
-following function.
+We will now write a function to determine  the number of partitions of
+a positive integer.  A partition of a positive integer is a descending
+list  of numbers   whose sum   is the   given   integer.  For  example
+$[4,2,1,1]$ is a partition of 8.  Note that there is just one partitio
+of 0, namely $[\,]$. The complete set of all  partitions of an integer
+$n$ may be divided  into subsets with respect  to the largest element.
+The number  of  partitions of   $n$ therefore  equals  the  sum of the
+numbers of partitions of $n-i$ with elements less than or equal to $i$
+for all possible $i$.  More generally the  number of partitions of $n$
+with elements less than $m$ is the sum of the numbers of partitions of
+$n-i$ with elements less than $i$ for $i$ less than $m$ and $n$.  This
+description yields the following function.
 
 \beginexample
-    gap> nrparts:= function(n)
-    >    local np;
-    >    np:= function(n, m)
-    >       local i, res;
-    >       if n = 0 then
-    >          return 1;
-    >       fi;
-    >       res:= 0;
-    >       for i in [1..Minimum(n,m)] do
-    >          res:= res + np(n-i, i);
-    >       od;
-    >       return res;
-    >    end;
-    >    return np(n,n);
-    > end;
-    function ( n ) ... end
+gap> nrparts:= function(n)
+>    local np;
+>    np:= function(n, m)
+>       local i, res;
+>       if n = 0 then
+>          return 1;
+>       fi;
+>       res:= 0;
+>       for i in [1..Minimum(n,m)] do
+>          res:= res + np(n-i, i);
+>       od;
+>       return res;
+>    end;
+>    return np(n,n);
+> end;
+function ( n ) ... end
 \endexample
 
 We wanted to  write a function that  takes one argument.   We solved  the
 problem of determining the number  of partitions in  terms of a recursive
 procedure with two arguments.  So we had to write  in fact two functions.
 The  function  `nrparts' that  can  be  used  to  compute the  number  of
-partitions takes indeed only one  argument.  The  function `np' takes two
+partitions indeed takes only one  argument.  The  function `np' takes two
 arguments and solves the problem in the indicated way.  The  only task of
 the function `nrparts' is to call `np' with two equal arguments.
 
-We made `np'  local to `nrparts'.   This  illustrates the  possibility of
-having local functions in {\GAP}.   It is however not necessary to put it
-there.  `np' could as  well be defined on the main level.   But  then the
-identifier `np'  would be bound and could not be used for other purposes.
-And  if  it were used  the essential  function  `np' would no  longer  be
-available for `nrparts'.
+We made `np' local to `nrparts'.  This  illustrates the possibility of
+having local functions in {\GAP}.  It is  however not necessary to put
+it there.  `np' could as well  be defined on  the main level, but then
+the  identifier `np' would  be bound and could   not be used for other
+purposes, and if  it were used  the  essential function `np' would  no
+longer be available for `nrparts'.
 
-Now have  a look at the function  `np'.  It has two local variables `res'
-and `i'.  The variable `res' is used to collect the sum and `i' is a loop
-variable.  In the loop  the  function `np' calls itself again with  other
-arguments.  It would be  very disturbing if this call of  `np' would  use
-the same `i' and `res'  as  the calling `np'.  Since the new call of `np'
-creates a new scope with new variables this is fortunately not the case.
+Now have a look at the function `np'. It has two local variables `res'
+and `i'. The  variable `res' is  used to collect the sum  and `i' is a
+loop  variable. In the loop the  function `np' calls itself again with
+other arguments. It would be very disturbing if this call of `np' was
+to use the same `i' and `res' as the calling `np'.  Since the new call
+of `np' creates a new scope with new variables this is fortunately not
+the case.
 
-The formal parameters $n$ and $m$ are treated like local variables.
+Note that the formal parameters 'n' and 'm' of 'np' are treated like
+local variables.
 
-It  is however  cheaper  (in  terms of  computing time)  to avoid such  a
-recursive solution if this is possible (and it is possible in this case),
-because a function call is not very cheap.
+(Regardless   of the recursive structure of   an algorithm it is often
+cheaper (in    terms  of  computing    time)  to  avoid  a   recursive
+implementation if possible (and it  is possible in this case), because
+a function call is not very cheap.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Further information}
+\Section{Further Information about Functions}
 
 The function  syntax is described  in Section "ref:Functions".   The `if'
 statement is described  in more detail in  Section "ref:If".  More  about
 Fibonacci  numbers is found  in  Section "ref:Fibonacci"  and more  about
 partitions in Section "ref:Partitions".
-The `for' loop is described in "ref:For".
-The `while' loop is described in "ref:While".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E  function.tex. . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-
-
-
 

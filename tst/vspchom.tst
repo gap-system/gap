@@ -110,10 +110,9 @@ gap> Z(3) * map3 = - map3;
 true
 
 gap> comp1:= CompositionMapping( map3, map2 );
-CompositionMapping( CanonicalBasis( GF(3^3) ) -> 
-[ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ], 
-[ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] 
- ] -> CanonicalBasis( GF(3^3) ) )
+CompositionMapping( [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ],
+  [ 0*Z(3), Z(3)^0 ] ] -> CanonicalBasis( GF(3^3) ), CanonicalBasis( GF(3^
+3) ) -> [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ] )
 gap> IsInjective( comp1 );
 false
 gap> IsSingleValued( comp1 );
@@ -122,9 +121,10 @@ gap> IsSurjective( comp1 );
 true
 
 gap> comp2:= CompositionMapping( map2, map3 );
-CompositionMapping( [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
-  [ 0*Z(3), Z(3)^0 ] ] -> CanonicalBasis( GF(3^3) ), CanonicalBasis( GF(3^
-3) ) -> [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ] )
+CompositionMapping( CanonicalBasis( GF(3^3) ) ->
+[ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ],
+[ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ]
+ ] -> CanonicalBasis( GF(3^3) ) )
 gap> IsInjective( comp2 );
 true
 gap> IsSingleValued( comp2 );
@@ -395,7 +395,7 @@ gap> map6 in hom;
 true
 gap> sub:= Subspace( hom, [ map6 ] );
 <vector space over GF(3), with 1 generators>
-gap> BasisVectors( BasisOfDomain( sub ) );
+gap> BasisVectors( Basis( sub ) );
 [ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ]
 
 gap> sub:= LeftModuleByGenerators( f, [ map6 ] );
@@ -409,7 +409,7 @@ gap> triv:= LeftModuleByGenerators( f, [], zero );
 gap> IsSubset( hom, triv );
 true
 
-gap> mb:= MutableBasisByGenerators( f, [], zero );
+gap> mb:= MutableBasis( f, [], zero );
 <mutable basis over GF(3), 0 vectors>
 gap> CloseMutableBasis( mb, map6 );
 gap> ImmutableBasis( mb );
@@ -440,7 +440,7 @@ gap> RingWithOneByGenerators( [ id ] );
 <algebra-with-one over GF(3), with 1 generators>
 
 gap> a:= AlgebraByGenerators( f, [], zero );
-<algebra over GF(3)>
+<algebra over GF(3), with 0 generators>
 gap> Dimension( a );
 0
 gap> a:= AlgebraByGenerators( f, [ id ] );
@@ -475,7 +475,7 @@ gap> GeneratorsOfLeftModule( endo );
   <linear mapping by matrix, GF(3^3) -> GF(3^3)>, 
   <linear mapping by matrix, GF(3^3) -> GF(3^3)>, 
   <linear mapping by matrix, GF(3^3) -> GF(3^3)> ]
-gap> b:= BasisOfDomain( endo );
+gap> b:= Basis( endo );
 Basis( End( GF(3), GF(3^3) ), 
 [ <linear mapping by matrix, GF(3^3) -> GF(3^3)>, 
   <linear mapping by matrix, GF(3^3) -> GF(3^3)>, 
@@ -509,9 +509,10 @@ End( GF(3), End( GF(3), GF(3^3) ) )
 gap> Dimension( endoendo );
 81
 
-gap> STOP_TEST( "vspchom.tst", 39749178 );
+gap> STOP_TEST( "vspchom.tst", 42737500 );
 
 
 #############################################################################
 ##
-#E  vspchom.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

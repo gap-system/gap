@@ -1,0 +1,319 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  streams.tex               GAP documentation              Frank Celler
+%W                                                     & Martin Schoenert
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file contains the description of streams.
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Streams}
+
+\FileHeader{streams}[1]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Categories for Streams and the StreamsFamily}
+
+\Declaration{IsStream}
+\Declaration{IsClosedStream}
+\Declaration{IsInputStream}
+\Declaration{IsInputTextStream}
+\Declaration{IsInputTextNone}
+\Declaration{IsOutputStream}
+\Declaration{IsOutputTextStream}
+\Declaration{IsOutputTextNone}
+\Declaration{StreamsFamily}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations applicable to All Streams}
+
+\Declaration{CloseStream}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Input Streams}
+
+Three operations normally used to read files: `Read', `ReadAsFunction'
+and `ReadTest' can also be used to read {\GAP} input from a
+stream. The input is immediately parsed and executed. When reading
+from a stream <str>, the {\GAP} kernel generates calls to
+`ReadLine(<str>)' to supply text to the parser. 
+
+Three further operations: `ReadByte', `ReadLine' and `ReadAll', support
+reading characters from an input stream without parsing them. This can be
+used to read data in any format and process it in {\GAP}.
+
+Additional operations for input streams support detection of end of
+stream, and (for those streams for which it is appropriate) random access 
+to the data.
+
+
+\>Read( <input-text-stream> )!{for streams} O
+
+reads the input-text-stream as  input  until `end-of-stream' occurs.  See
+"File Operations" for details.
+
+
+\>ReadAsFunction( <input-text-stream> )!{for streams} O
+
+reads the input-text-stream as function and returns this function. See
+"File Operations" for details.
+
+\>ReadTest( <input-text-stream> )!{for streams} O
+
+reads the input-text-stream as  test input until `end-of-stream' occurs.
+See "File Operations" for details.
+
+*Example*
+
+\beginexample
+# as function with local `a' does not change the global one
+gap> a := 1;;
+gap> i := InputTextString( "local a; a := 10; return a*10;" );;
+gap> ReadAsFunction(i)();
+100
+gap> a;
+1
+
+# reading it via `Read' does
+gap> i := InputTextString( "a := 10;" );;                      
+gap> Read(i);
+gap> a;
+10
+\endexample
+
+
+\Declaration{ReadByte}
+\Declaration{ReadLine}
+\Declaration{ReadAll}
+
+
+*Example*
+
+\beginexample
+gap> i := InputTextString( "1Hallo\nYou\n1" );;
+gap> ReadByte(i);
+49
+gap> CHAR_INT(last);
+'1'
+gap> ReadLine(i);
+"Hallo\n"
+gap> ReadLine(i);
+"You\n"
+gap> ReadLine(i);
+"1"
+gap> ReadLine(i);
+fail
+gap> ReadAll(i);
+""
+gap> RewindStream(i);;
+gap> ReadAll(i);     
+"1Hallo\nYou\n1"
+\endexample
+
+
+\Declaration{IsEndOfStream}
+\Declaration{PositionStream}
+\Declaration{RewindStream}
+\Declaration{SeekPositionStream}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Output Streams}
+
+\Declaration{WriteByte}
+\Declaration{WriteLine}
+\Declaration{WriteAll}
+
+*Example*
+
+\beginexample
+gap> str := "";; a := OutputTextString(str,true);;
+gap> WriteByte(a,INT_CHAR('H'));
+true
+gap> WriteLine(a,"allo");
+true
+gap> WriteAll(a,"You\n");
+true
+gap> CloseStream(a);
+gap> Print(str);
+Hallo
+You
+\endexample
+
+\>PrintTo( <output-stream>, <arg1>, ... )!{for streams} F
+\>AppendTo( <output-stream>, <arg1>, ... )!{for streams} F
+
+These functions work like `Print', except that the output is
+appended to the output stream <output-stream>.
+
+*Example*
+
+\beginexample
+gap> str := "";; a := OutputTextString(str,true);;
+gap> AppendTo( a, (1,2,3), ":", Z(3) );
+gap> CloseStream(a);
+gap> Print( str, "\n" );
+(1,2,3):Z(3)
+\endexample
+
+\Declaration{LogTo}
+\Declaration{InputLogTo}
+\Declaration{OutputLogTo}
+
+
+When  text is being  sent to an output text   stream via `PrintTo', `AppendTo',
+`LogTo', etc., it  is, by default formatted just  as it would  be were it being
+printed to  the screen. Thus,  it is broken into lines  of reasonable length at
+(where possible) sensible places, lines containing elements of lists or records
+are indented, and so forth.  This is appropriate if the output is eventually to
+be viewed by a human, and harmless if it to passed  as input to {\GAP}, but may
+be unhelpful if the output is to be  passed as input to  another program. It is
+possible    to turn      off   this behaviour     for   a   stream   using  the
+`SetPrintFormattingStatus' operation, and to test whether it is on or off using
+`PrintFormattingStatus'.
+
+\Declaration{SetPrintFormattingStatus}
+\Declaration{PrintFormattingStatus}
+
+*Example*
+\beginexample
+gap> s := "";; str := OutputTextString(s,false);;                              
+gap> PrintTo(str,Primes{[1..30]});                                             
+gap> s;
+"[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,\
+ \n  73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
+gap> Print(s,"\n");
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 
+  73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]
+gap> SetPrintFormattingStatus(str, false);
+gap> PrintTo(str,Primes{[1..30]});
+gap> s;
+"[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,\
+ \n  73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 11, 13, 17, 19\
+, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103\
+, 107, 109, 113 ]"
+gap> Print(s,"\n");
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 
+  73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 11, 13, 17, 19, 2\
+3, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 1\
+07, 109, 113 ]
+gap> 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{File Streams}
+
+File streams  are  streams associated with  files.  An  input file stream
+reads  the characters  it delivers from  a  file,  an output  file stream
+prints the characters it receives to a file.  The following functions can
+be used to create such streams.  They return `fail' if an error occurred,
+in this case `LastSystemError' (see "LastSystemError") can be used to get
+information about the error.
+
+\Declaration{InputTextFile}
+
+
+\Declaration{OutputTextFile}
+
+
+*Example*
+
+\begintt
+# use a temporary directory
+gap> name := Filename( DirectoryTemporary(), "test" );;
+
+# create an output stream, append output, and close again
+gap> output := OutputTextFile( name, true );;
+gap> AppendTo( output, "Hallo\n", "You\n" );
+gap> CloseStream(output);
+
+# create an input, print complete contents of file, and close
+gap> input := InputTextFile(name);;
+gap> Print( ReadAll(input) );
+Hallo
+You
+gap> CloseStream(input);
+
+# append a single line
+gap> output := OutputTextFile( name, true );; 
+gap> AppendTo( output, "AppendLine\n" );
+
+# close output stream to flush the output
+gap> CloseStream(output);
+
+
+# create an input, print complete contents of file, and close
+gap> input := InputTextFile(name);;
+gap> Print( ReadAll(input) );
+Hallo
+You
+AppendLine
+gap> CloseStream(input);
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{User Streams}
+
+The following two commands create streams which accept characters
+from, or deliver characters to, the user, via the keyboard or the {\GAP} session
+display.
+
+\Declaration{InputTextUser}
+
+\Declaration{OutputTextUser}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{String Streams}
+
+String streams   are streams associated  with   strings.  An input string
+stream reads  the characters it delivers  from a string, an output string
+stream  appends the characters  it receives  to  a string.  The following
+functions can be used to create such streams.
+
+\Declaration{InputTextString}
+
+
+\Declaration{OutputTextString}
+
+
+*Example*
+
+\begintt
+# read input from a string
+gap> input := InputTextString( "Hallo\nYou\n" );;
+gap> ReadLine(input);
+"Hallo\n"
+gap> ReadLine(input);
+"You\n"
+
+# print to a string
+gap> str := "";;
+gap> out := OutputTextString( str, true );;
+gap> PrintTo( out, 1, "\n", (1,2,3,4)(5,6), "\n" );
+gap> CloseStream(out);
+gap> Print( str );
+1
+(1,2,3,4)(5,6)
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Dummy Streams}
+
+The following  two commands create  dummy streams  which will consume all
+characters and never deliver one.
+
+
+\Declaration{InputTextNone}
+
+\Declaration{OutputTextNone}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  streams.tex . . . . . . . . . . . . . . . . . . . . . . . . ends here

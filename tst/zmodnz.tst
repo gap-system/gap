@@ -38,7 +38,7 @@ false
 gap> z2 < Z(7); Z(7) < z2;
 true
 false
-gap> Print(ListSorted( [ Z(7)^3, Z(7)^2, z1, z2, z3, Z(7)^5 ] ),"\n");
+gap> Print(SSortedList( [ Z(7)^3, Z(7)^2, z1, z2, z3, Z(7)^5 ] ),"\n");
 [ ZmodpZObj( 1, 7 ), ZmodpZObj( 3, 7 ), Z(7)^2, Z(7)^3, ZmodpZObj( 4, 7 ), 
   Z(7)^5 ]
 
@@ -46,8 +46,8 @@ gap> z1 + z2; z1 + z3; z2 + z3; z1 + 1; 2 + z2; z1 + Z(7); Z(7)^2 + z2;
 ZmodpZObj( 5, 7 )
 ZmodpZObj( 0, 7 )
 ZmodpZObj( 4, 7 )
-ZmodpZObj( 5, 7 )
-ZmodpZObj( 3, 7 )
+Z(7)^5
+Z(7)
 0*Z(7)
 Z(7)
 gap> z1 - z2; z1 - z3; z2 - z3; z1 - 1; 2 - z2; z1 - Z(7); Z(7)^2 - z2;
@@ -242,7 +242,7 @@ gap> Print(List( rings, AsList ),"\n");
   [ ZmodnZObj( 0, 8 ), ZmodnZObj( 1, 8 ), ZmodnZObj( 2, 8 ), 
       ZmodnZObj( 3, 8 ), ZmodnZObj( 4, 8 ), ZmodnZObj( 5, 8 ), 
       ZmodnZObj( 6, 8 ), ZmodnZObj( 7, 8 ) ] ]
-gap> Print(List( rings, AsListSorted ),"\n");
+gap> Print(List( rings, AsSSortedList ),"\n");
 [ [ 0*Z(2), Z(2)^0 ], [ 0*Z(3), Z(3)^0, Z(3) ], 
   [ ZmodnZObj( 0, 4 ), ZmodnZObj( 1, 4 ), ZmodnZObj( 2, 4 ), 
       ZmodnZObj( 3, 4 ) ], 
@@ -276,9 +276,10 @@ gap> ForAll( [ 1 .. len ], i -> i = Position( enum, enum[i], 0 ) );
 true
 
 
-gap> STOP_TEST( "zmodnz.tst", 6575053 );
+gap> STOP_TEST( "zmodnz.tst", 10520000 );
 
 
 #############################################################################
 ##
-#E  zmodnz.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

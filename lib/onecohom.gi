@@ -19,9 +19,8 @@ Revision.onecohom_gi:=
 #F  TriangulizedGeneratorsByMatrix( <gens>, <M>, <F> ) 
 ##  triangulize and make base
 ##
-InstallGlobalFunction( TriangulizedGeneratorsByMatrix,
-    function ( gens, M, F )
-    local   m,  n,  i,  j,  k,  a,  r, z,  z0;
+InstallGlobalFunction( TriangulizedGeneratorsByMatrix, function ( gens, M, F )
+local   m,  n,  i,  j,  k,  a,  r, z,  z0;
 
     gens := ShallowCopy(gens);
     M := ShallowCopy(M);
@@ -125,7 +124,8 @@ local  hom,fg,fpi,fpg,nt;
   fi;
 
   nt:=Subgroup(ocr.group,NumeratorOfModuloPcgs(ocr.modulePcgs));
-  if Index(ocr.group,nt)>500000 then
+  if Index(ocr.group,nt)>500000 and not
+   KnownNaturalHomomorphismsPool(ocr.group,nt) then
     # computing a factor representation may be too hard
     hom:=false;
   else
@@ -243,9 +243,10 @@ local i,base;
     ocr.moduleMap := x -> ExponentsOfPcElement(ocr.modulePcgs,x)
                           * ocr.one;
     ocr.matrices := LinearOperationLayer(ocr.generators, ocr.modulePcgs);
-    ocr.identityMatrix := IdentityMat( Length( ocr.modulePcgs ), ocr.field );
-    List( ocr.matrices, IsMatrix );
-    IsMatrix( ocr.identityMatrix );
+    ocr.identityMatrix := Immutable( IdentityMat( Length( ocr.modulePcgs ),
+         ocr.field ) );
+#    List( ocr.matrices, IsMatrix );
+#    IsMatrix( ocr.identityMatrix );
 #T ??
 
     # Do the same for the operations of 'normalIn' if present.
@@ -253,7 +254,7 @@ local i,base;
         if not IsBound( ocr.normalMatrices )  then
             ocr.normalMatrices := LinearOperationLayer(ocr.normalGenerators,
                 ocr.modulePcgs);
-    	    List( ocr.normalMatrices, IsMatrix );
+#    	    List( ocr.normalMatrices, IsMatrix );
         fi;
     fi;
 
@@ -277,7 +278,7 @@ end );
 ##
 ##
 InstallGlobalFunction( OCAddToFunctions, function( ocr )
-    local   base,  dim,  gens;
+local   base,  dim,  gens;
 
     # Get the module generators.
     base:=ocr.modulePcgs;
@@ -340,7 +341,7 @@ InstallGlobalFunction( OCAddToFunctions, function( ocr )
     	    	for i  in [ 1 .. Length( L ) ]  do
     	    	    L[ i ] := gens[ i ] * L[ i ];
     	    	od;
-    	    	return Group( L,One(base[1]) );
+    	    	return GroupByGenerators( L, One( base[1] ) );
     	    end;
         else
 
@@ -367,7 +368,7 @@ InstallGlobalFunction( OCAddToFunctions, function( ocr )
                 for i  in [ 1 .. Length( L ) ]  do
                     L[ i ] := gens[i] * ocr.vectorMap( L[i] );
                 od;
-    	    	return Group( L ,One(base[1]));
+    	    	return GroupByGenerators( L, One( base[1] ) );
             end;
         fi;
     fi;
@@ -453,15 +454,17 @@ end);
 #F  OCAddCentralizer( <ocr>, <B> )  . . . . . . . add centralizer by base <B>
 ##
 OCAddCentralizer := function( ocr, B )
-    ocr.centralizer := Group(List(B,ocr.vectorMap),One(ocr.group));
+    ocr.centralizer := GroupByGenerators( List( B, ocr.vectorMap ),
+                                          One( ocr.group ) );
 end;
+
 
 #############################################################################
 ##
 #F  OCOneCoboundaries( <ocr> )	. . . . . . . . . . one cobounds main routine
 ##
 InstallGlobalFunction( OCOneCoboundaries, function( ocr )
-    local   B,  S,  L,  T,  i,  j;
+local   B,  S,  L,  T,  i,  j;
 
     # Add the important record components for coboundaries.
     if IsBound( ocr.oneCoboundaries )  then
@@ -531,7 +534,7 @@ end );
 ##  Compute a Word n in <ocr.module> such that <c1> ^ n = <c2>.
 ##
 InstallGlobalFunction( OCConjugatingWord, function( ocr, c1, c2 )
-    local   B,  w,  v,  j;
+local   B,  w,  v,  j;
 
     B := ocr.triangulizedBase;
     w := One(ocr.modulePcgs[1]);
@@ -552,7 +555,7 @@ end );
 ##
 InstallMethod(OCAddRelations,"pc group",true,[IsRecord,IsModuloPcgs],0,
 function( ocr, gens  )
-    local   H,  p,  w,  r,  i,  j,  k, mpcgs;
+local   p,  w,  r,  i,  j,  k, mpcgs;
 
 
     # If <ocr> has a  record component 'relators', nothing is done.
@@ -570,9 +573,9 @@ function( ocr, gens  )
     # contains only one negative exponent.
     ocr.relators := [];
     for i  in [ 1 .. Length( mpcgs ) ]  do
-        p := RelativeOrderOfPcElement(mpcgs, mpcgs[ i ] );
+        p := RelativeOrders(mpcgs)[i];
         r := rec( generators := [ i ], powers := [ -p ]  );
-        w := ExponentsOfPcElement( mpcgs,mpcgs[i]^p );
+        w := ExponentsOfRelativePower( mpcgs,i );
         for j  in [ 1 .. Length( w ) ]  do
             if w[ j ] <> 0  then
                 Add( r.generators, j );
@@ -606,7 +609,7 @@ end);
 
 InstallMethod(OCAddRelations,"perm group",true,[IsRecord,IsList],0,
 function( ocr, gens  )
-local   f,r,fg,rel,i,j,w,g,n;
+local   r,fg,rel,i,j,w;
 
   # If <ocr> has a  record component 'relators', nothing is done.
   if IsBound( ocr.relators )  then
@@ -641,6 +644,21 @@ local   f,r,fg,rel,i,j,w,g,n;
 
 end);
 
+BindGlobal("OCTestRelations",function(ocr,gens)
+local i,j,e,g;
+  g:=GroupByGenerators( NumeratorOfModuloPcgs( ocr.modulePcgs ) );
+  for i in ocr.relators do
+    e:=One(gens[1]);
+    for j in [1..Length(i.generators)] do
+      e:=e*gens[i.generators[j]]^i.powers[j];
+    od;
+    if not e in g then
+      Error("relator wrong");
+    fi;
+  od;
+  return true;
+end);
+
 #############################################################################
 ##
 #M  NormalRelations( <ocr>,<G>,<gens> )  . .  rels for normal complements, local
@@ -648,12 +666,10 @@ end);
 InstallMethod(OCNormalRelations,"pc group",
   true,[IsRecord,IsPcGroup,IsListOrCollection],0,
 function( ocr,G, gens )
-
-    local   i, j, k,
-            relations,
-            r,
-            H,
-            w,mpcgs;
+local   i, j, k,
+	relations,
+	r,
+	w,mpcgs;
 
     Info(InfoCoh,2,"computes rels for normal complements");
 
@@ -693,7 +709,7 @@ end);
 ##
 InstallMethod(OCAddSumMatrices,"pc group",true,[IsRecord,IsPcgs],0,
 function( ocr,pcgs )
-    local   i,  j;
+local   i,  j;
 
     if not IsBound( ocr.maximalPowers )  then
     	Info(InfoCoh,2,"maximal powers = relative orders");
@@ -778,7 +794,7 @@ end);
 #F  OCEquationMatrix( <ocr>, <r>, <n> )  . . . . . . . . . . . . . . .  local
 ##
 InstallGlobalFunction( OCEquationMatrix, function( ocr, r, n )
-    local   mat,  i,  j,  v,  vv;
+local   mat,  i,  j,  v,  vv;
 
     Info(InfoCoh,3,"OCEquationMatrix: matrix number ", n );
     mat := ocr.identityMatrix - ocr.identityMatrix;
@@ -841,7 +857,7 @@ end );
 ##
 InstallMethod(OCAddBigMatrices,"general",true,[IsRecord,IsList],0,
 function( ocr,G )
-    local   i,  j,  n,  w,  small,  nonSmall;
+local   i,  j,  n,  w,  small,  nonSmall;
 
     # If no small generating set is known simply return.
     if not IsBound( ocr.smallGeneratingSet )  then
@@ -883,7 +899,7 @@ end);
 #F  OCSmallEquationMatrix( <ocr>, <r>, <n> )  . . . . . . . . . . . . . local
 ##
 InstallGlobalFunction( OCSmallEquationMatrix, function( ocr, r, n )
-    local   mat,  i,  j,  v,  vv;
+local   mat,  i,  j,  v,  vv;
 
     Info(InfoCoh,3,"OCSmallEquationMatrix: matrix number ", n);
     mat := ocr.identityMatrix - ocr.identityMatrix;
@@ -993,7 +1009,7 @@ local   n, i;
       n := n * ocr.generators[ r.generators[ i ] ] ^ r.powers[ i ];
   od;
 
-  #Assert(1,n in Group(ocr.modulePcgs));
+  Assert(1,n in GroupByGenerators( NumeratorOfModuloPcgs( ocr.modulePcgs )));
 
   return ShallowCopy(ocr.moduleMap( n ));
 
@@ -1005,7 +1021,7 @@ end );
 #F  OCSmallEquationVector( <ocr>, <r> )	. . . . . . . . . . . . . . . . local
 ##
 InstallGlobalFunction( OCSmallEquationVector, function( ocr, r )
-    local   n,  a,  i,  nonSmall,  v,  vv,  j;
+local   n,  a,  i,  nonSmall,  v,  vv,  j;
 
     # if <r> has  an entry 'conjugated'  the  records  is no relator   for  a
     # presentation, but belongs to relation
@@ -1102,20 +1118,19 @@ end);
 ##  the extension does not split.
 ##
 InstallGlobalFunction( OCOneCocycles, function( ocr, onlySplit )
-
-    local   cobounds, cocycles,     # base of one coboundaries and cocycles
-    	    dim,    	    	    # dimension of module
-    	    gens,   	    	    # generator numbers
-    	    len,    	    	    # number of generators
-    	    K,	    	    	    # list of complement generators
-    	    L0,                     # null vector
-            S,  R,  	    	    # linear system and right hand side
-    	    rels,   	    	    # relations
-    	    RS,  RR,	    	    # rel linear system and right hand side
-    	    isSplit,	    	    # is split extension
-    	    N,	    	    	    # correct
-    	    row,    	    	    # one row
-    	    tmp, i, g, j, k, n;
+local   cobounds, cocycles,     # base of one coboundaries and cocycles
+	dim,    	    	    # dimension of module
+	gens,   	    	    # generator numbers
+	len,    	    	    # number of generators
+	K,	    	    	    # list of complement generators
+	L0,                     # null vector
+	S,  R,  	    	    # linear system and right hand side
+	rels,   	    	    # relations
+	RS,  RR,	    	    # rel linear system and right hand side
+	isSplit,	    	    # is split extension
+	N,	    	    	    # correct
+	row,    	    	    # one row
+	tmp, i, g, j, k, n;
 
     # If we know our cocycles return them.
     if IsBound( ocr.oneCocycles )  then
@@ -1143,6 +1158,8 @@ InstallGlobalFunction( OCOneCocycles, function( ocr, onlySplit )
 
     # Initialize the relations and sum/big matrices.
     OCAddRelations( ocr, ocr.generators );
+    Assert(1,OCTestRelations(ocr,ocr.generators)=true);
+
     OCAddSumMatrices( ocr, ocr.generators );
     if IsBound( ocr.smallGeneratingSet )  then
         OCAddBigMatrices( ocr, ocr.generators );
@@ -1352,7 +1369,7 @@ end );
 #M  OneCoboundaries( <G>, <M> )	. . . . . . . . . . one cobounds of <G> / <M>
 ##
 InstallGlobalFunction( OneCoboundaries, function(G,M)
-    local   GG,  MM,  f,  ocr,  em;
+local ocr;
 
 
   if not IsList(M) then
@@ -1366,7 +1383,7 @@ InstallGlobalFunction( OneCoboundaries, function(G,M)
   if IsGroup(G) then 
     ocr.group:=G;
   else
-    ocr.group:=Group(G);
+    ocr.group:= GroupByGenerators( G );
     ocr.generators:=G;
   fi;
 
@@ -1399,7 +1416,7 @@ local   ocr,erg;
   if IsGroup(G) then 
     ocr.group:=G;
   else
-    ocr.group:=Group(G);
+    ocr.group:= GroupByGenerators( G );
     ocr.generators:=G;
   fi;
 

@@ -1,156 +1,19 @@
-\Chapter{Stabilizer Chains}
-
-\def\labelto#1{\buildrel\lower0.8ex\hbox{$\scriptstyle #1$}\over\to}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  stabchain.tex             GAP documentation            Heiko Thei\3en
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+\PreliminaryChapter{Stabilizer Chains}
 
 This  chapter contains some rather  technical complements to the material
-handled  in chapter~"ref:Permutations  and   Permutation Groups"  of  the
-reference manual.
+handled in the chapters~"ref:Permutations" and "ref:Permutation Groups"  of
+the reference manual.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Stabilizer chain records}
-
-If a  permutation group  has a   stabilizer chain, this   is stored  as a
-recursive structure. This  structure  is itself  a record~<S>  and it has
-(1)~components that provide information about  one level~$G^{(i)}$ of the
-stabilizer chain (which  we call  the  ``current stabilizer'')  and (2)~a
-component `stabilizer'  that  holds   another such  record,   namely  the
-stabilizer chain  of    the next stabilizer~$G^{(i+1)}$.  This  gives   a
-recursive  structure  where the  ``outermost''  record  representing  the
-``topmost'' stabilizer is bound to the group record component `stabChain'
-and   has the components explained below.    Note: Since the structure is
-recursive, *never print a stabilizer chain!* (Unless you want to exercise
-the scrolling capabilities of your terminal.)
-\beginitems
-`identity' &
-        the identity element of the current stabilizer.
-
-`labels' &
-        a list of permutations that serve as labels for the Schreier tree
-        of  the current stabilizer,  i.e., as elements for the factorized
-        inverse Schreier transversal.  The  first entry  is this list  is
-        always the  `identity',    for  reasons explained   below   under
-        `translabels'.  {\GAP}  tries  to  arrange   things so  that  the
-        `labels' components are  identical (i.e., the same {\GAP} object)
-        on every stabilizer of the chain;  this implies that the `labels'
-        of   one stabilizer  do  not  necessarily   all lie  in the  next
-        stabilizer (but see `genlabels' below).
-
-`genlabels' &
-        a list of integers that point to some  of the permutations in the
-        `labels' component. The    `labels' addressed in this   way taken
-        together form a generating set for the current stabilizer. If the
-        `genlabels' component is empty,  the rest of the stabilizer chain
-        represents  the trivial subgroup, and  can be ignored, e.g., when
-        calculating the size.
-
-`generators' &
-        a generating set for    the current stabilizer. Usually this   is
-        `labels\{ genlabels \}', but it can be a different set.
-
-`orbit' &
-        the vertices of  the Schreier tree,  which  form the basic  orbit
-        $b_iG^{(i)}$, ordered in such a way that the  base point $b_i$ is
-        first in the list.
-
-`translabels' &
-        the factorized inverse   transversal  that was  found during  the
-        orbit  algorithm  carried out   with the   inverses of  `labels\{
-        genlabels \}', starting from the base point. The directed edge $i
-        \labelto g j  = ig^{-1}$ in  the Schreier tree  is represented by
-        `labels[ translabels[<j>] ]' = <g> in  the stabilizer chain (note
-        that <i> can be reconstructed as <jg> from this information). The
-        entries in the `translabels'   component are thus   just integers
-        giving the  positions of the appropriate   labels in the `labels'
-        component. The base point itself (i.e.,  the root of the Schreier
-        tree) has the entry `1' in  `translabels'. This makes it possible
-        to assign `transversal\{ orbit \} := labels\{ translabels\{ orbit
-        \} \}' (see  "ref:sublist!assignment" in the reference manual and
-        `transversal'  below).   The `translabels'   component   pays off
-        handsomely   in    the   stabilizer    chain   conjugation   (see
-        "ref:ConjugateGroup!for permutation      groups" in the reference
-        manual).
-
-`transversal' &
-        is another  representation of the factorized inverse transversal:
-        as a list   with `transversal[<j>] =  labels[ translabels[<j>] ]'
-        (the base point  itself has entry `()').  To look up  an entry in
-        this list is faster than to evaluate  the expression on the right
-        hand side,  and   since this operation   appears  most  often  in
-        permutation   group     code    (e.g.,    in      the    function
-        `InverseRepresentative' below), the speed-up is really worth this
-        extra record component.
-
-`stabilizer' &
-        If  the  current stabilizer is  not   yet the trivial  group, the
-        stabilizer chain continues with   the stabilizer of  the  current
-        base  point,  which is    again  represented as  a   record  with
-        components `labels',    `identity',    `genlabels', `generators',
-        `orbit',     `translabels',  `transversal'     (and      possibly
-        `stabilizer'). This record is bound to the `stabilizer' component
-        of the current stabilizer. The last member  of a stabilizer chain
-        is recognized  by the fact that  it has no `stabilizer' component
-        bound.
-\enditems
-It is possible that different stabilizer  chains share the same record as
-one of their iterated `stabilizer' components.  Note that the `stabChain'
-record and `stabilizer'  records further down   are not themselves  group
-records. Thus you cannot take such a record and  apply group functions to
-it. Instead, the following functions can be used to access these records.
-Let <S> denote a stabilizer chain.
-\beginitems
-\function IsFixedStabilizer( <S>, <pnt> ) &
-        returns `true'  if <pnt> is fixed by   all generators of  <S> and
-        `false' otherwise.
-
-\function EmptyStabChain( <labels>, <id> \[, <pnt> \] ) &
-        constructs  a   stabilizer  chain  for   the trivial   group with
-        `identity=<id>' and `labels=$\{id\}\cup  labels$'  (but of course
-        with `genlabels=[ ]' and `generators=[ ]'). If the optional third
-        argument <pnt>  is present, the only stabilizer   of the chain is
-        initialized with the  one-point basic orbit  `[ <pnt> ]' and with
-        `translabels' and `transversal' components.
-        
-\function InsertTrivialStabilizer( <S>, <pnt> ) &
-        `InsertTrivialStabilizer' initializes the current stabilizer with
-        <pnt>  as `EmptyStabChain' did,  but  assigns the original <S> to
-        the  new `<S>.stabilizer' component,  such that  a new level with
-        trivial basic  orbit (but identical  `labels' and `ShallowCopy'ed
-        `genlabels' and  `generators') is  inserted. These functions  are
-        recommended if <pnt> really is  fixed  by the generators of  <S>,
-        because   then new generators  can   be added and  the  orbit and
-        transversal   at the  same   time  extended  with  the  following
-        function.
-
-\function AddGeneratorsExtendSchreierTree( <S>, <new> ) &
-        adds the elements  in <new> to the list  of generators of <S> and
-        at the  same time extends the  orbit and transversal. This is the
-        only legal way  to extend  a  Schreier tree (because  it involves
-        careful handling of the tree components).
-
-\function InverseRepresentative( <S>, <pnt> ) &
-        calculates the transversal element which  maps <pnt> back to  the
-        base point of  <S>. It just  runs back through the  Schreier tree
-        from <pnt> to the root and multiplies the labels along the way.
-
-\function SiftedPermutation( <S>, <g> ) &
-        sifts  the element  <g> as  follows: <g>  is replaced by  `<g> \*
-        InverseRepresentative(  <S>, <S>.orbit[1] ^   <g> )', then <S> is
-        replaced by `<S>.stabilizer' and  this process is repeated  until
-        <S> is trivial or `<S>.orbit[1] ^ <g>' is  not in the basic orbit
-        `<S>.orbit'.  The remainder <g>  is returned, it  is the identity
-        permutation if  and  only if the  original <g>  was in  the group
-        described by the original~<S>.
-
-\function GroupStabChain( \[ <G>, \] <S> ) &
-        constructs a permutation group with stabilizer chain <S>, i.e., a
-        group    with  generators `Generators( <S>  )'   to  which <S> is
-        assigned as component  `stabChain'. If the  optional argument <G>
-        is  given, the result  will be  a subgroup (in  the {\GAP} sense)
-        of~<G>.
-\enditems
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Generalized conjugation technique}
+\Section{Generalized Conjugation Technique}
 
 The  command  `ConjugateGroup( <G>,  <p>  )' (see~"ref:ConjugateGroup!for
 permutation groups" in the reference  manual) for a permutation group <G>
@@ -198,7 +61,7 @@ reference manual).
 To ``conjugate''  the  points  (i.e., `orbit')  and  permutations  (i.e.,
 `labels') of the Schreier  tree, a loop is  set up over the `orbit'  list
 constructed  during the  orbit algorithm,  and for each  vertex  <b> with
-unique edge $a\labelto l b$ ending at  <b>, the label  <l> is mapped with
+unique edge $a(l)b$ ending at  <b>, the label  <l> is mapped with
 <hom> and <b> with   <map>. We assume  that  the `orbit' list   was built
 w.r.t.~a  certain ordering of the  labels, where $l'\<l$ means that every
 point in the  orbit was mapped with  $l'$ before it  was mapped with <l>.
@@ -207,7 +70,7 @@ extended only by  `AddGeneratorsExtendSchreierTree', and it  is then also
 guaranteed  for the ``conjugated''  Schreier  tree. (The  ordering of the
 labels cannot be read from the Schreier tree, however.)
 
-In the generalized case, it   can happen that the   edge $a\labelto l  b$
+In the generalized case, it   can happen that the   edge $a(l)b$
 bears a label <l> whose image is ``old'', i.e.,  equal to the image of an
 earlier label  $l'\<l$. Because of  the  compatibility of the  actions we
 then have   $map(b)    = map(a).  hom(l)^{-1}   =   map(a).hom(l')^{-1} =
@@ -219,13 +82,13 @@ image,  too, but then  it need  not be  ``conjugated''  at all. A similar
 remark applies to labels which map under <hom> to the identity.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{The general backtrack algorithm with ordered partitions}
+\Section{The General Backtrack Algorithm with Ordered Partitions}
 
 \begingroup%
 \def\R{{\cal R}} \def\I{{\cal I}}%
 
-Section "ref:Backtrack searching" in the reference manual describes how a
-backtrack search can be organized with ordered partitions. The purpose of
+Section "ref:Backtrack" in the reference manual describes the basic
+functions for a backtrack search. The purpose of
 this section  is  to document  how  the general   backtrack algorithm  is
 implemented in {\GAP} and which  parts you have to modify  if you want to
 write your own backtrack routines.
@@ -405,7 +268,7 @@ not yet  in a one-point  cell of $\Pi$ and still  moved by the stabilizer
 $G_{a_1\ldots a_i}$  of the  earlier base points.   If certain points  of
 $\Omega$ should are preferred as base point (e.g., because they belong to
 long cycles of $g$), a list of points starting with the most wanted ones,
-can  be given as optional  third  argument to `NextRBasePoint' (actually,
+can be given as an optional third argument to `NextRBasePoint' (actually,
 this is done in the real code for `Centralizer').
 
 6.\enspace  `Fixcells( $\Pi$ )' returns the  list of  points in one-point
@@ -424,7 +287,7 @@ base point $q$:  It prescribes $q$ as next  base in the  stabilizer chain
 for $G$ (needed, e.g., in line~5) and  returns `false' if $q$ was already
 fixed the  stabilizer of the  earlier base points (and  `true' otherwise;
 this is not used here).  Another call to  `ProcessFixpoint' like this was
-impicitly  made by the  function  `NextRBasePoint' to register the chosen
+implicitly  made by the  function  `NextRBasePoint' to register the chosen
 base  point. By contrast,  the  point $q$  was  not chosen  this  way, so
 `ProcessFixpoint' must be called explicitly for~$q$.
 
@@ -580,7 +443,7 @@ and the additional data (for the  `data' component of the ``R-image'') to
 {\bsf  Functions  for  meeting    ordered  partitions.}\quad A   kind  of
 refinement that   occurs  in particular  in   the  normalizer calculation
 involves computing  the  meet of $\Pi$  (cf.\ lines~6ff.\  above) with an
-arbitary other partition  $\Lambda$, not just  with one point. To do this
+arbitrary other partition  $\Lambda$, not just  with one point. To do this
 efficiently, {\GAP} uses the following two functions.
 
 \>StratMeetPartition( $\R$, $\Pi$, $\Lambda$ \[, $g$ \] )
@@ -674,7 +537,7 @@ improve~$c$.
 
 The  product has to be multiplied  out only when  the property is finally
 tested  for  the  element $c$. But  it  is  often possible  to  delay the
-multiplication  even  futher, namely  until after   the test, so  that no
+multiplication  even  further, namely  until after   the test, so  that no
 multiplication is required in the case of  an unsuccessful test. Then the
 test  itself  must be carried   out with the  factorized   version of the
 element $c$.  For  this purpose,  `PartitionBacktrack' can  be passed its
@@ -710,7 +573,7 @@ $left$ and $right$.
 left object $left$  and preimage  of  the right object `$opr$(   $right$,
 $c$^-1 )'.  Here {\GAP} operates with the  inverse of $c$ because this is
 the product of  the permutations stored  in the ``list of inverses''. The
-preimage of $right$ under $c$ is then calculcated by mapping $right$ with
+preimage of $right$ under $c$ is then calculated by mapping $right$ with
 the factors  of $c^{-1}$ one by one,  without the need  to multiply these
 factors.    This mapping  of  $right$  is     automatically done by   the
 `ProcessFixpoint' function whenever $c$ is extended, the current value of
@@ -724,7 +587,11 @@ equal.
 \endgroup%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Stabilizer chains for automorphisms acting on enumerators}\null
+\Section{Stabilizer Chains for Automorphisms Acting on Enumerators}
+
+This section describes a way of representing the automorphism group of a
+group as permutation group, following \cite{Sims97}. The code hoewever is
+not yet included in the {\GAP} library.
 
 In this section  we present an example in  which objects we  already know
 (namely,  automorphisms  of   solvable  groups)   are  equipped  with the
@@ -848,11 +715,13 @@ straightforward. The  code has sometimes  been  abbreviated and is  meant
 ``cum grano salis'',  e.g.,  the declaration of  the local  variables has
 been left out.
 \begintt
-InstallMethod( Length, true, [ IsCosetSolvableFactorEnumeratorRep ], 0,
+InstallMethod( Length, [ IsCosetSolvableFactorEnumeratorRep ],
     enum -> Product( RelativeOrdersPcgs( enum!.pcgs ){ enum!.range } ) );
+\endtt
 
-InstallMethod( \[\], true, [ IsCosetSolvableFactorEnumeratorRep,
-        IsPosRat and IsInt ], 0,
+\begintt
+InstallMethod( \[\], [ IsCosetSolvableFactorEnumeratorRep,
+        IsPosRat and IsInt ],
     function( enum, pos )
     elm := ();
     pos := pos - 1;
@@ -863,14 +732,15 @@ InstallMethod( \[\], true, [ IsCosetSolvableFactorEnumeratorRep,
     od;
     return enum!.representative * elm;
 end );
+\endtt
 
-InstallMethod( Position, true, [ IsCosetSolvableFactorEnumeratorRep,
-        IsObject, IsZeroCyc ], 0,
+\begintt
+InstallMethod( Position, [ IsCosetSolvableFactorEnumeratorRep,
+        IsObject, IsZeroCyc ],
     function( enum, elm, zero )
     exp := ExponentsOfPcElement( enum!.pcgs,
                    LeftQuotient( enum!.representative, elm ) );
     pos := 0;
-|_
     for i  in enum!.range  do
         pos := pos * RelativeOrderOfPcElement( pcgs, i ) + exp[ i ];
     od;
@@ -894,7 +764,9 @@ in $model$).
 \begintt
 IsPermOnEnumerator := NewCategory( "IsPermOnEnumerator",
     IsMultiplicativeElementWithInverse and IsPerm );
+\endtt
 
+\begintt
 IsPermOnEnumeratorDefaultRep := NewRepresentation
     ( "IsPermOnEnumeratorDefaultRep",
       IsPermOnEnumerator and IsAttributeStoringRep,
@@ -902,9 +774,11 @@ IsPermOnEnumeratorDefaultRep := NewRepresentation
 
 PermOnEnumerator := NewOperation( "PermOnEnumerator",
     [ IsEnumerator, IsObject ] );
+\endtt
 
-InstallMethod( PermOnEnumerator, true,
-        [ IsEnumerator, IsObject ], 0,
+\begintt
+InstallMethod( PermOnEnumerator,
+        [ IsEnumerator, IsObject ],
     function( enum, a )
     SetFilterObj( a, IsMultiplicativeElementWithInverse );
     a := Objectify( NewKind( PermutationsOnEnumeratorsFamily,
@@ -913,9 +787,11 @@ InstallMethod( PermOnEnumerator, true,
     SetEnumerator( a, enum );
     return a;
 end );
+\endtt
 
-InstallMethod( PermOnEnumerator, true,
-        [ IsEnumerator, IsPermOnEnumeratorDefaultRep ], 0,
+\begintt
+InstallMethod( PermOnEnumerator,
+        [ IsEnumerator, IsPermOnEnumeratorDefaultRep ],
     function( enum, a )
     a := Objectify( TypeObj( a ), rec( perm := a!.perm ) );
     SetEnumerator( a, enum );
@@ -928,16 +804,17 @@ the    right kind. We    also have to write  a    function which uses the
 enumerators to apply such an automorphism to positive integers.
 \begintt
 InstallMethod( \*, IsIdenticalObj,
-        [ IsPermOnEnumeratorDefaultRep, IsPermOnEnumeratorDefaultRep ], 0,
+        [ IsPermOnEnumeratorDefaultRep, IsPermOnEnumeratorDefaultRep ],
     function( a, b )
     perm := a!.perm * b!.perm;
-|_
     SetIsBijective( perm, true );
     return PermOnEnumerator( Enumerator( a ), perm );
 end );
+\endtt
 
-InstallMethod( \^, true,
-        [ IsPosRat and IsInt, IsPermOnEnumeratorDefaultRep ], 0,
+\begintt
+InstallMethod( \^,
+        [ IsPosRat and IsInt, IsPermOnEnumeratorDefaultRep ],
     function( p, a )
     return PositionCanonical( Enumerator( a ),
                    Enumerator( a )[ p ] ^ a!.perm );
@@ -969,6 +846,8 @@ corresponding to that level.
 \)end;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
 % Local Variables:
 % mode:               text
 % mode:               outline-minor

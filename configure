@@ -798,8 +798,10 @@ else
   test "${CFLAGS+set}" = set || CFLAGS="-g"
 fi
 
+BASECC=`basename ${CC}`
+
 echo $ac_n "checking whether ${MAKE-make} sets \${MAKE}""... $ac_c" 1>&6
-echo "configure:803: checking whether ${MAKE-make} sets \${MAKE}" >&5
+echo "configure:805: checking whether ${MAKE-make} sets \${MAKE}" >&5
 set dummy ${MAKE-make}; ac_make=`echo "$2" | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_prog_make_${ac_make}_set'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -825,6 +827,9 @@ else
   SET_MAKE="MAKE=${MAKE-make}"
 fi
 
+
+gapdir=`pwd`
+mkdir -p bin
 trap '' 1 2 15
 cat > confcache <<\EOF
 # This file is a shell script that caches the results of configure
@@ -937,7 +942,7 @@ done
 
 ac_given_srcdir=$srcdir
 
-trap 'rm -fr `echo "Makefile" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "Makefile sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -984,7 +989,9 @@ s%@build_cpu@%$build_cpu%g
 s%@build_vendor@%$build_vendor%g
 s%@build_os@%$build_os%g
 s%@CC@%$CC%g
+s%@BASECC@%$BASECC%g
 s%@SET_MAKE@%$SET_MAKE%g
+s%@gapdir@%$gapdir%g
 
 CEOF
 EOF
@@ -1026,7 +1033,7 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"Makefile"}
+CONFIG_FILES=\${CONFIG_FILES-"Makefile sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

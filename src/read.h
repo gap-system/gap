@@ -88,6 +88,17 @@ extern UInt ReadEvalFile ( void );
 */
 extern void ReadEvalError ( void );
 
+/****************************************************************************
+**
+*V  StackNams, CountNames . . . . . .stack of lists of local variable names
+**
+**  This is exported to support a rather nasty hack in intrprtr.c todo with
+**  while loops and the break loop
+*/
+
+extern Obj StackNams;
+extern UInt CountNams;
+
 
 /****************************************************************************
 **

@@ -1,0 +1,53 @@
+#!/bin/sh
+#############################################################################
+##
+#W  crosscompile						Frank Celler
+##                                                          Alexander Hulpke
+##
+##  this shell script cross-compiles the next version for Winooze machines
+##  using the cygnus gnuwin-32 cross-compiler
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# go into the home directory and compile
+cd ${DISTROOT}/${DISTNAME}
+tar zcf wincode.tgz src/* cnf/* configure configure.in Makefile.in sysinfo.in gap.shi
+
+# ask for transfer and crosscompilation
+echo "Now you must prepare the windows binary. Transfer the file wincode.tgz"
+echo "to the PC. Start cygwin there. Extract the file using"
+echo "tar zxf wincode.tgz                       and call"
+echo "./configure"
+echo "make"
+echo "tar zcf winbin.tgz bin/i586-pc-cygwin-gcc/gap.exe"
+echo "Then ftp the file 'winbin.tgz' back in the current UNIX directory".
+echo "Afterwards leave, by typing 'exit'."
+bash
+echo "Thanks!"
+
+
+rm wincode.tgz
+if [ \! -f winbin.tgz ];  then
+    echo "PANIC: no file winbin.tgz available"
+    exit 1
+fi
+tar zxf winbin.tgz
+# check that a binary executable has been created
+if [ \! -x bin/i586-pc-cygwin-gcc/gap.exe ];  then
+    echo "PANIC: no executable has been created"
+    exit 1
+fi
+if [ \! -f /gap/4.0/bin/cygwin1.dll ];  then
+    echo "PANIC: no cygwin1.dll in /gap/4.0/bin"
+    exit 1
+fi
+rm winbin.tgz
+
+exit 0

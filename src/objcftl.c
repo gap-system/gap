@@ -2,7 +2,7 @@
 **
 *W  objcftl.c                      GAP source                   Werner Nickel
 **
-**
+**  Objects Collected From The Left.
 **  This file contains a collector from the left for polycyclic
 **  presentations.
 */
@@ -10,8 +10,6 @@
 
 const char * Revision_objcftl_c =
    "@(#)$Id$";
-
-
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -21,6 +19,7 @@ const char * Revision_objcftl_c =
 #include        "gap.h"                 /* error handling, initialisation  */
 #include        "bool.h"                /* booleans                        */
 #include        "integer.h"             /* integers                        */
+#include        "ariths.h"              /* fast integers                   */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -36,19 +35,52 @@ const char * Revision_objcftl_c =
 #undef  INCLUDE_DECLARATION_PART
 
 
+#define IS_INT_ZERO( n )  (IS_INTOBJ(n) && ((n) == INTOBJ_INT(0))) 
 
-static UInt DebugPcc;
-static void DbPr( char *str, long arg1, long arg2 ) {
-    if( VAL_GVAR( DebugPcc ) == True )
-        Pr( str, arg1, arg2 );
+#define GET_COMMUTE( g )  INT_INTOBJ(ELM_PLIST(commute,(g))) 
+
+#define GET_EXPONENT( g ) ( ((g) <= LEN_PLIST(exp)) ? \
+                            ELM_PLIST( exp, (g) ) : (Obj)0 )
+#define GET_POWER( g )    ( ((g) <= LEN_PLIST(pow)) ? \
+                            ELM_PLIST( pow, (g) ) : (Obj)0 )
+#define GET_IPOWER( g )   ( ((g) <= LEN_PLIST(ipow)) ? \
+                            ELM_PLIST( ipow, (g) ) : (Obj)0 )
+
+#define GET_CONJ( h, g ) ( (h <= LEN_PLIST( conj ) && \
+                            g <= LEN_PLIST(ELM_PLIST( conj, h ))) ? \
+                           ELM_PLIST( ELM_PLIST( conj, h ), g ) : (Obj)0 )
+
+#define GET_ICONJ( h, g ) ( (h <= LEN_PLIST( iconj ) && \
+                             g <= LEN_PLIST(ELM_PLIST( iconj, h ))) ? \
+                            ELM_PLIST( ELM_PLIST( iconj, h ), g ) : (Obj)0 )
+
+#define PUSH_STACK( word, exp ) {  \
+  st++; \
+  SET_ELM_PLIST( wst,  st, word ); \
+  SET_ELM_PLIST( west, st, exp );  \
+  SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) ); \
+  SET_ELM_PLIST( est,  st, ELM_PLIST( word, 2 ) ); \
+  CHANGED_BAG( wst ); CHANGED_BAG( west ); CHANGED_BAG( est ); }
+
+                                
+void AddIn( Obj list, Obj w, Obj e ) {
+
+  Int    g,  i;
+  Obj    r,  s,  t;
+
+  for( i = 1; i < LEN_PLIST(w); i += 2 ) {
+      g = INT_INTOBJ( ELM_PLIST( w, i ) );
+
+      s = ELM_PLIST( w, i+1 );
+      C_PROD_FIA( t, s, e );
+
+      r = ELM_PLIST( list, g );
+      C_SUM_FIA( s, t, r );
+
+      SET_ELM_PLIST( list, g, s );  CHANGED_BAG( list );
+  }
+
 }
-
-static void DbPrintObj( Obj v ) {
-    if( VAL_GVAR( DebugPcc ) == True )
-        PrintObj( v );
-}
-
-static Obj PowerAutomorphism;
 
 Obj CollectPolycyc (
     Obj pcp,
@@ -58,217 +90,206 @@ Obj CollectPolycyc (
     Int    ngens   = INT_INTOBJ( ADDR_OBJ(pcp)[ PC_NUMBER_OF_GENERATORS ] );
     Obj    commute = ADDR_OBJ(pcp)[ PC_COMMUTE ];
 
+    Obj    gens    = ADDR_OBJ(pcp)[ PC_GENERATORS ];
+    Obj    igens   = ADDR_OBJ(pcp)[ PC_INVERSES ];
+
     Obj    pow     = ADDR_OBJ(pcp)[ PC_POWERS ];
     Obj    ipow    = ADDR_OBJ(pcp)[ PC_INVERSEPOWERS ];
     Obj    exp     = ADDR_OBJ(pcp)[ PC_EXPONENTS ];
 
-    Obj    dtpols  = ADDR_OBJ(pcp)[ PC_DEEP_THOUGHT_POLS ];
-    Int    dtbound = INT_INTOBJ( ADDR_OBJ(pcp)[ PC_DEEP_THOUGHT_BOUND ] );
-
     Obj    wst  = ADDR_OBJ(pcp)[ PC_WORD_STACK ];
     Obj    west = ADDR_OBJ(pcp)[ PC_WORD_EXPONENT_STACK ];
     Obj    sst  = ADDR_OBJ(pcp)[ PC_SYLLABLE_STACK ];
-    Obj    est =  ADDR_OBJ(pcp)[ PC_EXPONENT_STACK ];
+    Obj    est  = ADDR_OBJ(pcp)[ PC_EXPONENT_STACK ];
 
     Obj    conj, iconj, powers;
 
     Int    st, bottom = INT_INTOBJ( ADDR_OBJ(pcp)[ PC_STACK_POINTER ] );
 
-    Int    g, syl, h;
+    Int    i, g, syl, h, hh;
 
-    Obj    e, ge, mge, we;
-    Obj    w, x = (Obj)0;
+    Obj    e, ge, mge, we, r, s, t, u;
+    Obj    w, x = (Obj)0, y = (Obj)0;
 
-    extern Obj BinaryPower();
+
+    if( LEN_PLIST(word) == 0 ) return (Obj)0;
 
     if( LEN_PLIST(list) < ngens ) {
-      ErrorQuit( "vector too short", 0L, 0L );
-      return (Obj)0;
+        ErrorQuit( "vector too short", 0L, 0L );
+        return (Obj)0;
+    }
+    if( LEN_PLIST(word) % 2 != 0 ) {
+        ErrorQuit( "Length of word odd", 0L, 0L );
+        return (Obj)0;
     }
 
-    st = bottom + 1;
-    SET_ELM_PLIST( wst,  st, word );
-    SET_ELM_PLIST( west, st, INTOBJ_INT(1) );
-    SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) );
-    SET_ELM_PLIST( est,  st, ELM_PLIST( word, 2 ) ); 
+    st = bottom;
+    PUSH_STACK( word, INTOBJ_INT(1) );
 
-    DbPr( "Entering collector at %d\n", (long)st, 0L );
-    DbPrintObj( word ); DbPr( "\n", 0L, 0L );
-    DbPrintObj( list ); DbPr( "\n", 0L, 0L );
-    
     while( st > bottom ) {
 
       w   = ELM_PLIST( wst, st );
       syl = INT_INTOBJ( ELM_PLIST( sst, st ) );
       g   = INT_INTOBJ( ELM_PLIST( w, syl )  );
 
-      DbPr( "Collecting generator %d\n", (long)g, 0L );
-      /*
-      ** Look at g and choose one of three collection methods:
-      **   a) commute
-      **      1) (x1 x2 ... xn)^e can be rewritten as x1^e x2^e ... xn^e if
-      **         x1 == Commute[ x1 ].
-      **      2) xi^e can be collected in one step if xi == Commute[ xi ].
-      **   b) Deep Thought
-      **   c) collection from the left
-      */
-      if( syl == 1 ) {
-        /* Do something about the word exponent. */
-        we = ELM_PLIST( west, st );
-        if( !IS_INTOBJ(we) || INT_INTOBJ(we) > 1 ) {
-          if( g == INT_INTOBJ( ELM_PLIST(commute, g) ) ) {
-            x = NEW_PLIST( T_PLIST, LEN_PLIST(w) );
-            SET_LEN_PLIST( x, LEN_PLIST(w) );
-            for( syl = 1; syl <= LEN_PLIST(w); syl += 2 ) {
-              SET_ELM_PLIST( x, syl,   ELM_PLIST( w, syl ) );
-              e = ProdInt( ELM_PLIST( w, syl+1 ), we );
-              SET_ELM_PLIST( x, syl+1, e );
-              CHANGED_BAG(x);
-            }
-            we = INTOBJ_INT(1);
-          }
-          else if( g >= dtbound ) {
-            x = Power( w, we, dtpols );
-            we = INTOBJ_INT(1);
-          }
-          else {
-            /* Here we need the treatment of huge exponents via the Russian
-            ** peasant method. */
-            if( !IS_INTOBJ(we) || we != INTOBJ_INT(1) ) {
-              ADDR_OBJ(pcp)[ PC_STACK_POINTER ] = INTOBJ_INT( st );
-              x = BinaryPower( pcp, w, we );
-              we = INTOBJ_INT(1);
-            }
-          }
-          SET_ELM_PLIST( wst,  st, x );
-          SET_ELM_PLIST( west, st, we );
-          SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) );
-          SET_ELM_PLIST( est,  st, ELM_PLIST( x, 2 ));
-          CHANGED_BAG( wst ); CHANGED_BAG( west );
+      if( st > bottom+1 && syl==1 && g == GET_COMMUTE(g) ) {
+        /* Collect word^exponent in one go. */
 
-          /* Reset w, syl and g. */
-          w   = ELM_PLIST( wst, st );
-          syl = INT_INTOBJ( ELM_PLIST( sst, st ) );
-          g   = INT_INTOBJ( ELM_PLIST( w, syl )  );
-        }
-      }
+        e = ELM_PLIST( west, st );
 
-      if( g == INT_INTOBJ( ELM_PLIST(commute, g) ) ) {
-        e = SumInt( ELM_PLIST( list, g ), ELM_PLIST( est, st ) );
-        SET_ELM_PLIST( list, g, e );
-        SET_ELM_PLIST( est, st, INTOBJ_INT(0) );
-        CHANGED_BAG( list );
-      }
-      else if( g >= dtbound ) {
-        DbPr( "Using Deep thought\n", 0L, 0L );
-        MultGen( list, g, ELM_PLIST( est, st ), dtpols );
-        SET_ELM_PLIST( est, st, INTOBJ_INT(0) );
-        /*
-        ** Put the result onto the stack because exponents may have to be
-        ** reduced.
-        */
-        x = NEW_PLIST( T_PLIST, 2*ngens );
-        for( syl = 1, h = g+1; h <= ngens; h++ )
-          if( ELM_PLIST( list, h ) != INTOBJ_INT(0) ) {
-            SET_ELM_PLIST( x, syl,   INTOBJ_INT(h) );
-            SET_ELM_PLIST( x, syl+1, ELM_PLIST(list,h) );
-            syl += 2;
-            SET_ELM_PLIST( list, h, INTOBJ_INT(0) );
+        /* Add in. */
+        AddIn( list, w, e );
+
+        /* Reduce. */
+        for( h = g; h <= ngens; h++ ) {
+          s = ELM_PLIST( list, h );
+          if( IS_INT_ZERO( s ) ) continue;
+
+          y = (Obj)0;
+          if( (e = GET_EXPONENT( h )) != (Obj)0 ) {
+              if( !LtInt( s, e ) ) {
+                  t = ModInt( s, e );
+                  SET_ELM_PLIST( list, h, t ); CHANGED_BAG( list );
+                  if( y = GET_POWER( h ) ) e = QuoInt( s, e );
+              }
+              else if( LtInt( s, INTOBJ_INT(0) ) ) {
+                  t = ModInt( s, e );
+                  SET_ELM_PLIST( list, h, t ); CHANGED_BAG( list );
+              
+                  if( y = GET_IPOWER( h ) ) {
+                      e = QuoInt( s, e );
+                      if( !IS_INT_ZERO( t ) ) e = DiffInt( e, INTOBJ_INT(1) );
+                      e = ProdInt( e, INTOBJ_INT(-1) );
+                  }
+              }
           }
-        if( syl > 1 ) {
-          SET_LEN_PLIST( x, syl-1 );
-          SHRINK_PLIST(  x, syl-1 );
-          CHANGED_BAG(x);
-          st++;
-          SET_ELM_PLIST( wst,  st, x );
-          SET_ELM_PLIST( west, st, INTOBJ_INT(1) );
-          SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) );
-          SET_ELM_PLIST( est,  st, ELM_PLIST( x, 2 ));
-          CHANGED_BAG( wst ); CHANGED_BAG( est );
+          if( y != (Obj)0 ) AddIn( list, y, e );
+
         }
+
+        st--;
+
       }
       else {
-        /* Assume that the top of the exponent stack is non-zero. */
-        e = ELM_PLIST( est, st );
-        SET_ELM_PLIST( est, st, INTOBJ_INT(0) );
+        if( g == GET_COMMUTE( g ) ) {
+          s = ELM_PLIST( list, g ); 
+          t = ELM_PLIST( est, st ); 
+          C_SUM_FIA( ge, s, t );
+          SET_ELM_PLIST( est, st, INTOBJ_INT(0) );
+        }
+        else {
+          /* Assume that the top of the exponent stack is non-zero. */
+          e = ELM_PLIST( est, st );
+          
+          if( LtInt( INTOBJ_INT(0), e ) ) {
+            C_DIFF_FIA( e, e, INTOBJ_INT(1) );
+            SET_ELM_PLIST( est, st, e );
+            conj  = ADDR_OBJ(pcp)[PC_CONJUGATES];
+            iconj = ADDR_OBJ(pcp)[PC_INVERSECONJUGATES];
+            
+            C_SUM_FIA( ge, ELM_PLIST( list, g ), INTOBJ_INT(1) );
+          }
+          else {
+            C_SUM_FIA( e, e, INTOBJ_INT(1) );
+            SET_ELM_PLIST( est, st, e );
+            conj  = ADDR_OBJ(pcp)[PC_CONJUGATESINVERSE];
+            iconj = ADDR_OBJ(pcp)[PC_INVERSECONJUGATESINVERSE];
+            
+            C_DIFF_FIA( ge, ELM_PLIST( list, g ), INTOBJ_INT(1) );
+          }
+        }
+        SET_ELM_PLIST( list, g, ge );  CHANGED_BAG( list );
 
-        DbPr( "Calling PowerAutomorphism with %d ", (long)g, 0L );
-        DbPrintObj( e ); DbPr( "\n", 0L, 0L );
-        ADDR_OBJ(pcp)[ PC_STACK_POINTER ] = INTOBJ_INT( st );
-        powers = CALL_3ARGS( PowerAutomorphism, pcp, INTOBJ_INT(g), e );
-        conj   = ELM_PLIST( powers, 1 );
-        iconj  = ELM_PLIST( powers, 2 );
 
-        e = SumInt( ELM_PLIST( list, g ), e );
-        SET_ELM_PLIST( list, g, e );  CHANGED_BAG( list );
+        /* Reduce the exponent.  We delay putting the power onto the 
+           stack until all the conjugates are on the stack.  The power is
+           stored in  y, its exponent in ge.  */
+        y = (Obj)0;
+        if( e = GET_EXPONENT( g ) ) {
+            if( !LtInt( ge, e ) ) {
+                mge = ModInt( ge, e );
+                SET_ELM_PLIST( list, g, mge ); CHANGED_BAG( list );
+            
+                if( y = GET_POWER( g ) ) ge = QuoInt( ge, e );
+            }
+            else if( LtInt( ge, INTOBJ_INT(0) ) ) {
+                mge = ModInt( ge, e );
+                SET_ELM_PLIST( list, g, mge ); CHANGED_BAG( list );
+            
+                if( y = GET_IPOWER( g ) ) {
+                    ge = QuoInt( ge, e );
+                    if( !IS_INT_ZERO( mge ) ) 
+                        ge = DiffInt( ge, INTOBJ_INT(1) );
+                    ge = ProdInt( ge, INTOBJ_INT(-1) );
+                }
+            }
+        }
         
-        for( h = INT_INTOBJ(ELM_PLIST( commute, g )); h > g; h-- ) {
+        hh = h = GET_COMMUTE( g );
+        
+        /* Find the place where we start to collect. */
+        for( ; h > g; h-- ) {
+            e = ELM_PLIST( list, h );
+            if( !IS_INT_ZERO(e) ) {
+            
+                if( LtInt( INTOBJ_INT(0), e ) ) {
+                    if( GET_CONJ( h, g ) ) break;
+                }
+                else {
+                    if( GET_ICONJ( h, g ) ) break;
+                }
+            }
+        }
+
+        /* Put those onto the stack, if necessary. */
+        if( h > g || y != (Obj)0 ) 
+          for( ; hh > h; hh-- ) {
+            e = ELM_PLIST( list, hh );
+            if( !IS_INT_ZERO(e) ) {
+              SET_ELM_PLIST( list, hh, INTOBJ_INT(0) );
+              
+              if( LtInt( INTOBJ_INT(0), e ) ) {
+                  x = ELM_PLIST(  gens, hh );
+              }
+              else {
+                  x = ELM_PLIST( igens, hh );
+                  C_PROD_FIA( e, e, INTOBJ_INT(-1) );
+              }
+              
+              PUSH_STACK( x, e );
+            }
+          }
+        
+        
+        for( ; h > g; h-- ) {
           e = ELM_PLIST( list, h );
-          if( !IS_INTOBJ(e) || INT_INTOBJ(e) != 0 ) {
+          if( !IS_INT_ZERO(e) ) {
             SET_ELM_PLIST( list, h, INTOBJ_INT(0) );
-            if( LtInt( INTOBJ_INT(0), e ) ) {
-              x = ELM_PLIST( conj, h );
-            }
-            else if( LtInt( e, INTOBJ_INT(0) ) ) {
-              e = ProdInt( e, INTOBJ_INT(-1) );
-              x = ELM_PLIST( iconj, h );
-            }
-            st++; 
-            SET_ELM_PLIST( wst,  st, x );
-            SET_ELM_PLIST( west, st, e );
-            SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) );
-            SET_ELM_PLIST( est,  st, ELM_PLIST( x, 2 ) );
-            CHANGED_BAG( west ); CHANGED_BAG( est ); 
-          }
-        }
-      }
-
-      /* Reduce the exponent. */
-      if( g <= LEN_PLIST(exp) && (e = ELM_PLIST( exp, g )) != (Obj)0 ) {
-        ge = ELM_PLIST( list, g );
-        x = (Obj)0;
-        if( !LtInt( ge, e ) ) {
-          mge = ModInt( ge, e );
-          SET_ELM_PLIST( list, g, mge );
-          CHANGED_BAG( list );
-          if( g <= LEN_PLIST( pow ) && (x = ELM_PLIST( pow, g )) != (Obj)0 )
-            ge = QuoInt( ge, e );
-        }
-        else if( LtInt( ge, INTOBJ_INT(0) ) ) {
-          mge = ModInt( ge, e );
-          SET_ELM_PLIST( list, g, mge );
-          CHANGED_BAG( list )
-          if( g <= LEN_PLIST(ipow) && (x = ELM_PLIST( ipow, g )) != (Obj)0 ) {
-            ge = QuoInt( ge, e );
-            if( !EqInt( mge, INTOBJ_INT(0) ) ) ge = DiffInt( ge,INTOBJ_INT(1) );
-            ge = ProdInt( ge, INTOBJ_INT(-1) );
+            
+            x = (Obj)0;
+            if( LtInt( INTOBJ_INT(0), e ) ) x = GET_CONJ( h, g );
+            else                            x = GET_ICONJ( h, g );
+            
+            if( x == (Obj)0 ) 
+              if( LtInt( INTOBJ_INT(0), e ) ) x = ELM_PLIST(  gens, h );
+              else                            x = ELM_PLIST( igens, h );
+            
+            if( LtInt( e, INTOBJ_INT(0) ) )
+              C_PROD_FIA( e, e, INTOBJ_INT(-1) );
+            
+            PUSH_STACK( x, e );
           }
         }
         
-        if( x != (Obj)0 ) {
-            st++;
-            SET_ELM_PLIST( wst,  st, x );
-            SET_ELM_PLIST( west, st, ge );
-            SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) );
-            SET_ELM_PLIST( est,  st, ELM_PLIST( x, 2 ) );
-            CHANGED_BAG( west ); CHANGED_BAG( est );
-        }
+        if( y != (Obj)0 ) PUSH_STACK( y, ge );
       }
 
-      while( st > bottom && EqInt( ELM_PLIST( est, st ), INTOBJ_INT(0) ) ) {
-        DbPr( "Exponent stack shows zero\n", 0L, 0L );
+      while( st > bottom && IS_INT_ZERO( ELM_PLIST( est, st ) ) ) {
         w   = ELM_PLIST( wst, st );
-        DbPrintObj( list ); DbPr( "\n", 0L, 0L );
-        DbPrintObj( w ); DbPr( "\n", 0L, 0L );
         syl = INT_INTOBJ( ELM_PLIST( sst, st ) ) + 2;
-        DbPr( "Syllable: %d\n", (long)syl, 0L );
         if( syl > LEN_PLIST( w ) ) {
-          DbPr( "Syllable exceeded word length\n", 0L, 0L );
           we = DiffInt( ELM_PLIST( west, st ), INTOBJ_INT(1) );
-          if( EqInt( we, INTOBJ_INT(0) ) ) {
-            DbPr( "Word exponent stack shows zero\n", 0L, 0L );
-            st--;
-          }
+          if( EqInt( we, INTOBJ_INT(0) ) ) { st--; }
           else {
             SET_ELM_PLIST( west, st, we );
             SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) );
@@ -283,11 +304,8 @@ Obj CollectPolycyc (
         }
       }
     }
-    DbPr( "\n", 0L, 0L );
 
     ADDR_OBJ(pcp)[ PC_STACK_POINTER ] = INTOBJ_INT( bottom );
-    DbPr( "Exiting collector at %d\n", (long)st, 0L );
-
     return (Obj)0;
 }
 
@@ -299,79 +317,6 @@ Obj FuncCollectPolycyc (
 {
   CollectPolycyc( pcp, list, word );
   return (Obj)0;
-}
-
-Obj BinaryPower( Obj pcp, Obj w, Obj e ) {
-
-    Int    ngens   = INT_INTOBJ( ADDR_OBJ(pcp)[ PC_NUMBER_OF_GENERATORS ] );
-    Int    g, syl;
-
-    Obj    ev, f, result;
-    
-    DbPr( "Running BinaryPower with ", 0L, 0L );
-    DbPrintObj( w ); DbPr( " and ", 0L, 0L );
-    DbPrintObj( e ); DbPr( ".\n", 0L, 0L );
-    
-    /* copy w into a list of length 2*ngens. */
-    f = NEW_PLIST( T_PLIST, 2*ngens );
-    for( syl = 1; syl <= LEN_PLIST(w); syl++ )
-      SET_ELM_PLIST( f, syl, ELM_PLIST( w, syl ) );
-    SET_LEN_PLIST( f, syl-1 ); CHANGED_BAG(f);
-    w = f;
-
-    /* convert w into an exponent vector. */
-    ev = NEW_PLIST( T_PLIST, ngens ); SET_LEN_PLIST( ev, ngens );
-    for( g = 1; g <= ngens; g++ )
-      ELM_PLIST( ev, g ) = INTOBJ_INT(0);
-    for( syl = 1; syl <= LEN_PLIST(w); syl += 2 ) {
-      g = INT_INTOBJ( ELM_PLIST( w, syl ) );
-      SET_ELM_PLIST( ev, g, ELM_PLIST( w, syl+1 ) );
-    }
-    CHANGED_BAG(ev);
-
-    /* allocate space for the result. */
-    result = NEW_PLIST( T_PLIST, ngens ); SET_LEN_PLIST( result, ngens );
-    for( g = 1; g <= ngens; g++ )
-      ELM_PLIST( result, g ) = INTOBJ_INT(0);
-    
-    while( !IS_INTOBJ(e) || e != INTOBJ_INT(0) ) {
-      if( ModInt( e, INTOBJ_INT(2) ) == INTOBJ_INT(1) )
-        CollectPolycyc( pcp, result, w ); 
-
-      e = QuoInt( e, INTOBJ_INT(2) );
-      if( !IS_INTOBJ(e) || e != INTOBJ_INT(0) ) {
-        CollectPolycyc( pcp, ev, w );
-        /* copy ev back into w. */
-        for( syl = g = 1; g <= ngens; g++ ) {
-          f = ELM_PLIST( ev, g );
-          if( !IS_INTOBJ(f) || f != INTOBJ_INT(0) ) {
-            ELM_PLIST( w, syl++ ) = INTOBJ_INT(g);
-            ELM_PLIST( w, syl++ ) = f;
-          }
-        }
-        SET_LEN_PLIST( w, syl-1 ); CHANGED_BAG(w);
-      }
-    }
-
-    /* convert result into a word, use w for that. */
-    for( syl = g = 1; g <= ngens; g++ ) {
-      f = ELM_PLIST( result, g );
-      if( !IS_INTOBJ( f ) || f != INTOBJ_INT(0) ) {
-        ELM_PLIST( w, syl++ ) = INTOBJ_INT(g);
-        ELM_PLIST( w, syl++ ) = f;
-      }
-    }
-    SET_LEN_PLIST( w, syl-1 ); CHANGED_BAG(w);
-
-    DbPr( "Returning from BinaryPower with ", 0L, 0L );
-    DbPrintObj( w ); DbPr( "\n", 0L, 0L );
-    
-    return w;
-}
-
-Obj FunBinaryPower( Obj self, Obj pcp, Obj w, Obj e ) {
-
-  return BinaryPower( pcp, w, e );
 }
 
 /****************************************************************************
@@ -391,9 +336,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "CollectPolycyclic", 3, "pcp, list, word",
       FuncCollectPolycyc, "src/objcftl.c:CollectPolycyclic" },
 
-    { "BinaryPower", 3, "pcp, word, exponent",
-      FunBinaryPower, "src/objcftl.c:BinaryPower" },
-
     { 0 }
 
 };
@@ -409,7 +351,6 @@ static Int InitKernel (
 {
     /* Keep track of variables containing library functions called in this */
     /* module.                                                             */
-    InitFopyGVar( "PowerAutomorphism", &PowerAutomorphism );
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -426,8 +367,6 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    DebugPcc = GVarName( "DebugPcc" );
-
     /* return success                                                      */
     return 0;
 }
@@ -440,11 +379,6 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    DebugPcc = GVarName( "DebugPcc" );
-    AssGVar( DebugPcc, False );
-
-    AssGVar( GVarName( "DTBound" ), INTOBJ_INT(1) );
-
     AssGVar( GVarName( "PC_NUMBER_OF_GENERATORS" ),
              INTOBJ_INT( PC_NUMBER_OF_GENERATORS ) );
     AssGVar( GVarName( "PC_GENERATORS" ),
@@ -527,3 +461,4 @@ StructInitInfo * InitInfoPcc ( void )
 
 *E  objcftl.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
+

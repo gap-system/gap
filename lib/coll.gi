@@ -52,7 +52,13 @@ InstallMethod( ViewObj,
     "for an iterator",
     true,
     [ IsIterator ], 0,
-    function( iter ) Print( "<iterator>" ); end );
+    function( iter )
+    if IsMutable( iter ) then
+      Print( "<iterator>" );
+    else
+      Print( "<iterator (immutable)>" );
+    fi;
+    end );
 
 
 #############################################################################
@@ -62,8 +68,14 @@ InstallMethod( ViewObj,
 InstallMethod( PrintObj,
     "for an iterator",
     true, [ IsIterator ], 0,
-    function( iter ) Print( "<iterator>" ); end );
+    function( iter )
+    if IsMutable( iter ) then
+      Print( "<iterator>" );
+    else
+      Print( "<iterator (immutable)>" );
+    fi;
 #T this is not nice!
+    end );
 
 
 #############################################################################
@@ -150,11 +162,12 @@ InstallMethod( IsFinite,
 
 #############################################################################
 ##
-#M  IsWholeFamily(<C>)  . . .  test if a collection contains the whole family
+#M  IsWholeFamily( <C> )  . .  test if a collection contains the whole family
 ##
 InstallMethod( IsWholeFamily,
-    "for a collection",
-    true, [ IsCollection ], 0,
+    "default for a collection, print an error message",
+    true,
+    [ IsCollection ], 0,
     function ( C )
     Error( "cannot test whether <C> contains the family of its elements" );
     end );
@@ -162,10 +175,10 @@ InstallMethod( IsWholeFamily,
 
 #############################################################################
 ##
-#M  Size(<C>) . . . . . . . . . . . . . . . . . . . . .  size of a collection
+#M  Size( <C> ) . . . . . . . . . . . . . . . . . . . .  size of a collection
 ##
 InstallImmediateMethod( Size,
-    IsCollection and HasIsFinite, 0,
+    IsCollection and HasIsFinite and IsAttributeStoringRep, 0,
     function ( C )
     if IsFinite( C ) then
         TryNextMethod();
@@ -174,7 +187,7 @@ InstallImmediateMethod( Size,
     end );
 
 InstallImmediateMethod( Size,
-    IsCollection and HasAsList, 0,
+    IsCollection and HasAsList and IsAttributeStoringRep, 0,
     function ( C )
     return Length( AsList( C ) );
     end );
@@ -183,9 +196,7 @@ InstallMethod( Size,
     "for a collection",
     true,
     [ IsCollection ], 0,
-    function ( C )
-    return Length( Enumerator( C ) );
-    end );
+    C -> Length( Enumerator( C ) ) ); 
 
 
 #############################################################################
@@ -197,7 +208,6 @@ InstallMethod( Representative,
     true,
     [ IsCollection and IsList ], 0,
     function ( C )
-    local   elm;
     if IsEmpty( C ) then
       Error( "<C> must be nonempty to have a representative" );
     else
@@ -206,7 +216,7 @@ InstallMethod( Representative,
     end );
 
 InstallImmediateMethod( RepresentativeSmallest,
-    IsCollection and HasEnumeratorSorted, 1000,
+    IsCollection and HasEnumeratorSorted and IsAttributeStoringRep, 1000,
     function( C )
     C:= EnumeratorSorted( C );
     if IsEmpty( C ) then
@@ -217,9 +227,9 @@ InstallImmediateMethod( RepresentativeSmallest,
     end );
 
 InstallImmediateMethod( RepresentativeSmallest,
-    IsCollection and HasAsListSorted, 1000,
+    IsCollection and HasAsSSortedList and IsAttributeStoringRep, 1000,
     function( C )
-    C:= AsListSorted( C );
+    C:= AsSSortedList( C );
     if IsEmpty( C ) then
       TryNextMethod();
     else
@@ -241,6 +251,7 @@ InstallMethod( RepresentativeSmallest,
 
 #############################################################################
 ##
+#M  Random( <list> )  . . . . . . . . . . . . . . . . . . . . . .  for a list
 #M  Random( <C> ) . . . . . . . . . . . . . . . . . . . . .  for a collection
 ##
 ##  The default function for random selection in a finite collection computes
@@ -248,21 +259,45 @@ InstallMethod( RepresentativeSmallest,
 ##  function `RANDOM_LIST', which is a pseudo random number generator.
 ##
 InstallMethod( Random,
-    "for a collection that is an internal list",
+    "for an internal list",
     true,
-    [ IsCollection and IsList and IsInternalRep ], 100,
+    [ IsList and IsInternalRep ], 100,
 #T ?
     RANDOM_LIST );
 
 InstallMethod( Random,
-    "for a collection",
-    true, [ IsCollection ], 10,
+    "for a (finite) collection",
+    true,
+    [ IsCollection ], 10,
     function ( C )
     if not IsFinite( C ) then
         TryNextMethod();
     fi;
     return RANDOM_LIST( Enumerator( C ) );
     end );
+
+
+#############################################################################
+##
+#M  PseudoRandom( <list> )  . . . . . . . . . . . . . .  for an internal list
+##
+InstallMethod( PseudoRandom,
+    "for an internal list",
+    true,
+    [ IsList and IsInternalRep ], 100,
+#T ?
+    RANDOM_LIST );
+
+
+#############################################################################
+##
+#M  PseudoRandom( <C> ) . . . . . . . . . . . . . .  for a list or collection
+##
+InstallMethod( PseudoRandom,
+    "for a list or collection (delegate to `Random')",
+    true,
+    [ IsListOrCollection ], 0,
+    Random );
 
 
 #############################################################################
@@ -286,35 +321,73 @@ InstallMethod( AsList,
 
 #############################################################################
 ##
-#M  AsListSorted( <coll> )
+#M  AsSSortedList( <coll> )
 ##
-InstallMethod( AsListSorted,
+InstallMethod( AsSSortedList,
     "for a collection",
     true,
     [ IsCollection ],
     0,
     coll -> ConstantTimeAccessList( EnumeratorSorted( coll ) ) );
 
-InstallOtherMethod( AsListSorted,
+InstallOtherMethod( AsSSortedList,
     "for a collection that is a constant time access list",
     true,
     [ IsCollection and IsConstantTimeAccessList ],
     0,
-    AsListSortedList );
+    l->AsSSortedListList(AsPlist(l)) );
 
 
 #############################################################################
 ##
-#M  Enumerator(<C>)
+#M  Enumerator( <C> )
 ##
 InstallImmediateMethod( Enumerator,
-    IsCollection and HasAsList, 0,
+    IsCollection and HasAsList and IsAttributeStoringRep, 0,
+    AsList );
+
+
+InstallMethod( Enumerator,
+    "for a collection with known `AsList' value",
+    true,
+    [ IsCollection and HasAsList ], 
+    SUM_FLAGS, # we don't want to compute anything anew -- this is already a
+               # known result as good as any.
     AsList );
 
 InstallMethod( Enumerator,
+    "for a collection with known `AsSSortedList' value",
+    true,
+    [ IsCollection and HasAsSSortedList ],
+    SUM_FLAGS, # we don't want to compute anything anew -- this is already a
+               # known result as good as any.
+    AsSSortedList );
+
+InstallMethod( Enumerator,
     "for a collection that is a list",
-    true, [ IsCollection and IsList ], 0,
+    true,
+    [ IsCollection and IsList ], 0,
     Immutable );
+
+
+#############################################################################
+##
+#M  EnumeratorSorted( <C> )
+##
+##  If a collection known already its `AsSSortedList' value then
+##  `EnumeratorSorted' may fetch this value.
+##
+InstallImmediateMethod( EnumeratorSorted,
+    IsCollection and HasAsSSortedList and IsAttributeStoringRep, 0,
+    AsSSortedList );
+
+InstallMethod( EnumeratorSorted,
+    "for a collection with known `AsSSortedList' value",
+    true,
+    [ IsCollection and HasAsSSortedList ],
+    SUM_FLAGS, # we don't want to compute anything anew -- this is already a
+               # known result as good as any.
+    AsSSortedList );
 
 
 #############################################################################
@@ -324,7 +397,7 @@ InstallMethod( Enumerator,
 InstallMethod( ViewObj,
     "for an enumerator",
     true,
-    [ IsEnumerator ], 0,
+    [ IsList and IsAttributeStoringRep ], 0,
     function( enum )
     Print( "<enumerator>" );
     end );
@@ -337,7 +410,7 @@ InstallMethod( ViewObj,
 InstallMethod( PrintObj,
     "for an enumerator",
     true,
-    [ IsEnumerator ], 0,
+    [ IsList and IsAttributeStoringRep ], 0,
     function( enum )
     Print( "<enumerator>" );
     end );
@@ -346,21 +419,108 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  EnumeratorSorted(<C>)
+#R  IsEnumeratorOfSubsetDefaultRep
 ##
-InstallImmediateMethod( EnumeratorSorted,
-    IsCollection and HasAsListSorted, 0,
-    AsListSorted );
+DeclareRepresentation( "IsEnumeratorOfSubsetDefaultRep",
+    IsAttributeStoringRep,
+    [ "list", "blist" ] );
 
-InstallMethod( EnumeratorSorted,
-    "for a collection",
-    true, [ IsCollection ], 0,
-    coll -> AsListSortedList( Enumerator( coll ) ) );
 
-InstallMethod( EnumeratorSorted,
-    "for a collection that is a list",
-    true, [ IsCollection and IsList ], 0,
-    AsListSortedList );
+#############################################################################
+##
+#M  Length( <senum> ) . . . . . . . . . . . . . .  for enumerators of subsets
+##
+InstallMethod( Length,
+    "for enumerator of subset in default repres.",
+    true,
+    [ IsList and IsEnumeratorOfSubsetDefaultRep ], 0,
+    senum -> SIZE_BLIST( senum!.blist ) );
+
+
+#############################################################################
+##
+#M  <senum>[ <num> ]  . . . . . . . . . . . . . .  for enumerators of subsets
+##
+InstallMethod( \[\],
+    "for enumerator of subset in default repres., and pos. integer",
+    true,
+    [ IsList and IsEnumeratorOfSubsetDefaultRep, IsPosInt ], 0,
+    function( senum, num )
+    local pos;
+    pos:= PositionNthTrueBlist( senum!.blist, num );
+    if pos = fail then
+      Error( "List Element: <list>[", num, "] must have an assigned value" );
+    else
+      return senum!.list[ pos ];
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  PositionCanonical( <senum>, <elm> ) . . . . .  for enumerators of subsets
+##
+InstallMethod( PositionCanonical,
+    "for enumerator of subset in default repres., and object",
+    true,
+    [ IsList and IsEnumeratorOfSubsetDefaultRep, IsObject ], 0,
+    function( senum, elm )
+    local pos;
+    
+    pos:= PositionCanonical( senum!.list, elm );
+    if pos = fail or not senum!.blist[ pos ] then
+      return fail;
+    else
+      return SIZE_BLIST( senum!.blist{ [ 1 .. pos ] } );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  ConstantTimeAccessList( <senum> ) . . . . . .  for enumerators of subsets
+##
+InstallMethod( ConstantTimeAccessList,
+    "for enumerator of subset in default repres.",
+    true,
+    [ IsList and IsEnumeratorOfSubsetDefaultRep ], 0,
+    senum -> senum!.list{ LIST_BLIST( [ 1 .. Length( senum!.list ) ],
+                                     senum!.blist ) } );
+
+
+#############################################################################
+##
+#F  EnumeratorOfSubset( <list>, <blist>[, <ishomog>] )
+##
+InstallGlobalFunction( EnumeratorOfSubset,
+    function( arg )
+
+    local list, blist, Fam;
+
+    # Get and check the arguments.
+    if Length( arg ) < 2 or 3 < Length( arg ) then
+      Error( "usage: EnumeratorOfSubset( <list>, <blist>[, <ishomog>] )" );
+    fi;
+    list:= arg[1];
+    blist:= arg[2];
+
+    # Determine the family of the result.
+    if IsHomogeneousList( list ) then
+      Fam:= FamilyObj( list );
+    elif Length( arg ) = 2 then
+      Error( "missing third argument <ishomog> for inhomog. <list>" );
+    elif arg[3] = true then
+      Fam:= FamilyObj( list );
+    else
+      Fam:= ListsFamily;
+    fi;
+
+    # Construct the enumerator.
+    return Objectify( NewType( Fam,
+                               IsList and IsEnumeratorOfSubsetDefaultRep ),
+                      rec( list  := list,
+                           blist := blist ) );
+    end );
 
 
 #############################################################################
@@ -370,14 +530,15 @@ InstallMethod( EnumeratorSorted,
 ##
 InstallGlobalFunction( List,
     function( arg )
-    local tnum, C, func, res, i, elm;
-    if IsEmpty( arg ) then
+    local tnum, C, func, res, i, elm, l;
+    l := Length(arg);
+    if l = 0 then
       Error( "usage: List( <C>[, <func>] )" );
     fi;
-    tnum:= TNUM_OBJ( arg[1] )[1];
+    tnum:= TNUM_OBJ_INT( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
-      if Length( arg ) = 1 then
+      if l = 1 then
         return ShallowCopy( C );
       else
         func:= arg[2];
@@ -431,31 +592,67 @@ InstallOtherMethod( ListOp,
     return res;
     end );
 
+#############################################################################
+##
+#M  SortedList( <C> )
+##
+InstallMethod( SortedList, "for a list or collection",
+    true, [ IsListOrCollection ], 0,
+function(C)
+local l;
+  l:=List(C);
+  if not IsDenseList(l) then
+    l:=List(l,i->i);
+  fi;
+  Sort(l);
+  return l;
+end);
+
+InstallMethod( AsSortedList, "for a list or collection",
+        true, [ IsListOrCollection ], 0, 
+        function(l) 
+    local s;
+    s := SortedList(l);
+    MakeImmutable(s);
+    return s;
+end);
 
 #############################################################################
 ##
-#M  ListSorted( <C> )
+#M  SSortedList( <C> )
 ##
-InstallMethod( ListSorted,
+InstallMethod( SSortedList,
     "for a collection",
     true, [ IsCollection ], 0,
     C -> ShallowCopy( EnumeratorSorted( C ) ) );
 
-InstallMethod( ListSorted,
-    "for a collection that is a list",
-    true, [ IsCollection and IsList ], 0,
-    ListSortedList );
+InstallMethod( SSortedList,
+    "for a collection that is a small list",
+    true, [ IsCollection and IsList and IsSmallList ], 0,
+    SSortedListList );
+
+InstallMethod( SSortedList,
+        "for a collection that is a list",
+        true, [ IsCollection and IsList ], 0,
+        function(list)
+    if IsSmallList(list) then
+       return SSortedListList(list);
+    else
+        Error("Sort for large lists not yet implemented");
+    fi;
+    end
+        );
 
 
 #############################################################################
 ##
-#M  ListSorted( <C>, <func> )
+#M  SSortedList( <C>, <func> )
 ##
-InstallOtherMethod( ListSorted,
+InstallOtherMethod( SSortedList,
     "for a collection, and a function",
     true, [ IsCollection, IsFunction ], 0,
     function ( C, func )
-    return ListSortedList( List( C, func ) );
+    return SSortedListList( List( C, func ) );
     end );
 
 
@@ -474,8 +671,9 @@ InstallMethod( Iterator,
     C -> IteratorList( C ) );
 
 InstallOtherMethod( Iterator,
-    "for an iterator",
-    true, [ IsIterator ], 0,
+    "for a mutable iterator",
+    true,
+    [ IsIterator and IsMutable ], 0,
     IdFunc );
 #T or change the for-loop to accept iterators?
 
@@ -492,14 +690,30 @@ InstallMethod( IteratorSorted,
 InstallMethod( IteratorSorted,
     "for a collection that is a list",
     true, [ IsCollection and IsList ], 0,
-    C -> IteratorList( ListSortedList( C ) ) );
+    C -> IteratorList( SSortedListList( C ) ) );
 
 
 #############################################################################
 ##
-#R  IsTrivialIterator( <iter> )
+#M  NextIterator( <iter> ) . . . . . . for immutable iterator (error message)
 ##
-DeclareRepresentation( "IsTrivialIterator",
+InstallOtherMethod( NextIterator,
+    "for an immutable iterator (print a reasonable error message)",
+    true,
+    [ IsIterator ], 0,
+    function( iter )
+    if IsMutable( iter ) then
+      TryNextMethod();
+    fi;
+    Error( "no `NextIterator' method for immutable iterator <iter>" );
+    end );
+
+
+#############################################################################
+##
+#R  IsTrivialIteratorRep( <iter> )
+##
+DeclareRepresentation( "IsTrivialIteratorRep",
     IsComponentObjectRep, [ "element", "isDone" ] );
 
 
@@ -509,18 +723,22 @@ DeclareRepresentation( "IsTrivialIterator",
 ##
 InstallGlobalFunction( TrivialIterator, function( elm )
     return Objectify( NewType( IteratorsFamily,
-                               IsIterator and IsTrivialIterator ),
+                                   IsIterator
+                               and IsMutable
+                               and IsTrivialIteratorRep ),
                       rec( element := elm, isDone := false ) );
 end );
 
 InstallMethod( IsDoneIterator,
     "for a trivial iterator",
-    true, [ IsIterator and IsTrivialIterator ], SUM_FLAGS,
+    true,
+    [ IsIterator and IsTrivialIteratorRep ], 0,
     iter -> iter!.isDone );
 
 InstallMethod( NextIterator,
-    "for a trivial iterator",
-    true, [ IsIterator and IsTrivialIterator ], SUM_FLAGS,
+    "for a mutable trivial iterator",
+    true,
+    [ IsIterator and IsMutable and IsTrivialIteratorRep ], 0,
     function( iter )
     iter!.isDone:= true;
     return iter!.element;
@@ -528,8 +746,21 @@ InstallMethod( NextIterator,
 
 InstallMethod( Iterator,
     "for a trivial collection",
-    true, [ IsCollection and IsTrivial ], SUM_FLAGS,
+    true,
+    [ IsCollection and IsTrivial ], SUM_FLAGS,
     D -> TrivialIterator( Enumerator( D )[1] ) );
+
+InstallMethod( ShallowCopy,
+    "for a trivial iterator",
+    true,
+    [ IsIterator and IsTrivialIteratorRep ], 0,
+    function( iter )
+    if iter!.isDone then
+      return iter;
+    else
+      return TrivialIterator( iter!.elm );
+    fi;
+    end );
 
 
 #############################################################################
@@ -541,14 +772,15 @@ InstallMethod( Iterator,
 ##
 InstallGlobalFunction( Sum,
     function( arg )
-    local tnum, C, func, sum, i;
-    if IsEmpty( arg ) then
+    local tnum, C, func, sum, i, l;
+    l := Length( arg );
+    if l = 0 then
       Error( "usage: Sum( <C>[, <func>][, <init>] )" );
     fi;
-    tnum:= TNUM_OBJ( arg[1] )[1];
+    tnum:= TNUM_OBJ_INT( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
-      if Length( arg ) = 1 then
+      if l = 1 then
         if IsEmpty( C ) then
           sum:= 0;
         else
@@ -557,7 +789,7 @@ InstallGlobalFunction( Sum,
             sum:= sum + C[i];
           od;
         fi;
-      elif Length( arg ) = 2 and IsFunction( arg[2] ) then
+      elif l = 2 and IsFunction( arg[2] ) then
         func:= arg[2];
         if IsEmpty( C ) then
           sum:= 0;
@@ -567,12 +799,12 @@ InstallGlobalFunction( Sum,
             sum:= sum + func( C[i] );
           od;
         fi;
-      elif Length( arg ) = 2 then
+      elif l = 2 then
         sum:= arg[2];
         for i in C do
           sum:= sum + i;
         od;
-      elif Length( arg ) = 3 and IsFunction( arg[2] ) then
+      elif l = 3 and IsFunction( arg[2] ) then
         func:= arg[2];
         sum:= arg[3];
         for i in C do
@@ -660,7 +892,6 @@ InstallOtherMethod( SumOp,
     true,
     [ IsListOrCollection, IsFunction, IsAdditiveElement ], 0,
     function ( C, func, init )
-    local   sum, i;
     C := Iterator( C );
     while not IsDoneIterator( C ) do
       init := init + func( NextIterator( C ) );
@@ -678,14 +909,15 @@ InstallOtherMethod( SumOp,
 ##
 InstallGlobalFunction( Product,
     function( arg )
-    local tnum, C, func, product, i;
-    if IsEmpty( arg ) then
+    local tnum, C, func, product, l, i;
+    l := Length(arg);
+    if l = 0 then
       Error( "usage: Product( <C>[, <func>][, <init>] )" );
     fi;
-    tnum:= TNUM_OBJ( arg[1] )[1];
+    tnum:= TNUM_OBJ_INT( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
-      if Length( arg ) = 1 then
+      if l = 1 then
         if IsEmpty( C ) then
           product:= 1;
         else
@@ -694,7 +926,7 @@ InstallGlobalFunction( Product,
             product:= product * C[i];
           od;
         fi;
-      elif Length( arg ) = 2 and IsFunction( arg[2] ) then
+      elif l = 2 and IsFunction( arg[2] ) then
         func:= arg[2];
         if IsEmpty( C ) then
           product:= 1;
@@ -704,12 +936,12 @@ InstallGlobalFunction( Product,
             product:= product * func( C[i] );
           od;
         fi;
-      elif Length( arg ) = 2 then
+      elif l = 2 then
         product:= arg[2];
         for i in C do
           product:= product * i;
         od;
-      elif Length( arg ) = 3 and IsFunction( arg[2] ) then
+      elif l = 3 and IsFunction( arg[2] ) then
         func:= arg[2];
         product:= arg[3];
         for i in C do
@@ -757,7 +989,7 @@ InstallOtherMethod( ProductOp,
     true,
     [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
-    local   prod, i;
+    local   prod;
     C := Iterator( C );
     if not IsDoneIterator( C ) then
         prod := func( NextIterator( C ) );
@@ -830,7 +1062,7 @@ end;
 InstallGlobalFunction( Filtered,
     function( C, func )
     local tnum, res, i, elm;
-    tnum:= TNUM_OBJ( C )[1];
+    tnum:= TNUM_OBJ_INT( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       res := [];
       i   := 0;
@@ -869,7 +1101,8 @@ InstallMethod( FilteredOp,
 InstallMethod( FilteredOp,
     "for an empty list/collection, and a function",
     true,
-    [ IsEmpty, IsFunction ], SUM_FLAGS,
+    [ IsEmpty, IsFunction ], 
+    SUM_FLAGS, # there is nothing to do
     function( list, func )
     return [];
     end );
@@ -882,14 +1115,15 @@ InstallMethod( FilteredOp,
 ##
 InstallGlobalFunction( Number,
     function( arg )
-    local tnum, C, func, nr, elm;
-    if IsEmpty( arg ) then
+    local tnum, C, func, nr, elm,l;
+    l := Length( arg );
+    if l = 0 then
       Error( "usage: Number( <C>[, <func>] )" );
     fi;
-    tnum:= TNUM_OBJ( arg[1] )[1];
+    tnum:= TNUM_OBJ_INT( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
-      if Length( arg ) = 1 then
+      if l = 1 then
         nr := 0;
         for elm in C do
             nr := nr + 1;
@@ -956,7 +1190,7 @@ InstallOtherMethod( NumberOp,
 InstallGlobalFunction( ForAll,
     function( C, func )
     local tnum, elm;
-    tnum:= TNUM_OBJ( C )[1];
+    tnum:= TNUM_OBJ_INT( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       for elm in C do
           if not func( elm ) then
@@ -991,7 +1225,8 @@ InstallMethod( ForAllOp,
 InstallOtherMethod( ForAllOp,
     "for an empty list/collection, and a function",
     true,
-    [ IsEmpty, IsFunction ], SUM_FLAGS,
+    [ IsEmpty, IsFunction ], 
+    SUM_FLAGS, # there is nothing to do
     ReturnTrue );
 
 
@@ -1002,7 +1237,7 @@ InstallOtherMethod( ForAllOp,
 InstallGlobalFunction( ForAny,
     function( C, func )
     local tnum, elm;
-    tnum:= TNUM_OBJ( C )[1];
+    tnum:= TNUM_OBJ_INT( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       for elm in C do
           if func( elm ) then
@@ -1037,7 +1272,8 @@ InstallMethod( ForAnyOp,
 InstallOtherMethod( ForAnyOp,
     "for an empty list/collection, and a function",
     true,
-    [ IsEmpty, IsFunction ], SUM_FLAGS,
+    [ IsEmpty, IsFunction ],
+    SUM_FLAGS, # there is nothing to do
     ReturnFalse );
 
 
@@ -1064,13 +1300,15 @@ ListXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     Add( result, CallFuncList( gens[i+1], vals ) );
 end;
+MAKE_READ_ONLY_GLOBAL( "ListXHelp" );
 
-ListXHelp2 := function ( result, gens, i, val1, val2 )
+BIND_GLOBAL( "ListXHelp2", function ( result, gens, i, val1, val2 )
     local   gen, vals, val3;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1090,13 +1328,14 @@ ListXHelp2 := function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     Add( result, gens[i+1]( val1, val2 ) );
-end;
+end );
 
-ListXHelp1 := function ( result, gens, i, val1 )
+BIND_GLOBAL( "ListXHelp1", function ( result, gens, i, val1 )
     local   gen, val2;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1113,13 +1352,14 @@ ListXHelp1 := function ( result, gens, i, val1 )
             od;
             return;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     Add( result, gens[i+1]( val1 ) );
-end;
+end );
 
-ListXHelp0 := function ( result, gens, i )
+BIND_GLOBAL( "ListXHelp0", function ( result, gens, i )
     local   gen, val1;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1136,11 +1376,12 @@ ListXHelp0 := function ( result, gens, i )
             od;
             return;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     Add( result, gens[i+1]() );
-end;
+end );
 
 InstallGlobalFunction( ListX, function ( arg )
     local   result;
@@ -1173,13 +1414,15 @@ SetXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     AddSet( result, CallFuncList( gens[i+1], vals ) );
 end;
+MAKE_READ_ONLY_GLOBAL( "SetXHelp" );
 
-SetXHelp2 := function ( result, gens, i, val1, val2 )
+BIND_GLOBAL( "SetXHelp2", function ( result, gens, i, val1, val2 )
     local   gen, vals, val3;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1199,13 +1442,14 @@ SetXHelp2 := function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     AddSet( result, gens[i+1]( val1, val2 ) );
-end;
+end );
 
-SetXHelp1 := function ( result, gens, i, val1 )
+BIND_GLOBAL( "SetXHelp1", function ( result, gens, i, val1 )
     local   gen, val2;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1222,13 +1466,14 @@ SetXHelp1 := function ( result, gens, i, val1 )
             od;
             return;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     AddSet( result, gens[i+1]( val1 ) );
-end;
+end );
 
-SetXHelp0 := function ( result, gens, i )
+BIND_GLOBAL( "SetXHelp0", function ( result, gens, i )
     local   gen, val1;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1245,11 +1490,12 @@ SetXHelp0 := function ( result, gens, i )
             od;
             return;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     AddSet( result, gens[i+1]() );
-end;
+end );
 
 InstallGlobalFunction( SetX, function ( arg )
     local   result;
@@ -1282,7 +1528,8 @@ SumXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return result;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     if result = fail then
@@ -1292,8 +1539,9 @@ SumXHelp := function ( result, gens, i, vals, l )
     fi;
     return result;
 end;
+MAKE_READ_ONLY_GLOBAL( "SumXHelp" );
 
-SumXHelp2 := function ( result, gens, i, val1, val2 )
+BIND_GLOBAL( "SumXHelp2", function ( result, gens, i, val1, val2 )
     local   gen, vals, val3;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1313,7 +1561,8 @@ SumXHelp2 := function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return result;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     if result = fail then
@@ -1322,9 +1571,9 @@ SumXHelp2 := function ( result, gens, i, val1, val2 )
         result := result + gens[i+1]( val1, val2 );
     fi;
     return result;
-end;
+end );
 
-SumXHelp1 := function ( result, gens, i, val1 )
+BIND_GLOBAL( "SumXHelp1", function ( result, gens, i, val1 )
     local   gen, val2;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1341,7 +1590,8 @@ SumXHelp1 := function ( result, gens, i, val1 )
             od;
             return result;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     if result = fail then
@@ -1350,9 +1600,9 @@ SumXHelp1 := function ( result, gens, i, val1 )
         result := result + gens[i+1]( val1 );
     fi;
     return result;
-end;
+end );
 
-SumXHelp0 := function ( result, gens, i )
+BIND_GLOBAL( "SumXHelp0", function ( result, gens, i )
     local   gen, val1;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1369,7 +1619,8 @@ SumXHelp0 := function ( result, gens, i )
             od;
             return result;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     if result = fail then
@@ -1378,7 +1629,7 @@ SumXHelp0 := function ( result, gens, i )
         result := result + gens[i+1]();
     fi;
     return result;
-end;
+end );
 
 InstallGlobalFunction( SumX, function ( arg )
     local   result;
@@ -1411,7 +1662,8 @@ ProductXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return result;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     if result = fail then
@@ -1421,8 +1673,9 @@ ProductXHelp := function ( result, gens, i, vals, l )
     fi;
     return result;
 end;
+MAKE_READ_ONLY_GLOBAL( "ProductXHelp" );
 
-ProductXHelp2 := function ( result, gens, i, val1, val2 )
+BIND_GLOBAL( "ProductXHelp2", function ( result, gens, i, val1, val2 )
     local   gen, vals, val3;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1442,7 +1695,8 @@ ProductXHelp2 := function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return result;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     if result = fail then
@@ -1451,9 +1705,9 @@ ProductXHelp2 := function ( result, gens, i, val1, val2 )
         result := result * gens[i+1]( val1, val2 );
     fi;
     return result;
-end;
+end );
 
-ProductXHelp1 := function ( result, gens, i, val1 )
+BIND_GLOBAL( "ProductXHelp1", function ( result, gens, i, val1 )
     local   gen, val2;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1470,7 +1724,8 @@ ProductXHelp1 := function ( result, gens, i, val1 )
             od;
             return result;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     if result = fail then
@@ -1479,9 +1734,9 @@ ProductXHelp1 := function ( result, gens, i, val1 )
         result := result * gens[i+1]( val1 );
     fi;
     return result;
-end;
+end );
 
-ProductXHelp0 := function ( result, gens, i )
+BIND_GLOBAL( "ProductXHelp0", function ( result, gens, i )
     local   gen, val1;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1498,7 +1753,8 @@ ProductXHelp0 := function ( result, gens, i )
             od;
             return result;
         else
-            Error("gens[",i+1,"] must be a list, a boolean, or a function");
+            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+                   "or a function" );
         fi;
     od;
     if result = fail then
@@ -1507,7 +1763,7 @@ ProductXHelp0 := function ( result, gens, i )
         result := result * gens[i+1]();
     fi;
     return result;
-end;
+end );
 
 InstallGlobalFunction( ProductX, function ( arg )
     local   result;
@@ -1552,7 +1808,8 @@ InstallMethod( IsSubset,
     IsIdenticalObj,
     [ IsCollection and IsWholeFamily,
       IsCollection ],
-    SUM_FLAGS+2,
+    SUM_FLAGS+2, # better than everything else, however we must override the
+                 # follwoing two which are already ranked high.
     ReturnTrue );
 
 
@@ -1561,7 +1818,7 @@ InstallMethod( IsSubset,
     IsIdenticalObj,
     [ IsCollection,
       IsCollection ],
-    SUM_FLAGS+1,
+    SUM_FLAGS+1, # better than the following method
 
 function ( D, E )
     if not IsIdenticalObj( D, E ) then
@@ -1576,7 +1833,7 @@ InstallMethod( IsSubset,
     IsIdenticalObj,
     [ IsCollection and HasSize,
       IsCollection and HasSize ],
-    SUM_FLAGS,
+    SUM_FLAGS, # do this before everything else
 
 function ( D, E )
     if Size( E ) <= Size( D ) then
@@ -1604,14 +1861,14 @@ InstallMethod( IsSubset,
 
 
 InstallMethod( IsSubset,
-    "for two collections with known `AsListSorted'",
+    "for two collections with known `AsSSortedList'",
     IsIdenticalObj,
-    [ IsCollection and HasAsListSorted,
-      IsCollection and HasAsListSorted ],
+    [ IsCollection and HasAsSSortedList,
+      IsCollection and HasAsSSortedList ],
     0,
 
 function ( D, E )
-    return IsSubsetSet( AsListSorted( D ), AsListSorted( E ) );
+    return IsSubsetSet( AsSSortedList( D ), AsSSortedList( E ) );
 end );
 
 
@@ -1631,7 +1888,7 @@ end );
 ##
 #M  Intersection( <C>, ... )
 ##
-IntersectionSet := function ( C1, C2 )
+BIND_GLOBAL( "IntersectionSet", function ( C1, C2 )
     local   I;
     if Length( C1 ) < Length( C2 ) then
         I := Set( C1 );
@@ -1641,26 +1898,34 @@ IntersectionSet := function ( C1, C2 )
         IntersectSet( I, C1 );
     fi;
     return I;
-end;
+end );
 
 InstallOtherMethod( Intersection2,
-    "for two lists",
-    true, [ IsList, IsList ], 0,
+    "for two lists (not necessarily in the same family)",
+    true,
+    [ IsList, IsList ], 0,
     IntersectionSet );
 
 InstallMethod( Intersection2,
-    "for two collections that are lists",
+    "for two collections in the same family, both lists",
     IsIdenticalObj,
     [ IsCollection and IsList, IsCollection and IsList ], 0,
     IntersectionSet );
 
 InstallMethod( Intersection2,
-    "for two collections, the second being a list",
-    IsIdenticalObj, [ IsCollection, IsCollection and IsList ], 0,
+    "for two collections in different families",
+    IsNotIdenticalObj,
+    [ IsCollection, IsCollection ], 0,
+    function( C1, C2 ) return []; end );
+
+InstallMethod( Intersection2,
+    "for two collections in the same family, the second being a list",
+    IsIdenticalObj,
+    [ IsCollection, IsCollection and IsList ], 0,
     function ( C1, C2 )
     local   I, elm;
     if IsFinite( C1 ) then
-        I := ShallowCopy( AsListSorted( C1 ) );
+        I := ShallowCopy( AsSSortedList( C1 ) );
         IntersectSet( I, C2 );
     else
         I := [];
@@ -1674,12 +1939,13 @@ InstallMethod( Intersection2,
     end );
 
 InstallMethod( Intersection2,
-    "for two collections, the first being a list",
-    IsIdenticalObj, [ IsCollection and IsList, IsCollection ], 0,
+    "for two collections in the same family, the first being a list",
+    IsIdenticalObj,
+    [ IsCollection and IsList, IsCollection ], 0,
     function ( C1, C2 )
     local   I, elm;
     if IsFinite( C2 ) then
-        I := ShallowCopy( AsListSorted( C2 ) );
+        I := ShallowCopy( AsSSortedList( C2 ) );
         IntersectSet( I, C1 );
     else
         I := [];
@@ -1693,14 +1959,15 @@ InstallMethod( Intersection2,
     end );
 
 InstallMethod( Intersection2,
-    "for two collections",
-    IsIdenticalObj, [ IsCollection, IsCollection ], 0,
+    "for two collections in the same family",
+    IsIdenticalObj,
+    [ IsCollection, IsCollection ], 0,
     function ( C1, C2 )
     local   I, elm;
     if IsFinite( C1 ) then
         if IsFinite( C2 ) then
-            I := ShallowCopy( AsListSorted( C1 ) );
-            IntersectSet( I, AsListSorted( C2 ) );
+            I := ShallowCopy( AsSSortedList( C1 ) );
+            IntersectSet( I, AsSSortedList( C2 ) );
         else
             I := [];
             for elm in C1 do
@@ -1762,7 +2029,7 @@ end );
 ##
 #M  Union(<C>,...)
 ##
-UnionSet := function ( C1, C2 )
+BIND_GLOBAL( "UnionSet", function ( C1, C2 )
     local   I;
     if Length( C1 ) < Length( C2 ) then
         I := Set( C2 );
@@ -1772,7 +2039,7 @@ UnionSet := function ( C1, C2 )
         UniteSet( I, C2 );
     fi;
     return I;
-end;
+end );
 
 InstallMethod( Union2,
     "for two collections that are lists",
@@ -1791,7 +2058,7 @@ InstallMethod( Union2,
     function ( C1, C2 )
     local   I;
     if IsFinite( C1 ) then
-        I := ShallowCopy( AsListSorted( C1 ) );
+        I := ShallowCopy( AsSSortedList( C1 ) );
         UniteSet( I, C2 );
     else
         Error("sorry, cannot unite <C2> with the infinite collection <C1>");
@@ -1805,7 +2072,7 @@ InstallMethod( Union2,
     function ( C1, C2 )
     local   I;
     if IsFinite( C2 ) then
-        I := ShallowCopy( AsListSorted( C2 ) );
+        I := ShallowCopy( AsSSortedList( C2 ) );
         UniteSet( I, C1 );
     else
         Error("sorry, cannot unite <C1> with the infinite collection <C2>");
@@ -1820,8 +2087,8 @@ InstallMethod( Union2,
     local   I;
     if IsFinite( C1 ) then
         if IsFinite( C2 ) then
-            I := ShallowCopy( AsListSorted( C1 ) );
-            UniteSet( I, AsListSorted( C2 ) );
+            I := ShallowCopy( AsSSortedList( C1 ) );
+            UniteSet( I, AsSSortedList( C2 ) );
         else
             Error("sorry, cannot unite <C1> with the infinite collection <C2>");
         fi;
@@ -1892,6 +2159,15 @@ InstallOtherMethod( Difference,
     return ShallowCopy( C1 );
     end );
 
+InstallOtherMethod( Difference,
+    "for two lists (assume one can produce a sorted result)",
+    true, [ IsList, IsList ], 0,
+    function ( C1, C2 )
+    C1 := Set( C1 );
+    SubtractSet( C1, C2 );
+    return C1;
+    end );
+
 InstallMethod( Difference,
     "for two collections that are lists",
     IsIdenticalObj, [ IsCollection and IsList, IsCollection and IsList ], 0,
@@ -1908,8 +2184,8 @@ InstallMethod( Difference,
     local   D, elm;
     if IsFinite( C1 ) then
         if IsFinite( C2 ) then
-            D := ShallowCopy( AsListSorted( C1 ) );
-            SubtractSet( D, AsListSorted( C2 ) );
+            D := ShallowCopy( AsSSortedList( C1 ) );
+            SubtractSet( D, AsSSortedList( C2 ) );
         else
             D := [];
             for elm in C1 do
@@ -1931,7 +2207,7 @@ InstallMethod( Difference,
     local   D, elm;
     if IsFinite( C2 )  then
         D := Set( C1 );
-        SubtractSet( D, AsListSorted( C2 ) );
+        SubtractSet( D, AsSSortedList( C2 ) );
     else
         D := [];
         for elm in C1 do
@@ -1949,7 +2225,7 @@ InstallMethod( Difference,
     function ( C1, C2 )
     local   D;
     if IsFinite( C1 ) then
-        D := ShallowCopy( AsListSorted( C1 ) );
+        D := ShallowCopy( AsSSortedList( C1 ) );
         SubtractSet( D, C2 );
     else
         Error( "sorry, cannot subtract from the infinite domain <D>" );
@@ -1957,8 +2233,83 @@ InstallMethod( Difference,
     return D;
     end );
 
+#############################################################################
+##
+#M  CanEasilyCompareElements( <obj> )
+##
+InstallMethod(CanEasilyCompareElements,"generic: inherit `true' from family",
+  true, [IsObject],0,
+function(obj)
+  if not IsFamily(obj) then
+    return CanEasilyCompareElementsFamily(FamilyObj(obj));
+  fi;
+  return false;
+end);
+
+InstallGlobalFunction(CanEasilyCompareElementsFamily,function(fam)
+  if HasCanEasilyCompareElements(fam) then
+    return CanEasilyCompareElements(fam);
+  else
+    return false;
+  fi;
+end);
+
+InstallMethod(CanEasilyCompareElements,"family: default false",
+  true, [IsFamily],0,
+function(obj)
+  return false;
+end);
+
+InstallOtherMethod(SetCanEasilyCompareElements,"family setter",
+  true, [IsFamily,IsObject],0,
+function(fam,val)
+  # if the value is `true' we want to store it and to imply it for elements
+  if val=true then
+    fam!.IMP_FLAGS:=WITH_IMPS_FLAGS(AND_FLAGS(fam!.IMP_FLAGS,
+                                              CanEasilyCompareElements ) );
+  fi;
+  TryNextMethod();
+end);
 
 #############################################################################
 ##
-#E  coll.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  CanEasilySortElements( <obj> )
+##
+InstallMethod(CanEasilySortElements,"generic: inherit `true' from family",
+  true, [IsObject],0,
+function(obj)
+  if not IsFamily(obj) then
+    return CanEasilySortElementsFamily(FamilyObj(obj));
+  fi;
+  return false;
+end);
+
+InstallGlobalFunction(CanEasilySortElementsFamily,function(fam)
+  if HasCanEasilySortElements(fam) then
+    return CanEasilySortElements(fam);
+  else
+    return false;
+  fi;
+end);
+
+InstallMethod(CanEasilySortElements,"family: default false",
+  true, [IsFamily],0,ReturnFalse);
+
+InstallOtherMethod(SetCanEasilySortElements,"family setter",
+  true, [IsFamily,IsObject],0,
+function(fam,val)
+  # if the value is `true' we want to store it and to imply it for elements
+  if val=true then
+    fam!.IMP_FLAGS:=WITH_IMPS_FLAGS(AND_FLAGS(fam!.IMP_FLAGS,
+                                              CanEasilySortElements ) );
+  fi;
+  TryNextMethod();
+end);
+
+InstallMethod( CanComputeIsSubset,"default: no, unless identical",
+  true, [IsObject,IsObject],0,IsIdenticalObj);
+
+#############################################################################
+##
+#E
 

@@ -1,0 +1,104 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  algfld.msk                 GAP documentation             Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Algebraic extensions of fields}
+
+If we adjoin a root $\alpha$ of an irreducible polynomial $f \in K[x]$ to
+the field $K$ we get an *algebraic extension* $K(\alpha)$, which is again
+a field. We call $K$ the *base field* of $K(\alpha)$.
+
+By Kronecker{\pif}s construction, we may identify $K(\alpha)$ with
+the factor ring $K[x]/(f)$, an identification that also provides a method
+for computing in these extension fields.
+
+It is important to note that different extensions of the same field are
+entirely different (and its elements lie in different families), even if
+mathematically one could be embedded in the other one.
+
+Currently {\sf GAP} only allows extension fields of fields $K$, when $K$
+itself is not an extension field.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creation of Algebraic Extensions}
+
+\Declaration{AlgebraicExtension}
+\beginexample
+gap> x:=Indeterminate(Rationals,"x");;
+gap> p:=x^4+3*x^2+1;;
+gap> e:=AlgebraicExtension(Rationals,p);
+<field in characteristic 0>
+gap> IsField(e);
+true
+gap> a:=RootOfDefiningPolynomial(e);
+(a)
+\endexample
+
+\Declaration{IsAlgebraicExtension}
+\beginexample
+gap> IsAlgebraicExtension(e);
+true
+gap> IsAlgebraicExtension(Rationals);
+false
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements in Algebraic Extensions}
+
+\index{Operations for algebraic elements}
+
+According to Kronecker{\pif}s construction, the elements of an algebraic
+extension considered to be polynomials in the primitive element. The
+elements of the base field are represented as polynomials of degree 0.
+{\GAP} therefore displays elements of an algebraic extension as polynomials
+in an indeterminate ``a'', which is a root of the defining polynomial of the
+extension.
+Polynomials of degree 0 are displayed with a leading exclamation mark to
+indicate that they are different from elements of the base field.
+
+The usual field operations are applicable to algebraic elements.
+
+\beginexample
+gap> a^3/(a^2+a+1);
+(-1/2*a+1/2*a^2-1/2*a^3)
+gap> a*(1/a);
+!1
+\endexample
+
+The external representation of algebraic extension elements are the
+polynomial coefficients in the primitive element `a', the operations
+`ExtRepOfObj' and `ObjByExtRep' can be used for conversion.
+
+\beginexample
+gap> ExtRepOfObj(One(a));
+[ 1, 0, 0, 0 ]
+gap> ExtRepOfObj(a^3+2*a-9);
+[ -9, 2, 0, 1 ]
+gap> ObjByExtRep(FamilyObj(a),[3,19,-27,433]);
+(3+19*a-27*a^2+433*a^3)
+\endexample
+
+{\GAP} does *not* embed the base field in its algebraic extensions and
+therefore lists which contain elements of the base field and of the
+extension are not homogeneous and thus cannot be used as polynomial
+coefficients or to form matrices. The remedy is to multiply the
+list(s) with the `One' of the extension which will embed all entries in the
+extension.
+\beginexample
+gap> m:=[[1,a],[0,1]];
+[ [ 1, (a) ], [ 0, 1 ] ]
+gap> IsMatrix(m);
+false
+gap> m:=m*One(e);
+[ [ !1, (a) ], [ !0, !1 ] ]
+gap> IsMatrix(m);
+true
+gap> m^2;
+[ [ !1, (2*a) ], [ !0, !1 ] ]
+\endexample
+
+\Declaration{IsAlgebraicElement}

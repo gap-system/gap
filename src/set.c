@@ -54,21 +54,23 @@ const char * Revision_set_c =
 
 /****************************************************************************
 **
-
 *F  IsSet( <list> ) . . . . . . . . . . . . . . . . . test if a list is a set
 **
-**  'IsSet' returns 1 if the list <list> is a proper set  and 0 otherwise.  A
-**  proper set is a list that has no holes, no duplicates, and is sorted.  As
-**  a sideeffect 'IsSet' changes the type of proper sets to 'T_SET'.
+**  'IsSet' returns 1 if the list <list> is a proper set and 0
+**  otherwise.  A proper set is a  list that has no holes,
+**  no duplicates, and is sorted.  As a sideeffect 'IsSet' changes the
+**  type of proper sets as appropriate.
 **
 **  A typical call in the set functions looks like this:
 **
 **  |    if ( ! IsSet(list) )  list = SetList(list); |
 **
-**  This tests if 'list' is a proper set and the type  is changed to 'T_SET'.
+**  This tests if 'list' is a proper set and the type  is changed 
 **  If it is not  then 'SetList' is  called to make  a copy of 'list', remove
-**  the holes, sort the copy, and remove the duplicates.
+**  the holes, sort the copy, and remove the duplicates.  
+** 
 */
+
 #define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
 
 Int IsSet ( 
@@ -86,8 +88,8 @@ Int IsSet (
             isSet = 1;
         }
 
-        /* if <list> homogeneous and strictly sorted, its a set            */
-        else if ( IS_HOMOG_LIST(list) && IS_SSORT_LIST(list) ) {
+        /* if <list>  strictly sorted, its a set            */
+        else if ( IS_SSORT_LIST(list) ) {
             isSet = 1;
         }
 
@@ -98,8 +100,8 @@ Int IsSet (
 
     }
 
-    /* if it is another list                                               */
-    else if ( IS_LIST(list) ) {
+    /* if it is another small list                                         */
+    else if ( IS_SMALL_LIST(list) ) {
 
         /* if <list> is the empty list, its a set (:-)                     */
         if ( LEN_LIST(list) == 0 ) {
@@ -108,10 +110,10 @@ Int IsSet (
             isSet = 1;
         }
 
-        /* if <list> homogeneous and strictly sorted, its a set            */
-        else if ( IS_HOMOG_LIST(list) && IS_SSORT_LIST(list) ) {
+        /* if <list> strictly sorted, its a set            */
+        else if (  IS_SSORT_LIST(list) ) {
             PLAIN_LIST( list );
-            SET_FILT_LIST( list, FN_IS_HOMOG );
+            /* SET_FILT_LIST( list, FN_IS_HOMOG ); */
             SET_FILT_LIST( list, FN_IS_SSORT );
             isSet = 1;
         }
@@ -152,7 +154,7 @@ Obj SetList (
     Int                 lenSet;         /* length of <set>                 */
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of the list         */
-    UInt                mutable;        /* the elements are mutable        */
+    UInt                status;        /* the elements are mutable        */
     UInt                i;              /* loop variable                   */
 
     /* make a dense copy                                                   */
@@ -164,6 +166,7 @@ Obj SetList (
         if ( elm != 0 ) {
             lenSet += 1;
             SET_ELM_PLIST( set, lenSet, elm );
+	    CHANGED_BAG(set);	/* in case elm had to be made, not just extracted  */
         }
     }
     SET_LEN_PLIST( set, lenSet );
@@ -173,12 +176,24 @@ Obj SetList (
     SortDensePlist( set );
 
     /* remove duplicates                                                   */
-    mutable = RemoveDupsDensePlist( set );
+    status = RemoveDupsDensePlist( set );
 
-    /* if possible, turn this into a set                                   */
-    if ( IS_HOMOG_LIST(set) )
+    /* adjust flags where possible                                   */
+    switch(status)
+      {
+      case 0:
+	break;
+	
+      case 1:
+	SET_FILT_LIST(set, FN_IS_NHOMOG);
+	SET_FILT_LIST(set, FN_IS_SSORT);
+	break;
+	
+      case 2:
 	SET_FILT_LIST( set, FN_IS_HOMOG );
-    SET_FILT_LIST( set, FN_IS_SSORT );
+	SET_FILT_LIST( set, FN_IS_SSORT );
+	break;
+      }
 
     /* return set                                                          */
     return set;
@@ -206,11 +221,11 @@ Obj FuncLIST_SORTED_LIST (
     Obj                 set;            /* result                          */
 
     /* check the argument                                                  */
-    while ( ! IS_LIST( list ) ) {
+    while ( ! IS_SMALL_LIST( list ) ) {
         list = ErrorReturnObj(
-            "Set: <list> must be a list (not a %s)",
+            "Set: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can return a small list for <list>" );
     }
 
     /* if the list is empty create a new empty list                        */
@@ -219,7 +234,7 @@ Obj FuncLIST_SORTED_LIST (
     }
 
     /* if <list> is a set just shallow copy it                             */
-    else if ( IS_HOMOG_LIST(list) && IS_SSORT_LIST(list) ) {
+    else if ( /* IS_HOMOG_LIST(list) && */ IS_SSORT_LIST(list) ) {
         set = SHALLOW_COPY_OBJ( list );
     }
 
@@ -282,18 +297,18 @@ Obj             FuncIS_EQUAL_SET (
     Obj                 list2 )
 {
     /* check the arguments, convert to sets if necessary                   */
-    while ( ! IS_LIST(list1) ) {
+    while ( ! IS_SMALL_LIST(list1) ) {
         list1 = ErrorReturnObj(
-            "IsEqualSet: <list1> must be a list (not a %s)",
+            "IsEqualSet: <list1> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list1), 0L,
-            "you can return a list for <list1>" );
+            "you can return a small list for <list1>" );
     }
     if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
-    while ( ! IS_LIST(list2) ) {
+    while ( ! IS_SMALL_LIST(list2) ) {
         list2 = ErrorReturnObj(
-            "IsEqualSet: <list2> must be a list (not a %s)",
+            "IsEqualSet: <list2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list2), 0L,
-            "you can return a list for <list2>" );
+            "you can return a small list for <list2>" );
     }
     if ( ! IsSet( list2 ) )  list2 = SetList( list2 );
 
@@ -329,17 +344,17 @@ Obj             FuncIS_SUBSET_SET (
     UInt                pos;            /* position                        */
 
     /* check the arguments, convert to sets if necessary                   */
-    while ( ! IS_LIST(set1) ) {
+    while ( ! IS_SMALL_LIST(set1) ) {
         set1 = ErrorReturnObj(
-            "IsSubsetSet: <set1> must be a list (not a %s)",
+            "IsSubsetSet: <set1> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set1), 0L,
-            "you can return a list for <set1>" );
+            "you can return a small list for <set1>" );
     }
-    while ( ! IS_LIST(set2) ) {
+    while ( ! IS_SMALL_LIST(set2) ) {
         set2 = ErrorReturnObj(
-            "IsSubsetSet: <set2> must be a list (not a %s)",
+            "IsSubsetSet: <set2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set2), 0L,
-            "you can return a list for <set2>" );
+            "you can return a small list for <set2>" );
     }
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
 
@@ -428,54 +443,105 @@ Obj             FuncIS_SUBSET_SET (
 **  of changing <set>.
 */
 Obj FuncADD_SET (
-    Obj                 self,
-    Obj                 set,
-    Obj                 obj )
+		 Obj                 self,
+		 Obj                 set,
+		 Obj                 obj )
 {
-    UInt                len;            /* logical length of the list      */
-    UInt                pos;            /* position                        */
-    UInt                i;              /* loop variable                   */
+  UInt                len;            /* logical length of the list      */
+  UInt                pos;            /* position                        */
+  UInt                i;              /* loop variable                   */
+  UInt                isCyc;          /* True if the set being added to consists
+					 of kernel cyclotomics           */
+  UInt                notpos;         /* position of an original element
+					 (not the new one)               */
+  UInt                wasHom;
+  UInt                wasNHom;
+    
+  /* check the arguments                                                 */
+  while ( ! IsSet(set) || ! IS_MUTABLE_OBJ(set) ) {
+    set = ErrorReturnObj(
+			 "AddSet: <set> must be a mutable proper set (not a %s)",
+			 (Int)TNAM_OBJ(set), 0L,
+			 "you can return a set for <set>" );
+  }
+  len = LEN_LIST(set);
 
-    /* check the arguments                                                 */
-    while ( ! IsSet(set) || ! IS_MUTABLE_OBJ(set) ) {
-        set = ErrorReturnObj(
-            "AddSet: <set> must be a mutable proper set (not a %s)",
-            (Int)TNAM_OBJ(set), 0L,
-            "you can return a set for <set>" );
+  /* perform the binary search to find the position                      */
+  pos = PositionSortedDensePlist( set, obj );
+
+  /* add the element to the set if it is not already there               */
+  if ( len < pos || ! EQ( ELM_PLIST(set,pos), obj ) ) {
+    GROW_PLIST( set, len+1 );
+    SET_LEN_PLIST( set, len+1 );
+    {
+      Obj *ptr;
+      ptr = PTR_BAG(set) + len+1;
+      for ( i = len+1; pos < i; i-- ) {
+	*ptr = *(ptr-1);
+	ptr--;
+	/* SET_ELM_PLIST( set, i, ELM_PLIST(set,i-1) ); */
+      }
     }
-    len = LEN_LIST(set);
+    SET_ELM_PLIST( set, pos, obj );
+    CHANGED_BAG( set );
 
-    /* perform the binary search to find the position                      */
-    pos = PositionSortedDensePlist( set, obj );
+    /* fix up the type of the result                                   */
+    if ( HAS_FILT_LIST( set, FN_IS_SSORT ) ) {
+      isCyc = (TNUM_OBJ(set) == T_PLIST_CYC_SSORT);
+      wasHom = HAS_FILT_LIST(set, FN_IS_HOMOG);
+      wasNHom = HAS_FILT_LIST(set, FN_IS_NHOMOG);
+      CLEAR_FILTS_LIST(set);
+      /* the result of addset is always dense */
+      SET_FILT_LIST( set, FN_IS_DENSE );
 
-    /* add the element to the set if it is not already there               */
-    if ( len < pos || ! EQ( ELM_PLIST(set,pos), obj ) ) {
-        GROW_PLIST( set, len+1 );
-        SET_LEN_PLIST( set, len+1 );
-        for ( i = len+1; pos < i; i-- ) {
-            SET_ELM_PLIST( set, i, ELM_PLIST(set,i-1) );
-        }
-        SET_ELM_PLIST( set, pos, obj );
-        CHANGED_BAG( set );
-
-        /* fix up the type of the result                                   */
-        if ( HAS_FILT_LIST( set, FN_IS_SSORT ) ) {
-            CLEAR_FILTS_LIST(set);
-            if ( IS_MUTABLE_OBJ(obj) ) {
-                SET_FILT_LIST( set, FN_IS_DENSE );
-            }
-            else {
-                SET_FILT_LIST( set, FN_IS_SSORT );
-            }
-        }
-        else {
-            CLEAR_FILTS_LIST(set);
-            SET_FILT_LIST( set, FN_IS_DENSE );
-        }
+				/* if the object we added was not
+                                   mutable then we might be able to
+                                   conclude more */
+      if ( ! IS_MUTABLE_OBJ(obj) ) {
+				/* a one element list is automatically
+                                   homogenous */
+	if (len == 0 )
+	  {
+	    if (TNUM_OBJ(obj) <= T_CYC)
+	      RetypeBag( set, T_PLIST_CYC_SSORT);
+	    else
+	      SET_FILT_LIST( set, FN_IS_HOMOG );
+	  }
+	else
+	  {
+	    /* Now determine homogeneity */
+	    if (isCyc)
+	      if (TNUM_OBJ(obj) <= T_CYC)
+		RetypeBag( set, T_PLIST_CYC_SSORT);
+	      else
+		{
+		  RESET_FILT_LIST(set, FN_IS_HOMOG);
+		  SET_FILT_LIST(set, FN_IS_NHOMOG);
+		}
+	    else if (wasHom)
+	      {
+		if (!SyInitializing) {
+		  notpos = (pos == 1) ? 2 : 1;
+		  if (FAMILY_OBJ(ELM_PLIST(set,notpos)) == FAMILY_OBJ(obj))
+		    SET_FILT_LIST(set, FN_IS_HOMOG);
+		  else
+		    SET_FILT_LIST(set, FN_IS_NHOMOG);
+		}
+	      }
+	    else if (wasNHom)
+	      SET_FILT_LIST(set, FN_IS_NHOMOG);
+	  }
+      }
+      SET_FILT_LIST( set, FN_IS_SSORT );
     }
+    else {
+      CLEAR_FILTS_LIST(set);
+      SET_FILT_LIST( set, FN_IS_DENSE );
+    }
+  }
 
-    /* return void, this is a procedure                                    */
-    return (Obj)0;
+  /* return void, this is a procedure                                    */
+  return (Obj)0;
 }
 
 
@@ -504,6 +570,7 @@ Obj FuncREM_SET (
     UInt                len;            /* logical length of the list      */
     UInt                pos;            /* position                        */
     UInt                i;              /* loop variable                   */
+    Obj                 *ptr;
 
     /* check the arguments                                                 */
     while ( ! IsSet(set) || ! IS_MUTABLE_OBJ(set) ) {
@@ -519,8 +586,12 @@ Obj FuncREM_SET (
 
     /* remove the element from the set if it is there                      */
     if ( pos <= len && EQ( ELM_PLIST(set,pos), obj ) ) {
+
+        ptr = PTR_BAG(set) + pos;
         for ( i = pos; i < len; i++ ) {
-            SET_ELM_PLIST( set, i, ELM_PLIST(set,i+1) );
+	    *ptr = *(ptr+1);
+	    ptr ++;
+	    /*             SET_ELM_PLIST( set, i, ELM_PLIST(set,i+1) ); */
         }
         SET_ELM_PLIST( set, len, 0 );
         SET_LEN_PLIST( set, len-1 );
@@ -557,8 +628,10 @@ Obj FuncREM_SET (
 **
 **  'TmpUnion' is the global  bag that serves as  temporary bag for the union.
 **  It is created in 'InitSet' and is resized when necessary.
+**
+**   This doesn't work, because UniteSet calls EQ, which can result in a nested call to
+** UniteSet, which must accordingly be re-entrant.
 */
-Obj TmpUnion;
 
 Obj FuncUNITE_SET (
     Obj                 self,
@@ -572,6 +645,7 @@ Obj FuncUNITE_SET (
     UInt                i2;             /* index into right set            */
     Obj                 e1;             /* element of left  set            */
     Obj                 e2;             /* element of right set            */
+    Obj                 TmpUnion;
 
     /* check the arguments                                                 */
     while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
@@ -580,18 +654,19 @@ Obj FuncUNITE_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can return a set for <set1>" );
     }
-    while ( ! IS_LIST(set2) ) {
+    while ( ! IS_SMALL_LIST(set2) ) {
         set2 = ErrorReturnObj(
-            "UniteSet: <set2> must be a list (not a %s)",
+            "UniteSet: <set2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set2), 0L,
-            "you can return a list for <set2>" );
+            "you can return a small list for <set2>" );
     }
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );
     len2 = LEN_PLIST( set2 );
-    GROW_PLIST( TmpUnion, len1 + len2 );
+    TmpUnion = NEW_PLIST(T_PLIST,len1+len2);
+    /*     GROW_PLIST( TmpUnion, len1 + len2 );*/
     lenr = 0;
     i1 = 1;
     i2 = 1;
@@ -635,10 +710,20 @@ Obj FuncUNITE_SET (
     }
 
     /* fix up the type of the result                                       */
-    CLEAR_FILTS_LIST(set1);
     if ( 0 == LEN_PLIST(set1) ) {
         RetypeBag( set1, MUTABLE_TNUM(TNUM_OBJ(set2)) );
+    } else if ( 0 != LEN_PLIST(set2)) {
+      if (HAS_FILT_LIST(set1, FN_IS_HOMOG))
+	if( !HAS_FILT_LIST(set2, FN_IS_HOMOG))
+	  RESET_FILT_LIST(set1, FN_IS_HOMOG);
+	else if (!SyInitializing &&
+		 FAMILY_OBJ(ELM_PLIST(set1,1)) != FAMILY_OBJ(ELM_PLIST(set2,1)))
+	  {
+	    RetypeBag(set1, T_PLIST_DENSE_NHOM);
+	  }
     }
+
+    SET_FILT_LIST(set1, FN_IS_SSORT);
 
     /* resize the result and copy back from the union                      */
     GROW_PLIST(    set1, lenr );
@@ -688,11 +773,11 @@ Obj FuncINTER_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can return a set for <set1>" );
     }
-    while ( ! IS_LIST(set2) ) {
+    while ( ! IS_SMALL_LIST(set2) ) {
         set2 = ErrorReturnObj(
-            "IntersectSet: <set2> must be a list (not a %s)",
+            "IntersectSet: <set2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set2), 0L,
-            "you can return a list for <set2>" );
+            "you can return a small list for <set2>" );
     }
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
@@ -726,9 +811,28 @@ Obj FuncINTER_SET (
 
     /* fix up the type of the result                                       */
     if ( lenr == 0 ) {
-        CLEAR_FILTS_LIST(set1);
-        SET_FILT_LIST( set1, FN_IS_EMPTY );
+      CLEAR_FILTS_LIST(set1);
+      SET_FILT_LIST( set1, FN_IS_EMPTY );
     }
+    else if ( lenr == 1) {
+      if (TNUM_OBJ(ELM_PLIST(set1,1)) <= T_CYC)
+	RetypeBag(set1, T_PLIST_CYC_SSORT);
+      else
+	RetypeBag(set1, T_PLIST_HOM_SSORT);
+    }
+    else
+      {
+	if ( TNUM_OBJ(set2) >= T_PLIST_CYC )
+	  RetypeBag(set1, MUTABLE_TNUM( TNUM_OBJ(set2)));
+	else
+	  {
+	    RESET_FILT_LIST(set1, FN_IS_NHOMOG);
+	    if ( HAS_FILT_LIST( set2, FN_IS_HOMOG )) {
+	      SET_FILT_LIST(set1, FN_IS_HOMOG );
+	      SET_FILT_LIST(set1, FN_IS_SSORT );
+	    }
+	  }
+      }
 
     /* return void, this is a procedure                                    */
     return (Obj)0;
@@ -769,11 +873,11 @@ Obj FuncSUBTR_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can return a set for <set1>" );
     }
-    while ( ! IS_LIST(set2) ) {
+    while ( ! IS_SMALL_LIST(set2) ) {
         set2 = ErrorReturnObj(
-            "SubtractSet: <set2> must be a list (not a %s)",
+            "SubtractSet: <set2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set2), 0L,
-            "you can return a list for <set2>" );
+            "you can return a small list for <set2>" );
     }
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
@@ -816,6 +920,14 @@ Obj FuncSUBTR_SET (
         CLEAR_FILTS_LIST(set1);
         SET_FILT_LIST( set1, FN_IS_EMPTY );
     }
+    else if ( lenr == 1) {
+      if (TNUM_OBJ(ELM_PLIST(set1,1)) <= T_CYC)
+	RetypeBag(set1, T_PLIST_CYC_SSORT);
+      else
+	RetypeBag(set1, T_PLIST_HOM_SSORT);
+    }
+    else
+      RESET_FILT_LIST(set1, FN_IS_NHOMOG);
 
     /* return void, this is a procedure                                    */
     return (Obj)0;
@@ -874,7 +986,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* create the temporary union bag                                      */
-    InitGlobalBag( &TmpUnion, "src/set.c:TmpUnion" );
+  /*    InitGlobalBag( &TmpUnion, "src/set.c:TmpUnion" ); */
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -892,8 +1004,8 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* create the temporary union bag                                      */
-    TmpUnion = NEW_PLIST( T_PLIST, 1024 );
-    SET_LEN_PLIST( TmpUnion, 1024 );
+  /*     TmpUnion = NEW_PLIST( T_PLIST, 1024 );
+	 SET_LEN_PLIST( TmpUnion, 1024 ); */
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

@@ -60,11 +60,17 @@ local u,cs,ncs,n,rep,i,au,hom,cl,co;
   Assert(1,IsNormal(G,Centre(G)));
   Print("conjugacy classes\n");
   cl:=ConjugacyClasses(G);
+  Assert(1,Sum(List(cl,Size))=Size(G));
   for i in cl do
     Assert(1,Centralizer(i)=Centralizer(G,Representative(i)));
     Assert(1,Size(i)=Index(G,Centralizer(i)));
     Assert(1,Length(Orbit(Centralizer(i),Representative(i)))=1);
   od;
+
+  Print("rational classes\n");
+  cl:=RationalClasses(G);
+  Assert(1,Sum(List(cl,Size))=Size(G));
+
   if Length(AbelianInvariants(CommutatorFactorGroup(G)))<=3 then
     Print("automorphism group\n");
     au:=AutomorphismGroup(G);

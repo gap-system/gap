@@ -22,6 +22,8 @@ Revision.addcoset_gd :=
 ##  The additive coset and its additively acting domain lie in the same
 ##  family.
 ##
+##  Note that additive cosets for non-commutative addition are not supported.
+##
 DeclareCategory( "IsAdditiveCoset",
     IsExtASet and IsAssociativeAOpESum and IsTrivialAOpEZero );
 
@@ -30,13 +32,10 @@ DeclareCategory( "IsAdditiveCoset",
 ##
 #O  AdditiveCoset( <A>, <a> )
 ##
-DeclareOperation( "AdditiveCoset",
-    [ IsAdditiveGroup, IsAdditiveElement ] );
+DeclareOperation( "AdditiveCoset", [ IsAdditiveGroup, IsAdditiveElement ] );
 
 
 #############################################################################
 ##
-#E  addcoset.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

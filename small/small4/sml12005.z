@@ -1,0 +1,11 @@
+#############################################################################
+##
+#W  sml12005.z             GAP library of groups           Hans Ulrich Besche
+##                                               Bettina Eick, Eamonn O'Brien
+##
+Revision.sml12005_z :=
+    "@(#)$Id$";
+
+SMALL_GROUP_LIB[ 12005 ].pnil := rec( syl :=
+[ 15 ], oper :=
+[ 29230872731432 ] );

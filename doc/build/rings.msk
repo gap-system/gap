@@ -8,49 +8,233 @@
 %%
 \Chapter{Rings}
 
+This chapter deals with domains that are additive groups closed under
+multiplication `\*'.
+Such a domain, if `\*' and `+' are distributive,
+is called a *ring* in {\GAP}.
+Each division ring, field (see~"Fields and Division Rings"),
+or algebra (see~"Algebras") is a ring,
+important examples are the integers (see~"Integers") and matrix rings.
+%(see~"???").
+
+% residue class rings ?
+
+In the case of a *ring-with-one*, additional multiplicative structure is
+present, see~"IsRingWithOne".
+
+Several functions for ring elements, such as `IsPrime' ("IsPrime") and
+`Factors' ("Factors"), are defined only relative to a ring <R>,
+which can be entered as an optional argument;
+if <R> is omitted then a *default ring* is formed from the ring elements
+given as arguments, see~"DefaultRing".
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Generating Rings}
 
 \Declaration{IsRing}
 
 \Declaration{Ring}
+
+\beginexample
+gap> Ring( 2, E(4) );
+<ring with 2 generators>
+\endexample
+
 \Declaration{DefaultRing}
 
+\beginexample
+gap> DefaultRing( 2, E(4) );
+GaussianIntegers
+\endexample
+
 \Declaration{RingByGenerators}
+
+\beginexample
+gap> RingByGenerators([ 2, E(4) ]); 
+<ring with 2 generators>
+\endexample
+
 \Declaration{DefaultRingByGenerators}
+
+\beginexample
+gap> DefaultRingByGenerators([ 2, E(4) ]);
+GaussianIntegers
+\endexample
+
 
 \Declaration{GeneratorsOfRing}
 
-\Declaration{AsRing}
+\beginexample
+gap> R:=Ring( 2, 1/2 );            
+<ring with 2 generators>
+gap> GeneratorsOfRing( R );
+[ 2, 1/2 ]
+\endexample
+
+%W \Declaration{AsRing}
+
+
 
 \Declaration{Subring}
 
+\beginexample
+gap> R:= Integers;
+Integers
+gap> S:= Subring( R, [ 2, 3 ] );
+<ring with 2 generators>
+gap> Parent( S );
+Integers
+\endexample
+
 \Declaration{ClosureRing}
 
+\beginexample
+gap> ClosureRing( Integers, E(4) );
+<ring-with-one, with 2 generators>
+\endexample
+
 \Declaration{Quotient}
+
+\beginexample
+gap> Quotient( 2, 3 );
+fail
+gap> Quotient( 6, 3 );
+2
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ideals in Rings}
+
+\FileHeader[1]{ideal}
+
+\Declaration{TwoSidedIdeal}
+
+\beginexample
+gap> R:= Integers;;
+gap> I:= Ideal( R, [ 2 ] );
+<two-sided ideal in Integers, (1 generators)>
+\endexample
+
+\Declaration{TwoSidedIdealNC}
+
+\Declaration{IsTwoSidedIdeal}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 3 );
+( Rationals^[ 3, 3 ] )
+gap> I:= Ideal( A, [ Random( A ) ] );
+<two-sided ideal in ( Rationals^[ 3, 3 ] ), (1 generators)>
+gap> IsTwoSidedIdeal( A, I );
+true
+\endexample
+
+\Declaration{TwoSidedIdealByGenerators}
+
+\Declaration{LeftIdealByGenerators}
+
+\Declaration{RightIdealByGenerators}
+
+\Declaration{GeneratorsOfTwoSidedIdeal}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 3 );;
+gap> I:= Ideal( A, [ One( A ) ] );;   
+gap> GeneratorsOfIdeal( I );
+[ [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] ]
+\endexample
+
+\Declaration{GeneratorsOfLeftIdeal}
+
+\Declaration{GeneratorsOfRightIdeal}
+
+\Declaration{LeftActingRingOfIdeal}
+
+\Declaration{AsLeftIdeal}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 3 );;
+gap> B:= DirectSumOfAlgebras( A, A );
+<algebra over Rationals, with 6 generators>
+gap> C:= Subalgebra( B, Basis( B ){[1..9]} );
+<algebra over Rationals, with 9 generators>
+gap> I:= AsTwoSidedIdeal( B, C );
+<two-sided ideal in <algebra of dimension 18 over Rationals>, (9 generators)>
+\endexample
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Rings With One}
 
 \Declaration{IsRingWithOne}
-\Declaration{One}
+
 \Declaration{RingWithOne}
+
+\beginexample
+gap> RingWithOne( [ 4, 6 ] );  
+<ring-with-one, with 2 generators>
+\endexample
+
 \Declaration{RingWithOneByGenerators}
+\Declaration{GeneratorsOfRingWithOne}
+
+\beginexample
+gap> R:= RingWithOne( [ 4, 6 ] ); 
+<ring-with-one, with 2 generators>
+gap> GeneratorsOfRingWithOne( R );
+[ 4, 6 ]
+\endexample
+
 \Declaration{SubringWithOne}
+
+\beginexample
+gap> R:= SubringWithOne( Integers, [ 4, 6 ] );
+<ring-with-one, with 2 generators>
+gap> Parent( R );
+Integers
+\endexample
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Properties of Rings}
 
-\Declaration{IsCommutative}
 \Declaration{IsIntegralRing}
+
+\beginexample
+gap> IsIntegralRing( Integers );
+true
+\endexample
+
 \Declaration{IsUniqueFactorizationRing}
+
+\beginexample
+gap> IsUniqueFactorizationRing( PolynomialRing( Rationals, 1 ) );
+true
+\endexample
+
 \Declaration{IsLDistributive}
 \Declaration{IsRDistributive}
 \Declaration{IsDistributive}
+
+\beginexample
+gap> IsDistributive( Integers );
+true
+\endexample
+
+
 \Declaration{IsAnticommutative}
+
 \Declaration{IsZeroSquaredRing}
 
 \Declaration{IsJacobianRing}
+
+\beginexample
+gap> L:= FullMatrixLieAlgebra( GF( 5 ), 7 );
+<Lie algebra over GF(5), with 13 generators>
+gap> IsJacobianRing( L );
+true
+\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,36 +242,135 @@
 
 \Declaration{IsUnit}
 \Declaration{Units}
+
+\beginexample
+gap> Units( GaussianIntegers );
+[ -1, 1, -E(4), E(4) ]
+gap> Units( GF( 16 ) );        
+<group with 1 generators>
+\endexample
+
 \Declaration{IsAssociated}
 \Declaration{Associates}
+
+\beginexample
+gap> Associates( Integers, 2 );
+[ -2, 2 ]
+gap> Associates( GaussianIntegers, 2 );
+[ -2, 2, -2*E(4), 2*E(4) ]
+\endexample
+
 \Declaration{StandardAssociate}
-\Declaration{IsIrreducible}
+
+\beginexample
+gap> x:= Indeterminate( Rationals, "x" );;
+gap> StandardAssociate( -x^2-x+1 );
+-1+x+x^2
+\endexample
+
+\Declaration{IsIrreducibleRingElement}
+
+\beginexample
+gap> IsIrreducibleRingElement( Integers, 2 ); 
+true
+\endexample
+
+
 \Declaration{IsPrime}
 \Declaration{Factors}
+
+\beginexample
+gap> x:= Indeterminate( Rationals, "x" );;
+gap> Factors( x^3+3*x^2+3*x+1 );
+[ 1+x, 1+x, 1+x ]
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Euclidean Rings}
 
 \Declaration{IsEuclideanRing}
+
+\beginexample
+gap> IsEuclideanRing( GaussianIntegers );
+true
+\endexample
+
 \Declaration{EuclideanDegree}
+
+\beginexample
+gap> EuclideanDegree( GaussianIntegers, 3 );
+9
+\endexample
+
 \Declaration{EuclideanQuotient}
+
+\beginexample
+gap> EuclideanQuotient( 8, 3 );
+2
+\endexample
+
 \Declaration{EuclideanRemainder}
+
+\beginexample
+gap> EuclideanRemainder( 8, 3 );
+2
+\endexample
+
 \Declaration{QuotientRemainder}
+
+\beginexample
+gap> QuotientRemainder( GaussianIntegers, 8, 3 ); 
+[ 3, -1 ]
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Gcd and Lcm}
 
 \Declaration{Gcd}
+
+\beginexample
+gap> Gcd( Integers, [ 10, 15 ] );
+5
+\endexample
+
 \Declaration{GcdOp}
 \Declaration{GcdRepresentation}
+
+\beginexample
+gap> x:= Indeterminate( Rationals, "x" );;      
+gap> GcdRepresentation( x^2+1, x^3+1 );   
+[ 1/2-1/2*x-1/2*x^2, 1/2+1/2*x ]
+\endexample
+
 \Declaration{GcdRepresentationOp}
 \Declaration{Lcm}
+
 \Declaration{LcmOp}
 
-
 \Declaration{QuotientMod}
+
+\beginexample
+gap> QuotientMod( 7, 2, 3 );
+2
+\endexample
+
 \Declaration{PowerMod}
+
+\beginexample
+gap> PowerMod( 12, 100000, 7 );
+2
+\endexample
 
 
 \Declaration{InterpolatedPolynomial}
+
+\beginexample
+gap>  InterpolatedPolynomial( Integers, [ 1, 2, 3 ], [ 5, 7, 0 ] );
+-6+31/2*x-9/2*x^2
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
 

@@ -53,7 +53,10 @@ InstallMethod( ViewObj,
     function( M )
     if IsEmpty( GeneratorsOfMagmaWithOne( M ) ) then
       Print( "<trivial monoid>" );
-    else
+    elif Length(GeneratorsOfMagmaWithOne(M)) = 1 then
+      Print( "<monoid with ", Length( GeneratorsOfMagmaWithOne( M ) ),
+             " generator>" );
+	else
       Print( "<monoid with ", Length( GeneratorsOfMagmaWithOne( M ) ),
              " generators>" );
     fi;
@@ -107,6 +110,10 @@ InstallOtherMethod( MonoidByGenerators,
     return M;
     end );
 
+InstallImmediateMethod( GeneratorsOfSemigroup,
+    IsMonoid and HasGeneratorsOfMonoid and IsAttributeStoringRep, 0,
+    M->Union(GeneratorsOfMonoid(M), [One(M)]));
+
 
 #############################################################################
 ##
@@ -125,19 +132,19 @@ InstallMethod( AsMonoid,
     function ( D )
     local   M,  L;
 
-    D := AsListSorted( D );
+    D := AsSSortedList( D );
     L := ShallowCopy( D );
     M := TrivialSubmagmaWithOne( MonoidByGenerators( D ) );
-    SubtractSet( L, AsListSorted( M ) );
+    SubtractSet( L, AsSSortedList( M ) );
     while not IsEmpty(L)  do
         M := ClosureMagmaDefault( M, L[1] );
-        SubtractSet( L, AsListSorted( M ) );
+        SubtractSet( L, AsSSortedList( M ) );
     od;
-    if Length( AsListSorted( M ) ) <> Length( D )  then
+    if Length( AsSSortedList( M ) ) <> Length( D )  then
         return fail;
     fi;
     M := MonoidByGenerators( GeneratorsOfMonoid( M ), One( D[1] ) );
-    SetAsListSorted( M, D );
+    SetAsSSortedList( M, D );
     SetIsFinite( M, true );
     SetSize( M, Length( D ) );
 
@@ -148,18 +155,28 @@ InstallMethod( AsMonoid,
 
 #############################################################################
 ##
-#M  AsSubmonoid( <M>, <U> )
+#M  AsSubmonoid( <G>, <U> )
 ##
 InstallMethod( AsSubmonoid,
-    "generic method for monoids",
+    "generic method for a domain and a collection",
     IsIdenticalObj,
-    [ IsMonoid, IsMonoid ], 0,
-    function( M, U )
+    [ IsDomain, IsCollection ], 0,
+    function( G, U )
     local S;
-    if not IsSubset( M, U ) then
+    if not IsSubset( G, U ) then
       return fail;
     fi;
-    S:= SubmonoidNC( M, GeneratorsOfMonoid( U ) );
+    if IsMagmaWithOne( U ) then
+      if not IsAssociative( U ) then
+        return fail;
+      fi;
+      S:= SubmonoidNC( G, GeneratorsOfMagmaWithOne( U ) );
+    else
+      S:= SubmagmaWithOneNC( G, AsList( U ) );
+      if not IsAssociative( S ) then
+        return fail;
+      fi;
+    fi;
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );
     return S;
@@ -189,7 +206,7 @@ InstallGlobalFunction( Monoid, function( arg )
     if Length( arg ) = 1 and IsMatrix( arg[1] ) then
       return MonoidByGenerators( [ arg[1] ] );
 
-    # special case for matrices, because they may look like lists
+    # special case for matrices, because they look like lists
     elif Length( arg ) = 2 and IsMatrix( arg[1] ) then
       return MonoidByGenerators( arg );
 
@@ -214,5 +231,5 @@ end );
 
 #############################################################################
 ##
-#E  monoid.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

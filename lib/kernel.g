@@ -8,6 +8,8 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains function that should be in the kernel of GAP.
+##  Actually it now just contains some utilities needed very early in
+##  the bootstrap
 ##
 Revision.kernel_g :=
     "@(#)$Id$";
@@ -15,40 +17,12 @@ Revision.kernel_g :=
 
 #############################################################################
 ##
-
 #F  ADD_LIST_DEFAULT( <list>, <obj> ) . . . . . .  add an element to the list
 ##
 ADD_LIST_DEFAULT := function ( list, obj )
     list[ LEN_LIST(list)+1 ] := obj;
 end;
 
-
-#############################################################################
-##
-#F  RANDOM_LIST( <list> ) . . . . . . . . return a random element from a list
-##
-R_N := 1;
-R_X := [];
-
-RANDOM_LIST := function ( list )
-    R_N := R_N mod 55 + 1;
-    R_X[R_N] := (R_X[R_N] + R_X[(R_N+30) mod 55+1]) mod 2^28;
-    return list[ QUO_INT( R_X[R_N] * LEN_LIST(list), 2^28 ) + 1 ];
-end;
-
-RANDOM_SEED := function ( n )
-    local  i;
-    R_N := 1;  R_X := [ n ];
-    for i  in [2..55]  do
-        R_X[i] := (1664525 * R_X[i-1] + 1) mod 2^28;
-    od;
-    for i  in [1..99]  do
-        R_N := R_N mod 55 + 1;
-        R_X[R_N] := (R_X[R_N] + R_X[(R_N+30) mod 55+1]) mod 2^28;
-    od;
-end;
-
-if R_X = []  then RANDOM_SEED( 1 );  fi;
 
 
 #############################################################################
@@ -70,7 +44,11 @@ end;
 ##
 #F  STRING_INT( <int> ) . . . . . . . . . . . . . . . .  string of an integer
 ##
-STRING_INT := function ( n )
+##  This function is used as a fall-back by the kernel for integers so 
+##  large that the kernel buffer normally used is not big enough. Most
+##  integers are printed by the faster kernel code.
+##
+STRING_INT_DEFAULT := function ( n )
     local  str,  num,  digits;
 
     # construct the string without sign
@@ -101,7 +79,7 @@ end;
 Ordinal := function ( n )
     local   str;
 
-    str := STRING_INT(n);
+    str := SHALLOW_COPY_OBJ(STRING_INT(n));
     if   n mod 10 = 1  and n mod 100 <> 11  then
         APPEND_LIST_INTR( str, "st" );
     elif n mod 10 = 2  and n mod 100 <> 12  then
@@ -117,7 +95,6 @@ end;
 
 ############################################################################
 ##
-
 #F  REPLACE_SUBSTRING( <string>, <old>, <new> ) . . .  replace <old> by <new>
 ##
 REPLACE_SUBSTRING := function( string, old, new )
@@ -214,7 +191,12 @@ end;
 
 #############################################################################
 ##
-
-#E  kernel.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#V  POST_RESTORE_FUNCS
 ##
+POST_RESTORE_FUNCS := [];
+
+
+#############################################################################
+##
+#E
 

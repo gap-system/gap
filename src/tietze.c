@@ -670,7 +670,7 @@ Obj FuncTzOccurrences (
     Int                 min;            /* word that has this minimum      */
 
     /* get and check arguments                                             */
-    if ( ! IS_LIST(args) || 2 < LEN_LIST(args) || LEN_LIST(args) < 1 ) {
+    if ( ! IS_SMALL_LIST(args) || 2 < LEN_LIST(args) || LEN_LIST(args) < 1 ) {
         ErrorQuit( "usage: TzOccurrences( <Tietze stack>[, <gen no.> ] )",
                    0L, 0L );
         return 0;
@@ -870,7 +870,7 @@ Obj FuncTzOccurrencesPairs (
     Int                 j1, j2, r;      /* loop variables                  */
 
     /* get and check arguments                                             */
-    if ( ! IS_LIST(args) || 3 < LEN_LIST(args) || LEN_LIST(args) < 2 ) {
+    if ( ! IS_SMALL_LIST(args) || 3 < LEN_LIST(args) || LEN_LIST(args) < 2 ) {
         ErrorQuit(
           "usage: TzOccurrencesPairs( <Tietze stack>, <gen>[, <list>] )",
           0L, 0L );
@@ -1072,7 +1072,7 @@ Obj FuncTzSearchC (
     Int                 equal;          /* flag                            */
 
     /* get and check arguments                                             */
-    if ( ! IS_LIST(args) || 4 < LEN_LIST(args) || LEN_LIST(args) < 3 ) {
+    if ( ! IS_SMALL_LIST(args) || 4 < LEN_LIST(args) || LEN_LIST(args) < 3 ) {
         ErrorQuit(
           "usage: TzSearchC( <Tietze stack>, <pos1>, <pos2>[, <equal>] )",
           0L, 0L );

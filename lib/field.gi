@@ -20,16 +20,15 @@ Revision.field_gi :=
 ##
 InstallOtherMethod( DivisionRingByGenerators,
     "for a collection",
-    true,
-    [ IsCollection ], 0,
-    coll -> FieldByGenerators(
+    [ IsCollection ],
+    coll -> DivisionRingByGenerators(
         FieldOverItselfByGenerators( [ One( Representative( coll ) ) ] ),
         coll ) );
 
 InstallMethod( DivisionRingByGenerators,
-    "for a field and a collection",
+    "for a division ring, and a collection",
     IsIdenticalObj,
-    [ IsDivisionRing, IsCollection ] , 0,
+    [ IsDivisionRing, IsCollection ],
     function( F, gens )
     local D;
     D:= Objectify( NewType( FamilyObj( gens ),
@@ -47,8 +46,7 @@ InstallMethod( DivisionRingByGenerators,
 ##
 InstallMethod( FieldOverItselfByGenerators,
     "for a collection",
-    true,
-    [ IsCollection ], 0,
+    [ IsCollection ],
     function( gens )
     local F;
     if IsEmpty( gens ) then
@@ -69,8 +67,7 @@ InstallMethod( FieldOverItselfByGenerators,
 ##
 InstallMethod( DefaultFieldByGenerators,
     "for a collection",
-    true,
-    [ IsCollection ], 0,
+    [ IsCollection ],
     DivisionRingByGenerators );
 
 
@@ -144,7 +141,7 @@ InstallGlobalFunction( Subfield, function( F, gens )
     if IsEmpty( gens ) then
       return PrimeField( F );
     elif     IsHomogeneousList( gens )
-         and IsIdenticalObj( ElementsFamily( FamilyObj(F) ), FamilyObj( gens ) )
+         and IsIdenticalObj( FamilyObj( F ), FamilyObj( gens ) )
          and ForAll( gens, g -> g in F ) then
       S:= FieldByGenerators( LeftActingDomain( F ), gens );
       SetParent( S, F );
@@ -171,12 +168,73 @@ end );
 
 #############################################################################
 ##
+#M  ClosureDivisionRing( <D>, <d> ) . . . . . . . . . closure with an element
+##
+InstallMethod( ClosureDivisionRing,
+    "for a division ring and a scalar",
+    IsCollsElms,
+    [ IsDivisionRing, IsScalar ],
+    function( D, d )
+
+    # if possible test if the element lies in the division ring already,
+    if     HasGeneratorsOfDivisionRing( D )
+       and d in GeneratorsOfDivisionRing( D ) then
+      return D;
+
+    # otherwise make a new division ring
+    else
+      return DivisionRingByGenerators( LeftActingDomain( D ),
+                 Concatenation( GeneratorsOfDivisionRing( D ), [ d ] ) );
+    fi;
+    end );
+
+
+InstallMethod( ClosureDivisionRing,
+    "for a division ring containing the whole family, and a scalar",
+    IsCollsElms,
+    [ IsDivisionRing and IsWholeFamily, IsScalar ],
+    SUM_FLAGS, # we can't be better than this
+    function( D, d )
+    return D;
+    end );
+
+
+#############################################################################
+##
+#M  ClosureDivisionRing( <D>, <C> ) . . . . . . . .  closure of division ring
+##
+InstallMethod( ClosureDivisionRing,
+    "for division ring and collection of elements",
+    IsIdenticalObj,
+    [ IsDivisionRing, IsCollection ],
+    function( D, C )
+    local   d;          # one generator
+
+    if IsDivisionRing( C ) then
+      if not IsSubset( LeftActingDomain( D ), LeftActingDomain( C ) ) then
+        C:= AsDivisionRing( Intersection( LeftActingDomain( C ),
+                                          LeftActingDomain( D ) ), C );
+      fi;
+      C:= GeneratorsOfDivisionRing( C );
+    elif not IsList( C ) then
+      TryNextMethod();
+    fi;
+
+    for d in C do
+      D:= ClosureDivisionRing( D, d );
+    od;
+
+    return D;
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <F> )  . . . . . . . . . . . . . . . . . . . . . .  view a field
 ##
 InstallMethod( ViewObj,
     "for a field",
-    true,
-    [ IsField ], 0,
+    [ IsField ],
     function( F )
     if HasSize( F ) and IsInt( Size( F ) ) then
       Print( "<field of size ", Size( F ), ">" );
@@ -192,8 +250,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for a field with known generators",
-    true,
-    [ IsField and HasGeneratorsOfField ], 0,
+    [ IsField and HasGeneratorsOfField ],
     function( F )
     if IsPrimeField( LeftActingDomain( F ) ) then
       Print( "Field( ", GeneratorsOfField( F ), " )" );
@@ -208,8 +265,7 @@ InstallMethod( PrintObj,
 
 InstallMethod( PrintObj,
     "for a field",
-    true,
-    [ IsField ], 0,
+    [ IsField ],
     function( F )
     if IsPrimeField( LeftActingDomain( F ) ) then
       Print( "Field( ... )" );
@@ -223,12 +279,42 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  IsTrivial( <F> )  . . . . . . . . . . . . . . . . . . for a division ring
+##
+InstallMethod( IsTrivial,
+    "for a division ring",
+    [ IsDivisionRing ],
+    ReturnFalse );
+
+
+#############################################################################
+##
+#M  PrimeField( <F> ) . . . . . . . . . . . . . . . . . . for a division ring
+##
+InstallMethod( PrimeField,
+    "for a division ring",
+    [ IsDivisionRing ],
+    function( F )
+    local P;
+    P:= Field( One( F ) );
+    UseSubsetRelation( F, P );
+    SetIsPrimeField( P, true );
+    return P;
+    end );
+
+InstallMethod( PrimeField,
+    "for a prime field",
+    [ IsField and IsPrimeField ],
+    IdFunc );
+
+
+#############################################################################
+##
 #M  IsPrimeField( <F> ) . . . . . . . . . . . . . . . . . for a division ring
 ##
 InstallMethod( IsPrimeField,
     "for a division ring",
-    true,
-    [ IsDivisionRing ], 0,
+    [ IsDivisionRing ],
     F -> DegreeOverPrimeField( F ) = 1 );
 
 
@@ -238,8 +324,7 @@ InstallMethod( IsPrimeField,
 ##
 InstallMethod( IsNumberField,
     "for a field",
-    true,
-    [ IsField ], 0,
+    [ IsField ],
     F -> Characteristic( F ) = 0 and IsInt( DegreeOverPrimeField( F ) ) );
 
 
@@ -249,8 +334,7 @@ InstallMethod( IsNumberField,
 ##
 InstallMethod( IsAbelianNumberField,
     "for a field",
-    true,
-    [ IsField ], 0,
+    [ IsField ],
     F -> IsNumberField( F ) and IsCommutative( GaloisGroup(
                                          AsField( PrimeField( F ), F ) ) ) );
 
@@ -261,8 +345,7 @@ InstallMethod( IsAbelianNumberField,
 ##
 InstallMethod( IsCyclotomicField,
     "for a field",
-    true,
-    [ IsField ], 0,
+    [ IsField ],
     F ->     IsAbelianNumberField( F )
          and Conductor( F ) = DegreeOverPrimeField( F ) );
 
@@ -273,8 +356,7 @@ InstallMethod( IsCyclotomicField,
 ##
 InstallMethod( IsNormalBasis,
     "for a basis of a field",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     function( B )
     local vectors;
     if not IsField( UnderlyingLeftModule( B ) ) then
@@ -292,8 +374,7 @@ InstallMethod( IsNormalBasis,
 ##
 InstallMethod( GeneratorsOfDivisionRing,
     "for a prime field",
-    true,
-    [ IsField and IsPrimeField ], 0,
+    [ IsField and IsPrimeField ],
     F -> [ One( F ) ] );
 
 
@@ -307,44 +388,64 @@ InstallImmediateMethod( DegreeOverPrimeField, IsPrimeField, 20, F -> 1 );
 #############################################################################
 ##
 #M  NormalBase( <F> ) . . . . . . . . . .  for a field in characteristic zero
+#M  NormalBase( <F>, <elm> )  . . . . . .  for a field in characteristic zero
 ##
-##  (uses the algorithm given in E. Artin, Galoissche Theorie, p. 65 f.).
+##  For fields in characteristic zero, a normal basis is computed
+##  as described on p.~65~f.~in~\cite{Art68}.
+##  Let $\Phi$ denote the polynomial of the field extension $L/L^{\prime}$,
+##  $\Phi^{\prime}$ its derivative and $\alpha$ one of its roots;
+##  then for all except finitely many elements $z \in L^{\prime}$,
+##  the conjugates of $\frac{\Phi(z)}{(z-\alpha)\cdot\Phi^{\prime}(\alpha)}$
+##  form a normal basis of $L/L^{\prime}$.
+##
+##  When `NormalBase' is called for a field <F> in characteristic zero and
+##  an element <elm>,
+##  $z$ is chosen as <elm>, $<elm> + 1$, $<elm> + 2$, \ldots,
+##  until a normal basis is found.
+##  The default of <elm> is the identity of <F>.
 ##
 InstallMethod( NormalBase,
-    "for a field in characteristic zero",
-    true,
-    [ IsField ], 0,
-    function( F )
+    "for a field (in characteristic zero)",
+    [ IsField ],
+    F -> NormalBase( F, One( F ) ) );
 
-    local alpha, poly, normal, i, val;
+InstallMethod( NormalBase,
+    "for a field (in characteristic zero), and a scalar",
+    [ IsField, IsScalar ],
+    function( F, z )
 
+    local alpha, poly, i, val, normal;
+
+    # Check the arguments.
     if Characteristic( F ) <> 0 then
       TryNextMethod();
+    elif not z in F then
+      Error( "<z> must be an element in <F>" );
     fi;
 
-    # get a primitive element 'alpha'
+    # Get a primitive element `alpha'.
     alpha:= PrimitiveElement( F );
 
-    # the polynomial
-    # $\prod_{\sigma\in 'Gal( alpha )'\setminus \{1\} } (x-\sigma('alpha') )
-    # for the primitive element 'alpha'
+    # Construct the polynomial
+    # $\prod_{\sigma\in `Gal( alpha )'\setminus \{1\} } (x-\sigma(`alpha') )
+    # for the primitive element `alpha'.
     poly:= [ 1 ];
     for i in Difference( Conjugates( F, alpha ), [ alpha ] ) do
-      poly:= ProductPol( poly, [ -i, 1 ] );
+      poly:= ProductCoeffs( poly, [ -i, 1 ] );
 #T ?
     od;
 
-    # for the denominator, eval 'poly' at 'a'
+    # For the denominator, evaluate `poly' at `a'.
     val:= Inverse( ValuePol( poly, alpha ) );
 
-    # there are only finitely many values 'x' in the subfield for which
-    # 'poly(x) \* val' is not an element of a normal base.
-    i:= 1;
+    # There are only finitely many values `x' in the subfield
+    # for which `poly(x) * val' is not an element of a normal basis.
     repeat
-      normal:= Conjugates( F, ValuePol( poly, i ) * val );
-      i:= i + 1;
+      normal:= Conjugates( F, ValuePol( poly, z ) * val );
+      z:= z + 1;
     until RankMat( List( normal, COEFFS_CYC ) ) = Dimension( F );
 
+    # Return the result.
     return normal;
     end );
 
@@ -355,8 +456,7 @@ InstallMethod( NormalBase,
 ##
 InstallMethod( PrimitiveElement,
     "for a division ring",
-    true,
-    [ IsDivisionRing ], 0,
+    [ IsDivisionRing ],
     function( D )
     D:= GeneratorsOfDivisionRing( D );
     if Length( D ) = 1 then
@@ -373,8 +473,7 @@ InstallMethod( PrimitiveElement,
 ##
 InstallMethod( Representative,
     "for a division ring with known generators",
-    true,
-    [ IsDivisionRing and HasGeneratorsOfDivisionRing ], 0,
+    [ IsDivisionRing and HasGeneratorsOfDivisionRing ],
     RepresentativeFromGenerators( GeneratorsOfDivisionRing ) );
 
 
@@ -384,8 +483,7 @@ InstallMethod( Representative,
 ##
 InstallMethod( GeneratorsOfRing,
     "for a division ring with known generators",
-    true,
-    [ IsDivisionRing and HasGeneratorsOfDivisionRing ], 0,
+    [ IsDivisionRing and HasGeneratorsOfDivisionRing ],
     F -> Concatenation( GeneratorsOfDivisionRing( F ),
                         [ One( F ) ],
                         List( GeneratorsOfDivisionRing( F ), Inverse ) ) );
@@ -397,8 +495,7 @@ InstallMethod( GeneratorsOfRing,
 ##
 InstallMethod( GeneratorsOfRingWithOne,
     "for a division ring with known generators",
-    true,
-    [ IsDivisionRing and HasGeneratorsOfDivisionRing ], 0,
+    [ IsDivisionRing and HasGeneratorsOfDivisionRing ],
     F -> Concatenation( GeneratorsOfDivisionRing( F ),
                         List( GeneratorsOfDivisionRing( F ), Inverse ) ) );
 
@@ -417,74 +514,128 @@ EnumeratorOfPrimeField := function( F )
       Error( "sorry, cannot compute elements list of infinite field <F>" );
     fi;
     one:= One( F );
-    return AsListSortedList( List( [ 0 .. Size( F ) - 1 ], i -> i * one ) );
+    return AsSSortedListList( List( [ 0 .. Size( F ) - 1 ], i -> i * one ) );
 end;
 
 InstallMethod( Enumerator,
     "for a prime field",
-    true,
-    [ IsField and IsPrimeField ], 0,
+    [ IsField and IsPrimeField ],
     EnumeratorOfPrimeField );
 
 InstallMethod( AsList,
     "for a prime field",
-    true,
-    [ IsField and IsPrimeField ], 0,
+    [ IsField and IsPrimeField ],
     EnumeratorOfPrimeField );
 
 
-#T InstallMethod( EnumeratorSorted, true, [ IsField and IsPrimeField ], 0,
+#T InstallMethod( EnumeratorSorted, [ IsField and IsPrimeField ],
 #T     EnumeratorOfPrimeField );
 #T 
-#T InstallMethod( AsListSorted, true, [ IsField and IsPrimeField ], 0,
+#T InstallMethod( AsSSortedList, [ IsField and IsPrimeField ],
 #T     EnumeratorOfPrimeField );
 
 
 #############################################################################
 ##
-#M  \=( <F>, <G> ) . . . . . . . . . . . . . . . . . .  comparisons of fields
+#M  IsSubset( <D>, <F> )  . . . . . . . . . . . . . .  for two division rings
+##
+##  We have to be careful not to run into an infinite recursion in the case
+##  that <F> is equal to its left acting domain.
+##  Also we must be aware of situations where the left acting domains are
+##  in a family different from that of the fields themselves,
+##  for example <D> could be given as a field over a field that is really
+##  a subset of <D>, whereas the left acting domain of <F> is not a subset
+##  of <F>.
+##
+BindGlobal( "DivisionRing_IsSubset", function( D, F )
+
+    local CF;
+
+    CF:= LeftActingDomain( F );
+
+    if not IsSubset( D, GeneratorsOfDivisionRing( F ) ) then
+      return false;
+    elif IsSubset( LeftActingDomain( D ), CF ) or IsPrimeField( CF ) then
+      return true;
+    elif FamilyObj( F ) = FamilyObj( CF ) then
+      return IsSubset( D, CF );
+    else
+      CF:= AsDivisionRing( PrimeField( CF ), CF );
+      return IsSubset( D, List( GeneratorsOfDivisionRing( CF ),
+                                x -> x * One( F ) ) );
+    fi;
+end );
+
+InstallMethod( IsSubset,
+    "for two division rings",
+    IsIdenticalObj,
+    [ IsDivisionRing, IsDivisionRing ],
+    DivisionRing_IsSubset );
+
+
+#############################################################################
+##
+#M  \=( <D>, <F> )  . . . . . . . . . . . . . . . . .  for two division rings
 ##
 InstallMethod( \=,
-    "for two fields",
+    "for two division rings",
     IsIdenticalObj,
-    [ IsField, IsField ], 0,
-    function ( F, G )
-
-    if IsFinite( F ) and IsFinite( G ) then
-      return     ( Size( F ) = Size( G ) )
-             and ForAll( GeneratorsOfField( F ), g -> g in G );
-    else
-      return     ForAll( GeneratorsOfField( F ), g -> g in G )
-             and ForAll( GeneratorsOfField( G ), g -> g in F );
-    fi;
+    [ IsDivisionRing, IsDivisionRing ],
+    function( D, F )
+    return DivisionRing_IsSubset( D, F ) and DivisionRing_IsSubset( F, D );
     end );
 
 
 #############################################################################
 ##
-#M  IsSubset( <F>, <G> )
+#M  AsDivisionRing( <C> ) . . . . . . . . . . . . . . . . .  for a collection
 ##
-InstallMethod( IsSubset,
-    "for two fields",
-    IsIdenticalObj,
-    [ IsField, IsField ], 0,
-    function ( F, G )
+InstallMethod( AsDivisionRing,
+    "for a collection",
+    [ IsCollection ],
+    function( C )
 
-    if IsFinite( F ) and IsFinite( G ) then
-      return     Size( F ) mod Size( G ) = 0
-             and (Size( F ) - 1) mod (Size( G ) - 1) = 0
-             and ForAll( GeneratorsOfField( G ), g -> g in F );
-    else
-      return ForAll( GeneratorsOfField( G ), g -> g in F );
+    local one, F;
+
+    # A division ring contains at least two elements.
+    if IsEmpty( C ) or IsTrivial( C ) then
+      return fail;
     fi;
+
+    # Construct the prime field.
+    one:= One( Representative( C ) );
+    if one = fail then
+      return fail;
+    fi;
+    F:= FieldOverItselfByGenerators( [ one ] );
+
+    # Delegate to the two-argument version.
+    return AsDivisionRing( F, C );
     end );
 
-InstallMethod( IsSubset,
-    "for two fields",
+
+#############################################################################
+##
+#M  AsDivisionRing( <F>, <C> )  . . . . for a division ring, and a collection
+##
+InstallMethod( AsDivisionRing,
+    "for a division ring, and a collection",
     IsIdenticalObj,
-    [ IsDivisionRing, IsDivisionRing ], 0,
-    function( D, F )
-    return IsSubset( D, GeneratorsOfDivisionRing( F ) );
+    [ IsDivisionRing, IsCollection ],
+    function( F, C )
+
+    local D;
+
+    if not IsSubset( C, F ) then
+      return fail;
+    fi;
+
+    D:= DivisionRingByGenerators( F, C );
+    if D <> C then
+      return fail;
+    fi;
+
+    return D;
     end );
 
 
@@ -495,7 +646,7 @@ InstallMethod( IsSubset,
 InstallMethod( AsDivisionRing,
     "for two division rings",
     IsIdenticalObj,
-    [ IsDivisionRing, IsDivisionRing ], 0,
+    [ IsDivisionRing, IsDivisionRing ],
     function( F, D )
     local E;
 
@@ -523,39 +674,89 @@ InstallMethod( AsDivisionRing,
 InstallMethod( AsLeftModule,
     "for two division rings",
     IsIdenticalObj,
-    [ IsDivisionRing, IsDivisionRing ], 0,
+    [ IsDivisionRing, IsDivisionRing ],
     AsDivisionRing );
 
 
 #############################################################################
 ##
 #M  Conjugates( <F>, <z> )  . . . . . . . . . . conjugates of a field element
-#M  Conjugates( <z> )
+#M  Conjugates( <z> ) . . . . . . . . . . . . . conjugates of a field element
 ##
-InstallOtherMethod( Conjugates,
-    "for a scalar",
-    true,
-    [ IsScalar ], 0,
+InstallMethod( Conjugates,
+    "for a scalar (delegate to version with default field)",
+    [ IsScalar ],
     z -> Conjugates( DefaultField( z ), z ) );
 
 InstallMethod( Conjugates,
-    "for a field and a scalar",
+    "for a field and a scalar (delegate to version with two fields)",
     IsCollsElms,
-    [ IsField, IsScalar ], 0,
-    function ( F, z )
+    [ IsField, IsScalar ],
+    function( F, z )
+    return Conjugates( F, LeftActingDomain( F ), z );
+    end );
+
+
+#############################################################################
+##
+#M  Conjugates( <L>, <K>, <z> ) . .  for a field elm. (use `TracePolynomial')
+##
+InstallMethod( Conjugates,
+    "for two fields and a scalar (call `TracePolynomial')",
+    IsCollsXElms,
+    [ IsField, IsField, IsScalar ],
+    function( L, K, z )
+
+    local pol, lin, conj, mult, i;
+
+    # Check whether `Conjugates' is allowed to call `MinimalPolynomial'.
+    if IsFieldControlledByGaloisGroup( L ) then
+      TryNextMethod();
+    fi;
+
+    # Compute the roots in `L' of the minimal polynomial of `z' over `K'.
+    pol:= MinimalPolynomial( K, z );
+    lin:= List( Filtered( Factors( L, pol ),
+                          x -> DegreeOfLaurentPolynomial( x ) = 1 ),
+                CoefficientsOfUnivariatePolynomial );
+    lin:= List( lin, x -> AdditiveInverse( lin[1] / lin[2] ) );
+
+    # Take the roots with the appropriate multiplicity.
+    conj:= [];
+    mult:= DegreeOverPrimeField( L ) / DegreeOverPrimeField( K );
+    mult:= mult / DegreeOfLaurentPolynomial( pol );
+    for i in [ 1 .. mult ] do
+      Append( conj, lin );
+    od;
+
+    return conj;
+    end );
+
+
+#############################################################################
+##
+#M  Conjugates( <L>, <K>, <z> ) . . . for a field element (use `GaloisGroup')
+##
+InstallMethod( Conjugates,
+    "for two fields and a scalar (call `GaloisGroup')",
+    IsCollsXElms,
+    [ IsFieldControlledByGaloisGroup, IsField, IsScalar ],
+    function( L, K, z )
     local   cnjs,       # conjugates of <z> in <F>, result
             aut;        # automorphism of <F>
 
-    # check the arguments
-    if not z in F then Error( "<z> must lie in <F>" ); fi;
+    # Check the arguments.
+    if not z in L then
+      Error( "<z> must lie in <L>" );
+    fi;
 
-    # compute the conjugates simply by applying all the automorphisms
-    cnjs := [];
-    for aut in GaloisGroup( F ) do
-        Add( cnjs, z ^ aut );
+    # Compute the conjugates simply by applying all the automorphisms.
+    cnjs:= [];
+    for aut in GaloisGroup( AsField( L, K ) ) do
+      Add( cnjs, z ^ aut );
     od;
 
-    # return the conjugates
+    # Return the conjugates.
     return cnjs;
     end );
 
@@ -563,322 +764,263 @@ InstallMethod( Conjugates,
 #############################################################################
 ##
 #M  Norm( <F>, <z> )  . . . . . . . . . . . . . . . . norm of a field element
-#M  Norm( <z> )
+#M  Norm( <z> ) . . . . . . . . . . . . . . . . . . . norm of a field element
 ##
-InstallOtherMethod( Norm,
-    "for a scalar",
-    true,
-    [ IsScalar ], 0,
+InstallMethod( Norm,
+    "for a scalar (delegate to version with default field)",
+    [ IsScalar ],
     z -> Norm( DefaultField( z ), z ) );
 
 InstallMethod( Norm,
-    "for a field and a scalar",
+    "for a field and a scalar (delegate to version with two fields)",
     IsCollsElms,
-    [ IsField, IsScalar ], 0,
-    function ( F, z ) return Product( Conjugates( F, z ) ); end );
+    [ IsField, IsScalar ],
+    function( F, z )
+    return Norm( F, LeftActingDomain( F ), z );
+    end );
 
 
 #############################################################################
 ##
-#M  Trace( <F>, <z> ) . . . . . . . . . . . . . . .  trace of a field element
-#M  Trace( <z> )
+#M  Norm( <L>, <K>, <z> ) . . . .  norm of a field element (use `Conjugates')
 ##
-InstallOtherMethod( Trace,
-    "for a scalar",
-    true,
-    [ IsScalar ], 0,
+InstallMethod( Norm,
+    "for two fields and a scalar (use `Conjugates')",
+    IsCollsXElms,
+    [ IsFieldControlledByGaloisGroup, IsField, IsScalar ],
+    function( L, K, z )
+    return Product( Conjugates( L, K, z ) );
+    end );
+
+
+#############################################################################
+##
+#M  Norm( <L>, <K>, <z> ) . . .  norm of a field element (use the trace pol.)
+##
+InstallMethod( Norm,
+    "for two fields and a scalar (use the trace pol.)",
+    IsCollsXElms,
+    [ IsField, IsField, IsScalar ],
+    function( L, K, z )
+    local coeffs;
+    coeffs:= CoefficientsOfUnivariatePolynomial(
+                 TracePolynomial( L, K, z, 1 ) );
+    return (-1)^(Length( coeffs )-1) * coeffs[1];
+    end );
+
+
+#############################################################################
+##
+#M  Trace( <z> )  . . . . . . . . . . . . . . . . .  trace of a field element
+#M  Trace( <F>, <z> ) . . . . . . . . . . . . . . .  trace of a field element
+##
+InstallMethod( Trace,
+    "for a scalar (delegate to version with default field)",
+    [ IsScalar ],
     z -> Trace( DefaultField( z ), z ) );
 
 InstallMethod( Trace,
-    "for a field and a scalar",
+    "for a field and a scalar (delegate to version with two fields)",
     IsCollsElms,
-    [ IsField, IsScalar ], 0,
-    function ( F, z ) return Sum( Conjugates( F, z ) ); end );
+    [ IsField, IsScalar ],
+    function( F, z )
+    return Trace( F, LeftActingDomain( F ), z );
+    end );
 
 
 #############################################################################
 ##
-#M  MinimalPolynomial( <F>, <z> )
+#M  Trace( <L>, <K>, <z> )  . . . trace of a field element (use `Conjugates')
 ##
-InstallMethod( MinimalPolynomial,"using `Conjugates'",
-    IsCollsElmsX,[ IsField, IsScalar,IsPosInt], 0,
-function(f,z,ind)
-local p,i;
-  ind:=UnivariatePolynomial(f,[Zero(f),One(f)],ind);
-  p:=ind^0;
-  for i in Conjugates(Field(f,[z]),z) do
-    p:=p*(ind-i);
-  od;
-  return p;
-end);
+InstallMethod( Trace,
+    "for two fields and a scalar (use `Conjugates')",
+    IsCollsXElms,
+    [ IsFieldControlledByGaloisGroup, IsField, IsScalar ],
+    function( L, K, z )
+    return Sum( Conjugates( L, K, z ) );
+    end );
 
 
 #############################################################################
 ##
-#M  TracePolynomial( <B>,<F>, <z> )
+#M  Trace( <L>, <K>, <z> )  . . trace of a field element (use the trace pol.)
 ##
-InstallMethod( TracePolynomial,"using minimal poly",
-    IsCollsCollsElmsX,[ IsField,IsField,IsScalar,IsPosInt], 0,
-function(b,f,z,ind)
-local p;
-  return MinimalPolynomial(b,z,ind)^(
-            DegreeOverPrimeField(f)/DegreeOverPrimeField(Field(b,[z])));
-end);
-
-InstallOtherMethod( TracePolynomial,"indet. 1",IsCollsCollsElms,
-    [ IsField,IsField,IsScalar], 0,
-function(b,f,z)
-  return TracePolynomial(b,f,z,1);
-end);
-
-#############################################################################
-##
-#M  CharacteristicPolynomial( <B>,<F>, <z> )
-##
-InstallOtherMethod( CharacteristicPolynomial,"call `TracePolynomial'",
-    IsCollsCollsElms,
-    [ IsField,IsField,IsScalar], 0,
-    TracePolynomial );
-
-InstallOtherMethod( CharacteristicPolynomial,"call `TracePolynomial'",
-    IsCollsCollsElmsX,
-    [ IsField,IsField,IsScalar,IsPosInt], 0,
-    TracePolynomial );
+InstallMethod( Trace,
+    "for two fields and a scalar (use the trace pol.)",
+    IsCollsXElms,
+    [ IsField, IsField, IsScalar ],
+    function( L, K, z )
+    local coeffs;
+    coeffs:= CoefficientsOfUnivariatePolynomial(
+                 TracePolynomial( L, K, z, 1 ) );
+    return AdditiveInverse( coeffs[ Length( coeffs ) - 1 ] );
+    end );
 
 
 #############################################################################
 ##
-##  Vector spaces of field elements are handled as follows.
-##  Let $V$ be an $F$-space of field elements, and $K$ the (default) field of
-##  the vector space generators of $V$.
-##  It is assumed that methods for computing a basis $B$ for the
-##  $F$-vector space $K$ are known;
-##  e.g., one can compute a Lenstra basis of an abelian number field,
-##  or take successive powers of a primitive root of a finite field.
-##  For the vector space generators of $V$, choose a set of linearly
-##  independent positions of the $B$-coefficients, and associate this sublist
-##  of $B$-coefficients to every element of $V$.
+#M  MinimalPolynomial( <F>, <z>, <nr> )
 ##
-##  Then computations can be performed using 'NiceFreeLeftModule',
-##  'NiceVector', and 'UglyVector'.
+##  If the default field of <z> knows how to get the Galois group then
+##  we compute the conjugates and from them the minimal polynomial.
+##  Otherwise we solve an equation system.
 ##
-##  Note that the situation here is a little bit different from that with
-##  polynomials, since one has to compute the basis $B$ and the choice of
-##  the positions first --this is done by 'NiceFreeLeftModule'-- and only
-##  afterwards can use the 'NiceVector' and 'UglyVector'
-##  functions.
+##  Note that the family predicate `IsCollsElmsX' expresses that <z> may lie
+##  in an extension field of <F>;
+##  this guarantees that the method is *not* applicable for the case that <z>
+##  is a matrix.
 ##
+InstallMethod( MinimalPolynomial,
+    "for field, scalar, and indet. number",
+    IsCollsElmsX,
+    [ IsField, IsScalar,IsPosInt ],
+    function( F, z, ind )
 
-#############################################################################
-##
-#R  IsFieldElementsSpaceRep( <V> )
-##
-##  is the representation of vector spaces of division ring elements
-##  (that are themselves not division rings and)
-##  that are handled via nice bases.
-##  The associated basis is computed using a basis of the enveloping
-##  division ring.
-##
-##  'fieldbasis' : \\
-##     the canonical basis of the default field of the space generators
-##     that is used to compute associated (row) vectors
-##
-##  'coeffschoice' : \\
-##     list of positions in the coefficients list used to compute associated
-##     nice (row) vectors
-##
-##  'canonicalvectors' : \\
-##     list of vectors of <V> whose associated nice vectors are the canonical
-##     basis vectors of the associated space.
-##     They are the vectors of the canonical basis of <V>.
-##
-##  We have 'Coefficients( <V>!.fieldbasis, <x> ){ <V>!.coeffschoice }' the
-##  associated nice vector of $x \in V$,
-##  and '<r> \*\ <V>!.canonicalvectors' the associated vector of the row
-##  vector <r>.
-##
-DeclareRepresentation( "IsFieldElementsSpaceRep",
-    IsHandledByNiceBasis,
-    [ "fieldbasis", "coeffschoice", "canonicalvectors" ] );
+    local L, coe, deg, zero, con, i, B, pow, mat, MB;
 
+    # Construct a basis of a field in which the computations happen.
+    # (This need not be the smallest such field.)
+    L:= DefaultField( z );
 
-#############################################################################
-##
-#M  PrepareNiceFreeLeftModule( <V> )
-##
-InstallMethod( PrepareNiceFreeLeftModule,
-    "for vector space of field elements",
-    true,
-    [ IsVectorSpace and IsFieldElementsSpaceRep ], 0,
-    function( V )
+    if IsFieldControlledByGaloisGroup( L ) then
 
-    local gens,
-          coeffs,
-          sem;
+      # We may call `Conjugates'.
 
-    gens:= GeneratorsOfLeftModule( V );
-
-    if IsEmpty( gens ) then
-
-      V!.canonicalvectors := [];
-      V!.coeffschoice:= [];
+      coe:= [ One( F ) ];
+      deg:= 0;
+      zero:= Zero( F );
+      for con in Conjugates( Field( F, [ z ] ), z ) do
+        coe[deg+2]:= coe[deg+1];
+        for i in [ deg+1, deg .. 2 ] do
+          coe[i]:= coe[i-1] - con * coe[i];
+        od;
+        coe[1]:= zero - con * coe[1];
+        deg:= deg + 1;
+      od;
 
     else
 
-      # Compute the default field of the space generators,
-      # a basis of this field (over the left acting domain of 'V'),
-      # and the coefficients of the space generators w.r. to this basis.
-      V!.fieldbasis:= BasisOfDomain( AsField( LeftActingDomain( V ),
-                                              DefaultField( gens ) ) );
-      coeffs:= List( gens, x -> Coefficients( V!.fieldbasis, x ) );
+      # Solve an equation system.
 
-      # Choose a subset of linear independent positions,
-      # and store field elements corresponding to the rows of the basis.
-      # These are the vectors of the canonical basis of 'V'.
-      sem:= SemiEchelonMatTransformation( coeffs );
-      if IsEmpty( sem.coeffs ) then
+      B:= Basis( L );
 
-        V!.canonicalvectors := [];
-        V!.coeffschoice:= [];
+      # Compute coefficients of the powers of `z' until
+      # the rows are linearly dependent.
+      pow:= One( F );
+      coe:= Coefficients( B, pow );
+      mat:= [ coe ];
+      MB:= MutableBasis( F, [ coe ] );
+      repeat
+        CloseMutableBasis( MB, coe );
+        pow:= pow * z;
+        coe:= Coefficients( B, pow );
+        Add( mat, coe );
+      until IsContainedInSpan( MB, coe );
 
-      else
-
-        V!.canonicalvectors:= sem.coeffs * gens;
-        coeffs:= sem.heads;
-        V!.coeffschoice:= Filtered( [ 1 .. Length( coeffs ) ],
-                                    x -> coeffs[x] <> 0 );
-
-      fi;
+      # The coefficients of the minimal polynomial
+      # are given by the linear relation.
+      coe:= NullspaceMat( mat )[1];
+      coe:= Inverse( coe[ Length( coe ) ] ) * coe;
 
     fi;
+
+    # Construct the polynomial.
+    return UnivariatePolynomial( F, coe, ind );
     end );
 
 
 #############################################################################
 ##
-#M  NiceFreeLeftModule( <V> )
+#M  TracePolynomial( <L>, <K>, <z> )
+#M  TracePolynomial( <L>, <K>, <z>, <ind> )
 ##
-##  We do not use the default method since the nice space is known to be a
-##  full row space.
-##
-InstallMethod( NiceFreeLeftModule,
-    "for vector space of field elements",
-    true,
-    [ IsFreeLeftModule and IsFieldElementsSpaceRep ], 0,
-    function( V )
-    PrepareNiceFreeLeftModule( V );
-    return FullRowModule( LeftActingDomain( V ),
-                          Length( V!.canonicalvectors ) );
+InstallMethod( TracePolynomial,
+    "using minimal polynomial",
+    IsCollsXElmsX,
+    [ IsField, IsField, IsScalar, IsPosInt ],
+    function( L, K, z, ind )
+
+    local minpol, mult;
+
+    minpol:= MinimalPolynomial( K, z, ind );
+    mult:= DegreeOverPrimeField( L ) / DegreeOverPrimeField( K );
+    mult:= mult / DegreeOfLaurentPolynomial( minpol );
+
+    return minpol ^ mult;
+    end );
+
+InstallMethod( TracePolynomial,
+    "add default indet. 1",
+    IsCollsXElms,
+    [ IsField, IsField, IsScalar ],
+    function( L, K, z )
+    return TracePolynomial( L, K, z, 1 );
     end );
 
 
 #############################################################################
 ##
+#M  CharacteristicPolynomial( <L>, <K>, <z> )
+#M  CharacteristicPolynomial( <L>, <K>, <z>, <ind> )
+##
+InstallOtherMethod( CharacteristicPolynomial,
+    "call `TracePolynomial'",
+    IsCollsXElms,
+    [ IsField, IsField, IsScalar ],
+    function( L, K, z )
+    return TracePolynomial( L, K, z, 1 );
+    end );
+
+InstallOtherMethod( CharacteristicPolynomial,
+    "call `TracePolynomial'",
+    IsCollsXElmsX,
+    [ IsField, IsField, IsScalar, IsPosInt ],
+    TracePolynomial );
+
+
+#############################################################################
+##
+#M  NiceFreeLeftModuleInfo( <V> )
 #M  NiceVector( <V>, <v> )
-##
-##  returns the row vector in 'NiceFreeLeftModule( <V> )' that corresponds
-##  to the vector <v> of <V>.
-##
-InstallMethod( NiceVector,
-    "for field elements space and scalar",
-    IsCollsElms,
-    [ IsFreeLeftModule and IsFieldElementsSpaceRep, IsScalar ], 0,
-    function( V, v )
-    local c;
-    c:= Coefficients( V!.fieldbasis, v );
-    if c <> fail then
-      c:= c{ V!.coeffschoice };
-    fi;
-    return c;
-    end );
-
-
-#############################################################################
-##
 #M  UglyVector( <V>, <r> )
 ##
-##  returns the vector in <V> that corresponds to the vector <r> in
-##  'NiceFreeLeftModule( <V> )'.
-##
-InstallMethod( UglyVector,
-    "for field elements space and row vector",
-    IsIdenticalObj,
-    [ IsFreeLeftModule and IsFieldElementsSpaceRep, IsRowVector ], 0,
-    function( V, r )
-    if Length( r ) <> Length( V!.canonicalvectors ) then
-      return fail;
-    fi;
-    return r * V!.canonicalvectors;
-    end );
+InstallHandlingByNiceBasis( "IsFieldElementsSpace", rec(
+    detect := function( F, gens, V, zero )
+      return     IsScalarCollection( V )
+             and IsIdenticalObj( FamilyObj( F ), FamilyObj( V ) )
+             and IsDivisionRing( F );
+      end,
 
+    NiceFreeLeftModuleInfo := function( V )
+      local lad, gens;
 
-#############################################################################
-##
-#M  LeftModuleByGenerators( <F>, <gens> ) . create vector space of field elms
-##
-InstallMethod( LeftModuleByGenerators,
-    "for division ring and collection of scalars in same family",
-    IsIdenticalObj,
-    [ IsDivisionRing, IsScalarCollection ] , 0,
-    function( F, gens )
-    local V;
-    V:= Objectify( NewType( FamilyObj( gens ),
-                                IsFreeLeftModule
-                            and IsLeftActedOnByDivisionRing
-                            and IsFieldElementsSpaceRep
-                            and IsAttributeStoringRep ),
-                   rec() );
-    SetLeftActingDomain( V, F );
-    SetGeneratorsOfLeftModule( V, AsList( gens ) );
-    return V;
-    end );
+      # Compute the default field of the vector space generators,
+      # a basis of this field (over the left acting domain of `V'),
+      lad:= LeftActingDomain( V );
+      if not IsIdenticalObj( FamilyObj( V ), FamilyObj( lad ) ) then
+        TryNextMethod();
+      fi;
+      gens:= GeneratorsOfLeftModule( V );
 
+      if IsEmpty( gens ) then
+        return Basis( AsField( lad, lad ) );
+      else
+        return Basis( AsField( lad, DefaultField( gens ) ) );
+      fi;
+      end,
 
-#############################################################################
-##
-#M  LeftModuleByGenerators( <F>, <gens>, <zero> )
-##
-InstallOtherMethod( LeftModuleByGenerators,
-    "for division ring and collection of scalars in same family",
-    IsCollsCollsElms,
-    [ IsDivisionRing, IsScalarCollection, IsScalar ], 0,
-    function( F, gens, zero )
-    local V;
-    V:= Objectify( NewType( FamilyObj( F ),
-                                IsFreeLeftModule
-                            and IsLeftActedOnByDivisionRing
-                            and IsFieldElementsSpaceRep
-                            and IsAttributeStoringRep ),
-                   rec() );
-    SetLeftActingDomain( V, F );
-    SetGeneratorsOfLeftModule( V, AsList( gens ) );
-    SetZero( V, zero );
-    return V;
-    end );
+    NiceVector := function( V, v )
+      return Coefficients( NiceFreeLeftModuleInfo( V ), v );
+      end,
 
-
-#############################################################################
-##
-#M  LeftModuleByGenerators( <F>, <empty>, <zero> )
-##
-InstallOtherMethod( LeftModuleByGenerators,
-    "for division ring, empty list, and scalar",
-    IsCollsXElms,
-    [ IsDivisionRing, IsList and IsEmpty, IsScalar ], 0,
-    function( F, empty, zero )
-    local V;
-    V:= Objectify( NewType( FamilyObj( F ),
-                                IsFreeLeftModule
-                            and IsLeftActedOnByDivisionRing
-                            and IsTrivial
-                            and IsFieldElementsSpaceRep
-                            and IsAttributeStoringRep ),
-                   rec() );
-    SetLeftActingDomain( V, F );
-    SetGeneratorsOfLeftModule( V, AsList( empty ) );
-    SetZero( V, zero );
-    return V;
-    end );
+    UglyVector := function( V, r )
+      local B;
+      B:= NiceFreeLeftModuleInfo( V );
+      if Length( r ) <> Length( B ) then
+        return fail;
+      fi;
+      return LinearCombination( B, r );
+      end ) );
 
 
 #############################################################################
@@ -888,7 +1030,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 InstallMethod( Quotient,
     "for field, and two ring elements",
     IsCollsElmsElms,
-    [ IsField, IsRingElement, IsRingElement ], 0,
+    [ IsField, IsRingElement, IsRingElement ],
     function ( F, r, s )
     return r/s;
     end );
@@ -901,7 +1043,7 @@ InstallMethod( Quotient,
 InstallMethod( IsUnit,
     "for field, and ring element",
     IsCollsElms,
-    [ IsField, IsRingElement ], 0,
+    [ IsField, IsRingElement ],
     function ( F, r )
     return not IsZero( r ) and r in F;
     end );
@@ -913,8 +1055,7 @@ InstallMethod( IsUnit,
 ##
 InstallMethod( Units,
     "for a division ring",
-    true,
-    [ IsDivisionRing ], 0,
+    [ IsDivisionRing ],
     function( D )
     if IsFinite( D ) then
       return Difference( AsList( D ), [ Zero( D ) ] );
@@ -935,8 +1076,7 @@ InstallMethod( Units,
 ##
 InstallMethod( PrimitiveRoot,
     "for a finite prime field",
-    true,
-    [ IsField and IsFinite ], 0,
+    [ IsField and IsFinite ],
     function( F )
     if not IsPrimeField( F ) then
       TryNextMethod();
@@ -952,7 +1092,7 @@ InstallMethod( PrimitiveRoot,
 InstallMethod( IsAssociated,
     "for field, and two ring elements",
     IsCollsElmsElms,
-    [ IsField, IsRingElement, IsRingElement ], 0,
+    [ IsField, IsRingElement, IsRingElement ],
     function ( F, r, s )
     return (r = Zero( F ) ) = (s = Zero( F ) );
     end );
@@ -965,7 +1105,7 @@ InstallMethod( IsAssociated,
 InstallMethod( StandardAssociate,
     "for field and ring element",
     IsCollsElms,
-    [ IsField, IsScalar ], 0,
+    [ IsField, IsScalar ],
     function ( R, r )
     if r = Zero( R ) then
         return Zero( R );
@@ -985,8 +1125,7 @@ InstallMethod( StandardAssociate,
 #M  IsFieldHomomorphism( <map> )
 ##
 InstallMethod( IsFieldHomomorphism,
-    true,
-    [ IsGeneralMapping ], 0,
+    [ IsGeneralMapping ],
     map -> IsRingHomomorphism( map ) and IsField( Source( map ) ) );
 
 
@@ -996,8 +1135,7 @@ InstallMethod( IsFieldHomomorphism,
 ##
 InstallMethod( KernelOfAdditiveGeneralMapping,
     "for a field homomorphism",
-    true,
-    [ IsFieldHomomorphism ], 0,
+    [ IsFieldHomomorphism ],
 #T higher rank?
 #T (is this method ever used?)
     function ( hom )
@@ -1016,8 +1154,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
 ##
 InstallMethod( IsInjective,
     "for a field homomorphism",
-    true,
-    [ IsFieldHomomorphism ], 0,
+    [ IsFieldHomomorphism ],
     hom -> Size( KernelOfAdditiveGeneralMapping( hom ) ) = 1 );
 
 
@@ -1027,8 +1164,7 @@ InstallMethod( IsInjective,
 ##
 InstallMethod( IsSurjective,
     "for a field homomorphism",
-    true,
-    [ IsFieldHomomorphism ], 0,
+    [ IsFieldHomomorphism ],
     function ( hom )
     if IsFinite( Range( hom ) ) then
       return Size( Range( hom ) ) = Size( Image( hom ) );
@@ -1045,7 +1181,7 @@ InstallMethod( IsSurjective,
 InstallMethod( \=,
     "for two field homomorphisms",
     IsIdenticalObj,
-    [ IsFieldHomomorphism, IsFieldHomomorphism ], 0,
+    [ IsFieldHomomorphism, IsFieldHomomorphism ],
     function ( hom1, hom2 )
 
     # maybe the properties we already know determine the result
@@ -1072,7 +1208,7 @@ InstallMethod( \=,
 InstallMethod( ImagesSet,
     "for field homomorphism and field",
     CollFamSourceEqFamElms,
-    [ IsFieldHomomorphism, IsField ], 0,
+    [ IsFieldHomomorphism, IsField ],
     function ( hom, elms )
     elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
                gen -> ImagesRepresentative( hom, gen ) ) );
@@ -1088,7 +1224,7 @@ InstallMethod( ImagesSet,
 InstallMethod( PreImagesElm,
     "for field homomorphism and element",
     FamRangeEqFamElm,
-    [ IsFieldHomomorphism, IsObject ], 0,
+    [ IsFieldHomomorphism, IsObject ],
     function ( hom, elm )
     if IsInjective( hom ) = 1 then
       return [ PreImagesRepresentative( hom, elm ) ];
@@ -1107,7 +1243,7 @@ InstallMethod( PreImagesElm,
 InstallMethod( PreImagesSet,
     "for field homomorphism and field",
     CollFamRangeEqFamElms,
-    [ IsFieldHomomorphism, IsField ], 0,
+    [ IsFieldHomomorphism, IsField ],
     function ( hom, elms )
     elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
                gen -> PreImagesRepresentative( hom, gen ) ) );
@@ -1118,5 +1254,5 @@ InstallMethod( PreImagesSet,
 
 #############################################################################
 ##
-#E  field.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

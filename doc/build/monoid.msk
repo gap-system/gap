@@ -1,0 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  monoid.msk                 GAP documentation                Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Monoids}
+
+This chapter describes functions for monoids.
+Currently there are only few of them.
+More general functions for magmas and semigroups can be found in
+Chapters~"Magmas" and "Semigroups".
+
+
+\Declaration{IsMonoid}
+
+\Declaration{Monoid}
+\Declaration{Submonoid}
+\Declaration{MonoidByGenerators}
+
+\Declaration{AsMonoid}
+\Declaration{AsSubmonoid}
+\Declaration{GeneratorsOfMonoid}
+\Declaration{TrivialSubmonoid}
+
+\Declaration{FreeMonoid}
+
+\Declaration{MonoidByMultiplicationTable}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

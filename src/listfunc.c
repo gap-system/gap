@@ -91,11 +91,16 @@ void            AddPlist (
         AssPlistEmpty( list, pos, obj );
     }
     else {
-        RetypeBag( list, T_PLIST );
-        GROW_PLIST( list, pos );
-        SET_LEN_PLIST( list, pos );
-        SET_ELM_PLIST( list, pos, obj );
-        CHANGED_BAG( list );
+      ASS_LIST( list, pos, obj);
+      /*  The code below is commented out and replaced by the line above, so
+	  as, at the cost of one extra dispatch, to take advantage of the
+	  special code in AssPlist<things> which maintain as much information
+	  about denseness homogeneity, etc as possible */
+      /*        RetypeBag( list, T_PLIST );
+		GROW_PLIST( list, pos );
+		SET_LEN_PLIST( list, pos );
+		SET_ELM_PLIST( list, pos, obj );
+		CHANGED_BAG( list ); */
     }
 }
 
@@ -148,9 +153,17 @@ Obj             FuncAPPEND_LIST_INTR (
     Obj                 elm;            /* one element of the second list  */
     Int                 i;              /* loop variable                   */
 
+    /* check the mutability of the first argument */
+    while ( !IS_MUTABLE_OBJ( list1) )
+      list1 = ErrorReturnObj (
+		"Append: <list1> must be mutable",
+		0L, 0L,
+		"you can return a mutable list for <list1>");
+    
+    
     /* check the type of the first argument                                */
     if ( TNUM_OBJ( list1 ) != T_PLIST ) {
-        while ( ! IS_LIST( list1 ) ) {
+        while ( ! IS_SMALL_LIST( list1 ) ) {
             list1 = ErrorReturnObj(
                 "AppendList: <list1> must be a list (not a %s)",
                 (Int)TNAM_OBJ(list1), 0L,
@@ -163,7 +176,7 @@ Obj             FuncAPPEND_LIST_INTR (
 
     /* check the type of the second argument                               */
     if ( TNUM_OBJ( list2 ) != T_PLIST ) {
-        while ( ! IS_LIST( list2 ) ) {
+        while ( ! IS_SMALL_LIST( list2 ) ) {
             list2 = ErrorReturnObj(
                 "AppendList: <list2> must be a list (not a %s)",
                 (Int)TNAM_OBJ(list2), 0L,
@@ -289,11 +302,11 @@ Obj             FuncPOSITION_SORTED_LIST (
     UInt                h;              /* position, result                */
 
     /* check the first argument                                            */
-    while ( ! IS_LIST(list) ) {
+    while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "POSITION_SORTED_LIST: <list> must be a list (not a %s)",
+            "POSITION_SORTED_LIST: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can return a small list for <list>" );
     }
 
     /* dispatch                                                            */
@@ -381,9 +394,9 @@ Obj             FuncPOSITION_SORTED_COMP (
     UInt                h;              /* position, result                */
 
     /* check the first argument                                            */
-    while ( ! IS_LIST(list) ) {
+    while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "POSITION_SORTED_LISTComp: <list> must be a list (not a %s)",
+            "POSITION_SORTED_LISTComp: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
@@ -565,22 +578,202 @@ void SortDensePlistComp (
     }
 }
 
+/****************************************************************************
+**
+*F  SORT_PARA_LIST( <list> )  . . . . . . . . . . .  sort a lists with shadow
+*F  SortParaDensePlistPara( <list> )  . . . . . . .  sort a lists with shadow
+*F  SORT_PARA_LISTComp(<list>,<func>) . . . . . . .  sort a lists with shadow
+*F  SortParaDensePlistComp(<list>,<func>) . . . . .  sort a lists with shadow
+**
+**  The following suite of functions mirrors the sort functions above.  They
+**  sort the first list given and perform the same operations on the second
+**  list, the shadow list.  All functions assume that shadow list has (at
+**  least) the length of the first list. 
+**
+**  The code here is a duplication of the code above with the operations on
+**  the second list added in.
+*/
+
+void SORT_PARA_LIST (
+    Obj                 list,
+    Obj               shadow )
+{
+    UInt                len;            /* length of the list              */
+    UInt                h;              /* gap width in the shellsort      */
+    Obj                 v,  w;          /* two element of the list         */
+    Obj                 vs, ws;         /* two element of the shadow list  */
+    UInt                i,  k;          /* loop variables                  */
+
+    /* sort the list with a shellsort                                      */
+    len = LEN_LIST( list );
+    h = 1;
+    while ( 9*h + 4 < len ) { h = 3*h + 1; }
+    while ( 0 < h ) {
+        for ( i = h+1; i <= len; i++ ) {
+            v  = ELMV_LIST( list,   i ); 
+            vs = ELMV_LIST( shadow, i );
+            k  = i;
+            w  = ELMV_LIST( list,   k-h );
+            ws = ELMV_LIST( shadow, k-h );
+            while ( h < k && LT( v, w ) ) {
+              ASS_LIST( list,   k, w  );
+              ASS_LIST( shadow, k, ws );
+                k -= h;
+                if ( h < k ) {
+                    w  = ELMV_LIST( list,   k-h );
+                    ws = ELMV_LIST( shadow, k-h );
+                }
+            }
+            ASS_LIST( list,   k, v  ); 
+            ASS_LIST( shadow, k, vs );
+        }
+        h = h / 3;
+    }
+}
+
+void SortParaDensePlist (
+    Obj                 list,
+    Obj               shadow )
+{
+    UInt                len;            /* length of the list              */
+    UInt                h;              /* gap width in the shellsort      */
+    Obj                 v,  w;          /* two element of the list         */
+    Obj                 vs, ws;         /* two element of the shadow list  */
+    UInt                i,  k;          /* loop variables                  */
+
+    /* sort the list with a shellsort                                      */
+    len = LEN_PLIST( list );
+    h = 1;
+    while ( 9*h + 4 < len ) { h = 3*h + 1; }
+    while ( 0 < h ) {
+        for ( i = h+1; i <= len; i++ ) {
+            v  = ELM_PLIST( list,   i );
+            vs = ELM_PLIST( shadow, i );
+            k  = i;
+            w  = ELM_PLIST( list,   k-h );
+            ws = ELM_PLIST( shadow, k-h );
+            while ( h < k && LT( v, w ) ) {
+                SET_ELM_PLIST( list,   k, w  );
+                SET_ELM_PLIST( shadow, k, ws );
+                k -= h;
+                if ( h < k ) {
+                    w  = ELM_PLIST( list,   k-h );
+                    ws = ELM_PLIST( shadow, k-h );
+                }
+            }
+            SET_ELM_PLIST( list,   k, v  );
+            SET_ELM_PLIST( shadow, k, vs );
+        }
+        h = h / 3;
+    }
+
+    /* if list was ssorted, then it still will be,
+       but, we don't know anything else any more */
+    RESET_FILT_LIST(list, FN_IS_NSORT);
+    RESET_FILT_LIST(shadow, FN_IS_SSORT);
+    RESET_FILT_LIST(shadow, FN_IS_NSORT);
+}
+
+void SORT_PARA_LISTComp (
+    Obj                 list,
+    Obj               shadow,
+    Obj                 func )
+{
+    UInt                len;            /* length of the list              */
+    UInt                h;              /* gap width in the shellsort      */
+    Obj                 v,  w;          /* two element of the list         */
+    Obj                 vs, ws;         /* two element of the shadow list  */
+    UInt                i,  k;          /* loop variables                  */
+
+    /* sort the list with a shellsort                                      */
+    len = LEN_LIST( list );
+    h = 1;
+    while ( 9*h + 4 < len ) { h = 3*h + 1; }
+    while ( 0 < h ) {
+        for ( i = h+1; i <= len; i++ ) {
+            v  = ELMV_LIST( list,   i );    
+            vs = ELMV_LIST( shadow, i );
+            k  = i;
+            w  = ELMV_LIST( list,   k-h );
+            ws = ELMV_LIST( shadow, k-h );
+            while ( h < k && CALL_2ARGS( func, v, w ) == True ) {
+                ASS_LIST( list,   k, w );
+                ASS_LIST( shadow, k, ws );
+                k -= h;
+                if ( h < k ) {
+                    w  = ELMV_LIST( list,   k-h );
+                    ws = ELMV_LIST( shadow, k-h );
+                }
+            }
+            ASS_LIST( list,   k, v  );
+            ASS_LIST( shadow, k, vs );
+        }
+        h = h / 3;
+    }
+}
+
+void SortParaDensePlistComp (
+    Obj                 list,
+    Obj               shadow,
+    Obj                 func )
+{
+    UInt                len;            /* length of the list              */
+    UInt                h;              /* gap width in the shellsort      */
+    Obj                 v,  w;          /* two element of the list         */
+    Obj                 vs, ws;         /* two element of the shadow list  */
+    UInt                i,  k;          /* loop variables                  */
+
+    /* sort the list with a shellsort                                      */
+    len = LEN_PLIST( list );
+    h = 1;
+    while ( 9*h + 4 < len ) { h = 3*h + 1; }
+    while ( 0 < h ) {
+        for ( i = h+1; i <= len; i++ ) {
+            v  = ELM_PLIST( list,   i );
+            vs = ELM_PLIST( shadow, i );
+            k  = i;
+            w  = ELM_PLIST( list,   k-h );
+            ws = ELM_PLIST( shadow, k-h );
+            while ( h < k && CALL_2ARGS( func, v, w ) == True ) {
+                SET_ELM_PLIST( list,   k, w  );
+                SET_ELM_PLIST( shadow, k, ws );
+                k -= h;
+                if ( h < k ) {
+                    w  = ELM_PLIST( list,   k-h );  
+                    ws = ELM_PLIST( shadow, k-h );
+                }
+            }
+            SET_ELM_PLIST( list,   k, v  );
+            SET_ELM_PLIST( shadow, k, vs );
+        }
+        h = h / 3;
+    }
+    RESET_FILT_LIST(list, FN_IS_NSORT);
+    RESET_FILT_LIST(list, FN_IS_SSORT);
+    RESET_FILT_LIST(shadow, FN_IS_NSORT);
+    RESET_FILT_LIST(shadow, FN_IS_SSORT);
+}
+
+
 
 /****************************************************************************
 **
 *F  RemoveDupsDensePlist(<list>)  . . . . remove duplicates from a plain list
 **
-**  'RemoveDupsDensePlist' removes  duplicate elements from  the dense  plain
-**  list <list>.  <list> must be sorted.  'RemoveDupsDensePlist' returns 1 if
-**  <list> contains mutable elements, and 0 otherwise.
+**  'RemoveDupsDensePlist' removes duplicate elements from the dense
+**  plain list <list>.  <list> must be sorted.  'RemoveDupsDensePlist'
+**  returns 0 if <list> contains mutable elements, 1 if not and 2 if
+**  the list contains immutable elements all lying in the same family.
 */
 UInt            RemoveDupsDensePlist (
     Obj                 list )
 {
     UInt                mutable;        /* the elements are mutable        */
+    UInt                homog;          /* the elements all lie in the same family */
     Int                 len;            /* length of the list              */
     Obj                 v, w;           /* two elements of the list        */
     UInt                l, i;           /* loop variables                  */
+    Obj                 fam;
 
     /* get the length, nothing to be done for empty lists                  */
     len = LEN_PLIST( list );
@@ -590,10 +783,13 @@ UInt            RemoveDupsDensePlist (
     l = 1;
     v = ELM_PLIST( list, l );
     mutable = IS_MUTABLE_OBJ(v);
+    homog = 1;
+    fam = FAMILY_OBJ(v);
 
     /* loop over the other elements, compare them with the current rep.    */
     for ( i = 2; i <= len; i++ ) {
         w = ELM_PLIST( list, i );
+	mutable = (mutable || IS_MUTABLE_OBJ(w));
         if ( ! EQ( v, w ) ) {
             if ( l+1 != i ) {
                 SET_ELM_PLIST( list, l+1, w );
@@ -601,7 +797,7 @@ UInt            RemoveDupsDensePlist (
             }
             l += 1;
             v = w;
-            mutable = (mutable || IS_MUTABLE_OBJ(v));
+	    homog = (!mutable && homog && fam == FAMILY_OBJ(w));
         }
     }
 
@@ -609,8 +805,23 @@ UInt            RemoveDupsDensePlist (
     SET_LEN_PLIST( list, l );
     SHRINK_PLIST(  list, l );
 
+    /* Set appropriate filters */
+    if (!mutable)
+      {
+	if (!homog)
+	  SET_FILT_LIST(list, FN_IS_NHOMOG);
+	else
+	  SET_FILT_LIST(list, FN_IS_HOMOG);
+	SET_FILT_LIST(list, FN_IS_SSORT);
+      }
+
     /* return whether the list contains mutable elements                   */
-    return mutable;
+    if (mutable)
+      return 0;
+    if (!homog)
+      return 1;
+    else
+      return 2;
 }
 
 
@@ -630,9 +841,9 @@ Obj FuncSORT_LIST (
     Obj                 list )
 {
     /* check the first argument                                            */
-    while ( ! IS_LIST(list) ) {
+    while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "SORT_LIST: <list> must be a list (not a %s)",
+            "SORT_LIST: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
@@ -664,9 +875,9 @@ Obj FuncSORT_LIST_COMP (
     Obj                 func )
 {
     /* check the first argument                                            */
-    while ( ! IS_LIST(list) ) {
+    while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "SORT_LISTComp: <list> must be a list (not a %s)",
+            "SORT_LISTComp: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
@@ -686,6 +897,108 @@ Obj FuncSORT_LIST_COMP (
     }
     else {
         SORT_LISTComp( list, func );
+    }
+
+    /* return nothing                                                      */
+    return (Obj)0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSORT_PARA_LIST( <self>, <list> )  . . . . . . sort a list with shadow
+*/
+Obj FuncSORT_PARA_LIST (
+    Obj                 self,
+    Obj                 list,
+    Obj               shadow )
+{
+    /* check the first two arguments                                       */
+    while ( ! IS_SMALL_LIST(list) ) {
+        list = ErrorReturnObj(
+            "SORT_PARA_LIST: first <list> must be a small list (not a %s)",
+            (Int)TNAM_OBJ(list), 0L,
+            "you can return a list for <list>" );
+    }
+    while ( ! IS_SMALL_LIST(shadow) ) {
+        shadow = ErrorReturnObj(
+            "SORT_PARA_LIST: second <list> must be a small list (not a %s)",
+            (Int)TNAM_OBJ(shadow), 0L,
+            "you can return a list for <list>" );
+    }
+    if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
+        ErrorReturnVoid( 
+            "SORT_PARA_LIST: lists must have the same length (not %d and %d)",
+            (Int)LEN_LIST( list ),
+            (Int)LEN_LIST( shadow ),
+            "you can return" );
+    }
+
+    /* dispatch                                                            */
+    if ( T_PLIST_DENSE     <= TNUM_OBJ(list)
+       && TNUM_OBJ(list)   <= T_PLIST_CYC_SSORT
+       && T_PLIST_DENSE    <= TNUM_OBJ(shadow)
+       && TNUM_OBJ(shadow) <= T_PLIST_CYC_SSORT ) {
+        SortParaDensePlist( list, shadow );
+    }
+    else {
+        SORT_PARA_LIST( list, shadow );
+    }
+    IS_SSORT_LIST(list);
+
+    /* return nothing                                                      */
+    return (Obj)0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSORT_LIST_COMP( <self>, <list>, <func> )  . . . . . . . . sort a list
+*/
+Obj FuncSORT_PARA_LIST_COMP (
+    Obj                 self,
+    Obj                 list,
+    Obj               shadow,
+    Obj                 func )
+{
+    /* check the first two arguments                                       */
+    while ( ! IS_SMALL_LIST(list) ) {
+        list = ErrorReturnObj(
+            "SORT_LISTComp: <list> must be a small list (not a %s)",
+            (Int)TNAM_OBJ(list), 0L,
+            "you can return a list for <list>" );
+    }
+    while ( ! IS_SMALL_LIST(shadow) ) {
+        shadow = ErrorReturnObj(
+            "SORT_PARA_LIST: second <list> must be a small list (not a %s)",
+            (Int)TNAM_OBJ(shadow), 0L,
+            "you can return a list for <list>" );
+    }
+    if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
+        ErrorReturnVoid( 
+            "SORT_PARA_LIST: lists must have the same length (not %d and %d)",
+            (Int)LEN_LIST( list ),
+            (Int)LEN_LIST( shadow ),
+            "you can return" );
+    }
+
+    /* check the third argument                                            */
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
+        func = ErrorReturnObj(
+            "SORT_LISTComp: <func> must be a function (not a %s)",
+            (Int)TNAM_OBJ(func), 0L,
+            "you can return a function for <func>" );
+    }
+
+    /* dispatch                                                            */
+    if ( T_PLIST_DENSE     <= TNUM_OBJ(list)
+       && TNUM_OBJ(list)   <= T_PLIST_CYC_SSORT
+       && T_PLIST_DENSE    <= TNUM_OBJ(shadow)
+       && TNUM_OBJ(shadow) <= T_PLIST_CYC_SSORT ) {
+        SortParaDensePlistComp( list, shadow, func );
+    }
+    else {
+        SORT_PARA_LISTComp( list, shadow, func );
     }
 
     /* return nothing                                                      */
@@ -734,7 +1047,7 @@ Obj             FuncOnPairs (
     Obj                 tmp;            /* temporary                       */
 
     /* check the type of the first argument                                */
-    while ( ! IS_LIST( pair ) || LEN_LIST( pair ) != 2 ) {
+    while ( ! IS_SMALL_LIST( pair ) || LEN_LIST( pair ) != 2 ) {
         pair = ErrorReturnObj(
             "OnPairs: <pair> must be a list of length 2 (not a %s)",
             (Int)TNAM_OBJ(pair), 0L,
@@ -780,13 +1093,23 @@ Obj             FuncOnTuples (
     UInt                i;              /* loop variable                   */
 
     /* check the type of the first argument                                */
-    while ( ! IS_LIST( tuple ) ) {
+    while ( ! IS_SMALL_LIST( tuple ) ) {
         tuple = ErrorReturnObj(
-            "OnTuples: <tuple> must be a list (not a %s)",
+            "OnTuples: <tuple> must be a small list (not a %s)",
             (Int)TNAM_OBJ(tuple), 0L,
-            "you can return a list for <tuple>" );
+            "you can return a small list for <tuple>" );
     }
 
+    /* special case for the empty list */
+    if ( HAS_FILT_LIST( tuple, FN_IS_EMPTY )) {
+      if (IS_MUTABLE_OBJ(tuple)) {
+	img = NEW_PLIST(T_PLIST_EMPTY, 0);
+	SET_LEN_PLIST(img,0);
+	return img;
+      } else {
+	return tuple;
+      }
+    }
     /* special case for permutations                                       */
     if ( TNUM_OBJ(elm) == T_PERM2 || TNUM_OBJ(elm) == T_PERM4 ) {
         PLAIN_LIST( tuple );
@@ -820,24 +1143,39 @@ Obj             FuncOnTuples (
 **  specifies the operation  of group elements  on  sets of points, which are
 **  represented by sorted lists of points without duplicates (see "Sets").
 */
+
 Obj             FuncOnSets (
     Obj                 self,
     Obj                 set,
     Obj                 elm )
 {
     Obj                 img;            /* handle of the image, result     */
-    UInt                mutable;        /* the elements are mutable        */
+    UInt                status;        /* the elements are mutable        */
 
     /* check the type of the first argument                                */
-    while ( TNUM_OBJ( set ) != T_PLIST_HOM_SSORT && ! IsSet( set ) ) {
+    while ( !HAS_FILT_LIST(set, FN_IS_SSORT) && ! IsSet( set ) ) {
         set = ErrorReturnObj(
             "OnSets: <set> must be a set (not a %s)",
             (Int)TNAM_OBJ(set), 0L,
             "you can return a set for <set>" );
     }
 
+    /* special case for the empty list */
+    if ( HAS_FILT_LIST( set, FN_IS_EMPTY )) {
+      if (IS_MUTABLE_OBJ(set)) {
+	img = NEW_PLIST(T_PLIST_EMPTY, 0);
+	SET_LEN_PLIST(img,0);
+	return img;
+      } else {
+	return set;
+      }
+    }
+	
+	 
+
     /* special case for permutations                                       */
     if ( TNUM_OBJ(elm) == T_PERM2 || TNUM_OBJ(elm) == T_PERM4 ) {
+        PLAIN_LIST( set );
         return OnSetsPerm( set, elm );
     }
 
@@ -848,10 +1186,22 @@ Obj             FuncOnSets (
     SortDensePlist( img );
 
     /* remove duplicates, check for mutable elements                       */
-    mutable = RemoveDupsDensePlist( img );
+    status = RemoveDupsDensePlist( img );
 
     /* if possible, turn this into a set                                   */
-    if ( ! mutable ) { RetypeBag( img, T_PLIST_HOM_SSORT ); }
+    switch (status)
+      {
+      case 0:
+	break;
+	
+      case 1:
+	RetypeBag( img, T_PLIST_DENSE_NHOM_SSORT );
+
+      case 2:
+	RetypeBag( img, T_PLIST_HOM_SSORT );
+
+      }
+
 
     /* return set                                                          */
     return img;
@@ -963,6 +1313,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SORT_LIST_COMP", 2, "list, func",
       FuncSORT_LIST_COMP, "src/listfunc.c:SORT_LIST_COMP" },
+
+    { "SORT_PARA_LIST", 2, "list, list",
+      FuncSORT_PARA_LIST, "src/listfunc.c:SORT_PARA_LIST" },
+
+    { "SORT_PARA_LIST_COMP", 3, "list, list, func",
+      FuncSORT_PARA_LIST_COMP, "src/listfunc.c:SORT_PARA_LIST_COMP" },
 
     { "OnPoints", 2, "pnt, elm",
       FuncOnPoints, "src/listfunc.c:OnPoints" },

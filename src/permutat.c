@@ -2319,7 +2319,7 @@ Obj             FuncPermList (
     Int                 i,  k;          /* loop variables                  */
 
     /* check the arguments                                                 */
-    while ( ! IS_LIST( list ) ) {
+    while ( ! IS_SMALL_LIST( list ) ) {
         list = ErrorReturnObj(
             "PermList: <list> must be a list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
@@ -2520,13 +2520,7 @@ Obj             FuncLARGEST_MOVED_POINT_PERM (
 
     }
 
-    /* check for identity                                                  */
-    if ( sup == 0 ) {
-        return ErrorReturnObj(
-            "LargestMovedPointPerm: <perm> must not be the identity",
-            0L, 0L,
-            "you can return a result value (i.e., a largest moved point)" );
-    }
+    /* ahulpke: 19-nov-99: Removed special treatment of identity */
 
     /* return it                                                           */
     return INTOBJ_INT( sup );
@@ -3185,7 +3179,7 @@ Obj             FuncTRIM_PERM (
     }
     else {
       rdeg = deg < DEG_PERM4(perm) ? deg : DEG_PERM4(perm);
-      if (rdeg > 65535 ) {
+      if (rdeg > 65536UL ) {
 	ResizeBag( perm, sizeof(UInt4)*rdeg);
       }
       else {
@@ -3544,9 +3538,9 @@ Obj Array2Perm (
     /* loop over the cycles                                                */
     for ( i = 1; i <= LEN_LIST(array); i++ ) {
         cycle = ELM_LIST( array, i );
-        while ( ! IS_LIST(cycle) ) {
+        while ( ! IS_SMALL_LIST(cycle) ) {
             cycle = ErrorReturnObj(
-                "Arra2Perm: <cycle> must be a list (not a %s)",
+                "Arra2Perm: <cycle> must be a small list (not a %s)",
                 (Int)TNAM_OBJ(cycle), 0L,
                 "you can return a list" );
         }

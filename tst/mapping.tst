@@ -56,8 +56,8 @@ gap> IsTotal( inv );
 false
 
 gap> comp:= CompositionMapping( inv, map );
-CompositionMapping( <general mapping: GF(3) -> GF(
-3) >, InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
+CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
+3) > ), <general mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( comp ) ),"\n");
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
@@ -74,8 +74,8 @@ gap> IsTotal( comp );
 true
 
 gap> anticomp:= CompositionMapping( map, inv );
-CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
-3) > ), <general mapping: GF(3) -> GF(3) > )
+CompositionMapping( <general mapping: GF(3) -> GF(
+3) >, InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
 gap> Print(AsList( UnderlyingRelation( anticomp ) ),"\n");
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ Z(3)^0, 0*Z(3) ] ), Tuple( [ Z(3)^0, Z(3)^0 ] ) ]
@@ -87,6 +87,29 @@ gap> IsSurjective( anticomp );
 false
 gap> IsTotal( anticomp );
 false
+
+gap> t1:= Tuple( [ (), () ] );;  t2:= Tuple( [ (1,2), (1,2) ] );;
+gap> g:= Group( (1,2) );;
+gap> t:= TrivialSubgroup( g );;
+gap> map1:= GeneralMappingByElements( g, g, [ t1, t2 ] );;
+gap> map2:= GeneralMappingByElements( t, t, [ t1 ] );;
+gap> IsMapping( map1 );
+true
+gap> IsMapping( map2 );
+true
+gap> com:= CompositionMapping( map2, map1 );;
+gap> Source( com );
+Group([ (1,2) ])
+gap> Images( com, (1,2) );
+[  ]
+gap> IsTotal( com );
+false
+gap> IsSurjective( com );
+true
+gap> IsSingleValued( com );
+true
+gap> IsInjective( com );
+true
 
 gap> map:= GeneralMappingByElements( M, M, tuples{ [ 1, 4 ] } );
 <general mapping: GF(3) -> GF(3) >
@@ -113,8 +136,8 @@ gap> IsTotal( inv );
 false
 
 gap> comp:= CompositionMapping( inv, map );
-CompositionMapping( <general mapping: GF(3) -> GF(
-3) >, InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
+CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
+3) > ), <general mapping: GF(3) -> GF(3) > )
 gap> IsInjective( comp );
 false
 gap> IsSingleValued( comp );
@@ -148,9 +171,9 @@ gap> inv < map;
 false
 
 gap> conj:= map ^ inv;
-CompositionMapping( CompositionMapping( <general mapping: GF(3) -> GF(
-3) >, <general mapping: GF(3) -> GF(
-3) > ), InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
+CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
+3) > ), CompositionMapping( <general mapping: GF(3) -> GF(
+3) >, <general mapping: GF(3) -> GF(3) > ) )
 gap> IsSubset( UnderlyingRelation( conj ), UnderlyingRelation( map ) );
 true
 gap> IsSubset( UnderlyingRelation( map ), UnderlyingRelation( conj ) );
@@ -267,11 +290,11 @@ gap> PreImagesRange( map );
 gap> g := Group((1,2),(3,4));;
 gap> i := IdentityMapping( g );;
 gap> i2 := AsGroupGeneralMappingByImages(i);;
-gap> j:=GroupGeneralMappingByImages(g,g,AsListSorted(g),AsListSorted(g));;
+gap> j:=GroupGeneralMappingByImages(g,g,AsSSortedList(g),AsSSortedList(g));;
 gap> i2 = j;
 true
 
-gap> STOP_TEST( "mapping.tst", 15840238 );
+gap> STOP_TEST( "mapping.tst", 19067500 );
 
 
 #############################################################################

@@ -1,0 +1,92 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  grpchain.msk              GAP documentation               Gene Cooperman
+%A							     and Scott Murray
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\PreliminaryChapter{Chains of subgroups}
+
+*The functions and operations described in this chapter have been added
+very recently and are still undergoing development. It is conceivable that
+names of variants of the functionality might change in future versions. If
+you plan to use these functions in your own code, please contact us.*
+
+Data structures for storing general group chains. Note that this does not 
+replace StabChain.
+The group attribute ChainSubgroup(G) stores the next group down in the 
+chain (ie. the structure is recursive).  ChainSubgroup(G) should have 
+an attribute Transversal which describes a transversal of 
+ChainSubgroup(G) in G, as in gptransv.[gd,gi]
+
+The command "ChainSubgroup" will use the default
+method for computing chains -- currently this is
+random Schreier-Sims, unless the group is nilpotent.
+Warning: This algorithm is Monte-Carlo.
+ChainSubgroup is mutable, since it may start as the trivial
+    subgroup, and then grow as elements are sifted in, and some stick.
+    This allows us to do, if we want:
+        SetChainSubgroup(G, ClosureGroup(ChainSubgroup(G), siftee) );
+
+Whether this code is used instead of previous methods is determined by four 
+variables which control the behavious of the filter IsChainTypeGroup.  
+See the file gap/lib/grpchain.gd for details.
+\Declaration{IsChainTypeGroup}
+
+\Declaration{ChainSubgroup}
+\Declaration{MakeHomChain}
+\Declaration{Transversal}
+\Declaration{IsInChain}
+\Declaration{GeneratingSetIsComplete}
+
+\Declaration{SiftOneLevel}[grpchain]
+\Declaration{Sift}
+\Declaration{SizeOfChainOfGroup}
+\Declaration{TransversalOfChainSubgroup}
+\Declaration{ChainStatistics}
+\Declaration{HasChainHomomorphicImage}
+\Declaration{ChainHomomorphicImage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stabiliser chain subgroups}
+
+\Declaration{Base}
+\Declaration{ExtendedGroup}
+\Declaration{StrongGens}
+\Declaration{ChainSubgroupByStabiliser}
+\Declaration{OrbitGeneratorsOfGroup}
+
+\Declaration{RandomSchreierSims}
+\Declaration{ChangedBaseGroup
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Hom coset chain subgroups}
+
+\Declaration{ChainSubgroupByHomomorphism}
+\Declaration{ChainSubgroupByProjectionFunction}
+\Declaration{QuotientGroupByChainHomomorphicImage}
+\Declaration{ChainSubgroupQuotient}
+
+\Declaration{MakeHomChain}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Direct product chain subgroups}
+
+\Declaration{ChainSubgroupByDirectProduct}
+\Declaration{ChainSubgroupByPSubgroupOfAbelian}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Trivial chain subgroups and sift function chain subgroups}
+
+\Declaration{ChainSubgroupByTrivialSubgroup}
+\Declaration{ChainSubgroupBySiftFunction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

@@ -1,5 +1,4 @@
 BEGIN{mode=0;t="";
-  print "\n\n\n\nDifferences in output:\n=====================";
   di=0;
   }
 
@@ -27,6 +26,7 @@ BEGIN{mode=0;t="";
     if (substr($0,1,8)!="gap> #@ ") { 
       # compare the results
       if (e!=o) {
+        if (di == 0)   print "\n\n\n\nDifferences in output:\n=====================";
         print "\nCommand: " t ;
 	print "Example: " e;
 	print "Output : " o;
@@ -45,7 +45,9 @@ BEGIN{mode=0;t="";
   }
 }
 
-END{if (di==0) print "NONE!";
+END{if (di==0 && quiet == 0) {  
+  print "\n\n\n\nDifferences in output:\n=====================";
+  print "NONE!"; }
 }
 
 function unblank (a) {

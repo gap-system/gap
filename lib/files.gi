@@ -45,7 +45,11 @@ InstallMethod( Directory,
     0,
         
 function( str )
-    if '\\' in str or ':' in str  then
+    #
+    # ':' or '\\' probably are untranslated MSDOS or MaxOS path
+    # separators, but ':' in position 2 may be OK
+    #
+    if '\\' in str or (':' in str and str[2] <> ':') then
         Error( "<str> must not contain '\\' or ':'" );
     fi;
     if str[Length(str)] = '/'  then
@@ -114,19 +118,13 @@ end );
 ##
 #M  Filename( <directories>, <string> ) . . . . . . . . search for a filename
 ##
-InstallMethod( Filename,
-    "string",
-    true,
-    [ IsList,
-      IsString ],
-    0,
-
+InstallMethod( Filename, "string", true, [ IsList, IsString ], 0,
 function( dirs, name )
     local   dir,  new;
 
     for dir  in dirs  do
         new := Filename( dir, name );
-        if IsExistingFile(new)  then
+        if IsExistingFile(new)=true  then
             return new;
         fi;
     od;

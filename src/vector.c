@@ -172,10 +172,19 @@ Int             IsXTNumMatCyc (
         isMatrix = (len < i) ? 1 : 0;
     }
 
+    else if (T_PLIST_TAB <= TNUM_OBJ(list) &&
+	     TNUM_OBJ(list) <= T_PLIST_TAB_SSORT + IMMUTABLE)
+      {
+	/* now we know it is homogenous and rectangular */
+	/* just have to check if the first entry is a list of cyclotomics */
+	isMatrix = IsXTNumPlistCyc( ELM_PLIST( list, 1 ) );
+      }
+    
     /* otherwise the list is certainly not a matrix                        */
-    else {
+    else
+      {      
         isMatrix = 0;
-    }
+      }
 
     /* return the result                                                   */
     return isMatrix;
@@ -207,7 +216,8 @@ Obj             SumIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecR );
-    vecS = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
+    vecS = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
+		      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecS, len );
 
     /* loop over the elements and add                                      */
@@ -255,7 +265,8 @@ Obj             SumVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecL );
-    vecS = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
+    vecS = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
+		      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecS, len );
 
     /* loop over the elements and add                                      */
@@ -312,7 +323,8 @@ Obj             SumVectorVector (
              "you can return a new vector for <right>" );
         return SUM( vecL, vecR );
     }
-    vecS = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
+    vecS = NEW_PLIST( (IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
+		      T_PLIST_CYC+IMMUTABLE : T_PLIST_CYC, len );
     SET_LEN_PLIST( vecS, len );
 
     /* loop over the elements and add                                      */
@@ -363,7 +375,8 @@ Obj             DiffIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecR );
-    vecD = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
+    vecD = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
+		      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecD, len );
 
     /* loop over the elements and subtract                                 */
@@ -411,7 +424,8 @@ Obj             DiffVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecL );
-    vecD = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
+    vecD = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
+		      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecD, len );
 
     /* loop over the elements and subtract                                 */
@@ -468,7 +482,8 @@ Obj             DiffVectorVector (
              "you can return a new vector for <right>" );
         return DIFF( vecL, vecR );
     }
-    vecD = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
+    vecD = NEW_PLIST(  (IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
+		      T_PLIST_CYC+IMMUTABLE : T_PLIST_CYC, len );
     SET_LEN_PLIST( vecD, len );
 
     /* loop over the elements and subtract                                 */
@@ -519,7 +534,8 @@ Obj             ProdIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecR );
-    vecP = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
+    vecP = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
+		      T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecP, len );
 
     /* loop over the entries and multiply                                  */
@@ -567,7 +583,8 @@ Obj             ProdVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecL );
-    vecP = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
+    vecP = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
+		      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecP, len );
 
     /* loop over the entries and multiply                                  */
@@ -697,64 +714,73 @@ Obj             ProdVectorMatrix (
         return PROD( vecL, vecR );
     }
 
-    /* make the result list by multiplying the first entries               */
-    elmL = ELM_PLIST( vecL, 1 );
-    vecR = ELM_PLIST( matR, 1 );
-    vecP = PROD( elmL, vecR );
+    /* make the result list */
+    
+    vecP = NEW_PLIST( (IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(ELM_PLIST(matR,1))) ?
+		      T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE,
+		      col);
+    SET_LEN_PLIST( vecP, col);
+    for ( i = 1; i <= col; i++)
+      SET_ELM_PLIST( vecP, i, INTOBJ_INT(0));
 
-    /* loop over the other entries and multiply                            */
-    for ( i = 2; i <= len; i++ ) {
+
+    /* loop over the entries and multiply                            */
+    for ( i = 1; i <= len; i++ ) {
         elmL = ELM_PLIST( vecL, i );
         vecR = ELM_PLIST( matR, i );
         ptrR = ADDR_OBJ( vecR );
         ptrP = ADDR_OBJ( vecP  );
         if ( elmL == INTOBJ_INT( 1L ) ) {
-            for ( k = 1; k <= col; k++ ) {
-                elmT = ptrR[k];
-                elmP = ptrP[k];
-                if ( ! ARE_INTOBJS(elmP,elmT)
-                  || ! SUM_INTOBJS(elmS,elmP,elmT) ) {
-                    CHANGED_BAG( vecP );
-                    elmS = SUM( elmP, elmT );
-                    ptrR = ADDR_OBJ( vecR );
-                    ptrP = ADDR_OBJ( vecP );
-                }
-                ptrP[k] = elmS;
-            }
+	  for ( k = 1; k <= col; k++ ) {
+	    elmT = ptrR[k];
+	    elmP = ptrP[k];
+	    if ( ! ARE_INTOBJS(elmP,elmT)
+		 || ! SUM_INTOBJS(elmS,elmP,elmT) ) {
+	      CHANGED_BAG( vecP );
+	      elmS = SUM( elmP, elmT );
+	      ptrR = ADDR_OBJ( vecR );
+	      ptrP = ADDR_OBJ( vecP );
+	    }
+	    ptrP[k] = elmS;
+	  }
         }
         else if ( elmL == INTOBJ_INT( -1L ) ) {
             for ( k = 1; k <= col; k++ ) {
-                elmT = ptrR[k];
-                elmP = ptrP[k];
-                if ( ! ARE_INTOBJS(elmP,elmT)
-                  || ! DIFF_INTOBJS(elmS,elmP,elmT) ) {
-                    CHANGED_BAG( vecP );
-                    elmS = DIFF( elmP, elmT );
-                    ptrR = ADDR_OBJ( vecR );
-                    ptrP = ADDR_OBJ( vecP );
-                }
-                ptrP[k] = elmS;
+	      elmT = ptrR[k];
+	      elmP = ptrP[k];
+	      if ( ! ARE_INTOBJS(elmP,elmT)
+		   || ! DIFF_INTOBJS(elmS,elmP,elmT) ) {
+		CHANGED_BAG( vecP );
+		elmS = DIFF( elmP, elmT );
+		ptrR = ADDR_OBJ( vecR );
+		ptrP = ADDR_OBJ( vecP );
+	      }
+		    ptrP[k] = elmS;
+
             }
         }
         else if ( elmL != INTOBJ_INT( 0L ) ) {
             for ( k = 1; k <= col; k++ ) {
-                elmR = ptrR[k];
-                if ( ! ARE_INTOBJS(elmL,elmR)
-                  || ! PROD_INTOBJS(elmT,elmL,elmR) ) {
-                    CHANGED_BAG( vecP );
-                    elmT = PROD( elmL, elmR );
-                    ptrR = ADDR_OBJ( vecR );
-                    ptrP = ADDR_OBJ( vecP );
-                }
-                elmP = ptrP[k];
-                if ( ! ARE_INTOBJS(elmP,elmT)
-                  || ! SUM_INTOBJS(elmS,elmP,elmT) ) {
-                    CHANGED_BAG( vecP );
-                    elmS = SUM( elmP, elmT );
-                    ptrR = ADDR_OBJ( vecR );
-                    ptrP = ADDR_OBJ( vecP );
-                }
-                ptrP[k] = elmS;
+	      elmR = ptrR[k];
+	      if (elmR != INTOBJ_INT(0L))
+		{
+		  if ( ! ARE_INTOBJS(elmL,elmR)
+		       || ! PROD_INTOBJS(elmT,elmL,elmR) ) {
+		    CHANGED_BAG( vecP );
+		    elmT = PROD( elmL, elmR );
+		    ptrR = ADDR_OBJ( vecR );
+		    ptrP = ADDR_OBJ( vecP );
+		  }
+		  elmP = ptrP[k];
+		  if ( ! ARE_INTOBJS(elmP,elmT)
+		       || ! SUM_INTOBJS(elmS,elmP,elmT) ) {
+		    CHANGED_BAG( vecP );
+		    elmS = SUM( elmP, elmT );
+		    ptrR = ADDR_OBJ( vecR );
+		    ptrP = ADDR_OBJ( vecP );
+		  }
+		  ptrP[k] = elmS;
+		}
             }
         }
     }
@@ -763,6 +789,8 @@ Obj             ProdVectorMatrix (
     CHANGED_BAG( vecP );
     return vecP;
 }
+
+
 
 
 /****************************************************************************
@@ -774,7 +802,6 @@ Obj             ProdVectorMatrix (
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (

@@ -610,10 +610,24 @@ gap> n := Normalizer( g, u );;
 gap> Print(CanonicalPcgsWrtFamilyPcgs(n),"\n");
 Pcgs([ f1, f2, f3, f4, f5*f7^2, f6*f7^2, f8*f9^2 ])
 
+gap> G:=function() local g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,r,f,g,rws,x;
+> f:=FreeGroup(10); g:=GeneratorsOfGroup(f); g1:=g[1]; g2:=g[2]; g3:=g[3];
+> g4:=g[4]; g5:=g[5]; g6:=g[6]; g7:=g[7]; g8:=g[8]; g9:=g[9]; g10:=g[10];
+> rws:=SingleCollector(f,[ 2, 3, 2, 3, 2, 2, 2, 2, 2, 2 ]);
+> r:=[ ];
+> for x in r do SetPower(rws,x[1],x[2]);od;
+> r:=[ [2,1,g2], [6,1,g5], [7,1,g5*g6*g9], [8,1,g5], [9,1,g5],
+> [10,1,g8*g9], [5,2,g5*g9], [6,2,g5], [7,2,g9], [8,2,g9], [9,2,g5],
+> [10,2,g5], [4,3,g4], [6,3,g5*g8*g9], [7,3,g5*g8*g10], [6,4,g5*g8*g9],
+> [7,4,g5*g8*g10], [8,4,g5*g6*g8], [10,4,g5*g6*g7*g9*g10] ];
+> for x in r do SetCommutator(rws,x[1],x[2],x[3]);od;
+> return GroupByRwsNC(rws); end;; G:=G();;
+gap> Size(Normalizer(G,Subgroup(G,[G.1,G.2])));
+144
 
 #############################################################################
 
-gap> STOP_TEST( "grppcnrm.tst", 4599810668 );
+gap> STOP_TEST( "grppcnrm.tst", 2248650000 );
 
 
 #############################################################################

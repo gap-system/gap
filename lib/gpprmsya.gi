@@ -27,9 +27,12 @@ InstallMethod( IsNaturalAlternatingGroup,
 
 function( alt )
     if 0 = NrMovedPoints(alt)  then
-        return IsTrivial(alt);
+      return IsTrivial(alt);
     else
-        return Size(alt) * 2 = Factorial( NrMovedPoints(alt) );
+      return IsTransitive(alt,MovedPoints(alt)) and 
+      	     IsPrimitive(alt,MovedPoints(alt)) and 
+	     (NrMovedPoints(alt)<11 or Size(alt)>NrMovedPoints(alt)*10^6) and
+             Size(alt) * 2 = Factorial( NrMovedPoints(alt) );
     fi;
 end );
 
@@ -38,7 +41,8 @@ end );
 ##
 #M  <perm> in <nat-alt-grp>
 ##
-InstallMethod( \in,"alternating",
+InstallMethod( \in,
+    "alternating",
     true,
     [ IsPerm,
       IsNaturalAlternatingGroup ],
@@ -58,15 +62,18 @@ function( g, S )
     elif l = 0  then
         return false;
     elif IsRange(m) and ( l = 1 or m[2] - m[1] = 1 )  then
-        return SmallestMovedPointPerm(g) >= m[1]
-           and LargestMovedPointPerm(g)  <= m[l];
+        return SmallestMovedPoint(g) >= m[1]
+           and LargestMovedPoint(g)  <= m[l];
     else
-        return IsSubset( m, MovedPointsPerms([g]) );
+        return IsSubset( m, MovedPoints( [g] ) );
     fi;
 end );
 
-InstallMethod(Random,"alternating group: floyd's algorithm",
-  true,[IsNaturalAlternatingGroup],0,
+InstallMethod( Random,
+    "alternating group: floyd's algorithm",
+    true,
+    [ IsNaturalAlternatingGroup ],
+    10, # override perm gp. method
 function ( G )
     local   rnd,        # random permutation, result
             sgn,        # sign of the permutation so far
@@ -105,10 +112,11 @@ end);
 
 #############################################################################
 ##
-#M  RepresentativeOperation( <G>, <d>, <e>, <opr> ). . for alternating groups
+#M  RepresentativeAction( <G>, <d>, <e>, <opr> ). . for alternating groups
 ##
-InstallOtherMethod(RepresentativeOperationOp,true,
-  [IsNaturalAlternatingGroup,IsObject, IsObject, IsFunction ], 0,
+InstallOtherMethod( RepresentativeActionOp,
+    true,
+    [ IsNaturalAlternatingGroup, IsObject, IsObject, IsFunction ], 0,
 function ( G, d, e, opr )
 local dom,sortfun,max,cd,ce,rep;
   dom:=Set(MovedPoints(G));
@@ -131,7 +139,7 @@ local dom,sortfun,max,cd,ce,rep;
       if CycleStructurePerm(d)<>CycleStructurePerm(e) then
         return fail;
       fi;
-      max:=Maximum(LargestMovedPointPerm(d),LargestMovedPointPerm(e));
+      max:=Maximum(LargestMovedPoint(d),LargestMovedPoint(e));
       cd:=ShallowCopy(Cycles(d,[1..max]));
       ce:=ShallowCopy(Cycles(e,[1..max]));
       Sort(cd,sortfun);
@@ -194,8 +202,10 @@ local dom,sortfun,max,cd,ce,rep;
 end);
 
 
-InstallMethod(SylowSubgroupOp,"alternating",true,
-  [IsNaturalAlternatingGroup, IsPosInt],0,
+InstallMethod( SylowSubgroupOp,
+    "alternating",
+    true,
+    [ IsNaturalAlternatingGroup, IsPosInt ], 0,
 function ( G, p )
     local   S,          # <p>-Sylow subgroup of <G>, result
             sgs,        # strong generating set of <G>
@@ -234,8 +244,10 @@ function ( G, p )
 end);
 
 
-InstallMethod(ConjugacyClasses,"alternating",true,
-              [IsNaturalAlternatingGroup],0,
+InstallMethod( ConjugacyClasses,
+    "alternating",
+    true,
+    [ IsNaturalAlternatingGroup ], 0,
 function ( G )
     local   classes,    # conjugacy classes of <G>, result
             prt,        # partition of <G>
@@ -246,6 +258,9 @@ function ( G )
 
     mov:=MovedPoints(G);
     deg:=Length(mov);
+    if deg=0 then
+      TryNextMethod();
+    fi;
     trf:=MappingPermListList([1..deg],mov);
     # loop over the partitions
     classes := [];
@@ -281,6 +296,125 @@ function ( G )
     return classes;
 end);
 
+InstallMethod( IsomorphismFpGroup,
+    "alternating group",
+    true,
+    [ IsNaturalAlternatingGroup ], 10, # override `IsSimpleGroup' method
+function(G)
+  return IsomorphismFpGroup(G,
+           Concatenation("A_",String(Length(MovedPoints(G))),".") );
+end);
+
+InstallOtherMethod( IsomorphismFpGroup,
+    "alternating group,name",
+    true,
+    [ IsNaturalAlternatingGroup, IsString ],
+    10, # override `IsSimpleGroup' method
+function ( G,str )
+local   F,      # free group
+	gens,	#generators of F
+	imgs,
+	hom,	# bijection
+	mov,deg,# moved pts, degree
+	m,	#[n/2]
+	relators,
+	r,s,	# generators
+	d,	# subset of pts
+	p,	# permutation
+	j;      # loop variables
+
+    mov:=MovedPoints(G);
+    deg:=Length(mov);
+
+    # create the finitely presented group with <G>.degree-1 generators
+    F := FreeGroup( 2, str);
+    gens:=GeneratorsOfGroup(F);
+
+    # add the relations according to the presentation by Coxeter
+    # (see Coxeter/Moser)
+    r:=F.1;
+    s:=F.2;
+    if IsOddInt(deg) then
+      m:=(deg-1)/2;
+      relators:=[r^deg/s^deg,r^deg/(r*s)^m];
+      for j in [2..m] do
+	Add(relators,(r^-j*s^j)^2);
+      od;
+      #(1,2,3,..deg) and (1,3,2,4,5,..deg)
+      p:=MappingPermListList(mov,Concatenation(mov{[2..deg]},[mov[1]]));
+      imgs:=[p,p^(mov[2],mov[3])];
+    else
+      m:=deg/2;
+      relators:=[r^(deg-1)/s^(deg-1),r^(deg-1)/(r*s)^m];
+      for j in [1..m-1] do
+	Add(relators,(r^-j*s^-1*r*s^j)^2);
+      od;
+      # (1,2,3,4..,deg-2,deg),(1,2,3,4,deg-3,deg-1,deg);
+      d:=Concatenation(mov{[1..deg-2]},[mov[deg]]);
+      p:=MappingPermListList(d,Concatenation(d{[2..deg-1]},[d[1]]));
+      imgs:=[p];
+      d:=Concatenation(mov{[1..deg-3]},mov{[deg-1,deg]});
+      p:=MappingPermListList(d,Concatenation(d{[2..deg-1]},[d[1]]));
+      Add(imgs,p);
+    fi;
+
+    F:=F/relators;
+
+    SetSize(F,Size(G));
+    UseIsomorphismRelation( G, F );
+
+    # return the isomorphism to the finitely presented group
+    hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
+    SetIsBijective( hom, true );
+    return hom;
+end);
+
+# alternative, which has nicer (but more) generators
+#function ( G )
+#local   F,      # free group
+#	gens,	#generators of F
+#	imgs,
+#	hom,	# bijection
+#	mov,deg,
+#	relators,
+#	i, k;       # loop variables
+#
+#    mov:=MovedPoints(G);
+#    deg:=Length(mov);
+#
+#    # create the finitely presented group with <G>.degree-1 generators
+#    F := FreeGroup( deg-2, Concatenation("A_",String(deg),".") );
+#    gens:=GeneratorsOfGroup(F);
+#
+#    # add the relations according to the presentation by Carmichael
+#    # (see Coxeter/Moser)
+#    relators := [];
+#    for i  in [1..deg-2]  do
+#        Add( relators, gens[i]^3 );
+#    od;
+#    for i  in [1..deg-3]  do
+#        for k  in [i+1..deg-2]  do
+#            Add( relators, (gens[i] * gens[k])^2 );
+#        od;
+#    od;
+#
+#    F:=F/relators;
+#
+#    SetSize(F,Size(G));
+#    UseIsomorphismRelation( G, F );
+#
+#    # compute the bijection
+#    imgs:=[];
+#    for i in [1..deg-2] do
+#      Add(imgs,(mov[1],mov[i+1],mov[deg]));
+#    od;
+#
+#    # return the isomorphism to the finitely presented group
+#    hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
+#    SetIsBijective( hom, true );
+#    return hom;
+#end);
+
 
 #############################################################################
 ##
@@ -291,9 +425,15 @@ InstallMethod( IsNaturalSymmetricGroup,
     true,
     [ IsPermGroup ],
     0,
-
 function( sym )
-    return Size(sym) = Factorial( NrMovedPoints(sym) );
+    if 0 = NrMovedPoints(sym)  then
+      return IsTrivial(sym);
+    else
+      return IsTransitive(sym,MovedPoints(sym)) and 
+      	     IsPrimitive(sym,MovedPoints(sym)) and 
+	     (NrMovedPoints(sym)<11 or Size(sym)>NrMovedPoints(sym)*10^6) and
+             Size(sym) = Factorial( NrMovedPoints(sym) );
+    fi;
 end );
 
 
@@ -301,7 +441,7 @@ end );
 ##
 #M  <perm> in <nat-sym-grp>
 ##
-InstallMethod( \in,
+InstallMethod( \in,"perm in natsymmetric group",
     true,
     [ IsPerm,
       IsNaturalSymmetricGroup ],
@@ -318,11 +458,24 @@ function( g, S )
     elif l = 0  then
         return false;
     elif IsRange(m) and ( l = 1 or m[2] - m[1] = 1 )  then
-        return SmallestMovedPointPerm(g) >= m[1]
-           and LargestMovedPointPerm(g)  <= m[l];
+        return SmallestMovedPoint(g) >= m[1]
+           and LargestMovedPoint(g)  <= m[l];
     else
-        return IsSubset( m, MovedPointsPerms([g]) );
+        return IsSubset( m, MovedPoints( [g] ) );
     fi;
+end );
+
+#############################################################################
+##
+#M  IsSubset(<nat-sym-grp>,<permgrp>
+##
+InstallMethod( IsSubset,"permgrp of natsymmetric group", true,
+    [ IsNaturalSymmetricGroup,IsPermGroup ],
+    # we need to override a metrhod that computes the size.
+    SUM_FLAGS,
+
+function( S,G )
+  return IsSubset(MovedPoints(S),MovedPoints(G));
 end );
 
 
@@ -332,13 +485,15 @@ end );
 ##
 InstallMethod( Size,
     true,
-    [ IsNaturalSymmetricGroup ],
-    0,
+    [ IsNaturalSymmetricGroup ], 0,
     sym -> Factorial( NrMovedPoints(sym) ) );
 
 
-InstallMethod(Random,"symmetric group: floyd's algorithm",
-  true,[IsNaturalSymmetricGroup],0,
+InstallMethod( Random,
+    "symmetric group: floyd's algorithm",
+    true,
+    [ IsNaturalSymmetricGroup ],
+    10, # override perm. gp. method
 function ( G )
     local   rnd,        # random permutation, result
             sgn,        # sign of the permutation so far
@@ -380,8 +535,10 @@ function( sym, p, opr )
            SymmetricGroup( Difference( MovedPoints( sym ), [ p ] ) ) );
 end );
 
-InstallMethod(CentralizerOp,"element in symmetric group",
-  IsCollsElms,[IsNaturalSymmetricGroup,IsPerm],0,
+InstallMethod( CentralizerOp,
+    "element in natural symmetric group",
+    IsCollsElms,
+    [ IsNaturalSymmetricGroup, IsPerm ], 0,
 function ( G, g )
     local   C,          # centralizer of <g> in <G>, result
             sgs,        # strong generating set of <C>
@@ -439,10 +596,13 @@ end);
 
 #############################################################################
 ##
-#M  RepresentativeOperation( <G>, <d>, <e>, <opr> ) .  . for symmetric groups
+#M  RepresentativeAction( <G>, <d>, <e>, <opr> ) .  . for symmetric groups
 ##
-InstallOtherMethod(RepresentativeOperationOp,true,
-  [IsNaturalSymmetricGroup,IsObject, IsObject, IsFunction ], 0,
+InstallOtherMethod( RepresentativeActionOp,
+    "for natural symmetric group",
+    true,
+    [ IsNaturalSymmetricGroup, IsObject, IsObject,
+      IsFunction ], 0,
 function ( G, d, e, opr )
 local dom,sortfun,max,cd,ce;
   dom:=Set(MovedPoints(G));
@@ -465,7 +625,7 @@ local dom,sortfun,max,cd,ce;
       if CycleStructurePerm(d)<>CycleStructurePerm(e) then
         return fail;
       fi;
-      max:=Maximum(LargestMovedPointPerm(d),LargestMovedPointPerm(e));
+      max:=Maximum(LargestMovedPoint(d),LargestMovedPoint(e));
       cd:=ShallowCopy(Cycles(d,[1..max]));
       ce:=ShallowCopy(Cycles(e,[1..max]));
       Sort(cd,sortfun);
@@ -483,8 +643,10 @@ local dom,sortfun,max,cd,ce;
   TryNextMethod(); 
 end);
 
-InstallMethod(SylowSubgroupOp,"symmetric",true,
-  [IsNaturalSymmetricGroup, IsPosInt],0,
+InstallMethod( SylowSubgroupOp,
+    "symmetric",
+    true,
+    [ IsNaturalSymmetricGroup, IsPosInt ], 0,
 function ( G, p )
 local   S,          # <p>-Sylow subgroup of <G>, result
 	sgs,        # strong generating set of <G>
@@ -513,8 +675,10 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     return S;
 end);
 
-InstallMethod(ConjugacyClasses,"symmetric",true,
-              [IsNaturalSymmetricGroup],0,
+InstallMethod( ConjugacyClasses,
+    "symmetric",
+    true,
+    [ IsNaturalSymmetricGroup ], 0,
 function ( G )
     local   classes,    # conjugacy classes of <G>, result
             prt,        # partition of <G>
@@ -548,8 +712,10 @@ function ( G )
     return classes;
 end);
 
-InstallMethod(IsomorphismFpGroup,"symmetric group",true,
-  [IsNaturalSymmetricGroup],0,
+InstallMethod( IsomorphismFpGroup,
+    "symmetric group",
+    true,
+    [ IsNaturalSymmetricGroup ], 0,
 function ( G )
 local   F,      # free group
 	gens,	#generators of F
@@ -648,5 +814,59 @@ end );
 
 #############################################################################
 ##
-#E  gpprmsya.gd  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  SymmetricParentGroup( <grp> )
 ##
+InstallMethod( SymmetricParentGroup,
+    "symm(moved pts)",
+    true,
+    [ IsPermGroup ], 0,
+    G -> SymmetricGroup( MovedPoints( G ) ) );
+
+InstallMethod( SymmetricParentGroup,
+    "natural symmetric group",
+    true,
+    [ IsNaturalSymmetricGroup ], 0,
+    IdFunc );
+
+
+#############################################################################
+##
+#M  OrbitStabilizingParentGroup( <grp> )
+##
+InstallMethod( OrbitStabilizingParentGroup, "direct product of S_n's",
+    true, [ IsPermGroup ], 0,
+function(G)
+local o,d,i,j,l,s;
+  o:=ShallowCopy(Orbits(G,MovedPoints(G)));
+  Sort(o,function(a,b) return Length(a)<Length(b);end);
+  d:=false;
+  i:=1;
+  while i<=Length(o) do
+    l:=Length(o[i]);
+    j:=i+1;
+    while j<=Length(o) and Length(o[j])=l do
+      j:=j+1;
+    od;
+    s:=SymmetricGroup(l);
+    if j-1>i then
+      s:=WreathProduct(s,SymmetricGroup(j-i));
+    fi;
+    if d=false then 
+      d:=s;
+    else
+      d:=DirectProduct(d,s);
+    fi;
+    Assert(1,HasSize(d));
+    i:=j;
+  od;
+  d:=ConjugateGroup(d,MappingPermListList(Set(MovedPoints(d)),
+                                          Concatenation(o)));
+  Assert(1,IsSubset(d,G));
+  return d;
+end);
+
+
+#############################################################################
+##
+#E
+

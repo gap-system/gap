@@ -11,32 +11,51 @@
 Revision.gprd_gi :=
     "@(#)$Id$";
 
+
 #############################################################################
 ##
 #F  DirectProduct( <arg> )
 ##
-InstallGlobalFunction(DirectProduct,function( arg )
-    local   grps;
-    
-    if IsList( arg[1] )  then  grps := arg[1];
-                         else  grps := arg;    fi;
-    if   ForAll( grps, IsPermGroup )  then
-        return DirectProductOfPermGroups( grps );
-    elif ForAll( grps, IsPcGroup )    then
-        return DirectProductOfPcGroups( grps );
+InstallGlobalFunction( DirectProduct, function( arg )
+local d;
+  if Length( arg ) = 0 then
+    Error( "<arg> must be nonempty" );
+  elif Length( arg ) = 1 and IsList( arg[1] ) then
+    if IsEmpty( arg[1] ) then
+      Error( "<arg>[1] must be nonempty" );
     else
-        return DirectProductOfGroups( grps );
+      d:=DirectProductOp( arg[1], arg[1][1] );
     fi;
-end);
+  else
+    d:=DirectProductOp( arg, arg[1] );
+  fi;
+  if ForAll(arg,HasSize) then
+    SetSize(d,Product(List(arg,Size)));
+  fi;
+  return d;
+end );
+
 
 #############################################################################
 ##
-#M  DirectProductOfGroups( list )
+#M  DirectProductOp( <list>, <G> )
 ##
-InstallGlobalFunction(DirectProductOfGroups,function( list )
+InstallMethod( DirectProductOp,
+    "for a list (of groups), and a group",
+    true,
+    [ IsList, IsGroup ], 0,
+    function( list, gp )
+
     local ids, tup, first, i, G, gens, g, new, D;
 
-    ids := List( list, x -> One( x ) );
+    # Check the arguments.
+    if IsEmpty( list ) then
+      Error( "<list> must be nonempty" );
+    elif ForAny( list, G -> not IsGroup( G ) ) then
+      TryNextMethod();
+    fi;
+
+    ids := List( list, One );
     tup := [];
     first := [1];
     for i in [1..Length( list )] do
@@ -50,26 +69,34 @@ InstallGlobalFunction(DirectProductOfGroups,function( list )
         od;
         Add( first, Length( tup )+1 );
     od;
-    D := Group( tup );
+
+    D := GroupByGenerators( tup, Tuple( ids ) );
+
     SetDirectProductInfo( D, rec( groups := list,
                                   first  := first,
                                   embeddings := [],
                                   projections := [] ) );
+
     return D;
-end);        
+    end );        
+
 
 #############################################################################
 ##
-#M \in( <tuple>, <G> )
+#M  \in( <tuple>, <G> )
 ##
-InstallMethod( \in, true, [IsTuple, IsGroup and HasDirectProductInfo], 0,
+InstallMethod( \in,
+    true,
+#T why not IsElmsColls ?
+    [ IsTuple, IsGroup and HasDirectProductInfo ], 0,
 function( g, G )
     local n, info;
     n := Length( g );
     info := DirectProductInfo( G );
     return ForAll( [1..n], x -> g[x] in info.groups[x] );
 end );
-    
+
+
 #############################################################################
 ##
 #A Embedding
@@ -110,7 +137,7 @@ InstallMethod( Projection,
          [ IsGroup and HasDirectProductInfo, IsPosInt ], 
          0,
     function( D, i )
-    local info, G, imgs, hom, N, list, gens;
+    local info, G, imgs, hom, N, gens;
 
     # check
     info := DirectProductInfo( D );
@@ -126,7 +153,7 @@ InstallMethod( Projection,
                GeneratorsOfGroup( G ),
                List( [info.first[i+1]..Length(gens)], x -> One(G)));
     hom := GroupHomomorphismByImagesNC( D, G, gens, imgs );
-    N := Subgroup( D, gens{Concatenation( [1..info.first[i]-1], 
+    N := SubgroupNC( D, gens{Concatenation( [1..info.first[i]-1], 
                            [info.first[i+1]..Length(gens)])});
     SetIsSurjective( hom, true );
     SetKernelOfMultiplicativeGeneralMapping( hom, N );
@@ -161,9 +188,13 @@ end );
 ##
 InstallMethod( Pcgs, "for direct products", true, 
                [IsGroup and CanEasilyComputePcgs and HasDirectProductInfo], 
-               SUM_FLAGS,
+	       Maximum(
+		SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsPcGroup))),
+		SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(
+		  IsPermGroup and IsSolvableGroup)))
+	        ),# this is better than these two common alternatives
 function( D )
-    local info, pcs, i, pcgs, emb, rels, one, new, g;
+    local info, pcs, i, pcgs, rels, one, new, g;
     if not IsTuple( One( D ) ) then TryNextMethod(); fi;
     info := DirectProductInfo( D );
     pcs := [];
@@ -181,7 +212,6 @@ function( D )
     pcs := PcgsByPcSequenceNC( ElementsFamily(FamilyObj( D ) ), pcs );
     SetRelativeOrders( pcs, rels );
     SetOneOfPcgs( pcs, One(D) );
-    SetIsGenericPcgs( pcs, true );
     return pcs;
 end );
 
@@ -279,7 +309,7 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
                 Add( autU, Image( gamma, alpha ) );
             fi;
         od;
-        autU := Subgroup( P, autU );
+        autU := SubgroupNC( P, autU );
 
         # calculate induced autos in H
         NormVM := Normalizer( NormV, M );
@@ -294,7 +324,7 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
                 Add( autV, Image( gamma, alpha ) );
             fi;
         od;
-        autV := Subgroup( P, autV );
+        autV := SubgroupNC( P, autV );
 
         # and obtain double coset reps
         reps := List( DoubleCosets( P, autU, autV ), Representative );
@@ -307,13 +337,12 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
             gens := Concatenation( GeneratorsOfGroup( N ), 
                                    GeneratorsOfGroup( M ) );
             for r in GeneratorsOfGroup( UN ) do
-                g := Image( rep, r );
-                h := Image( iso, r );
-                g := PreImagesRepresentative( pair[1], g );
+                g := PreImagesRepresentative( pair[1], r );
+                h := Image( iso, Image( rep, r ) );
                 h := PreImagesRepresentative( pair[2], h );
                 Add( gens, g * h );
             od;
-            S := Subgroup( D, gens );
+            S := SubgroupNC( D, gens );
             SetSize( S, Size( N ) * Size( M ) * Size( UN ) );
             Add( subdir, S );
         od;
@@ -347,7 +376,7 @@ end);
 #F SubdirectProducts( S, T ) . . . . . . . . . . . up to conjugacy in parents
 ##
 InstallGlobalFunction(SubdirectProducts,function( S, T )
-    local G, H, D, emb1, emb2, U, V, subdir, info, i, tmp;
+    local G, H, D, emb1, emb2, U, V, subdir, info, i;
 
     # go over to direct product
     G := Parent( S );
@@ -375,5 +404,26 @@ InstallGlobalFunction(SubdirectProducts,function( S, T )
     return subdir;
 end);
 
+# wreath products: generic via permutation groups
+
+InstallOtherMethod( WreathProduct,"generic groups with permhom", true,
+ [ IsGroup, IsGroup, IsSPGeneralMapping ], 0,
+function(G,H,hom)
+local iso;
+  iso:=IsomorphismPermGroup(G);
+  return WreathProductImprimitiveAction(iso,H,hom);
+end);
+
+InstallOtherMethod( WreathProduct,"generic groups", true,
+ [ IsGroup, IsGroup ], 0,
+function(G,H)
+local iso;
+  iso:=IsomorphismPermGroup(H);
+  return WreathProduct(G,H,iso);
+end);
+
 
 #############################################################################
+##
+#E
+

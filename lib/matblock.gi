@@ -19,25 +19,32 @@ Revision.matblock_gi :=
 ##
 ##  A matrix in this representation is described by the following data.
 ##
-##  `blocks'
+##  \beginitems
+##  `blocks' &
 ##       an ordered list of triples $[ i, j, m ]$ where $m$ is a matrix
 ##       (possibly again a block matrix) with `rb' rows and `cb' columns
 ##       that is in the $i$-th row block and in the $j$-th column block
 ##       of the matrix <mat>,
-##  `nrb'
+##
+##  `nrb' &
 ##       number of row blocks,
-##  `ncb'
+##
+##  `ncb' &
 ##       number of column blocks,
-##  `rpb'
+##
+##  `rpb' &
 ##       rows per block,
-##  `cpb'
+##
+##  `cpb' &
 ##       columns per block,
-##  `zero'
+##
+##  `zero' &
 ##       the zero element that is stored in all places of the matrix
 ##       outside the blocks in `blocks'.
+##  \enditems
 ##
 DeclareRepresentation( "IsBlockMatrixRep",
-    IsListDefaultRep and IsComponentObjectRep,
+    IsComponentObjectRep,
     [ "blocks", "zero", "nrb", "ncb", "rpb", "cpb" ] );
 
 
@@ -86,7 +93,7 @@ InstallGlobalFunction( BlockMatrix, function( arg )
         Add( newblocks, block );
       fi;
     od;
-    Sort( newblocks, Lexicographically );
+    Sort( newblocks, IsLexicographicallyLess );
     for i in [ 1 .. Length( newblocks ) - 1 ] do
       if newblocks[i][1] = newblocks[ i+1 ][1] and
          newblocks[i][2] = newblocks[ i+1 ][2] then
@@ -99,6 +106,7 @@ InstallGlobalFunction( BlockMatrix, function( arg )
     return Objectify( NewType( CollectionsFamily( CollectionsFamily(
                                    FamilyObj( zero ) ) ),
                                    IsOrdinaryMatrix
+                               and IsListDefault
                                and IsBlockMatrixRep
                                and IsFinite ),
                       rec( blocks := Immutable( newblocks ),
@@ -184,9 +192,9 @@ InstallGlobalFunction( MatrixByBlockMatrix, function( blockmat )
       mat:= blockmat;
     else
 
-      mat:= MutableNullMat( blockmat!.nrb * blockmat!.rpb,
-                            blockmat!.ncb * blockmat!.cpb,
-                            blockmat!.zero );
+      mat:= NullMat( blockmat!.nrb * blockmat!.rpb,
+                     blockmat!.ncb * blockmat!.cpb,
+                     blockmat!.zero );
       for block in blockmat!.blocks do
         i:= block[1];
         j:= block[2];
@@ -280,7 +288,7 @@ InstallMethod( \+,
        and bm1!.cpb = bm2!.cpb then
 
       blocks:= Concatenation( bm1!.blocks, bm2!.blocks );
-      Sort( blocks, Lexicographically );
+      Sort( blocks, IsLexicographicallyLess );
       pos:= 1;
       i:= 1;
       while i < Length( blocks ) do
@@ -312,9 +320,9 @@ InstallMethod( \+,
 
 #############################################################################
 ##
-#M  AdditiveInverse( <blockmat> ) . . . . . . . . . . . .  for a block matrix
+#M  AdditiveInverseOp( <blockmat> ) . . . . . . . . . . .  for a block matrix
 ##
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
     "for an ordinary block matrix",
     true,
     [ IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
@@ -511,9 +519,9 @@ InstallMethod( \*,
 
 #############################################################################
 ##
-#M  One( <bm> )  . . . . . . . . . . . . . . . . . . . . . for a block matrix
+#M  OneOp( <bm> )  . . . . . . . . . . . . . . . . . . . . for a block matrix
 ##
-InstallOtherMethod( One,
+InstallOtherMethod( OneOp,
     "for an ordinary block matrix",
     true,
     [ IsOrdinaryMatrix and IsBlockMatrixRep ], 3,
@@ -522,7 +530,7 @@ InstallOtherMethod( One,
     local mat;
     if bm!.nrb = bm!.ncb and bm!.rpb = bm!.cpb then
       if IsEmpty( bm!.blocks ) then
-        mat:= IdentityMat( bm!.rpb, bm!.zero );
+        mat:= Immutable( IdentityMat( bm!.rpb, bm!.zero ) );
       else
         mat:= One( bm!.blocks[1][3] );
       fi;
@@ -575,5 +583,5 @@ InstallMethod( DimensionsMat,
 
 #############################################################################
 ##
-#E  matblock.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

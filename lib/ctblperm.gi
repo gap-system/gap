@@ -18,7 +18,7 @@ Revision.ctblperm_gi :=
 #F       Entry i,j of the matrix of el in the permutation representation of G
 ##
 FingerprintPerm := function(D,el,i,j,orbitJ,representatives)
-  local x,y,a,cycle,cycles;
+  local x,a,cycle,cycles;
   a:=0;
   #cycles:=Cycles(el,D.group.orbit);
   cycles:=Cycles(el,MovedPoints(D.group));
@@ -85,7 +85,7 @@ end;
 ##
 InstallMethod(DxPreparation,"perm",true,[IsPermGroup,IsRecord],0,
 function(G,D)
-local k,sum,perm,structures,ambiguousStructures,i,j,p,e,cem,ces,z,t,cen,a,
+local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
       c,s,f,fc,fs,fos,fr,enum;
 
   D.identification:=IdentificationPermGroup;
@@ -188,7 +188,7 @@ local k,sum,perm,structures,ambiguousStructures,i,j,p,e,cem,ces,z,t,cen,a,
 
         fs  := Stabilizer(G,D.p1);
         fos := First(Orbits(fs,[1..D.permdegree]),o->D.p2 in o);
-        fr  := List([1..D.permdegree],x->RepresentativeOperation(G,x,D.p1));
+        fr  := List([1..D.permdegree],x->RepresentativeAction(G,x,D.p1));
         fc:=[];
         for s in ambiguousStructures do
           c:=Filtered([1..D.klanz],i->IdentificationPermGroup(D,

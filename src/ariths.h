@@ -64,7 +64,7 @@ typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
 */
 #define ZERO(op)        ((*ZeroFuncs[TNUM_OBJ(op)])(op))
 
-extern Obj ZeroAttr;
+extern Obj ZeroOp;
 
 
 /****************************************************************************
@@ -90,7 +90,7 @@ extern void InstallZeroObject ( Int );
 */
 #define AINV(op) ((*AInvFuncs[TNUM_OBJ(op)])(op))
 
-extern Obj AInvAttr;
+extern Obj AInvOp;
 
 
 /****************************************************************************
@@ -140,7 +140,7 @@ extern void InstallAinvObject ( Int );
 */
 #define ONE(op)         ((*OneFuncs[TNUM_OBJ(op)])(op))
 
-extern Obj OneAttr;
+extern Obj OneOp;
 
 
 /****************************************************************************
@@ -166,7 +166,7 @@ extern void InstallOneObject ( Int );
 */
 #define INV(op)         ((*InvFuncs[TNUM_OBJ(op)])(op))
 
-extern Obj InvAttr;
+extern Obj InvOp;
 
 
 /****************************************************************************

@@ -38,8 +38,8 @@ Revision.assert_gd :=
 
 #############################################################################
 ##
-#V  SetAssertionLevel() . . . . . . . .  sets the level of assertion checking
-#V  AssertionLevel()  . . . . .  gets the current level of assertion checking
+#F  SetAssertionLevel() . . . . . . . .  sets the level of assertion checking
+#F  AssertionLevel()  . . . . .  gets the current level of assertion checking
 ##
 DeclareGlobalFunction("SetAssertionLevel");
 DeclareGlobalFunction("AssertionLevel");
@@ -49,6 +49,4 @@ DeclareGlobalFunction("AssertionLevel");
 ##
 #E  assert.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here  
 ##
-
-        
 

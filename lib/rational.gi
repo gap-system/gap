@@ -19,7 +19,7 @@ Revision.rational_gi :=
 ##
 InstallValue( Rationals, Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
-    IsRationals ), rec() ) );
+    IsRationals and IsAttributeStoringRep ), rec() ) );
 SetName( Rationals, "Rationals" );
 SetLeftActingDomain( Rationals, Rationals );
 SetIsPrimeField( Rationals, true );
@@ -29,8 +29,7 @@ SetConductor( Rationals, 1 );
 SetDimension( Rationals, 1 );
 SetGaloisStabilizer( Rationals, [ 1 ] );
 SetGeneratorsOfLeftModule( Rationals, [ 1 ] );
-#T necessary?
-#T     automorphisms               := [ e -> e ],
+SetIsWholeFamily( Rationals, false );
 
 
 #############################################################################
@@ -39,7 +38,7 @@ SetGeneratorsOfLeftModule( Rationals, [ 1 ] );
 ##
 InstallValue( GaussianRationals, Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
-    IsGaussianRationals ), rec() ) );
+    IsGaussianRationals and IsAttributeStoringRep ), rec() ) );
 SetName( GaussianRationals, "GaussianRationals" );
 SetLeftActingDomain( GaussianRationals, Rationals );
 SetIsPrimeField( GaussianRationals, false );
@@ -50,21 +49,28 @@ SetDimension( GaussianRationals, 2 );
 SetDegreeOverPrimeField( GaussianRationals, 2 );
 SetGaloisStabilizer( GaussianRationals, [ 1 ] );
 SetGeneratorsOfLeftModule( GaussianRationals, [ 1, E(4) ] );
+SetIsWholeFamily( GaussianRationals, false );
 
 
 #############################################################################
 ##
 #M  \in( <x>, <Rationals> ) . . . . . . . . . . membership test for rationals
 ##
-InstallMethod( \in, true, [ IsObject, IsRationals ], 0,
-    function ( x, Rationals ) return IsRat( x ); end );
+InstallMethod( \in,
+    "for Rationals and an object",
+    true,
+    [ IsObject, IsRationals ], 0,
+    function( x, Rationals ) return IsRat( x ); end );
 
 
 #############################################################################
 ##
 #M  Random( Rationals ) . . . . . . . . . . . . . . . . . . . random rational
 ##
-InstallMethod( Random, true, [ IsRationals ], 0,
+InstallMethod( Random,
+    "for Rationals",
+    true,
+    [ IsRationals ], 0,
     function( Rationals )
     local den;
     repeat den := Random( Integers ); until den <> 0;
@@ -74,10 +80,15 @@ InstallMethod( Random, true, [ IsRationals ], 0,
 
 #############################################################################
 ##
-#M  Conjugates( Rationals, <x> )  . . . . . . . . .  conjugates of a rational
+#M  Conjugates( Rationals, Rationals, <x> )   . . .  conjugates of a rational
 ##
-InstallMethod( Conjugates, IsCollsElms, [ IsRationals, IsRat ], 0,
-    function ( Rationals, x ) return [ x ]; end );
+InstallMethod( Conjugates,
+    "for Rationals, Rationals, and a rational",
+    IsCollsXElms,
+    [ IsRationals, IsRationals, IsRat ], 0,
+    function( L, K, x )
+    return [ x ];
+    end );
 
 
 #############################################################################
@@ -133,11 +144,10 @@ InstallMethod( Coefficients,
 
 ############################################################################
 ##
-#R  IsRationalsIterator
+#R  IsRationalsIteratorRep
 ##
-DeclareRepresentation( "IsRationalsIterator",
-    IsIterator,
-    [ "structure", "actualn", "up", "sign", "pos", "coprime" ] );
+DeclareRepresentation( "IsRationalsIteratorRep", IsComponentObjectRep,
+    [ "structure", "actualn", "up", "sign", "pos", "coprime", "len" ] );
 
 
 ############################################################################
@@ -157,22 +167,49 @@ DeclareRepresentation( "IsRationalsIterator",
 ##  elements in each $B_n$ for positive $n$, and the reverse of this
 ##  ordering for negative $n$.
 ##
-InstallMethod( Iterator, true, [ IsRationals ], 0,
+InstallMethod( Iterator,
+    "for `Rationals'",
+    true,
+    [ IsRationals ], 0,
     function( Rationals )
-    return Objectify( NewType( IteratorsFamily, IsRationalsIterator ),
+    return Objectify( NewType( IteratorsFamily,
+                                   IsIterator
+                               and IsMutable
+                               and IsRationalsIteratorRep ),
                       rec(
                            structure := Rationals,
                            actualn   := 0,
                            up        := false,
                            sign      := -1,
                            pos       := 1,
-                           coprime   := [ 1 ]       ) );
+                           coprime   := [ 1 ],
+                           len       := 1       ) );
     end );
 
-InstallMethod( IsDoneIterator, true, [ IsRationalsIterator ], 0,
+InstallMethod( IsDoneIterator,
+    "for iterator of `Rationals'",
+    true,
+    [ IsIterator and IsRationalsIteratorRep ], 0,
     ReturnFalse );
 
-InstallMethod( NextIterator, true, [ IsRationalsIterator ], 0,
+InstallMethod( ShallowCopy,
+    "for iterator of `Rationals'",
+    true,
+    [ IsIterator and IsRationalsIteratorRep ], 0,
+    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
+                       rec(
+                            structure := Rationals,
+                            actualn   := iter!.actualn,
+                            up        := iter!.up,
+                            sign      := iter!.sign,
+                            pos       := iter!.pos,
+                            coprime   := ShallowCopy( iter!.coprime ),
+                            len       := Length( iter!.coprime ) ) ) );
+
+InstallMethod( NextIterator,
+    "for mutable iterator of `Rationals'",
+    true,
+    [ IsIterator and IsMutable and IsRationalsIteratorRep ], 0,
     function( iter )
 
     local value;
@@ -238,7 +275,10 @@ DeclareRepresentation( "IsRationalsEnumerator",
 ##
 #M  Enumerator( Rationals )
 ##
-InstallMethod( Enumerator, true, [ IsRationals ], 0,
+InstallMethod( Enumerator,
+    "for `Rationals'",
+    true,
+    [ IsRationals ], 0,
     function( Rationals )
     local enum;
     enum:= Objectify( NewType( FamilyObj( Rationals ),
@@ -248,7 +288,9 @@ InstallMethod( Enumerator, true, [ IsRationals ], 0,
     return enum;
     end );
 
-InstallMethod( Position, true,
+InstallMethod( Position,
+    "for enumerator of `Rationals', cyclotomic, and 0",
+    true,
     [ IsRationalsEnumerator, IsCyc, IsZeroCyc ], 0,
     function( enum, elm, zero )
 
@@ -303,7 +345,10 @@ InstallMethod( Position, true,
     return number;
     end );
 
-InstallMethod( \[\], true, [ IsRationalsEnumerator, IsPosInt ], 0,
+InstallMethod( \[\],
+    "for enumerator of `Rationals', and pos. integer",
+    true,
+    [ IsRationalsEnumerator, IsPosInt ], 0,
     function( enum, number )
 
     local elm,
@@ -357,7 +402,7 @@ InstallMethod( \[\], true, [ IsRationalsEnumerator, IsPosInt ], 0,
 ##
 #F  EvalF(<number>) . . . . . .  floating point evaluation of rational number
 ##
-EvalF := function(arg)
+BindGlobal( "EvalF", function(arg)
 local r,f,i,s;
   r:=arg[1];
   if r<0 then
@@ -382,14 +427,52 @@ local r,f,i,s;
     od;
     s:=Concatenation(s,String(r));
   fi;
-  IsString(s);
+  ConvertToStringRep(s);
   return s;
-end; 
+end );
 
 
 #############################################################################
 ##
-#E  rational.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+##
+InstallMethod( RoundCyc,
+    "Rational",
+    true,
+    [ IsRat], 0,
+  function ( r )
 
+    if r < 0  then
+        return Int( r - 1 / 2 );
+    else
+        return Int( r + 1 / 2 );
+    fi;
 
+end );
+
+################
+##
+#M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+##
+InstallMethod( RoundCycDown,
+    "Rational",
+    true,
+    [ IsRat], 0,
+  function ( r )
+   
+    if DenominatorRat( r ) = 2  then
+        return Int( r );
+    fi;
+
+    if r < 0  then
+        return Int( r - 1 / 2 );
+    else
+        return Int( r + 1 / 2 );
+    fi;
+
+end );
+
+#############################################################################
+##
+#E
 

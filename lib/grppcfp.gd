@@ -12,12 +12,12 @@ Revision.grppcfp_gd :=
 ##
 #F  PcGroupFpGroup( <G> )
 ##
-##  creates a PcGroup <P> from an FpGroup (see chapter "Finitely Presented
+##  creates a PcGroup <P> from an FpGroup (see Chapter "Finitely Presented
 ##  Groups") <G> whose presentation is polycyclic. The resulting group <P>
 ##  has generators corresponding to the generators of <G>. They are printed
 ##  in the same way as generators of <G>, but they lie in a different
-##  family.
-##
+##  family. If the pc presentation of <G> is not confluent, an error message
+##  occurs.
 #T  should this become a method?
 DeclareGlobalFunction( "PcGroupFpGroup" );
 
@@ -63,4 +63,4 @@ DeclareGlobalFunction( "TryLayerSQ" );
 ##  should this become a method?
 ##
 DeclareGlobalFunction( "SolvableQuotient" );
-DeclareGlobalFunction( "SQ" );
+DeclareSynonym( "SQ", SolvableQuotient);

@@ -51,11 +51,11 @@ AC_DEFUN(GP_C_LONG_ALIGN,
 [AC_CACHE_CHECK(unaligned access, gp_cv_c_long_align,
 [
 case "$host" in
-   alpha-* )
+   alpha* )
 	gp_cv_c_long_align=8;;
    mips-* )
-        gp_cv_c_long_align=4;;
-   i586-* )
+        gp_cv_c_long_align=$ac_cv_sizeof_void_p;;
+   i586-* | i686-* )
         gp_cv_c_long_align=2;;
         * )
 
@@ -92,13 +92,76 @@ dnl ##
 AC_DEFUN(GP_C_UNION_WAIT,
 [AC_CACHE_CHECK(union wait, gp_cv_c_union_wait,
  [
-  AC_TRY_COMPILE( [#include sys/wait.h ], 
+  AC_TRY_COMPILE( [#include <sys/wait.h> ], 
                   [int a; int status; waitpid( (pid_t)-1, & status, 0);
                              a = WIFSIGNALED(status); a = WEXITSTATUS(status);],
                   gp_cv_c_union_wait=0,
                   gp_cv_c_union_wait=1 )],
   AC_DEFINE( HAVE_UNION_WAIT, $gp_cv_c_union_wait )
 )])
+
+dnl #########################################################################
+dnl ##
+dnl ## choose CFLAGS more carefully
+dnl ##
+AC_DEFUN(GP_CFLAGS,
+[AC_CACHE_CHECK(C compiler default flags, gp_cv_cflags,
+ [ case "$host-$CC" in
+    *-gcc | *-linux*-cc )
+     	gp_cv_cflags="-g -O2";;
+    i686-*-egcs )
+        gp_cv_cflags="-g -O2 -mcpu=i686";;
+    i586-*-egcs )
+        gp_cv_cflags="-g -O2 -mcpu=i586";;
+    i486-*-egcs )
+        gp_cv_cflags="-g -O2 -mcpu=i486";;
+    i386-*-egcs )
+        gp_cv_cflags="-g -O2 -mcpu=i386";;
+    alphaev6-*-osf4*-cc )
+	gp_cv_cflags="-g3 -arch ev6 -O3 ";;
+    alphaev56-*-osf4*-cc )
+	gp_cv_cflags="-g3 -arch ev56 -O3";;
+    alphaev5-*-osf4*-cc )
+	gp_cv_cflags="-g3 -arch ev5 -O3";;
+    alpha*-*-osf4*-cc )
+	gp_cv_cflags="-g3 -O3";;
+    *aix*cc )
+	gp_cv_cflags="-g -O3";;
+    *-solaris*-cc )
+	gp_cv_cflags="-fast -erroff=E_STATEMENT_NOT_REACHED";;
+    *-irix*-cc )
+	gp_cv_cflags="-O3 -woff 1110,1167";;
+    * )
+        gp_cv_cflags="-O";;
+   esac 
+ ])
+CFLAGS=$gp_cv_cflags
+AC_SUBST(CFLAGS)])
+
+dnl #########################################################################
+dnl ##
+dnl ## choose LDFLAGS more carefully
+dnl ##
+
+AC_DEFUN(GP_LDFLAGS,
+[AC_CACHE_CHECK(Linker default flags, gp_cv_ldflags,
+ [ case "$host-$CC" in
+    *-gcc | *-linux*-cc | *-egcs )
+     	gp_cv_ldflags="-g";;
+    alpha*-*-osf4*-cc )
+	gp_cv_ldflags="-g3 ";;
+    *-solaris*-cc )
+	gp_cv_ldflags="";;
+    *aix*cc )
+	gp_cv_ldflags="-g";;
+    *-irix*-cc )
+	gp_cv_ldflags="-O3";;
+    * )
+        gp_cv_ldflags="";;
+   esac 
+ ])
+LDFLAGS=$gp_cv_ldflags
+AC_SUBST(LDFLAGS)])
               
 dnl #########################################################################
 dnl ##
@@ -109,20 +172,25 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
  [ case "$host-$CC" in
     *-hpux-gcc )
         gp_cv_prog_cc_cdynoptions="-fpic";;
-    *-gcc )
-     	gp_cv_prog_cc_cdynoptions="-fpic -ansi -Wall -O2";;
+    *-gcc | *-egcs )
+     	gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2";;
     *-next-nextstep-cc )
-        gp_cv_prog_cc_cdynoptions="-ansi -Wall -O2 -arch $hostcpu";;
+        gp_cv_prog_cc_cdynoptions=" -Wall -O2 -arch $hostcpu";;
+    *-osf*-cc )
+	gp_cv_prog_cc_cdynoptions=" -shared -x -O2";;
+   
     * )
         gp_cv_prog_cc_cdynoptions="UNSUPPORTED";;
    esac 
  ])
  AC_CACHE_CHECK(dynamic linker, gp_cv_prog_cc_cdynlinker,
  [ case "$host-$CC" in
-    *-gcc )
+    *-gcc | *-egcs )
         gp_cv_prog_cc_cdynlinker="ld";;
     *-next-nextstep-cc )
         gp_cv_prog_cc_cdynlinker="cc";;
+    *-osf*-cc )
+	gp_cv_prog_cc_cdynlinker="cc";;
     * )
         gp_cv_prog_cc_cdynlinker="echo";;
    esac 
@@ -135,6 +203,10 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinking="-Bshareable -x";;
     *hpux* )
         gp_cv_prog_cc_cdynlinking="-b +e Init__Dynamic";;
+    alpha*osf*cc )
+	gp_cv_prog_cc_cdynlinking="-shared";;
+    *osf*cc )
+	gp_cv_prog_cc_cdynlinking="-shared -r";;
 
     *-nextstep*cc )
         gp_cv_prog_cc_cdynlinking="-arch $hostcpu -Xlinker -r -Xlinker -x -nostdlib";;

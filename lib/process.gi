@@ -170,7 +170,7 @@ InstallMethod( Process,
     0,
 
 function( dir, prg, input, output, args )
-    local   name_input,  new,  name_output,  res,  new_output,  tmp;
+    local   name_input,  new,  name_output,  res,  new_output;
 
     # convert input into a file
     if not IsInputTextFileRep(input)  then
@@ -214,6 +214,33 @@ end );
 
 #############################################################################
 ##
+#F  Exec( <str_1>, <str_2>, ..., <str_n> )  . . . . . . . . execute a command
+##
+InstallGlobalFunction( Exec, function( arg )
+    local   cmd,  i,  shell,  dir;
+
+    # simply concatenate the arguments
+    cmd := ShallowCopy( arg[1] );
+    for i  in [ 2 .. Length(arg) ]  do
+        Append( cmd, " " );
+        Append( cmd, arg[i] );
+    od;
+
+    # select the shell, bourne shell is the default
+    shell := Filename( DirectoriesSystemPrograms(), "sh" );
+
+    # execute in the current directory
+    dir := DirectoryCurrent();
+
+    # execute the command
+    Process( dir, shell, InputTextUser(), OutputTextUser(), [ "-c", cmd ] );
+
+end );
+
+
+#############################################################################
+##
 
 #E  process.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
+

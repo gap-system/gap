@@ -129,15 +129,19 @@ extern  Obj             SuccFF;
 *F  TYPE_FF(<ff>) . . . . . . . . . . . . . . .  kind of a small finite field
 **
 **  'TYPE_FF' returns the kind of elements of the small finite field <ff>.
+**  'TYPE_FF0' returns the kind of the zero of <ff>
 **
 **  Note that  'TYPE_FF' is a macro, so  do not call  it  with arguments that
 **  have sideeffects.
 */
 #define TYPE_FF(ff)             (ELM_PLIST( TypeFF, ff ))
+#define TYPE_FF0(ff)             (ELM_PLIST( TypeFF0, ff ))
 
 extern  Obj             TypeFF;
+extern  Obj             TypeFF0;
 
 extern  Obj             TYPE_FFE;
+extern  Obj             TYPE_FFE0;
 
 
 /****************************************************************************
@@ -282,8 +286,12 @@ typedef UInt2           FFV;
 **
 **  If the finite field element is 0 the power is also 0, otherwise  we  have
 **  $a^n ~ (z^{a-1})^n = z^{(a-1)*n} = z^{(a-1)*n % (o-1)} ~ (a-1)*n % (o-1)$
+**
+**  In the first macro one needs to be careful to convert a and n to UInt4. 
+**  Before performing the multiplication, ANSI-C will only convert to Int
+**  since UInt2 fits into Int.
 */
-#define POW1_FFV(a,n,f) ( (((a)-1) * (n)) % *(f) + 1 )
+#define POW1_FFV(a,n,f) ( (((UInt4)(a)-1) * (UInt4)(n)) % (UInt4)*(f) + 1 )
 #define POW_FFV(a,n,f)  ( (n)==0 ? 1 : ( (a)==0 ? 0 : POW1_FFV(a,n,f) ) )
 
 
@@ -297,7 +305,7 @@ typedef UInt2           FFV;
 **  Note that 'FLD_FFE' is a macro, so do not call  it  with  arguments  that
 **  have sideeffects.
 */
-#define FLD_FFE(ffe)            ((((UInt)(ffe)) & 0xFFFF) >> 3)
+#define FLD_FFE(ffe)            ((FF)((((UInt)(ffe)) & 0xFFFF) >> 3))
 
 
 /****************************************************************************
@@ -311,7 +319,7 @@ typedef UInt2           FFV;
 **  Note that 'VAL_FFE' is a macro, so do not call  it  with  arguments  that
 **  have sideeffects.
 */
-#define VAL_FFE(ffe)            (((UInt)(ffe)) >> 16)
+#define VAL_FFE(ffe)            ((FFV)(((UInt)(ffe)) >> 16))
 
 
 /****************************************************************************

@@ -138,9 +138,9 @@ InstallMethod( \+,
 
 #############################################################################
 ##
-#M  AdditiveInverse( <emptyvec> ) . . . . . . . . . . .  for empty row vector
+#M  AdditiveInverseOp( <emptyvec> ) . . . . . . . . . .  for empty row vector
 ##
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
     "for empty row vector",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
@@ -149,9 +149,9 @@ InstallMethod( AdditiveInverse,
 
 #############################################################################
 ##
-#M  Zero( <emptyvec> )  . . . . . . . . . . . . . . . .  for empty row vector
+#M  ZeroOp( <emptyvec> )  . . . . . . . . . . . . . . .  for empty row vector
 ##
-InstallMethod( Zero,
+InstallMethod( ZeroOp,
     "for empty row vector",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,

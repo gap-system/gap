@@ -26,7 +26,10 @@ Revision.arith_gd :=
 
 #############################################################################
 ##
-#C  IsExtAElement(<obj>)
+#C  IsExtAElement( <obj> )
+##
+##  An *external additive element* is an object that can be added via `+'
+##  with other elements (not necessarily in the same family, see~"Families").
 ##
 DeclareCategory( "IsExtAElement", IsObject );
 DeclareCategoryCollections( "IsExtAElement" );
@@ -41,9 +44,87 @@ InstallTrueMethod( IsExtAElement,
 
 #############################################################################
 ##
-#C  IsAdditiveElement(<obj>)
+#C  IsNearAdditiveElement( <obj> )
 ##
-DeclareCategory( "IsAdditiveElement", IsExtAElement );
+##  A *near-additive element* is an object that can be added via `+'
+##  with elements in its family (see~"Families");
+##  this addition is not necessarily commutative.
+##
+DeclareCategory( "IsNearAdditiveElement", IsExtAElement );
+DeclareCategoryCollections( "IsNearAdditiveElement" );
+DeclareCategoryCollections( "IsNearAdditiveElementCollection" );
+DeclareCategoryCollections( "IsNearAdditiveElementCollColl" );
+DeclareSynonym( "IsNearAdditiveElementList",
+    IsNearAdditiveElementCollection and IsList );
+DeclareSynonym( "IsNearAdditiveElementTable",
+    IsNearAdditiveElementCollColl   and IsTable );
+InstallTrueMethod( IsNearAdditiveElement,
+    IsNearAdditiveElementList );
+InstallTrueMethod( IsNearAdditiveElementList,
+    IsNearAdditiveElementTable );
+
+
+#############################################################################
+##
+#C  IsNearAdditiveElementWithZero( <obj> )
+##
+##  A *near-additive element-with-zero* is an object that can be added
+##  via `+' with elements in its family (see~"Families"),
+##  and that is an admissible argument for the operation `Zero' (see~"Zero");
+##  this addition is not necessarily commutative.
+##
+DeclareCategory( "IsNearAdditiveElementWithZero", IsNearAdditiveElement );
+DeclareCategoryCollections( "IsNearAdditiveElementWithZero" );
+DeclareCategoryCollections( "IsNearAdditiveElementWithZeroCollection" );
+DeclareCategoryCollections( "IsNearAdditiveElementWithZeroCollColl" );
+DeclareSynonym( "IsNearAdditiveElementWithZeroList",
+    IsNearAdditiveElementWithZeroCollection and IsList );
+DeclareSynonym( "IsNearAdditiveElementWithZeroTable",
+    IsNearAdditiveElementWithZeroCollColl   and IsTable );
+InstallTrueMethod(
+    IsNearAdditiveElementWithZero,
+    IsNearAdditiveElementWithZeroList );
+InstallTrueMethod(
+    IsNearAdditiveElementWithZeroList,
+    IsNearAdditiveElementWithZeroTable );
+
+
+#############################################################################
+##
+#C  IsNearAdditiveElementWithInverse( <obj> )
+##
+##  A *near-additive element-with-inverse* is an object that can be
+##  added via `+' with elements in its family (see~"Families"),
+##  and that is an admissible argument for the operations `Zero' (see~"Zero")
+##  and `AdditiveInverse' (see~"AdditiveInverse");
+##  this addition is not necessarily commutative.
+##
+DeclareCategory( "IsNearAdditiveElementWithInverse",
+    IsNearAdditiveElementWithZero );
+DeclareCategoryCollections( "IsNearAdditiveElementWithInverse" );
+DeclareCategoryCollections( "IsNearAdditiveElementWithInverseCollection" );
+DeclareCategoryCollections( "IsNearAdditiveElementWithInverseCollColl" );
+DeclareSynonym( "IsNearAdditiveElementWithInverseList",
+    IsNearAdditiveElementWithInverseCollection and IsList );
+DeclareSynonym( "IsNearAdditiveElementWithInverseTable",
+    IsNearAdditiveElementWithInverseCollColl   and IsTable );
+InstallTrueMethod(
+    IsNearAdditiveElementWithInverse,
+    IsNearAdditiveElementWithInverseList );
+InstallTrueMethod(
+    IsNearAdditiveElementWithInverseList,
+    IsNearAdditiveElementWithInverseTable );
+
+
+#############################################################################
+##
+#C  IsAdditiveElement( <obj> )
+##
+##  An *additive element* is an object that can be added via `+'
+##  with elements in its family (see~"Families");
+##  this addition is commutative.
+##
+DeclareCategory( "IsAdditiveElement", IsNearAdditiveElement );
 DeclareCategoryCollections( "IsAdditiveElement" );
 DeclareCategoryCollections( "IsAdditiveElementCollection" );
 DeclareCategoryCollections( "IsAdditiveElementCollColl" );
@@ -59,12 +140,25 @@ InstallTrueMethod( IsAdditiveElementList,
 
 #############################################################################
 ##
-#C  IsAdditiveElementWithZero(<obj>)
+#C  IsAdditiveElementWithZero( <obj> )
 ##
-DeclareCategory( "IsAdditiveElementWithZero", IsAdditiveElement );
-DeclareCategoryCollections( "IsAdditiveElementWithZero" );
-DeclareCategoryCollections( "IsAdditiveElementWithZeroCollection" );
-DeclareCategoryCollections( "IsAdditiveElementWithZeroCollColl" );
+##  An *additive element-with-zero* is an object that can be added
+##  via `+' with elements in its family (see~"Families"),
+##  and that is an admissible argument for the operation `Zero' (see~"Zero");
+##  this addition is commutative.
+##
+DeclareSynonym( "IsAdditiveElementWithZero",
+    IsNearAdditiveElementWithZero and IsAdditiveElement );
+DeclareSynonym( "IsAdditiveElementWithZeroCollection",
+        IsNearAdditiveElementWithZeroCollection
+    and IsAdditiveElementCollection );
+DeclareSynonym( "IsAdditiveElementWithZeroCollColl",
+        IsNearAdditiveElementWithZeroCollColl
+    and IsAdditiveElementCollColl );
+DeclareSynonym( "IsAdditiveElementWithZeroCollCollColl",
+        IsNearAdditiveElementWithZeroCollCollColl
+    and IsAdditiveElementCollCollColl );
+
 DeclareSynonym( "IsAdditiveElementWithZeroList",
     IsAdditiveElementWithZeroCollection and IsList );
 DeclareSynonym( "IsAdditiveElementWithZeroTable",
@@ -79,12 +173,26 @@ InstallTrueMethod(
 
 #############################################################################
 ##
-#C  IsAdditiveElementWithInverse(<obj>)
+#C  IsAdditiveElementWithInverse( <obj> )
 ##
-DeclareCategory( "IsAdditiveElementWithInverse", IsAdditiveElementWithZero );
-DeclareCategoryCollections( "IsAdditiveElementWithInverse" );
-DeclareCategoryCollections( "IsAdditiveElementWithInverseCollection" );
-DeclareCategoryCollections( "IsAdditiveElementWithInverseCollColl" );
+##  An *additive element-with-inverse* is an object that can be
+##  added via `+' with elements in its family (see~"Families"),
+##  and that is an admissible argument for the operations `Zero' (see~"Zero")
+##  and `AdditiveInverse' (see~"AdditiveInverse");
+##  this addition is commutative.
+##
+DeclareSynonym( "IsAdditiveElementWithInverse",
+    IsNearAdditiveElementWithInverse and IsAdditiveElement );
+DeclareSynonym( "IsAdditiveElementWithInverseCollection",
+        IsNearAdditiveElementWithInverseCollection
+    and IsAdditiveElementCollection );
+DeclareSynonym( "IsAdditiveElementWithInverseCollColl",
+        IsNearAdditiveElementWithInverseCollColl
+    and IsAdditiveElementCollColl );
+DeclareSynonym( "IsAdditiveElementWithInverseCollCollColl",
+        IsNearAdditiveElementWithInverseCollCollColl
+    and IsAdditiveElementCollCollColl );
+
 DeclareSynonym( "IsAdditiveElementWithInverseList",
     IsAdditiveElementWithInverseCollection and IsList );
 DeclareSynonym( "IsAdditiveElementWithInverseTable",
@@ -99,7 +207,11 @@ InstallTrueMethod(
 
 #############################################################################
 ##
-#C  IsExtLElement(<obj>)
+#C  IsExtLElement( <obj> )
+##
+##  An *external left element* is an object that can be multiplied from the
+##  left, via `\*', with other elements (not necessarily in the same family,
+##  see~"Families").
 ##
 DeclareCategory( "IsExtLElement", IsObject );
 DeclareCategoryCollections( "IsExtLElement" );
@@ -115,7 +227,11 @@ InstallTrueMethod(
 
 #############################################################################
 ##
-#C  IsExtRElement(<obj>)
+#C  IsExtRElement( <obj> )
+##
+##  An *external right element* is an object that can be multiplied from the
+##  right, via `\*', with other elements (not necessarily in the same family,
+##  see~"Families").
 ##
 DeclareCategory( "IsExtRElement", IsObject );
 DeclareCategoryCollections( "IsExtRElement" );
@@ -131,7 +247,10 @@ InstallTrueMethod(
 
 #############################################################################
 ##
-#C  IsMultiplicativeElement(<obj>)
+#C  IsMultiplicativeElement( <obj> )
+##
+##  A *multiplicative element* is an object that can be multiplied via `\*'
+##  with elements in its family (see~"Families").
 ##
 DeclareCategory( "IsMultiplicativeElement",
         IsExtLElement and IsExtRElement );
@@ -146,7 +265,11 @@ DeclareSynonym( "IsMultiplicativeElementTable",
 
 #############################################################################
 ##
-#C  IsMultiplicativeElementWithOne(<obj>)
+#C  IsMultiplicativeElementWithOne( <obj> )
+##
+##  A *multiplicative element-with-one* is an object that can be multiplied
+##  via `\*' with elements in its family (see~"Families"),
+##  and that is an admissible argument for the operation `One' (see~"One").
 ##
 DeclareCategory( "IsMultiplicativeElementWithOne",
         IsMultiplicativeElement );
@@ -161,7 +284,14 @@ DeclareSynonym( "IsMultiplicativeElementWithOneTable",
 
 #############################################################################
 ##
-#C  IsMultiplicativeElementWithInverse(<obj>)
+#C  IsMultiplicativeElementWithInverse( <obj> )
+##
+##  A *multiplicative element-with-inverse* is an object that can be
+##  multiplied via `\*' with elements in its family (see~"Families"),
+##  and that is an admissible argument for the operations `One' (see~"One")
+##  and `Inverse' (see~"Inverse"). (Note the wording ``admissable'': an
+##  object in this category does not necessarily have an inverse, `Inverse'
+##  may return `fail'.)
 ##
 DeclareCategory( "IsMultiplicativeElementWithInverse",
         IsMultiplicativeElementWithOne );
@@ -176,19 +306,20 @@ DeclareSynonym( "IsMultiplicativeElementWithInverseTable",
 
 #############################################################################
 ##
-#C  IsVector(<obj>)
+#C  IsVector( <obj> )
 ##
-##  A *vector* is an additive-element-with-inverse that can e multiplied from
-##  the left and right with other objects (not necessarily of the same type).
+##  A *vector* is an additive-element-with-inverse that can be multiplied
+##  from the left and right with other objects (not necessarily of the same
+##  type).
 ##  Examples are cyclotomics, finite field elements,
 ##  and of course row vectors (see below).
 ##
-##  Note that not all lists of ring elements are regarded as vectors, for
-##  example lists of matrices are not vectors.
+##  Note that not all lists of ring elements are regarded as vectors,
+##  for example lists of matrices are not vectors.
 ##  This is because although the category `IsAdditiveElementWithInverse' is
-##  implied by the join of its collections category and `IsList', the family
-##  of each list entry may may not imply `IsAdditiveElementWithInverse' for
-##  all its elements.
+##  implied by the join of its collections category and `IsList',
+##  the family of a list entry may not imply `IsAdditiveElementWithInverse'
+##  for all its elements.
 ##
 DeclareSynonym( "IsVector",
         IsAdditiveElementWithInverse
@@ -214,11 +345,16 @@ DeclareSynonym( "IsVectorTable",
 
 #############################################################################
 ##
-#C  IsRowVector(<obj>)
+#C  IsRowVector( <obj> )
 ##
-##  Note that methods for row vectors must be installed with the requirement
-##  `IsRowVector', since `IsVector' may lead to a rank of the method below
-##  that of the default method for row vectors (see file `vecmat.gi').
+##  A *row vector* is a vector (see~"IsVector") that is also a
+##  homogeneous list.  Typical examples are lists of integers, lists
+##  of finite field elements of the same characteristic, lists of
+##  polynomials from a common polynomial ring, and matrices.
+##
+##  The additive operations of the vector must thus be compatible with
+##  that for lists, implying that the list entries are the
+##  coefficients of the vector with respect to some basis.
 ##
 ##  Note that not all row vectors admit a scalar product via `\*';
 ##  for example, matrices are row vectors but the matrix product is defined
@@ -227,14 +363,111 @@ DeclareSynonym( "IsVectorTable",
 ##  the vector must be ring elements; note that the default method expects
 ##  the row vectors to lie in `IsRingElementList', and this category may not
 ##  be implied by `IsRingElement' for all entries of the row vector
-##  (see the comment for `IsVector').
+##  (see the comment for `IsVector' in~"IsVector").
+##
+##  Note that methods for special types of row vectors really must be
+##  installed with the requirement `IsRowVector',
+## since `IsVector' may lead to a rank of the method below
+##  that of the default method for row vectors (see file `vecmat.gi').
 ##
 DeclareSynonym( "IsRowVector", IsVector and IsHomogeneousList );
 
 
 #############################################################################
 ##
-#C  IsRingElement(<obj>)
+#C  IsNearRingElement( <obj> )
+##
+##  `IsNearRingElement' is just a synonym for the join of
+##  `IsNearAdditiveElementWithInverse' and `IsMultiplicativeElement'.
+##
+DeclareSynonym( "IsNearRingElement",
+        IsNearAdditiveElementWithInverse
+    and IsMultiplicativeElement );
+DeclareSynonym( "IsNearRingElementCollection",
+        IsNearAdditiveElementWithInverseCollection
+    and IsMultiplicativeElementCollection );
+DeclareSynonym( "IsNearRingElementCollColl",
+        IsNearAdditiveElementWithInverseCollColl
+    and IsMultiplicativeElementCollColl );
+DeclareSynonym( "IsNearRingElementCollCollColl",
+        IsNearAdditiveElementWithInverseCollCollColl
+    and IsMultiplicativeElementCollCollColl );
+DeclareSynonym( "IsNearRingElementList",
+        IsNearAdditiveElementWithInverseList
+    and IsMultiplicativeElementList );
+DeclareSynonym( "IsNearRingElementTable",
+        IsNearAdditiveElementWithInverseTable
+    and IsMultiplicativeElementTable );
+InstallTrueMethod(
+    IsNearRingElement,
+    IsNearRingElementTable );
+
+DeclareCategoryFamily( "IsNearRingElement" );
+
+
+#############################################################################
+##
+#C  IsNearRingElementWithOne( <obj> )
+##
+##  `IsNearRingElementWithOne' is just a synonym for the join of
+##  `IsNearAdditiveElementWithInverse' and `IsMultiplicativeElementWithOne'.
+##
+DeclareSynonym( "IsNearRingElementWithOne",
+        IsNearAdditiveElementWithInverse
+    and IsMultiplicativeElementWithOne );
+DeclareSynonym( "IsNearRingElementWithOneCollection",
+        IsNearAdditiveElementWithInverseCollection
+    and IsMultiplicativeElementWithOneCollection );
+DeclareSynonym( "IsNearRingElementWithOneCollColl",
+        IsNearAdditiveElementWithInverseCollColl
+    and IsMultiplicativeElementWithOneCollColl );
+DeclareSynonym( "IsNearRingElementWithOneCollCollColl",
+        IsNearAdditiveElementWithInverseCollCollColl
+    and IsMultiplicativeElementWithOneCollCollColl );
+DeclareSynonym( "IsNearRingElementWithOneList",
+        IsNearAdditiveElementWithInverseList
+    and IsMultiplicativeElementWithOneList );
+DeclareSynonym( "IsNearRingElementWithOneTable",
+        IsNearAdditiveElementWithInverseTable
+    and IsMultiplicativeElementWithOneTable );
+InstallTrueMethod(
+    IsNearRingElementWithOne,
+    IsNearRingElementWithOneTable );
+
+
+#############################################################################
+##
+#C  IsNearRingElementWithInverse( <obj> )
+##
+DeclareSynonym( "IsNearRingElementWithInverse",
+        IsNearAdditiveElementWithInverse
+    and IsMultiplicativeElementWithInverse );
+DeclareSynonym( "IsNearRingElementWithInverseCollection",
+        IsNearAdditiveElementWithInverseCollection
+    and IsMultiplicativeElementWithInverseCollection );
+DeclareSynonym( "IsNearRingElementWithInverseCollColl",
+        IsNearAdditiveElementWithInverseCollColl
+    and IsMultiplicativeElementWithInverseCollColl );
+DeclareSynonym( "IsNearRingElementWithInverseCollCollColl",
+        IsNearAdditiveElementWithInverseCollCollColl
+    and IsMultiplicativeElementWithInverseCollCollColl );
+DeclareSynonym( "IsNearRingElementWithInverseList",
+        IsNearAdditiveElementWithInverseList
+    and IsMultiplicativeElementWithInverseList );
+DeclareSynonym( "IsNearRingElementWithInverseTable",
+        IsNearAdditiveElementWithInverseTable
+    and IsMultiplicativeElementWithInverseTable );
+InstallTrueMethod(
+    IsNearRingElementWithInverse,
+    IsNearRingElementWithInverseTable );
+
+
+#############################################################################
+##
+#C  IsRingElement( <obj> )
+##
+##  `IsRingElement' is just a synonym for the join of
+##  `IsAdditiveElementWithInverse' and `IsMultiplicativeElement'.
 ##
 DeclareSynonym( "IsRingElement",
         IsAdditiveElementWithInverse
@@ -263,7 +496,10 @@ DeclareCategoryFamily( "IsRingElement" );
 
 #############################################################################
 ##
-#C  IsRingElementWithOne(<obj>)
+#C  IsRingElementWithOne( <obj> )
+##
+##  `IsRingElementWithOne' is just a synonym for the join of
+##  `IsAdditiveElementWithInverse' and `IsMultiplicativeElementWithOne'.
 ##
 DeclareSynonym( "IsRingElementWithOne",
         IsAdditiveElementWithInverse
@@ -290,7 +526,12 @@ InstallTrueMethod(
 
 #############################################################################
 ##
-#C  IsRingElementWithInverse(<obj>)
+#C  IsRingElementWithInverse( <obj> )
+#C  IsScalar( <obj> )
+##
+##  `IsRingElementWithInverse' and `IsScalar' are just synonyms for the join
+##  of
+##  `IsAdditiveElementWithInverse' and `IsMultiplicativeElementWithInverse'.
 ##
 DeclareSynonym( "IsRingElementWithInverse",
         IsAdditiveElementWithInverse
@@ -314,11 +555,6 @@ InstallTrueMethod(
     IsRingElementWithInverse,
     IsRingElementWithInverseTable );
 
-
-#############################################################################
-##
-#C  IsScalar(<obj>)
-##
 DeclareSynonym( "IsScalar",           IsRingElementWithInverse );
 DeclareSynonym( "IsScalarCollection", IsRingElementWithInverseCollection );
 DeclareSynonym( "IsScalarCollColl",   IsRingElementWithInverseCollColl );
@@ -328,20 +564,21 @@ DeclareSynonym( "IsScalarTable",      IsRingElementWithInverseTable );
 
 #############################################################################
 ##
-#C  IsMatrix(<obj>)
+#C  IsMatrix( <obj> )
 ##
 ##  A *matrix* is a list of lists of equal length whose entries lie in a
 ##  common ring.
 ##
 ##  Note that matrices may have different multiplications,
-##  besides the usual matrix product there is the Lie product.
+##  besides the usual matrix product there is for example the Lie product.
 ##  So there are categories such as `IsOrdinaryMatrix' and `IsLieMatrix'
-##  that describe the matrix product.
+##  (see~"IsOrdinaryMatrix", "IsLieMatrix")
+##  that describe the matrix multiplication.
 ##  One can form the product of two matrices only if they support the same
 ##  multiplication.
-##
-##  In order to avoid that a matrix supports more than one multiplication,
-##  appropriate immediate methods are installed (see~`arith.gi').
+#T
+#T  In order to avoid that a matrix supports more than one multiplication,
+#T  appropriate immediate methods are installed (see~`arith.gi').
 ##
 DeclareSynonym( "IsMatrix", IsRingElementTable );
 DeclareCategoryCollections( "IsMatrix" );
@@ -349,7 +586,7 @@ DeclareCategoryCollections( "IsMatrix" );
 
 #############################################################################
 ##
-#C  IsOrdinaryMatrix(<obj>)
+#C  IsOrdinaryMatrix( <obj> )
 ##
 ##  An *ordinary matrix* is a matrix whose multiplication is the ordinary
 ##  matrix multiplication.
@@ -380,24 +617,32 @@ InstallTrueMethod( IsOrdinaryMatrix, IsMatrix and IsInternalRep );
 ##  A *Lie matrix* is a matrix whose multiplication is given by the
 ##  Lie bracket.
 ##  (Note that a matrix with ordinary matrix multiplication is in the
-##  category `IsOrdinaryMatrix'.)
+##  category `IsOrdinaryMatrix', see~"IsOrdinaryMatrix".)
 ##
 ##  Each matrix created by `LieObject' is in the category `IsLieMatrix',
 ##  and arithmetic operations with objects in `IsLieMatrix' produce
 ##  again matrices in `IsLieMatrix'.
 ##
-##  (We do not claim that every object in `IsLieMatrix' is also contained in
-##  `IsLieObject', since the former describes the containment in a certain
-##  family and the latter describes a certain matrix multiplication;
-##  probably this distinction is unnecessary.)
+#T  (We do not claim that every object in `IsLieMatrix' is also contained in
+#T  `IsLieObject', since the former describes the containment in a certain
+#T  family and the latter describes a certain matrix multiplication;
+#T  probably this distinction is unnecessary.)
 ##
 DeclareCategory( "IsLieMatrix", IsMatrix );
 
 
 #############################################################################
 ##
-#C  IsAssociativeElement(<obj>)
-##                     category of elements belonging to associative families
+#C  IsAssociativeElement( <obj> ) . . . elements belonging to assoc. families
+#C  IsAssociativeElementCollection( <obj> )
+#C  IsAssociativeElementCollColl( <obj> )
+##
+##  An element <obj> in the category `IsAssociativeElement' knows
+##  that the multiplication of any elements in the family of <obj>
+##  is associative.
+##  For example, all permutations lie in this category, as well as those
+##  ordinary matrices (see~"IsOrdinaryMatrix") whose entries are also in
+##  `IsAssociativeElement'.
 ##
 DeclareCategory( "IsAssociativeElement", IsMultiplicativeElement );
 DeclareCategoryCollections( "IsAssociativeElement" );
@@ -406,166 +651,351 @@ DeclareCategoryCollections( "IsAssociativeElementCollection" );
 
 #############################################################################
 ##
-#M  IsAssociativeElement( <mat> ) . .  for matrices that are internal objects
+#M  IsAssociativeElement( <mat> ) . . . . . . . for certain ordinary matrices
 ##
-##  Matrices in internal representation and with entries in an associative
-##  family are themselves associative elements.
+##  Matrices with associative multiplication
+##  and with entries in an associative family
+##  are themselves associative elements.
 ##
 InstallTrueMethod( IsAssociativeElement,
-    IsMatrix and IsInternalRep and IsAssociativeElementCollColl );
+    IsOrdinaryMatrix and IsAssociativeElementCollColl );
 
 
 #############################################################################
 ##
-#C  IsCommutativeElement(<obj>)
-##                     category of elements belonging to commutative families
+#C  IsAdditivelyCommutativeElement( <obj> )
+#C  IsAdditivelyCommutativeElementCollection( <obj> )
+#C  IsAdditivelyCommutativeElementCollColl( <obj> )
+#C  IsAdditivelyCommutativeElementFamily( <obj> )
+##
+##  An element <obj> in the category `IsAdditivelyCommutativeElement' knows
+##  that the addition of any elements in the family of <obj>
+##  is commutative.
+##  For example, each finite field element and each rational number lies in
+##  this category.
+##
+DeclareCategory( "IsAdditivelyCommutativeElement", IsNearAdditiveElement );
+DeclareCategoryCollections( "IsAdditivelyCommutativeElement" );
+DeclareCategoryCollections( "IsAdditivelyCommutativeElementCollection" );
+
+DeclareCategoryFamily( "IsAdditivelyCommutativeElement" );
+
+
+#############################################################################
+##
+#M  IsAdditivelyCommutativeElement( <mat> ) . . . . . .  for certain matrices
+##
+##  Matrices with entries in an additively commutative family
+##  are themselves additively commutative elements.
+##
+InstallTrueMethod( IsAdditivelyCommutativeElement,
+    IsMatrix and IsAdditivelyCommutativeElementCollColl );
+
+
+#############################################################################
+##
+#M  IsAdditivelyCommutativeElement( <mat> ) . . . . . for certain row vectors
+##
+##  Row vectors with entries in an additively commutative family
+##  are themselves additively commutative elements.
+##
+InstallTrueMethod( IsAdditivelyCommutativeElement,
+    IsRowVector and IsAdditivelyCommutativeElementCollection );
+
+
+#############################################################################
+##
+#C  IsCommutativeElement( <obj> ) . . .  elements belonging to comm. families
+#C  IsCommutativeElementCollection( <obj> )
+#C  IsCommutativeElementCollColl( <obj> )
+##
+##  An element <obj> in the category `IsCommutativeElement' knows
+##  that the multiplication of any elements in the family of <obj>
+##  is commutative.
+##  For example, each finite field element and each rational number lies in
+##  this category.
 ##
 DeclareCategory( "IsCommutativeElement", IsMultiplicativeElement );
 DeclareCategoryCollections( "IsCommutativeElement" );
+DeclareCategoryCollections( "IsCommutativeElementCollection" );
 
 
 #############################################################################
 ##
-#C  IsFiniteOrderElement(<obj>)
-##                      category of elements with finite multiplicative order
+#C  IsFiniteOrderElement( <obj> )
+#C  IsFiniteOrderElementCollection( <obj> )
+#C  IsFiniteOrderElementCollColl( <obj> )
+##
+##  An element <obj> in the category `IsFiniteOrderElement' knows
+##  that it has finite multiplicative order.
+##  For example, each finite field element and each permutation lies in
+##  this category.
+##  However the value may be `false' even if <obj> has finite order,
+##  but if this was not known when <obj> was constructed.
+##
+##  Although it is legal to set this filter for any object with finite order,
+##  this is really useful only in the case that all elements of a family are
+##  known to have finite order.
 ##
 DeclareCategory( "IsFiniteOrderElement",
-        IsMultiplicativeElementWithInverse );
+    IsMultiplicativeElementWithInverse );
 DeclareCategoryCollections( "IsFiniteOrderElement" );
+DeclareCategoryCollections( "IsFiniteOrderElementCollection" );
 
 
 #############################################################################
 ##
-#C  IsJacobianElement(<obj>)
-##            category of elements belonging to families with Jacobi identity
+#C  IsJacobianElement( <obj> )  . elements belong. to fam. with Jacobi ident.
+#C  IsJacobianElementCollection( <obj> )
+#C  IsJacobianElementCollColl( <obj> )
 ##
-##  The Jacobi identity for a family $F$ means that
-##  $x * y * z + z * x * y + y * z * x$ is equal to zero for all $x$, $y$,
-##  $z$ in $F$.
+##  An element <obj> in the category `IsJacobianElement' knows
+##  that the multiplication of any elements in the family $F$ of <obj>
+##  satisfies the Jacobi identity, that is,
+##  $x \* y \* z + z \* x \* y + y \* z \* x$ is zero
+##  for all $x$, $y$, $z$ in $F$.
+##
+##  For example, each Lie matrix (see~"IsLieMatrix") lies in this category.
 ##
 DeclareCategory( "IsJacobianElement", IsRingElement );
 DeclareCategoryCollections( "IsJacobianElement" );
+DeclareCategoryCollections( "IsJacobianElementCollection" );
 
 
 #############################################################################
 ##
-#C  IsZeroSquaredElement(<obj>)
-##                    category of elements belonging to zero squared families
+#C  IsZeroSquaredElement( <obj> ) . . . elements belong. to zero squared fam.
+#C  IsZeroSquaredElementCollection( <obj> )
+#C  IsZeroSquaredElementCollColl( <obj> )
+##
+##  An element <obj> in the category `IsZeroSquaredElement' knows
+##  that `<obj>^2 = Zero( <obj> )'.
+##  For example, each Lie matrix (see~"IsLieMatrix") lies in this category.
+##
+##  Although it is legal to set this filter for any zero squared object,
+##  this is really useful only in the case that all elements of a family are
+##  known to have square zero.
 ##
 DeclareCategory( "IsZeroSquaredElement", IsRingElement );
 DeclareCategoryCollections( "IsZeroSquaredElement" );
+DeclareCategoryCollections( "IsZeroSquaredElementCollection" );
 
 
 #############################################################################
 ##
-#P  IsZero(<elm>) . . . . . . . . . . . . . . . . . . . test for zero element
+#P  IsZero( <elm> ) . . . . . . . . . . . . . . . . . . test for zero element
+##
+##  is `true' if `<elm> = Zero( <elm> )', and `false' otherwise.
 ##
 DeclareProperty( "IsZero", IsAdditiveElementWithZero );
 
 
 #############################################################################
 ##
-#P  IsOne(<elm>)  . . . . . . . . . . . . . . . . . . .  test for one element
+#P  IsOne( <elm> )  . . . . . . . . . . . . . . . . test for identity element
+##
+##  is `true' if `<elm> = One( <elm> )', and `false' otherwise.
 ##
 DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 
 
+#############################################################################
+##
+#A  Zero( <obj> ) . . . . . . .  additive neutral of an element/domain/family
+#O  ZeroOp( <obj> ) . . . . . . . . . . . . .  additive neutral of an element
+##
+##  `Zero' and `ZeroOp' return the additive neutral element of the additive
+##  element <obj>.
+##
+##  The only difference between `Zero' and `ZeroOp' is that the former is an
+##  attribute and hence returns an immutable result,
+##  and the latter is guaranteed to return a new *mutable* object whenever
+##  a mutable version of the required element exists in {\GAP}.
+##
+##  If <obj> is a domain or a family then `Zero' is defined as the zero
+##  element of all elements in <obj>,
+##  provided that all these elements have the same zero.
+##  For example, the family of all cyclotomics has the zero element `0',
+##  but a collections family (see~"CollectionsFamily") may contain
+##  matrices of all dimensions and then it cannot have a unique zero element.
+##  Note that `Zero' is applicable to a domain only if it is an
+##  additive magma-with-zero (see~"IsAdditiveMagmaWithZero");
+##  use `AdditiveNeutralElement' (see~"AdditiveNeutralElement") otherwise.
+##
+##  If <obj> is an additive element then `ZeroOp( <obj> )' is equivalent to
+##  `0 \* <obj>'.
+##  The default method of `Zero' for additive elements is to call `ZeroOp'
+##  (note that `ZeroOp' must *not* delegate to `Zero');
+##  other methods to compute zero elements need to be installed only for
+##  `ZeroOp';
+##  For domains, `Zero' may call `Representative' (see~"Representative"),
+##  but `Representative' is allowed to fetch the zero of a domain <D>
+##  only if `HasZero( <D> )' is `true'.
+##
+DeclareAttribute( "Zero", IsAdditiveElementWithZero );
+DeclareAttribute( "Zero", IsFamily );
+
+DeclareSynonymAttr( "ZeroAttr", Zero );
+
+DeclareOperationKernel( "ZeroOp", [ IsAdditiveElementWithZero ], ZERO );
+
 
 #############################################################################
 ##
-#A  Zero(<obj>) . . . . . . . .  additive neutral of an element/domain/family
+#o  `<elm1>+<elm2>' . . . . . . . . . . . . . . . . . . . sum of two elements
 ##
-##  'Zero'  returns the additive neutral  element of <obj>, which must either
-##  be an additive element, a domain, or a family.
-##
-##  For an element  'Zero(<elm>)' is equivalent to  '0|*|<elm>'.  If a domain
-##  or a family has a zero, then all its elements must have the same zero (so
-##  a  collections family, which contains  matrices of  all dimensions cannot
-##  have a zero).
-##
-##  'Zero' may call 'Representative', but 'Representative' is allowed to
-##  fetch the zero of a domain <D> only if 'HasZero( <D>) ' is 'true'.
-##
-DeclareAttributeKernel( "Zero", IsAdditiveElementWithZero, ZERO );
 
-
-#############################################################################
-##
-#o  '<elm1>+<elm2>' . . . . . . . . . . . . . . . . . . . sum of two elements
-##
+#DeclareOperation( "+", [ IsExtAElement, IsExtAElement ] );
 DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 
 
 #############################################################################
 ##
-#A  AdditiveInverse(<elm>)  . . . . . . . . .  additive inverse of an element
+#A  AdditiveInverse( <elm> )  . . . . . . . .  additive inverse of an element
+#O  AdditiveInverseOp( <elm> )  . . . . . . .  additive inverse of an element
 ##
-DeclareAttributeKernel( "AdditiveInverse", IsAdditiveElementWithInverse,
-    AINV );
+##  `AdditiveInverse' and `AdditiveInverseOp' return the additive inverse
+##  of <elm>.
+##
+##  The only difference between `AdditiveInverse' and `AdditiveInverseOp'
+##  is that the former is an attribute and hence returns an immutable result,
+##  and the latter is guaranteed to return a new *mutable* object whenever
+##  a mutable version of the required element exists in {\GAP}.
+##
+##  `AdditiveInverseOp( <elm> )' is equivalent to `-<obj>'.
+##
+##  The default method of `AdditiveInverse' is to call `AdditiveInverseOp'
+##  (note that `AdditiveInverseOp' must *not* delegate to `AdditiveInverse');
+##  other methods to compute additive inverses need to be installed only for
+##  `AdditiveInverseOp'.
+##
+DeclareAttribute( "AdditiveInverse", IsAdditiveElementWithInverse );
+
+DeclareSynonymAttr( "AdditiveInverseAttr", AdditiveInverse );
+
+DeclareOperationKernel( "AdditiveInverseOp",
+    [ IsAdditiveElementWithInverse ], AINV );
 
 
 #############################################################################
 ##
-#o  '<elm1>-<elm2>' . . . . . . . . . . . . . . .  difference of two elements
+#o  `<elm1>-<elm2>' . . . . . . . . . . . . . . .  difference of two elements
 ##
-DeclareOperationKernel( "-", [ IsExtAElement, IsAdditiveElementWithInverse ],
-    DIFF );
+
+#DeclareOperation( "-", [ IsExtAElement, IsAdditiveElementWithInverse ] );
+DeclareOperationKernel( "-", 
+	[ IsExtAElement, IsNearAdditiveElementWithInverse ], DIFF );
 
 
 #############################################################################
 ##
-#o  '<elm1>*<elm2>' . . . . . . . . . . . . . . . . . product of two elements
+#o  `<elm1>*<elm2>' . . . . . . . . . . . . . . . . . product of two elements
 ##
+
+#DeclareOperation( "*", [ IsExtRElement, IsExtLElement ] );
 DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 
 
 #############################################################################
 ##
-#A  One(<obj>)  . . . . .  multiplicative neutral of an element/domain/family
+#A  One( <obj> )  . . . .  multiplicative neutral of an element/domain/family
+#A  Identity( <obj> )
+#O  OneOp( <obj> )  . . . . . . . . . .  multiplicative neutral of an element
 ##
-##  `One' returns  the  multiplicative neutral  element of <obj>,  which must
-##  either be a multiplicative element, a domain, or a family.
+##  `One' and `OneOp' return the multiplicative neutral element of the
+##  multiplicative element <obj>.
+##  `Identity' is a synonym for `One'.
 ##
-##  For an element `One(<elm>)' is equivalent to `<elm>|^|0'.
-##  If a domain or a family has a one, then all its elements (even a zero if
-##  the domain or family has one) must have the same one (so a collections
-##  family, which contains matrices of all dimensions, cannot have a one).
+##  The only difference between `One' and `OneOp' is that the former is an
+##  attribute and hence returns an immutable result,
+##  and the latter is guaranteed to return a new *mutable* object whenever
+##  a mutable version of the required element exists in {\GAP}.
 ##
-##  The one of an object need not be distinct from its zero,
-##  so a ring consisting of a single element can be regarded as a
-##  ring-with-one.
-##  This is especially useful in the case of finitely presented algebras,
-##  where a factor of a free algebra-with-one is again an algebra-with-one,
+##  If <obj> is a domain or a family then `One' is defined as the identity
+##  element of all elements in <obj>, 
+##  provided that all these elements have the same identity.
+##  For example, the family of all cyclotomics has the identity element `1',
+##  but a collections family (see~"CollectionsFamily") may contain
+##  matrices of all dimensions and then it cannot have a unique identity
+##  element.
+##  Note that `One' is applicable to a domain only if it is a
+##  magma-with-one (see~"IsMagmaWithOne");
+##  use `MultiplicativeNeutralElement' (see~"MultiplicativeNeutralElement")
+##  otherwise.
+##
+##  If <obj> is a multiplicative element then `OneOp( <obj> )' is equivalent
+##  to `<obj>^0'.
+##
+##  The identity of an object need not be distinct from its zero,
+##  so for example a ring consisting of a single element can be regarded as a
+##  ring-with-one (see~"Rings").
+##  This is particularly useful in the case of finitely presented algebras,
+##  where any factor of a free algebra-with-one is again an algebra-with-one,
 ##  no matter whether or not it is a zero algebra.
 ##
-##  `One' may call `Representative', but `Representative' is allowed to
-##  fetch the one of a domain <D> only if `HasOne( <D>)' is `true'.
+##  The default method of `One' for multiplicative elements is to call
+##  `OneOp' (note that `OneOp' must *not* delegate to `One');
+##  other methods to compute identity elements need to be installed only for
+##  `OneOp'.
+##  For domains, `One' may call `Representative' (see~"Representative"),
+##  but `Representative' is allowed to fetch the identity of a domain <D>
+##  only if `HasOne( <D> )' is `true'.
 ##
-DeclareAttributeKernel( "One", IsMultiplicativeElementWithOne, ONE );
+DeclareAttribute( "One", IsMultiplicativeElementWithOne );
+DeclareAttribute( "One", IsFamily );
 
 DeclareSynonymAttr( "Identity", One );
+DeclareSynonymAttr( "OneAttr", One );
+
+DeclareOperationKernel( "OneOp", [ IsMultiplicativeElementWithOne ], ONE );
 
 
 #############################################################################
 ##
-#A  Inverse(<elm>)  . . . . . . . . . .  multiplicative inverse of an element
+#A  Inverse( <elm> )  . . . . . . . . .  multiplicative inverse of an element
+#O  InverseOp( <elm> )  . . . . . . . .  multiplicative inverse of an element
 ##
-##  `Inverse' returns the multiplicative inverse of an element <elm>,
-##  that is, an element <inv> such that
-##  `<elm> * <inv> = <inv> * <elm> = One( <elm> )' holds.
+##  `Inverse' and `InverseOp' return the multiplicative inverse
+##  of an element <elm>, that is, an element <inv> such that
+##  `<elm> * <inv> = <inv> * <elm> = One( <elm> )' holds;
+##  if <elm> is not invertible then `fail' (see~"Fail") is returned.
 ##
-#T  Note the somewhat strange behaviour for mappings whose source and range
-#T  differ!
-#T  (perhaps introduce `InverseMapping'?)
+##  Note that the above definition implies that a (general) mapping
+##  is invertible in the sense of `Inverse' only if its source equals its
+##  range (see~"Technical Matters Concerning General Mappings").
+##  For a bijective mapping $f$ whose source and range differ,
+##  `InverseGeneralMapping' (see~"InverseGeneralMapping") can be used
+##  to construct a mapping $g$ with the property
+##  that $f `*' g$ is the identity mapping on the source of $f$
+##  and $g `*' f$ is the identity mapping on the range of $f$.
 ##
-DeclareAttributeKernel( "Inverse", IsMultiplicativeElementWithInverse,
+##  The only difference between `Inverse' and `InverseOp'
+##  is that the former is an attribute and hence returns an immutable result,
+##  and the latter is guaranteed to return a new *mutable* object whenever
+##  a mutable version of the required element exists in {\GAP}.
+##
+##  `InverseOp( <elm> )' is equivalent to `<elm>^-1'.
+##
+##  The default method of `Inverse' is to call `InverseOp'
+##  (note that `InverseOp' must *not* delegate to `Inverse');
+##  other methods to compute additive inverses need to be installed only for
+##  `InverseOp'.
+##
+DeclareAttribute( "Inverse", IsMultiplicativeElementWithInverse );
+
+DeclareSynonymAttr( "InverseAttr", Inverse );
+
+DeclareOperationKernel( "InverseOp", [ IsMultiplicativeElementWithInverse ],
     INV );
 
 
 #############################################################################
 ##
-#o  '<elm1>/<elm2>' . . . . . . . . . . . . . . . .  quotient of two elements
+#o  `<elm1>/<elm2>' . . . . . . . . . . . . . . . .  quotient of two elements
 ##
+
+#DeclareOperation( "/",
+#    [ IsExtRElement, IsMultiplicativeElementWithInverse ] );
 DeclareOperationKernel( "/",
     [ IsExtRElement, IsMultiplicativeElementWithInverse ],
     QUO );
@@ -573,8 +1003,16 @@ DeclareOperationKernel( "/",
 
 #############################################################################
 ##
-#O  LeftQuotient(<elm1>,<elm2>) . . . . . . . . left quotient of two elements
+#O  LeftQuotient( <elm1>, <elm2> )  . . . . . . left quotient of two elements
 ##
+##  returns the product `<elm1>^(-1) \* <elm2>'.
+##  For some types of objects (for example permutations) this product can be
+##  evaluated more efficiently than by first inverting <elm1>
+##  and then forming the product with <elm2>.
+##
+
+#DeclareOperation( "LeftQuotient",
+#    [ IsMultiplicativeElementWithInverse, IsExtLElement ] );
 DeclareOperationKernel( "LeftQuotient",
     [ IsMultiplicativeElementWithInverse, IsExtLElement ],
     LQUO );
@@ -582,8 +1020,11 @@ DeclareOperationKernel( "LeftQuotient",
 
 #############################################################################
 ##
-#o  '<elm1>^<elm2>' . . . . . . . . .  . . . . . . . .  power of two elements
+#o  `<elm1>^<elm2>' . . . . . . . . .  . . . . . . . .  power of two elements
 ##
+
+#DeclareOperation( "^",
+#    [ IsMultiplicativeElement, IsMultiplicativeElement ] );
 DeclareOperationKernel( "^",
     [ IsMultiplicativeElement, IsMultiplicativeElement ],
     POW );
@@ -592,8 +1033,15 @@ DeclareOperationKernel( "^",
 
 #############################################################################
 ##
-#O  Comm(<elm1>,<elm2>) . . . . . . . . . . . . .  commutator of two elements
+#O  Comm( <elm1>, <elm2> )  . . . . . . . . . . .  commutator of two elements
 ##
+##  returns the *commutator* of <elm1> and <elm2>. The commutator is defined
+##  as the product $<elm1>^{-1} \* <elm2>^{-1} \* <elm1> \* <elm2>$.
+##
+
+#DeclareOperation( "Comm",
+#    [ IsMultiplicativeElementWithInverse,
+#      IsMultiplicativeElementWithInverse ] );
 DeclareOperationKernel( "Comm",
     [ IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -602,15 +1050,19 @@ DeclareOperationKernel( "Comm",
 
 #############################################################################
 ##
-#O  LieBracket(<elm1>,<elm2>) . . . . . . . . . . lie bracket of two elements
+#O  LieBracket( <elm1>, <elm2> )  . . . . . . . . Lie bracket of two elements
+##
+##  returns the element `<elm1> \* <elm2> - <elm2> \* <elm1>'.
 ##
 DeclareOperation( "LieBracket", [ IsRingElement, IsRingElement ] );
 
 
 #############################################################################
 ##
-#o  '<elm1> mod <elm2>' . . . . . . . . . . . . . . . modulus of two elements
+#o  `<elm1> mod <elm2>' . . . . . . . . . . . . . . . modulus of two elements
 ##
+
+#DeclareOperation( "mod", [ IsObject, IsObject ] );
 DeclareOperationKernel( "mod", [ IsObject, IsObject ], MOD );
 
 
@@ -618,14 +1070,76 @@ DeclareOperationKernel( "mod", [ IsObject, IsObject ], MOD );
 ##
 #A  Int( <elm> )  . . . . . . . . . . . . . . . . . .  integer value of <elm>
 ##
-DeclareAttribute( "Int", IsScalar );
+##  `Int' returns an integer <int> whose meaning depends on the type
+##  of <elm>.
+##
+##  If <elm> is a rational number (see~"Rational Numbers") then <int> is the
+##  integer part of the quotient of numerator and denominator of <elm>
+##  (see~"QuoInt").
+##
+##  If <elm> is an element of a finite prime field
+##  (see Chapter~"Finite Fields") then <int> is the smallest
+##  nonnegative integer such that `<elm> = <int> \* One( <elm> )'.
+##
+##  If <elm> is a string (see Chapter~"Strings and Characters") consisting of
+##  digits `{'0'}', `{'1'}', $\ldots$, `{'9'}'
+##  and `{'-'}' (at the first position) then <int> is the integer
+##  described by this string.
+##  The operation `String' (see~"String") can be used to compute a string for
+##  rational integers, in fact for all cyclotomics.
+##
+##  \beginexample
+##  gap> Int( 4/3 );  Int( -2/3 );
+##  1
+##  0
+##  gap> int:= Int( Z(5) );  int * One( Z(5) );
+##  2
+##  Z(5)
+##  gap> Int( "12345" );  Int( "-27" );  Int( "-27/3" );
+##  12345
+##  -27
+##  fail
+##  \endexample
+##
+DeclareAttribute( "Int", IsObject );
 
 
 #############################################################################
 ##
 #A  Rat( <elm> )  . . . . . . . . . . . . . . . . . . rational value of <elm>
 ##
-DeclareAttribute( "Rat", IsScalar );
+##  `Rat' returns a rational number <rat> whose meaning depends on the type
+##  of <elm>.
+##
+##  If <elm> is a string consisting of digits `{'0'}', `{'1'}', $\ldots$,
+##  `{'9'}' and `{'-'}' (at the first position), `{'/'}' and the decimal dot
+##  `{'.'}' then <rat> is the rational described by this string.
+##  The operation `String' (see~"String") can be used to compute a string for
+##  rational numbers, in fact for all cyclotomics.
+##
+##  \beginexample
+##  gap> Rat( "1/2" );  Rat( "35/14" );  Rat( "35/-27" );  Rat( "3.14159" );
+##  1/2
+##  5/2
+##  -35/27
+##  314159/100000
+##  \endexample
+##
+DeclareAttribute( "Rat", IsObject );
+
+
+#############################################################################
+##
+#O  Sqrt( <obj> )
+##
+##  `Sqrt' returns a square root of <obj>, that is, an object $x$ with the
+##  property that $x \cdot x = <obj>$ holds.
+##  If such an $x$ is not unique then the choice of $x$ depends on the type
+##  of <obj>.
+##  For example, `ER' (see~"ER") is the `Sqrt' method for rationals
+##  (see~"IsRat").
+##
+DeclareOperation( "Sqrt", [ IsMultiplicativeElement ] );
 
 
 #############################################################################
@@ -638,7 +1152,7 @@ DeclareOperation( "Root", [ IsMultiplicativeElement, IS_INT ] );
 
 #############################################################################
 ##
-#O  Log(<elm>,<base>)
+#O  Log( <elm>, <base> )
 ##
 DeclareOperation( "Log",
     [ IsMultiplicativeElement, IsMultiplicativeElement ] );
@@ -646,20 +1160,35 @@ DeclareOperation( "Log",
 
 #############################################################################
 ##
-#A  Characteristic(<obj>) . . . .  characteristic of an element/domain/family
+#A  Characteristic( <obj> ) . . .  characteristic of an element/domain/family
 ##
-##  'Characteristic' returns  the characteristic of  <obj>, which must either
-##  be an additive element, a domain or a family.
+##  `Characteristic' returns the *characteristic* of <obj>,
+##  where <obj> must either be an additive element, a domain or a family.
 ##
-##  If a domain or a family has a characteristic,  then all its elements must
-##  have the same characteristic.
+##  For a domain <D>, the characteristic is defined if <D> is closed under
+##  addition and has a zero element `<z> = Zero( <D> )' (see~"Zero");
+##  in this case, `Characteristic( <D> )' is the smallest positive integer
+##  <p> such that `<p> * <x> = <z>' for all elements <x> in <D>,
+##  if such an integer exists, and the integer zero `0' otherwise.
 ##
+##  If a family has a characteristic then this means
+##  that all domains of elements in this family have this characteristic.
+##  In this case, also each element in the family has this characteristic.
+##  (Note that also the zero element $z$ of a finite field in characteristic
+##  $p$ has characteristic $p$, although $n \* z = z$ for any integer $n$.)
+##  
 DeclareAttribute( "Characteristic", IsObject );
 
 
 #############################################################################
 ##
-#A  Order(<elm>)
+#A  Order( <elm> )
+##
+##  is the multiplicative order of <elm>.
+##  This is the smallest positive integer <n> such that
+##  `<elm>^<n> = One( <elm> )' if such an integer exists. If the order is
+##  infinite, `Order' may return the value `infinity', but it also might run
+##  into an infinite loop trying to test the order.
 ##
 DeclareAttribute( "Order", IsMultiplicativeElementWithOne );
 
@@ -667,6 +1196,10 @@ DeclareAttribute( "Order", IsMultiplicativeElementWithOne );
 #############################################################################
 ##
 #A  NormedRowVector( <v> )
+##
+##  returns a scalar multiple `<w> = <c> \* <v>' of the row vector <v>
+##  with the property that the first nonzero entry of <w> is an identity
+##  element in the sense of `IsOne'.
 ##
 DeclareAttribute( "NormedRowVector", IsRowVector and IsScalarCollection );
 
@@ -690,14 +1223,46 @@ DeclareProperty( "IsSkewFieldFamily", IsFamily );
 ##
 #P  IsUFDFamily( <family> )
 ##
-##  the   <family>  is    at  least a    commutative  ring-with-one,  without
-##  zero-divisors and  the    factorisations of elements into     elements of
-##  <family> is unique (upto units and ordering)
+##  the family <family> is at least a commutative ring-with-one,
+##  without zero divisors, and the factorisation of each element into
+##  elements of <family> is unique (up to units and ordering).
 ##
 DeclareProperty( "IsUFDFamily", IsFamily );
+
+#############################################################################
+##
+#R  IsAdditiveElementAsMultiplicativeElementRep( <obj> )
+##
+DeclareRepresentation("IsAdditiveElementAsMultiplicativeElementRep",
+  IsPositionalObjectRep and IsMultiplicativeElement,[]);
+
+#############################################################################
+##
+#A  AdditiveElementsAsMultiplicativeElementsFamily( <fam> )
+##
+DeclareAttribute("AdditiveElementsAsMultiplicativeElementsFamily", IsFamily);
+
+#############################################################################
+##
+#A  AdditiveElementAsMultiplicativeElement( <obj> )
+##
+##  for an additive element <obj>, this attribute returns a *multiplicative*
+##  element, for which multiplication is done via addition of the original
+##  element. The original element of such a ``wrapped'' multiplicative
+##  element can be obtained as the `UnderlyingElement'.
+DeclareAttribute("AdditiveElementAsMultiplicativeElement",
+  IsAdditiveElement );
 
 
 #############################################################################
 ##
-#E  arith.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#O  UnderlyingElement( <elm> )
+##
+##  Let <elm> be an object which builds on elements of another domain and
+##  just wraps these up to provide another arithmetic.
+DeclareOperation( "UnderlyingElement", [ IsObject ] );
+
+#############################################################################
+##
+#E
 

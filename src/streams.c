@@ -17,7 +17,6 @@
 const char * Revision_streams_c =
    "@(#)$Id$";
 
-
 #include        "sysfiles.h"            /* file input/output               */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -52,6 +51,57 @@ const char * Revision_streams_c =
 *F * * * * * * * * * streams and files related functions  * * * * * * * * * *
 */
 
+Int READ_COMMAND ( void ) {
+
+    ExecStatus    status;
+
+    ClearError();
+    status = ReadEvalCommand();
+    if( status == STATUS_EOF )
+        return 0;
+
+    if ( UserHasQuit || UserHasQUIT )
+        return 0;
+    
+    /* handle return-value or return-void command                          */
+    if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
+        Pr( "'return' must not be used in file read-eval loop", 0L, 0L );
+    }
+
+    /* handle quit command or <end-of-file>                                */
+    else if (status == STATUS_QUIT) {
+        UserHasQuit = 1;
+    }
+    else if (status == STATUS_QQUIT) {
+        UserHasQUIT = 1;
+    }
+    ClearError();
+
+    return 1;
+}
+
+Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
+
+    Int status;
+
+    /* try to open the file                                                */
+    if ( ! OpenInputStream(stream) ) {
+        return Fail;
+    }
+
+    if (echo == True)
+      Input->echo = 1;
+    else
+      Input->echo = 0;
+
+    status = READ_COMMAND();
+    
+    CloseInput();
+
+    if( status == 0 ) return Fail;
+
+    return ReadEvalResult ? ReadEvalResult : Fail;
+}
 
 /****************************************************************************
 **
@@ -60,11 +110,17 @@ const char * Revision_streams_c =
 **
 **  Read the current input and close the input stream.
 */
+
+static UInt LastReadValueGVar;
+
 Int READ ( void )
 {
     ExecStatus                status;
 
 
+    MakeReadWriteGVar(LastReadValueGVar);
+    AssGVar( LastReadValueGVar, 0);
+    MakeReadOnlyGVar(LastReadValueGVar);
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
@@ -89,8 +145,15 @@ Int READ ( void )
 	  UserHasQUIT = 1;
 	  break;
 	}
+	if (ReadEvalResult)
+	  {
+	    MakeReadWriteGVar(LastReadValueGVar);
+	    AssGVar( LastReadValueGVar, ReadEvalResult);
+	    MakeReadOnlyGVar(LastReadValueGVar);
+	  }
 	
     }
+
 
     /* close the input file again, and return 'true'                       */
     if ( ! CloseInput() ) {
@@ -270,8 +333,20 @@ Int READ_GAP_ROOT ( Char * filename )
         return 1;
     }
 
+    /* special handling for the other cases, if we are trying to load compiled
+       modules needed for a saved workspace ErrorQuit is not available */
+    else if (SyRestoring)
+      {
+	if (res == 3 || res == 4)
+	  Pr("Can't find compiled module '%s' needed by saved workspace\n",
+	     (Int) filename, 0L);
+	else
+	  Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
+	SyExit(1);
+      }
+    
     /* ordinary gap file                                                   */
-    else if ( !SyRestoring && (res == 3 || res == 4) ) {
+    else if ( res == 3 || res == 4  ) {
         if ( SyDebugLoading ) {
             Pr( "#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
                 (Int)filename, 0L );
@@ -303,6 +378,7 @@ Int READ_GAP_ROOT ( Char * filename )
         ErrorQuit( "unknown result code %d from 'SyFindGapRoot'", res, 0L );
         return 0;
     }
+    return 0;
 }
 
 
@@ -1478,6 +1554,24 @@ Obj FuncWRITE_BYTE_FILE (
     return ret == -1 ? Fail : True;
 }
 
+/****************************************************************************
+**
+*F  FuncWRITE_STRING_FILE_NC( <self>, <fid>, <string> ) .write a whole string
+*/
+Obj FuncWRITE_STRING_FILE_NC (
+    Obj             self,
+    Obj             fid,
+    Obj             str )
+{
+    Int             ret;
+
+    /* don't check the argument                                            */
+    
+    /* call the system dependent function                                  */
+    SyFputs( CSTR_STRING(str), INT_INTOBJ(fid) );
+    return True;
+}
+
 
 /****************************************************************************
 **
@@ -1531,11 +1625,11 @@ Obj FuncExecuteProcess (
             (Int)TNAM_OBJ(out), 0L,
             "you can return an integer for <out>" );
     }
-    while ( ! IS_LIST(args) ) {
+    while ( ! IS_SMALL_LIST(args) ) {
         args = ErrorReturnObj(
-            "<args> must be an integer (not a %s)",
+            "<args> must be a small list (not a %s)",
             (Int)TNAM_OBJ(args), 0L,
-            "you can return an integer for <args>" );
+            "you can return a small list for <args>" );
     }
 
     /* create an argument array                                            */
@@ -1584,6 +1678,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "READ", 1L, "filename",
       FuncREAD, "src/streams.c:READ" },
+
+    { "READ_COMMAND", 2L, "stream, echo", 
+      FuncREAD_COMMAND, "src/streams.c:READ_COMMAND" },
 
     { "READ_STREAM", 1L, "stream",
       FuncREAD_STREAM, "src/sreams.c:READ_STREAM" },
@@ -1699,6 +1796,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "WRITE_BYTE_FILE", 2L, "fid, byte",
       FuncWRITE_BYTE_FILE, "src/sreams.c:WRITE_BYTE_FILE" },
 
+    { "WRITE_STRING_FILE_NC", 2L, "fid, string",
+      FuncWRITE_STRING_FILE_NC, "src/sreams.c:WRITE_STRING_FILE_NC" },
+
     { "ExecuteProcess", 5L, "dir, prg, in, out, args",
       FuncExecuteProcess, "src/sreams.c:ExecuteProcess" },
 
@@ -1734,6 +1834,9 @@ static Int PostRestore (
     ErrorNumberRNam  = RNamName("number");
     ErrorMessageRNam = RNamName("message");
 
+    /* pick up the number of this global */
+    LastReadValueGVar = GVarName("LastReadValue");
+
     /* return success                                                      */
     return 0;
 }
@@ -1748,6 +1851,7 @@ static Int InitLibrary (
 {
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
+
 
     /* return success                                                      */
     return PostRestore( module );

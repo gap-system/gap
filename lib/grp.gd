@@ -12,94 +12,28 @@
 ##
 ##  This file contains the declarations of operations for groups.
 ##
+
 #1
-##  Unless explicitly declared otherwise, all subgroup series are descending. 
+##  Unless explicitly declared otherwise, all subgroup series are descending.
 ##  That is they are stored in decreasing order.
+
 
 #2
 ##  If a group <U> is created as a subgroup of another group <G>, <G>
 ##  becomes the parent of <U>. There is no `universal' parent group,
 ##  parent-child chains can be arbitrary long. {\GAP} stores the result of some
-##  operations with the parent like `Normalizer' as an attribute.
+##  operations (such as `Normalizer') with the parent as an attribute.
 
 Revision.grp_gd :=
     "@(#)$Id$";
 
 
-GroupString := function(arg) return "Group"; end;
-#T !!!
-
-IsPrimeInt := "2b defined";
-
 #############################################################################
 ##
-#F  KeyDependentFOA( <name>, <grpreq>, <keyreq>, <keytest> )  . e.g., `PCore'
-##
-KeyDependentFOA := function( name, grpreq, keyreq, keytest )
-    local str, nname, oper, attr, func;
-    
-    if keytest = "prime"  then
-        keytest := function( key )
-            if not IsPrimeInt( key )  then
-                Error( name, ": <p> must be a prime" );
-            fi;
-        end;
-    fi;
-
-    # Create the two-argument operation.
-    str:= ShallowCopy( name );
-    Append(str,"Op");
-
-    oper:= NewOperation( str, [ grpreq, keyreq ] );
-    BIND_GLOBAL( str, oper );
-
-    # Create the mutable attribute and install the default method.
-    str := "Computed";
-    Append( str, name );
-    Append( str, "s" );
-    attr:= NewAttribute( str, grpreq, "mutable" );
-    BIND_GLOBAL( str, attr );
-    nname:= "Set"; APPEND_LIST_INTR( nname, str );
-    BIND_GLOBAL( nname, SETTER_FILTER( attr ) );
-    nname:= "Has"; APPEND_LIST_INTR( nname, str );
-    BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
-
-    InstallMethod( attr, true, [ grpreq ], 0, grp -> [  ] );
-
-    # Create the function that mainly calls the operation.
-    func:= function( grp, key )
-        local   known,  i, erg;
-        
-        if not IsFinite( grp )  then
-            Error( name, ": <G> must be finite" );
-        fi;
-        keytest( key );
-        known := attr( grp );
-        i := 1;
-        while     i < Length( known )
-              and known[ i ] < key  do
-            i := i + 2;
-        od;
-	# Start storing only after the result has been computed.
-        # This avoids errors if a calculation had been interrupted.
-
-        if i > Length( known )  or  known[ i ] <> key  then
-	    erg := oper( grp, key );
-            known{ [ i .. Length( known ) ] + 2 } :=
-              known{ [ i .. Length( known ) ] };
-            known[ i ] := key;
-            known[ i + 1 ] := erg;
-        fi;
-        return known[ i + 1 ];
-    end;
-    BIND_GLOBAL( name, func );
-end;
-
-
-#############################################################################
-##
-
 #V  InfoGroup
+##
+##  is the info class for the generic group theoretic functions
+##  (see~"Info Functions").
 ##
 DeclareInfoClass( "InfoGroup" );
 
@@ -108,31 +42,63 @@ DeclareInfoClass( "InfoGroup" );
 ##
 #C  IsGroup( <obj> )
 ##
-##  A group is a magma with inverses and associative multiplication.
+##  A group is a magma-with-inverses (see~"IsMagmaWithInverses")
+##  and associative (see~"IsAssociative") multiplication.
 ##
-IsGroup := IsMagmaWithInverses and IsAssociative;
+##  `IsGroup' tests whether the object <obj> fulfills these conditions,
+##  it does *not* test whether <obj> is a set of elements that forms a group
+##  under multiplication;
+##  use `AsGroup' (see~"AsGroup") if you want to perform such a test.
+##  (See~"Categories" for details about categories.)
+##
+DeclareSynonym( "IsGroup", IsMagmaWithInverses and IsAssociative );
+
+InstallTrueMethod( IsFiniteOrderElementCollection, IsGroup and IsFinite );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfGroup( <G> )
 ##
-GeneratorsOfGroup := GeneratorsOfMagmaWithInverses;
-SetGeneratorsOfGroup := SetGeneratorsOfMagmaWithInverses;
-HasGeneratorsOfGroup := HasGeneratorsOfMagmaWithInverses;
+##  returns a list of generators of the group <G>.
+##  If <G> has been created by the command `GroupWithGenerators'
+##  (see~"GroupWithGenerators"), with argument <gens>, then
+##  the list returned by `GeneratorsOfGroup' will be equal to <gens>.
+##
+DeclareSynonymAttr( "GeneratorsOfGroup", GeneratorsOfMagmaWithInverses );
+
+
+#############################################################################
+##
+#O  GroupString( <G>, <name> )
+##
+##  returns a short string (usually less than one line) with information
+##  about the group <G>. <name> is a display name if the group <G> does
+##  not have one.
+DeclareOperation( "GroupString", [IsGroup,IsString] );
+
+
+#############################################################################
+##
+#A  NameIsomorphismClass( <G> ) . . . . . . . . . . . . . . . .  experimental
+##
+DeclareAttribute( "NameIsomorphismClass", IsGroup );
 
 
 #############################################################################
 ##
 #P  IsCyclic( <G> )
 ##
-##  A group is cyclic if it can be generated by one element.
+##  A group is *cyclic* if it can be generated by one element.
+##  For a cyclic group, one can compute a generating set consisting of only
+##  one element using `MinimalGeneratingSet' (see~"MinimalGeneratingSet").
+##
 DeclareProperty( "IsCyclic", IsGroup );
 
-InstallSubsetMaintainedMethod( IsCyclic, IsGroup and IsCyclic, IsGroup );
+InstallSubsetMaintenance( IsCyclic, IsGroup and IsCyclic, IsGroup );
 
-InstallFactorMaintainedMethod( IsCyclic,
-    IsGroup and IsCyclic, IsCollection, IsGroup );
+InstallFactorMaintenance( IsCyclic,
+    IsGroup and IsCyclic, IsObject, IsGroup );
 
 InstallTrueMethod( IsCyclic, IsGroup and IsTrivial );
 
@@ -144,15 +110,15 @@ InstallTrueMethod( IsCommutative, IsGroup and IsCyclic );
 #P  IsElementaryAbelian( <G> )
 ##
 ##  A group <G> is elementary abelian if it is commutative and if there is a
-##  prime $p$ such that the order of each element in <G> is divisible by $p$.
+##  prime $p$ such that the order of each element in <G> divides $p$.
 ##
 DeclareProperty( "IsElementaryAbelian", IsGroup );
 
-InstallSubsetMaintainedMethod( IsElementaryAbelian,
+InstallSubsetMaintenance( IsElementaryAbelian,
     IsGroup and IsElementaryAbelian, IsGroup );
 
-InstallFactorMaintainedMethod( IsElementaryAbelian,
-    IsGroup and IsElementaryAbelian, IsCollection, IsGroup );
+InstallFactorMaintenance( IsElementaryAbelian,
+    IsGroup and IsElementaryAbelian, IsObject, IsGroup );
 
 InstallTrueMethod( IsElementaryAbelian, IsGroup and IsTrivial );
 
@@ -161,19 +127,25 @@ InstallTrueMethod( IsElementaryAbelian, IsGroup and IsTrivial );
 ##
 #P  IsFinitelyGeneratedGroup( <G> )
 ##
+##  tests whether the group <G> can be generated by a finite number of
+##  generators. (This property is mainly used to obtain finiteness
+##  conditions.)
+##
 DeclareProperty( "IsFinitelyGeneratedGroup", IsGroup );
 
-InstallFactorMaintainedMethod( IsFinitelyGeneratedGroup,
-    IsGroup and IsFinitelyGeneratedGroup, IsCollection, IsGroup );
+InstallFactorMaintenance( IsFinitelyGeneratedGroup,
+    IsGroup and IsFinitelyGeneratedGroup, IsObject, IsGroup );
 
 InstallTrueMethod( IsFinitelyGeneratedGroup, IsGroup and IsTrivial );
 
 #############################################################################
 ##
-#P  IsSubsetLocallyFiniteGroup(<M>) . . . . test if a group is locally finite
+#P  IsSubsetLocallyFiniteGroup(<U>) . . . . test if a group is locally finite
 ##
 ##  A group is called locally finite if every finitely generated subgroup is
-##  finite.
+##  finite. This property checks whether the group <U> is a subset of a
+##  locally finite group. This is used to check whether finite generation
+##  will imply finiteness, as it does for example for permutation groups.
 ##
 DeclareProperty( "IsSubsetLocallyFiniteGroup", IsGroup );
 
@@ -184,44 +156,199 @@ InstallTrueMethod( IsFinite, IsFinitelyGeneratedGroup and IsGroup
 
 InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFinite and IsGroup );
 
-InstallSubsetMaintainedMethod( IsSubsetLocallyFiniteGroup,
+InstallSubsetMaintenance( IsSubsetLocallyFiniteGroup,
     IsGroup and IsSubsetLocallyFiniteGroup, IsGroup );
+
+
+#############################################################################
+##
+#M  IsSubsetLocallyFiniteGroup( <G> ) . . . . . . . . . .  for magmas of FFEs
+##
+InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFFECollection and IsMagma );
+
+
+#############################################################################
+#3
+##  The following filters and operations indicate capabilities of {\GAP}.
+##  They can be used in the method selection or algorithms to check whether
+##  it is feasible to compute certain operations for a given group.
+##  In general, they return `true' if good algorithms for the given arguments
+##  are available in {\GAP}.
+##  An answer `false' indicates that no method for this group may exist,
+##  or that the existing methods might run into problems.
+##
+##  Typical examples when this might happen is with finitely presented
+##  groups, for which many of the methods cannot be guaranteed to succeed in
+##  all situations.
+##
+##  The willingness of {\GAP} to perform certain operations may change,
+##  depending on which further information is known about the arguments.
+##  Therefore the filters used are not implemented as properties but as
+##  ``other filters'' (see~"Properties" and~"Other Filters").
+##
+
+
+#############################################################################
+##
+#F  CanEasilyTestMembership( <grp> )
+##
+##  This filter indicates whether a group can test membership of
+##  elements in <grp> (via the operation `in') in reasonable time.
+##  It is used by the method selection to decide whether an algorithm
+##  that relies on membership tests may be used.
+##
+DeclareFilter( "CanEasilyTestMembership" );
+
+
+#############################################################################
+##
+#F  CanComputeSizeAnySubgroup( <grp> )
+##
+##  This filter indicates whether <grp> can easily compute the size of any
+##  subgroup. (This is for example advantageous if one can test that a
+##  stabilizer index equals the length of the orbit computed so far to stop
+##  early.)
+##
+DeclareFilter( "CanComputeSizeAnySubgroup" );
+
+InstallTrueMethod(CanEasilyTestMembership,CanComputeSizeAnySubgroup);
+InstallTrueMethod(CanComputeSize,CanComputeSizeAnySubgroup);
+
+# this implicatiobn can create problems with some fp groups. Therefore we
+# are a bit less eager
+#InstallTrueMethod( CanComputeSizeAnySubgroup, IsTrivial );
+InstallTrueMethod( CanComputeSize, IsTrivial );
+InstallTrueMethod( CanEasilyTestMembership, IsTrivial );
+
+
+#############################################################################
+##
+#F  CanComputeIndex( <G>, <H> )
+##
+##  This filter indicates whether the index $[G:H]$ (which might
+##  be `infinity') can be computed. It assumes that $H\le G$. (see
+##  "CanComputeIsSubset")
+DeclareOperation( "CanComputeIndex", [IsGroup,IsGroup] );
+
+
+#############################################################################
+##
+#P  KnowsHowToDecompose( <G> )
+#O  KnowsHowToDecompose( <G>, <gens> )
+##
+##  Tests whether the group <G> can decompose elements in the generators
+##  <gens>. If <gens> is not given it tests, whether it can decompose in the
+##  generators given in `GeneratorsOfGroup'.
+##
+##  This property can be used for example to check whether a
+##  `GroupHomomorphismByImages' can be reasonably defined from this group.
+DeclareProperty( "KnowsHowToDecompose", IsGroup );
+DeclareOperation( "KnowsHowToDecompose", [ IsGroup, IsList ] );
+
+
+#############################################################################
+##
+#P  IsPGroup( <G> ) . . . . . . . . . . . . . . . . .  is a group a p-group ?
+##
+##  A *$p$-group* is a finite group whose order (see~"Size") is of the form
+##  $p^n$ for a prime integer $p$ and a nonnegative integer $n$.
+##  `IsPGroup' returns `true' if <G> is a $p$-group, and `false' otherwise.
+##
+DeclareProperty( "IsPGroup", IsGroup );
+
+InstallSubsetMaintenance( IsPGroup,
+    IsGroup and IsPGroup, IsGroup );
+
+InstallFactorMaintenance( IsPGroup,
+    IsGroup and IsPGroup, IsObject, IsGroup );
+
+InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
+
+
+#############################################################################
+##
+#A  PrimePGroup( <G> )
+##
+##  If <G> is a nontrivial $p$-group (see~"IsPGroup"), `PrimePGroup' returns
+##  the prime integer $p$;
+##  if <G> is trivial then `PrimePGroup' returns `fail'.
+##  Otherwise an error is issued.
+##
+DeclareAttribute( "PrimePGroup", IsPGroup );
+
+InstallSubsetMaintenance( PrimePGroup,
+    IsGroup and HasPrimePGroup, IsGroup );
+
+InstallFactorMaintenance( PrimePGroup,
+    IsGroup and HasPrimePGroup, IsObject, IsGroup );
+
+
+#############################################################################
+##
+#A  PClassPGroup( <G> )
+##
+##  The $p$-class of a $p$-group <G> (see~"IsPGroup")
+##  is the length of the lower $p$-central series (see~"PCentralSeries")
+##  of <G>.
+##  If <G> is not a $p$-group then an error is issued.
+##
+DeclareAttribute( "PClassPGroup", IsPGroup );
+
+
+#############################################################################
+##
+#A  RankPGroup( <G> )
+##
+##  For a $p$-group <G> (see~"IsPGroup"), `RankPGroup' returns the *rank* of
+##  <G>, which is defined as the minimal size of a generating system of <G>.
+##  If <G> is not a $p$-group then an error is issued.
+##
+DeclareAttribute( "RankPGroup", IsPGroup );
+
 
 #############################################################################
 ##
 #P  IsNilpotentGroup( <G> )
 ##
-##  A group is nilpotent if it is the direct product of its sylow subgroups.
+##  A group is *nilpotent* if the lower central series
+##  (see~"LowerCentralSeriesOfGroup" for a definition) reaches the trivial
+##  subgroup in a finite number of steps.
+##
 DeclareProperty( "IsNilpotentGroup", IsGroup );
 
-InstallSubsetMaintainedMethod( IsNilpotentGroup,
+InstallSubsetMaintenance( IsNilpotentGroup,
     IsGroup and IsNilpotentGroup, IsGroup );
 
-InstallFactorMaintainedMethod( IsNilpotentGroup,
-    IsGroup and IsNilpotentGroup, IsCollection, IsGroup );
+InstallFactorMaintenance( IsNilpotentGroup,
+    IsGroup and IsNilpotentGroup, IsObject, IsGroup );
 
 InstallTrueMethod( IsNilpotentGroup, IsGroup and IsCommutative );
+
+InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup );
 
 
 #############################################################################
 ##
 #P  IsPerfectGroup( <G> )
 ##
-##  A group is perfect if it equals its derived subgroup.
+##  A group is *perfect* if it equals its derived subgroup
+##  (see~"DerivedSubgroup").
+##
 DeclareProperty( "IsPerfectGroup", IsGroup );
 
-InstallFactorMaintainedMethod( IsPerfectGroup,
-    IsGroup and IsPerfectGroup, IsCollection, IsGroup );
+InstallFactorMaintenance( IsPerfectGroup,
+    IsGroup and IsPerfectGroup, IsObject, IsGroup );
 
 
 #############################################################################
 ##
 #P  IsSimpleGroup( <G> )
 ##
-##  A group is simple, if it has no nontrivial normal subgroups.
+##  A group is *simple* if it has no nontrivial normal subgroups.
+##
 DeclareProperty( "IsSimpleGroup", IsGroup );
 
-InstallIsomorphismMaintainedMethod( IsSimpleGroup,
+InstallIsomorphismMaintenance( IsSimpleGroup,
     IsGroup and IsSimpleGroup, IsGroup );
 
 
@@ -229,14 +356,16 @@ InstallIsomorphismMaintainedMethod( IsSimpleGroup,
 ##
 #P  IsSupersolvableGroup( <G> )
 ##
-##  a group is supersolvable if it has a normal series with cyclic factors.
+##  A finite group is *supersolvable* if it has a normal series with cyclic
+##  factors.
+##
 DeclareProperty( "IsSupersolvableGroup", IsGroup );
 
-InstallSubsetMaintainedMethod( IsSupersolvableGroup,
+InstallSubsetMaintenance( IsSupersolvableGroup,
     IsGroup and IsSupersolvableGroup, IsGroup );
 
-InstallFactorMaintainedMethod( IsSupersolvableGroup,
-    IsGroup and IsSupersolvableGroup, IsCollection, IsGroup );
+InstallFactorMaintenance( IsSupersolvableGroup,
+    IsGroup and IsSupersolvableGroup, IsObject, IsGroup );
 
 InstallTrueMethod( IsSupersolvableGroup, IsNilpotentGroup );
 
@@ -245,12 +374,13 @@ InstallTrueMethod( IsSupersolvableGroup, IsNilpotentGroup );
 ##
 #P  IsMonomialGroup( <G> )
 ##
-##  A group is monomial if every irreducible complex character is induced
-##  from a linear character of a subgroup.
+##  A finite group is *monomial* if every irreducible complex character is
+##  induced from a linear character of a subgroup.
+##
 DeclareProperty( "IsMonomialGroup", IsGroup );
 
-InstallFactorMaintainedMethod( IsMonomialGroup,
-    IsGroup and IsMonomialGroup, IsCollection, IsGroup );
+InstallFactorMaintenance( IsMonomialGroup,
+    IsGroup and IsMonomialGroup, IsObject, IsGroup );
 
 InstallTrueMethod( IsMonomialGroup, IsSupersolvableGroup and IsFinite );
 
@@ -259,17 +389,37 @@ InstallTrueMethod( IsMonomialGroup, IsSupersolvableGroup and IsFinite );
 ##
 #P  IsSolvableGroup( <G> )
 ##
-##  A group is solvable if it has a subnormal series with cyclic factors.
+##  A group is *solvable* if the derived series (see~"DerivedSeriesOfGroup"
+##  for a definition)
+##  reaches the trivial subgroup in a finite number of steps.
+##
+##  For finite groups this is the same as being polycyclic
+##  (see~"IsPolycyclicGroup"),
+##  and each polycyclic group is solvable,
+##  but there are infinite solvable groups that are not polycyclic.
+##
 DeclareProperty( "IsSolvableGroup", IsGroup );
 
-InstallSubsetMaintainedMethod( IsSolvableGroup,
+InstallSubsetMaintenance( IsSolvableGroup,
     IsGroup and IsSolvableGroup, IsGroup );
 
-InstallFactorMaintainedMethod( IsSolvableGroup,
-    IsGroup and IsSolvableGroup, IsCollection, IsGroup );
+InstallFactorMaintenance( IsSolvableGroup,
+    IsGroup and IsSolvableGroup, IsObject, IsGroup );
 
 InstallTrueMethod( IsSolvableGroup, IsMonomialGroup );
 InstallTrueMethod( IsSolvableGroup, IsSupersolvableGroup );
+
+
+#############################################################################
+##
+#P  IsPolycyclicGroup( <G> )
+##
+##  A group is polycyclic if it has a subnormal series with cyclic factors.
+##  For finite groups this is the same as if the group is solvable
+##  (see~"IsSolvableGroup").
+##
+DeclareProperty( "IsPolycyclicGroup", IsGroup );
+InstallTrueMethod( IsPolycyclicGroup, IsSolvableGroup and IsFinite );
 
 
 #############################################################################
@@ -279,8 +429,9 @@ InstallTrueMethod( IsSolvableGroup, IsSupersolvableGroup );
 ##  Computes the abelian invariants of the commutator factor group of <G>.
 ##  They are given as a list of the orders of a set of independent
 ##  generators of $G/G'$ (see "IndependentGeneratorsOfAbelianGroup").
-##  
+##
 DeclareAttribute( "AbelianInvariants", IsGroup );
+
 
 #############################################################################
 ##
@@ -288,6 +439,7 @@ DeclareAttribute( "AbelianInvariants", IsGroup );
 ##
 ##  if the elements of the collection <D> form a group the command returns
 ##  this group, otherwise it returns `fail'.
+##
 DeclareAttribute( "AsGroup", IsCollection );
 
 
@@ -295,39 +447,45 @@ DeclareAttribute( "AsGroup", IsCollection );
 ##
 #A  ChiefSeries( <G> )
 ##
-##  A series of normal subgroups of <G> which cannot be refined further.
-##  That is there is no normal subgroup <N> of <G> with $U_{i+1}\< N\< U_i$.
+##  is a series of normal subgroups of <G> which cannot be refined further.
+##  That is there is no normal subgroup $N$ of <G> with $U_i > N > U_{i+1}$.
+##  This attribute returns *one* chief series (of potentially many
+##  possibilities).
+##
 DeclareAttribute( "ChiefSeries", IsGroup );
 
 
 #############################################################################
 ##
-#O  ChiefSeriesUnderAction( <U>, <G> )
+#O  ChiefSeriesUnderAction( <H>, <G> )
 ##
-##  is a chief series of the group <G> with respect to the action of the
-##  supergroup <U>.
+##  returns a series of normal subgroups of <G> which are invariant under
+##  <H> such that the series cannot be refined any further. <G> must be
+##  a subgroup of <H>.
+##  This attribute returns *one* such series (of potentially many
+##  possibilities).
 ##
-DeclareOperation( "ChiefSeriesUnderAction",
-    [ IsGroup, IsGroup ] );
+DeclareOperation( "ChiefSeriesUnderAction", [ IsGroup, IsGroup ] );
 
 
 #############################################################################
 ##
-#O  ChiefSeriesThrough( <G>,<list> )
+#O  ChiefSeriesThrough( <G>, <l> )
 ##
 ##  is a chief series of the group <G> going through the normal subgroups in
-##  <l>. <l> must be a list of normal subgroups of <G> contained in each
-##  other, sorted by descending size.
+##  the list <l>. <l> must be a list of normal subgroups of <G> contained in
+##  each other, sorted by descending size.  This attribute returns *one*
+##  chief series (of potentially many possibilities).
 ##
-DeclareOperation( "ChiefSeriesThrough",
-    [ IsGroup, IsList ] );
+DeclareOperation( "ChiefSeriesThrough", [ IsGroup, IsList ] );
 
 
 #############################################################################
 ##
 #A  CommutatorFactorGroup( <G> )
 ##
-##  computes the commutator factors group of <G>.
+##  computes the commutator factor group $<G>/<G>^{\prime}$ of the group <G>.
+##
 DeclareAttribute( "CommutatorFactorGroup", IsGroup );
 
 
@@ -336,8 +494,12 @@ DeclareAttribute( "CommutatorFactorGroup", IsGroup );
 #A  CompositionSeries( <G> )
 ##
 ##  A composition series is a subnormal series which cannot be refined.
+##  This attribute returns *one* composition series (of potentially many
+##  possibilities).
+##
 DeclareAttribute( "CompositionSeries", IsGroup );
 #T and for module?
+
 
 #############################################################################
 ##
@@ -345,6 +507,7 @@ DeclareAttribute( "CompositionSeries", IsGroup );
 ##
 ##  Displays a composition series of <G> in a nice way, identifying the
 ##  simple factors.
+##
 DeclareGlobalFunction( "DisplayCompositionSeries" );
 
 
@@ -352,8 +515,41 @@ DeclareGlobalFunction( "DisplayCompositionSeries" );
 ##
 #A  ConjugacyClasses( <G> )
 ##
-##  returns the conjugacy classes of elements of <G>. See `ConjugacyClass'
-##  ("ConjugacyClass") for details.
+##  returns the conjugacy classes of elements of <G> as a list of
+##  `ConjugacyClass'es of <G> (see~`ConjugacyClass'
+##  ("ConjugacyClass") for details). It is guaranteed that the class of the
+##  identity is in the first position, the further arrangement depends on
+##  the method chosen (and might be different for equal but not identical
+##  groups).
+##
+##  For very small groups (of size up to 500) the classes will be computed
+##  by the conjugation action of <G> on itself
+##  (see~"ConjugacyClassesByOrbits"). This can be deliberately switched off
+##  using the ``{`noaction'}'' option shown below.
+##
+##  For solvable groups, the default method to compute the classes is by
+##  homomorphic lift
+##  (see section~"Conjugacy Classes in Solvable Groups").
+##
+##  For other groups the method of \cite{HulpkeClasses} is employed.
+##
+##  `ConjugacyClasses' supports the following options that can be used to
+##  modify this strategy:
+##  \beginitems
+##  `random'&The classes are computed by  random search. See
+##  `ConjugacyClassesByRandomSearch' ("ConjugacyClassesByRandomSearch")
+##  below.
+##
+##  `action'&The classes are computed by action of <G> on itself See
+##  `ConjugacyClassesByOrbits' ("ConjugacyClassesByOrbits")
+##  below.
+##
+##  `noaction'&Even for small groups
+##  `ConjugacyClassesByOrbits' ("ConjugacyClassesByOrbits")
+##  is not used as a default. This can be useful if the elements of the
+##  group use a lot of memory.
+##  \enditems
+##
 DeclareAttribute( "ConjugacyClasses", IsGroup );
 
 
@@ -375,6 +571,7 @@ DeclareAttribute( "ConjugacyClassesMaximalSubgroups", IsGroup );
 ##  returns a list of all maximal subgroups of <G>. This may take up much
 ##  space, therefore the command should be avoided if possible. See
 ##  "ConjugacyClassesMaximalSubgroups".
+##
 DeclareAttribute( "MaximalSubgroups", IsGroup );
 
 
@@ -384,6 +581,7 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##
 ##  returns a list of conjugacy representatives of the maximal subgroups
 ##  of <G>.
+##
 DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
 
 
@@ -392,7 +590,9 @@ DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
 #A  PerfectResiduum( <G> )
 ##
 ##  is the smallest normal subgroup of <G> that has a solvable factor group.
+##
 DeclareAttribute( "PerfectResiduum", IsGroup );
+
 
 #############################################################################
 ##
@@ -400,8 +600,9 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 ##
 ##  returns a list of conjugacy representatives of perfect subgroups of <G>.
 ##  This uses the library of perfect groups (see "PerfectGroup"), thus it
-##  will issue an error if the library data is insufficient to determine all
+##  will issue an error if the library is insufficient to determine all
 ##  perfect subgroups.
+##
 DeclareAttribute( "RepresentativesPerfectSubgroups", IsGroup );
 
 
@@ -411,6 +612,7 @@ DeclareAttribute( "RepresentativesPerfectSubgroups", IsGroup );
 ##
 ##  returns a list of the conjugacy classes of perfect subgroups of <G>.
 ##  (see "RepresentativesPerfectSubgroups".)
+##
 DeclareAttribute( "ConjugacyClassesPerfectSubgroups", IsGroup );
 
 
@@ -418,9 +620,12 @@ DeclareAttribute( "ConjugacyClassesPerfectSubgroups", IsGroup );
 ##
 #A  ConjugacyClassesSubgroups( <G> )
 ##
-##  This attribute returns the list of conjugacy classes of subgroups of the
+##  This attribute returns a list of conjugacy classes of subgroups of the
 ##  group <G>. It also is applicable for lattices of subgroups (see
 ##  "LatticeSubgroups").
+##  The order in which the groups are listed depends on the method chosen by
+##  {\GAP}.
+##
 DeclareAttribute( "ConjugacyClassesSubgroups", IsGroup );
 
 
@@ -428,11 +633,13 @@ DeclareAttribute( "ConjugacyClassesSubgroups", IsGroup );
 ##
 #A  LatticeSubgroups( <G> )
 ##
-##  computes the lattice of conjugacy classes of subgroups of the group <G>.
-##  This lattice has the conjugacy classes of subgroups as an attribute 
-##  (see "ConjugacyClassesSubgroups") and
-##  permits to test maximality/minimality relations.
+##  computes the lattice of subgroups of the group <G>.  This lattice has
+##  the conjugacy classes of subgroups as attribute
+##  `ConjugacyClassesSubgroups' (see~"ConjugacyClassesSubgroups") and
+##  permits one to test maximality/minimality relations.
+##
 DeclareAttribute( "LatticeSubgroups", IsGroup );
+
 
 #############################################################################
 ##
@@ -440,15 +647,28 @@ DeclareAttribute( "LatticeSubgroups", IsGroup );
 ##
 ##  The derived length of a group is the number of steps in the derived
 ##  series. (As there is always the group, it is the series length minus 1.)
+##
 DeclareAttribute( "DerivedLength", IsGroup );
+
+#############################################################################
+##
+#A  HirschLength( <G> )
+##
+##  Suppose that <G> is polycyclic-by-finite; that is, there exists a
+##  polycyclic normal subgroup N in <G> with [G : N] finite. Then the Hirsch
+##  length of <G> is the number of infinite cyclic factors in a polycyclic
+##  series of N. This is an invariant of <G>.
+##
+DeclareAttribute( "HirschLength", IsGroup );
 
 
 #############################################################################
 ##
 #A  DerivedSeriesOfGroup( <G> )
 ##
-##  The derived series of a group is obtained by $U_i=U_{i-1}'$. It stops 
+##  The derived series of a group is obtained by $U_{i+1}=U_i'$. It stops
 ##  if $U_i$ is perfect.
+##
 DeclareAttribute( "DerivedSeriesOfGroup", IsGroup );
 
 
@@ -457,26 +677,51 @@ DeclareAttribute( "DerivedSeriesOfGroup", IsGroup );
 #A  DerivedSubgroup( <G> )
 ##
 ##  The derived subgroup $G'$ of $G$ is the subgroup generated by all
-##  commutators of elements of $G$. It is normal in $G$ and the factor
-##  $G/G'$ is the largest abelian factor of $G$.
+##  commutators of pairs of elements of $G$. It is normal in $G$ and the
+##  factor group $G/G'$ is the largest abelian factor group of $G$.
+##
 DeclareAttribute( "DerivedSubgroup", IsGroup );
+
+
+#############################################################################
+##
+#A  CommutatorLength( <G> )
+##
+##  `CommutatorLength' returns the minimal number $n$ such that each element
+##  in the derived subgroup (see~"DerivedSubgroup") of the group <G> can be
+##  written as a product of (at most) $n$ commutators of elements in <G>.
+##
+DeclareAttribute( "CommutatorLength", IsGroup );
 
 
 #############################################################################
 ##
 #A  DimensionsLoewyFactors( <G> )
 ##
+##  This operation computes the dimensions of the factors of the Loewy
+##  series of <G>. (See \cite{Hup82}, p. 157 for the slightly complicated
+##  definition of the Loewy Series.)
+##
+##  The dimensions are computed via the `JenningsSeries' without computing
+##  the Loewy series itself.
 DeclareAttribute( "DimensionsLoewyFactors", IsGroup );
 
 
 #############################################################################
 ##
 #A  ElementaryAbelianSeries( <G> )
+#A  ElementaryAbelianSeriesLargeSteps( <G> )
 ##
 ##  returns a series of normal subgroups of $G$ such that all factors are
 ##  elementary abelian. If the group is not solvable (and thus no such series
 ##  exists) it returns `fail'.
+##
+##  The variant `ElementaryAbelianSeriesLargeSteps' tries to make the steps
+##  in this series large (by eliminating intermediate subgroups if possible)
+##  at a small additional cost.
+##
 DeclareAttribute( "ElementaryAbelianSeries", IsGroup );
+DeclareAttribute( "ElementaryAbelianSeriesLargeSteps", IsGroup );
 
 
 #############################################################################
@@ -484,9 +729,12 @@ DeclareAttribute( "ElementaryAbelianSeries", IsGroup );
 #A  Exponent( <G> )
 ##
 ##  The exponent $e$ of a group <G> is the lcm of the orders of its
-##  elements, that is $e$ is the smallest integer such that $g^e=1$ for all
+##  elements, that is, $e$ is the smallest integer such that $g^e=1$ for all
 ##  $g\in G$
+##
 DeclareAttribute( "Exponent", IsGroup );
+
+InstallIsomorphismMaintenance( Exponent, IsGroup and HasExponent, IsGroup );
 
 
 #############################################################################
@@ -495,6 +743,7 @@ DeclareAttribute( "Exponent", IsGroup );
 ##
 ##  The Fitting subgroup of a group <G> is its largest nilpotent normal
 ##  subgroup.
+##
 DeclareAttribute( "FittingSubgroup", IsGroup );
 
 
@@ -502,17 +751,25 @@ DeclareAttribute( "FittingSubgroup", IsGroup );
 ##
 #A  PrefrattiniSubgroup( <G> )
 ##
-##  XXXXXXX
-##  The frattini subgroup is the core of a prefrattini subgroup.
+##  returns a Prefrattini subgroup of the finite solvable group <G>.
+##  A factor $M/N$ of $G$ is called a Frattini factor if $M/N \leq
+##  \phi(G/N)$ holds.  The group $P$ is a Prefrattini subgroup of $G$ if $P$
+##  covers each Frattini chief factor  of $G$, and  if for each  maximal
+##  subgroup  of $G$ there exists a conjugate maximal subgroup, which
+##  contains $P$.   In a finite solvable group $G$ the Prefrattini subgroups
+##  form a characteristic conjugacy class of subgroups and the intersection
+##  of all these subgroups is the Frattini subgroup of $G$.
 ##
 DeclareAttribute( "PrefrattiniSubgroup", IsGroup );
+
 
 #############################################################################
 ##
 #A  FrattiniSubgroup( <G> )
 ##
-##  The frattini subgroup of a group <G> is the intersection of all maximal
+##  The Frattini subgroup of a group <G> is the intersection of all maximal
 ##  subgroups of <G>.
+##
 DeclareAttribute( "FrattiniSubgroup", IsGroup );
 
 
@@ -527,6 +784,11 @@ DeclareAttribute( "InvariantForm", IsGroup );
 ##
 #A  JenningsSeries( <G> )
 ##
+##  For a $p$-group <G>, this function returns its Jennings series.
+##  This series is defined by setting
+##  $G_1=G$ and for $i\geq 0$, $G_{i+1}=[G_i,G]G_j^p$, where $j$ is the
+##  smallest integer $\geq i/p$.
+##
 DeclareAttribute( "JenningsSeries", IsGroup );
 
 
@@ -534,15 +796,20 @@ DeclareAttribute( "JenningsSeries", IsGroup );
 ##
 #A  LowerCentralSeriesOfGroup( <G> )
 ##
-##  The lower central series of a group <G> is defined as $U_{i+1}:=[G,U_i]$. It
-##  is a central series of normal subgroups. The name derives from the fact
-##  that $U_i$ is contained in every $i$-th step subgroup of a central series.
+##  The lower central series of a group <G> is defined as $U_{i+1}:=[G,U_i]$.
+##  It is a central series of normal subgroups.
+##  The name derives from the fact that $U_i$ is contained in the $i$-th
+##  step subgroup of any central series.
+##
 DeclareAttribute( "LowerCentralSeriesOfGroup", IsGroup );
 
 
 #############################################################################
 ##
 #A  MaximalNormalSubgroups( <G> )
+##
+##  is a list containing those proper normal subgroups of the group <G>
+##  that are maximal among the proper normal subgroups.
 ##
 DeclareAttribute( "MaximalNormalSubgroups", IsGroup );
 
@@ -559,12 +826,13 @@ DeclareAttribute( "NormalMaximalSubgroups", IsGroup );
 #A  NormalSubgroups( <G> )
 ##
 ##  returns a list of all normal subgroups of <G>.
+##
 DeclareAttribute( "NormalSubgroups", IsGroup );
 
 
 #############################################################################
 ##
-#F  NormalSubgroupsAbove
+#F  NormalSubgroupsAbove( <G> )
 ##
 DeclareGlobalFunction("NormalSubgroupsAbove");
 
@@ -574,30 +842,35 @@ DeclareGlobalFunction("NormalSubgroupsAbove");
 #A  NrConjugacyClasses( <G> )
 ##
 ##  returns the number of conjugacy classes of <G>.
+##
 DeclareAttribute( "NrConjugacyClasses", IsGroup );
 
 
 #############################################################################
 ##
-#O  Omega( <G>, <n> )
+#F  Omega( <G>, <p>[, <n>] )
 ##
-##  For a $p$ group <G>, one defines $\Omega_n=\{g\in G\mid g^{p^n}=1\}$.
+##  For a <p>-group <G>, one defines
+##  $\Omega_{<n>}(<G>) = \{ g\in <G> \mid g^{<p>^{<n>}} = 1 \}$.
+##  The default value for <n> is `1'.
+##
+##  *@At the moment methods exist only for abelian <G> and <n>=1.@*
 ##
 DeclareGlobalFunction( "Omega" );
-DeclareOperation( "OmegaOp",
-    [ IsGroup, IsPosInt, IsPosInt ] );
+DeclareOperation( "OmegaOp", [ IsGroup, IsPosInt, IsPosInt ] );
 DeclareAttribute( "ComputedOmegas", IsGroup, "mutable" );
 
 
 #############################################################################
 ##
-#O  Agemo( <G>, <n> )
+#F  Agemo( <G>, <p>[, <n>] )
 ##
-##  For a $p$ group <G>, one defines
-##  $\mho=\langle g^{p^n}\mid g\in G\rangle$.
+##  For a <p>-group <G>, one defines
+##  $\mho_{<n>}(G) = \langle g^{<p>^{<n>}} \mid g\in <G> \rangle$.
+##  The default value for <n> is `1'.
+##
 DeclareGlobalFunction( "Agemo" );
-DeclareOperation( "AgemoOp",
-    [ IsGroup, IsPosInt, IsPosInt ] );
+DeclareOperation( "AgemoOp", [ IsGroup, IsPosInt, IsPosInt ] );
 DeclareAttribute( "ComputedAgemos", IsGroup, "mutable" );
 
 
@@ -605,48 +878,19 @@ DeclareAttribute( "ComputedAgemos", IsGroup, "mutable" );
 ##
 #A  RadicalGroup( <G> )
 ##
-##  is the radical of <G>, i.e., the largest normal solvable subgroup of <G>.
+##  is the radical of <G>, i.e., the largest solvable normal subgroup of <G>.
 ##
 DeclareAttribute( "RadicalGroup", IsGroup );
 
 
 #############################################################################
 ##
-#A  OrdersClassRepresentatives( <G> )
-##
-##  is a list of orders of representatives of conjugacy classes of the group
-##  <G>, in the same ordering as the conjugacy classes.
-##
-DeclareAttribute( "OrdersClassRepresentatives", IsGroup );
-
-
-#############################################################################
-##
 #A  RationalClasses( <G> )
 ##
-##  returns a list of the rational classes of the group <G>. (see
+##  returns a list of the rational classes of the group <G>. (See
 ##  "RationalClass".)
+##
 DeclareAttribute( "RationalClasses", IsGroup );
-
-
-#############################################################################
-##
-#A  SizesCentralizers( <G> )
-##
-##  is a list that stores at position $i$ the size of the centralizer of any
-##  element in the $i$-th conjugacy class of the group $G$.
-##
-DeclareAttribute( "SizesCentralizers", IsGroup );
-
-
-#############################################################################
-##
-#A  SizesConjugacyClasses( <G> )
-##
-##  is a list that stores at position $i$ the size of the $i$-th conjugacy
-##  class of the group $G$.
-##
-DeclareAttribute( "SizesConjugacyClasses", IsGroup );
 
 
 #############################################################################
@@ -655,12 +899,23 @@ DeclareAttribute( "SizesConjugacyClasses", IsGroup );
 ##
 ##  returns a ``smallest'' generating set for the group <G>. This is the
 ##  lexicographically (using {\GAP}s order of group elements) smallest list
-##  $l$ of elements of <G> such that $G=\langle
-##  l\rangle$ and $l_i\not\in\langle l_1,\ldots,l_{i-1}$ and $1\not\in l$.
-##  The comparison of two groups via lexicographic comparison of their
-##  sorted element lists yields the same relation as lexicographic comparison
-##  of their smallest generating sets.
+##  $l$ of elements of <G> such that $G=\langle l\rangle$ and
+##  $l_i\not\in\langle l_1,\ldots,l_{i-1}\rangle$ (in particular $l_1$ is
+##  not the one of the group).  The comparison of two groups via
+##  lexicographic comparison of their sorted element lists yields the same
+##  relation as lexicographic comparison of their smallest generating sets.
+##
 DeclareAttribute( "GeneratorsSmallest", IsGroup );
+
+
+#############################################################################
+##
+#A  LargestElementGroup( <G> )
+##
+##  returns the largest element of <G> with respect to the ordering `\<' of
+##  the elements family.
+##
+DeclareAttribute( "LargestElementGroup", IsGroup );
 
 
 #############################################################################
@@ -668,6 +923,7 @@ DeclareAttribute( "GeneratorsSmallest", IsGroup );
 #A  MinimalGeneratingSet( <G> )
 ##
 ##  returns a generating set of <G> of minimal possible length.
+##
 DeclareAttribute( "MinimalGeneratingSet", IsGroup );
 
 
@@ -679,14 +935,17 @@ DeclareAttribute( "MinimalGeneratingSet", IsGroup );
 ##  irredundancy, nor minimal length is proven it runs much faster than
 ##  `MinimalGeneratingSet'. It can be used whenever a short generating set is
 ##  desired which not necessarily needs to be optimal.
+##
 DeclareAttribute( "SmallGeneratingSet", IsGroup );
+
 
 #############################################################################
 ##
 #A  SupersolvableResiduum( <G> )
 ##
-##  The supersolvable residuum of a group <G> is its smallest normal
-##  subgroup with supersolvable factor group.
+##  is the supersolvable residuum of the group <G>, that is,
+##  its smallest normal subgroup with supersolvable factor group.
+##
 DeclareAttribute( "SupersolvableResiduum", IsGroup );
 
 
@@ -695,13 +954,16 @@ DeclareAttribute( "SupersolvableResiduum", IsGroup );
 #F  SupersolvableResiduumDefault( <G> ) . . . . supersolvable residuum of <G>
 ##
 ##  `SupersolvableResiduumDefault' returns a record with components
-##  `ssr' :
+##  \beginitems
+##  `ssr': &
 ##      the supersolvable residuum of the group <G>, that is,
 ##      the largest normal subgroup of <G> with supersolvable factor group,
-##  `ds' :
-##      a chain of normal subgroups of <G>, descending from <G> to the
-##      supersolvable residuum, such that any refinement of this chain
-##      is a normal series.
+##
+##  `ds': &
+##      a chain of normal subgroups of <G>,
+##      descending from <G> to the supersolvable residuum,
+##      such that any refinement of this chain is a normal series.
+##  \enditems
 ##
 DeclareGlobalFunction( "SupersolvableResiduumDefault" );
 
@@ -710,10 +972,13 @@ DeclareGlobalFunction( "SupersolvableResiduumDefault" );
 ##
 #A  ComplementSystem( <G> )
 ##
-##  A complement system of a group <G> is a set of hall $p'$-subgroups of
-##  <G> such that every pair of subgroups from this set commutes as subgroups.
-##  Complement systems exist only for solvable groups. The operation returns
-##  `fail' if the group <G> is not solvable.
+##  A complement system of a group <G> is a set of Hall-$p'$-subgroups of
+##  <G>, where $p'$ runs through the subsets of prime factors of $|<G>|$
+##  that omit exactly one prime.
+##  Every pair of subgroups from this set commutes as subgroups.
+##  Complement systems exist only for solvable groups, therefore
+##  `ComplementSystem' returns `fail' if the group <G> is not solvable.
+##
 DeclareAttribute( "ComplementSystem", IsGroup );
 
 
@@ -721,20 +986,23 @@ DeclareAttribute( "ComplementSystem", IsGroup );
 ##
 #A  SylowSystem( <G> )
 ##
-##  A sylow system of a group <G> is a set of sylow subgroups of <G> such
-##  that every pair of sylow subgroups from this set commutes as subgroups.
+##  A Sylow system of a group <G> is a set of Sylow subgroups of <G> such
+##  that every pair of Sylow subgroups from this set commutes as subgroups.
 ##  Sylow systems exist only for solvable groups. The operation returns
 ##  `fail' if the group <G> is not solvable.
+##
 DeclareAttribute( "SylowSystem", IsGroup );
+
 
 #############################################################################
 ##
 #A  HallSystem( <G> )
 ##
-##  returns a list of hall $\pi$ subgroups for all sets $\pi$ of primes
+##  returns a list containing one Hall-$P$ subgroup for each set $P$ of primes
 ##  which occur in the order of <G>.
 ##  Hall systems exist only for solvable groups. The operation returns
 ##  `fail' if the group <G> is not solvable.
+##
 DeclareAttribute( "HallSystem", IsGroup );
 
 
@@ -742,15 +1010,16 @@ DeclareAttribute( "HallSystem", IsGroup );
 ##
 #A  TrivialSubgroup( <G> ) . . . . . . . . . .  trivial subgroup of group <G>
 ##
-TrivialSubgroup := TrivialSubmagmaWithOne;
-SetTrivialSubgroup := SetTrivialSubmagmaWithOne;
-HasTrivialSubgroup := HasTrivialSubmagmaWithOne;
+DeclareSynonymAttr( "TrivialSubgroup", TrivialSubmagmaWithOne );
+
 
 #############################################################################
 ##
-#A  Socle( <G> ) . . . . . . . . . .  socle of <G>
+#A  Socle( <G> ) . . . . . . . . . . . . . . . . . . . . . . . . socle of <G>
 ##
-##  The socle is the subgroup generated by all minimal normal subgroups.
+##  The socle of the group <G> is the subgroup generated by
+##  all minimal normal subgroups.
+##
 DeclareAttribute( "Socle", IsGroup );
 
 
@@ -758,17 +1027,22 @@ DeclareAttribute( "Socle", IsGroup );
 ##
 #A  UpperCentralSeriesOfGroup( <G> )
 ##
-##  The upper central series of a group <G> is defined as
-##  $U_i/U_{i+1}:=Z(G/U_{i+1})$. It
-##  is a central series of normal subgroups. The name derives from the fact
-##  that $U_i$ contains every $i$-th step subgroup of a central series.
-DeclareAttribute( "UpperCentralSeriesOfGroup",
-    IsGroup );
+##  The upper central series of a group <G> is defined as an ending series
+##  $U_i/U_{i+1}:=Z(G/U_{i+1})$.
+##  It is a central series of normal subgroups.
+##  The name derives from the fact that $U_i$ contains every $i$-th step
+##  subgroup of a central series.
+##
+DeclareAttribute( "UpperCentralSeriesOfGroup", IsGroup );
 
 
 #############################################################################
 ##
 #O  EulerianFunction( <G>, <n> )
+##
+##  returns the  number  of <n>-tuples $(g_1, g_2,  \ldots g_n)$ of elements
+##  of the group <G>  that  generate the  whole group <G>.
+##  The elements of an <n>-tuple need not be different.
 ##
 DeclareOperation( "EulerianFunction", [ IsGroup, IsPosInt ] );
 
@@ -785,6 +1059,7 @@ DeclareGlobalFunction( "AgemoAbove" );
 #O  AsSubgroup( <G>, <U> )
 ##
 ##  creates a subgroup of <G> which contains the same elements as <U>
+##
 DeclareOperation( "AsSubgroup", [ IsGroup, IsGroup ] );
 
 
@@ -794,8 +1069,9 @@ DeclareOperation( "AsSubgroup", [ IsGroup, IsGroup ] );
 #O  ClassMultiplicationCoefficient( <G>, <C_i>, <C_j>, <C_k> )
 ##
 DeclareOperation( "ClassMultiplicationCoefficient",
-    [ IsGroup, IsPosInt,
-      IsPosInt, IsPosInt ] );
+    [ IsGroup, IsPosInt, IsPosInt, IsPosInt ] );
+DeclareOperation( "ClassMultiplicationCoefficient",
+    [ IsGroup, IsCollection, IsCollection, IsCollection ] );
 
 
 #############################################################################
@@ -804,10 +1080,10 @@ DeclareOperation( "ClassMultiplicationCoefficient",
 ##
 ##  This functions returns the closure of the group <G> with the element
 ##  <elm>.
-##  If <G> has the attribute 'AsListSorted' then also the result has this
+##  If <G> has the attribute `AsSSortedList' then also the result has this
 ##  attribute.
-##  This is used to implement the default method for 'Enumerator' and
-##  'EnumeratorSorted', via the function 'EnumeratorOfGroup'.
+##  This is used to implement the default method for `Enumerator'
+##  (see~"Enumerator") and `EnumeratorSorted' (see~"EnumeratorSorted").
 ##
 DeclareGlobalFunction( "ClosureGroupDefault" );
 
@@ -816,14 +1092,56 @@ DeclareGlobalFunction( "ClosureGroupDefault" );
 ##
 #O  ClosureGroup( <G>, <obj> )  . . .  closure of group with element or group
 ##
-##  creates the group generated by teh elements of <G> and <obj>. <obj> can
-##  be either an element or a list of elements or another group.
+##  creates the group generated by the elements of <G> and <obj>.
+##  <obj> can be either an element or a collection of elements,
+##  in particular another group.
+##
 DeclareOperation( "ClosureGroup", [ IsGroup, IsObject ] );
 
 
 #############################################################################
 ##
+#F  ClosureGroupAddElm( <G>, <elm> )
+#F  ClosureGroupCompare( <G>, <elm> )
+#F  ClosureGroupIntest( <G>, <elm> )
+##
+##  These three functions together with `ClosureGroupDefault' implement the
+##  main methods for `ClosureGroup' (see~"ClosureGroup").
+##  In the ordering given, they just add <elm> to the generators, remove
+##  duplicates and identity elements, and test whether <elm> is already
+##  contained in <G>.
+##
+DeclareGlobalFunction( "ClosureGroupAddElm" );
+DeclareGlobalFunction( "ClosureGroupCompare" );
+DeclareGlobalFunction( "ClosureGroupIntest" );
+
+
+#############################################################################
+##
+#F  ClosureSubgroup( <G>, <obj> )
+#F  ClosureSubgroupNC( <G>, <obj> )
+##
+##  For a group <G> that stores a parent group (see~"Parents"),
+##  `ClosureSubgroup' calls `ClosureGroup' (see~"ClosureGroup") with the same
+##  arguments;
+##  if the result is a subgroup of the parent of <G> then the parent of <G>
+##  is set as parent of the result, otherwise an error is raised.
+##  The check whether the result is contained in the parent of <G> is omitted
+##  by the `NC' version.
+##
+DeclareGlobalFunction( "ClosureSubgroup" );
+DeclareGlobalFunction( "ClosureSubgroupNC" );
+
+
+#############################################################################
+##
 #O  CommutatorSubgroup( <G>, <H> )
+##
+##  If <G> and <H> are two groups of elements in the same family, this
+##  operation returns the group generated by all commutators
+##  $[ g, h ] = g^{-1} h^{-1} g h$ (see~"Comm") of elements $g \in <G>$ and
+##  $h \in <H>$, that is the group
+##  $\left\langle [ g, h ] \mid g \in <G>, h \in <H> \right\rangle$.
 ##
 DeclareOperation( "CommutatorSubgroup", [ IsGroup, IsGroup ] );
 
@@ -832,16 +1150,20 @@ DeclareOperation( "CommutatorSubgroup", [ IsGroup, IsGroup ] );
 ##
 #O  ConjugateGroup( <G>, <obj> )  . . . . . . conjugate of group <G> by <obj>
 ##
-##  To form a conjugate (group) by any object acting via '\^', one can use
-##  the operator '\^'.
-#T This should not be restricted to objects in the parent, or?
-#T (Remember the hacks in the dispatchers of 'Centralizer' and 'Normalizer'
-#T in GAP-3!)
-##
-#T Do we need 'ConjugateSubgroupNC', which does not check containment in
-#T the parent?
+##  returns the conjugate group of <G>, obtained by applying the conjugating
+##  element <obj>.
+##  To form a conjugate (group) by any object acting via `^', one can use
+##  the infix operator `^'.
 ##
 DeclareOperation( "ConjugateGroup", [ IsGroup, IsObject ] );
+
+
+#############################################################################
+##
+#O  ConjugateSubgroup( <G>, <g> )
+##
+DeclareOperation( "ConjugateSubgroup",
+    [ IsGroup and HasParent, IsMultiplicativeElementWithInverse ] );
 
 
 #############################################################################
@@ -850,6 +1172,7 @@ DeclareOperation( "ConjugateGroup", [ IsGroup, IsObject ] );
 ##
 ##  returns a list of all images of the group <U> under conjugation action
 ##  by <G>.
+##
 DeclareOperation( "ConjugateSubgroups", [ IsGroup, IsGroup ] );
 
 
@@ -857,6 +1180,8 @@ DeclareOperation( "ConjugateSubgroups", [ IsGroup, IsGroup ] );
 ##
 #O  Core( <S>, <U> )
 ##
+##  If <S> and <U> are groups of elements in the same family, this
+##  operation
 ##  returns the core of <U> in <S>, that is the intersection of all
 ##  <S>-conjugates of <U>.
 ##
@@ -867,22 +1192,38 @@ InParentFOA( "Core", IsGroup, IsGroup, NewAttribute );
 ##
 #O  CosetTable( <G>, <H> )
 ##
+##  returns the coset table of the finitely presented group <G> on the cosets
+##  of the subgroup <H>.
+##
+##  Basically a coset table is the permutation representation of the finitely
+##  presented group on the cosets of a subgroup  (which need  not be faithful
+##  if the subgroup has a nontrivial  core).  Most  of  the set theoretic and
+##  group functions use the regular  representation of <G>, i.e.,  the  coset
+##  table of <G> over the trivial subgroup.
+##
+##  The coset table is returned as a list of lists. For each generator of
+##  <G> and its inverse the table contains a generator list. A generator
+##  list is simply a list of integers. If <l> is the generator list for the
+##  generator <g> and if `<l>[<i>] = <j>' then generator <g> takes the coset
+##  <i> to the coset <j> by multiplication from the right. Thus the
+##  permutation representation of <G> on the cosets of <H> is obtained by
+##  applying `PermList' to each generator list (see "PermList"). The coset
+##  table is standardized, i.e., the cosets are sorted with respect to the
+##  smallest word that lies in each coset.
+##
 DeclareOperation( "CosetTable", [ IsGroup, IsGroup ] );
 
 
 #############################################################################
 ##
-#A  CosetTableInWholeGroup( <G> )
-##
-DeclareAttribute( "CosetTableInWholeGroup", IsGroup );
-
-
-#############################################################################
-##
-#O  FactorGroup( <G>, <N> )
+#F  FactorGroup( <G>, <N> )
+#O  FactorGroupNC( <G>, <N> )
 ##
 ##  returns the image of the `NaturalHomomorphismByNormalSubgroup(<G>,<N>)'.
-DeclareOperation( "FactorGroup", [ IsGroup, IsGroup ] );
+##  The `NC' version does not test whether <N> is normal in <G>.
+##
+DeclareGlobalFunction( "FactorGroup" );
+DeclareOperation( "FactorGroupNC", [ IsGroup, IsGroup ] );
 
 
 #############################################################################
@@ -898,6 +1239,8 @@ InParentFOA( "Index", IsGroup, IsGroup, NewAttribute );
 ##
 #A  IndexInWholeGroup( <G> )
 ##
+##  If the family of elements of <G> itself forms a group <P>, this
+##  attribute returns the index of <G> in <P>.
 DeclareAttribute( "IndexInWholeGroup", IsGroup );
 
 
@@ -908,6 +1251,7 @@ DeclareAttribute( "IndexInWholeGroup", IsGroup );
 ##  returns a set of generators <g> of prime-power order of the abelian
 ##  group <A> such that <A> is the direct product of the cyclic groups
 ##  generated by the $g_i$.
+##
 DeclareAttribute( "IndependentGeneratorsOfAbelianGroup",
   IsGroup and IsAbelian );
 
@@ -918,8 +1262,10 @@ DeclareAttribute( "IndependentGeneratorsOfAbelianGroup",
 #O  IsConjugate( <G>, <U>, <V> )
 ##
 ##  tests whether the elements <x> and <y> or the subgroups <U> and <V> are
-##  conjugate under <G>. This command is only a shortcut to
+##  conjugate under the action of <G>. (They do not need to be contained in
+##  <G>.) This command is only a shortcut to
 ##  `RepresentativeOperation'.
+##
 DeclareOperation( "IsConjugate", [ IsGroup, IsObject, IsObject ] );
 
 
@@ -927,7 +1273,22 @@ DeclareOperation( "IsConjugate", [ IsGroup, IsObject, IsObject ] );
 ##
 #O  IsNormal( <G>, <U> )
 ##
+##  returns `true' if the group <G> normalizes the group <U>
+##  and `false' otherwise.
+##
+##  A group <G> *normalizes* a group <U> if and only if for every $g \in <G>$
+##  and $u \in <U>$ the element $u^g$ is a member of <U>.
+##  Note that <U> need not be a subgroup of <G>.
+##
 InParentFOA( "IsNormal", IsGroup, IsGroup, NewProperty );
+
+
+#############################################################################
+##
+#O  IsCharacteristicSubgroup(<G>,<N>)
+##
+##  tests whether <N> is invariant under all automorphisms of <G>.
+DeclareOperation( "IsCharacteristicSubgroup", [IsGroup,IsGroup] );
 
 
 #############################################################################
@@ -936,7 +1297,7 @@ InParentFOA( "IsNormal", IsGroup, IsGroup, NewProperty );
 ##
 ##  A group is $p$-nilpotent if it possesses a normal $p$-complement.
 ##
-KeyDependentFOA( "IsPNilpotent", IsGroup, IsPosInt, "prime" );
+KeyDependentOperation( "IsPNilpotent", IsGroup, IsPosInt, "prime" );
 
 
 #############################################################################
@@ -946,15 +1307,27 @@ KeyDependentFOA( "IsPNilpotent", IsGroup, IsPosInt, "prime" );
 ##  A group is $p$-solvable if every chief factor is either not divisible
 ##  by $p$ or solvable.
 ##
-KeyDependentFOA( "IsPSolvable", IsGroup, IsPosInt, "prime" );
+##  *@Currently no method is installed!@*
+##
+KeyDependentOperation( "IsPSolvable", IsGroup, IsPosInt, "prime" );
 
 
 #############################################################################
 ##
-#O  IsSubgroup( <G>, <U> )
+#F  IsSubgroup( <G>, <U> )
 ##
-DeclareOperation( "IsSubgroup", [ IsGroup, IsGroup ] );
-#T really needed? (compat3.g?)
+##  `IsSubgroup' returns `true' if <U> is a group that is a subset of the
+##  domain <G>.
+##  This is actually checked by calling `IsGroup( <U> )' and
+##  `IsSubset( <G>, <U> )';
+##  note that special methods for `IsSubset' (see~"IsSubset") are available
+##  that test only generators of <U> if <G> is closed under the group
+##  operations.
+##  So in most cases,
+##  for example whenever one knows already that <U> is a group,
+##  it is better to call only `IsSubset'.
+##
+DeclareGlobalFunction( "IsSubgroup" );
 
 
 #############################################################################
@@ -963,6 +1336,7 @@ DeclareOperation( "IsSubgroup", [ IsGroup, IsGroup ] );
 ##
 ##  A subgroup <U> of the group <G> is subnormal if it is contained in a
 ##  subnormal series of <G>.
+##
 DeclareOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 
 
@@ -980,6 +1354,9 @@ InParentFOA( "NormalClosure", IsGroup, IsGroup, NewAttribute );
 ##
 #O  NormalIntersection( <G>, <U> )
 ##
+##  computes the intersection of <G> and <U>, assuming that <G> is normalized
+##  by <U>. This works faster than `Intersection', but will not produce the
+##  intersection if <G> is not normalized by <U>.
 DeclareOperation( "NormalIntersection", [ IsGroup, IsGroup ] );
 
 
@@ -999,8 +1376,9 @@ InParentFOA( "Normalizer", IsGroup, IsObject, NewAttribute );
 ##
 #O  CentralizerModulo(<G>,<N>,<elm>)   full preimage of C_(G/N)(elm.N)
 ##
-##  Computes the full preimage of the centralizer $C_(G/N)(elm\cdot N)$ in
+##  Computes the full preimage of the centralizer $C_{G/N}(elm\cdot N)$ in
 ##  <G> (without necessarily constructing the factor group).
+##
 DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 
 
@@ -1008,31 +1386,39 @@ DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 ##
 #F  PCentralSeries( <G>, <p> )
 ##
-KeyDependentFOA( "PCentralSeries", IsGroup, IsPosInt, "prime" );
+##  The $p$-central series of $G$ is defined by $U_1:=G$,
+##  $U_i:=[G,U_{i-1}]U_{i-1}^p$.
+##
+KeyDependentOperation( "PCentralSeries", IsGroup, IsPosInt, "prime" );
 
 
 #############################################################################
 ##
 #F  PRump( <G>, <p> )
 ##
-##  ????
-KeyDependentFOA( "PRump", IsGroup, IsPosInt, "prime" );
+##  The *p-rump* of a group $G$ is the subgroup $G' G^p$ for a prime $p$.
+##
+KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 
 
 #############################################################################
 ##
 #F  PCore( <G>, <p> )
 ##
+##  \index{Op(G)}
 ##  The $p$-core of <G> is the largest normal $p$-subgroup of <G>. It is the
 ##  core of a $p$-Sylow subgroup of <G>.
 ##
-KeyDependentFOA( "PCore", IsGroup, IsPosInt, "prime" );
+KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 
 
 #############################################################################
 ##
 #O  SubnormalSeries( <G>, <U> )
 ##
+##  If <U> is a subgroup of <G> this operation returns a subnormal series
+##  that descends from <G> to a subnormal subgroup <V>$\ge$<U>. If <U> is
+##  subnormal, <V>=<U>.
 InParentFOA( "SubnormalSeries", IsGroup, IsGroup, NewAttribute );
 
 
@@ -1040,11 +1426,12 @@ InParentFOA( "SubnormalSeries", IsGroup, IsGroup, NewAttribute );
 ##
 #F  SylowSubgroup( <G>, <p> )
 ##
-##  returns a $p$-Sylow subgroup of the finite group <G>. This is a
-##  $p$-subgroup <U> such that the index $[G:U]$ is coprime to $p$.
-##  It computes Sylow subgroups via the operation `SylowSubgroupOp'.
+##  returns a Sylow $p$ subgroup of the finite group <G>.
+##  This is a $p$-subgroup of <G> whose index in <G> is coprime to $p$.
+##  `SylowSubgroup' computes Sylow subgroups via the operation
+##  `SylowSubgroupOp'.
 ##
-KeyDependentFOA( "SylowSubgroup", IsGroup, IsPosInt, "prime" );
+KeyDependentOperation( "SylowSubgroup", IsGroup, IsPosInt, "prime" );
 
 
 #############################################################################
@@ -1054,22 +1441,24 @@ KeyDependentFOA( "SylowSubgroup", IsGroup, IsPosInt, "prime" );
 ##  returns a $p$-Sylow complement of the finite group <G>. This is a
 ##  subgroup <U> of order coprime to $p$ such that the index $[G:U]$ is a
 ##  $p$-power.
+##  At the moment methods exist only if <G> is solvable and {\GAP} will
+##  issue an error if <G> is not solvable.
 ##
-KeyDependentFOA( "SylowComplement", IsGroup, IsPosInt, "prime" );
+KeyDependentOperation( "SylowComplement", IsGroup, IsPosInt, "prime" );
 
 
 #############################################################################
 ##
-#F  HallSubgroup( <G>, <pi> )
+#F  HallSubgroup( <G>, <P> )
 ##
-##  computes a $\pi$-Hall subgroup for a set $\pi$ of primes. This is a
-##  subgroup which is only divisible by primes in $\pi$ and whose index is
-##  coprime to all primes in $\pi$. 
-##  A group is solvable if and only if for all sets $\pi$ of primes dividing
-##  the group order $\pi$-Hall subgroups exist.
+##  computes a $P$-Hall subgroup for a set $P$ of primes.
+##  This is a subgroup the order of which is only divisible by primes in $P$
+##  and whose index is coprime to all primes in $P$.
 ##  The function computes Hall subgroups via the operation `HallSubgroupOp'.
+##  At the moment methods exist only if <G> is solvable and {\GAP} will
+##  issue an error if <G> is not solvable.
 ##
-KeyDependentFOA( "HallSubgroup", IsGroup, IsList, ReturnTrue );
+KeyDependentOperation( "HallSubgroup", IsGroup, IsList, ReturnTrue );
 
 
 #############################################################################
@@ -1081,36 +1470,76 @@ DeclareOperation( "NrConjugacyClassesInSupergroup", [ IsGroup, IsGroup ] );
 
 #############################################################################
 ##
+#F  Factorization( <G>, <elm> )
+##
+##  returns a factorization of <elm> as word in the generators of <G> given in
+##  the attribute `GeneratorsOfGroup'. (The corresponding free generators can
+##  be obtained via the family <fam> of the result as
+##  `CollectionsFamily(<fam>)!.wholeGroup'.)
+##
+##  The algorithm used computes all elements of the group to ensure a short
+##  word is found. Therefore this function should *not* be used when the
+##  group <G> has more than a few thousand elements. Because of this you
+##  also should not call this function within algorithms, but use
+##  homomorphisms instead. The sole use of this function is didactic.
+DeclareGlobalFunction("Factorization");
+
+
+#############################################################################
+##
 #O  GroupByGenerators( <gens> ) . . . . . . . . . . . . . group by generators
 #O  GroupByGenerators( <gens>, <id> ) . . . . . . . . . . group by generators
 ##
+##  `GroupByGenerators' returns the group $G$ generated by the list <gens>.
+##  If a second argument <id> is present then this is stored as the identity
+##  element of the group.
+##
+##  The value of the attribute `GeneratorsOfGroup' of $G$ need not be equal
+##  to <gens>.
+##  `GroupByGenerators' is called by `Group'.
+##
 DeclareOperation( "GroupByGenerators", [ IsCollection ] );
+DeclareOperation( "GroupByGenerators",
+    [ IsCollection, IsMultiplicativeElementWithInverse ] );
+
+
+#############################################################################
+##
+#O  GroupWithGenerators( <gens> ) . . . . . . . . group with given generators
+#O  GroupWithGenerators( <gens>, <id> ) . . . . . group with given generators
+##
+##  `GroupWithGenerators' returns the group $G$ generated by the list <gens>.
+##  If a second argument <id> is present then this is stored as the identity
+##  element of the group.
+##  The value of the attribute `GeneratorsOfGroup' of $G$ is equal to <gens>.
+##
+DeclareOperation( "GroupWithGenerators", [ IsCollection ] );
+DeclareOperation( "GroupWithGenerators",
+    [ IsCollection, IsMultiplicativeElementWithInverse ] );
 
 
 #############################################################################
 ##
 #F  Group( <gen>, ... )
+#F  Group( <gens> )
 #F  Group( <gens>, <id> )
 ##
-##  'Group( <gen>, ... )' is the group generated by the arguments <gen>, ...
+##  `Group( <gen>, ... )' is the group generated by the arguments <gen>, ...
 ##
-##  If the only  argument <obj> is a list  that is not  a matrix then 'Group(
-##  <obj> )' is the group generated by the elements of that list.
+##  If the only  argument <gens> is a list  that is not  a matrix then
+##  `Group( <gens> )' is the group generated by the elements of that list.
 ##
-##  If there  are two arguments,   a list <gens>  and  an element <id>,  then
-##  'Group( <gens>, <id> )'  is the group generated  by <gens>, with identity
-##  <id>.
+##  If there  are two arguments,   a list <gens>  and  an element <id>, then
+##  `Group( <gens>, <id> )'  is the group generated  by the elements of
+##  <gens>, with identity <id>.
+##
+##  Note that the value of the attribute `GeneratorsOfGroup' need not be
+##  equal to the list <gens> of generators entered as argument.  Use
+##  `GroupWithGenerators' if you want to be sure that the argument <gens> is
+##  stored as value of `GeneratorsOfGroup'. If this is required, see
+##  `GroupWithGenerators'("GroupWithGenerators").
 ##
 DeclareGlobalFunction( "Group" );
-
-
-#############################################################################
-##
-#F  InstallGroupMethod( <coll-prop>, <grp-prop>, <func> )
-##
-GROUP_METHODS      := [];
-InstallGroupMethod := InstallMethodsFunction2(GROUP_METHODS);
-RunGroupMethods    := RunMethodsFunction2(GROUP_METHODS);
 
 
 #############################################################################
@@ -1120,8 +1549,8 @@ RunGroupMethods    := RunMethodsFunction2(GROUP_METHODS);
 ##
 ##  creates the subgroup <U> of <G> generated by <gens>. The `Parent' of <U>
 ##  will be <G>.
-##  The `NC' version does not check, whether the elements in <gens> actually lie
-##  in <G>.
+##  The `NC' version does not check, whether the elements in <gens> actually
+##  lie in <G>.
 ##
 DeclareSynonym( "Subgroup", SubmagmaWithInverses );
 
@@ -1130,31 +1559,121 @@ DeclareSynonym( "SubgroupNC", SubmagmaWithInversesNC );
 
 #############################################################################
 ##
-#R  IsRightTransversal  . . . . . . . . . . . . . . . . . . right transversal
+#C  IsRightTransversal( <obj> )
 ##
-DeclareRepresentation( "IsRightTransversal",
-    IsEnumerator and IsDuplicateFreeList and
-    IsComponentObjectRep and IsAttributeStoringRep,
-    [ "group", "subgroup" ] );
+DeclareCategory("IsRightTransversal",IsCollection);
+DeclareCategoryCollections("IsRightTransversal");
 
 #############################################################################
 ##
 #O  RightTransversal( <G>, <U> )
 ##
-##  A right transversal is a list of representatives for the right cosets
-##  $U{\setminus}G$ (consisting of cosets $Ug$).
-##  `RightTransversal' returns an object that behaves like an immutable
-##  list of length $[<G>{:}<U>]$. For elements of <G>, the function
-##  `PositionCanonical' however will return the position of a representative
-##  in the transversal that defines the same coset. This can be very useful
-##  for commands like `Operation' or `Permutation'.
+##  A right transversal $t$ is a list of representatives for the set
+##  $<U> {\setminus} <G>$ of right
+##  cosets (consisting of cosets $Ug$) of $U$ in $G$.
+##
+##  The object returned by `RightTransversal' is not a plain list, but an
+##  object that behaves like an immutable list of length $[<G>{:}<U>]$,
+##  except if <U> is the trivial subgroup of <G>
+##  in which case `RightTransversal' may return the sorted plain list of
+##  coset representatives.
+##
+##  The operation `PositionCanonical(<t>,<g>)', called for a transversal <t>
+##  and an element <g> of <G>, will return the position of the
+##  representative in <t> that lies in the same coset of <U> as the element
+##  <g> does. (In comparison, `Position' will return `fail' if the element
+##  is not equal to the representative.) Functions that implement group
+##  actions such as `Action' or `Permutation' (see Chapter~"Group
+##  Actions") use `PositionCanonical', therefore it is possible to
+##  ``act'' on a right transversal to implement the action on the cosets.
+##  This is often much more efficient than acting on cosets.
 ##
 InParentFOA( "RightTransversal", IsGroup, IsGroup, NewAttribute );
 
 
 #############################################################################
 ##
-#F  IsomorphismTypeFiniteSimpleGroup( <G> ) . . . . . . . . . ismorphism type
+#O  IntermediateSubgroups( <G>, <U> )
+##
+##  returns a list of all subgroups of <G> that properly contain <U>; that
+##  is all subgroups between <G> and <U>. It returns a record with
+##  components `subgroups' which is a list of these subgroups as well as a
+##  component `inclusions' which lists all maximality inclusions among these
+##  subgroups.
+##  A maximality inclusion is given as a list `[<i>,<j>]' indicating that
+##  subgroup number <i> is a maximal subgroup of subgroup number <j>, the
+##  numbers 0 and 1+length(`subgroups') are used to denote <U> and <G>
+##  respectively.
+##
+DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
+
+
+#############################################################################
+##
+#F  IsomorphismTypeFiniteSimpleGroup( <G> )
+##
+##  For a finite simple group <G>, `IsomorphismTypeFiniteSimpleGroup' returns
+##  a record with components `series', `name' and possibly `parameter',
+##  describing the isomorphism type of <G>.
+##  The component `name' is a string that gives name(s) for <G>,
+##  and `series' is a string that describes the following series.
+##
+##  (If different characterizations of <G> are possible only one is given by
+##  `series' and `parameter', while `name' may give several names.)
+##  \beginlist
+##  \item{`"A"'} Alternating groups, `parameter' gives the natural degree.
+##
+##  \item{`"L"'} Linear groups (Chevalley type $A$),
+##               `parameter' is a list [<n>,<q>] that indicates $L(n,q)$.
+##
+##  \item{`"2A"'} Twisted Chevalley type ${}^2A$,
+##                `parameter' is a list [<n>,<q>] that indicates ${}^2A(n,q)$.
+##
+##  \item{`"B"'} Chevalley type $B$,
+##               `parameter' is a list [<n>,<q>] that indicates $B(n,q)$.
+##
+##  \item{`"2B"'} Twisted Chevalley type ${}^2B$,
+##                `parameter' is a value <q> that indicates ${}^2B(2,q)$.
+##
+##  \item{`"C"'} Chevalley type $C$,
+##               `parameter' is a list [<n>,<q>] that indicates $C(n,q)$.
+##
+##  \item{`"D"'} Chevalley type $D$,
+##               `parameter' is a list [<n>,<q>] that indicates $D(n,q)$.
+##
+##  \item{`"2D"'} Twisted Chevalley type ${}^2D$,
+##                `parameter' is a list [<n>,<q>] that indicates ${}^2D(n,q)$.
+##
+##  \item{`"3D"'} Twisted Chevalley type ${}^3D$,
+##                `parameter' is a value <q> that indicates ${}^3D(4,q)$.
+##
+##  \item{`"E"'} Exceptional Chevalley type $E$,
+##               `parameter' is a list [<n>,<q>] that indicates $E_n(q)$.
+##               The value of <n> is 6,7 or 8.
+##
+##  \item{`"2E"'} Twisted exceptional Chevalley type $E_6$,
+##                `parameter' is a value <q> that indicates ${}^2E_6(q)$.
+##
+##  \item{`"F"'} Exceptional Chevalley type $F$,
+##               `parameter' is a value <q> that indicates $F(4,q)$.
+##
+##  \item{`"2F"'} Twisted exceptional Chevalley type ${}^2F$ (Ree groups),
+##                `parameter' is a value <q> that indicates ${}^2F(4,q)$.
+##
+##  \item{`"G"'} Exceptional Chevalley type $G$,
+##               `parameter' is a value <q> that indicates $G(2,q)$.
+##
+##  \item{`"2G"'} Twisted exceptional Chevalley type ${}^2G$ (Ree groups),
+##                `parameter' is a value <q> that indicates ${}^2G(2,q)$.
+##
+##  \item{`"Spor"'} Sporadic groups, `name' gives the name.
+##
+##  \item{`"Z"'} Cyclic groups of prime size, `parameter' gives the size.
+##  \endlist
+##
+##  An equal sign in the name denotes different naming schemes for the same
+##  group, a tilde sign abstract isomorphisms between groups constructed in a
+##  different way.
 ##
 DeclareGlobalFunction( "IsomorphismTypeFiniteSimpleGroup" );
 
@@ -1163,33 +1682,73 @@ DeclareGlobalFunction( "IsomorphismTypeFiniteSimpleGroup" );
 ##
 #A  IsomorphismPcGroup( <G> )
 ##
+##  \index{isomorphic!pc group}
+##  returns an isomorphism from <G> onto an isomorphic PC group.
+##  The series chosen for this PC representation depends on
+##  the method chosen.
+##  <G> may be a polycyclic group of any kind, for example a permuattion
+##  group.
 DeclareAttribute( "IsomorphismPcGroup", IsGroup );
+
+
+#############################################################################
+##
+#A  IsomorphismSpecialPcGroup( <G> )
+##
+##  returns an isomorphism from <G> onto an isomorphic PC group whose family
+##  pcgs is a special pcgs. (This can be beneficial to the runtime of
+##  calculations.)
+##  <G> may be a polycyclic group of any kind, for example a permuattion
+##  group.
+DeclareAttribute( "IsomorphismSpecialPcGroup", IsGroup );
+
+
+#############################################################################
+##
+#A  IsomorphismPermGroup( <G> )
+##
+##  returns an isomorphism $\varphi$ from the group <G> onto
+##  a permutation group <P> which is isomorphic to <G>.
+##  The method will select a suitable permutation representation.
+##
+DeclareAttribute("IsomorphismPermGroup",IsGroup);
+
 
 #############################################################################
 ##
 #A  IsomorphismFpGroup( <G> )
 ##
-##  returns an isomorphism from <G> to an isomorphic finitely presented
-##  group <F>. The presentation (and thus the generators in which it is
-##  presented) is chosen by the method to obtain a short presentation.
+##  returns an isomorphism from the given finite group <G> to a finitely
+##  presented group isomorphic to <G>. The presentation (and thus the
+##  generators in which it is presented) is chosen by a method to obtain a
+##  short presentation.
+##
 DeclareAttribute( "IsomorphismFpGroup", IsGroup );
+
 
 #############################################################################
 ##
 #A  IsomorphismFpGroupByGenerators( <G>,<gens>[,<string>] )
 ##
-##  returns an isomorphism from <G> to an isomorphic finitely presented
-##  group <F>. The generators of <F> correspond to the generators of <G>
-##  given in <gens>.
+##  returns an isomorphism from a finite group <G> to a finitely presented
+##  group <F> isomorphic to <G>.
+##  The generators of <F> correspond to the generators of <G> given in
+##  the list <gens>.
 ##  If <string> is given it is used to name the generators of the finitely
 ##  presented group.
-DeclareOperation( 
-    "IsomorphismFpGroupByGenerators", [IsGroup, IsList, IsString] );
-DeclareOperation( 
+##
+DeclareOperation( "IsomorphismFpGroupByGenerators", [ IsGroup, IsList ] );
+DeclareOperation( "IsomorphismFpGroupByGenerators",
+    [ IsGroup, IsList, IsString ] );
+
+DeclareOperation(
     "IsomorphismFpGroupBySubnormalSeries", [IsGroup, IsList, IsString] );
-DeclareOperation( 
+
+DeclareOperation(
     "IsomorphismFpGroupByCompositionSeries", [IsGroup, IsString] );
+
 DeclareGlobalFunction( "IsomorphismFpGroupByPcgs" );
+
 
 #############################################################################
 ##
@@ -1214,8 +1773,7 @@ DeclareOperation( "PrimePowerComponent",
 ##  class containing the <n>-th powers of the elements in the $i$-th class
 ##  of the list <ccl> of conjugacy classes.
 ##
-DeclareOperation( "PowerMapOfGroup",
-    [ IsGroup, IsInt, IsHomogeneousList ] );
+DeclareOperation( "PowerMapOfGroup", [ IsGroup, IsInt, IsHomogeneousList ] );
 
 
 #############################################################################
@@ -1235,24 +1793,21 @@ DeclareGlobalFunction( "PowerMapOfGroupWithInvariants" );
 
 #############################################################################
 ##
-#O  KnowsHowToDecompose(<G>,<gens>)      test whether the group can decompose 
-##                                       into the generators
-##
-DeclareOperation("KnowsHowToDecompose",[IsGroup,IsList]);
-
-
-#############################################################################
-##
 #O  HasAbelianFactorGroup(<G>,<N>)
 ##
-##  tests whether $G/N$ is abelian.
+##  tests whether $G/N$ is abelian (without explicitly
+##  constructing the factor group).
+##
 DeclareGlobalFunction("HasAbelianFactorGroup");
+
 
 #############################################################################
 ##
 #O  HasElementaryAbelianFactorGroup(<G>,<N>)
 ##
-##  tests whether $G/N$ is elementary abelian.
+##  tests whether $G/N$ is elementary abelian (without explicitly
+##  constructing the factor group).
+##
 DeclareGlobalFunction("HasElementaryAbelianFactorGroup");
 
 
@@ -1262,13 +1817,14 @@ DeclareGlobalFunction("HasElementaryAbelianFactorGroup");
 ##
 ##  This filter indicates that the group <G> is the group which is stored in
 ##  the family of its elements as `WholeGroup'.
+#T This is not correct;
+#T the family <Fam> of <G> stores <G> as `<Fam>!.wholeGroup'.
+#T (In fact currently no attribute `WholeGroup' exists.)
+##
 DeclareFilter("IsGroupOfFamily");
 
 
 #############################################################################
 ##
-
-#E  grp.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
+#E
 

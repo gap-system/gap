@@ -32,9 +32,18 @@ DeclareGlobalFunction( "CentralizerTransSymmCSPG" );
 DeclareGlobalFunction( "IntersectionNormalClosurePermGroup" );
 DeclareGlobalFunction( "ActionAbelianCSPG" );
 DeclareGlobalFunction( "ImageOnAbelianCSPG" );
-DeclareGlobalFunction( "ChiefSeriesPermGroup" );
+
 
 #############################################################################
 ##
-#E  grpprmcs.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#F  ChiefSeriesOfGroup( [<H>, ]<G>[, <through>] )
+##
+#T  Eventually this function should be moved to another file.
+##
+DeclareGlobalFunction( "ChiefSeriesOfGroup" );
+
+
+#############################################################################
+##
+#E
 

@@ -1,0 +1,40 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  relation.msk                GAP documentation          Andrew Solomon      
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Relations}
+
+
+\FileHeader{relation}[1]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{General Binary Relations}
+
+\Declaration{IsBinaryRelation}
+
+
+\Declaration{IsSymmetricBinaryRelation}
+
+\Declaration{ReflexiveClosureBinaryRelation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Equivalence Relations}
+\Declaration{IsEquivalenceRelation}
+\Declaration{EquivalenceRelationPartition}
+\Declaration{EquivalenceRelationByPartition}
+\Declaration{EquivalenceRelationByRelation}
+\Declaration{EquivalenceRelationByPairs}
+\Declaration{IsEquivalenceClass}
+\Declaration{EquivalenceClassRelation}
+\Declaration{EquivalenceClasses}
+\Declaration{EquivalenceClassOfElement}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

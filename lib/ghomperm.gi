@@ -72,11 +72,11 @@ end );
 
 #############################################################################
 ##
-#R  IsCoKernelGensIterator  . . . . . . . . iterator over cokernel generators
+#R  IsCoKernelGensIteratorRep . . . . . . . iterator over cokernel generators
 ##
-DeclareRepresentation( "IsCoKernelGensIterator",
-    IsIterator and IsComponentObjectRep,
-      [ "level", "pointNo", "genlabelNo", "levelNo", "base", "bimg", "img" ] );
+DeclareRepresentation( "IsCoKernelGensIteratorRep",
+    IsComponentObjectRep,
+    [ "level", "pointNo", "genlabelNo", "levelNo", "base", "bimg", "img" ] );
 
 #############################################################################
 ##
@@ -87,7 +87,10 @@ InstallGlobalFunction( CoKernelGensIterator, function( hom )
     
     S := StabChainMutable( hom );
     iter := Objectify
-            ( NewType( IteratorsFamily, IsCoKernelGensIterator ),
+            ( NewType( IteratorsFamily,
+                           IsIterator
+                       and IsMutable
+                       and IsCoKernelGensIteratorRep ),
               rec( level := S,
                  pointNo := 1,
               genlabelNo := 1,
@@ -98,12 +101,16 @@ InstallGlobalFunction( CoKernelGensIterator, function( hom )
     return iter;
 end );
 
-InstallMethod( IsDoneIterator, true,
-        [ IsIterator and IsCoKernelGensIterator ], 0,
+InstallMethod( IsDoneIterator,
+    "for `IsCoKernelGensIteratorRep'",
+    true,
+    [ IsIterator and IsCoKernelGensIteratorRep ], 0,
     iter -> IsEmpty( iter!.level.genlabels ) );
 
-InstallMethod( NextIterator, true,
-        [ IsIterator and IsCoKernelGensIterator ], 0,
+InstallMethod( NextIterator,
+    "for `IsCoKernelGensIteratorRep'",
+    true,
+    [ IsIterator and IsMutable and IsCoKernelGensIteratorRep ], 0,
     function( iter )
     local   gen,  stb,  bimg,  rep,  pnt,  img,  j,  k;
     
@@ -158,6 +165,24 @@ InstallMethod( NextIterator, true,
     return gen;
 end );
 
+InstallMethod( ShallowCopy,
+    "for `IsCoKernelGensIteratorRep'",
+    true,
+    [ IsIterator and IsCoKernelGensIteratorRep ], 0,
+    function( iter )
+    iter:= Objectify( Subtype( TypeObj( iter ), IsMutable ),
+                rec( level      := StructuralCopy( iter!.level ),
+                     pointNo    := iter!.pointNo,
+                     genlabelNo := iter!.genlabelNo,
+                     levelNo    := iter!.levelNo,
+                     base       := ShallowCopy( iter!.base ),
+                     img        := iter!.img ) );
+    iter!.bimg:= iter!.base;
+#T what is this good for??
+    return iter;
+    end );
+
+
 #############################################################################
 ##
 #F  CoKernelGensPermHom( <hom> )  . . . . . . . . generators for the cokernel
@@ -176,10 +201,9 @@ end );
 
 #############################################################################
 ##
-
 #M  StabChainMutable( <hom> ) . . . . . . . . . . . . . . for perm group homs
 ##
-InstallOtherMethod( StabChainMutable, true,
+InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
         [ IsPermGroupGeneralMappingByImages ], 0,
     function( hom )
     local   S,
@@ -190,13 +214,11 @@ InstallOtherMethod( StabChainMutable, true,
             img,        # its image
             size,       # size of the stabilizer chain constructed so far
             stb,        # stabilizer in '<hom>.source'
-            orb,        # orbit
-            len,        # length of the orbit before extension
             bpt,        # base point
             two,        # power of two
             trivgens,   # trivial generators and their images, must be
             trivimgs,   #   entered into every level of the chain
-            i,  j,  T;  # loop variables
+            i, T;  # loop variables
 
     # start with the generators as random elements
     two := 16;
@@ -270,7 +292,7 @@ InstallOtherMethod( StabChainMutable, true,
 
             # if this stabilizer is trivial add an new level
             if not IsBound( stb.stabilizer )  then
-                InsertTrivialStabilizer( stb, SmallestMovedPointPerm(elm) );
+                InsertTrivialStabilizer( stb, SmallestMovedPoint(elm) );
                 AddGeneratorsGenimagesExtendSchreierTree( stb,
                         trivgens, trivimgs );
             fi;
@@ -297,8 +319,11 @@ end );
 ##
 InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
     true, [ IsPermGroupGeneralMappingByImages ], 0,
-    function( hom )
-    return NormalClosure( ImagesSource( hom ), SubgroupNC
+function( hom )
+  if not CanComputeSizeAnySubgroup(Range(hom)) then
+    TryNextMethod();
+  fi;
+  return NormalClosure( ImagesSource( hom ), SubgroupNC
                    ( Range( hom ), CoKernelGensPermHom( hom ) ) );
 end );
 
@@ -345,19 +370,22 @@ end );
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . for perm group homs
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-        [ IsPermGroupGeneralMappingByImages,
-          IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    return ImagesRepresentative( InverseGeneralMapping( hom ), elm );
-end );
+#T This method is quite stupid (there is another installation of a similar
+#T method in the generic code) and interferes with better code for to Pc group
+#T homomorphisms. Disabled. AH
+#InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+#        [ IsPermGroupGeneralMappingByImages,
+#          IsMultiplicativeElementWithInverse ], 0,
+#    function( hom, elm )
+#    return ImagesRepresentative( InverseGeneralMapping( hom ), elm );
+#end );
 
 #############################################################################
 ##
 #M  CompositionMapping2( <hom1>, <hom2> ) . . . . . . . . for perm group homs
 ##
-InstallMethod( CompositionMapping2, FamSource1EqFamRange2,
-        [ IsGroupHomomorphism,
+InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
+  FamSource1EqFamRange2, [ IsGroupHomomorphism,
           IsPermGroupGeneralMappingByImages and IsGroupHomomorphism ], 0,
     function( hom1, hom2 )
     local   prd,  stb,  levs,  S;
@@ -397,7 +425,6 @@ end );
 
 #############################################################################
 ##
-
 #F  StabChainPermGroupToPermGroupGeneralMappingByImages( <hom> )  . . . local
 ##
 InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
@@ -540,7 +567,7 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
     for i in [1..Length(hom!.generators)] do
         longgens[i] := hom!.generators[i] * (hom!.genimages[i] ^ conperm); 
     od;
-    longgroup :=  Group(longgens,());
+    longgroup :=  GroupByGenerators( longgens, () );
     for op  in [ PreImagesRange, ImagesSource ]  do
         if      HasIsSolvableGroup( op( hom ) )
            and not IsSolvableGroup( op( hom ) )  then
@@ -548,6 +575,7 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
             break;
         fi;
     od;
+
     MakeStabChainLong( hom, StabChainOp( longgroup, options ),
            [ 1 .. n ], (), conperminv, hom,
            CoKernelOfMultiplicativeGeneralMapping );
@@ -607,6 +635,7 @@ InstallGlobalFunction( MakeStabChainLong,
             stb := stb.stabilizer;
         else
             RemoveStabChain( S );
+	    S.genimages:=[];
             S.labelimages := [  ];
             S := false;
         fi;
@@ -633,7 +662,7 @@ end );
 ##
 #M  StabChainMutable( <hom> ) . . . . . . . . . . for perm to perm group homs
 ##
-InstallMethod( StabChainMutable, true,
+InstallMethod( StabChainMutable, "perm to perm mapping by images",true,
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
         StabChainPermGroupToPermGroupGeneralMappingByImages );
@@ -664,10 +693,10 @@ end );
 
 #############################################################################
 ##
-
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . . . for const hom
 ##
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
+InstallMethod( ImagesRepresentative,"Constituent homomorphism",
+  FamSourceEqFamElm,
         [ IsConstituentHomomorphism, IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
     local   D;
@@ -685,8 +714,10 @@ end );
 ##
 #M  ImagesSet( <hom>, <H> ) . . . . . . . . . . . . . . . . . . for const hom
 ##
-InstallMethod( ImagesSet, CollFamSourceEqFamElms,
-        [ IsConstituentHomomorphism, IsPermGroup ], 0,
+InstallMethod( ImagesSet,"constituent homomorphism", CollFamSourceEqFamElms,
+	# this method should *not* be applied if the group to be mapped has
+	# no stabilizer chain (for example because it is very big).
+        [ IsConstituentHomomorphism, IsPermGroup and HasStabChainMutable], 0,
     function( hom, H )
     local   D,  I;
     
@@ -703,7 +734,7 @@ end );
 ##
 #M  PreImagesSet( <hom>, <I> )  . . . . . . . . . . . . . . . . for const hom
 ##
-InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
+InstallMethod( PreImagesSet, "constituent homomorphism",CollFamRangeEqFamElms,
         [ IsConstituentHomomorphism, IsPermGroup ], 0,
     function( hom, I )
     local   H,          # preimage of <I>, result
@@ -737,6 +768,7 @@ end );
 #M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . for const hom
 ##
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
+    "for constituent homomorphism",
     true, [ IsConstituentHomomorphism ], 0,
     function( hom )
     return Stabilizer( Source( hom ), Enumerator( UnderlyingExternalSet( hom ) ),
@@ -748,7 +780,9 @@ end );
 
 #M  StabChainMutable( <hom> ) . . . . . . . . . . . . . . . .  for blocks hom
 ##
-InstallMethod( StabChainMutable, true, [ IsBlocksHomomorphism ], 0,
+InstallMethod( StabChainMutable,
+    "for blocks homomorphism",
+    true, [ IsBlocksHomomorphism ], 0,
     function( hom )
     local   img;
     
@@ -807,7 +841,8 @@ InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H )
         B := D[ i ];
 
         # if <S> does not already stabilize this block
-        if ForAny( S.generators, gen -> hom!.reps[ B[ 1 ] ^ gen ] <> i )
+        if     IsBound( B[1] )
+           and ForAny( S.generators, gen -> hom!.reps[ B[ 1 ] ^ gen ] <> i )
            then
             ChangeStabChain( S, [ B[ 1 ] ] );
 
@@ -844,7 +879,9 @@ end );
 ##
 #M  ImagesSet( <hom>, <H> ) . . . . . . . . . . . . . . . . .  for blocks hom
 ##
-InstallMethod( ImagesSet, CollFamSourceEqFamElms,
+InstallMethod( ImagesSet,
+    "for blocks homomorphism and perm. group",
+    CollFamSourceEqFamElms,
         [ IsBlocksHomomorphism, IsPermGroup ], 0,
     ImageKernelBlocksHomomorphism );
 
@@ -885,7 +922,6 @@ InstallMethod( PreImagesRepresentative, "blocks homomorphism",
 	  pos := PositionProperty( B, pnt ->
 			 IsBound( S.translabels[ pnt/pre ] ) );
 	  if pos = fail  then
-	      Error("2");
 	      return fail;
 	  else
 	      pre := LeftQuotient( InverseRepresentative( S, B[ pos ] / pre ),
@@ -969,15 +1005,218 @@ end );
 
 #############################################################################
 ##
-
 #F  IsomorphismPermGroup( <G> )
 ##
-InstallMethod(IsomorphismPermGroup,"perm groups",true,[IsPermGroup],0,
-function(G)
-  return IdentityMapping(G);
-end);
+InstallMethod( IsomorphismPermGroup,
+    "perm groups",
+    true,
+    [ IsPermGroup ], 0,
+    IdentityMapping );
 
 
 #############################################################################
 ##
-#E  ghomperm.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  IsConjugatorIsomorphism( <hom> )
+##
+InstallOtherMethod( IsConjugatorIsomorphism,
+    "perm group homomorphism",
+    true,
+    [ IsGroupGeneralMapping ],
+  # There is no filter to test whether a homomorphism goes from a perm group
+  # to a perm group. So we have to test explicitly and make this method
+  # higher ranking than the default one in `ghom.gi'.
+  1,
+    function( hom )
+    local s, genss, rep,dom,insn,stb,E,bpt,fix,pnt,idom,sliced,
+      o,oimgs,i,pi,sto,stbs,stbi, r, sym;
+
+    s:= Source( hom );
+    if not IsPermGroup( s ) then
+      TryNextMethod();
+    elif not ( IsGroupHomomorphism( hom ) and IsBijective( hom ) ) then
+      return false;
+    fi;
+    genss:= GeneratorsOfGroup( s );
+
+    if IsEndoGeneralMapping( hom ) then
+
+  # test in transitive case whether we can realize in S_n
+  # we do not yet compute the permutation here because we will still have to
+  # test first whether it is in fact an inner automorphism:
+  # ConjugatorAutomorphisms are guaranteed to conjugate with an inner
+  # element if possible!
+  insn:=false;
+  dom:=MovedPoints(s);
+  if IsTransitive(s,dom) then
+    bpt := dom[ 1 ];
+    stb:=Stabilizer(s,bpt);
+    E:=Image(hom,stb);
+    if Number(dom,i->ForAll(GeneratorsOfGroup(E),j->i^j=i))=
+       Number(dom,i->ForAll(GeneratorsOfGroup(stb),j->i^j=i)) then
+#T why not with NrMovedPoints?
+#T why not compare orbit lengths of point stabilizer and its image?
+      insn:=true;
+    else
+      # we cannot realize in S_n
+      return false;
+    fi;
+  else
+    # compute the orbits and their image orbits
+    o:=Orbits(s,dom);
+    oimgs:=[];
+    stbs:=[];
+    stbi:=[];
+    i:=1;
+    while i<=Length(o) do
+      stb:=Stabilizer(s,o[i][1]);
+      sto:=Collected(List(Orbits(stb,o[i]),Length)); # stb orbit lengths
+      E:=Image(hom,stb);
+      Add(stbs,stb);
+      Add(stbi,E);
+      pi:=Filtered(o,j->Length(j)=Length(o[i])); # possible images by length
+      # possible images by stabilizer orbit lengths
+      pi:=Filtered(pi,j->Collected(List(Orbits(E,j),Length))=sto);
+      if Length(pi)=0 then
+        return false; # image cannot be stabilizer
+      elif Length(pi)=1 then
+        Add(oimgs,pi[1]);
+      else
+        # orbit image not unique. We would have to backtrack. For the time
+	# being, give up
+#T why not inspect other orbits, and hope for a cheap `false' answer?
+        i:=Length(o)+10;
+      fi;
+      i:=i+1;
+    od;
+    if Length(oimgs)=Length(o) then
+      insn:=2; # conjugation in S_n established on multiple orbits
+    fi;
+  fi;
+
+  # try first to find an element in the group itself
+  rep:=RepresentativeAction(s, genss,
+         List( genss, i -> ImagesRepresentative( hom, i ) ), OnTuples );
+
+  if rep<>fail then
+    # we found the automorphism is in fact inner
+    SetIsInnerAutomorphism(hom,true);
+  else
+    if insn=true then
+      hom:=AsGroupGeneralMappingByImages(hom);
+      fix := First( dom, p -> ForAll( GeneratorsOfGroup( E ),
+		    gen -> p ^ gen = p ) );
+      
+      # The automorphism <aut> maps <d>_bpt to <e>_fix, so permutes the points.
+      # Find an element in <G> with the same action.
+      idom := [  ];
+      for pnt  in dom  do
+	  sliced := [  ];
+	  while pnt <> bpt  do
+	      Add( sliced, StabChainMutable( hom ).transimages[ pnt ] );
+	      pnt := pnt ^ StabChainMutable( hom ).transversal[ pnt ];
+	  od;
+	  Add( idom, PreImageWord( fix, sliced ) );
+      od;
+      
+      rep:=MappingPermListList( dom, idom );
+    elif insn=2 then
+      dom:=[];
+      idom:=[];
+      for i in [1..Length(o)] do
+	# compute the images for orbit o[i]
+	stb:=stbs[i]; # pnt stabilizer and its image
+	E:=stbi[i];
+	# base point and image
+	bpt:=o[i][1];
+	fix:=First(oimgs[i],p->ForAll(GeneratorsOfGroup(E),
+		    gen -> p ^ gen = p ) );
+
+	# we could try to use stabilizer chains, but the homomorphism does
+	# not necessarily have one which acts in every orbit. So we use the
+	# time-homoured transversal
+	sliced:=RightTransversal(s,stb);
+	for pnt in sliced do
+	  Add(dom,bpt^pnt);
+	  Add(idom,fix^ImageElm(hom,pnt));
+	od;
+        
+      od;
+      rep:=MappingPermListList( dom, idom );
+    else
+      # we got 
+      rep:=RepresentativeAction(OrbitStabilizingParentGroup(s),
+            genss,
+	    List( genss, i -> ImagesRepresentative( hom, i ) ), OnTuples );
+    fi;
+  fi;
+
+    else
+
+      r:= Range( hom );
+      if not IsPermGroup( r ) then
+        return false;
+      fi;
+      sym:= SymmetricGroup( Union( MovedPoints( s ), MovedPoints( r ) ) );
+
+      # Simply compute a conjugator in the enveloping symmetric group.
+      # (Note that all checks whether source and range
+      # can fit together under conjugation
+      # should better be left to `RepresentativeAction'.)
+      rep:= RepresentativeAction( sym, genss, List( genss,
+                      i -> ImagesRepresentative( hom, i ) ), OnTuples );
+
+    fi;
+
+    # Return the result.
+    if rep <> fail then
+      Assert( 1, ForAll( genss, i -> Image( hom, i ) = i^rep ) );
+      SetConjugatorOfConjugatorIsomorphism( hom, rep );
+      return true;
+    else
+      return false;
+    fi;
+end );
+
+
+#AH: This function should become obsolete soon!
+#F  AutomorphismByConjugation( <Omega>, <d>, <e> )
+AutomorphismByConjugation := function( Omega, d, e )
+local  G,bpt, aut, D1, E1, fix, Imega, sliced, pnt;
+    
+    Info(InfoWarning,1,"replace AutomorphismByConjugation");
+    aut := GroupGeneralMappingByImages( G, G, d, e );
+    if not IsTransitive( PreImagesRange( aut ), Omega )  then
+        Error( "<d> and <e> must generate transitive subgroups of <G>" );
+    elif not IsTransitive( ImagesSource( aut ), Omega )  then
+        return fail;
+    fi;
+    
+    bpt := Omega[ 1 ];
+    D1 := Stabilizer( PreImagesRange( aut ), bpt );
+    E1 := ImagesSet( aut, D1 );
+    if NrMovedPoints( E1 ) = Length( Omega )  then
+        return fail;
+    fi;
+    fix := First( Omega, p -> ForAll( GeneratorsOfGroup( E1 ),
+                   gen -> p ^ gen = p ) );
+    
+    # The automorphism <aut> maps <d>_bpt to <e>_fix, so permutes the points.
+    # Find an element in <G> with the same action.
+    Imega := [  ];
+    for pnt  in Omega  do
+        sliced := [  ];
+        while pnt <> bpt  do
+            Add( sliced, StabChainMutable( aut ).transimages[ pnt ] );
+            pnt := pnt ^ StabChainMutable( aut ).transversal[ pnt ];
+        od;
+        Add( Imega, PreImageWord( fix, sliced ) );
+    od;
+    
+    return MappingPermListList( Omega, Imega );
+end;
+
+
+#############################################################################
+##
+#E
+

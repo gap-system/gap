@@ -7,272 +7,362 @@
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %%
-\Chapter{Group Operations}
+\Chapter{Group Actions}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{About Operations}
+A *group action* is a triple $(G,<Omega>,\mu)$, where $G$ is a group,
+<Omega> a set and $\mu\colon<Omega>\times G\to<Omega>$ a function (shose
+action is compatible with the group arithmetic). We call <Omega> the
+*domain* of the action.
 
-Formally, a *group operation* is a triple $(G,\Omega,\mu)$, where $G$ is a
-group, $\Omega$ a set and $\mu\colon\Omega\times G\to\Omega$ a function
-(with certain properties). We call $\Omega$ the *domain* of the operation.
+In {\GAP}, <Omega> can be a duplicate-free collection (an object that
+permits access to its elements via the <Omega>[<n>] operation, for example a
+list), it does not need to be sorted (see~"IsSet").
 
-In {\GAP}, $G$ must be a group, $\Omega$ a
-duplicate-free collection (an object that permits the access to its elements
-via the <Omega>[<n>] operation, for example a list) and $\mu$ a function
-\>opfun(<pnt>,<g>)
-that returns the image $\mu(<pnt>,<g>)$.
-In {\GAP} groups always operates from the right, that is
+The acting function $\mu$ is a {\GAP} function of the form
+\)actfun(<pnt>,<g>)
+
+that returns the image $\mu(<pnt>,<g>)$ for a point $<pnt>\in<Omega>$ and a
+group element $<g>\in<G>$.
+
+Groups always acts from the right, that is
 $\mu(\mu(<pnt>,<g>),<h>)=\mu(<pnt>,<gh>)$.
 
-{\GAP} does not test whether an operation function `opfun' satisfies the
-conditions for a group operation. If it does not, results are
-unpredictable.
+{\GAP} does not test whether an acting function `actfun' satisfies the
+conditions for a group operation but silently assumes that is does.
+(If it does not, results are unpredictable.)
 
-Various commonly used operations are already built into {\GAP}. They are
-listed in the section "Basic Operations". For many of the built-in
-operations special methods are available for functions like `Stabilizer'.
+The first section of this chapter , "About Group Actions", describes the
+various ways how operations for group actions can be called.
 
-Usually, group operations can be passed as parameters to functions in the
-following ways:
+Functions for several commonly used action are already built into {\GAP}.
+These are listed in section~"Basic Actions".
 
-\>ExampleOperationFunction(<G>,<Omega>[,<opfun>])
-\>ExampleOperationFunction(<G>,<Omega>,<gens>,<oprs>[,<opfun>])
-\>ExampleOperationFunction(<extset>)
+The following sections then describe operations to compute orbits,
+stabilizers, the induced permutation images of group actions as well as
+properties of actions.
 
-The first version gives the group, the domain and the operation function. If
-the operation function <opfun> is not given, the built-in operation `OnPoints'
-(which defines operation via the caret operator `^') is used. 
-In the second version, <gens> must be a set of generators of <G> and <oprs>
-a list of objects corresponding to <gens>. It implements the operation
-$\mu(<pnt>,<g>)=<opfun>(<pnt>,<g>^\varphi)$, where $\varphi$ is the
-homomorphism defined on <G> by mapping <gens> to <oprs>.
-(It is not tested whether this mapping actually induces an homomorphism.)
+Finally section~"External Sets" describes the concept of ``external sets''
+which represent the concept of a ``$G$-set'' and underly the actions mechanism.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{About Group Actions}
+
+The syntax which is used by the operations for group actions is quite
+flexible. For example we can call the operation `Orbits' for the orbits
+of the group <G> on the domain <Omega> in the following ways:
+
+\)Orbits(<G>,<Omega>[,<actfun>])
+
+The acting function <actfun> is optional. If it is not given, the built-in
+action `OnPoints' (which defines an action via the caret operator `^') is
+used as a default. 
+\bigskip
+
+The second version permits to implement an action induced by a homomorphism:
+If <H> acts on <Omega> via $\mu$ and $\varphi\colon G\to H$ is a
+homomorphism, <G> acts on <Omega> via
+$\mu'(\omega,g)=\mu(\omega,g^{\varphi})$:
+
+\)Orbits(<G>,<Omega>,<gens>,<acts>[,<actfun>])
+
+Here <gens> must be a set of generators of <G> and <acts> the images of
+<gens> under a homomorphism $\varphi\colon G\to H$. 
+<actfun> is the acting function for <H>, the call
+to `ExampleActionFunction' implements the induced action of <G>.
+Again, the acting function <actfun> is optional and `OnPoints' is used as a
+default.
+
 The advantage of this notation is that {\GAP} does not need to construct
-this homomorphism physically. (Construction of the homomorphism would imply
-constructing the range group. If <G> is small but acts by matrices in a
-large dimensional space it is undesirable to construct such a
-high-dimensional matrix group.)
+this homomorphism $\varphi$ and the range group <H> as {\GAP} objects. (If a
+small group <G> acts via complicated objects <acts> this otherwise could
+lead to performance problems.)
+\bigskip
 
-The third version takes an an external set <extset>. External sets
-are {\GAP} objects that represent the triple (<G>,<Omega>,<opfun>). They are
-described in section "External Sets". Most of the operations are attributes
-for external sets.
+{\GAP} does not test whether the mapping $<gens>\mapsto<acts>$
+actually induces a homomorphism and the results are unpredictable if this is
+not the case.
 
-The description of the command `Orbits' (see "Orbits") gives
-examples for all kinds of parameters.
-For commands like `Stabilizer' the domain is replaced by an element of
-$\Omega$.
+\)Orbits(<extset>) A
 
-When acting on a domain <Omega>, operation functions like `Permuted' or
-`OperationHomomorphism' use the command
-`PositionCanonical' to determine the position of elements in the domain.
-This can be used to act on a domain given by a list representatives for
-which `PositionCanonical' is implemented, for example a `RightTransversal'
-(see "RightTransversal").
+A third variant is to call the operation with an external set (which then
+provides <G>, <Omega> and <actfun>. You will find more about external sets in
+section~"External Sets".
+\bigskip
+
+For operations like `Stabilizer' of course the domain must be replaced by an
+element of <Omega> which is to be acted on.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{External Sets}
+\Section{Basic Actions}
 
-External sets are {\GAP} objects that represent a group operation.
+\index{group actions}
+\index{actions}
+\index{group operations}
 
-\Declaration{IsExternalSet}
-\Declaration{ExternalSet}
-\beginexample
-gap> g:=Group((1,2,3),(2,3,4));;
-gap> e:=ExternalSet(g,[1..4]);
-[ 1 .. 4 ]
-\endexample
-
-\Declaration{IsExternalSubset}
-\Declaration{ExternalSubset}
-\Declaration{IsExternalOrbit}
-\Declaration{ExternalOrbit}
-\beginexample
-gap> e:=ExternalOrbit(g,g,(1,2,3));
-(1,2,3)^G < <enumerator of perm group>
-\endexample
-
-\Declaration{ActingDomain}
-\Declaration{FunctionOperation}
-\Declaration{HomeEnumerator}
-\beginexample
-gap> ActingDomain(e);
-Group( [ (1,2,3,4), (1,2) ], ... )
-gap> FunctionOperation(e)=OnPoints;  
-true
-gap> HomeEnumerator(e);
-<enumerator of perm group>
-\endexample
-
-\Declaration{StabilizerOfExternalSet}
-\beginexample
-gap> Representative(e);
-(1,2,3)
-gap> StabilizerOfExternalSet(e);
-Group( [ (1,2,3) ], ... )
-\endexample
-
-\Declaration{ExternalOrbits}
-\beginexample
-gap> ExternalOrbits(g,g);
-[ ()^G < <enumerator of perm group>, 
-  (1,2)(3,4)^G < <enumerator of perm group>, 
-  (2,3,4)^G < <enumerator of perm group>, 
-  (2,4,3)^G < <enumerator of perm group> ]
-\endexample
-
-\Declaration{ExternalOrbitsStabilizers}
-\beginexample
-gap> e:=ExternalOrbitsStabilizers(g,g);
-[ ()^G < <enumerator of perm group>, 
-  (1,2)(3,4)^G < <enumerator of perm group>, 
-  (2,3,4)^G < <enumerator of perm group>, 
-  (2,4,3)^G < <enumerator of perm group> ]
-gap> HasStabilizerOfExternalSet(e[3]);
-true
-gap> StabilizerOfExternalSet(e[3]);
-Group( [ (2,4,3) ], ... )
-\endexample
-
-\Declaration{CanonicalRepresentativeOfExternalSet}
-\Declaration{CanonicalRepresentativeDeterminatorOfExternalSet}
-\Declaration{OperatorOfExternalSet}
-\beginexample
-gap> u:=Subgroup(g,[(1,2,3)]);;  
-gap> e:=RightCoset(u,(1,2)(3,4));;  
-gap> CanonicalRepresentativeOfExternalSet(e);
-(2,4,3)
-gap> OperatorOfExternalSet(e);
-(1,2,3)
-gap> FunctionOperation(e)((1,2)(3,4),last);
-(2,4,3)
-\endexample
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Basic Operations}
+{\GAP} already provides acting functions for the more commpon actions of a
+group.  For built-in operations such as `Stabilizer' special methods are
+available for many of these actions.
 
 \Declaration{OnPoints}
 \Declaration{OnRight}
 \Declaration{OnLeftInverse}
-\Declaration{OnPairs}
 \Declaration{OnSets}
 \Declaration{OnTuples}
+\Declaration{OnPairs}
 \Declaration{OnSetsSets}
+\Declaration{OnSetsDisjointSets}
 \Declaration{OnSetsTuples}
 \Declaration{OnTuplesSets}
 \Declaration{OnTuplesTuples}
 \beginexample
+gap> g:=Group((1,2,3),(2,3,4));;
 gap> Orbit(g,1,OnPoints);              
 [ 1, 2, 3, 4 ]
 gap> Orbit(g,(),OnRight);               
-[ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,4,2), (1,2,3), 
-  (1,3,4), (2,3,4), (1,3,2), (1,4,3), (1,2,4) ]
+[ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3),(1,2,4), (1,3,2), (1,3,4),
+  (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]
 gap> Orbit(g,[1,2],OnPairs);
-[ [ 1, 2 ], [ 2, 1 ], [ 3, 4 ], [ 4, 3 ], [ 1, 4 ], [ 4, 1 ], [ 2, 3 ], 
-  [ 3, 2 ], [ 1, 3 ], [ 3, 1 ], [ 4, 2 ], [ 2, 4 ] ]
+[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 3 ], [ 2, 4 ], [ 3, 1 ], 
+  [ 3, 2 ], [ 3, 4 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ] ]
 gap> Orbit(g,[1,2],OnSets); 
-[ [ 1, 2 ], [ 3, 4 ], [ 1, 4 ], [ 2, 3 ], [ 1, 3 ], [ 2, 4 ] ]
+[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ] ]
 \endexample
 \beginexample
 gap> Orbit(g,[[1,2],[3,4]],OnSetsSets);
-[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], [ [ 1, 3 ], [ 2, 4 ] ] ]
+[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ] ]
 gap> Orbit(g,[[1,2],[3,4]],OnTuplesSets);
-[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 3, 4 ], [ 1, 2 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
-  [ [ 2, 3 ], [ 1, 4 ] ], [ [ 1, 3 ], [ 2, 4 ] ], [ [ 2, 4 ], [ 1, 3 ] ] ]
+[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
+  [ [ 2, 3 ], [ 1, 4 ] ], [ [ 2, 4 ], [ 1, 3 ] ], [ [ 3, 4 ], [ 1, 2 ] ] ]
 gap> Orbit(g,[[1,2],[3,4]],OnSetsTuples);
-[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 1 ], [ 4, 3 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
-  [ [ 3, 2 ], [ 4, 1 ] ], [ [ 1, 3 ], [ 4, 2 ] ], [ [ 2, 4 ], [ 3, 1 ] ] ]
+[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 3 ], [ 4, 2 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
+  [ [ 2, 1 ], [ 4, 3 ] ], [ [ 2, 4 ], [ 3, 1 ] ], [ [ 3, 2 ], [ 4, 1 ] ] ]
 gap> Orbit(g,[[1,2],[3,4]],OnTuplesTuples);
-[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 1 ], [ 4, 3 ] ], [ [ 3, 4 ], [ 1, 2 ] ], 
-  [ [ 4, 3 ], [ 2, 1 ] ], [ [ 1, 4 ], [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 2 ] ], 
-  [ [ 2, 3 ], [ 1, 4 ] ], [ [ 3, 2 ], [ 4, 1 ] ], [ [ 1, 3 ], [ 4, 2 ] ], 
-  [ [ 3, 1 ], [ 2, 4 ] ], [ [ 4, 2 ], [ 1, 3 ] ], [ [ 2, 4 ], [ 3, 1 ] ] ]
+[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 3 ], [ 4, 2 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
+  [ [ 2, 1 ], [ 4, 3 ] ], [ [ 2, 3 ], [ 1, 4 ] ], [ [ 2, 4 ], [ 3, 1 ] ], 
+  [ [ 3, 1 ], [ 2, 4 ] ], [ [ 3, 2 ], [ 4, 1 ] ], [ [ 3, 4 ], [ 1, 2 ] ], 
+  [ [ 4, 1 ], [ 3, 2 ] ], [ [ 4, 2 ], [ 1, 3 ] ], [ [ 4, 3 ], [ 2, 1 ] ] ]
 \endexample
 
 \Declaration{OnLines}
 \beginexample
 gap> gl:=GL(2,5);;v:=[1,0]*Z(5)^0;  
 [ Z(5)^0, 0*Z(5) ]
-gap> h:=Operation(gl,Orbit(gl,v,OnLines),OnLines);
-Group( [ (2,3,5,6), (1,2,4)(3,6,5) ], ... )
+gap> h:=Action(gl,Orbit(gl,v,OnLines),OnLines);
+Group([ (3,6,5,4), (1,2,5)(3,4,6) ])
 \endexample
 
-\Declaration{OnPartitions}
 \Declaration{OnIndeterminates}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Creating Operations}
+\>Permuted(<list>,<perm>) F
 
-\Declaration{OperationHomomorphism}
-(See section "About Operations" for information about operations.)
+The operation `Permuted' can be used to implement a permutation action on a
+domain:
 \beginexample
-gap> hom:=OperationHomomorphism(g,Arrangements([1..4],3),OnTuples);
-<operation homomorphism>
-gap> Image(hom);
-Group( 
-[ ( 1, 9,13)( 2,10,14)( 3, 7,15)( 4, 8,16)( 5,12,17)( 6,11,18)(19,22,23)
-    (20,21,24), ( 1, 4, 5)( 2, 3, 6)( 7,14,19)( 8,13,20)( 9,17,21)
-    (10,18,22)(11,15,23)(12,16,24) ], ... )
-gap> Size(Range(hom));Size(Image(hom));
-620448401733239439360000
-12
-gap> hom:=OperationHomomorphism(g,Arrangements([1..4],3),OnTuples,
-> "surjective");;
-gap> Size(Range(hom));
-12
+gap> g:=Group((1,2,3),(1,2));;
+gap> dom:=[ "a", "b", "c" ];;
+gap> Orbit(g,dom,Permuted);
+[ [ "a", "b", "c" ], [ "c", "a", "b" ], [ "b", "a", "c" ], [ "b", "c", "a" ], 
+  [ "a", "c", "b" ], [ "c", "b", "a" ] ]
 \endexample
 
-\Declaration{Operation}
-(See section "About Operations" for information about operations.)
+\Declaration{OnSubspacesByCanonicalBasis}
 
-\Declaration{SurjectiveOperationHomomorphismAttr}
+\bigskip
 
-\Declaration{UnderlyingExternalSet}
+If one needs an action for which no acting function is provided
+by the library it can be implemented via a {\GAP} function that
+conforms to the syntax
+
+\)actfun(<omega>,<g>)
+
+For example one could define the following function that acts on pairs of
+polynomials via `OnIntereminates':
 \begintt
-gap> UnderlyingExternalSet(hom);
-[ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 2 ], [ 1, 3, 4 ], [ 1, 4, 2 ], 
-  [ 1, 4, 3 ], [ 2, 1, 3 ], [ 2, 1, 4 ], [ 2, 3, 1 ], [ 2, 3, 4 ], 
-  [ 2, 4, 1 ], [ 2, 4, 3 ], [ 3, 1, 2 ], [ 3, 1, 4 ], [ 3, 2, 1 ], 
-  [ 3, 2, 4 ], [ 3, 4, 1 ], [ 3, 4, 2 ], [ 4, 1, 2 ], [ 4, 1, 3 ], 
-  [ 4, 2, 1 ], [ 4, 2, 3 ], [ 4, 3, 1 ], [ 4, 3, 2 ] ]
+OnIndeterminatesPairs:=function(polypair,g)
+  return [OnIndeterminates(polypair[1],g),
+          OnIndeterminates(polypair[2],g)];
+end;
 \endtt
 
-\Declaration{SparseOperationHomomorphism}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Orbits}
+
+If <G> acts on <Omega> the set of all images of $\omega\in<Omega>$ under
+elements of <G> is called the *orbit* of $\omega$. The set of orbits of <G>
+is a partition of <Omega>.
+
+\Declaration{Orbit}
+\beginexample
+gap> g:=Group((1,3,2),(2,4,3));;
+gap> Orbit(g,1);           
+[ 1, 3, 2, 4 ]
+gap> Orbit(g,[1,2],OnSets);
+[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ] ]
+\endexample
+(See Section~"Basic Actions" for information about specific actions.)
+
+\Declaration{Orbits}
+\beginexample
+gap> g:=Group((1,3,2),(2,4,3));;
+gap> Orbits(g,[1..5]);                         
+[ [ 1, 3, 2, 4 ], [ 5 ] ]
+gap> Orbits(g,Arrangements([1..4],3),OnTuples);
+[ [ [ 1, 2, 3 ], [ 1, 3, 4 ], [ 1, 4, 2 ], [ 2, 1, 4 ], [ 2, 3, 1 ], 
+      [ 2, 4, 3 ], [ 3, 1, 2 ], [ 3, 2, 4 ], [ 3, 4, 1 ], [ 4, 1, 3 ], 
+      [ 4, 2, 1 ], [ 4, 3, 2 ] ], 
+  [ [ 1, 2, 4 ], [ 1, 3, 2 ], [ 1, 4, 3 ], [ 2, 1, 3 ], [ 2, 3, 4 ], 
+      [ 2, 4, 1 ], [ 3, 1, 4 ], [ 3, 2, 1 ], [ 3, 4, 2 ], [ 4, 1, 2 ], 
+      [ 4, 2, 3 ], [ 4, 3, 1 ] ] ]
+gap> Orbits(g,GF(2)^2,[(1,2,3),(1,4)(2,3)], 
+> [[[Z(2)^0,Z(2)^0],[Z(2)^0,0*Z(2)]],[[Z(2)^0,0*Z(2)],[0*Z(2),Z(2)^0]]]);   
+[ [ <an immutable GF2 vector of length 2> ], 
+  [ <an immutable GF2 vector of length 2>, <an immutable GF2 vector of length 
+        2>, <an immutable GF2 vector of length 2> ] ]
+\endexample
+(See Section~"Basic Actions" for information about specific actions.)
+
+\Declaration{OrbitLength}
+\Declaration{OrbitLengths}
+\beginexample
+gap> g:=Group((1,3,2),(2,4,3));;
+gap> OrbitLength(g,[1,2,3,4],OnTuples);
+12
+gap> OrbitLengths(g,Arrangements([1..4],4),OnTuples);
+[ 12, 12 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stabilizers}
+
+\index{pointstabilizer}\index{setstabilizer}\index{tuplestabilizer}
+The *Stabilizer* of an element $\omega$ is the set of all those $g\in G$
+which fix $\omega$.
+
+
+\Declaration{OrbitStabilizer}
+\Declaration{Stabilizer}
+\beginexample
+gap> g:=Group((1,3,2),(2,4,3));;
+gap> Stabilizer(g,4);
+Group([ (1,3,2) ])
+\endexample
+
+The stabilizer of a set or tuple of points can be computed by specifying an
+action of sets or tuples of points.
+\beginexample
+gap> Stabilizer(g,[1,2],OnSets);
+Group( [ (1,2)(3,4) ] )
+gap> Stabilizer(g,[1,2],OnTuples);
+Group(())
+gap> OrbitStabilizer(g,[1,2],OnSets);    
+rec(
+  orbit := [ [ 1, 2 ], [ 3, 4 ], [ 1, 3 ], [ 2, 4 ], [ 2, 3 ], [ 1, 4 ] ],
+  stabilizer := Group( [ (1,2)(3,4) ] ) )
+\endexample
+(See Section~"Basic Actions" for information about specific actions.)
+
+The standard methods for all these actions are an Orbit-Stabilizer
+algorithm. For permutation groups backtrack algorithms are used. For
+solvable groups an orbit-stabilizer algorithm for solvable groups, which
+uses the fact that the orbits of a normal subgroup form a block system (see
+\cite{SOGOS}) is used.
+
+\Declaration{OrbitStabilizerAlgorithm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements with Prescribed Images}
+
+\index{transporter}
+\Declaration{RepresentativeAction}
+\beginexample
+gap> g:=Group((1,3,2),(2,4,3));;
+gap> RepresentativeAction(g,1,3);
+(1,3)(2,4)
+gap> RepresentativeAction(g,1,3,OnPoints);
+(1,3)(2,4)
+gap> RepresentativeAction(g,(1,2,3),(2,4,3));
+(1,2,4)
+gap> RepresentativeAction(g,(1,2,3),(2,3,4));
+fail
+gap> RepresentativeAction(g,Group((1,2,3)),Group((2,3,4)));
+(1,2,4)
+gap>  RepresentativeAction(g,[1,2,3],[1,2,4],OnSets);  
+(2,4,3)
+gap>  RepresentativeAction(g,[1,2,3],[1,2,4],OnTuples);
+fail
+\endexample
+(See Section~"Basic Actions" for information about specific actions.)
+
+Again the standard method for `RepresentativeAction' is an orbit-stabilizer
+algorithm, for permutation groups and standard actions a backtrack algorithm
+is used.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Permutation Image of an Actions}
+
+If $G$ acts on a domain <Omega>, an enumeration of <Omega> yields a
+homomorphism of $G$ into the symmetric group on $\{1,\ldots,|<Omega>|\}$. In
+{\GAP}, the enumeration of the domain <Omega> is provided by the
+`Enumerator' of <Omega> (see~"Enumerator") which of course is <Omega> itself
+if it is a list.
+
+\Declaration{ActionHomomorphism}
+(See Section~"Basic Actions" for information about specific actions.)
+\beginexample
+gap> g:=Group((1,2,3),(1,2));;
+gap> hom:=ActionHomomorphism(g,Arrangements([1..4],3),OnTuples);
+<action homomorphism>
+gap> Image(hom);
+Group(
+  [(1,9,13)(2,10,14)(3,7,15)(4,8,16)(5,12,17)(6,11,18)(19,22,23)(20,21,24),
+  (1,7)(2,8)(3,9)(4,10)(5,11)(6,12)(13,15)(14,16)(17,18)(19,21)(20,22)(23,24)])
+gap> Size(Range(hom));Size(Image(hom));
+620448401733239439360000
+6
+gap> hom:=ActionHomomorphism(g,Arrangements([1..4],3),OnTuples,
+> "surjective");;
+gap> Size(Range(hom));
+6
+\endexample
+
+When acting on a domain, the operation `PositionCanonical' is used to
+determine the position of elements in the domain.  This can be used to act
+on a domain given by a list of representatives for which `PositionCanonical'
+is implemented, for example a `RightTransversal' (see "RightTransversal").
+
+\Declaration{Action}
+(See Section~"Basic Actions" for information about specific actions.)
+\index{regular action}
+The following code shows for example how to create the regular action of a
+group:
+\beginexample
+gap> g:=Group((1,2,3),(1,2));;
+gap> Action(g,AsList(g),OnRight);
+Group([ (1,4,5)(2,3,6), (1,3)(2,4)(5,6) ])
+\endexample
+
+\Declaration{SparseActionHomomorphism}
 \beginexample
 gap> h:=Group(Z(3)*[[[1,1],[0,1]]]);                             
-Group( [ [ [ Z(3), Z(3) ], [ 0*Z(3), Z(3) ] ] ], ... )
-gap> hom:=OperationHomomorphism(h,GF(3)^2,OnRight);;                     
+Group( [ [ [ Z(3), Z(3) ], [ 0*Z(3), Z(3) ] ] ] )
+gap> hom:=ActionHomomorphism(h,GF(3)^2,OnRight);;                     
 gap> Image(hom);
-Group( [ (2,3)(4,9,6,7,5,8) ], ... )
-gap> hom:=SparseOperationHomomorphism(h,[Z(3)*[1,0]],OnRight);;
+Group( [ (2,3)(4,9,6,7,5,8) ] )
+gap> hom:=SparseActionHomomorphism(h,[Z(3)*[1,0]],OnRight);;
 gap> Image(hom);
-Group( [ (1,2,3,4,5,6) ], ... )
+Group( [ (1,2,3,4,5,6) ] )
 \endexample
 
-\Declaration{Blocks}
-\beginexample
-gap> g:=TransitiveGroup(8,3);
-E(8) = 2[x]2[x]2
-gap> Blocks(g,[1..8]);      
-[ [ 1, 8 ], [ 2, 3 ], [ 4, 5 ], [ 6, 7 ] ]
-gap> Blocks(g,[1..8],[1,4]);
-[ [ 1, 4 ], [ 2, 7 ], [ 3, 6 ], [ 5, 8 ] ]
-\endexample
-(See section "About Operations" for information about operations.)
+For an action homomorphism, the operation `UnderlyingExternalSet'
+(see~"UnderlyingExternalSet") will return the external set on <Omega> which
+affords the action.
 
-\Declaration{MaximalBlocks}
-\Declaration{MinimalBlocks}
-\Declaration{AllBlocks}
-\beginexample
-gap> MaximalBlocks(g,[1..8]);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Permutations Induced by Elements and Cycles}
 
-gap> MinimalBlocks(g,[1..8]);
-[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ], [ 1, 8 ] ]
-gap> AllBlocks(g);       
-[ [ 1, 8 ], [ 1, 2, 3, 8 ], [ 1, 4, 5, 8 ], [ 1, 6, 7, 8 ], [ 1, 3 ], 
-  [ 1, 3, 5, 7 ], [ 1, 3, 4, 6 ], [ 1, 5 ], [ 1, 2, 5, 6 ], [ 1, 2 ], 
-  [ 1, 2, 4, 7 ], [ 1, 4 ], [ 1, 7 ], [ 1, 6 ] ]
-\endexample
+If only the permutation image of a single element is needed, it might not be
+worth to create the action homomorphism, the following operations yield the
+permutation image and cycles of a single element.
 
 \Declaration{Permutation}
 \Declaration{PermutationCycle}
@@ -298,97 +388,26 @@ gap> CycleLengths((1,2,3)(4,5)(6,7),[4..7]);
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Orbits and Stabilizers}
+\Section{Tests for Actions}
 
-\Declaration{Orbit}
+\Declaration{IsTransitive}[oprt]
+\Declaration{Transitivity}[oprt]
 \beginexample
 gap> g:=Group((1,3,2),(2,4,3));;
-gap> Orbit(g,1);           
-[ 1, 3, 2, 4 ]
-gap> Orbit(g,[1,2],OnSets);
-[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ]
-\endexample
-(See section "About Operations" for information about operations.)
-
-\Declaration{Orbits}
-\beginexample
-gap> Orbits(g,[1..5]);                         
-[ [ 1, 3, 2, 4 ], [ 5 ] ]
-gap> Orbits(g,Arrangements([1..4],3),OnTuples);
-[ [ [ 1, 2, 3 ], [ 3, 1, 2 ], [ 1, 4, 2 ], [ 2, 3, 1 ], [ 2, 1, 4 ], 
-      [ 3, 4, 1 ], [ 1, 3, 4 ], [ 4, 2, 1 ], [ 4, 1, 3 ], [ 2, 4, 3 ], 
-      [ 3, 2, 4 ], [ 4, 3, 2 ] ], 
-  [ [ 1, 2, 4 ], [ 3, 1, 4 ], [ 1, 4, 3 ], [ 2, 3, 4 ], [ 2, 1, 3 ], 
-      [ 3, 4, 2 ], [ 1, 3, 2 ], [ 4, 2, 3 ], [ 4, 1, 2 ], [ 2, 4, 1 ], 
-      [ 3, 2, 1 ], [ 4, 3, 1 ] ] ]
-gap> Orbits(g,GF(2)^2,[(1,2,3),(1,4)(2,3)], 
-> [[[Z(2)^0,Z(2)^0],[Z(2)^0,0*Z(2)]],[[Z(2)^0,0*Z(2)],[0*Z(2),Z(2)^0]]]);   
-[ [ [ 0*Z(2), 0*Z(2) ] ], 
-  [ [ 0*Z(2), Z(2)^0 ], <an immutable GF2 vector of length 2>, 
-      <an immutable GF2 vector of length 2> ] ]
-gap> e:=ExternalSet(g,g,OnRight);
-<enumerator of perm group>
-gap> Orbits(e);
-[ [ (), (1,3)(2,4), (1,2)(3,4), (1,4)(2,3), (2,3,4), (1,4,3), (1,3,2), 
-      (1,2,4), (2,4,3), (1,2,3), (1,4,2), (1,3,4) ] ]
-\endexample
-(See section "About Operations" for information about operations.)
-
-\Declaration{OrbitLength}
-\Declaration{OrbitLengths}
-\beginexample
-gap> OrbitLength(g,[1,2,3,4],OnTuples);
-12
-gap> OrbitLengths(g,Arrangements([1..4],4),OnTuples);
-[ 12, 12 ]
-\endexample
-
-\Declaration{OrbitStabilizer}
-\Declaration{Stabilizer}
-\beginexample
-gap> Stabilizer(g,4);
-Group( [ (1,3,2) ], ... )
-gap> Stabilizer(g,[1,2],OnSets);
-Group( [ (1,2)(3,4) ], ... )
-gap> Stabilizer(g,[1,2],OnTuples);
-Group( [  ], ... )
-gap> OrbitStabilizer(g,[1,2],OnSets);    
-rec(
-  orbit := [ [ 1, 2 ], [ 3, 4 ], [ 1, 3 ], [ 2, 4 ], [ 1, 4 ], [ 2, 3 ] ],
-  stabilizer := Group( [ (1,2)(3,4) ], ... ) )
-\endexample
-(See section "About Operations" for information about operations.)
-\Methods
-
-\Declaration{RepresentativeOperation}
-\beginexample
-gap> RepresentativeOperation(g,1,3);
-(1,3)(2,4)
-gap> RepresentativeOperation(g,(1,2,3),(2,4,3));
-(1,2,4)
-gap> RepresentativeOperation(g,(1,2,3),(2,3,4));
-fail
-gap> RepresentativeOperation(g,Group((1,2,3)),Group((2,3,4)));
-(1,2,4)
-\endexample
-(See section "About Operations" for information about operations.)
-\Methods
-
-The standard methods for all these operations are an Orbit-Stabilizer
-algorithm. For permutation groups backtrack algorithms are used, for
-solvable groups a special version for solvable groups (see \cite{SOGOS}) is
-used.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Tests for operations}
-
-\Declaration{IsTransitive}
-\Declaration{Transitivity}
-\beginexample
 gap> IsTransitive(g,[1..5]);
 false
 gap> Transitivity(g,[1..4]);
 2
+\endexample
+Note: For permutation groups, the syntax `IsTransitive(<g>)' is also
+permitted and tests whether the group is transitive on the points moved by
+it, that is the group $\langle (2,3,4),(2,3)\rangle$ is transitive (on 3
+points).
+
+\Declaration{RankAction}
+\beginexample
+gap> RankAction(g,Combinations([1..4],2),OnSets);
+4
 \endexample
 \Declaration{IsSemiRegular}
 \Declaration{IsRegular}
@@ -398,6 +417,8 @@ true
 gap> IsRegular(g,Arrangements([1..4],3),OnTuples);    
 false
 \endexample
+\Declaration{Earns}
+
 \Declaration{IsPrimitive}
 \beginexample
 gap> IsPrimitive(g,Orbit(g,(1,2)(3,4))); 
@@ -405,8 +426,202 @@ true
 \endexample
 %\declaration{IsFixpointFree}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{About the implementation}
 
-\Declaration{OrbitsishFOA}
-\Declaration{OrbitishFO}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Block Systems}
+
+A *block system* (system of imprimitivity) for the action of <G> on <Omega>
+is a partition of <Omega> which -- as a partition -- remains invariant under
+the action of <G>.
+
+\Declaration{Blocks}
+\beginexample
+gap> g:=TransitiveGroup(8,3);
+E(8) = 2[x]2[x]2
+gap> Blocks(g,[1..8]);      
+[ [ 1, 8 ], [ 2, 3 ], [ 4, 5 ], [ 6, 7 ] ]
+gap> Blocks(g,[1..8],[1,4]);
+[ [ 1, 4 ], [ 2, 7 ], [ 3, 6 ], [ 5, 8 ] ]
+\endexample
+(See Section~"Basic Actions" for information about specific actions.)
+
+\Declaration{MaximalBlocks}
+\beginexample
+gap> MaximalBlocks(g,[1..8]);
+[[1,2,3,8],[4,5,6,7]]
+\endexample
+
+\Declaration{RepresentativesMinimalBlocks}
+\beginexample
+gap> RepresentativesMinimalBlocks(g,[1..8]);
+[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ], [ 1, 8 ] ]
+\endexample
+
+\Declaration{AllBlocks}
+\beginexample
+gap> AllBlocks(g);       
+[ [ 1, 8 ], [ 1, 2, 3, 8 ], [ 1, 4, 5, 8 ], [ 1, 6, 7, 8 ], [ 1, 3 ], 
+  [ 1, 3, 5, 7 ], [ 1, 3, 4, 6 ], [ 1, 5 ], [ 1, 2, 5, 6 ], [ 1, 2 ], 
+  [ 1, 2, 4, 7 ], [ 1, 4 ], [ 1, 7 ], [ 1, 6 ] ]
+\endexample
+
+The stabilizer of a block can be computed via the action
+`OnSets' (see~"OnSets"):
+\beginexample
+gap> Stabilizer(g,[1,8],OnSets);
+Group([ (1,8)(2,3)(4,5)(6,7) ])
+\endexample
+
+If <bs> is a partition of <omega>, given as a set of sets, the stabilizer
+under the action `OnSetsDisjointSets' (see~"OnSetsDisjointSets") returns the
+largest subgroup which preserves <bs> as a block system.
+\beginexample
+gap> g:=Group((1,2,3,4,5,6,7,8),(1,2));;
+gap> bs:=[[1,2,3,4],[5,6,7,8]];;
+gap> Stabilizer(g,bs,OnSetsDisjointSets);
+Group([ (5,6)(7,8), (5,8)(6,7), (1,5)(2,6)(3,7)(4,8), (1,2)(3,4), (1,4)(2,3), 
+  (6,8,7), (2,3,4), (3,4), (7,8) ])
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{External Sets}
+
+When considering group actions, sometimes the concept of a *$G$-set* is
+used. This is the set <Omega> endowed with an action of $G$. The elements
+of the $G$-set are the same as those of <Omega>, however concepts like
+equality and equivalence of $G$-sets do not only consider the underlying
+domain <Omega> but the group action as well.
+
+This concept is implemented in {\GAP} via *external sets*. 
+\Declaration{IsExternalSet}
+
+\Declaration{ExternalSet}
+\beginexample
+gap> g:=Group((1,2,3),(2,3,4));;
+gap> e:=ExternalSet(g,[1..4]);
+[ 1,2,3,4 ]
+gap> e:=ExternalSet(g,g,OnRight);
+<enumerator of perm group>
+gap> Orbits(e);
+[ [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,4,2), (1,2,3),
+    (1,3,4), (2,3,4), (1,3,2), (1,4,3), (1,2,4) ] ]
+\endexample
+
+The following three attributes of an external set hold its constituents.
+\Declaration{ActingDomain}
+\Declaration{FunctionAction}
+\Declaration{HomeEnumerator}
+\beginexample
+gap> ActingDomain(e);
+Group( [ (1,2,3), (2,3,4) ] )
+gap> FunctionAction(e)=OnRight;  
+true
+gap> HomeEnumerator(e);
+[ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,3,4), (1,2,4), (1,3,2),
+  (1,4,3), (2,4,3), (1,2,3), (1,3,4), (1,4,2) ]
+\endexample
+
+Most operations for actions are applicable as an attribute for an external
+set.
+
+\Declaration{IsExternalSubset}
+The most prominent external subsets are orbits:
+\Declaration{ExternalSubset}
+\Declaration{IsExternalOrbit}
+\Declaration{ExternalOrbit}
+\beginexample
+gap> e:=ExternalOrbit(g,g,(1,2,3));
+(1,2,3)^G
+\endexample
+
+Many subsets of a group, such as conjugacy classes or cosets
+(see~"ConjugacyClass" and "RightCoset") are implemented as external orbits.
+
+\Declaration{StabilizerOfExternalSet}
+\beginexample
+gap> Representative(e);
+(1,2,3)
+gap> StabilizerOfExternalSet(e);
+Group( [ (1,2,3) ] )
+\endexample
+
+\Declaration{ExternalOrbits}
+\beginexample
+gap> ExternalOrbits(g,AsList(g));
+[()^G, (2,3,4)^G, (2,4,3)^G, (1,2)(3,4)^G]
+\endexample
+
+\Declaration{ExternalOrbitsStabilizers}
+\beginexample
+gap> e:=ExternalOrbitsStabilizers(g,AsList(g));
+[()^G, (2,3,4)^G, (2,4,3)^G, (1,2)(3,4)^G]
+gap> HasStabilizerOfExternalSet(e[3]);
+true
+gap> StabilizerOfExternalSet(e[3]);
+Group( [ (2,4,3) ] )
+\endexample
+
+\Declaration{CanonicalRepresentativeOfExternalSet}
+\Declaration{CanonicalRepresentativeDeterminatorOfExternalSet}
+\Declaration{ActorOfExternalSet}
+\beginexample
+gap> u:=Subgroup(g,[(1,2,3)]);;  
+gap> e:=RightCoset(u,(1,2)(3,4));;  
+gap> CanonicalRepresentativeOfExternalSet(e);
+(2,4,3)
+gap> ActorOfExternalSet(e);
+(1,3,2)
+gap> FunctionAction(e)((1,2)(3,4),last);
+(2,4,3)
+\endexample
+
+External sets also are implicitly underlying action homomorphisms:
+
+\Declaration{UnderlyingExternalSet}
+\begintt
+gap> g:=Group((1,2,3),(1,2));;
+gap> hom:=ActionHomomorphism(g,Arrangements([1..4],3),OnTuples);;
+gap> UnderlyingExternalSet(hom);
+[ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 2 ], [ 1, 3, 4 ], [ 1, 4, 2 ], 
+  [ 1, 4, 3 ], [ 2, 1, 3 ], [ 2, 1, 4 ], [ 2, 3, 1 ], [ 2, 3, 4 ], 
+  [ 2, 4, 1 ], [ 2, 4, 3 ], [ 3, 1, 2 ], [ 3, 1, 4 ], [ 3, 2, 1 ], 
+  [ 3, 2, 4 ], [ 3, 4, 1 ], [ 3, 4, 2 ], [ 4, 1, 2 ], [ 4, 1, 3 ], 
+  [ 4, 2, 1 ], [ 4, 2, 3 ], [ 4, 3, 1 ], [ 4, 3, 2 ] ]
+\endtt
+
+\Declaration{SurjectiveActionHomomorphismAttr}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Legacy Operations}
+
+\index{group operations}
+The concept of a group action is sometimes referred to as a ``group
+operation''.
+In {\GAP}~3 as well as in older versions of {\GAP}~4 the term `Operation' was
+used instead of `Action'. We decided to change the names to avoid confusion
+with the term ``operation'' as in `DeclareOperation' and ``Operations for Xyz''.
+
+The old names still exist as synonyms, however we do not guarantee that they
+will remain indefinitly in the system and strongly discourage their further
+use. They are listed here mainly as a help to users who are still accustomed
+to the old names:
+
+\>RepresentativeOperation(<args>) *obsolete*
+
+Obsolete synonym, see~"RepresentativeAction".
+
+\>Operation(<args>) *obsolete*
+
+Obsolete synonym, see~"Action".
+
+\>OperationHomomorphism(<args>) *obsolete*
+
+Obsolete synonym, see~"ActionHomomorphism".
+
+\>FunctionOperation(<args>) *obsolete*
+
+Obsolete synonym, see~"FunctionAction".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

@@ -51,16 +51,18 @@ Revision.wpobj_gd :=
 #C  IsWeakPointerObject( <obj> ) . . .  . . . . . . . category of  WP objects
 ##
 ##  All WP objects have to be mutable (a stronger term like volatile would 
-##  be appropriate)
+##  be appropriate),
+##  but this cannot be expressed via an explicit implication;
+##  note that `Immutable' is handled by the kernel.
 ##
 
 DeclareCategoryKernel( "IsWeakPointerObject",
-    IsList and IsMutable and IsFinite and IsSmallList,
+    IsList and IsSmallList,
     IsWPObj );
 
 
 #############################################################################
-##          
-    
+##
+
 #E  wpobj.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##                                      
+##

@@ -62,7 +62,7 @@ Revision.dt_g :=
 ##
 ##  'mkavec' returns the avec for the pc-presentation <pr>.
 ##
-mkavec := function(pr)
+BindGlobal( "mkavec", function(pr)
     local  i,j,vec;
 
     vec := [];
@@ -92,7 +92,7 @@ mkavec := function(pr)
 	fi;
     od;
     return vec;
-end;
+end );
 
 
 
@@ -103,7 +103,7 @@ end;
 ##
 ##  'equal' returns "true" if <vec1> and <vec2> represent the same monomial,
 ##   and "false" otherwise.
-equal := function(vec1,vec2)
+BindGlobal( "equal", function(vec1,vec2)
     local  i,j;
   
     if  Length(vec1) <> Length(vec2)  then
@@ -118,7 +118,7 @@ equal := function(vec1,vec2)
 	fi;
     od;
     return true;
-end;
+end );
 
 
 
@@ -132,7 +132,7 @@ end;
 ##  <vector>[5] < <vector>[7] < .. < vector[m-1],  where m is the length
 ##  of <vector>.  This is done for a easier comparison of formula vectors.
 ##
-ordne2 := function(vector)
+BindGlobal( "ordne2", function(vector)
     local  i,list1,list2;
     
     list1 := vector{[5,7..Length(vector)-1]};
@@ -142,7 +142,7 @@ ordne2 := function(vector)
         vector[ 2*i+3 ] := list1[i];
         vector[ 2*i+4 ] := list2[i];
     od;
-end;
+end );
 
 
 #############################################################################
@@ -154,7 +154,7 @@ end;
 ##  computes the corresponding coefficient vector and adds the latter to
 ##  the list <evlistvec>.
 ##
-fueghinzu := function(evlist, evlistvec, formvec, pr)
+BindGlobal( "fueghinzu", function(evlist, evlistvec, formvec, pr)
     local    i,j,k;
 
     Add(evlist, formvec);
@@ -172,7 +172,7 @@ fueghinzu := function(evlist, evlistvec, formvec, pr)
 	k[ j[i] ] := formvec[2]*j[i+1];
     od;
     Add(evlistvec, k);
-end;
+end );
 
 
 #############################################################################
@@ -182,8 +182,7 @@ end;
 ##  dt_add adds the deep thought monomial <pol> to the list of polynomials
 ##  <pols>,  such that afterwards <pols> represents a simplified polynomial.
 ##
-
-dt_add := function(pol, pols, pr)
+BindGlobal( "dt_add", function(pol, pols, pr)
     local  i,j,k,rel, pos, flag;
     
     # first sort the deep thought monomial <pol> to compare it with the
@@ -216,7 +215,7 @@ dt_add := function(pol, pols, pr)
         # <pol> is not contained in <pols>[<pos>] so add it to <pols>[<pos>]
         fueghinzu(pols[pos].evlist, pols[pos].evlistvec, pol, pr);
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -231,7 +230,7 @@ end;
 ##  in <sortedpols> into one component <evlist> and the <evlistvec>-coponents
 ##  into one component <evlistvec>.
 ##
-konvertiere := function(sortedpols)
+BindGlobal( "konvertiere", function(sortedpols)
     local  k,res;
     
     if  Length(sortedpols) = 0  then
@@ -244,7 +243,7 @@ konvertiere := function(sortedpols)
         Append(res.evlistvec, k.evlistvec);
     od;
     return res;
-end;
+end );
 
 
 #############################################################################
@@ -257,7 +256,7 @@ end;
 ##  coefficient k. After applying <konvert2> a pair [j, k] occuring in
 ##  <eclistvec>[i] means that <evlist>[i] occurs in f_j with coefficient k.
 ##
-konvert2 := function(evlistvec, pr)
+BindGlobal( "konvert2", function(evlistvec, pr)
     local i,j,res;
 
     for  i in [1..Length(evlistvec)]  do
@@ -269,7 +268,7 @@ konvert2 := function(evlistvec, pr)
         od;
 	evlistvec[i] := res;
     od;
-end;
+end );
 
 
 
@@ -280,7 +279,6 @@ end;
 ##  CalcOrder computes the order of the word <word> in the group determined
 ##  by the rewriting system <dtrws>
 ##
-
 CalcOrder := function(word, dtrws)
     local gcd, m, pcp;
     
@@ -295,6 +293,7 @@ CalcOrder := function(word, dtrws)
     gcd := DTPower(word, m, dtrws);
     return  m*CalcOrder(gcd, dtrws);
 end;
+MakeReadOnlyGlobal( "CalcOrder" );
 
 
 #############################################################################
@@ -304,8 +303,7 @@ end;
 ##  CompleteOrdersOfRws computes the orders of the generators of the
 ##  deep thought rewriting system <dtrws>
 ##
-
-CompleteOrdersOfRws := function(dtrws)
+BindGlobal( "CompleteOrdersOfRws", function(dtrws)
     local  i,j;
     
     dtrws![PC_ORDERS] := [];
@@ -323,7 +321,7 @@ CompleteOrdersOfRws := function(dtrws)
             dtrws![PC_ORDERS][i] := j;
         fi;
     od;
-end;
+end );
 
 
 #############################################################################
@@ -332,8 +330,7 @@ end;
 ##
 ##  redkomprimiere removes all empty entries from <list>
 ##
-
-redkomprimiere := function( list )
+BindGlobal( "redkomprimiere", function( list )
     local  skip, i;
     
     skip := 0;
@@ -349,7 +346,7 @@ redkomprimiere := function( list )
     for  i in  [Length(list)-skip+1..Length(list)]  do
         Unbind(list[i]);
     od;
-end;
+end );
 
 
 
@@ -360,8 +357,7 @@ end;
 ##  ReduceCoefficientsOfRws reduces all coefficients of each deep thought
 ##  polynomial f_l modulo the order of the l-th generator.
 ##
-
-ReduceCoefficientsOfRws := function(dtrws)
+BindGlobal( "ReduceCoefficientsOfRws", function(dtrws)
     local  i,j,k,l, pseudoreps;
     
     pseudoreps := dtrws![PC_DEEP_THOUGHT_POLS];
@@ -389,7 +385,7 @@ ReduceCoefficientsOfRws := function(dtrws)
         redkomprimiere( pseudoreps[i].evlist );
         i := i+1;
     od;
-end;
+end );
 
 
 #############################################################################
@@ -398,8 +394,7 @@ end;
 ##  
 ##  GetMax returns the maximal value for pos(tree) if num(tree) = <number>.  
 ##
-
-GetMax := function(tree, number, pr)
+BindGlobal( "GetMax", function(tree, number, pr)
     local rel, max, position;
     
     if  Length(tree) = 5  then
@@ -429,7 +424,7 @@ GetMax := function(tree, number, pr)
             return rel[position];
         fi;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -438,8 +433,7 @@ end;
 ##  
 ##  GetNumRight  returns num( right( tree ) ).
 ##
-
-GetNumRight := function(tree)
+BindGlobal( "GetNumRight", function(tree)
     
     if Length(tree) <> 4  then
         return  tree[ 5*(tree[9]+1)+2 ];
@@ -448,7 +442,7 @@ GetNumRight := function(tree)
         return  tree[2][2];
     fi;
     return  tree[2][3];
-end;
+end );
 
 
 
@@ -467,7 +461,7 @@ end;
 ##  then there don't exist any representatives exept for the atoms and 
 ##  finally 0 will be returned.
 ##
-calcrepsn:=function(n, avec, pr, max)
+BindGlobal( "calcrepsn", function(n, avec, pr, max)
     
     local i,j,k,l,       #  loop variables
           x,y,z,a,b,c,   #  trees
@@ -667,7 +661,7 @@ calcrepsn:=function(n, avec, pr, max)
       konvert2(pols.evlistvec, pr);
    fi;
    return(pols);
-end;
+end );
 
 
 #############################################################################
@@ -678,7 +672,7 @@ end;
 ##  computing word*g_n^(y_n) for all <dtbound> <= n <= m where m is the 
 ##  number of generators in the given presentation <pr>.
 ##
-calcreps2 := function(pr, max, dtbound)
+BindGlobal( "calcreps2", function(pr, max, dtbound)
     local  i,reps,avec,max2, max1;
     
     reps := [];
@@ -706,11 +700,7 @@ calcreps2 := function(pr, max, dtbound)
         fi;
     od;
     return reps;
-end;
-
-
-
-
+end );
 
 
 #############################################################################

@@ -270,7 +270,7 @@ gap> MyOps.SylowSubgroup:= function( G, p )
 >     Print( "my method for `SylowSubgroup':\n" );
 >     return SylowSubgroup( Group( G.generators, G.identity ), p );
 > end;
-function ( G, p ) ... end
+function( G, p ) ... end
 
 gap> g:= Group( (1,2,3,4), (1,2) );
 Group([ (1,2,3,4), (1,2) ])

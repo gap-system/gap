@@ -1,0 +1,53 @@
+#!/bin/sh
+#############################################################################
+##
+#W  crosscompile						Frank Celler
+##                                                          Alexander Hulpke
+##
+##  this shell script cross-compiles the next version for Winooze machines
+##  using the cygnus gnuwin-32 cross-compiler
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# go into the home directory and compile
+cd ${DISTROOT}/${DISTNAME}
+echo "$0: cross-compiling version $VERSION of $DATE"
+rm config.*
+# force the cross-compiler in the path
+#PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/gnuwin32/i586-pc-cygwin32/bin
+#./configure --host=i586-linux --target=i586-cygwin32
+
+CC=gnuwin32gcc
+NM=gnuwin32nm
+LD=gnuwin32ld
+export CC NM LD
+./configure
+
+make
+
+# deal with optimizer error
+echo "There is a bug in the optimizer. You must now:"
+echo "- PATH=`echo $PATH`"
+echo "- go to the bin/i686..gnuwin... subdirectory"
+echo "- edit the Makefile to remove optimization for 'integer.o'"
+echo "- remove 'integer.o' and the 'gap' binary."
+echo "- issue 'make' again to redo the compilation."
+echo "Afterwards leave, by typing 'exit'."
+bash
+echo "Thanks!"
+
+
+# check that a binary executable has been created
+if [ \! -x bin/i686-unknown-linux2.0.31-gnuwin32gcc/gap ];  then
+    echo "PANIC: no executable has been created"
+    exit 1
+fi
+
+exit 0

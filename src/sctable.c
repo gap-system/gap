@@ -89,9 +89,9 @@ Obj SCTableEntryHandler (
     Int                 l;              /* loop variable                   */
 
     /* check the table                                                     */
-    if ( ! IS_LIST(table) ) {
+    if ( ! IS_SMALL_LIST(table) ) {
         table = ErrorReturnObj(
-            "SCTableEntry: <table> must be a list (not a %s)",
+            "SCTableEntry: <table> must be a small list (not a %s)",
             (Int)TNAM_OBJ(table), 0L,
             "you can return a list for <table>" );
         return SCTableEntryHandler( self, table, i, j, k );
@@ -116,7 +116,7 @@ Obj SCTableEntryHandler (
 
     /* get and check the relevant row                                      */
     tmp = ELM_LIST( table, INT_INTOBJ(i) );
-    if ( ! IS_LIST(tmp) || LEN_LIST(tmp) != dim ) {
+    if ( ! IS_SMALL_LIST(tmp) || LEN_LIST(tmp) != dim ) {
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d] must be a list with %d elements",
             INT_INTOBJ(i), dim,
@@ -136,7 +136,7 @@ Obj SCTableEntryHandler (
 
     /* get and check the basis and coefficients list                       */
     tmp = ELM_LIST( tmp, INT_INTOBJ(j) );
-    if ( ! IS_LIST(tmp) || LEN_LIST(tmp) != 2 ) {
+    if ( ! IS_SMALL_LIST(tmp) || LEN_LIST(tmp) != 2 ) {
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d][%d] must be a basis/coeffs list",
             0L, 0L,
@@ -146,7 +146,7 @@ Obj SCTableEntryHandler (
 
     /* get and check the basis list                                        */
     basis = ELM_LIST( tmp, 1 );
-    if ( ! IS_LIST(basis) ) {
+    if ( ! IS_SMALL_LIST(basis) ) {
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d][%d][1] must be a basis list",
             0L, 0L,
@@ -156,7 +156,7 @@ Obj SCTableEntryHandler (
 
     /* get and check the coeffs list                                       */
     coeffs = ELM_LIST( tmp, 2 );
-    if ( ! IS_LIST(coeffs) ) {
+    if ( ! IS_SMALL_LIST(coeffs) ) {
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d][%d][2] must be a coeffs list",
             0L, 0L,
@@ -257,7 +257,7 @@ Obj SCTableProductHandler (
     Int                 i, j;           /* loop variables                  */
 
     /* check the arguments a bit                                           */
-    if ( ! IS_LIST(table) ) {
+    if ( ! IS_SMALL_LIST(table) ) {
         table = ErrorReturnObj(
             "SCTableProduct: <table> must be a list (not a %s)",
             (Int)TNAM_OBJ(table), 0L,
@@ -273,14 +273,14 @@ Obj SCTableProductHandler (
         return SCTableProductHandler( self, table, list1, list2 );
     }
     zero = ELM_LIST( table, dim+2 );
-    if ( ! IS_LIST(list1) || LEN_LIST(list1) != dim ) {
+    if ( ! IS_SMALL_LIST(list1) || LEN_LIST(list1) != dim ) {
         list1 = ErrorReturnObj(
             "SCTableProduct: <list1> must be a list with %d elements",
             dim, 0L,
             "you can return a list for <list1>" );
         return SCTableProductHandler( self, table, list1, list2 );
     }
-    if ( ! IS_LIST(list2) || LEN_LIST(list2) != dim ) {
+    if ( ! IS_SMALL_LIST(list2) || LEN_LIST(list2) != dim ) {
         list2 = ErrorReturnObj(
             "SCTableProduct: <list2> must be a list with %d elements",
             dim, 0L,

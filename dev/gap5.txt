@@ -3,10 +3,13 @@ This is a list of features which should eventually become part of GAP.
 Table Of Contents
 -----------------
 
-1) Was weak pointer objects, now implemented
+1) Was weak pointer objects			IMPLEMENTED
 2) Finalise methods
 3) Subgroup inclusions/Lattice
 4) Saving of objects, Marshalling
+5) Variadic Methods				SHOULD GO IN 4.2
+6) Printing, Viewing, Strings and Streams	SHOULD GO IN 4.2
+7) Lists that do not know their length          SHOULD GO IN 4.2
 
 -----------------------------------------------------------------------------
 
@@ -247,3 +250,125 @@ The save context also seems to be a suitable data structure for marshalling
 (that is transfering objects in small form to another program with
 preserving all relations.) A typical example would be the communication in
 GAPMPI.
+
+-------------------------------------------------------------------------
+
+5) Variadic Methods 
+
+THE IDEA is to be able to install a method that is applicable if the
+operation is called with k OR MORE arguments, such that the first k 
+meet the given specification. The method must obviously be a
+function(arg). 
+
+SOME SUBTLETIES arise:
+
+1.  How does a variadic method with three specified arguments rank
+    versus a method (fixed or variadic) with four specifiesd 
+    arguments, or versus a fixed method with three arguments?
+
+    Conclusion is that all methods with more specified arguments rank
+    ahead of all methods with fewer. All methods with the same number
+    of specified arguments are ranked according to the current rules
+
+2.  How do the family predicates work? Can/must they be variadic too? 
+    
+    Conclusion: variadic family predicates will not be allowed,
+    because it makes it too hard to work out which arguments will
+    have their types computed (see Stage 2 below).
+   
+
+3.  Is any function( arg ) installed as a method treated in this way?
+
+    Conclusion: no. Some special installation function
+    InstallVariadicMethod must be used. There are two many existing 
+    installations fo variadic functions (eg Operations) in the library 
+    and they are not intended to be used in this way
+
+PROPOSED IMPLEMENTATION
+
+Stage 1: making it work
+
+    Store in every operation a list of all variadic methods and their
+    requirements in decreasing lex order of ( <k>, <rank> ).
+
+    Install variadic methods in this list AND in the list of <k>
+    argument methods.
+
+    Make Method<n>Args check this list after it runs out of <n>
+    argument methods, starting with k = n-1.
+
+    Add DoOperationXArgs and MethodXArgs (taking a list of types)
+     to handle 7+ arguments. Computing the types of 6 will always
+     be enough -- no method cache in this case.
+
+    Update ApplicableMethod, HandleMethodNotFound etc. to reflect this
+
+Stage 2: making it better
+
+    Store in every operation a 7-place bit-list indicating
+    whether it has installed methods with 0,1,..6 arguments.
+
+    Store in every operation the maximum <k> of any variadic
+    method.
+
+    Adjust DoOperation<n>Args to use this information to
+    only compute types which might be needed. For the method cache,
+    replace the others with some dummy value.
+
+    Consider how to organise a method cache for DoOperationXArgs
+
+---------------------------------------------------------------------
+
+6) (summarising a proposal of various people)
+
+The present operations PrintObj, ViewObj, Display, etc. will be
+supplemented by String, ViewString, DisplayString, etc. and
+PrintObjTo, ViewObjTo, DisplayObjTo, etc.
+
+String &c will have most of the methods. They will return strings
+containing format control characters like \> \< and \n introduced by
+the methods. A function/operation CleanedString will be available to
+strip them.
+
+PrintObjTo will have a method which calls String and then some kernel
+function to deliver the String to the stream. Existing kernel PrintObj 
+machinery will probably stay (but be available also as kernel String
+machinery) but be generalized to support PrintObjTo.
+
+PrintObj will simply by PrintObjTo( __ , stdout )
+
+Same story for ViewObj and Display (which should proabbly become
+DisplayObj).
+
+
+The String stuff is general good practice and just useful.
+
+The ...To stuff is to avoid the current huge inefficiency in PrintTo,
+of opening the stream and then closing it. The single output file
+model is too constraining. By keeping the stream as a parameter all
+the way through the library and kernel printing process, we can keep
+its data structures alive in the kernel all the time and save a lot of 
+work (this will also mean streams having to explicitly create their
+"kernel part" when they are created, and destroy it when they are
+closed. The kernel part might include a pointer to the WriteAll
+method, which is a bit ugly, but will save a lot of time.
+
+-------------------------------------------------------------------
+
+7. The idea here is to give almost all lists, from creation the filter 
+CanEasilyComputeLength or some such, and use it to select methods in
+various places. Lists not in this filter are things like enumerators
+of fp groups, which don't yet know their order.
+
+
+
+  
+
+
+
+
+
+
+    
+    
+ 

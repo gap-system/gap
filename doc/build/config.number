@@ -1,5 +1,6 @@
-@msfiles = ("integers","numtheor","padics","cyclotom","numfield");
-@gdfiles = ("integer","numtheor","domain","arith","padics","cyclotom.g",
-            "cyclotom","field");
+@msfiles = ("integers","numtheor","rational","padics","cyclotom","fldabnum",
+            "unknown");
+@gdfiles = ("integer","numtheor","rational","domain","arith","padics",
+            "cyclotom.g","cyclotom","field","fldabnum","unknown","zmodnz");
 $DIR = "../ref";
 $LIB = "../../lib"; 

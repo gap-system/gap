@@ -1,0 +1,75 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  function.msk           GAP documentation                Alexander Hulpke
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1999
+%%
+%%  This file describes functions for functions.
+%%
+\Chapter{Functions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Information about a function}
+
+\Declaration{NameFunction}
+\beginexample
+gap> NameFunction(SylowSubgroup);
+"SylowSubgroup"
+gap> Blubberflutsch:=x->x;;
+gap> NameFunction(Blubberflutsch);
+"Blubberflutsch"
+gap> a:=Blubberflutsch;;
+gap> NameFunction(a);             
+"Blubberflutsch"
+gap> NameFunction(x->x);
+"unknown"
+gap> NameFunction(NameFunction);
+"NAME_FUNC"
+\endexample
+
+\Declaration{NumberArgumentsFunction}
+\beginexample
+gap> NumberArgumentsFunction(function(a,b,c,d,e,f,g,h,i,j,k)return 1;end); 
+11
+gap> NumberArgumentsFunction(Size);                   
+1
+gap> NumberArgumentsFunction(IsCollsCollsElms);
+3
+gap> NumberArgumentsFunction(Sum);               
+-1
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Calling an function with a variable number of arguments}
+
+\Declaration{CallFuncList}
+\beginexample
+gap> CallFuncList(\+,[6,7]); 
+13
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions that do nothing}
+
+The following functions return fix results (or just their own argument).
+They can be useful in places when the syntax requires a function, but
+actually no functionality is required. So `ReturnTrue' is often used as
+family predicate in `InstallMethod'
+(see~"prg:InstallMethod" in ``Programming in {\GAP}'').
+
+\Declaration{ReturnTrue}
+\Declaration{ReturnFalse}
+\Declaration{ReturnFail}
+\Declaration{IdFunc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Function Types}
+
+Functions are {\GAP} objects and thus have categories and a family.
+
+\Declaration{IsFunction}
+\Declaration{IsOperation}
+\Declaration{FunctionsFamily}
+

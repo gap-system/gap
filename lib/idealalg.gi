@@ -7,7 +7,8 @@
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains methods for ideals in algebras and algebras-with-one.
+##  This file contains methods for (left/right/two-sided) ideals
+##  in algebras and algebras-with-one.
 ##
 Revision.idealalg_gi :=
     "@(#)$Id$";
@@ -17,7 +18,7 @@ Revision.idealalg_gi :=
 ##
 #F  IsLeftIdealFromGenerators( <AsStructA>, <AsStructS>, <GensA>, <GensS> )
 ##
-IsLeftIdealFromGenerators :=
+BindGlobal( "IsLeftIdealFromGenerators",
     function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
     return function( A, S )
 
@@ -43,14 +44,14 @@ IsLeftIdealFromGenerators :=
     od;
     return true;
     end;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IsRightIdealFromGenerators( <AsStructA>, <AsStructS>, <GensA>, <GensS> )
 ##
-IsRightIdealFromGenerators :=
+BindGlobal( "IsRightIdealFromGenerators",
     function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
     return function( A, S )
 
@@ -76,7 +77,7 @@ IsRightIdealFromGenerators :=
     od;
     return true;
     end;
-end;
+end );
 
 
 #############################################################################
@@ -210,16 +211,18 @@ InstallMethod( TwoSidedIdealByGenerators,
     IsIdenticalObj,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
-    local I;
+    local I, lad;
     I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsAttributeStoringRep ),
                    rec() );
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    lad:= LeftActingDomain( A );
+    SetLeftActingDomain( I, lad );
     SetGeneratorsOfTwoSidedIdeal( I, gens );
     SetLeftActingRingOfIdeal( I, A );
     SetRightActingRingOfIdeal( I, A );
 
+    CheckForHandlingByNiceBasis( lad, gens, I, false );
     return I;
     end );
 
@@ -228,15 +231,17 @@ InstallMethod( LeftIdealByGenerators,
     IsIdenticalObj,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
-    local I;
+    local I, lad;
     I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsAttributeStoringRep ),
                    rec() );
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    lad:= LeftActingDomain( A );
+    SetLeftActingDomain( I, lad );
     SetGeneratorsOfLeftIdeal( I, gens );
     SetLeftActingRingOfIdeal( I, A );
 
+    CheckForHandlingByNiceBasis( lad, gens, I, false );
     return I;
     end );
 
@@ -245,15 +250,17 @@ InstallMethod( RightIdealByGenerators,
     IsIdenticalObj,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
-    local I;
+    local I, lad;
     I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsAttributeStoringRep ),
                    rec() );
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    lad:= LeftActingDomain( A );
+    SetLeftActingDomain( I, lad );
     SetGeneratorsOfRightIdeal( I, gens );
     SetRightActingRingOfIdeal( I, A );
 
+    CheckForHandlingByNiceBasis( lad, gens, I, false );
     return I;
     end );
 
@@ -263,18 +270,20 @@ InstallMethod( TwoSidedIdealByGenerators,
     true,
     [ IsFLMLOR, IsList and IsEmpty ], 0,
     function( A, gens )
-    local I;
+    local I, lad;
     I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsTrivial
                             and IsAttributeStoringRep ),
                    rec() );
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    lad:= LeftActingDomain( A );
+    SetLeftActingDomain( I, lad );
     SetGeneratorsOfTwoSidedIdeal( I, gens );
     SetGeneratorsOfLeftModule( I, gens );
     SetLeftActingRingOfIdeal( I, A );
     SetRightActingRingOfIdeal( I, A );
 
+    CheckForHandlingByNiceBasis( lad, gens, I, false );
     return I;
     end );
 
@@ -283,17 +292,19 @@ InstallMethod( LeftIdealByGenerators,
     true,
     [ IsFLMLOR, IsList and IsEmpty ], 0,
     function( A, gens )
-    local I;
+    local I, lad;
     I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsTrivial
                             and IsAttributeStoringRep ),
                    rec() );
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    lad:= LeftActingDomain( A );
+    SetLeftActingDomain( I, lad );
     SetGeneratorsOfLeftIdeal( I, gens );
     SetGeneratorsOfLeftModule( I, gens );
     SetLeftActingRingOfIdeal( I, A );
 
+    CheckForHandlingByNiceBasis( lad, gens, I, false );
     return I;
     end );
 
@@ -302,17 +313,19 @@ InstallMethod( RightIdealByGenerators,
     true,
     [ IsFLMLOR, IsList and IsEmpty ], 0,
     function( A, gens )
-    local I;
+    local I, lad;
     I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsTrivial
                             and IsAttributeStoringRep ),
                    rec() );
-    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    lad:= LeftActingDomain( A );
+    SetLeftActingDomain( I, lad );
     SetGeneratorsOfRightIdeal( I, gens );
     SetGeneratorsOfLeftModule( I, gens );
     SetRightActingRingOfIdeal( I, A );
 
+    CheckForHandlingByNiceBasis( lad, gens, I, false );
     return I;
     end );
 
@@ -325,13 +338,13 @@ InstallMethod( RightIdealByGenerators,
 ##  We need methods to compute algebra or left module generators from the
 ##  known (left/right/two-sided) ideal generators.
 ##  For that, we use `MutableBasisOfClosureUnderAction' in the case that the
-##  acting algebra is associative,
+##  acting algebra is known to be associative,
 ##  and `MutableBasisOfIdealInNonassociativeAlgebra' otherwise.
 ##
 ##  Note that by the call to `UseBasis', afterwards left module generators
 ##  are known, also if `GeneratorsOfLeftOperatorRing' had been called.
 ##
-LeftModuleGeneratorsForIdealFromGenerators := function( I, Igens, R )
+LeftModuleGeneratorsForIdealFromGenerators := function( I, Igens, R, side )
 
     local F,        # left acting domain of `I'
           maxdim,   # upper bound for the dimension of `I'
@@ -358,7 +371,7 @@ LeftModuleGeneratorsForIdealFromGenerators := function( I, Igens, R )
       mb:= MutableBasisOfClosureUnderAction(
                F,
                GeneratorsOfLeftOperatorRing( R ),
-               "both",
+               side,
                Igens,
                \*,
                Zero( I ),
@@ -372,7 +385,7 @@ LeftModuleGeneratorsForIdealFromGenerators := function( I, Igens, R )
                GeneratorsOfLeftModule( R ),
                Igens,
                Zero( I ),
-               "both",
+               side,
                maxdim );
 
     fi;
@@ -390,7 +403,7 @@ InstallMethod( GeneratorsOfLeftModule,
     [ IsFLMLOR and HasGeneratorsOfTwoSidedIdeal ], 0,
     I -> LeftModuleGeneratorsForIdealFromGenerators( I,
              GeneratorsOfTwoSidedIdeal( I ),
-             LeftActingRingOfIdeal( I ) ) );
+             LeftActingRingOfIdeal( I ), "both" ) );
 
 InstallMethod( GeneratorsOfLeftModule,
     "for FLMLOR with known left ideal generators",
@@ -399,7 +412,7 @@ InstallMethod( GeneratorsOfLeftModule,
     RankFilter( HasGeneratorsOfTwoSidedIdeal ),
     I -> LeftModuleGeneratorsForIdealFromGenerators( I,
              GeneratorsOfLeftIdeal( I ),
-             LeftActingRingOfIdeal( I ) ) );
+             LeftActingRingOfIdeal( I ), "left" ) );
 
 InstallMethod( GeneratorsOfLeftModule,
     "for FLMLOR with known right ideal generators",
@@ -408,7 +421,7 @@ InstallMethod( GeneratorsOfLeftModule,
     RankFilter( HasGeneratorsOfTwoSidedIdeal ),
     I -> LeftModuleGeneratorsForIdealFromGenerators( I,
              GeneratorsOfRightIdeal( I ),
-             RightActingRingOfIdeal( I ) ) );
+             RightActingRingOfIdeal( I ), "right" ) );
 
 
 InstallMethod( GeneratorsOfLeftOperatorRing,
@@ -417,7 +430,7 @@ InstallMethod( GeneratorsOfLeftOperatorRing,
     [ IsFLMLOR and HasGeneratorsOfTwoSidedIdeal ], 0,
     I -> LeftModuleGeneratorsForIdealFromGenerators( I,
              GeneratorsOfTwoSidedIdeal( I ),
-             LeftActingRingOfIdeal( I ) ) );
+             LeftActingRingOfIdeal( I ), "both" ) );
 
 InstallMethod( GeneratorsOfLeftOperatorRing,
     "for FLMLOR with known left ideal generators",
@@ -426,7 +439,7 @@ InstallMethod( GeneratorsOfLeftOperatorRing,
     RankFilter( HasGeneratorsOfTwoSidedIdeal ),
     I -> LeftModuleGeneratorsForIdealFromGenerators( I,
              GeneratorsOfLeftIdeal( I ),
-             LeftActingRingOfIdeal( I ) ) );
+             LeftActingRingOfIdeal( I ), "left" ) );
 
 InstallMethod( GeneratorsOfLeftOperatorRing,
     "for FLMLOR with known right ideal generators",
@@ -435,7 +448,7 @@ InstallMethod( GeneratorsOfLeftOperatorRing,
     RankFilter( HasGeneratorsOfTwoSidedIdeal ),
     I -> LeftModuleGeneratorsForIdealFromGenerators( I,
              GeneratorsOfRightIdeal( I ),
-             RightActingRingOfIdeal( I ) ) );
+             RightActingRingOfIdeal( I ), "right" ) );
 
 
 #############################################################################
@@ -527,6 +540,5 @@ InstallMethod( IsFiniteDimensional,
 
 #############################################################################
 ##
-#E  idealalg.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
+#E
 

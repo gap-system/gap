@@ -4,7 +4,12 @@ AC_SUBST(gp_configure_options)
 AC_CONFIG_AUX_DIR(cnf)
 AC_CANONICAL_SYSTEM
 AC_PROG_CC
+BASECC=`basename ${CC}`
+AC_SUBST(BASECC)
 AC_PROG_MAKE_SET
-AC_OUTPUT(Makefile)
+AC_SUBST(gapdir)
+gapdir=`pwd`
+mkdir -p bin
+AC_OUTPUT(Makefile sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi)
 
 

@@ -1,0 +1,209 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  sharepkg.msk              GAP documentation             Werner Nickel
+%W                                                       Alexander Hulpke
+%%
+%H  @(#)$Id$
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Share Packages}
+
+A share package  is the way  to  make software written by  (groups of)
+{\GAP} users  available to the  computational community  together with
+{\GAP}.
+
+A share package extends the functionality  of {\GAP} as defined by the
+{\GAP}  kernel, the  {\GAP} library and   the various  data libraries.
+Some share packages are written entirely in the {\GAP} language, while
+others include one  or more standalone  programs written in C or  some
+other  language which either  perfom  tasks that  are not available in
+{\GAP} or work particularly fast.
+
+The responsibility and  copyright of a  share package remains with the
+original author while the responsibility   of the rest of {\GAP}  lies
+with  the {\GAP} developer team.  
+
+A  share  package  undergoes  a formal  refereeing   process before it
+becomes part of the {\GAP} distribution.  This process is in many ways
+similar to the  refereeing process of a  paper submitted to a journal.
+It assesses the  quality and usefulness  of the submitted  package, it
+makes sure that it can be started and  runs  smoothly together with
+{\GAP} and it ensures that binary parts are portable to other architectures.
+Share  packages should be submitted  to  the chairman of the
+{\GAP} Council, Prof. Charles Wright.
+See the {\GAP} Web site (see~"Getting GAP") for more
+details and addresses.
+
+While much effort has been spent on making {\GAP} available on as many
+platforms as possible, the same is not always true for share packages.
+Share packages that consist entirely of {\GAP} code can be used on any
+platform where   {\GAP}  runs.  However, share   packages that contain
+standalone programs often run only in a UNIX environment.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing Share Packages}
+
+Typically, a share package is installed  by copying its directory (or
+unpacking its distribution file using `unzoo') into the
+`pkg' directory of the {\GAP} distribution.  This subdirectory of `pkg' is
+called the *home directory* of the share package.  It is possible to have
+several {\GAP} root directories (see~"GAP Root Directory"), therefore it is
+easy to install a package locally even if a user has no permission to add
+files to the main {\GAP} installation.  So share packages also provide an
+easy way to add optional components to the functionality of {\GAP}.
+
+If the share package uses external binaries, additional compilation is
+necessary. The documentation of  each share package will describe how
+to do this, the following paragraph describes a suggested procedure
+for compiling binaries on a UNIX system:
+
+Go to the directory of the share package.  Then call `/bin/sh configure
+path', where `path' gives a path to the root directory of the {\GAP}
+installation.  So for example if the share package is in the main {\GAP}
+path, simply call
+\begintt
+/bin/sh configure ../..
+\endtt
+This will fetch the name of the system architecture on which {\GAP} has been
+compiled. Finally call `make' to invoke the actual compilation.
+(The standard {\GAP} distribution contains a share package ``example'' which
+makes use of this mechanism. The `configure' script in this package also
+permits to omit the path, using `../..' as a default.)
+
+If {\GAP}  is installed on different  architectures  on a  common file
+system, this configuration  process   will only work  for  the  *last*
+architecture for   which  {\GAP} was  compiled. Therefore  compile the
+share package binaries  always immediately after compiling the  system
+architecture. If you want to add share packages later, you should call
+`configure' again  in the main {\GAP}  directory for each architecture
+before configuring the share package for this architecture.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing a Share Package in your home directory}
+\index{share package!permissions}
+\index{superuser}\index{administrator}
+
+If you are using {\GAP} on a multi-user system installing a share package
+globally the way described in the last section might require the cooperation
+of your system administrator.
+
+If your administrator is absent/unwilling/incapable you still can install
+the share package in your local home directory: Create a directory that will
+serve as ``your'' personal {\GAP} home directory. We will assume now that
+you are using a UNIX system and that this directory is called
+\begintt
+/home/user/mygap
+\endtt
+Go to this directory and create a subdirectory `pkg'
+\begintt
+you@unix> cd /home/user/mygap
+you@unix> mkdir pkg
+\endtt
+Now extract the share package in the `pkg' subdirectory, creating a
+directory with the package name. Configure the package as usual. However you
+now have to give the correct path to the main {\GAP} home directory (in
+{\GAP} look at the variable `GAP_ROOT_PATHS' to find out where this is),
+so your commands would look something like:
+\begintt
+you@unix> cd /home/user/mygap/pkg/thepackage
+you@unix> configure /usr/local/lib/{{gapdirname}}
+you@unix> make
+\endtt
+
+Now the share package is installed locally. Finally, to use the package you
+only have to tell {\GAP} to look in the right place. You can achieve this
+by giving two paths two home directories, the old one and your new one, 
+separated by a semicolon
+as arguments to the `-l' command line option to your usual gap4 command.
+(See~"Command Line Options" for details.)
+
+\begintt
+you@unix> gap4 -l "/usr/local/lib/{{gapdirname}};/home/user/mygap"
+\endtt
+
+Now {\GAP} starts as usual, and the new package ought to be available.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Loading a Share Package}
+\index{automatic loading of share packages}
+\index{disable automatic loading}
+
+Some share packages will be prepared for *automatic loading*,
+that is they will be loaded automatically with {\GAP},
+others must in each case be separately loaded by a call to
+`RequirePackage'.
+
+\Declaration{RequirePackage}
+
+After a package has been loaded its code and documentation are available as other parts of the
+{\GAP} library are.
+
+The documentation of each share package will tell if the package loads
+automatically or not.
+If share packages have been
+loaded automatically, {\GAP} prints a list of  the names of all share
+packages which have been loaded at the end of the initialization process.
+
+A share package may also install only its documentation automatically but
+still need loading by `RequirePackage'. In this situation the online help
+displays `(not loaded)' in the header lines of the manual pages belonging to
+this share package.
+
+\index{ALLPKG}
+(At the moment automatic loading is only possible for the packages listed in
+the file `pkg/ALLPKG'. (This is due to the fact that there is no standard
+C-Function that will list the contents of a subdirectory.) This file must
+list each package name on a line of its own without any heading or trailing
+extra characters.  Under UNIX you can create such a file easily by issuing
+the command
+\begintt
+find * -type d -maxdepth 0 -print > ALLPKG
+\endtt
+in the `pkg' directory.)
+
+If the {\GAP} installation you are using loads share packages automatically
+which (for example for reasons of memory usage) you do not want to load
+automatically, you can disable the automatic loading of share packages by
+putting a line
+\begintt
+RemoveSet(AUTOLOAD_PACKAGES,"name");
+\endtt
+where <name> is the name of the share package in your `.gaprc' file (see
+"The .gaprc file").
+
+You can disable automatic loading globally, by listing the name of the share
+package in a file `NOAUTO' in the `pkg' directory.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Share Packages}
+
+\Declaration{DeclarePackage}
+
+\Declaration{DeclarePackageDocumentation}
+
+\Declaration{ReadPkg}
+
+\Declaration{TestPackageAvailability}
+
+\Declaration{DirectoriesPackageLibrary}
+\begintt
+gap> DirectoriesPackageLibrary( "example", "gap" );  
+[ dir("/home/werner/Gap/4.0/pkg/example/gap/") ]
+\endtt
+
+In order to  find a subdirectory hierarchy in  the package  directory you
+can  pass subdirectories in <lib> separated  by `{'/'}'.  For example, to
+find the subdirectory `m11' in the directory `data', use:
+\begintt
+DirectoriesPackageLibrary( "pkgname", "data/m11" )
+\endtt
+
+\Declaration{DirectoriesPackagePrograms}
+\begintt
+gap> DirectoriesPackagePrograms( "nq" );    
+[ dir("/home/werner/Gap/4.0/pkg/nq/bin/i686-unknown-linux2.0.30-gcc/") ]
+\endtt
+
+\Declaration{CompareVersionNumbers}
+

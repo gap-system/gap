@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%A  pres.msk                   GAP documentation             Volkmar Felsch  
+%A  pres.msk                   GAP documentation             Volkmar Felsch
 %A                                                           Alexander Hulpke
 %%
 %A  @(#)$Id$
@@ -9,265 +9,115 @@
 %%
 \Chapter{Presentations and Tietze Transformations}
 
-A finite presentation describes a group but usually there is a multitude of
+A finite presentation describes a group, but usually there is a multitude of
 presentations that describe isomorphic groups. Therefore a presentation in
 {\GAP} is different from a finitely presented group though there are ways to
-translate between both. 
+translate between both.
 
 An important feature of presentations is that they can be modified (see
-"Tietze Transformations").
+sections "Changing Presentations" to "Tietze Transformations that introduce
+new Generators").
+
+%%  The code for presentations was designed and implemented by Volkmar Felsch.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Creating Presentations}
 
 \Declaration{PresentationFpGroup}
-\Declaration{FpGroupPresentation}
+
 \beginexample
-gap> f:=FreeGroup("a","b");
-Group( [ a, b ], ... )
-gap> g:=f/[f.1^2,f.2^3,(f.1*f.2)^3];
-Group( [ a, b ], ... )
-gap> p:=PresentationFpGroup(g);
-<< presentation with 2 gens and 3 rels of total length 11 >>
-gap> h:=FpGroupPresentation(p);
-Group( [ f1, f2 ], ... )
-gap> h=g;
+gap> f := FreeGroup( "a", "b" );
+<free group on the generators [ a, b ]>
+gap> g := f / [ f.1^3, f.2^2, (f.1*f.2)^3 ];
+<fp group on the generators [ a, b ]>
+gap> p := PresentationFpGroup( g );
+<presentation with 2 gens and 3 rels of total length 11>
+\endexample
+
+Most of the functions creating presentations and all functions performing
+Tietze transformations on them sort the relators by increasing lengths. The
+function `PresentationFpGroup' is an exception because it is intended to
+reflect the relators that were used to define the involved FpGroup. You may
+use the following command to sort the presentation.
+
+\Declaration{TzSort}
+
+\Declaration{GeneratorsOfPresentation}
+\Declaration{FpGroupPresentation}
+
+\beginexample
+gap> h := FpGroupPresentation( p );
+<fp group on the generators [ a, b ]>
+gap> h = g;
 false
 \endexample
 
 \Declaration{PresentationViaCosetTable}
 
-In general the command `IsomorphismFpGroup' (see "IsomorphismFpGroup")
-should be used to compute a presentation for a finite group. 
-
 \beginexample
 gap> G := GeneralLinearGroup( 2, 7 );
 GL(2,7)
-gap> GeneratorsOfGroup(G);
-[ [ [ Z(7), 0*Z(7) ], [ 0*Z(7), Z(7)^0 ] ], 
+gap> GeneratorsOfGroup( G );
+[ [ [ Z(7), 0*Z(7) ], [ 0*Z(7), Z(7)^0 ] ],
   [ [ Z(7)^3, Z(7)^0 ], [ Z(7)^3, 0*Z(7) ] ] ]
-gap> Size(G);
+gap> Size( G );
 2016
-gap> P:=PresentationViaCosetTable(G);
-<< presentation with 2 gens and 5 rels of total length 46 >>
-gap> TzPrintRelators(P);
-#I  1. _x2^3
-#I  2. _x1^6
-#I  3. _x1*_x2*_x1*_x2*_x1*_x2*_x1*_x2*_x1*_x2*_x1*_x2
-#I  4. _x1*_x2*_x1^-1*_x2*_x1*_x2^-1*_x1^-1*_x2*_x1*_x2*_x1^-1*_x2^-1
-#I  5. _x1^-3*_x2*_x1*_x2*_x1^-1*_x2^-1*_x1^-1*_x2^-1*_x1^-2*_x2
+gap> P := PresentationViaCosetTable( G );
+<presentation with 2 gens and 5 rels of total length 46>
+gap> TzPrintRelators( P );
+#I  1. f2^3
+#I  2. f1^6
+#I  3. f1*f2*f1*f2*f1*f2*f1*f2*f1*f2*f1*f2
+#I  4. f1*f2*f1^-1*f2*f1*f2^-1*f1^-1*f2*f1*f2*f1^-1*f2^-1
+#I  5. f1^-3*f2*f1*f2*f1^-1*f2^-1*f1^-1*f2^-1*f1^-2*f2
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Subgroup Presentations}
-
-\Declaration{PresentationSubgroup}
-\Declaration{PresentationSubgroupRrs}
+The two stage algorithm saves an essential amount of space by
+constructing two coset tables of lengths $|H|$ and $|G|/|H|$ instead of
+just one coset table of length $|G|$. The next example shows an application
+of this option in the case of a subgroup of size 7920 and index 12 in a
+permutation group of size 95040.
 
 \beginexample
-gap> g:=f/[f.1^2,f.2^3,(f.1*f.2)^5];
-Group( [ a, b ], ... )
-gap> u:=Subgroup(g,[g.1,g.1^g.2]);
-Group( [ a, b^-1*a*b ], ... )
-gap> p:=PresentationSubgroup(g,u);
-<< presentation with 3 gens and 4 rels of total length 12 >>
+gap> M12 := Group( [ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6),
+> (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) ], () );;
+gap> F := FreeGroup( "a", "b", "c" );
+<free group on the generators [ a, b, c ]>
+gap> words := [ F.1, F.2 ];
+[ a, b ]
+gap> P := PresentationViaCosetTable( M12, F, words );
+<presentation with 3 gens and 10 rels of total length 97>
+gap> G := FpGroupPresentation( P );
+<fp group on the generators [ a, b, c ]>
+gap> RelatorsOfFpGroup( G );
+[ c^2, b^4, a*c*a*c*a*c, a*b^-2*a*b^-2*a*b^-2, a^11,
+  a^2*b*a^-2*b^-2*a*b^-1*a^2*b^-1, a*b*a^-1*b*a^-1*b^-1*a*b*a^-1*b*a^-1*b^-1,
+  a^2*b*a^2*b^-2*a^-1*b*a^-1*b^-1*a^-1*b^-1,
+  a^2*b^-1*a^-1*b^-1*a*c*b*c*a*b*a*b, a^4*b*a^2*b*a^-2*c*a*b*a^-1*c ]
 \endexample
 
-The Reduced Reidemeister-Schreier algorithm is a modification of the
-Reidemeister-Schreier algorithm of George Havas \cite{Hav74b}.  It was
-proposed by Joachim Neub{\accent127u}ser and first implemented in 1986 by
-Andrea Lucchini and Volkmar Felsch in the SPAS system \cite{Spa89}. Like
-the Reidemeister-Schreier algorithm of George Havas, it needs only the
-presentation of <G> and a coset table of <H> in <G> to construct a
-presentation of <H>.
-
-Whenever you call the `PresentationSubgroupRrs' command, it first obtains
-a coset table of <H> in <G> if not given.
-Next, a set of generators of <H> is determined by reconstructing the
-coset table and introducing in that process as many Schreier generators
-of <H> in <G> as are needed to do a Felsch strategy coset enumeration
-without any coincidences. (In general, though containing redundant
-generators, this set will be much smaller than the set of all Schreier
-generators.  That is  why  we  call  the  method  the  *Reduced*
-Reidemeister-Schreier.)
-
-After having constructed this set of *primary subgroup generators* , say,
-the coset table is extended to an *augmented coset table* which describes
-the action of the group generators on coset representatives, i.e., on
-elements instead of cosets. For this purpose, suitable words in the
-(primary) subgroup generators have to be associated to the coset table
-entries. In order to keep the lengths of these words short, additional
-*secondary subgroup generators* are introduced as abbreviations of
-subwords. Their number may be large.
-
-Finally, a Reidemeister rewriting process is used to get defining
-relators for <H> from the relators of <G>. As the resulting presentation
-of <H> is a presentation on primary *and* secondary generators, in
-general  you will  have  to  simplify  it  by appropriate Tietze
-transformations (see "Tietze Transformations") or by the `DecodeTree'
-command (see "DecodeTree") before you can use it.  Therefore it is
-returned in the form of a presentation, <P> say.
-
-Compared with the Modified Todd-Coxeter method described below, the
-Reduced Reidemeister-Schreier method (as well as Havas{\pif} original
-Reidemeister-Schreier program) has the advantage that it does not require
-generators of <H> to be given if a coset table of <H> in <G> is known.
-This provides a possibility to compute a presentation of the normal
-closure of a given subgroup (see the `PresentationNormalClosureRrs'
-command below).
-
-As you may be interested not only to get the resulting presentation, but
-also to know what the involved subgroup generators are, the function
-`PresentationSubgroupRrs' will also provide a  list  of the primary
-generators of <H> as words in the generators of <G>.  It is provided in
-the attribute `PrimaryGeneratorWords' of the resulting presentation <P>.
-
-\Declaration{PrimaryGeneratorWords}
-\beginexample
-gap> PrimaryGeneratorWords(p);
-[ a, b^-1*a*b ]
-\endexample
-
-\Declaration{PresentationSubgroupMtc}
+Before it is returned, the resulting presentation is being simplified by
+appropriate calls of the function `SimplifyPresentation' (see "Tietze
+Transformations"), but without allowing any eliminations of generators.
+This restriction guarantees that we get a bijection between the list of
+generators of <G> and the list of generators in the presentation. Hence,
+if the generators of <G> are redundant and if you don{\pif}t care for the
+bijection, you may get a shorter presentation by calling the function
+`SimplifyPresentation', now without this restriction, once more yourself.
 
 \beginexample
-gap> p:=PresentationSubgroupMtc(g,u);
-#I  there are 3 generators and 4 relators of total length 12
-#I  there are 2 generators and 3 relators of total length 14
-<< presentation with 2 gens and 3 rels of total length 14 >>
+gap> H := Group(
+> [ (2,5,3), (2,7,5), (1,8,4), (1,8,6), (4,8,6), (3,5,7) ], () );;
+gap> P := PresentationViaCosetTable( H );
+<presentation with 6 gens and 12 rels of total length 42>
+gap> SimplifyPresentation( P );
+#I  there are 4 generators and 10 relators of total length 36
 \endexample
 
-The so called Modified Todd-Coxeter method was proposed, in slightly
-different forms, by Nathan S.~Mendelsohn and William O.~J.~Moser in 1966.
-Moser{\pif}s method was proved in \cite{BC76}.
-It was generalized to cover a broad
-spectrum of different versions (see the survey \cite{Neu82}).
-
-The `Modified Todd-Coxeter' method performs an enumeration of coset
-representatives.  It proceeds like an ordinary coset enumeration (see
-"Coset Enumeration"), but as the product of a coset
-representative by a group generator or its inverse need not be a coset
-representative itself, the Modified Todd-Coxeter has to store a kind of
-correction element for each coset table entry.  Hence it builds up a so
-called *augmented coset table* of <H> in <G> consisting of the ordinary
-coset table and a second table in parallel which contains the associated
-subgroup elements.
-
-Theoretically, these subgroup elements could be expressed as words in the
-given generators of  <H>, but in  general these words tend  to become
-unmanageable because of their  enormous lengths.  Therefore, a highly
-redundant list of subgroup generators is built up starting from the given
-(``*primary*'') generators   of  <H>  and   adding  additional
-(``*secondary*'') generators which are defined as  abbreviations of
-suitable words of length two in the preceding generators such that each
-of the subgroup elements in the augmented coset table can be expressed as
-a word of length at most one in the resulting (primary *and* secondary)
-subgroup generators.
-
-Then a rewriting process (which is essentially a kind of Reidemeister
-rewriting process) is used to get relators for <H> from the defining
-relators of <G>.
-
-The resulting presentation involves all the primary, but not all the
-secondary generators of <H>.  In fact, it contains only those secondary
-generators which explicitly occur in the augmented coset table. If we
-extended this presentation by those secondary generators which are not
-yet contained in it as additional generators, and by the definitions of
-all secondary  generators as additional relators, we would get a
-presentation of <H>, but, in general, we would end up with a large number
-of generators and relators.
-
-On the other hand, if we avoid this extension, the current presentation
-will not necessarily define <H> although we have used the same rewriting
-process which in the case of the `SubgroupPresentationRrs' command
-computes a defining set of relators for <H> from an augmented coset table
-and defining relators of <G>. The different behaviour here is caused by
-the fact that coincidences may have occurred in the Modified Todd-Coxeter
-coset enumeration.
-
-To overcome this problem without extending the presentation by all
-secondary generators, the `SubgroupPresentationMtc' command applies the
-so called *tree decoding* algorithm which provides a more economical
-approach.  The reader is strongly recommended to carefully read section
-"DecodeTree" where this algorithm is described in more detail. Here we
-will only mention that this procedure adds many fewer additional
-generators and relators in a process which in fact eliminates all
-secondary generators from the presentation and hence finally provides a
-presentation of <H> on the primary, i.e., the  originally given,
-generators  of <H>.  This  is  a  remarkable  advantage  of  the
-`SubgroupPresentationMtc'    command    compared    to    the
-`SubgroupPresentationRrs' command.  But note that, for some particular
-subgroup <H>, the Reduced Reidemeister-Schreier method might quite well
-produce a more concise presentation.
-
-The resulting presentation is returned in the form of a presentation,
-<P> say.
-
-As the function `PresentationSubgroupRrs' desribed above (see there for
-details), the function `PresentationSubgroupMtc' returns a list of the
-primary  subgroup generators  of  <H>  in the attribute
-`PrimaryGeneratorWords' of <P>. In fact, this list is not very exciting here
-because it is just a copy of the list `<H>.generators', however it is
-needed to guarantee a certain consistency between the results of the
-different functions for computing subgroup presentations.
-
-Though the tree  decoding routine already involves a lot of Tietze
-transformations,  we recommend that you try  to further simplify the
-resulting presentation by appropriate Tietze transformations (see "Tietze
-Transformations").
-
-\Declaration{PresentationNormalClosureRrs}
-\Declaration{PresentationNormalClosure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Relators in a Presentation}
-
-In order to speed up the Tietze transformation routines,
-each relator in a presentation <P> is internally represented by a
-list of positive or negative generator numbers, i.e., each factor of the
-proper {\GAP} word is represented by the position number of the
-corresponding generator with respect to the current list of generators,
-or by the respective negative number, if the factor is the inverse of a
-generator. Note that the numbering of the generators in tietze words is
-always relative to a generator list and bears no relation to the internal
-numbering of generators in a family of associative words.
-
-\Declaration{TietzeWordAbstractWord}
-\Declaration{AbstractWordTietzeWord}
-
-\beginexample
-gap> F := FreeGroup( "a", "b", "c" ,"d");
-Group( [ a, b, c, d ], ... )
-gap> tzword := TietzeWordAbstractWord(
-> Comm(F.4,F.2) * (F.3^2 * F.2)^-1, GeneratorsOfGroup(F){[2,3,4]} );
-[ -3, -1, 3, -2, -2 ]
-gap> AbstractWordTietzeWord( tzword,GeneratorsOfGroup(F){[2,3,4]});
-d^-1*b^-1*d*c^-2
-\endexample
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Information about Presentations}
-
-If some presentation <P>, say, contains a large presentation, then
-it would be a nuisance to wait for the end of an unintentionally started
-printout of all of its components.  Therefore, whenever
-you use the standard print facilities to display a presentation,
-{\GAP} will provide just one line of text containing the number of
-generators, the number of relators, and the total length of all relators.
-
-\Declaration{TzPrintStatus}
-\Declaration{TzPrintGenerators}
-\Declaration{TzPrintRelators}
-\Declaration{TzPrintPresentation}
-\Declaration{TzPrint}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Changing Presentations}
-
-\Declaration{AddGenerator}
-\Declaration{AddRelator}
-\Declaration{RemoveRelator}
+If you apply the function `FpGroupPresentation' to the resulting
+presentation you will get a finitely presented group isomorphic to <G>.
+Note, however, that the function `IsomorphismFpGroup' (see
+"IsomorphismFpGroup") is recommended for this purpose.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{SimplifiedFpGroup}
@@ -279,15 +129,15 @@ gap> G := F6 / [ F6.1^2, F6.2^2, F6.4*F6.6^-1, F6.5^2, F6.6^2,
 > F6.1*F6.2^-1*F6.3, F6.1*F6.5*F6.3^-1, F6.2*F6.4^-1*F6.3,
 > F6.3*F6.4*F6.5^-1, F6.1*F6.6*F6.3^-2, F6.3^4 ];;
 gap> H := SimplifiedFpGroup( G );
-Group( [ f1, f2 ], ... )
-gap> RelatorsOfFpGroup(H);
-[ f1^2, f1*f2^-1*f1*f2^-1, f2^4 ]
+<fp group on the generators [ G1, G3 ]>
+gap> RelatorsOfFpGroup( H );
+[ G1^2, G1*G3^-1*G1*G3^-1, G3^4 ]
 \endexample
 
 In fact, the command
 
 \begintt
-H := SimplifiedFpGroup( G ); 
+H := SimplifiedFpGroup( G );
 \endtt
 
 is an abbreviation of the command sequence
@@ -295,20 +145,345 @@ is an abbreviation of the command sequence
 \begintt
 P := PresentationFpGroup( G, 0 );;
 SimplifyPresentation( P );
-H := FpGroupPresentation( P ); 
+H := FpGroupPresentation( P );
 \endtt
 
 which applies a rather simple-minded strategy of Tietze transformations
 to the intermediate presentation <P>.
-If for some concrete group the resulting presentation is unsatisfying,
+If, for some concrete group, the resulting presentation is unsatisfying,
 then you should try a more sophisticated, interactive use of the
 available Tietze transformation commands (see "Tietze Transformations").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subgroup Presentations}
+\index{Schreier}
+
+\Declaration{PresentationSubgroup}
+\Declaration{PresentationSubgroupRrs}
+
+\beginexample
+gap> f := FreeGroup( "a", "b" );;
+gap> g := f / [ f.1^2, f.2^3, (f.1*f.2)^5 ];
+<fp group on the generators [ a, b ]>
+gap> g1 := Size( g );
+60
+gap> u := Subgroup( g, [ g.1, g.1^g.2 ] );
+Group([ a, b^-1*a*b ])
+gap> p := PresentationSubgroup( g, u, "g" );
+<presentation with 3 gens and 4 rels of total length 12>
+gap> gens := GeneratorsOfPresentation( p );
+[ g1, g2, g3 ]
+gap> TzPrintRelators( p );
+#I  1. g1^2
+#I  2. g2^2
+#I  3. g3*g2*g1
+#I  4. g3^5
+\endexample
+
+Note that you cannot call the generators by their names. These names are
+not variables, but just display figures. So, if you want to access the
+generators by their names, you first will have to introduce the respective
+variables and to assign the generators to them.
+
+\beginexample
+gap> gens[1] = g1;
+false
+gap> g1;
+60
+gap> g1 := gens[1];; g2 := gens[2];; g3 := gens[3];;
+gap> g1;
+g1
+\endexample
+
+The Reduced Reidemeister-Schreier algorithm is a modification of the
+Reidemeister-Schreier algorithm of George Havas \cite{Hav74b}. It was
+proposed by Joachim Neub{\accent127u}ser and first implemented in 1986 by
+Andrea Lucchini and Volkmar Felsch in the SPAS system \cite{Spa89}. Like
+the Reidemeister-Schreier algorithm of George Havas, it needs only the
+presentation of <G> and a coset table of <H> in <G> to construct a
+presentation of <H>.
+
+Whenever you call the command `PresentationSubgroupRrs', it first obtains
+a coset table of <H> in <G> if not given. Next, a set of generators of <H>
+is determined by reconstructing the coset table and introducing in that
+process as many Schreier generators of <H> in <G> as are needed to do a
+Felsch strategy coset enumeration without any coincidences. (In general,
+though containing redundant generators, this set will be much smaller than
+the set of all Schreier generators. That is why we call the method the
+*Reduced* Reidemeister-Schreier.)
+
+After having constructed this set of *primary subgroup generators*, say,
+the coset table is extended to an *augmented coset table* which describes
+the action of the group generators on coset representatives, i.e., on
+elements instead of cosets. For this purpose, suitable words in the
+(primary) subgroup generators have to be associated to the coset table
+entries. In order to keep the lengths of these words short, additional
+*secondary subgroup generators* are introduced as abbreviations of
+subwords. Their number may be large.
+
+Finally, a Reidemeister rewriting process is used to get defining
+relators for <H> from the relators of <G>. As the resulting presentation
+of <H> is a presentation on primary *and* secondary generators, in
+general you will have to simplify it by appropriate Tietze
+transformations (see "Tietze Transformations") or by the command
+`DecodeTree' (see "DecodeTree") before you can use it. Therefore it is
+returned in the form of a presentation, <P> say.
+
+Compared with the Modified Todd-Coxeter method described below, the
+Reduced Reidemeister-Schreier method (as well as Havas{\pif} original
+Reidemeister-Schreier program) has the advantage that it does not require
+generators of <H> to be given if a coset table of <H> in <G> is known.
+This provides a possibility to compute a presentation of the normal
+closure of a given subgroup (see the `PresentationNormalClosureRrs'
+command below).
+
+For certain applications you may be interested in getting not only just a
+presentation for <H>, but also a relation between the involved generators of
+<H> and the generators of <G>. The subgroup generators in the presentation
+are sorted such that the primary generators precede the secondary ones.
+Moreover, for each secondary subgroup generator there is a relator in the
+presentation which expresses this generator as a word in preceding ones.
+Hence, all we need in addition is a list of words in the generators of <G>
+which express the primary subgroup generators. In fact, such a list is
+provided in the attribute `PrimaryGeneratorWords' of the resulting
+presentation.
+
+\Declaration{PrimaryGeneratorWords}
+\beginexample
+gap> PrimaryGeneratorWords( p );
+[ a, b^-1*a*b ]
+\endexample
+
+\Declaration{PresentationSubgroupMtc}
+
+\beginexample
+gap> p := PresentationSubgroupMtc( g, u );
+#I  there are 3 generators and 4 relators of total length 12
+#I  there are 2 generators and 3 relators of total length 14
+<presentation with 2 gens and 3 rels of total length 14>
+\endexample
+
+The so called Modified Todd-Coxeter method was proposed, in slightly
+different forms, by Nathan S.~Mendelsohn and William O.~J.~Moser in 1966.
+Moser{\pif}s method was proved in \cite{BC76}. It has been generalized to
+cover a broad spectrum of different versions (see the survey \cite{Neu82}).
+
+The `Modified Todd-Coxeter' method performs an enumeration of coset
+representatives. It proceeds like an ordinary coset enumeration (see
+"Coset Tables and Coset Enumeration"), but as the product of a coset
+representative by a group generator or its inverse need not be a coset
+representative itself, the Modified Todd-Coxeter has to store a kind of
+correction element for each coset table entry. Hence it builds up a so
+called *augmented coset table* of <H> in <G> consisting of the ordinary
+coset table and a second table in parallel which contains the associated
+subgroup elements.
+
+Theoretically, these subgroup elements could be expressed as words in the
+given generators of <H>, but in general these words tend to become
+unmanageable because of their enormous lengths. Therefore, a highly
+redundant list of subgroup generators is built up starting from the given
+(``*primary*'') generators of <H> and adding additional
+(``*secondary*'') generators which are defined as abbreviations of
+suitable words of length two in the preceding generators such that each
+of the subgroup elements in the augmented coset table can be expressed as
+a word of length at most one in the resulting (primary *and* secondary)
+subgroup generators.
+
+Then a rewriting process (which is essentially a kind of Reidemeister
+rewriting process) is used to get relators for <H> from the defining
+relators of <G>.
+
+The resulting presentation involves all the primary, but not all the
+secondary generators of <H>. In fact, it contains only those secondary
+generators which explicitly occur in the augmented coset table. If we
+extended this presentation by those secondary generators which are not
+yet contained in it as additional generators, and by the definitions of
+all secondary generators as additional relators, we would get a
+presentation of <H>, but, in general, we would end up with a large number
+of generators and relators.
+
+On the other hand, if we avoid this extension, the current presentation
+will not necessarily define <H> although we have used the same rewriting
+process which in the case of the `PresentationSubgroupRrs' command
+computes a defining set of relators for <H> from an augmented coset table
+and defining relators of <G>. The different behaviour here is caused by
+the fact that coincidences may have occurred in the Modified Todd-Coxeter
+coset enumeration.
+
+To overcome this problem without extending the presentation by all
+secondary generators, the `PresentationSubgroupMtc' command applies the
+so called *decoding tree* algorithm which provides a more economical
+approach. The reader is strongly recommended to carefully read section
+"DecodeTree" where this algorithm is described in more detail. Here we
+will only mention that this procedure may add a lot of intermediate
+generators and relators (and even change the isomorphism type)
+in a process which in fact eliminates all
+secondary generators from the presentation and hence finally provides
+a presentation of <H> on the primary, i.e., the originally given,
+generators of <H>. This is a remarkable advantage of the command
+`PresentationSubgroupMtc' compared to the command `PresentationSubgroupRrs'.
+But note that, for some particular subgroup <H>, the Reduced
+Reidemeister-Schreier method might quite well produce a more concise
+presentation.
+
+The resulting presentation is returned in the form of a presentation,
+<P> say.
+
+As the function `PresentationSubgroupRrs' described above (see there for
+details), the function `PresentationSubgroupMtc' returns a list of the
+primary subgroup generators of <H> in the attribute
+`PrimaryGeneratorWords' of <P>. In fact, this list is not very exciting here
+because it is just a shallow copy of the attribute value
+`GeneratorsOfPresentation(H)', however it is
+needed to guarantee a certain consistency between the results of the
+different functions for computing subgroup presentations.
+
+Though the decoding tree routine already involves a lot of Tietze
+transformations, we recommend that you try to further simplify the
+resulting presentation by appropriate Tietze transformations (see "Tietze
+Transformations").
+
+\Declaration{PresentationNormalClosureRrs}
+\Declaration{PresentationNormalClosure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Relators in a Presentation}
+
+In order to speed up the Tietze transformation routines,
+each relator in a presentation <P> is internally represented by a
+list of positive or negative generator numbers, i.e., each factor of the
+proper {\GAP} word is represented by the position number of the
+corresponding generator with respect to the current list of generators,
+or by the respective negative number, if the factor is the inverse of a
+generator. Note that the numbering of the generators in Tietze words is
+always relative to a generator list and bears no relation to the internal
+numbering of generators in a family of associative words.
+
+\Declaration{TietzeWordAbstractWord}
+\Declaration{AbstractWordTietzeWord}
+
+\beginexample
+gap> F := FreeGroup( "a", "b", "c" ,"d");
+<free group on the generators [ a, b, c, d ]>
+gap> tzword := TietzeWordAbstractWord(
+> Comm(F.4,F.2) * (F.3^2 * F.2)^-1, GeneratorsOfGroup( F ){[2,3,4]} );
+[ -3, -1, 3, -2, -2 ]
+gap> AbstractWordTietzeWord( tzword, GeneratorsOfGroup( F ){[2,3,4]} );
+d^-1*b^-1*d*c^-2
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Printing Presentations}
+
+Whenever you create a presentation <P>, say, or assign it to a variable,
+{\GAP} will respond by printing <P>. However, as <P> may contain a lot of
+generators and many relators of large length, it would be annoying if the
+standard print facilities displayed all this information in detail.
+So they restrict the printout to just one line of text containing the number
+of generators, the number of relators, and the total length of all relators
+of <P>. As compensation, {\GAP} offers some special print commands which
+display various details of a presentation.
+
+\Declaration{TzPrintGenerators}
+
+\beginexample
+gap> G := Group( [ (1,2,3,4,5), (2,3,5,4), (1,6)(3,4) ], () );
+Group([ (1,2,3,4,5), (2,3,5,4), (1,6)(3,4) ])
+gap> P := PresentationViaCosetTable( G );
+<presentation with 3 gens and 6 rels of total length 28>
+gap> TzPrintGenerators( P );
+#I  1.  f1   11 occurrences
+#I  2.  f2   10 occurrences
+#I  3.  f3   7 occurrences   involution
+\endexample
+
+\Declaration{TzPrintRelators}
+
+\beginexample
+gap> TzPrintRelators( P );
+#I  1. f3^2
+#I  2. f2^4
+#I  3. f2*f3*f2*f3
+#I  4. f1^5
+#I  5. f1^2*f2*f1*f2^-1
+#I  6. f1*f2^-2*f3*f1*f3*f1^-1*f3
+\endexample
+
+\Declaration{TzPrintLengths}
+
+\beginexample
+gap> TzPrintLengths( P );
+[ 2, 4, 4, 5, 5, 8 ]
+\endexample
+
+\Declaration{TzPrintStatus}
+
+\beginexample
+gap> TzPrintStatus( P );
+#I  there are 3 generators and 6 relators of total length 28
+\endexample
+
+\Declaration{TzPrintPresentation}
+\Declaration{TzPrint}
+
+\beginexample
+gap> TzPrint( P );
+#I  generators: [ f1, f2, f3 ]
+#I  relators:
+#I  1.  2  [ 3, 3 ]
+#I  2.  4  [ 2, 2, 2, 2 ]
+#I  3.  4  [ 2, 3, 2, 3 ]
+#I  4.  5  [ 1, 1, 1, 1, 1 ]
+#I  5.  5  [ 1, 1, 2, 1, -2 ]
+#I  6.  8  [ 1, -2, -2, 3, 1, 3, -1, 3 ]
+\endexample
+
+\Declaration{TzPrintPairs}
+
+\beginexample
+gap> TzPrintPairs( P, 3 );
+#I  1.  3  occurrences of  f2^-1 * f3
+#I  2.  2  occurrences of  f2 * f3
+#I  3.  2  occurrences of  f1^-1 * f3
+\endexample
+
+Finally, there is a function `TzPrintOptions'. It is described in section
+"Tietze Options".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Changing Presentations}
+
+The functions described in this section may be used to change a presentation.
+Note, however, that in general they do not perform Tietze transformations
+because they change or may change the isomorphism type of the group defined
+by the presentation.
+
+\Declaration{AddGenerator}
+
+\beginexample
+gap> G := PerfectGroup( 120 );;
+gap> H := Subgroup( G, [ G.1^G.2, G.3 ] );;
+gap> P := PresentationSubgroup( G, H );
+<presentation with 4 gens and 7 rels of total length 21>
+gap> AddGenerator( P );
+#I  now the presentation has 5 generators, the new generator is _x7
+gap> gens := GeneratorsOfPresentation( P );
+[ _x1, _x2, _x4, _x5, _x7 ]
+gap> gen := gens[Length( gens )];
+_x7
+gap> gen = P!.7;
+true
+\endexample
+
+\Declaration{TzNewGenerator}
+\Declaration{AddRelator}
+\Declaration{RemoveRelator}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Tietze Transformations}
 
-The {\GAP} commands being described in this section can be used to modify
-a group presentation in a presentation by Tietze transformations.
+The commands in this section can be used to modify a presentation by Tietze
+transformations.
 
 In general, the aim of such modifications will be to *simplify* the given
 presentation, i.e., to reduce the number of generators and the number of
@@ -317,7 +492,7 @@ we will call the *total length* of the presentation. Depending on the
 concrete presentation under investigation one may end up with a nice,
 short presentation or with a very huge one.
 
-Unfortunately there cannot be an algorithm which could be applied to find the
+Unfortunately there is no algorithm which could be applied to find the
 shortest presentation which can be obtained by Tietze transformations
 from a given one. Therefore, what {\GAP} offers are some lower-level
 Tietze transformation commands and, in addition, some higher-level
@@ -339,14 +514,14 @@ gap> H := Subgroup( G, [ (a*b)^2, (a^-1*b)^2 ] );;
 gap> Index( G, H );
 408
 gap> P := PresentationSubgroup( G, H );
-<< presentation with 8 gens and 36 rels of total length 111 >>
-gap> PrimaryGeneratorWords(P);
+<presentation with 8 gens and 36 rels of total length 111>
+gap> PrimaryGeneratorWords( P );
 [ b, a*b*a ]
-gap> TzOptions(P).protected:=2;
+gap> TzOptions( P ).protected := 2;
 2
-gap> TzOptions(P).printLevel:=2;
+gap> TzOptions( P ).printLevel := 2;
 2
-gap> SimplifyPresentation(P);
+gap> SimplifyPresentation( P );
 #I  eliminating _x7 = _x5^-1
 #I  eliminating _x5 = _x4
 #I  eliminating _x18 = _x3
@@ -374,29 +549,28 @@ administrative overhead) which tries to eliminate generators that can be
 expressed as words in the remaining generators.
 
 If `TzGo' succeeds in reducing the number of generators,
-the number of relators, or the total length of all relators, then it
+the number of relators, or the total length of all relators, it
 displays the new status before returning (provided that you did not set
 the print level to zero). However, it does not provide any output if all
-these three values have remained unchanged, even if the `TzSearchEqual'
-command involved has changed the presentation such that another call of
-`TzGo' might provide further progress. Hence, in such a
+these three values have remained unchanged, even if the command
+`TzSearchEqual' involved has changed the presentation such that another
+call of `TzGo' might provide further progress. Hence, in such a
 case it makes sense to repeat the call of the command for several times
-(or to call instead the `TzGoGo' command which we will describe below).
+(or to call the command `TzGoGo' instead).
 
 \Declaration{TzGoGo}
-\Declaration{TzGoCheap}
 
-The result of the tietze transformations can be affected substantially by
-the options parameters (see "Tietze Options").
-To demonstrate the effect of the `eliminationsLimit' parameter, we will
-give an example in which we handle a subgroup of index 240 in a group of
-order 40320 given by a presentation due to B.~H. Neumann.  First we
-construct a presentation of the subgroup, and then we apply to it the
-\>TzGoGo'  command for different  values of the `eliminationsLimit
-parameter (including the default value 100). In fact, we also alter the
+The result of the Tietze transformations can be affected substantially by
+the options parameters (see "Tietze Options"). To demonstrate the effect
+of the `eliminationsLimit' parameter, we will give an example in which we
+handle a subgroup of index 240 in a group of order 40320 given by a
+presentation due to B.~H. Neumann.  First we construct a presentation of
+the subgroup, and then we apply to it the command `TzGoGo' for different
+values of the parameter `eliminationsLimit'
+(including the default value 100). In fact, we also alter the
 `printLevel' parameter, but this is only done in order to suppress most
 of the output.  In all cases the resulting presentations cannot be
-improved any more by applying the `TzGoGo' command again, i.e., they are
+improved any more by applying the command `TzGoGo' again, i.e., they are
 the best results which we can get without substituting new generators.
 
 \beginexample
@@ -408,12 +582,12 @@ gap> G := F3 / [ F3.1^3, F3.2^3, F3.3^3, (F3.1*F3.2)^5,
 gap> a := G.1;; b := G.2;; c := G.3;;
 gap> H := Subgroup( G, [ a, c ] );;
 gap> for i in [ 28, 29, 30, 94, 100 ] do
-> Pi:=PresentationSubgroup(G,H);
-> TzOptions(Pi).eliminationsLimit:=i;
+> Pi := PresentationSubgroup( G, H );
+> TzOptions( Pi ).eliminationsLimit := i;
 > Print("#I eliminationsLimit set to ",i,"\n");
-> TzOptions(Pi).printLevel:=0;
-> TzGoGo(Pi);
-> TzPrintStatus(Pi);
+> TzOptions( Pi ).printLevel := 0;
+> TzGoGo( Pi );
+> TzPrintStatus( Pi );
 > od;
 #I eliminationsLimit set to 28
 #I  there are 2 generators and 95 relators of total length 10817
@@ -435,12 +609,12 @@ changing the `eliminationsLimit' parameter which keeps its default value
 
 \beginexample
 gap> for i in [ 9, 10, 11, 12, 15 ] do
-> Pi:=PresentationSubgroup(G,H);
-> TzOptions(Pi).saveLimit:=i; 
-> Print("#I saveLimit set to ",i,"\n");        
-> TzOptions(Pi).printLevel:=0;
-> TzGoGo(Pi);                 
-> TzPrintStatus(Pi);
+> Pi := PresentationSubgroup( G, H );
+> TzOptions( Pi ).saveLimit := i;
+> Print( "#I saveLimit set to ", i, "\n" );
+> TzOptions( Pi ).printLevel := 0;
+> TzGoGo( Pi );
+> TzPrintStatus( Pi );
 > od;
 #I saveLimit set to 9
 #I  there are 3 generators and 97 relators of total length 5545
@@ -462,10 +636,10 @@ gap> for i in [ 9, 10, 11, 12, 15 ] do
 
 Two of the Tietze option parameters which are listed in section "Tietze
 Options" may strongly influence the performance and the results of the
-`TzSearch' command.  These are  the parameters `saveLimit' and
+command `TzSearch'. These are the parameters `saveLimit' and
 `searchSimultaneous'. The first of them has the following effect:
 
-When TzSearch has finished its main loop over all relators, then, in
+When `TzSearch' has finished its main loop over all relators, then, in
 general, there are relators which have changed and hence should be
 handled again in another run through the whole procedure. However,
 experience shows that it really does not pay to continue this way until
@@ -473,12 +647,12 @@ no more relators change. Therefore, `TzSearch' starts a new loop only if
 the loop just finished has reduced the total length of the relators by at
 least `saveLimit' per cent.
 
-The default value of `saveLimit' is 10 percent.
+The default value of `saveLimit' is 10 per cent.
 
 To understand the effect of the option `searchSimultaneous', we
 have to look in more detail at how `TzSearch' proceeds:
 
-First, it sorts the list of relators by increasing lengths.  Then it
+First, it sorts the list of relators by increasing lengths. Then it
 performs a loop over this list. In each step of this loop, the current
 relator is treated as *short relator* $r_1$, and a subroutine is called
 which loops over the succeeding relators, treating them as *long
@@ -511,30 +685,28 @@ The default value of `searchSimultaneous' is 20.
 
 \Declaration{TzSearchEqual}
 
-The Tietze option  parameter  `searchSimultaneous' is  used by
-`TzSearchEqual' in the same way as described for `TzSearch'.
-
-However, `TzSearchEqual' does not use the parameter `saveLimit':
-The loop over the relators is executed exactly once.
+The Tietze option parameter `searchSimultaneous' is used by `TzSearchEqual'
+in the same way as described for `TzSearch'. However, `TzSearchEqual' does
+not use the parameter `saveLimit': The loop over the relators is executed
+exactly once.
 
 \Declaration{TzFindCyclicJoins}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Tietze Transformations that introduce or change generators}
+\Section{Tietze Transformations that introduce new Generators}
 
 Some of the Tietze transformation commands listed so far may eliminate
 generators and hence change the given presentation to a presentation on a
 subset of the given set of generators, but they all do *not* introduce
-new generators. However, sometimes there  will be the need to substitute certain
-words as new generators in order to improve your presentation. Therefore
-{\GAP}   offers   the   two   commands   `TzSubstitute'   and
-`TzSubstituteCyclicJoins' which introduce new generators. These commands
-will be described next.
+new generators. However, sometimes there will be the need to substitute
+certain words as new generators in order to improve a presentation.
+Therefore {\GAP} offers the two commands `TzSubstitute' and
+`TzSubstituteCyclicJoins' which introduce new generators.
 
 \Declaration{TzSubstitute}
 
-More precisely: If, for instance, `word' is an abstract word, a call
+There is still another property of the command `TzSubstitute' which should
+be mentioned. If, for instance, `word' is an abstract word, a call
 
 \begintt
 TzSubstitute( P, word );
@@ -544,68 +716,48 @@ is more or less equivalent to
 
 \begintt
 AddGenerator( P );
-g := P.generators[Length( P.generators )];
+g := GeneratorsOfPresentation(P)[Length(GeneratorsOfPresentation(P))];
 AddRelator( P, g^-1 * word );
 \endtt
 
-whereas a call
-
-\begintt
-TzSubstitute( P, word, string );
-\endtt
-
-is more or less equivalent to
-
-\begintt
-g := AbstractGenerator( string );
-AddGenerator( P, g );
-AddRelator( P, g^-1 * word );
-\endtt
-
-The  essential difference  is,  that `TzSubstitute', as a  Tietze
-transformation of <T>, saves and updates the lists of generator images
-and preimages if they are being traced under the Tietze transformations
-applied to <T> (see the function `TzInitGeneratorImages' below), whereas
-a call of the function `AddGenerator' (which  does not perform Tietze
-transformations) will delete these lists and hence terminate the tracing.
-
-In order to decide which arguments might be appropriate for the next call of
-the second version of `TzSubstitute', it is often helpful to print out a
-list of the most frequently occurring squarefree relator subwords of length
-2. You can use the `TzPrintPairs' command described below to do this.
+However, there is a difference: If you are tracing generator images and
+preimages of <P> through the Tietze transformations applied to <P> (see
+"Tracing generator images through Tietze transformations"), then
+`TzSubstitute', as a Tietze transformation of <P>, will update and save the
+respective lists, whereas a call of the function `AddGenerator' (which does
+not perform a Tietze transformation) will delete these lists and hence
+terminate the tracing.
 
 \beginexample
-gap> G := PerfectGroup( IsSubgroupFpGroup,960, 1 );
+gap> G := PerfectGroup( IsSubgroupFpGroup, 960, 1 );
 A5 2^4
 gap> P := PresentationFpGroup( G );
-<< presentation with 6 gens and 21 rels of total length 84 >>
-gap> GeneratorsOfPresentation(P);
-[ _x1, _x2, _x3, _x4, _x5, _x6 ]
+<presentation with 6 gens and 21 rels of total length 84>
+gap> GeneratorsOfPresentation( P );
+[ a, b, s, t, u, v ]
 gap> TzGoGo( P );
 #I  there are 3 generators and 10 relators of total length 81
 #I  there are 3 generators and 10 relators of total length 80
 gap> TzPrintGenerators( P );
-#I  1.  _x1   31 occurrences   involution
-#I  2.  _x2   26 occurrences
-#I  3.  _x4   23 occurrences   involution
-\endexample
-\beginexample
-gap> a:=GeneratorsOfPresentation(P)[1];;
-gap> b:=GeneratorsOfPresentation(P)[2];;
-gap> TzSubstitute(P,a*b);
+#I  1.  a   31 occurrences   involution
+#I  2.  b   26 occurrences
+#I  3.  t   23 occurrences   involution
+gap> a := GeneratorsOfPresentation( P )[1];;
+gap> b := GeneratorsOfPresentation( P )[2];;
+gap> TzSubstitute( P, a*b );
 #I  now the presentation has 4 generators, the new generator is _x7
-#I  substituting new generator _x7 defined by _x1*_x2
+#I  substituting new generator _x7 defined by a*b
 #I  there are 4 generators and 11 relators of total length 83
-gap> TzGo(P);
+gap> TzGo( P );
 #I  there are 3 generators and 10 relators of total length 74
-gap> TzPrintGenerators(P);
-#I  1.  _x1   23 occurrences   involution
-#I  2.  _x4   23 occurrences   involution
+gap> TzPrintGenerators( P );
+#I  1.  a   23 occurrences   involution
+#I  2.  t   23 occurrences   involution
 #I  3.  _x7   28 occurrences
 \endexample
 
-As an example of the second usage, we handle a subgroup of index 266
-in the Janko group $J_1$.
+As an example of an application of the command `TzSubstitute' in its second
+form we handle a subgroup of index 266 in the Janko group $J_1$.
 
 \beginexample
 gap> F2 := FreeGroup( "a", "b" );;
@@ -614,7 +766,7 @@ gap> J1 := F2 / [ F2.1^2, F2.2^3, (F2.1*F2.2)^7,
 gap> a := J1.1;; b := J1.2;;
 gap> H := Subgroup ( J1, [ a, b^(a*b*(a*b^-1)^2) ] );;
 gap> P := PresentationSubgroup( J1, H );
-<< presentation with 23 gens and 82 rels of total length 530 >>
+<presentation with 23 gens and 82 rels of total length 530>
 gap> TzGoGo( P );
 #I  there are 3 generators and 47 relators of total length 1368
 #I  there are 2 generators and 46 relators of total length 3773
@@ -623,95 +775,129 @@ gap> TzGoGo( P );
 #I  there are 2 generators and 46 relators of total length 2568
 gap> TzGoGo( P );
 \endexample
+
 Here we do not get any more progress without substituting a new generator.
-{\GAP} cannot substitute a new generator without extending the total length,
-so we have to explicitly ask for it.
+
 \beginexample
 gap> TzSubstitute( P );
 #I  substituting new generator _x28 defined by _x6*_x23^-1
 #I  eliminating _x28 = _x6*_x23^-1
-gap> TzPrintPairs( P );
-#I  1.  498  occurrences of  _x6 * _x23^-1
-#I  2.  498  occurrences of  _x6^-1 * _x23
-#I  3.  451  occurrences of  _x6 * _x23
-#I  4.  451  occurrences of  _x6^-1 * _x23^-1
 \endexample
+
+{\GAP} cannot substitute a new generator without extending the total length,
+so we have to explicitly ask for it by using the second form of the command
+`TzSubstitute'. Our problem is to chose appropriate values for the arguments
+<n> and <eliminate>. For this purpose it may be helpful to print out a list
+of the most frequently occurring squarefree relator subwords of length 2.
+
 \beginexample
+gap> TzPrintPairs( P );
+#I  1.  504  occurrences of  _x6 * _x23^-1
+#I  2.  504  occurrences of  _x6^-1 * _x23
+#I  3.  448  occurrences of  _x6 * _x23
+#I  4.  448  occurrences of  _x6^-1 * _x23^-1
 gap> TzSubstitute( P, 2, 1 );
 #I  substituting new generator _x29 defined by _x6^-1*_x23
 #I  eliminating _x6 = _x23*_x29^-1
-#I  there are 2 generators and 46 relators of total length 2882
+#I  there are 2 generators and 46 relators of total length 2867
 gap> TzGoGo( P );
-#I  there are 2 generators and 45 relators of total length 2349
-#I  there are 2 generators and 45 relators of total length 2204
+#I  there are 2 generators and 45 relators of total length 2417
+#I  there are 2 generators and 45 relators of total length 2122
 gap> TzSubstitute( P, 1, 2 );
 #I  substituting new generator _x30 defined by _x23*_x29^-1
 #I  eliminating _x29 = _x30^-1*_x23
-#I  there are 2 generators and 45 relators of total length 2236
-\endexample
-\beginexample
+#I  there are 2 generators and 45 relators of total length 2192
 gap> TzGoGo( P );
-#I  there are 2 generators and 42 relators of total length 1628
-#I  there are 2 generators and 38 relators of total length 816
-#I  there are 2 generators and 18 relators of total length 311
-#I  there are 2 generators and 14 relators of total length 254
-#I  there are 2 generators and 13 relators of total length 222
-#I  there are 2 generators and 11 relators of total length 161
+#I  there are 2 generators and 42 relators of total length 1637
+#I  there are 2 generators and 40 relators of total length 1286
+#I  there are 2 generators and 36 relators of total length 807
+#I  there are 2 generators and 32 relators of total length 625
+#I  there are 2 generators and 22 relators of total length 369
+#I  there are 2 generators and 18 relators of total length 213
+#I  there are 2 generators and 13 relators of total length 141
+#I  there are 2 generators and 12 relators of total length 121
 #I  there are 2 generators and 10 relators of total length 101
 gap> TzPrintPairs( P );
-#I  1.  20  occurrences of  _x23 * _x30^-1
-#I  2.  20  occurrences of  _x23^-1 * _x30
+#I  1.  19  occurrences of  _x23 * _x30^-1
+#I  2.  19  occurrences of  _x23^-1 * _x30
 #I  3.  14  occurrences of  _x23 * _x30
 #I  4.  14  occurrences of  _x23^-1 * _x30^-1
 \endexample
+
+If we save a copy of the current presentation, then later we will be able to
+restart the computation from the current state.
+
+\beginexample
+gap> P1 := ShallowCopy( P );
+<presentation with 2 gens and 10 rels of total length 101>
+\endexample
+
 Just for demonstration we make an inconvenient choice:
+
 \beginexample
 gap> TzSubstitute( P, 3, 1 );
 #I  substituting new generator _x31 defined by _x23*_x30
 #I  eliminating _x23 = _x31*_x30^-1
-#I  there are 2 generators and 10 relators of total length 123
+#I  there are 2 generators and 10 relators of total length 122
 gap> TzGoGo( P );
-#I  there are 2 generators and 9 relators of total length 108
+#I  there are 2 generators and 9 relators of total length 105
+\endexample
+
+This presentation is worse than the one we have saved, so we restart from
+that presentation again.
+
+\beginexample
+gap> P := ShallowCopy( P1 );
+<presentation with 2 gens and 10 rels of total length 101>
+gap> TzSubstitute( P, 2, 1);
+#I  substituting new generator _x31 defined by _x23^-1*_x30
+#I  eliminating _x23 = _x30*_x31^-1
+#I  there are 2 generators and 10 relators of total length 107
+gap> TzGoGo( P );
+#I  there are 2 generators and 9 relators of total length 84
+#I  there are 2 generators and 8 relators of total length 75
+gap> TzSubstitute( P, 2, 1);
+#I  substituting new generator _x32 defined by _x30^-1*_x31
+#I  eliminating _x30 = _x31*_x32^-1
+#I  there are 2 generators and 8 relators of total length 71
+gap> TzGoGo( P );
+#I  there are 2 generators and 7 relators of total length 56
+#I  there are 2 generators and 5 relators of total length 36
+gap> TzPrintRelators( P );
+#I  1. _x32^5
+#I  2. _x31^5
+#I  3. _x31^-1*_x32^-1*_x31^-1*_x32^-1*_x31^-1*_x32^-1
+#I  4. _x31*_x32*_x31^-1*_x32*_x31^-1*_x32*_x31*_x32^-2
+#I  5. _x31^-1*_x32^2*_x31*_x32^-1*_x31^2*_x32^-1*_x31*_x32^2
 \endexample
 
 \Declaration{TzSubstituteCyclicJoins}
-Any sequence of Tietze transformations applied to a presentation
-<T>, starting from an ``old'' presentation $P_1$ and ending up with a
-``new'' presentation $P_2$, defines an  isomorphism, $\varphi$ say,
-between the groups defined by $P_1$ and $P_2$, respectively. Sometimes
-it is desirable to know the images of the old generators or the preimages
-of the new generators under $\varphi$. The {\GAP} Tietze transformations
-functions are able to trace these images. This is not automatically done
-because the involved words may grow to tremendous length, but it will be
-done if you  explicitly  request for  it by calling the function
-`TzInitGeneratorImages'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Tracing generator images through Tietze transformations}
 
+Any sequence of Tietze transformations applied to a presentation, starting
+from some presentation $P_1$ and ending up with some presentation $P_2$,
+defines an  isomorphism, $\varphi$ say, between the groups defined by $P_1$
+and $P_2$, respectively. Sometimes it is desirable to know the images of the
+(old) generators of $P_1$ or the preimages of the (new) generators of $P_2$
+under $\varphi$. The {\GAP} Tietze transformation functions are able to trace
+these images. This is not automatically done because the involved words may
+grow to tremendous length, but it will be done if you  explicitly  request
+for it by calling the function `TzInitGeneratorImages'.
+
 \Declaration{TzInitGeneratorImages}
-There  are a few restrictions  concerning the tracing of generator
-images:
-
-In  general,  the  functions  `AddGenerator', `AddRelator',  and
-`RemoveRelator' described in section "Changing Presentations" do not
-perform Tietze transformations as they may change the isomorphism type of
-the presentation. Therefore, if any of them is called for a presentation
-in which generator images and preimages are being traced, it will delete
-these lists.
-
-If the function `DecodeTree'  is called for  a presentation in which
-generator images and preimages are being traced, it will not continue to
-trace them. Instead, it will delete the corresponding lists, then decode
-the  tree, and finally reinitialize  the tracing  for the resulting
-presentation.
+\Declaration{OldGeneratorsOfPresentation}
+\Declaration{TzImagesOldGens}
+\Declaration{TzPreImagesNewGens}
 
 \Declaration{TzPrintGeneratorImages}
+
 \beginexample
-gap> G:=PerfectGroup(IsSubgroupFpGroup,960,1);
+gap> G := PerfectGroup( IsSubgroupFpGroup, 960, 1 );
 A5 2^4
 gap> P := PresentationFpGroup( G );
-<< presentation with 6 gens and 21 rels of total length 84 >>
+<presentation with 6 gens and 21 rels of total length 84>
 gap> TzInitGeneratorImages( P );
 gap> TzGo( P );
 #I  there are 3 generators and 11 relators of total length 96
@@ -728,36 +914,250 @@ gap> TzPrintGeneratorImages( P );
 #I  4. [ 3 ]
 #I  5. [ -2, 1, 3, 1, 2 ]
 #I  6. [ 1, 3, 1 ]
-\endexample
-\beginexample
-gap> gens :=GeneratorsOfPresentation(P);
-[ _x1, _x2, _x4 ]
-gap> oldgens:=OldGeneratorsOfPresentation(P);
-[ _x1, _x2, _x3, _x4, _x5, _x6 ]
-gap> TzImagesOldGens(P);
-[ _x1, _x2, _x1*_x2^-1*_x1*_x3*_x1*_x2*_x1, _x3, _x2^-1*_x1*_x3*_x1*_x2, 
-  _x1*_x3*_x1 ]
+gap> gens := GeneratorsOfPresentation( P );
+[ a, b, t ]
+gap> oldgens := OldGeneratorsOfPresentation( P );
+[ a, b, s, t, u, v ]
+gap> TzImagesOldGens( P );
+[ a, b, a*b^-1*a*t*a*b*a, t, b^-1*a*t*a*b, a*t*a ]
 gap> for i in [ 1 .. Length( oldgens ) ] do
-> Print( oldgens[i], " = ",
-> TzImagesOldGens(P)[i],"\n");                             
+> Print( oldgens[i], " = ", TzImagesOldGens( P )[i], "\n" );
 > od;
-_x1 = _x1
-_x2 = _x2
-_x3 = _x1*_x2^-1*_x1*_x3*_x1*_x2*_x1
-_x4 = _x3
-_x5 = _x2^-1*_x1*_x3*_x1*_x2
-_x6 = _x1*_x3*_x1
+a = a
+b = b
+s = a*b^-1*a*t*a*b*a
+t = t
+u = b^-1*a*t*a*b
+v = a*t*a
 \endexample
 
-
-\Declaration{TzPrintLengths}
-\Declaration{TzPrintPairs}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{DecodeTree}
 
 \Declaration{DecodeTree}
+\index{secondary subgroup generators}
 
+In order to explain the effect of this command we need to insert a few
+remarks on the subgroup presentation commands described in section
+"Subgroup Presentations". All these commands have the common property
+that in the process of constructing a presentation for a given subgroup
+<H> of a finitely presented group <G> they first build up a highly
+redundant list of generators of <H> which consists of an (in general
+small) list of ``primary'' generators, followed by an (in general
+large) list of ``secondary'' generators, and then construct a
+presentation $P_0$, say, *on a sublist of these generators* by rewriting
+the defining relators of <G>. This sublist contains all primary, but, at
+least in general, by far not all secondary generators.
+\index{primary subgroup generators}
+
+The role of the primary generators depends on the concrete choice of the
+subgroup presentation command. If the Modified Todd-Coxeter method is
+used, they are just the given generators of <H>, whereas in the case of
+the Reduced Reidemeister-Schreier algorithm they are constructed by the
+program.
+
+Each of the secondary generators is defined by a word of length two in
+the preceding generators and their inverses. By historical reasons, the
+list of these definitions is called the *subgroup generators tree*
+though in fact it is not a tree but rather a kind of bush.
+\index{subgroup generators tree}
+
+Now we have to distinguish two cases. If $P_0$ has been constructed by
+the Reduced Reidemeister-Schreier routines, it is a presentation of
+<H>. However, if the Modified Todd-Coxeter routines have been used
+instead, then the relators in $P_0$ are valid relators of <H>, but they
+do not necessarily define <H>. We handle these cases in turn, starting
+with the latter one.
+
+In fact, we could easily receive a presentation of <H> also in this case
+if we extended $P_0$ by adding to it all the secondary generators which
+are not yet contained in it and all the definitions from the generators
+tree as additional generators and relators. Then we could recursively
+eliminate all secondary generators by Tietze transformations using the
+new relators. However, this procedure turns out to be too inefficient to
+be of interest.
+
+Instead, we use the so called *decoding tree* procedure (see \cite{AMW82},
+\cite{AR84}). It proceeds as follows.
+
+Starting from $P = P_0$, it runs through a number of steps in each of
+which it eliminates the current ``last'' generator (with respect to
+the list of all primary and secondary generators). If the last generator
+<g>, say, is a primary generator, then the procedure terminates. Otherwise
+it checks whether there is a relator in the current presentation which
+can be used to substitute <g> by a Tietze transformation. If so, this is
+done. Otherwise, and only then, the tree definition of <g> is added to
+<P> as a new relator, and the generators involved are added as new
+generators if they have not yet been contained in <P>. Subsequently, <g>
+is eliminated.
+
+Note that the extension of <P> by one or two new generators is *not* a
+Tietze transformation. In general, it will change the isomorphism type
+of the group defined by <P>. However, it is a remarkable property of
+this procedure, that at the end, i.e., as soon as all secondary
+generators have been eliminated, it provides a presentation $P = P_1$,
+say, which defines a group isomorphic to <H>. In fact, it is this
+presentation which is returned by the command `DecodeTree' and hence by
+the command `PresentationSubgroupMtc'.
+
+If, in the other case, the presentation $P_0$ has been constructed by the
+Reduced Reidemeister-Schreier algorithm, then $P_0$ itself is a
+presentation of <H>, and the corresponding subgroup presentation command
+(`PresentationSubgroupRrs' or `PresentationNormalClosureRrs') just
+returns $P_0$.
+
+As mentioned in section "Subgroup Presentations", we recommend to further
+simplify this presentation before you use it. The standard way to do
+this is to start from $P_0$ and to apply suitable Tietze transformations,
+e.g., by calling the commands `TzGo' or `TzGoGo'. This is probably the
+most efficient approach, but you will end up with a presentation on some
+unpredictable set of generators. As an alternative, {\GAP} offers you
+the `DecodeTree' command which you can use to eliminate all secondary
+generators (provided that there are no space or time problems). For this
+purpose, the subgroup presentation commands do not only return the
+resulting presentation, but also the tree (together with some associated
+lists) as a kind of side result in a component `<P>!.tree' of the
+resulting presentation <P>.
+
+Note, however, that the decoding tree routines will not work correctly
+any more on a presentation from which generators have already been
+eliminated by Tietze transformations. Therefore, to prevent you from
+getting wrong results by calling the `DecodeTree' command in such a
+situation, {\GAP} will automatically remove the subgroup generators tree
+from a presentation as soon as one of the generators is substituted by a
+Tietze transformation.
+
+Nevertheless, a certain misuse of the command is still possible, and we
+want to explicitly warn you from this. The reason is that the Tietze
+option parameters described in section "Tietze Transformations" apply to
+the `DecodeTree' command as well. Hence, in case of inadequate values of
+these parameters, it may happen that the `DecodeTree' routine stops
+before all the secondary generators have vanished. In this case {\GAP}
+will display an appropriate warning. Then you should change the
+respective parameters and continue the process by calling the
+`DecodeTree' command again. Otherwise, if you would apply Tietze
+transformations, it might happen because of the convention described
+above that the tree is removed and that you end up with a wrong
+presentation.
+
+After a successful run of the `DecodeTree' command it is convenient to
+further simplify the resulting presentation by suitable Tietze
+transformations.
+
+As an example of an explicit call of the `DecodeTree' command we compute
+two presentations of a subgroup of order $384$ in a group of order
+$6912$. In both cases we use the Reduced Reidemeister-Schreier
+algorithm, but in the first run we just apply the Tietze transformations
+offered by the `TzGoGo' command with its default parameters, whereas in
+the second run we call the `DecodeTree' command before.
+
+\beginexample
+gap> F2 := FreeGroup( "a", "b" );;
+gap> G := F2 / [ F2.1*F2.2^2*F2.1^-1*F2.2^-1*F2.1^3*F2.2^-1,
+>                F2.2*F2.1^2*F2.2^-1*F2.1^-1*F2.2^3*F2.1^-1 ];;
+gap> a := G.1;;  b := G.2;;
+gap> H := Subgroup( G, [ Comm(a^-1,b^-1), Comm(a^-1,b), Comm(a,b) ] );;
+\endexample
+
+We use the Reduced Reidemeister Schreier method and default Tietze
+transformations to get a presentation for <H>.
+
+\beginexample
+gap> P := PresentationSubgroupRrs( G, H );
+<presentation with 18 gens and 35 rels of total length 169>
+gap> TzGoGo( P );
+#I  there are 3 generators and 20 relators of total length 488
+#I  there are 3 generators and 20 relators of total length 466
+\endexample
+
+We end up with 20 relators of total length 466. Now we repeat the
+procedure, but we call the decoding tree algorithm before doing the Tietze
+transformations.
+
+\beginexample
+gap> P := PresentationSubgroupRrs( G, H );
+<presentation with 18 gens and 35 rels of total length 169>
+gap> DecodeTree( P );
+#I  there are 9 generators and 26 relators of total length 185
+#I  there are 6 generators and 23 relators of total length 213
+#I  there are 3 generators and 20 relators of total length 252
+#I  there are 3 generators and 20 relators of total length 244
+gap> TzGoGo( P );
+#I  there are 3 generators and 19 relators of total length 168
+#I  there are 3 generators and 17 relators of total length 138
+#I  there are 3 generators and 15 relators of total length 114
+#I  there are 3 generators and 13 relators of total length 96
+#I  there are 3 generators and 12 relators of total length 84
+\endexample
+
+This time we end up with a shorter presentation.
+
+As an example of an implicit call of the command via the
+command `PresentationSubgroupMtc' we handle a subgroup of index 240 in a
+group of order 40320 given by a presentation due to B.~H.~Neumann.
+
+\beginexample
+gap> F3 := FreeGroup( "a", "b", "c" );;
+gap> a := F3.1;;  b := F3.2;;  c := F3.3;;
+gap> G := F3 / [ a^3, b^3, c^3, (a*b)^5, (a^-1*b)^5, (a*c)^4,
+>     (a*c^-1)^4, a*b^-1*a*b*c^-1*a*c*a*c^-1, (b*c)^3, (b^-1*c)^4 ];;
+gap> a := G.1;;  b := G.2;;  c := G.3;;
+gap> H := Subgroup( G, [ a, c ] );;
+gap> SetInfoLevel( InfoFpGroup, 1 );
+gap> P := PresentationSubgroupMtc( G, H );;
+#I  index = 240  total = 4737  max = 4507
+#I  MTC defined 2 primary and 4446 secondary subgroup generators
+#I  there are 246 generators and 617 relators of total length 2893
+#I  calling DecodeTree
+#I  there are 115 generators and 382 relators of total length 1837
+#I  there are 69 generators and 298 relators of total length 1785
+#I  there are 44 generators and 238 relators of total length 1767
+#I  there are 35 generators and 201 relators of total length 2030
+#I  there are 26 generators and 177 relators of total length 2084
+#I  there are 23 generators and 167 relators of total length 2665
+#I  there are 20 generators and 158 relators of total length 2848
+#I  there are 20 generators and 148 relators of total length 3609
+#I  there are 21 generators and 148 relators of total length 5170
+#I  there are 24 generators and 148 relators of total length 7545
+#I  there are 27 generators and 146 relators of total length 11477
+#I  there are 32 generators and 146 relators of total length 18567
+#I  there are 36 generators and 146 relators of total length 25440
+#I  there are 39 generators and 146 relators of total length 38070
+#I  there are 43 generators and 146 relators of total length 54000
+#I  there are 41 generators and 143 relators of total length 64970
+#I  there are 8 generators and 129 relators of total length 20031
+#I  there are 7 generators and 125 relators of total length 27614
+#I  there are 4 generators and 113 relators of total length 36647
+#I  there are 3 generators and 108 relators of total length 44128
+#I  there are 2 generators and 103 relators of total length 35394
+#I  there are 2 generators and 102 relators of total length 34380
+gap> TzGoGo( P );
+#I  there are 2 generators and 101 relators of total length 19076
+#I  there are 2 generators and 84 relators of total length 6552
+#I  there are 2 generators and 38 relators of total length 1344
+#I  there are 2 generators and 9 relators of total length 94
+#I  there are 2 generators and 8 relators of total length 86
+gap> TzPrintGenerators( P );
+#I  1.  _x1   43 occurrences
+#I  2.  _x2   43 occurrences
+gap> TzPrint( P );
+#I  generators: [ _x1, _x2 ]
+#I  relators:
+#I  1.  3  [ 1, 1, 1 ]
+#I  2.  3  [ 2, 2, 2 ]
+#I  3.  8  [ 1, -2, 1, -2, 1, -2, 1, -2 ]
+#I  4.  8  [ 1, 2, 1, 2, 1, 2, 1, 2 ]
+#I  5.  14  [ -2, 1, 2, 1, -2, -1, 2, 1, -2, -1, -2, 1, 2, -1 ]
+#I  6.  16  [ -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1, 2 ]
+#I  7.  16  [ 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2, 1 ]
+#I  8.  18  [ -2, -1, 2, -1, -2, 1, -2, -1, 2, -1, -2, 1, -2, -1, 2, -1, -2,
+  1 ]
+gap> K :=  FpGroupPresentation( P );
+<fp group on the generators [ _x1, _x2 ]>
+gap> Size( K );
+#I  index = 56  total = 57  max = 57
+168
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Tietze Options}
@@ -776,27 +1176,27 @@ keeps its own set of Tietze option parameters as an attribute.
 The following Tietze options are recognized by {\GAP}:
 
 \beginitems
-`protected':& 
-  The first `protected' generators in a presentation <T> are
+`protected':&
+  The first `protected' generators in a presentation <P> are
   protected from being eliminated by the Tietze transformations
   functions.  There are only  two exceptions:  The option
   `protected'   is   ignored   by   the   functions
-  `TzEliminate(<T>,<gen>)' and `TzSubstitute(<T>,<n>,<eliminate>)'
+  `TzEliminate(<P>,<gen>)' and `TzSubstitute(<P>,<n>,<eliminate>)'
   because they explicitly specify the generator to be eliminated.
   The default value of `protected' is 0.
 
-`eliminationsLimit':& 
+`eliminationsLimit':&
   Whenever the elimination phase of the `TzGo' command is entered
-  for a presentation <T>,  then it  will eliminate at most
+  for a presentation <P>,  then it  will eliminate at most
   `eliminationsLimit' generators (except for further ones which
   have turned out to  be trivial). Hence you may use  the
   `eliminationsLimit' parameter as a break criterion for the `TzGo'
   command. Note, however, that it is ignored by the `TzEliminate'
   command. The default value of `eliminationsLimit' is 100.
 
-`expandLimit':& 
+`expandLimit':&
   Whenever the routine for eliminating more than 1 generators is
-  called for a presentation <T> by the `TzEliminate' command or the
+  called for a presentation <P> by the `TzEliminate' command or the
   elimination phase of the `TzGo' command, then it saves the given
   total length of the relators, and subsequently it checks the
   current total length against its value before each elimination.
@@ -806,53 +1206,53 @@ The following Tietze options are recognized by {\GAP}:
   `expandLimit' parameter as a break criterion for the `TzGo'
   command. The default value of `expandLimit' is 150.
 
-`generatorsLimit':& 
+`generatorsLimit':&
   Whenever the elimination phase of the `TzGo' command is entered
-  for a presentation <T> with $n$ generators, then it will
+  for a presentation <P> with $n$ generators, then it will
   eliminate at most $n - $`generatorsLimit' generators (except
   for generators which turn out to be trivial). Hence you may use
   the `generatorsLimit' parameter as a break criterion for the
   `TzGo' command. The default value of `generatorsLimit' is 0.
 
-`lengthLimit':& 
+`lengthLimit':&
   The Tietze transformation commands will never eliminate  a
-  generator of a presentation <T>, if they cannot exclude the
+  generator of a presentation <P>, if they cannot exclude the
   possibility that the resulting total length of the relators
   exceeds the value of `lengthLimit'. The default value of
   `lengthLimit' is `infinity'.
 
-`loopLimit':& 
-  Whenever the `TzGo' command is called for a presentation <T>,
+`loopLimit':&
+  Whenever the `TzGo' command is called for a presentation <P>,
   then it will loop over at most `loopLimit' of its basic
   steps. Hence you may use the `loopLimit' parameter as a break
   criterion for  the `TzGo'  command. The  default value of
   `loopLimit' is `infinity'.
 
-`printLevel':& 
+`printLevel':&
   Whenever  Tietze transformation commands are called for  a
-  presentation <T> with `printLevel' $= 0$, they will not
+  presentation <P> with `printLevel' $= 0$, they will not
   provide any output except for error messages. If `printLevel'
   $= 1$, they will display some reasonable amount of output which
   allows you to watch the progress of the computation and to decide
-  about your next commands. In the case `<T>.printLevel' $= 2$, you
+  about your next commands. In the case `printLevel' $= 2$, you
   will get a much more generous amount of output. Finally, if
   `printLevel' $= 3$, various messages on internal details will
   be added. The default value of `printLevel' is 1.
 
-`saveLimit':& 
+`saveLimit':&
   Whenever the `TzSearch' command has finished its main loop over
-  all relators of a presentation <T>, then it checks whether during
+  all relators of a presentation <P>, then it checks whether during
   this loop the total length of the relators has been reduced by at
-  least `<T>.saveLimit' per cent. If this is the case, then
+  least `saveLimit' per cent. If this is the case, then
   `TzSearch' repeats its procedure instead of returning. Hence you
   may use the `saveLimit' parameter as a break criterion for the
   `TzSearch' command and, in particular, for the search phase of
   the `TzGo' command. The default value of `saveLimit' is 10.
 
-`searchSimultaneous':& 
+`searchSimultaneous':&
   Whenever the `TzSearch' or the `TzSearchEqual' command is called
-  for a presentation <T>, then it is allowed to handle up to
-  `searchSimultaneously' short relators simultaneously (see for
+  for a presentation <P>, then it is allowed to handle up to
+  `searchSimultaneous' short relators simultaneously (see for
   the description of the `TzSearch' command for more details). The
   choice of this parameter may heavily influence the performance as
   well as the result of the `TzSearch' and the `TzSearchEqual'
@@ -861,4 +1261,17 @@ The following Tietze options are recognized by {\GAP}:
 \enditems
 
 \Declaration{TzPrintOptions}
+
+\beginexample
+gap> TzPrintOptions( P );
+#I  protected          = 0
+#I  eliminationsLimit  = 100
+#I  expandLimit        = 150
+#I  generatorsLimit    = 0
+#I  lengthLimit        = infinity
+#I  loopLimit          = infinity
+#I  printLevel         = 1
+#I  saveLimit          = 10
+#I  searchSimultaneous = 20
+\endexample
 

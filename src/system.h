@@ -1,3 +1,4 @@
+
 /****************************************************************************
 **
 *W  system.h                    GAP source                   Martin Schoenert
@@ -110,7 +111,7 @@
 #endif
 
 #ifndef SY_STOR_MIN
-# if SYS_MAC_MPW || SYS_MAC_SYC || SYS_TOS_GCC2
+# if SYS_MAC_MPW || SYS_TOS_GCC2
 #  define SY_STOR_MIN   0
 # else
 #  define SY_STOR_MIN   8 * 1024 * 1024
@@ -313,14 +314,20 @@ const char * Revision_system_h =
 
 /****************************************************************************
 **
-*V  SYS_MAC_SYC . . . . . . . . . . . . . . . . . . . . . . . . MAC using SYC
+*V  SYS_MAC_MWC . . . . . . . . . . . . . . . . . . .  Mac using Metrowerks C
 */
-#ifdef SYS_IS_MAC_SYC
-# define SYS_MAC_SYC    1
+#ifdef SYS_IS_MAC_MWC
+# define SYS_MAC_MWC    1
 #else
-# define SYS_MAC_SYC    0
+# define SYS_MAC_MWC    0
 #endif
 
+#if SYS_MAC_MWC  /* on the Mac, fputs does not work. Print error messages 
+					using WriteToLog */
+# define FPUTS_TO_STDERR(str) 	WriteToLog (str)
+#else 
+# define FPUTS_TO_STDERR(str) fputs (str, stderr)
+#endif
 
 /****************************************************************************
 **
@@ -412,6 +419,24 @@ extern UInt SyStackAlign;
 */
 extern const Char * SyArchitecture;
 
+/****************************************************************************
+**
+*V  SyAutoloadSharePackages  . . . . . . . .automatically load share packages
+**
+**  0: no 
+**  1: yes
+*/
+extern UInt SyAutoloadSharePackages;
+
+/****************************************************************************
+**
+*V  SyBreakSuppress  . . . . . . . . never enter a break loop
+**
+**  0: no 
+**  1: yes
+*/
+extern UInt SyBreakSuppress;
+
 
 /****************************************************************************
 **
@@ -500,6 +525,12 @@ extern Char SyCompileName [256];
 */
 extern Char SyCompileOutput [256];
 
+/****************************************************************************
+**
+*V  SyCompileOptions . . . . . . . . . . . . . . . . . with these options
+*/
+extern Char SyCompileOptions [256];
+
 
 /****************************************************************************
 **
@@ -567,6 +598,12 @@ extern Char SyGapRootPaths [MAX_GAP_DIRS] [256];
 */
 extern Char SyInitfiles [16] [256];
 
+/****************************************************************************
+**
+*V  SyGapRCFilename . . . . . . . . . . . . . . . filename of the gaprc file
+*/
+extern Char SyGapRCFilename [256];
+
 
 /****************************************************************************
 **
@@ -611,7 +648,7 @@ extern UInt SyMsgsFlagBags;
 **  Put in this package because the command line processing takes place here.
 */
 extern UInt SyNrCols;
-
+extern UInt SyNrColsLocked;
 
 /****************************************************************************
 **
@@ -625,6 +662,7 @@ extern UInt SyNrCols;
 **  'SyHelp' uses this to decide where to stop with '-- <space> for more --'.
 */
 extern UInt SyNrRows;
+extern UInt SyNrRowsLocked;
 
 
 /****************************************************************************
@@ -655,6 +693,16 @@ extern UInt SyQuiet;
 */
 extern Char * SyRestoring;
 
+/****************************************************************************
+**
+*V  SyInitializing                               set to 1 during library init
+**
+**  `SyInitializing' is set to 1 during the library intialization phase of
+**  startup. It supresses some ebhaviours that may not be possible so early
+**  such as homogeneity tests in the plist code.
+*/
+
+extern UInt SyInitializing;
 
 /****************************************************************************
 **
@@ -670,6 +718,7 @@ extern Char * SyRestoring;
 **  Put in this package because the command line processing takes place here.
 */
 extern Int SyStorMax;
+extern Int SyStorOverrun;
 
 
 /****************************************************************************
@@ -1070,7 +1119,6 @@ typedef struct {
 
 /****************************************************************************
 **
-
 *F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
 **
 **  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.
@@ -1080,6 +1128,15 @@ typedef struct {
 */
 extern void SyExit (
     UInt                ret );
+
+/****************************************************************************
+**
+*F  SySleep( <secs> ) . . . . . . . . . . . . Try to sleep for <secs> seconds
+**
+**  The OS may wake us earlier, for example on receipt of a signal
+*/
+
+extern void SySleep( UInt secs );
 
 
 /****************************************************************************

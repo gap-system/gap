@@ -50,6 +50,7 @@ const char * Revision_intrprtr_c =
 #include        "code.h"                /* coder                           */
 #include        "vars.h"                /* variables                       */
 #include        "funcs.h"               /* functions                       */
+#include        "read.h"
 
 #define INCLUDE_DECLARATION_PART
 #include        "intrprtr.h"            /* interpreter                     */
@@ -230,11 +231,13 @@ Obj             PopVoidObj ( void )
 **  If  'IntrEnd' returns 2, then a  return-void-statement  was  interpreted.
 **  If 'IntrEnd' returns 8, then a quit-statement was interpreted.
 */
-void IntrBegin ( void )
+void IntrBegin ( Obj frame )
 {
     Obj                 intrState;      /* old interpreter state           */
 
     /* remember old interpreter state                                      */
+    /* This bag cannot exist at the top-most loop, which is the only
+       place from which we might call SaveWorkspace */
     intrState = NewBag( T_PLIST, 4*sizeof(Obj) );
     ADDR_OBJ(intrState)[0] = (Obj)3;
     ADDR_OBJ(intrState)[1] = IntrState;
@@ -255,10 +258,10 @@ void IntrBegin ( void )
     IntrReturning = 0;
 
     /* start an execution environment                                      */
-    ExecBegin();
+    ExecBegin(frame);
 }
 
-Int IntrEnd (
+ExecStatus IntrEnd (
     UInt                error )
 {
     UInt                intrReturning;  /* interpreted return-statement?   */
@@ -303,7 +306,7 @@ Int IntrEnd (
         if ( IntrCoding > 0 ) { CodeEnd( 1UL ); }
 
         /* remember that we had an error                                   */
-        intrReturning = 32;
+        intrReturning = STATUS_ERROR;
         IntrReturning = 0;
 
         /* must be back in immediate (non-ignoring, non-coding) mode       */
@@ -328,7 +331,7 @@ Int IntrEnd (
 /****************************************************************************
 **
 *F  IntrFuncCallBegin() . . . . . . . . . . .  interpret function call, begin
-*F  IntrFuncCallEnd(<funccall>,<nr>)  . . . . .  interpret function call, end
+*F  IntrFuncCallEnd(<funccall>,<options>, <nr>)  interpret function call, end
 **
 **  'IntrFuncCallBegin' is an action  to  interpret a  function call.  It  is
 **  called by  the reader  when  it  encounters  the parenthesis  '(',  i.e.,
@@ -338,7 +341,8 @@ Int IntrEnd (
 **  called by    the reader when it encounters     the parenthesis ')', i.e.,
 **  *after* the argument expressions are read.  <funccall>  is 1 if this is a
 **  function call, and 0 if this is a procedure call.  <nr>  is the number of
-**  arguments.
+**  arguments. <options> is 1 if options were present after the ':' in which
+**  case the options have been read already.
 */
 void            IntrFuncCallBegin ( void )
 {
@@ -349,8 +353,12 @@ void            IntrFuncCallBegin ( void )
     if ( CompNowFuncs != 0 ) { return; }
 }
 
+static Obj PushOptions;
+static Obj PopOptions;
+
 void            IntrFuncCallEnd (
     UInt                funccall,
+    UInt                options,
     UInt                nr )
 {
     Obj                 func;           /* function                        */
@@ -363,14 +371,23 @@ void            IntrFuncCallEnd (
     Obj                 args;           /* argument list                   */
     Obj                 argi;           /* <i>-th argument                 */
     Obj                 val;            /* return value of function        */
+    Obj                 opts;           /* record of options               */
     UInt                i;              /* loop variable                   */
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeFuncCallEnd( funccall, nr ); return; }
+    if ( IntrCoding    > 0 ) {
+      CodeFuncCallEnd( funccall, options, nr );
+      return; }
     if ( CompNowFuncs != 0 ) { return; }
 
+    if (options)
+      {
+      	opts = PopObj();
+	CALL_1ARGS(PushOptions, opts);
+      }
+      
     /* get the arguments from the stack                                    */
     a1 = a2 = a3 = a4 = a5 = a6 = args = 0;
     if ( nr <= 6 ) {
@@ -415,6 +432,9 @@ void            IntrFuncCallEnd (
             0L, 0L );
     }
 
+    if (options)
+      CALL_0ARGS(PopOptions);
+    
     /* push the value onto the stack                                       */
     if ( val == 0 )
         PushVoidObj();
@@ -567,7 +587,7 @@ void            IntrIfBeginBody ( void )
     cond = PopObj();
     if ( cond != True && cond != False ) {
         ErrorQuit(
-            "<expr> must be 'true' or 'false' (not to a %s)",
+            "<expr> must be 'true' or 'false' (not a %s)",
             (Int)TNAM_OBJ(cond), 0L );
     }
 
@@ -673,6 +693,19 @@ void IntrForBegin ( void )
     /* code a function expression (with no arguments and locals)           */
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
+    /* If we are in the break loop, then a local variable context may well exist,
+       and we have to create an empty local variable names list to match the
+       function expression that we are creating.
+
+       If we are not in a break loop, then this would be a waste of time and effort */
+       
+    if (CountNams > 0)
+      {
+	GROW_PLIST(StackNams, ++CountNams);
+	SET_ELM_PLIST(StackNams, CountNams, nams);
+	SET_LEN_PLIST(StackNams, CountNams);
+      }
+
     CodeFuncExprBegin( 0, 0, nams );
 
     /* code a for loop                                                     */
@@ -736,6 +769,11 @@ void IntrForEnd ( void )
     /* switch back to immediate mode, get the function                     */
     IntrCoding = 0;
     CodeEnd( 0 );
+    /* If we are in a break loop, then we will have created a "dummy" local
+       variable names list to get the counts right. Remove it */
+    if (CountNams > 0)
+      CountNams--;
+
     func = CodeResult;
 
     /* call the function                                                   */
@@ -787,8 +825,23 @@ void            IntrWhileBegin ( void )
     IntrCoding = 1;
 
     /* code a function expression (with no arguments and locals)           */
+
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
+    
+    /* If we are in the break loop, then a local variable context may well exist,
+       and we have to create an empty local variable names list to match the
+       function expression that we are creating.
+
+       If we are not in a break loop, then this would be a waste of time and effort */
+       
+    if (CountNams > 0)
+      {
+	GROW_PLIST(StackNams, ++CountNams);
+	SET_ELM_PLIST(StackNams, CountNams, nams);
+	SET_LEN_PLIST(StackNams, CountNams);
+      }
+    
     CodeFuncExprBegin( 0, 0, nams );
 
     /* code a while loop                                                   */
@@ -842,12 +895,20 @@ void            IntrWhileEnd ( void )
 
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
+    
 
     /* switch back to immediate mode, get the function                     */
     IntrCoding = 0;
     CodeEnd( 0 );
+
+    /* If we are in a break loop, then we will have created a "dummy" local
+       variable names list to get the counts right. Remove it */
+    if (CountNams > 0)
+      CountNams--;
+    
     func = CodeResult;
 
+    
     /* call the function                                                   */
     CALL_0ARGS( func );
 
@@ -899,6 +960,19 @@ void            IntrRepeatBegin ( void )
     /* code a function expression (with no arguments and locals)           */
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
+    /* If we are in the break loop, then a local variable context may well exist,
+       and we have to create an empty local variable names list to match the
+       function expression that we are creating.
+
+       If we are not in a break loop, then this would be a waste of time and effort */
+       
+    if (CountNams > 0)
+      {
+	GROW_PLIST(StackNams, ++CountNams);
+	SET_ELM_PLIST(StackNams, CountNams, nams);
+	SET_LEN_PLIST(StackNams, CountNams);
+      }
+
     CodeFuncExprBegin( 0, 0, nams );
 
     /* code a repeat loop                                                  */
@@ -956,6 +1030,10 @@ void            IntrRepeatEnd ( void )
     /* switch back to immediate mode, get the function                     */
     IntrCoding = 0;
     CodeEnd( 0 );
+    /* If we are in a break loop, then we will have created a "dummy" local
+       variable names list to get the counts right. Remove it */
+    if (CountNams > 0)
+      CountNams--;
     func = CodeResult;
 
     /* call the function                                                   */
@@ -1059,7 +1137,10 @@ void            IntrQuit ( void )
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* 'quit' is not allowed in functions (by the reader)                  */
-    assert( IntrCoding == 0 );
+    /* assert( IntrCoding == 0 ); */
+    if ( IntrCoding > 0 ) {
+      SyntaxError("'quit;' cannot be used in this context");
+    }
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( StackObj, 0 );
@@ -1238,19 +1319,19 @@ void            IntrAnd ( void )
         }
         else {
             ErrorQuit(
-                "<expr> must be 'true' or 'false' (not to a %s)",
+                "<expr> must be 'true' or 'false' (not a %s)",
                 (Int)TNAM_OBJ(opR), 0L );
         }
     }
 
-    /* handle the 'and' of two features                                    */
+    /* handle the 'and' of two filters                                    */
     else if ( TNUM_OBJ(opL) == T_FUNCTION ) {
         if ( TNUM_OBJ(opR) == T_FUNCTION ) {
             PushObj( NewAndFilter( opL, opR ) );
         }
         else {
             ErrorQuit(
-                "<expr> must be 'true' or 'false' (not to a %s)",
+                "<expr> must be 'true' or 'false' (not a %s)",
                 (Int)TNAM_OBJ(opL), 0L );
         }
     }
@@ -1258,7 +1339,7 @@ void            IntrAnd ( void )
     /* signal an error                                                     */
     else {
         ErrorQuit(
-            "<expr> must be 'true' or 'false' (not to a %s)",
+            "<expr> must be 'true' or 'false' (not a %s)",
             (Int)TNAM_OBJ(opL), 0L );
     }
 }
@@ -1285,7 +1366,7 @@ void            IntrNot ( void )
     op = PopObj();
     if ( op != True && op != False ) {
         ErrorQuit(
-            "<expr> must be 'true' or 'false' (not to a %s)",
+            "<expr> must be 'true' or 'false' (not a %s)",
             (Int)TNAM_OBJ(op), 0L );
     }
 
@@ -1690,7 +1771,8 @@ void            IntrIntExpr (
         low = 10 * low + str[i] - '0';
         pow = 10 * pow;
         if ( pow == 100000000L ) {
-            upp = SUM( PROD(upp,INTOBJ_INT(pow) ), INTOBJ_INT(sign*low) );
+	  upp = PROD(upp,INTOBJ_INT(pow) );
+            upp = SUM(upp  , INTOBJ_INT(sign*low) );
             pow = 1;
             low = 0;
         }
@@ -1706,7 +1788,8 @@ void            IntrIntExpr (
         val = upp;
     }
     else {
-        val = SUM( PROD( upp, INTOBJ_INT(pow) ), INTOBJ_INT(sign*low) );
+        upp =  PROD( upp, INTOBJ_INT(pow) );
+        val = SUM( upp , INTOBJ_INT(sign*low) );
     }
 
     /* push the integer value                                              */
@@ -1835,7 +1918,7 @@ void            IntrPermCycle (
         /* check that the cycles are disjoint                              */
         if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
             ErrorQuit(
-                "Permutation: cycles must be disjoint",
+                "Permutation: cycles must be disjoint and duplicate-free",
                 0L, 0L );
         }
 
@@ -1848,6 +1931,10 @@ void            IntrPermCycle (
     }
 
     /* enter first (last popped) entry at last (first popped) location     */
+    if (ptr4[l-1] != l-1)
+      {
+	ErrorQuit("Permutation: cycles must be disjoint and duplicate-free", 0L, 0L );
+      }
     ptr4[l-1] = p-1;
         
     /* push the permutation (if necessary, drop permutation first)         */
@@ -2022,7 +2109,7 @@ void            IntrListExprEnd (
         val = ELM_LIST( list, 1 );
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
-                "Range: <first> must be an integer (not a %s)",
+                "Range: <first> must be an integer less than 2^28 (not a %s)",
                 (Int)TNAM_OBJ(val), 0L );
         }
         low = INT_INTOBJ( val );
@@ -2032,7 +2119,7 @@ void            IntrListExprEnd (
             val = ELM_LIST( list, 2 );
             if ( ! IS_INTOBJ(val) ) {
                 ErrorQuit(
-                    "Range: <second> must be an integer (not a %s)",
+                    "Range: <second> must be an integer less than 2^28 (not a %s)",
                     (Int)TNAM_OBJ(val), 0L );
             }
             if ( INT_INTOBJ(val) == low ) {
@@ -2050,7 +2137,7 @@ void            IntrListExprEnd (
         val = ELM_LIST( list, LEN_LIST(list) );
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
-                "Range: <last> must not be an integer (not a %s)",
+                "Range: <last> must be an integer less than 2^28 (not a %s)",
                 (Int)TNAM_OBJ(val), 0L );
         }
         if ( (INT_INTOBJ(val) - low) % inc != 0 ) {
@@ -2231,6 +2318,130 @@ void            IntrRecExprEnd (
     }
 }
 
+/****************************************************************************
+**
+*F  IntrFuncCallOptionsBegin() . . . .. . . . . .  interpret options, begin
+*F  IntrFuncCallOptionsBeginElmName(<rnam>).  interpret options, begin element
+*F  IntrFuncCallOptionsBeginElmExpr() . .. .  interpret options, begin element
+*F  IntrFuncCallOptionsEndElm() . . .. .  . .  interpret options, end element
+*F  IntrFuncCallOptionsEndElmEmpty() .. .  . .  interpret options, end element
+*F  IntrFuncCallOptionsEnd(<nr>)  . . . . . . . .  interpret options, end
+**
+**  The net effect of all of these is to leave a record object on the stack
+**  where IntrFuncCallEnd can use it
+*/
+void            IntrFuncCallOptionsBegin ( void )
+{
+    Obj                 record;         /* new record                      */
+
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsBegin( ); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* allocate the new record                                             */
+    record = NEW_PREC( 0 );
+    /* push the record                                                     */
+    PushObj( record );
+}
+
+void            IntrFuncCallOptionsBeginElmName (
+    UInt                rnam )
+{
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsBeginElmName( rnam ); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* remember the name on the values stack                               */
+    PushObj( (Obj)rnam );
+}
+
+void            IntrFuncCallOptionsBeginElmExpr ( void )
+{
+    UInt                rnam;           /* record name                     */
+
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsBeginElmExpr(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* convert the expression to a record name                             */
+    rnam = RNamObj( PopObj() );
+
+    /* remember the name on the values stack                               */
+    PushObj( (Obj)rnam );
+}
+
+void            IntrFuncCallOptionsEndElm ( void )
+{
+    Obj                 record;         /* record that is currently made   */
+    UInt                rnam;           /* name of record element          */
+    Obj                 val;            /* value of record element         */
+
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsEndElm(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* get the value                                                       */
+    val = PopObj();
+
+    /* get the record name                                                 */
+    rnam = (UInt)PopObj();
+
+    /* get the record                                                      */
+    record = PopObj();
+
+    /* assign the value into the record                                    */
+    ASS_REC( record, rnam, val );
+
+    /* push the record again                                               */
+    PushObj( record );
+}
+
+void            IntrFuncCallOptionsEndElmEmpty ( void )
+{
+    Obj                 record;         /* record that is currently made   */
+    UInt                rnam;           /* name of record element          */
+    Obj                 val;            /* value of record element         */
+
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsEndElmEmpty(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* get the value                                                       */
+    val = True;
+
+    /* get the record name                                                 */
+    rnam = (UInt)PopObj();
+
+    /* get the record                                                      */
+    record = PopObj();
+
+    /* assign the value into the record                                    */
+    ASS_REC( record, rnam, val );
+
+    /* push the record again                                               */
+    PushObj( record );
+}
+
+void            IntrFuncCallOptionsEnd ( UInt nr )
+{
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeFuncCallOptionsEnd(nr); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+}
+
 
 /****************************************************************************
 **
@@ -2239,13 +2450,22 @@ void            IntrRecExprEnd (
 void            IntrAssLVar (
     UInt                lvar )
 {
+  Obj val;
     /* ignore                                                              */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeAssLVar( lvar );
+    if ( IntrCoding > 0 )
+      CodeAssLVar( lvar );
+
+    /* Or in the break loop */
+    else
+      {
+	val = PopObj();
+	ASS_LVAR(lvar, val);
+	PushObj(val);
+      }
 }
 
 void            IntrUnbLVar (
@@ -2256,8 +2476,14 @@ void            IntrUnbLVar (
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeUnbLVar( lvar );
+    if ( IntrCoding > 0 )
+      CodeUnbLVar( lvar );
+
+    /* or in the break loop */
+    else
+      {
+	ASS_LVAR(lvar,0);
+      }
 }
 
 
@@ -2268,13 +2494,30 @@ void            IntrUnbLVar (
 void            IntrRefLVar (
     UInt                lvar )
 {
+  Obj val;
     /* ignore                                                              */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeRefLVar( lvar );
+    if ( IntrCoding > 0 )
+      CodeRefLVar( lvar );
+
+    /* or in the break loop */
+
+    else
+      {
+	while ((val = OBJ_LVAR(lvar))==0)
+	  {
+	    ErrorReturnVoid(
+			    "Variable: '%s' must have an assigned value",
+			    (Int)NAME_LVAR( (UInt)( lvar )), 0L,
+			    "you can return after assigning a value" );
+	    
+	  }
+	PushObj(val);
+      }
+    return;
 }
 
 void            IntrIsbLVar (
@@ -2285,8 +2528,13 @@ void            IntrIsbLVar (
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeIsbLVar( lvar );
+    if( IntrCoding > 0 )
+      CodeIsbLVar( lvar );
+
+    else
+      {
+	PushObj(OBJ_LVAR(lvar) != (Obj)0 ? True : False);
+      }
 }
 
 
@@ -2297,13 +2545,21 @@ void            IntrIsbLVar (
 void            IntrAssHVar (
     UInt                hvar )
 {
+  Obj val;
     /* ignore                                                              */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeAssHVar( hvar );
+    if( IntrCoding > 0 )
+      CodeAssHVar( hvar );
+    /* Or in the break loop */
+    else
+      {
+	val = PopObj();
+	ASS_HVAR(hvar, val);
+	PushObj(val);
+      }
 }
 
 void            IntrUnbHVar (
@@ -2314,8 +2570,12 @@ void            IntrUnbHVar (
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeUnbHVar( hvar );
+    if ( IntrCoding > 0 ) 
+      CodeUnbHVar( hvar );
+    else
+      {
+	ASS_HVAR(hvar, 0);
+      }
 }
 
 
@@ -2326,13 +2586,27 @@ void            IntrUnbHVar (
 void            IntrRefHVar (
     UInt                hvar )
 {
+  Obj val;
     /* ignore                                                              */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeRefHVar( hvar );
+    if( IntrCoding > 0 )
+      CodeRefHVar( hvar );
+    /* or debugging */
+    else
+      {
+	while ((val = OBJ_HVAR(hvar))==0)
+	  {
+	    ErrorReturnVoid(
+			    "Variable: '%s' must have an assigned value",
+			    (Int)NAME_HVAR( (UInt)( hvar )), 0L,
+			    "you can return after assigning a value" );
+
+	  }
+	PushObj(val);
+      }
 }
 
 void            IntrIsbHVar (
@@ -2343,8 +2617,11 @@ void            IntrIsbHVar (
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeIsbHVar( hvar );
+    if( IntrCoding > 0 )
+      CodeIsbHVar( hvar );
+    /* or debugging */
+    else
+      PushObj((OBJ_HVAR(hvar) != (Obj) 0) ? True : False);
 }
 
 
@@ -2598,18 +2875,25 @@ void            IntrAssList ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    p = INT_INTOBJ(pos);
-
-    /* get the list (checking is done by 'ASS_LIST')                       */
+    
+    /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')         */
     list = PopObj();
+    
+    if (IS_INTOBJ(pos))
+      {
+	p = INT_INTOBJ(pos);
+	
 
-    /* assign to the element of the list                                   */
-    ASS_LIST( list, p, rhs );
+	/* assign to the element of the list                                   */
+	ASS_LIST( list, p, rhs );
+      }
+    else
+      ASSB_LIST(list, pos, rhs);
 
     /* push the right hand side again                                      */
     PushObj( rhs );
@@ -2663,7 +2947,6 @@ void            IntrAssListLevel (
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, left operand          */
-    Int                 p;              /* position, as C integer          */
     Obj                 rhss;           /* right hand sides, right operand */
 
     /* ignore or code                                                      */
@@ -2677,19 +2960,18 @@ void            IntrAssListLevel (
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    p = INT_INTOBJ(pos);
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
     lists = PopObj();
 
     /* assign the right hand sides to the elements of several lists        */
-    AssListLevel( lists, p, rhss, level );
+    AssListLevel( lists, pos, rhss, level );
 
     /* push the assigned values again                                      */
     PushObj( rhss );
@@ -2744,18 +3026,24 @@ void            IntrUnbList ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    p = INT_INTOBJ(pos);
-
+    
     /* get the list (checking is done by 'UNB_LIST')                       */
     list = PopObj();
 
-    /* unbind the element                                                  */
-    UNB_LIST( list, p );
+    if (IS_INTOBJ(pos))
+      {
+	p = INT_INTOBJ(pos);
+
+	/* unbind the element                                                  */
+	UNB_LIST( list, p );
+      }
+    else
+      UNBB_LIST(list, pos);
 
     /* push void                                                           */
     PushVoidObj();
@@ -2782,20 +3070,35 @@ void            IntrElmList ( void )
     if ( IntrCoding    > 0 ) { CodeElmList(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
-    /* get and check the position                                          */
+    
+    /* get  the position                                                   */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
-        ErrorQuit(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
-    p = INT_INTOBJ( pos );
-
     /* get the list (checking is done by 'ELM_LIST')                       */
     list = PopObj();
 
-    /* get the element of the list                                         */
-    elm = ELM_LIST( list, p );
+    
+    if ( ! IS_INTOBJ(pos))
+      {
+	if (TNUM_OBJ(pos) != T_INTPOS)
+	  {
+	    ErrorQuit("List Element: <position> must be a positive integer (not a %s)",
+		      (Int)TNAM_OBJ(pos), 0);
+	  }
+	elm = ELMB_LIST( list, pos);
+      }
+    else
+      {
+	if (INT_INTOBJ(pos) <= 0 ) {
+	  ErrorQuit(
+		    "List Element: <position> must be positive (not a %d)",
+		    INT_INTOBJ(pos), 0L );
+	}
+	p = INT_INTOBJ( pos );
+	
+	
+	/* get the element of the list                                         */
+	elm = ELM_LIST( list, p );
+      }
 
     /* push the element                                                    */
     PushObj( elm );
@@ -2836,7 +3139,6 @@ void            IntrElmListLevel (
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2846,19 +3148,18 @@ void            IntrElmListLevel (
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
         ErrorQuit(
             "List Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    p = INT_INTOBJ( pos );
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
     lists = PopObj();
 
     /* select the elements from several lists (store them in <lists>)      */
-    ElmListLevel( lists, p, level );
+    ElmListLevel( lists, pos, level );
 
     /* push the elements                                                   */
     PushObj( lists );
@@ -2910,18 +3211,24 @@ void            IntrIsbList ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
+    if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 )) {
         ErrorQuit(
             "List Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    p = INT_INTOBJ( pos );
-
+    
     /* get the list (checking is done by 'ISB_LIST')                       */
     list = PopObj();
 
-    /* get the result                                                      */
-    isb = (ISB_LIST( list, p ) ? True : False);
+    if (IS_INTOBJ(pos))
+      {
+	p = INT_INTOBJ( pos );
+
+	/* get the result                                                      */
+	isb = (ISB_LIST( list, p ) ? True : False);
+      }
+    else
+      isb = (ISBB_LIST( list, pos) ? True : False);
 
     /* push the result                                                     */
     PushObj( isb );
@@ -3788,6 +4095,27 @@ void            IntrIsbComObjExpr ( void )
 
 /****************************************************************************
 **
+*F  IntrEmpty() . . . . . . . . . . . . .  Interpret an empty statement body
+**
+*/
+
+void             IntrEmpty ( void )
+{
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeEmpty(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* interpret */
+    PushVoidObj();
+    return;
+  
+}
+
+
+/****************************************************************************
+**
 *F  IntrInfoBegin() . . . . . . . . .  start interpretation of Info statement
 *F  IntrInfoMiddle()  . . . . . .  shift to interpreting printable statements
 *F  IntrInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
@@ -4053,6 +4381,10 @@ static Int InitKernel (
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary( "InfoDecision", &InfoDecision );
     ImportFuncFromLibrary( "InfoDoPrint",  &InfoDoPrint  );
+
+    /* The work of handling Options is also delegated*/
+    ImportFuncFromLibrary( "PushOptions", &PushOptions );
+    ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
  
     /* return success                                                      */
     return 0;

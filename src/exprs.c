@@ -199,7 +199,7 @@ Obj             EvalUnknownBool (
     /* check that the value is either 'true' or 'false'                    */
     while ( val != True && val != False ) {
         val = ErrorReturnObj(
-            "<expr> must be 'true' or 'false' (not to a %s)",
+            "<expr> must be 'true' or 'false' (not a %s)",
             (Int)TNAM_OBJ(val), 0L,
             "you can return 'true' or 'false'" );
     }
@@ -280,7 +280,7 @@ Obj             EvalAnd (
         return EVAL_BOOL_EXPR( tmp );
     }
 
-    /* handle the 'and' of two features                                    */
+    /* handle the 'and' of two filters                                    */
     else if ( TNUM_OBJ(opL) == T_FUNCTION ) {
         tmp = ADDR_EXPR(expr)[1];
         opR = EVAL_EXPR( tmp );
@@ -289,7 +289,7 @@ Obj             EvalAnd (
         }
         else {
             ErrorQuit(
-                "<expr> must be 'true' or 'false' (not to a %s)",
+                "<expr> must be 'true' or 'false' (not a %s)",
                 (Int)TNAM_OBJ(opL), 0L );
         }
     }
@@ -297,7 +297,7 @@ Obj             EvalAnd (
     /* signal an error                                                     */
     else {
         ErrorQuit(
-            "<expr> must be 'true' or 'false' (not to a %s)",
+            "<expr> must be 'true' or 'false' (not a %s)",
             (Int)TNAM_OBJ(opL), 0L );
     }
     
@@ -949,7 +949,7 @@ Obj             EvalPermExpr (
             val = EVAL_EXPR( ADDR_EXPR( cycle )[j-1] );
             while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
                 val = ErrorReturnObj(
-              "Permutation: <expr> must be a positive integer (not to a %s)",
+              "Permutation: <expr> must be a positive integer (not a %s)",
                     (Int)TNAM_OBJ(val), 0L,
                     "you can return a positive integer" );
             }
@@ -1130,42 +1130,62 @@ void ListExpr2 (
     Obj                 sub;            /* value of a subexpression        */
     Int                 len;            /* logical length of the list      */
     Int                 i;              /* loop variable                   */
+    Int                 posshole;       /* initially 0, set to 1 at
+					   first empty position, then
+					   next full position causes
+					   the list to be made
+					   non-dense */
 
     /* get the length of the list                                          */
     len = SIZE_EXPR(expr) / sizeof(Expr);
+
+    /* initially we have not seen a hole                                   */
+    posshole = 0;
 
     /* handle the subexpressions                                           */
     for ( i = 1; i <= len; i++ ) {
 
         /* if the subexpression is empty                                   */
         if ( ADDR_EXPR(expr)[i-1] == 0 ) {
-            continue;
+	  if (!posshole)
+	    posshole = 1;
+	  continue;
         }
+	else 
+	  {
+	    if (posshole == 1)
+	      {
+		SET_FILT_LIST(list, FN_IS_NDENSE);
+		posshole = 2;
+	      }
 
-        /* special case if subexpression is a list expression              */
-        else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
-            sub = ListExpr1( ADDR_EXPR(expr)[i-1] );
-            SET_ELM_PLIST( list, i, sub );
-            CHANGED_BAG( list );
-            ListExpr2( sub, ADDR_EXPR(expr)[i-1] );
-        }
-
-        /* special case if subexpression is a record expression            */
-        else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
-            sub = RecExpr1( ADDR_EXPR(expr)[i-1] );
-            SET_ELM_PLIST( list, i, sub );
-            CHANGED_BAG( list );
-            RecExpr2( sub, ADDR_EXPR(expr)[i-1] );
-        }
-
-        /* general case                                                    */
-        else {
-            sub = EVAL_EXPR( ADDR_EXPR(expr)[i-1] );
-            SET_ELM_PLIST( list, i, sub );
-            CHANGED_BAG( list );
-        }
+	    /* special case if subexpression is a list expression              */
+	    if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
+	      sub = ListExpr1( ADDR_EXPR(expr)[i-1] );
+	      SET_ELM_PLIST( list, i, sub );
+	      CHANGED_BAG( list );
+	      ListExpr2( sub, ADDR_EXPR(expr)[i-1] );
+	    }
+	    
+	    /* special case if subexpression is a record expression            */
+	    else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
+	      sub = RecExpr1( ADDR_EXPR(expr)[i-1] );
+	      SET_ELM_PLIST( list, i, sub );
+	      CHANGED_BAG( list );
+	      RecExpr2( sub, ADDR_EXPR(expr)[i-1] );
+	    }
+	    
+	    /* general case                                                    */
+	    else {
+	      sub = EVAL_EXPR( ADDR_EXPR(expr)[i-1] );
+	      SET_ELM_PLIST( list, i, sub );
+	      CHANGED_BAG( list );
+	    }
+	  }
 
     }
+    if (!posshole)
+      SET_FILT_LIST(list, FN_IS_DENSE);
 
 }
 
@@ -1189,7 +1209,7 @@ Obj             EvalRangeExpr (
     val = EVAL_EXPR( ADDR_EXPR(expr)[0] );
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
-            "Range: <first> must be an integer (not a %s)",
+            "Range: <first> must be an integer less than 2^28 (not a %s)",
             (Int)TNAM_OBJ(val), 0L,
             "you can return an integer for <first>" );
     }
@@ -1201,7 +1221,7 @@ Obj             EvalRangeExpr (
         while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) == low ) {
             if ( ! IS_INTOBJ(val) ) {
                 val = ErrorReturnObj(
-                    "Range: <second> must be an integer (not a %s)",
+                    "Range: <second> must be an integer less than 2^28 (not a %s)",
                     (Int)TNAM_OBJ(val), 0L,
                     "you can return an integer for <second>" );
             }
@@ -1223,7 +1243,7 @@ Obj             EvalRangeExpr (
     while ( ! IS_INTOBJ(val) || (INT_INTOBJ(val) - low) % inc != 0 ) {
         if ( ! IS_INTOBJ(val) ) {
             val = ErrorReturnObj(
-                "Range: <last> must be an integer (not a %d)",
+                "Range: <last> must be an integer less than 2^28 (not a %s)",
                 (Int)TNAM_OBJ(val), 0L,
                 "you can return an integer for <last>" );
         }
@@ -1794,15 +1814,13 @@ void            PrintStringExpr (
 **
 **  'PrintRecExpr' the record expression <expr>.
 */
-void            PrintRecExpr (
+void            PrintRecExpr1 (
     Expr                expr )
 {
-    Expr                tmp;            /* temporary variable              */
-    UInt                i;              /* loop variable                   */
-
-    Pr("%2>rec(\n%2>",0L,0L);
-    for ( i = 1; i <= SIZE_EXPR(expr)/(2*sizeof(Expr)); i++ ) {
-
+  Expr                tmp;            /* temporary variable              */
+  UInt                i;              /* loop variable                   */
+  
+  for ( i = 1; i <= SIZE_EXPR(expr)/(2*sizeof(Expr)); i++ ) {
         /* print an ordinary record name                                   */
         tmp = ADDR_EXPR(expr)[2*i-2];
         if ( IS_INTEXPR(tmp) ) {
@@ -1824,7 +1842,13 @@ void            PrintRecExpr (
             Pr("%2<,\n%2>",0L,0L);
 
     }
+}
 
+void            PrintRecExpr (
+    Expr                expr )
+{
+    Pr("%2>rec(\n%2>",0L,0L);
+    PrintRecExpr1(expr);
     Pr(" %4<)",0L,0L);
 
 }

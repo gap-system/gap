@@ -78,10 +78,14 @@ end );
 ##
 #M  <g> in <cl> . . . . . . . . . . . . . . . . . . . . for conjugacy classes
 ##
-InstallMethod( \in, true, [ IsPerm, IsConjugacyClassPermGroupRep ], 0,
-    function( g, cl )
-    local   G;
+InstallMethod( \in,"perm class rep", IsElmsColls,
+  [ IsPerm, IsConjugacyClassPermGroupRep ], 0,
+function( g, cl )
+local   G;
     
+    if HasAsList(cl) or HasAsSSortedList(cl) then
+      TryNextMethod();
+    fi;
     G := ActingDomain( cl );
     return RepOpElmTuplesPermGroup( true, ActingDomain( cl ),
                    [ g ], [ Representative( cl ) ],
@@ -89,19 +93,8 @@ InstallMethod( \in, true, [ IsPerm, IsConjugacyClassPermGroupRep ], 0,
                    StabilizerOfExternalSet( cl ) ) <> fail;
 end );
 
-InstallMethod( \in, IsElmsColls, [ IsObject,
-        IsExternalOrbit and HasCanonicalRepresentativeOfExternalSet ], 0,
-    function( pnt, xorb )
-    if CanonicalRepresentativeOfExternalSet( xorb ) = pnt  then
-        return true;
-    else
-        TryNextMethod();
-    fi;
-end );
-
 #############################################################################
 ##
-
 #R  IsRationalClassPermGroupEnumerator  . .  enumerator for perm groups class
 ##
 DeclareRepresentation( "IsRationalClassPermGroupEnumerator",
@@ -286,7 +279,7 @@ InstallGlobalFunction( CompleteGaloisGroupPElement, function( class, gal, power,
                             StabilizerOfExternalSet( class ),
                             StabilizerOfExternalSet( class ) );
                     else
-                        fusingElement := RepresentativeOperation( G,
+                        fusingElement := RepresentativeAction( G,
                                          rep, rep ^ Int( exp ) );
                     fi;
                 fi;
@@ -384,7 +377,7 @@ InstallGlobalFunction( FusionRationalClassesPSubgroup, function( N, S, rationalC
                 Append( classreps, OnTuples( representatives, gen ) );
             fi;
         od;
-        classimages := List( ClassesSolvableGroup( S, 1,
+        classimages := List( RationalClassesSolvableGroup( S, 1,
 	  rec(candidates:= classreps) ),
 	  cl -> cl.representative );
         genimages := [  ];
@@ -506,7 +499,7 @@ InstallGlobalFunction( RationalClassesPElements, function( arg )
     else
         Info( InfoClasses, 1,
               "Calculating rational classes in Sylow subgroup" );
-        rationalSClasses := ClassesSolvableGroup( S, 3 );
+        rationalSClasses := RationalClassesSolvableGroup( S, 3 );
         
         # Fuse the classes with the Sylow normalizer.
         rationalSClasses := FusionRationalClassesPSubgroup
@@ -616,7 +609,7 @@ InstallGlobalFunction( RationalClassesPermGroup, function( G, primes )
            conj,             # result of conjugacy test $Hom(y^g)$ to $y_^m$
            m,                # auxiliary variable in calculation of $Gal(y)$
            gens,  gen,       # generators of the Galois group of <y>.
-           i, j, k, l, cl;   # loop variables
+           i, k, cl;   # loop variables
     
     # Treat the trivial case.
     rationalClasses := [  ];
@@ -646,7 +639,7 @@ InstallGlobalFunction( RationalClassesPermGroup, function( G, primes )
 
                     # Set  up the  blocks homomorphism  C  -> C_ and find the
                     # rational classes in C_.
-                    Hom := OperationHomomorphism( C, List( Cycles( z, 
+                    Hom := ActionHomomorphism( C, List( Cycles( z, 
                                    MovedPoints( G ) ), Set ), OnSets );
                     C_ := ImagesSource( Hom );
                     rationalClasses_ := RationalClassesPermGroup
@@ -737,7 +730,6 @@ end );
 
 #############################################################################
 ##
-
 #M  RationalClasses( <G> )  . . . . . . . . . . . . . . . . . . of perm group
 ##
 InstallMethod( RationalClasses, "perm group", true, [ IsPermGroup ], 0,
@@ -758,20 +750,14 @@ end );
 
 #############################################################################
 ##
-#M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . of perm group
+#M  ConjugacyClasses( <G> )
 ##
-InstallMethod( ConjugacyClasses, "perm group", true, [ IsPermGroup ], 0,
-    function( G )
-    if Size( G ) <= 1000  or  IsSimpleGroup( G )  then
-        return ConjugacyClassesByRandomSearch( G );
-    elif IsSolvableGroup( G )  then
-        TryNextMethod();
-    else
-        return Concatenation( List( RationalClasses( G ),
-	                      DecomposedRationalClass ) );
-    fi;
-end );
-
+InstallMethod( ConjugacyClasses, "perm group", true,
+  [ IsPermGroup and HasRationalClasses], 0,
+function( G )
+  return Concatenation( List( RationalClasses( G ),
+		      DecomposedRationalClass ) );
+end);
 
 #############################################################################
 ##

@@ -80,12 +80,27 @@ extern Obj TRY_NEXT_METHOD;
 */
 #define CACHE_OPER(oper,i)      (*            (ADDR_OBJ(oper) +29+ (i)) )
 
+/****************************************************************************
+**
+*F  ENABLED_ATTR( <oper> ) . . . . true if the operation is an attribute and
+**                                 storing is enabled (default) else false
+*/
+
+#define ENABLED_ATTR(oper)                    ((UInt)(ADDR_OBJ(oper)[37])) 
+
+/****************************************************************************
+**
+*F  SET_ENABLED_ATTR( <oper>, <new> )  . set a new value that records whether 
+**                                       storing is enabled for an operation
+*/
+
+#define SET_ENABLED_ATTR(oper, new)       ((ADDR_OBJ(oper)[37]) = (Obj)(new)) 
 
 /****************************************************************************
 **
 *V  SIZE_OPER . . . . . . . . . . . . . . . . . . . . .  size of an operation
 */
-#define SIZE_OPER               (37*sizeof(Bag))
+#define SIZE_OPER               (38*sizeof(Bag))
 
 
 /****************************************************************************
@@ -353,6 +368,8 @@ extern Obj NewFilter (
     Obj                 nams,
     ObjFunc             hdlr );
 
+
+extern Obj DoTestAttribute( Obj self, Obj obj);
 
 /****************************************************************************
 **

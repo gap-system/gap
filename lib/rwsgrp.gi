@@ -16,16 +16,6 @@ Revision.rwsgrp_gi :=
 
 #############################################################################
 ##
-
-#R  IsElementByRwsDefaultRep
-##
-DeclareRepresentation(
-    "IsElementByRwsDefaultRep",
-    IsPositionalObjectRep, [1] );
-
-
-#############################################################################
-##
 #M  ElementByRws( <fam>, <elm> )
 ##
 InstallMethod( ElementByRws,
@@ -38,6 +28,26 @@ function( fam, elm )
     return Objectify( fam!.defaultType, elm );
 end );
 
+##  
+##  Some collectors,  for example a Deep Thought  collector, store the
+##  rhs of conjugate and power relations as generators exponent lists.
+##  If ElementByRws() is called for those rhs, we need to convert them
+##  first to words in the appropriate free group.
+##
+InstallMethod( ElementByRws,
+    true,
+    [ IsElementsFamilyByRws, IsList ],
+    0,
+
+function( fam, list )
+    local  elm, freefam;
+
+    freefam := UnderlyingFamily( fam!.rewritingSystem );
+    elm := ObjByExtRep( freefam, list );
+    elm := [ Immutable(elm) ];
+    return Objectify( fam!.defaultType, elm );
+end );
+
 
 #############################################################################
 ##
@@ -45,7 +55,7 @@ end );
 ##
 InstallMethod( PrintObj,
     true,
-    [ IsElementByRwsDefaultRep ],
+    [ IsMultiplicativeElementWithInverseByRws and IsPackedElementDefaultRep ],
     0,
 
 function( obj )
@@ -59,7 +69,7 @@ end );
 ##
 InstallMethod( UnderlyingElement,
     true,
-    [ IsMultiplicativeElementWithInverseByRws and IsElementByRwsDefaultRep ],
+    [ IsMultiplicativeElementWithInverseByRws and IsPackedElementDefaultRep ],
     0,
 
 function( obj )
@@ -73,7 +83,7 @@ end );
 ##
 InstallMethod( ExtRepOfObj,
     true,
-    [ IsMultiplicativeElementWithInverseByRws and IsElementByRwsDefaultRep ],
+    [ IsMultiplicativeElementWithInverseByRws ],
     0,
 
 function( obj )
@@ -104,9 +114,9 @@ end );
 
 #############################################################################
 ##
-#M  Inverse( <elm-by-rws> )
+#M  InverseOp( <elm-by-rws> )
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseOp,
     "rws-element",
     true,
     [ IsMultiplicativeElementWithInverseByRws ],
@@ -143,9 +153,9 @@ end );
 
 #############################################################################
 ##
-#M  One( <elm-by-rws> )
+#M  OneOp( <elm-by-rws> )
 ##
-InstallMethod( One,
+InstallMethod( OneOp,
     "rws-element",
     true,
     [ IsMultiplicativeElementWithInverseByRws ],
@@ -293,7 +303,7 @@ function( rws )
     fam!.rewritingSystem := Immutable(rws);
 
     # create the default type for the elements
-    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
+    fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
     # that's it
     return fam;
@@ -328,14 +338,14 @@ end );
 ##
 #M  GroupByRwsNC( <rws> )
 ##
-InstallMethod( GroupByRwsNC,
-    true,
-    [ IsRewritingSystem and IsBuiltFromGroup ],
-    100,
+InstallMethod( GroupByRwsNC,"rewriting system", true,
+    [ IsRewritingSystem and IsBuiltFromGroup ], 100,
 
 function( rws )
-    local   fam,  gens,  g,  id,  grp;
+    local   pows,conjs,fam,  gens,  g,  id,  grp,defpcgs,i;
 
+    pows:=rws![SCP_POWERS];
+    conjs:=rws![SCP_CONJUGATES];
     # give the rewriting system a chance to optimise itself
     ReduceRules(rws);
 
@@ -350,14 +360,50 @@ function( rws )
     id := ElementByRws( fam, ReducedOne(rws) );
 
     # and a group
-    grp := Group( gens, id );
+    grp := GroupByGenerators( gens, id );
 
     # it is the whole family
     SetIsWholeFamily( grp, true );
 
     # check the true methods
-    RunGroupByRwsMethods( rws, grp );
-    
+    if HasIsFinite( rws ) then
+      SetIsFinite( grp, IsFinite( rws ) );
+    fi;
+    if IsPolycyclicCollector( rws ) then
+      defpcgs:=DefiningPcgs( ElementsFamily(FamilyObj(grp)) );
+      SetFamilyPcgs( grp, defpcgs);
+      SetHomePcgs( grp, defpcgs);
+      SetGroupOfPcgs(defpcgs,grp);
+      if HasIsFiniteOrdersPcgs(defpcgs) and IsFiniteOrdersPcgs(defpcgs) then
+        SetSize(grp,Product(RelativeOrders(defpcgs)));
+      fi;
+
+      for i in [1..Length(pows)] do
+	if IsBound(pows[i]) then
+	  # this certainly could be done better, if one knew more about rws
+	  # than I do. AH
+	  defpcgs!.powers[i]:=ExponentsOfPcElement(defpcgs,
+	                        ElementByRws(fam,pows[i]));
+	else
+	  defpcgs!.powers[i]:=defpcgs!.zeroVector;
+        fi;
+      od;
+      for pows in [1..Length(conjs)] do
+	for i in [1..Length(conjs[pows])] do
+	  if IsBound(conjs[pows][i]) then
+	  # this certainly could be done better, if one knew more about rws
+	  # than I do. AH
+	    defpcgs!.conjugates[pows][i]:=ExponentsOfPcElement(defpcgs,
+					    ElementByRws(fam,conjs[pows][i]));
+	  else
+	    defpcgs!.conjugates[pows][i]:=ExponentsOfPcElement(defpcgs,
+					    defpcgs[pows]);
+	  fi;
+	od;
+      od;
+
+    fi;
+
     # that's it
     return grp;
 
@@ -367,5 +413,5 @@ end );
 #############################################################################
 ##
 
-#E  rwsgrp.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

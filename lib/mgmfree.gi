@@ -11,7 +11,7 @@
 ##  This file contains the methods for free magmas and free magma-with-ones.
 ##
 ##  Element objects of free magmas are nonassociative words.
-##  For the external representation see the file 'word.gi'.
+##  For the external representation of elements, see the file `word.gi'.
 ##
 ##  (Note that a free semigroup is not a free magma, so we must not deal
 ##  with objects in `IsWord' here but with objects in `IsNonassocWord'.)
@@ -28,10 +28,10 @@ Revision.mgmfree_gi :=
 ##  magma generators of the family are among the magma generators of <M>.
 ##
 InstallMethod( IsWholeFamily,
-    "method for a free magma",
+    "for a free magma",
     true,
     [ IsMagma and IsNonassocWordCollection ], 0,
-    M -> IsSubset( GeneratorsMagmaFamily( ElementsFamily( FamilyObj( M ) ) ),
+    M -> IsSubset( MagmaGeneratorsOfFamily( ElementsFamily( FamilyObj(M) ) ),
                    GeneratorsOfMagma( M ) ) );
 
 
@@ -52,7 +52,18 @@ InstallMethod( IsWholeFamily,
 #M  IsFinite( <M> ) . . . . . . . . . . . . .  for a magma of nonassoc. words
 ##
 InstallMethod( IsFinite,
-    "method for a magma of nonassoc. words",
+    "for a magma of nonassoc. words",
+    true,
+    [ IsMagma and IsNonassocWordCollection ], 0,
+    IsTrivial );
+
+
+#############################################################################
+##
+#M  IsAssociative( <M> )  . . . . . . . . . .  for a magma of nonassoc. words
+##
+InstallMethod( IsAssociative,
+    "for a magma of nonassoc. words",
     true,
     [ IsMagma and IsNonassocWordCollection ], 0,
     IsTrivial );
@@ -63,7 +74,7 @@ InstallMethod( IsFinite,
 #M  Size( <M> ) . . . . . . . . . . . . . . . . . . . .  size of a free magma
 ##
 InstallMethod( Size,
-    "method for a free magma",
+    "for a free magma",
     true,
     [ IsMagma and IsNonassocWordCollection ], 0,
     function( M )
@@ -82,7 +93,7 @@ InstallMethod( Size,
 #T use better method for the whole family
 ##
 InstallMethod( Random,
-    "method for a free magma",
+    "for a free magma",
     true,
     [ IsMagma and IsNonassocWordCollection ], 0,
     function( M )
@@ -118,10 +129,10 @@ InstallMethod( Random,
 
 #############################################################################
 ##
-#M  GeneratorsMagmaFamily( <F> )  . . . . . for family of free magma elements
+#M  MagmaGeneratorsOfFamily( <F> )  . . . . for family of free magma elements
 ##
-InstallMethod( GeneratorsMagmaFamily,
-    "method for a family of free magma elements",
+InstallMethod( MagmaGeneratorsOfFamily,
+    "for a family of free magma elements",
     true,
     [ IsNonassocWordFamily ], 0,
     F -> List( [ 1 .. Length( F!.names ) ], i -> ObjByExtRep( F, i ) ) );
@@ -133,6 +144,7 @@ InstallMethod( GeneratorsMagmaFamily,
 #F  FreeMagma( <rank>, <name> )
 #F  FreeMagma( <name1>, <name2>, ... )
 #F  FreeMagma( <names> )
+#F  FreeMagma( infinity, <name>, <init> )
 ##
 InstallGlobalFunction( FreeMagma,
     function( arg )
@@ -146,12 +158,16 @@ InstallGlobalFunction( FreeMagma,
       names:= InfiniteListOfNames( "x" );
     elif Length( arg ) = 2 and arg[1] = infinity then
       names:= InfiniteListOfNames( arg[2] );
+    elif Length( arg ) = 3 and arg[1] = infinity then
+      names:= InfiniteListOfNames( arg[2], arg[3] );
     elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( "x", String(i) ) );
+      MakeImmutable( names );
     elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( arg[2], String(i) ) );
+      MakeImmutable( names );
     elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
       names:= arg;
     elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1]) then
@@ -169,7 +185,7 @@ InstallGlobalFunction( FreeMagma,
 
     # Make the magma.
     if IsFinite( names ) then
-      M:= MagmaByGenerators( GeneratorsMagmaFamily( F ) );
+      M:= MagmaByGenerators( MagmaGeneratorsOfFamily( F ) );
     else
       M:= MagmaByGenerators( InfiniteListOfGenerators( F ) );
     fi;
@@ -186,6 +202,7 @@ end );
 #F  FreeMagmaWithOne( <rank>, <name> )
 #F  FreeMagmaWithOne( <name1>, <name2>, ... )
 #F  FreeMagmaWithOne( <names> )
+#F  FreeMagmaWithOne( infinity, <name>, <init> )
 ##
 InstallGlobalFunction( FreeMagmaWithOne,
     function( arg )
@@ -199,12 +216,16 @@ InstallGlobalFunction( FreeMagmaWithOne,
       names:= InfiniteListOfNames( "x" );
     elif Length( arg ) = 2 and arg[1] = infinity then
       names:= InfiniteListOfNames( arg[2] );
+    elif Length( arg ) = 3 and arg[1] = infinity then
+      names:= InfiniteListOfNames( arg[2], arg[3] );
     elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( "x", String(i) ) );
+      MakeImmutable( names );
     elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( arg[2], String(i) ) );
+      MakeImmutable( names );
     elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
       names:= arg;
     elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1]) then
@@ -228,7 +249,7 @@ InstallGlobalFunction( FreeMagmaWithOne,
 
     # Make the magma.
     if IsFinite( names ) then
-      M:= MagmaWithOneByGenerators( GeneratorsMagmaFamily( F ) );
+      M:= MagmaWithOneByGenerators( MagmaGeneratorsOfFamily( F ) );
     else
       M:= MagmaWithOneByGenerators( InfiniteListOfGenerators( F ) );
     fi;
@@ -241,7 +262,57 @@ end );
 
 #############################################################################
 ##
-#E  mgmfree.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  ViewObj( <M> )  . . . . . . . . . . . . . . . . . . . .  for a free magma
+##
+InstallMethod( ViewObj,
+    "for a free magma containing the whole family",
+    true,
+    [ IsMagma and IsWordCollection and IsWholeFamily ], 0,
+    function( M )
+    if VIEWLEN * 10 < Length( GeneratorsOfMagma( M ) ) then
+      Print( "<free magma with ", Length( GeneratorsOfMagma( M ) ),
+             " generators>" );
+    else
+      Print( "<free magma on the generators ", GeneratorsOfMagma( M ), ">" );
+    fi;
+end );
 
 
+#############################################################################
+##
+#M  ViewObj( <M> )  . . . . . . . . . . . . . . . . for a free magma-with-one
+##
+InstallMethod( ViewObj,
+    "for a free magma-with-one containing the whole family",
+    true,
+    [ IsMagmaWithOne and IsWordCollection and IsWholeFamily ], 0,
+    function( M )
+    if VIEWLEN * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
+      Print( "<free magma-with-one with ",
+             Length( GeneratorsOfMagmaWithOne( M ) ), " generators>" );
+    else
+      Print( "<free magma-with-one on the generators ",
+             GeneratorsOfMagmaWithOne( M ), ">" );
+    fi;
+end );
+
+
+#############################################################################
+##                                               
+#M  \.( <F>, <n> )  . . . . . . . . . .  access to generators of a free magma
+#M  \.( <F>, <n> )  . . . . . . access to generators of a free magma-with-one
+##                                            
+InstallAccessToGenerators( IsMagma and IsWordCollection and IsWholeFamily,
+                           "free magma containing the whole family",
+                           GeneratorsOfMagma );
+
+InstallAccessToGenerators( IsMagmaWithOne and IsWordCollection
+                                          and IsWholeFamily,
+                           "free magma-with-one containing the whole family",
+                           GeneratorsOfMagmaWithOne );
+
+
+#############################################################################
+##
+#E
 

@@ -105,6 +105,9 @@ typedef UInt    RNam;
 #define CHECK_INT_SMALL_POS(obj) \
  if ( ! IS_INTOBJ(obj) || INT_INTOBJ(obj) <= 0 ) ErrorQuitIntSmallPos(obj);
 
+#define CHECK_INT_POS(obj) \
+ if ( TNUM_OBJ(obj) != T_INTPOS && (! IS_INTOBJ(obj) || INT_INTOBJ(obj) <= 0) ) ErrorQuitIntPos(obj);
+
 #define CHECK_BOOL(obj) \
  if ( obj != True && obj != False ) ErrorQuitBool(obj);
 
@@ -210,64 +213,78 @@ typedef UInt    RNam;
 
 
 /* lists, should go into 'lists.c' * * * * * * * * * * * * * * * * * * * * */
-
 #define C_LEN_LIST(len,list) \
- len = INTOBJ_INT( LEN_LIST(list) );
+ len = LENGTH(list);
 
 #define C_LEN_LIST_FPL(len,list) \
- if ( TNUM_OBJ(list) == T_PLIST ) { \
+ if ( TNUM_OBJ(list) >= FIRST_PLIST_TNUM && \
+      TNUM_OBJ(list) <= LAST_PLIST_TNUM ) { \
   len = INTOBJ_INT( LEN_PLIST(list) ); \
  } \
  else { \
-  len = INTOBJ_INT( LEN_LIST(list) ); \
+  len = LENGTH(list); \
  }
 
+
+
+
 #define C_ELM_LIST(elm,list,p) \
- elm = ELM_LIST( list, p );
+ elm = IS_INTOBJ(p) ? ELM_LIST( list, INT_INTOBJ(p) ) : ELMB_LIST(list, p);
 
 #define C_ELM_LIST_NLE(elm,list,p) \
- elm = ELMW_LIST( list, p );
+ elm = IS_INTOBJ(p) ? ELMW_LIST( list, INT_INTOBJ(p) ) : ELMB_LIST(list, p);
 
 #define C_ELM_LIST_FPL(elm,list,p) \
- if ( TNUM_OBJ(list) == T_PLIST ) { \
-  if ( p <= LEN_PLIST(list) ) { \
-   elm = ELM_PLIST( list, p ); \
-   if ( elm == 0 ) elm = ELM_LIST( list, p ); \
-  } else elm = ELM_LIST( list, p ); \
- } else elm = ELM_LIST( list, p );
+ if ( IS_INTOBJ(p) && \
+      TNUM_OBJ(list) >= FIRST_PLIST_TNUM && \
+      TNUM_OBJ(list) <= LAST_PLIST_TNUM ) { \
+  if ( INT_INTOBJ(p) <= LEN_PLIST(list) ) { \
+   elm = ELM_PLIST( list, INT_INTOBJ(p) ); \
+   if ( elm == 0 ) elm = ELM_LIST( list, INT_INTOBJ(p) ); \
+  } else elm = ELM_LIST( list, INT_INTOBJ(p) ); \
+ } else C_ELM_LIST( elm, list, p )
 
 #define C_ELM_LIST_NLE_FPL(elm,list,p) \
- if ( TNUM_OBJ(list) == T_PLIST ) { \
-  elm = ELM_PLIST( list, p ); \
- } else elm = ELMW_LIST( list, p );
+ if ( IS_INTOBJ(p) && \
+      TNUM_OBJ(list) >= FIRST_PLIST_TNUM && \
+      TNUM_OBJ(list) <= LAST_PLIST_TNUM ) { \
+  elm = ELM_PLIST( list, INT_INTOBJ(p) ); \
+ } else C_ELM_LIST_NLE(elm, list, p)
 
 #define C_ASS_LIST(list,p,rhs) \
- ASS_LIST( list, p, rhs ); \
+  if (IS_INTOBJ(p)) ASS_LIST( list, INT_INTOBJ(p), rhs ); \
+  else ASSB_LIST(list, p, rhs);
 
 #define C_ASS_LIST_FPL(list,p,rhs) \
- if ( TNUM_OBJ(list) == T_PLIST ) { \
-  if ( LEN_PLIST(list) < p ) { \
-   GROW_PLIST( list, p ); \
-   SET_LEN_PLIST( list, p ); \
+ if ( IS_INTOBJ(p) && TNUM_OBJ(list) == T_PLIST ) { \
+  if ( LEN_PLIST(list) < INT_INTOBJ(p) ) { \
+   GROW_PLIST( list, (UInt)INT_INTOBJ(p) ); \
+   SET_LEN_PLIST( list, INT_INTOBJ(p) ); \
   } \
-  SET_ELM_PLIST( list, p, rhs ); \
+  SET_ELM_PLIST( list, INT_INTOBJ(p), rhs ); \
   CHANGED_BAG( list ); \
  } \
  else { \
-  ASS_LIST( list, p, rhs ); \
+  C_ASS_LIST( list, p, rhs ) \
  }
 
 #define C_ASS_LIST_FPL_INTOBJ(list,p,rhs) \
- if ( TNUM_OBJ(list) == T_PLIST ) { \
-  if ( LEN_PLIST(list) < p ) { \
-   GROW_PLIST( list, p ); \
-   SET_LEN_PLIST( list, p ); \
+ if ( IS_INTOBJ(p) && TNUM_OBJ(list) == T_PLIST) { \
+  if ( LEN_PLIST(list) < INT_INTOBJ(p) ) { \
+   GROW_PLIST( list, (UInt)INT_INTOBJ(p) ); \
+   SET_LEN_PLIST( list, INT_INTOBJ(p) ); \
   } \
-  SET_ELM_PLIST( list, p, rhs ); \
+  SET_ELM_PLIST( list, INT_INTOBJ(p), rhs ); \
  } \
  else { \
-  ASS_LIST( list, p, rhs ); \
+  C_ASS_LIST( list, p, rhs ) \
  }
+
+#define C_ISB_LIST( list, pos) \
+  ((IS_INTOBJ(pos) ? ISB_LIST(list, INT_INTOBJ(pos)) : ISBB_LIST( list, pos)) ? True : False)
+
+#define C_UNB_LIST( list, pos) \
+   if (IS_INTOBJ(pos)) UNB_LIST(list, INT_INTOBJ(pos)); else UNBB_LIST(list, pos);
 
 extern  void            AddList (
             Obj                 list,
@@ -281,7 +298,7 @@ extern  void            AddPlist (
  AddList( list, obj );
 
 #define C_ADD_LIST_FPL(list,obj) \
- if ( TNUM_OBJ(list) == T_PLIST ) { \
+ if ( TNUM_OBJ(list) == T_PLIST) { \
   AddPlist( list, obj ); \
  } \
  else { \

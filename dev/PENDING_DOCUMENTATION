@@ -1,2 +1,3 @@
 - Warn of potential inconsistencies if calculations get interrupted.
-
+- Maximal subgroups for Lattice (once this is cleaned up)
+- AttributeValueNotSet

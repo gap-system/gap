@@ -42,38 +42,40 @@ InstallMethod( \=,
 ##
 #M  \<( <obj1>, <obj2> )  . . . . . . . for two objects in different families
 ##
-##  The ordering via `<' is defined for operands <obj1> and <obj2> in
-##  *different* families only if both <obj1> and <obj2> lie in filters among
-##  `IsCyclotomic', `IsFFE', `IsPerm', `IsBool', `IsChar', and `IsList',
-##  where two lists are comparable only if their entries are again objects
-##  in the listed filters.
+#1
+##  Only for the following kinds of objects, an ordering via `\<' of objects
+##  in *different* families (see~"Families") is supported.
+##  Rationals (see~"IsRat") are smallest,
+##  next are cyclotomics (see~"IsCyclotomic"),
+##  followed by finite field elements (see~"IsFFE");
+##  finite field elements in different characteristics are compared
+##  via their characteristics,
+##  next are permutations (see~"IsPerm"),
+##  followed by the boolean values `true', `false', and `fail'
+##  (see~"IsBool"),
+##  characters (such as `{'}a{'}', see~"IsChar"),
+##  and lists (see~"IsList") are largest;
+##  note that two lists can be compared with `\<' if and only if their
+##  elements are again objects that can be compared with `\<'.
 ##
-##  For other objects, {\GAP} does *not* provide an ordering via `<'.
+##  For other objects, {\GAP} does *not* provide an ordering via `\<'.
 ##  The reason for this is that a total ordering of all {\GAP} objects
 ##  would be hard to maintain when new kinds of objects are introduced,
 ##  and such a total ordering is hardly used in its full generality.
 ##
-##  However, for objects in the filters listed above, the ordering via `<'
+##  However, for objects in the filters listed above, the ordering via `\<'
 ##  has turned out to be useful.
-##  For example, one can form sorted lists containing integers and nested
-##  lists of integers, and then search in them using `PositionSorted'.
+##  For example, one can form *sorted lists* containing integers and nested
+##  lists of integers, and then search in them using `PositionSorted'
+##  (see~"Finding Positions in Lists").
 ##
-##  Of course it is possible to define an ordering via `<' also for objects
-##  in certain other filters, by installing appropriate methods for `\<'.
+##  Of course it would in principle be possible to define an ordering
+##  via `\<' also for certain other objects,
+##  by installing appropriate methods for the operation `\\\<'.
 ##  But this may lead to problems at least as soon as one loads {\GAP} code
 ##  in which the same is done, under the assumption that one is completely
-##  free to define an ordering for objects other than the ones for which the
-##  ``official'' {\GAP} provides already an ordering.
-##
-##  In {\GAP}, the following rules hold for the comparison of objects in
-##  different families.
-##  - cyclotomics are smaller than finite field elements,
-##  - finite field elements in different characteristics are compared
-##    via their characteristics,
-##  - finite field elements are smaller than permutations,
-##  - permutations are smaller than Booleans (`true', `false', and `fail'),
-##  - Booleans are smaller than characters (such as `'a''),
-##  - characters are smaller than lists
+##  free to define an ordering via `\<' for other objects than the ones
+##  for which the ``official'' {\GAP} provides already an ordering via `\<'.
 ##
 TO_COMPARE := [
     [ IsCyclotomic, "cyclotomic" ],
@@ -83,19 +85,24 @@ TO_COMPARE := [
     [ IsChar,       "character" ],
     [ IsList,       "list" ],
                                               ];
-for i in [ 1 .. Length( TO_COMPARE ) ] do
-  for j in [ 1 .. Length( TO_COMPARE ) ] do
-    if i <> j then
-      if i < j then func:= ReturnTrue; else func:= ReturnFalse; fi;
-      infostr:= "for a ";
-      APPEND_LIST_INTR( infostr, TO_COMPARE[i][2] );
-      APPEND_LIST_INTR( infostr, ", and a " );
-      APPEND_LIST_INTR( infostr, TO_COMPARE[j][2] );
-      InstallMethod( \<, infostr, true,
-          [ TO_COMPARE[i][1], TO_COMPARE[j][1] ], 0, func );
-    fi;
-  od;
-od;
+MAKE_COMP := function()
+    local i, j, func, infostr;
+
+    for i in [ 1 .. Length( TO_COMPARE ) ] do
+      for j in [ 1 .. Length( TO_COMPARE ) ] do
+        if i <> j then
+          if i < j then func:= ReturnTrue; else func:= ReturnFalse; fi;
+          infostr:= "for a ";
+          APPEND_LIST_INTR( infostr, TO_COMPARE[i][2] );
+          APPEND_LIST_INTR( infostr, ", and a " );
+          APPEND_LIST_INTR( infostr, TO_COMPARE[j][2] );
+          InstallMethod( \<, infostr, true,
+              [ TO_COMPARE[i][1], TO_COMPARE[j][1] ], 0, func );
+        fi;
+      od;
+    od;
+end;
+MAKE_COMP();
 
 InstallMethod( \<,
     "for two finite field elements in different characteristic",
@@ -162,7 +169,7 @@ function( str, n )
 
     # If <width> is too small, return.
     if Length( str ) >= n then
-        return str;
+        return ShallowCopy(str);
     fi;
 
     # If <width> is positive, blanks are filled in from the left.
@@ -195,7 +202,7 @@ function( str, n )
 
     # If <width> is too small, return.
     if Length( str ) >= -n then
-        return str;
+        return ShallowCopy(str);
     fi;
 
     # If <width> is negative, blanks are filled in from the right.
@@ -213,6 +220,18 @@ function( str, n )
 end );
 
 
+InstallMethod( FormattedString,
+    "for an object, and zero",
+    true,
+    [ IsObject,
+      IsZeroCyc ],
+    0,
+
+function( str, zero ) 
+    return ShallowCopy(String( str )); 
+end );
+
+
 #############################################################################
 ##
 #M  PrintObj( <obj> )
@@ -221,7 +240,7 @@ InstallMethod( PrintObj,
     "for an object with name",
     true,
     [ HasName ],
-    SUM_FLAGS,
+    SUM_FLAGS, # override anything specific
     function ( obj )  Print( Name( obj ) ); end );
 
 
@@ -241,7 +260,7 @@ InstallMethod( ViewObj,
     "for an object with name",
     true,
     [ HasName ],
-    SUM_FLAGS,
+    SUM_FLAGS, # override anything specific
     function ( obj )  Print( Name( obj ) ); end );
 
 
@@ -403,15 +422,20 @@ end );
 
 #############################################################################
 ##
-#O  Display( <obj> )  . . . . . . . . . . . . . . . . . . . display an object
+#M  Display( <obj> )  . . . . . . . . . . . . . . . . . . . display an object
 ##
-InstallMethod(Display,"generic: use Print",true, [ IsObject ],0, Print);
+##  We do not call `PrintObj' because strings shall be displayed without
+##  enclosing doublequotes.
+##
+InstallMethod( Display,
+    "generic: use Print",
+    true,
+    [ IsObject ], 0,
+    Print );
 
 
 #############################################################################
 ##
 
-#E  object.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
+#E
 

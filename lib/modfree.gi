@@ -7,7 +7,7 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains generic methods for free modules.
+##  This file contains generic methods for free left modules.
 ##
 Revision.modfree_gi :=
     "@(#)$Id$";
@@ -18,7 +18,7 @@ Revision.modfree_gi :=
 #M  \=( <V>, <W> )  . . . . . . . . . test if two free left modules are equal
 ##
 InstallMethod( \=,
-    "method for two free left modules (at least one fin. dim.)",
+    "for two free left modules (at least one fin. dim.)",
     IsIdenticalObj,
     [ IsFreeLeftModule, IsFreeLeftModule ], 0,
     function( V, W )
@@ -56,25 +56,19 @@ InstallMethod( \=,
 ##  so we are not allowed to compare first w.r.t. the left acting domains.)
 ##
 InstallMethod( \<,
-    "method for two free left modules",
+    "for two free left modules",
     IsIdenticalObj,
     [ IsFreeLeftModule, IsFreeLeftModule ], 0,
     function( V, W )
-    local inters, BV, BW, i;
+    local inters;
     if LeftActingDomain( V ) <> LeftActingDomain( W ) then
       inters:= Intersection( LeftActingDomain( V ), LeftActingDomain( W ) );
       return AsLeftModule( inters, V ) < AsLeftModule( inters, W );
     elif Dimension( V ) <> Dimension( W ) then
       return Dimension( V ) < Dimension( W );
     else
-      BV:= Reversed( BasisVectors( CanonicalBasis( V ) ) );
-      BW:= Reversed( BasisVectors( CanonicalBasis( W ) ) );
-      for i in [ 1 .. Length( BV ) ] do
-        if BV[i] < BW[i] then
-          return true;
-        fi;
-      od;
-      return false;
+      return   Reversed( BasisVectors( CanonicalBasis( V ) ) )
+             < Reversed( BasisVectors( CanonicalBasis( W ) ) );
     fi;
     end );
 
@@ -86,11 +80,11 @@ InstallMethod( \<,
 ##  We delegate this task to a basis.
 ##
 InstallMethod( \in,
-    "method for vector and fin. dim. free left module",
+    "for vector and fin. dim. free left module",
     IsElmsColls,
     [ IsVector, IsFreeLeftModule and IsFiniteDimensional ], 0,
     function( v, V )
-    return Coefficients( BasisOfDomain( V ), v ) <> fail;
+    return Coefficients( Basis( V ), v ) <> fail;
     end );
 
 
@@ -101,6 +95,13 @@ InstallMethod( \in,
 ##  A free left module is finite if and only if it is trivial (that is, all
 ##  generators are zero) or if it is finite dimensional and the coefficients
 ##  domain is finite.
+##
+##  Note that we have to be careful not to delegate to `IsFinite' for the
+##  left acting domain if the module is equal to its left acting domain,
+##  which may occur for fields.
+##  (Note that no special method for a FLMLOR, FLMLOR-with-one, or division
+##  ring is needed since all generator dependent questions are handled in the
+##  `IsTrivial' call.)
 ##
 InstallImmediateMethod( IsFinite,
     IsFreeLeftModule and HasIsFiniteDimensional, 0,
@@ -113,10 +114,22 @@ InstallImmediateMethod( IsFinite,
     end );
 
 InstallMethod( IsFinite,
-    "method for a free left module",
-    true, [ IsFreeLeftModule ], 0,
-    V -> IsFiniteDimensional( V )
-         and ( IsFinite( LeftActingDomain( V ) ) or IsTrivial( V ) ) );
+    "for a free left module",
+    true,
+    [ IsFreeLeftModule ], 0,
+    function( V )
+    if not IsFiniteDimensional( V ) then
+      return false;
+    elif IsTrivial( V ) then
+      return true;
+    elif V <> LeftActingDomain( V ) then
+      return IsFinite( LeftActingDomain( V ) );
+    elif Characteristic( V ) = 0 then
+      return false;
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################
@@ -127,8 +140,9 @@ InstallImmediateMethod( IsTrivial, IsFreeLeftModule and HasDimension, 0,
     V -> Dimension( V ) = 0 );
 
 InstallMethod( IsTrivial,
-    "method for a free left module",
-    true, [ IsFreeLeftModule ], 0,
+    "for a free left module",
+    true,
+    [ IsFreeLeftModule ], 0,
     V -> Dimension( V ) = 0 );
 
 
@@ -137,8 +151,9 @@ InstallMethod( IsTrivial,
 #M  Size( <V> ) . . . . . . . . . . . . . . . . .  size of a free left module
 ##
 InstallMethod( Size,
-    "method for a free left module",
-    true, [ IsFreeLeftModule ], 0,
+    "for a free left module",
+    true,
+    [ IsFreeLeftModule ], 0,
     function( V )
     if IsFiniteDimensional( V ) then
       if   IsFinite( LeftActingDomain( V ) ) then
@@ -154,7 +169,7 @@ InstallMethod( Size,
 #############################################################################
 ##
 #M  AsList( <V> ) . . . . . . . . . . . . . .  elements of a free left module
-#M  AsListSorted( <V> ) . . . . . . . . . . .  elements of a free left module
+#M  AsSSortedList( <V> ) . . . . . . . . . . .  elements of a free left module
 ##
 ##  is the set of elements of the free left module <V>,
 ##  computed from a basis of <V>.
@@ -174,7 +189,7 @@ AsListOfFreeLeftModule := function( V )
       Error( "cannot compute elements list of infinite domain <V>" );
     fi;
 
-    B    := BasisOfDomain( V );
+    B    := Basis( V );
     elms := [ Zero( V ) ];
 #T check whether we have the elements now ?
     for v in BasisVectors( B ) do
@@ -191,16 +206,18 @@ AsListOfFreeLeftModule := function( V )
 end;
 
 InstallMethod( AsList,
-    "method for a free left module",
-    true, [ IsFreeLeftModule ], 0,
+    "for a free left module",
+    true,
+    [ IsFreeLeftModule ], 0,
     AsListOfFreeLeftModule );
 
-InstallMethod( AsListSorted,
-    "method for a free left module",
-    true, [ IsFreeLeftModule ], 0,
+InstallMethod( AsSSortedList,
+    "for a free left module",
+    true,
+    [ IsFreeLeftModule ], 0,
     AsListOfFreeLeftModule );
 #T problem: may be called twice, but does the same job ...
-#T Note that 'AsList' is not allowed to call 'AsListSorted'!
+#T Note that 'AsList' is not allowed to call 'AsSSortedList'!
 
 
 #############################################################################
@@ -208,15 +225,16 @@ InstallMethod( AsListSorted,
 #M  Random( <V> ) . . . . . . . . . . . . random vector of a free left module
 ##
 InstallMethod( Random,
-    "method for a free left module",
-    true, [ IsFreeLeftModule ], 0,
+    "for a free left module",
+    true,
+    [ IsFreeLeftModule ], 0,
     function( V )
 
     local F;    # coefficient field of <V>
 
     if IsFiniteDimensional( V ) then
       F:= LeftActingDomain( V );
-      return LinearCombination( BasisOfDomain( V ),
+      return LinearCombination( Basis( V ),
                                 List( [ 1 .. Dimension( V ) ],
                                       x -> Random( F ) ) );
     else
@@ -230,24 +248,27 @@ InstallMethod( Random,
 #M  IsSubset( <V>, <U> )
 ##
 InstallMethod( IsSubset,
-    "method for two free left modules",
+    "for two free left modules",
     IsIdenticalObj,
     [ IsFreeLeftModule, IsFreeLeftModule ], 0,
     function( V, U )
 
-    local base;
+    local gensU, base;
 
-    if IsSubset( LeftActingDomain( V ), LeftActingDomain( U ) ) then
-      return ForAll( GeneratorsOfLeftModule( U ), v -> v in V );
+    gensU:= GeneratorsOfLeftModule( U );
+
+    if IsEmpty( gensU ) then
+      return Zero( U ) in V;
+    elif IsSubset( LeftActingDomain( V ), LeftActingDomain( U ) ) then
+      return ForAll( gensU, v -> v in V );
     else
-      base:= BasisVectors( BasisOfDomain(
+      base:= BasisVectors( Basis(
 #T does only work if the left acting domain is a field!
 #T (would work for division rings or algebras, but general rings ?)
                AsField( Intersection( LeftActingDomain( V ),
                                       LeftActingDomain( U ) ),
                         LeftActingDomain( U ) ) ) );
-      return ForAll( GeneratorsOfLeftModule( U ),
-                     v -> ForAll( base, x -> x * v in V ) );
+      return ForAll( gensU, v -> ForAll( base, x -> x * v in V ) );
     fi;
     end );
 
@@ -257,12 +278,12 @@ InstallMethod( IsSubset,
 #M  Dimension( <V> )
 ##
 InstallMethod( Dimension,
-    "method for a free left module",
+    "for a free left module",
     true,
     [ IsFreeLeftModule ], 0,
     function( V )
     if IsFiniteDimensional( V ) then
-      return Length( BasisVectors( BasisOfDomain( V ) ) );
+      return Length( BasisVectors( Basis( V ) ) );
     else
       return infinity;
     fi;
@@ -274,7 +295,7 @@ InstallMethod( Dimension,
 #M  IsFiniteDimensional( <M> )  . for a free left module with known dimension
 ##
 InstallMethod( IsFiniteDimensional,
-    "method for a free left module with known dimension",
+    "for a free left module with known dimension",
     true,
     [ IsFreeLeftModule and HasDimension ], 0,
     M -> IsInt( Dimension( M ) ) );
@@ -285,9 +306,9 @@ InstallMethod( IsFiniteDimensional,
 #M  GeneratorsOfLeftModule( <V> ) . left module geners. of a free left module
 ##
 InstallImmediateMethod( GeneratorsOfLeftModule,
-    IsFreeLeftModule and HasBasisOfDomain, 0,
+    IsFreeLeftModule and HasBasis and IsAttributeStoringRep, 0,
     function( V )
-    V:= BasisOfDomain( V );
+    V:= Basis( V );
     if HasBasisVectors( V ) then
       return BasisVectors( V );
     else
@@ -305,10 +326,10 @@ InstallImmediateMethod( GeneratorsOfLeftModule,
 ##  a prescribed basis.
 ##
 InstallMethod( Enumerator,
-    "method for free left module (delegate to 'EnumeratorByBasis')",
+    "for free left module (delegate to 'EnumeratorByBasis')",
     true,
     [ IsFreeLeftModule ], 0,
-    V -> EnumeratorByBasis( BasisOfDomain( V ) ) );
+    V -> EnumeratorByBasis( Basis( V ) ) );
 
 
 #############################################################################
@@ -320,10 +341,10 @@ InstallMethod( Enumerator,
 ##  a prescribed basis.
 ##
 InstallMethod( Iterator,
-    "method for free left module (delegate to 'IteratorByBasis')",
+    "for free left module (delegate to 'IteratorByBasis')",
     true,
     [ IsFreeLeftModule ], 0,
-    V -> IteratorByBasis( BasisOfDomain( V ) ) );
+    V -> IteratorByBasis( Basis( V ) ) );
 
 
 #############################################################################
@@ -331,15 +352,15 @@ InstallMethod( Iterator,
 #M  ClosureLeftModule( <V>, <a> ) . . . . . . . closure of a free left module
 ##
 InstallMethod( ClosureLeftModule,
-    "method for free left module and vector",
+    "for free left module and vector",
     IsCollsElms,
-    [ IsFreeLeftModule and HasBasisOfDomain, IsVector ], 0,
+    [ IsFreeLeftModule and HasBasis, IsVector ], 0,
     function( V, w )
     local   B;  # basis of 'V'
 
     # We can test membership easily.
 #T why easily?
-    B:= BasisOfDomain( V );
+    B:= Basis( V );
     if Coefficients( B, w ) = fail then
       return LeftModuleByGenerators( LeftActingDomain( V ),
                              Concatenation( BasisVectors( B ), [ w ] ) );
@@ -351,10 +372,7 @@ InstallMethod( ClosureLeftModule,
 
 #############################################################################
 ##
-#F  FreeLeftModule( <R>, <gens> )
-#F  FreeLeftModule( <R>, <gens>, <zero> )
-#F  FreeLeftModule( <R>, <gens>, "basis" )
-#F  FreeLeftModule( <R>, <gens>, <zero>, "basis" )
+#F  FreeLeftModule( <R>, <gens>[, <zero>][, "basis"] )
 ##
 InstallGlobalFunction(FreeLeftModule,function( arg )
 
@@ -390,8 +408,7 @@ InstallGlobalFunction(FreeLeftModule,function( arg )
 
     # no argument given, error
     else
-      Error( "usage: FreeLeftModule( <R>, <gens> ) ",
-             "resp. FreeLeftModule( <R>, <gens>, <zero> )");
+      Error( "usage: FreeLeftModule( <R>, <gens>[, <zero>][, \"basis\"] )");
     fi;
 
     # Return the result.
@@ -418,21 +435,21 @@ end);
 #T decide here that we want to forget about it ?
 ##
 InstallMethod( UseBasis,
-    "method for a free left module and a homog. list",
+    "for a free left module and a homog. list",
     true,
     [ IsFreeLeftModule, IsHomogeneousList ], 0,
     function( V, gens )
-    local B;
+#T    local B;
     if not HasGeneratorsOfLeftModule( V ) then
       SetGeneratorsOfLeftModule( V, gens );
     fi;
     if not HasDimension( V ) then
       SetDimension( V, Length( gens ) );
     fi;
-#T     if not IsBound( V.basis ) then
-#T       B:= Basis( V, gens, true );
+#T     if not HasBasis( V ) then
+#T       B:= BasisNC( V, gens );
 #T       if   IsSemiEchelonized( B ) then
-#T         V.basis:= B;
+#T         SetBasis( V, B );
 #T       elif IsBound( B.basis ) then
 #T         V.basis:= B.basis;
 #T       fi;
@@ -502,5 +519,5 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#E  modfree.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

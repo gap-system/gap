@@ -214,6 +214,24 @@ Composing the TEX file exa.tex\\
 Composing the TEX file exa1.tex\\
 }
 
+\section{Variable replacement}
+
+The configuration file may also contain lines that assign variables
+\begin{verbatim}
+gapname=4r1
+datum=5. Nov. 1837
+\end{verbatim}
+
+Occurences of these variables in double squiggly brackets will be replaced
+by their value. For example a line
+\begin{verbatim}
+The last release is {{gapname}} of {{datum}}
+\end{verbatim}
+will be replaced by:
+\begin{verbatim}
+The last release is 4r1 of 5. Nov. 1837
+\end{verbatim}
+This feature is very handy for information that changes over time.
 
 \end{document}
 

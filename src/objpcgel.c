@@ -237,6 +237,65 @@ Obj Func8Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
     }
 }
 
+/****************************************************************************
+**
+*F  Func8Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func8Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
+{
+    UInt	len;		/* length of pcgs */
+    Obj		el;		/* exponents list */
+    UInt        le;
+    UInt	indx;
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt        ebits;          /* number of exponent bits                 */
+    UInt        npos;           /* the wanted generator number             */
+    UInt        num;            /* number of syllables in <w>              */
+    UInt1 *     ptr;            /* pointer to the syllables of <w>         */
+    UInt        i,j;            /* loop                                    */
+    UInt        gen;            /* current generator number                */
+
+    len=LEN_LIST(pcgs);
+    el=NEW_PLIST(T_PLIST_CYC,len);
+    SET_LEN_PLIST(el,len);
+    indx=1; /* current index in el we assign to */
+    num = NPAIRS_WORD(w);
+
+    le=1; /* last exponent which has been assigned+1 */
+
+    ebits = EBITS_WORD(w);
+    exps  = 1UL << (ebits-1);
+    expm  = exps - 1;
+
+    ptr   = ((UInt1*)DATA_WORD(w));
+    for ( i = 1;  i <= num;  i++, ptr++ ) {
+      gen = ((*ptr) >> ebits) + 1;
+      for (j=le; j< gen;j++) {
+        /* zero out intermediate entries */
+	SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+	indx++;
+      }
+
+      if ( (*ptr) & exps )
+	  SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
+      else
+	  SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
+      indx++;
+      le=gen+1;
+    }
+
+    /* zeroes at the end */
+    for (j=le; j<=len;j++) {
+      /* zero out  */
+      SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+      indx++;
+    }
+
+    CHANGED_BAG(el);
+    return el;
+}
+
 
 /****************************************************************************
 **
@@ -328,10 +387,68 @@ Obj Func16Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
     }
 }
 
+/****************************************************************************
+**
+*F  Func16Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func16Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
+{
+    UInt	len;		/* length of pcgs */
+    Obj		el;		/* exponents list */
+    UInt        le;
+    UInt	indx;
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt        ebits;          /* number of exponent bits                 */
+    UInt        npos;           /* the wanted generator number             */
+    UInt        num;            /* number of syllables in <w>              */
+    UInt2 *     ptr;            /* pointer to the syllables of <w>         */
+    UInt        i,j;            /* loop                                    */
+    UInt        gen;            /* current generator number                */
+
+    len=LEN_LIST(pcgs);
+    el=NEW_PLIST(T_PLIST_CYC,len);
+    SET_LEN_PLIST(el,len);
+    indx=1; /* current index in el we assign to */
+    num = NPAIRS_WORD(w);
+
+    le=1; /* last exponent which has been assigned+1 */
+
+    ebits = EBITS_WORD(w);
+    exps  = 1UL << (ebits-1);
+    expm  = exps - 1;
+
+    ptr   = ((UInt2*)DATA_WORD(w));
+    for ( i = 1;  i <= num;  i++, ptr++ ) {
+      gen = ((*ptr) >> ebits) + 1;
+      for (j=le; j< gen;j++) {
+        /* zero out intermediate entries */
+	SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+	indx++;
+      }
+
+      if ( (*ptr) & exps )
+	  SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
+      else
+	  SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
+      indx++;
+      le=gen+1;
+    }
+
+    /* zeroes at the end */
+    for (j=le; j<=len;j++) {
+      /* zero out  */
+      SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+      indx++;
+    }
+
+    CHANGED_BAG(el);
+    return el;
+}
+
 
 /****************************************************************************
 **
-
 *F  Func32Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
 */
 Obj Func32Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
@@ -419,6 +536,65 @@ Obj Func32Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
     }
 }
 
+/****************************************************************************
+**
+*F  Func32Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
+{
+    UInt	len;		/* length of pcgs */
+    Obj		el;		/* exponents list */
+    UInt        le;
+    UInt	indx;
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt        ebits;          /* number of exponent bits                 */
+    UInt        npos;           /* the wanted generator number             */
+    UInt        num;            /* number of syllables in <w>              */
+    UInt4 *     ptr;            /* pointer to the syllables of <w>         */
+    UInt        i,j;            /* loop                                    */
+    UInt        gen;            /* current generator number                */
+
+    len=LEN_LIST(pcgs);
+    el=NEW_PLIST(T_PLIST_CYC,len);
+    SET_LEN_PLIST(el,len);
+    indx=1; /* current index in el we assign to */
+    num = NPAIRS_WORD(w);
+
+    le=1; /* last exponent which has been assigned+1 */
+
+    ebits = EBITS_WORD(w);
+    exps  = 1UL << (ebits-1);
+    expm  = exps - 1;
+
+    ptr   = ((UInt4*)DATA_WORD(w));
+    for ( i = 1;  i <= num;  i++, ptr++ ) {
+      gen = ((*ptr) >> ebits) + 1;
+      for (j=le; j< gen;j++) {
+        /* zero out intermediate entries */
+	SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+	indx++;
+      }
+
+      if ( (*ptr) & exps )
+	  SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
+      else
+	  SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
+      indx++;
+      le=gen+1;
+    }
+
+    /* zeroes at the end */
+    for (j=le; j<=len;j++) {
+      /* zero out  */
+      SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+      indx++;
+    }
+
+    CHANGED_BAG(el);
+    return el;
+}
+
 
 /****************************************************************************
 **
@@ -468,6 +644,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "8Bits_LeadingExponentOfPcElement", 2, "8_bits_pcgs, 8_bits_word",
       Func8Bits_LeadingExponentOfPcElement, "src/objpcgel.c:8Bits_LeadingExponentOfPcElement" },
 
+    { "8Bits_ExponentsOfPcElement", 2, "8_bits_pcgs, 8_bits_pcword",
+      Func8Bits_ExponentsOfPcElement, "src/objpcgel.c:8Bits_ExponentsOfPcElement" },
+
     { "16Bits_DepthOfPcElement", 2, "16_bits_pcgs, 16_bits_pcword",
       Func16Bits_DepthOfPcElement, "src/objpcgel.c:16Bits_DepthOfPcElement" },
 
@@ -477,6 +656,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "16Bits_LeadingExponentOfPcElement", 2, "16_bits_pcgs, 16_bits_word",
       Func16Bits_LeadingExponentOfPcElement, "src/objpcgel.c:16Bits_LeadingExponentOfPcElement" },
 
+    { "16Bits_ExponentsOfPcElement", 2, "16_bits_pcgs, 16_bits_pcword",
+      Func16Bits_ExponentsOfPcElement, "src/objpcgel.c:16Bits_ExponentsOfPcElement" },
+
     { "32Bits_DepthOfPcElement", 2, "32_bits_pcgs, 32_bits_pcword",
       Func32Bits_DepthOfPcElement, "src/objpcgel.c:32Bits_DepthOfPcElement" },
 
@@ -485,6 +667,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "32Bits_LeadingExponentOfPcElement", 2, "32_bits_pcgs, 32_bits_word",
       Func32Bits_LeadingExponentOfPcElement, "src/objpcgel.c:32Bits_LeadingExponentOfPcElement" },
+
+    { "32Bits_ExponentsOfPcElement", 2, "32_bits_pcgs, 32_bits_pcword",
+      Func32Bits_ExponentsOfPcElement, "src/objpcgel.c:32Bits_ExponentsOfPcElement" },
 
     { 0 }
 

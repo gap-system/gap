@@ -1,0 +1,46 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  fldabnum.msk                 GAP documentation              Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\PreliminaryChapter{Abelian Number Fields}
+
+\Declaration{CyclotomicField}
+\Declaration{AbelianNumberField}
+\Declaration{GaussianRationals}
+\Declaration{IsGaussianRationals}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Integral Bases for Abelian Number Fields}
+
+\Declaration{ZumbroichBase}
+\Declaration{LenstraBase}
+
+For details about the bases see \cite{Bre97}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Abelian Number Fields}
+
+For operations for cyclotomics, e.g., `Conductor' (see~"Conductor"),
+see Chapter~"Cyclotomic Numbers".
+
+\Declaration{IsNumberField}
+\Declaration{IsAbelianNumberField}
+\Declaration{GaloisStabilizer}
+\Declaration{ComplexConjugate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Gaussians}
+
+\Declaration{GaussianIntegers}
+\Declaration{IsGaussianIntegers}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

@@ -37,7 +37,8 @@ extern  Obj             IntrResult;
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
 *F  IntrEnd(<error>)  . . . . . . . . . . . . . . . . . . stop an interpreter
 **
-**  'IntrBegin' starts a new interpreter.
+**  'IntrBegin( <frame> )' starts a new interpreter in context <frame>
+**  if in doubt, pass BottomLVars as <frame>
 **
 **  'IntrEnd(<error>)' stops the current interpreter.
 **
@@ -50,16 +51,16 @@ extern  Obj             IntrResult;
 **  If  'IntrEnd' returns 2, then a  return-void-statement  was  interpreted.
 **  If 'IntrEnd' returns 8, then a quit-statement was interpreted.
 */
-extern  void            IntrBegin ( void );
+extern  void            IntrBegin ( Obj frame );
 
-extern  Int             IntrEnd (
+extern  ExecStatus             IntrEnd (
             UInt                error );
 
 
 /****************************************************************************
 **
 *F  IntrFuncCallBegin() . . . . . . . . . . .  interpret function call, begin
-*F  IntrFuncCallEnd(<funccall>,<nr>)  . . . . .  interpret function call, end
+*F  IntrFuncCallEnd(<funccall>,<options>,<nr>)  interpret function call, end
 **
 **  'IntrFuncCallBegin' is an action  to  interpret a  function call.  It  is
 **  called by  the reader  when  it  encounters  the parenthesis  '(',  i.e.,
@@ -69,14 +70,39 @@ extern  Int             IntrEnd (
 **  called by    the reader when it encounters     the parenthesis ')', i.e.,
 **  *after* the argument expressions are read.  <funccall>  is 1 if this is a
 **  function call, and 0 if this is a procedure call.  <nr>  is the number of
-**  arguments.
+**  arguments. <options> is 1 if options were present after the ':' in which
+**  case the options have been read already.
 */
 extern  void            IntrFuncCallBegin ( void );
 
 extern  void            IntrFuncCallEnd (
             UInt                funccall,
+	    UInt                options,
             UInt                nr );
 
+/****************************************************************************
+**
+*F  IntrFuncCallOptionsBegin() . . . .. . . . . .  interpret options, begin
+*F  IntrFuncCallOptionsBeginElmName(<rnam>).  interpret options, begin element
+*F  IntrFuncCallOptionsBeginElmExpr() . .. .  interpret options, begin element
+*F  IntrFuncCallOptionsEndElm() . . .. .  . .  interpret options, end element
+*F  IntrFuncCallOptionsEndElmEmpty() .. .  . .  interpret options, end element
+*F  IntrFuncCallOptionsEnd(<nr>)  . . . . . . . .  interpret options, end
+**
+**  The net effect of all of these is to leave a record object on the stack
+**  where IntrFuncCallEnd can use it
+*/
+extern void            IntrFuncCallOptionsBegin ( void );
+
+extern void            IntrFuncCallOptionsBeginElmName ( UInt rnam );
+
+extern void            IntrFuncCallOptionsBeginElmExpr ( void );
+
+extern void            IntrFuncCallOptionsEndElm ( void );
+
+extern void            IntrFuncCallOptionsEndElmEmpty ( void );
+
+extern void            IntrFuncCallOptionsEnd ( UInt nr );
 
 /****************************************************************************
 **
@@ -769,6 +795,14 @@ extern  void            IntrIsbComObjName (
             UInt                rnam );
 
 extern  void            IntrIsbComObjExpr ( void );
+
+/****************************************************************************
+**
+*F  IntrEmpty() . . . . . . . . . . . . .  Interpret an empty statement body
+**
+*/
+
+extern void             IntrEmpty ( void );
 
 /****************************************************************************
 **

@@ -313,7 +313,7 @@ InstallMethod(AddImage, FamMapFamSourceFamRange,
   [ IsListHashTable and IsExtensibleGeneralMapping and IsMutable, 
     IsObject, IsObject], 0,
   function(ht, obj, val)
-    local h,list, entrypos, im;
+    local h,list, entrypos;
     Info(InfoHashTables,3,"Adding ", obj, "->", val, " to list hash table");
     h := ht!.hashFunc(obj);
     if h = fail then
@@ -352,7 +352,7 @@ InstallMethod(AddImageNC, FamMapFamSourceFamRange,
   [ IsList and IsExtensibleGeneralMapping and IsMutable, 
     IsObject, IsObject], 0,
   function(ht, obj, val)
-    local h,list, entrypos, im;
+    local h,list, entrypos;
     Info(InfoHashTables,3,"Adding ", obj, "->", val, " to list hash table");
     h := ht!.hashFunc(obj);
     Assert(2, h <> fail);
@@ -872,7 +872,6 @@ InstallMethod(ShallowCopy, true, [IsFlatHashTable and IsSingleValued], 0,
                        table := ShallowCopy(ht!.table)
                        ));
 end);
-    
 
 #############################################################################
 ##

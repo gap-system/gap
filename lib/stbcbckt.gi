@@ -23,6 +23,7 @@ if not IsBound( LARGE_TASK )  then  LARGE_TASK := false;   fi;
 #F  IsSymmetricGroupQuick( <G> )  . . . . . . . . . . . . . . . .  quick test
 ##
 InstallGlobalFunction( IsSymmetricGroupQuick, function( G )
+    return false;
     return ( HasIsNaturalSymmetricGroup( G )  or  NrMovedPoints( G ) <= 100 )
        and IsNaturalSymmetricGroup( G );
 end );
@@ -391,24 +392,25 @@ InstallGlobalFunction( Suborbits, function( arg )
     if Omega <> MovedPoints( H )  then
         suborbits := [  ];
     elif len <> 0  then
-        b := b ^ conj;
-        if not IsBound( H!.stabSuborbits )  then
-            H!.stabSuborbits       := [  ];
-            H!.stabSuborbitsLabels := [  ];
-        fi;
-        p := Position( H!.stabSuborbitsLabels, tofix );
-        if p = fail  then
-            Add( H!.stabSuborbitsLabels, tofix );
-            p := Length( H!.stabSuborbitsLabels );
-        fi;
-        tofix := p;
-        if not IsBound( H!.stabSuborbits[ tofix ] )  then
-            H!.stabSuborbits[ tofix ] := [  ];
-        fi;
-        if not IsBound( H!.stabSuborbits[ tofix ][ len ] )  then
-            H!.stabSuborbits[ tofix ][ len ] := [  ];
-        fi;
-        suborbits := H!.stabSuborbits[ tofix ][ len ];
+      b := b ^ conj;
+#        if not IsBound( H!.stabSuborbits )  then
+#            H!.stabSuborbits       := [  ];
+#            H!.stabSuborbitsLabels := [  ];
+#        fi;
+#        p := Position( H!.stabSuborbitsLabels, tofix );
+#        if p = fail  then
+#            Add( H!.stabSuborbitsLabels, tofix );
+#            p := Length( H!.stabSuborbitsLabels );
+##        fi;
+#        tofix := p;
+#        if not IsBound( H!.stabSuborbits[ tofix ] )  then
+#            H!.stabSuborbits[ tofix ] := [  ];
+#        fi;
+#        if not IsBound( H!.stabSuborbits[ tofix ][ len ] )  then
+#            H!.stabSuborbits[ tofix ][ len ] := [  ];
+#        fi;
+#        suborbits := H!.stabSuborbits[ tofix ][ len ];
+        suborbits:=[];
     else
         if not IsBound( H!.suborbits )  then
             H!.suborbits := [  ];
@@ -427,6 +429,7 @@ InstallGlobalFunction( Suborbits, function( arg )
                    InverseRepresentative( GG, a );
   
     ran := [ 1 .. Maximum( Omega ) ];
+    # disabled. See also `suborbits' assignement below
     if IsBound( suborbits[ a ] )  then
         subs := suborbits[ a ];
     else
@@ -774,7 +777,7 @@ InstallGlobalFunction( RegisterRBasePoint, function( P, rbase, pnt )
     Info( InfoBckt, 1, "Level ", Length( rbase.base ), ": ", pnt, ", ",
             P.lengths[ k ] + 1, " possible images" );
     if not ProcessFixpoint( rbase, pnt )  then
-        Error( "this can't happen: R-base point is already fixed" );
+        Info(InfoWarning,2,"Warning: R-base point is already fixed" );
     fi;
     Add( rbase.where, k );
     Add( rbase.rfm, [  ] );
@@ -1578,7 +1581,7 @@ end;
 ##  equals <coll>.
 ##
 Refinements.Suborbits2 := function( rbase, image, tra, f, start, coll )
-    local   F,  types,  pnt,  subs,  i,  p,  k;
+    local   F,  types,  pnt,  subs,  i, k;
     
     F    := image.data[ 2 ];
     pnt  := FixpointCellNo( image.partition, f );
@@ -1767,7 +1770,7 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
     
     # Construct an  R-base. Start with  the partition into  <G>-orbits on the
     # cells of <B>. In the normalizer  case, only the factor group $N_G(E)/E$
-    # operates on the cells.
+    # acts on the cells.
     rbase := EmptyRBase( G, Omega, CollectedPartition( B, div ) );
     range := [ 1 .. rbase.domain[ Length( rbase.domain ) ] ];
     rbase.suborbits := [  ];
@@ -1801,7 +1804,7 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
     doneroot := [  ];
         
     rbase.nextLevel := function( P, rbase )
-        local   len,  a,  Q,  S,  dd,  strat,  orb,  f,  fpt,  subs,  k,  i,
+        local   len,  a,  Q, strat,  orb,  f,  fpt,  subs,  k,  i,
                 start,  oldstart,  types,  typ,  coll,  pnt,  done;
 
         if reg <> fail  then  NextLevelRegularGroups( P, rbase );
@@ -2048,12 +2051,9 @@ InstallGlobalFunction( RepOpElmTuplesPermGroup,
     local  Omega,      # a common operation domain for <G>, <E> and <F>
            order,      # orders of elements in <e>
            cycles,     # cycles of <e> on <Omega>
-           lens,       # cycle lengths of <e> on <Omega>
            P, Q,       # partition refined during construction of <rbase>
            rbase,      # the R-base for the backtrack algorithm
-           a,          # next R-base point
-           Pr,         # property to be tested
-           i, p, size; # loop/auxiliary variables
+           i, size; # loop/auxiliary variables
     
     # Central elements and trivial subgroups.
     if ForAll( GeneratorsOfGroup( G ), gen -> OnTuples( e, gen ) = e )  then
@@ -2082,7 +2082,7 @@ InstallGlobalFunction( RepOpElmTuplesPermGroup,
 #        R := L;
 #    fi;
     
-    Omega := MovedPointsPerms( Concatenation( GeneratorsOfGroup( G ), e, f ) );
+    Omega := MovedPoints( Concatenation( GeneratorsOfGroup( G ), e, f ) );
     P := TrivialPartition( Omega );
     if repr  then  size := 1;
              else  size := Size( G );  fi;
@@ -2146,7 +2146,7 @@ end );
 #F  IsomorphismPermGroups( <arg> )  . . . . isomorphism / conjugating element
 ##
 InstallGlobalFunction( IsomorphismPermGroups, function( arg )
-    local   G,  E,  F,  Pr,  n,  L,  R,  Omega,  rbase,  data,
+    local   G,  E,  F,  Pr,  L,  R,  Omega,  rbase,  data,
             Q,  BF;
     
     G := arg[ 1 ];
@@ -2164,8 +2164,16 @@ InstallGlobalFunction( IsomorphismPermGroups, function( arg )
         F := First( GeneratorsOfGroup( F ), gen -> Order( gen ) <> 1 );
         return RepOpElmTuplesPermGroup( true, G, [ E ], [ F ], L, R );
     fi;
-    Omega := MovedPointsPerms( Concatenation( GeneratorsOfGroup( G ),
+    Omega := MovedPoints( Concatenation( GeneratorsOfGroup( G ),
                      GeneratorsOfGroup( E ), GeneratorsOfGroup( F ) ) );
+
+    # test whether we have a chance mapping the groups (as their orbits fit
+    # together)
+    if Collected(List(Orbits(E,Omega),Length))<>
+       Collected(List(Orbits(F,Omega),Length)) then
+      return fail;
+    fi;
+
     Pr := gen -> ForAll( GeneratorsOfGroup( E ), g -> g ^ gen in F );
     if Length( arg ) > 3  then
         L := arg[ Length( arg ) - 1 ];
@@ -2196,8 +2204,7 @@ end );
 #F  AutomorphismGroupPermGroup( <arg> ) . . . automorphism group / normalizer
 ##
 InstallGlobalFunction( AutomorphismGroupPermGroup, function( arg )
-    local   G,  E,  div,  n,  Omega,  Pr,  P,
-            rbase,  data,  N,  B,  L,  cl,  i;
+local   G,  E,  div, Omega,  Pr, rbase,  data,  N,  B,  L;
     
     G := arg[ 1 ];
     E := arg[ 2 ];
@@ -2210,7 +2217,7 @@ InstallGlobalFunction( AutomorphismGroupPermGroup, function( arg )
                      gen -> Order( gen ) <> 1 ) ];
         return RepOpElmTuplesPermGroup( false, G, E, E, L, L );
     fi;
-    Omega := MovedPointsPerms( Concatenation( GeneratorsOfGroup( G ),
+    Omega := MovedPoints( Concatenation( GeneratorsOfGroup( G ),
                      GeneratorsOfGroup( E ) ) );
     Pr := gen -> ForAll( GeneratorsOfGroup( E ), g -> g ^ gen in E );
     if   Length( arg ) = 3  then  L := arg[ 3 ];
@@ -2218,13 +2225,18 @@ InstallGlobalFunction( AutomorphismGroupPermGroup, function( arg )
     else                          L := TrivialSubgroup( G );  fi;
     
     if not IsTrivial( G )  then
-        if IsSymmetricGroupQuick( G )  then
+        if IsSymmetricGroupQuick( G ) and
+	  IsSubset(MovedPoints(G),MovedPoints(E)) then
             div := YndexSymmetricGroup( G, E );
         elif IsSubset( G, E )  then
             div := SmallestPrimeDivisor( Index( G, E ) );
         else
             div := SmallestPrimeDivisor( Size( G ) );
         fi;
+	if Length(MovedPoints(G))>Size(G) and Length(MovedPoints(G))>500 then
+	  return SubgroupProperty(G,
+	    i->ForAll(GeneratorsOfGroup(E),j->j^i in E));
+	fi;
         B := OrbitsPartition( E, Omega );
         rbase := RBaseGroupsBloxPermGroup( false, G, Omega, E, div, B );
         data := [ true, E, [  ], B, [  ] ];
@@ -2238,7 +2250,12 @@ InstallGlobalFunction( AutomorphismGroupPermGroup, function( arg )
     return N;
 end );
 
-InstallMethod( NormalizerOp,"perm group", IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
+InstallMethod( NormalizerOp,"perm group", IsIdenticalObj,
+  [ IsPermGroup, IsPermGroup ], 0,
+        AutomorphismGroupPermGroup );
+
+InstallOtherMethod( NormalizerOp,"perm group", true,
+  [ IsPermGroup, IsPermGroup,IsPermGroup ], 0,
         AutomorphismGroupPermGroup );
 
 #############################################################################
@@ -2303,9 +2320,6 @@ end );
 ##
 #M  PartitionStabilizerPermGroup(<G>,<part>)
 ##
-##  <part> must be a list of sets of points, on which <G> acts. This
-##  function computes the stabilizer in <G> of <part>, that is the subgroup
-##  which maps every set from <part> to another set from <part>.
 InstallGlobalFunction( PartitionStabilizerPermGroup, function(G,part)
 local pl,i,p,W,op;
 
@@ -2328,7 +2342,7 @@ local pl,i,p,W,op;
       # (It seems that computing the intersection is better than the
       # `SubgroupProperty' call commented out below, as `Intersection' uses
       # better refinements internally.
-      op:=OperationHomomorphism(G,Concatenation(p)); #makes the blocks standard
+      op:=ActionHomomorphism(G,Concatenation(p)); #makes the blocks standard
 
       W:=WreathProduct(SymmetricGroup(Length(p[1])),SymmetricGroup(Length(p)));
 
@@ -2409,6 +2423,12 @@ local   Omega,  P,  rbase,  L,mg,mh;
     # align the acting domains
     mg:=MovedPoints(G);
     mh:=MovedPoints(H);
+    if IsSubset(mg,mh) and IsSubset(G,H) then
+      return H;
+    elif IsSubset(mh,mg) and IsSubset(H,G) then
+      return G;
+    fi;
+
     G:=Stabilizer(G,Difference(mg,mh),OnTuples);
     H:=Stabilizer(H,Difference(mh,mg),OnTuples);
 
@@ -2429,10 +2449,10 @@ end );
 #F  TwoClosure( <G> [, <merge> ] ) . . . . . . . . . two-closure
 ##
 TwoClosurePermGroup := function( arg )
-    local   G,  merge,  n,  ran,  Omega,  Agemo,  opr,  S,
-            adj,  tot,  k,  kk,  pnt,  orb,  o,  new,  gen,  p,  i,
-            tra,  Q,  rbase,  doneroot,  P,  Pr,  type,  param;
-    
+local   G,  merge,  n,  ran,  Omega,  Agemo,  opr,  S,
+	adj,  tot,  k,  kk,  pnt,  orb,  o,  new,  gen,  p,  i,
+	tra,  Q,  rbase,  doneroot,  P,  Pr;
+
     G := arg[ 1 ];
     if IsTrivial( G )  then
         return G;
@@ -2615,5 +2635,5 @@ InstallMethod(TwoClosure,"permutation group",true,[IsPermGroup],0,
 
 #############################################################################
 ##
-#E  stbcbckt.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

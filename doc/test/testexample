@@ -1,5 +1,15 @@
-#/bin/sh
-#usage: testexample <skeletonfile>
+#!/bin/sh 
+#usage: testexample <skeletonfile> [<gap-options>]  [-quiet]
 awk -f getinput.awk $1
-gap4 <in
-awk -f parseoutput.awk gaout
+if [ "x$2" = "x-quiet" ]; then
+      gapopts=$3
+      quiet=1
+elif [ "x$3" = "x-quiet" ]; then
+      gapopts="$2"
+      quiet=1
+else
+      gapopts="$2"
+      quiet=0
+fi
+../../bin/gap.sh -b -A -T $gapopts <in > /dev/null
+awk -f parseoutput.awk -v quiet=$quiet gaout 

@@ -8,49 +8,15 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This script produces the file 'ctprimar.tbl' for the 'tbl' directory
-##  of GAP 4 from the data files 'tbl/ct[go]*'.
+##  of {\GAP}~4 from the data files 'tbl/ct[go]*'.
 ##
 ##  It must be called from the directory containing the directories 'tbl'
 ##  and 'etc' of {\GAP}.
 ##
-##  Each data file is supposed to consist of
-##
-##  comment lines, starting with '#'
-##
-##  assignments at the beginning of the file, namely
-##     Revision.<name> :=
-##         "@(#)$Id$";
-##     ALN:= Ignore;
-##
-##  assignments at the end of the file, namely
-##     LIBTABLE.LOADSTATUS.<name>:="userloaded";
-##     ALN:= NotifyCharTableName;
-##
-##  calls of the form
-##     SET_TABLEFILENAME(<name>);
-##     MBT("<name>",<data>);
-##     MOT("<name>",<data>);
-##     ALF("<from>","<to>",<map>);
-##     ALF("<from>","<to>",<map>,<textlines>);
-##     ALN("<name>",<listofnames>);
-##     ARC("<name>","<component>",<data>);
-##
-##  Besides the above calls, and the data itself,
-##  only those {\GAP} library functions are defined also in the check
-##  phase at the end of the 'maketbl' run
-##  (see the end of this file).
-##
-##  The calls may use several lines of a file.
-##  The ';' is the last character in its line if and only if it terminates
-##  a function call.
-##
-##  Names of tables are strings, i.e., they are enclosed by double quotes;
-##  they must not be split to several lines, because otherwise this program
-##  may get confused.
-##  Also, the names themselves must not contain double quotes.
+##  For the conventions about the contents of the table library files,
+##  see '../tbl/ctadmin.tbd'.
 ##
 ##  If a line has more than 78 characters, this program signals a warning.
-##
 ##
 ##  The following calls to 'ARC' are used by this program.
 ##
@@ -155,16 +121,23 @@ awk -v "PRJ=$PRJFILE" \
      # Store the first names of the tables,
      # and the corresponding file names.
      /^MOT/ {
-         position[$2] = i
-         setnewname( tolower($2), $2, 1 )
-         firstnam[i] = $2
-         if ( file != FILENAME ) {
-             file = FILENAME
-             jj++
-             files[jj] = substr( file, 5, index( file, "." ) - 5 )
+         tolo = tolower($2);
+         if ( tolo in lowerposition ) {
+             printf( "double name %s\n", tolo ) > "/dev/stderr"
          }
-         filename[i] = jj
-         i++
+         else {
+             position[$2] = i
+             lowerposition[ tolo ] = i
+             setnewname( tolo, $2, 1 )
+             firstnam[i] = $2
+             if ( file != FILENAME ) {
+                 file = FILENAME
+                 jj++
+                 files[jj] = substr( file, 5, index( file, "." ) - 5 )
+             }
+             filename[i] = jj
+             i++
+         }
      }
 
      # Store the other names of the tables.
@@ -419,6 +392,8 @@ awk -v "PRJ=$PRJFILE" \
          # Construct the components 'LIBLIST.allnames', 'LIBLIST.position'.
          print( "LIBLIST.allnames:= [];" )
          print( "LIBLIST.position:= [];" )
+         print( "LIBLIST.makenames:= function()" )
+         print( "local entry;" )
          print( "for entry in LIBLIST.names do" )
          print( "  LIBLIST.pos:= Position( LIBLIST.firstnames, entry[1] );" )
          print( "  Append( LIBLIST.allnames," )
@@ -426,8 +401,11 @@ awk -v "PRJ=$PRJFILE" \
          print( "  Append( LIBLIST.position," )
          print( "          List( [2..Length(entry)], x -> LIBLIST.pos ) );" )
          print( "od;" )
+         print( "end;" )
+         print( "LIBLIST.makenames();" )
          print( "Unbind( LIBLIST.names );" );
-         print( "Unbind( LIBLIST.pos );\n" );
+         print( "Unbind( LIBLIST.pos );" );
+         print( "Unbind( LIBLIST.makenames );\n" );
 
          # They shall be sorted according to the ordering of {\GAP},
          # so we leave the sorting to {\GAP}.
@@ -623,7 +601,8 @@ echo ' ' >> $OUTFILE
 ##
 echo '#############################################################################' >> $OUTFILE
 echo '##' >> $OUTFILE
-echo '#E  ctprimar.tbl  . . . . . . . . . . . . . . . . . . . . . . . . . ends here' >> $OUTFILE
+echo '#E' >> $OUTFILE
+echo '' >> $OUTFILE
 
 
 #############################################################################
@@ -668,9 +647,9 @@ echo 'ConstructFactor := function( arg ); end;;' >> $CHECKFILE
 echo 'Concatenation := function( arg ) return 0; end;;' >> $CHECKFILE
 echo 'TransposedMat := function( arg ) return 0; end;;' >> $CHECKFILE
 
-ls tbl | grep clm > $CHECKFILE2
-ls tbl | grep ctb >> $CHECKFILE2
-ls tbl | grep cto >> $CHECKFILE2
+ls tbl | grep 'clm.*.tbl' > $CHECKFILE2
+ls tbl | grep 'ctb.*.tbl' >> $CHECKFILE2
+ls tbl | grep 'cto.*.tbl' >> $CHECKFILE2
 sed -e 's/^/READ("tbl\//;s/\.tbl.*$/.tbl");/' \
      < $CHECKFILE2 >> $CHECKFILE
 gap -l tbl < $CHECKFILE > $CHECKFILE2
@@ -681,5 +660,5 @@ rm $CHECKFILE $CHECKFILE2
 
 #############################################################################
 ##
-#E  maketbl . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

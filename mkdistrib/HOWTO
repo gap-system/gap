@@ -1,0 +1,73 @@
+This directory contains files to wrap up a distribution of GAP4, compiling
+GAP under linux and with the Winooze compiler, creating completion
+files, running the test files, creating the manuals,
+TeXing them, creating an html version and finally wrapping everything up.
+
+The distribution is built under /scratch/gap4dist (this is set in `setvar')
+
+The file `setvar' will need editing depending on the linux version used and
+the cvs path.
+
+The files assume that
+
+- The current version is OK (testfiles &c.).
+- enough disk space (200-300MB due to the TOM's) is available
+- share packages are under /user1/ftp/pub/gap/gap4/{share,deposit/psh}
+- Type1 PS fonts, `tth', `zoo' and `unzoo' are installed locally. (This all
+  holds for `shades'.)
+- doc/build/config.install sets the right version number variables.
+- cvs path set in `setvar'.
+- standard `gcc' setup under linux
+- The `cygwin1.dll' file for Windos resides under /gap/4.0/bin
+- The wrapper scripts (in particular `zooit' and `setvar') reflect the
+  latest version of GAP and `compile' and `windowscompile' give the right
+  binary paths.
+
+======
+
+To build, go into this directory and call
+
+  doit nr
+
+where nr is the number of the version to be wrapped up.
+
+After some time the program will prompt you to transfer a file to the
+Windows machine, compile it there under cygwin and transfer the result back.
+Then it continues zooing everything up.
+
+checkout and zooing both can take about an hour. You can write the
+announcement during this time.
+
+======
+
+Transfer the files on the ftp server and ensure they install. (You'll need
+to get Mac binaries from Burkhard!)
+
+======
+
+Create a branch for the version under cvs (this is commented out in the
+wrapper scripts as it has been frequently necessary to call the building
+process a second time because something was forgotten):
+
+  cvs rtag -b GAP4RX 4.0
+
+Afterwards it is possible again to check in changes.
+
+======
+
+cvs remove the old WWW/Manual4 manual (except index.html), unzoo the
+htm_small.zoo file, cvs add its files and commit.
+(Probably at some point change the WWW setup so that the manual is built
+locally)
+
+======
+
+Edit /gap/WWW/Util/DEFAULTS to give the new version number, edit
+WWW/Info4/{distrib.input,bugfixes.input,announce.input,changes.input} to
+the new status. Make and commit.
+
+======
+
+Send out the announcement.
+
+   Alexander Hulpke, 27-7-99

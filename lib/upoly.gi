@@ -1,465 +1,41 @@
-#############################################################################
+
 ##
 #W  upoly.gi                     GAP Library                 Alexander Hulpke
 ##
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file  contains the  methods for univariate polynomials
+##  This file contains methods for univariate polynomials
 ##
 Revision.upoly_gi:=
   "@(#)$Id$";
 
-DOULP:=DegreeOfUnivariateLaurentPolynomial;
-
-#############################################################################
-##
-#M  \<( <upol>, <upol> )  comparison
-##
-InstallMethod(\<,IsIdenticalObj,
-              [IsUnivariateLaurentPolynomial,IsUnivariateLaurentPolynomial],0,
-function(a,b)
-  a:=CoefficientsOfUnivariateLaurentPolynomial(a);
-  a:=ShiftedCoeffs(a[1],a[2]);
-  b:=CoefficientsOfUnivariateLaurentPolynomial(b);
-  b:=ShiftedCoeffs(b[1],b[2]);
-  return a<b;
-end);
-
-#############################################################################
-##
-#F  RandomPol( <fam>, <deg> )
-##
-RandomPol:=function(dom,deg)
-local i,c;
-  c:=[];
-  for i in [0..deg] do
-    Add(c,Random(dom));
-  od;
-  return UnivariateLaurentPolynomialByCoefficients(FamilyObj(c[1]),c,0,1);
-end;
-
-#############################################################################
-##
-#M  Value( <upol>, <elm> )
-##
-InstallMethod(Value,"Value LPol",true,
-  [IsUnivariateLaurentPolynomial,IsRingElement],0,
-function(f,x)
-local val,i,id;
-  id:=x^0;
-  val:=Zero(id);
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  i:=Length(f[1]);
-  while 0<i do
-    val:=val*x+id*f[1][i];
-    i:=i-1;
-  od;
-  if 0<>f[2]  then
-    val:=val*x^f[2];
-  fi;
-  return val;
-end);
-
-
-#############################################################################
-##
-#M  Value( <upol>, <elm>, <one> )
-##
-InstallOtherMethod( Value,
-    "method for univ. Laurent pol., ring element, and mult. neutral element",
-    true,
-    [ IsUnivariateLaurentPolynomial, IsRingElement, IsRingElement ], 0,
-    function( f, x, one )
-    local val, i;
-    val:= Zero( one );
-    f:= CoefficientsOfUnivariateLaurentPolynomial( f );
-    i:= Length( f[1] );
-    while 0 < i do
-      val:= val * x + one * f[1][i];
-      i:= i-1;
-    od;
-    if 0 <> f[2] then
-      val:= val * x^f[2];
-    fi;
-    return val;
-    end );
-
-
-#############################################################################
-##
-#M  LeadingCoefficient( <upol> )
-##
-InstallMethod(LeadingCoefficient,true,[IsUnivariateLaurentPolynomial],0,
-function(f)
-  if f=Zero(f) then
-    return Zero(CoefficientsFamily(FamilyObj(f)));
-  fi;
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  return f[1][Length(f[1])];
-end);
-
-#############################################################################
-##
-#F  LeadingMonomial . . . . . . . . . . . for a univariate laurent polynomial
-##
-InstallMethod( LeadingMonomial,
-        "for a univariate laurent polynomial",
-        true,
-        [ IsUnivariateLaurentPolynomial ],
-        0,
-  p -> [ IndeterminateNumberOfUnivariateLaurentPolynomial( p ),DOULP( p ) ]
-);
-
 #############################################################################
 ##
 #M  IrrFacsPol(<f>) . . . lists of irreducible factors of polynomial over
-##                        ring
+##                        ring, initialize default
 ##
 InstallMethod(IrrFacsPol,true,[IsPolynomial],0,f -> []);
 
 #############################################################################
 ##
-#M  EuclideanRemainder( <pring>, <upol>, <upol> )
-##
-InstallOtherMethod(EuclideanRemainder,"EuclRemUnivPols",true,
-# we will get the ring from the polynomials. Allowing any object for R
-# permits to call this function for 'mod'
-	      [IsObject,IsUnivariatePolynomial,
-	       IsUnivariatePolynomial],0,
-function(R,f,g)
-local brci;
-  brci:=BRCIUnivPols(f,g);
-  if brci=fail then TryNextMethod();fi;
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  g:=CoefficientsOfUnivariateLaurentPolynomial(g);
-  f:=ShiftedCoeffs(f[1],f[2]);
-  g:=ShiftedCoeffs(g[1],g[2]);
-  ReduceCoeffs(f,g);
-  ShrinkCoeffs(f);
-  return UnivariateLaurentPolynomialByCoefficients(brci[1],f,0,brci[2]);
-end);
-
-#############################################################################
-##
-#M  \mod( <upol>, <upol> )
-##
-InstallMethod(\mod,"univariate polynomials",IsIdenticalObj,
-  [IsUnivariatePolynomial,IsUnivariatePolynomial],0,
-function(a,b)
-  return EuclideanRemainder(0,a,b);
-end);
-
-#############################################################################
-##
-#M  StandardAssociate( <pring>, <upol> )
-##
-InstallMethod(StandardAssociate,"StdAssoc Pol",IsCollsElms,[IsPolynomialRing,
-                IsUnivariatePolynomial],0,
-function(R,f)
-local l,a,ind;
-
-  l:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  ind:=IndeterminateNumberOfUnivariateLaurentPolynomial(f);
-
-  # <f> should be nontrivial
-  if 0 < Length(l[1])  then
-
-    # get standard associate of leading term
-    a:=l[1][Length(l[1])];
-    f:=f*Quotient(CoefficientsRing(R),
-                  StandardAssociate(CoefficientsRing(R),a),a);
-  fi;
-  return f;
-end);
-
-#############################################################################
-##
-#M  Derivative( <upol> )
-##
-InstallMethod(Derivative,"DerivativePol",true,
-                [IsUnivariateLaurentPolynomial],0,
-function(f)
-local d,i,ind;
-
-  ind:=IndeterminateNumberOfUnivariateLaurentPolynomial(f);
-  d:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  if Length(d[1])=0 then
-    # special case: Derivative of 0-Polynomial
-    return f;
-  fi;
-  f:=d;
-  d:=[];
-  for i in [1..Length(f[1])]  do
-      d[i] := (i+f[2]-1)*f[1][i];
-  od;
-  return UnivariateLaurentPolynomialByCoefficients(FamilyObj(f[1][1]),d,
-                                                   f[2]-1,ind);
-end);
-
-#############################################################################
-##
-#M  QuotientRemainder( <pring>, <upol>, <upol> )
-##
-InstallMethod(QuotientRemainder,"Pol/Pol",true,[IsPolynomialRing,
-                IsUnivariatePolynomial,IsUnivariatePolynomial],0,
-function (R,f,g)
-local m,n,i,k,c,q,val,brci;
-  brci:=BRCIUnivPols(f,g);
-  if brci=fail then TryNextMethod();fi;
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  if f[2]<0  then
-    Error("<f> must not be a laurent polynomial");
-  fi;
-  g:=CoefficientsOfUnivariateLaurentPolynomial(g);
-  if g[2]<0  then
-    Error("<g> must not be a laurent polynomial");
-  fi;
-
-  # if <g> is zero signal an error
-  if 0=Length(g[1]) then
-    Error("<g> must not be zero");
-  fi;
-
-  # if <f> is zero return it
-  if 0=Length(f[1])  then
-    f:=UnivariateLaurentPolynomialByCoefficients(brci[1],[],0,brci[2]);
-    return [f,f];
-  fi;
-
-  # remove the valuation of <f> and <g>
-  f:=ShiftedCoeffs(f[1],f[2]);
-  g:=ShiftedCoeffs(g[1],g[2]);
-
-  # Try to divide <f> by <g>
-  q := [];
-  n := Length(g);
-  m := Length(f) - n;
-  for i  in [0..m]  do
-      c := f[m-i+n] / g[n];
-      for k  in [1..n]  do
-	  f[m-i+k] := f[m-i+k] - c*g[k];
-      od;
-      q[m-i+1] := c;
-  od;
-
-  # return the polynomial
-  return [UnivariateLaurentPolynomialByCoefficients(brci[1],q,0,brci[2]),
-          UnivariateLaurentPolynomialByCoefficients(brci[1],f,0,brci[2])];
-
-end);
-
-#############################################################################
-##
-#M  Quotient( <upol>, <upol> )
-##
-QUOT_POLS:=function (f,g)
-local m,n,i,k,c,q,val,brci;
-  brci:=BRCIUnivPols(f,g);
-  if brci=fail then TryNextMethod();fi;
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  if f[2]<0  then
-    Error("<f> must not be a laurent polynomial");
-  fi;
-  g:=CoefficientsOfUnivariateLaurentPolynomial(g);
-  if g[2]<0  then
-    Error("<g> must not be a laurent polynomial");
-  fi;
-
-  # if <g> is zero signal an error
-  if 0=Length(g[1]) then
-    Error("<g> must not be zero");
-  fi;
-
-  # if <f> is zero return it
-  if 0=Length(f[1])  then
-    return UnivariateLaurentPolynomialByCoefficients(brci[1],[],0,brci[2]);
-  fi;
-
-  # remove the valuation of <f> and <g>
-  f:=ShiftedCoeffs(f[1],f[2]);
-  g:=ShiftedCoeffs(g[1],g[2]);
-
-  # Try to divide <f> by <g>
-  q := [];
-  n := Length(g);
-  m := Length(f) - n;
-  for i  in [0..m]  do
-      c := f[m-i+n] / g[n];
-      for k  in [1..n]  do
-	  f[m-i+k] := f[m-i+k] - c*g[k];
-      od;
-      q[m-i+1] := c;
-  od;
-
-  ShrinkCoeffs(f);
-
-  if Length(f)=0 then
-    # return the polynomial
-    return UnivariateLaurentPolynomialByCoefficients(brci[1],q,0,brci[2]);
-  else
-    return fail;
-  fi;
-
-end;
-
-InstallMethod(Quotient,"Quotient Pol/Pol",true,[IsPolynomialRing,
-   IsUnivariatePolynomial,IsUnivariatePolynomial],0,
-function(R,a,b)
-  return QUOT_POLS(a,b);
-end);
-InstallOtherMethod(Quotient,"Quotient Pol/Pol",true,
-         [IsUnivariatePolynomial,IsUnivariatePolynomial],0,QUOT_POLS);
-
-#############################################################################
-##
-#M  QuotientMod( <pring>, <upol>, <upol>, <upol> )
-##
-InstallMethod(QuotientMod,"QuotientMod Pol/Pol mod Pol",true,
-  [IsRing,IsRingElement,IsRingElement,IsRingElement],0,
-function (R,r,s,m)
-local f,g,h,fs,gs,hs,q,t;
-    f := s;  fs := 1;
-    g := m;  gs := 0;
-    while g <> Zero(g) do
-        t := QuotientRemainder(R,f,g);
-        h := g;          hs := gs;
-        g := t[2];       gs := fs - t[1]*gs;
-        f := h;          fs := hs;
-    od;
-    q := Quotient(r,f);
-    #AH
-    if q = fail  then
-        return fail;
-    else
-        return EuclideanRemainder(R,fs*q,m);
-    fi;
-end);
-
-#############################################################################
-##
-#M  GcdOp( <pring>, <upol>, <upol> )  . . . . . .  for univariate polynomials
-##
-InstallMethod( GcdOp,"Gcd(Pol,Pol)",
-    IsCollsElmsElms,[IsEuclideanRing,
-                IsUnivariatePolynomial,IsUnivariatePolynomial],0,
-function(R,f,g)
-local gcd,u,v,w,val,brci;
-
-  brci:=BRCIUnivPols(f,g);
-  if brci=fail then TryNextMethod();fi;
-  f:=CoefficientsOfUnivariateLaurentPolynomial(f);
-  g:=CoefficientsOfUnivariateLaurentPolynomial(g);
-
-  # remove common x^i term
-  val:=Minimum(f[2],g[2]);
-  f:=ShiftedCoeffs(f[1],f[2]-val);
-  g:=ShiftedCoeffs(g[1],g[2]-val);
-
-  # perform a Euclidean algorithm
-  u:=f;
-  v:=g;
-  while 0<Length(v) do
-    w:=v;
-    ReduceCoeffs(u,v);
-    ShrinkCoeffs(u);
-    v:=u;
-    u:=w;
-  od;
-  gcd:=u*u[Length(u)]^-1;
-
-  # return the gcd
-  return UnivariateLaurentPolynomialByCoefficients(brci[1],gcd,val,brci[2]);
-end);
-
-
-#############################################################################
-##
-#M  PowerMod( <pring>, <upol>, <exp>, <upol> )	. . . . power modulo
-##
-InstallMethod(PowerMod,"PowerModPol",true,
-   [IsPolynomialRing,IsPolynomial,IsInt,IsPolynomial],0,
-function(R,g,e,m)
-local val,brci;
-
-  brci:=BRCIUnivPols(g,m);
-  if brci=fail then TryNextMethod();fi;
-
-  # if <m> is of degree zero return the zero polynomial
-  if DegreeOfUnivariateLaurentPolynomial(m) = 0  then
-    return Zero(g);
-
-  # if <e> is zero return one
-  elif e = 0  then
-    return One(g);
-  fi;
-
-  # reduce polynomial
-  g:=EuclideanRemainder(R,g,m);
-
-  # and invert if necessary
-  if e < 0  then
-    g := QuotientMod(R,One(R),g,m);
-    if g = fail  then
-      Error("<g> must be invertable module <m>");
-    fi;
-    e := -e;
-  fi;
-
-  g:=CoefficientsOfUnivariateLaurentPolynomial(g);
-  m:=CoefficientsOfUnivariateLaurentPolynomial(m);
-
-  # use 'PowerModCoeffs' to power polynomial
-  if g[2]=m[2] then
-    val:=g[2];
-    g:=g[1];
-    m:=m[1];
-  else
-    val:=0;
-    g:=ShiftedCoeffs(g[1],g[2]);
-    m:=ShiftedCoeffs(m[1],m[2]);
-  fi;
-  g:=UnivariateLaurentPolynomialByCoefficients(brci[1],
-		 PowerModCoeffs(g,e,m),val,brci[2]);
-  return g;
-end);
-
-#############################################################################
-##
 #F  StoreFactorsPol( <pring>, <upol>, <factlist> ) . . . . store factors list
 ##
-StoreFactorsPol:=function(R,f,fact)
-local i,irf;
+InstallGlobalFunction(StoreFactorsPol,function(R,f,fact)
+local irf;
   irf:=IrrFacsPol(f);
   if not ForAny(irf,i->i[1]=R) then
     Add(irf,[R,fact]);
   fi;
-end;
-
-
-#############################################################################
-##
-#F  Discriminant( <f> ) . . . . . . . . . . . . discriminant of polynomial f
-##
-InstallMethod(Discriminant,"upol",true,[IsUnivariateLaurentPolynomial],0,
-function(f)
-local d;
-  # the discriminant is \prod_i\prod_{j\not= i}(\alpha_i-\alpha_j), but
-  # to avoid chaos with symmetric polynomials, we better compute it as
-  # the resultant of f and f'
-  d:=DegreeOfUnivariateLaurentPolynomial(f);
-  return (-1)^(d*(d-1)/2)*Resultant(f,Derivative(f),
-    IndeterminateNumberOfUnivariateLaurentPolynomial(f))/LeadingCoefficient(f);
 end);
-
 
 #############################################################################
 ##
 #M  IsIrreducibleRingElement(<pol>) . . . Irreducibility test for polynomials
 ##
-InstallMethod(IsIrreducibleRingElement,"Pol",true,
+InstallMethod(IsIrreducibleRingElement,"polynomial",IsCollsElms,
   [IsPolynomialRing,IsPolynomial],0,
 function(R,f)
   return Length(Factors(R,f))<=1;
@@ -469,13 +45,23 @@ end);
 ##
 #F  RootsOfUPol(<upol>) . . . . . . . . . . . . . . . . roots of a polynomial
 ##
-InstallGlobalFunction( RootsOfUPol, function(f)
-  local roots,factor;
+InstallGlobalFunction( RootsOfUPol, function(arg)
+  local roots,factor,f,fact,fie,m;
   roots:=[];
-  for factor in Factors(f) do
-    if DOULP(factor)=1 then
-      factor:=CoefficientsOfUnivariateLaurentPolynomial(factor);
-      # work around new representation of polynomials
+  f:=arg[Length(arg)];
+  if Length(arg)=1 then
+    fact:=Factors(f);
+  elif IsString(arg[1]) and arg[1]="split" then
+    fie:=SplittingField(f);
+    m:=List(IrrFacsPol(f),i->Maximum(List(i[2],DegreeOfLaurentPolynomial)));
+    m:=IrrFacsPol(f)[Position(m,Minimum(m))][2];
+    fact:=Concatenation(List(m,i->Factors(PolynomialRing(fie),i)));
+  else
+    fact:=Factors(PolynomialRing(arg[1]),f);
+  fi;
+  for factor in fact do
+    if DegreeOfLaurentPolynomial(factor)=1 then
+      factor:=CoefficientsOfLaurentPolynomial(factor);
       if factor[2]=0 then
 	Add(roots,-factor[1][1]/factor[1][2]);
       else
@@ -485,6 +71,15 @@ InstallGlobalFunction( RootsOfUPol, function(f)
   od;
   return roots;
 end );
+
+#M  for factorization redisplatch if found out the polynomial is univariate
+RedispatchOnCondition(Factors,true,[IsPolynomial],[IsUnivariatePolynomial],0);
+RedispatchOnCondition(Factors,true,[IsRing,IsPolynomial],
+  [,IsUnivariatePolynomial],0);
+RedispatchOnCondition(Factors,true,[IsRing,IsPolynomial,IsRecord],
+  [,IsUnivariatePolynomial,],0);
+RedispatchOnCondition(IsIrreducibleRingElement,true,[IsRing,IsPolynomial],
+  [,IsUnivariatePolynomial],0);
 
 
 #############################################################################
@@ -572,5 +167,64 @@ end );
 
 #############################################################################
 ##
-#E  upoly.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  IsPrimitivePolynomial( <F>, <pol> )
 ##
+InstallMethod( IsPrimitivePolynomial,
+    "for a (finite) field, and a polynomial",
+    function( F1, F2 )
+    return     HasCoefficientsFamily( F2 )
+           and IsCollsElms( F1, CoefficientsFamily( F2 ) );
+    end,
+    [ IsField, IsRationalFunction ], 0,
+    function( F, pol )
+
+    local coeffs,      # coefficients of `pol'
+          one,         # `One( F )'
+          pmc,         # result of `PowerModCoeffs'
+          size,        # size of mult. group of the extension field
+          x,           # polynomial `x'
+          p;           # loop over prime divisors of `size'
+
+    # Check the arguments.
+    if not IsPolynomial( pol ) then
+      return false;
+    elif not IsFinite( F ) then
+      TryNextMethod();
+    fi;
+
+    coeffs:= CoefficientsOfUnivariatePolynomial( pol );
+    one:= One( F );
+    if IsZero( coeffs[1] ) or coeffs[ Length( coeffs ) ] <> one then
+      return false;
+    fi;
+
+    size:= Size( F ) ^ ( Length( coeffs ) - 1 ) - 1;
+    x:= [ Zero( F ), one ];
+
+    # Primitive polynomials divide the polynomial $x^{q^d-1} - 1$ \ldots
+    pmc:= PowerModCoeffs( x, size, coeffs );
+    ShrinkCoeffs( pmc );
+    if pmc <> [ one ] then
+      return false;
+    fi;
+
+    # \ldots and are not divisible by $x^m - 1$
+    # for proper divisors $m$ of $q^d-1$.
+    if size <> 1 then
+      for p in Set( Factors( size ) ) do
+        pmc:= PowerModCoeffs( x, size / p, coeffs );
+        ShrinkCoeffs( pmc );
+        if pmc = [ one ] then
+          return false;
+        fi;
+      od;
+    fi;
+
+    return true;
+    end );
+
+
+#############################################################################
+##
+#E
+

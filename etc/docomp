@@ -1,0 +1,22 @@
+#!/bin/sh
+
+#
+# Run in lib directory to make the statically compiled files
+#
+#
+compileme() {
+  inter=`mktemp /tmp/cfile.XXXXXX`
+  dest=../src/c_$2.c
+  gac -C -ffast-plain-lists -ffast-int-arith -o $inter $1.g
+  echo "#ifndef AVOID_PRECOMPILED" >| $dest
+  sed -e "/\"${1}\.g\"/ s/\"/\"GAPROOT\/lib\//" $inter >> $dest
+  echo "#endif" >> $dest
+  rm $inter
+}
+
+compileme oper1 oper1
+compileme methsel1 meths1
+compileme type1 type1
+compileme filter1 filt1
+compileme random random
+ 

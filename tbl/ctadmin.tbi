@@ -14,7 +14,7 @@
 ##  1. Representations of library tables
 ##  2. Functions used in the library files
 ##  3. Functions to construct library tables
-##  4. Functions used as 'construction' component of library tables
+##  4. Functions used as `construction' component of library tables
 ##  5. Selection functions for the table library
 ##  6. Functions to produce tables in library format
 ##
@@ -32,7 +32,7 @@ Revision.ctadmin_tbi :=
 ##  is a record with information about admissible names, fusion sources
 ##  etc. of all library tables;
 ##  the components are mainly computed by the `awk' script `maketbl',
-##  and they are stored in the file 'ctprimar.tbl',
+##  and they are stored in the file `ctprimar.tbl',
 ##
 #V  TOM_TBL_INFO
 ##
@@ -84,8 +84,7 @@ end );
 
 #############################################################################
 ##
-#F  ALF( <from>, <to>, <map> ) . . . . . . . . . .  add library table fusions
-#F  ALF( <from>, <to>, <map>, <text> )
+#F  ALF( <from>, <to>, <map>[, <text>] ) . . . . .  add library table fusions
 ##
 InstallGlobalFunction( ALF, function( arg )
 
@@ -97,21 +96,22 @@ InstallGlobalFunction( ALF, function( arg )
       # Check that the names are valid.
       pos:= Position( LIBLIST.firstnames, arg[2] );
       if not arg[1] in RecNames( LIBTABLE.( LIBTABLE.TABLEFILENAME ) ) then
-        Error( "source '", arg[1], "' is not stored in 'LIBTABLE.",
+        Error( "source `", arg[1], "' is not stored in `LIBTABLE.",
                LIBTABLE.TABLEFILENAME, "'" );
       elif pos = fail then
-        Error( "destination '", arg[2], "' is not a valid first name" );
+        Error( "destination `", arg[2], "' is not a valid first name" );
       fi;
 
       # Check whether there was already such a fusion.
-      if arg[1] in LIBLIST.fusionsource[ pos ] then
-        Error( "there is already a fusion from '",
-               arg[1], "' to '", arg[2], "'" );
-      fi;
+      if not arg[1] in LIBLIST.fusionsource[ pos ] then
 
-      # Store the fusion source.
-      LIBLIST.fusionsource[ pos ]:= Immutable( Concatenation(
-          LIBLIST.fusionsource[ pos ], [ arg[1] ] ) );
+        # Store the fusion source.
+        LIBLIST.fusionsource:= ShallowCopy( LIBLIST.fusionsource );
+        LIBLIST.fusionsource[ pos ]:= Immutable( Concatenation(
+            LIBLIST.fusionsource[ pos ], [ arg[1] ] ) );
+        MakeImmutable( LIBLIST.fusionsource );
+
+      fi;
 
     fi;
 
@@ -173,19 +173,19 @@ InstallGlobalFunction( NotifyNameOfCharacterTable,
       Error( "<firstname> and entries in list <newnames> must be strings" );
     elif ForAny( [ 1 .. Length( firstname ) - 2 ],
                x -> firstname{ [ x .. x+2 ] } = "mod" ) then
-      Error( "Brauer tables must not have explicitly given 'othernames'" );
+      Error( "Brauer tables must not have explicitly given `othernames'" );
     fi;
 
     pos:= Position( LIBLIST.firstnames, firstname );
     if pos = fail then
-      Error( "no GAP library table with first name '", firstname, "'" );
+      Error( "no GAP library table with first name `", firstname, "'" );
     fi;
     lower:= List( newnames, LowercaseString );
     if ForAny( lower, x -> x in LIBLIST.allnames ) then
       Error( "<newnames> must contain only new names" );
     fi;
 
-    # Change 'LIBLIST'.
+    # Change `LIBLIST'.
     LIBLIST.allnames:= Concatenation(
         LIBLIST.allnames, lower );
     LIBLIST.position:= Concatenation(
@@ -201,11 +201,11 @@ end );
 #F  NotifyCharacterTable( <firstname>, <filename>, <othernames> )
 ##
 ##  notifies a new ordinary table to the library.
-##  This table has 'identifier' component <firstname>,
+##  This table has `Identifier' value <firstname>,
 ##  it is contained in the file with name <filename>, and
 ##  it is known to have also the names contained in the list <othernames>.
 ##
-##  'NotifyCharacterTable' modifies the global variable 'LIBLIST' after
+##  `NotifyCharacterTable' modifies the global variable `LIBLIST' after
 ##  having checked that there is no other table yet with admissible name
 ##  equal to <firstname> or contained in <othernames>.
 ##
@@ -224,7 +224,7 @@ InstallGlobalFunction( NotifyCharacterTable,
       Error( "'", firstname, "' is already a valid name" );
     fi;
 
-    # Change 'LIBLIST'.
+    # Change `LIBLIST'.
     LIBLIST.firstnames:= Immutable( Concatenation(
         LIBLIST.firstnames, [ firstname ] ) );
     if not filename in LIBLIST.files then
@@ -344,10 +344,10 @@ InstallGlobalFunction( LibInfoCharacterTable, function( tblname )
 
     local i, ordinfo, obj, pos;
 
-    # Is 'tblname' the name of a Brauer table, i.e., has it the structure
-    # '<ordname>mod<prime>' ?
-    # If so, return '<firstordname>mod<prime>' where
-    # '<firstordname> = LibInfoCharacterTable( <ordname> ).firstName'.
+    # Is `tblname' the name of a Brauer table,
+    # i.e., does it have the structure `<ordname>mod<prime>' ?
+    # If so, return `<firstordname>mod<prime>' where
+    # `<firstordname> = LibInfoCharacterTable( <ordname> ).firstName'.
 
     tblname:= LowercaseString( tblname );
     for i in [ 1 .. Length( tblname ) - 2 ] do
@@ -401,9 +401,9 @@ InstallGlobalFunction( LibraryTables, function( filename )
        or LIBTABLE.LOADSTATUS.( filename ) = "unloaded" then
 
       # It is necessary to read a library file.
-      # First unload all files which are not '"userloaded"', except that
+      # First unload all files which are not `"userloaded"', except that
       # with the ordinary resp. Brauer tables corresponding to those in
-      # the file 'filename'
+      # the file `filename'
       for file in RecNames( LIBTABLE.LOADSTATUS ) do
         if LIBTABLE.LOADSTATUS.( file ) <> "userloaded" and
            filename{ [ 4 .. Length( filename ) ] }
@@ -417,14 +417,14 @@ InstallGlobalFunction( LibraryTables, function( filename )
       LIBTABLE.( filename ):= rec();
 #T      LIBTABLE.TABLEFILENAME:= filename;
 #T allow to read files in other directories if the tables were notified there!
-      ReadTbl( Concatenation( filename, ".tbl" ) );
-#T       if not ReadPath( TBLNAME, filename, ".tbl", "ReadTbl" ) then
-#T         Print( "#E ReadTbl: no file with name '", filename,
-#T                "' in the GAP table library\n" );
-#T         return fail;
-#T       fi;
+      if not ReadTbl( Concatenation( filename, ".tbl" ),
+                      "character tables" ) then
+        Info( InfoCharacterTable, 1,
+              "no file with name `", filename, "' in the GAP table library" );
+        return fail;
+      fi;
 
-      # Reset the load status from '"userloaded"' to '"loaded"'.
+      # Reset the load status from `"userloaded"' to `"loaded"'.
       LIBTABLE.LOADSTATUS.( filename ):= "loaded";
 
     fi;
@@ -435,10 +435,10 @@ end );
 
 #############################################################################
 ##
-#F  CharacterTableFromLibrary( [ <tblname> ] )
-#F  CharacterTableFromLibrary( [ <series>, <parameters> ] )
+#F  CharacterTableFromLibrary( <tblname> )
+#F  CharacterTableFromLibrary( <series>, <param1>[, <param2>] )
 ##
-InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
+InstallGlobalFunction( CharacterTableFromLibrary, function( arg )
 
     local i,
           j,
@@ -455,19 +455,19 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
           name,
           fus;
 
-    if IsEmpty( arglist ) or not IsString( arglist[1] ) then
+    if IsEmpty( arg ) or not IsString( arg[1] ) then
 
-      Error( "usage: CharacterTableFromLibrary( [ <tblname> ] )\n",
-             " resp. CharacterTableFromLibrary( [ <series>, <parameters> ] )" );
+      Error( "usage: CharacterTableFromLibrary( <tblname> )\n",
+             " resp. CharacterTableFromLibrary( <series>, <parameters> )" );
 
-    elif Length( arglist ) = 1 then
+    elif Length( arg ) = 1 then
 
-      # 'CharacterTableFromLibrary( tblname )'
-      tblname:= arglist[1];
+      # `CharacterTableFromLibrary( tblname )'
+      tblname:= arg[1];
       firstname:= LibInfoCharacterTable( tblname );
       if firstname = fail then
         Info( InfoCharacterTable, 1,
-              "No library table with name '", tblname, "'" );
+              "No library table with name `", tblname, "'" );
         return fail;
       fi;
       filename  := firstname.fileName;
@@ -475,10 +475,12 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
 
       if filename{ [ 1 .. 3 ] } = "ctb" then
 
-        # Brauer table, call 'BrauerTable'
+        # Brauer table, call `BrauerTable'
         # (First get the ordinary table.)
-        return BrauerTable( firstname, CharacterTableFromLibrary(
-                   [ PartsBrauerTableName( firstname ).ordname ] ) );
+        name:= PartsBrauerTableName( firstname );
+        return BrauerTableFromLibrary(
+                   CharacterTableFromLibrary( name.ordname ),
+                   name.prime );
 
       fi;
 
@@ -486,9 +488,10 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
 
       librarytables:= LibraryTables( filename );
 
-      if not IsBound( librarytables.( firstname ) ) then
+      if    librarytables = fail
+         or not IsBound( librarytables.( firstname ) ) then
         Info( InfoCharacterTable, 1,
-              "No library table with name '", tblname, "'" );
+              "No library table with name `", tblname, "'" );
         return fail;
       fi;
 
@@ -498,14 +501,13 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
       # we must do this now.
       if IsRecord( libtbl ) then
 
-        # If the table is a generic table, simply return it.
+        # If the table is a generic table then simply return it.
         if IsBound( libtbl.isGenericTable )
            and libtbl.isGenericTable = true then
-          libtbl.Identifier := firstname;
-          return ConvertToLibraryCharacterTableNC( libtbl );
+          return libtbl;
         fi;
 
-        # Concatenate the lines of the 'text' component.
+        # Concatenate the lines of the `InfoText' component.
         if IsBound( libtbl.InfoText ) then
           libtbl.InfoText:= Concatenation( libtbl.InfoText );
           ConvertToStringRep( libtbl.InfoText );
@@ -516,8 +518,8 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
         libtbl.NamesOfFusionSources:=
             ShallowCopy( LIBLIST.fusionsource[ pos ] );
 
-        # Evaluate characters encoded as '[GALOIS,[i,j]]'
-        # or '[TENSOR,[i,j]]'.
+        # Evaluate characters encoded as `[GALOIS,[i,j]]'
+        # or `[TENSOR,[i,j]]'.
         if IsBound( libtbl.projectives ) then
           fld:= libtbl.projectives;
           libtbl.projectives:= [];
@@ -541,11 +543,19 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
         fi;
 
         # initialize some components
-        if     IsBound( libtbl.ComputedPowerMaps )
+        if IsBound( libtbl.orders ) then
+          libtbl.OrdersClassRepresentatives:= libtbl.orders;
+        elif   IsBound( libtbl.ComputedPowerMaps )
            and not IsEmpty( libtbl.ComputedPowerMaps )
            and not IsBound( libtbl.OrdersClassRepresentatives ) then
           libtbl.OrdersClassRepresentatives:=
                        ElementOrdersPowerMap( libtbl.ComputedPowerMaps );
+          if not ForAll( libtbl.OrdersClassRepresentatives, IsPosInt ) then
+            Info( InfoWarning, 1,
+                  "representative orders of library table ", tblname,
+                  " not uniquely determined" );
+            Unbind( libtbl.OrdersClassRepresentatives );
+          fi;
         fi;
 
         if IsBound( libtbl.AutomorphismsOfTable ) then
@@ -562,30 +572,29 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
           libtbl.IsSimpleCharacterTable:= libtbl.isSimple;
         fi;
 
-        # Evaluate characters encoded as '[GALOIS,[i,j]]', '[TENSOR,[i,j]]'.
-        EvalChars( libtbl.Irr );
-
-        # If necessary, decode the irredinfo component.
-        # ('irredinfo' is then a record, its components are lists,
-        # each element a list of same length as 'irr')
-        if IsBound( libtbl.irredinfo ) then
-          newirredinfo:= List( libtbl.Irr, x -> rec() );
-          for fld in RecNames( libtbl.irredinfo ) do
-            info:= libtbl.irredinfo.( fld );
-            for i in [ 1 .. Length( newirredinfo ) ] do
-              newirredinfo[i].( fld ):= [];
-            od;
-            for i in [ 1 .. Length( info ) ] do
-              for j in [ 1 .. Length( newirredinfo ) ] do
-                if IsBound( info[i] ) then
-                  newirredinfo[j].( fld )[i]:= info[i][j];
-                fi;
-              od;
-            od;
-          od;
-          libtbl.IrredInfo:= newirredinfo;
-          Unbind( libtbl.irredinfo );
+        if IsBound( libtbl.CAS ) then
+          libtbl.CASInfo:= libtbl.CAS;
+          Unbind( libtbl.CAS );
         fi;
+        if IsBound( libtbl.CASInfo ) then
+          # For tables constructed from others,
+          # the value may be copied from an attribute value
+          # and hence may be immutable.
+#T mutability problem:
+#T if the following comment signs are removed then GAP runs into an error!
+#         if not IsMutable( libtbl.CASInfo ) then
+            libtbl.CASInfo:= List( libtbl.CASInfo, ShallowCopy );
+#         fi;
+          for i in libtbl.CASInfo do
+            if IsBound( i.text ) and ForAll( i.text, IsString ) then
+              i.text:= Concatenation( i.text );
+              ConvertToStringRep( i.text );
+            fi;
+          od;
+        fi;
+
+        # Evaluate characters encoded as `[GALOIS,[i,j]]', `[TENSOR,[i,j]]'.
+        EvalChars( libtbl.Irr );
 
         # Make the table object, and store it for the next call.
         ConvertToLibraryCharacterTableNC( libtbl );
@@ -598,109 +607,109 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
 
     else
 
-      if arglist[1] = "Quaternionic" and Length( arglist ) = 2
-         and IsInt( arglist[2] ) then
-        return CharacterTableQuaternionic( arglist[2] );
+      if arg[1] = "Quaternionic" and Length( arg ) = 2
+         and IsInt( arg[2] ) then
+        return CharacterTableQuaternionic( arg[2] );
 
-      elif arglist[1] = "GL" and Length( arglist ) = 3
-           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+      elif arg[1] = "GL" and Length( arg ) = 3
+           and IsInt( arg[2] ) and IsInt( arg[3] ) then
 
-        # 'CharacterTable( GL, 2, q )'
-        if arglist[2] = 2 then
+        # `CharacterTable( GL, 2, q )'
+        if arg[2] = 2 then
           return CharacterTableSpecialized(
-                     CharacterTableFromLibrary( [ "GL2" ] ), arglist[3] );
+                     CharacterTableFromLibrary( "GL2" ), arg[3] );
         else
           Info( InfoCharacterTable, 1,
-                "Table of GL(", arglist[2], ",q) not yet implemented" );
+                "Table of GL(", arg[2], ",q) not yet implemented" );
           return fail;
         fi;
 
-      elif arglist[1] = "SL" and Length( arglist ) = 3
-           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+      elif arg[1] = "SL" and Length( arg ) = 3
+           and IsInt( arg[2] ) and IsInt( arg[3] ) then
 
         # CharacterTable( SL, 2, q )
-        if arglist[2] = 2 then
-          if arglist[3] mod 2 = 0 then
+        if arg[2] = 2 then
+          if arg[3] mod 2 = 0 then
             return CharacterTableSpecialized(
-                       CharacterTableFromLibrary( [ "SL2even" ] ),
-                       arglist[3] );
+                       CharacterTableFromLibrary( "SL2even" ),
+                       arg[3] );
           else
             return CharacterTableSpecialized(
-                       CharacterTableFromLibrary( [ "SL2odd" ] ),
-                       arglist[3] );
+                       CharacterTableFromLibrary( "SL2odd" ),
+                       arg[3] );
           fi;
         else
           Info( InfoCharacterTable, 1,
-                "Table of SL(", arglist[2], ",q) not yet implemented" );
+                "Table of SL(", arg[2], ",q) not yet implemented" );
           return fail;
         fi;
 
-      elif arglist[1] = "PSL" and Length( arglist ) = 3
-           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+      elif arg[1] = "PSL" and Length( arg ) = 3
+           and IsInt( arg[2] ) and IsInt( arg[3] ) then
 
         # PSL( 2, q )
-        if arglist[2] = 2 then
-          if arglist[3] mod 2 = 0 then
+        if arg[2] = 2 then
+          if arg[3] mod 2 = 0 then
             return CharacterTableSpecialized(
-                       CharacterTableFromLibrary( [ "SL2even" ] ),
-                       arglist[3] );
-          elif ( arglist[3] - 1 ) mod 4 = 0 then
+                       CharacterTableFromLibrary( "SL2even" ),
+                       arg[3] );
+          elif ( arg[3] - 1 ) mod 4 = 0 then
             return CharacterTableSpecialized(
-                       CharacterTableFromLibrary( [ "PSL2even" ] ),
-                       arglist[3] );
+                       CharacterTableFromLibrary( "PSL2even" ),
+                       arg[3] );
           else
             return CharacterTableSpecialized(
-                       CharacterTableFromLibrary( [ "PSL2odd" ] ),
-                       arglist[3] );
+                       CharacterTableFromLibrary( "PSL2odd" ),
+                       arg[3] );
           fi;
         else
           Info( InfoCharacterTable, 1,
-                "Table of PSL(", arglist[2], ",q) not yet implemented" );
+                "Table of PSL(", arg[2], ",q) not yet implemented" );
           return fail;
         fi;
 
-      elif arglist[1] = "GU" and Length( arglist ) = 3
-           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+      elif arg[1] = "GU" and Length( arg ) = 3
+           and IsInt( arg[2] ) and IsInt( arg[3] ) then
 
         # GU( 3, q )
-        if arglist[2] = 3 then
+        if arg[2] = 3 then
           return CharacterTableSpecialized(
-                     CharacterTableFromLibrary( [ "GU3" ] ), arglist[3] );
+                     CharacterTableFromLibrary( "GU3" ), arg[3] );
         else
           Info( InfoCharacterTable, 1,
-                "Table of GU(", arglist[2], ",q) not yet implemented" );
+                "Table of GU(", arg[2], ",q) not yet implemented" );
           return fail;
         fi;
 
-      elif arglist[1] = "SU" and Length( arglist ) = 3
-           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+      elif arg[1] = "SU" and Length( arg ) = 3
+           and IsInt( arg[2] ) and IsInt( arg[3] ) then
 
         # SU( 3, q )
-        if arglist[2] = 3 then
+        if arg[2] = 3 then
           return CharacterTableSpecialized(
-                     CharacterTableFromLibrary( [ "SU3" ] ),
-                     arglist[3] );
+                     CharacterTableFromLibrary( "SU3" ),
+                     arg[3] );
         else
           Info( InfoCharacterTable, 1,
-                "Table of SU(", arglist[2], ",q) not yet implemented" );
+                "Table of SU(", arg[2], ",q) not yet implemented" );
           return fail;
         fi;
 
-      elif arglist[1] = "Suzuki" and Length( arglist ) = 2
-           and IsInt( arglist[2] ) then
-        if not Set( FactorsInt( arglist[2] ) ) = [ 2 ] then
+      elif arg[1] = "Suzuki" and Length( arg ) = 2
+           and IsInt( arg[2] ) then
+        if not Set( FactorsInt( arg[2] ) ) = [ 2 ] then
           Info( InfoCharacterTable, 1,
                 "CharacterTable(\"Suzuki\",q): q must be a power of 2");
           return fail;
         fi;
         return CharacterTableSpecialized(
-                   CharacterTableFromLibrary( [ "Suzuki" ] ),
-                   [ arglist[2],
-                     2^((Length(FactorsInt(arglist[2]))+1)/2) ] );
+                   CharacterTableFromLibrary( "Suzuki" ),
+                   [ arg[2],
+                     2^((Length(FactorsInt(arg[2]))+1)/2) ] );
 
       else
         return CharacterTableSpecialized(
-                   CharacterTableFromLibrary( [ arglist[1] ] ), arglist[2] );
+                   CharacterTableFromLibrary( arg[1] ), arg[2] );
       fi;
     fi;
 end );
@@ -709,21 +718,26 @@ end );
 #############################################################################
 ##
 #M  CharacterTable( <name> )  . . . . . . . . . library table with given name
-#M  CharacterTable( <series>, <parameters> )
+#M  CharacterTable( <series>, <param> )
+#M  CharacterTable( <series>, <param1>, <param2> )
 ##
-InstallOtherMethod( CharacterTable,
+InstallMethod( CharacterTable,
     "for a string",
     true,
     [ IsString ], 0,
-    name -> CharacterTableFromLibrary( [ name ] ) );
+    CharacterTableFromLibrary );
 
 InstallOtherMethod( CharacterTable,
     "for a string and an object",
     true,
     [ IsString, IsObject ], 0,
-    function( series, parameters )
-    return CharacterTableFromLibrary( [ series, parameters ] );
-    end );
+    CharacterTableFromLibrary );
+
+InstallOtherMethod( CharacterTable,
+    "for a string and two objects",
+    true,
+    [ IsString, IsObject, IsObject ], 0,
+    CharacterTableFromLibrary );
 
 
 #############################################################################
@@ -795,7 +809,7 @@ InstallGlobalFunction( BasicSetBrauerTree, function( brauertree )
 
     while brauertree <> [] do
 
-      # take a vertex of degree 1, remove its edge, adjust 'degrees'
+      # take a vertex of degree 1, remove its edge, adjust `degrees'
       elm:= Position( degrees, 1 );
       AddSet( basicset, elm );
       edge:= First( brauertree, x -> elm in x );
@@ -824,7 +838,7 @@ InstallGlobalFunction( DecMatBrauerTree, function( brauertree )
     for i in brauertree do
       max:= Maximum( max, Maximum(i) );
     od;
-    decmat:= MutableNullMat( max, Length( brauertree ) );
+    decmat:= NullMat( max, Length( brauertree ) );
     for i in [ 1 .. Length( brauertree ) ] do
       for j in brauertree[i] do
         decmat[j][i]:= 1;
@@ -854,14 +868,14 @@ InstallGlobalFunction( BrauerTree, function( decmat )
     brauertree:= [];
     for i in [ 1 .. Length( decmat[1] ) ] do
 
-      # find the entries 1 in column 'i'
+      # find the entries 1 in column `i'
       edge:= [];
       for j in [ 1 .. Length( decmat ) ] do
         if decmat[j][i] = 1 then Add( edge, j ); fi;
       od;
       len:= Length( edge );
 
-      # If 'len = 2', we have an ordinary edge of the tree; else this may
+      # If `len = 2', we have an ordinary edge of the tree; else this may
       # concern an exceptional character.
 
       if len = 2 then
@@ -886,9 +900,9 @@ end );
 
 #############################################################################
 ##
-#F  BrauerTable( <name>, <ordtbl> )
+#F  BrauerTableFromLibrary( <ordtbl>, <prime> )
 ##
-InstallGlobalFunction( BrauerTable, function( name, ordtbl )
+InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
 
     local filename,      # name of the file containing the Brauer table
           fld,           # library tables of the whole library file
@@ -909,7 +923,7 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
           ordblocks,
           modblocks,
           defect,
-          prime,
+          name,
           irreducibles,
           restricted,
           block,
@@ -924,18 +938,29 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
           decmat,
           brauertree,
           facttbl,
+          mfacttbl,
+          pbl,
+          info,
+          factinfo,
+          ordchars,
           offset,
           decinv;
 
-    # Get the library file if possible.
-    filename:= LibInfoCharacterTable( name ).fileName;
-    fld:= LibraryTables( filename );
+    # Get the library file of the Brauer table if possible.
+    name:= Concatenation( Identifier( ordtbl ), "mod", String( prime ) );
+    filename:= LibInfoCharacterTable( name );
+    if IsRecord( filename ) then
+      filename:= LibInfoCharacterTable( name ).fileName;
+      fld:= LibraryTables( filename );
+    else
+      fld:= fail;
+    fi;
+
     if fld = fail or not IsBound( fld.( name ) ) then
 
       # Maybe we have to factor out a normal $p$-subgroup before
-      # we find the table in the library.
+      # we find the table (name) in the library.
       nsg:= ClassPositionsOfNormalSubgroups( ordtbl );
-      prime:= PartsBrauerTableName( name ).prime;
       op:= false;
       j:= 0;
       classes:= SizesConjugacyClasses( ordtbl );
@@ -950,7 +975,7 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
 
       if j = 0 then
         Info( InfoCharacterTable, 1,
-              "No library table with name '", name, "'" );
+              "No library table with name `", name, "'" );
         return fail;
       fi;
 
@@ -959,17 +984,48 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
       for entry in ComputedClassFusions( ordtbl ) do
         fusion:= entry.map;
         if Filtered( [ 1 .. nccl ], i -> fusion[i] = 1 ) = op then
-          facttbl:= CharacterTableFromLibrary( [ entry.name ] );
-          libtbl:= facttbl mod prime;
-          fusion:= CompositionMaps( InverseMap( fusion ),
-                                    GetFusionMap( libtbl, facttbl ) );
-          for i in [ 1 .. Length( fusion ) ] do
-            if IsList( fusion[i] ) then
-              fusion[i]:= First( fusion[i], x -> orders[x] mod prime <> 0 );
-            fi;
-          od;
-          StoreFusion( libtbl, fusion, ordtbl );
-          return libtbl;
+
+          # We found the ordinary factor for which the Brauer characters
+          # are equal to the ones we need.
+          facttbl:= CharacterTableFromLibrary( entry.name );
+          if facttbl = fail then
+            return fail;
+          fi;
+          mfacttbl:= BrauerTable( facttbl, prime );
+          if mfacttbl = fail then
+            return fail;
+          fi;
+
+          # Now we set up a *new* Brauer table since the ordinary table
+          # as well as the blocks information for the factor group is
+          # different from the one for the extension.
+          reg:= CharacterTableRegular( ordtbl, prime );
+
+          # Set the irreducibles.
+          # Note that the ordering of classes is in general *not* the same,
+          # so we must translate with the help of fusion maps.
+          fusion:= CompositionMaps(
+                    InverseMap( GetFusionMap( mfacttbl, facttbl ) ),
+                    CompositionMaps( GetFusionMap( ordtbl, facttbl ),
+                                     GetFusionMap( reg, ordtbl ) ) );
+          SetIrr( reg, List( Irr( mfacttbl ),
+              chi -> Character( reg,
+                  ValuesOfClassFunction( chi ){ fusion } ) ) );
+
+          # Set known attribute values that can be copied from `mfacttbl'.
+          if HasAutomorphismsOfTable( mfacttbl ) then
+            SetAutomorphismsOfTable( reg, AutomorphismsOfTable( mfacttbl ) );
+          fi;
+          if HasInfoText( mfacttbl ) then
+            SetInfoText( reg, InfoText( mfacttbl ) );
+          fi;
+          if HasComputedIndicators( mfacttbl ) then
+            SetComputedIndicators( reg, ComputedIndicators( mfacttbl ) );
+          fi;
+
+          # Return the table.
+          return reg;
+
         fi;
       od;
 
@@ -978,6 +1034,8 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
       return fail;
 
     fi;
+
+
     libtbl:= fld.( name );
 
     # If the table was already constructed simply return it.
@@ -986,10 +1044,28 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
     fi;
 
     # Otherwise we have to work.
-    prime:= libtbl.UnderlyingCharacteristic;
     reg:= CharacterTableRegular( ordtbl, prime );
 
-    SetInfoText( reg, libtbl.InfoText );
+#T just a hack ...
+    reg!.defect:= libtbl.defect;
+    reg!.block:= libtbl.block;
+    if IsBound( libtbl.decinv ) then
+      reg!.decinv:= libtbl.decinv;
+    fi;
+    if IsBound( libtbl.basicset ) then
+      reg!.basicset:= libtbl.basicset;
+    fi;
+    if IsBound( libtbl.brauertree ) then
+      reg!.brauertree:= libtbl.brauertree;
+    fi;
+#T end of the hack ...
+
+    # Concatenate the lines of the `InfoText' component if necessary.
+    if IsString( libtbl.InfoText ) then
+      SetInfoText( reg, libtbl.InfoText );
+    else
+      SetInfoText( reg, Concatenation( libtbl.InfoText ) );
+    fi;
 
     # If automorphisms are known (list of generators), convert to a group.
     if IsBound( libtbl.AutomorphismsOfTable ) then
@@ -1008,13 +1084,13 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
     brauertree:= [];
     decinv:= [];
 
-    ordblocks:= InverseMap( List( IrredInfo( ordtbl ),
-                                  x -> x.pblock[prime] ) );
-#T why is this available?
-#T (better compute anew?)
+    # If the distribution to blocks is stored on the table
+    # then use it, otherwise compute it.
+    ordblocks:= PrimeBlocks( ordtbl, prime ).block;
+    ordblocks:= InverseMap( ordblocks );
 
     # Get the blocks of factor groups if necessary;
-    # 'factorblocks' is a list of pairs containing the names of the
+    # `factorblocks' is a list of pairs containing the names of the
     # tables that hold the blocks and the offset of basic set characters.
     if IsBound( libtbl.factorblocks ) then
 
@@ -1116,7 +1192,7 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
             irreducibles{ modblocks[i] }:=
                 List( decinv[i] * List( restricted{ basicset[i] },
                                         ValuesOfClassFunction ),
-                      vals -> CharacterByValues( reg, vals ) );
+                      vals -> Character( reg, vals ) );
           else
             Error( "at least one of the components <decinv>, <brauertree> ",
                    "must be bound at pos. ", i );
@@ -1127,30 +1203,36 @@ InstallGlobalFunction( BrauerTable, function( name, ordtbl )
       fi;
 
       result_blocks[i]:= rec( defect    := defect[i],
-                              ordchars  := Immutable( ordblocks[i] ),
-                              modchars  := Immutable( modblocks[i] ),
-                              decinv    := Immutable( decinv[i] ),
-                              basicset  := Immutable( basicset[i] )   );
+                              ordchars  := ordblocks[i],
+                              modchars  := modblocks[i],
+                              decinv    := decinv[i],
+                              basicset  := basicset[i]   );
       if IsBound( brauertree[i] ) and brauertree[i] <> fail then
-        result_blocks[i].brauertree:= Immutable( brauertree[i] );
+        result_blocks[i].brauertree:= brauertree[i];
       fi;
 
     od;
 
+    # instead of calling `Immutable' for the entries in the loop ...
+    MakeImmutable( ordblocks );
+    MakeImmutable( modblocks );
+    MakeImmutable( decinv );
+    MakeImmutable( basicset );
+    MakeImmutable( brauertree );
+
     SetBlocksInfo( reg, result_blocks );
     SetIrr( reg, irreducibles );
 
-    # decode the 'IrredInfo' value
+    # decode the `IrredInfo' value
     # (contains 2nd indicator if the prime is 2, else nothing)
     if IsBound( libtbl.indicator ) then
-      SetIrredInfo( reg, List( libtbl.indicator,
-                               x -> rec( indicator:= [ , x ] ) ) );
+      SetComputedIndicators( reg, [ , libtbl.indicator ] );
     fi;
 
 #T BAD HACK until incomplete tables disappeared ...
 #T only file ctborth2 ...
     if IsBound( libtbl.warning ) then
-      Print( "#W warning for table of '", libtbl.identifier, "':\n",
+      Print( "#W warning for table of `", Identifier( reg ), "':\n",
              libtbl.warning, "\n" );
     fi;
 
@@ -1164,23 +1246,23 @@ end );
 
 #############################################################################
 ##
-#M  \mod( <tbl>, <p> )  . . . . . . . . . . . . . . <p>-modular library table
+#M  BrauerTableOp( <tbl>, <p> ) . . . . . . . . . . <p>-modular library table
 ##
 ##  If <tbl> is an {\ATLAS} library table then take the Brauer table from the
-##  library if possible.
+##  library if possible,
+##  and fall back to the generic method otherwise.
 ##
-InstallMethod( \mod,
+InstallMethod( BrauerTableOp,
     "for a library character table and a positive integer",
     true,
-    [ IsOrdinaryTable and IsLibraryCharacterTableRep,
-      IsPosRat and IsInt ], 0,
+    [ IsOrdinaryTable and IsLibraryCharacterTableRep, IsPosInt ], SUM_FLAGS,
     function( tbl, p )
-    tbl:= BrauerTable( Concatenation( Identifier( tbl ), "mod", String(p) ),
-                       tbl );
-    if not IsBrauerTable( tbl ) then
+    local modtbl;
+    modtbl:= BrauerTableFromLibrary( tbl, p );
+    if modtbl = fail then
       TryNextMethod();
     fi;
-    return tbl;
+    return modtbl;
     end );
 
 
@@ -1200,7 +1282,7 @@ InstallGlobalFunction( CharacterTableSpecialized, function( gtab, q )
           class;       #
 
     # Check if the argument is valid.
-    if not IsGenericCharacterTableRep( gtab ) then
+    if not ( IsRecord( gtab ) and IsBound( gtab.isGenericTable ) ) then
       Error( "this is not a generic character table" );
     elif IsBound( gtab!.domain ) and not gtab!.domain( q ) then
       Error( q, " is not a valid paramater for this generic table" );
@@ -1211,8 +1293,8 @@ InstallGlobalFunction( CharacterTableSpecialized, function( gtab, q )
 
     if IsBound( gtab!.wholetable ) then
 
-      # If the generic table has a component 'wholetable'
-      # (a function which takes the generic table and 'q' as arguments),
+      # If the generic table has a component `wholetable'
+      # (a function which takes the generic table and `q' as arguments),
       # use this function to construct the whole table.
       taf:= gtab!.wholetable( gtab, q );
 
@@ -1221,14 +1303,14 @@ InstallGlobalFunction( CharacterTableSpecialized, function( gtab, q )
       taf := rec();
 
       # Get the parametrisation of classes and characters.
-      # 'genclass' stores for each class of the specialized character table
+      # `genclass' stores for each class of the specialized character table
       # the number of the class of the generic table it stems from.
-      # 'classparam' stores the parameter of the special class.
-      # 'genchar' and 'charparam' do the same for characters.
+      # `classparam' stores the parameter of the special class.
+      # `genchar' and `charparam' do the same for characters.
 
       if    not IsBound( gtab!.classparam )
          or not IsBound( gtab!.charparam ) then
-        Error( "components 'classparam' and 'charparam' are missing" );
+        Error( "components `classparam' and `charparam' are missing" );
       fi;
 
       genclass   := [];
@@ -1304,10 +1386,10 @@ InstallGlobalFunction( CharacterTableSpecialized, function( gtab, q )
                                   ( q, charparam[i], classparam[j] ) ) );
       fi;
 
-      taf.ClassParameters := List( [ 1 .. Length( classparam ) ],
-                                   i -> [ genclass[i], classparam[i] ] );
-      taf.IrredInfo:= List( [ 1 .. Length( charparam ) ],
-                            i->rec(charparam:= [genchar[i],charparam[i]]) );
+      taf.ClassParameters:= List( [ 1 .. Length( classparam ) ],
+                                  i -> [ genclass[i], classparam[i] ] );
+      taf.CharacterParameters:= List( [ 1 .. Length( charparam ) ],
+                                      i -> [ genchar[i], charparam[i] ] );
 
       if IsBound( gtab!.text ) then
         taf.InfoText:= Concatenation( "computed using ", gtab!.text );
@@ -1336,15 +1418,15 @@ InstallGlobalFunction( TransferComponentsToLibraryTableRecord,
 
     local names, i, fld;
 
-    names:= RecNames( tbl );
+    names:= ShallowCopy( RecNames( tbl ) );
     Add( names, "Irr" );
 
     # Set the supported attribute values.
-    for i in [ 1, 3 .. Length( SupportedOrdinaryTableInfo ) - 1 ] do
-      if     not SupportedOrdinaryTableInfo[ i+1 ] in names
-         and Tester( SupportedOrdinaryTableInfo[i] )( t ) then
-        tbl.( SupportedOrdinaryTableInfo[ i+1 ] ):=
-            SupportedOrdinaryTableInfo[i]( t );
+    for i in [ 1, 4 .. Length( SupportedCharacterTableInfo ) - 2 ] do
+      if     not SupportedCharacterTableInfo[ i+1 ] in names
+         and Tester( SupportedCharacterTableInfo[i] )( t ) then
+        tbl.( SupportedCharacterTableInfo[ i+1 ] ):=
+            SupportedCharacterTableInfo[i]( t );
       fi;
     od;
 
@@ -1369,16 +1451,16 @@ end );
 InstallGlobalFunction( ConstructMixed,
     function( tbl, subname, factname, plan, perm )
 
-    local factfus,  # factor fusion from 'tbl' to 'fact'
-          subfus,   # subgroup fusion from 'sub' to 'tbl'
-          proj,     # projection map of 'subfus'
+    local factfus,  # factor fusion from `tbl' to `fact'
+          subfus,   # subgroup fusion from `sub' to `tbl'
+          proj,     # projection map of `subfus'
           irreds,   # list of irreducibles
           zero;     # list of zeros to be appended to the characters
 
     factfus  := First( tbl.ComputedClassFusions,
                        fus -> fus.name = factname ).map;
-    factname := CharacterTableFromLibrary( [ factname ] );
-    subname  := CharacterTableFromLibrary( [ subname ] );
+    factname := CharacterTableFromLibrary( factname );
+    subname  := CharacterTableFromLibrary( subname );
     subfus   := First( ComputedClassFusions( subname ),
                        fus -> fus.name = tbl.Identifier ).map;
     proj    := ProjectionMap( subfus );
@@ -1394,10 +1476,62 @@ end );
 
 #############################################################################
 ##
-#F  ConstructProj( <tbl> )
+#F  ConstructMixedInfo( <tblmGa>, <tblmG>, <tblGa> )
 ##
-##  constructs irreducibles for projective tables from projectives of
-##  a factor group table.
+InstallGlobalFunction( ConstructMixedInfo,
+    function( tblmGa, tblmG, tblGa )
+
+    local factfus,
+          subfus,
+          kernel,
+          nccl,
+          irr,
+          plan,
+          chi,
+          rest,
+          nonfaith,
+          zero,
+          proj,
+          faithful,
+          perm;
+
+    factfus:= GetFusionMap( tblmGa, tblGa );
+    subfus:= GetFusionMap( tblmG, tblmGa );
+    if factfus = fail or subfus = fail then
+      Error( "fusions <tblmG> -> <tblmGa> -> <tblGa> must be stored" );
+    fi;
+
+    kernel:= ClassPositionsOfKernel( factfus );
+
+    nccl:= NrConjugacyClasses( tblmG );
+    irr:= Irr( tblmG );
+    plan:= [];
+    for chi in Irr( tblmGa ) do
+      if not IsSubset( ClassPositionsOfKernel( chi ), kernel ) then
+        rest:= chi{ subfus };
+        Add( plan, Filtered( [ 1 .. nccl ],
+                       i -> ScalarProduct( tblmG, rest, irr[i] ) <> 0 ) );
+      fi;
+    od;
+
+    nonfaith:= List( Irr( tblGa ), chi -> chi{ factfus } );
+    zero:= Zero( [ Maximum( subfus ) + 1 .. NrConjugacyClasses( tblmGa ) ] );
+    proj:= ProjectionMap( subfus );
+    faithful:= List( plan,
+        entry -> Concatenation( Sum( irr{ entry } ){ proj }, zero ) );
+    perm:= Sortex( Concatenation( nonfaith, faithful ) ) /
+           Sortex( ShallowCopy( Irr( tblmGa ) ) );
+
+    return rec( subname:= Identifier( tblmG ),
+                factname:= Identifier( tblGa ),
+                plan:= plan,
+                perm:= perm );
+end );
+
+
+#############################################################################
+##
+#F  ConstructProj( <tbl> )
 ##
 InstallGlobalFunction( ConstructProj, function( tbl )
 
@@ -1407,7 +1541,7 @@ InstallGlobalFunction( ConstructProj, function( tbl )
           vals;
 
     nccl:= Length( tbl.SizesCentralizers );
-    factor:= CharacterTableFromLibrary( [ tbl.Irr[1][1] ] );
+    factor:= CharacterTableFromLibrary( tbl.Irr[1][1] );
     fus:= First( tbl.ComputedClassFusions,
                  fus -> fus.name = tbl.Irr[1][1] ).map;
     mult:= tbl.SizesCentralizers[1] / Size( factor );
@@ -1419,8 +1553,8 @@ InstallGlobalFunction( ConstructProj, function( tbl )
     omegasquare:= E(3)^2;
     I:= E(4);
 
-    # Loop over the divisors of 'mult' (a divisor of 12).
-    # Note the succession for 'mult = 12'!
+    # Loop over the divisors of `mult' (a divisor of 12).
+    # Note the succession for `mult = 12'!
     if mult <> 12 then
       divs:= Difference( DivisorsInt( mult ), [ 1 ] );
     else
@@ -1429,9 +1563,9 @@ InstallGlobalFunction( ConstructProj, function( tbl )
 
     for d in divs do
 
-      # Construct the faithful irreducibles for an extension by 'd'.
+      # Construct the faithful irreducibles for an extension by `d'.
       # For that, we split and adjust the portion of characters (stored
-      # on the small table 'factor') as if we would create this extension,
+      # on the small table `factor') as if we would create this extension,
       # and then we blow up these characters to the whole table.
 
       name:= tbl.Irr[d][1];
@@ -1453,8 +1587,8 @@ InstallGlobalFunction( ConstructProj, function( tbl )
         od;
       od;
 
-      # now we have to multiply the values on certain classes 'j' with
-      # roots of unity, dependent on the value of 'd'\:
+      # Now we have to multiply the values on certain classes `j' with
+      # roots of unity, dependent on the value of `d':
 
       Adjust:= [];
       for i in [ 1 .. d-1 ] do
@@ -1462,20 +1596,20 @@ InstallGlobalFunction( ConstructProj, function( tbl )
                               x -> adjust[ factfus[x] ] = factfus[x] - i );
       od;
 
-      # d =  2\:\ classes in 'Adjust[1]' multiply with '-1'
-      # d =  3\:\ classes in 'Adjust[x]' multiply
-      #                       with 'E(3)^x' for the proxy cohort,
-      #                       with 'E(3)^(2*x)' for the follower cohort
-      # d =  4\:\ classes in 'Adjust[x]' multiply
-      #                       with 'E(4)^x' for the proxy cohort,
-      #                       with '(-E(4))^x' for the follower cohort,
-      # d =  6\:\ classes in 'Adjust[x]' multiply with '(-E(3))^x'
-      # d = 12\:\ classes in 'Adjust[x]' multiply with '(E(12)^7)^x'
+      # d =  2: classes in `Adjust[1]' multiply with `-1'
+      # d =  3: classes in `Adjust[x]' multiply
+      #                     with `E(3)^x' for the proxy cohort,
+      #                     with `E(3)^(2*x)' for the follower cohort
+      # d =  4: classes in `Adjust[x]' multiply
+      #                     with `E(4)^x' for the proxy cohort,
+      #                     with `(-E(4))^x' for the follower cohort,
+      # d =  6: classes in `Adjust[x]' multiply with `(-E(3))^x'
+      # d = 12: classes in `Adjust[x]' multiply with `(E(12)^7)^x'
       #
       # (*Note* that follower cohorts of classes never occur in projective
       #  ATLAS tables ... )
 
-      # determine proxy classes and follower classes\:
+      # Determine proxy classes and follower classes:
 
       if Length( linear ) in [ 2, 5 ] then  # out in [ 3, 6 ]
         prox:= [];
@@ -1511,7 +1645,7 @@ InstallGlobalFunction( ConstructProj, function( tbl )
           od;
         od;
       elif d = 12 then
-        # special case with three Galois partners and 'lin = []'
+        # special case with three Galois partners and `lin = []'
         vals:= [ E(12)^7, - omegasquare, - I, E(3), E(12)^11, -1,
                  -E(12)^7, omegasquare, I, -E(3), -E(12)^11 ];
         for j in [ 1 .. Length( faith ) ] do
@@ -1568,6 +1702,136 @@ end );
 
 #############################################################################
 ##
+#F  ConstructProjInfo( <tbl>, <kernel> )
+##
+InstallGlobalFunction( ConstructProjInfo, function( tbl, kernel )
+
+    local fusions,     # computed fusions of `tbl'
+          fus,         # one fusion
+          classes,     # class lengths of `tbl'
+          orders,      # representative orders of `tbl'
+          mult,        # order of the central subgroup `kernel'
+          faithpos,    # position of a cyclic generator of the kernel
+          nsg,         # class positions of subgroups of `kernel'
+          faith,       # corresponding group orders
+          names,       # names of factors by these subgroups
+          fusrec,      # loop over fusions
+          faithchars,  # faithful characters for each subgroup
+          chi,         # loop over irreducibles of `tbl'
+          ker,         # kernel of `chi'
+          proj,
+          nccl,
+          linear,
+          partners,
+          i,
+          new,
+          gal,
+          rest,
+          projectives,
+          info;
+
+    # Get the factor fusions.
+    fusions:= ComputedClassFusions( tbl );
+    fus:= First( fusions, x -> ClassPositionsOfKernel( x.map ) = kernel );
+    if fus = fail then
+      Error( "factor fusion from <tbl> to <facttbl> must be stored" );
+    fi;
+
+    classes:= SizesConjugacyClasses( tbl );
+    orders:= OrdersClassRepresentatives( tbl );
+
+    mult:= Sum( classes{ kernel } );
+    faithpos:= First( kernel, i -> orders[i] = mult );
+
+    if    12 mod mult <> 0
+       or faithpos = fail
+       or Length( kernel ) <> mult then
+      Error( "only cyclic central ext. by a group of order dividing 12" );
+    fi;
+
+    nsg:= Filtered( ClassPositionsOfNormalSubgroups( tbl ),
+                    x -> IsSubset( kernel, x ) );
+    faith:= List( nsg, l -> mult / Length( l ) );
+    SortParallel( faith, nsg );
+    if mult = 12 then
+      nsg:= Permuted( nsg, (3,4) );
+      faith:= Permuted( faith, (3,4) );
+    fi;
+
+    names:= [];
+    for i in [ 1 .. Length( nsg ) ] do
+      fusrec:= First( fusions,
+                      r -> ClassPositionsOfKernel( r.map ) = nsg[i] );
+      if fusrec = fail then
+        Error( "factor fusion with kernel ", nsg[i], " not stored" );
+      fi;
+      names[i]:= fusrec.name;
+    od;
+    names[ Length( names ) ]:= Identifier( tbl );
+
+    # Distribute the irreducibles according to their kernels.
+    # Take only those irreducibles
+    # of  $3.G$ with value `E(3)' times the degree on the first nonid. class,
+    # of  $4.G$ with value `E(4)' times the degree on the first nonid. class,
+    # of  $6.G$ with value `E(6)' times the degree on the first nonid. class,
+    # of $12.G$ with value `E(12)^7' times the deg. on the first nonid. class,
+    faithchars:= List( nsg, l -> [] );
+    for chi in Irr( tbl ) do
+      ker:= ClassPositionsOfKernel( chi );
+      for i in [ 1 .. Length( nsg ) ] do
+        if IsSubset( kernel, nsg[i] ) then
+
+          if      faith[i] <= 2
+             or ( faith[i] =  3 and chi[ faithpos ] = E(3) * chi[1] )
+             or ( faith[i] =  4 and chi[ faithpos ] = E(4) * chi[1] )
+             or ( faith[i] =  6 and chi[ faithpos ] = E(6) * chi[1] )
+             or ( faith[i] = 12 and chi[ faithpos ] = E(12)^7 * chi[1] ) then
+            Add( faithchars[i], chi );
+          fi;
+
+        fi;
+      od;
+    od;
+
+    # Remove characters obtained by multiplication with linear characters
+    # of the factor group,
+    # and create the result info.
+    proj:= ProjectionMap( fus.map );
+    nccl:= Length( proj );
+    linear:= List( Filtered( faithchars[1], chi -> chi[1] = 1 ),
+                   lambda -> lambda{ proj } );
+    projectives:= [];
+    info:= [ [ names[1], [] ] ];
+
+    for i in [ 2 .. Length( nsg ) ] do
+
+      new:= [];
+      gal:= [];
+      for chi in faithchars[i] do
+        rest:= chi{ proj };
+        if ForAll( linear, lambda -> not List( [ 1 .. nccl ],
+               j -> lambda[j] * rest[j] ) in new ) then
+          Add( new, rest );
+          partners:= GaloisPartnersOfIrreducibles( tbl, [ chi ], faith[i] );
+          if faith[i] <> 12 then
+            partners:= partners[1];
+          fi;
+          Append( gal, partners );
+        fi;
+      od;
+      info[ faith[i] ]:= [ names[i], gal ];
+      Add( projectives, rec( name:= names[i], chars:= new ) );
+
+    od;
+
+    # Return the result.
+    return rec( projectives := projectives,
+                info        := info         );
+end );
+
+
+#############################################################################
+##
 #F  ConstructDirectProduct( <tbl> )
 #F  ConstructDirectProduct( <tbl>, <permclasses>, <permchars> )
 ##
@@ -1576,10 +1840,10 @@ InstallGlobalFunction( ConstructDirectProduct, function( arg )
     local tbl, t, i;
 
     tbl:= arg[1];
-    t:= CharacterTableFromLibrary( tbl.factors[1] );
+    t:= CallFuncList( CharacterTableFromLibrary, tbl.factors[1] );
     for i in [ 2 .. Length( tbl.factors ) ] do
       t:= CharacterTableDirectProduct( t,
-              CharacterTableFromLibrary( tbl.factors[i] ) );
+              CallFuncList( CharacterTableFromLibrary, tbl.factors[i] ) );
     od;
     if 1 < Length( arg ) then
       t:= CharacterTableWithSortedClasses( t, arg[2] );
@@ -1603,10 +1867,10 @@ InstallGlobalFunction( ConstructSubdirect, function( tbl, factors, choice  )
 
     local t, i;
 
-    t:= CharacterTableFromLibrary( factors[1] );
+    t:= CallFuncList( CharacterTableFromLibrary, factors[1] );
     for i in [ 2 .. Length( factors ) ] do
       t:= CharacterTableDirectProduct( t,
-              CharacterTableFromLibrary( factors[i] ) );
+              CallFuncList( CharacterTableFromLibrary, factors[i] ) );
     od;
     t:= CharacterTableOfNormalSubgroup( t, choice );
     TransferComponentsToLibraryTableRecord( t, tbl );
@@ -1623,10 +1887,10 @@ InstallGlobalFunction( ConstructIsoclinic, function( arg )
     local tbl, t, i, fld;
 
     tbl:= arg[1];
-    t:= CharacterTableFromLibrary( tbl.factors[1] );
+    t:= CallFuncList( CharacterTableFromLibrary, tbl.factors[1] );
     for i in [ 2 .. Length( tbl.factors ) ] do
       t:= CharacterTableDirectProduct( t,
-              CharacterTableFromLibrary( tbl.factors[i] ) );
+              CallFuncList( CharacterTableFromLibrary, tbl.factors[i] ) );
     od;
     if Length( arg ) = 1 then
       t:= CharacterTableIsoclinic( t );
@@ -1646,7 +1910,7 @@ InstallGlobalFunction( ConstructV4G, function( tbl, facttbl, aut )
     local fus, chars;
 
     fus:= First( tbl.ComputedClassFusions, fus -> fus.name = facttbl ).map;
-    facttbl:= CharacterTableFromLibrary( [ facttbl ] );
+    facttbl:= CharacterTableFromLibrary( facttbl );
     tbl.Irr:= List( Irr( facttbl ), x -> ValuesOfClassFunction( x ){ fus } );
     chars:= List( Filtered( tbl.Irr, x -> x[1] <> x[3] ),
                   x -> Permuted( x, aut ) );
@@ -1716,25 +1980,25 @@ end );
 InstallGlobalFunction( ConstructGS3,
     function( tbls3, tbl2, tbl3, ind2, ind3, ext, perm )
 
-    local fus2,       # fusion map 'tbl2' in 'tbls3'
-          fus3,       # fusion map 'tbl3' in 'tbls3'
+    local fus2,       # fusion map `tbl2' in `tbls3'
+          fus3,       # fusion map `tbl3' in `tbls3'
           proj2,      # projection $G.S3$ to $G.2$
-          pos,        # position in 'proj2'
+          pos,        # position in `proj2'
           proj2i,     # inner part of projection $G.S3$ to $G.2$
           proj2o,     # outer part of projection $G.S3$ to $G.2$
           proj3,      # projection $G.S3$ to $G.3$
           zeroon2,    # zeros for part of $G.2 \setminus G$ in $G.S_3$
-          irr,        # irreducible characters of 'tbls3'
-          irr3,       # irreducible characters of 'tbl3'
-          irr2,       # irreducible characters of 'tbl2'
-          i,          # loop over 'ind2'
-          pair,       # loop over 'ind3' and 'ext'
+          irr,        # irreducible characters of `tbls3'
+          irr3,       # irreducible characters of `tbl3'
+          irr2,       # irreducible characters of `tbl2'
+          i,          # loop over `ind2'
+          pair,       # loop over `ind3' and `ext'
           chi,        # character
           chii,       # inner part of character
           chio;       # outer part of character
 
-    tbl2:= CharacterTableFromLibrary( [ tbl2 ] );
-    tbl3:= CharacterTableFromLibrary( [ tbl3 ] );
+    tbl2:= CharacterTableFromLibrary( tbl2 );
+    tbl3:= CharacterTableFromLibrary( tbl3 );
 
     fus2:= First( ComputedClassFusions( tbl2 ),
                   fus -> fus.name = tbls3.Identifier ).map;
@@ -1751,15 +2015,15 @@ InstallGlobalFunction( ConstructGS3,
     zeroon2:= Zero( Difference( [ 1 .. Length( tbls3.SizesCentralizers ) ],
                     fus3 ) );
 
-    # Induce the characters given by 'ind2' from 'tbl2'.
+    # Induce the characters given by `ind2' from `tbl2'.
     irr:= InducedLibraryCharacters( tbl2, tbls3, Irr( tbl2 ){ ind2 }, fus2 );
 
-    # Induce the characters given by 'ind3' from 'tbl3'.
+    # Induce the characters given by `ind3' from `tbl3'.
     irr3:= List( Irr( tbl3 ), ValuesOfClassFunction );
     Append( irr, List( ind3,
         pair -> Concatenation( Sum( irr3{ pair } ){ proj3 }, zeroon2 ) ) );
 
-    # Put the extensions from 'tbl' together.
+    # Put the extensions from `tbl' together.
     irr2:= List( Irr( tbl2 ), ValuesOfClassFunction );
     for pair in ext do
       chii:= irr3[ pair[1] ]{ proj3 };
@@ -1768,12 +2032,104 @@ InstallGlobalFunction( ConstructGS3,
       Add( irr, Concatenation( chii, -chio ) );
     od;
 
-    # Permute the characters with 'perm'.
+    # Permute the characters with `perm'.
     irr:= Permuted( irr, perm );
 
     # Store the irreducibles.
     tbls3.Irr:= irr;
 end );
+
+
+#############################################################################
+##
+#F  ConstructGS3Info( <tbl2>, <tbl3>, <tbls3> )
+##
+InstallGlobalFunction( ConstructGS3Info, function( tbl2, tbl3, tbls3 )
+
+    local irr2,        # irreducible characters of `tbl2'
+          irr3,        # irreducible characters of `tbl3'
+          irrs3,       # irreducible characters of `tbls3'
+          ind,         # list of induced characters
+          ind2,        # positions of irreducible characters of `tbl2'
+                       # inducing irreducibly to `tbls3'
+          oldind,      # auxiliary list
+          i,           # loop over positions in `ind'
+          pos,         # position in `ind' or `irr3'
+          ind3,        # positions of pairs of irreducible characters of
+                       # `tbl3' inducing irreducibly to `tbls3'
+          ext,         # list of pairs corresponding to irreducibles of
+                       # `tbls3' that are extensions from `tbl2' and `tbl3'
+          chi,         # loop over `irrs3'
+          pos2,        # position in `irr2'
+          rest,        # one restricted character
+          irr,
+          fus3,
+          proj3,
+          zeroon2,
+          proj2,
+          proj2o,
+          pair,
+          chii,
+          chio,
+          perm;
+
+    irr2  := Irr( tbl2 );
+    irr3  := Irr( tbl3 );
+    irrs3 := Irr( tbls3 );
+
+    ind:= Induced( tbl2, tbls3, Irr( tbl2 ) );
+    ind2:= Filtered( [ 1 .. Length( ind ) ],
+                     i -> Position( ind, ind[i] ) = i and ind[i] in irrs3 );
+    oldind:= ind;
+
+    ind:= Induced( tbl3, tbls3, Irr( tbl3 ) );
+    ind3:= [];
+    for i in [ 1 .. Length( ind ) ] do
+      if ind[i] in irrs3 and not ind[i] in oldind then
+        pos:= Position( ind, ind[i] );
+        if pos <> i then
+          Add( ind3, [ pos, i ] );
+        fi;
+      fi;
+    od;
+
+    ext:= [];
+    for chi in irrs3 do
+      rest:= Restricted( tbls3, tbl3, [ chi ] )[1];
+      pos:= Position( irr3, rest );
+      if pos <> fail and ForAll( ext, x -> x[1] <> pos ) then
+        rest:= Restricted( tbls3, tbl2, [ chi ] )[1];
+        pos2:= Position( irr2, rest );
+        if pos2 <> fail then
+          Add( ext, [ pos, pos2 ] );
+        fi;
+      fi;
+    od;
+
+    # Put the characters together, for computing the necessary permutation.
+    # (Use the same code as in `ConstructGS3'.
+    irr:= Induced( tbl2, tbls3, Irr( tbl2 ){ind2} );
+    fus3:= GetFusionMap( tbl3, tbls3 );
+    proj3:= ProjectionMap( fus3 );
+    zeroon2:= Zero( Difference( [ 1 .. NrConjugacyClasses( tbls3 ) ],
+                                fus3 ) );
+    proj2:= ProjectionMap( GetFusionMap( tbl2, tbls3 ) );
+    pos:= First( [ 1 .. Length( proj2 ) ], x -> not IsBound( proj2[x] ) );
+    pos:= First( [ pos .. Length( proj2 ) ], x -> IsBound( proj2[x] ) );
+    proj2o:= proj2{ [ pos .. Length( proj2 ) ] };
+    Append( irr, List( ind3,
+        pair -> Concatenation( Sum( irr3{ pair } ){ proj3 }, zeroon2 ) ) );
+    for pair in ext do
+      chii := irr3[pair[1]]{proj3};
+      chio := irr2[pair[2]]{proj2o};
+      Add( irr, Concatenation( chii, chio ) );
+      Add( irr, Concatenation( chii, - chio ) );
+    od;
+    perm := Sortex( irr ) / Sortex( ShallowCopy( Irr( tbls3 ) ) );
+
+    # Return the result.
+    return rec( ind2:= ind2, ind3:= ind3, ext:= ext, perm := perm );
+    end );
 
 
 #############################################################################
@@ -1789,14 +2145,14 @@ InstallGlobalFunction( ConstructPermuted,
 
     local t;
 
-    # There may be fusions into 'tbl',
+    # There may be fusions into `tbl',
     # so we must guarantee a trivial class permutation.
     if not IsBound( tbl.ClassPermutation ) then
       tbl.ClassPermutation:= ();
     fi;
 
     # Get the permuted table.
-    t := CharacterTableFromLibrary( libnam );
+    t := CallFuncList( CharacterTableFromLibrary, libnam );
     if prmclasses <> () then
       t:= CharacterTableWithSortedClasses( t, prmclasses );
     fi;
@@ -1804,7 +2160,7 @@ InstallGlobalFunction( ConstructPermuted,
       t:= CharacterTableWithSortedCharacters( t, prmchars );
     fi;
 
-    # Store the components in 'tbl'.
+    # Store the components in `tbl'.
     TransferComponentsToLibraryTableRecord( t, tbl );
 end );
 
@@ -1822,10 +2178,11 @@ InstallGlobalFunction( ConstructFactor,
     local t;
 
     # Construct the required table of the factor group.
-    t:= CharacterTableFactorGroup( CharacterTableFromLibrary( libnam ),
+    t:= CharacterTableFactorGroup( CallFuncList( CharacterTableFromLibrary,
+                                                 libnam ),
                                    kernel );
 
-    # Store the components in 'tbl'.
+    # Store the components in `tbl'.
     TransferComponentsToLibraryTableRecord( t, tbl );
 end );
 
@@ -1845,7 +2202,7 @@ InstallGlobalFunction( ConstructClifford, function( tbl )
           clmat,
           matsize,
           grps,
-          newct,     # the list of irreducibles of 'tbl'
+          newct,     # the list of irreducibles of `tbl'
           rowct,     # actual row
           colct,     # actual column
           eintr,
@@ -1855,7 +2212,7 @@ InstallGlobalFunction( ConstructClifford, function( tbl )
           lin,
           new;
 
-    # Decode the 'cliffordTable' component of 'tbl'.
+    # Decode the `cliffordTable' component of `tbl'.
     tbl.cliffordTable:= rec( Ti:= rec( fusions:= tbl.cliffordTable[1],
                                         tables := tbl.cliffordTable[2] ),
                              cliffordrecords:= tbl.cliffordTable[3] );
@@ -1869,12 +2226,12 @@ InstallGlobalFunction( ConstructClifford, function( tbl )
     ct:= [];
     for i in [ 1 .. AnzTi ] do
       if tables[i][1] = "projectives" then
-        eintr:= CharacterTableFromLibrary( [ tables[i][2] ] );
+        eintr:= CharacterTableFromLibrary( tables[i][2] );
       else
-        eintr:= CharacterTableFromLibrary( tables[i] );
+        eintr:= CallFuncList( CharacterTableFromLibrary, tables[i] );
       fi;
       if eintr = fail then
-        Error( "table of inertia factor group '", tables[i],
+        Error( "table of inertia factor group `", tables[i],
                "' not in the library" );
       fi;
       if tables[i][1] = "projectives" then
@@ -1908,7 +2265,7 @@ InstallGlobalFunction( ConstructClifford, function( tbl )
 
     for i in tbl.cliffordTable.cliffordrecords do
 
-      # Get the necessary components of the 'i'-th Clifford matrix,
+      # Get the necessary components of the `i'-th Clifford matrix,
       # and multiply it with the character tables of inertia factor groups.
 
       clmexp  := UnpackedCll( i );
@@ -2020,7 +2377,7 @@ InstallGlobalFunction( CllToClf, function( tbl, cll )
     nr:= cll[2][1];
     dim:= Length( cll[2] );
 
-    # Decode 'cll'.
+    # Decode `cll'.
     clf:= UnpackedCll( cll );
 
     # Fill the Clifford matrix record.
@@ -2056,7 +2413,7 @@ InstallGlobalFunction( CllToClf, function( tbl, cll )
 #
 #         factor:= Ti.tables[ clf.inertiagrps[2] ];
 #         if not IsCharacterTable( factor ) then
-#           factor:= CharacterTableFromLibrary( factor );
+#           factor:= CallFuncList( CharacterTableFromLibrary, factor );
 #         fi;
 #
 #         if IsBound( cll[4] )  then
@@ -2092,37 +2449,6 @@ end );
 
 #############################################################################
 ##
-#F  AddDecMats( <modtbl> )
-##
-InstallGlobalFunction( AddDecMats, function( modtbl )
-
-    local ordtbl,
-          fus,
-          block,
-          ordchars,
-          modchars;
-
-    if not IsBrauerTable( modtbl ) then
-      Error( "<modtbl> must be a Brauer table" );
-    fi;
-    ordtbl:= OrdinaryCharacterTable( modtbl );
-    fus:= GetFusionMap( modtbl, ordtbl );
-    for block in BlocksInfo( modtbl ) do
-      if block.defect = 0 then
-        block.decmat:= [ [ 1 ] ];
-      else
-        ordchars:= List( Irr( ordtbl ){ block.ordchars },
-                         chi -> ValuesOfClassFunction( chi ){ fus } );
-        modchars:= List( Irr( modtbl ){ block.modchars },
-                         ValuesOfClassFunction );
-        block.decmat:= Decomposition( modchars, ordchars, "nonnegative" );
-      fi;
-    od;
-end );
-
-
-#############################################################################
-##
 #F  OfThose()
 #F  IsSporadicSimple( <G> )
 #F  SchurCover()
@@ -2137,17 +2463,12 @@ InstallGlobalFunction( SchurCover,
 
 #############################################################################
 ##
-#F  AllCharacterTableNames( ) . . . . all ordinary table names in the library
-#F  AllCharacterTableNames( IsSimple, true )
-#F  AllCharacterTableNames( IsSporadicSimple, true )
-#F  AllCharacterTableNames( <func>, <val> )
-#F  AllCharacterTableNames( ..., OfThose, AutomorphismGroup )
-#F  AllCharacterTableNames( ..., OfThose, SchurCover )
-#F  AllCharacterTableNames( ..., OfThose, <func> )
+#F  AllCharacterTableNames( {<func>, <val>} )
+#F  AllCharacterTableNames( <func>, <val>, ...{, OfThose, <func>} )
 ##
 InstallGlobalFunction( AllCharacterTableNames, function( arg )
 
-    local sporsimp, list, pos, i, t, pp, oft, funcs, resul,
+    local sporsimp, list, pos, i, j, t, pp, oft, funcs, resul, name, ok,
           newlist, multinfo, autoinfo, simpinfo;
 
     if IsEmpty( arg ) then
@@ -2166,24 +2487,37 @@ InstallGlobalFunction( AllCharacterTableNames, function( arg )
     autoinfo:= List( LIBLIST.simpleInfo, x -> x[3] );
 
     # initialize the names list;
-    # supported up to now: special cases 'IsSimple', 'IsSporadicSimple'
+    # supported special cases up to now are `IsSimple', `IsSporadicSimple'
 
     if     ( arg[1] = IsSimple or arg[1] = IsSimpleGroup
                                or arg[1] = IsSimpleCharacterTable )
        and arg[2] = true then
       list:= simpinfo;
+#T careful:
+#T in the case of user extensions, loop also over these files!!
     elif arg[1] = IsSporadicSimple and arg[2] = true then
-      list:= sporsimp;
+      list:= ShallowCopy( sporsimp );
+    elif arg[1] = OfThose then
+      list:= LIBLIST.firstnames;
+      pos:= 1;
     else
-      list:= Filtered( LIBLIST.firstnames,
-                x -> arg[1]( CharacterTableFromLibrary( [ x ] ) ) = arg[2] );
+      list:= [];
+      for i in LIBLIST.firstnames do
+        t:= CharacterTableFromLibrary( i );
+        resul:= arg[1]( t );
+        if resul = arg[2] or ( IsList( arg[2] ) and resul in arg[2] ) then
+          Add( list, t );
+        fi;
+      od;
     fi;
 
     # now there are two possibilities:
-    # Either one filters the actual list 'list',
-    # or we reach an 'OfThose', so we replace each entry of 'list' by
-    # the list of images under the mapping instruction after 'OfThose'
-    pos:= 3;
+    # Either one filters the current list `list',
+    # or we reach an `OfThose', so we replace each entry of `list' by
+    # the list of images under the mapping instruction after `OfThose'
+    if not IsBound( pos ) then
+      pos:= 3;
+    fi;
     while pos <= Length( arg ) do
 
       oft:= Position( arg, OfThose, pos - 1 );
@@ -2191,78 +2525,100 @@ InstallGlobalFunction( AllCharacterTableNames, function( arg )
         oft:= Length( arg ) + 1;
       fi;
 
-      # filter between two 'OfThose' mappings
-      funcs:= [];
-      resul:= [];
-      for i in [ pos, pos + 2 .. oft - 2 ] do
-        Add( funcs, arg[  i  ] );
-        Add( resul, arg[ i+1 ] );
-      od;
-
-      if funcs <> [] then
+      # filter between each two `OfThose' mappings
+      if pos <= oft - 2 then
         newlist:= [];
         for i in list do
-          t:= CharacterTable( i );
-          if ForAll( [ 1 .. Length( funcs ) ],
-                     x -> funcs[x]( t ) = resul[x] ) then
-            Add( newlist, i );
+          if IsCharacterTable( i ) then
+            t:= i;
+          else
+            t:= CharacterTable( i );
+          fi;
+          ok:= true;
+          for j in [ pos, pos + 2 .. oft - 2 ] do
+            resul:= arg[j]( t );
+            if not( resul = arg[ j+1 ]
+                    or ( IsList( arg[ j+1 ] ) and resul in arg[ j+1 ] ) ) then
+              ok:= false;
+              break;
+            fi;
+          od;
+          if ok then
+            Add( newlist, t );
           fi;
         od;
-      else
-        newlist:= list;
+        list:= newlist;
       fi;
 
       if Length( arg ) > oft then
 
-        # mapping instruction 'OfThose',
+        # mapping instruction `OfThose',
         # supported special cases are
-        # 'SchurCover', 'AutomorphismGroup'.
-
-        list:= [];
+        # `SchurCover', `AutomorphismGroup'.
+        newlist:= [];
 
         if   arg[ oft + 1 ] = SchurCover then
 
-          for i in newlist do
+          for i in list do
 
-            pp:= Position( simpinfo, i );
+            if IsString( i ) then
+              pp:= Position( simpinfo, i );
+            else
+              pp:= Position( simpinfo, Identifier( i ) );
+            fi;
             if pp = fail then
-              Error( "no info about Schur multiplier of '", i,
+              Error( "no info about Schur multiplier of `", i,
                      "' stored" );
             fi;
             if multinfo[ pp ] = "" then
-              Add( list, simpinfo[ pp ] );
+              Add( newlist, simpinfo[ pp ] );
             else
-              Add( list, Concatenation( multinfo[ pp ], ".",
-                                        simpinfo[ pp ] ) );
+              Add( newlist, Concatenation( multinfo[ pp ], ".",
+                                           simpinfo[ pp ] ) );
             fi;
 
           od;
 
         elif arg[ oft + 1 ] = AutomorphismGroup then
 
-          for i in newlist do
+          for i in list do
 
-            pp:= Position( simpinfo, i );
+            if IsString( i ) then
+              pp:= Position( simpinfo, i );
+            else
+              pp:= Position( simpinfo, Identifier( i ) );
+            fi;
             if pp = fail then
-              Error( "no info about automorphism group of '", i,
+              Error( "no info about automorphism group of `", i,
                      "' stored" );
             fi;
             if autoinfo[ pp ] = "" then
-              Add( list, simpinfo[ pp ] );
+              Add( newlist, simpinfo[ pp ] );
             else
-              Add( list, Concatenation( simpinfo[ pp ], ".",
-                                        autoinfo[ pp ] ) );
+              Add( newlist, Concatenation( simpinfo[ pp ], ".",
+                                           autoinfo[ pp ] ) );
             fi;
 
           od;
 
         else
 
-          list:= Concatenation( List( newlist, x -> arg[ oft+1 ] ) );
+          for i in list do
+            if IsString( i ) then
+              resul:= arg[ oft+1 ]( CharacterTable( i ) );
+            else
+              resul:= arg[ oft+1 ]( i );
+            fi;
+            if IsString( resul ) then
+              AddSet( newlist, resul );
+            elif ForAll( resul, IsString ) then
+              UniteSet( newlist, resul );
+            else
+              Error( "<arg>[ oft+1 ] must return a (list of) strings" );
+            fi;
+          od;
 
         fi;
-
-      else
 
         list:= newlist;
 
@@ -2272,10 +2628,14 @@ InstallGlobalFunction( AllCharacterTableNames, function( arg )
 
     od;
 
+    for i in [ 1 .. Length( list ) ] do
+      if IsCharacterTable( list[i] ) then
+        list[i]:= Identifier( list[i] );
+      fi;
+    od;
+
     return list;
 end );
-#T change strategy: if necessary construct the character table once,
-#T then trace it through the whole argument!
 
 
 #T #############################################################################
@@ -2361,7 +2721,9 @@ InstallGlobalFunction( BlanklessPrintTo, function( stream, obj )
     elif IsList( obj ) then
       PrintTo( stream, "[" );
       for i in [ 1 .. Length( obj ) - 1 ] do
-        if IsBound( obj[i] ) then BlanklessPrintTo( stream, obj[i] ); fi;
+        if IsBound( obj[i] ) then
+          BlanklessPrintTo( stream, obj[i] );
+        fi;
         PrintTo( stream, "," );
       od;
       if not IsEmpty( obj ) then
@@ -2460,8 +2822,8 @@ end );
 #T        not IsBound( clf.inertiagrps ) or
 #T        not IsBound( clf.fusionclasses ) or
 #T        not IsBound( clf.mat ) then
-#T       Error( "<clf> must be record with components 'inertiagrps', 'mat' ",
-#T              "and 'fusionclasses'" );
+#T       Error( "<clf> must be record with components `inertiagrps', `mat' ",
+#T              "and `fusionclasses'" );
 #T     fi;
 #T 
 #T     l:= Length( clf.mat[1] );
@@ -2532,7 +2894,7 @@ end );
 #T 
 #T           Print( "#I Clifford matrix not found in the library\n" );
 #T 
-#T # 'clm' not found in library, either because given libname is wrong or
+#T # `clm' not found in library, either because given libname is wrong or
 #T # the matrix must be added first by an authorized person.
 #T # The order would be:
 #T #           PrintClmsToLib( <file>, [clf] );
@@ -2552,6 +2914,10 @@ end );
 InstallGlobalFunction( LibraryFusion, function( name, fus )
 
     local string, linelen, i, str;
+
+    if IsCharacterTable( name ) then
+      name:= Identifier( name );
+    fi;
 
     # Initialize the result string.
     string:= "";
@@ -2602,16 +2968,184 @@ end );
 
 #############################################################################
 ##
+#F  ConsiderFactorBlocks( <tbl> )
+##
+##  (This is a utility for `PrintToLibBrauer'.)
+##
+##  Let <tbl> be the Brauer character table of a group $G$, say.
+##  If the {\GAP} table library contains the tables of factor groups of $G$
+##  by central subgroups
+##  such that the irreducible characters of these factors precede the other
+##  characters in <tbl> then the blocks of the factors can be omitted in the
+##  library version of <tbl>, and references to the factors are stored
+##  instead.
+##
+##  `ConsiderFactorBlocks' returns `0' if no such replacement is possible;
+##  otherwise a record with components `faithful' and `info' is returned,
+##  the former being the range of those irreducible characters of <tbl> that
+##  are not covered by the factor groups, the latter being the list that
+##  must be inserted as value of the `factorblocks' component in the library
+##  version of <tbl>;
+##  this is a list of pairs whose first entries are the names of the factor
+##  tables, and the second entries are the offsets of numbers of basic set
+##  characters.
+##
+##  Currently this special treatment of factor groups is supported only for
+##  Brauer tables in the {\ATLAS} of Finite Groups.
+##  This means that the central subgroups in question have order divisible
+##  by $12$.
+##
+BindGlobal( "ConsiderFactorBlocks", function( tbl )
+
+    local p,
+          ordinary,
+          factfus,
+          classes,
+          orders,
+          pos,
+          mult,
+          sizes,
+          kernels,
+          i,
+          kernel,
+          size,
+          name,
+          facttbl,
+          info,
+          nonfaith1,
+          nonfaith,
+          1faith,
+          ppos,
+          2faith,
+          nonfaith2,
+          nonfaith4,
+          4faith;
+
+    # Get the factor fusions stored on the ordinary table.
+    p:= UnderlyingCharacteristic( tbl );
+    ordinary:= OrdinaryCharacterTable( tbl );
+    factfus:= Filtered( ComputedClassFusions( ordinary ),
+                  x -> Length( ClassPositionsOfKernel( x.map ) ) <> 1 );
+
+    # Get the maximal cyclic normal subgroup (of order dividing $12$).
+    classes:= SizesConjugacyClasses( ordinary );
+    orders:= OrdersClassRepresentatives( ordinary );
+    pos:= 0;
+    mult:= 0;
+    sizes:= List( factfus, x -> 0 );
+    kernels:= [];
+    for i in [ 1 .. Length( factfus ) ] do
+      kernel:= ClassPositionsOfKernel( factfus[i].map );
+      size:= Sum( classes{ kernel } );
+      if 12 mod size = 0 and size in orders{ kernel } then
+        sizes[i]:= size;
+        kernels[i]:= kernel;
+        if mult < size then
+          pos:= i;
+          mult:= size;
+        fi;
+      fi;
+    od;
+    if pos = 0 or ( mult mod p = 0 ) then
+      return 0;
+    fi;
+
+    # Get the table of the factor group.
+    name:= factfus[ pos ].name;
+    facttbl:= CharacterTable( name );
+
+    # Initialize the `factorblocks' info.
+    info:= [ [ name, 0 ] ];
+    nonfaith1:= Length( PrimeBlocks( facttbl, p ).defect );
+    nonfaith:= nonfaith1;
+
+    # If `mult' is a prime then we are done.
+    if mult <> 3 and mult <> 2 then
+
+      # Get the number of ordinary characters of `1.G'.
+      1faith:= Maximum( factfus[ pos ].map );
+
+      # Get the number of faithful ordinary characters of `2.G'.
+      ppos:= First( [ 1 .. Length( factfus ) ],
+                    i ->     sizes[i] = mult / 2
+                         and IsSubset( kernels[ pos ], kernels[i] ) );
+      2faith:= Maximum( factfus[ ppos ].map ) - 1faith;
+      Add( info, [ factfus[ ppos ].name, 0 ] );
+      facttbl:= CharacterTable( factfus[ ppos ].name );
+      nonfaith2:= Length( PrimeBlocks( facttbl, p ).defect );
+      nonfaith:= nonfaith2;
+
+      # If `mult = 4' then we are done.
+      if mult = 6 then
+
+        # Consider `3.G'
+        # (offset is the number of ordinary faithful characters of `2.G').
+        ppos:= First( [ 1 .. Length( factfus ) ],
+                      i ->     sizes[i] = 2
+                           and IsSubset( kernels[ pos ], kernels[i] ) );
+        Add( info, [ factfus[ ppos ].name, 2faith ] );
+        facttbl:= CharacterTable( factfus[ ppos ].name );
+
+        nonfaith:= Length( PrimeBlocks( facttbl, p ).defect )
+                   + nonfaith2 - nonfaith1;
+
+      elif mult = 12 then
+
+        # Consider `4.G' (no offset).
+        ppos:= First( [ 1 .. Length( factfus ) ],
+                      i ->     sizes[i] = 3
+                           and IsSubset( kernels[ pos ], kernels[i] ) );
+        Add( info, [ factfus[ ppos ].name, 0 ] );
+        facttbl:= CharacterTable( factfus[ ppos ].name );
+        nonfaith4:= Length( PrimeBlocks( facttbl, p ).defect );
+
+        # Get the number of faithful ordinary characters of `4.G'.
+        4faith:= Maximum( factfus[ ppos ].map ) - 1faith - 2faith;
+
+        # Consider `3.G' (offset is the number of
+        # ordinary faithful characters of `2.G' and `4.G').
+        ppos:= First( [ 1 .. Length( factfus ) ],
+                      i ->     sizes[i] = 4
+                           and IsSubset( kernels[ pos ], kernels[i] ) );
+        Add( info, [ factfus[ ppos ].name, 2faith + 4faith ] );
+        facttbl:= CharacterTable( factfus[ ppos ].name );
+
+        # Consider `6.G' (offset is the number of
+        # ordinary faithful characters of `4.G').
+        ppos:= First( [ 1 .. Length( factfus ) ],
+                      i ->     sizes[i] = 2
+                           and IsSubset( kernels[ pos ], kernels[i] ) );
+        Add( info, [ factfus[ ppos ].name, 4faith ] );
+        facttbl:= CharacterTable( factfus[ ppos ].name );
+
+        nonfaith:= Length( PrimeBlocks( facttbl, p ).defect )
+                   + nonfaith4 - nonfaith2;
+
+      fi;
+
+    fi;
+
+    # Return the ``shrink'' information.
+    return rec( offset := nonfaith,
+                info   := info );
+end );
+
+
+#############################################################################
+##
+#F  PrintToLibOrdinary( <file>, <tbl> )
+#F  PrintToLibBrauer( <file>, <tbl> )
 #F  PrintToLib( <file>, <tbl> )
 ##
-InstallGlobalFunction( PrintToLib, function( file, tbl )
+BindGlobal( "PrintToLibOrdinary", function( file, tbl )
 
     local special,
-          string,
           out,
           flds,
           i, j,
           name,
+          powermap,
+          primes,
           tblinfo,
           chars,
           fld,
@@ -2624,13 +3158,6 @@ InstallGlobalFunction( PrintToLib, function( file, tbl )
           libinfo,
           maxes,
           pos;
-
-    if not ( IsOrdinaryTable( tbl ) and HasIdentifier( tbl ) ) then
-      Error( "usage: PrintToLib( <file>, <tbl> ) ",
-             "for ord. char. table <tbl>" );
-    elif not IsAttributeStoringRep( tbl ) then
-      Error("sorry, don't know the representation of this character table");
-    fi;
 
     # Special cases are `Irr( tbl )' and `tbl!.projectives' since
     # after the call of `ShrinkChars' they may
@@ -2661,18 +3188,25 @@ InstallGlobalFunction( PrintToLib, function( file, tbl )
     end;
 
     # Create the output stream.
-    string:= "";
-    out:= OutputTextString( string, true );
+    if     3 < Length( file )
+       and file{ [ Length( file ) - 3 .. Length( file ) ] } = ".tbl" then
+      out:= OutputTextFile( file, true );
+      file:= file{ [ 1 .. Length( file ) - 4 ] };
+    else
+      out:= OutputTextFile( Concatenation( file, ".tbl" ), true );
+    fi;
+
+    # Print the definition of the filename (= component in `LIBTABLE')
+    PrintTo( out, "SET_TABLEFILENAME(\"", file, "\");\n" );
 
     name:= Identifier( tbl );
 
     # Step 1:  Do the preparatory work, i.e.,
     #          shrink the Clifford records and remove the irreducibles.
-    if IsBound( tbl!.cliffordTable ) then
-#T allowed access?
+    if IsLibraryCharacterTableRep( tbl ) and IsBound( tbl!.cliffordTable ) then
       if HasIrr( tbl ) then
 Error( "handling of Clifford tables not yet installed!" );
-        tbl.cliffordTable:= StructuralCopy( tbl.cliffordTable );
+        tbl!.cliffordTable:= StructuralCopy( tbl!.cliffordTable );
 #T semi-shallow ?
         ShrinkClifford( tbl );
       fi;
@@ -2690,7 +3224,6 @@ Error( "handling of Clifford tables not yet installed!" );
     else
       PrintTo( out, "0,\n" );
     fi;
-
     if HasSizesCentralizers( tbl ) then
       BlanklessPrintTo( out, SizesCentralizers( tbl ) );
       PrintTo( out, ",\n" );
@@ -2699,8 +3232,20 @@ Error( "handling of Clifford tables not yet installed!" );
     fi;
 
     if     HasComputedPowerMaps( tbl )
-       and not IsEmpty( ComputedPowerMaps( tbl ) ) then
-      BlanklessPrintTo( out, ComputedPowerMaps( tbl ) );
+       and 1 < Length( ComputedPowerMaps( tbl ) ) then
+      powermap:= ShallowCopy( ComputedPowerMaps( tbl ) );
+      if IsBound( powermap[1] ) then
+        Unbind( powermap[1] );
+      fi;
+      if HasIrr( tbl ) then
+        primes:= Set( Factors( Size( tbl ) ) );
+        for i in [ 2 .. Length( powermap ) ] do
+          if IsBound( powermap[i] ) and not i in primes then
+            Unbind( powermap[i] );
+          fi;
+        od;
+      fi;
+      BlanklessPrintTo( out, powermap );
       PrintTo( out, ",\n" );
     else
       PrintTo( out, "0,\n" );
@@ -2714,13 +3259,12 @@ Error( "handling of Clifford tables not yet installed!" );
     fi;
 
     if HasAutomorphismsOfTable( tbl ) then
-      BlanklessPrintTo( out, GeneratorsOfGroup( AutomorphismsOfTable( tbl ) ) );
+      BlanklessPrintTo( out, GeneratorsOfGroup( AutomorphismsOfTable(tbl) ) );
     else
       PrintTo( out, "0" );
     fi;
 
-    if IsBound( tbl!.construction ) then
-#T allowed access?
+    if IsLibraryCharacterTableRep( tbl ) and IsBound( tbl!.construction ) then
       pos:= Position( TABLE_CONSTRUCTORS[1], tbl!.construction );
       if pos = fail then
         PrintTo( out, ",\n", tbl!.construction, ");\n" );
@@ -2746,8 +3290,7 @@ Error( "handling of Clifford tables not yet installed!" );
     fi;
 
     # Shrink and print the projectives.
-    if IsBound( tbl!.projectives ) then
-#T allowed access?
+    if IsLibraryCharacterTableRep( tbl ) and IsBound( tbl!.projectives ) then
 
       PrintTo( out, "ARC(\"", name, "\",\"projectives\",[" );
       for j in tbl!.projectives do
@@ -2757,26 +3300,6 @@ Error( "handling of Clifford tables not yet installed!" );
         PrintTo( out, "," );
       od;
       PrintTo( out, "]);\n" );
-
-    fi;
-
-    # Encode and print the 'IrredInfo' component.
-    if HasIrredInfo( tbl ) then
-
-      tblinfo:= IrredInfo( tbl );
-      newirredinfo:= rec();
-      for fld in RecNames( tblinfo[1] ) do
-        newirredinfo.( fld ):= [];
-        info:= tblinfo[1].( fld );
-        for i in [ 1 .. Length( info ) ] do
-          if IsBound( info[i] ) then
-            newirredinfo.( fld )[i]:= List( tblinfo, x -> x.( fld )[i] );
-          fi;
-        od;
-      od;
-      PrintTo( out, "ARC(\"", name, "\",\"irredinfo\"," );
-      BlanklessPrintTo( out, newirredinfo );
-      PrintTo( out, ");\n" );
 
     fi;
 
@@ -2801,23 +3324,32 @@ Error( "handling of Clifford tables not yet installed!" );
              "AutomorphismsOfTable",
              "ComputedClassFusions",
              "ComputedPowerMaps",
+             "ConjugacyClasses",
+             "IdentificationOfConjugacyClasses",
              "Identifier",
              "InfoText",
              "Irr",
-             "IrredInfo",
+             "IsPerfectCharacterTable",
+             "IsSimpleCharacterTable",
+             "IsSolvableCharacterTable",
              "NamesOfFusionSources",
+             "NrConjugacyClasses",
              "OrdersClassRepresentatives",
              "SizesCentralizers",
              "SizesConjugacyClasses",
              "UnderlyingCharacteristic",
+             "UnderlyingGroup",
              ];
+    if HasSizesCentralizers( tbl ) then
+      Add( done, "Size" );
+    fi;
 
-    for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
-      fld:= SupportedOrdinaryTableInfo[i];
+    for i in [ 3, 6 .. Length( SupportedCharacterTableInfo ) ] do
+      fld:= SupportedCharacterTableInfo[ i-1 ];
       if     not fld in done
-         and Tester( SupportedOrdinaryTableInfo[ i-1 ] )( tbl ) then
+         and Tester( SupportedCharacterTableInfo[ i-2 ] )( tbl ) then
         PrintTo( out, "ARC(\"", name, "\",\"", fld, "\"," );
-        BlanklessPrintTo( out, SupportedOrdinaryTableInfo[ i-1 ]( tbl ) );
+        BlanklessPrintTo( out, SupportedCharacterTableInfo[ i-2 ]( tbl ) );
         PrintTo( out, ");\n" );
       fi;
     od;
@@ -2856,16 +3388,160 @@ Error( "handling of Clifford tables not yet installed!" );
         PrintTo( out, "\"", names[ Length( names ) ], "\"]);\n" );
       fi;
     fi;
+    PrintTo( out, "\n" );
 
     # Close the stream.
     CloseStream( out );
+end );
 
-    # Finally, print the string to the file.
+BindGlobal( "PrintToLibBrauer", function( file, tbl )
+
+    local ordtbl,
+          ordname,
+          prime,
+          info,
+          factorblocks,
+          block,
+          offset,
+          defect,
+          basicset,
+          brauertree,
+          decinv,
+          i,
+          decmat,
+          lic,
+          pos,
+          automorphisms,
+          indicator,
+          out;
+
+    ordtbl:= OrdinaryCharacterTable( tbl );
+    ordname:= Identifier( ordtbl );
+    prime:= UnderlyingCharacteristic( tbl );
+
+    # Fetch the blocks info.
+    info:= BlocksInfo( tbl );
+
+    # Check whether tables of factors groups are available
+    # that allow one to omit some of the blocks.
+    factorblocks:= ConsiderFactorBlocks( tbl );
+
+    # `block' component (position 4)
+    block:= InverseMap( List( info, r -> r.modchars ) );
+
+    # factor blocks (pos. 9)
+    offset:= 0;
+    if factorblocks <> 0 then
+      offset:= factorblocks.offset;
+      info:= info{ [ offset + 1 .. Length( info ) ] };
+      block:= Filtered( block, x -> offset < x );
+      factorblocks:= factorblocks.info;
+    fi;
+
+    # `defect' component (position 5)
+    defect:= List( info, r -> r.defect );
+
+    # `basicset' component (position 6)
+    # `brauertree' component (position 7)
+    # `decinv' component (position 8)
+    basicset:= [];
+    brauertree:= [];
+    decinv:= [];
+    for i in [ 1 .. Length( info ) ] do
+      if info[i].defect = 1 then
+
+        brauertree[i]:= BrauerTree( DecompositionMatrix( tbl, i + offset ) );
+
+        # Replace multiple occurrences of a tree by an index.
+        pos:= Position( brauertree, brauertree[i] );
+        if pos < i then
+          brauertree[i]:= pos;
+        fi;
+
+      elif info[i].defect > 1 then
+
+        if IsBound( info[i].basicset ) and IsBound( info[i].decinv ) then
+          basicset[i]:= info[i].basicset;
+          decinv[i]:= info[i].decinv;
+        else
+          decmat:= DecompositionMatrix( tbl, i );
+          lic:= LinearIndependentColumns( TransposedMat( decmat ) );
+          basicset[i]:= info[i].ordchars{ lic };
+          decinv[i]:= Inverse( decmat{ lic } );
+        fi;
+
+        # Replace multiple occurrences of a matrix by an index.
+        pos:= Position( decinv, decinv[i] );
+        if pos < i then
+          decinv[i]:= pos;
+        fi;
+
+      fi;
+    od;
+
+    # automorphisms (pos. 10)
+    if HasAutomorphismsOfTable( tbl ) then
+      automorphisms:= GeneratorsOfGroup( AutomorphismsOfTable( tbl ) );
+    else
+      automorphisms:= 0;
+    fi;
+
+    # indicator (pos. 11)
+    if prime = 2 and IsBound( ComputedIndicators( tbl )[2] ) then
+      indicator:= ComputedIndicators( tbl )[2];
+    else
+      indicator:= 0;
+    fi;
+
+    # Create the output stream.
     if     3 < Length( file )
        and file{ [ Length( file ) - 3 .. Length( file ) ] } = ".tbl" then
-      AppendTo( file, string, "\n" );
+      out:= OutputTextFile( file, true );
+      file:= file{ [ 1 .. Length( file ) - 4 ] };
     else
-      AppendTo( Concatenation( file, ".tbl" ), string, "\n" );
+      out:= OutputTextFile( Concatenation( file, ".tbl" ), true );
+    fi;
+
+    # Print the definition of the filename (= component in `LIBTABLE')
+    PrintTo( out, "SET_TABLEFILENAME(\"", file, "\");\n" );
+
+    # Print the header (positions 1, 2).
+    PrintTo( out, "MBT(\"", ordname, "\",", prime, ",\n" );
+
+    # `InfoText' (pos. 3)
+    if not HasInfoText( tbl ) then
+      BlanklessPrintTo( out, "(no info text)" );
+    elif InfoText( tbl ) =
+         "origin: modular ATLAS of finite groups, tests: DEC, TENS" then
+      BlanklessPrintTo( out, "TEXT1" );
+    else
+      BlanklessPrintTo( out, InfoText( tbl ) );
+    fi;
+    PrintTo( out, ",\n" );
+
+    # Print the other components.
+    for i in [ block, defect, basicset, brauertree, decinv,
+               factorblocks, automorphisms ] do
+      BlanklessPrintTo( out, i );
+      PrintTo( out, ",\n" );
+    od;
+    BlanklessPrintTo( out, indicator );
+
+    # Complete the function call.
+    PrintTo( out, ");\n\n" );
+
+    # Close the stream.
+    CloseStream( out );
+end );
+
+InstallGlobalFunction( PrintToLib, function( file, tbl )
+    if IsOrdinaryTable( tbl ) and IsString( file ) then
+      PrintToLibOrdinary( file, tbl );
+    elif IsBrauerTable( tbl ) and IsString( file ) then
+      PrintToLibBrauer( file, tbl );
+    else
+      Error( "usage: PrintToLib( <file>, <tbl> ) for string <file>\n",
+             "and char. table <tbl>" );
     fi;
 end );
 
@@ -2982,9 +3658,737 @@ InstallGlobalFunction( OrbitsResidueClass, function( pq, set )
 end );
 
 
+##############################################################################
+##
+#F  GaloisPartnersOfIrreducibles( <tbl>, <characters>, <n> )
+##
+##  Compute the Galois automorphism(s) carrying to the partner(s).
+##
+InstallGlobalFunction( GaloisPartnersOfIrreducibles,
+    function( tbl, characters, n )
+
+    local partners,  # list of partners, result
+          chi,       # loop over `characters'
+          N,         # conductor of `chi'
+          k,         # list of values representing the partner cohorts
+          facts,     # collected factors of `N'
+          primes,    # prime factors of `N'
+          2part,     # $2$-part of `N'
+          3part,     # $3$-part of `N'
+          NN,        # part of `N' that is coprime to $2$ and $3$
+          kk,        # list with possible prime residues for each in `k'
+          new,       # admissible subsets of `kk'
+          p;         # characteristic in the case of a Brauer table
+
+    if n < 3 then
+      Error( "only for n >=3" );
+    fi;
+
+    partners:= [];
+
+    for chi in characters do
+
+      N:= Conductor( chi );
+
+      # The rules of the ordinary Atlas apply for ordinary tables
+      # and for Brauer characters for which all algebraic conjugates
+      # are Brauer characters.
+      if    IsOrdinaryTable( tbl )
+         or (     IsBrauerTable( tbl )
+              and ( n <> 12 or Identifier( tbl ) <> "12.M22mod11" )
+#T is this reasonable?
+              and ForAll( PrimeResidues( N ),
+                    k -> List( chi,
+                               x -> GaloisCyc( x, k ) ) in characters ) ) then
+
+        if n <> 12 then
+          k:= [ n - 1 ];
+        else
+          k:= [ 5, 7, 11 ];
+        fi;
+        facts:= Collected( Factors( N ) );
+        primes:= List( facts, x -> x[1] );
+        if 2 in primes then
+          2part:= 2^facts[ Position( primes, 2 ) ][2];
+        else
+          2part:= 1;
+        fi;
+        if 3 in primes then
+          3part:= 3^facts[ Position( primes, 3 ) ][2];
+        else
+          3part:= 1;
+        fi;
+        NN:= N / ( 2part * 3part );
+
+        # The automorphism $\ast k^\prime$ that carries to the
+        # partner in the cohort given by $\ast k$
+        # is determined by the conditions that
+        # $k^\prime \equiv k \pmod{n}$,
+        # $k^\prime \equiv 1$ modulo each divisor of $N$ coprime to $n$,
+        # $k^\prime \equiv \pm 1$ modulo powers of $2$ and $3$
+        # dividing $n$,
+        # where $+1$ is preferred if there is a choice.
+        # (As an example, consider $N = 60$, $n = 3$, and $k = 2$
+        # where $11$ and $41$ are possible solutions,
+        # and the action on $20$-th roots of unity is different;
+        # this occurs for the group $3.U_3(11)$.)
+        # Note that we may have to replace $N$ by the l.c.m. of $N$
+        # and $n$, for example if $n = 6$ and $N$ is odd.
+        kk:= List( k, y -> Filtered( PrimeResidues( LcmInt( N, n ) ),
+                                      x -> x mod NN in [ 0, 1 ]
+                                  and x mod n = y
+                                  and x mod 2part in [ 2part-1, 1 ]
+                                  and x mod 3part in [ 3part-1, 1 ] ) );
+        for k in [ 1 .. Length( kk ) ] do
+          if Length( kk[k] ) = 1 then
+            kk[k]:= kk[k][1];
+          else
+            if 2part <> 1 then
+              new:= Filtered( kk[k], x -> x mod 2part = 1 );
+              if Length( new ) <> 0 then
+                kk[k]:= new;
+              fi;
+            fi;
+            if Length( kk[k] ) > 1 and 3part <> 1 then
+              new:= Filtered( kk[k], x -> x mod 3part = 1 );
+              if Length( new ) <> 0 then
+                kk[k]:= new;
+              fi;
+            fi;
+            kk[k]:= kk[k][1];
+          fi;
+        od;
+
+      else
+
+        p:= UnderlyingCharacteristic( tbl );
+        if n <> 12 then
+          if ( p-1 ) mod n <> 0 then
+            kk:= [ p ];
+          else
+            kk:= [ -1 ];
+          fi;
+        elif Identifier( tbl ) = "12.M22mod11" then
+          kk:= [ -1 ];
+        else
+          kk:= [ p, -1, -p ];
+        fi;
+
+      fi;
+
+      Add( partners, kk );
+
+    od;
+
+    return partners;
+end );
+
+
+##############################################################################
+##
+#F  AtlasLabelsOfIrreducibles( <tbl>[, <short>] )
+##
+InstallGlobalFunction( AtlasLabelsOfIrreducibles, function( arg )
+
+    local tbl,        # first argument, an ATLAS character table
+          short,      # optional second argument, choice of short labels
+          ordtbl,     # ordinary table of `tbl'
+          out,        # index of the derived subgroup
+          centre,     # centre of the derived subgroup
+          mult,       # order of `centre'
+          nccl,       # no. of conjugacy classes of `tbl'
+          charname,   # string "\\chi" or "\\varphi"
+          der,        # table of the derived subgroup corresp. to `tbl'
+          ordder,     # table of the derived subgroup corresp. to `ordtbl'
+          pos,        # position in a list
+          irr,        # list of irreducibles
+          portions,   # list that separates characters with different kernel
+          divisors,   # list of divisors of the multiplier
+          i, j, k, l, # loop variables
+          labels,     # list of labels, result
+          portionlbs, # list of labels for one portion
+          max,        # current maximal offset
+          partners,   # output of `GaloisPartnersOfIrreducibles'
+          special,    # list of special cases requiring offsets
+          offsets,    # current offsets in special case
+          fus,        # various fusion maps
+          rest,       # list of restricted characters
+          distrib,    # positions of restrictions in `rest'
+          restchi,    # one restriction to the derived subgroup
+          dec,        # decomposition matrix of restrictions
+          derlabels,  # list of labels of the derived subgroup
+          inv,        # inverse map of `distrib'
+          dl,         # list of nonzero coefficients in a decomposition
+          n,          # length of `dl'
+          lb,         # one label
+          intermed,   # list of intermediate tables
+          index,      # index of an inertia subgroup
+          fus1,       # fusion from derived subgroup to intermediate group
+          fus2,       # fusion from intermediate group to group
+          ext,        # positions of extensions of a character
+          interirr;   # irreducibles of an intermediate table
+
+    # Get the arguments.
+    tbl:= arg[1];
+    short:= Length( arg ) = 2 and arg[2] = "short";
+
+    # `tbl' is assumed to be the table of a bicyclic extension
+    # of a simple group.
+    # Get the index `out' of the derived subgroup
+    # and the order `mult' of the centre of the derived subgroup.
+    if IsBrauerTable( tbl ) then
+      ordtbl:= OrdinaryCharacterTable( tbl );
+    else
+      ordtbl:= tbl;
+    fi;
+    out:= AbelianInvariants( ordtbl );
+    if not IsSSortedList( out ) then
+      Error( "<tbl> is not a bicyclic extension of a simple table" );
+    fi;
+    out:= Product( out, 1 );
+    centre:= ClassPositionsOfFittingSubgroup( ordtbl );
+    mult:= Sum( SizesConjugacyClasses( ordtbl ){ centre }, 0 );
+    if 12 mod mult <> 0 then
+      Error( "<tbl> is not a bicyclic extension of an ATLAS table" );
+    fi;
+
+    nccl:= NrConjugacyClasses( tbl );
+
+    # Initializations for the final labels.
+    if IsOrdinaryTable( tbl ) then
+      charname:= "\\chi_{";
+    else
+      charname:= "\\varphi_{";
+    fi;
+
+    # Compute label descriptions for the derived subgroup.
+    # (For tables of non-perfect groups,
+    # the labels are formed relative to the labels of the
+    # table of the derived subgroup,
+    # so we need this table and its label descriptions.)
+    if out = 1 then
+
+      der:= tbl;
+      ordder:= ordtbl;
+
+    else
+
+      ordder:= Identifier( ordtbl );
+      pos:= Length( ordder );
+      while IsDigitChar( ordder[ pos ] ) or ordder[ pos ] = '_' do
+        pos:= pos - 1;
+      od;
+      if pos = Length( ordder ) or ordder[ pos ] <> '.' then
+        Error( "derived subgroup table not given by identifier of <tbl>" );
+      fi;
+      ordder:= CharacterTable( ordder{ [ 1 .. pos-1 ] } );
+      if ordder = fail then
+        Info( InfoCharacterTable, 1 ,
+              "no derived character table of ", Identifier( ordtbl ),
+              " available" );
+        return fail;
+      fi;
+      if IsBrauerTable( tbl ) then
+        der:= BrauerTable( ordder, UnderlyingCharacteristic( tbl ) );
+        if der = fail then
+          Info( InfoCharacterTable, 1 ,
+                "no ", UnderlyingCharacteristic( tbl ), "-modular ",
+                "derived character table of ", Identifier( ordtbl ),
+                " available" );
+          return fail;
+        fi;
+      else
+        der:= ordder;
+      fi;
+
+    fi;
+
+    # `der' is the table of a central extension of a simple group.
+    # Each label is encoded by an integer (the subscript)
+    # or a list of length two (the pair of subscript and a Galois
+    # automorphism).
+
+    # Distribute the characters to different portions.
+    irr:= List( Irr( der ), ValuesOfClassFunction );
+
+    if mult <> 12 then
+      divisors:= DivisorsInt( mult );
+    else
+      divisors:= [ 1, 2, 4, 3, 6, 12 ];
+    fi;
+
+    # The `i'-th portion consists of those characters with
+    # conductor of the restriction to `centre' equal to `divisors[i]'.
+    if IsBrauerTable( der ) then
+      fus:= GetFusionMap( der, ordder );
+      centre:= Filtered( [ 1 .. Length( fus ) ], i -> fus[i] in centre );
+    fi;
+    portions:= List( divisors,
+                     i -> Filtered( [ 1 .. NrConjugacyClasses( der ) ],
+                                j -> Conductor( irr[j]{ centre } ) = i ) );
+
+    labels:= [];
+    max:= 0;
+
+    for i in [ 1 .. Length( portions ) ] do
+
+      if divisors[i] < 3 then
+
+        # The $i$-th label has index $i$.
+        Append( labels, [ 1 .. Length( portions[i] ) ] + max );
+        max:= Maximum( labels );
+
+      else
+
+        # Some of the characters are not printed in the {\ATLAS},
+        # therefore the labels are more complicated.
+        portionlbs:= [];
+
+        # Compute the Galois automorphisms mapping the printed
+        # characters to their partner(s).
+        partners:= GaloisPartnersOfIrreducibles( der, irr{ portions[i] },
+                                                 divisors[i] );
+
+        for k in [ 1 .. Length( portions[i] ) ] do
+
+          j:= portions[i][k];
+
+          # Get the position(s) of the partner(s).
+          pos:= List( partners[k],
+                      x -> Position( irr,
+                                     List( irr[j],
+                                           y -> GaloisCyc( y, x ) ) ) );
+
+          # Construct labels relative to the *first* character
+          # of each set with the same proxy.
+          if j < Minimum( pos ) then
+            max:= max + 1;
+            portionlbs[k]:= max;
+            for l in [ 1 .. Length( pos ) ] do
+              portionlbs[ Position( portions[i], pos[l] ) ]:=
+                  [ max, partners[k][l] ];
+            od;
+          fi;
+
+        od;
+
+        Append( labels, portionlbs );
+
+      fi;
+
+    od;
+
+    # Adjust the labels in the special cases
+    # $A_6$, $A_7$, $L_3(4)$, $M_{22}$, $U_4(3)$, $O_7(3)$,
+    # $U_6(2)$, $Suz$, $Fi_{22}$, and ${}^2E_6(2)$.
+    # For these groups, $6$ divides the multiplier,
+    # so at least $3.G$ needs an offset.
+    special:= [
+                "3.A6",           [  7,  6 ],
+                "3.A6mod5",       [  5,  4 ],
+
+                "3.A7",           [  9,  7 ],
+                "3.A7mod5",       [  8,  6 ],
+                "3.A7mod7",       [  7,  5 ],
+
+                "3.L3(4)",        [ 10, 21 ],
+                "4_2.L3(4)",      [ 18,  6 ],
+                "6.L3(4)",        [ 18, 13 ],
+                "12_1.L3(4)",     [ 24,  7 ],
+                "12_2.L3(4)",     [ 41, 11, 18, 6 ],
+
+                "4_2.L3(4)mod3",  [ 16,  5 ],
+                "12_2.L3(4)mod3", [ 16,  5 ],
+
+                "3.L3(4)mod5",    [  8, 15 ],
+                "6.L3(4)mod5",    [ 14,  9 ],
+                "12_1.L3(4)mod5", [ 18,  5 ],
+                "12_2.L3(4)mod5", [ 31,  7, 14, 4 ],
+
+                "3.L3(4)mod7",    [  8, 15 ],
+                "6.L3(4)mod7",    [ 14,  9 ],
+                "12_1.L3(4)mod7", [ 18,  5 ],
+                "12_2.L3(4)mod7", [ 31,  7, 14, 4 ],
+
+                "3.M22",          [ 12, 19 ],
+                "6.M22",          [ 23,  8 ],
+
+                "3.M22mod5",      [ 11, 10 ],
+                "6.M22mod5",      [ 21,  7 ],
+
+                "3.M22mod7",      [ 10,  9 ],
+                "6.M22mod7",      [ 19,  6 ],
+
+                "3_1.U4(3)",      [ 20, 35 ],
+                "3_2.U4(3)",      [ 20, 78 ],
+                "6_1.U4(3)",      [ 39, 16 ],
+                "6_2.U4(3)",      [ 39, 59 ],
+                "12_2.U4(3)",     [ 55, 43 ],
+
+                "3_2.U4(3)mod2",  [ 12,  8 ],
+                "6_2.U4(3)mod2",  [ 12,  8 ],
+                "12_2.U4(3)mod2", [ 12,  8 ],
+
+                "3_2.U4(3)mod5",  [ 19, 73 ],
+                "6_2.U4(3)mod5",  [ 37, 55 ],
+                "12_2.U4(3)mod5", [ 52, 40 ],
+
+                "3_2.U4(3)mod7",  [ 18, 68 ],
+                "6_2.U4(3)mod7",  [ 35, 51 ],
+                "12_2.U4(3)mod7", [ 49, 37 ],
+
+                "3.O7(3)",        [ 58, 30 ],
+                "3.O7(3)mod5",    [ 53, 27 ],
+                "3.O7(3)mod7",    [ 56, 28 ],
+                "3.O7(3)mod13",   [ 56, 28 ],
+
+                "3.Suz",          [ 43, 33 ],
+                "3.Suzmod5",      [ 35, 26 ],
+                "3.Suzmod7",      [ 39, 30 ],
+                "3.Suzmod11",     [ 42, 32 ],
+                "3.Suzmod13",     [ 41, 31 ],
+
+                "3.Fi22",         [ 65, 49 ],
+                "3.Fi22mod5",     [ 59, 43 ],
+                "3.Fi22mod7",     [ 62, 46 ],
+                "3.Fi22mod11",    [ 61, 45 ],
+                "3.Fi22mod13",    [ 63, 47 ],
+
+                "3.2E6(2)",       [ "?", "?" ],
+                "3.2E6(2)mod5",   [ "?", "?" ],
+                "3.2E6(2)mod7",   [ "?", "?" ],
+                "3.2E6(2)mod11",  [ "?", "?" ],
+                "3.2E6(2)mod13",  [ "?", "?" ],
+                "3.2E6(2)mod17",  [ "?", "?" ],
+                "3.2E6(2)mod19",  [ "?", "?" ],
+
+                ];
+
+    pos:= Position( special, Identifier( der ) );
+    if pos <> fail then
+      offsets:= special[ pos+1 ];
+      for i in [ 1 .. Length( labels ) ] do
+        if IsInt( labels[i] ) and labels[i] > offsets[1] then
+          labels[i]:= labels[i] + offsets[2];
+        elif IsList( labels[i] ) and labels[i][1] > offsets[1] then
+          labels[i][1]:= labels[i][1] + offsets[2];
+        elif Length( offsets ) > 2 then
+          if IsInt( labels[i] ) and labels[i] > offsets[3] then
+            labels[i]:= labels[i] + offsets[4];
+          elif IsList( labels[i] ) and labels[i][1] > offsets[3] then
+            labels[i][1]:= labels[i][1] + offsets[4];
+          fi;
+        fi;
+      od;
+    fi;
+
+    if out = 1 then
+
+      # Build the final labels from the subscripts.
+      for i in [ 1 .. Length( labels ) ] do
+        if IsInt( labels[i] ) then
+          lb:= Concatenation( charname, String( labels[i] ), "}" );
+        else
+          lb:= Concatenation( charname, String( labels[i][1] ), "}^{\\ast" );
+          k:= labels[i][2];
+          if k < 0 then
+            Append( lb, "\\ast" );
+            k:= -k;
+          fi;
+          if k <> 1 then
+            Append( lb, " " );
+            Append( lb, String( k ) );
+          fi;
+          Append( lb, "}" );
+        fi;
+        labels[i]:= lb;
+      od;
+
+    else
+
+      # Start with the labels for `der'.
+      # They are of the form `i' (for $\chi_i$)
+      # or `[ i, j ]' (for $\chi_i^{\ast j}$).
+      derlabels:= labels;
+      labels:= [];
+
+      fus:= GetFusionMap( der, tbl );
+      if fus = fail then
+        Info( InfoCharacterTable, 1 ,
+              "no fusion from ", der, " to ", tbl, " available" );
+        return fail;
+      fi;
+
+      # `rest' is the list of the different restrictions of `irr'
+      # to the derived subgroup.
+      # `distrib[i]' is the position of the restriction of `irr[i]'
+      # in `rest'.
+      rest:= [];
+      distrib:= [];
+      irr:= List( Irr( tbl ), ValuesOfClassFunction );
+      for i in [ 1 .. Length( irr ) ] do
+        restchi:= irr[i]{ fus };
+        pos:= Position( rest, restchi );
+        if pos = fail then
+          Add( rest, restchi );
+          pos:= Length( rest );
+        fi;
+        distrib[i]:= pos;
+      od;
+
+      # Compute the decompositions of `rest' into irreducibles of `der'.
+      dec:= Decomposition( List( Irr( der ), ValuesOfClassFunction ),
+                           rest, "nonnegative" );
+
+      # Store tables of intermediate groups if `out' is nonprime.
+      intermed:= [];
+
+      # Compute the labels of `irr'.
+      # The number $n$ of different irreducibles of `der' contained in
+      # a restriction divides `out'.
+      # Let `outprime' be the $p^\prime$ part of `out'.
+      # The following labels occur.
+      # - If $n = 1$ then the labels are of the form
+      #   $\chi_{i,k}$ and $\chi_{i,k}^{\ast j}$, respectively,
+      #   where $0 \leq k < `outprime'$.
+      # - If $n$ equals `out' then the labels are of the form
+      #   $\chi_{i1+i2+...+iout}$ or
+      #   $\chi_{i1\ast j1 + i2\ast j2 +...+ iout\ast jout}$ .
+      # - In all other cases, `outprime' is either $4$ or $6$,
+      #   and we need the intermediate tables.
+
+      inv:= InverseMap( distrib );
+      for i in [ 1 .. Length( rest ) ] do
+        if IsInt( inv[i] ) then
+          inv[i]:= [ inv[i] ];
+        fi;
+        dl:= Filtered( [ 1 .. Length( dec[i] ) ], j -> dec[i][j] <> 0 );
+        n:= Length( dl );
+        if n = 1 then
+          # extension case
+          for j in [ 1 .. Length( inv[i] ) ] do
+            if IsInt( derlabels[ dl[1] ] ) then
+              # extension
+              labels[ inv[i][j] ]:= Concatenation( charname,
+                                        String( derlabels[ dl[1] ] ), ",",
+                                        String( j-1 ), "}" );
+            else
+              # conjugate of an extension
+              lb:= Concatenation( charname, String( derlabels[ dl[1] ][1] ),
+                       ",", String( j-1 ), "}^{\\ast" );
+              k:= derlabels[ dl[1] ][2];
+              if k < 0 then
+                Append( lb, "\\ast" );
+                k:= -k;
+              fi;
+              if k <> 1 then
+                Append( lb, " " );
+                Append( lb, String( k ) );
+              fi;
+              Append( lb, "}" );
+              labels[ inv[i][j] ]:= lb;
+            fi;
+          od;
+        elif n = out then
+          # case of fusion
+          if short then
+            if ForAny( derlabels{ dl }, IsInt ) then
+              lb:= Concatenation( charname,
+                                  String( First( derlabels{ dl }, IsInt ) ),
+                                  "+}" );
+            else
+              j:= derlabels[ dl[1] ];
+              lb:= Concatenation( charname,
+                                  String( j[1] ),
+                                  "\\ast" );
+              k:= j[2];
+              if k < 0 then
+                Append( lb, "\\ast" );
+                k:= - k;
+              fi;
+              Append( lb, " " );
+              if k <> 1 then
+                Append( lb, String( k ) );
+              fi;
+              Append( lb, "+}" );
+            fi;
+          else
+            lb:= ShallowCopy( charname );
+            for j in derlabels{ dl } do
+              if IsInt( j ) then
+                Append( lb, Concatenation( String( j ), "+" ) );
+              else
+                Append( lb, String( j[1] ) );
+                Append( lb, "\\ast" );
+                k:= j[2];
+                if k < 0 then
+                  Append( lb, "\\ast" );
+                  k:= -k;
+                fi;
+                Append( lb, " " );
+                if k <> 1 then
+                  Append( lb, String( k ) );
+                fi;
+                Append( lb, "+" );
+              fi;
+            od;
+            lb[ Length( lb ) ]:= '}';
+          fi;
+          labels[ inv[i][1] ]:= lb;
+
+        else
+
+          # We have an intermediate group $U$ such that the characters
+          # of the simple group extend to $U$ and the extensions of
+          # different characters fuse in the full extension.
+          # (In our cases, this intermediate group is uniquely determined
+          # because `out' is either $4$ or $6$.)
+
+          # The inertia subgroup has index `index'.
+          index:= Length( dl );
+          if not IsBound( intermed[ index ] ) then
+            intermed[ index ]:= List( Filtered(
+                ComputedClassFusions( ordder ),
+                x -> x.name in NamesOfFusionSources( ordtbl ) ),
+                    y -> CharacterTable( y.name ) );
+            intermed[ index ]:= Filtered( intermed[ index ],
+                 x -> Size( tbl ) / Size( x ) = index );
+            if Length( intermed[ index ] ) > 1 then
+              Error( "indermediate table of index ", index, " in ", ordtbl,
+                     " not unique" );
+            fi;
+            intermed[ index ]:= intermed[ index ][1];
+            if IsBrauerTable( der ) then
+              intermed[ index ]:= BrauerTable( intermed[ index ],
+                                         UnderlyingCharacteristic( der ) );
+            fi;
+          fi;
+          interirr:= List( Irr( intermed[ index ] ),
+                           ValuesOfClassFunction );
+          fus1:= GetFusionMap( der, intermed[ index ] );
+          fus2:= GetFusionMap( intermed[ index ], tbl );
+
+          for j in inv[i] do
+
+            # Construct the label string.
+            if short then
+
+              if ForAny( dl, x -> IsInt( derlabels[x] ) ) then
+
+                l:= First( dl, x -> IsInt( derlabels[x] ) );
+
+                # Get the extensions from `der' to the intermediate group.
+                ext:= ValuesOfClassFunction( Irr( der )[l] );
+                ext:= Filtered( [ 1 .. Length( interirr ) ],
+                        x -> Irr( intermed[ index ] )[x]{ fus1 } = ext );
+
+                # Count which extension occurs in the restriction from `tbl'
+                # to the intermediate group.
+                k:= Decomposition( interirr, [ irr[j]{ fus2 } ],
+                                   "nonnegative" );
+                k:= First( [ 1 .. Length( ext ) ],
+                           x -> k[1][ ext[x] ] <> 0 );
+
+                lb:= Concatenation( charname,
+                                    String( derlabels[l] ),
+                                    ",",
+                                    String( k-1 ),
+                                    "+}" );
+
+              else
+
+                l:= dl[1];
+
+                # Get the extensions from `der' to the intermediate group.
+                ext:= ValuesOfClassFunction( Irr( der )[l] );
+                ext:= Filtered( [ 1 .. Length( interirr ) ],
+                        x -> Irr( intermed[ index ] )[x]{ fus1 } = ext );
+
+                # Count which extension occurs in the restriction from `tbl'
+                # to the intermediate group.
+                k:= Decomposition( interirr, [ irr[j]{ fus2 } ],
+                                   "nonnegative" );
+                k:= First( [ 1 .. Length( ext ) ],
+                           x -> k[1][ ext[x] ] <> 0 );
+
+                lb:= Concatenation( charname,
+                                    String( derlabels[l][1] ),
+                                    ",",
+                                    String( k-1 ),
+                                    "\\ast" );
+
+                if derlabels[l][2] < 0 then
+                  Append( lb, "\\ast" );
+                  derlabels[l][2]:= -derlabels[l][2];
+                fi;
+                if derlabels[l][2] <> 1 then
+                  Append( lb, " " );
+                  Append( lb, String( derlabels[l][2] ) );
+                fi;
+                Append( lb, "+}" );
+
+              fi;
+
+            else
+
+              lb:= ShallowCopy( charname );
+
+              for l in dl do
+
+                # Get the extensions from `der' to the intermediate group.
+                ext:= ValuesOfClassFunction( Irr( der )[l] );
+                ext:= Filtered( [ 1 .. Length( interirr ) ],
+                        x -> Irr( intermed[ index ] )[x]{ fus1 } = ext );
+
+                # Count which extension occurs in the restriction from `tbl'
+                # to the intermediate group.
+                k:= Decomposition( interirr, [ irr[j]{ fus2 } ],
+                                   "nonnegative" );
+                k:= First( [ 1 .. Length( ext ) ],
+                           x -> k[1][ ext[x] ] <> 0 );
+
+                if IsInt( derlabels[l] ) then
+                  Append( lb, String( derlabels[l] ) );
+                  Append( lb, "," );
+                  Append( lb, String( k-1 ) );
+                  Append( lb, "+" );
+                else
+                  Append( lb, String( derlabels[l][1] ) );
+                  Append( lb, "," );
+                  Append( lb, String( k-1 ) );
+                  Append( lb, "\\ast" );
+                  if derlabels[l][2] < 0 then
+                    Append( lb, "\\ast" );
+                    derlabels[l][2]:= -derlabels[l][2];
+                  fi;
+                  if derlabels[l][2] <> 1 then
+                    Append( lb, String( derlabels[l][2] ) );
+                  fi;
+                  Append( lb, "+" );
+                fi;
+
+              od;
+
+              lb[ Length( lb ) ]:= '}';
+
+            fi;
+
+            labels[j]:= lb;
+
+          od;
+
+        fi;
+      od;
+
+    fi;
+
+
+    # Return the labels.
+    return labels;
+end );
+
+
 #############################################################################
 ##
-#E  ctadmin.tbi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

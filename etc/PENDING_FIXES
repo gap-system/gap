@@ -1,4 +1,6 @@
 # changes that shoudl make it to the next bugfix:
 # Description (Date, Initials of person who fixed it, changed file)
 CopiedGroup (10.2, AH,grplatt.gd, tom.gi)
+SmallGeneratingSet in IsomorphismPermGroup (10.2, AH, morpheus.gi)
+Subgroup (16.2, AH, onecohom.gi)
 

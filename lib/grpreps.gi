@@ -17,7 +17,7 @@ InstallGlobalFunction( RegularModuleByGens, function( G, gens, F )
     mats := List( gens, x -> false );
     elms := AsList( G );
     d    := Length(elms);
-    zero := MutableNullMat( d, d, F );
+    zero := NullMat( d, d, F );
     for i in [1..Length( gens )] do
         mat := List( zero, ShallowCopy ); 
         for j in [1..d] do
@@ -35,7 +35,8 @@ InstallMethod( RegularModule,
     [ IsGroup, IsField ],
     0,
 function( G, F )
-    return RegularModuleByGens( G, GeneratorsOfGroup( G ), F );
+    return [GeneratorsOfGroup(G),
+            RegularModuleByGens( G, GeneratorsOfGroup( G ), F )];
 end);
 
 #############################################################################
@@ -48,12 +49,14 @@ InstallMethod( IrreducibleModules,
     [ IsGroup, IsField and IsFinite, IsInt ],
     0,
 function( G, F, dim )
-    local modu, modus;
+    local modu, modus,gens;
     modu := RegularModule( G, F );
+    gens:=modu[1];
+    modu:=modu[2];
     modus := List( MTX.CollectedFactors( modu ), x -> x[1] );
     if dim > 0 then
         modus := Filtered( modus, x -> x.dimension <= dim );
     fi;
-    return modus;
+    return [gens,modus];
 end);
 

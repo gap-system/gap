@@ -16,7 +16,23 @@ Revision.rwspcgrp_gd :=
 
 #############################################################################
 ##
+#C  IsElementFinitePolycyclicGroup
+#C  IsElementFinitePolycyclicGroupCollection
+##
+##  This category is set if the group defining a family of polycyclic
+##  elements is finite. It is used to impliy finiteness for groups generated
+##  by elements in this family.
+##
+DeclareCategory( "IsElementFinitePolycyclicGroup",
+    IsMultiplicativeElementWithInverse and IsAssociativeElement );
+DeclareCategoryCollections( "IsElementFinitePolycyclicGroup");
 
+InstallTrueMethod(IsSubsetLocallyFiniteGroup,
+  IsElementFinitePolycyclicGroupCollection);
+
+
+#############################################################################
+##
 #C  IsMultiplicativeElementWithInverseByPolycyclicCollector
 ##
 DeclareCategory(
@@ -29,8 +45,9 @@ DeclareCategoryCollections(
 
 #############################################################################
 ##
-#C  IsPcGroup
+#C  IsPcGroup( <G> )
 ##
+##  tests whether <G> is a pc group.
 DeclareSynonym( "IsPcGroup",
     IsMultiplicativeElementWithInverseByPolycyclicCollectorCollection
     and IsGroup );
@@ -38,18 +55,24 @@ DeclareSynonym( "IsPcGroup",
 
 #############################################################################
 ##
-
 #A  DefiningPcgs( <obj> )
 ##
 DeclareAttribute(
     "DefiningPcgs",
     IsObject );
 
+#############################################################################
+##
+#F  IsKernelPcWord(obj)
+##
+##  This filter is implied by the kernel pc words. It is used solely to
+##  increase the rank of the pc words representation (NewRepresenattion does
+##  not admit a rank other than 1).
+DeclareFilter("IsKernelPcWord",100);
 
 
 #############################################################################
 ##
-
 #C  IsElementsFamilyBy8BitsSingleCollector
 ##
 DeclareCategory(

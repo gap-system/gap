@@ -54,7 +54,34 @@ const char * Revision_funcs_c =
 
 /****************************************************************************
 **
+*F ExecProccallOpts( <call> ). . execute a procedure call with options
+**
+** Calls with options are wrapped in an outer statement, which is
+** handled here
+*/
 
+static Obj PushOptions;
+static Obj PopOptions;
+
+UInt ExecProccallOpts(
+		      Stat call )
+{
+  Obj opts;
+  
+  SET_BRK_CURR_STAT( call );
+  opts = EVAL_EXPR( ADDR_STAT(call)[0] );
+  CALL_1ARGS(PushOptions, opts);
+
+  EXEC_STAT( ADDR_STAT( call )[1]);
+
+  CALL_0ARGS(PopOptions);
+  
+  return 0;
+}
+
+
+/****************************************************************************
+**
 *F  ExecProccall0args(<call>)  .  execute a procedure call with 0    arguments
 *F  ExecProccall1args(<call>)  .  execute a procedure call with 1    arguments
 *F  ExecProccall2args(<call>)  .  execute a procedure call with 2    arguments
@@ -316,6 +343,31 @@ UInt            ExecProccallXargs (
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
+}
+
+/****************************************************************************
+**
+*F EvalFunccallOpts( <call> ). . evaluate a function call with options
+**
+** Calls with options are wrapped in an outer statement, which is
+** handled here
+*/
+
+Obj EvalFunccallOpts(
+		      Expr call )
+{
+  Obj opts;
+  Obj res;
+  
+  
+  opts = EVAL_EXPR( ADDR_STAT(call)[0] );
+  CALL_1ARGS(PushOptions, opts);
+
+  res = EVAL_EXPR( ADDR_STAT( call )[1]);
+
+  CALL_0ARGS(PopOptions);
+  
+  return res;
 }
 
 
@@ -643,28 +695,74 @@ Obj             EvalFunccallXargs (
 **
 **  Note that these functions are never called directly, they are only called
 **  through the function call mechanism.
+**
+**  The following functions implement the recursion depth control.
+**
 */
-#ifdef DEBUG_RECURSION
+
+
 static Int RecursionDepth;
-#define CHECK_RECURSION_BEFORE {                                \
-    RecursionDepth++;                                           \
-    if ( RecursionDepth == DEBUG_RECURSION ) {                  \
-        RecursionDepth = 0;                                     \
-        ErrorReturnVoid( "recursion depth overflow (%d)\n",     \
-                         (Int)DEBUG_RECURSION, 0L,              \
-                         "you may return" );                    \
-    }                                                           \
+static UInt RecursionTrapInterval = 5000;
+
+static void RecursionDepthTrap( void )
+{
+    Int recursionDepth;
+    recursionDepth = RecursionDepth;
+    RecursionDepth = 0;
+    ErrorReturnVoid( "recursion depth trap (%d)\n",         
+		     (Int)recursionDepth, 0L,               
+		     "you may return" );
+    RecursionDepth = recursionDepth;
 }
-#define CHECK_RECURSION_AFTER { \
-    RecursionDepth--;                                           \
-    if ( RecursionDepth == -1 ) {                               \
-        RecursionDepth = 0;                                     \
-    }                                                           \
+     
+#ifndef SYS_IS_MAC_MWC
+
+static inline void CheckRecursionBefore( void )
+{
+    RecursionDepth++;                                           
+    if ( RecursionTrapInterval &&                                
+	 0 == (RecursionDepth % RecursionTrapInterval) )
+      RecursionDepthTrap();
 }
-#else
-#define CHECK_RECURSION_BEFORE          /* NO CHECK */
-#define CHECK_RECURSION_AFTER           /* NO CHECK */
+
+
 #endif
+
+#ifdef SYS_IS_MAC_MWC
+#include <MacMemory.h>
+
+/* on the Mac, stack overflows lead to serious crashes, so we check for them too */
+extern char * SyMinStack;
+
+static void StackOverflowTrap( void )
+{
+ 	unsigned long stackLeft; /* just for debugging purposes */
+ 	
+ 	RecursionDepth = 0;
+    stackLeft = StackSpace ();
+    ErrorQuit( "Stack overflow - you should check for infinite recursion\n",         
+		0L, 0L );
+}
+     
+static inline void CheckRecursionBefore( void )
+{
+    char c;                                           
+    if (&c < SyMinStack) 
+    	StackOverflowTrap ();
+    	
+    RecursionDepth++;                                           
+    if ( RecursionTrapInterval &&                                
+	 0 == (RecursionDepth % RecursionTrapInterval) )
+      RecursionDepthTrap();
+}
+
+#endif
+
+#define CHECK_RECURSION_BEFORE CheckRecursionBefore();
+
+
+#define CHECK_RECURSION_AFTER     RecursionDepth--;       
+
 
 Obj DoExecFunc0args (
     Obj                 func )
@@ -1004,6 +1102,26 @@ Obj             EvalFuncExpr (
 
 /****************************************************************************
 **
+*F  PrintFuncExpr(<expr>) . . . . . . . . . . . . print a function expression
+**
+**  'PrintFuncExpr' prints a function expression.
+*/
+void            PrintFuncExpr (
+    Expr                expr )
+{
+    Obj                 fexs;           /* func. expr. list of curr. func. */
+    Obj                 fexp;           /* function expression bag         */
+
+    /* get the function expression bag                                     */
+    fexs = FEXS_FUNC( CURR_FUNC );
+    fexp = ELM_PLIST( fexs, (Int)(ADDR_EXPR(expr)[0]) );
+    PrintFunction( fexp );
+    /* Pr("function ... end",0L,0L); */
+}
+
+
+/****************************************************************************
+**
 *F  PrintProccall(<call>) . . . . . . . . . . . . . .  print a procedure call
 **
 **  'PrintProccall' prints a procedure call.
@@ -1011,10 +1129,20 @@ Obj             EvalFuncExpr (
 extern  void            PrintFunccall (
             Expr                call );
 
+extern  void            PrintFunccallOpts (
+            Expr                call );
+
 void            PrintProccall (
     Stat                call )
 {
     PrintFunccall( call );
+    Pr( ";", 0L, 0L );
+}
+
+void            PrintProccallOpts (
+    Stat                call )
+{
+    PrintFunccallOpts( call );
     Pr( ";", 0L, 0L );
 }
 
@@ -1025,7 +1153,7 @@ void            PrintProccall (
 **
 **  'PrintFunccall' prints a function call.
 */
-void            PrintFunccall (
+static void            PrintFunccall1 (
     Expr                call )
 {
     UInt                i;              /* loop variable                   */
@@ -1045,23 +1173,30 @@ void            PrintFunccall (
         }
     }
 
-    /* print the closing parenthesis                                       */
-    Pr(" %2<)",0L,0L);
+    return;
+    
 }
 
-
-/****************************************************************************
-**
-*F  PrintFuncExpr(<expr>) . . . . . . . . . . . . print a function expression
-**
-**  'PrintFuncExpr' prints a function expression.
-*/
-void            PrintFuncExpr (
-    Expr                expr )
+void            PrintFunccall (
+    Expr                call )
 {
-    Pr("function ... end",0L,0L);
+  PrintFunccall1( call );
+  
+  /* print the closing parenthesis                                       */
+  Pr(" %2<)",0L,0L);
 }
 
+
+void             PrintFunccallOpts (
+				    Expr call )
+{
+  PrintFunccall1( ADDR_STAT( call )[1]);
+  Pr(" :%2> ", 0L, 0L);
+  PrintRecExpr1 ( ADDR_STAT( call )[0]);
+  Pr(" %4<)",0L,0L);
+}
+
+  
 
 /****************************************************************************
 **
@@ -1070,7 +1205,7 @@ void            PrintFuncExpr (
 */
 Obj             ExecState;
 
-void            ExecBegin ( void )
+void            ExecBegin ( Obj frame )
 {
     Obj                 execState;      /* old execution state             */
 
@@ -1085,7 +1220,7 @@ void            ExecBegin ( void )
     ExecState = execState;
 
     /* set up new state                                                    */
-    SWITCH_TO_OLD_LVARS( BottomLVars );
+    SWITCH_TO_OLD_LVARS( frame );
     SET_BRK_CURR_STAT( 0 );
 }
 
@@ -1096,7 +1231,6 @@ void            ExecEnd (
     if ( ! error ) {
 
         /* the state must be primal again                                  */
-        assert( CurrLVars == BottomLVars );
         assert( CurrStat  == 0 );
 
         /* switch back to the old state                                    */
@@ -1117,12 +1251,56 @@ void            ExecEnd (
     }
 }
 
+/****************************************************************************
+**
+*F  FuncSetRecursionTrapInterval( <self>, <interval> )
+**
+*/
+
+Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
+{
+  while (!IS_INTOBJ(interval) || INT_INTOBJ(interval) < 0)
+    interval = ErrorReturnObj( "SetRecursionTrapInterval( <interval> ): "
+			       "<interval> must be a non-negative small integer",
+			       0L,
+			       0L, "You can return a non-negative small integer");
+  RecursionTrapInterval = INT_INTOBJ( interval);
+  return 0;
+}
+
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "SetRecursionTrapInterval", 1, "interval",
+      FuncSetRecursionTrapInterval, "src/funcs.c:SetRecursionTrapInterval" },
+
+    { 0 }
+
+};
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+
+    /* return success                                                      */
+    return 0;
+}
 
 
 /****************************************************************************
@@ -1135,6 +1313,13 @@ static Int InitKernel (
 {
     /* make the global variable known to Gasman                            */
     InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
+
+    /* Register the handler for our exported function                      */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* Import some functions from the library                              */
+    ImportFuncFromLibrary( "PushOptions", &PushOptions );
+    ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
 
     /* use short cookies to save space in saved workspace                  */
     InitHandlerFunc( DoExecFunc0args, "i0");
@@ -1155,6 +1340,8 @@ static Int InitKernel (
     ExecStatFuncs [ T_PROCCALL_5ARGS ] = ExecProccall5args;
     ExecStatFuncs [ T_PROCCALL_6ARGS ] = ExecProccall6args;
     ExecStatFuncs [ T_PROCCALL_XARGS ] = ExecProccallXargs;
+    ExecStatFuncs [ T_PROCCALL_OPTS  ] = ExecProccallOpts;
+
     EvalExprFuncs [ T_FUNCCALL_0ARGS ] = EvalFunccall0args;
     EvalExprFuncs [ T_FUNCCALL_1ARGS ] = EvalFunccall1args;
     EvalExprFuncs [ T_FUNCCALL_2ARGS ] = EvalFunccall2args;
@@ -1163,6 +1350,7 @@ static Int InitKernel (
     EvalExprFuncs [ T_FUNCCALL_5ARGS ] = EvalFunccall5args;
     EvalExprFuncs [ T_FUNCCALL_6ARGS ] = EvalFunccall6args;
     EvalExprFuncs [ T_FUNCCALL_XARGS ] = EvalFunccallXargs;
+    EvalExprFuncs [ T_FUNCCALL_OPTS  ] = EvalFunccallOpts;
     EvalExprFuncs [ T_FUNC_EXPR      ] = EvalFuncExpr;
 
     /* install the printers                                                */
@@ -1174,6 +1362,7 @@ static Int InitKernel (
     PrintStatFuncs[ T_PROCCALL_5ARGS ] = PrintProccall;
     PrintStatFuncs[ T_PROCCALL_6ARGS ] = PrintProccall;
     PrintStatFuncs[ T_PROCCALL_XARGS ] = PrintProccall;
+    PrintStatFuncs[ T_PROCCALL_OPTS  ] = PrintProccallOpts;
     PrintExprFuncs[ T_FUNCCALL_0ARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNCCALL_1ARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNCCALL_2ARGS ] = PrintFunccall;
@@ -1182,6 +1371,7 @@ static Int InitKernel (
     PrintExprFuncs[ T_FUNCCALL_5ARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNCCALL_6ARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNCCALL_XARGS ] = PrintFunccall;
+    PrintExprFuncs[ T_FUNCCALL_OPTS  ] = PrintFunccallOpts;
     PrintExprFuncs[ T_FUNC_EXPR      ] = PrintFuncExpr;
 
     /* return success                                                      */
@@ -1201,7 +1391,7 @@ static StructInitInfo module = {
     0,                                  /* version                        */
     0,                                  /* crc                            */
     InitKernel,                         /* initKernel                     */
-    0,                                  /* initLibrary                    */
+    InitLibrary,                        /* initLibrary                    */
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+echo This is only for zooing packages with NO BINARY FILES
+echo 
+echo zooing $1
+echo
+cvs -d /gap/CVS export -D today 4.0/pkg/$1 > /dev/null 2>&1
+echo 'zoo c $1 $2 <<EOF' > .textcom
+echo !TEXT! >> .textcom
+echo /END >> .textcom
+echo EOF >> .textcom
+chmod u+x .textcom
+cd 4.0/pkg
+find . -type f \! -name .cvsignore -exec zoo ah ../../$1.zoo {} \; -exec ../../.textcom ../../$1.zoo {} \; > /dev/null 2>&1
+cd ../..
+rm -rf .textcom 4.0
+echo result should be in $1.zoo
+

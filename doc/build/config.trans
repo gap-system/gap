@@ -1,0 +1,4 @@
+@msfiles = ("trans");
+@gdfiles  = ("trans");
+$DIR = "../ref";
+$LIB = "../../lib";

@@ -197,7 +197,7 @@ InstallMethod( PrintObj,
 ##
 ##  Compute the identity (if exists) from the s.~c. table.
 ##
-InstallOtherMethod( One,
+InstallMethod( One,
     "for family of s. c. algebra elements",
     true,
     [ IsSCAlgebraObjFamily ], 0,
@@ -384,20 +384,20 @@ InstallMethod( \/,
     return ObjByExtRep( FamilyObj( x ), x![1] / y );
     end );
 
-InstallMethod( Zero,
+InstallMethod( ZeroOp,
     "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
     x -> ObjByExtRep( FamilyObj( x ), Zero( ExtRepOfObj( x ) ) ) );
 
-InstallMethod( AdditiveInverse,
+InstallMethod( AdditiveInverseOp,
     "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
     x -> ObjByExtRep( FamilyObj( x ),
                       AdditiveInverse( ExtRepOfObj( x ) ) ) );
 
-InstallOtherMethod( One,
+InstallOtherMethod( OneOp,
     "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
@@ -411,7 +411,7 @@ InstallOtherMethod( One,
     return one;
     end );
 
-InstallOtherMethod( Inverse,
+InstallOtherMethod( InverseOp,
     "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
@@ -447,6 +447,7 @@ InstallMethod( \in,
 ##
 #F  AlgebraByStructureConstants( <R>, <sctable> )
 #F  AlgebraByStructureConstants( <R>, <sctable>, <name> )
+#F  AlgebraByStructureConstants( <R>, <sctable>, <names> )
 #F  AlgebraByStructureConstants( <R>, <sctable>, <name1>, <name2>, ... )
 ##
 ##  is an algebra $A$ over the ring <R>, defined by the structure constants
@@ -460,51 +461,68 @@ InstallMethod( \in,
 ##
 BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
 
-    local   sctable,    # structure constants table
-            n,          # dimensions of structure matrices
-            R,          # coefficients field
-            zero,       # zero of `R'
-            names,      # names of the algebra generators
-            Fam,        # the family of algebra elements
-            A,          # the algebra, result
-            gens;       # algebra generators of `A'
+    local T,      # structure constants table
+          n,      # dimensions of structure matrices
+          R,      # coefficients ring
+          zero,   # zero of `R'
+          names,  # names of the algebra generators
+          Fam,    # the family of algebra elements
+          A,      # the algebra, result
+          gens;   # algebra generators of `A'
 
     # Check the argument list.
-    if not (     1 < Length( arglist )
-             and IsRing( arglist[1] )
-             and IsList( arglist[2] )
-             and ( Length( arglist ) = 2 or
-                   ForAll( [ 3 .. Length( arglist ) ],
-                           x -> IsString( arglist[x] ) ) ) ) then
+    if not 1 < Length( arglist ) and IsRing( arglist[1] )
+                                 and IsList( arglist[2] ) then
       Error( "usage: AlgebraByStructureConstantsArg([<R>,<sctable>]) or \n",
              "AlgebraByStructureConstantsArg([<R>,<sctable>,<name1>,...])" );
     fi;
 
     # Check the s.~c. table.
-#T really do this!
-    sctable := Immutable( arglist[2] );
-    R       := arglist[1];
-    zero    := Zero( R );
-    if Length( sctable ) = 2 then
-      n:= 0;
+#T really do this?
+    R    := arglist[1];
+    zero := Zero( R );
+    T    := arglist[2];
+
+    if zero = T[ Length( T ) ] then
+      T:= Immutable( T );
     else
-      n:= Length( sctable[1] );
+      if T[ Length( T ) ] = 0 then
+        T:= ReducedSCTable( T, One( zero ) );
+      else
+        Error( "<R> and <T> are not compatible" );
+      fi;
     fi;
 
-    # Construct names of generators (used only for printing).
+    if Length( T ) = 2 then
+      n:= 0;
+    else
+      n:= Length( T[1] );
+    fi;
+
+    # Construct names of generators (used for printing only).
     if   Length( arglist ) = 2 then
       names:= List( [ 1 .. n ],
                     x -> Concatenation( "v.", String(x) ) );
+      MakeImmutable( names );
     elif Length( arglist ) = 3 and IsString( arglist[3] ) then
       names:= List( [ 1 .. n ],
                     x -> Concatenation( "v.", arglist[3] ) );
+      MakeImmutable( names );
     elif Length( arglist ) = 3 and IsHomogeneousList( arglist[3] )
-                           and ForAll( arglist[3], IsString ) then
-      names:= arglist[3];
+                               and Length( arglist[3] ) = n
+                               and ForAll( arglist[3], IsString ) then
+      names:= Immutable( arglist[3] );
     elif Length( arglist ) = 2 + n then
-      names:= arglist{ [ 3 .. Length( arglist ) ] };
+      names:= Immutable( arglist{ [ 3 .. Length( arglist ) ] } );
     else
-      Error( "number of names does not match" );
+      Error( "usage: AlgebraByStructureConstantsArg([<R>,<sctable>]) or \n",
+             "AlgebraByStructureConstantsArg([<R>,<sctable>,<name1>,...])" );
+    fi;
+
+    # If the coefficients know to be additively commutative then
+    # also the s.c. algebra will know this.
+    if IsAdditivelyCommutativeElementFamily( FamilyObj( zero ) ) then
+      filter:= filter and IsAdditivelyCommutativeElement;
     fi;
 
     # Construct the family of elements of our algebra.
@@ -518,8 +536,8 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
       Fam!.coefficientsDomain:= R;
     fi;
 
-    Fam!.sctable   := sctable;
-    Fam!.names     := Immutable( names );
+    Fam!.sctable   := T;
+    Fam!.names     := names;
     Fam!.zerocoeff := zero;
 
     # Construct the default type of the family.
@@ -610,24 +628,25 @@ end );
 
 #############################################################################
 ##
-#M  One( <quat> ) . . . . . . . . . . . . . . . . . . . . .  for a quaternion
+#M  OneOp( <quat> ) . . . . . . . . . . . . . . . . . . . .  for a quaternion
 ##
-InstallMethod( One,
+InstallMethod( OneOp,
     "for a quaternion",
     true,
     [ IsQuaternion and IsSCAlgebraObj ], 0,
-    quat -> ObjByExtRep( FamilyObj( quat ), [ 1, 0, 0, 0 ] ) );
+    quat -> ObjByExtRep( FamilyObj( quat ),
+                         [ 1, 0, 0, 0 ] * One( ExtRepOfObj( quat )[1] ) ) );
 
 
 #############################################################################
 ##
-#M  Inverse( <quat> ) . . . . . . . . . . . . . . . . . . .  for a quaternion
+#M  InverseOp( <quat> ) . . . . . . . . . . . . . . . . . .  for a quaternion
 ##
 ##  The inverse of $c_1 e + c_2 i + c_3 j + c_4 k$ is
 ##  $c_1/z e - c_2/z i - c_3/z j - c_4/z k$
 ##  where $z = c_1^2 + c_2^2 + c_3^2 + c_4^2$.
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseOp,
     "for a quaternion",
     true,
     [ IsQuaternion and IsSCAlgebraObj ], 0,
@@ -745,60 +764,45 @@ InstallGlobalFunction( OctaveAlgebra, F -> AlgebraByStructureConstants(
 
 #############################################################################
 ##
-#M  PrepareNiceFreeLeftModule( <V> )
-##
-##  We do not need additional data to perform `NiceVector' and `UglyVector'.
-##
-InstallMethod( PrepareNiceFreeLeftModule, true,
-    [ IsFreeLeftModule and IsSCAlgebraObjSpaceRep ], 0,
-    Ignore );
-
-
-#############################################################################
-##
+#M  NiceFreeLeftModuleInfo( <V> )
 #M  NiceVector( <V>, <v> )
-##
-InstallMethod( NiceVector,
-    "for s. c. algebra elements space and s. c. algebra element",
-    IsCollsElms,
-    [ IsFreeLeftModule and IsSCAlgebraObjSpaceRep, IsSCAlgebraObj ], 0,
-    function( V, v )
-    return ExtRepOfObj( v );
-    end );
-
-
-#############################################################################
-##
 #M  UglyVector( <V>, <r> )
 ##
-InstallMethod( UglyVector,
-    "for s. c. algebra elements space and s. c. algebra element",
-    true,
-    [ IsFreeLeftModule and IsSCAlgebraObjSpaceRep, IsRowVector ], 0,
-    function( V, r )
-    local F;
-    F:= ElementsFamily( FamilyObj( V ) );
-    if Length( r ) <> Length( F!.names ) then
-      return fail;
-    fi;
-    return ObjByExtRep( F, r );
-    end );
+InstallHandlingByNiceBasis( "IsSCAlgebraObjSpace", rec(
+    detect := function( R, gens, V, zero )
+      return IsSCAlgebraObjCollection( V );
+      end,
+
+    NiceFreeLeftModuleInfo := ReturnTrue,
+
+    NiceVector := function( V, v )
+      return ExtRepOfObj( v );
+      end,
+
+    UglyVector := function( V, r )
+      local F;
+      F:= ElementsFamily( FamilyObj( V ) );
+      if Length( r ) <> Length( F!.names ) then
+        return fail;
+      fi;
+      return ObjByExtRep( F, r );
+      end ) );
 
 
 #############################################################################
 ##
-#M  MutableBasisByGenerators( <R>, <gens> )
-#M  MutableBasisByGenerators( <R>, <gens>, <zero> )
+#M  MutableBasis( <R>, <gens> )
+#M  MutableBasis( <R>, <gens>, <zero> )
 ##
 ##  We choose a mutable basis that stores a mutable basis for a nice module.
 ##
-InstallMethod( MutableBasisByGenerators,
+InstallMethod( MutableBasis,
     "for ring and collection of s. c. algebra elements",
     true,
     [ IsRing, IsSCAlgebraObjCollection ], 0,
     MutableBasisViaNiceMutableBasisMethod2 );
 
-InstallOtherMethod( MutableBasisByGenerators,
+InstallOtherMethod( MutableBasis,
     "for ring, (possibly empty) list, and zero element",
     true,
     [ IsRing, IsList, IsSCAlgebraObj ], 0,
@@ -845,9 +849,9 @@ InstallMethod( BasisVectors,
 
 #############################################################################
 ##
-#M  BasisOfDomain( <A> )  . . . . . . . . . . . basis of a full s.~c. algebra
+#M  Basis( <A> )  . . . . . . . . . . . . . . . basis of a full s.~c. algebra
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for full s. c. algebra (call `CanonicalBasis')",
     true,
     [ IsFreeLeftModule and IsSCAlgebraObjCollection and IsFullSCAlgebra ], 0,
@@ -896,7 +900,8 @@ InstallMethod( IsCanonicalBasisFullSCAlgebra,
 #T change implementation: bases of their own right, as for Gaussian row spaces,
 #T if the algebra is Gaussian
 
+
 #############################################################################
 ##
-#E  algsc.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

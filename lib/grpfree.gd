@@ -22,11 +22,13 @@
 Revision.grpfree_gd :=
     "$Id$";
 
+
 #############################################################################
 ##
 #F  IsElementOfFreeGroup  . . . . . . . . . . . . .  elements in a free group
 ##
-IsElementOfFreeGroup := IsAssocWordWithInverse and IsElementOfFpGroup;
+DeclareSynonym( "IsElementOfFreeGroup",
+    IsAssocWordWithInverse and IsElementOfFpGroup );
 
 
 #############################################################################
@@ -35,6 +37,7 @@ IsElementOfFreeGroup := IsAssocWordWithInverse and IsElementOfFpGroup;
 #F  FreeGroup( <rank>, <name> )
 #F  FreeGroup( <name1>, <name2>, ... )
 #F  FreeGroup( <names> )
+#F  FreeGroup( infinity, <name>, <init> )
 ##
 ##  Called in the first form, `FreeGroup' returns a free group on
 ##  <rank> generators.
@@ -45,6 +48,15 @@ IsElementOfFreeGroup := IsAssocWordWithInverse and IsElementOfFpGroup;
 ##  Called in the fourth form, `FreeGroup' returns a free group on
 ##  as many generators as the length of the list <names>, the $i$-th
 ##  generator being printed as `<names>[$i$]'.
+##  Called in the fifth form, `FreeGroup' returns a free group on
+##  infinitely many generators, where the first generators are printed
+##  by the names in the list <init>, and the other generators by <name>
+##  and an appended number.
 ##
 DeclareGlobalFunction( "FreeGroup" );
+
+
+#############################################################################
+##
+#E  grpfree.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 

@@ -19,35 +19,21 @@ Revision.process_gd :=
 #O  Process( <dir>, <prg>, <in>, <out>, <args> )  . . . . . . start a process
 ##
 UNBIND_GLOBAL( "Process" );
-DeclareOperation(
-    "Process",
+DeclareOperation( "Process",
     [ IsDirectory, IsString, IsInputStream, IsOutputStream, IsList ] );
 
 
 #############################################################################
 ##
-#F  Exec  . . . . . . . . . . . . . . . . . . . . . . . . . execute a command
+#F  Exec( <str_1>, <str_2>, ..., <str_n> )  . . . . . . . . execute a command
 ##
-Exec := function( arg )
-    local   cmd,  i,  shell,  dir;
-
-    # simply concatenate the arguments
-    cmd := arg[1];
-    for i  in [ 2 .. Length(arg) ]  do
-        Append( cmd, " " );
-        Append( cmd, arg[i] );
-    od;
-
-    # select the shell, bourne shell is the default
-    shell := Filename( DirectoriesSystemPrograms(), "sh" );
-
-    # execute in the current directory
-    dir := DirectoryCurrent();
-
-    # execute the command
-    Process( dir, shell, InputTextUser(), OutputTextUser(), [ "-c", cmd ] );
-
-end;
+##  `Exec' executes the command given by the string obtained from
+##  concatenating the strings <str_1>, <str_2>, \ldots, <str_n>
+##  after inserting whitespace between them.
+##
+##  `Exec' calls the more general operation `Process'.
+##
+DeclareGlobalFunction( "Exec" );
 
 
 #############################################################################
@@ -55,3 +41,4 @@ end;
 
 #E  process.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
+

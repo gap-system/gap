@@ -63,7 +63,7 @@ InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
     for i in [1..n] do
 
         # the power
-        exp := ExponentsOfPcElement( pcgs, pcgs[i]^pis[i] ){[i+1..n]};
+        exp := ExponentsOfRelativePower( pcgs, i ){[i+1..n]};
         t   := One( F );
         for h in [i+1..n] do
             t := t * gens[h]^exp[h-i];
@@ -191,7 +191,7 @@ InstallGlobalFunction( SmithNormalFormSQ, function( M )
 	end;
 
 	reduce_col := function ()
-	    local	h, i, j, min;
+	    local	h, i, min;
 	    for i in [ pos+1..Length( M ) ] do
 	      if M[i][pos] <> 0 then
 		repeat
@@ -243,10 +243,10 @@ InstallGlobalFunction( SmithNormalFormSQ, function( M )
 	end;
 
     # here starts the main function
-	P := MutableIdentityMat( Length( M ) );
-	M := ShallowCopy( M );
-	Q := MutableIdentityMat( Length( M[1] ) );
-	I := MutableIdentityMat( Length( M[1] ) );
+	P := IdentityMat( Length( M ) );
+	M := List( M, ShallowCopy );
+	Q := IdentityMat( Length( M[1] ) );
+	I := IdentityMat( Length( M[1] ) );
 
 	for pos in [ 1..Minimum( Length( M ), Length( M[1] ) ) ] do
 	    if minimum() <> 0 then
@@ -435,9 +435,9 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
     mtil := [];
     for w in epi.imgs do
         e := ExponentsOfPcElement( pcgsG, w );
-        g := PcElementByExponents( pcgsH, htil, e );
+        g := PcElementByExponentsNC( pcgsH, htil, e );
         Add( gtil, g );
-        m := IdentityMat( d, M.field );
+        m := Immutable( IdentityMat( d, M.field ) );
         for i in [1..n] do
             m := m * M.generators[i]^e[i];
         od;
@@ -458,7 +458,8 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
         Append( V, v );
    
         # left hand side
-        mats := List( [1..r], x -> NullMat( d, d, M.field ) );
+        mats := ListWithIdenticalEntries( r,
+                    Immutable( NullMat( d, d, M.field ) ) );
         for i in [1..l] do
             g := Subword( rel, i, i );
             j := Position( gensf, g );
@@ -494,7 +495,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
     elms := [];
     for i in [1..r] do
         sub := sol{[d*(i-1)+1..d*i]}; 
-        elm := PcElementByExponents( pcgsN, sub );
+        elm := PcElementByExponentsNC( pcgsN, sub );
         Add( elms, elm );
     od;
     imgs := List( [1..r], x -> gtil[x] * elms[x] ) ;
@@ -516,7 +517,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
         elms := [];
         for i in [1..r] do
             sub := new{[d*(i-1)+1..d*i]}; 
-            elm := PcElementByExponents( pcgsN, sub );
+            elm := PcElementByExponentsNC( pcgsN, sub );
             Add( elms, elm );
         od;
         imgs := List( [1..r], x -> gtil[x] * elms[x] );
@@ -559,7 +560,7 @@ end );
 #F  TryModuleSQ( epi, M )
 ##
 InstallGlobalFunction( TryModuleSQ, function( epi, M )
-    local  C, lift, co, cb, cc, tmp, r, q, i, j, k, l, v, qi, c;
+    local  C, lift, co, cb, cc, r, q, j, k, l, v, qi, c;
 
     # first try a split extension
     lift := LiftEpimorphismSQ( epi, M, 0 );
@@ -632,6 +633,7 @@ InstallGlobalFunction( TryLayerSQ, function( epi, layer )
     field := GF(layer[1]);
     dim   := layer[2];
     reps  := IrreducibleModules( epi.image, field, dim );
+    reps:=reps[2]; # the actual modules
         
     # loop over the representations
     for rep in reps do
@@ -729,5 +731,5 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
     return epi;
 end );
 
-InstallGlobalFunction( SQ, SolvableQuotient );
+#InstallGlobalFunction( SQ, SolvableQuotient );
 

@@ -1,0 +1,11 @@
+#############################################################################
+##
+#W  id1785.z               GAP library of id's             Hans Ulrich Besche
+##
+Revision.id1785_z :=
+    "@(#)$Id$";
+
+ID_GROUP_TREE.next[1785]:=
+rec(
+  fp:= [ 40617, 43020 ],
+  next:= [ 1, 2 ] );

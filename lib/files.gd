@@ -15,7 +15,6 @@ Revision.files_gd :=
 
 #############################################################################
 ##
-
 #C  IsDirectory	. . . . . . . . . . . . . . . . . . . category of directories
 ##
 DeclareCategory(
@@ -81,9 +80,9 @@ DeclareOperation(
 
 #F  DirectoriesLibrary( <name> )  . . . . . . . .  directories of the library
 ##
-DIRECTORIES_LIBRARY := rec();
+BIND_GLOBAL( "DIRECTORIES_LIBRARY", rec() );
 
-DirectoriesLibrary := function( arg )
+BIND_GLOBAL( "DirectoriesLibrary", function( arg )
     local   name,  dirs,  dir,  path;
 
     if 0 = Length(arg)  then
@@ -113,14 +112,19 @@ DirectoriesLibrary := function( arg )
     fi;
 
     return DIRECTORIES_LIBRARY.(name);
-end;
+end );
 
 
 #############################################################################
 ##
-#F  DirectoriesPackagePrograms( <name> )  . . . . directories of the packages
+#F  DirectoriesPackagePrograms( <name> )
 ##
-DirectoriesPackagePrograms := function( name )
+##  returns a list of the `bin/<architecture>' subdirectories of all
+##  packages <name> where <architecture> is the architecture on which {\GAP}
+##  has been compiled. The directories returned by
+##  `DirectoriesPackagePrograms' is the place where external binaries for
+##  the share package <name> and the current architecture should be located.
+BIND_GLOBAL( "DirectoriesPackagePrograms", function( name )
     local   arch,  dirs,  dir,  path;
 
     arch := GAP_ARCHITECTURE;
@@ -130,14 +134,20 @@ DirectoriesPackagePrograms := function( name )
         Add( dirs, Directory(path) );
     od;
     return dirs;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  DirectoriesPackageLibrary( <name>, <path> ) . directories of the packages
+#F  DirectoriesPackageLibrary( <name> [,<path>] )
 ##
-DirectoriesPackageLibrary := function( arg )
+##  takes  the name of a share  package and locates  the library functions
+##  of the share package.  The default is that the  library functions are in
+##  the subdirectory `lib' of the share package's home directory.  If this
+##  is not the case, then the  second  argument needs to   be present and
+##  specify  a string that is  a path name relative to  the home directory
+##  of  the share package.
+BIND_GLOBAL( "DirectoriesPackageLibrary", function( arg )
     local   name,  path,  dirs,  dir,  tmp;
 
     name := arg[1];
@@ -164,7 +174,7 @@ DirectoriesPackageLibrary := function( arg )
     else
         return fail;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -173,22 +183,22 @@ end;
 ##
 DIRECTORIES_PROGRAMS := false;
 
-DirectoriesSystemPrograms := function()
+BIND_GLOBAL( "DirectoriesSystemPrograms", function()
     if DIRECTORIES_PROGRAMS = false  then
         DIRECTORIES_PROGRAMS := List( DIRECTORIES_SYSTEM_PROGRAMS,
                                       x -> Directory(x) );
     fi;
     return DIRECTORIES_PROGRAMS;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  DirectoryTemporary( <hint> )  . . . . . . .  create a temporary directory
 ##
-DIRECTORIES_TEMPORARY := [];
+BIND_GLOBAL( "DIRECTORIES_TEMPORARY", [] );
 
-DirectoryTemporary := function( arg )
+BIND_GLOBAL( "DirectoryTemporary", function( arg )
     local   dir;
 
     # check arguments
@@ -205,32 +215,34 @@ DirectoryTemporary := function( arg )
     # remember directory name and return
     Add( DIRECTORIES_TEMPORARY, dir );
     return Directory(dir);
-end;
+end );
 
 
-#T THIS IS A HACK UNTIL 'RemoveDirectory' IS AVAILABLE
+#T THIS IS A HACK UNTIL `RemoveDirectory' IS AVAILABLE
 InputTextNone := "2b defined";
 OutputTextNone := "2b defined";
 Process := "2b defined";
 
-InstallAtExit( function()
-    local    i,  input,  output,  tmp,  rm,  proc;
+if ARCH_IS_UNIX() then
+  # as we use `rm' this will only run under UNIX.
+  InstallAtExit( function()
+      local    i,  input,  output,  tmp,  rm,  proc;
 
-    input  := InputTextNone();
-    output := OutputTextNone();
-    tmp    := Directory("/tmp");
-    rm     := Filename( DirectoriesSystemPrograms(), "rm" );
-    if rm = fail  then
-        Print("#W  cannot execute 'rm' to remove temporary directories\n");
-        return;
-    fi;
+      input  := InputTextNone();
+      output := OutputTextNone();
+      tmp    := Directory("/tmp");
+      rm     := Filename( DirectoriesSystemPrograms(), "rm" );
+      if rm = fail  then
+	  Print("#W  cannot execute `rm' to remove temporary directories\n");
+	  return;
+      fi;
 
-    for i  in DIRECTORIES_TEMPORARY  do
-        proc := Process( tmp, rm, input, output, [ "-rf", i ] );
-    od;
+      for i  in DIRECTORIES_TEMPORARY  do
+	  proc := Process( tmp, rm, input, output, [ "-rf", i ] );
+      od;
 
-end );
-
+  end );
+fi;
 
 #############################################################################
 ##
@@ -239,12 +251,12 @@ end );
 #T  THIS IS A HACK (will not work if SetDirectoryCurrent is implemented)
 DIRECTORY_CURRENT := false;
 
-DirectoryCurrent := function()
+BIND_GLOBAL( "DirectoryCurrent", function()
     if IsBool(DIRECTORY_CURRENT)  then
         DIRECTORY_CURRENT := Directory("./");
     fi;
     return DIRECTORY_CURRENT;
-end;
+end );
 
 
 #############################################################################
@@ -252,19 +264,19 @@ end;
 
 #F  CrcFile( <filename> ) . . . . . . . . . . . . . . . . .  create crc value
 ##
-CrcFile := function( name )
+BIND_GLOBAL( "CrcFile", function( name )
     if IsReadableFile(name) <> true  then
         return fail;
     fi;
     return GAP_CRC(name);
-end;
+end );
 
 
 #############################################################################
 ##
-#F  LoadDynamicModule( <filename> ) . . . . . . . . . . . . . . load a module
+#F  LoadDynamicModule( <filename> [, <crc> ] )  . . . . . . . . load a module
 ##
-LoadDynamicModule := function( arg )
+BIND_GLOBAL( "LoadDynamicModule", function( arg )
 
     if Length(arg) = 1  then
         if not LOAD_DYN( arg[1], false )  then
@@ -275,10 +287,39 @@ LoadDynamicModule := function( arg )
             Error( "<crc> mismatch (or no support for dynamic loading)" );
         fi;
     else
-        Error( "usage: LoadDynamicModule( <filename> )" );
+        Error( "usage: LoadDynamicModule( <filename> [, <crc> ] )" );
     fi;
 
-end;
+end );
+
+#############################################################################
+##
+#F  LoadStaticModule( <filename> [, <crc> ] )   . . . . . . . . load a module
+##
+BIND_GLOBAL( "LoadStaticModule", function( arg )
+
+    if Length(arg) = 1  then
+        if not arg[1] in SHOW_STAT() then
+            Error( "unknown static module ", arg[1] );
+        fi;
+
+        if not LOAD_STAT( arg[1], false )  then
+            Error( "loading static module ", arg[1], " failed" );
+        fi;
+    elif Length(arg) = 2  then
+        if not arg[1] in SHOW_STAT() then
+            Error( "unknown static module ", arg[1] );
+        fi;
+
+        if not LOAD_STAT( arg[1], arg[2] )  then
+            Error( "loading static module ", arg[1], 
+                   " failed, possible crc mismatch" );
+        fi;
+    else
+        Error( "usage: LoadStaticModule( <filename> [, <crc> ] )" );
+    fi;
+
+end );
 
 
 #############################################################################
@@ -291,9 +332,17 @@ EDITOR := "vi";
 
 #############################################################################
 ##
-#O  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
+#F  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
 ##
-DeclareGlobalFunction("Edit");
+##  `Edit' starts an editor with the file whose filename is given by the
+##  string <filename>, and reads the file back into {\GAP} when you exit the
+##  editor again.
+##  You should set the {\GAP} variable `EDITOR' to the name of
+##  the editor that you usually use, e.g., `/usr/ucb/vi'.
+##  This can for example be done in your `.gaprc' file (see the sections on
+##  operating system dependent features in Chapter~"Installing GAP").
+##
+DeclareGlobalFunction( "Edit" );
 
 
 #############################################################################
@@ -314,5 +363,5 @@ DeclareGlobalFunction("CheckCompletionFiles");
 #############################################################################
 ##
 
-#E  files.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

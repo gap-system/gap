@@ -41,7 +41,7 @@ true
 
 gap> z:= Algebra( GF(3), [], [ [ 0*Z(9), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] );
 <algebra over GF(3)>
-gap> IsGaussianMatrixSpaceRep( z );
+gap> IsGaussianMatrixSpace( z );
 true
 gap> IsTrivial( z );
 true
@@ -51,14 +51,14 @@ gap> Dimension( z );
 gap> a:= Algebra( GF(3), [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 >                   [ [ 0*Z(9), Z(27) ], [ Z(3)^0, Z(3) ] ] ] );
 <algebra over GF(3), with 2 generators>
-gap> IsNonGaussianMatrixSpaceRep( a );
+gap> IsNonGaussianMatrixSpace( a );
 true
 gap> Dimension( a );
 24
 
 gap> b:= Algebra( Rationals, [ [ [ 1, E(5) ], [ E(5), 0 ] ] ] );
 <algebra over Rationals, with 1 generators>
-gap> IsNonGaussianMatrixSpaceRep( b );
+gap> IsNonGaussianMatrixSpace( b );
 true
 gap> Dimension( b );
 8
@@ -66,7 +66,7 @@ gap> Dimension( b );
 gap> c:= Algebra( CF(5), [ [ [ 1, E(5) ], [ E(5), 0 ] ] ],
 >                     [ [ 0, 0 ], [ 0, 0 ] ] );
 <algebra over CF(5), with 1 generators>
-gap> IsGaussianMatrixSpaceRep( c );
+gap> IsGaussianMatrixSpace( c );
 true
 gap> Dimension( c );
 2
@@ -74,7 +74,7 @@ gap> Dimension( c );
 gap> d:= Algebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ],
 >                       [ [ 0, E(3) ], [ E(4), 5 ] ] ] );
 <algebra over Rationals, with 2 generators>
-gap> IsNonGaussianMatrixSpaceRep( d );
+gap> IsNonGaussianMatrixSpace( d );
 true
 gap> Dimension( d );
 16
@@ -84,7 +84,7 @@ gap> Dimension( d );
 gap> uz:= AlgebraWithOne( GF(3), [],
 >                            [ [ 0*Z(9), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] );
 <algebra-with-one over GF(3), with 0 generators>
-gap> IsGaussianMatrixSpaceRep( uz );
+gap> IsGaussianMatrixSpace( uz );
 true
 gap> IsTrivial( uz );
 false
@@ -94,14 +94,14 @@ gap> Dimension( uz );
 gap> ua:= AlgebraWithOne( GF(3), [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 >                   [ [ 0*Z(9), Z(27) ], [ Z(3)^0, Z(3) ] ] ] );
 <algebra-with-one over GF(3), with 2 generators>
-gap> IsNonGaussianMatrixSpaceRep( ua );
+gap> IsNonGaussianMatrixSpace( ua );
 true
 gap> Dimension( ua );
 24
 
 gap> ub:= AlgebraWithOne( Rationals, [ [ [ 1, E(5) ], [ E(5), 0 ] ] ] );
 <algebra-with-one over Rationals, with 1 generators>
-gap> IsNonGaussianMatrixSpaceRep( ub );
+gap> IsNonGaussianMatrixSpace( ub );
 true
 gap> Dimension( ub );
 8
@@ -109,7 +109,7 @@ gap> Dimension( ub );
 gap> uc:= AlgebraWithOne( CF(5), [ [ [ 1, E(5) ], [ E(5), 0 ] ] ],
 >                     [ [ 0, 0 ], [ 0, 0 ] ] );
 <algebra-with-one over CF(5), with 1 generators>
-gap> IsGaussianMatrixSpaceRep( uc );
+gap> IsGaussianMatrixSpace( uc );
 true
 gap> Dimension( uc );
 2
@@ -117,7 +117,7 @@ gap> Dimension( uc );
 gap> ud:= AlgebraWithOne( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ],
 >                       [ [ 0, E(3) ], [ E(4), 5 ] ] ] );
 <algebra-with-one over Rationals, with 2 generators>
-gap> IsNonGaussianMatrixSpaceRep( ud );
+gap> IsNonGaussianMatrixSpace( ud );
 true
 gap> Dimension( ud );
 16
@@ -213,7 +213,7 @@ gap> Dimension( fullcen );
 #############################################################################
 
 gap> f:= GF(2)^[3,3];
-<algebra-with-one over GF(2), with 2 generators>
+( GF(2)^[ 3, 3 ] )
 gap> f = FullMatrixFLMLOR( GF(2), 3 );
 true
 gap> IsFullMatrixModule( f );
@@ -264,7 +264,7 @@ gap> Dimension( l );
 #############################################################################
 
 gap> sum:= DirectSumOfAlgebras( f, f );
-<algebra of dimension 18 over GF(2)>
+<algebra over GF(2), with 6 generators>
 gap> Dimension( sum ) = 2 * Dimension( f );
 true
 gap> IsFullMatrixModule( sum );
@@ -290,8 +290,8 @@ gap> n:= NullAlgebra( GF(3) );
 <algebra over GF(3)>
 gap> Dimension( n );
 0
-gap> b:= BasisOfDomain( n );
-SemiEchelonBasis( <algebra of dimension 0 over GF(3)>, [  ] )
+gap> b:= Basis( n );
+Basis( <algebra of dimension 0 over GF(3)>, [  ] )
 gap> BasisVectors( b );
 [  ]
 gap> zero:= Zero( n );
@@ -327,11 +327,10 @@ true
 
 #############################################################################
 
-gap> STOP_TEST( "algmat.tst", 2275253357 );
+gap> STOP_TEST( "algmat.tst", 2140820000 );
 
 
 #############################################################################
 ##
-#E  algmat.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
 

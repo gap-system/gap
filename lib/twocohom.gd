@@ -10,61 +10,67 @@ Revision.twocohom_gd :=
 
 #############################################################################
 ##
-#F  CollectedWordSQ( C, u, v ) 
+#F  CollectedWordSQ( <C>, <u>, <v> ) 
 ##
 DeclareGlobalFunction( "CollectedWordSQ" );
 
 #############################################################################
 ##
-#F  CollectorSQ( G, M, isSplit )
+#F  CollectorSQ( <G>, <M>, <isSplit> )
 ##
 DeclareGlobalFunction( "CollectorSQ" );
 
 #############################################################################
 ##
-#F  AddEquationsSQ( eq, t1, t2 )
+#F  AddEquationsSQ( <eq>, <t1>, <t2> )
 ##
 DeclareGlobalFunction( "AddEquationsSQ" );
 
 #############################################################################
 ##
-#F  SolutionSQ( C, eq )
+#F  SolutionSQ( <C>, <eq> )
 ##
 DeclareGlobalFunction( "SolutionSQ" );
 
 #############################################################################
 ##
-#F  TwoCocyclesSQ( C, G, M )
+#F  TwoCocyclesSQ( <C>, <G>, <M> )
 ##
 DeclareGlobalFunction( "TwoCocyclesSQ" );
 
 #############################################################################
 ##
-#F  TwoCoboundariesSQ( C, G, M )
+#F  TwoCoboundariesSQ( <C>, <G>, <M> )
 ##
 DeclareGlobalFunction( "TwoCoboundariesSQ" );
 
 #############################################################################
 ##
-#F  TwoCohomologySQ( C, G, M )
+#F  TwoCohomologySQ( <C>, <G>, <M> )
 ##
 DeclareGlobalFunction( "TwoCohomologySQ" );
 
 #############################################################################
 ##
-#O  TwoCocycles( G, M )
+#O  TwoCocycles( <G>, <M> )
 ##
+##  returns the group of 2-cocycles of <G> by the <G>-module <M>. This group
+##  is given as vector space over the field underlying <M>.
 DeclareOperation( "TwoCocycles", [ IsPcGroup, IsObject ] );
 
 #############################################################################
 ##
-#O  TwoCoboundaries( G, M )
+#O  TwoCoboundaries( <G>, <M> )
 ##
+##  returns the group of 2-coboundaries of <G> by the <G>-module <M>. This
+##  group is given as vector space over the field underlying <M>.
 DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 
 #############################################################################
 ##
-#O  TwoCohomology( G, M )
+#O  TwoCohomology( <G>, <M> )
 ##
+##  returns a record defining the second cohomology group as factor space of 
+##  the space of cocycles by the space of coboundaries.
 DeclareOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
 

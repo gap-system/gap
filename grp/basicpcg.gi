@@ -15,43 +15,106 @@ Revision.basicpcg_gi :=
 
 #############################################################################
 ##
+#M  TrivialGroupCons( <IsPcGroup> )
+##
+InstallMethod( TrivialGroupCons,
+    "pc group",
+    [ IsPcGroup and IsFinite ],
+    function( filter )
+    filter:= CyclicGroup( IsPcGroup, 1 );
+    SetIsTrivial( filter, true );
+    return filter;
+    end );
 
+    
+#############################################################################
+##
 #M  AbelianGroupCons( <IsPcGroup and IsFinite>, <ints> )
 ##
-InstallMethod( AbelianGroupCons,
-    "pc group",
-    true,
-    [ IsPcGroup and IsFinite,
-      IsList ],
-    0,
-
+InstallMethod( AbelianGroupCons, "pc group", true,
+    [ IsPcGroup and IsFinite, IsList ], 0,
 function( filter, ints )
-    local   pis,  f,  g,  r,  k,  pi,  i;
+local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
 
     if not ForAll( ints, IsInt )  then
         Error( "<ints> must be a list of integers" );
     fi;
     if not ForAll( ints, x -> 0 < x )  then
-        TryNextMethod();
+      TryNextMethod();
+    fi;
+    if ForAll(ints,i->i=1) then
+      # the stupid trivial group case
+      return CyclicGroup(1);
     fi;
 
-    pis := List( Filtered( ints, x -> 1 < x ), Factors );
-    f   := FreeGroup( Sum( List( pis, Length ) ) );
+    pis := List( ints, Factors );
+    f   := FreeGroup( Sum( List(pis{Filtered([1..Length(pis)],i->ints[i]>1)},
+                                Length ) ) );
     g   := GeneratorsOfGroup(f);
     r   := [];
     k   := 1;
+    geni:=[];
     for pi  in pis  do
+      if pi[1]=1 then
+        Add(geni,0);
+      else
+	Add(geni,k);
         for i  in [ 1 .. Length(pi)-1 ]  do
             Add( r, g[k]^pi[i] / g[k+1] );
             k := k + 1;
         od;
         Add( r, g[k]^pi[Length(pi)] );
         k := k + 1;
+      fi;
     od;
     f := PolycyclicFactorGroup( f, r );
     SetSize( f, Product(ints) );
     SetIsAbelian( f, true );
-    return f;
+
+    k:=[];
+    g:=GeneratorsOfGroup(f);
+    for i in geni do
+      if i=0 then 
+        Add(k,One(f));
+      else
+        Add(k,g[i]);
+      fi;
+    od;
+    k:=GroupWithGenerators(k,One(f));
+    SetSize(k,Size(f));
+    SetIsAbelian( k, true );
+
+    pis := [ ];
+    ps := [ ];
+    for i in ints do
+      pi := PrimePowersInt( i );
+      for j in [ 1, 3 .. Length( pi ) - 1 ] do
+        if pi[ j ] in ps then
+          SetIsCyclic( k, false );
+        fi;
+        AddSet( ps, pi[ j ] );
+        Add( pis, pi[ j ] ^ pi[ j + 1 ] );
+      od;
+    od;
+    if not HasIsCyclic( k ) then
+      SetIsCyclic( k, true );
+      SetNameIsomorphismClass( k, Concatenation( "c", String( Size( f ))));
+      return k;
+    fi;
+    Sort( pis );
+    SetAbelianInvariants( k, pis );
+    pis := Collected( pis );
+    name := "";
+    for i in pis do
+      Append( name, String( i[ 1 ] ) );
+      if i[ 2 ] > 1 then
+        name := Concatenation( name, "^", String( i[ 2 ] ) );
+      fi;
+      Append( name, "x" );
+    od;
+    Unbind( name[ Length( name ) ] );
+    SetNameIsomorphismClass( k, name );
+    return k;
 end );
 
 
@@ -92,17 +155,25 @@ InstallMethod( CyclicGroupCons,
 function( filter, n )
     local   pi,  f,  g,  r,  i;
 
-    pi := Factors( n );
-    f  := FreeGroup( Length(pi) );
-    g  := GeneratorsOfGroup(f);
-    r  := [];
-    for i  in [ 1 .. Length(g)-1 ]  do
-        Add( r, g[i]^pi[i] / g[i+1] );
-    od;
-    Add( r, g[Length(g)] ^ pi[Length(g)] );
-    f := PolycyclicFactorGroup( f, r );
+    # Catch the case n = 1.
+    if n = 1 then
+        f := GroupByRws( SingleCollector( FreeGroup( 0 ), [] ) );
+        
+    else
+        pi := Factors( n );
+        f  := FreeGroup( Length(pi) );
+        g  := GeneratorsOfGroup(f);
+        r  := [];
+        for i  in [ 1 .. Length(g)-1 ]  do
+            Add( r, g[i]^pi[i] / g[i+1] );
+        od;
+        Add( r, g[Length(g)] ^ pi[Length(g)] );
+        f := PolycyclicFactorGroup( f, r );
+    fi;
+
     SetSize( f, n );
     SetIsCyclic( f, true );
+    SetNameIsomorphismClass( f, Concatenation( "c", String( n ) ) );
     return f;
 end );
 
@@ -123,6 +194,8 @@ function( filter, n )
 
     if n mod 2 = 1  then
         TryNextMethod();
+    elif n = 2 then return
+        CyclicGroup( IsPcGroup, 2 );
     fi;
     pi := Factors(n/2);
     f  := FreeGroup( Length(pi)+1 );
@@ -156,11 +229,12 @@ InstallMethod( ElementaryAbelianGroupCons,
 function( filter, n )
     if n = 1  then
         return CyclicGroupCons( IsPcGroup, 1 );
-    fi;
-    if not IsPrimePowerInt(n)  then
+    elif not IsPrimePowerInt(n)  then
         Error( "<n> must be a prime power" );
     fi;
-    return AbelianGroupCons( IsPcGroup, Factors(n) );
+    n:= AbelianGroupCons( IsPcGroup, Factors(n) );
+    SetIsElementaryAbelian( n, true );
+    return n;
 end );
 
 
@@ -254,7 +328,7 @@ function( filters, order, exp )
         Add( r, Comm( e[2*i], e[2*i-1] ) * z );
     od;
 
-    # return the Ag group
+    # return the pc group
     return PolycyclicFactorGroup( f, r );
 
 end );
@@ -282,5 +356,5 @@ end );
 #############################################################################
 ##
 
-#E  basicpc.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

@@ -28,7 +28,7 @@ Revision.polyconw_gd :=
 ##  $( \cdots (((c_k x^n + c_{k-1}) x^n + c_{k-2}) x^n + c_{k-3}) x^n
 ##   + \cdots c_0$.
 ##
-##  (this function is used in 'ConwayPol'.)
+##  (this function is used in `ConwayPol'.)
 ##
 DeclareGlobalFunction( "PowerModEvalPol" );
 
@@ -37,7 +37,13 @@ DeclareGlobalFunction( "PowerModEvalPol" );
 ##
 #V  CONWAYPOLYNOMIALS
 ##
-CONWAYPOLYNOMIALS := [];
+##  is a list that stores at position $p$, if bound,
+##  a list $l$ describing Conway polynomials in characteristic $p$.
+##  The $n$-th entry of $l$, if bound, is a list $[ i_0, i_1, \ldots, i_k ]$
+##  of integers such that the Conway polynomial for the field with $p^n$
+##  elements is $i_0 + i_1 X + \cdots + i_k X^k + X^n$.
+##
+DeclareGlobalVariable( "CONWAYPOLYNOMIALS" );
 
 
 ############################################################################
@@ -52,7 +58,7 @@ DeclareGlobalFunction( "ConwayPol" );
 #F  ConwayPolynomial( <p>, <n> ) .  <n>-th Conway polynomial in charact. <p>
 ##
 ##  is the Conway polynomial of the finite field $GF(p^n)$ as
-##  polynomial over the Rationals.
+##  polynomial over the prime field in characteristic <p>.
 ##
 ##  The *Conway polynomial* $\Phi_{n,p}$ of $GF(p^n)$ is defined by the
 ##  following properties.
@@ -65,9 +71,9 @@ DeclareGlobalFunction( "ConwayPol" );
 ##  value in $\{ 0, 1, \ldots, p-1 \}$ that is mapped to $c\in GF(p)$ under
 ##  the canonical epimorphism that maps the integers onto $GF(p)$.
 ##
-##  $\Phi_{n,p}$ is primitive over $GF(p)$, that is, it is irreducible,
-##  monic, and is the minimal polynomial of a primitive element of
-##  $GF(p^n)$.
+##  $\Phi_{n,p}$ is *primitive* over $GF(p)$ (see~"IsPrimitivePolynomial").
+##  That is, $\Phi_{n,p}$ is irreducible, monic,
+##  and is the minimal polynomial of a primitive root of $GF(p^n)$.
 ##
 ##  For all divisors $d$ of $n$ the compatibility condition
 ##  $\Phi_{d,p}( x^{\frac{p^n-1}{p^m-1}} ) \equiv 0 \pmod{\Phi_{n,p}(x)}$
@@ -81,7 +87,5 @@ DeclareGlobalFunction( "ConwayPolynomial" );
 
 #############################################################################
 ##
-#E  polyconw.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

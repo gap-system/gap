@@ -19,25 +19,6 @@
 ##  irreducible matrix group (over a finite field)  and its underlying vector
 ##  space.
 ##
-#H  $Log$
-#H  Revision 4.2  1998/02/28 12:31:23  gap
-#H  first round in making globals read-only
-#H
-#H      TB
-#H
-#H  Revision 4.1  1997/07/17 15:15:50  fceller
-#H  for version 4
-#H
-#H  Revision 1.1  1997/02/20 12:21:23  htheisse
-#H  added the primitive groups library
-#H
-#H  Revision 3.2  1995/03/31  13:41:05  sam
-#H  adjusted usage of spaces
-#H
-#H  Revision 3.1  1993/11/08  23:14:09  martin
-#H  initial revision under RCS
-#H
-##
 Revision.irredsol_grp :=
     "@(#)$Id$";
 
@@ -846,7 +827,7 @@ InstallGlobalFunction( IrreducibleSolvableGroup, function ( n, p, k )
 
     # Construct the generators
     gens := [ ];
-    idmat := IdentityMat( n, GF( p ) );
+    idmat := Immutable( IdentityMat( n, GF( p ) ) );
     for i in [1..(Length(desc)-3)/len] do
         mat := idmat;
         for j in [1..len] do
@@ -856,7 +837,7 @@ InstallGlobalFunction( IrreducibleSolvableGroup, function ( n, p, k )
     od;
 
     # Make the group and return it
-    grp := Group( gens, idmat );
+    grp := GroupByGenerators( gens, idmat );
     SetSize( grp, desc[ 1 ] );
     if desc[ 2 ] = 0 then
         grp!.isLinearlyPrimitive := true;

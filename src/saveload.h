@@ -39,7 +39,7 @@ extern void SaveUInt1(UInt1 x);
 extern void SaveUInt2(UInt2 x);
 extern void SaveUInt4(UInt4 x);
 extern void SaveUInt(UInt x);
-#ifdef SYS_IS_64BIT
+#ifdef SYS_IS_64_BIT
 extern void SaveUInt8(UInt8 x);
 #endif
 extern void SaveCStr(Char *s);
@@ -50,7 +50,7 @@ extern UInt1 LoadUInt1( void );
 extern UInt2 LoadUInt2( void );
 extern UInt4 LoadUInt4( void );
 extern UInt LoadUInt( void );
-#ifdef SYS_IS_64BIT
+#ifdef SYS_IS_64_BIT
 extern UInt8 LoadUInt8( void);
 #endif
 extern void LoadCStr(Char *buf, UInt maxlen );

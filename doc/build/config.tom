@@ -1,0 +1,4 @@
+@msfiles = ("tom");
+@gdfiles = ("stdgen","tom","../tom/tmadmin.tmd");
+$DIR = "../ref";
+$LIB = "../../lib"; 

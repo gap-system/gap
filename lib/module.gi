@@ -22,7 +22,7 @@ Revision.module_gi :=
 ##  with zero element <zero>.
 ##
 InstallMethod( LeftModuleByGenerators,
-    "method for ring and collection",
+    "for ring and collection",
     true,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
@@ -32,20 +32,17 @@ InstallMethod( LeftModuleByGenerators,
                    rec() );
     SetLeftActingDomain( V, R );
     SetGeneratorsOfLeftModule( V, AsList( gens ) );
+
+    CheckForHandlingByNiceBasis( R, gens, V, false );
     return V;
     end );
 
-InstallOtherMethod( LeftModuleByGenerators,
-    "method for ring, homogeneous list, and vector",
+InstallMethod( LeftModuleByGenerators,
+    "for ring, homogeneous list, and vector",
     true,
-    [ IsRing, IsHomogeneousList, IsVector ], 0,
+    [ IsRing, IsHomogeneousList, IsObject ], 0,
     function( R, gens, zero )
     local V;
-
-    if     IsCollection( gens )
-       and not IsCollsElms( FamilyObj( gens ), FamilyObj( zero ) ) then
-      Error( "the elements of <gens> must lie in the family of <zero>" );
-    fi;
 
     V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                             IsLeftModule and IsAttributeStoringRep ),
@@ -56,6 +53,8 @@ InstallOtherMethod( LeftModuleByGenerators,
     if IsEmpty( gens ) then
       SetIsTrivial( V, true );
     fi;
+
+    CheckForHandlingByNiceBasis( R, gens, V, zero );
     return V;
     end );
 
@@ -71,19 +70,19 @@ InstallMethod( AsLeftModule,
     function ( R, D )
     local   S,  L;
 
-    D := AsListSorted( D );
+    D := AsSSortedList( D );
     L := ShallowCopy( D );
     S := TrivialSubmodule( LeftModuleByGenerators( R, D ) );
-    SubtractSet( L, AsListSorted( S ) );
+    SubtractSet( L, AsSSortedList( S ) );
     while not IsEmpty(L)  do
         S := ClosureLeftModule( S, L[1] );
-        SubtractSet( L, AsListSorted( S ) );
+        SubtractSet( L, AsSSortedList( S ) );
     od;
-    if Length( AsListSorted( S ) ) <> Length( D )  then
+    if Length( AsSSortedList( S ) ) <> Length( D )  then
         return fail;
     fi;
     S := LeftModuleByGenerators( R, GeneratorsOfLeftModule( S ) );
-    SetAsListSorted( S, D );
+    SetAsSSortedList( S, D );
     SetIsFinite( S, true );
     SetSize( S, Length( D ) );
 
@@ -99,15 +98,16 @@ InstallMethod( AsLeftModule,
 ##  View the left module <M> as a left module over the ring <R>.
 ##
 InstallMethod( AsLeftModule,
+    " for a ring and a left module",
     true,
     [ IsRing, IsLeftModule ], 0,
     function( R, M )
 
     local W,        # the space, result
           base,     # basis vectors of field extension
-          gen,      # loop over generators of 'V'
-          b,        # loop over 'base'
-          gens,     # generators of 'V'
+          gen,      # loop over generators of `V'
+          b,        # loop over `base'
+          gens,     # generators of `V'
           newgens;  # extended list of generators
 
     if R = LeftActingDomain( M ) then
@@ -117,10 +117,10 @@ InstallMethod( AsLeftModule,
 
     elif IsSubset( R, LeftActingDomain( M ) ) then
 
-      # Check whether 'M' is really a module over the bigger field,
+      # Check whether `M' is really a module over the bigger field,
       # that is, whether the set of elements does not change.
       base:= BasisVectors( Basis( AsField( LeftActingDomain( M ), R ) ) );
-#T generalize 'AsField', at least to 'AsAlgebra'!
+#T generalize `AsField', at least to `AsAlgebra'!
       for gen in GeneratorsOfLeftModule( M ) do
         for b in base do
           if not b * gen in M then
@@ -137,7 +137,7 @@ InstallMethod( AsLeftModule,
 
     elif IsSubset( LeftActingDomain( M ), R ) then
 
-      # View 'M' as a module over a smaller ring.
+      # View `M' as a module over a smaller ring.
       # For that, the list of generators must be extended.
       gens:= GeneratorsOfLeftModule( M );
       if IsEmpty( gens ) then
@@ -145,7 +145,7 @@ InstallMethod( AsLeftModule,
       else
 
         base:= BasisVectors( Basis( AsField( R, LeftActingDomain( M ) ) ) );
-#T generalize 'AsField', at least to 'AsAlgebra'!
+#T generalize `AsField', at least to `AsAlgebra'!
         newgens:= [];
         for b in base do
           for gen in gens do
@@ -158,7 +158,7 @@ InstallMethod( AsLeftModule,
 
     else
 
-      # View 'M' first as module over the intersection of rings,
+      # View `M' first as module over the intersection of rings,
       # and then over the desired ring.
       return AsLeftModule( R,
                  AsLeftModule( Intersection2( R, LeftActingDomain( M ) ),
@@ -180,12 +180,29 @@ InstallMethod( AsLeftModule,
 ##  finite dimensional.
 ##
 InstallMethod( SetGeneratorsOfLeftModule,
-    "method that checks for 'IsFiniteDimensional'",
+    "method that checks for `IsFiniteDimensional'",
     IsIdenticalObj,
-    [ IsFreeLeftModule and IsAttributeStoringRep, IsList ], SUM_FLAGS + 1,
-    function( M, gens )
+    [ IsFreeLeftModule and IsAttributeStoringRep, IsList ], 0,
+  function( M, gens )
     SetIsFiniteDimensional( M, IsFinite( gens ) );
     TryNextMethod();
+  end );
+
+
+#############################################################################
+##
+#M  Characteristic( <M> ) . . . . . . . . . . characteristic of a left module
+##
+InstallMethod( Characteristic,
+    "for a left module with known left acting domain",
+    true,
+    [ IsLeftModule and HasLeftActingDomain ], 0,
+    function( M )
+    if IsIdenticalObj( M, LeftActingDomain( M ) ) then
+      TryNextMethod();
+    else
+      return Characteristic( LeftActingDomain( M ) );
+    fi;
     end );
 
 
@@ -194,7 +211,7 @@ InstallMethod( SetGeneratorsOfLeftModule,
 #M  Representative( <D> ) .  representative of a left operator additive group
 ##
 InstallMethod( Representative,
-    "method for left operator additive group with known generators",
+    "for left operator additive group with known generators",
     true,
     [ IsLeftOperatorAdditiveGroup
       and HasGeneratorsOfLeftOperatorAdditiveGroup ], 0,
@@ -206,7 +223,7 @@ InstallMethod( Representative,
 #M  Representative( <D> ) . representative of a right operator additive group
 ##
 InstallMethod( Representative,
-    "method for right operator additive group with known generators",
+    "for right operator additive group with known generators",
     true,
     [ IsRightOperatorAdditiveGroup
       and HasGeneratorsOfRightOperatorAdditiveGroup ], 0,
@@ -217,7 +234,10 @@ InstallMethod( Representative,
 ##
 #M  ClosureLeftModule( <V>, <a> ) . . . . . . . . .  closure of a left module
 ##
-InstallMethod( ClosureLeftModule, IsCollsElms, [ IsLeftModule, IsVector ], 0,
+InstallMethod( ClosureLeftModule,
+    "for left module and vector",
+    IsCollsElms,
+    [ IsLeftModule, IsVector ], 0,
     function( V, w )
 
     # if possible test if the element lies in the module already
@@ -237,7 +257,9 @@ InstallMethod( ClosureLeftModule, IsCollsElms, [ IsLeftModule, IsVector ], 0,
 ##
 #M  ClosureLeftModule( <V>, <W> ) . . . . . . . . .  closure of a left module
 ##
-InstallOtherMethod( ClosureLeftModule, IsIdenticalObj,
+InstallOtherMethod( ClosureLeftModule,
+    "for two left modules",
+    IsIdenticalObj,
     [ IsLeftModule, IsLeftModule ], 0,
     function( V, W )
     local C, v;
@@ -258,7 +280,7 @@ InstallOtherMethod( ClosureLeftModule, IsIdenticalObj,
 #M  \+( <U1>, <U2> )  . . . . . . . . . . . . . . . . sum of two left modules
 ##
 InstallOtherMethod( \+,
-    "method for two left modules",
+    "for two left modules",
     IsIdenticalObj,
     [ IsLeftModule, IsLeftModule ], 0,
     function( V, W )
@@ -288,23 +310,33 @@ InstallOtherMethod( \+,
 #F  SubmoduleNC( <M>, <gens>, "basis" )
 ##
 InstallGlobalFunction( Submodule, function( arg )
-    local S;
+    local M, gens, S;
+
+    # Check the arguments.
     if Length( arg ) < 2
        or not IsLeftModule( arg[1] )
-       or not IsList( arg[2] ) then
-      Error( "first argument must be a left module, second a list\n" );
-    elif IsEmpty( arg[2] ) then
-      return SubmoduleNC( arg[1], arg[2] );
-    elif     IsIdenticalObj( FamilyObj( arg[1] ), FamilyObj( arg[2] ) )
-         and IsSubset( arg[1], arg[2] ) then
-      S:= LeftModuleByGenerators( LeftActingDomain( arg[1] ), arg[2] );
-      SetParent( S, arg[1] );
+       or not (IsEmpty(arg[2]) or IsCollection( arg[2] )) then
+      Error( "first argument must be a left module, second a collection\n" );
+    fi;
+
+    # Get the arguments.
+    M    := arg[1];
+    gens := AsList( arg[2] );
+
+    if IsEmpty( gens ) then
+      return SubmoduleNC( M, gens );
+    elif     IsIdenticalObj( FamilyObj( M ), FamilyObj( gens ) )
+         and IsSubset( M, gens ) then
+      S:= LeftModuleByGenerators( LeftActingDomain( M ), gens );
+      SetParent( S, M );
       if Length( arg ) = 3 and arg[3] = "basis" then
-        UseBasis( S, arg[2] );
+        UseBasis( S, gens );
       fi;
+      UseSubsetRelation( M, S );
       return S;
     fi;
-    Error( "usage: Submodule( <V>, <gens> [, \"basis\"] )" );
+
+    Error( "usage: Submodule( <M>, <gens> [, \"basis\"] )" );
 end );
 
 InstallGlobalFunction( SubmoduleNC, function( arg )
@@ -324,6 +356,7 @@ InstallGlobalFunction( SubmoduleNC, function( arg )
       UseBasis( S, arg[2] );
     fi;
     SetParent( S, arg[1] );
+    UseSubsetRelation( arg[1], S );
     return S;
 end );
 
@@ -334,13 +367,32 @@ end );
 ##
 InstallMethod( TrivialSubadditiveMagmaWithZero,
     "generic method for left modules",
-    true, [ IsLeftModule ], 0,
+    true,
+    [ IsLeftModule ], 0,
     M -> SubmoduleNC( M, [] ) );
 
 
 #############################################################################
 ##
-#E  module.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  DimensionOfVectors( <M> ) . . . . . . . . . . . . . . . for a left module
+##
+InstallMethod( DimensionOfVectors,
+    "generic method for left modules",
+    true,
+    [ IsFreeLeftModule ], 0,
+    function( M )
+    M:= Representative( M );
+    if IsRowVector( M ) then
+      return Length( M );
+    elif IsMatrix( M ) then
+      return DimensionsMat( M );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
+#############################################################################
+##
+#E
 

@@ -58,7 +58,7 @@ end );
 ##
 #F  SizesPerfectGroups( )
 ##
-##  'SizesPerfectGroups'  returns an ordered list of all integers  that occur
+##  `SizesPerfectGroups'  returns an ordered list of all integers  that occur
 ##  as group sizes in the library of perfect groups.
 ##
 InstallGlobalFunction( SizesPerfectGroups, function ( )
@@ -74,7 +74,7 @@ end );
 ##
 #F  NumberPerfectGroups( size )
 ##
-##  'NumberPerfectGroups'  returns the number of nonisomorphic perfect groups
+##  `NumberPerfectGroups'  returns the number of nonisomorphic perfect groups
 ##  of size size for 1 <= size <= 1 000 000.
 ##
 ##  Exception:  The number of  perfect groups  is not yet known for the eight
@@ -102,7 +102,7 @@ end );
 ##
 #F  NumberPerfectLibraryGroups( size )
 ##
-##  'NumberPerfectLibraryGroups'  returns the number of nonisomorphic perfect
+##  `NumberPerfectLibraryGroups'  returns the number of nonisomorphic perfect
 ##  groups of size size for 1 <= size <= 1 000 000 which are available in the
 ##  perfect groups library.
 ##
@@ -123,7 +123,7 @@ end );
 ##
 #F  PerfectCentralProduct( <grpdata> ) . . . . . . . . . . . . . . local
 ##
-##  'PerfectCentralProduct'  returns, generators, relators and subgroup
+##  `PerfectCentralProduct'  returns, generators, relators and subgroup
 ##  information for 
 ##  the direct product of two perfect groups  or their central product modulo
 ##  some given central element.
@@ -203,7 +203,7 @@ end;
 ##
 #F  PerfectSubdirectProduct( <source> ) . . . . . . . . . . . . . . . . local
 ##
-##  'PerfectSubdirectProduct' returns, in form of a finitely presented group,
+##  `PerfectSubdirectProduct' returns, in form of a finitely presented group,
 ##  the subdirect product of two perfect groups.
 ##
 ##  It expects the associated source entry to be of the form
@@ -321,22 +321,65 @@ end);
 ##
 InstallMethod(PerfGrpConst,"perm grp",true,[IsPermGroup,IsList],0,
 function(filter,l)
-local G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
+local G,i,j,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp,extend,num;
   if Length(l)=0 then
     # special treatment for the trivial group
-    G:=Group(());
+    G:= GroupByGenerators( [], () );
     return G;
   fi;
   if l[1][1]=1 then
-    gens:=GeneratorsOfGroup(FreeGroup(List(l[1][2],i->[i])));
-    rels:=CallFuncList(l[1][3],gens);
+    gl:=List(l[1][2],i->[i]);
+    if Length(l[1])>4 then
+      # we have auxiliary generators
+      extend:=l[1][5];
+      for i in [1..Length(extend)] do
+        if extend[i]<>0 then
+	  Add(gl,Concatenation("aux",String(i)));
+	fi;
+      od;
+    else
+      extend:=false;
+    fi;
+    gens:=GeneratorsOfGroup(FreeGroup(gl));
+    num:=Length(l[1][2]);
+    rels:=CallFuncList(l[1][3],gens{[1..num]});
     subs:=rels[2];
     rels:=rels[1];
+    if extend<>false then
+      # add the further generators in the `auxiliary' component.
+      for i in [1..Length(extend)] do
+        if extend[i]<>0 then
+	  num:=num+1;
+	  if IsInt(extend[i]) then
+	    Add(rels,gens[i]^extend[i]/gens[num]);
+	  else
+	    g1:=One(gens[1]);
+	    for j in extend[i] do
+	      if j>0 then g1:=g1*gens[j];
+	      else g1:=g1/gens[-j];fi;
+	    od;
+	    Add(rels,g1/gens[num]);
+	  fi;
+	fi;
+      od;
+
+      # Tietze
+      extend:=PresentationFpGroup(Group(gens)/rels);
+      TzOptions(extend).generatorsLimit:=Length(gens);
+      TzOptions(extend).printLevel:=0;
+      TzGo(extend);
+      G:=FpGroupPresentation(extend);
+      gl:=gens;
+      gens:=FreeGeneratorsOfFpGroup(G);
+      rels:=RelatorsOfFpGroup(G);
+      subs:=List(subs,i->List(i,j->MappedWord(j,gl,gens)));
+
+    fi;
   elif l[1][1] in [2,4] then
     g1:=PerfGrpConst(IsPermGroup,PERFGRP[PerfGrpLoad(l[1][2])][l[1][3]]);
     g2:=PerfGrpConst(IsPermGroup,PERFGRP[PerfGrpLoad(l[1][4])][l[1][5]]);
     G:=DirectProduct(g1,g2);
-    if l[1][2]=3 then
+    if Length(l[1])>5 then
       gl:=Length(PERFGRP[PerfGrpLoad(l[1][6])][1][1][2]);
       e1:=Embedding(G,1);
       e2:=Embedding(G,2);
@@ -385,7 +428,7 @@ local G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
     pgens:=List([1..Length(gens)],i->pgens[i]*ct[i]);
     deg:=deg+ind[i];
   od;
-  G:=Group(pgens,());
+  G:= GroupByGenerators( pgens, () );
 
 #  # store the presentation
 #  fp:=Group(gens,gens[1]^0)/rels;
@@ -447,7 +490,7 @@ end );
 #F  DisplayInformationPerfectGroups( <size>, <n> )  . . . . . . . . . . . . .
 #F  DisplayInformationPerfectGroups( [ <size>, <n> ] )  . . . . . . . . . . .
 ##
-##  'DisplayInformationPerfectGroups'  displays  some invariants  of the n-th
+##  `DisplayInformationPerfectGroups'  displays  some invariants  of the n-th
 ##  group of size size from the perfect groups library.
 ##
 ##  If no value of n has been specified, the invariants will be displayed for
@@ -564,7 +607,7 @@ end );
 ##
 #F  SizeNumbersPerfectGroups( <factor>, ..., <factor> ) . . . . . . . . . . .
 ##
-##  'SizeNumbersPerfectGroups'  returns  a list  of the  size numbers  of all
+##  `SizeNumbersPerfectGroups'  returns  a list  of the  size numbers  of all
 ##  perfect library groups whose composition factors cover the given factors.
 ##  Each  argument  must be  one of the  valid names  of simple factors  or a
 ##  positive integer.

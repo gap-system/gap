@@ -65,6 +65,7 @@ const char * Revision_scanner_h =
 #define S_RPAREN        ((1UL<< 8))
 #define S_COMMA         ((1UL<< 9)+0)
 #define S_DOTDOT        ((1UL<< 9)+1)
+#define S_COLON         ((1UL<< 9)+1)
 
 #define S_INT           ((1UL<<10))
 #define S_TRUE          ((1UL<<11)+0)
@@ -207,7 +208,7 @@ typedef UInt            TypSymbolSet;
 **  maximal length of a  string.   'GetIdent', 'GetInt' and 'GetStr' truncate
 **  identifier, integers or strings after that many characters.
 */
-extern  Char            Value [1024];
+extern  Char            Value [1025];
 
 
 /****************************************************************************
@@ -344,40 +345,6 @@ extern void Match (
             UInt                symbol,
             Char *              msg,
             TypSymbolSet        skipto );
-
-
-/****************************************************************************
-**
-*F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
-**
-**  'Pr' is the output function. The first argument is a 'printf' like format
-**  string containing   up   to 2  '%'  format   fields,   specifing  how the
-**  corresponding arguments are to be  printed.  The two arguments are passed
-**  as  'long'  integers.   This  is possible  since every  C object  ('int',
-**  'char', pointers) except 'float' or 'double', which are not used  in GAP,
-**  can be converted to a 'long' without loss of information.
-**
-**  The function 'Pr' currently support the following '%' format  fields:
-**  '%c'    the corresponding argument represents a character,  usually it is
-**          its ASCII or EBCDIC code, and this character is printed.
-**  '%s'    the corresponding argument is the address of  a  null  terminated
-**          character string which is printed.
-**  '%d'    the corresponding argument is a signed integer, which is printed.
-**          Between the '%' and the 'd' an integer might be used  to  specify
-**          the width of a field in which the integer is right justified.  If
-**          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%>'    increment the indentation level.
-**  '%<'    decrement the indentation level.
-**  '%%'    can be used to print a single '%' character. No argument is used.
-**
-**  You must always  cast the arguments to  '(long)' to avoid  problems  with
-**  those compilers with a default integer size of 16 instead of 32 bit.  You
-**  must pass 0L if you don't make use of an argument to please lint.
-*/
-extern  void            Pr (
-            const Char *    format,
-            Int                 arg1,
-            Int                 arg2 );
 
 
 /****************************************************************************
@@ -810,6 +777,7 @@ typedef struct {
     Obj         stream;
     Obj         sline;
     Int         spos;
+    UInt        echo;
 } TypInputFile;
 
 
@@ -858,6 +826,7 @@ typedef struct {
     Int         file;
     Char        line [256];
     Int         pos;
+    Int         format;
     Int         indent;
     Int         spos;
     Int         sindent;
@@ -866,6 +835,50 @@ typedef struct {
 
 extern TypOutputFile   OutputFiles [16];
 extern TypOutputFile * Output;
+
+/****************************************************************************
+**
+*F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
+**
+**  'Pr' is the output function. The first argument is a 'printf' like format
+**  string containing   up   to 2  '%'  format   fields,   specifing  how the
+**  corresponding arguments are to be  printed.  The two arguments are passed
+**  as  'long'  integers.   This  is possible  since every  C object  ('int',
+**  'char', pointers) except 'float' or 'double', which are not used  in GAP,
+**  can be converted to a 'long' without loss of information.
+**
+**  The function 'Pr' currently support the following '%' format  fields:
+**  '%c'    the corresponding argument represents a character,  usually it is
+**          its ASCII or EBCDIC code, and this character is printed.
+**  '%s'    the corresponding argument is the address of  a  null  terminated
+**          character string which is printed.
+**  '%d'    the corresponding argument is a signed integer, which is printed.
+**          Between the '%' and the 'd' an integer might be used  to  specify
+**          the width of a field in which the integer is right justified.  If
+**          the first character is '0' 'Pr' pads with '0' instead of <space>.
+**  '%>'    increment the indentation level.
+**  '%<'    decrement the indentation level.
+**  '%%'    can be used to print a single '%' character. No argument is used.
+**
+**  You must always  cast the arguments to  '(long)' to avoid  problems  with
+**  those compilers with a default integer size of 16 instead of 32 bit.  You
+**  must pass 0L if you don't make use of an argument to please lint.
+*/
+
+typedef TypOutputFile *KOutputStream;
+
+extern  void            Pr (
+            const Char *    format,
+            Int                 arg1,
+            Int                 arg2 );
+
+
+extern  void            PrTo (
+            KOutputStream   stream,			      
+            const Char *    format,
+            Int                 arg1,
+            Int                 arg2 );
+
 
 
 /****************************************************************************
@@ -1182,6 +1195,8 @@ extern  UInt            OpenTest (
 **  attempt is made.
 */
 extern  UInt            CloseTest ( void );
+
+
 
 
 /****************************************************************************

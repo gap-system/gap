@@ -1567,11 +1567,11 @@ Obj FuncCONDUCTOR (
     while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
          && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
          && TNUM_OBJ(cyc) != T_CYC
-         && ! IS_LIST(cyc) ) {
+         && ! IS_SMALL_LIST(cyc) ) {
         cyc = ErrorReturnObj(
-            "NofCyc: <cyc> must be a cyclotomic or a list (not a %s)",
+            "Conductor: <cyc> must be a cyclotomic or a small list (not a %s)",
             (Int)TNAM_OBJ(cyc), 0L,
-            "you can return a cyclotomic or a list for <cyc>" );
+            "you can return a cyclotomic or a small list for <cyc>" );
     }
 
     /* handle cyclotomics                                                  */
@@ -1593,7 +1593,7 @@ Obj FuncCONDUCTOR (
                  && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
                  && TNUM_OBJ(cyc) != T_CYC ) {
                 cyc = ErrorReturnObj(
-                    "NofCyc: <list>[%d] must be a cyclotomic (not a %s)",
+                    "Conductor: <list>[%d] must be a cyclotomic (not a %s)",
                     (Int)i, (Int)TNAM_OBJ(cyc),
                     "you can return a cyclotomic for the list element" );
             }
@@ -1717,22 +1717,24 @@ Obj FuncGALOIS_CYC (
     UInt2 *             exs;            /* pointer to the exponents        */
     Obj *               res;            /* pointer to the result           */
     UInt                i;              /* loop variable                   */
+    UInt                tnumord, tnumcyc;
 
-    /* do full operation                                                   */
-    if ( FIRST_EXTERNAL_TNUM <= TNUM_OBJ(cyc)
-      || FIRST_EXTERNAL_TNUM <= TNUM_OBJ(ord) ) {
+    /* do full operation for any but standard arguments */
+
+    tnumord = TNUM_OBJ(ord);
+    tnumcyc = TNUM_OBJ(cyc);
+    if ( FIRST_EXTERNAL_TNUM <= tnumcyc
+	 || FIRST_EXTERNAL_TNUM <= tnumord 
+	 || (tnumord != T_INT && tnumord != T_INTNEG && tnumord != T_INTPOS)
+	 || ( tnumcyc != T_INT    && tnumcyc != T_RAT
+	      && tnumcyc != T_INTPOS && tnumcyc != T_INTNEG
+	      && tnumcyc != T_CYC )
+	 )
+      {
         return DoOperation2Args( self, cyc, ord );
-    }
+      }
 
     /* get and check <ord>                                                 */
-    while ( TNUM_OBJ(ord) != T_INT && TNUM_OBJ(ord) != T_INTNEG 
-            && TNUM_OBJ(ord) != T_INTPOS )
-    {
-        ord = ErrorReturnObj(
-            "GaloisCyc: <ord> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(ord), 0L,
-            "you can return an integer for <ord>" );
-    }
     if ( TNAM_OBJ(ord) == T_INT ) {
 	o = INT_INTOBJ(ord);
     }
@@ -1741,19 +1743,9 @@ Obj FuncGALOIS_CYC (
 	o = INT_INTOBJ(ord);
     }
 
-    /* get and check the cyclotomic                                        */
-    while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
-         && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
-         && TNUM_OBJ(cyc) != T_CYC ) {
-        cyc = ErrorReturnObj(
-            "GaloisCyc: <cyc> must be a cyclotomic (not a %s)",
-            (Int)TNAM_OBJ(cyc), 0L,
-            "you can return a cyclotomic for <cyc>" );
-    }
-
     /* every galois automorphism fixes the rationals                       */
-    if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
-      || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
+    if ( tnumcyc == T_INT    || tnumcyc == T_RAT
+      || tnumcyc == T_INTPOS || tnumcyc == T_INTNEG ) {
         return cyc;
     }
 

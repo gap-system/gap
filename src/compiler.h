@@ -18,7 +18,6 @@ const char * Revision_compiler_h =
 
 /****************************************************************************
 **
-
 *F  CompileFunc(<output>,<func>,<name>,<magic1>,<magic2>) . . . . . . compile
 */
 extern Int CompileFunc (
@@ -27,6 +26,15 @@ extern Int CompileFunc (
             Char *              name,
             UInt4               magic1,
             Char *              magic2 );
+
+/****************************************************************************
+**
+*F  SetCompileOpts( <string> ) . . parse the compiler options from <string>
+**                                 and set the appropriate variables
+**                                 unrecognised options are ignored for now
+*/
+
+extern void SetCompileOpts( Char *opts );
 
 
 /****************************************************************************

@@ -2,55 +2,82 @@
 %%
 %A  grpperm.msk                 GAP documentation            Alexander Hulpke
 %A                                                           Heiko Theissen
+%A                                                           Akos Seress
 %%
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %%
-\Chapter{Permutation groups}
+\Chapter{Permutation Groups}
 
 \Declaration{IsPermGroup}
 \beginexample
 gap> g:=Group((1,2,3,4),(1,2));
-Group( [ (1,2,3,4), (1,2) ], ... )
+Group( [ (1,2,3,4), (1,2) ] )
 \endexample
 
 Permutation groups are groups and therefore all operations for groups (see
-chapter "Groups") can be applied to them. In many cases special methods are
+Chapter~"Groups") can be applied to them. In many cases special methods are
 installed for permutation groups that make computations more effective.
 
+%%  The code for the computation and verification stabilizer chains, for
+%%  composition series and the radical is due to \'Akos Seress.
+%%  Heiko Thei{\ss}en wrote the backtrack routines which are used to compute for
+%%  example centralizers, normalizers and conjugating elements.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{The natural operation}
+\Section{The Natural Action}
 
-\Declaration{MovedPoints}
-\Declaration{NrMovedPoints}
-\Declaration{LargestMovedPoint}
-\Declaration{SmallestMovedPoint}
-
+The functions `MovedPoints', `NrMovedPoints', `LargestMovedPoint',
+and `SmallestMovedPoint' are defined for arbitrary collections of
+permutations (see~"Moved Points of Permutations"),
+in particular they can be applied to permutation groups.
 \beginexample
-gap> MovedPoints(g);
-[ 1, 2, 3, 4 ]
-gap> NrMovedPoints(g);
+gap> g:= Group( (2,3,5,6), (2,3) );;
+gap> MovedPoints( g );  NrMovedPoints( g );
+[ 2, 3, 5, 6 ]
 4
-gap> LargestMovedPoint(g);
-4
-gap> SmallestMovedPoint(g);
-1
+gap> LargestMovedPoint( g );  SmallestMovedPoint( g );
+6
+2
 \endexample
 
-The operation of a permutation group on the positive integers is a group
-operation (via the operation function `OnPoints'). Therefore all operation
-functions can be applied (see the chapter "Group Operations".
+The action of a permutation group on the positive integers is a group
+action (via the acting function `OnPoints').
+Therefore all action functions can be applied
+(see the Chapter~"Group Actions"),
+for example `Orbit', `Stabilizer', `Blocks', `IsTransitive', `IsPrimitive'.
+
+If one has a list of group generators and is interested in the moved points
+(see above) or orbits, it may be useful to avoid the explicit construction
+of the group for efficiency reasons.
+For the special case of the action of permutations on positive integers
+via `^', the following functions are provided for this purpose.
+
+\Declaration{OrbitPerms}
+\Declaration{OrbitsPerms}
+\beginexample
+gap> OrbitPerms( [ (1,2,3)(4,5), (3,6) ], 1 );
+[ 1, 2, 3, 6 ]
+gap> OrbitsPerms( [ (1,2,3)(4,5), (3,6) ], [ 1 .. 6 ] );
+[ [ 1, 2, 3, 6 ], [ 4, 5 ] ]
+\endexample
+
+Similarly, several functions concerning the natural action of
+permutation groups address stabilizer chains (see~"Stabilizer Chains")
+rather than permutation groups themselves, for example `BaseStabChain'
+(see~"BaseStabChain").
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Computing a permutation representation}
+\Section{Computing a Permutation Representation}
 
 \Declaration{IsomorphismPermGroup}
 \beginexample
 gap> g:=SmallGroup(24,12);
-Group( [ f1, f2, f3, f4 ], ... )
-gap> iso:=IsomorphismPermGroup(g);                  
-<operation homomorphism>
+<pc group of size 24 with 4 generators>
+gap> iso:=IsomorphismPermGroup(g);
+<action homomorphism>
 gap> Image(iso,g.3*g.4);
 ( 1, 4)( 2, 3)( 5, 8)( 6, 7)(9,12)(10,11)(13,16)(14,15)(17,20)(18,19)(21,24)
 (22,23)
@@ -60,30 +87,107 @@ In many cases the permutation representation constructed by
 `IsomorphismPermGroup' is regular.
 
 \Declaration{SmallerDegreePermutationRepresentation}
-
 \beginexample
-gap> p:=Group((1,2,3,4,5,6),(1,2));;p:=Operation(p,p,OnRight);;
-gap> Length(MovedPoints(p));
-720
-gap> q:=SmallerDegreePermutationRepresentation(p);;
-gap> Length(MovedPoints(Image(q)));
-6
+gap> image:= Image( iso );;  NrMovedPoints( image );
+24
+gap> small:= SmallerDegreePermutationRepresentation( image );;
+gap> Image( small );
+Group([ (2,3), (2,4,3), (1,3)(2,4), (1,2)(3,4) ])
+\endexample
+
+% gap> p:=Group((1,2,3,4,5,6),(1,2));;p:=Action(p,AsList(p),OnRight);;
+% gap> Length(MovedPoints(p));
+% 720
+% gap> q:=SmallerDegreePermutationRepresentation(p);;
+% gap> Length(MovedPoints(Image(q)));
+% 6
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Symmetric and Alternating Groups}
+
+The commands `SymmetricGroup' and `AlternatingGroup' (see~"Basic Groups")
+construct symmetric and alternating permutation groups.
+{\GAP} can also detect whether a given permutation group is a symmetric
+or alternating group on the set of its moved points;
+if so then the group is called a *natural* symmetric or alternating group,
+respectively.
+
+\Declaration{IsNaturalSymmetricGroup}
+\Declaration{IsNaturalAlternatingGroup}
+
+For groups that are known to be natural symmetric or natural alternating
+groups, very efficient methods for computing membership, conjugacy classes,
+Sylow subgroups etc.~are used.
+\beginexample
+gap> g:=Group((1,5,7,8,99),(1,99,13,72));;
+gap> IsNaturalSymmetricGroup(g);
+true
+gap> g;
+Sym([ 1, 5, 7, 8, 13, 72, 99 ])
+gap> IsNaturalSymmetricGroup( Group( (1,2)(4,5), (1,2,3)(4,5,6) ) );
+false
+\endexample
+
+The following functions can be used to check whether a given group
+(not necessarily a permutation group)
+is isomorphic to a symmetric or alternating group.
+
+There are no methods yet for IsSymmetricGroup and IsAlternatingGroup!
+
+\Declaration{IsSymmetricGroup}
+\Declaration{IsAlternatingGroup}
+
+
+\Declaration{SymmetricParentGroup}
+\beginexample
+gap> SymmetricParentGroup( Group( (1,2), (4,5), (7,8,9) ) );
+Sym( [ 1, 2, 4, 5, 7, 8, 9 ] )
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Stabilizer chains}
+\Section{Primitive Groups}
+
+\Declaration{ONanScottType}
+
+\Declaration{SocleTypePrimitiveGroup}
+
+\beginexample
+gap> g:=AlternatingGroup(5);;
+gap> h:=DirectProduct(g,g);;
+gap> p:=List([1,2],i->Projection(h,i));;
+gap> ac:=Action(h,AsList(g),                                                   
+> function(g,h) return Image(p[1],h)^-1*g*Image(p[2],h);end);;                 
+gap> Size(ac);NrMovedPoints(ac);IsPrimitive(ac,[1..60]);
+3600
+60
+true
+gap> ONanScottType(ac);
+"3a"
+gap> SocleTypePrimitiveGroup(ac);
+rec( series := "A", width := 2, parameter := 5 )
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stabilizer Chains}
 
 Many of the algorithms for permutation groups use a *stabilizer chain* of
-the group. The concept of stabilizer chains was introduced by Charles Sims
-in \cite{Sim70}.
+the group.
+The concepts of stabilizer chains, *bases*, and *strong generating sets* were
+introduced by Charles Sims in~\cite{Sim70}.
+A further discussion of base change is given in
+section~"ext:Generalized Conjugation Technique" in ``Extending {\GAP}''.
 
-If $[b_1, \ldots, b_n]$ is a list of points, $G^{(1)} = G$ and $G^{(i+1)} =
-Stab_{G^{(i)}}(b_i)$ such that $G^{(n+1)} = \{ () \}$. The list $[b_1,
-\ldots, b_n]$ is called a *base* of $G$, the points $b_i$ are called *base
+Let $B=[b_1, \ldots, b_n]$ be a list of points, $G^{(1)} = G$ and $G^{(i+1)} =
+Stab_{G^{(i)}}(b_i)$, such that $G^{(n+1)} = \{ () \}$.
+Then the list $[b_1, \ldots, b_n]$ is called a *base* of $G$,
+the points $b_i$ are called *base
 points*.  A set $S$ of generators for $G$ satisfying the condition $\< S
 \cap G^{(i)} >$ = $G^{(i)}$ for each $1 \leq i \leq n$, is called a *strong
 generating set* (SGS) of $G$. (More precisely we ought to say that it is a
-SGS of $G$ *relative* to $B$). The chain of subgroups of $G$ itself is
+SGS of $G$ *relative* to $B$).
+The chain of subgroups $G^{(i)}$ of $G$ itself is
 called the *stabilizer chain* of $G$ relative to $B$.
 
 Since $[b_1, \ldots, b_n]$, where $n$ is the degree of $G$ and $b_i$ are the
@@ -91,18 +195,23 @@ moved points of $G$, certainly is a base for $G$ there exists a base for
 each permutation group. The number of points in a base is called the
 *length* of the base. A base $B$ is called *reduced* if there exists no $i$
 such that $G^{(i)} = G^{(i+1)}$. (This however does not imply that no subset
-of $B$ could also serve as a base.) Note that different reduced bases for
-one group $G$ may have different length.  For example, the Chevalley Group
-$G_2(4)$ possesses reduced bases of length 5 and 7.
+of $B$ could also serve as a base.)
+Note that different reduced bases for one permutation group $G$
+may have different lengths.
+For example, the irreducible degree $416$ permutation representation
+of the Chevalley Group $G_2(4)$ possesses reduced bases of length 5 and 7.
 
 Let $R^{(i)}$ be a right transversal of $G^{(i+1)}$ in $G^{(i)}$, i.e. a set
 of right coset representatives of the cosets of $G^{(i+1)}$ in $G^{(i)}$.
 Then each element $g$ of $G$ has a unique representation of the form $g =
-r_n \ldots r_1$ with $r_i \in R^{(i)}$.  We can identify the cosets of
-$G^{(i+1)}$ in $G^{(i)}$ with the points in $O^{(i)} := b_i^{G^{(i)}}$.  So
-we can represent a transversal  as a list $T$ such  that $T[p]$ is  a
-representative of the coset corresponding to the point $p \in O^{(i)}$, i.e.
-an element of $G^{(i)}$ that takes $b_i$ to $p$.
+r_n \ldots r_1$ with $r_i \in R^{(i)}$.
+The cosets of $G^{(i+1)}$ in $G^{(i)}$ are in bijective correspondence with
+the points in $O^{(i)} := b_i^{G^{(i)}}$.
+So we could represent a transversal as a list $T$ such that $T[p]$ is a
+representative of the coset corresponding to the point $p \in O^{(i)}$,
+i.e., an element of $G^{(i)}$ that takes $b_i$ to $p$.
+(Note that such a list has holes in all positions corresponding to points
+not contained in $O^{(i)}$.)
 
 This approach however will store many different permutations as coset
 representatives which can be a problem if the degree $n$ gets bigger. Our
@@ -111,22 +220,304 @@ that we can still reconstruct each representative in $R^{(i)}$, and from
 them the elements in $G$. A *factorized inverse transversal* $T$ is a list
 where $T[p]$ is a generator of $G^{(i)}$ such that $p^{T[p]}$ is a point
 that lies earlier in $O^{(i)}$ than $p$ (note that we consider $O^{(i)}$ as
-a list not as a set). If we assume inductively that we know an element $r
+a list, not as a set). If we assume inductively that we know an element $r
 \in G^{(i)}$ that takes $b_i$ to $p^{T[p]}$, then $r T[p]^{-1}$ is an
 element in $G^{(i)}$ that takes $b_i$ to $p$. {\GAP} uses such factorized
 inverse transversals.
 
-\Declaration{StabChain}
+Another name for a factorized inverse transversal is a 
+*Schreier tree*. The vertices of the tree are the points in $O^{(i)}$,
+and the root of the tree is $b_i$. 
+The edges are defined as the ordered pairs $(p, p^{T[p]})$, 
+for $p \in O^{(i)} \setminus \{ b_i\}$. The edge $(p, p^{T[p]})$
+is labelled with the generator $T[p]$, and the product of edge labels
+along the unique path from $p$ to $b_i$ is the inverse of the 
+transversal element carrying $b_i$ to $p$.
 
-The `random' option is explained in more detail in section "Random Methods
-for Permutation Groups".
+Before we describe the construction of stablizer chains
+in~"Construction of Stabilizer Chains",
+we explain in~"Randomized Methods for Permutation Groups" the idea of
+using non-deterministic algorithms;
+this is necessary for understanding the options available for the
+construction of stabilizer chains.
+After that, in~"Stabilizer Chain Records" it is explained
+how a stabilizer chain is stored in {\GAP},
+"Operations for Stabilizer Chains" lists operations for stabilizer
+chains,
+and~"Low Level Routines to Modify and Create Stabilizer Chains" lists
+low level routines for manipulating stabilizer chains.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Randomized Methods for Permutation Groups}
+
+\index{Schreier-Sims!Random}
+
+For most computations with permutation groups,
+it is crucial to construct stabilizer chains efficiently. Sims's 
+original construction \cite{Sim70} is deterministic, and is called
+the Schreier-Sims algorithm, because it is based
+on Schreier's Lemma (p. 96 in \cite{Hall}): given $K=\langle S \rangle$
+and a transversal $T$ for $K$ mod $L$, one can obtain 
+$|S||T|$ generators for $L$. This lemma is applied recursively,
+with consecutive point stabilizers $G^{(i)}$ and $G^{(i+1)}$
+playing the role of $K$ and $L$. 
+
+In permutation groups of large degree, the number of Schreier generators
+to be processed becomes too large, and the deterministic Schreier-Sims
+algorithm becomes impractical. Therefore, {\GAP} uses randomized 
+algorithms. The method selection process, which is quite different
+from Version 3, works the following way. 
+
+If a group acts on not more than a hundred points,
+Sims's original deterministic algorithm is applied. In groups of 
+degree greater than hundred, a heuristic algorithm based
+on ideas in \cite{BCFS91} constructs a stabilizer chain. 
+This construction is complemented by a
+verify-routine that either proves the correctness of the stabilizer chain
+or causes the extension of the chain to a correct one. 
+The user can influence the verification process by setting
+the value of the record component `random'
+(cf.~"Construction of Stabilizer Chains"). 
+
+If `random' $=1000$ then a slight extension of an unpublished method of 
+Sims is used. The outcome of this verification process is always 
+correct. The user also can prescribe any integer $1 \le x \le 999$ 
+as the value of `random'. In this case, a randomized verification
+process from \cite{BCFS91} is applied, and the result of the 
+stabilizer chain construction is guaranteed to be correct with probability
+at least $x/1000$. The practical performance of the algorithm is 
+much better than the theoretical guarantee. 
+
+If the stabilizer chain is not correct then the elements in the 
+product of transversals $R^{(m)}R^{(m-1)}\cdots R^{(1)}$ constitute a 
+proper subset of the group $G$ in question. 
+This means that a membership test with this stabilizer chain 
+returns `false' for
+all elements that are not in $G$,
+but it may also return `false' for some elements of $G$;
+in other words, the result `true' of a membership test is always correct,
+whereas the result `false' may be incorrect.
+
+The construction and verification phases are separated because 
+there are situations where the verification step can be omitted;
+if one happens to know the order of the group in advance then the
+randomized construction of the stabilizer chain stops 
+as soon as the product of the lengths of the basic orbits
+of the chain equals the group order, and the chain will be correct
+(see the `size' option of the `StabChain' command in~"StabChain").
+
+Although the worst case running time is roughly quadratic for 
+Sims's verification and roughly linear for the randomized one, 
+in most examples the running time of the stabilizer chain
+construction with `random'$=1000$ (i.e., guaranteed correct output)
+is about the same as the running time of randomized verification
+with guarantee of at least $90\%$ correctness. Therefore, we suggest
+to use the default value `random'$=1000$. Possible uses of
+`random'$\<1000$ are when one has to run through a large collection
+of subgroups, and a low value of random is used to choose quickly
+a candidate for more thorough examination; another use is when
+the user suspects that the quadratic bottleneck of the guaranteed
+correct verification is hit. 
+
+We will illustrate these ideas in two examples.
+
+\beginexample
+gap> h:= SL(4,7);;
+gap> o:= Orbit( h, [1,0,0,0]*Z(7)^0, OnLines );;
+gap> op:= Action( h, o, OnLines );;
+gap> NrMovedPoints( op );
+400
+\endexample
+
+We created a permutation group on 400 points.
+First we compute a guaranteed correct stabilizer chain.
+(The `StabChain' command is described in~"StabChain".)
+
+\begintt
+gap> h:= Group( GeneratorsOfGroup( op ) );;
+gap> StabChain( h );;  time;
+1120
+gap> Size( h );
+2317591180800
+\endtt
+
+Now randomized verification will be used.
+We require that the result is guaranteed correct with probability $90\%$.
+This means that if we would do this calculation many times over,
+{\GAP} would *guarantee* that in least $90\%$ percent of all calculations
+the result is correct.
+In fact the results are much better than the guarantee,
+but we cannot promise that this will really happen.
+(For the meaning of the `random' component in the second argument of
+`StabChain', see~"StabChain".)
+
+First the group is created anew.
+
+\begintt
+gap> h:= Group( GeneratorsOfGroup( op ) );;
+gap> StabChain( h, rec( random:= 900 ) );;  time;
+1410
+gap> Size( h );
+2317591180800
+\endtt
+
+The result is still correct, and the running time is actually somewhat 
+slower. 
+If you give the algorithm additional information so that it can check
+its results,
+things become faster and the result is guaranteed to be correct.
+
+\begintt
+gap> h:=Group( GeneratorsOfGroup( op ) );;
+gap> SetSize( h, 2317591180800 );
+gap> StabChain( h );;  time;
+170
+\endtt
+
+The second example gives a typical group when the verification
+with `random' $=1000$ is slow. The problem is that the group 
+has a stabilizer subgroup $G^{(i)}$ such that the fundamental 
+orbit $O^{(i)}$ is split into a lot of orbits when we stabilize
+$b_i$ and one additional point of $O^{(i)}$. 
+
+\begintt
+gap> p1:=PermList(Concatenation([401],[1..400]));;
+gap> p2:=PermList(List([1..400],i->(i*20 mod 401)));;
+gap> d:=DirectProduct(Group(p1,p2),SymmetricGroup(5));;
+gap> h:=Group(GeneratorsOfGroup(d));;
+gap> StabChain(h);;time;Size(h);
+1030
+192480
+gap> h:=Group(GeneratorsOfGroup(d));;
+gap> StabChain(h,rec(random:=900));;time;Size(h);
+570
+192480
+\endtt
+
+When stabilizer chains of a group $G$ are created
+with `random' $\<1000$, this is noted in the group $G$,
+by setting of the record component `random'
+in the value of the attribute `StabChainOptions' for $G$
+(see~"StabChainOptions").
+As errors induced by the random methods might propagate,
+any group or homomorphism created from $G$ inherits a `random' component
+in its `StabChainOptions' from the corresponding component for $G$.
+
+A lot of algorithms dealing with permutation groups use randomized 
+methods; however, if the initial stabilizer chain construction 
+for a group is correct, these further methods will provide 
+guaranteed correct output. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Construction of Stabilizer Chains}
+
+\Declaration{StabChain}
 
 \Declaration{StabChainOptions}
 \Declaration{DefaultStabChainOptions}
-\Declaration{BaseOfGroup}
 \Declaration{StabChainBaseStrongGenerators}
 
+\Declaration{MinimalStabChain}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stabilizer Chain Records}
+
+If a  permutation group  has a   stabilizer chain, this   is stored  as a
+recursive structure. This  structure  is itself  a record~<S>  and it has
+(1)~components that provide information about  one level~$G^{(i)}$ of the
+stabilizer chain (which  we call  the  ``current stabilizer'')  and (2)~a
+component `stabilizer'  that  holds   another such  record,   namely  the
+stabilizer chain  of    the next stabilizer~$G^{(i+1)}$.  This  gives   a
+recursive  structure  where the  ``outermost''  record  representing  the
+``topmost'' stabilizer is bound to the group record component `stabChain'
+and   has the components explained below.
+Note: Since the structure is recursive, *never print a stabilizer chain!*
+(Unless you want to exercise the scrolling capabilities of your terminal.)
+\beginitems
+`identity' &
+        the identity element of the current stabilizer.
+
+`labels' &
+        a list of permutations which contains labels for the Schreier tree
+        of  the current stabilizer,  i.e., it contains 
+        elements for the factorized
+        inverse transversal.  The  first entry  is this list  is
+        always the  `identity',    for  reasons explained   below   under
+        `translabels'.
+        Note that {\GAP} tries to arrange things so that the `labels'
+        components are identical (i.e., the same {\GAP} object)
+        in every stabilizer of the chain;
+        thus the `labels' of a stabilizer do not necessarily all lie
+        in the this stabilizer (but see `genlabels' below).
+
+`genlabels' &
+        a list of integers indexing some of the permutations in the
+        `labels' component. The    `labels' addressed in this   way 
+        form a generating set for the current stabilizer. If the
+        `genlabels' component is empty,  the rest of the stabilizer chain
+        represents  the trivial subgroup, and  can be ignored, e.g., when
+        calculating the size.
+
+`generators' &
+        a list of generators for the current stabilizer. Usually, it is 
+        `labels\{ genlabels \}'.
+
+`orbit' &
+        the vertices of  the Schreier tree,  which  form the basic  orbit
+        $b_i^{G^{(i)}}$, ordered in such a way that the  base point $b_i$ is
+        first in the list.
+
+`translabels' &
+        the factorized inverse   transversal  that was  found during  the
+        orbit  algorithm  carried out   with the   inverses of  `labels\{
+        genlabels \}', starting from the base point.
+        The directed edge from the point $i$ to the point $j = i ^g$
+        in the Schreier tree is represented by
+        `labels[ translabels[<j>] ] = <g>' in  the stabilizer chain
+        (note that <i> can be reconstructed as $j^{g^{-1}}$ 
+        from this information).
+        The entries in the `translabels' component are thus just integers
+        giving the positions of the appropriate labels in the `labels'
+        component.
+        The base point itself (i.e., the root of the Schreier tree)
+        corresponds to the entry `1' in `translabels'.
+        This makes it possible to assign
+        `transversal\{ orbit \} := labels\{ translabels\{ orbit \} \}'
+        (see~"ref:sublist!assignment" in the Reference Manual
+        and `transversal' below).
+        The `translabels' component pays off handsomely in the stabilizer
+        chain conjugation (see~"ext:Generalized Conjugation Technique"
+        in ``Extending {\GAP}'').
+
+`transversal' &
+        is another  representation of the factorized inverse transversal:
+        as a list   with `transversal[<j>] =  labels[ translabels[<j>] ]'
+        (the base point  itself has entry `()').  To look up  an entry in
+        this list is faster than to evaluate  the expression on the right
+        hand side,  and   since this operation   appears  most  often  in
+        permutation   group     code    (e.g.,    in      the    function
+        `InverseRepresentative' below), the speed-up is really worth this
+        extra record component.
+
+`stabilizer' &
+        If  the  current stabilizer is  not   yet the trivial  group, the
+        stabilizer chain continues with   the stabilizer of  the  current
+        base  point,  which is    again  represented as  a   record  with
+        components `labels',    `identity',    `genlabels', `generators',
+        `orbit',     `translabels',  `transversal'     (and      possibly
+        `stabilizer'). This record is bound to the `stabilizer' component
+        of the current stabilizer. The last member  of a stabilizer chain
+        is recognized  by the fact that  it has no `stabilizer' component
+        bound.
+\enditems
+It is possible that different stabilizer  chains share the same record as
+one of their iterated `stabilizer' components.
+
 \beginexample
+gap> g:=Group((1,2,3,4),(1,2));;
 gap> StabChain(g);
 rec(
   labels := [ (), (3,4), (2,4,3), (1,4)(2,3), (1,2)(3,4) ],
@@ -157,7 +548,7 @@ rec(
       transversal := [ , (), (2,4,3), (2,4,3) ] ),
   orbit := [ 1, 2, 4, 3 ],
   translabels := [ 1, 5, 4, 4 ],
-  transversal := [ (), (1,2)(3,4), (1,4)(2,3), (1,4)(2,3) ] )
+  transversal := [ (), (1,2)(3,4), (1,4)(2,3), (1,4)(2,3) ])
 gap> BaseOfGroup(g);
 [ 1, 2, 3 ]
 gap> StabChainOptions(g);
@@ -170,113 +561,49 @@ rec(
   tryPcgs := true )
 \endexample
 
-\Declaration{MinimalStabChain}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Random Methods for Permutation Groups}
-\index{Random! Methods for Permutation Groups}
-\index{Schreier-Sims!Random}
-
-When permutation groups become larger, computations become slower. This
-increase might make it impossible to compute with these groups. The reason
-is mainly the creation of stabilizer chains (see "StabChain"): During
-this process a lot of schreier generators are produced for the next point
-stabilizer in the chain, and these generators must be processed. In actual
-examples, it is observed, however, that much fewer generators are needed.
-This observation can be justified theoretically and the random methods
-exploit it by using a method of the Schreier-Sims algorithm which gives the
-correct result with an user-given error probability. 
-
-*Advantage:*
-Computations become much faster. In fact, large problems may be handled
-only by using random methods.
-
-*Disadvantages:*
-Computations might produce wrong results. However, you can set an error
-margin, which is guaranteed. The practical performance is even better than
-our guarantee. You should also keep in mind, that it is
-impossible, to eliminate system, user or programming errors.
-
-However, there are many situations, when theory offers methods to check
-correctness of the results. As an example, consider the following situation.
-You want to compute some maximal subgroups of large sporadic groups. The
-ATLAS of finite groups then tells you the sizes of the groups as well as the
-sizes of the subgroups. The error of the random methods is one-sided in the
-sense that they never create strong generators which are not elements of the
-group. Hence if the resulting group
-sizes are correct, you have indeed obtained the correct result.
-You might also give this information to 'StabChain', and computation will
-not only be much faster, but also corresponding to the information, i.e. if
-you give the size, the stabilizer chain is computed correctly. {\GAP} will
-use this automatically when computing a stabilizer chain for a group whose
-size is known, for example if it had been assigned before with `SetSize'
-
-If a group acts on not more than a hundered points, the use of random
-methods has no advantage. For these groups always the deterministic methods
-are used. We will illustrate the advantages in an example
-
-\beginexample
-gap> h:=SL(4,7);
-SL(4,7)
-gap> o:=Orbit(h,[1,0,0,0]*Z(7)^0,OnLines);;Length(o);
-400
-gap> op:=Operation(h,o,OnLines);;
-\endexample
-
-We create a large permutation group on 400 points. First we compute
-deterministic.
-
-\beginexample
-gap> h:=Group(GeneratorsOfGroup(op));;    
-gap> StabChain(h);;time;
-970
-gap> Size(h);   
-2317591180800
-\endexample
-
-Now random methods will be used. We allow that the result is guaranteed
-correct only with 0.1 percent probability. The group is created anew.
-
-\beginexample
-gap> h:=Group(GeneratorsOfGroup(op));;
-gap> StabChain(h,rec(random:=1));;time;
-280
-gap> Size(h);
-2317591180800
-\endexample
-
-The result is still correct, though it took only less than one tenth of the
-time (your mileage may vary). If you give the algorithm a chance to check its
-results, things become even faster.
-
-\beginexample
-gap> h:=Group(GeneratorsOfGroup(op));;
-gap> SetSize(h,2317591180800);
-gap> StabChain(h);;time;               
-170
-\endexample
-
-When stabilizer chains are created, while random methods are allowed, it is
-noted in the respective groups, by setting of the record component `random'
-in the attribute `StabChainOptions'. 
-As errors induced by the random functions might propagate, any group or
-homomorphism created from the group inherits a `random' component
-in its `StabChainOptions' from the group.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations for a stabilizer chain}
+\Section{Operations for Stabilizer Chains}
 
 \Declaration{BaseStabChain}
+\Declaration{BaseOfGroup}
+
 \Declaration{SizeStabChain}
 \Declaration{StrongGeneratorsStabChain}
 \Declaration{GroupStabChain}
 \Declaration{OrbitStabChain}
 \Declaration{IndicesStabChain}
 \Declaration{ListStabChain}
+\Declaration{ElementsStabChain}
 
+\Declaration{InverseRepresentative}
 \Declaration{SiftedPermutation}
+\Declaration{MinimalElementCosetStabChain}
+\Declaration{LargestElementStabChain}
 
 \Declaration{ApproximateSuborbitsStabilizerPermGroup}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Low Level Routines to Modify and Create Stabilizer Chains}
+
+These operations modify a stabilizer chain or obtain new chains with
+specific properties. They are rather technical and should only be used if
+such low-level routines are deliberately required. (For all functions in
+this section the parameter <S> is a stabilizer chain.)
+
+\Declaration{CopyStabChain}
+\Declaration{CopyOptionsDefaults}
+\Declaration{ChangeStabChain}
+\Declaration{ExtendStabChain}
+\Declaration{ReduceStabChain}
+%%declaration{ConjugateStabChain}
+\Declaration{RemoveStabChain}
+\Declaration{EmptyStabChain}
+\Declaration{InsertTrivialStabilizer}
+\Declaration{IsFixedStabilizer}
+\Declaration{AddGeneratorsExtendSchreierTree}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Backtrack}
@@ -293,14 +620,14 @@ conjugacy test for elements <a> and <b> for which one can set
 $<L>:=C_G(<a>)$ and $<R>:=C_G(<b>)$.
 
 \beginexample
-gap> propfun:=function(el) return (1,2,3)^el in [(1,2,3),(1,3,2)];end;;
-gap> SubgroupProperty(g,propfun,Subgroup(g,[(1,2,3)]));
-Group( [ (1,2,3), (2,3) ], ... )
-gap> ElementProperty(g,function(el) return Order(el)=2;end);
+gap> propfun:= el -> (1,2,3)^el in [ (1,2,3), (1,3,2) ];;
+gap> SubgroupProperty( g, propfun, Subgroup( g, [ (1,2,3) ] ) );
+Group( [ (1,2,3), (2,3) ] )
+gap> ElementProperty( g, el -> Order( el ) = 2 );
 (2,4)
 \endexample
 
-Chapter "Permutations" describes special operations to construct
+Chapter~"Permutations" describes special operations to construct
 permutations in the symmetric group without using backtrack constructions.
 
 Backtrack routines are also called by the methods for permutation groups
@@ -309,51 +636,20 @@ as well as
 stabilizers for the operations of a permutation group
 `OnPoints', `OnSets', `OnTuples' and `OnSetSets'. Some of these methods use
 more specific refinements than `SubgroupProperty' or `ElementProperty'.
-
+For the definition of refinements, and how one can define refinements, see
+Section~"ext:The General Backtrack Algorithm with Ordered Partitions" in
+``Extending {\GAP}''.
 
 \Declaration{TwoClosure}
 \beginexample
-gap> TwoClosure(Group((1,2,3),(2,3,4)));      
-Sym[ 1 .. 4 ]
+gap> TwoClosure(Group((1,2,3),(2,3,4)));
+Sym([ 1 .. 4 ])
 \endexample
 
 \Declaration{InfoBckt}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations to modify a stabilizer chain}
-
-These operations modify a stabilizer chain or obtain new chains with
-specific properties. They are rather technical and shoudl only be used if
-such low-level routines are deliberately required.
-
-\Declaration{CopyStabChain}
-\Declaration{CopyOptionsDefaults}
-\Declaration{ChangeStabChain}
-\Declaration{ExtendStabChain}
-\Declaration{ReduceStabChain}
-\Declaration{EmptyStabChain}
-\Declaration{ConjugateStabChain}
-\Declaration{RemoveStabChain}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Symmetric and Alternating Groups}
+%%
+%E
 
-The commands `SymmetricGroup' and `AlternatingGroup' (see section
-"Basic Groups") permit to construct the symmetric and alternating group.
-{\GAP} can also detect whether a permutation group given by generators is
-a symmetric or alternating group.
-
-\Declaration{IsNaturalSymmetricGroup}
-\Declaration{IsNaturalAlternatingGroup}
-
-in these cases special methods are used for computations like conjugacy
-classes or sylow subgroups.
-
-\beginexample
-gap> g:=Group((1,5,7,8,99),(1,99,13,72));
-Group( [ ( 1, 5, 7, 8,99), ( 1,99,13,72) ], ... )
-gap> IsNaturalSymmetricGroup(g);
-true
-gap> g;
-Sym( [ 1, 5, 7, 8, 13, 72, 99 ] )
-\endexample

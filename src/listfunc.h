@@ -60,25 +60,58 @@ extern  UInt            PositionSortedDensePlist (
 
 /****************************************************************************
 **
-*F  SortList(<list>)  . . . . . . . . . . . . . . . . . . . . . . sort a list
+*F  SORT_LIST(<list>) . . . . . . . . . . . . . . . . . . . . . . sort a list
 *F  SortDensePlist(<list>)  . . . . . . . . . . . . . . . . . . . sort a list
+*F  SORT_LISTComp(<list>,<func>)  . . . . . . . . . . . . . . . . sort a list
+*F  SortDensePlistComp(<list>,<func>) . . . . . . . . . . . . . . sort a list
+**
+*F  SORT_PARA_LIST(<list>,<shadow>) . . . . . . . . . sort a list with shadow
+*F  SortParaDensePlistPara(<list>,<shadow>) . . . . . sort a list with shadow
+*F  SORT_PARA_LISTComp(<list>,<shadow>,<func>)  . . . sort a list with shadow
+*F  SortParaDensePlistComp(<list>,<shadow>,<func>)  . sort a list with shadow
 **
 **  'SortList' sorts the list <list> in increasing  order.
 */
-extern  void            SortList (
-            Obj                 list );
+extern  void SORT_LIST (
+        Obj  list );
 
-extern  void            SortDensePlist (
-            Obj                 list );
+extern  void SortDensePlist (
+        Obj  list );
 
+extern  void SORT_LISTComp (
+        Obj  list,
+        Obj  func );
+
+extern  void SortDensePlistComp (
+        Obj  list,
+        Obj  func );
+
+extern  void SORT_PARA_LIST (
+        Obj  list,
+        Obj  shadow );
+
+extern  void SortParaDensePlist (
+        Obj  list,
+        Obj  shadow );
+
+extern  void SORT_PARA_LISTComp (
+        Obj  list,
+        Obj  shadow,
+        Obj  func );
+
+extern  void SortParaDensePlistComp (
+        Obj  list,
+        Obj  shadow,
+        Obj  func );
 
 /****************************************************************************
 **
 *F  RemoveDupsDensePlist(<list>)  . . . . remove duplicates from a plain list
 **
-**  'RemoveDupsDensePlist' removes  duplicate elements from  the dense  plain
-**  list <list>.  <list> must be sorted.  'RemoveDupsDensePlist' returns 1 if
-**  <list> contains mutable elements, and 0 otherwise.
+**  'RemoveDupsDensePlist' removes duplicate elements from the dense
+**  plain list <list>.  <list> must be sorted.  'RemoveDupsDensePlist'
+**  returns 0 if <list> contains mutable elements, 1 if immutable but
+**  not homogenout, 2 otherwise
 */
 extern  UInt            RemoveDupsDensePlist (
             Obj                 list );

@@ -19,7 +19,7 @@ Revision.flag_g :=
 
 #V  FlagsFamily . . . . . . . . . . . . . . . . . . . . . . . family of flags
 ##
-FlagsFamily := NewFamily( "FlagsFamily", IsObject );
+BIND_GLOBAL( "FlagsFamily", NewFamily( "FlagsFamily", IsObject ) );
 
 
 
@@ -27,7 +27,7 @@ FlagsFamily := NewFamily( "FlagsFamily", IsObject );
 ##
 #V  TYPE_FLAGS  . . . . . . . . . . . . . . . . . . . . . . . . type of flags
 ##
-TYPE_FLAGS  := NewType( FlagsFamily,  IsInternalRep );
+BIND_GLOBAL( "TYPE_FLAGS", NewType( FlagsFamily,  IsInternalRep ) );
 
 
 #############################################################################

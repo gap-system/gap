@@ -18,37 +18,39 @@ Revision.ctblsolv_gd :=
 ##
 #A  BaumClausenInfo( <G> )  . . . . .  info about irreducible representations
 ##
-##  returns a record with components
-##
-##  `pcgs'
+##  Called with a group <G>, `BaumClausenInfo' returns a record with the
+##  following components.
+##  \beginlist
+##  `pcgs' &
 ##       each representation is encoded as a list, the entries encode images
 ##       of the elements in `pcgs',
 ##
-##  `kernel'
+##  `kernel' &
 ##       the normal subgroup such that the result describes the irreducible
 ##       representations of the corresponding factor group only
 ##       (so *all* irreducible nonlinear representations are described if
 ##       and only if this subgroup is trivial),
 ##
-##  `exponent'
+##  `exponent' &
 ##       the roots of unity in the representations are encoded as exponents
 ##       of a primitive `exponent'-th root,
 ##
-##  `lin'
+##  `lin' &
 ##       the list that encodes all linear representations of <G>,
 ##       each representation is encoded as a list of exponents,
 ##
-##  `nonlin'
+##  `nonlin' &
 ##       a list of nonlinear irreducible representations,
-##       each a list of monomial matrices,
+##       each a list of monomial matrices.
+##  \endlist
 ##
 ##  Monomial matrices are encoded as records with components
 ##  `perm' (the permutation part) and `diag' (the nonzero entries).
 ##  E. g., the matrix `rec( perm := [ 3, 1, 2 ], diag := [ 1, 2, 3 ] )'
 ##  stands for
-##  [ . , . , 1 ]     [ e^1 ,  .  ,  .  ]   [  .  ,  .  , e^3 ]
-##  [ 1 , . , . ]  *  [  .  , e^2 ,  .  ] = [ e^1 ,  .  ,  .  ] ,
-##  [ . , 1 , . ]     [  .  ,  .  , e^3 ]   [  .  , e^2 ,  .  ]
+##  [ .  .  1 ]     [ e^1   .    .  ]   [  .    .   e^3 ]
+##  [ 1  .  . ]  *  [  .   e^2   .  ] = [ e^1   .    .  ] ,
+##  [ .  1  . ]     [  .    .   e^3 ]   [  .   e^2   .  ]
 ##  where `e' is the value of `exponent' in the result record.
 ##
 ##  The algorithm of Baum and Clausen guarantees to compute all
@@ -91,39 +93,32 @@ DeclareAttribute( "BaumClausenInfo", IsGroup );
 
 #############################################################################
 ##
-#F  IrreducibleRepresentations( <G>)
+#A  IrreducibleRepresentations( <G> )
+#O  IrreducibleRepresentations( <G>, <F> )
 ##
-##  This function returns a record with components
-##  `representations'
-##       a list of group homomorphism from the group <G> to
-##       matrix groups over a suitable cyclotomic field,
+##  Called with a finite group <G> and a field <F>,
+##  `IrreducibleRepresentations' returns a list of representatives of the
+##  irreducible matrix representations of <G> over <F>, up to equivalence.
 ##
-##  `kernel'
-##       a normal subgroup $N$ of `G' such that the `representations'
-##       component contains exactly the different absolutely irreducible
-##       representations of `G' whose kernel contains $N$.
+##  If <G> is the only argument then `IrreducibleRepresentations' returns a
+##  list of representatives of the absolutely irreducible complex
+##  representations of <G>, up to equivalence.
 ##  
-DeclareAttribute( "IrreducibleRepresentations",
-    IsGroup );
+DeclareAttribute( "IrreducibleRepresentations", IsGroup );
+DeclareOperation( "IrreducibleRepresentations", [ IsGroup, IsField ] );
 
 
 #############################################################################
 ##
-#F  IrrBaumClausen( <G> ) . . . .  irred. characters of a supersolvable group
+#A  IrrBaumClausen( <G> ) . . . .  irred. characters of a supersolvable group
 ##
-##  `IrrBaumClausen' returns a record with components
+##  `IrrBaumClausen' returns the absolutely irreducible ordinary characters
+##  of the factor group of the finite solvable group <G>
+##  by the derived subgroup of its supersolvable residuum.
 ##
-##  `irreducibles'
-##       the irreducible characters of the factor group of <G> by the
-##       derived subgroup of its supersolvable residuum,
-##
-##  `complete'
-##       is `true' if the component `irreducibles' contains all irreducibles
-##       of <G>, and `false' otherwise.
-##
-##  The absolutely irreducible characters of the group <G> in characteristic
-##  zero are computed using the algorithm by Baum and Clausen,
-##  see ...
+##  The characters are computed using the algorithm by Baum and Clausen
+##  (see~\cite{BC94}).
+##  An error is signalled if <G> is not solvable.
 ##
 DeclareAttribute( "IrrBaumClausen", IsGroup );
 
@@ -138,8 +133,7 @@ DeclareAttribute( "IrrBaumClausen", IsGroup );
 ##  `InducedRepresentationImagesRepresentative' returns the image of the
 ##  element <g> of $G$ under $\phi$.
 ##
-DeclareGlobalFunction(
-    "InducedRepresentationImagesRepresentative" );
+DeclareGlobalFunction( "InducedRepresentationImagesRepresentative" );
 
 
 #############################################################################
@@ -161,8 +155,57 @@ DeclareGlobalFunction( "InducedRepresentation" );
 
 
 #############################################################################
+##
+#F  ProjectiveCharDeg( <G> ,<z> ,<q> )
+##
+##  is a collected list of the degrees of those faithful and absolutely
+##  irreducible characters of the group <G> in characteristic <q> that
+##  restrict homogeneously to the group generated by <z>, which must be
+##  central in <G>.
+##  Only those characters are counted that have value a multiple of
+##  `E( Order(<z>) )' on <z>.
+##
+DeclareGlobalFunction( "ProjectiveCharDeg" );
+
+
+#############################################################################
+##
+#F  CoveringTriplesCharacters( <G>, <z> ) . . . . . . . . . . . . . . . local
+##
+##  <G> must be a supersolvable group, and <z> a central element in <G>.
+##  `CoveringTriplesCharacters' returns a list of tripels $[ T, K, e ]$
+##  such that every irreducible character $\chi$ of <G> with the property
+##  that $\chi(<z>)$ is a multiple of `E( Order(<z>) )' is induced from a
+##  linear character of some $T$, with kernel $K$.
+##  The element $e \in T$ is chosen such that $\langle e K \rangle = T/K$.
+##
+##  The algorithm is in principle the same as `ProjectiveCharDeg',
+##  but the recursion stops if $<G> = <z>$.
+##  The structure and the names of the variables are the same.
+##
+DeclareGlobalFunction( "CoveringTriplesCharacters" );
+
+
+#############################################################################
+##
+#A  IrrConlon( <G> )
+##
+##  For a finite solvable group <G>, `IrrConlon' returns a list of certain
+##  irreducible characters of <G>, among those all irreducibles that have the
+##  supersolvable residuum of <G> in their kernels;
+##  so if <G> is supersolvable, all irreducible characters of <G> are
+##  returned.
+##  An error is signalled if <G> is not solvable.
+##
+##  The characters are computed using Conlon's algorithm
+##  (see~\cite{Con90a} and~\cite{Con90b}).
+##  For each irreducible character in the returned list,
+##  the monomiality information (see~"TestMonomial") is stored.
+##
+DeclareAttribute( "IrrConlon", IsGroup );
+
+
+#############################################################################
 ##              
-#E  ctblsolv.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
+#E
 

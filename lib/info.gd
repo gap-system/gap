@@ -12,7 +12,7 @@
 ##  Informational messages are controlled by the user setting desired
 ##  levels of verbosity for InfoClasses. A set of InfoClasses is an
 ##  InfoSelector, and classes and selectors may be built up with \+
-#N  I wanted to use \or, but this isn't at operation
+#N  I wanted to use \or, but this isn't an operation
 ##
 ##  A message is associated with a selector and a level and is
 ##  printed when the desired level for any of the classes in the selector

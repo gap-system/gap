@@ -1,0 +1,636 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  ctblmaps.msk                GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Maps Concerning Character Tables}
+
+\index{maps}
+\index{parametrized maps}
+
+\FileHeader[1]{ctblmaps}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Power Maps}
+
+\FileHeader[2]{ctblmaps}
+
+\Declaration{PowerMap}
+\beginexample
+gap> tbl:= CharacterTable( "L3(2)" );;
+gap> ComputedPowerMaps( tbl );
+[ , [ 1, 1, 3, 2, 5, 6 ], [ 1, 2, 1, 4, 6, 5 ],,,, [ 1, 2, 3, 4, 1, 1 ] ]
+gap> PowerMap( tbl, 5 );
+[ 1, 2, 3, 4, 6, 5 ]
+gap> ComputedPowerMaps( tbl );
+[ , [ 1, 1, 3, 2, 5, 6 ], [ 1, 2, 1, 4, 6, 5 ],, [ 1, 2, 3, 4, 6, 5 ],, 
+  [ 1, 2, 3, 4, 1, 1 ] ]
+gap> PowerMap( tbl, 137, 2 );
+2
+\endexample
+
+\Declaration{PossiblePowerMaps}
+\beginexample
+gap> tbl:= CharacterTable( "U4(3).4" );;
+gap> PossiblePowerMaps( tbl, 2 );
+[ [ 1, 1, 3, 4, 5, 2, 2, 8, 3, 4, 11, 12, 6, 14, 9, 1, 1, 2, 2, 3, 4, 5, 6, 
+      8, 9, 9, 10, 11, 12, 16, 16, 16, 16, 17, 17, 18, 18, 18, 18, 20, 20, 
+      20, 20, 22, 22, 24, 24, 25, 26, 28, 28, 29, 29 ] ]
+\endexample
+
+\Declaration{ElementOrdersPowerMap}
+\beginexample
+gap> tbl:= CharacterTable( "U4(3).4" );;
+gap> known:= ComputedPowerMaps( tbl );;
+gap> Length( known );
+7
+gap> sub:= ShallowCopy( known );;  Unbind( sub[7] );
+gap> ElementOrdersPowerMap( sub );
+[ 1, 2, 3, 3, 3, 4, 4, 5, 6, 6, Unknown(1), Unknown(2), 8, 9, 12, 2, 2, 4, 4, 
+  6, 6, 6, 8, 10, 12, 12, 12, Unknown(3), Unknown(4), 4, 4, 4, 4, 4, 4, 8, 8, 
+  8, 8, 12, 12, 12, 12, 12, 12, 20, 20, 24, 24, Unknown(5), Unknown(6), 
+  Unknown(7), Unknown(8) ]
+gap> ord:= ElementOrdersPowerMap( known );
+[ 1, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 9, 12, 2, 2, 4, 4, 6, 6, 6, 8, 10, 
+  12, 12, 12, 14, 14, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12, 12, 12, 
+  20, 20, 24, 24, 28, 28, 28, 28 ]
+gap> ord = OrdersClassRepresentatives( tbl );
+true
+\endexample
+
+\Declaration{PowerMapByComposition}
+\beginexample
+gap> tbl:= CharacterTable( "U4(3).4" );;  exp:= Exponent( tbl );
+2520
+gap> PowerMapByComposition( tbl, exp );
+[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1 ]
+gap> Length( ComputedPowerMaps( tbl ) );
+7
+gap> PowerMapByComposition( tbl, 11 );
+fail
+gap> PowerMap( tbl, 11 );;
+gap> PowerMapByComposition( tbl, 11 );
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 
+  22, 23, 24, 26, 25, 27, 28, 29, 31, 30, 33, 32, 35, 34, 37, 36, 39, 38, 41, 
+  40, 43, 42, 45, 44, 47, 46, 49, 48, 51, 50, 53, 52 ]
+\endexample
+
+\FileHeader[3]{ctblmaps}
+
+\Declaration{OrbitPowerMaps}
+\index{matrix automorphisms}
+\Declaration{RepresentativesPowerMaps}
+\beginexample
+gap> tbl:= CharacterTable( "3.McL" );;
+gap> grp:= MatrixAutomorphisms( Irr( tbl ) );  Size( grp );
+<permutation group with 5 generators>
+32
+gap> poss:= PossiblePowerMaps( CharacterTable( "3.McL" ), 3 );
+[ [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17, 4, 4, 
+      4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 9, 8, 37, 37, 37, 40, 
+      40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49, 49, 14, 14, 14, 14, 
+      14, 14, 37, 37, 37, 37, 37, 37 ], 
+  [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17, 4, 4, 
+      4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 8, 9, 37, 37, 37, 40, 
+      40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49, 49, 14, 14, 14, 14, 
+      14, 14, 37, 37, 37, 37, 37, 37 ] ]
+gap> reps:= RepresentativesPowerMaps( poss, grp );
+[ [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17, 4, 4, 
+      4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 8, 9, 37, 37, 37, 40, 
+      40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49, 49, 14, 14, 14, 14, 
+      14, 14, 37, 37, 37, 37, 37, 37 ] ]
+gap> orb:= OrbitPowerMaps( reps[1], grp );
+[ [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17, 4, 4, 
+      4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 8, 9, 37, 37, 37, 40, 
+      40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49, 49, 14, 14, 14, 14, 
+      14, 14, 37, 37, 37, 37, 37, 37 ], 
+  [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17, 4, 4, 
+      4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 9, 8, 37, 37, 37, 40, 
+      40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49, 49, 14, 14, 14, 14, 
+      14, 14, 37, 37, 37, 37, 37, 37 ] ]
+gap> Parametrized( orb );
+[ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17, 4, 4, 4, 
+  4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, [ 8, 9 ], [ 8, 9 ], 37, 37, 
+  37, 40, 40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49, 49, 14, 14, 14, 
+  14, 14, 14, 37, 37, 37, 37, 37, 37 ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Class Fusions between Character Tables}
+
+\index{fusions}\index{subgroup fusions}
+
+\FileHeader[4]{ctblmaps}
+
+\Declaration{FusionConjugacyClasses}
+\beginexample
+gap> s4:= SymmetricGroup( 4 );
+Sym( [ 1 .. 4 ] )
+gap> tbls4:= CharacterTable( s4 );;
+gap> d8:= SylowSubgroup( s4, 2 );
+Group([ (1,2), (3,4), (1,3)(2,4) ])
+gap> FusionConjugacyClasses( d8, s4 );
+[ 1, 2, 3, 3, 5 ]
+gap> tbls5:= CharacterTable( "S5" );;
+gap> FusionConjugacyClasses( CharacterTable( "A5" ), tbls5 );
+[ 1, 2, 3, 4, 4 ]
+gap> FusionConjugacyClasses( CharacterTable( "A5" ), CharacterTable( "J1" ) );
+fail
+gap> PossibleClassFusions( CharacterTable( "A5" ), CharacterTable( "J1" ) );
+[ [ 1, 2, 3, 4, 5 ], [ 1, 2, 3, 5, 4 ] ]
+\endexample
+
+\Declaration{ComputedClassFusions}
+\Declaration{GetFusionMap}
+\Declaration{StoreFusion}
+\beginexample
+gap> ComputedClassFusions( CharacterTable( d8 ) );
+[ rec( name := "CT1", map := [ 1, 2, 3, 3, 5 ] ) ]
+gap> Identifier( tbls4 );
+"CT1"
+gap> GetFusionMap( CharacterTable( d8 ), tbls4 );
+[ 1, 2, 3, 3, 5 ]
+gap> GetFusionMap( tbls4, tbls5 );
+fail
+gap> poss:= PossibleClassFusions( tbls4, tbls5 );
+[ [ 1, 5, 2, 3, 6 ] ]
+gap> StoreFusion( tbls4, poss[1], tbls5 );
+gap> GetFusionMap( tbls4, tbls5 );
+[ 1, 5, 2, 3, 6 ]
+\endexample
+
+\Declaration{NamesOfFusionSources}
+\beginexample
+gap> NamesOfFusionSources( tbls5 );
+[ "2.A5.2", "A5", "3^1+4:2^1+4.s5", "CT1" ]
+\endexample
+
+\Declaration{PossibleClassFusions}
+\beginexample
+gap> subtbl:= CharacterTable( "U3(3)" );;  tbl:= CharacterTable( "J4" );;
+gap> PossibleClassFusions( subtbl, tbl );
+[ [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ], 
+  [ 1, 2, 4, 4, 5, 5, 6, 10, 13, 12, 14, 14, 21, 21 ], 
+  [ 1, 2, 4, 4, 6, 6, 6, 10, 12, 13, 15, 15, 22, 22 ], 
+  [ 1, 2, 4, 4, 6, 6, 6, 10, 12, 13, 16, 16, 22, 22 ], 
+  [ 1, 2, 4, 4, 6, 6, 6, 10, 13, 12, 15, 15, 22, 22 ], 
+  [ 1, 2, 4, 4, 6, 6, 6, 10, 13, 12, 16, 16, 22, 22 ] ]
+\endexample
+
+\FileHeader[5]{ctblmaps}
+
+\Declaration{OrbitFusions}
+\index{table automorphisms}
+\Declaration{RepresentativesFusions}
+\beginexample
+gap> fus:= GetFusionMap( subtbl, tbl );
+[ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ]
+gap> orb:= OrbitFusions( AutomorphismsOfTable( subtbl ), fus,
+>              AutomorphismsOfTable( tbl ) );
+[ [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ], 
+  [ 1, 2, 4, 4, 5, 5, 6, 10, 13, 12, 14, 14, 21, 21 ] ]
+gap> rep:= RepresentativesFusions( AutomorphismsOfTable( subtbl ), orb,
+>              AutomorphismsOfTable( tbl ) );
+[ [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ] ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Parametrized Maps}
+
+\index{map!parametrized}\index{paramap}\index{class functions}
+
+\FileHeader[6]{ctblmaps}
+
+\Declaration{CompositionMaps}
+\beginexample
+gap> map1:= [ 1, [ 2 .. 4 ], [ 4, 5 ], 1 ];;
+gap> map2:= [ [ 1, 2 ], 2, 2, 3, 3 ];;
+gap> CompositionMaps( map2, map1 );
+[ [ 1, 2 ], [ 2, 3 ], 3, [ 1, 2 ] ]
+gap> CompositionMaps( map1, map2 );
+[ [ 1, 2, 3, 4 ], [ 2, 3, 4 ], [ 2, 3, 4 ], [ 4, 5 ], [ 4, 5 ] ]
+\endexample
+
+\Declaration{InverseMap}
+\beginexample
+gap> tbl:= CharacterTable( "2.A5" );;  f:= CharacterTable( "A5" );;
+gap> fus:= GetFusionMap( tbl, f );
+[ 1, 1, 2, 3, 3, 4, 4, 5, 5 ]
+gap> inv:= InverseMap( fus );
+[ [ 1, 2 ], 3, [ 4, 5 ], [ 6, 7 ], [ 8, 9 ] ]
+gap> CompositionMaps( fus, inv );
+[ 1, 2, 3, 4, 5 ]
+gap> # transfer a power map ``up'' to the factor group
+gap> pow:= PowerMap( tbl, 2 );
+[ 1, 1, 2, 4, 4, 8, 8, 6, 6 ]
+gap> CompositionMaps( fus, CompositionMaps( pow, inv ) );
+[ 1, 1, 3, 5, 4 ]
+gap> last = PowerMap( f, 2 );
+true
+gap> # transfer a power map of the factor group ``down'' to the group
+gap> CompositionMaps( inv, CompositionMaps( PowerMap( f, 2 ), fus ) );
+[ [ 1, 2 ], [ 1, 2 ], [ 1, 2 ], [ 4, 5 ], [ 4, 5 ], [ 8, 9 ], [ 8, 9 ], 
+  [ 6, 7 ], [ 6, 7 ] ]
+\endexample
+
+\Declaration{ProjectionMap}
+\beginexample
+gap> ProjectionMap( [ 1, 1, 1, 2, 2, 2, 3, 4, 5, 5, 5, 6, 6, 6 ] );
+[ 1, 4, 7, 8, 9, 12 ]
+\endexample
+
+\Declaration{Indirected}
+\beginexample
+gap> tbl:= CharacterTable( "M12" );;
+gap> fus:= [ 1, 3, 4, [ 6, 7 ], 8, 10, [ 11, 12 ], [ 11, 12 ],
+>            [ 14, 15 ], [ 14, 15 ] ];;
+gap> List( Irr( tbl ){ [ 1 .. 6 ] }, x -> Indirected( x, fus ) );
+[ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
+  [ 11, 3, 2, Unknown(9), 1, 0, Unknown(10), Unknown(11), 0, 0 ], 
+  [ 11, 3, 2, Unknown(12), 1, 0, Unknown(13), Unknown(14), 0, 0 ], 
+  [ 16, 0, -2, 0, 1, 0, 0, 0, Unknown(15), Unknown(16) ], 
+  [ 16, 0, -2, 0, 1, 0, 0, 0, Unknown(17), Unknown(18) ], 
+  [ 45, -3, 0, 1, 0, 0, -1, -1, 1, 1 ] ]
+\endexample
+
+\Declaration{Parametrized}
+\beginexample
+gap> Parametrized( [ [ 1, 2, 3, 4, 5 ], [ 1, 3, 2, 4, 5 ],
+>                    [ 1, 2, 3, 4, 6 ] ] );
+[ 1, [ 2, 3 ], [ 2, 3 ], 4, [ 5, 6 ] ]
+\endexample
+
+\Declaration{ContainedMaps}
+\beginexample
+gap> ContainedMaps( [ 1, [ 2, 3 ], [ 2, 3 ], 4, [ 5, 6 ] ] );
+[ [ 1, 2, 2, 4, 5 ], [ 1, 2, 2, 4, 6 ], [ 1, 2, 3, 4, 5 ], [ 1, 2, 3, 4, 6 ], 
+  [ 1, 3, 2, 4, 5 ], [ 1, 3, 2, 4, 6 ], [ 1, 3, 3, 4, 5 ], [ 1, 3, 3, 4, 6 ] ]
+\endexample
+
+\Declaration{UpdateMap}
+\beginexample
+gap> subtbl:= CharacterTable( "S4(4).2" );;  tbl:= CharacterTable( "He" );;
+gap> fus:= InitFusion( subtbl, tbl );;
+gap> fus;
+[ 1, 2, 2, [ 2, 3 ], 4, 4, [ 7, 8 ], [ 7, 8 ], 9, 9, 9, [ 10, 11 ], 
+  [ 10, 11 ], 18, 18, 25, 25, [ 26, 27 ], [ 26, 27 ], 2, [ 6, 7 ], [ 6, 7 ], 
+  [ 6, 7, 8 ], 10, 10, 17, 17, 18, [ 19, 20 ], [ 19, 20 ] ]
+gap> chi:= Irr( tbl )[2];
+Character( CharacterTable( "He" ), [ 51, 11, 3, 6, 0, 3, 3, -1, 1, 2, 0, 
+  3*E(7)+3*E(7)^2+3*E(7)^4, 3*E(7)^3+3*E(7)^5+3*E(7)^6, 2, 
+  E(7)+E(7)^2+2*E(7)^3+E(7)^4+2*E(7)^5+2*E(7)^6, 
+  2*E(7)+2*E(7)^2+E(7)^3+2*E(7)^4+E(7)^5+E(7)^6, 1, 1, 0, 0, 
+  -E(7)-E(7)^2-E(7)^4, -E(7)^3-E(7)^5-E(7)^6, E(7)+E(7)^2+E(7)^4, 
+  E(7)^3+E(7)^5+E(7)^6, 1, 0, 0, -1, -1, 0, 0, E(7)+E(7)^2+E(7)^4, 
+  E(7)^3+E(7)^5+E(7)^6 ] )
+gap> filt:= Filtered( Irr( subtbl ), x -> x[1] = 50 );
+[ Character( CharacterTable( "S4(4).2" ), [ 50, 10, 10, 2, 5, 5, -2, 2, 0, 0, 
+      0, 1, 1, 0, 0, 0, 0, -1, -1, 10, 2, 2, 2, 1, 1, 0, 0, 0, -1, -1 ] ), 
+  Character( CharacterTable( "S4(4).2" ), [ 50, 10, 10, 2, 5, 5, -2, 2, 0, 0, 
+      0, 1, 1, 0, 0, 0, 0, -1, -1, -10, -2, -2, -2, -1, -1, 0, 0, 0, 1, 1 ] ) 
+ ]
+gap> UpdateMap( chi, fus, filt[1] + TrivialCharacter( subtbl ) );
+true
+gap> fus;
+[ 1, 2, 2, 3, 4, 4, 8, 7, 9, 9, 9, 10, 10, 18, 18, 25, 25, [ 26, 27 ], 
+  [ 26, 27 ], 2, [ 6, 7 ], [ 6, 7 ], [ 6, 7 ], 10, 10, 17, 17, 18, 
+  [ 19, 20 ], [ 19, 20 ] ]
+\endexample
+
+\Declaration{MeetMaps}
+\beginexample
+gap> map1:= [ [ 1, 2 ], [ 3, 4 ], 5, 6, [ 7, 8, 9 ] ];;
+gap> map2:= [ [ 1, 3 ], [ 3, 4 ], [ 5, 6 ], 6, [ 8, 9, 10 ] ];;
+gap> MeetMaps( map1, map2 );  map1;
+true
+[ 1, [ 3, 4 ], 5, 6, [ 8, 9 ] ]
+\endexample
+
+\Declaration{CommutativeDiagram}
+\beginexample
+gap> map1:= [ [ 1, 2, 3 ], [ 1, 3 ] ];;  map2:= [ [ 1, 2 ], 1, [ 1, 3 ] ];;
+gap> map3:= [ [ 2, 3 ], 3 ];;  map4:= [ , 1, 2, [ 1, 2 ] ];;
+gap> imp:= CommutativeDiagram( map1, map2, map3, map4 );
+rec( imp1 := [ 2 ], imp2 := [ 1 ], imp3 := [  ], imp4 := [  ] )
+gap> map1;  map2;  map3;  map4;
+[ [ 1, 2, 3 ], 1 ]
+[ 2, 1, [ 1, 3 ] ]
+[ [ 2, 3 ], 3 ]
+[ , 1, 2, [ 1, 2 ] ]
+gap> imp2:= CommutativeDiagram( map1, map2, map3, map4, imp );
+rec( imp1 := [  ], imp2 := [  ], imp3 := [  ], imp4 := [  ] )
+\endexample
+
+\Declaration{CheckFixedPoints}
+\beginexample
+gap> subtbl:= CharacterTable( "L4(3).2_2" );;
+gap> tbl:= CharacterTable( "O7(3)" );;
+gap> fus:= InitFusion( subtbl, tbl );;  fus{ [ 48, 49 ] };
+[ [ 54, 55, 56, 57 ], [ 54, 55, 56, 57 ] ]
+gap> CheckFixedPoints( ComputedPowerMaps( subtbl )[5], fus,
+>        ComputedPowerMaps( tbl )[5] );
+[ 48, 49 ]
+gap> fus{ [ 48, 49 ] };
+[ [ 56, 57 ], [ 56, 57 ] ]
+\endexample
+
+\Declaration{TransferDiagram}
+\beginexample
+gap> subtbl:= CharacterTable( "2F4(2)" );;  tbl:= CharacterTable( "Ru" );;
+gap> fus:= InitFusion( subtbl, tbl );;
+gap> permchar:= Sum( Irr( tbl ){ [ 1, 5, 6 ] } );;
+gap> CheckPermChar( subtbl, tbl, fus, permchar );; fus;
+[ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 
+  [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ], [ 18, 19 ], 
+  [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+gap> tr:= TransferDiagram( PowerMap( subtbl, 2 ), fus, PowerMap( tbl, 2 ) );
+rec( impinside1 := [  ], impbetween := [ 12, 23 ], impinside2 := [  ] )
+gap> tr:= TransferDiagram( PowerMap( subtbl, 3 ), fus, PowerMap( tbl, 3 ) );
+rec( impinside1 := [  ], impbetween := [ 14, 24, 25 ], impinside2 := [  ] )
+gap> tr:= TransferDiagram( PowerMap( subtbl, 3 ), fus, PowerMap( tbl, 3 ),
+>             tr );
+rec( impinside1 := [  ], impbetween := [  ], impinside2 := [  ] )
+gap> fus;
+[ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, 15, 16, 18, 20, [ 25, 26 ], [ 25, 26 ], 
+  5, 5, 6, 8, 14, 13, 19, 19, [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+\endexample
+
+\Declaration{TestConsistencyMaps}
+\beginexample
+gap> subtbl:= CharacterTable( "2F4(2)" );;  tbl:= CharacterTable( "Ru" );;
+gap> fus:= InitFusion( subtbl, tbl );;
+gap> permchar:= Sum( Irr( tbl ){ [ 1, 5, 6 ] } );;
+gap> CheckPermChar( subtbl, tbl, fus, permchar );; fus;
+[ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 
+  [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ], [ 18, 19 ], 
+  [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+gap> TestConsistencyMaps( ComputedPowerMaps( subtbl ), fus,
+>        ComputedPowerMaps( tbl ) );
+true
+gap> fus;
+[ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, 15, 16, 18, 20, [ 25, 26 ], [ 25, 26 ], 
+  5, 5, 6, 8, 14, 13, 19, 19, [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+gap> Indeterminateness( fus );
+16
+\endexample
+
+\Declaration{Indeterminateness}
+\beginexample
+gap> Indeterminateness( [ 1, [ 2, 3 ], [ 4, 5 ], [ 6, 7, 8, 9, 10 ], 11 ] );
+20
+\endexample
+
+\Declaration{PrintAmbiguity}
+\beginexample
+gap> paramap:= [ 1, [ 2, 3 ], [ 3, 4 ], [ 2, 3, 4 ], 5 ];;
+gap> list:= [ [ 1, 1, 1, 1, 1 ], [ 1, 1, 2, 2, 3 ], [ 1, 2, 3, 4, 5 ] ];;
+gap> PrintAmbiguity( list, paramap );
+1 1 [  ]
+2 4 [ 2, 4 ]
+3 12 [ 2, 3, 4 ]
+\endexample
+
+\Declaration{ContainedSpecialVectors}
+\beginexample
+gap> subtbl:= CharacterTable( "HSM12" );;  tbl:= CharacterTable( "HS" );;
+gap> fus:= InitFusion( subtbl, tbl );;
+gap> rest:= CompositionMaps( Irr( tbl )[8], fus );
+[ 231, [ -9, 7 ], [ -9, 7 ], [ -9, 7 ], 6, 15, 15, [ -1, 15 ], [ -1, 15 ], 1, 
+  [ 1, 6 ], [ 1, 6 ], [ 1, 6 ], [ 1, 6 ], [ -2, 0 ], [ 1, 2 ], [ 1, 2 ], 
+  [ 1, 2 ], 0, 0, 1, 0, 0, 0, 0 ]
+gap> irr:= Irr( subtbl );;
+gap> # no further condition
+gap> cont1:= ContainedSpecialVectors( subtbl, irr, rest,
+>                function( tbl, chars, vec ) return true; end );;
+gap> Length( cont1 );
+24
+gap> # require scalar products to be integral
+gap> cont2:= ContainedSpecialVectors( subtbl, irr, rest,
+>                IntScalarProducts );;
+[ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 
+      0, 0, 0, 0 ], 
+  [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 0, 
+      0, 0, 0 ], 
+  [ 231, 7, -9, -9, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 
+      0, 0, 0, 0 ], 
+  [ 231, 7, -9, 7, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 0, 
+      0, 0, 0 ] ]
+gap> # additionally require scalar products to be nonnegative
+gap> cont3:= ContainedSpecialVectors( subtbl, irr, rest,
+>                NonnegIntScalarProducts );
+[ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 
+      0, 0, 0, 0 ], 
+  [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 0, 
+      0, 0, 0 ] ]
+gap> cont2 = ContainedPossibleVirtualCharacters( subtbl, irr, rest );
+true
+gap> cont3 = ContainedPossibleCharacters( subtbl, irr, rest );
+true
+\endexample
+
+\Declaration{CollapsedMat}
+\beginexample
+gap> mat:= [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ];;
+gap> coll:= CollapsedMat( mat, [] );
+rec( mat := [ [ 1, 1, 1 ], [ 2, -1, 0 ], [ 4, 4, 1 ] ], 
+  fusion := [ 1, 2, 3, 3 ] )
+gap> List( last.mat, x -> x{ last.fusion } ) = mat;
+true
+gap> coll:= CollapsedMat( mat, [ [ 1, 1, 1, 2 ] ] );
+rec( mat := [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ], 
+  fusion := [ 1, 2, 3, 4 ] )
+\endexample
+
+\Declaration{ContainedDecomposables}
+\beginexample
+gap> subtbl:= CharacterTable( "HSM12" );;  tbl:= CharacterTable( "HS" );;
+gap> rat:= RationalizedMat( Irr( subtbl ) );;
+gap> fus:= InitFusion( subtbl, tbl );;
+gap> rest:= CompositionMaps( Irr( tbl )[8], fus );
+[ 231, [ -9, 7 ], [ -9, 7 ], [ -9, 7 ], 6, 15, 15, [ -1, 15 ], [ -1, 15 ], 1, 
+  [ 1, 6 ], [ 1, 6 ], [ 1, 6 ], [ 1, 6 ], [ -2, 0 ], [ 1, 2 ], [ 1, 2 ], 
+  [ 1, 2 ], 0, 0, 1, 0, 0, 0, 0 ]
+gap> # compute all vectors in the lattice
+gap> ContainedDecomposables( rat, SizesCentralizers( subtbl ), rest,
+>        ReturnTrue );
+[ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 
+      0, 0, 0, 0 ], 
+  [ 231, 7, -9, -9, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 
+      0, 0, 0, 0 ], 
+  [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 0, 
+      0, 0, 0 ], 
+  [ 231, 7, -9, 7, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 0, 
+      0, 0, 0 ] ]
+gap> # compute only those vectors that are characters
+gap> ContainedDecomposables( rat, SizesCentralizers( subtbl ), rest,
+>        x -> NonnegIntScalarProducts( subtbl, Irr( subtbl ), x ) );
+[ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 
+      0, 0, 0, 0 ], 
+  [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0, 0, 1, 0, 
+      0, 0, 0 ] ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subroutines for the Construction of Power Maps}
+
+\Declaration{InitPowerMap}
+\beginexample
+gap> t:= CharacterTable( "U4(3).4" );;
+gap> pow:= InitPowerMap( t, 2 );
+[ 1, 1, 3, 4, 5, [ 2, 16 ], [ 2, 16, 17 ], 8, 3, [ 3, 4 ], 
+  [ 11, 12 ], [ 11, 12 ], [ 6, 7, 18, 19, 30, 31, 32, 33 ], 14, 
+  [ 9, 20 ], 1, 1, 2, 2, 3, [ 3, 4, 5 ], [ 3, 4, 5 ], 
+  [ 6, 7, 18, 19, 30, 31, 32, 33 ], 8, 9, 9, [ 9, 10, 20, 21, 22 ], 
+  [ 11, 12 ], [ 11, 12 ], 16, 16, [ 2, 16 ], [ 2, 16 ], 17, 17, 
+  [ 6, 18, 30, 31, 32, 33 ], [ 6, 18, 30, 31, 32, 33 ], 
+  [ 6, 7, 18, 19, 30, 31, 32, 33 ], [ 6, 7, 18, 19, 30, 31, 32, 33 ], 
+  20, 20, [ 9, 20 ], [ 9, 20 ], [ 9, 10, 20, 21, 22 ], 
+  [ 9, 10, 20, 21, 22 ], 24, 24, [ 15, 25, 26, 40, 41, 42, 43 ], 
+  [ 15, 25, 26, 40, 41, 42, 43 ], [ 28, 29 ], [ 28, 29 ], [ 28, 29 ], 
+  [ 28, 29 ] ]
+\endexample
+
+\FileHeader[7]{ctblmaps}
+
+\Declaration{Congruences}
+\beginexample
+gap> Congruences( t, Irr( t ), pow, 2, false );  pow;
+true
+[ 1, 1, 3, 4, 5, 2, 2, 8, 3, 4, 11, 12, [ 6, 7 ], 14, 9, 1, 1, 2, 2, 3, 4, 5, 
+  [ 6, 7 ], 8, 9, 9, 10, 11, 12, 16, 16, 16, 16, 17, 17, 18, 18, [ 18, 19 ], 
+  [ 18, 19 ], 20, 20, 20, 20, 22, 22, 24, 24, [ 25, 26 ], [ 25, 26 ], 28, 28, 
+  29, 29 ]
+\endexample
+
+\Declaration{ConsiderKernels}
+\beginexample
+gap> t:= CharacterTable( "A7.2" );;  init:= InitPowerMap( t, 2 );
+[ 1, 1, 3, 4, [ 2, 9, 10 ], 6, 3, 8, 1, 1, [ 2, 9, 10 ], 3, [ 3, 4 ], 6, 
+  [ 7, 12 ] ]
+gap> ConsiderKernels( t, Irr( t ), init, 2, false );
+true
+gap> init;
+[ 1, 1, 3, 4, 2, 6, 3, 8, 1, 1, 2, 3, [ 3, 4 ], 6, 7 ]
+\endexample
+
+\Declaration{ConsiderSmallerPowerMaps}
+\beginexample
+gap> t:= CharacterTable( "3.A6" );;  init:= InitPowerMap( t, 5 );
+[ 1, [ 2, 3 ], [ 2, 3 ], 4, [ 5, 6 ], [ 5, 6 ], [ 7, 8 ], [ 7, 8 ], 9, 
+  [ 10, 11 ], [ 10, 11 ], 1, [ 2, 3 ], [ 2, 3 ], 1, [ 2, 3 ], [ 2, 3 ] ]
+gap> Indeterminateness( init );
+4096
+gap> ConsiderSmallerPowerMaps( t, init, 5, false );
+true
+gap> Indeterminateness( init );
+256
+\endexample
+
+\Declaration{MinusCharacter}
+\beginexample
+gap> tbl:= CharacterTable( "S7" );;  pow:= InitPowerMap( tbl, 2 );;
+gap> pow;
+[ 1, 1, 3, 4, [ 2, 9, 10 ], 6, 3, 8, 1, 1, [ 2, 9, 10 ], 3, [ 3, 4 ], 6, 
+  [ 7, 12 ] ]
+gap> chars:= Irr( tbl ){ [ 2 .. 5 ] };;
+gap> List( chars, x -> MinusCharacter( x, pow, 2 ) );
+[ [ 0, 0, 0, 0, [ 0, 1 ], 0, 0, 0, 0, 0, [ 0, 1 ], 0, 0, 0, [ 0, 1 ] ], 
+  [ 15, -1, 3, 0, [ -2, -1, 0 ], 0, -1, 1, 5, -3, [ 0, 1, 2 ], -1, 0, 0, 
+      [ 0, 1 ] ], 
+  [ 15, -1, 3, 0, [ -1, 0, 2 ], 0, -1, 1, 5, -3, [ 1, 2, 4 ], -1, 0, 0, 1 ], 
+  [ 190, -2, 1, 1, [ 0, 2 ], 0, 1, 1, -10, -10, [ 0, 2 ], -1, -1, 0, 
+      [ -1, 0 ] ] ]
+\endexample
+
+\Declaration{PowerMapsAllowedBySymmetrizations}
+\beginexample
+gap> tbl:= CharacterTable( "U4(3).4" );;
+gap> pow:= InitPowerMap( tbl, 2 );;
+gap> Congruences( tbl, Irr( tbl ), pow, 2 );;  pow;
+[ 1, 1, 3, 4, 5, 2, 2, 8, 3, 4, 11, 12, [ 6, 7 ], 14, 9, 1, 1, 2, 2, 3, 4, 5, 
+  [ 6, 7 ], 8, 9, 9, 10, 11, 12, 16, 16, 16, 16, 17, 17, 18, 18, [ 18, 19 ], 
+  [ 18, 19 ], 20, 20, 20, 20, 22, 22, 24, 24, [ 25, 26 ], [ 25, 26 ], 28, 28, 
+  29, 29 ]
+gap> PowerMapsAllowedBySymmetrizations( tbl, Irr( tbl ), Irr( tbl ),
+>       pow, 2, rec( maxlen:= 10, contained:= ContainedPossibleCharacters,
+>       minamb:= 2, maxamb:= infinity, quick:= false ) );
+[ [ 1, 1, 3, 4, 5, 2, 2, 8, 3, 4, 11, 12, 6, 14, 9, 1, 1, 2, 2, 3, 4, 5, 6, 
+      8, 9, 9, 10, 11, 12, 16, 16, 16, 16, 17, 17, 18, 18, 18, 18, 20, 20, 
+      20, 20, 22, 22, 24, 24, 25, 26, 28, 28, 29, 29 ] ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subroutines for the Construction of Class Fusions}
+
+\Declaration{InitFusion}
+\beginexample
+gap> subtbl:= CharacterTable( "2F4(2)" );;  tbl:= CharacterTable( "Ru" );;
+gap> fus:= InitFusion( subtbl, tbl );
+[ 1, 2, 2, 4, [ 5, 6 ], [ 5, 6, 7, 8 ], [ 5, 6, 7, 8 ], [ 9, 10 ], 11, 14, 
+  14, [ 13, 14, 15 ], [ 16, 17 ], [ 18, 19 ], 20, [ 25, 26 ], [ 25, 26 ], 
+  [ 5, 6 ], [ 5, 6 ], [ 5, 6 ], [ 5, 6, 7, 8 ], [ 13, 14, 15 ], 
+  [ 13, 14, 15 ], [ 18, 19 ], [ 18, 19 ], [ 25, 26 ], [ 25, 26 ], 
+  [ 27, 28, 29 ], [ 27, 28, 29 ] ]
+\endexample
+
+\Declaration{CheckPermChar}
+\index{permutation character}
+\beginexample
+gap> permchar:= Sum( Irr( tbl ){ [ 1, 5, 6 ] } );;
+gap> CheckPermChar( subtbl, tbl, fus, permchar ); fus;
+true
+[ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 
+  [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ], [ 18, 19 ], 
+  [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+\endexample
+
+\Declaration{ConsiderTableAutomorphisms}
+\index{table automorphisms}
+\beginexample
+gap> ConsiderTableAutomorphisms( fus, AutomorphismsOfTable( tbl ) );
+[ 16 ]
+gap> fus;
+[ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 25, 
+  [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ], [ 18, 19 ], [ 25, 26 ], 
+  [ 25, 26 ], 27, 27 ]
+\endexample
+
+\Declaration{FusionsAllowedByRestrictions}
+\beginexample
+gap> subtbl:= CharacterTable( "U3(3)" );;  tbl:= CharacterTable( "J4" );;
+gap> fus:= InitFusion( subtbl, tbl );;
+gap> TestConsistencyMaps( ComputedPowerMaps( subtbl ), fus,
+>        ComputedPowerMaps( tbl ) );
+true
+gap> fus;
+[ 1, 2, 4, 4, [ 5, 6 ], [ 5, 6 ], [ 5, 6 ], 10, [ 12, 13 ], [ 12, 13 ], 
+  [ 14, 15, 16 ], [ 14, 15, 16 ], [ 21, 22 ], [ 21, 22 ] ]
+gap> ConsiderTableAutomorphisms( fus, AutomorphismsOfTable( tbl ) );
+[ 9 ]
+gap> fus;
+[ 1, 2, 4, 4, [ 5, 6 ], [ 5, 6 ], [ 5, 6 ], 10, 12, [ 12, 13 ], 
+  [ 14, 15, 16 ], [ 14, 15, 16 ], [ 21, 22 ], [ 21, 22 ] ]
+gap> FusionsAllowedByRestrictions( subtbl, tbl, Irr( subtbl ),
+>        Irr( tbl ), fus, rec( maxlen:= 10,
+>        contained:= ContainedPossibleCharacters, minamb:= 2,
+>        maxamb:= infinity, quick:= false ) );
+[ [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ], 
+  [ 1, 2, 4, 4, 6, 6, 6, 10, 12, 13, 15, 15, 22, 22 ], 
+  [ 1, 2, 4, 4, 6, 6, 6, 10, 12, 13, 16, 16, 22, 22 ] ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

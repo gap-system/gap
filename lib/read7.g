@@ -5,7 +5,6 @@
 ##
 ReadLib( "ctbl.gd"     );
 ReadLib( "ctblfuns.gd" );
-ReadLib( "ctblchar.gd" );
 ReadLib( "ctblmaps.gd" );
 ReadLib( "ctblauto.gd" );
 ReadLib( "ctbllatt.gd" );
@@ -15,6 +14,7 @@ ReadLib( "ctblpope.gd" );
 ReadLib( "ctblmoli.gd" );
 ReadLib( "ctblmono.gd" );
 ReadLib( "ctblgrp.gd"  );
+ReadLib( "ctblothe.gd" );
 
 
 #############################################################################
@@ -23,7 +23,6 @@ ReadLib( "ctblgrp.gd"  );
 ##
 ReadLib( "ctbl.gi"     );
 ReadLib( "ctblfuns.gi" );
-ReadLib( "ctblchar.gi" );
 ReadLib( "ctblmaps.gi" );
 ReadLib( "ctblauto.gi" );
 ReadLib( "ctbllatt.gi" );
@@ -35,6 +34,7 @@ ReadLib( "ctblmono.gi" );
 ReadLib( "ctblgrp.gi"  );
 ReadLib( "ctblperm.gi" );
 ReadLib( "ctblpc.gi" );
+ReadLib( "ctblothe.gi" );
 
 
 #############################################################################
@@ -42,13 +42,11 @@ ReadLib( "ctblpc.gi" );
 #X  files dealing with tables of marks
 ##
 ReadLib( "tom.gd");
+ReadLib( "straight.gd");
+ReadLib( "stdgen.gd");
+
 ReadLib( "tom.gi");
-
-
-#############################################################################
-##
-#X  interface between the libraries of char. tables and of tables of marks
-##
-ReadLib( "ctbltom.gi");
+ReadLib( "straight.gi");
+ReadLib( "stdgen.gi");
 
 

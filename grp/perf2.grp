@@ -644,7 +644,7 @@ Revision.perf2_grp :=
   1,[64,64]],
   # 15360.2
   [[1,"abdstuvef",
-  function(a,b,s,t,u,v,d,e,f)
+  function(a,b,d,s,t,u,v,e,f)
   return
   [[a^2*d,b^3,(a*b)^5,d^2,d^-1*b^-1*d*b,e^4,f^2,
   d^-1*a^-1*d*a,d^-1*s^-1*d*s,

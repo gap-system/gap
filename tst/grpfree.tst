@@ -24,7 +24,7 @@ gap> iter:= Iterator( g );;
 gap> for i in [ 1 .. 50 ] do
 >   Print( NextIterator( iter ), "\n" );
 > od;
-<identity> of ...
+<identity ...>
 a
 a^-1
 b
@@ -79,7 +79,7 @@ false
 gap> enum:= Enumerator( g );;
 gap> first50:=List( [ 1 .. 50 ], x -> enum[x] );;
 gap> Print(first50,"\n");
-[ <identity> of ..., a, a^-1, b, b^-1, a^2, a^-2, b*a, b^-1*a, a*b, a^-1*b, 
+[ <identity ...>, a, a^-1, b, b^-1, a^2, a^-2, b*a, b^-1*a, a*b, a^-1*b, 
   b*a^-1, b^-1*a^-1, a*b^-1, a^-1*b^-1, b^2, b^-2, a^3, a^-3, b*a^2, 
   b^-1*a^2, a*b*a, a^-1*b*a, b*a^-2, b^-1*a^-2, a*b^-1*a, a^-1*b^-1*a, b^2*a, 
   b^-2*a, a^2*b, a^-2*b, b*a*b, b^-1*a*b, a*b*a^-1, a^-1*b*a^-1, b*a^-1*b, 
@@ -89,7 +89,7 @@ gap> Print(first50,"\n");
 gap> List( first50, x -> Position( enum, x ) ) = [ 1 .. 50 ];
 true
 
-gap> STOP_TEST( "grpfree.tst", 2390880 );
+gap> STOP_TEST( "grpfree.tst", 2630000 );
 
 #############################################################################
 ##

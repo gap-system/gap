@@ -56,7 +56,7 @@ stat_identifier="USER";
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="@CC@"
-c_options="@CFLAGS@"
+c_options="@CFLAGS@" 
 c_linker="@CC@"
 
 # These three will need special care 
@@ -66,7 +66,19 @@ c_dyn_linking="@CDYNLINKING@"
 
 # hardwire this for now. There is probably a nicer way 
 
-OBJECTS="ariths.o blister.o bool.o c_methse.o c_type.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vector.o weakptr.o"
+OBJECTS="\
+    c_meths1.o  c_type1.o   c_oper1.o   c_filt1.o    c_random.o  \
+    ariths.o    blister.o   bool.o      calls.o      code.o      \
+    compiler.o  costab.o    cyclotom.o  dt.o         dteval.o    \
+    exprs.o     finfield.o  funcs.o     gap.o        gasman.o    \
+    gvars.o     integer.o   intrprtr.o  listfunc.o   listoper.o  \
+    lists.o     objcftl.o   objects.o   objfgelm.o   objpcgel.o  \
+    objscoll.o  objccoll.o  opers.o     permutat.o   plist.o     \
+    precord.o   range.o     rational.o  read.o       records.o   \
+    saveload.o  scanner.o   sctable.o   set.o        stats.o     \
+    streams.o   string.o    sysfiles.o  system.o     tietze.o    \
+    vars.o      vecgf2.o    vecffe.o    vec8bit.o    vector.o    \
+    weakptr.o"
 
 #############################################################################
 ##
@@ -83,8 +95,10 @@ gap_compile () {
 #F  c_compile   <output> <input>
 ##
 c_compile () {
-    echo ${c_compiler} ${c_options} -o $1 -I ${gap_include} -c $2
-    ${c_compiler} ${c_options} -o $1 -I ${gap_include} -c $2
+    echo ${c_compiler} ${c_options} -o $1 -I${gap_include} \
+         -I${gap_bin} -DCONFIG_H -c $2
+    ${c_compiler} ${c_options} -o $1 -I${gap_include} \
+         -I${gap_bin} -DCONFIG_H -c $2
 }
 
 
@@ -95,8 +109,10 @@ c_compile () {
 c_compile_dyn () {
     xxx=`basename $1 .so`
     tmp=/tmp/$$_${xxx}.o
-    echo ${c_compiler} ${c_dyn_options} -o ${tmp} -I ${gap_include} -c $2
-    ${c_compiler} ${c_dyn_options} -o ${tmp} -I ${gap_include} -c $2
+    echo ${c_compiler} ${c_dyn_options} -o ${tmp} -I${gap_include}\
+	-I${gap_bin} -DCONFIG_H -c $2
+    ${c_compiler} ${c_dyn_options} -o ${tmp} -I${gap_include} \
+	-I${gap_bin} -DCONFIG_H -c $2
     echo ${c_dyn_linker} ${c_dyn_linking} -o $1 ${tmp}
     ${c_dyn_linker} ${c_dyn_linking} -o $1 ${tmp}
     echo rm -f ${tmp}
@@ -109,8 +125,8 @@ c_compile_dyn () {
 #F  c_link <output> <inputs_o>
 ##
 c_link () {
-    echo ${c_linker} -o $1 $2
-    ${c_linker} -o $1 $2
+    echo ${c_linker} -ldl -o $1 $2
+    ${c_linker} -ldl -o $1 $2
 }
 
 
@@ -150,31 +166,34 @@ while [ $# -gt 0 ]; do
     -o|--output)          shift; output="$1";;
 
     -ffast-int-arith)     if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-D FAST_INT_ARITH"
+                              gap_options="-U FAST_INT_ARITH"
                           else
                               gap_options="${gap_options},FAST_INT_ARITH"
                           fi;;
 
     -ffast-plain-lists)   if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-D FAST_PLAIN_LISTS"
+                              gap_options="-U FAST_PLAIN_LISTS"
                           else
                               gap_options="${gap_options},FAST_PLAIN_LISTS"
                           fi;;
 
-    -ffast-list-funcs)    if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-D FAST_LIST_FUNCS"
+    -ffast-list-funcs)   # echo "$0: option $1 is not currently allowed, ignoring it";;
+
+			    
+			   if [ "X${gap_options}" = "X" ]; then
+                              gap_options="-U FAST_LIST_FUNCS"
                           else
                               gap_options="${gap_options},FAST_LIST_FUNCS"
                           fi;;
 
     -fno-check-types)     if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-D NO_CHECK_TYPES"
+                              gap_options="-U NO_CHECK_TYPES"
                           else
                               gap_options="${gap_options},NO_CHECK_TYPES"
                           fi;;
 
     -fno-check-list-elms) if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-D NO_CHECK_LIST_ELMS"
+                              gap_options="-U NO_CHECK_LIST_ELMS"
                           else
                               gap_options="${gap_options},NO_CHECK_LIST_ELMS"
                           fi;;
@@ -279,11 +298,25 @@ if [ ${comp_mode} = "comp_link" ]; then
     temps_c="${temps_c} /tmp/$$compstat.c"
     echo     "/* made by 'gac', can be thrown away */"   >  /tmp/$$compstat.c
     echo     "#include \"compiled.h\""                   >> /tmp/$$compstat.c
+
+    echo     "#ifndef AVOID_PRECOMPILED"                 >> /tmp/$$compstat.c
+    echo     "extern StructInitInfo * Init__methsel ( void );" \
+                                                         >> /tmp/$$compstat.c
+    echo     "extern StructInitInfo * Init__type ( void );"    \
+                                                         >> /tmp/$$compstat.c
+    echo     "#endif"                                    >> /tmp/$$compstat.c
+
     for name in ${names}; do
-        echo "extern StructCompInitInfo * Init__${name} ( void );" \
+        echo "extern StructInitInfo * Init__${name} ( void );" \
 						         >> /tmp/$$compstat.c
     done
-    echo     "CompInitFunc CompInitFuncs [] = {"         >> /tmp/$$compstat.c
+
+    echo     "InitInfoFunc CompInitFuncs [] = {"         >> /tmp/$$compstat.c
+    echo     "#ifndef AVOID_PRECOMPILED"                 >> /tmp/$$compstat.c
+    echo     "    Init__methsel,"                        >> /tmp/$$compstat.c
+    echo     "    Init__type,"                           >> /tmp/$$compstat.c
+    echo     "#endif"                                    >> /tmp/$$compstat.c
+
     for name in ${names}; do
         echo "    Init__${name},"                        >> /tmp/$$compstat.c
     done

@@ -1,0 +1,130 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  hash2.msk                  GAP documentation               Gene Cooperman
+%A							         Scott Murray
+%A	        					     Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\PreliminaryChapter{Dictionaries and General Hash Tables}
+
+People and computers spend a large amount of time with searching.
+Dictionaries are an abstract data structure which facilitates searching for
+certain objects. An important way of implementing dictionaries is via hash
+tables.
+
+*The functions and operations described in this chapter have been added
+very recently and are still undergoing development. It is conceivable that
+names of variants of the functionality might change in future versions. If
+you plan to use these functions in your own code, please contact us.*
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Dictionaries}
+
+\Declaration{IsDictionary}
+\Declaration{IsLookupDictionary}
+
+\Declaration{KnowsDictionary}
+\Declaration{KnowsDictionary}
+\Declaration{LookupDictionary}
+
+\FileHeader[1]{dict}
+
+\Declaration{NewDictionary}
+
+\FileHeader[2]{dict}
+
+As there are situations where the approach via binary lists is explicitly
+desired, such dictionaries can be created deliberately.
+\Declaration{DictionaryByPosition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{General Hash Tables}
+
+This chapter describes hash tables for general objects.
+We hash by keys and also store a value.  Keys    
+cannot be removed from the table, but the corresponding value can be 
+changed.  Fast access to last hash index allows you to efficiently store 
+more than one array of values -- this facility should be used with care.
+
+This code works for any kind of object, provided you have a DenseIntKey
+or KeyIntSparse method to convert the key into a positive integer.  
+These methods should ideally be implemented efficiently in the core.
+
+Note that, for efficiency, it is currently impossible to create a 
+hash table with non-positive integers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{General hash table definitions and operations}
+
+\Declaration{IsHash}
+\Declaration{PrintHashWithNames}
+\Declaration{GetHashEntry}
+\Declaration{AddHashEntry}
+\Declaration{RandomHashKey}
+\Declaration{HashKeyEnumerator}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Hash keys}
+
+The crucial step of hashing is to transform key objects into integers such
+that equal objects produce the same integer.
+
+\Declaration{IntKeyFun}
+
+The actual function used will vary very much on the type of objects. However
+{\GAP} provides already key functions for some commonly encountered objects.
+
+\Declaration{DenseIntKey}
+\Declaration{SparseIntKey}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Dense hash tables}
+
+Dense hash tables are used for hashing dense sets without collisions, 
+in particular integers. 
+Stores keys as an unordered list and values as an 
+array with holes.  The position of a value is given by the attribute
+`IntKeyFun' or the function returned by `DenseIntKey',
+and so KeyIntDense must be one-to-one.  
+\Declaration{DenseHashTable}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sparse hash tables}
+
+Sparse hash tables are used for hashing sparse sets.  
+Stores keys as an array with fail 
+denoting an empty position, stores values as an array with holes.
+Uses `HashFunct' applied to the `IntKeyFun' (respectively the result of
+calling `SparseIntKey') of the key.  DefaultHashLength 
+is the default starting hash table length; the table is doubled 
+when it becomes half full.
+\Declaration{SparseHashTable}
+\Declaration{GetHashEntryIndex}
+\Declaration{DoubleHashArraySize}
+
+In sparse hash tables, the integer obtained from the hash key is then
+transformed to an index position, this transformation is done using the hash
+function `HashFunct':
+\Declaration{HashFunct}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Fast access to last hash index}
+
+These functions allow you to use the index of last hash access or modification. 
+Note that this is global across all hash tables.  If you want to
+have two hash tables with identical layouts, the following works:
+GetHashEntry( hashTable1, object ); GetHashEntryAtLastIndex( hashTable2 );
+These functions should be used with extreme care, as they bypass most
+of the inbuilt error checking for hash tables.
+
+\Declaration{GetHashEntryAtLastIndex}
+\Declaration{SetHashEntryAtLastIndex}
+\Declaration{SetHashEntry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

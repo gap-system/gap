@@ -53,6 +53,8 @@ InstallMethod( FLMLORByGenerators,
                    rec() );
     SetLeftActingDomain( A, R );
     SetGeneratorsOfLeftOperatorRing( A, AsList( gens ) );
+
+    CheckForHandlingByNiceBasis( R, gens, A, false );
     return A;
     end );
 
@@ -74,6 +76,7 @@ InstallOtherMethod( FLMLORByGenerators,
       SetGeneratorsOfLeftModule( A, gens );
     fi;
 
+    CheckForHandlingByNiceBasis( R, gens, A, zero );
     return A;
     end );
 
@@ -94,6 +97,8 @@ InstallMethod( FLMLORWithOneByGenerators,
                    rec() );
     SetLeftActingDomain( A, R );
     SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( gens ) );
+
+    CheckForHandlingByNiceBasis( R, gens, A, false );
     return A;
     end );
 
@@ -109,6 +114,8 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     SetLeftActingDomain( A, R );
     SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( gens ) );
     SetZero( A, zero );
+
+    CheckForHandlingByNiceBasis( R, gens, A, zero );
     return A;
     end );
 
@@ -345,7 +352,7 @@ InstallMethod( LieAlgebraByDomain,
 # by d_{ij}^k - d_{ji}^k.
 
 
-       T:= StructureConstantsTable( BasisOfDomain( A ) );
+       T:= StructureConstantsTable( Basis( A ) );
        n:= Dimension( A );
        zero:= Zero( LeftActingDomain( A ) );
        nullvec:= List( [1..n], x -> zero );
@@ -362,13 +369,16 @@ InstallMethod( LieAlgebraByDomain,
              k:= cji[1][m];
              cfs[k]:= cfs[k] - cji[2][m];
            od;
-
+           
+           cij:= [ ];
+           
            for m in [1..n] do
              if cfs[m] <> zero then
-               SetEntrySCTable( S, i, j, [ cfs[m], m ] );
+                 Add( cij, cfs[m] );
+                 Add( cij, m );
              fi;
            od;
-
+           SetEntrySCTable( S, i, j, cij );
          od;
        od;
 
@@ -487,33 +497,49 @@ end );
 ##
 InstallGlobalFunction( SetEntrySCTable, function( T, i, j, list )
 
-    local range, zero, Fam, entry, k;
+    local range, zero, Fam, entry, k, val, pos;
 
     # Check that `i' and `j' are admissible.
     range:= [ 1 .. Length( T ) - 2 ];
-    if not i in range then
+    if   not i in range then
       Error( "<i> must lie in ", range );
-    fi;
-    if not j in range then
+    elif not j in range then
       Error( "<j> must lie in ", range );
     fi;
 
-    # Check the list, and construct the table entry.
+    # Check `list', and construct the table entry.
     zero:= T[ Length( T ) ];
     Fam:= FamilyObj( zero );
     entry:= [ [], [] ];
     for k in [ 1, 3 .. Length( list ) -1 ] do
-      if FamilyObj( list[k] ) <> Fam then
-        Error( "list entry ", list[k], " does not fit to zero element" );
-      elif not list[k+1] in range then
+
+      val:= list[k];
+      pos:= list[k+1];
+
+      # Check that `pos' is inside the table,
+      # and that its entry is assigned only once.
+      if not pos in range then
         Error( "list entry ", list[k+1], " must lie in ", range );
-      elif list[k+1] in entry[1] then
-        Error( "position ", list[k+1],
-               " must occur at most once in <list>" );
-      elif list[k] <> zero then
-        Add( entry[1], list[ k+1 ] );
-        Add( entry[2], list[  k  ] );
+      elif pos in entry[1] then
+        Error( "position ", pos, " must occur at most once in <list>" );
       fi;
+
+      # Check that the coefficients either fit to the zero element
+      # or are rationals (with suitable denominators).
+      if FamilyObj( val ) = Fam then
+        if val <> zero then
+          Add( entry[1], pos );
+          Add( entry[2], val );
+        fi;
+      elif IsRat( val ) then
+        if val <> 0 then
+          Add( entry[1], pos );
+          Add( entry[2], val * One( zero ) );
+        fi;
+      else
+        Error( "list entry ", list[k], " does not fit to zero element" );
+      fi;
+
     od;
 
     # Set the table entry.
@@ -526,6 +552,38 @@ InstallGlobalFunction( SetEntrySCTable, function( T, i, j, list )
     elif T[ Length(T) - 1 ] = -1 then
       T[j][i]:= Immutable( [ entry[1], -entry[2] ] );
     fi;
+end );
+
+
+#############################################################################
+##
+#F  ReducedSCTable( <T>, <one> )
+##
+InstallGlobalFunction( ReducedSCTable, function( T, one )
+
+    local new, n, i, j, entry;
+
+    new:= [];
+    n:= Length( T ) - 2;
+
+    # Reduce the entries.
+    for i in [ 1 .. n ] do
+      new[i]:= [];
+      for j in [ 1 .. n ] do
+        entry:= T[i][j];
+        entry:= [ Immutable( entry[1] ), entry[2] * one ];
+        MakeImmutable( entry );
+        new[i][j]:= entry;
+      od;
+    od;
+
+    # Store zero coefficient and symmetry flag.
+    new[ n+1 ]:= T[ n+1 ] * one;
+    new[ n+2 ]:= T[ n+2 ];
+
+    # Return the immutable new table.
+    MakeImmutable( new );
+    return new;
 end );
 
 
@@ -795,7 +853,7 @@ InstallMethod( MultiplicativeNeutralElement, true,
     local B,       # basis of `A'
           one;     # result
 
-    B:= BasisOfDomain( A );
+    B:= Basis( A );
     one:= IdentityFromSCTable( StructureConstantsTable( B ) );
     if one <> fail then
       one:= LinearCombination( B, one );
@@ -842,7 +900,7 @@ InstallMethod( IsAssociative,
       TryNextMethod();
     fi;
 
-    T:= StructureConstantsTable( BasisOfDomain( A ) );
+    T:= StructureConstantsTable( Basis( A ) );
     zero:= Zero( LeftActingDomain( A ) );
     range:= [ 1 .. Length( T[1] ) ];
     for i in range do
@@ -908,7 +966,7 @@ InstallMethod( IsAnticommutative,
     fi;
 
     n:= Dimension( A );
-    T:= StructureConstantsTable( BasisOfDomain( A ) );
+    T:= StructureConstantsTable( Basis( A ) );
     zero:= T[ n+2 ];
     for i in [ 2 .. n ] do
       for j in [ 1 .. i-1 ] do
@@ -984,7 +1042,7 @@ InstallMethod( IsZeroSquaredRing,
       # Every zero squared ring is anticommutative.
       return false;
 
-    elif ForAny( BasisVectors( BasisOfDomain( A ) ),
+    elif ForAny( BasisVectors( Basis( A ) ),
                  x -> not IsZero( x*x ) ) then
 
       # If not all basis vectors are zero squared then we return `false'.
@@ -1036,7 +1094,7 @@ InstallMethod( Centre,
     fi;
 
     # Construct the equation system.
-    B:= BasisOfDomain( A );
+    B:= Basis( A );
     M:= List( BasisVectors( B ), bi ->
               Concatenation( List( GeneratorsOfAlgebra( A ),
                              a -> Coefficients( B, bi * a - a * bi ) ) ) );
@@ -1075,7 +1133,7 @@ InstallMethod( IsJacobianRing,
 
     # In characteristic 2 we have to make sure that $a \* a = 0$.
 #T really?
-    T:= StructureConstantsTable( BasisOfDomain( A ) );
+    T:= StructureConstantsTable( Basis( A ) );
     if Characteristic( A ) = 2 then
       n:= Dimension( A );
       for i in [ 1 .. n ] do
@@ -1134,36 +1192,59 @@ InstallOtherMethod( \/,
     end );
 
 InstallOtherMethod( \/,
+    "for FLMLOR and empty list",
+    true,
+    [ IsFLMLOR, IsList and IsEmpty ], 0,
+    function( A, empty )
+    # `NaturalHomomorphismByIdeal( A, TrivialSubFLMLOR( A ) )' is the
+    # identity mapping on `A', and `ImagesSource' of it yields `A'.
+    return A;
+    end );
+
+InstallOtherMethod( \/,
     "generic method for two FLMLORs",
-    IsIdenticalObj, [ IsFLMLOR, IsFLMLOR ], 0,
+    IsIdenticalObj,
+    [ IsFLMLOR, IsFLMLOR ], 0,
     function( A, I )
     return ImagesSource( NaturalHomomorphismByIdeal( A, I ) );
     end );
 
 
-#############################################################################
-##
-#M  IsFinite( <A> ) . . . . . . . . . . . .  check whether a FLMLOR is finite
-##
-InstallMethod( IsFinite,
-    "generic method for a FLMLOR",
-    true,
-    [ IsFLMLOR ], 0,
-    A ->   ( IsFiniteDimensional( A ) and IsFinite( LeftActingDomain( A ) ) )
-         or ForAll( GeneratorsOfLeftOperatorRing( A ), IsZero ) );
-
-
-#############################################################################
-##
-#M  IsFinite( <A> ) . . . . . . . . check whether a FLMLOR-with-one is finite
-##
-InstallMethod( IsFinite,
-    "generic method for a FLMLOR-with-one",
-    true,
-    [ IsFLMLORWithOne ], 0,
-    A ->    IsTrivial( A )
-         or (     IsFiniteDimensional( A )
-              and IsFinite( LeftActingDomain( A ) ) ) );
+# #############################################################################
+# ##
+# #M  IsFinite( <A> ) . . . . . . . . . . . .  check whether a FLMLOR is finite
+# ##
+# ##  We have to be careful not to ask `IsFinite' for the left acting domain
+# ##  if the FLMLOR is equal to its left acting domain.
+# ##
+# ##  We need no special method for FLMLOR-with-one since the conditions are
+# ##  the same as for FLMLORs.
+# ##  (Note that also a FLMLOR-with-one can be trivial, that is, the identity
+# ##  element may be zero.)
+# ##
+# #T is this method needed at all?
+# #T if the check for the generators to be zero is replaced by
+# #T a `IsTrivial' test for the FLMLOR (for which a method is there)
+# #T then the method for free left modules suffices!
+# ##
+# InstallMethod( IsFinite,
+#     "generic method for a FLMLOR",
+#     true,
+#     [ IsFLMLOR ], 0,
+#     function( A )
+#     if not IsFiniteDimensional( A ) then
+#       return false;
+#     elif A <> LeftActingDomain( A ) then
+#       return    IsFinite( LeftActingDomain( A ) )
+#              or ForAll( GeneratorsOfLeftOperatorRing( A ), IsZero );
+#     elif ForAll( GeneratorsOfLeftOperatorRing( A ), IsZero ) then
+#       return true;
+#     elif Characteristic( A ) = 0 then
+#       return false;
+#     else
+#       TryNextMethod();
+#     fi;
+#     end );
 
 
 #############################################################################
@@ -1188,20 +1269,20 @@ InstallMethod( AsFLMLOR,
     function( F, D )
     local A, L;
 
-    D:= AsListSorted( D );
+    D:= AsSSortedList( D );
     L:= ShallowCopy( D );
     A:= TrivialSubFLMLOR( AsFLMLOR( F, D ) );
-    SubtractSet( L, AsListSorted( A ) );
+    SubtractSet( L, AsSSortedList( A ) );
     while 0 < Length(L)  do
       A:= ClosureLeftOperatorRing( A, L[1] );
 #T call explicit function that maintains an elements list?
-      SubtractSet( L, AsListSorted( A ) );
+      SubtractSet( L, AsSSortedList( A ) );
     od;
     if Length( AsList( A ) ) <> Length( D )  then
       return fail;
     fi;
     A:= FLMLOR( F, GeneratorsOfLeftOperatorRing( A ), Zero( D[1] ) );
-    SetAsListSorted( A, D );
+    SetAsSSortedList( A, D );
     SetSize( A, Length( D ) );
     SetIsFinite( A, true );
 #T ?
@@ -1233,8 +1314,8 @@ InstallMethod( AsFLMLOR,
       if A <> V then
         return fail;
       fi;
-      if HasBasisOfDomain( V ) then
-        SetBasisOfDomain( A, BasisOfDomain( V ) );
+      if HasBasis( V ) then
+        SetBasis( A, Basis( V ) );
       fi;
 
     elif IsTrivial( V ) then
@@ -1245,7 +1326,7 @@ InstallMethod( AsFLMLOR,
     elif IsSubset( LeftActingDomain( V ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(V) ) ) );
+      L:= BasisVectors( Basis( AsField( F, LeftActingDomain(V) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfLeftModule( V ),
                                              y -> x * y ) ) );
       A:= FLMLOR( F, L );
@@ -1256,7 +1337,7 @@ InstallMethod( AsFLMLOR,
     elif IsSubset( F, LeftActingDomain( V ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(V), F ) ) );
+      L:= BasisVectors( Basis( AsField( LeftActingDomain(V), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfLeftModule( V ),
                                  y -> not x * y in V ) ) then
         return fail;
@@ -1308,7 +1389,7 @@ InstallMethod( AsFLMLOR,
     elif IsSubset( LeftActingDomain( D ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(D) ) ) );
+      L:= BasisVectors( Basis( AsField( F, LeftActingDomain(D) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
       A:= FLMLOR( F, L );
@@ -1316,7 +1397,7 @@ InstallMethod( AsFLMLOR,
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
+      L:= BasisVectors( Basis( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
         return fail;
@@ -1377,14 +1458,14 @@ InstallMethod( AsFLMLORWithOne,
       if HasGeneratorsOfLeftModule( V ) then
         SetGeneratorsOfLeftModule( A, GeneratorsOfLeftModule( V ) );
       fi;
-      if HasBasisOfDomain( V ) then
-        SetBasisOfDomain( A, BasisOfDomain( V ) );
+      if HasBasis( V ) then
+        SetBasis( A, Basis( V ) );
       fi;
 
     elif IsSubset( LeftActingDomain( V ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(V) ) ) );
+      L:= BasisVectors( Basis( AsField( F, LeftActingDomain(V) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfLeftModule( V ),
                                              y -> x * y ) ) );
       A:= FLMLORWithOne( F, L );
@@ -1395,7 +1476,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( F, LeftActingDomain( V ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(V), F ) ) );
+      L:= BasisVectors( Basis( AsField( LeftActingDomain(V), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfLeftModule( V ),
                                  y -> not x * y in V ) ) then
         return fail;
@@ -1446,14 +1527,14 @@ InstallMethod( AsFLMLORWithOne,
       if HasGeneratorsOfLeftModule( D ) then
         SetGeneratorsOfLeftModule( A, GeneratorsOfLeftModule( D ) );
       fi;
-      if HasBasisOfDomain( D ) then
-        SetBasisOfDomain( A, BasisOfDomain( D ) );
+      if HasBasis( D ) then
+        SetBasis( A, Basis( D ) );
       fi;
 
     elif IsSubset( LeftActingDomain( D ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(D) ) ) );
+      L:= BasisVectors( Basis( AsField( F, LeftActingDomain(D) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
       A:= FLMLORWithOne( F, L );
@@ -1461,7 +1542,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
+      L:= BasisVectors( Basis( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
         return fail;
@@ -1503,7 +1584,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( LeftActingDomain( D ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(D) ) ) );
+      L:= BasisVectors( Basis( AsField( F, LeftActingDomain(D) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
       A:= AlgebraWithOne( F, L );
@@ -1511,7 +1592,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
+      L:= BasisVectors( Basis( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
         return fail;
@@ -1561,7 +1642,7 @@ InstallMethod( ClosureLeftOperatorRing,
 InstallMethod( ClosureLeftOperatorRing,
     "for an FLMLOR with basis, and a ring element",
     IsCollsElms,
-    [ IsFLMLOR and HasBasisOfDomain, IsRingElement ], 0,
+    [ IsFLMLOR and HasBasis, IsRingElement ], 0,
     function( A, a )
 
     # test if the element lies in the FLMLOR already,
@@ -1572,7 +1653,7 @@ InstallMethod( ClosureLeftOperatorRing,
     else
       return FLMLOR( LeftActingDomain( A ),
 #T FLMLORByGenerators?
-                 Concatenation( BasisVectors( BasisOfDomain( A ) ), [ a ] ),
+                 Concatenation( BasisVectors( Basis( A ) ), [ a ] ),
                  "basis" );
     fi;
     end );
@@ -1598,7 +1679,7 @@ InstallMethod( ClosureLeftOperatorRing,
 InstallMethod( ClosureLeftOperatorRing,
     "for a FLMLOR-with-one with basis, and a ring element",
     IsCollsElms,
-    [ IsFLMLORWithOne and HasBasisOfDomain, IsRingElement ], 0,
+    [ IsFLMLORWithOne and HasBasis, IsRingElement ], 0,
     function( A, a )
 
     # test if the element lies in the FLMLOR already,
@@ -1608,7 +1689,7 @@ InstallMethod( ClosureLeftOperatorRing,
     # otherwise make a new FLMLOR-with-one
     else
       return FLMLORWithOne( LeftActingDomain( A ),
-                 Concatenation( BasisVectors( BasisOfDomain( A ) ), [ a ] ),
+                 Concatenation( BasisVectors( Basis( A ) ), [ a ] ),
                  "basis" );
     fi;
     end );
@@ -1616,7 +1697,8 @@ InstallMethod( ClosureLeftOperatorRing,
 InstallMethod( ClosureLeftOperatorRing,
     "for a FLMLOR containing the whole family, and a ring element",
     IsCollsElms,
-    [ IsFLMLOR and IsWholeFamily, IsRingElement ], SUM_FLAGS,
+    [ IsFLMLOR and IsWholeFamily, IsRingElement ],
+    SUM_FLAGS, # this is better than everything else
     function( A, a )
     return A;
     end );
@@ -1655,7 +1737,8 @@ InstallMethod( ClosureLeftOperatorRing,
 InstallMethod( ClosureLeftOperatorRing,
     "for a left op. ring cont. the whole family, and a collection",
     IsIdenticalObj,
-    [ IsLeftOperatorRing and IsWholeFamily, IsCollection ], SUM_FLAGS,
+    [ IsLeftOperatorRing and IsWholeFamily, IsCollection ],
+    SUM_FLAGS, # this is better than everything else
     function( A, S )
     return A;
     end );
@@ -1738,7 +1821,7 @@ InstallGlobalFunction( MutableBasisOfClosureUnderAction,
     fi;
 
     # $I_0$
-    MB  := MutableBasisByGenerators( F, init, zero );
+    MB  := MutableBasis( F, init, zero );
     dim := 0;
 
     while dim < NrBasisVectors( MB ) and dim < maxdim do
@@ -1787,7 +1870,7 @@ InstallGlobalFunction( MutableBasisOfNonassociativeAlgebra,
           bv,        # current basis vectors
           v, w;      # loop over basis vectors found already
 
-    MB  := MutableBasisByGenerators( F, Agens, zero );
+    MB  := MutableBasis( F, Agens, zero );
     dim := 0;
 
     while dim < NrBasisVectors( MB ) and dim < maxdim do
@@ -1834,7 +1917,7 @@ InstallGlobalFunction( MutableBasisOfIdealInNonassociativeAlgebra,
     fi;
 
     dim := 0;
-    MB  := MutableBasisByGenerators( F, Igens, zero );
+    MB  := MutableBasis( F, Igens, zero );
 
     while dim < NrBasisVectors( MB ) and dim < maxdim do
 
@@ -2182,7 +2265,7 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  ViewObj( <A> )  . . . . . . . . . . . . . . . . . . .  view a Lie algebra
+#M  ViewObj( <A> )  . . . . . . . . . . . . . . . . . . view a Lie algebra
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
@@ -2210,7 +2293,8 @@ InstallMethod( ViewObj,
     function( A )
     Print( "<Lie algebra over ", LeftActingDomain( A ), ", with ",
            Length( GeneratorsOfAlgebra( A ) ), " generators>" );
-    end );
+end );
+
 
 
 #############################################################################
@@ -2377,7 +2461,7 @@ InstallGlobalFunction( CentralizerInFiniteDimensionalAlgebra,
     fi;
 
     # Now `S' is known to be contained in `A'.
-    B:= BasisOfDomain( A );
+    B:= Basis( A );
     T:= StructureConstantsTable( B );
     n:= Dimension( A );
     m:= Length( S );
@@ -2462,7 +2546,7 @@ InstallMethod( CentralizerOp,
       TryNextMethod();
     fi;
     return CentralizerInFiniteDimensionalAlgebra( A,
-               BasisVectors( BasisOfDomain( S ) ),
+               BasisVectors( Basis( S ) ),
                true );
     end );
 
@@ -2499,7 +2583,7 @@ InstallMethod( CentralizerOp,
       TryNextMethod();
     fi;
     return CentralizerInFiniteDimensionalAlgebra( A,
-               BasisVectors( BasisOfDomain( S ) ),
+               BasisVectors( Basis( S ) ),
                false );
     end );
 
@@ -2571,10 +2655,10 @@ InstallMethod( Centre,
     # Construct the equation system.
 #T better: introduce function `CentreFromSCTable'
 #T (which assumes a commutative coefficients domain)
-    B:= BasisOfDomain( A );
+    B:= Basis( A );
     T:= StructureConstantsTable( B );
     n:= Dimension( A );
-    M:= MutableNullMat( n, n*n, LeftActingDomain( A ) );
+    M:= NullMat( n, n*n, LeftActingDomain( A ) );
     for i in [ 1 .. n ] do
       row:= M[i];
       for j in [ 1 .. n ] do
@@ -2630,9 +2714,9 @@ BindGlobal( "MutableBasisOfProductSpace", function( U, V )
       V:= AsVectorSpace( inter, V );
     fi;
 
-    MB:= MutableBasisByGenerators( inter, [], Zero( U ) );
-    V:= BasisVectors( BasisOfDomain( V ) );
-    for u in BasisVectors( BasisOfDomain( U ) ) do
+    MB:= MutableBasis( inter, [], Zero( U ) );
+    V:= BasisVectors( Basis( V ) );
+    for u in BasisVectors( Basis( U ) ) do
       for v in V do
         CloseMutableBasis( MB, u * v );
       od;
@@ -2671,7 +2755,7 @@ InstallMethod( ProductSpace,
     fi;
 
     # Insert the basis.
-    SetBasisOfDomain( C, ImmutableBasis( MB[1] ) );
+    SetBasis( C, ImmutableBasis( MB[1] ) );
 
     # Return the result.
     return C;
@@ -2694,7 +2778,7 @@ InstallMethod( ProductSpace,
     function( U, V )
     local P, MB, C;
 
-    # Look for the ideal relation that allows to construct an ideal.
+    # Look for the ideal relation that allows one to construct an ideal.
     if IsIdenticalObj( U, V ) then
       P:= U;
     elif HasParent( V ) and IsIdenticalObj( Parent( V ), U )
@@ -2716,7 +2800,7 @@ InstallMethod( ProductSpace,
     C:= SubalgebraNC( P, BasisVectors( MB ), "basis" );
 
     SetIsTwoSidedIdealInParent( C, true );
-    SetBasisOfDomain( C, ImmutableBasis( MB ) );
+    SetBasis( C, ImmutableBasis( MB ) );
 
     # Return the result.
     return C;
@@ -2744,7 +2828,7 @@ InstallMethod( ProductSpace,
     C:= SubalgebraNC( Parent( U ), BasisVectors( MB ), "basis" );
 
     SetIsTwoSidedIdealInParent( C, true );
-    SetBasisOfDomain( C, ImmutableBasis( MB ) );
+    SetBasis( C, ImmutableBasis( MB ) );
 
     # Return the result.
     return C;
@@ -2755,7 +2839,7 @@ InstallMethod( ProductSpace,
 ##
 #M  RadicalOfAlgebra( <A> ) . . . . . . . . radical of an associative algebra
 ##
-##  `RadicalOfAlgebra' computes the radical (intersection of maximal ideals)
+##  `RadicalOfAlgebra' computes the radical (maximal nilpotent ideal)
 ##  of an associative algebra <A> by first constructing a faithful
 ##  matrix representation.
 ##  (Note that there is a special implementation for associative matrix
@@ -2794,7 +2878,7 @@ InstallMethod( RadicalOfAlgebra,
     fi;
 
     n:= Dimension( A );
-    BA:= BasisOfDomain( A );
+    BA:= Basis( A );
     bv:= BasisVectors( BA );
     F:= LeftActingDomain( A );
 
@@ -2826,8 +2910,8 @@ InstallMethod( RadicalOfAlgebra,
     R:= RadicalOfAlgebra( B );
 
     # Transfer the radical back to the original algebra.
-    bas:= BasisByGeneratorsNC( B, bb );
-    rad:= List( BasisVectors( BasisOfDomain( R ) ),
+    bas:= BasisNC( B, bb );
+    rad:= List( BasisVectors( Basis( R ) ),
                 x -> LinearCombination( BA, Coefficients( bas, x ) ) );
 
     return SubalgebraNC( A, rad, "basis" );
@@ -2872,14 +2956,14 @@ InstallMethod( GeneratorsOfLeftModule,
     "for a FLMLOR",
     true,
     [ IsFLMLOR ], 0,
-    A -> BasisVectors( BasisOfDomain( A ) ) );
+    A -> BasisVectors( Basis( A ) ) );
 
 
 #############################################################################
 ##
-#M  BasisOfDomain( <A> )  . . . . . . . .  basis from FLMLOR gens. for FLMLOR
+#M  Basis( <A> )  . . . . . . . . . . . .  basis from FLMLOR gens. for FLMLOR
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for a FLMLOR",
     true,
     [ IsFLMLOR ], 0,
@@ -2895,15 +2979,15 @@ InstallMethod( BasisOfDomain,
              LeftActingDomain( A ),
              GeneratorsOfLeftOperatorRing( A ),
              Zero( A ),
-             infinity ) );
+             infinity ), A );
     end );
 
 
 #############################################################################
 ##
-#M  BasisOfDomain( <A> )  . .  basis from FLMLOR gens. for associative FLMLOR
+#M  Basis( <A> )  . . . . . .  basis from FLMLOR gens. for associative FLMLOR
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for an associative FLMLOR",
     true,
     [ IsFLMLOR and IsAssociative ], 0,
@@ -2922,15 +3006,15 @@ InstallMethod( BasisOfDomain,
              GeneratorsOfLeftOperatorRing( A ),
              \*,
              Zero( A ),
-             infinity ) );
+             infinity ), A );
     end );
 
 
 #############################################################################
 ##
-#M  BasisOfDomain( <A> )   basis from FLMLOR gens. for assoc. FLMLOR-with-one
+#M  Basis( <A> )   .  basis from FLMLOR gens. for associative FLMLOR-with-one
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for an associative FLMLOR-with-one",
     true,
     [ IsFLMLORWithOne and IsAssociative ], 0,
@@ -2949,20 +3033,20 @@ InstallMethod( BasisOfDomain,
              [ One( A ) ],
              \*,
              Zero( A ),
-             infinity ) );
+             infinity ), A );
     end );
 
 
 #############################################################################
 ##
-#M  BasisOfDomain( <A> )  . . . . . . basis from FLMLOR gens. for Lie algebra
+#M  Basis( <A> )  . . . . . . . . . . basis from FLMLOR gens. for Lie algebra
 ##
 ##  In a Lie algebra, every word (with brackets) in terms of algebra
 ##  generators is a linear combination of left-normed words;
 ##  this means that it is sufficient to multiply with generators from one
 ##  side.
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for a Lie algebra",
     true,
     [ IsLieAlgebra ], 0,
@@ -2981,48 +3065,76 @@ InstallMethod( BasisOfDomain,
              GeneratorsOfLeftOperatorRing( A ),
              \*,
              Zero( A ),
-             infinity ) );
+             infinity ), A );
     end );
 
 
 #############################################################################
 ##
-#M  DerivedSubalgebra( <A> )
+#M  PowerSubalgebraSeries( <A> )
 ##
-##  is the derived subalgebra of the algebra <A>,
-##  this is the algebra generated by all products $uv$
-##  where $u$ and $v$ range over a basis of <A>.
-##
-InstallMethod( DerivedSubalgebra,
-    "for an algebra",
-    true,
-    [ IsAlgebra ], 0,
-    A -> ProductSpace( A, A ) );
-
-
-#############################################################################
-##
-#M  DerivedSeriesOfAlgebra( <A> )
-##
-InstallOtherMethod( DerivedSeriesOfAlgebra,
+InstallOtherMethod( PowerSubalgebraSeries,
     "for an algebra",
     true,
     [ IsAlgebra ], 0,
     function ( A )
 
-    local   S,          # derived series of <A>, result
-            D;          # derived subalgebras
+    local   S,          # power subalgebra series of <A>, result
+            D;          # power subalgebras
 
-    # Compute the series by repeated calling of `DerivedSubalgebra'.
+    # Compute the series by repeated calling of `ProductSpace'.
     S := [ A ];
-    D := DerivedSubalgebra( A );
+    D := ProductSpace( A, A );
     while D <> S[ Length(S) ]  do
       Add( S, D );
-      D:= DerivedSubalgebra( D );
+      D:= ProductSpace( D, D );
     od;
 
     # Return the series when it becomes stable.
     return S;
+    end );
+
+
+#############################################################################
+##
+#M  IsNilpotentElement( <L>, <x> )  . . . . . . for an algebra and an element
+##
+##  <x> is nilpotent if its adjoint matrix $A$ (i.e. the linear map coming
+##  from left multiplication by <x>) is nilpotent.
+##  To check this, we only need to check whether $A^n$ (or a smaller power)
+##  is zero, where $n$ denotes the dimension of <L>.
+##
+InstallMethod( IsNilpotentElement,
+    "for an algebra, and an element",
+    IsCollsElms,
+    [ IsAlgebra, IsRingElement ], 0,
+    function( L, x )
+
+    local B,     # a basis of `L'
+          A,     # adjoint matrix of `x w.r. to `B'
+          n,     # dimension of `L'
+          i,     # loop variable
+          zero;  # zero coefficient
+
+    B := Basis( L );
+    A := AdjointMatrix( B, x );
+    n := Dimension( L );
+    i := 1;
+    zero:= Zero( A[1][1] );
+
+    if ForAll( A, x -> n < PositionNot( x, zero ) ) then
+      return true;
+    fi;
+
+    while i < n do
+      i:= 2 * i;
+      A:= A * A;
+      if ForAll( A, x -> n < PositionNot( x, zero ) ) then
+        return true;
+      fi;
+    od;
+
+    return false;
     end );
 
 
@@ -3075,14 +3187,22 @@ InstallOtherMethod( DirectSumOfAlgebras,
     [ IsAlgebra, IsAlgebra ], 0,
     function( A1, A2 )
 
-    local n,    # The dimension of the resulting algebra.
-          i,j,  # Loop variables.
-          T,    # The table of structure constants of the direct sum.
-          scT,  #
-          n1,   # The dimension of A1.
-          n2,   # The dimension of A2.
-          ll,   # A list of structure constants.
-          L;    # result
+    local n,     # The dimension of the resulting algebra.
+          i,j,   # Loop variables.
+          T,     # The table of structure constants of the direct sum.
+          scT,   #
+          n1,    # The dimension of A1.
+          n2,    # The dimension of A2.
+          ll,    # A list of structure constants.
+          L,     # result.
+          sym,   # if both products are (anti)symmetric, then the result
+                 # will have the sam property.
+          R1,R2, # Root systems of A1,A2.
+          f1,f2, # Embeddings of A1,A2 in L.
+          R,     # Root system of L.
+          RV,    # List of various things.
+          r,
+          pos;   # List of positions.
 
     if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
       Error( "<A1> and <A2> must be written over the same field" );
@@ -3097,10 +3217,14 @@ InstallOtherMethod( DirectSumOfAlgebras,
     T:= EmptySCTable( n, Zero( LeftActingDomain( A1 ) ) );
 
     # Enter the structure constants for the first algebra.
-    scT:= StructureConstantsTable( BasisOfDomain( A1 ) );
+    scT:= StructureConstantsTable( Basis( A1 ) );
+    sym:= scT[n1+1];
     T{ [ 1 .. n1 ] }{ [ 1 .. n1 ] }:= scT{ [ 1 .. n1 ] };
 
-    scT:= StructureConstantsTable( BasisOfDomain( A2 ) );
+    scT:= StructureConstantsTable( Basis( A2 ) );
+
+    if scT[n2+1] = sym then T[ n+1 ]:= sym; fi;
+
     for i in [1..n2] do
       for j in [1..n2] do
         ll:= ShallowCopy( scT[i][j] );
@@ -3114,7 +3238,82 @@ InstallOtherMethod( DirectSumOfAlgebras,
     # Maintain useful information.
     if     HasIsLieAlgebra( A1 ) and HasIsLieAlgebra( A2 )
        and IsLieAlgebra( A1 ) and IsLieAlgebra( A2 ) then
-      SetIsLieAlgebra( L, true );
+       SetIsLieAlgebra( L, true );
+       if HasRootSystem( A1 ) and HasRootSystem( A2 ) then
+           # We can easily compute the root system of `L'.
+           R1:= RootSystem( A1 ); R2:= RootSystem( A2 );
+           f1:= LeftModuleGeneralMappingByImages( A1, L, CanonicalBasis(A1),
+                        CanonicalBasis(L){[1..Dimension(A1)]} );
+           f2:= LeftModuleGeneralMappingByImages( A2, L, CanonicalBasis(A2),
+                        CanonicalBasis(L){[Dimension(A1)+1..Dimension(L)]} );
+           R:= Objectify( NewType( NewFamily( "RootSystemFam", IsObject ),
+                       IsAttributeStoringRep and IsRootSystemFromLieAlgebra ),
+                       rec() );
+           RV:= List( PositiveRootVectors( R1 ), x -> Image( f1, x ) );
+           Append( RV, List( PositiveRootVectors( R2 ),
+                                               x -> Image( f2, x ) ) );
+           SetPositiveRootVectors( R, RV );
+           RV:= List( NegativeRootVectors( R1 ), x -> Image( f1, x ) );
+           Append( RV, List( NegativeRootVectors( R2 ),
+                                               x -> Image( f2, x ) ) );
+           SetNegativeRootVectors( R, RV );
+           RV:= List( PositiveRoots( R1 ), ShallowCopy );
+           for i in [1..Length(RV)] do
+               Append( RV[i], ListWithIdenticalEntries(
+                       Length( CartanMatrix( R2 ) ),
+                       Zero( LeftActingDomain( A2 ) ) ) );
+           od;
+           for i in PositiveRoots( R2 ) do
+               r:= ListWithIdenticalEntries( Length( CartanMatrix( R1 ) ),
+                           Zero( LeftActingDomain( A1 ) ) );
+               Append( r, i );
+               Add( RV, r );
+           od;
+           SetPositiveRoots( R, RV );
+           RV:= List( NegativeRoots( R1 ), ShallowCopy );
+           for i in [1..Length(RV)] do
+               Append( RV[i], ListWithIdenticalEntries(
+                       Length( CartanMatrix( R2 ) ),
+                       Zero( LeftActingDomain( A2 ) ) ) );
+           od;
+           for i in NegativeRoots( R2 ) do
+               r:= ListWithIdenticalEntries( Length( CartanMatrix( R1 ) ),
+                           Zero( LeftActingDomain( A1 ) ) );
+               Append( r, i );
+               Add( RV, r );
+           od;
+           SetNegativeRoots( R, RV );
+           pos:= List( SimpleSystem( R1 ), x -> Position(
+                         PositiveRoots(R1), x ) );
+           RV:= PositiveRoots( R ){pos};
+           pos:= List( SimpleSystem( R2 ), x -> Position(
+                       PositiveRoots(R2), x ) + Length( PositiveRoots(R1) ));
+           Append( RV, PositiveRoots( R ){pos} );
+           SetSimpleSystem( R, RV );
+           RV:= [ ];
+           for i in [1,2,3] do
+               RV[i]:= List( CanonicalGenerators( R1 )[i],
+                             x -> Image( f1, x ) );
+               Append( RV[i], List( CanonicalGenerators( R2 )[i],
+                              x -> Image( f2, x ) ) );
+           od;
+           SetCanonicalGenerators( R, RV );
+           SetCartanMatrix( R, DirectSumMat( CartanMatrix( R1 ),
+                   CartanMatrix( R2 ) ) );
+           SetUnderlyingLieAlgebra( R, L );
+           SetRootSystem( L, R );
+           if HasChevalleyBasis( A1 ) and HasChevalleyBasis( A2 ) then
+               RV:= [ ];
+               for i in [1,2,3] do
+                   RV[i]:= List( ChevalleyBasis( A1 )[i],
+                                 x -> Image( f1, x ) );
+                   Append( RV[i], List( ChevalleyBasis( A2 )[i],
+                           x -> Image( f2, x ) ) );
+               od;
+               SetChevalleyBasis( L, RV );
+           fi;
+       fi;
+
     fi;
     if     HasIsAssociative( A1 ) and HasIsAssociative( A2 )
        and IsAssociative( A1 ) and IsAssociative( A2 ) then
@@ -3198,7 +3397,7 @@ InstallMethod( IsCentral,
 ##
 ##  is used for a uniform treatment of free (associative) algebras(-with-one)
 ##
-FreeAlgebraConstructor := function( name, magma )
+BindGlobal( "FreeAlgebraConstructor", function( name, magma )
     return function( arg )
 
     local   R,          # coefficients ring
@@ -3215,6 +3414,7 @@ FreeAlgebraConstructor := function( name, magma )
     if   Length( arg ) = 2 and IsInt( arg[2] ) then
       names:= List( [ 1 .. arg[2] ],
                     i -> Concatenation( "x.", String(i) ) );
+      MakeImmutable( names );
     elif     Length( arg ) = 2
          and IsList( arg[2] )
          and ForAll( arg[2], IsString ) then
@@ -3222,6 +3422,7 @@ FreeAlgebraConstructor := function( name, magma )
     elif Length( arg ) = 3 and IsInt( arg[2] ) and IsString( arg[3] ) then
       names:= List( [ 1 .. arg[2] ],
                     x -> Concatenation( arg[3], ".", String(x) ) );
+      MakeImmutable( names );
     elif ForAll( arg{ [ 2 .. Length( arg ) ] }, IsString ) then
       names:= arg{ [ 2 .. Length( arg ) ] };
     else
@@ -3230,9 +3431,15 @@ FreeAlgebraConstructor := function( name, magma )
     fi;
 
     # Construct the algebra as free magma algebra of a free magma over `R'.
-    return FreeMagmaRing( R, magma( names ) );
+    R:= FreeMagmaRing( R, magma( names ) );
+
+    # Store the names.
+    ElementsFamily( FamilyObj( R ) )!.names:= names;
+
+    # Return the result.
+    return R;
     end;
-end;
+end );
 
 
 #############################################################################
@@ -3273,6 +3480,19 @@ InstallGlobalFunction( FreeAssociativeAlgebra,
 ##
 InstallGlobalFunction( FreeAssociativeAlgebraWithOne,
     FreeAlgebraConstructor( "FreeAssociativeAlgebraWithOne", FreeMonoid ) );
+
+
+#############################################################################
+##
+#M  \.( <F>, <n> )  . . . . . . . . .  access to generators of a free algebra
+##
+InstallAccessToGenerators( IsMagmaRingModuloRelations,
+                           "magma ring containing the whole family",
+                           GeneratorsOfAlgebra );
+
+InstallAccessToGenerators( IsMagmaRingModuloRelations and IsRingWithOne,
+                           "magma ring-with-one containing the whole family",
+                           GeneratorsOfAlgebraWithOne );
 
 
 #############################################################################
@@ -3334,7 +3554,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
       Rad:= RadicalOfAlgebra( B );
       hom:= NaturalHomomorphismByIdeal( B, Rad );
       Q:= ImagesSource( hom );
-      bQ:= BasisVectors( BasisOfDomain( Q ) );
+      bQ:= BasisVectors( Basis( Q ) );
       ids:= [ One( Q ) ];
       ideals:= [ Q ];
 
@@ -3362,14 +3582,14 @@ InstallMethod( CentralIdempotentsOfAlgebra,
             # from a set of `2*Dimension(Q)^2' elements,
             # then this element generates `Q' with probability > 1/2
 
-            bQ:= BasisVectors( BasisOfDomain( ideals[k] ) );
+            bQ:= BasisVectors( Basis( ideals[k] ) );
             cf:= List( [ 1 .. Length(bQ) ], x -> Random( set ) );
             e:= LinearCombination( bQ, cf );
 
             # Now we calculate the minimum polynomial of `e'.
 
             vv:= [ MultiplicativeNeutralElement( ideals[k] ) ];
-            sp:= MutableBasisByGenerators( F, vv );
+            sp:= MutableBasis( F, vv );
             x:= ShallowCopy( e );
 
             while not IsContainedInSpan( sp, x ) do
@@ -3379,13 +3599,13 @@ InstallMethod( CentralIdempotentsOfAlgebra,
             od;
             sp:= UnderlyingLeftModule( ImmutableBasis( sp ) );
             cf:= ShallowCopy(
-                   - Coefficients( BasisByGeneratorsNC( sp, vv ), x )
+                   - Coefficients( BasisNC( sp, vv ), x )
                  );
             Add( cf, One( F ) );
             f:= ElementsFamily( FamilyObj( F ) );
-            f:= UnivariateLaurentPolynomialByCoefficients( f, cf, 0 );
+            f:= LaurentPolynomialByCoefficients( f, cf, 0 );
 
-          until DegreeOfUnivariateLaurentPolynomial( f ) = Dimension( Q );
+          until DegreeOfLaurentPolynomial( f ) = Dimension( Q );
 
         else
 
@@ -3414,7 +3634,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
           if k>Length(ideals) then break; fi;
 
           vv:= [ MultiplicativeNeutralElement( ideals[k] ) ];
-          sp:= MutableBasisByGenerators( F, vv );
+          sp:= MutableBasis( F, vv );
 
           e:= sol[1];
           if IsContainedInSpan( sp, e ) then e:=sol[2]; fi;
@@ -3429,12 +3649,12 @@ InstallMethod( CentralIdempotentsOfAlgebra,
           od;
           sp:= UnderlyingLeftModule( ImmutableBasis( sp ) );
           cf:=  ShallowCopy(
-                  - Coefficients( BasisByGeneratorsNC( sp, vv ), x )
+                  - Coefficients( BasisNC( sp, vv ), x )
                 );
           Add( cf, One( F ) );
 
           f:= ElementsFamily( FamilyObj( F ) );
-          f:= UnivariateLaurentPolynomialByCoefficients( f, cf, 0 );
+          f:= LaurentPolynomialByCoefficients( f, cf, 0 );
 
         fi;
 
@@ -3536,7 +3756,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
         E:= E+ei;
       od;
 
-      return id;
+      return AsSSortedList(id);
 
 end );
 
@@ -3608,12 +3828,12 @@ InstallMethod( LeviMalcevDecomposition,
           sol,           # Solution set to the equations.
           r,offset;      # Integers.
 
-    if IsAssociative( L ) then
+    if IsLieAlgebra( L ) then
+      R:= LieSolvableRadical( L );
+      offset:= 1;
+    elif IsAssociative( L ) then
       R:= RadicalOfAlgebra( L );
-      offset:= 0;
-    elif IsLieAlgebra( L ) then
-      R:= SolvableRadical( L );
-      offset:=1;
+      offset:=0;
     fi;
 
     if Dimension( R ) = 0 then
@@ -3626,11 +3846,11 @@ InstallMethod( LeviMalcevDecomposition,
 
     # `bb' will be a basis of a complement to `R' in `L'.
 
-    bas:= ShallowCopy( BasisVectors( BasisOfDomain( R ) ) );
+    bas:= ShallowCopy( BasisVectors( Basis( R ) ) );
     F:= LeftActingDomain( L );
-    sp:= MutableBasisByGenerators( F, bas );
+    sp:= MutableBasis( F, bas );
     bb:= [ ];
-    for k in BasisVectors( BasisOfDomain( L ) ) do
+    for k in BasisVectors( Basis( L ) ) do
       if Length( bb ) = s then
         break;
       elif not IsContainedInSpan( sp, k ) then
@@ -3639,7 +3859,7 @@ InstallMethod( LeviMalcevDecomposition,
       fi;
     od;
 
-    sp:= MutableBasisByGenerators( F, bb );
+    sp:= MutableBasis( F, bb );
     subalg:= true;
     for i in [1..Length(bb)] do
       for j in [offset*i+1..Length(bb)] do
@@ -3655,7 +3875,7 @@ InstallMethod( LeviMalcevDecomposition,
       return [ SubalgebraNC( L, bb, "basis" ), R ];
     fi;
 
-    ser:= DerivedSeriesOfAlgebra( R );
+    ser:= PowerSubalgebraSeries( R );
 
     # We now calculate a basis of `R' such that the first k1 elements
     # form a basis of the last nonzero term of the derived series `ser',
@@ -3664,14 +3884,14 @@ InstallMethod( LeviMalcevDecomposition,
 
     p:= Length( ser );
     i:= p-1;
-    Rbas:= ShallowCopy( BasisVectors( BasisOfDomain( ser[p-1] ) ) );
-    sp:= MutableBasisByGenerators( F, Rbas );
+    Rbas:= ShallowCopy( BasisVectors( Basis( ser[p-1] ) ) );
+    sp:= MutableBasis( F, Rbas );
     while Length(Rbas) < Dimension(R) do
       if Length(Rbas) = Dimension(ser[i]) then
         i:= i-1;
         k:= 1;
       else
-        x:= BasisVectors( BasisOfDomain( ser[i] ) )[k];
+        x:= BasisVectors( Basis( ser[i] ) )[k];
         if not IsContainedInSpan( sp, x ) then
           Add( Rbas, x );
           CloseMutableBasis( sp, x );
@@ -3690,7 +3910,7 @@ InstallMethod( LeviMalcevDecomposition,
     # We now calculate a structure constants table of `L' w.r.t. this basis.
 
     sp:= VectorSpace( F, bb );
-    B:= BasisByGeneratorsNC( sp, bb );
+    B:= BasisNC( sp, bb );
     T:= List([1..s],x->[]);
     for i in [1..s] do
       for j in [offset*i+1..s] do
@@ -3729,11 +3949,11 @@ InstallMethod( LeviMalcevDecomposition,
         Add(bb,Rbas[i]);
       od;
       sp:= VectorSpace( F, bb );
-      B:= BasisByGeneratorsNC( sp, bb );
+      B:= BasisNC( sp, bb );
 
       cf:= List( comp, x -> Coefficients( B, x ){[1..dim]} );
 
-      eqs:= MutableNullMat( s*dim, dim*s*(s-offset)/(offset+1), F );
+      eqs:= NullMat( s*dim, dim*s*(s-offset)/(offset+1), F );
       rl:= [];
       for i in [1..s] do
         for j in [offset*i+1..s] do
@@ -3777,6 +3997,8 @@ InstallMethod( LeviMalcevDecomposition,
 
       sol:= SolutionMat( eqs, rl );
 
+      if sol = fail then return sol; fi;
+
       for i in [1..s] do
         for j in [1..dim] do
           levi[i]:=levi[i]+sol[(i-1)*dim+j]*comp[j];
@@ -3788,7 +4010,28 @@ InstallMethod( LeviMalcevDecomposition,
     end );
 
 
+############################################################################
+##
+#M  DirectSumDecomposition( <A> )   ........direct sum decomposition of <A>
+##
+
+InstallMethod( DirectSumDecomposition,
+        "for semisimple associative algebras",
+        true, [ IsAlgebra and IsAssociative ], 0,
+        function( A )
+
+    local R;
+
+    R:= RadicalOfAlgebra( A );
+    if Dimension( R ) > 0 then
+        TryNextMethod();
+    fi;
+    return List( CentralIdempotentsOfAlgebra( A ), x -> Ideal( A, [ x ] ) );
+
+end );
+
+
 #############################################################################
 ##
-#E  algebra.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

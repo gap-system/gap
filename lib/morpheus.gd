@@ -28,10 +28,31 @@ DeclareAttribute("AutomorphismGroup",IsDomain);
 
 #############################################################################
 ##
+#P  IsGroupOfAutomorphisms(<G>)
+##
+##  indicates whether <G> consists of automorphisms of another group <H>.
+##  The group <H> can be obtained from <G> via the attribute
+##  `AutomorphismDomain'.
+DeclareProperty( "IsGroupOfAutomorphisms", IsGroup );
+
+InstallTrueMethod( IsHandledByNiceMonomorphism,IsGroupOfAutomorphisms );
+
+#############################################################################
+##
+#A  AutomorphismDomain(<G>)
+##
+##  If <G> consists of automorphisms of <H>, this attribute returns <H>.
+DeclareAttribute( "AutomorphismDomain", IsGroupOfAutomorphisms );
+
+#############################################################################
+##
 #P  IsAutomorphismGroup(<G>)
 ##
-##  indicates whether <G> is the automorphism group of another group.
-DeclareProperty( "IsAutomorphismGroup", IsGroup );
+##  indicates whether <G> is the full automorphism group of another group
+##  <H>, this group is given as `AutomorphismDomain' of <G>.
+DeclareProperty( "IsAutomorphismGroup", IsGroupOfAutomorphisms );
+
+InstallTrueMethod( IsGroupOfAutomorphisms,IsAutomorphismGroup );
 
 #############################################################################
 ##
@@ -44,15 +65,35 @@ DeclareAttribute("InnerAutomorphismsAutomorphismGroup",IsGroup);
 
 #############################################################################
 ##
-#F  StoreNiceMonomorphismAutomGroup(<autgrp>,<elms>,<elmsgens>)   local
+#F  AssignNiceMonomorphismAutomorphismGroup(<autgrp>,<group>)   local
 ##
-##  This function creates a nice monomorphism for an automorphism group
+##  
+##  computes a nice monomorphism for <autgroup> acting on <group> and stores
+##  it as `NiceMonomorphism' in <autgrp>.
+##
+##  If the centre of `AutomorphismDomain' of <autgrp> is trivial, the
+##  operation will first try to represent all automorphisms by conjugation
+##  (in <group> or a natural parent of <group>).
+##
+##  If this fails the operation tries to find a small subset of <group> on
+##  which the action will be faithful.
+##
+##  The operation sets the attribute `NiceMonomorphism' and does not return
+##  a value.
+##
+DeclareGlobalFunction("AssignNiceMonomorphismAutomorphismGroup");
+
+#############################################################################
+##
+#F  NiceMonomorphismAutomGroup(<autgrp>,<elms>,<elmsgens>)
+##
+##  This function creates a monomorphism for an automorphism group
 ##  <autgrp> of a group by permuting the group elements in the list <elms>.
 ##  This list must be chosen to yield a faithful representation. <elmsgens>
 ##  is a list of generators which are a subset of <elms>. (They can differ
-##  from the groups original generators.)
-##
-DeclareGlobalFunction("StoreNiceMonomorphismAutomGroup");
+##  from the groups original generators.) It does not yet assign it as
+##  `NiceMonomorphism'.
+DeclareGlobalFunction("NiceMonomorphismAutomGroup");
 
 #############################################################################
 ##
@@ -112,7 +153,7 @@ DeclareGlobalFunction("MorMaxFusClasses");
 ##  as a list [<word>,<order>] where <word> is a word in the free generators
 ##  `free'.
 ##  
-##  `dom'& a set of elements on which automorphisms act faithful (used to do
+##  `dom'& a set of elements on which automorphisms act faithfully (used to do
 ##  element tests in partial automorphism groups).
 ##  
 ##  `aut'& Subgroup of already known automorphisms.
@@ -143,7 +184,7 @@ DeclareGlobalFunction("MorFindGeneratingSystem");
 ##
 #F  Morphium(<G>,<H>,<DoAuto>) . . . . . . . . local
 ##
-##  This function is a frontend to 'MorClassLoop' and is used to find
+##  This function is a frontend to `MorClassLoop' and is used to find
 ##  isomorphisms between <G> and <H> or the automorphism group of <G> (in which
 ##  case <G> must equal <H>). The boolean flag <DoAuto> indicates if all
 ##  automorphisms should be found.
@@ -164,7 +205,7 @@ DeclareGlobalFunction("AutomorphismGroupAbelianGroup");
 ##
 #F  IsomorphismAbelianGroups(<G>,<H>)
 ##
-##  computes and isomorphism between the abelian groups <G> and <H>
+##  computes an isomorphism between the abelian groups <G> and <H>
 ##  if they are isomorphic and returns `fail' otherwise.
 ##
 DeclareGlobalFunction("IsomorphismAbelianGroups");
@@ -173,7 +214,7 @@ DeclareGlobalFunction("IsomorphismAbelianGroups");
 ##
 #F  IsomorphismGroups(<G>,<H>)
 ##
-##  computes and isomorphism between the groups <G> and <H>
+##  computes an isomorphism between the groups <G> and <H>
 ##  if they are isomorphic and returns `fail' otherwise.
 ##
 DeclareGlobalFunction("IsomorphismGroups");
@@ -186,6 +227,16 @@ DeclareGlobalFunction("IsomorphismGroups");
 ##  This classifies all factor groups of <F> which are isomorphic to <G>.
 ##
 DeclareOperation("GQuotients",[IsGroup,IsGroup]);
+
+#############################################################################
+##
+#O  IsomorphicSubgroups(<G>,<H>)  monomorphisms from H onto G up to conjugacy
+##
+##  computes all monomorphisms from <H> onto <G> up to <G>-conjugacy of the
+##  image groups.  This classifies all <G>-classes of subgroups of <G> which
+##  are isomorphic to <H>.
+##
+DeclareOperation("IsomorphicSubgroups",[IsGroup,IsGroup]);
 
 #############################################################################
 ##

@@ -1,0 +1,13 @@
+#############################################################################
+##
+#W  id3159.z               GAP library of id's             Hans Ulrich Besche
+##
+Revision.id3159_z :=
+    "@(#)$Id$";
+
+ID_GROUP_TREE.next[3159]:=
+rec(
+  fp:= [ 2 ],
+  next:= [ rec(
+    fp:= [ 22385, 32048 ],
+    next:= [ 312, 313 ] ) ] );

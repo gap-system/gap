@@ -16,11 +16,23 @@ Revision.cyclotom_g :=
 
 #############################################################################
 ##
-#C  IsCyclotomic(<obj>) . . . . . . . . . . . . . . category of all cyclotomics
+#C  IsCyclotomic( <obj> ) . . . . . . . . . . . . category of all cyclotomics
+#C  IsCyc( <obj> )
 ##
-##  is the category of cyclotomic numbers
+##  Every object in the family `CyclotomicsFamily' lies in the category
+##  `IsCyclotomic'.
+##  This covers integers, rationals, proper cyclotomics, the object
+##  `infinity' (see~"Infinity"), and unknowns (see Chapter~"Unknowns").
+##  All these objects except `infinity' and unknowns lie also in the category
+##  `IsCyc',
+##  `infinity' lies in (and can be detected from) the category `IsInfinity',
+##  and unknowns lie in `IsUnknown'.
+##
 DeclareCategory( "IsCyclotomic",
-    IsScalar and IsAssociativeElement and IsCommutativeElement );
+    IsScalar and IsAssociativeElement and IsCommutativeElement
+    and IsAdditivelyCommutativeElement );
+
+DeclareCategoryKernel( "IsCyc", IsCyclotomic, IS_CYC );
 
 
 #############################################################################
@@ -36,53 +48,58 @@ DeclareCategoryCollections( "IsCyclotomicCollColl" );
 
 #############################################################################
 ##
-#C  IsCyc(<obj>)
+#C  IsRat( <obj> )
 ##
-##  is the category of kernel cyclotomics.
-DeclareCategoryKernel( "IsCyc", IsCyclotomic, IS_CYC );
-
-
-#############################################################################
-##
-#C  IsRat . . . . . . . . . . . . . . . . . . . . . . . .  internal rationals
+##  Every rational number lies in the category `IsRat',
+##  which is a subcategory of `IsCyc' (see~"Cyclotomics").
 ##
 DeclareCategoryKernel( "IsRat", IsCyc, IS_RAT );
 
 
 #############################################################################
 ##
-#C  IsInt . . . . . . . . . . . . . . . . . . . . . . . . . internal integers
+#C  IsInt( <obj> )
+##
+##  Every rational integer lies in the category `IsInt',
+##  which is a subcategory of `IsRat' (see~"Rationals").
 ##
 DeclareCategoryKernel( "IsInt", IsRat, IS_INT );
 
 
 #############################################################################
 ##
-#C  IsPosRat  . . . . . . . . . . . . . . . . . . internal positive rationals
+#C  IsPosRat( <obj> )
+##
+##  Every positive rational number lies in the category `IsPosRat'.
 ##
 DeclareCategory( "IsPosRat", IsRat );
 
 
 #############################################################################
 ##
-#C  IsPosInt
+#C  IsPosInt( <obj> )
 ##
-##  is the category for positive integers
+##  Every positive integer lies in the category `IsPosInt'.
+## 
 DeclareSynonym( "IsPosInt", IsInt and IsPosRat );
 
 
 #############################################################################
 ##
-#C  IsNegRat  . . . . . . . . . . . . . . . . . . internal negative rationals
+#C  IsNegRat( <obj> )
+##
+##  Every negative rational number lies in the category `IsNegRat'.
 ##
 DeclareCategory( "IsNegRat", IsRat );
 
 
 #############################################################################
 ##
-#C  IsZeroCyc . . . . . . . . . . . . . . . . . . . . . internal zero integer
+#C  IsZeroCyc( <obj> )
 ##
-DeclareCategory( "IsZeroCyc", IsInt );
+##  Only the zero `0' of the cyclotomics lies in the category `IsZeroCyc'.
+##
+DeclareCategory( "IsZeroCyc", IsInt and IsZero );
 
 
 #############################################################################
@@ -91,8 +108,9 @@ DeclareCategory( "IsZeroCyc", IsInt );
 #V  CyclotomicsFamily . . . . . . . . . . . . . . . . . family of cyclotomics
 ##
 BIND_GLOBAL( "CyclotomicsFamily",
-    NewFamily( "CyclotomicsFamily", IsCyclotomic ) );
-
+    NewFamily( "CyclotomicsFamily",
+    IsCyclotomic,CanEasilySortElements,
+    CanEasilySortElements ) );
 
 #############################################################################
 ##
@@ -167,48 +185,73 @@ BIND_GLOBAL( "TYPE_CYC",
 
 #############################################################################
 ##
-#V  One . . . . . . . . . . . . . . . . . . . . . . . .  of CyclotomicsFamily
+#v  One( CyclotomicsFamily )
 ##
 SetOne( CyclotomicsFamily, 1 );
 
 
 #############################################################################
 ##
-#V  Zero  . . . . . . . . . . . . . . . . . . . . . . .  of CyclotomicsFamily
+#v  Zero( CyclotomicsFamily )
 ##
 SetZero( CyclotomicsFamily, 0 );
 
 
 #############################################################################
 ##
-#V  Characteristic  . . . . . . . . . . . . . . . . . .  of CyclotomicsFamily
+#v  Characteristic( CyclotomicsFamily )
 ##
 SetCharacteristic( CyclotomicsFamily, 0 );
 
 
 #############################################################################
 ##
-#V  IsUFDFamily . . . . . . . . . . . . . . . . .  true for CyclotomicsFamily
+#v  IsUFDFamily( CyclotomicsFamily )
 ##
 SetIsUFDFamily( CyclotomicsFamily, true );
 
 
 #############################################################################
 ##
-
-#C  IsInfinity  . . . . . . . . . . . . . . . . . . . .  category of infinity
+#F  E( <n> )
 ##
-DeclareCategory( "IsInfinity", IsCyclotomic );
+##  `E' returns the primitive <n>-th root of unity $e_n = e^{2\pi i/n}$.
+##  Cyclotomics are usually entered as sums of roots of unity,
+##  with rational coefficients,
+##  and irrational cyclotomics are displayed in the same way.
+##  (For special cyclotomics, see~"ATLAS irrationalities".)
+##
+
+# DeclareGlobalFunction( "E" );
 
 
 #############################################################################
 ##
+
+#C  IsInfinity( <obj> ) . . . . . . . . . . . . . . . .  category of infinity
 #V  infinity  . . . . . . . . . . . . . . . . . . . . . .  the value infinity
 ##
+##  `infinity' is a special {\GAP} object that lies in `CyclotomicsFamily'.
+##  It is larger than all other objects in this family.
+##  `infinity' is mainly used as return value of operations such as `Size'
+##  and `Dimension' for infinite resp.~infinite dimensional domains.
+##
+##  Note that *no* arithmetic operations are provided for `infinity',
+##  in particular there is no problem to define what `0 * infinity' or
+##  `infinity - infinity' means.
+##
+##  Often it is useful to distinguish `infinity' from ``proper''
+##  cyclotomics.
+##  For that, `infinity' lies in the category `IsInfinity' but not in
+##  `IsCyc', and the other cyclotomics lie in the category `IsCyc' but not
+##  in `IsInfinity'.
+##
+DeclareCategory( "IsInfinity", IsCyclotomic );
+
 UNBIND_GLOBAL( "infinity" );
 BIND_GLOBAL( "infinity",
     Objectify( NewType( CyclotomicsFamily, IsInfinity
-                        and IsPositionalObjectRep ), rec() ) );
+                        and IsPositionalObjectRep ), [] ) );
 
 InstallMethod( PrintObj,
     "for infinity",
@@ -241,11 +284,20 @@ InstallMethod( \<,
 
 #############################################################################
 ##
-#F  IsIntegralCyclotomic( <obj> ) . . . . . . . . . . .  integral cyclotomics
+#P  IsIntegralCyclotomic( <obj> ) . . . . . . . . . . .  integral cyclotomics
 ##
-##  returns  `true'  if  <obj>  is a cyclotomic integer  (see  "Cyclotomic
-##  Integers"), `false' otherwise.
-##
+##  A cyclotomic is called *integral* or a *cyclotomic integer* if all
+##  coefficients of its minimal polynomial over the rationals are integers.
+##  Since the underlying basis of the external representation of cyclotomics
+##  is an integral basis (see~"Integral Bases for Abelian Number Fields"),
+##  the subring of cyclotomic integers in a cyclotomic field is formed
+##  by those cyclotomics for which the external representation is a list of
+##  integers.
+##  For example, square roots of integers are cyclotomic integers
+##  (see~"ATLAS irrationalities"), any root of unity is a cyclotomic integer,
+##  character values are always cyclotomic integers,
+##  but all rationals which are not integers are not cyclotomic integers.
+##  
 DeclareProperty( "IsIntegralCyclotomic", IsObject );
 
 DeclareSynonym( "IsCycInt", IsIntegralCyclotomic );
@@ -259,41 +311,74 @@ InstallMethod( IsIntegralCyclotomic,
 
 #############################################################################
 ##
-#A  Conductor( <cyc> )
-#A  Conductor( <F> )
-#A  Conductor( <list> )
+#A  Conductor( <cyc> )  . . . . . . . . . . . . . . . . . .  for a cyclotomic
+#A  Conductor( <C> )  . . . . . . . . . . . . for a collection of cyclotomics
 ##
 ##  For an element <cyc> of a cyclotomic field, `Conductor' returns the
 ##  smallest integer $n$ such that <cyc> is contained in the $n$-th
 ##  cyclotomic field.
-##  For a field <F> or a list <list> of cyclotomics, `Conductor' returns the
-##  smallest integer $n$ such that all elements of <F> resp.~all entries in
-##  <list> are contained in the $n$-th cyclotomic field.
+##  For a collection <C> of cyclotomics (for example a dense list of
+##  cyclotomics or a field of cyclotomics), `Conductor' returns the
+##  smallest integer $n$ such that all elements of <C> are contained in the
+##  $n$-th cyclotomic field.
 ##
 DeclareAttributeKernel( "Conductor", IsCyc, CONDUCTOR );
+DeclareAttribute( "Conductor", IsCyclotomicCollection );
+
+#T also for matrices, matrix groups etc. of cyclotomics?
 
 
 #############################################################################
 ##
 #O  GaloisCyc( <cyc>, <k> ) . . . . . . . . . . . . . . . .  Galois conjugate
+#O  GaloisCyc( <list>, <k> )  . . . . . . . . . . . list of Galois conjugates
 ##
-##  returns  the cyclotomic obtained on raising the roots  of unity in the
-##  representation of  the cyclotomic <z> to  the <k>-th power.  If <k> is
-##  a fixed integer coprime to the integer $n$, `GaloisCyc( ., <k> )' acts
-##  as a Galois automorphism of the $n$-th cyclotomic field
-##  (see   "GaloisGroup  for   Number  Fields"); to get the Galois
-##  automorphisms themselves, use "GaloisGroup" `GaloisGroup'.
+##  For a cyclotomic <cyc> and an integer <k>,
+##  `GaloisCyc' returns the cyclotomic obtained by raising the roots of unity
+##  in the Zumbroich basis representation of <cyc> to the <k>-th power.
+##  If <k> is coprime to the integer $n$,
+##  `GaloisCyc( ., <k> )' acts as a Galois automorphism of the $n$-th
+##  cyclotomic field (see~"GaloisGroup for Number Fields");
+##  to get the Galois automorphisms themselves,
+##  use `GaloisGroup' (see~"GaloisGroup.field").
 ##
-##  The complex conjugate of <cyc> is `GaloisCyc( <cyc>, -1 )',
+##  The *complex conjugate* of <cyc> is `GaloisCyc( <cyc>, -1 )',
 ##  which can also be computed using `ComplexConjugate'
-##  (see "ComplexConjugate").
+##  (see~"ComplexConjugate").
+##
+##  For a list or matrix <list> of cyclotomics, `GaloisCyc' returns the list
+##  obtained by applying `GaloisCyc' to the entries of <list>.
 ##
 DeclareOperationKernel( "GaloisCyc", [ IsCyc, IsInt ], GALOIS_CYC );
+DeclareOperation( "GaloisCyc", [ IsCyclotomicCollection, IsInt ] );
+DeclareOperation( "GaloisCyc", [ IsCyclotomicCollColl, IsInt ] );
+
+InstallMethod( GaloisCyc,
+    "for a list of cyclotomics, and an integer",
+    true,
+    [ IsList and IsCyclotomicCollection, IsInt ], 0,
+    function( list, k )
+    return List( list, entry -> GaloisCyc( entry, k ) );
+    end );
+
+InstallMethod( GaloisCyc,
+    "for a list of lists of cyclotomics, and an integer",
+    true,
+    [ IsList and IsCyclotomicCollColl, IsInt ], 0,
+    function( list, k )
+    return List( list, entry -> GaloisCyc( entry, k ) );
+    end );
 
 
 #############################################################################
 ##
 #F  NumeratorRat( <rat> ) . . . . . . . . . .  numerator of internal rational
+##
+##  `NumeratorRat' returns the numerator of the rational <rat>.
+##  Because the numerator holds the sign of the rational it may be any
+##  integer.
+##  Integers are rationals with denominator $1$, thus `NumeratorRat' is the
+##  identity function for integers.
 ##
 BIND_GLOBAL( "NumeratorRat", NUMERATOR_RAT );
 
@@ -302,20 +387,56 @@ BIND_GLOBAL( "NumeratorRat", NUMERATOR_RAT );
 ##
 #F  DenominatorRat( <rat> ) . . . . . . . .  denominator of internal rational
 ##
+##  `DenominatorRat' returns the denominator of the rational <rat>.
+##  Because the numerator holds the  sign of the rational the denominator is
+##  always a positive integer.
+##  Integers are rationals with the denominator 1, thus `DenominatorRat'
+##  returns 1 for integers.
+##
 BIND_GLOBAL( "DenominatorRat", DENOMINATOR_RAT );
 
 
 #############################################################################
 ##
-#F  QuoInt( <a>, <b> )  . . . . . . . . . . . . quotient of internal integers
+#F  QuoInt( <n>, <m> )  . . . . . . . . . . . . quotient of internal integers
 ##
+##  `QuoInt' returns the integer part of the quotient of its integer
+##  operands.
+##
+##  If <n> and <m> are positive `QuoInt( <n>, <m> )' is the largest
+##  positive integer <q> such that $<q> \* <m> \le <n>$.
+##  If <n> or <m> or both are negative the absolute value of the integer part
+##  of the quotient is the quotient of the absolute values of <n> and <m>,
+##  and the sign of it is the product of the signs of <n> and <m>.
+##
+##  `QuoInt' is used in a method for the general operation
+##  `EuclideanQuotient' (see~"EuclideanQuotient").
+##
+
+#DeclareGlobalFunction( "QuoInt" );
 BIND_GLOBAL( "QuoInt", QUO_INT );
 
 
 #############################################################################
 ##
-#F  RemInt( <a>, <b> )  . . . . . . . . . . .  remainder of internal integers
+#F  RemInt( <n>, <m> )  . . . . . . . . . . .  remainder of internal integers
 ##
+##  `RemInt' returns the remainder of its two integer operands.
+##
+##  If <m> is not equal to zero
+##  `RemInt( <n>, <m> ) = <n> - <m> * QuoInt( <n>, <m> )'.
+##  Note that the rules given for `QuoInt' imply that `RemInt( <n>, <m> )'
+##  has the same sign as <n> and its absolute value is strictly less than the
+##  absolute value of <m>.
+##  Note also that `RemInt( <n>, <m> ) = <n> mod <m>' when both <n> and <m>
+##  are nonnegative.
+##  Dividing by 0 signals an error.
+##
+##  `RemInt' is used in a method for the general operation
+##  `EuclideanRemainder' (see~"EuclideanRemainder").
+##
+
+#DeclareGlobalFunction( "RemInt" );
 BIND_GLOBAL( "RemInt", REM_INT );
 
 
@@ -323,40 +444,69 @@ BIND_GLOBAL( "RemInt", REM_INT );
 ##
 #F  GcdInt( <a>, <b> )  . . . . . . . . . . . . . .  gcd of internal integers
 ##
+##  `GcdInt' returns the greatest common divisor of its two integer operands.
+##
+##  `GcdInt' is a method used by the general function `Gcd' (see~"Gcd").
+##
+
+#DeclareGlobalFunction( "GcdInt" );
 BIND_GLOBAL( "GcdInt", GCD_INT );
 
 
 #############################################################################
 ##
-#M  Order( <z> ) . . . . . . . . . . . . . . . . . .  order of an alg. number
+#m  Order( <cyc> ) . . . . . . . . . . . . . . . . .  order of an alg. number
 ##
 InstallMethod( Order,
     "for a cyclotomic",
     true,
     [ IsCyc ], 0,
     function ( cyc )
-    local ord, val;
+
+    local n;
+
+    # Check that the argument is a root of unity.
     if cyc = 0 then
       Error( "argument must be nonzero" );
     elif cyc * GaloisCyc( cyc, -1 ) <> 1 then   # not a root of unity
       return infinity;
+    fi;
+
+    # Let $n$ be the conductor of `cyc'.
+    # The roots of unity in the $n$-th cyclotomic field are exactly the
+    # $n$-th roots if $n$ is even, and the $2 n$-th roots if $n$ is odd.
+    n:= Conductor( cyc );
+    if n mod 2 = 0 then
+      return n;
     else
-      ord:= 1;
-      val:= cyc;
-      while val <> 1 do
-        val:= val * cyc;
-        ord:= ord + 1;
-      od;
-      return ord;
-#T improve!
+      cyc:= cyc^n;
+      if cyc = 1 then
+        return n;
+      else
+        return 2*n;
+      fi;
     fi;
     end );
 
 
 #############################################################################
 ##
+#M  Int( <int> )  . . . . . . . . . . . . . . . . . . . . . .  for an integer
+#M  Int( <rat> ) . . . . . . . . . . . .   convert a rational into an integer
 #M  Int( <cyc> )  . . . . . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
+InstallMethod( Int,
+    "for an integer",
+    true,
+    [ IsInt ], 0,
+    IdFunc );
+
+InstallMethod( Int,
+    "for a rational",
+    true,
+    [ IsRat ], 0,
+    obj -> QuoInt( NumeratorRat( obj ), DenominatorRat( obj ) ) );
+
 InstallMethod( Int,
     "for a cyclotomic",
     true,
@@ -375,30 +525,32 @@ InstallMethod( Int,
 
 #############################################################################
 ##
-#M  Int( <rat> ) . . . . . . . . . . . .   convert a rational into an integer
+#M  String( <int> ) . . . . . . . . . . . . . . . . . . . . .  for an integer
+#M  String( <rat> ) . . . . . . . . . . . .  convert a rational into a string
+#M  String( <cyc> ) . . . . . . . . . . . .  convert cyclotomic into a string
+#M  String( <infinity> )  . . . . . . . . . . . . . . . . . .  for `infinity'
 ##
-InstallMethod( Int,
-    "for a rational",
-    true,
-    [ IsRat ], 0,
-    obj -> QuoInt( NumeratorRat( obj ), DenominatorRat( obj ) ) );
-
-
-#############################################################################
-##
-#M  Int( <n> )
-##
-InstallMethod( Int,
+InstallMethod( String,
     "for an integer",
     true,
     [ IsInt ], 0,
-    IdFunc );
+    STRING_INT );
 
+InstallMethod( String,
+    "for a rational",
+    true,
+    [ IsRat ], 0,
+    function ( rat )
+    local   str;
 
-#############################################################################
-##
-#M  String( <cyc> ) . . . . . . . . . . . .  convert cyclotomic into a string
-##
+    str := String( NumeratorRat( rat ) );
+    if DenominatorRat( rat ) <> 1  then
+        str := Concatenation( str, "/", String( DenominatorRat( rat ) ) );
+    fi;
+    ConvertToStringRep( str );
+    return str;
+    end );
+
 InstallMethod( String,
     "for a cyclotomic",
     true,
@@ -420,7 +572,7 @@ InstallMethod( String,
     elif coeffs[i] = -1 then
         str := Concatenation( "-", En );
     elif coeffs[i] = 1 then
-        str := En;
+        str := ShallowCopy( En );
     else
         str := Concatenation( String( coeffs[i] ), "*", En );
     fi;
@@ -460,42 +612,6 @@ InstallMethod( String,
     return str;
     end );
 
-
-#############################################################################
-##
-#M  String( <rat> ) . . . . . . . . . . . .  convert a rational into a string
-##
-InstallMethod( String,
-    "for a rational",
-    true,
-    [ IsRat ], 0,
-    function ( rat )
-    local   str;
-
-    str := String( NumeratorRat( rat ) );
-    if DenominatorRat( rat ) <> 1  then
-        str := Concatenation( str, "/", String( DenominatorRat( rat ) ) );
-    fi;
-    ConvertToStringRep( str );
-    return str;
-    end );
-
-
-#############################################################################
-##
-#M  String( <n> ) . . . . . . . . . . . . . . . . . . . . . .  for an integer
-##
-InstallMethod( String,
-    "for an integer",
-    true,
-    [ IsInt ], 0,
-    STRING_INT );
-
-
-#############################################################################
-##
-#M  String( <infinity> )  . . . . . . . . . . . . . . . . . .  for `infinity'
-##
 InstallMethod( String,
     "for infinity",
     true,
@@ -506,5 +622,6 @@ InstallMethod( String,
 #############################################################################
 ##
 
-#E  cyclotom.g	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 ##
+

@@ -1,0 +1,21 @@
+#!/bin/sh
+testit() {
+echo -n "testing $1"
+echo "===============\n\n" $1 "---------------\n" >> $outputfile
+./testexample $1 -quiet >> $outputfile
+echo "   finished"
+}
+
+if [ "xx$1" = "xx" ]; then
+outputfile=alltests.out
+else
+outputfile=$1
+fi
+
+date > $outputfile
+#for i in ../build/*.msk; do testit $i; done
+for i in ../ref/*.tex; do testit $i; done
+for i in ../tut/*.tex; do testit $i; done
+for i in ../prg/*.tex; do testit $i; done
+for i in ../ext/*.tex; do testit $i; done
+

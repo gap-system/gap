@@ -55,11 +55,10 @@ end );
 
 #############################################################################
 ##
-
 #F  AddNormalizingElementPcgs( <G>, <z> ) . . . . . cyclic extension for pcgs
 ##
 InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
-    local   S,  A,  oldpos,  pos,  relord,
+    local   S,  A,  pos,  relord,
             pnt,  orb,  l,  L,  n,  m,  img,  i,  f,  p,  edg;
 
     S := G;
@@ -76,7 +75,7 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
         if IsBound( G.base )  then
             ChooseNextBasePoint( S, G.base, [ z ] );
         elif not IsBound( S.stabilizer )  then
-            InsertTrivialStabilizer( S, SmallestMovedPointPerm( z ) );
+            InsertTrivialStabilizer( S, SmallestMovedPoint( z ) );
             Unbind( S.stabilizer.relativeOrders );
         fi;
         
@@ -247,8 +246,8 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
             
             # Form  all necessary  commutators with  <t>   and for elementary
             # abelian factors also a <p>th power.
-            if cent  then  T := ListSorted( GeneratorsOfGroup( G ) );
-                     else  T := ListSorted( X );                       fi;
+            if cent  then  T := SSortedList( GeneratorsOfGroup( G ) );
+                     else  T := SSortedList( X );                       fi;
             done := false;
             while not done  and  ( not IsEmpty( T )  or  elab <> false )  do
                 if not IsEmpty( T )  then
@@ -318,7 +317,7 @@ end );
 ##
 InstallGlobalFunction(TryPcgsPermGroup,function( G, cent, desc, elab )
     local   grp,  pcgs,  U,  oldlen,  series,  y,  w,  whole,
-            bound,  deg,  step,  seriesAttr,  i,  S,  filter;
+            bound,  deg,  step,  i,  S,  filter;
 
     # If the last member <U> of the series <G> already has a pcgs, start with
     # its stabilizer chain.
@@ -350,15 +349,15 @@ InstallGlobalFunction(TryPcgsPermGroup,function( G, cent, desc, elab )
 
 	      # ensure compatible bases
 
-	      # compute a new stab chain without touching th stab chain
+	      # compute a new stab chain without touching the stab chain
 	      # stored in S
 	      #T this is less than satisficial but I don't see how otherwise
 	      #T to avoid those %$#@ side effects. AH
-	      U:=StabChainOp(Group(GeneratorsOfGroup(S),()),
+	      U:= StabChainOp( GroupByGenerators(GeneratorsOfGroup(S),One(S) ),
 	                     rec(base:=BaseOfGroup(G[1]),size:=Size(S)));
 	    else
 	      U := StabChainBaseStrongGenerators( BaseStabChain( U ),
-			   StrongGeneratorsStabChain( U ) );
+			   StrongGeneratorsStabChain( U ),U.identity );
 	      if i <> fail  then
 		  U.base := i;
 	      fi;
@@ -460,13 +459,22 @@ end);
 ##
 InstallGlobalFunction( PcgsStabChainSeries, function( filter, G, series, oldlen )
     local   pcgs,  first,  i;
+
+    first := [  ];
+    for i  in [ 1 .. Length( series ) ]  do
+      Add( first, Length( series[ i ].labels ) );
+    od;
     
     pcgs := PcgsByPcSequenceCons(
-                    IsPcgsDefaultRep,
-                    IsPcgs and filter and IsPrimeOrdersPcgs,
-                    ElementsFamily( FamilyObj( G ) ),
-                    series[ 1 ].labels
-                    { 1 + [ 1 .. Length(series[ 1 ].labels) - oldlen ] } );
+		IsPcgsDefaultRep,
+		IsPcgs and filter and IsPrimeOrdersPcgs 
+		  and HasIndicesNormalSteps,
+		ElementsFamily( FamilyObj( G ) ),
+		series[ 1 ].labels
+		{ 1 + [ 1 .. Length(series[ 1 ].labels) - oldlen ] },
+                [IndicesNormalSteps, first[ 1 ] - first + 1] );
+
+    SetRelativeOrders(pcgs, series[ 1 ].relativeOrders);
     pcgs!.stabChain := series[ 1 ];
     pcgs!.generatingSeries:=series;
 
@@ -474,20 +482,6 @@ InstallGlobalFunction( PcgsStabChainSeries, function( filter, G, series, oldlen 
 #      G:=Group(series[1].generators,());
 #    fi;
 #    SetGroupOfPcgs( pcgs, G );
-
-    SetRelativeOrders( pcgs, series[ 1 ].relativeOrders );
-#    SetStabChainMutable( G, series[ 1 ] );
-    first := [  ];
-    for i  in [ 1 .. Length( series ) ]  do
-        Add( first, Length( series[ i ].labels ) );
-#        Unbind( series[ i ].relativeOrders );
-#        Unbind( series[ i ].base           );
-#        series[ i ] := GroupStabChain( G, series[ i ], true );
-#        SetHomePcgs ( series[ i ], pcgs );
-#        SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
-#        series[ i ]!.noInSeries := i;
-    od;
-    SetIndicesNormalSteps( pcgs, first[ 1 ] - first + 1 );
 
     return pcgs;
 end );
@@ -508,8 +502,7 @@ local series,G,i;
 end;
 
 InstallMethod(NormalSeriesByPcgs,"perm group rep",true,
-   [IsPcgs and IsPcgsPermGroupRep],0,
-NorSerPermPcgs);
+   [IsPcgs and IsPcgsPermGroupRep],0, NorSerPermPcgs);
 
 InstallOtherMethod(NormalSeriesByPcgs,"perm group modulo rep",true,
   [IsModuloPcgsPermGroupRep],0,
@@ -527,17 +520,19 @@ InstallGlobalFunction( TailOfPcgsPermGroup, function( pcgs, from )
         i := i + 1;
     od;
     tail := PcgsByPcSequenceCons(
-                    IsPcgsDefaultRep,
-                    IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-                    FamilyObj( OneOfPcgs( pcgs ) ),
-                    pcgs{ [ IndicesNormalSteps( pcgs )[ i ] .. Length( pcgs ) ] } );
+	    IsPcgsDefaultRep,
+	    IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs
+	      and HasIndicesNormalSteps 
+	      and HasNormalSeriesByPcgs,
+	    FamilyObj( OneOfPcgs( pcgs ) ),
+	    pcgs{[IndicesNormalSteps(pcgs)[i]..Length(pcgs)]},
+	    [ IndicesNormalSteps,
+	      IndicesNormalSteps(pcgs){[i..Length(IndicesNormalSteps(pcgs))]},
+	    NormalSeriesByPcgs,
+	      NormalSeriesByPcgs(pcgs){[i..Length(IndicesNormalSteps(pcgs))]}]);
+
+    SetRelativeOrders(tail,RelativeOrders(pcgs){[from..Length(pcgs)]});
     tail!.stabChain := StabChainMutable( NormalSeriesByPcgs( pcgs )[ i ] );
-    SetRelativeOrders( tail, RelativeOrders( pcgs )
-            { [ from .. Length( pcgs ) ] } );
-    SetIndicesNormalSteps( tail, IndicesNormalSteps( pcgs )
-            { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] } );
-    SetNormalSeriesByPcgs( tail, NormalSeriesByPcgs( pcgs )
-            { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] } );
     if from < IndicesNormalSteps( pcgs )[ i ]  then
         tail := ExtendedPcgs( tail,
                         pcgs{ [ from .. IndicesNormalSteps( pcgs )[ i ] - 1 ] } );
@@ -725,7 +720,7 @@ InstallGlobalFunction( SolvableNormalClosurePermGroup, function( G, H )
     series := [ U ];
     
     # The derived length of <G> is at most (5 log_3(deg(<G>)))/2 (Dixon).
-    bound := Int( LogInt( NrMovedPoints( G ) ^ 5, 3 ) / 2 );
+    bound := Int( LogInt( Maximum(1,NrMovedPoints( G ) ^ 5), 3 ) / 2 );
     if     HasSize( G )
        and Length( FactorsInt( Size( G ) ) ) < bound  then
         bound := Length( FactorsInt( Size( G ) ) );
@@ -758,33 +753,43 @@ InstallMethod( \mod, "perm group pcgs", IsIdenticalObj,
     local   pcgs,  i;
 
     if G{ [ Length( G ) - Length( N ) + 1 .. Length( G ) ] } = N  then
-        pcgs := PcgsByPcSequenceCons(
-                IsPcgsDefaultRep,
-                IsPcgs and IsModuloPcgsPermGroupRep and
-                IsModuloPcgs and IsPrimeOrdersPcgs,
-                FamilyObj( OneOfPcgs( G ) ),
-                G{ [ 1 .. Length( G ) - Length( N ) ] } );
-        pcgs!.stabChain := G!.stabChain;
-        SetRelativeOrders( pcgs, RelativeOrders( G ){ [ 1..Length(pcgs) ] } );
-        i := 1;
-        while Length( G ) - IndicesNormalSteps( G )[ i ] >= Length( N )  do
-            i := i + 1;
-        od;
-        SetIndicesNormalSteps( pcgs, Concatenation( IndicesNormalSteps( G )
-                { [ 1 .. i - 1 ] }, [ Length( pcgs ) + 1 ] ) );
-        SetNormalSeriesByPcgs( pcgs, Concatenation( NormalSeriesByPcgs( G )
-                { [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] ) );
+
+      i := 1;
+      while Length( G ) - IndicesNormalSteps( G )[ i ] >= Length( N )  do
+	  i := i + 1;
+      od;
+
+      pcgs:=G{ [ 1 .. Length( G ) - Length( N ) ] };
+      pcgs := PcgsByPcSequenceCons(
+	      IsPcgsDefaultRep,
+	      IsPcgs and IsModuloPcgsPermGroupRep and
+	      IsModuloPcgs and IsPrimeOrdersPcgs
+		and HasIndicesNormalSteps 
+		and HasNormalSeriesByPcgs,
+	      FamilyObj( OneOfPcgs( G ) ),
+	      pcgs,
+	      [IndicesNormalSteps, Concatenation( IndicesNormalSteps( G )
+		      { [ 1 .. i - 1 ] }, [ Length( pcgs ) + 1 ] ),
+	      NormalSeriesByPcgs, Concatenation( NormalSeriesByPcgs( G )
+		      { [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] )]);
+
+      SetRelativeOrders(pcgs, RelativeOrders( G ){ [ 1..Length(pcgs) ] });
+      pcgs!.stabChain := G!.stabChain;
+
     else
         pcgs := PcgsByPcSequenceCons(
                 IsPcgsDefaultRep,
                 IsPcgs and IsModuloPcgsPermGroupRep and
-                IsModuloPcgs and IsPrimeOrdersPcgs,
+                IsModuloPcgs and IsPrimeOrdersPcgs
+		  and HasIndicesNormalSteps 
+		  and HasNormalSeriesByPcgs,
                 FamilyObj( OneOfPcgs( G ) ),
-                [  ] );
+                [  ],
+		[IndicesNormalSteps, [ 1 ],
+		NormalSeriesByPcgs, [ GroupOfPcgs( N ) ]] );
+
+	SetRelativeOrders(pcgs, [  ]);
         pcgs!.stabChain := N!.stabChain;
-        SetRelativeOrders( pcgs, [  ] );
-        SetIndicesNormalSteps( pcgs, [ 1 ] );
-        SetNormalSeriesByPcgs( pcgs, [ GroupOfPcgs( N ) ] );
         pcgs := ExtendedPcgs( pcgs, G );
     fi;
     SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
@@ -876,33 +881,39 @@ end );
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )  . . . . . . . .  as perm pcgs
 ##
 InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
-    [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs and IsPcgs,
-      IsList and IsPermCollection ], 0,
-    function( pcgs, pcs )
-    local   igs,  i;
+  [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs and IsPcgs,
+    IsList and IsPermCollection ], 0,
+function( pcgs, pcs )
+local   igs,  i,ran;
 
-    i := Position( IndicesNormalSteps( pcgs ), Length( pcgs )-Length( pcs )+1 );
-    if i = fail  or
-       pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } <>
-       pcs  then
-        TryNextMethod();
-    fi;
-    igs := PcgsByPcSequenceCons(
-        IsPcgsDefaultRep,
-        IsPcgs and IsInducedPcgs and IsPrimeOrdersPcgs and
-                   IsTailInducedPcgsRep and IsPcgsPermGroupRep,
-        FamilyObj( OneOfPcgs( pcgs ) ),
-        pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    igs!.stabChain := StabChainMutable( NormalSeriesByPcgs( pcgs )[ i ] );
-    SetRelativeOrders( igs, RelativeOrders( pcgs )
-            { [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    SetIndicesNormalSteps( igs, IndicesNormalSteps( pcgs )
-            { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] } );
-    SetNormalSeriesByPcgs( igs, NormalSeriesByPcgs( pcgs )
-            { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] } );
-    SetParentPcgs( igs, pcgs );
-    igs!.tailStart := Length( pcgs ) - Length( pcs ) + 1;
-    return igs;
+  i := Position( IndicesNormalSteps( pcgs ), Length( pcgs )-Length( pcs )+1 );
+  ran:=[ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ];
+  if i = fail  or pcgs{ ran } <> pcs  then
+    TryNextMethod();
+  fi;
+  igs := PcgsByPcSequenceCons(
+    IsPcgsDefaultRep,
+    IsPcgs and IsInducedPcgs and IsInducedPcgsRep and
+    IsPrimeOrdersPcgs and IsTailInducedPcgsRep and IsPcgsPermGroupRep
+		and HasIndicesNormalSteps 
+		and HasNormalSeriesByPcgs and HasParentPcgs,
+    FamilyObj( OneOfPcgs( pcgs ) ),
+    pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] },
+      [IndicesNormalSteps, IndicesNormalSteps( pcgs )
+	      { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] },
+      NormalSeriesByPcgs, NormalSeriesByPcgs( pcgs )
+	      { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] },
+      ParentPcgs, pcgs] );
+
+  SetRelativeOrders(igs, RelativeOrders( pcgs ) { ran });
+  igs!.stabChain := StabChainMutable( NormalSeriesByPcgs( pcgs )[ i ] );
+  igs!.tailStart := Length( pcgs ) - Length( pcs ) + 1;
+  # information many InducedPcgs methods use
+  igs!.depthsInParent:=ran;
+  igs!.depthMapFromParent:=[];
+  igs!.depthMapFromParent{ran}:=[1..Length(igs)];
+  igs!.depthMapFromParent[Length(pcgs)+1]:=Length(igs)+1;
+  return igs;
 end );
 
 #############################################################################
@@ -911,13 +922,21 @@ end );
 ##
 InstallMethod( InducedPcgsWrtHomePcgs, "tail of perm pcgs", true,
         [ IsMemberPcSeriesPermGroup and HasHomePcgs ], 0,
-    function( U )
-    local   pcgs;
-    
-    pcgs := PcgsMemberPcSeriesPermGroup( U );
-    SetFilterObj( pcgs, IsInducedPcgs );
-    SetParentPcgs( pcgs, HomePcgs( U ) );
-    return pcgs;
+function( U )
+local   pcgs,par,ran;
+  
+  pcgs := PcgsMemberPcSeriesPermGroup( U );
+  par:=HomePcgs(U);
+  SetFilterObj( pcgs, IsInducedPcgs and IsInducedPcgsRep);
+  SetParentPcgs( pcgs,par ) ;
+  # information many InducedPcgs methods use
+  ran:=[IndicesNormalSteps(par)[U!.noInSeries]..Length(par)];
+  pcgs!.depthsInParent:=ran;
+  pcgs!.depthMapFromParent:=[];
+  pcgs!.depthMapFromParent{ran}:=[1..Length(pcgs)];
+  pcgs!.depthMapFromParent[Length(par)+1]:=Length(pcgs)+1;
+  pcgs!.tailStart:=IndicesNormalSteps(par)[U!.noInSeries];
+  return pcgs;
 end );
 
 #############################################################################
@@ -942,7 +961,7 @@ InstallMethod( ExtendedPcgs, "perm pcgs", true,
     else
         pcgs := PcgsByPcSequenceCons( IsPcgsDefaultRep,
                         IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-                        FamilyObj( OneOfPcgs( N ) ), pcs );
+                        FamilyObj( OneOfPcgs( N ) ), pcs,[] );
     fi;
     pcgs!.stabChain := S;
     SetRelativeOrders( pcgs, S.relativeOrders );
@@ -1020,9 +1039,9 @@ end );
 
 #############################################################################
 ##
-#M  RepresentativeOperation( <G>, <d>, <e>, OnPoints )   first compare cycles
+#M  RepresentativeAction( <G>, <d>, <e>, OnPoints )   first compare cycles
 ##
-InstallOtherMethod( RepresentativeOperationOp,
+InstallOtherMethod( RepresentativeActionOp,
     "cycle structure comparison",
     true,
     [ IsPermGroup and CanEasilyComputePcgs,
@@ -1067,14 +1086,63 @@ end );
 
 #############################################################################
 ##
+#M  EpiPcByModpcgs( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
+##
+BindGlobal("EpiPcByModpcgs",function( G, H, gens, imgs )
+local   filter,  hom,pcgs,imgso,den;
+  
+  den:=GeneratorsOfGroup(gens!.denominator); # denominator gens
+  hom := rec(generators:=Concatenation(gens,den),
+             genimages:=Concatenation(imgs,List(den,i->One(H))));
+  filter := HasSource and HasRange and IsGroupGeneralMappingByPcgs
+            and IsToPcGroupGeneralMappingByImages and IsTotal;
+
+  if IsPermGroup( G )  then
+    filter := filter and IsPermGroupGeneralMappingByImages;
+  fi;
+
+  pcgs:=[gens,imgs];
+
+  hom.sourcePcgs       := gens;
+  hom.sourcePcgsImages := imgs;
+  # precompute powers of the pcgs images
+  hom.sourcePcgsImagesPowers := List([1..Length(gens)],
+	  i->List([1..RelativeOrders(gens)[i]-1], j->imgs[i]^j));
+
+  if HasGeneratorsOfGroup(H) 
+      and IsIdenticalObj(GeneratorsOfGroup(H),imgs) then
+    imgso:=H;
+  else
+    imgso:=SubgroupNC( H, imgs);
+  fi;
+  # we can also get the ImagesSource quickly
+  ObjectifyWithAttributes( hom,
+  NewType( GeneralMappingsFamily
+	  ( ElementsFamily( FamilyObj( G ) ),
+	    ElementsFamily( FamilyObj( H ) ) ), filter and HasImagesSource ), 
+	    Source,G,
+	    Range,H,
+	    ImagesSource,imgso);
+
+  SetIsMapping(hom,true);
+  return hom;
+end );
+
+#############################################################################
+##
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . .  for solvable factors
 ##
+NH_TRYPCGS_LIMIT:=30000;
 InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
   "try solvable factor for permutation groups",
   IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
     function( G, N )
     local   map,  pcgs,  A;
     
+    if Minimum(Index(G,N),NrMovedPoints(G))>NH_TRYPCGS_LIMIT then
+      TryNextMethod();
+    fi;
+
     # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
     # routines).
     pcgs := TryPcgsPermGroup( [ G, N ], false, false, true );
@@ -1085,7 +1153,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
     # Construct the pcp group <A> and the bijection between <A> and <G>.
     A := PcGroupPcgs( pcgs, IndicesNormalSteps( pcgs ), false );
     UseFactorRelation( G, N, A );
-    map := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ) );
+    map := EpiPcByModpcgs( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsSurjective( map, true );
     SetKernelOfMultiplicativeGeneralMapping( map, N );
     

@@ -27,7 +27,7 @@ DeclareCategory( "IsExtLSet", IsDomain );
 ##
 #C  IsAssociativeLOpDProd( <D> )
 ##
-##  is 'true' iff $a \* ( x \* y ) = ( a \* x ) \* y$
+##  is `true' iff $a \* ( x \* y ) = ( a \* x ) \* y$
 ##  for $a \in E$ and $x, y \in D$.
 ##
 DeclareCategory( "IsAssociativeLOpDProd", IsExtLSet );
@@ -37,7 +37,7 @@ DeclareCategory( "IsAssociativeLOpDProd", IsExtLSet );
 ##
 #C  IsAssociativeLOpEProd( <D> )
 ##
-##  is 'true' iff $a \* ( b \* x ) = ( a \* b ) \* x$
+##  is `true' iff $a \* ( b \* x ) = ( a \* b ) \* x$
 ##  for $a, b \in E$ and $x \in D$.
 ##
 DeclareCategory( "IsAssociativeLOpEProd", IsExtLSet );
@@ -47,7 +47,7 @@ DeclareCategory( "IsAssociativeLOpEProd", IsExtLSet );
 ##
 #C  IsDistributiveLOpDProd( <D> )
 ##
-##  is 'true' iff $a \* ( x \* y ) = ( a \* x ) \* ( a \* y )$
+##  is `true' iff $a \* ( x \* y ) = ( a \* x ) \* ( a \* y )$
 ##  for $a \in E$ and $x, y \in D$.
 ##
 DeclareCategory( "IsDistributiveLOpDProd", IsExtLSet );
@@ -57,7 +57,7 @@ DeclareCategory( "IsDistributiveLOpDProd", IsExtLSet );
 ##
 #C  IsDistributiveLOpDSum( <D> )
 ##
-##  is 'true' iff $a \* ( x + y ) = ( a \* x ) + ( a \* y )$
+##  is `true' iff $a \* ( x + y ) = ( a \* x ) + ( a \* y )$
 ##  for $a \in E$ and $x, y \in D$.
 ##
 DeclareCategory( "IsDistributiveLOpDSum", IsExtLSet );
@@ -67,7 +67,7 @@ DeclareCategory( "IsDistributiveLOpDSum", IsExtLSet );
 ##
 #C  IsDistributiveLOpEProd( <D> )
 ##
-##  is 'true' iff $( a \* b ) \* x = ( a \* x ) \* ( b \* x )$
+##  is `true' iff $( a \* b ) \* x = ( a \* x ) \* ( b \* x )$
 ##  for $a, b \in E$ and $x \in D$.
 ##
 DeclareCategory( "IsDistributiveLOpEProd", IsExtLSet );
@@ -77,7 +77,7 @@ DeclareCategory( "IsDistributiveLOpEProd", IsExtLSet );
 ##
 #C  IsDistributiveLOpESum( <D> )
 ##
-##  is 'true' iff $( a + b ) \* x = ( a \* x ) + ( b \* x )$
+##  is `true' iff $( a + b ) \* x = ( a \* x ) + ( b \* x )$
 ##  for $a, b \in E$ and $x \in D$.
 ##
 DeclareCategory( "IsDistributiveLOpESum", IsExtLSet );
@@ -87,7 +87,7 @@ DeclareCategory( "IsDistributiveLOpESum", IsExtLSet );
 ##
 #C  IsTrivialLOpEOne( <D> )
 ##
-##  is 'true' iff the identity element $e \in E$ acts trivially on $D$,
+##  is `true' iff the identity element $e \in E$ acts trivially on $D$,
 ##  that is, $e \* x = x$ for $x \in D$.
 #T necessary?
 ##
@@ -98,7 +98,7 @@ DeclareCategory( "IsTrivialLOpEOne", IsExtLSet );
 ##
 #C  IsTrivialLOpEZero( <D> )
 ##
-##  is 'true' iff the zero element $z \in E$ acts trivially on $D$,
+##  is `true' iff the zero element $z \in E$ acts trivially on $D$,
 ##  that is, $z \* x = Z$ for $x \in D$ and the zero element $Z$ of $D$.
 #T necessary?
 ##

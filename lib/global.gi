@@ -119,7 +119,6 @@ end);
 
 InstallGlobalFunction( UnbindGlobal, 
         function (name)
-    local isbound;
     CheckGlobalName( name );
     if not ISBOUND_GLOBAL( name ) then
         Info( InfoWarning + InfoGlobal, 1, 
@@ -163,6 +162,9 @@ end);
 InstallGlobalFunction( MakeReadOnlyGlobal, 
         function (name)
     CheckGlobalName( name );
+    if name in ["time", "last", "last2", "last3", "~"] then
+        Error("Making ",name," read-only is not a good idea!");
+    fi;
     if not ISBOUND_GLOBAL( name ) then
         Info( InfoWarning + InfoGlobal, 1, 
               "MakeReadOnlyGlobal: ", name, "no value bound");
@@ -251,6 +253,84 @@ InstallGlobalFunction( TemporaryGlobalVarName,
     return gvar;
 end );
 
+
+HIDDEN_GVARS:=[];
+
+InstallGlobalFunction(HideGlobalVariables,function(arg)
+local p,i;
+  p:=Length(HIDDEN_GVARS);
+  for i in arg do
+    if IsString(i) then
+      p:=p+1;
+      HIDDEN_GVARS[p]:=i;
+      p:=p+2;
+      if ISBOUND_GLOBAL(i) then
+        # variable is assigned
+	HIDDEN_GVARS[p-1]:=VALUE_GLOBAL(i);
+	if IS_READ_ONLY_GLOBAL(i) then
+	  HIDDEN_GVARS[p]:=true;
+	  MAKE_READ_WRITE_GLOBAL(i);
+	else
+	  HIDDEN_GVARS[p]:=false;
+        fi;
+      else
+        HIDDEN_GVARS[p-1]:=fail; # needs to be assigned
+        HIDDEN_GVARS[p]:=fail;
+      fi;
+      # temporarily remove the variable
+      UNBIND_GLOBAL(i);
+    else
+      Error("HideGlobalVariables requires the names as strings");
+    fi;
+  od;
+end);
+
+InstallGlobalFunction(UnhideGlobalVariables,function(arg)
+local p,str,all,l,which;
+  all:=Length(arg)=0; # doe we want to unhide all?
+  which:=arg;
+  l:=Length(HIDDEN_GVARS);
+  p:=l-2;
+  while p>0 do
+    str:=HIDDEN_GVARS[p];
+    # do we want to unhide the variable?
+    if all or str in which then
+      # remove the value
+      if ISBOUND_GLOBAL(str) then
+	if IS_READ_ONLY_GLOBAL(str) then
+	  MAKE_READ_WRITE_GLOBAL(str);
+	fi;
+	UNBIND_GLOBAL(str);
+      fi;
+
+      if HIDDEN_GVARS[p+2]<>fail then
+	#reassign a value
+	ASS_GVAR(str,HIDDEN_GVARS[p+1]);
+	if HIDDEN_GVARS[p+2]=true then
+	  MAKE_READ_ONLY_GLOBAL(str);
+	fi;
+      fi;
+
+      # remove the corresponding "HIDDEN_GVARS" entry
+      if not all then
+        if p+2<l then
+	  # move
+	  HIDDEN_GVARS{[p..l-3]}:=HIDDEN_GVARS{[p+3..l]};
+	fi;
+	# remove
+	Unbind(HIDDEN_GVARS[l-2]);
+	Unbind(HIDDEN_GVARS[l-1]);
+	Unbind(HIDDEN_GVARS[l]);
+	l:=l-3;
+	which:=Filtered(which,i->i<>str);
+      fi;
+    fi;
+    p:=p-3;
+  od;
+  if all then 
+    HIDDEN_GVARS:=[];
+  fi;
+end);
 
 
 
