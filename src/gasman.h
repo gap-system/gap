@@ -32,7 +32,7 @@
 **  happen to  look like references.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_gasman_h =
+SYS_CONST char * Revision_gasman_h =
    "@(#)$Id$";
 #endif
 
@@ -433,13 +433,22 @@ extern void SwapMasterPoint (
 **  'SizeDeadBags' and the total size of bags that have been found to be dead
 **  by  this garbage  collection.   This  value  is used  in the  information
 **  message.
+**
+**  'NrHalfDeadBags'
+** 
+**  'NrHalfDeadBags'  is  the number of  bags  that  have  been  found to  be
+**  reachable only by way of weak pointers since the last garbage collection.
+**  The bodies of these bags are deleted, but their identifiers are marked so
+**  that weak pointer objects can recognize this situation.  
 */
+
 extern  UInt                    NrAllBags;
 extern  UInt                    SizeAllBags;
 extern  UInt                    NrLiveBags;
 extern  UInt                    SizeLiveBags;
 extern  UInt                    NrDeadBags;
 extern  UInt                    SizeDeadBags;
+extern  UInt                    NrHalfDeadBags;
 
 
 /****************************************************************************
@@ -595,6 +604,17 @@ extern  void            InitMsgsFuncBags (
 **  Note that 'MARK_BAG' is a macro, so do not call it with an argument that
 **  has sideeffects.
 **
+**  'MarkBagWeakly( <bag> )'
+**
+**  'MarkBagWeakly' is an alternative to MARK_BAG, intended to be used by the
+**  marking functions  of weak pointer objects.  A  bag which is  marked both
+**  weakly and strongly  is treated as strongly marked.   A bag which is only
+**  weakly marked will be recovered by garbage collection, but its identifier
+**  remains, marked      in   a    way    which   can     be   detected    by
+**  "IS_WEAK_DEAD_BAG". Which should  always be   checked before copying   or
+**  using such an identifier.
+**
+**
 **  {\Gasman} already provides the following marking functions.
 **
 **  'MarkNoSubBags( <bag> )'
@@ -633,7 +653,7 @@ extern  void            InitMsgsFuncBags (
 **  down 'CollectBags'.  For example  in {\GAP} bags  for lists contain  only
 **  bag identifiers for the elements  of the  list or 0   if an entry has  no
 **  assigned value.
-*/
+** */
 typedef void            (* TNumMarkFuncBags ) (
             Bag                 bag );
 
@@ -653,17 +673,77 @@ extern  void            MarkTwoSubBags (
 extern  void            MarkAllSubBags (
             Bag                 bag );
 
+extern void             MarkBagWeakly (
+            Bag                 bag );
+
 extern  Bag *                   MptrBags;
 extern  Bag *                   OldBags;
 extern  Bag *                   AllocBags;
 extern  Bag                     MarkedBags;
 
+#define MARKED_DEAD(x)  (x)
+#define MARKED_ALIVE(x) ((Bag)(((Char *)(x))+1))
+#define MARKED_HALFDEAD(x) ((Bag)(((Char *)(x))+2))
+#define IS_MARKED_ALIVE(bag) ((PTR_BAG(bag)[-1]) == MARKED_ALIVE(bag))
+#define IS_MARKED_DEAD(bag) ((PTR_BAG(bag)[-1]) == MARKED_DEAD(bag))
+#define IS_MARKED_HALFDEAD(bag) ((PTR_BAG(bag)[-1]) == MARKED_HALFDEAD(bag))
+#define UNMARKED_DEAD(x)  (x)
+#define UNMARKED_ALIVE(x) ((Bag)(((Char *)(x))-1))
+#define UNMARKED_HALFDEAD(x) ((Bag)(((Char *)(x))-2))
+
+
 #define MARK_BAG(bag)                                                       \
                 if ( (((UInt)(bag)) & (sizeof(Bag)-1)) == 0                 \
                   && (Bag)MptrBags <= (bag)    && (bag) < (Bag)OldBags      \
                   && YoungBags < PTR_BAG(bag)  && PTR_BAG(bag) <= AllocBags \
-                  && PTR_BAG(bag)[-1] == (bag) ) {                          \
+                  && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) ) \
+                  {                                                          \
                     PTR_BAG(bag)[-1] = MarkedBags; MarkedBags = (bag);      }
+
+/****************************************************************************
+**
+*F
+*/
+
+#define IS_WEAK_DEAD_BAG(bag) ( (((UInt)bag & (sizeof(Bag)-1)) == 0) && \
+                                (Bag)MptrBags <= (bag)    &&          \
+                                (bag) < (Bag)OldBags  &&              \
+                                (((UInt)*bag) & (sizeof(Bag)-1)) == 1)
+
+             
+/****************************************************************************
+**
+*F  InitSweepFuncBags(<type>,<sweep-func>)  . . . . install sweeping function
+**
+**  'InitSweepFuncBags( <type>, <sweep-func> )'
+**
+**  'InitSweepFuncBags' installs the function <sweep-func> as sweeping
+**  function for bags of type <type>.  
+**
+**  A sweeping function is a function that takes two arguments src and dst of
+**  type Bag *, and  a third, length of type  UInt, and returns nothing. When
+**  it  is called, src points to  the start of the data  area of one bag, and
+**  dst to another. The function should copy the  data from the source bag to
+**  the destination, making any appropriate changes.
+**
+**  Those functions are applied during  the garbage collection to each marked
+**  bag, i.e., bags that are assumed  to be still live  to move them to their
+**  new  position. The  intended  use is  for  weak  pointer bags, which must
+**  remove references to identifiers of  any half-dead objects. 
+**
+**  If no function  is installed for a Tnum,  then the data is  simply copied
+**  unchanged and this is done particularly quickly 
+*/
+
+typedef void            (* TNumSweepFuncBags ) (
+            Bag  *               src,
+            Bag *                dst,
+            UInt                 length);
+
+extern  void            InitSweepFuncBags (
+            UInt                tnum,
+            TNumSweepFuncBags    sweep_func );
+ 
 
 
 /****************************************************************************
@@ -883,9 +963,10 @@ extern  void            InitBags (
 **
 *F  CallbackForAllBags( <func> ) call a C function on all non-zero mptrs
 **
-**  This calls a C function on every bag, including garbage ones, by simply
-**  walking the masterpointer area. Not terribly safe
-**
+** This calls a   C  function on every    bag, including ones  that  are  not
+** reachable from    the root, and    will  be deleted  at the   next garbage
+** collection, by simply  walking the masterpointer area. Not terribly safe
+** 
 */
 
 extern void CallbackForAllBags(

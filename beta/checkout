@@ -1,0 +1,44 @@
+#!/bin/sh
+#############################################################################
+##
+#W  checkout							 Frank Celler
+##
+##  this shell script checks out the next version of the beta release
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# create an beta directory
+cd ${BETAROOT}
+rm -rf ${BETANAME}
+
+
+# checkout the files
+echo "$0: checking out version $VERSION of $DATE"
+cvs -Q export -D "$DATE" -d $BETANAME GAP/4.0
+if [ \! -d ${BETANAME} ];  then
+    echo "PANIC: cvs did not create an beta directory"
+    exit 1
+fi
+
+
+# and add a tag
+echo "$0: tagging version $VERSION of $DATE"
+cvs tag -F -D "$DATE" "GAP4B$VERSION"
+
+
+# set the version
+chmod 644 $BETANAME/lib/version.g
+echo "VERSION := \"Beta $VERSION\";" > beta/lib/version.g
+echo "DATE := \"$DATE\";" >> ${BETANAME}/lib/version.g
+cat $BINDIR/banner >> ${BETANAME}/lib/version.g
+
+
+# that's it
+exit 0

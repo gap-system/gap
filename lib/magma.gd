@@ -321,18 +321,10 @@ IsCentral :=
 ##  of the magma <M>.  This is the domain of those elements  $m \in <M>$ that
 ##  commute with <obj>.
 ##
-Centralizer :=
-    NewOperation( "Centralizer",
-        [ IsMagma, IsObject ] );
-
-
-#############################################################################
-##
-#A  CentralizerInParent(<M>)  . . . . .  centralizer of a magma in its parent
-##
-CentralizerInParent :=
-    NewAttribute( "CentralizerInParent",
-        IsMagma );
+tmp:= InParentFOA( "Centralizer", IsMagma, IsObject, NewAttribute );
+Centralizer         := tmp[1];
+CentralizerOp       := tmp[2];
+CentralizerInParent := tmp[3];
 SetCentralizerInParent := Setter( CentralizerInParent );
 HasCentralizerInParent := Tester( CentralizerInParent );
 
@@ -408,6 +400,22 @@ IsCentralFromGenerators := function( GeneratorsStruct1, GeneratorsStruct2 )
     return true;
     end;
 end;
+
+
+#############################################################################
+##
+#A  AsMagma( <C> )  . . . . . . . . . . . . . .  view a collection as a magma
+##
+AsMagma := NewAttribute( "AsMagma", IsCollection );
+SetAsMagma := Setter( AsMagma );
+HasAsMagma := Tester( AsMagma );
+
+
+#############################################################################
+##
+#O  AsSubmagma( <M>, <N> )  . . . view a magma as a submagma of another magma
+##
+AsSubmagma := NewOperation( "AsSubmagma", [ IsMagma, IsMagma ] );
 
 
 #############################################################################

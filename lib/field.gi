@@ -465,17 +465,19 @@ InstallMethod( IsSubset,
 
 #############################################################################
 ##
-#M  AsDivisionRing( <F>, <D> )
+#M  AsDivisionRing( <F>, <D> )  . . . . . . . . . . .  for two division rings
 ##
 InstallMethod( AsDivisionRing,
-    "method for two fields",
+    "method for two division rings",
     IsIdentical,
     [ IsDivisionRing, IsDivisionRing ], 0,
     function( F, D )
     local E;
 
-    if not IsSubset( D, F ) then
-      Error( "<F> must be contained in <D>" );
+    if   F = LeftActingDomain( D ) then
+      return D;
+    elif not IsSubset( D, F ) then
+      return fail;
     fi;
 
     E:= DivisionRingByGenerators( F, GeneratorsOfDivisionRing( D ) );
@@ -485,6 +487,19 @@ InstallMethod( AsDivisionRing,
 
     return E;
     end );
+
+
+#############################################################################
+##
+#M  AsLeftModule( <F1>, <F2> )  . . . . . . . . . . .  for two division rings
+##
+##  View the division ring <F2> as vector space over the division ring <F1>.
+##
+InstallMethod( AsLeftModule,
+    "method for two division rings",
+    IsIdentical,
+    [ IsDivisionRing, IsDivisionRing ], 0,
+    AsDivisionRing );
 
 
 #############################################################################
@@ -862,6 +877,27 @@ InstallMethod( Units,
     else
       TryNextMethod();
     fi;
+    end );
+
+
+#############################################################################
+##
+#M  PrimitiveRoot( <F> )  . . . . . . . . . . . .  for finite prime field <F>
+##
+##  For a fields of prime order $p$, the multiplicative group corresponds to
+##  the group of residues modulo $p$, via `Int'.
+##  A primitive root is obtained as `PrimitiveRootMod( $p$ )' times the
+##  identity of <F>.
+##
+InstallMethod( PrimitiveRoot,
+    "method for a finite prime field",
+    true,
+    [ IsField and IsFinite ], 0,
+    function( F )
+    if not IsPrimeField( F ) then
+      TryNextMethod();
+    fi;
+    return PrimitiveRootMod( Size( F ) ) * One( F );
     end );
 
 

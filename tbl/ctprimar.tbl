@@ -28,7 +28,7 @@ LIBLIST := rec();
 ##
 ##  Read the data that was automatically produced.
 ##
-LIBLIST.firstnames := [ 
+LIBLIST.firstnames := Immutable( [ 
  # file ctoalter
   "(2xA6).2_3", "2.A10", "2.A10.2", "2.A11", "2.A11.2", "2.A12", "2.A12.2",
   "2.A13", "2.A13.2", "2.A5", "2.A5.2", "2.A6", "2.A6.2_1", "2.A6.2_2",
@@ -44,7 +44,7 @@ LIBLIST.firstnames := [
   "G2(3).2", "G2(4)", "G2(4).2", "G2(5)", "R(27)", "R(27).3", "Sz(32)",
   "Sz(32).5", "Sz(8)", "Sz(8).3",
  # file ctocliff
-  "3^(1+10):U5(2):2", "3^5:U4(2)", "3^7:O7(3)",
+  "3^(1+10):U5(2):2", "3^5:U4(2)", "3^7:O7(3)", "2^7:S6(2)",
  # file ctoconja
   "2.Co1", "2.J2", "2.J2.2", "3.J3", "3.J3.2", "Co1", "Co2", "Co3", "J1",
   "J2", "J2.2", "J3", "J3.2", "J4",
@@ -140,7 +140,8 @@ LIBLIST.firstnames := [
   "6.M22M7", "12.M22M7", "2xL2(11)", "3xL2(11)", "2.(2xL2(11))", "6xL2(11)",
   "3x2.(2xL2(11))", "McLM10", "2^4:a8", "2^6:(psl(3,2)xs3)", "2^6:3.s6",
   "2xS5", "3^2.2.S4", "4^2:D12", "4^2:D12.2", "A4xS3", "M12M7", "M22.2M5",
-  "M8.S4", "S4xS3",
+  "M8.S4", "S4xS3", "2xM11", "2.M12M2", "2.M12M4", "2x3^2.2.S4", "2.M12M7",
+  "2.M12M8", "2.M12M9", "2.M12M10", "2.A4xS3",
  # file ctomaxi2
   "(2^2xSz(8)):3", "(3^2:4xa6).2", "(3xG2(3)):2", "(D10xU3(5)).2",
   "(a4xpsl(3,4)):2", "(a6xa5).2", "2.(2^2xSz(8)):3", "2.2.2^4+6:S5",
@@ -216,6 +217,7 @@ LIBLIST.firstnames := [
   "3^3:A4", "3^4.2U4(2)", "3^4.2U4(2).2", "3^4:(2xA5)", "3^4:A6",
   "3^6:L4(3)", "3^7.O7(3)", "5^(1+4):GL(2,5)", "6xU5(2)", "7^2:2.L2(7).2",
   "A6.D8", "D8xL4(3).2_2", "M22.2M2", "O7(3).2x2", "S4xU4(2).2",
+  "2^6:U4(2).2",
  # file ctoorth1
   "2.O7(3)", "2.O7(3).2", "3.O7(3)", "3.O7(3).2", "6.O7(3)", "6.O7(3).2",
   "Fi22M3", "O7(3)", "O7(3).2",
@@ -276,12 +278,12 @@ LIBLIST.firstnames := [
  # file ctounit4
   "2.U6(2)", "2.U6(2).2", "2^2.U6(2)", "2^2.U6(2).2", "2^2.U6(2).3",
   "2^2.U6(2).3.2", "3.U6(2)", "3.U6(2).2", "3.U6(2).3", "6.U6(2)",
-  "6.U6(2).2", "U6(2)", "U6(2).2", "U6(2).3", "U6(2).3.2", ];
+  "6.U6(2).2", "U6(2)", "U6(2).2", "U6(2).3", "U6(2).3.2", ] );
 
-LIBLIST.filenames := Concatenation( [
+LIBLIST.filenames := Immutable( Concatenation( [
   List( [ 1 .. 57 ], x -> 1 ),
   List( [ 1 .. 22 ], x -> 2 ),
-  List( [ 1 .. 3 ], x -> 3 ),
+  List( [ 1 .. 4 ], x -> 3 ),
   List( [ 1 .. 14 ], x -> 4 ),
   List( [ 1 .. 8 ], x -> 5 ),
   List( [ 1 .. 5 ], x -> 6 ),
@@ -294,7 +296,7 @@ LIBLIST.filenames := Concatenation( [
   List( [ 1 .. 16 ], x -> 13 ),
   List( [ 1 .. 8 ], x -> 14 ),
   List( [ 1 .. 25 ], x -> 15 ),
-  List( [ 1 .. 49 ], x -> 16 ),
+  List( [ 1 .. 58 ], x -> 16 ),
   List( [ 1 .. 86 ], x -> 17 ),
   List( [ 1 .. 30 ], x -> 18 ),
   List( [ 1 .. 19 ], x -> 19 ),
@@ -307,7 +309,7 @@ LIBLIST.filenames := Concatenation( [
   List( [ 1 .. 1 ], x -> 26 ),
   List( [ 1 .. 32 ], x -> 27 ),
   List( [ 1 .. 3 ], x -> 28 ),
-  List( [ 1 .. 36 ], x -> 29 ),
+  List( [ 1 .. 37 ], x -> 29 ),
   List( [ 1 .. 9 ], x -> 30 ),
   List( [ 1 .. 16 ], x -> 31 ),
   List( [ 1 .. 7 ], x -> 32 ),
@@ -322,9 +324,9 @@ LIBLIST.filenames := Concatenation( [
   List( [ 1 .. 29 ], x -> 41 ),
   List( [ 1 .. 12 ], x -> 42 ),
   List( [ 1 .. 15 ], x -> 43 ),
-  ] );
+  ] ) );
 
-LIBLIST.files := [
+LIBLIST.files := Immutable( [
   "ctoalter", "ctoatres", "ctocliff", "ctoconja", "ctofisc1", "ctofisc2",
   "ctoholpl", "ctoinert", "ctoline1", "ctoline2", "ctoline3", "ctoline4",
   "ctoline5", "ctoline6", "ctomathi", "ctomaxi1", "ctomaxi2", "ctomaxi3",
@@ -332,9 +334,9 @@ LIBLIST.files := [
   "ctomisc4", "ctomisc5", "ctomisc6", "ctomonst", "ctonews", "ctoorth1",
   "ctoorth2", "ctoorth3", "ctoorth4", "ctoorth5", "ctospora", "ctosylno",
   "ctosympl", "ctotwis1", "ctotwis2", "ctounit1", "ctounit2", "ctounit3",
-  "ctounit4", ];
+  "ctounit4", ] );
 
-LIBLIST.fusionsource := [
+LIBLIST.fusionsource := Immutable( [
   [ # fusions to (2xA6).2_3
   "4.A6.2_3", "6.M22M7", ],
   [ # fusions to 2.A10
@@ -511,6 +513,8 @@ LIBLIST.fusionsource := [
   ],
   [ # fusions to 3^7:O7(3)
   ],
+  [ # fusions to 2^7:S6(2)
+  ],
   [ # fusions to 2.Co1
   "2.2^11:M24", "6.Suz.2", ],
   [ # fusions to 2.J2
@@ -572,7 +576,7 @@ LIBLIST.fusionsource := [
   "O8+(2).2", "O8+(2).3.2", "Fi22N5", "2F4(2)'", "U4(3)", "U4(3).2_2",
   "2.U6(2)", ],
   [ # fusions to Fi22.2
-  "2.Fi22.2", "3.Fi22.2", "6.Fi22.2", "Fi22", "M12.2",
+  "2^7:S6(2)", "2.Fi22.2", "3.Fi22.2", "6.Fi22.2", "Fi22", "M12.2",
   "(2x2^(1+8):U4(2):2):2", "S3xU4(3).(2^2)_{122}", "O8+(2):S3x2", ],
   [ # fusions to 3.F3+
   "Fi23", ],
@@ -1156,7 +1160,8 @@ LIBLIST.fusionsource := [
   [ # fusions to 12.M22.2
   "12.M22", ],
   [ # fusions to 2.M12
-  "A6.D8", ],
+  "2.L2(11)", "2xM11", "2.M12M2", "2.M12M4", "2x3^2.2.S4", "2.M12M7",
+  "2.M12M8", "2.M12M9", "2.M12M10", "2.A4xS3", "A6.D8", ],
   [ # fusions to 2.M12.2
   "2.M12", ],
   [ # fusions to 2.M22
@@ -1308,6 +1313,24 @@ LIBLIST.fusionsource := [
   [ # fusions to M8.S4
   ],
   [ # fusions to S4xS3
+  ],
+  [ # fusions to 2xM11
+  ],
+  [ # fusions to 2.M12M2
+  ],
+  [ # fusions to 2.M12M4
+  ],
+  [ # fusions to 2x3^2.2.S4
+  ],
+  [ # fusions to 2.M12M7
+  ],
+  [ # fusions to 2.M12M8
+  ],
+  [ # fusions to 2.M12M9
+  ],
+  [ # fusions to 2.M12M10
+  ],
+  [ # fusions to 2.A4xS3
   ],
   [ # fusions to (2^2xSz(8)):3
   "2.(2^2xSz(8)):3", ],
@@ -1724,7 +1747,7 @@ LIBLIST.fusionsource := [
   [ # fusions to 2^10:m22
   ],
   [ # fusions to 2^6:s6f2
-  ],
+  "2^6:U4(2).2", ],
   [ # fusions to f22s2
   ],
   [ # fusions to g61
@@ -1935,6 +1958,8 @@ LIBLIST.fusionsource := [
   "O7(3).2", ],
   [ # fusions to S4xU4(2).2
   "U4(2).2", ],
+  [ # fusions to 2^6:U4(2).2
+  ],
   [ # fusions to 2.O7(3)
   "6.O7(3)", ],
   [ # fusions to 2.O7(3).2
@@ -2205,8 +2230,8 @@ LIBLIST.fusionsource := [
   [ # fusions to S4(5).2
   "2.S4(5).2", "S4(5)", ],
   [ # fusions to S6(2)
-  "A8.2", "L2(8).3", "2.[2^6]:(S3xS3)", "2^5:S6", "2^6:L3(2)", "S3xS6",
-  "2.S6(2)", "U3(3).2", "U4(2).2", ],
+  "A8.2", "2^7:S6(2)", "L2(8).3", "2.[2^6]:(S3xS3)", "2^5:S6", "2^6:L3(2)",
+  "S3xS6", "2.S6(2)", "U3(3).2", "U4(2).2", ],
   [ # fusions to S6(3)
   "3^(1+4).2U4(2)", "2.S6(3)", ],
   [ # fusions to S6(3).2
@@ -2442,7 +2467,7 @@ LIBLIST.fusionsource := [
   "2^2.U6(2).3", "3.U6(2).3", "U6(2)", ],
   [ # fusions to U6(2).3.2
   "U6(2).2", "U6(2).3", ],
-  ];
+  ] );
 
 LIBLIST.names := [
  ["(2^(1+8)x2^6):S6(2)","(2^(1+8)x2^6):s6(2)","f4(2)m1","f4(2)m2"],
@@ -2523,6 +2548,7 @@ LIBLIST.names := [
  ["2.A12.2","2.a12.2","2.s12"],
  ["2.A13","2.a13"],
  ["2.A13.2","2.a13.2","2.s13"],
+ ["2.A4xS3","2.a4xs3","2.m12m11"],
  ["2.A5","2.a1(4)","2.a1(5)","2.a5","2.j2m9","2.l2(4)","2.l2(5)","2.o3(4)",
   "2.o3(5)","2.o4-(2)","2.s2(4)","2.s2(5)","2.u2(4)","2.u2(5)"],
  ["2.A5.2","2.a5.2","2.s5"],
@@ -2552,7 +2578,8 @@ LIBLIST.names := [
  ["2.J2","2.j2"],
  ["2.J2.2","2.j2.2"],
  ["2.J2M8","2.j2m8"],
- ["2.L2(11)","2.a1(11)","2.l2(11)","2.o3(11)","2.s2(11)","2.u2(11)"],
+ ["2.L2(11)","2.a1(11)","2.l2(11)","2.m12m5","2.o3(11)","2.s2(11)","2.u2(11)"
+  ],
  ["2.L2(11).2","2.l2(11).2"],
  ["2.L2(13)","2.a1(13)","2.l2(13)","2.o3(13)","2.s2(13)","2.u2(13)"],
  ["2.L2(13).2","2.l2(13).2"],
@@ -2594,6 +2621,12 @@ LIBLIST.names := [
  ["2.L4(3).2_3","2.l4(3).2_3"],
  ["2.M12","2.m12"],
  ["2.M12.2","2.m12.2"],
+ ["2.M12M10","2.m12m10"],
+ ["2.M12M2","2.m12m2"],
+ ["2.M12M4","2.m12m4"],
+ ["2.M12M7","2.m12m7"],
+ ["2.M12M8","2.m12m8"],
+ ["2.M12M9","2.m12m9"],
  ["2.M22","2.m22"],
  ["2.M22.2","2.m22.2"],
  ["2.M22M2","2.m22m2"],
@@ -2718,9 +2751,11 @@ LIBLIST.names := [
  ["2^6:3.s6","2^6:3.s6","hem3","hem4","m24m5"],
  ["2^6:L3(2)","2^6:l3(2)","s6(2)m5"],
  ["2^6:U4(2)","2^6:u4(2)","o8-(2)m1"],
+ ["2^6:U4(2).2","2^6:o6f2","2^6:u4(2).2"],
  ["2^6:s6f2","2^6:s6f2","f22m6","fi22m6"],
  ["2^6:u3(3)","2^6:u3(3)"],
  ["2^6:u3(3):2","2^6:u3(3):2","rum2"],
+ ["2^7:S6(2)","2^6:s6f2.2","2^7:s6(2)","2^7:s6f2","fi22.2m6"],
  ["2^8:O8-(2)","2^8.o8-(2)","2^8:o8-(2)","o10-(2)m1"],
  ["2^9.L3(4)","2^9.l3(4)","2^9:l3(4)","u6(2)m3"],
  ["2^{1+4}_-:2A5","2.j2m3","2^{1+4}_-:2a5"],
@@ -2730,10 +2765,12 @@ LIBLIST.names := [
  ["2x(3^2.QD16)","2x(3^2.qd16)","hsn3"],
  ["2x2^3:L3(2)","2.m22m6","2^3:l3(2)x2","2x2^3:l3(2)","m22.2m6"],
  ["2x3.O7(3)","2x3.o7(3)","6.fi22m2","6.fi22m3"],
+ ["2x3^2.2.S4","2.m12m6","2x3^2.2.s4"],
  ["2x7:3","2x7:3"],
  ["2xA5","2xa5","j1m3"],
  ["2xA7","2.m22m3","2.m22m4","2xa7"],
  ["2xL2(11)","2.m22m8","2xl2(11)"],
+ ["2xM11","2.m12m1","2xm11"],
  ["2xO7(3)","2.fi22m2","2.fi22m3","2xo7(3)"],
  ["2xS5","2xs5","m12m8"],
  ["2xS6(2)","2xs6(2)","w(e7)"],
@@ -3481,7 +3518,7 @@ Unbind( LIBLIST.pos );
 
 SortParallel( LIBLIST.allnames, LIBLIST.position );
 
-LIBLIST.projections := [
+LIBLIST.projections := Immutable( [
   ["(2xA6).2_3","A6.2_3",ProjectionMap(
   [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8])],
   ["2.A10","A10",ProjectionMap(
@@ -4364,9 +4401,9 @@ LIBLIST.projections := [
   32,32,33,33,33,33,33,33,34,34,34,34,34,34,35,35,35,36,36,36,37,37,37,37,
   37,37,38,38,38,39,39,39,40,40,40,40,40,40,41,41,41,42,42,42,43,43,43,43,
   43,43,44,44,44,44,44,44,45,45,45,45,45,45,46,46,46,46,46,46])],
-  ];
+  ] );
 
-LIBLIST.simpleInfo := [
+LIBLIST.simpleInfo := Immutable( [
   [ "2", "A10", "2" ],
   [ "2", "A11", "2" ],
   [ "2", "A12", "2" ],
@@ -4467,13 +4504,15 @@ LIBLIST.simpleInfo := [
   [ "2", "U4(2)", "2" ],
   [ "", "U5(2)", "2" ],
   [ "(2^2x3)", "U6(2)", "3.2" ],
-  ];
+  ] );
+
 
 LIBLIST.sporadicSimple := Immutable( [
-  "M11", "M12", "J1", "M22", "J2", "M23", "HS", "J3", "M24", "McL", "He",
-  "Ru", "Suz", "ON", "Co3", "Co2", "Fi22", "HN", "Ly", "Th", "Fi23", "Co1",
-  "J4", "F3+", "B", "M" ] );
-
+  "M11", "M12", "J1", "M22", "J2", "M23", "HS", "J3",
+  "M24", "McL", "He", "Ru", "Suz", "ON", "Co3", "Co2",
+  "Fi22", "HN", "Ly", "Th", "Fi23", "Co1", "J4", "F3+",
+  "B", "M" ] );
+ 
 LIBLIST.GENERIC := [
   "Cyclic",
   "Dihedral",
@@ -4496,7 +4535,6 @@ LIBLIST.GENERIC:= rec(
    allnames:= List( LIBLIST.GENERIC, LowercaseString ),
    firstnames:= LIBLIST.GENERIC );
  
-
 #############################################################################
 ##
 #E  ctprimar.tbl  . . . . . . . . . . . . . . . . . . . . . . . . . ends here

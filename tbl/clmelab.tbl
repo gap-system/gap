@@ -4,10 +4,12 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains Clifford matrices for the extension of an elementary
-##  abelian group
+##  abelian group.
+##  The matrices are *NOT* ordered according to their dimensions,
+##  new matrices must be added at the end of the file.
 ##
 Revision.clmelab_tbl :=
     "@(#)$Id$";
@@ -4530,6 +4532,15 @@ E(4),1,-E(4)],[1,-1,1,-1,-1,1,-1,1,1,-1,1,-1],[1,E(4),-1,-E(4),E(4),-1,-E(4),
 -E(4)],[2,-2,2,-2,0,0,0,0,-2,2,-2,2]]);
 ACM("elab",5,[[1,1,1,1,1],[3,1,-1,-1-2*E(4),-1+2*E(4)],[3,-1,3,-1,-1],[3,1,-1,
 -1+2*E(4),-1-2*E(4)],[6,-2,-2,2,2]]);
+ACM("elab",4,[[1,1,1,1],[1,1,-1,-1],[63,-1,-9,7],[63,-1,9,-7]]);
+ACM("elab",4,[[1,1,1,1],[1,1,-1,-1],[63,-1,-9,7],[63,-1,9,-7]]);
+ACM("elab",6,[[1,1,1,1,1,1],[1,1,1,-1,-1,-1],[1,1,-1,-1,1,1],[30,-2,0,0,-10,
+6],[1,1,-1,1,-1,-1],[30,-2,0,0,10,-6]]);
+ACM("elab",6,[[1,1,1,1,1,1],[1,1,1,-1,-1,-1],[3,3,-1,3,3,-1],[12,-4,0,-12,4,
+0],[3,3,-1,-3,-3,1],[12,-4,0,12,-4,0]]);
+ACM("elab",8,[[1,1,1,1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,-1,1,1,1,-1],[12,
+-4,0,0,0,-12,4,0],[2,2,-2,0,-2,2,2,0],[1,1,1,-1,-1,-1,-1,1],[12,-4,0,0,0,12,
+-4,0],[2,2,-2,0,2,-2,-2,0]]);
 
 LIBTABLE.LOADSTATUS.clmelab:="userloaded";
 

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*F  records.h                   GAP source                   Martin Schoenert
+*W  records.h                   GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -12,13 +12,14 @@
 **  records and the elements for the other packages in the GAP kernel.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_records_h =
+SYS_CONST char * Revision_records_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *F  NAME_RNAM(<rnam>) . . . . . . . . . . . . . . . .  name for a record name
 **
 **  'NAME_RNAM' returns the name (as a C string) for the record name <rnam>.
@@ -166,11 +167,37 @@ extern UInt completion_rnam (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupRecords()  . . . . . . . . .  initialize the generic records package
+*/
+extern void SetupRecords ( void );
+
+
+/****************************************************************************
+**
 *F  InitRecords() . . . . . . . . . .  initialize the generic records package
 **
 **  'InitRecords' initializes the generic records package.
 */
-extern  void            InitRecords ( void );
+extern void InitRecords ( void );
 
 
+/****************************************************************************
+**
+*F  CheckRecords()  . check the initialisation of the generic records package
+*/
+extern void CheckRecords ( void );
+
+
+/****************************************************************************
+**
+
+*E  records.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 

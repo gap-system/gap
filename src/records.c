@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*F  records.c                   GAP source                   Martin Schoenert
+*W  records.c                   GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -11,34 +11,39 @@
 **  This package  provides a uniform  interface to  the functions that access
 **  records and the elements for the other packages in the GAP kernel.
 */
-char *          Revision_records_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_records_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gvars.h"               /* global variables                */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
-
-#include        "calls.h"               /* NewFunctionC                    */
-#include        "opers.h"               /* NewOperationC, DoOperation2Args */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
 
 #define INCLUDE_DECLARATION_PART
-#include        "records.h"             /* declaration part of the package */
+#include        "records.h"             /* generic records                 */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "bool.h"                /* True, False                     */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "plist.h"               /* NEW_PLIST, SET_LEN_PLIST, SET...*/
-#include        "string.h"              /* NEW_STRING, CSTR_STRING         */
+#include        "bool.h"                /* booleans                        */
 
-#include        "gap.h"                 /* Error                           */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
 **
+
 *F  CountRnam . . . . . . . . . . . . . . . . . . . .  number of record names
 **
 **  'CountRnam' is the number of record names.
@@ -205,8 +210,6 @@ UInt            RNamObj (
 **  'RNamObj' returns the record name  corresponding  to  the  object  <obj>,
 **  which currently must be a string or an integer.
 */
-Obj             RNamObjFunc;
-
 Obj             RNamObjHandler (
     Obj                 self,
     Obj                 obj )
@@ -237,7 +240,7 @@ Obj             NameRNamHandler (
         || CountRNam < INT_INTOBJ(rnam) ) {
         rnam = ErrorReturnObj(
             "NameRName: <rnam> must be a record name (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(rnam)].name), 0L,
+            (Int)TNAM_OBJ(rnam), 0L,
             "you can return a record name for <rnam>" );
     }
     name = NEW_STRING( SyStrlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
@@ -327,7 +330,7 @@ Obj             ElmRecError (
 {
     rec = ErrorReturnObj(
         "Record Element: <rec> must be a record (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
+        (Int)TNAM_OBJ(rec), 0L,
         "you can return a record for <rec>" );
     return ELM_REC( rec, rnam );
 }
@@ -336,7 +339,13 @@ Obj             ElmRecObject (
     Obj                 obj,
     UInt                rnam )
 {
-    return DoOperation2Args( ElmRecOper, obj, INTOBJ_INT(rnam) );
+  Obj elm;
+  elm = DoOperation2Args( ElmRecOper, obj, INTOBJ_INT(rnam) );
+  while (elm == 0)
+    elm =  ErrorReturnObj("Record access method must return a value",0L,0L,
+                          "you can return a value or quit");
+  return elm;
+
 }
 
 
@@ -374,7 +383,7 @@ Int             IsbRecError (
 {
     rec = ErrorReturnObj(
         "IsBound: <rec> must be a record (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
+        (Int)TNAM_OBJ(rec), 0L,
         "you can return a record for <rec>" );
     return ISB_REC( rec, rnam );
 }
@@ -421,7 +430,7 @@ void            AssRecError (
 {
     rec = ErrorReturnObj(
         "Record Assignment: <rec> must be a record (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
+        (Int)TNAM_OBJ(rec), 0L,
         "you can return a record for <rec>" );
     ASS_REC( rec, rnam, obj );
 }
@@ -469,7 +478,7 @@ void            UnbRecError (
 {
     rec = ErrorReturnObj(
         "Unbind: <rec> must be a record (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
+        (Int)TNAM_OBJ(rec), 0L,
         "you can return a record for <rec>" );
     UNB_REC( rec, rnam );
 }
@@ -534,38 +543,20 @@ UInt            completion_rnam (
 
 /****************************************************************************
 **
-*F  InitRecords() . . . . . . . . . .  initialize the generic records package
-**
-**  'InitRecords' initializes the generic records package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitRecords ( void )
+
+/****************************************************************************
+**
+
+*F  SetupRecords()  . . . . . . . . .  initialize the generic records package
+*/
+void SetupRecords ( void )
 {
     UInt                type;           /* loop variable                   */
 
-    /* make the list of names of record names                              */
-    CountRNam = 0;
-    InitGlobalBag( &NamesRNam, "record: NamesRNam" );
-    NamesRNam = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( NamesRNam, 0 );
-
-    /* make the hash list of record names                                  */
-    SizeRNam = 997;
-    InitGlobalBag( &HashRNam, "record: HashRNam" );
-    HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
-    SET_LEN_PLIST( HashRNam, SizeRNam );
-
-    /* make and install the 'RNamObj' and 'NameRName' functions            */
-    InitHandlerFunc( RNamObjHandler, "RNamObj" );
-    RNamObjFunc = NewFunctionC( "RNamObj", 1L, "obj", RNamObjHandler );
-    AssGVar( GVarName( "RNamObj" ), RNamObjFunc );
-    InitHandlerFunc( NameRNamHandler, "NameRNam" );
-    NameRNamFunc = NewFunctionC( "NameRNam", 1L, "rnam", NameRNamHandler );
-    AssGVar( GVarName( "NameRNam" ), NameRNamFunc );
-
     /* make and install the 'IS_REC' filter                                */
-    InitHandlerFunc( IsRecHandler, "IS_REC" );
-    IsRecFilt = NewFilterC( "IS_REC", 1L, "obj", IsRecHandler );
-    AssGVar( GVarName( "IS_REC" ), IsRecFilt );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsRecFuncs[ type ] = IsRecNot;
     }
@@ -576,11 +567,8 @@ void            InitRecords ( void )
         IsRecFuncs[ type ] = IsRecObject;
     }
 
+
     /* make and install the 'ELM_REC' operations                           */
-    InitHandlerFunc( ElmRecHandler, "ELM_REC" );
-    ElmRecOper = NewOperationC( "ELM_REC", 2L, "obj, rnam",
-                                ElmRecHandler );
-    AssGVar( GVarName( "ELM_REC" ), ElmRecOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         ElmRecFuncs[ type ] = ElmRecError;
     }
@@ -588,11 +576,8 @@ void            InitRecords ( void )
         ElmRecFuncs[ type ] = ElmRecObject;
     }
 
+
     /* make and install the 'ISB_REC' operation                            */
-    InitHandlerFunc( IsbRecHandler, "ISB_REC" );
-    IsbRecOper = NewOperationC( "ISB_REC", 2L, "obj, rnam",
-                                IsbRecHandler );
-    AssGVar( GVarName( "ISB_REC" ), IsbRecOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsbRecFuncs[ type ] = IsbRecError;
     }
@@ -600,11 +585,8 @@ void            InitRecords ( void )
         IsbRecFuncs[ type ] = IsbRecObject;
     }
 
+
     /* make and install the 'ASS_REC' operation                            */
-    InitHandlerFunc( AssRecHandler, "ASS_REC" );
-    AssRecOper = NewOperationC( "ASS_REC", 3L, "obj, rnam, val",
-                                AssRecHandler );
-    AssGVar( GVarName( "ASS_REC" ), AssRecOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         AssRecFuncs[ type ] = AssRecError;
     }
@@ -612,19 +594,101 @@ void            InitRecords ( void )
         AssRecFuncs[ type ] = AssRecObject;
     }
 
+
     /* make and install the 'UNB_REC' operation                            */
-    InitHandlerFunc( UnbRecHandler, "UNB_REC" );
-    UnbRecOper = NewOperationC( "UNB_REC", 2L, "obj, rnam",
-                                UnbRecHandler );
-    AssGVar( GVarName( "UNB_REC" ), UnbRecOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         UnbRecFuncs[ type ] = UnbRecError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         UnbRecFuncs[ type ] = UnbRecObject;
     }
-
 }
 
 
+
+/****************************************************************************
+**
+*F  InitRecords() . . . . . . . . . .  initialize the generic records package
+**
+**  'InitRecords' initializes the generic records package.
+*/
+void InitRecords ( void )
+{
+    /* make the list of names of record names                              */
+    InitGlobalBag( &NamesRNam, "src/records.c:NamesRNam" );
+    if ( 1 || ! SyRestoring ) {
+        CountRNam = 0;
+        NamesRNam = NEW_PLIST( T_PLIST, 0 );
+        SET_LEN_PLIST( NamesRNam, 0 );
+    }
+    else {
+        CountRNam = LEN_PLIST(NamesRNam);
+    }
+
+
+    /* make the hash list of record names                                  */
+    InitGlobalBag( &HashRNam, "src/records.c:HashRNam" );
+    if ( 1 || ! SyRestoring ) {
+        SizeRNam = 997;
+        HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
+        SET_LEN_PLIST( HashRNam, SizeRNam );
+    }
+    else {
+        SizeRNam = LEN_PLIST(HashRNam);
+    }
+
+
+    /* make and install the 'RNamObj' and 'NameRName' functions            */
+    C_NEW_GVAR_FUNC( "RNamObj", 1, "obj",
+                      RNamObjHandler,
+       "src/records.c:RNamObj" );
+
+    C_NEW_GVAR_FUNC( "NameRNam", 1, "rnam",
+                      NameRNamHandler,
+       "src/records.c:NameRNam" );
+
+
+    /* make and install the 'IS_REC' filter                                */
+    C_NEW_GVAR_FILT( "IS_REC", "obj", IsRecFilt, IsRecHandler,
+       "src/records.c:IS_REC" );
+
+
+    /* make and install the 'ELM_REC' operations                           */
+    C_NEW_GVAR_OPER( "ELM_REC",  2L, "obj, rnam", ElmRecOper, ElmRecHandler,
+       "src/records.c:ELM_REC" );
+
+
+    /* make and install the 'ISB_REC' operation                            */
+    C_NEW_GVAR_OPER( "ISB_REC",  2L, "obj, rnam", IsbRecOper, IsbRecHandler,
+       "src/records.c:ISB_REC" );
+
+
+    /* make and install the 'ASS_REC' operation                            */
+    C_NEW_GVAR_OPER( "ASS_REC",  3L, "obj, rnam, val", AssRecOper, AssRecHandler,
+       "src/records.c:ASS_REC" );
+
+
+    /* make and install the 'UNB_REC' operation                            */
+    C_NEW_GVAR_OPER( "UNB_REC",  2L, "obj, rnam", UnbRecOper, UnbRecHandler,
+       "src/records.c:UNB_REC" );
+}
+
+
+
+/****************************************************************************
+**
+*F  CheckRecords()  . check the initialisation of the generic records package
+*/
+void CheckRecords ( void )
+{
+    SET_REVISION( "records_c",  Revision_records_c );
+    SET_REVISION( "records_h",  Revision_records_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  records.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 

@@ -1436,10 +1436,15 @@ Congruences := function( arg )
       for cand_image in images do
         j:= 1;
         ok:= true;
-        while j <= Length( chars ) and ok do   # loop over characters
+        while ok and j <= Length( chars ) do   # loop over characters
           char:= chars[j];
-          if not IsUnknown( char[ cand_image ] ) then
-            if IsInt( char[i] ) then
+          if     not IsUnknown( char[ cand_image ] )
+             and not IsUnknown( char[i] ) then
+            if char[1] = 1 then
+              if char[i]^prime <> char[ cand_image ] then
+                ok:= false;
+              fi;
+            elif IsInt( char[i] ) then
               if not IsCycInt( ( char[ cand_image ] - char[i] ) / prime ) then
                 ok:= false;
               fi;
@@ -1475,13 +1480,13 @@ Congruences := function( arg )
     # look for empty lists.
     errors:= [];
     for i in omega do
-      if   Length( powermap[i] ) = 0 then
+      if   IsEmpty( powermap[i] ) then
         Add( errors, i );
       elif Length( powermap[i] ) = 1 then
         powermap[i]:= powermap[i][1];
       fi;
     od;
-    if Length( errors ) > 0 then
+    if not IsEmpty( errors ) then
       Info( InfoCharacterTable, 1,
             "Congruences(.,.,.,", prime,
             "): no image possible for classes ", errors );
@@ -3413,12 +3418,13 @@ ContainedDecomposables := function( constituents, moduls, parachar, func )
             firstallowed, step, gencharacter, newvalues;
 
       abgespalten:= [];
-      while uniques <> [] do
+      while not IsEmpty( uniques ) do
         for col in uniques do
           candidate[col]:= ( candidate[col] + images[col] ) mod moduls[col];
           row:= StepModGauss( matrix, moduls, nonzerocol, col );
           if row <> fail then
             abgespalten[ Length( abgespalten ) + 1 ]:= row;
+#T Add !
             if candidate[ col ] mod row[ col ] <> 0 then
               impossible:= true;
               return abgespalten;
@@ -3455,7 +3461,7 @@ ContainedDecomposables := function( constituents, moduls, parachar, func )
                 AddSet( newvalues, j );
               fi;
             od;
-            if newvalues = [] then                   # contradiction
+            if IsEmpty( newvalues ) then             # contradiction
               impossible:= true;
               return abgespalten;
             elif Length( newvalues ) = 1 then        # unique

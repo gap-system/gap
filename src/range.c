@@ -48,32 +48,39 @@
 **
 **  The  third part consists  ...
 */
-char *          Revision_range_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_range_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* system dependent functions      */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gvars.h"               /* global variables                */
 
 #include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations package      */
+#include        "opers.h"               /* generic operations              */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* generic list package            */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "bool.h"                /* True, False                     */
+#include        "ariths.h"              /* basic arithmetic                */
 
-#include        "plist.h"               /* GET_LEN_PLIST, GET_ELM_PLIST,...*/
+#include        "bool.h"                /* booleans                        */
 
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
 #define INCLUDE_DECLARATION_PART
-#include        "range.h"               /* declaration part of the package */
+#include        "range.h"               /* ranges                          */
 #undef  INCLUDE_DECLARATION_PART
+#include        "string.h"              /* strings                         */
 
-#include        "gap.h"                 /* Error                           */
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
@@ -1047,57 +1054,177 @@ Obj             IsRangeHandler (
 
 /****************************************************************************
 **
-
-*F  InitRange() . . . . . . . . . . . . . . . .  initialize the range package
+*F  SaveRange( <range> )
 **
-**  'InitRange' initializes the range package.
 */
-void            InitRange ( void )
+
+void SaveRange( Obj range )
+{
+  SaveSubObj(ADDR_OBJ(range)[0]); /* length */
+  SaveSubObj(ADDR_OBJ(range)[1]); /* base */
+  SaveSubObj(ADDR_OBJ(range)[2]); /* increment */
+}
+
+/****************************************************************************
+**
+*F  LoadRange( <range> )
+**
+*/
+
+void LoadRange( Obj range )
+{
+  ADDR_OBJ(range)[0] = LoadSubObj(); /* length */
+  ADDR_OBJ(range)[1] = LoadSubObj(); /* base */
+  ADDR_OBJ(range)[2] = LoadSubObj(); /* increment */
+}
+
+
+/****************************************************************************
+**
+*F  Range2Check( <first>, <last> )  . . . . . . . . . . . . . construct range
+*/
+Obj Range2Check (
+    Obj                 first,
+    Obj                 last )
+{
+    Obj                 range;
+    Int                 f, l;
+    if ( ! IS_INTOBJ(first) ) {
+        ErrorQuit(
+            "Range: <first> must be a positive small integer (not a %s)",
+            (Int)TNAM_OBJ(first), 0L );
+    }
+    f = INT_INTOBJ(first);
+    if ( ! IS_INTOBJ(last) ) {
+        ErrorQuit(
+            "Range: <last> must be a positive small integer (not a %s)",
+            (Int)TNAM_OBJ(last), 0L );
+    }
+    l = INT_INTOBJ(last);
+    if ( f > l ) {
+        range = NEW_PLIST( T_PLIST, 0 );
+        SET_LEN_PLIST( range, 0 );
+    }
+    else if ( f == l ) {
+        range = NEW_PLIST( T_PLIST, 1 );
+        SET_LEN_PLIST( range, 1 );
+        SET_ELM_PLIST( range, 1, first );
+    }
+    else {
+        range = NEW_RANGE_SSORT();
+        SET_LEN_RANGE( range, (l-f) + 1 );
+        SET_LOW_RANGE( range, f );
+        SET_INC_RANGE( range, 1 );
+    }
+    return range;
+}
+
+
+/****************************************************************************
+**
+*F  Range3Check( <first>, <second>, <last> )  . . . . . . . . construct range
+*/
+Obj Range3Check (
+    Obj                 first,
+    Obj                 second,
+    Obj                 last )
+{
+    Obj                 range;
+    Int                 f, i, l;
+    if ( ! IS_INTOBJ(first) ) {
+        ErrorQuit(
+            "Range: <first> must be a positive small integer (not a %s)",
+            (Int)TNAM_OBJ(first), 0L );
+    }
+    f = INT_INTOBJ(first);
+    if ( ! IS_INTOBJ(second) ) {
+        ErrorQuit(
+            "Range: <second> must be a positive small integer (not a %s)",
+            (Int)TNAM_OBJ(second), 0L );
+    }
+    if ( first == second ) {
+        ErrorQuit(
+            "Range: <second> must not be equal to <first> (%d)",
+            (Int)INT_INTOBJ(first), 0L );
+    }
+    i = INT_INTOBJ(second) - f;
+    if ( ! IS_INTOBJ(last) ) {
+        ErrorQuit(
+            "Range: <last> must be a positive small integer (not a %s)",
+            (Int)TNAM_OBJ(last), 0L );
+    }
+    l = INT_INTOBJ(last);
+    if ( (l - f) % i != 0 ) {
+        ErrorQuit(
+            "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
+            (Int)(l - f), (Int)i );
+    }
+    if ( (0 < i && f > l) || (i < 0 && f < l) ) {
+        range = NEW_PLIST( T_PLIST, 0 );
+        SET_LEN_PLIST( range, 0 );
+    }
+    else if ( f == l ) {
+        range = NEW_PLIST( T_PLIST, 1 );
+        SET_LEN_PLIST( range, 1 );
+        SET_ELM_PLIST( range, 1, first );
+    }
+    else {
+        if ( 0 < i )
+            range = NEW_RANGE_SSORT();
+        else
+            range = NEW_RANGE_NSORT();
+        SET_LEN_RANGE( range, (l - f) / i + 1 );
+        SET_LOW_RANGE( range, f );
+        SET_INC_RANGE( range, i );
+    }
+    return range;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupRange() . . . . . . . . . . . . . . . . initialize the range package
+*/
+void SetupRange ( void )
 {
     /* install the marking functions                                       */
-    InfoBags[           T_RANGE_NSORT                     ].name
-        = "list (range)";
+    InfoBags[           T_RANGE_NSORT                     ].name = "list (range,nsort)";
+    InfoBags[           T_RANGE_NSORT +IMMUTABLE          ].name = "list (range,nsort,imm)";
+    InfoBags[           T_RANGE_SSORT                     ].name = "list (range,ssort)";
+    InfoBags[           T_RANGE_SSORT +IMMUTABLE          ].name = "list (range,ssort,imm)";
+    InfoBags[           T_RANGE_NSORT            +COPYING ].name = "list (range,nsort,copied)";
+    InfoBags[           T_RANGE_NSORT +IMMUTABLE +COPYING ].name = "list (range,nsort,imm,copied)";
+    InfoBags[           T_RANGE_SSORT            +COPYING ].name = "list (range,ssort,copied)";
+    InfoBags[           T_RANGE_SSORT +IMMUTABLE +COPYING ].name = "list (range,ssort,imm,copied)";
+
     InitMarkFuncBags(   T_RANGE_NSORT                     , MarkAllSubBags );
-    InfoBags[           T_RANGE_NSORT +IMMUTABLE          ].name
-        = "list (range)";
     InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE          , MarkAllSubBags );
-    InfoBags[           T_RANGE_SSORT                     ].name
-        = "list (range)";
     InitMarkFuncBags(   T_RANGE_SSORT                     , MarkAllSubBags );
-    InfoBags[           T_RANGE_SSORT +IMMUTABLE          ].name
-        = "list (range)";
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE          , MarkAllSubBags );
-    InfoBags[           T_RANGE_NSORT            +COPYING ].name
-        = "list (range), copied";
     InitMarkFuncBags(   T_RANGE_NSORT            +COPYING , MarkAllSubBags );
-    InfoBags[           T_RANGE_NSORT +IMMUTABLE +COPYING ].name
-        = "list (range), copied";
     InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE +COPYING , MarkAllSubBags );
-    InfoBags[           T_RANGE_SSORT            +COPYING ].name
-        = "list (range), copied";
     InitMarkFuncBags(   T_RANGE_SSORT            +COPYING , MarkAllSubBags );
-    InfoBags[           T_RANGE_SSORT +IMMUTABLE +COPYING ].name
-        = "list (range), copied";
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE +COPYING , MarkAllSubBags );
 
 
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
-                           &TYPE_RANGE_NSORT_MUTABLE );
+    /* Saving functions */
+    SaveObjFuncs[T_RANGE_NSORT            ] = SaveRange;
+    SaveObjFuncs[T_RANGE_NSORT +IMMUTABLE ] = SaveRange;
+    SaveObjFuncs[T_RANGE_SSORT            ] = SaveRange;
+    SaveObjFuncs[T_RANGE_SSORT +IMMUTABLE ] = SaveRange;
+    LoadObjFuncs[T_RANGE_NSORT            ] = LoadRange;
+    LoadObjFuncs[T_RANGE_NSORT +IMMUTABLE ] = LoadRange;
+    LoadObjFuncs[T_RANGE_SSORT            ] = LoadRange;
+    LoadObjFuncs[T_RANGE_SSORT +IMMUTABLE ] = LoadRange;
 
-    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_MUTABLE",
-                           &TYPE_RANGE_SSORT_MUTABLE );
-
-    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_IMMUTABLE",
-                           &TYPE_RANGE_NSORT_IMMUTABLE );
-
-    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_IMMUTABLE",
-                           &TYPE_RANGE_SSORT_IMMUTABLE );
-
-    TypeObjFuncs[ T_RANGE_NSORT            ] = TypeRangeNSortMutable;
-    TypeObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = TypeRangeNSortImmutable;
-    TypeObjFuncs[ T_RANGE_SSORT            ] = TypeRangeSSortMutable;
-    TypeObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = TypeRangeSSortImmutable;
 
     /* install the copy methods                                            */
     CopyObjFuncs [ T_RANGE_NSORT                     ] = CopyRange;
@@ -1117,11 +1244,13 @@ void            InitRange ( void )
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = CleanRange;
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
 
+
     /* install the print method                                            */
     PrintObjFuncs[ T_RANGE_NSORT            ] = PrintRange;
     PrintObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = PrintRange;
     PrintObjFuncs[ T_RANGE_SSORT            ] = PrintRange;
     PrintObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = PrintRange;
+
 
     /* install the comparison methods                                      */
     EqFuncs[ T_RANGE_NSORT ][ T_RANGE_NSORT ] = EqRange;
@@ -1132,6 +1261,7 @@ void            InitRange ( void )
     LtFuncs[ T_RANGE_NSORT ][ T_RANGE_SSORT ] = LtRange;
     LtFuncs[ T_RANGE_SSORT ][ T_RANGE_NSORT ] = LtRange;
     LtFuncs[ T_RANGE_SSORT ][ T_RANGE_SSORT ] = LtRange;
+
 
     /* install the list functions in the tables                            */
     LenListFuncs    [ T_RANGE_NSORT            ] = LenRange;
@@ -1202,12 +1332,50 @@ void            InitRange ( void )
     PlainListFuncs  [ T_RANGE_NSORT +IMMUTABLE ] = PlainRange;
     PlainListFuncs  [ T_RANGE_SSORT            ] = PlainRange;
     PlainListFuncs  [ T_RANGE_SSORT +IMMUTABLE ] = PlainRange;
+}
+
+
+/****************************************************************************
+**
+*F  InitRange() . . . . . . . . . . . . . . . .  initialize the range package
+**
+**  'InitRange' initializes the range package.
+*/
+void InitRange ( void )
+{
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
+                           &TYPE_RANGE_NSORT_MUTABLE );
+
+    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_MUTABLE",
+                           &TYPE_RANGE_SSORT_MUTABLE );
+
+    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_IMMUTABLE",
+                           &TYPE_RANGE_NSORT_IMMUTABLE );
+
+    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_IMMUTABLE",
+                           &TYPE_RANGE_SSORT_IMMUTABLE );
+
+    TypeObjFuncs[ T_RANGE_NSORT            ] = TypeRangeNSortMutable;
+    TypeObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = TypeRangeNSortImmutable;
+    TypeObjFuncs[ T_RANGE_SSORT            ] = TypeRangeSSortMutable;
+    TypeObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = TypeRangeSSortImmutable;
+
 
     /* install the internal function                                       */
-    InitHandlerFunc( IsRangeHandler, "IsRange" );
-    IsRangeFilt = NewFilterC( "IsRange", 1L, "obj",
-                                IsRangeHandler );
-    AssGVar( GVarName( "IS_RANGE" ), IsRangeFilt );
+    C_NEW_GVAR_FILT( "IS_RANGE", "obj", IsRangeFilt, IsRangeHandler,
+         "src/range.c:IS_RANGE" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckRange()  . . . . . . . check the initialisation of the range package
+*/
+void CheckRange ( void )
+{
+    SET_REVISION( "range_c",    Revision_range_c );
+    SET_REVISION( "range_h",    Revision_range_h );
 }
 
 

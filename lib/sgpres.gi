@@ -1159,6 +1159,7 @@ PresentationAugmentedCosetTable := function ( arg )
     comps := [ 1 .. numgens ];
 
     # define the remaining Tietze stack entries.
+    tietze[TZ_FREEGENS] := fgens;
     tietze[TZ_NUMGENS] := numgens;
     tietze[TZ_GENERATORS] := List( [ 1 .. numgens ], i -> fgens[i] );
     tietze[TZ_INVERSES] := invs;
@@ -2040,7 +2041,7 @@ end;
 
 #############################################################################
 ##
-#F  SortRelsSortedByStartGen(<relsGen>) sort the relators sorted by start gen
+#M  SortRelsSortedByStartGen(<relsGen>) sort the relators sorted by start gen
 ##
 ##  'SortRelsSortedByStartGen' sorts the relators lists  sorted  by  starting
 ##  generator to get better  results  of  the  Reduced  Reidemeister-Schreier

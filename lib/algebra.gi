@@ -1328,7 +1328,7 @@ InstallMethod( AsFLMLORWithOne,
 
       A:= FLMLORWithOne( F, GeneratorsOfLeftModule( V ) );
       if A <> V then
-        Error( "<V> is not a FLMLOR-with-one" );
+        return fail;
       fi;
       if HasBasisOfDomain( V ) then
         SetBasisOfDomain( A, BasisOfDomain( V ) );
@@ -1342,7 +1342,7 @@ InstallMethod( AsFLMLORWithOne,
                                              y -> x * y ) ) );
       A:= FLMLORWithOne( F, L );
       if A <> V then
-        Error( "<V> is not a FLMLOR-with-one" );
+        return fail;
       fi;
 
     elif IsSubset( F, LeftActingDomain( V ) ) then
@@ -1351,11 +1351,11 @@ InstallMethod( AsFLMLORWithOne,
       L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(V), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfLeftModule( V ),
                                  y -> not x * y in V ) ) then
-        Error( "field change leads out of <V>" );
+        return fail;
       fi;
       A:= FLMLORWithOne( F, GeneratorsOfLeftModule( V ) );
       if A <> V then
-        Error( "<V> is not a FLMLOR-with-one" );
+        return fail;
       fi;
 
     else
@@ -1409,7 +1409,7 @@ InstallMethod( AsFLMLORWithOne,
       L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
-        Error( "field change leads out of <D>" );
+        return fail;
       fi;
       A:= FLMLORWithOne( F, GeneratorsOfLeftOperatorRing( D ) );
 
@@ -1459,7 +1459,7 @@ InstallMethod( AsFLMLORWithOne,
       L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
-        Error( "field change leads out of the algebra" );
+        return fail;
       fi;
       A:= AlgebraWithOne( F, GeneratorsOfAlgebra( D ) );
 
@@ -1815,7 +1815,7 @@ InstallMethod( IsSubset,
 ##  For associative algebras(-with-one), we need to check only the products
 ##  of algebra(-with-one) generators.
 ##
-InstallOtherMethod( IsLeftIdeal,
+InstallOtherMethod( IsLeftIdealOp,
     "method for FLMLOR and free left module",
     IsIdentical,
     [ IsFLMLOR, IsFreeLeftModule ], 0,
@@ -1823,7 +1823,7 @@ InstallOtherMethod( IsLeftIdeal,
                                GeneratorsOfLeftModule,
                                GeneratorsOfLeftModule ) );
 
-InstallOtherMethod( IsLeftIdeal,
+InstallOtherMethod( IsLeftIdealOp,
     "method for associative FLMLOR and free left module",
     IsIdentical,
     [ IsFLMLOR and IsAssociative, IsFreeLeftModule ], 0,
@@ -1831,7 +1831,7 @@ InstallOtherMethod( IsLeftIdeal,
                                GeneratorsOfLeftOperatorRing,
                                GeneratorsOfLeftModule ) );
 
-InstallOtherMethod( IsLeftIdeal,
+InstallOtherMethod( IsLeftIdealOp,
     "method for associative FLMLOR-with-one and free left module",
     IsIdentical,
     [ IsFLMLORWithOne and IsAssociative, IsFreeLeftModule ], 0,
@@ -1839,7 +1839,7 @@ InstallOtherMethod( IsLeftIdeal,
                                GeneratorsOfLeftOperatorRingWithOne,
                                GeneratorsOfLeftModule ) );
 
-InstallMethod( IsLeftIdeal,
+InstallMethod( IsLeftIdealOp,
     "method for associative FLMLOR and FLMLOR",
     IsIdentical,
     [ IsFLMLOR and IsAssociative, IsFLMLOR ], 0,
@@ -1859,7 +1859,7 @@ InstallMethod( IsLeftIdeal,
 ##  For associative algebras(-with-one), we need to check only the products
 ##  of algebra(-with-one) generators.
 ##
-InstallOtherMethod( IsRightIdeal,
+InstallOtherMethod( IsRightIdealOp,
     "method for FLMLOR and free left module",
     IsIdentical,
     [ IsFLMLOR, IsFreeLeftModule ], 0,
@@ -1867,7 +1867,7 @@ InstallOtherMethod( IsRightIdeal,
                                 GeneratorsOfLeftModule,
                                 GeneratorsOfLeftModule ) );
 
-InstallOtherMethod( IsRightIdeal,
+InstallOtherMethod( IsRightIdealOp,
     "method for associative FLMLOR and free left module",
     IsIdentical,
     [ IsFLMLOR and IsAssociative, IsFreeLeftModule ], 0,
@@ -1875,7 +1875,7 @@ InstallOtherMethod( IsRightIdeal,
                                 GeneratorsOfLeftOperatorRing,
                                 GeneratorsOfLeftModule ) );
 
-InstallOtherMethod( IsRightIdeal,
+InstallOtherMethod( IsRightIdealOp,
     "method for associative FLMLOR-with-one and free left module",
     IsIdentical,
     [ IsFLMLORWithOne and IsAssociative, IsFreeLeftModule ], 0,
@@ -1883,7 +1883,7 @@ InstallOtherMethod( IsRightIdeal,
                                 GeneratorsOfLeftOperatorRingWithOne,
                                 GeneratorsOfLeftModule ) );
 
-InstallMethod( IsRightIdeal,
+InstallMethod( IsRightIdealOp,
     "method for associative FLMLOR and FLMLOR",
     IsIdentical,
     [ IsFLMLOR and IsAssociative, IsFLMLOR ], 0,
@@ -2032,7 +2032,7 @@ InstallMethod( AsSubalgebra,
     function( A, U )
     local S;
     if not IsSubset( A, U ) then
-      Error( "<U> must be a subset of <A>" );
+      return fail;
     fi;
 
     # Construct the generators list.
@@ -2057,7 +2057,7 @@ InstallMethod( AsSubalgebra,
     function( A, U )
     local S;
     if not IsSubset( A, U ) then
-      Error( "<U> must be a subset of <A>" );
+      return fail;
     fi;
 
     # Construct the generators list.
@@ -2084,10 +2084,8 @@ InstallMethod( AsSubalgebraWithOne,
     IsIdentical, [ IsAlgebra, IsAlgebra ], 0,
     function( A, U )
     local S;
-    if not IsSubset( A, U ) then
-      Error( "<U> must be a subset of <A>" );
-    elif One( U ) = fail then
-      Error( "<U> does not contain an identity element" );
+    if not IsSubset( A, U ) or One( U ) = fail then
+      return fail;
     fi;
 
     if LeftActingDomain( A ) <> LeftActingDomain( U ) then
@@ -2110,7 +2108,7 @@ InstallMethod( AsSubalgebraWithOne,
     function( A, U )
     local S;
     if not IsSubset( A, U ) then
-      Error( "<U> must be a subset of <A>" );
+      return fail;
     fi;
 
     if LeftActingDomain( A ) <> LeftActingDomain( U ) then
@@ -2259,7 +2257,7 @@ end;
 ##
 #M  Centralizer( <A>, <S> ) . . . . . . cent. of a vector space in an algebra
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for a finite dimensional algebra and a vector space with parent",
     IsIdentical,
     [ IsAlgebra, IsVectorSpace and HasParent ], 0,
@@ -2277,7 +2275,7 @@ InstallMethod( Centralizer,
 ##
 #M  Centralizer( <A>, <S> ) . .  cent. of a vector space in an assoc. algebra
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for a fin. dim. assoc. algebra and a vector space with parent",
     IsIdentical,
     [ IsAlgebra and IsAssociative, IsVectorSpace and HasParent ], 0,
@@ -2295,7 +2293,7 @@ InstallMethod( Centralizer,
 ##
 #M  Centralizer( <A>, <S> ) . . . . . . cent. of a vector space in an algebra
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for a finite dimensional algebra and a vector space",
     IsIdentical,
     [ IsAlgebra, IsVectorSpace ], 0,
@@ -2313,7 +2311,7 @@ InstallMethod( Centralizer,
 ##
 #M  Centralizer( <A>, <S> ) . .  cent. of a vector space in an assoc. algebra
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for a fin. dim. assoc. algebra and a vector space",
     IsIdentical,
     [ IsAlgebra and IsAssociative, IsVectorSpace ], 0,
@@ -2331,7 +2329,7 @@ InstallMethod( Centralizer,
 ##
 #M  Centralizer( <A>, <elm> ) . . . . . . . cent. of an element in an algebra
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for an algebra and an element",
     IsCollsElms,
     [ IsAlgebra, IsObject ], 0,
@@ -2502,12 +2500,20 @@ InstallMethod( ProductSpace,
     # Look for the ideal relation that allows to construct an ideal.
     if IsIdentical( U, V ) then
       P:= U;
-    elif HasParent( V ) and IsIdentical( Parent( V ), U ) then
+    elif HasParent( V ) and IsIdentical( Parent( V ), U )
+                        and HasIsIdealInParent( V )
+                        and IsIdealInParent( V ) then
       P:= U;
-    elif HasParent( U ) and IsIdentical( Parent( U ), V ) then
+    elif HasParent( U ) and IsIdentical( Parent( U ), V )
+                        and HasIsIdealInParent( U )
+                        and IsIdealInParent( U ) then
       P:= V;
-    elif     HasParent( U ) and HasParent( V )
-         and IsIdentical( Parent( V ), Parent( U ) ) then
+    elif HasParent( U ) and HasParent( V )
+                        and IsIdentical( Parent( V ), Parent( U ) )
+                        and HasIsIdealInParent( U )
+                        and IsIdealInParent( U )
+                        and HasIsIdealInParent( V )
+                        and IsIdealInParent( V ) then
       P:= Parent( U );
     else
       TryNextMethod();

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  cyclotom.c                  GAP source                   Martin Schoenert
+*W  cyclotom.c                  GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -85,34 +85,42 @@
 **  The terms are sorted with respect to the exponent.  Note that none of the
 **  arithmetic functions need this, but it makes the equality test simpler.
 */
-char *          Revision_cyclotom_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_cyclotom_c =
+   "@(#)$Id$";
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "calls.h"               /* NewFunctionC                    */
-#include        "opers.h"               /* NewFilterC, NewOperationC       */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* generic lists package           */
+#include        "gvars.h"               /* global variables                */
 
-#include        "bool.h"                /* True, False                     */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
 
-#include        "integer.h"             /* SumInt, DiffInt, ProdInt, Quo...*/
+#include        "ariths.h"              /* basic arithmetic                */
+
+#include        "bool.h"                /* booleans                        */
+
+#include        "integer.h"             /* integers                        */
 
 #define INCLUDE_DECLARATION_PART
-#include        "cyclotom.h"            /* declaration part of the package */
+#include        "cyclotom.h"            /* cyclotomics                     */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "plist.h"               /* plain lists                     */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gap.h"                 /* Error                           */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
+
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
@@ -127,6 +135,7 @@ char *          Revision_cyclotom_c =
 
 /****************************************************************************
 **
+
 *V  ResultCyc . . . . . . . . . . . .  temporary buffer for the result, local
 **
 **  'ResultCyc' is used  by all the arithmetic functions  as a buffer for the
@@ -1413,7 +1422,7 @@ Obj             EHandler (
     while ( TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) <= 0 ) {
         n = ErrorReturnObj(
             "E: <n> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(n)].name), 0L,
+            (Int)TNAM_OBJ(n), 0L,
             "you can return a positive integer for <n>" );
     }
 
@@ -1558,7 +1567,7 @@ Obj             NofCycHandler (
          && ! IS_LIST(cyc) ) {
         cyc = ErrorReturnObj(
             "NofCyc: <cyc> must be a cyclotomic or a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(cyc)].name), 0L,
+            (Int)TNAM_OBJ(cyc), 0L,
             "you can return a cyclotomic or a list for <cyc>" );
     }
 
@@ -1582,7 +1591,7 @@ Obj             NofCycHandler (
                  && TNUM_OBJ(cyc) != T_CYC ) {
                 cyc = ErrorReturnObj(
                     "NofCyc: <list>[%d] must be a cyclotomic (not a %s)",
-                    (Int)i, (Int)(InfoBags[TNUM_OBJ(cyc)].name),
+                    (Int)i, (Int)TNAM_OBJ(cyc),
                     "you can return a cyclotomic for the list element" );
             }
             if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
@@ -1639,7 +1648,7 @@ Obj             CoeffsCycHandler (
          && TNUM_OBJ(cyc) != T_CYC ) {
         cyc = ErrorReturnObj(
             "COEFFSCYC: <cyc> must be a cyclotomic (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(cyc)].name), 0L,
+            (Int)TNAM_OBJ(cyc), 0L,
             "you can return a cyclotomic for <cyc>" );
     }
 
@@ -1716,7 +1725,7 @@ Obj             GaloisCycHandler (
     while ( TNUM_OBJ(ord) != T_INT ) {
         ord = ErrorReturnObj(
             "GaloisCyc: <ord> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(ord)].name), 0L,
+            (Int)TNAM_OBJ(ord), 0L,
             "you can return an integer for <ord>" );
     }
     o = INT_INTOBJ(ord);
@@ -1727,7 +1736,7 @@ Obj             GaloisCycHandler (
          && TNUM_OBJ(cyc) != T_CYC ) {
         cyc = ErrorReturnObj(
             "GaloisCyc: <cyc> must be a cyclotomic (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(cyc)].name), 0L,
+            (Int)TNAM_OBJ(cyc), 0L,
             "you can return a cyclotomic for <cyc>" );
     }
 
@@ -1878,34 +1887,79 @@ void            MarkCycSubBags (
 
 /****************************************************************************
 **
-*F  InitCyc() . . . . . . . . . . . . . . . initialize the cyclotomic package
+*F  SaveCyc() . . . . . . . . . . . . . . . save a cyclotyomic 
 **
-**  'InitCyc' initializes the cyclotomic package.
+**  We do not save the XXX_CYC field, since it is not used.
 */
-void            InitCyc ( void )
-{
-    Obj *               res;            /* pointer into the result         */
-    UInt                i;              /* loop variable                   */
 
+void  SaveCyc( Obj cyc)
+{
+  UInt len, i;
+  Obj *coefs;
+  UInt2 *expos;
+  len = SIZE_CYC(cyc);
+  coefs = COEFS_CYC(cyc);
+  for (i = 0; i < len; i++)
+    SaveSubObj(*coefs++);
+  expos = EXPOS_CYC(cyc,len);
+  expos++;                      /*Skip past the XXX */
+  for (i = 1; i < len; i++)
+    SaveUInt2(*expos++);
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadCyc() . . . . . . . . . . . . . . . load a cyclotyomic 
+**
+**  We do not load the XXX_CYC field, since it is not used.
+*/
+
+void  LoadCyc( Obj cyc)
+{
+  UInt len, i;
+  Obj *coefs;
+  UInt2 *expos;
+  len = SIZE_CYC(cyc);
+  coefs = COEFS_CYC(cyc);
+  for (i = 0; i < len; i++)
+    *coefs++ = LoadSubObj();
+  expos = EXPOS_CYC(cyc,len);
+  expos++;                      /*Skip past the XXX */
+  for (i = 1; i < len; i++)
+    *expos++ = LoadUInt2();
+  return;
+}
+
+
+/****************************************************************************
+**
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupCyc()  . . . . . . . . . . . . . . initialize the cyclotomic package
+*/
+void SetupCyc ( void )
+{
     /* install the marking function                                        */
     InfoBags[           T_CYC           ].name = "cyclotomic";
     InitMarkFuncBags(   T_CYC           , MarkCycSubBags );
 
-    /* create the result buffer                                            */
-    ResultCyc = NEW_PLIST( T_PLIST, 1024 );
-    InitGlobalBag( &ResultCyc , "cyclotomic result buffer");
-    res = ADDR_OBJ( ResultCyc );
-    for ( i = 0; i < 1024; i++ ) { res[i] = INTOBJ_INT(0); }
 
-    /* tell Gasman about the place were we remember the primitive root     */
-    InitGlobalBag( &LastECyc, "cyclotomic: primitive root");
+    /* and the saving function                                             */
+    SaveObjFuncs[ T_CYC ] = SaveCyc;
+    LoadObjFuncs[ T_CYC ] = LoadCyc;
 
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
-    TypeObjFuncs[ T_CYC ] = TypeCyc;
 
     /* install the evaluation and print function                           */
     PrintObjFuncs[ T_CYC ] = PrintCyc;
+
 
     /* install the comparison methods                                      */
     EqFuncs[   T_CYC    ][ T_CYC    ] = EqCyc;
@@ -1919,11 +1973,13 @@ void            InitCyc ( void )
     LtFuncs[   T_CYC    ][ T_INTNEG ] = LtCycNot;
     LtFuncs[   T_CYC    ][ T_RAT    ] = LtCycNot;
 
+
     /* install the unary arithmetic methods                                */
     ZeroFuncs[ T_CYC ] = ZeroCyc;
     AInvFuncs[ T_CYC ] = AInvCyc;
     OneFuncs [ T_CYC ] = OneCyc;
     InvFuncs [ T_CYC ] = InvCyc;
+
 
     /* install the arithmetic methods                                      */
     SumFuncs[  T_CYC    ][ T_CYC    ] = SumCyc;
@@ -1953,37 +2009,75 @@ void            InitCyc ( void )
     ProdFuncs[ T_CYC    ][ T_INTPOS ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_INTNEG ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_RAT    ] = ProdCycInt;
-
-    /* and finally install the internal functions                          */
-    InitHandlerFunc( EHandler, "E" );
-    EOper = NewOperationC( "E", 1L, "n",
-                                EHandler );
-    AssGVar( GVarName( "E" ), EOper );
-
-    InitHandlerFunc( IsCycHandler, "IS_CYC" );
-    IsCycFilt = NewFilterC( "IS_CYC", 1L, "obj",
-                                IsCycHandler );
-    AssGVar( GVarName( "IS_CYC" ), IsCycFilt );
-
-    InitHandlerFunc( IsCycIntHandler, "IS_CYC_INT" );
-    IsCycIntOper = NewOperationC( "IS_CYC_INT", 1L, "obj",
-                                IsCycIntHandler );
-    AssGVar( GVarName( "IS_CYC_INT" ), IsCycIntOper );
-
-    C_NEW_GVAR_ATTR( "CONDUCTOR", "cyc", NofCycAttr, NofCycHandler,
-      "src/cyclotom.c:NofCycHandler" );
-
-    InitHandlerFunc( CoeffsCycHandler, "COEFFS_CYC" );
-    CoeffsCycOper = NewOperationC( "COEFFS_CYC", 1L, "cyc",
-                                CoeffsCycHandler );
-    AssGVar( GVarName( "COEFFS_CYC" ), CoeffsCycOper );
-
-    InitHandlerFunc( GaloisCycHandler, "GALOIS_CYC" );
-    GaloisCycOper = NewOperationC( "GALOIS_CYC", 2L, "cyc, n",
-                                GaloisCycHandler );
-    AssGVar( GVarName( "GALOIS_CYC" ), GaloisCycOper );
-
 }
 
 
+/****************************************************************************
+**
+*F  InitCyc() . . . . . . . . . . . . . . . initialize the cyclotomic package
+**
+**  'InitCyc' initializes the cyclotomic package.
+*/
+void InitCyc ( void )
+{
+    Obj *               res;            /* pointer into the result         */
+    UInt                i;              /* loop variable                   */
 
+    /* create the result buffer                                            */
+    InitGlobalBag( &ResultCyc , "src/cyclotom.c:ResultCyc" );
+    if ( ! SyRestoring ) {
+        ResultCyc = NEW_PLIST( T_PLIST, 1024 );
+        res = ADDR_OBJ( ResultCyc );
+        for ( i = 0; i < 1024; i++ ) { res[i] = INTOBJ_INT(0); }
+    }
+
+
+    /* tell Gasman about the place were we remember the primitive root     */
+    InitGlobalBag( &LastECyc, "src/cyclotom.c:LastECyc" );
+
+
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
+    TypeObjFuncs[ T_CYC ] = TypeCyc;
+
+
+    /* and finally install the internal functions                          */
+    C_NEW_GVAR_OPER( "E", 1, "n", EOper, EHandler,
+      "src/cyclotom.c:E" );
+
+    C_NEW_GVAR_FILT( "IS_CYC", "obj", IsCycFilt, IsCycHandler,
+      "src/cyclotom.c:IS_CYC" );
+
+    C_NEW_GVAR_OPER( "IS_CYC_INT", 1, "obj", IsCycIntOper, IsCycIntHandler,
+      "src/cyclotom.c:IS_CYC_INT" );
+                     
+    C_NEW_GVAR_ATTR( "CONDUCTOR", "cyc", NofCycAttr, NofCycHandler,
+      "src/cyclotom.c:CONDUCTOR" );
+
+    C_NEW_GVAR_OPER( "COEFFS_CYC", 1, "cyc", CoeffsCycOper, CoeffsCycHandler,
+      "src/cyclotom.c:COEFFS_CYC" );
+
+    C_NEW_GVAR_OPER( "GALOIS_CYC", 2, "cyc, n", GaloisCycOper,
+                      GaloisCycHandler,
+      "src/cyclotom.c:GALOIS_CYC" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckCyc()  . . . . .  check the initialisation of the cyclotomic package
+**
+**  'InitCyc' initializes the cyclotomic package.
+*/
+void CheckCyc ( void )
+{
+    SET_REVISION( "cyclotom_c", Revision_cyclotom_c );
+    SET_REVISION( "cyclotom_h", Revision_cyclotom_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  cyclotom.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

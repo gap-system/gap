@@ -606,15 +606,17 @@ end;
 PowerModInt := function ( r, e, m )
     local   pow, f;
 
-    # reduce r initially
-    r := r mod m;
-
-    # handle special case
+    # handle special cases
     if e = 0  then
         return 1;
+    elif m = 1 then
+        return 0;
     fi;
 
-    # if e is negative then invert n modulo m with Euclids algorithm
+    # reduce `r' initially
+    r := r mod m;
+
+    # if `e' is negative then invert `r' modulo `m' with Euclids algorithm
     if e < 0  then
         r := 1/r mod m;
         e := -e;
@@ -1089,7 +1091,9 @@ InstallMethod( QuotientMod,
     true,
     [ IsIntegers, IsInt, IsInt, IsInt ], 0,
     function ( Integers, r, s, m )
-    if r mod GcdInt( s, m ) = 0  then
+    if   m = 1 then
+        return 0;
+    elif r mod GcdInt( s, m ) = 0  then
         return r/s mod m;
     else
         return fail;

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  stats.h                     GAP source                   Martin Schoenert
+*W  stats.h                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -12,13 +12,14 @@
 **  statements for their effects and prints statements.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_stats_h =
+SYS_CONST char * Revision_stats_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *F  EXEC_STAT(<stat>) . . . . . . . . . . . . . . . . . . execute a statement
 **
 **  'EXEC_STAT' executes the statement <stat>.
@@ -130,11 +131,35 @@ extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
 
 /****************************************************************************
 **
-*F  InitStats() . . . . . . . . . . . . . . . . initialize statements package
-**
-**  'InitStats' initializes the statements package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-extern  void            InitStats ( void );
 
 
+/****************************************************************************
+**
 
+*F  SetupStats()  . . . . . . . . . . . . . initialize the statements package
+*/
+extern void SetupStats ( void );
+
+
+/****************************************************************************
+**
+*F  InitStats() . . . . . . . . . . . . . . initialize the statements package
+*/
+extern void InitStats ( void );
+
+
+/****************************************************************************
+**
+*F  CheckStats() . . . . . check the initialisation of the statements package
+*/
+extern void CheckStats ( void );
+
+
+/****************************************************************************
+**
+
+*E  stats.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

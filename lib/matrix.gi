@@ -284,13 +284,19 @@ InstallMethod( Display,
 function( m )
     local   deg,  chr,  zero,  w,  t,  x,  v,  f,  z,  y;
 
-    # get the degree and characteristic
-    deg  := Lcm( List( m, DegreeFFE ) );
-    chr  := Characteristic(m[1][1]);
-    zero := 0*Z(chr);
+    if  IsZmodnZObj(m[1][1]) then
+      Print("ZmodnZ matrix:\n");
+      t:=List(m,i->List(i,i->i![1]));
+      Display(t);
+      Print("modulo ",DataType(TypeObj(m[1][1])),"\n");
+    else
+      # get the degree and characteristic
+      deg  := Lcm( List( m, DegreeFFE ) );
+      chr  := Characteristic(m[1][1]);
+      zero := Zero(m[1][1]);
 
-    # if it is a finite prime field,  use integers for display
-    if deg = 1  then
+      # if it is a finite prime field,  use integers for display
+      if deg = 1  then
 
         # compute maximal width
         w := LogInt( chr, 10 ) + 2;
@@ -311,9 +317,9 @@ function( m )
             Print( "\n" );
         od;
 
-    # if it a finite,  use mixed integers/z notation
-    else
-        Print( "z = Z(", chr^deg, ")\n" );
+      # if it a finite,  use mixed integers/z notation
+      else
+	  Print( "z = Z(", chr^deg, ")\n" );
 
         # compute maximal width
         w := LogInt( chr^deg-1, 10 ) + 4;
@@ -345,8 +351,8 @@ function( m )
             Print( "\n" );
         od;
 
+      fi;
     fi;
-
 end );
 
 
@@ -695,6 +701,25 @@ function( mat )
     return dim;
 
 end);
+
+InstallOtherMethod( SumIntersectionMat, 
+  true, [ IsEmpty, IsMatrix ], 0, 
+function(a,b)
+  return [b,a];
+end);
+
+InstallOtherMethod( SumIntersectionMat, 
+  true, [ IsMatrix, IsEmpty ], 0, 
+function(a,b)
+  return [a,b];
+end);
+
+InstallOtherMethod( SumIntersectionMat, 
+  IsIdentical, [ IsEmpty, IsEmpty ], 0, 
+function(a,b)
+  return [a,b];
+end);
+
 
 #############################################################################
 ##
@@ -1356,11 +1381,11 @@ function ( mat1, mat2 )
 end );
 
 
-##########################################################################
+#############################################################################
 ##
 #M  SolutionMat( <mat>, <vec> ) . . . . . . . . . .  one solution of equation
 ##
-##  One solution <x> of <x> * <mat> = <vec> or 'fail'.
+##  One solution <x> of <x> * <mat> = <vec> or `fail'.
 ##
 InstallMethod( SolutionMat,
     "generic method for matrix and vector",
@@ -1414,7 +1439,7 @@ function ( mat, vec )
 
     # Find a solution.
     for i  in [ r + 1 .. l ]  do
-        if vec[ i ] <> zero  then return false;  fi;
+        if vec[ i ] <> zero  then return fail;  fi;
     od;
     h := [];
     s := Length( mat[ 1 ] );
@@ -2293,7 +2318,7 @@ NullspaceModQ := function( E, q )
         for e  in elem  do
             r   := o * ( - (e * E) / (p ^ ( i - 1 ) ) );
             sol := SolutionMat( B, r );
-            if sol <> false then
+            if sol <> fail then
                 for j  in [ 1..Length( elem ) ]  do
                     new := e + ( p^(i-1) * List( o * elem[j] + sol, IntFFE ) );
 #T !

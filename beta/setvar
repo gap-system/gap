@@ -1,0 +1,58 @@
+#!/bin/sh
+#############################################################################
+##
+#W  setvar							 Frank Celler
+##
+##  this shell script sets the variables
+##
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+# where does the CVS directory live
+CVSROOT="/gap/CVS"
+# :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS
+
+
+# where does the beta directory live
+BETAROOT=/scratch/gap4beta
+if [ \! -d ${BETAROOT} ];  then
+    echo "PANIC: directory '${BETAROOT}' does not exists"
+    exit 1
+fi
+
+
+# executable
+MAKETARGET=i386-ibm-linux-gcc2
+
+# what is *this moment*
+DATE=`date +"%D %T %Z"`
+
+
+# what is the next version
+if [ \! -f ${BETAROOT}/VERSION ];  then
+    echo "PANIC: cannot find the version file '${BETAROOT}/VERSION'"
+    exit 1
+fi
+OLD_VERSION=`cat ${BETAROOT}/VERSION`
+if [ -z ${OLD_VERSION} ];  then
+    echo "PANIC: version file '${BETAROOT}/VERSION' is corrupted'"
+    exit 1
+fi
+VERSION=`expr ${OLD_VERSION} + 1`
+
+# where does the beta directory live
+BETANAME="gap4b$VERSION"
+GAPEXEC=${BETAROOT}/${BETANAME}/bin/i386-ibm-linux-gcc2/gap
+
+
+# binary directory
+BINDIR=/gap/4.0/beta
+
+
+# the tar directory
+TARDIR=/scratch
+
+
+# export these variables
+export CVSROOT BETAROOT VERSION BINDIR DATE GAPEXEC MAKETARGET TARDIR BETANAME
+
+

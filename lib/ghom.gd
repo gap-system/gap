@@ -27,17 +27,25 @@ GroupHomomorphismByImages := NewOperation( "GroupHomomorphismByImages",
 #############################################################################
 ##
 #O  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . map onto factor group
+#O  NaturalHomomorphismByNormalSubgroupNC(<G>,<N> )
 ##
-NaturalHomomorphismByNormalSubgroup := NewOperation(
-    "NaturalHomomorphismByNormalSubgroup", [ IsGroup, IsGroup ] );
+##  returns a homomorphism from <G> to another group whose kernel is <N>.
+##  \GAP will try to select the image group as to make computations in it as
+##  efficient as possible. As the factor group $<G>/<N>$ can be identified 
+##  with the image of <G> this permits efficient computations in the factor
+##  group. The `NC' variant does not check whether <N> is normal in <G>.
+NaturalHomomorphismByNormalSubgroup:=
+  NewOperationArgs("NaturalHomomorphismByNormalSubgroup");
 
-
-#############################################################################
-##
-#A  NaturalHomomorphismByNormalSubgroupInParent( <N> )  .  if G is the parent
-##
-NaturalHomomorphismByNormalSubgroupInParent := NewAttribute(
-    "NaturalHomomorphismByNormalSubgroupInParent", IsGroup );
+tmp:= InParentFOA( "NaturalHomomorphismByNormalSubgroup", IsGroup, IsGroup,
+              NewAttribute );
+NaturalHomomorphismByNormalSubgroupNC       := tmp[1];
+NaturalHomomorphismByNormalSubgroupOp       := tmp[2];
+NaturalHomomorphismByNormalSubgroupInParent := tmp[3];
+SetNaturalHomomorphismByNormalSubgroupInParent :=
+  Setter( NaturalHomomorphismByNormalSubgroupInParent );
+HasNaturalHomomorphismByNormalSubgroupInParent :=
+  Tester( NaturalHomomorphismByNormalSubgroupInParent );
 
 
 IsGroupGeneralMappingByImages := NewRepresentation
@@ -97,12 +105,7 @@ IsNaturalHomomorphismPcGroupRep := NewRepresentation
       IsAttributeStoringRep,
       [ "pcgsSource", "pcgsRange" ] );
 
-FilterGroupGeneralMappingByImages := NewOperationArgs(
-    "FilterGroupGeneralMappingByImages" );
-
 MakeMapping := NewOperationArgs( "MakeMapping" );
-GroupIsomorphismByFunctions := NewOperationArgs(
-    "GroupIsomorphismByFunctions" );
 
 IsomorphismPermGroup := NewAttribute("IsomorphismPermGroup",IsGroup);
 HasIsomorphismPermGroup := Tester( IsomorphismPermGroup );

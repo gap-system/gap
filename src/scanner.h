@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  scanner.h                   GAP source                   Martin Schoenert
+*W  scanner.h                   GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -25,7 +25,7 @@
 **  dependent module 'system.c' for the low level input/output.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_scanner_h =
+SYS_CONST char * Revision_scanner_h =
    "@(#)$Id$";
 #endif
 
@@ -1185,12 +1185,37 @@ extern  UInt            CloseTest ( void );
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupScanner()  . . . . . . . . . . . . .  initialize the scanner package
+*/
+extern void SetupScanner ( void );
+
+
+/****************************************************************************
+**
 *F  InitScanner() . . . . . . . . . . . . . .  initialize the scanner package
 **
 **  'InitScanner' initializes  the  scanner  package.  This  justs  sets  the
 **  current input file to '*stdin*' and current output  file  to  '*stdout*'.
 */
-extern  void            InitScanner ( void );
+extern void InitScanner ( void );
 
 
+/****************************************************************************
+**
+*F  CheckScanner()  . . . . . check the initialisation of the scanner package
+*/
+extern void CheckScanner ( void );
 
+
+/****************************************************************************
+**
+
+
+*E  scanner.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

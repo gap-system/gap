@@ -1,0 +1,330 @@
+\Chapter{Function-Operation-Attribute Triples}
+
+{\GAP}  is eager  to maintain information  that  it has gathered about an
+object, possibly by lengthy  calculcations. The most  important mechanism
+for information maintenance  is the  automatic  storage and look-up  that
+takes  place  for  *attributes*; and    this   was already mentioned   in
+section~"tut:Attributes"  in the   tutorial. In   this  chapter  we  will
+describe further mechanisms that  allow storage of  results that  are not
+values of attributes.
+
+\index{FOA triples}%
+The  idea which is   common to all  sections  is that certain operations,
+which are  not themselves attributes, have  an attribute  associated with
+them. To automatically delegate tasks to the  attribute, {\GAP} knows, in
+addition  to  the *operation*  and  the  *attributes*   also an  ordinary
+*function*, which  is  ``wrapped around'' the  other  two. This ``wrapper
+function''  is called by    the user and    decides whether to  call  the
+operation    or  the    attribute     or  possibly     both.   The  whole
+*f*unction-*o*peration-*a*ttribute triple (or *FOA triple*)  is set up by
+a single   {\GAP} command which  writes the  wrapper function and already
+installs  some methods,  e.g.,  for the attribute  to   fall back on  the
+operation. The idea  is then that subsequent  methods, which  perform the
+actual computation, are installed   only for the operation,   whereas the
+wrapper function remains unaltered, and  in general no additional methods
+for the attribute are required either.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Key-dependent operations}
+
+There  are several functions  which  require as first  argument a domain,
+e.g., a  group, and as second  argument  something much simpler,  e.g., a
+prime. `SylowSubgroup'  is an  example. Since  its  value depends  on two
+arguments, it cannot be  an attribute,  yet one would  like to  store the
+Sylow subgroups once they have been  computed. The idea  is to store them
+in a list,  which is then regarded as  an attribute of the  group, called
+`ComputedSylowSubgroups'. The  name    implies that  the  value  of  this
+attribute  changes in    the  course of   a  {\GAP}  session,  whenever a
+newly-computed Sylow subgroup is put into the  list. Therefore, this is a
+*mutable attribute*.
+
+The   list    contains    primes     in    its   odd   positions      and
+`ComputedSylowSubgroups(  <G> )[  <even>     ]'   holds the  value     of
+`SylowSubgroup( <G>,  <p>  )' if  `<p> =  ComputedSylowSubgroups(  <G> )[
+<even> - 1 ]'. The pairs are sorted in increasing order of <p>. This list
+is automatically maintained by the  function `SylowSubgroup', which calls
+the operation `SylowSubgroupOp(  <G>, <p> )' to do  the real work, if the
+prime <p> cannot be found in the list.
+
+The same mechanism  works for other functions as  well, e.g, for `PCore',
+but also for `HallSubgroup', where the second argument is not a prime but
+a set of primes.
+
+\>KeyDependentFOA( <name>, <dom-req>, <key-req>, <key-test> )
+
+To   set up  the   three objects  `SylowSubgroup',  `SylowSubgroupOp' and
+`ComputedSylowSubgroups'  together,   the declaration file ``lib/grp.gd''
+contains the following code:
+\begintt
+    tmp := KeyDependentFOA( "SylowSubgroup",
+	       IsGroup, IsPosRat and IsInt, "prime" );
+    SylowSubgroup          := tmp[1];
+    SylowSubgroupOp        := tmp[2];
+    ComputedSylowSubgroups := tmp[3];
+\endtt
+The second and third argument  to `KeyDependentFOA', namely <grp-req> and
+<dom-req> specify   the  required filters  for   the first resp.\  second
+argument of the operation  `SylowSubgroupOp', which are needed  when this
+operation is created with  `NewOperation' (see "NewOperation"). <grp-req>
+is   also    the required  filter    for  the   corresponding   attribute
+`ComputedSylowSubgroups'. The fourth argument <key-test> is a function to
+which  the second  argument <p> of  `SylowSubgroup(  <G>, <p> )' will  be
+passed.  This function can  perform tests  on  <p> and  raise an error if
+appropriate.  If, as in our example,  <key-test> has the value `"prime"',
+it is silently  replaced  with a function that   tests whether  <p> is  a
+prime.
+\beginexample
+    gap> s4 := Group((1,2,3,4),(1,2));;
+    gap> SylowSubgroup( s4, 5 );;  ComputedSylowSubgroups( s4 );
+    [ 5, Group( [  ], ... ) ]
+    gap> SylowSubgroup( s4, 2 );;  ComputedSylowSubgroups( s4 );
+    [ 2, Group( [ (3,4), (1,2), (1,3)(2,4) ], ... ), 5,
+      Group( [  ], ... ) ]
+|_
+    gap> SylowSubgroup( s4, 6 );                                
+    Error SylowSubgroup: <p> must be a prime at
+    Error( name, ": <p> must be a prime" );
+    Entering break read-eval-print loop, you can 'quit;' to quit to outer \
+    loop,
+    or you can return to continue
+    brk> quit;
+\endexample
+Thus   the prime test need not    be repeated in  the   methods which are
+installed  to  do   the   real  work.  They    are  installed  only    in
+`SylowSubgroupOp', whereas the function `SylowSubgroup' and the attribute
+`ComputedSylowSubgroups' remain as they were made by `KeyDependentFOA'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{In parent attributes}
+
+This section described how you can add  new ``in parent attributes'' (see
+"ref:Subdomains and parents" in the reference manual).  As an example, we
+describe how `Index' and its related functions are implemented.
+
+There  is  a function  `Index', an operation   `IndexOp' and an attribute
+`IndexInParent'. They are created together as  shown below and after they
+have been  created, methods need be  installed only for `IndexOp'. In the
+creation  process,  `IndexInParent'  alread   gets  one method  installed
+(besides the system getter), namely `D -> IndexOp( Parent( D ), D )'.
+
+The function  `Index' takes   any number of  arguments and    proceeds as
+follows:
+\beginlist
+\item{$\bullet$}
+  If it is called  with exactly two arguments  <super> and <sub>,  and if
+  `HasParent( <sub> )' and `IsIdentical( <super>, Parent( <sub> ) )', the
+  tester `HasIndexInParent( <sub> )' is consulted.
+  \itemitem{$\circ$}
+    If  the  tester returns `true',  `IndexInParent(  <sub> )'  is called
+    (which  will then hopefully choose  the system getter) and the result
+    returned.
+  \itemitem{$\circ$}
+    If the tester returns `false', `IndexOp' is called in the obvious way
+    and the result is passed to the setter `SetIndexInParent' (which will
+    hopefully store it). The result is also returned.
+\item{$\bullet$}
+  Otherwise, `IndexOp' is called with the same arguments that `Index' was
+  called with (which can be more  or less than two,  because there may be
+  method    installed for     a  different  number   of   arguments  with
+  `InstallOtherMethod',    see  "InstallOtherMethod").   The  result   is
+  returned.
+\endlist
+
+\>InParentFOA( <name>, <super-req>, <sub-req>, NewAttribute \| %
+  NewProperty )
+
+To  set  up  these   three    objects  together, the  declaration    file
+``lib/grp.gd'' contains the following code:
+\begintt
+    tmp:= InParentFOA( "Index", IsGroup, IsGroup, NewAttribute );
+    Index         := tmp[1];
+    IndexOp       := tmp[2];
+    IndexInParent := tmp[3];
+    SetIndexInParent := Setter( IndexInParent );
+    HasIndexInParent := Tester( IndexInParent );
+\endtt
+The  second and third argument to  `InParentFOA',  namely <super-req> and
+<sub-req> specify  the required   filters  for the first    resp.\ second
+argument of the operation `IndexOp', which are needed when this operation
+is  created with `NewOperation' (see  "NewOperation").  <sub-req> is also
+the  required filter for the  corresponding attribute `IndexInParent( <U>
+)' Note that `HasParent' is *not* required of <U>, because even without a
+parent set, `Parent( <U> )' is legal, meaning <U> itself.
+
+For property testing functions, such as `IsNormal', the `NewAttribute' is
+replaced  by  `NewProperty'. After  these assignments,  methods  are only
+installed for `IndexOp'. `Index'  must and `IndexInParent'  should remain
+as it is.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operation functions}
+
+Section~"ref:Operation  functions!for  groups"  of  the  reference manual
+explains that certain  operations like  `Orbits( <G>,  <D>, <opr> )'  can
+also  be applied to external  sets, for which  they can be interpreted as
+attributes. Moreover, they  can also be  interpreted  as attributes  of a
+permutation group,  if it is  acting naturally  on the  set  of its moved
+points. Thus  there is an  attribute  `OrbitsAttr' which is automatically
+invoked by `Orbits'. Since there are so many options to invoke a function
+like  `Orbits', there   is  a rather complicated   interplay between that
+function and the attribute on  the one hand  and the operation `OrbitsOp'
+on the other hand. The advantage is that methods which perform the actual
+computations  are only installed  for  `OrbitsOp', and  they have  a very
+restricted syntax.
+
+The definition  of `OrbitsOp' says that its  methods should  be functions
+`function( <G>, <D>,  <gens>,  <oprs>, <opr> )'  like  `ExternalSet' when
+specified via <gens> and <oprs> (see "ref:External sets" in the reference
+manual). All other  syntax variants allowed  for  `Orbits' (e.g., leaving
+out <gens>  and <oprs>) are handled by  the wrapper function,  which does
+the following:
+\beginlist
+  \item{1.}
+    If the only  argument  is an  external  set <xset> and the  attribute
+    tester `Tester( OrbitsAttr )( <xset> )' returns  `true', the value of
+    that attribute is returned.
+  \item{2.}
+    If the  only argument is   an external set  <xset> and  the attribute
+    value is  not  known,  the    arguments are  obtained as   `<G>    :=
+    ActingDomain( <xset> )', `<D> := HomeEnumerator(  <xset> )' and <opr>
+    either as `FunctionOperation( <xset> )' (if `IsExternalSetDefaultRep(
+    <xset> )') or  as `<xset>!.funcOperation',  in  the latter case  also
+    `<gens> := <xset>!.generators' and `<oprs> := <xset>!.operators'.
+  \item{3.}
+    If <gens> and <oprs>  are not specified, <gens> is  set to `Pcgs( <G>
+    )'   if `IsPcgsComputable( <G> )'   and to `GeneratorsOfGroup( <G> )'
+    otherwise, and <oprs> is set to <gens>.
+  \item{4.}
+    If <opr> is not specified, `OnPoints' is assigned.
+  \item{5.}
+    In the case of a natural operation of <G> on `MovedPoints( <G> )', if
+    the  attribute tester `Tester( OrbitsAttr )(   <G> )' returns `true',
+    the value of that attribute is returned.
+  \item{6.}
+    The  operation is called as `<result>  := OrbitsOp( <G>, <D>, <gens>,
+    <oprs>, <opr> )'.
+  \item{7.}
+    If an  external set <xset> if  it was specified, the attribute setter
+    is  called as `Setter( OrbitsAttr  )( <xset>, <result> )'. The setter
+    is also called for <G> in the natural operation case.
+  \item{8.}
+    <result> is returned.
+\endlist
+
+\>OrbitsishFOA( <name>, <reqs>, <usetype>, NewAttribute \| NewProperty )
+
+To set  up the FOA  triple, the declaration file ``lib/oprt.gd'' contains
+the following code:
+\begintt
+    tmp := OrbitsishFOA( "Orbits", OrbitsishReq, false, NewAttribute );
+    Orbits     := tmp[1];
+    OrbitsOp   := tmp[2];
+    OrbitsAttr := tmp[3];
+\endtt
+The second argument <reqs> specifies the list of required filters for the
+list    of   arguments  to    the  operation   `OrbitsOp'.   The variable
+`OrbitsishReq' contains the standard requirements
+\begintt
+    OrbitsishReq := [ IsGroup, IsList,
+		      IsList,
+		      IsList,
+		      IsFunction ];
+\endtt
+If the third  argument <usetype> is   `true', the function  call `Orbits(
+<xset> )' will --- if  the attribute value is  not yet known --- call the
+operation as `OrbitsOp( <G>, <xset>, <gens>, <oprs>, <opr> )' rather than
+as in step~6 above. This allows certain methods for the operation to make
+use of `TypeObj( <xset> )', in which the types of the external subsets of
+<xset> and of the external orbits in <xset> are stored.  (This is used to
+avoid repeated calls   of  `NewType' in  functions  like `ExternalOrbits(
+<xset> )', which call `ExternalOrbit( <xset>, <pnt> )' for several values
+of~<pnt>.)
+
+For  property testing functions  like `IsTransitive', the fourth argument
+would be `NewProperty' instead of `NewAttribute'.
+
+\>OrbitishFO( <name>, <reqs>, <famrel>, <usetype> )
+
+A similar mechanism is provided for operations  like `Orbit', that do not
+have  an associated  attribute, but   still need a  wrapper function   to
+standardize  the arguments for the  operation  `OrbitOp'. The declaration
+file ``lib/oprt.gd'' contains the following code:
+\begintt
+    OrbitishReq  := [ IsGroup, IsList, IsObject,
+		      IsList,
+		      IsList,
+		      IsFunction ];
+    
+    tmp := OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false );
+    Orbit   := tmp[1];
+    OrbitOp := tmp[2];
+\endtt
+The  third argument <famrel> is used  to test the family relation between
+the second and  third  argument  of  `Orbit( <G>,  <D>, <pnt>   )', where
+`IsCollsElms' means that <pnt> must be an element of <D>. By contrast, in
+`Blocks( <G>, <D>,  <seed> )', <seed> must  be  a subset of <D>,  and the
+family relation  is `IsIdentical'. This  relation testing is necessary to
+decide  whether  the argument <D>  was specified  at  all,  because it is
+possible to  leave  it out in  `Orbit' (see  "ref:Operation functions!for
+groups" in the reference   manual). Similarly, the third  argument <seed>
+can be left out  in  `Blocks', but {\GAP} treats   both rules as one:  It
+simply checks whether only one of the arguments <D> and <pnt> is present,
+and if so,  a command like `Orbit( <G>,  <pnt> )' calls the  operation as
+`OrbitOp( <G>, <pnt>, <gens>, <oprs>, <opr>  )' instead of `OrbitOp( <G>,
+<D>, <pnt>, <gens>, <oprs>, <opr> )'. Respectively,  `Blocks( <G>, <D> )'
+leads to a call of `BlocksOp( <G>, <D>, <gens>,  <oprs>, <opr> )' instead
+of  `BlocksOp(  <G>, <operation domain>, <D>,   <gens>,  <oprs>, <opr> )'
+because {\GAP}  thinks the argument <D> is   something like the  <pnt> in
+`Orbit', but it is really the operation domain!
+
+As a  consequence of  these rules, there  must be  not  only methods  for
+`OrbitOp' with  the six arguments  promised  in `OrbitishReq',  but  also
+``other methods'' for only five arguments (i.e., without <D>), the latter
+are installed with `InstallOtherMethod'. Plenty of examples are contained
+in the implementation file ``lib/oprt.gi''.
+
+The fourth argument <usetype> serves the  same purpose as  in the case of
+`OrbitsishFOA', but it has an additional meaning, which is currently used
+for the functions `Blocks' and `MaximalBlocks'. Since they depend upon an
+extra argument  <seed>, they cannot be  regarded as  attributes. However,
+they are  most often called without  giving  <seed>, meaning ``choose any
+minimal resp.\ maximal block system''. In this case,  their result can be
+stored   as the value of an   attribute, and this can    be passed to the
+function `OrbitishFO' as fourth argument. It will then be considered by a
+wrapper function call `Blocks( <G>, <D>, <opr>  )' (i.e., without <seed>)
+in the  same  way `Orbits' considers  `OrbitsAttr'. To  set  this up, the
+declaration file ``lib/oprt.gd'' contains the following lines:
+\begintt
+    BlocksAttr := NewAttribute( "BlocksAttr", IsExternalSet );
+    tmp := OrbitishFO( "Blocks",
+	[ IsGroup, IsList, IsList,
+	  IsList,
+	  IsList,
+	  IsFunction ], IsIdentical, BlocksAttr );
+    Blocks   := tmp[1];
+    BlocksOp := tmp[2];
+\endtt
+And this extraordinary FOA triple works as follows:
+\beginexample
+    gap> s4 := Group((1,2,3,4),(1,2));; Blocks( s4, MovedPoints(s4), [1,2] );
+    [ [ 1, 2, 3, 4 ] ]
+    gap> Tester( BlocksAttr )( s4 );
+    false
+|_
+    gap> Blocks( s4, MovedPoints(s4) );       
+    [ [ 1, 2, 3, 4 ] ]
+    gap> Tester( BlocksAttr )( s4 );  BlocksAttr( s4 );
+    true
+    [ [ 1, 2, 3, 4 ] ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:               text
+% mode:               outline-minor
+% outline-regexp:     "\\\\Chapter\\|\\\\Section"
+% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% fill-column:        73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

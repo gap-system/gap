@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  finfield.h                  GAP source                      Werner Nickel
+*W  finfield.h                  GAP source                      Werner Nickel
 **                                                         & Martin Schoenert
 **
 *H  @(#)$Id$
@@ -49,7 +49,7 @@
 **  order of the finite field minus one.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_finfield_h =
+SYS_CONST char * Revision_finfield_h =
    "@(#)$Id$";
 #endif
 
@@ -392,11 +392,37 @@ extern  Obj             TypeFFE (
 
 /****************************************************************************
 **
-*F  InitFinfield()  . . . . . . . . . . . . . initialize finite field package
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupFinfield() . . . . . . . . . . . initialize the finite field package
+*/
+extern void SetupFinfield ( void );
+
+
+/****************************************************************************
+**
+*F  InitFinfield()  . . . . . . . . . . . initialize the finite field package
 **
 **  'InitFinfield' initializes the finite field package.
 */
-extern  void            InitFinfield ( void );
+extern void InitFinfield ( void );
 
 
+/****************************************************************************
+**
+*F  CheckFinfield() . .  check the initialisation of the finite field package
+*/
+extern void CheckFinfield ( void );
 
+
+/****************************************************************************
+**
+
+*E  finfield.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -3,7 +3,7 @@
 #W  grppcext.gi                 GAP library                      Bettina Eick
 ##
 Revision.grppcext_gi :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 #############################################################################
 ##

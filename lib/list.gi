@@ -623,9 +623,9 @@ InstallOtherMethod( Product,
 
 #############################################################################
 ##
-#M  ELM0_LIST
+#M  Elm0List
 ##
-InstallMethod( ELM0_LIST,
+InstallMethod( Elm0List,
     true, [ IsList, IsInt ], 0,
     function ( list, pos )
     if IsBound( list[pos] ) then
@@ -961,6 +961,28 @@ InstallMethod( Collected,
     return res;
     end );
 
+
+#############################################################################
+##
+#M  DuplicateFreeList(<list>)  . . . . . duplicate free list of list elements
+##
+InstallMethod( DuplicateFreeList, true, [ IsList ], 0,
+function ( list )
+local l,i;
+  l:=[];
+  for i in list do
+    if not i in l then
+      Add(l,i);
+    fi;
+  od;
+  return l;
+end );
+
+#############################################################################
+##
+#M  AsDuplicateFreeList(<list>)  . . . . duplicate free list of list elements
+##
+InstallMethod( AsDuplicateFreeList, true, [ IsList ], 0, DuplicateFreeList);
 
 #############################################################################
 ##

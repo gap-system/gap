@@ -14,48 +14,47 @@
 **  immediately, it switches into coding mode, and  delegates the work to the
 **  coder.
 */
-char *          Revision_intrprtr_c =
-   "@(#)$Id$";
-
 #include        <assert.h>              /* assert                          */
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_intrprtr_c =
+   "@(#)$Id$";
+
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 #include        "read.h"                /* reader                          */
 
-#include        "gvars.h"               /* Tilde, VAL_GVAR, AssGVar        */
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "gvars.h"               /* global variables                */
 
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations              */
 
-#include        "ariths.h"              /* generic operations              */
+#include        "ariths.h"              /* basic arithmetic                */
 #include        "records.h"             /* generic records                 */
 #include        "lists.h"               /* generic lists                   */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "permutat.h"            /* NEW_PERM2, ADDR_PERM2, ...      */
+#include        "permutat.h"            /* permutations                    */
 
-#include        "precord.h"             /* NEW_PREC, InPRec                */
+#include        "precord.h"             /* plain records                   */
 
-#include        "plist.h"               /* SET_LEN_PLIST, SET_ELM_PLIST    */
-#include        "range.h"               /* NEW_RANGE, SET_LEN_RANGE,    ...*/
-#include        "string.h"              /* ObjsChar, NEW_STRING, CSTR_ST...*/
+#include        "plist.h"               /* plain lists                     */
+#include        "range.h"               /* ranges                          */
+#include        "string.h"              /* strings                         */
 
-#include        "code.h"                /* CodeBegin, CodeEnd, ...         */
-#include        "vars.h"                /* ??? */
-#include        "funcs.h"               /* ExecBegin, ExecEnd              */
+#include        "code.h"                /* coder                           */
+#include        "vars.h"                /* variables                       */
+#include        "funcs.h"               /* functions                       */
 
 #define INCLUDE_DECLARATION_PART
-#include        "intrprtr.h"            /* declaration part of the package */
+#include        "intrprtr.h"            /* interpreter                     */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "gap.h"                 /* Error                           */
-
-#include        "saveload.h"            /* SaveWorkspace, LoadWorkspace    */
+#include        "saveload.h"            /* saving and loading              */
 
 /****************************************************************************
 **
@@ -395,7 +394,7 @@ void            IntrFuncCallEnd (
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit(
             "<func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L );
+            (Int)TNAM_OBJ(func), 0L );
     }
 
     /* call the function                                                   */
@@ -568,7 +567,7 @@ void            IntrIfBeginBody ( void )
     if ( cond != True && cond != False ) {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TNUM_OBJ(cond)].name), 0L );
+            (Int)TNAM_OBJ(cond), 0L );
     }
 
     /* if the condition is 'false', ignore the body                        */
@@ -1133,14 +1132,14 @@ void            IntrOr ( void )
         }
         else {
             ErrorQuit( "<expr> must be 'true' or 'false' (not a %s)",
-                       (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L );
+                       (Int)TNAM_OBJ(opR), 0L );
         }
     }
     
     /* signal an error                                                     */
     else {
         ErrorQuit( "<expr> must be 'true' or 'false' (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
+                   (Int)TNAM_OBJ(opL), 0L );
     }
 }
 
@@ -1212,7 +1211,7 @@ void            IntrAnd ( void )
         else {
             ErrorQuit(
                 "<expr> must be 'true' or 'false' (not to a %s)",
-                (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L );
+                (Int)TNAM_OBJ(opR), 0L );
         }
     }
 
@@ -1224,7 +1223,7 @@ void            IntrAnd ( void )
         else {
             ErrorQuit(
                 "<expr> must be 'true' or 'false' (not to a %s)",
-                (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
+                (Int)TNAM_OBJ(opL), 0L );
         }
     }
     
@@ -1232,7 +1231,7 @@ void            IntrAnd ( void )
     else {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
+            (Int)TNAM_OBJ(opL), 0L );
     }
 }
 
@@ -1259,7 +1258,7 @@ void            IntrNot ( void )
     if ( op != True && op != False ) {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TNUM_OBJ(op)].name), 0L );
+            (Int)TNAM_OBJ(op), 0L );
     }
 
     /* negate the operand                                                  */
@@ -1789,7 +1788,7 @@ void            IntrPermCycle (
         if ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
             ErrorQuit(
                 "Permutation: <expr> must be a positive integer (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(val)].name), 0L );
+                (Int)TNAM_OBJ(val), 0L );
         }
         c = INT_INTOBJ(val);
 
@@ -1996,7 +1995,7 @@ void            IntrListExprEnd (
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
                 "Range: <first> must be an integer (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(val)].name), 0L );
+                (Int)TNAM_OBJ(val), 0L );
         }
         low = INT_INTOBJ( val );
 
@@ -2006,7 +2005,7 @@ void            IntrListExprEnd (
             if ( ! IS_INTOBJ(val) ) {
                 ErrorQuit(
                     "Range: <second> must be an integer (not a %s)",
-                    (Int)(InfoBags[TNUM_OBJ(val)].name), 0L );
+                    (Int)TNAM_OBJ(val), 0L );
             }
             if ( INT_INTOBJ(val) == low ) {
                 ErrorQuit(
@@ -2024,7 +2023,7 @@ void            IntrListExprEnd (
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
                 "Range: <last> must not be an integer (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(val)].name), 0L );
+                (Int)TNAM_OBJ(val), 0L );
         }
         if ( (INT_INTOBJ(val) - low) % inc != 0 ) {
             ErrorQuit(
@@ -2547,7 +2546,7 @@ void            IntrAssList ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -2626,7 +2625,7 @@ void            IntrAssListLevel (
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -2693,7 +2692,7 @@ void            IntrUnbList ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -2733,7 +2732,7 @@ void            IntrElmList ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -2795,7 +2794,7 @@ void            IntrElmListLevel (
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -2859,7 +2858,7 @@ void            IntrIsbList ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -3106,7 +3105,7 @@ void            IntrAssPosObj ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -3199,7 +3198,7 @@ void            IntrAssPosObjLevel (
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -3270,7 +3269,7 @@ void            IntrUnbPosObj ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -3317,7 +3316,7 @@ void            IntrElmPosObj ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -3400,7 +3399,7 @@ void            IntrElmPosObjLevel (
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -3468,7 +3467,7 @@ void            IntrIsbPosObj ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
+            (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -3889,7 +3888,7 @@ void             IntrAssertAfterCondition ( void )
     else if (condition != False)
         ErrorQuit(
             "<condition> in Assert must yield 'true' or 'false' (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(condition)].name), 0L );
+            (Int)TNAM_OBJ(condition), 0L );
 }   
 
 void             IntrAssertEnd2Args ( void )
@@ -3952,7 +3951,7 @@ void              IntrSaveWSBegin ( void )
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
     if ( IntrCoding    > 0 ) { ErrorQuit("SaveWorkspace not at outer level",
-					 0L,0L); }
+                                         0L,0L); }
     if ( CompNowFuncs != 0 ) { return; }
 }
 
@@ -3966,63 +3965,35 @@ void              IntrSaveWSEnd ( void )
   if ( IntrIgnoring  > 0 ) { return; }
   if ( IntrCoding    > 0 ) {
     ErrorQuit("Panic: SaveWorkspace end not at outer level",
-				       0L,0L); }
+                                       0L,0L); }
   if ( CompNowFuncs != 0 ) { return; }
   
   filename = PopObj();
   PushObj(SaveWorkspace( filename ));
 }
 
+
+
+
 /****************************************************************************
 **
-*F  IntrLoadWSBegin() . . . . . . . . . . . . . Start interpeting a save WS
-**
-*F  IntrLoadWSEnd() . . . . . . . . . . . . . . Actually save the workspace
-**
-**  'IntrLoadWSBegin' is called when the reader starts reading a
-**  LoadWorkspace command. Unusually, there is something to do,
-**  because we must signal an error if we are coding, as the SaveWS
-**  cannot be at the outer level
-**
-**  Some clever footwork may be needed after a LoadWorkspace to get the
-**  stack into a permissible state?
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
-void              IntrLoadWSBegin ( void )
-{
-    /* ignore or signal an error
-       perhaps we should signal an error more often?? */
-  
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { ErrorQuit("LoadWorkspace not at outer level",
-					 0L,0L); }
-    if ( CompNowFuncs != 0 ) { return; }
-}
-
-void              IntrLoadWSEnd ( void )
-{
-  Obj filename;
-  /* ignore or signal an error
-     perhaps we should signal an error more often?? */
-  
-  if ( IntrReturning > 0 ) { return; }
-  if ( IntrIgnoring  > 0 ) { return; }
-  if ( IntrCoding    > 0 ) {
-    ErrorQuit("Panic: LoadWorkspace end not at outer level",
-				       0L,0L); }
-  if ( CompNowFuncs != 0 ) { return; }
-  
-  filename = PopObj();
-  PushObj(LoadWorkspace( filename ));
-}
-
-
-
 
 /****************************************************************************
 **
 
+*F  SetupIntrprtr() . . . . . . . . . . . . . . .  initialize the interpreter
+*/
+void SetupIntrprtr ( void )
+{
+}
+
+
+/****************************************************************************
+**
 *F  InitIntrprtr()  . . . . . . . . . . . . . . .  initialize the interpreter
 **
 **  'InitIntrprtr' initializes the interpreter.
@@ -4031,9 +4002,9 @@ void InitIntrprtr ( void )
 {
     UInt            lev;
 
-    InitGlobalBag( &IntrResult, "interpreter: result"       );
-    InitGlobalBag( &IntrState,  "interpreter: state"        );
-    InitGlobalBag( &StackObj,   "interpreter: object stack" );
+    InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" );
+    InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  );
+    InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   );
 
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary( "InfoDecision", &InfoDecision );
@@ -4041,8 +4012,21 @@ void InitIntrprtr ( void )
 
     /* The Assertion level is also controlled at GAP level */
     lev = GVarName("CurrentAssertionLevel");
-    InitCopyGVar( lev, &CurrentAssertionLevel );
-    AssGVar( lev, INTOBJ_INT(0) );
+    InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
+    if ( ! SyRestoring ) {
+        AssGVar( lev, INTOBJ_INT(0) );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  CheckIntrprtr() . . . . . . . check the initialisation of the interpreter
+*/
+void CheckIntrprtr ( void )
+{
+    SET_REVISION( "intrprtr_c", Revision_intrprtr_c );
+    SET_REVISION( "intrprtr_h", Revision_intrprtr_h );
 }
 
 

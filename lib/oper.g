@@ -279,6 +279,11 @@ INSTALL_IMMEDIATE_METHOD := function( oper, name, filter, rank, method )
             ignore,
             j;
 
+    # Check whether <oper> really is an operation.
+    if not IS_OPERATION(oper)  then
+        Error( "<oper> is not an operation" );
+    fi;
+    
     # Check whether this in fact installs an implication.
     if    FLAGS_FILTER(oper) <> false
       and (method = true or method = RETURN_TRUE)
@@ -600,7 +605,12 @@ end;
 ##
 INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
     local   tmp,  tmp2,  req,  i,  imp,  flags;
-
+    
+    # check whether <opr> really is an operation
+    if not IS_OPERATION(opr)  then
+        Error( "<opr> is not an operation" );
+    fi;
+    
     # check whether this really installs an implication
     if    FLAGS_FILTER(opr) <> false
       and (rel = true or rel = RETURN_TRUE)

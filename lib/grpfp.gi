@@ -170,6 +170,49 @@ InstallMethod( \<,
 
 #############################################################################
 ##
+#M  \in ( <elm>, <U> )  in subgroup of fp group
+##
+InstallMethod( \in,
+  "subgroup of fp group",
+  IsElmsColls,
+  [ IsElementOfFpGroup,
+    IsSubgroupFpGroup ],
+  0,
+function(elm,U)
+local t,fg,i,p;
+  t:=CosetTableInWholeGroup(U);
+  elm:=UnderlyingElement(elm);
+  # build up generator list corresponding to coset table
+  fg:=[];
+  for i in FreeGeneratorsOfFpGroup(U) do
+    Add(fg,i);Add(fg,i^-1);
+  od;
+  p:=1;
+  for i in [1..LengthWord(elm)] do
+    p:=t[Position(fg,Subword(elm,i,i))][p];
+  od;
+  return p=1;
+end);
+
+
+#############################################################################
+##
+#M  \=( <U>, <V> )  . . . . . . . . .  for two subgroups of a f.p. group
+##
+InstallMethod( \=,
+    "subgroups of fp group",
+    IsIdentical,
+    [ IsSubgroupFpGroup,
+      IsSubgroupFpGroup ],
+    0,
+    function( left, right )
+      return ForAll(GeneratorsOfGroup(left),i->i in right)
+             and ForAll(GeneratorsOfGroup(right),i->i in left);
+    end );
+
+
+#############################################################################
+##
 #M  GeneratorsOfGroup( <F> )  . . . . . . . . . . . . . . .  for a f.p. group
 ##
 InstallMethod( GeneratorsOfGroup,
@@ -716,6 +759,36 @@ end;
 
 #############################################################################
 ##
+#M  ImagesRepresentative( <hom>, <elm> )
+##
+InstallMethod( ImagesRepresentative, 
+  "map from fp group or free group, use 'MappedWord'",
+  FamSourceEqFamElm, [ IsFromFpGroupStdGensGeneralMappingByImages,
+          IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  return MappedWord(elm,hom!.generators,hom!.genimages);
+end);
+
+
+#############################################################################
+##
+#M  Index( <G>,<H> )
+##
+InstallMethod( IndexOp,
+    "method for finitely presented groups",
+    true,
+    [ IsSubgroupFpGroup, IsSubgroupFpGroup ],
+    0,
+function(G,H)
+  if not IsSubset(G,H) then
+    Error("<H> must be a subset of <G>");
+  fi;
+  return IndexInWholeGroup(H)/IndexInWholeGroup(G);
+end);
+
+
+#############################################################################
+##
 #M  IndexInWholeGroup( <H> )  . . . . . .  index of a subgroup in an fp group
 ##
 InstallMethod( IndexInWholeGroup,
@@ -732,6 +805,119 @@ function( H )
     return Length( T[1] );
 
 end );
+
+
+#############################################################################
+##
+#M  Intersection2(<G>,<H>)  . intersection of two fin. pres. groups
+##
+InstallMethod(Intersection2,"subgroups of fp group",IsIdentical,
+  [IsSubgroupFpGroup,IsSubgroupFpGroup],0,
+function ( G, H )
+    local   I,          # intersection of <G> and <H>, result
+    	    Fam,	# group family
+            rels,       # representatives for the relators
+            table,      # coset table for <I> in its parent
+            nrcos,      # number of cosets of <I>
+            tableG,     # coset table of <G>
+            nrcosG,     # number of cosets of <G>
+            tableH,     # coset table of <H>
+            nrcosH,     # number of cosets of <H>
+	    pargens,	# generators of Parent(G)
+	    freegens,	# free generators of Parent(G)
+            nrgens,     # number of generators of the parent of <G> and <H>
+            ren,        # if 'ren[<i>]' is 'nrcosH * <iG> + <iH>' then the
+                        # coset <i> of <I> corresponds to the intersection
+                        # of the pair of cosets <iG> of <G> and <iH> of <H>
+            ner,        # the inverse mapping of 'ren'
+            cos,        # coset loop variable
+            gen,        # generator loop variable
+            img;        # image of <cos> under <gen>
+
+    Fam:=FamilyObj(G);
+    # handle trivial cases
+    if IsIdentical(G,Fam!.wholeGroup) then
+        return H;
+    elif IsIdentical(H,Fam!.wholeGroup) then
+        return G;
+    fi;
+
+    tableG := CosetTableInWholeGroup(G);
+    nrcosG := Length( tableG[1] ) + 1;
+    tableH := CosetTableInWholeGroup(H);
+    nrcosH := Length( tableH[1] ) + 1;
+
+    if nrcosG<nrcosH then
+      if ForAll(GeneratorsOfGroup(H),i->i in G) then
+        return G;
+      fi;
+    elif nrcosH<nrcosG then
+      if ForAll(GeneratorsOfGroup(G),i->i in H) then
+        return H;
+      fi;
+    fi;
+
+    pargens:=GeneratorsOfGroup(Fam!.wholeGroup);
+    freegens:=FreeGeneratorsOfFpGroup(G);
+    # initialize the table for the intersection
+    rels := RelatorRepresentatives( ElementsFamily(Fam)!.relators );
+    nrgens := Length(freegens);
+    table := [];
+    for gen  in [ 1 .. nrgens ]  do
+        table[ 2*gen-1 ] := [];
+        if     freegens[ gen ]^2  in rels
+            or freegens[ gen ]^-2 in rels
+        then
+            table[ 2*gen ] := table[ 2*gen-1 ];
+        else
+            table[ 2*gen ] := [];
+        fi;
+    od;
+
+    # set up the renumbering
+    ren := ListWithIdenticalEntries(nrcosG*nrcosH,0);
+    ner := ListWithIdenticalEntries(nrcosG*nrcosH,0);
+    ren[ 1*nrcosH + 1 ] := 1;
+    ner[ 1 ] := 1*nrcosH + 1;
+    nrcos := 1;
+
+    # the coset table for the intersection is the transitive component of 1
+    # in the *tensored* permutation representation
+    cos := 1;
+    while cos <= nrcos  do
+
+        # loop over all entries in this row
+        for gen  in [ 1 .. nrgens ]  do
+
+            # get the coset pair
+            img := nrcosH * tableG[ 2*gen-1 ][ QuoInt( ner[ cos ], nrcosH ) ]
+                          + tableH[ 2*gen-1 ][ ner[ cos ] mod nrcosH ];
+
+            # if this pair is new give it the next available coset number
+            if ren[ img ] = 0  then
+                nrcos := nrcos + 1;
+                ren[ img ] := nrcos;
+                ner[ nrcos ] := img;
+            fi;
+
+            # and enter it into the coset table
+            table[ 2*gen-1 ][ cos ] := ren[ img ];
+            table[ 2*gen   ][ ren[ img ] ] := cos;
+
+        od;
+
+        cos := cos + 1;
+    od;
+
+    # now make the subgroup
+    I:=SubgroupGeneratorsCosetTable(freegens,rels, table );
+    I:=List(I,i->MappedWord(i,freegens,pargens));
+    I:=Subgroup(Fam!.wholeGroup,I);
+    SetCosetTableInWholeGroup(I,table);
+
+    # and return it
+    return I;
+end);
 
 
 #############################################################################
@@ -774,6 +960,26 @@ function( G )
     return isAbelian;
 
 end );
+
+
+#############################################################################
+##
+#M  IsSingleValued
+##
+InstallMethod( IsSingleValued,
+  "map from fp group or free group, given on std. gens: test relators",
+  true,
+  [IsFromFpGroupStdGensGeneralMappingByImages],0,
+function(hom)
+local s,sg,o;
+  s:=Source(hom);
+  if IsFreeGroup(s) then
+    return true;
+  fi;
+  sg:=FreeGeneratorsOfFpGroup(s);
+  o:=One(Range(hom));
+  return ForAll(RelatorsOfFpGroup(s),i->MappedWord(i,sg,hom!.genimages)=o);
+end);
 
 
 #############################################################################
@@ -1105,8 +1311,53 @@ end);
 
 #############################################################################
 ##
-#F  LowIndexSubgroupsFpGroup(<G>,<H>,<index>[,<excluded>]) . . find subgroups
-#F                               of small index in a finitely presented group
+#M  KernelOfMultiplicativeGeneralMapping( <hom> )
+##
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
+  "map from fp group or free group",
+  true, [ IsFromFpGroupStdGensGeneralMappingByImages
+	  and IsToPermGroupGeneralMappingByImages ],0,
+function(hom)
+local f,p,t,orbs,o,cor,i,j,k,u,e,frg;
+
+  f:=Source(hom);
+  frg:=FreeGeneratorsOfFpGroup(f);
+  p:=Range(hom);
+  # construct coset table
+  t:=[];
+  orbs:=Orbits(p,MovedPoints(p));
+  cor:=f;
+
+  for o in orbs do
+    # form coset table
+    for i in hom!.genimages do
+      for j in [1,-1] do
+	e:=i^j;
+	Add(t,List(o,k->Position(o,k^e)));
+      od;
+    od;
+    StandardizeTable(t);
+
+    # get subgroup generators
+    u:=SubgroupGeneratorsCosetTable(frg,
+         ElementsFamily(FamilyObj(f))!.relators,t);
+
+    # map them to f
+    u:=List(u,i->MappedWord(i,frg,hom!.generators));
+
+    u:=Subgroup(f,u);
+    SetCosetTableInWholeGroup(u,t);
+    cor:=Intersection(cor,u);
+  od;
+  cor:=Core(f,cor);
+  return cor;
+end);
+
+
+#############################################################################
+##
+#M  LowIndexSubgroupsFpGroup(<G>,<H>,<index>[,<excluded>]) . . find subgroups
+#M                               of small index in a finitely presented group
 ##
 LowIndexSubgroupsFpGroup := function ( arg )
     local   G,          # parent group
@@ -1857,7 +2108,7 @@ end);
 ##  is automatically cyclically reduced).
 ##
 RelatorRepresentatives := function ( rels )
-    local   cyc, fam, i, length, list, min, rel, reversed, reps;
+    local   cyc, fam, i, j, length, list, min, rel, reversed, reps;
 
     reps := [ ];
 
@@ -1885,19 +2136,23 @@ RelatorRepresentatives := function ( rels )
                 if cyc^-1 < min  then min := cyc^-1;  fi;
             od;
 
-            # reinvert the exponents.
-            list := ExtRepOfObj( min );
-            for i in [ 2, 4 .. Length( list ) ] do
-                list[i] := -list[i];
-            od;
-
             # if the relator is new, add it to the representatives
-            min := ObjByExtRep( fam, list );
             if not min in reps  then
-                AddSet( reps, min );
+                AddSet( reps, [ LengthWord( min ), min ] );
             fi;
 
         fi;
+    od;
+
+    # reinvert the exponents.
+    for i in [ 1 .. Length( reps ) ]  do
+        rel := reps[i][2];
+        fam := FamilyObj( rel );
+        list := ExtRepOfObj( rel );
+        for j in [ 2, 4 .. Length( list ) ] do
+            list[j] := -list[j];
+        od;
+        reps[i] := ObjByExtRep( fam, list );
     od;
 
     # return the representatives
@@ -2105,6 +2360,131 @@ function( H )
     return Size( G ) / IndexInWholeGroup( H );
 
 end );
+
+
+#############################################################################
+##
+#M  SubgroupGeneratorsCosetTable(<freegens>,<fprels>,<table>)
+##     determines subgroup generators from free generators, relators and
+##     coset table. It returns elements of the free group!
+##
+SubgroupGeneratorsCosetTable := function ( freegens, fprels, table )
+    local   gens,               # generators for the subgroup
+            rels,               # representatives for the relators
+            relsGen,            # relators sorted by start generator
+            deductions,         # deduction queue
+            ded,                # index of current deduction in above
+            nrdeds,             # current number of deductions in above
+            nrgens,
+            cos,                # loop variable for coset
+            i, gen, inv,        # loop variables for generator
+            g,                  # loop variable for generator col
+            rel,                # loop variable for relation
+            p, p1, p2,          # generator position numbers
+            triple,             # loop variable for relators as triples
+            app,                # arguments list for 'ApplyRel'
+            x, y, c;
+
+    nrgens := 2 * Length( freegens ) + 1;
+    gens := [];
+
+    # make all entries in the table negative
+    for cos  in [ 1 .. Length( table[1] ) ]  do
+        for gen  in table  do
+            if 0 < gen[cos]  then
+                gen[cos] := -gen[cos];
+            fi;
+        od;
+    od;
+
+    # make the rows for the relators and distribute over relsGen
+    rels := RelatorRepresentatives( fprels );
+    relsGen := RelsSortedByStartGen( freegens, rels, table, false );
+
+    # make the structure that is passed to 'ApplyRel'
+    app := ListWithIdenticalEntries(4,0);
+
+    # run over all the cosets
+    cos := 1;
+    while cos <= Length( table[1] )  do
+
+        # run through all the rows and look for undefined entries
+        for i  in [1..Length(freegens)]  do
+            gen := table[2*i-1];
+
+            if gen[cos] < 0  then
+
+                inv := table[2*i];
+
+                # make the Schreier generator for this entry
+                x := One(freegens[1]);
+                c := cos;
+                while c <> 1  do
+                    g := nrgens - 1;
+                    y := nrgens - 1;
+                    while 0 < g  do
+                        if AbsInt(table[g][c]) <= AbsInt(table[y][c])  then
+                            y := g;
+                        fi;
+                        g := g - 2;
+                    od;
+                    x := freegens[ y/2 ] * x;
+                    c := AbsInt(table[y][c]);
+                od;
+                x := x * freegens[ i ];
+                c := AbsInt( gen[ cos ] );
+                while c <> 1  do
+                    g := nrgens - 1;
+                    y := nrgens - 1;
+                    while 0 < g  do
+                        if AbsInt(table[g][c]) <= AbsInt(table[y][c])  then
+                            y := g;
+                        fi;
+                        g := g - 2;
+                    od;
+                    x := x * freegens[ y/2 ]^-1;
+                    c := AbsInt(table[y][c]);
+                od;
+                if x <> One(x)  then
+                    Add( gens, x );
+                fi;
+
+                # define a new coset
+                gen[cos]   := - gen[cos];
+                inv[ gen[cos] ] := cos;
+
+                # set up the deduction queue and run over it until it's empty
+                deductions := [ [i,cos] ];
+                nrdeds := 1;
+                ded := 1;
+                while ded <= nrdeds  do
+
+                    # apply all relators that start with this generator
+                    for triple in relsGen[deductions[ded][1]] do
+                        app[1] := triple[3];
+                        app[2] := deductions[ded][2];
+                        app[3] := -1;
+                        app[4] := app[2];
+                        if ApplyRel( app, triple[2] ) then
+                            triple[2][app[1]][app[2]] := app[4];
+                            triple[2][app[3]][app[4]] := app[2];
+                            nrdeds := nrdeds + 1;
+                            deductions[nrdeds] := [triple[1][app[1]],app[2]];
+                        fi;
+                    od;
+
+                    ded := ded + 1;
+                od;
+
+            fi;
+        od;
+
+        cos := cos + 1;
+    od;
+
+    # return the generators
+    return gens;
+end;
 
 
 #############################################################################

@@ -215,19 +215,6 @@ DecodeTree := function ( T )
     T.protected := protected;
 end;
 
-#############################################################################
-##
-##  This  is a  preliminary  dummy  version  of a  routine  which is  not yet
-##  available in GAP4.
-##
-DecodeTree := function ( T )
-
-    Print(
-    "#I  --------------------------------------------------------------\n",
-    "#I  WARNING: Tietze transformations are not yet available in GAP 4\n",
-    "#I  --------------------------------------------------------------\n" );
-end;
-
 
 #############################################################################
 ##
@@ -329,7 +316,7 @@ PresentationFpGroup := function ( arg )
     tietze[TZ_NUMGENS] := numgens;
     gens := List( [ 1 .. numgens ], i -> freegens[i] );
     tietze[TZ_GENERATORS] := gens;
-    invs := [ numgens, numgens - 1 .. - numgens ];
+    invs := ShallowCopy( numgens - [ 0 .. 2 * numgens ] );
     tietze[TZ_INVERSES] := invs;
     frels := List( grels, rel -> MappedWord( rel, fggens, gens ) );
     numrels := Length( frels );
@@ -1785,7 +1772,7 @@ TzGeneratorExponents := function ( T )
                     flags[i] := 1;
                     tietze[TZ_MODIFIED] := true;
                 elif num1 < 0 then
-                    rels[i] := - rel;
+                    rels[i] := List( rel, num -> -num );
                 fi;
             fi;
         fi;
@@ -1858,19 +1845,6 @@ TzGo := function ( arg )
 
 end;
 
-#############################################################################
-##
-##  This  is a  preliminary  dummy  version  of a  routine  which is  not yet
-##  available in GAP4.
-##
-TzGo := function ( arg )
-
-    Print(
-    "#I  --------------------------------------------------------------\n",
-    "#I  WARNING: Tietze transformations are not yet available in GAP 4\n",
-    "#I  --------------------------------------------------------------\n" );
-end;
-
 SimplifyPresentation := TzGo;
 
 
@@ -1923,19 +1897,6 @@ TzGoGo := function ( T )
     if silentGo then  TzPrintStatus( T, true );  fi;
 end;
 
-#############################################################################
-##
-##  This  is a  preliminary  dummy  version  of a  routine  which is  not yet
-##  available in GAP4.
-##
-TzGoGo := function ( T )
-
-    Print(
-    "#I  --------------------------------------------------------------\n",
-    "#I  WARNING: Tietze transformations are not yet available in GAP 4\n",
-    "#I  --------------------------------------------------------------\n" );
-end;
-
 
 #############################################################################
 ##
@@ -1958,84 +1919,7 @@ TzHandleLength1Or2Relators := function ( T )
     local absrep2, done, flags, gens, i, idword, invs, j, length, lengths,
           numgens, numgens1, numrels, pointers, protected, ptr, ptr1, ptr2,
           redunds, rels, rep, rep1, rep2, tietze, tracingImages, tree,
-          treelength, treeNums, TzReplaceGens;
-
-
-    TzReplaceGens := function ( tietze )
-
-        # This is a preliminary GAP version of a C routine which is not yet
-        # available in GAP4.
-
-        local altered, i, invs, j, k, leng, lengths, new, numgens, numgens1,
-              numrels, old, reduced, rel, rels, total;
-
-        # get some local varaibles.
-        numgens := tietze[TZ_NUMGENS];
-        numrels := tietze[TZ_NUMRELS];
-        rels    := tietze[TZ_RELATORS];
-        lengths := tietze[TZ_LENGTHS];
-        invs   := tietze[TZ_INVERSES];
-        total  := tietze[TZ_TOTAL];
-        numgens1 := numgens + 1;
-
-        # loop over all relators.
-        for i in [ 1 .. numrels ] do
-            rel := rels[i];
-            leng := lengths[i];
-            k := 0;
-            altered := false;
-
-            # Don't change a sqare relator defining a valid involution.
-            if not ( leng = 2 and flags[i] = 3 and
-                invs[numgens1+rel[1]] = rel[1] )
-                then
-
-                # run through the relator and replace the occurring
-                # generators.
-                for j in [ 1 .. leng ] do
-                    old := rel[j];
-                    if old < -numgens or numgens < old or old = 0 then
-                        Error("gen no. ",j," in rel no. ",i," out of range");
-                    fi;
-                    new := invs[numgens1-old];
-                    if new = 0 then
-                        altered := true;
-                    elif k > 0 and rel[k] = invs[numgens1+new] then
-                        k := k - 1;
-                        altered := true;
-                    else
-                        k := k + 1;
-                        rel[k] := new;
-                        if new <> old then altered := true; fi;
-                    fi;
-                od;
-
-                if altered then
-
-                    # now cyclically reduce the relator.
-                    j := 1;
-                    while j < k and rel[j] = invs[numgens1+rel[k]] do
-                        j := j + 1;
-                        k := k - 1;
-                    od;
-
-                    # resize the resulting relator, if necessary.
-                    if k < leng then
-                        rels[i] := rel{ [ j .. k ] };
-                        reduced := k - j + 1;
-                        lengths[i] := reduced;
-                        total := total - leng + reduced;
-                    fi;
-
-                    # redefine the corresponding search flag.
-                    flags[i] := 1;
-                fi;
-            fi;
-        od;
-
-        tietze[TZ_TOTAL] := total;
-    end;
-
+          treelength, treeNums;
 
     if T.printLevel >= 3 then  Print( "#I  handling short relators\n" );  fi;
 
@@ -2294,98 +2178,7 @@ end;
 ##
 TzMostFrequentPairs := function ( T, nmax )
 
-    local gens, i, j, k, max, n, numgens, occlist, pairs, tietze,
-          TzOccurrencesPairs;
-
-
-    TzOccurrencesPairs := function ( arg )
-
-        # This is a preliminary GAP version of a C routine which is not yet
-        # available in GAP4.
-
-        local i, ii, inv, invs, j1, j2, leng, list, num, numgens, numgens1,
-              rel, rels, tietze;
-
-        # get the arguments.
-        tietze := arg[1];
-        num := arg[2];
-        if Length( arg ) > 2 then
-            list := arg[3];
-        else
-            list := [ ];
-        fi;
-
-        # get some local variables.
-        numgens := tietze[TZ_NUMGENS];
-        invs := tietze[TZ_INVERSES];
-        rels := tietze[TZ_RELATORS];
-        numgens1 := numgens + 1;
-        inv := invs[numgens1+num];
-
-        #  return, if num = numgens.
-        if num = numgens then
-            return list;
-        fi;
-
-        # list[i]           counts the occurrences of gen * gen[i],
-        # list[numgens+i]   counts the occurrences of gen * gen[i]^-1,
-        # list[2*numgens+i] counts the occurrences of gen^-1 * gen[i],
-        # list[3*numgens+i] counts the occurrences of gen^-1 * gen[i]^-1.
-
-        # initialize the counters.
-        for i in [ 1 .. 4 * numgens ] do
-            list[i] := 0;
-        od;
-
-        # loop over the relators.
-        for rel in rels do
-            leng := Length( rel );
-
-            # skip the current relator if its length is less than 2.
-            if leng > 1 then
-
-                # loop over the current relator and investigate the pairs
-                # ( rel[j1], rel[j2] ).
-                j1 := leng;
-                for j2 in [ 1 .. leng ] do
-
-                    # count any "forward" pair gen * gen[i], gen * gen[i]^-1,
-                    # gen^-1 * gen[i], or gen^-1 * gen[i]^-1 (with num < i).
-                    if rel[j1] = num or rel[j1] = inv then
-                        i := rel[j2];
-                        if i < -num or num < i then
-                            if i < 0 then i := numgens - i; fi;
-                            if rel[j1] <> num then i := i + 2 * numgens; fi;
-                            list[i] := list[i] + 1;
-                        fi;
-
-                    # count any "backward" pair gen[i]^-1 * gen^-1,
-                    # gen[i] * gen^-1, gen[i]^-1 * gen, or gen[i] * gen
-                    # (with num < i) which is not covered by a forward pair.
-                    elif rel[j2] = num or rel[j2] = inv then
-                        i := rel[j1];
-                        if i < -num or num < i then
-                            ii := invs[numgens1+i];
-                            if num <> inv or rel[(j2+1) mod leng] <> ii or
-                                i = ii and invs[numgens1+rel[(j1+leng-1) mod
-                                leng]] = rel[j2] then
-                                if ii < 0 then ii := numgens - ii; fi;
-                                if rel[j2] <> inv then
-                                    ii := ii + 2 * numgens;
-                                fi;
-                                list[ii] := list[ii] + 1;
-                            fi;
-                        fi;
-                    fi;
-
-                    j1 := j2;
-                od;
-            fi;
-        od;
-
-        return list;
-end;
-
+    local gens, i, j, k, max, n, numgens, occlist, pairs, tietze;
 
     # check the first argument to be a Tietze record.
     if not ( IsBound( T.isTietze ) and T.isTietze ) then
@@ -2506,118 +2299,6 @@ TzNewGenerator := function ( T )
         [-numgens] );
 
     return gen;
-end;
-
-
-#############################################################################
-##
-#M  TzOccurrences( <Tietze stack>, <num> )  . . . . . . . . .  occurrences of
-#M  TzOccurrences( <Tietze stack> ) . . . . . . . . . . . . Tietze generators
-##
-##  This is a  preliminary  GAP  version  of a  C  routine  which  is not yet
-##  available in GAP4.
-##
-TzOccurrences := function ( arg )
-
-    local c, i, k, leng, lengths, minocc, minrel, next, num, numgens,
-          numrels, occ, rel, rels, tietze, total;
-
-    # get the first argument which is assumed to be a Tietze stack.
-    tietze := arg[1];
-
-    # get some local variables.
-    numgens := tietze[TZ_NUMGENS];
-    rels := tietze[TZ_RELATORS];
-    numrels := tietze[TZ_NUMRELS];
-    lengths := tietze[TZ_LENGTHS];
-
-    # check if a generator number is given.
-    if Length( arg ) > 1 then
-
-        # count the occurrences the specified generator only.
-        num := arg[2];
-        if num <= 0 or numgens < num then
-            Error( "given generator number ", num, " out of range" );
-        fi;
-
-        # initialize the counters.
-        minrel := 0;
-        minocc := 0;
-        total := 0;
-
-        # loop over all relators.
-        for i in [ 1 .. numrels ] do
-            rel := rels[i];
-            leng := lengths[i];
-
-            # loop through the relator.
-            occ := 0;
-            for k in [ 1 .. leng ] do
-                if rel[k] = num or rel[k] = -num then
-                    occ := occ + 1;
-                fi;
-            od;
-
-            if occ > 0 then
-                # check whether occ is less than the number of occurrences
-                # in the preceding relators.
-                if minocc = 0 or occ < minocc or
-                    occ = minocc and leng < lengths[minrel] then
-                    minrel := i;
-                    minocc := occ;
-                fi;
-                total := total + occ;
-            fi;
-        od;
-
-        total := [ total ];
-        minrel := [ minrel ];
-        minocc := [ minocc ];
-
-    else
-
-        # handle general case of all Tietze generators.
-        num := numgens;
-
-        # initialize the resulting lists.
-        minrel := ListWithIdenticalEntries( numgens, 0 );
-        minocc := ListWithIdenticalEntries( numgens, 0 );
-        total := ListWithIdenticalEntries( numgens, 0 );
-
-        # initialize a local list.
-        occ := ListWithIdenticalEntries( numgens, 0 );
-
-        # loop over all relators.
-        for i in [ 1 .. numrels ] do
-            rel := rels[i];
-            leng := lengths[i];
-
-            # loop through the relator.
-            for k in [ 1 .. leng ] do
-                next := AbsInt( rel[k] );
-                occ[next] := occ[next] + 1;
-            od;
-
-            # loop over the generators, collecting the counts.
-            for k in [ 1 .. numgens ] do
-                c := occ[k];
-                if c > 0 then
-                    if minocc[k] = 0 or c < minocc[k] or
-                        c = minocc[k] and leng < lengths[minrel[k]] then
-                        minrel[k] := i;
-                        minocc[k] := c;
-                    fi;
-                    total[k] := total[k] + c;
-                    occ[k] := 0;
-                fi;
-            od;
-        od;
-
-    fi;
-
-    # return the result.
-    return [ total, minrel, minocc ];
-
 end;
 
 
@@ -3096,38 +2777,7 @@ TzRemoveGenerators := function ( T )
 
     local comps, gens, i, image, invs, j, newim, numgens, numgens1,
           oldnumgens, pointers, preimages, redunds, tietze, tracingImages,
-          tree, treelength, treeNums, TzRenumberGens;
-
-
-    TzRenumberGens := function ( tietze )
-
-        # This is a preliminary GAP version of a C routine which is not yet
-        # available in GAP4.
-
-        local i, invs, j, leng, lengths, numgens, numrels, old, rel, rels;
-
-        # get some local varaibles.
-        numgens := tietze[TZ_NUMGENS];
-        numrels := tietze[TZ_NUMRELS];
-        rels    := tietze[TZ_RELATORS];
-        lengths := tietze[TZ_LENGTHS];
-        invs   := tietze[TZ_INVERSES];
-
-        # loop over all relators and replace the occurring generators.
-        for i in [ 1 .. numrels ] do
-            rel := rels[i];
-            leng := lengths[i];
-            # run through the relator and replace the occurring generators.
-            for j in [ 1 .. leng ] do
-                old := rel[j];
-                if old < -numgens or numgens < old or old = 0 then
-                    Error( "gen no. ",j," in rel no. ",i," out of range" );
-                fi;
-                rel[j] := invs[numgens+1-old];
-            od;
-        od;
-    end;
-
+          tree, treelength, treeNums;
 
     if T.printLevel >= 3 then
         Print( "#I  renumbering the Tietze generators\n" );
@@ -3339,21 +2989,6 @@ TzSearch := function ( T )
     od;
 end;
 
-    TzSearch := Ignore;
-
-
-#############################################################################
-##
-#M  TzSearchC( <Tietze stack>, <i>, <j> [, <equal> ] ) . . .  search subwords
-#M                                                             and substitute
-##
-##  This is  a preliminary  dummy version  of a  C  routine  which is not yet
-##  available in GAP4.
-##
-TzSearchC := function ( arg )
-    return 0;
-end;
-
 
 #############################################################################
 ##
@@ -3429,8 +3064,6 @@ TzSearchEqual := function ( T )
     fi;
 end;
 
-    TzSearchEqual := Ignore;
-
 
 #############################################################################
 ##
@@ -3443,61 +3076,6 @@ end;
 ##  The sorting algorithm used is the same as in the GAP function Sort.
 ##
 TzSort := function ( T )
-
-    local flag, flags, h, i, k, leng, lengths, n, numrels, rel, rels,
-          TzSortC;
-
-
-    TzSortC := function ( tietze )
-
-        # This is a preliminary GAP version of a C routine which is not yet
-        # available in GAP4.
-
-        # get some local varaibles.
-        rels    := tietze[TZ_RELATORS];
-        numrels := tietze[TZ_NUMRELS];
-        flags   := tietze[TZ_FLAGS];
-        lengths := tietze[TZ_LENGTHS];
-
-        # sort the relators.
-        h := 1;
-        while 9 * h + 4 < numrels do h := 3 * h + 1; od;
-        while 0 < h do
-            for i in [ h+1 .. numrels ] do
-                rel  := rels[i];
-                leng := lengths[i];
-                flag := flags[i];
-                k    := i;
-                if leng <> 0 then
-                    while h < k and ( lengths[k-h] = 0
-                        or leng < lengths[k-h]
-                        or leng = lengths[k-h] and flag > flags[k-h] ) do
-                        rels[k]    := rels[k-h];
-                        lengths[k] := lengths[k-h];
-                        flags[k]   := flags[k-h];
-                        k          := k - h;
-                    od;
-                fi;
-                rels[k]    := rel;
-                lengths[k] := leng;
-                flags[k]   := flag;
-            od;
-            h := QuoInt( h, 3 );
-        od;
-
-        # reduce the lists, if necessary.
-        n := numrels;
-        while n > 0 and lengths[n] = 0 do
-            n := n - 1;
-        od;
-        if n < numrels then
-            tietze[TZ_RELATORS] := rels{ [ 1 .. n ] };
-            tietze[TZ_FLAGS]    := flags{ [ 1 .. n ] };
-            tietze[TZ_LENGTHS]  := lengths{ [ 1 .. n ] };
-            tietze[TZ_NUMRELS]  := n;
-        fi;
-    end;
-
 
     if T.printLevel >= 3 then  Print( "#I  sorting the relators\n" );  fi;
 
@@ -3754,71 +3332,6 @@ TzSubstituteCyclicJoins := function ( T )
         TzSort( T );
         if printlevel >= 1 then  TzPrintStatus( T, true );  fi;
     fi;
-end;
-
-
-#############################################################################
-##
-#M  TzSubstituteGen( <Tietze stack>, <Tietze word> )  . . .  replace a Tietze
-#M                                                 generator by a Tietze word
-##
-##  This is a  preliminary  GAP  version  of a  C  routine  which  is not yet
-##  available in GAP4.
-##
-TzSubstituteGen := function ( tietze, gen, word )
-
-    local flags, i, invs, j, leng, lengths, numgens, numgens1, numrels, rel,
-          rels, replacelist, wleng, winv;
-
-    # get some local variables.
-    numgens := tietze[TZ_NUMGENS];
-    numgens1 := numgens + 1;
-    invs := tietze[TZ_INVERSES];
-    rels := tietze[TZ_RELATORS];
-    numrels := tietze[TZ_NUMRELS];
-    flags := tietze[TZ_FLAGS];
-    lengths := tietze[TZ_LENGTHS];
-
-    # check the second argument to be a valid Tietze generator.
-    gen := AbsInt( gen );
-    if gen < 0 or numgens < gen then
-        Error( "generator number ", gen, " out of range" );
-    fi;
-
-    # check the third argument to be a valid Tietze word, and invert it.
-    if not IsList( word ) then
-        Error( "third argument must be a Tietze word" );
-    fi;
-    wleng := Length( word );
-    winv := List( [ 1 .. wleng ], i -> invs[numgens1+word[wleng+1-i]] );
-
-    # build up the replace list.
-    replacelist := [ -numgens .. numgens ];
-    replacelist[numgens1+gen] := word;
-    replacelist[numgens1-gen] := winv;
-
-    # now loop over all relators.
-    for i in [ 1 .. numrels ] do
-        rel := rels[i];
-        leng := Length( rel );
-
-        # check if the relator contains gen or its invers.
-        j := 0;
-        while j < leng do
-            j := j + 1;
-            if rel[j] = gen or rel[j] = -gen then
-                j := leng + 1;
-            fi;
-        od;
-        if j > leng then
-            # build up the modified relator and cyclically reduce ist.
-            rel := ReducedRrsWord(
-                Flat( List( rel, j -> replacelist[numgens1+j] ) ) );
-            rels[i] := rel;
-            lengths[i] := Length( rel );
-            flags[i] := 1;
-        fi;
-    od;
 end;
 
 

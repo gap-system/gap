@@ -11,39 +11,43 @@
 **  The  statements package  is the  part  of  the interpreter that  executes
 **  statements for their effects and prints statements.
 */
-#include        "system.h"              /* Ints, UInts                     */
+#include        "system.h"              /* system dependent part           */
 
 SYS_CONST char * Revision_stats_c =
    "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gvars.h"               /* AssGVar                         */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "calls.h"               /* NAMI_FUNC used by EVAL_EXPR     */
+#include        "gvars.h"               /* global variables                */
 
-#include        "lists.h"               /* IS_LIST, LEN_LIST, ELMV0_LIST   */
-#include        "plist.h"               /* NEW_PLIST, SET_LEN_PLIST, ...   */
+#include        "calls.h"               /* generic call mechanism          */
 
-#include        "bool.h"                /* True, False                     */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "code.h"                /* Stat, Expr, TNUM_STAT, ADDR_S...*/
-#include        "vars.h"                /* ASS_LVAR, ASS_HVAR              */
-#include        "exprs.h"               /* EVAL_EXPR, EVAL_BOOL_EXPR, ...  */
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
-#include        "intrprtr.h"            /* InfoDecision, InfoDoPrint, ...  */
+#include        "bool.h"                /* booleans                        */
 
-#include        "ariths.h"              /* LT used by ExecAssert...        */
+#include        "code.h"                /* coder                           */
+#include        "vars.h"                /* variables                       */
+#include        "exprs.h"               /* expressions                     */
+
+#include        "intrprtr.h"            /* interpreter                     */
+
+#include        "ariths.h"              /* basic arithmetic                */
 
 #define INCLUDE_DECLARATION_PART
-#include        "stats.h"               /* declaration part of the package */
+#include        "stats.h"               /* statements                      */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* Error                           */
 
 
 /****************************************************************************
@@ -785,7 +789,7 @@ UInt            ExecForRange (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
+            (Int)TNAM_OBJ(elm), 0L,
             "you can return an integer for <first>" );
     }
     first = INT_INTOBJ(elm);
@@ -793,7 +797,7 @@ UInt            ExecForRange (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
+            (Int)TNAM_OBJ(elm), 0L,
             "you can return an integer for <last>" );
     }
     last  = INT_INTOBJ(elm);
@@ -847,7 +851,7 @@ UInt            ExecForRange2 (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
+            (Int)TNAM_OBJ(elm), 0L,
             "you can return an integer for <first>" );
     }
     first = INT_INTOBJ(elm);
@@ -855,7 +859,7 @@ UInt            ExecForRange2 (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
+            (Int)TNAM_OBJ(elm), 0L,
             "you can return an integer for <last>" );
     }
     last  = INT_INTOBJ(elm);
@@ -914,7 +918,7 @@ UInt            ExecForRange3 (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
+            (Int)TNAM_OBJ(elm), 0L,
             "you can return an integer for <first>" );
     }
     first = INT_INTOBJ(elm);
@@ -922,7 +926,7 @@ UInt            ExecForRange3 (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
+            (Int)TNAM_OBJ(elm), 0L,
             "you can return an integer for <last>" );
     }
     last  = INT_INTOBJ(elm);
@@ -1334,7 +1338,7 @@ UInt ExecAssert2Args (
         while ( decision != True && decision != False ) {
          decision = ErrorReturnObj(
           "Assertion condition must evaluate to 'true' or 'false', not a %s",
-          (Int)(InfoBags[TNUM_OBJ(decision)].name), 0L,
+          (Int)TNAM_OBJ(decision), 0L,
           "you may return 'true' or 'false' or you may quit");
         }
         if ( decision == False ) {
@@ -1371,7 +1375,7 @@ UInt ExecAssert3Args (
         while ( decision != True && decision != False ) {
          decision = ErrorReturnObj(
          "Assertion condition must evaluate to 'true' or 'false', not a %s",
-         (Int)(InfoBags[TNUM_OBJ(decision)].name), 0L,
+         (Int)TNAM_OBJ(decision), 0L,
          "you may return 'true' or 'false' or you may quit");
         }
         if ( decision == False ) {
@@ -1469,8 +1473,8 @@ UInt ExecIntrStat (
     /* change the entries in 'ExecStatFuncs' back to the original          */
     if ( RealExecStatCopied ) {
         for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-	    ExecStatFuncs[i] = RealExecStatFuncs[i];
-	}
+            ExecStatFuncs[i] = RealExecStatFuncs[i];
+        }
     }
     SyIsIntr();
 
@@ -1503,10 +1507,10 @@ void InterruptExecStat ( void )
 
     /* remember the original entries from the table 'ExecStatFuncs'        */
     if ( ! RealExecStatCopied ) {
-	for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-	    RealExecStatFuncs[i] = ExecStatFuncs[i];
-	}
-	RealExecStatCopied = 1;
+        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+            RealExecStatFuncs[i] = ExecStatFuncs[i];
+        }
+        RealExecStatCopied = 1;
     }
 
     /* change the entries in the table 'ExecStatFuncs' to 'ExecIntrStat'   */
@@ -1529,13 +1533,13 @@ void InterruptExecStat ( void )
 */
 void ClearError ( void )
 {
-    UInt	i;
+    UInt        i;
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
     if ( RealExecStatCopied ) {
         for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-	    ExecStatFuncs[i] = RealExecStatFuncs[i];
-	}
+            ExecStatFuncs[i] = RealExecStatFuncs[i];
+        }
     }
 
     /* reset <NrError>                                                     */
@@ -1864,20 +1868,18 @@ void            PrintReturnVoid (
 /****************************************************************************
 **
 
-*F  InitStats() . . . . . . . . . . . . . . . . initialize statements package
-**
-**  'InitStats' initializes the statements package.
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitStats ( void )
+
+
+/****************************************************************************
+**
+
+*F  SetupStats()  . . . . . . . . . . . . . initialize the statements package
+*/
+void SetupStats ( void )
 {
     UInt                i;              /* loop variable                   */
-
-    /* make the global bags known to Gasman                                */
-    /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
-    /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
-    /* furthermore, statements are no longer bags                          */
-    /* InitGlobalBag( &CurrStat );                                         */
-    InitGlobalBag( &ReturnObjStat, "stats: returned object" );
 
     /* install executors for non-statements                                */
     for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
@@ -1945,6 +1947,24 @@ void            InitStats ( void )
     PrintStatFuncs[ T_ASSERT_3ARGS   ] = PrintAssert3Args;
     PrintStatFuncs[ T_RETURN_OBJ     ] = PrintReturnObj;
     PrintStatFuncs[ T_RETURN_VOID    ] = PrintReturnVoid;
+}
+
+
+
+/****************************************************************************
+**
+*F  InitStats() . . . . . . . . . . . . . . initialize the statements package
+*/
+void InitStats ( void )
+{
+    /* make the global bags known to Gasman                                */
+    /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
+    /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
+    /* furthermore, statements are no longer bags                          */
+    /* InitGlobalBag( &CurrStat );                                         */
+
+    InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" );
+
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
@@ -1954,3 +1974,20 @@ void            InitStats ( void )
 
 
 
+/****************************************************************************
+**
+*F  CheckStats() . . . . . check the initialisation of the statements package
+*/
+void CheckStats ( void )
+{
+    SET_REVISION( "stats_c",    Revision_stats_c );
+    SET_REVISION( "stats_h",    Revision_stats_h );
+}
+
+
+
+/****************************************************************************
+**
+
+*E  stats.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

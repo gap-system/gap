@@ -64,6 +64,19 @@ InstallOtherMethod( DegreeFFE,
 
 #############################################################################
 ##
+#M  LogFFE( <n>, <r> )  . . . . . . . . . . . . . . . . . . . . . for two FFE
+##
+InstallMethod( LogFFE,
+    "method for two FFEs",
+    IsIdentical,
+    [ IsFFE, IsFFE ], 0,
+    function( n, r )
+    return LogMod( Int( n ), Int( r ), Characteristic( n ) );
+    end );
+
+
+#############################################################################
+##
 #M  IntVecFFE( <vector> )
 ##
 InstallOtherMethod( IntVecFFE,
@@ -598,7 +611,7 @@ InstallMethod( Order,
 InstallMethod( SquareRoots,
     "method for a field of FFEs, and a FFE",
     IsCollsElms,
-    [ IsField and IsFFECollection, IsFFE ], 0,
+    [ IsField, IsFFE ], 0,
     function( F, z )
     local r;
     if IsZero( z ) then

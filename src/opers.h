@@ -10,7 +10,7 @@
 **  and properties package.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_opers_h =
+SYS_CONST char * Revision_opers_h =
    "@(#)$Id$";
 #endif
 
@@ -293,17 +293,62 @@ extern void ChangeDoOperations (
             Obj                 oper,
             Int                 verb );
 
+/****************************************************************************
+**
+*F  SaveOperationExtras( <oper> ) . . . .additional savng for functions which
+**                                       are operations
+**
+**  This is called by SaveFunction when the function bag is too large to be
+**  a simple function, and so must be an operation
+**
+*/
+
+extern void SaveOperationExtras( Obj oper );
+
+/****************************************************************************
+**
+*F  LoadOperationExtras( <oper> ) . . . .additional loading for functions which
+**                                       are operations
+**
+**  This is called by LoadFunction when the function bag is too large to be
+**  a simple function, and so must be an operation
+**
+*/
+
+extern void LoadOperationExtras( Obj oper );
+
 
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupOpers() . . . . . . . . . . . . . . initialize the operations package
+*/
+extern void SetupOpers ( void );
+
+
+/****************************************************************************
+**
 *F  InitOpers() . . . . . . . . . . . . . . initialize the operations package
 */
-extern  void            InitOpers ( void );
+extern void InitOpers ( void );
 
 
+/****************************************************************************
+**
+*F  CheckOpers()  . . . .  check the initialisation of the operations package
+*/
+extern void CheckOpers ( void );
 
 
+/****************************************************************************
+**
 
-
-
+*E  opers.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

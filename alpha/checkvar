@@ -1,0 +1,43 @@
+#!/bin/sh
+#############################################################################
+##
+#W  checkvar							 Frank Celler
+##
+##  this shell script checks the variables
+##
+if [ -z "$CVSROOT" ];  then
+    echo "PANIC: you must set 'CVSROOT'"
+    exit 1
+fi
+
+if [ -z "$ALPHAROOT" ];  then
+    echo "PANIC: you must set 'ALPHAROOT'"
+    exit 1
+fi
+
+if [ -z "$VERSION" ];  then
+    echo "PANIC: you must set 'VERSION'"
+    exit 1
+fi
+
+if [ -z "$DATE" ];  then
+    echo "PANIC: you must set 'DATE'"
+    exit 1
+fi
+
+if [ -z "$MAKETARGET" ];  then
+    echo "PANIC: you must set 'MAKETARGET'"
+    exit 1
+fi
+
+if [ -z "$GAPEXEC" ];  then
+    echo "PANIC: you must set 'GAPEXEC'"
+    exit 1
+fi
+
+if [ -z "$TARDIR" ];  then
+    echo "PANIC: you must set 'TARDIR'"
+    exit 1
+fi
+
+exit 0

@@ -15,202 +15,38 @@ SYS_CONST char * Revision_objects_c =
 
 #include        "sysfiles.h"            /* file input/output               */
 
-#include        "gasman.h"              /* Retype                          */
+#include        "gasman.h"              /* garbage collector               */
 
 #define INCLUDE_DECLARATION_PART
-#include        "objects.h"             /* declaration part of the package */
+#include        "objects.h"             /* objects                         */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "scanner.h"             /* Pr                              */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gvars.h"               /* global variables                */
 
-#include        "calls.h"               /* NewFunctionC                    */
-#include        "opers.h"               /* NewFilterC, NewOperationC       */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "plist.h"               /* ELM_PLIST used by FAMILY_TYPE   */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gap.h"                 /* Error                           */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
-/****************************************************************************
-**
-
-*T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
-**
-**  'Obj' is defined in the declaration part of this package.
-*/
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
 **
 
-*F  IS_INTOBJ( <o> )  . . . . . . . .  test if an object is an integer object
-**
-**  'IS_INTOBJ' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  ARE_INTOBJS( <o1>, <o2> ) . . . . test if two objects are integer objects
-**
-**  'ARE_INTOBJS' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  INTOBJ_INT( <i> ) . . . . . . .  convert a C integer to an integer object
-**
-**  'INTOBJ_INT' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  INT_INTOBJ( <o> ) . . . . . . .  convert an integer object to a C integer
-**
-**  'INT_INTOBJ' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  EQ_INTOBJS( <o>, <l>, <r> ) . . . . . . . . . compare two integer objects
-**
-**  'EQ_INTOBJS' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  LT_INTOBJS( <o>, <l>, <r> ) . . . . . . . . . compare two integer objects
-**
-**  'LT_INTOBJS' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  SUM_INTOBJS( <o>, <l>, <r> )  . . . . . . . .  sum of two integer objects
-**
-**  'SUM_INTOBJS' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  DIFF_INTOBJS( <o>, <l>, <r> ) . . . . . difference of two integer objects
-**
-**  'DIFF_INTOBJS' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  PROD_INTOBJS( <o>, <l>, <r> ) . . . . . .  product of two integer objects
-**
-**  'PROD_INTOBJS' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  IS_FFE( <o> ) . . . . . . . . test if an object is a finite field element
-**
-**  'IS_FFE'  returns 1  if the  object <o>  is  an  (immediate) finite field
-**  element and 0 otherwise.
-*/
-
-
-/****************************************************************************
-**
-
-*S  T_<name>  . . . . . . . . . . . . . . . . symbolic names for object types
-*S  FIRST_CONSTANT_TNUM, LAST_CONSTANT_TNUM . . . . range of constant   types
-*S  FIRST_RECORD_TNUM,   LAST_RECORD_TNUM . . . . . range of record     types
-*S  FIRST_LIST_TNUM,     LAST_LIST_TNUM . . . . . . range of list       types
-*S  FIRST_EXTERNAL_TNUM, LAST_EXTERNAL_TNUM . . . . range of external   types
-*S  FIRST_REAL_TNUM,     LAST_REAL_TNUM . . . . . . range of real       types
-*S  FIRST_VIRTUAL_TNUM,  LAST_VIRTUAL_TNUM  . . . . range of virtual    types
-*S  FIRST_IMM_MUT_TNUM,  LAST_IMM_MUT_TNUM  . . . . range of im/mutable types
-**
-**  The  objects types and the type ranges are  defined  in  the  declaration
-**  part of this package.
-*/
-
-
-/****************************************************************************
-**
-
-*F  TNUM_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
-**
-**  'TNUM_OBJ' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  TNUM_OBJ_Handler( <self>, <obj> ) . . . . . . . .  handler for 'TNUM_OBJ'
-*/
-Obj TNUM_OBJ_Func;
-
-Obj TNUM_OBJ_Handler (
-    Obj                 self,
-    Obj                 obj )
-{
-    return INTOBJ_INT( TNUM_OBJ(obj) );
-}
-
-
-/****************************************************************************
-**
-*F  SIZE_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . size of an object
-**
-**  'SIZE_OBJ' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  SIZE_OBJ_Handler( <self>, <obj> ) . . . . . . . .  handler for 'SIZE_OBJ'
-*/
-Obj SIZE_OBJ_Func;
-
-Obj SIZE_OBJ_Handler (
-    Obj                 self,
-    Obj                 obj )
-{
-    return INTOBJ_INT( SIZE_OBJ(obj) );
-}
-
-
-/****************************************************************************
-**
-*F  ADDR_OBJ( <obj> ) . . . . . . . . . . . . . absolute address of an object
-**
-**  'ADDR_OBJ' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-
-*F  FAMILY_TYPE( <kind> ) . . . . . . . . . . . . . . . . .  family of a kind
-**
-**  'FAMILY_TYPE' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
 *F  FamilyTypeHandler( <self>, <kind> ) . . . . . . handler for 'FAMILY_TYPE'
 */
-Obj FamilyTypeFunc;
-
 Obj FamilyTypeHandler (
     Obj                 self,
     Obj                 kind )
@@ -221,40 +57,14 @@ Obj FamilyTypeHandler (
 
 /****************************************************************************
 **
-*F  FAMILY_OBJ( <obj> ) . . . . . . . . . . . . . . . . . family of an object
-**
-**  'FAMILY_OBJ' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
 *F  FamilyObjHandler( <self>, <obj> ) . . . . . . .  handler for 'FAMILY_OBJ'
 */
-Obj FamilyObjFunc;
-
 Obj FamilyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
     return FAMILY_OBJ( obj );
 }
-
-
-/****************************************************************************
-**
-*F  FLAGS_TYPE( <kind> )  . . . . . . . . . . .  flags boolean list of a kind
-**
-**  'FLAGS_TYPE' is defined in the declaration part of this package.
-*/
-
-
-/****************************************************************************
-**
-*F  SHARED_TYPE( <kind> ) . . . . . . . . . . . . . . . shared data of a kind
-**
-**  'SHARED_TYPE' is defined in the declaration part of this package.
-*/
 
 
 /****************************************************************************
@@ -271,9 +81,8 @@ Obj (*TypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 Obj TypeObjError (
     Obj                 obj )
 {
-    ErrorQuit(
-        "Panic: basic object of type '%s' is unkind",
-        (Int)(InfoBags[TNUM_OBJ(obj)].name), 0L );
+    ErrorQuit( "Panic: basic object of type '%s' is unkind",
+               (Int)TNAM_OBJ(obj), 0L );
     return 0;
 }
 
@@ -282,8 +91,6 @@ Obj TypeObjError (
 **
 *F  TypeObjHandler( <self>, <obj> ) . . . . . . . . .  handler for 'TYPE_OBJ'
 */
-Obj TypeObjFunc;
-
 Obj TypeObjHandler (
     Obj                 self,
     Obj                 obj )
@@ -295,18 +102,6 @@ Obj TypeObjHandler (
 /****************************************************************************
 **
 
-*F  MUTABLE_TNUM( <type> )  . . . . . . . . . . mutable type of internal type
-*/
-
-
-/****************************************************************************
-**
-*F  IMMUTABLE_TNUM( <type> )  . . . . . . . . immutable type of internal type
-*/
-
-
-/****************************************************************************
-**
 *F  IS_MUTABLE_OBJ( <obj> ) . . . . . . . . . . . . . .  is an object mutable
 **
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can
@@ -402,20 +197,6 @@ Obj IsCopyableObjHandler (
 /****************************************************************************
 **
 
-*F  SHALLOW_COPY_OBJ( <obj> ) . . . . . . .  make a shallow copy of an object
-**
-**  'SHALLOW_COPY_OBJ' makes a shallow copy of the object <obj>.
-**
-**  'SHALLOW_COPY_OBJ' is defined in the  declaration part of this package as
-**  follows
-**
-#define SHALLOW_COPY_OBJ(obj) \
-                        ((*ShallowCopyObjFuncs[ TNUM_OBJ(obj) ])( obj ))
-*/
-
-
-/****************************************************************************
-**
 *V  ShallowCopyObjFuncs[<type>] . . . . . . . . . .  shallow copier functions
 */
 Obj (*ShallowCopyObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
@@ -524,41 +305,9 @@ Obj CopyObj (
 
 /****************************************************************************
 **
-*F  COPY_OBJ( <obj>, <mut> )  . . . . . . make a structural copy of an object
-**
-**  'COPY_OBJ' calls the    function pointed to   by  'CopyObjFuncs[<type>]',
-**  passing <obj> as argument.  If <type> is the type  of an constant object,
-**  then  'CopyObjFuncs[<type>]' points   to  'CopyObjConstant',  which  just
-**  returns <obj>, since those objects need not be copied.
-**
-**  'COPY_OBJ' is defined in the declaration part of this package as follows
-**
-#define COPY_OBJ(obj,mut) \
-    ((*CopyObjFuncs[ TNUM_OBJ(obj) ])( obj, mut ))
-*/
-
-
-/****************************************************************************
-**
 *V  CopyObjFuncs[<type>]  . . . . . . . . . . . .  table of copying functions
 */
 Obj (*CopyObjFuncs[ LAST_REAL_TNUM+COPYING+1 ]) ( Obj obj, Int mut );
-
-
-/****************************************************************************
-**
-*F  CLEAN_OBJ( <obj> )  . . . . . . . . . . . . clean up object after copying
-**
-**  'CLEAN_OBJ' calls  the  function pointed to   by 'CleanObjFuncs[<type>]',
-**  passing <obj> as argument.  If <type> is the type  of an constant object,
-**  then  'CleanObjFuncs[<type>]'   points to  'CopyObjConstant', which  does
-**  nothing, since those objects need not be copied.
-**
-**  'CLEAN_OBJ' is defined in the declaration part of this package as follows
-**
-#define CLEAN_OBJ(obj) \
-    ((*CleanObjFuncs[ TNUM_OBJ(obj) ])( obj ))
-*/
 
 
 /****************************************************************************
@@ -933,8 +682,6 @@ void CleanObjDatObjCopy (
 
 *F  ImmutableCopyObjHandler( <self>, <obj> )  . . . . immutable copy of <obj>
 */
-Obj ImmutableCopyObjFunc;
-
 Obj ImmutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
@@ -947,8 +694,6 @@ Obj ImmutableCopyObjHandler (
 **
 *F  MutableCopyObjHandler( <self>, <obj> )  . . . . . . mutable copy of <obj>
 */
-Obj MutableCopyObjFunc;
-
 Obj MutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
@@ -1106,38 +851,6 @@ void PrintPathError (
 /****************************************************************************
 **
 
-*F  IS_COMOBJ( <obj> )  . . . . . . . . . . . is an object a component object
-**
-**  'IS_COMOBJ' is defined in the declaration part of this package as follows
-**
-#define IS_COMOBJ(obj)            (TNUM_OBJ(obj) == T_COMOBJ)
-*/
-
-
-/****************************************************************************
-**
-*F  TYPE_COMOBJ( <obj> )  . . . . . . . . . . . .  kind of a component object
-**
-**  'TYPE_COMOBJ'  is defined in  the  declaration part   of this package  as
-**  follows
-**
-#define TYPE_COMOBJ(obj)          (ADDR_OBJ(obj)[0])
-*/
-
-
-/****************************************************************************
-**
-*F  SET_TYPE_COMOBJ( <obj>, <val> ) . . .  set the kind of a component object
-**
-**  'SET_TYPE_COMOBJ'  is defined in the  declaration part of this package as
-**  follows
-**
-#define SET_TYPE_COMOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
-*/
-
-
-/****************************************************************************
-**
 *F  TypeComObj( <obj> ) . . . . . . . . . . function version of 'TYPE_COMOBJ'
 */
 Obj             TypeComObj (
@@ -1151,8 +864,6 @@ Obj             TypeComObj (
 **
 *F  IS_COMOBJ_Hander( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
 */
-Obj             IS_COMOBJ_Func;
-
 Obj             IS_COMOBJ_Handler (
     Obj                 self,
     Obj                 obj )
@@ -1165,8 +876,6 @@ Obj             IS_COMOBJ_Handler (
 **
 *F  SET_TYPE_COMOBJ_Handler( <self>, <obj>, <kind> ) . . .  'SET_TYPE_COMOBJ'
 */
-Obj SET_TYPE_COMOBJ_Func;
-
 Obj SET_TYPE_COMOBJ_Handler (
     Obj                 self,
     Obj                 obj,
@@ -1182,38 +891,6 @@ Obj SET_TYPE_COMOBJ_Handler (
 /****************************************************************************
 **
 
-*F  IS_POSOBJ( <obj> )  . . . . . . . . . .  is an object a positional object
-**
-**  'IS_POSOBJ' is defined in the declaration part of this package as follows
-**
-#define IS_POSOBJ(obj)            (TNUM_OBJ(obj) == T_POSOBJ)
-*/
-
-
-/****************************************************************************
-**
-*F  TYPE_POSOBJ( <obj> )  . . . . . . . . . . . . kind of a positional object
-**
-**  'TYPE_POSOBJ'  is defined in  the  declaration part   of this package  as
-**  follows
-**
-#define TYPE_POSOBJ(obj)          (ADDR_OBJ(obj)[0])
-*/
-
-
-/****************************************************************************
-**
-*F  SET_TYPE_POSOBJ( <obj>, <val> ) . . . set the kind of a positional object
-**
-**  'SET_TYPE_POSOBJ'  is defined in the  declaration part of this package as
-**  follows
-**
-#define SET_TYPE_POSOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
-*/
-
-
-/****************************************************************************
-**
 *F  TypePosObj( <obj> ) . . . . . . . . . . function version of 'TYPE_POSOBJ'
 */
 Obj TypePosObj (
@@ -1227,8 +904,6 @@ Obj TypePosObj (
 **
 *F  IS_POSOBJ_Handler( <self>, <obj> )  . . . . . . . handler for 'IS_POSOBJ'
 */
-Obj IS_POSOBJ_Func;
-
 Obj IS_POSOBJ_Handler (
     Obj                 self,
     Obj                 obj )
@@ -1241,8 +916,6 @@ Obj IS_POSOBJ_Handler (
 **
 *F  SET_TYPE_POSOBJ_Handler( <self>, <obj>, <kind> )  . . .  'SET_TYPE_POSOB'
 */
-Obj SET_TYPE_POSOBJ_Func;
-
 Obj SET_TYPE_POSOBJ_Handler (
     Obj                 self,
     Obj                 obj,
@@ -1259,8 +932,6 @@ Obj SET_TYPE_POSOBJ_Handler (
 **
 *F  LEN_POSOBJ_Handler( <self>, <obj> ) . . . . . .  handler for 'LEN_POSOBJ'
 */
-Obj LEN_POSOBJ_Func;
-
 Obj LEN_POSOBJ_Handler (
     Obj                 self,
     Obj                 obj )
@@ -1272,38 +943,6 @@ Obj LEN_POSOBJ_Handler (
 /****************************************************************************
 **
 
-*F  IS_DATOBJ( <obj> )  . . . . . . . . . . . . .  is an object a data object
-**
-**  'IS_DATOBJ' is defined in the declaration part of this package as follows
-**
-#define IS_DATOBJ(obj)            (TNUM_OBJ(obj) == T_DATOBJ)
-*/
-
-
-/****************************************************************************
-**
-*F  TYPE_DATOBJ( <obj> )  . . . . . . . . . . . . . . . kind of a data object
-**
-**  'TYPE_DATOBJ'  is defined in  the  declaration part   of this package  as
-**  follows
-**
-#define TYPE_DATOBJ(obj)          (ADDR_OBJ(obj)[0])
-*/
-
-
-/****************************************************************************
-**
-*F  SET_TYPE_DATOBJ( <obj>, <val> ) . . . . . . set the kind of a data object
-**
-**  'SET_TYPE_DATOBJ'  is defined in the  declaration part of this package as
-**  follows
-**
-#define SET_TYPE_DATOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
-*/
-
-
-/****************************************************************************
-**
 *F  TypeDatObj( <obj> ) . . . . . . . . . . function version of 'TYPE_DATOBJ'
 */
 Obj             TypeDatObj (
@@ -1317,8 +956,6 @@ Obj             TypeDatObj (
 **
 *F  IS_DATOBJ_Hander( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
 */
-Obj             IS_DATOBJ_Func;
-
 Obj             IS_DATOBJ_Handler (
     Obj                 self,
     Obj                 obj )
@@ -1331,8 +968,6 @@ Obj             IS_DATOBJ_Handler (
 **
 *F  SET_TYPE_DATOBJ_Handler( <self>, <obj>, <kind> ) . . .  'SET_TYPE_DATOBJ'
 */
-Obj SET_TYPE_DATOBJ_Func;
-
 Obj SET_TYPE_DATOBJ_Handler (
     Obj                 self,
     Obj                 obj,
@@ -1352,8 +987,6 @@ Obj SET_TYPE_DATOBJ_Handler (
 **
 **  'IsIdenticalHandler' implements 'IsIdentical'
 */
-Obj IsIdenticalFunc;
-
 Obj IsIdenticalHandler (
     Obj                 self,
     Obj                 obj1,
@@ -1369,7 +1002,7 @@ Obj IsIdenticalHandler (
 ** 'SaveObjFuncs' is the dispatch table that  contains, for every type
 **  of  objects, a pointer to the saving function for objects of that type
 **  These should not handle the file directly, but should work via the
-**  functions 'SaveObjRef', 'SaveUInt<n>' (<n> = 1,2,4 or 8), and others
+**  functions 'SaveSubObj', 'SaveUInt<n>' (<n> = 1,2,4 or 8), and others
 **  to be determined. Their role is to identify the C types of the various
 **  parts of the bag, and perhaps to leave out some information that does
 **  not need to be saved. By the time this function is called, the bag
@@ -1380,15 +1013,15 @@ Obj IsIdenticalHandler (
 void (*SaveObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj);
 
 void SaveObjError (
-		   Obj obj
-		   )
+                   Obj obj
+                   )
 {
   ErrorQuit(
-	    "Panic: tried to save an object of unknown type '%d'",
-	    (Int)TNUM_OBJ(obj), 0L );
+            "Panic: tried to save an object of unknown type '%d'",
+            (Int)TNUM_OBJ(obj), 0L );
 }
     
-		   
+                   
      
      
 /****************************************************************************
@@ -1406,63 +1039,167 @@ void SaveObjError (
 **  No loading function may allocate any bag
 */
 
-void (*LoadObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj, Bag bag);
+void (*LoadObjFuncs[ LAST_REAL_TNUM + 1]) (Bag bag);
 
 void LoadObjError (
-		   Obj obj,
-		   Bag bag
-		   )
+                   Obj obj
+                   )
 {
   ErrorQuit(
-	    "Panic: tried to loade an object of unknown type '%d'",
-	    (Int)TNUM_OBJ(obj), 0L );
+            "Panic: tried to loade an object of unknown type '%d'",
+            (Int)TNUM_OBJ(obj), 0L );
 }
 
+/****************************************************************************
+**
+*F  SaveComObj( Obj comobj)
+**
+*/
+
+void SaveComObj( Obj comobj)
+{
+  UInt len,i;
+  SaveSubObj(TYPE_COMOBJ( comobj ));
+  len = LEN_PREC(comobj);
+  for (i = 1; i <= len; i++)
+    {
+      SaveUInt(GET_RNAM_PREC(comobj, i));
+      SaveSubObj(GET_ELM_PREC(comobj, i));
+    }
+  return;
+}
+
+/****************************************************************************
+**
+*F  SavePosObj( Obj posobj)
+**
+*/
+
+void SavePosObj( Obj posobj)
+{
+  UInt len,i;
+  SaveSubObj(TYPE_POSOBJ( posobj ));
+  len = (SIZE_OBJ(posobj)/sizeof(Obj) - 1);
+  for (i = 1; i <= len; i++)
+    {
+      SaveSubObj(ADDR_OBJ(posobj)[i]);
+    }
+  return;
+}
+
+/****************************************************************************
+**
+*F  SaveDatObj( Obj datobj)
+**
+**  Here we lose endianness protection, because we don't know if this is really
+**  UInts, or if it might be smaller data
+*/
+
+void SaveDatObj( Obj datobj)
+{
+  UInt len,i;
+  UInt *ptr;
+  SaveSubObj(TYPE_DATOBJ( datobj ));
+  len = (SIZE_OBJ(datobj)/sizeof(UInt) - 1);
+  ptr = (UInt *)ADDR_OBJ(datobj);
+  for (i = 1; i <= len; i++)
+    {
+      SaveUInt(*ptr++);
+    }
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadComObj( Obj comobj)
+**
+*/
+
+void LoadComObj( Obj comobj)
+{
+  UInt len,i;
+  TYPE_COMOBJ( comobj) = LoadSubObj( );
+  len = LEN_PREC(comobj);
+  for (i = 1; i <= len; i++)
+    {
+      SET_RNAM_PREC(comobj, i, LoadUInt());
+      SET_ELM_PREC(comobj, i, LoadSubObj());
+    }
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadPosObj( Obj posobj)
+**
+*/
+
+void LoadPosObj( Obj posobj)
+{
+  UInt len,i;
+  TYPE_POSOBJ( posobj ) = LoadSubObj();
+  len = (SIZE_OBJ(posobj)/sizeof(Obj) - 1);
+  for (i = 1; i <= len; i++)
+    {
+      ADDR_OBJ(posobj)[i] = LoadSubObj();
+    }
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadDatObj( Obj datobj)
+**
+**  Here we lose endianness protection, because we don't know if this is really
+**  UInts, or if it might be smaller data
+*/
+
+void LoadDatObj( Obj datobj)
+{
+  UInt len,i;
+  UInt *ptr;
+  TYPE_DATOBJ( datobj ) = LoadSubObj();
+  len = (SIZE_OBJ(datobj)/sizeof(UInt) - 1);
+  ptr = (UInt *)ADDR_OBJ(datobj);
+  for (i = 1; i <= len; i++)
+    {
+      *ptr ++ = LoadUInt();
+    }
+  return;
+}
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
 
 
 /****************************************************************************
 **
 
-*F  InitObjects() . . . . . . . . . . . . . .  initialize the objects package
-**
-** 'InitObjects' initializes the objects package.
+*F  SetupObjects()  . . . . . . . . . . . . .  initialize the objects package
 */
-void InitObjects ( void )
+void SetupObjects ( void )
 {
+    Int                 t;              /* loop variable                   */
 
-  Int                 t;              /* loop variable                   */
-
-    /* make and install the 'FAMILY_TYPE' function                         */
-    InitHandlerFunc( FamilyTypeHandler, "FAMILY_TYPE" );
-    FamilyTypeFunc = NewFunctionC(
-        "FAMILY_TYPE", 1L, "kind", FamilyTypeHandler );
-    AssGVar( GVarName( "FAMILY_TYPE" ), FamilyTypeFunc );
-
-
-    /* make and install the 'TYPE_OBJ' function                            */
-    InitHandlerFunc( TypeObjHandler, "TYPE_OBJ" );
-    TypeObjFunc = NewFunctionC(
-        "TYPE_OBJ", 1L, "obj", TypeObjHandler );
-    AssGVar( GVarName( "TYPE_OBJ" ), TypeObjFunc );
-
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
-        TypeObjFuncs[ t ] = TypeObjError;
-
-
-    /* make and install the 'FAMILY_OBJ' function                          */
-    InitHandlerFunc( FamilyObjHandler, "FAMILY_OBJ" );
-    FamilyObjFunc = NewFunctionC(
-        "FAMILY_OBJ", 1L, "obj", FamilyObjHandler );
-    AssGVar( GVarName( "FAMILY_OBJ" ), FamilyObjFunc );
+    /* install the marking methods                                         */
+    InfoBags[         T_COMOBJ          ].name = "object (component)";
+    InitMarkFuncBags( T_COMOBJ          , MarkAllSubBags  );
+    InfoBags[         T_COMOBJ +COPYING ].name = "object (component,copied)";
+    InitMarkFuncBags( T_COMOBJ +COPYING , MarkAllSubBags  );
+    InfoBags[         T_POSOBJ          ].name = "object (positional)";
+    InitMarkFuncBags( T_POSOBJ          , MarkAllSubBags  );
+    InfoBags[         T_POSOBJ +COPYING ].name = "object (positional,copied)";
+    InitMarkFuncBags( T_POSOBJ +COPYING , MarkAllSubBags  );
+    InfoBags[         T_DATOBJ          ].name = "object (data,copied)";
+    InitMarkFuncBags( T_DATOBJ          , MarkOneSubBags  );
+    InfoBags[         T_DATOBJ +COPYING ].name = "object (data,copied)";
+    InitMarkFuncBags( T_DATOBJ +COPYING , MarkOneSubBags  );
 
 
     /* make and install the 'IS_MUTABLE_OBJ' filter                        */
-    InitHandlerFunc( IsMutableObjHandler, "IS_MUTABLE_OBJ" );
-    IsMutableObjFilt = NewFilterC(
-        "IS_MUTABLE_OBJ", 1L, "obj", IsMutableObjHandler );
-    AssGVar( GVarName( "IS_MUTABLE_OBJ" ),
-        IsMutableObjFilt );
-
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
         IsMutableObjFuncs[ t ] = IsMutableObjError;
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
@@ -1472,12 +1209,6 @@ void InitObjects ( void )
 
 
     /* make and install the 'IS_COPYABLE_OBJ' filter                       */
-    InitHandlerFunc( IsCopyableObjHandler, "IS_COPYABLE_OBJ" );
-    IsCopyableObjFilt = NewFilterC(
-        "IS_COPYABLE_OBJ", 1L, "obj", IsCopyableObjHandler );
-    AssGVar( GVarName( "IS_COPYABLE_OBJ" ),
-        IsCopyableObjFilt );
-
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
         IsCopyableObjFuncs[ t ] = IsCopyableObjError;
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
@@ -1487,12 +1218,6 @@ void InitObjects ( void )
 
 
     /* make and install the 'SHALLOW_COPY_OBJ' operation                   */
-    InitHandlerFunc( ShallowCopyObjHandler, "SHALLOW_COPY_OBJ" );
-    ShallowCopyObjOper = NewOperationC(
-        "SHALLOW_COPY_OBJ", 1L, "obj", ShallowCopyObjHandler );
-    AssGVar( GVarName( "SHALLOW_COPY_OBJ" ),
-        ShallowCopyObjOper );
-
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjError;
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
@@ -1506,18 +1231,6 @@ void InitObjects ( void )
 
 
     /* make and install the 'COPY_OBJ' function                            */
-    InitHandlerFunc( ImmutableCopyObjHandler, "IMMUTABLE_COPY_OBJ" );
-    ImmutableCopyObjFunc = NewFunctionC(
-        "IMMUTABLE_COPY_OBJ", 1L, "obj", ImmutableCopyObjHandler );
-    AssGVar( GVarName( "IMMUTABLE_COPY_OBJ" ),
-        ImmutableCopyObjFunc );
-    InitHandlerFunc( MutableCopyObjHandler, "DEEP_COPY_OBJ" );
-
-    MutableCopyObjFunc = NewFunctionC(
-        "DEEP_COPY_OBJ", 1L, "obj", MutableCopyObjHandler );
-    AssGVar( GVarName( "DEEP_COPY_OBJ" ),
-        MutableCopyObjFunc );
-
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         CopyObjFuncs [ t ] = CopyObjError;
         CleanObjFuncs[ t ] = CleanObjError;
@@ -1541,11 +1254,6 @@ void InitObjects ( void )
 
 
     /* make and install the 'PRINT_OBJ' operation                          */
-    InitHandlerFunc( PrintObjHandler, "PRINT_OBJ" );
-    PrintObjOper = NewOperationC(
-        "PRINT_OBJ", 1L, "obj", PrintObjHandler );
-    AssGVar( GVarName( "PRINT_OBJ" ), PrintObjOper );
-
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM+PRINTING; t++ )
         PrintObjFuncs[ t ] = PrintObjObject;
 
@@ -1553,89 +1261,132 @@ void InitObjects ( void )
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM+PRINTING; t++ )
         PrintPathFuncs[ t ] = PrintPathError;
 
+
     /* enter 'SaveObjError' and 'LoadObjError' for all types initially     */
+    for ( t = FIRST_REAL_TNUM;  t <= LAST_REAL_TNUM;  t++ ) {
+        SaveObjFuncs[ t ] = SaveObjError;
+        LoadObjFuncs[ t ] = LoadObjError;
+    }
+  
+    /* install the saving functions */
+    SaveObjFuncs[ T_COMOBJ ] = SaveComObj;
+    SaveObjFuncs[ T_POSOBJ ] = SavePosObj;
+    SaveObjFuncs[ T_DATOBJ ] = SaveDatObj;
+
+    /* install the loading functions */
+    LoadObjFuncs[ T_COMOBJ ] = LoadComObj;
+    LoadObjFuncs[ T_POSOBJ ] = LoadPosObj;
+    LoadObjFuncs[ T_DATOBJ ] = LoadDatObj;
+}
+
+
+/****************************************************************************
+**
+*F  InitObjects() . . . . . . . . . . . . . .  initialize the objects package
+**
+** 'InitObjects' initializes the objects package.
+*/
+void InitObjects ( void )
+{
+    Int                 t;              /* loop variable                   */
+
+    /* make and install the 'FAMILY_TYPE' function                         */
+    C_NEW_GVAR_FUNC( "FAMILY_TYPE", 1, "kind",
+                      FamilyTypeHandler,
+       "src/objects.c:FAMILY_TYPE" );
+
+
+    /* make and install the 'TYPE_OBJ' function                            */
+    C_NEW_GVAR_FUNC( "TYPE_OBJ", 1, "obj",
+                      TypeObjHandler,
+       "src/objects.c:TYPE_OBJ" );
 
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
-      {
-	SaveObjFuncs[ t ] = SaveObjError;
-	LoadObjFuncs[ t ] = LoadObjError;
-      }
-  
-    /* make and install the 'IS_IDENTICAL_OBJ' function                    */
-    InitHandlerFunc( IsIdenticalHandler, "IS_IDENTICAL_OBJ" );
-    IsIdenticalFunc = NewFunctionC(
-        "IS_IDENTICAL_OBJ", 2, "obj1, obj2", IsIdenticalHandler );
-    AssGVar( GVarName( "IS_IDENTICAL_OBJ" ), IsIdenticalFunc );
+        TypeObjFuncs[ t ] = TypeObjError;
 
-
-    /* install the marking methods                                         */
-    InfoBags[         T_COMOBJ          ].name = "object (component)";
-    InitMarkFuncBags( T_COMOBJ          , MarkAllSubBags  );
-    InfoBags[         T_COMOBJ +COPYING ].name = "object (component,copied)";
-    InitMarkFuncBags( T_COMOBJ +COPYING , MarkAllSubBags  );
-    InfoBags[         T_POSOBJ          ].name = "object (positional)";
-    InitMarkFuncBags( T_POSOBJ          , MarkAllSubBags  );
-    InfoBags[         T_POSOBJ +COPYING ].name = "object (positional,copied)";
-    InitMarkFuncBags( T_POSOBJ +COPYING , MarkAllSubBags  );
-    InfoBags[         T_DATOBJ          ].name = "object (data,copied)";
-    InitMarkFuncBags( T_DATOBJ          , MarkOneSubBags  );
-    InfoBags[         T_DATOBJ +COPYING ].name = "object (data,copied)";
-    InitMarkFuncBags( T_DATOBJ +COPYING , MarkOneSubBags  );
-
-
-    /* install the kind methods                                            */
     TypeObjFuncs[ T_COMOBJ ] = TypeComObj;
     TypeObjFuncs[ T_POSOBJ ] = TypePosObj;
     TypeObjFuncs[ T_DATOBJ ] = TypeDatObj;
 
 
+    /* make and install the 'FAMILY_OBJ' function                          */
+    C_NEW_GVAR_FUNC( "FAMILY_OBJ", 1, "obj",
+                      FamilyObjHandler,
+       "src/objects.c:FAMILY_OBJ" );
+
+
+    /* make and install the 'IS_MUTABLE_OBJ' filter                        */
+    C_NEW_GVAR_FILT( "IS_MUTABLE_OBJ", "obj", IsMutableObjFilt, IsMutableObjHandler,
+       "src/objects.c:IS_MUTABLE_OBJ" );
+
+
+    /* make and install the 'IS_COPYABLE_OBJ' filter                       */
+    C_NEW_GVAR_FILT( "IS_COPYABLE_OBJ", "obj", IsCopyableObjFilt, IsCopyableObjHandler,
+       "src/objects.c:IS_COPYABLE_OBJ" );
+
+
+    /* make and install the 'SHALLOW_COPY_OBJ' operation                   */
+    C_NEW_GVAR_OPER( "SHALLOW_COPY_OBJ", 1, "obj", ShallowCopyObjOper, ShallowCopyObjHandler,
+       "src/objects.c:SHALLOW_COPY_OBJ" );
+
+
+    /* make and install the 'COPY_OBJ' function                            */
+    C_NEW_GVAR_FUNC( "IMMUTABLE_COPY_OBJ", 1, "obj", ImmutableCopyObjHandler,
+       "src/objects.c:IMMUTABLE_COPY_OBJ" );
+
+    C_NEW_GVAR_FUNC( "DEEP_COPY_OBJ", 1, "obj", MutableCopyObjHandler,
+       "src/objects.c:DEEP_COPY_OBJ" );
+
+
+    /* make and install the 'PRINT_OBJ' operation                          */
+    C_NEW_GVAR_OPER( "PRINT_OBJ", 1, "obj", PrintObjOper, PrintObjHandler,
+       "src/objects.c:PRINT_OBJ" );
+
+
+    /* make and install the 'IS_IDENTICAL_OBJ' function                    */
+    C_NEW_GVAR_FUNC( "IS_IDENTICAL_OBJ", 2, "obj1, obj2", IsIdenticalHandler,
+       "src/objects.c:IS_IDENTICAL_OBJ" );
+
+
     /* make and install the functions for low level accessing of objects   */
-    InitHandlerFunc( IS_COMOBJ_Handler, "IS_COMOBJ" );
-    IS_COMOBJ_Func = NewFunctionC(
-        "IS_COMOBJ", 1L, "obj", IS_COMOBJ_Handler );
-    AssGVar( GVarName( "IS_COMOBJ" ), IS_COMOBJ_Func );
+    C_NEW_GVAR_FUNC( "IS_COMOBJ", 1, "obj",
+                      IS_COMOBJ_Handler,
+       "src/objects.c:IS_COMOBJ" );
+
+    C_NEW_GVAR_FUNC( "SET_TYPE_COMOBJ", 2, "obj, type",
+                      SET_TYPE_COMOBJ_Handler,
+       "src/objects.c:SET_TYPE_COMOBJ" );
+
+    C_NEW_GVAR_FUNC( "IS_POSOBJ", 1, "obj",
+                      IS_POSOBJ_Handler,
+       "src/objects.c:IS_POSOBJ" );
     
-    InitHandlerFunc( SET_TYPE_COMOBJ_Handler, "SET_TYPE_COMOBJ" );
-    SET_TYPE_COMOBJ_Func = NewFunctionC(
-        "SET_TYPE_COMOBJ", 2L, "obj, kind", SET_TYPE_COMOBJ_Handler );
-    AssGVar( GVarName( "SET_TYPE_COMOBJ" ), SET_TYPE_COMOBJ_Func );
+    C_NEW_GVAR_FUNC( "SET_TYPE_POSOBJ", 2, "obj, type",
+                      SET_TYPE_POSOBJ_Handler,
+       "src/objects.c:SET_TYPE_POSOBJ" );
     
-    InitHandlerFunc( IS_POSOBJ_Handler, "IS_POSOBJ" );
-    IS_POSOBJ_Func = NewFunctionC(
-        "IS_POSOBJ", 1L, "obj", IS_POSOBJ_Handler );
-    AssGVar( GVarName( "IS_POSOBJ" ), IS_POSOBJ_Func );
+    C_NEW_GVAR_FUNC( "LEN_POSOBJ", 1, "obj",
+                      LEN_POSOBJ_Handler,
+       "src/objects.c:LEN_POSOBJ" );
     
-    InitHandlerFunc( SET_TYPE_POSOBJ_Handler, "SET_TYPE_POSOBJ" );
-    SET_TYPE_POSOBJ_Func = NewFunctionC(
-        "SET_TYPE_POSOBJ", 2L, "obj, kind", SET_TYPE_POSOBJ_Handler );
-    AssGVar( GVarName( "SET_TYPE_POSOBJ" ), SET_TYPE_POSOBJ_Func );
+    C_NEW_GVAR_FUNC( "IS_DATOBJ", 1, "obj",
+                      IS_DATOBJ_Handler,
+       "src/objects.c:IS_DATOBJ" );
     
-    InitHandlerFunc( LEN_POSOBJ_Handler, "LEN_POSOBJ" );
-    LEN_POSOBJ_Func = NewFunctionC(
-        "LEN_POSOBJ", 1L, "obj", LEN_POSOBJ_Handler );
-    AssGVar( GVarName( "LEN_POSOBJ" ), LEN_POSOBJ_Func );
-    
-    InitHandlerFunc( IS_DATOBJ_Handler, "IS_DATOBJ" );
-    IS_DATOBJ_Func = NewFunctionC(
-        "IS_DATOBJ", 1L, "obj", IS_DATOBJ_Handler );
-    AssGVar( GVarName( "IS_DATOBJ" ), IS_DATOBJ_Func );
-    
-    InitHandlerFunc( SET_TYPE_DATOBJ_Handler, "SET_TYPE_DATOBJ" );
-    SET_TYPE_DATOBJ_Func = NewFunctionC(
-        "SET_TYPE_DATOBJ", 2L, "obj, kind", SET_TYPE_DATOBJ_Handler );
-    AssGVar( GVarName( "SET_TYPE_DATOBJ" ), SET_TYPE_DATOBJ_Func );
+    C_NEW_GVAR_FUNC( "SET_TYPE_DATOBJ", 2, "obj, type",
+                      SET_TYPE_DATOBJ_Handler,
+       "src/objects.c:SET_TYPE_DATOBJ" );
+}
 
 
-    /* install the debug functions                                         */
-    InitHandlerFunc( SIZE_OBJ_Handler, "SIZE_OBJ" );
-    SIZE_OBJ_Func = NewFunctionC(
-        "SIZE_OBJ", 1L, "obj", SIZE_OBJ_Handler );
-    AssGVar( GVarName( "SIZE_OBJ" ), SIZE_OBJ_Func );    
-
-    InitHandlerFunc( TNUM_OBJ_Handler, "TNUM_OBJ" );
-    TNUM_OBJ_Func = NewFunctionC(
-        "TNUM_OBJ", 1L, "obj", TNUM_OBJ_Handler );
-    AssGVar( GVarName( "TNUM_OBJ" ), TNUM_OBJ_Func );
+/****************************************************************************
+**
+*F  CheckObjects()  . . . . . check the initialisation of the objects package
+*/
+void CheckObjects ( void )
+{
+    SET_REVISION( "objects_c",  Revision_objects_c );
+    SET_REVISION( "objects_h",  Revision_objects_h );
 }
 
 

@@ -337,6 +337,15 @@ IsGenericPcgs := NewProperty( "IsGenericPcgs", IsPcgs );
 SetIsGenericPcgs := Setter( IsGenericPcgs );
 HasIsGenericPcgs := Tester( IsGenericPcgs );
 
+
+#############################################################################
+##
+#F  PcgsByIndependentGeneratorsOfAbelianGroup( <A> )
+##
+PcgsByIndependentGeneratorsOfAbelianGroup := NewOperationArgs
+    ( "PcgsByIndependentGeneratorsOfAbelianGroup" );
+
+
 #############################################################################
 ##
 

@@ -386,32 +386,18 @@ RightIdealNC := NewOperationArgs( "RightIdealNC" );
 #O  IsRightIdeal( <R>, <I> )
 ##
 IsIdeal:= NewOperation( "IsIdeal", [ IsRing, IsRing ] );
-IsLeftIdeal:= NewOperation( "IsLeftIdeal", [ IsRing, IsRing ] );
-IsRightIdeal:= NewOperation( "IsRightIdeal", [ IsRing, IsRing ] );
-
-
-#############################################################################
-##
-#P  IsLeftIdealInParent( <R> )
-##
-IsLeftIdealInParent := NewProperty( "IsLeftIdealInParent", IsRing );
+tmp:= InParentFOA( "IsLeftIdeal", IsRing, IsRing, NewProperty );
+IsLeftIdeal         := tmp[1];
+IsLeftIdealOp       := tmp[2];
+IsLeftIdealInParent := tmp[3];
 SetIsLeftIdealInParent := Setter( IsLeftIdealInParent );
 HasIsLeftIdealInParent := Tester( IsLeftIdealInParent );
-
-
-#############################################################################
-##
-#P  IsRightIdealInParent( <R> )
-##
-IsRightIdealInParent := NewProperty( "IsRightIdealInParent", IsRing );
+tmp:= InParentFOA( "IsRightIdeal", IsRing, IsRing, NewProperty );
+IsRightIdeal         := tmp[1];
+IsRightIdealOp       := tmp[2];
+IsRightIdealInParent := tmp[3];
 SetIsRightIdealInParent := Setter( IsRightIdealInParent );
 HasIsRightIdealInParent := Tester( IsRightIdealInParent );
-
-
-#############################################################################
-##
-#P  IsIdealInParent( <R> )
-##
 IsIdealInParent := IsLeftIdealInParent and IsRightIdealInParent;
 SetIsIdealInParent := Setter( IsIdealInParent );
 HasIsIdealInParent := Tester( IsIdealInParent );

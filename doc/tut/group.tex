@@ -17,8 +17,8 @@
 \Chapter{Groups and Homomorphisms}
 
 In this chapter we will show  some computations with groups. The examples
-deal most with permutation groups, because they are the most easy ones to
-input.  The   functions mentioned    here,   like  `Group',   `Size'   or
+deal mostly with permutation groups, because they are the most easy ones
+to input.  The functions mentioned here, like `Group', `Size' or
 `SylowSubgroup', however, are the same for all  kinds of groups, although
 the algorithms which compute the information  of course will be different
 in most cases.
@@ -191,8 +191,8 @@ By the way, you should not try the operator `\<'  instead of the function
 \endexample
 will not cause an error, but the result does not  tell anything about the
 inclusion of one group in another; `\<' tests  which of the two groups is
-less is some total order. On the other hand, the equality operator `=' in
-fact does test the equality of groups.
+less in some total order. On the other hand, the equality operator `=' in
+fact does test the equality of its arguments.
 
 {\bf Summary.}   In  this section   we have   used   the elementary group
 functions to determine  the structure of  a normalizer. We have  assigned
@@ -573,7 +573,7 @@ system. The  (optional) third  argument  in the following   example tells
 \endexample
 The result is a list  of sets, such that  `a8_56' operates on those sets.
 Now we would like  the stabilizer of this  operation on the sets. Because
-we  wanted to operate on   the sets we  have  to  pass `OnSets' as  third
+we  want to operate on   the sets we  have  to  pass `OnSets' as  third
 argument.
 \beginexample
     gap> u8_56 := Stabilizer( a8_56, blocks[1], OnSets );;
@@ -725,7 +725,7 @@ above `u105' that we get by adding `(2,3)(6,8)' to `u105'.
     gap> u15b := ClosureGroup( u105, (2,3)(6,8) );; Index( a8, u15b );
     15 
     gap> RepresentativeOperation( a8, u15, u15b );
-    false 
+    fail
 \endexample
 `RepresentativeOperation' tells us that  there is no  element <g> in `a8'
 such that `u15 ^ <g> = u15b'. Because `^' also denotes the conjugation of
@@ -765,7 +765,8 @@ whose $i$th entry is the image of `<gens>[ $i$ ]' under the homomorphism.
     gap> PreImage( hom, (1,2,3) );
     Error <map> must be an inj. and surj. mapping at
     Error( "<map> must be an inj. and surj. mapping" );
-    Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+    Entering break read-eval-print loop, you can 'quit;' to quit to outer \
+    loop,
     or you can return to continue
     brk> quit;
 |_

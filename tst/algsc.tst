@@ -180,7 +180,7 @@ gap> LieCentre( s1 );
 gap> LieCentralizer( l1, s1 );
 <Lie algebra of dimension 4 over Rationals>
 gap> ps:= ProductSpace( l1, s1 );
-<Lie algebra of dimension 6 over Rationals>
+VectorSpace( Rationals, [ v.4, v.3, v.6, v.5, v.9, v.8 ] )
 gap> LieCentralizer( l1, ps );
 <Lie algebra of dimension 0 over Rationals>
 gap> LieNormalizer( l1, ps );
@@ -479,7 +479,7 @@ gap> LieCentre( s2 );
 gap> LieCentralizer( l2, s2 );
 <Lie algebra of dimension 9 over Rationals>
 gap> ps:= ProductSpace( l2, s2 );
-<Lie algebra of dimension 6 over Rationals>
+VectorSpace( Rationals, [ v.5, v.6, v.1, v.9, v.10, v.13 ] )
 gap> LieCentralizer( l2, ps );
 <Lie algebra of dimension 1 over Rationals>
 gap> LieNormalizer( l2, ps );
@@ -635,7 +635,7 @@ gap> LieCentre( s3 );
 gap> LieCentralizer( l3, s3 );
 <Lie algebra of dimension 10 over Rationals>
 gap> ps:= ProductSpace( l3, s3 );
-<Lie algebra of dimension 4 over Rationals>
+VectorSpace( Rationals, [ v.2, v.3, v.4, v.1 ] )
 gap> LieCentralizer( l3, ps );
 <Lie algebra of dimension 4 over Rationals>
 gap> LieNormalizer( l3, ps );

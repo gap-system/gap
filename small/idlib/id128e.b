@@ -3,7 +3,7 @@
 #W  id128e.b               GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id128e_b :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 128 ].next[ 5 ].next[ 2 ] := 
 rec(

@@ -24,7 +24,7 @@ at many  places several lines of  input  (which you  should type  on your
 terminal) followed by the corresponding output  (which {\GAP} produces as
 an answer to your input).
 \begintt
-    This ``session protocol'' is indented and printed in typwriter style
+    This ``session protocol'' is indented and printed in typewriter style
     (like this paragraph) in this tutorial and should look exactly as it
     looks on your text terminal or text window.
 \endtt
@@ -331,7 +331,11 @@ under a permutation and to conjugate one permutation by another.
     gap> (1,2,3)^(1,2);
     (1,3,2) 
 \endexample
-The    last  type  of   constants  we  want  to introduce    here are the
+The various other constants that {\GAP} can deal with will be introduced
+when they are used, for example there are elements of finite fields
+such as `Z(8)', and complex roots of unity such as `E(4)'.
+
+The    last  type  of   constants  we  want  to mention    here are the
 *characters*, which are simply objects in {\GAP} that represent arbitrary
 characters  from  the character set   of the  operating system. Character
 literals can  be  entered   in  {\GAP} by  enclosing  the   character  in
@@ -384,6 +388,8 @@ equality sign `=' which is in {\GAP} only used for the test of equality.
     22
     gap> a * (a + 1);
     506
+    gap> a = 10;
+    false
     gap> a:= 10;
     10
     gap> a * (a + 1);
@@ -426,7 +432,7 @@ identifiers.  You will see more keywords in the following sections.
 In  the remaining  part of  this manual   we  will ignore the  difference
 between variables, their names  (identifiers), and the objects they point
 to.  It may be useful  to think from time  to  time about what is  really
-meant by terms such as the integer `w'.
+meant by terms such as ``the integer `w'''.
 
 There are some predefined variables coming with {\GAP}.  Many of them you
 will find in the remaining  chapters of  this manual, since functions are
@@ -590,7 +596,8 @@ After the function has been defined, it can now be applied.
     125 
 \endexample
 More complicated  functions,  especially  functions with   more  than one
-argument  cannot be   defined in    this way.  own  {\GAP} functions   in
+argument cannot be defined in this way.
+You will see how to write your own {\GAP} functions in
 Chapter~"prg:Functions" in the programming tutorial.
 
 %%  Summary  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

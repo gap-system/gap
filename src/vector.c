@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  vector.c                    GAP source                   Martin Schoenert
+*W  vector.c                    GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -15,37 +15,42 @@
 **  in  the {\GAP} manual.   Read also about "More   about Vectors" about the
 **  vector flag and the compact representation of vectors over finite fields.
 */
-char *          Revision_vector_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_vector_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* system dependent functions      */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* generic list package            */
+#include        "ariths.h"              /* basic arithmetic                */
+#include        "lists.h"               /* generic lists                   */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "integer.h"             /* <op>_INTOBJS for fast ariths    */
+#include        "integer.h"             /* integers                        */
 
-#include        "listoper.h"            /* ProdListScl                     */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "plist.h"               /* GET_LEN_PLIST, GET_ELM_PLIST,...*/
+#include        "lists.h"               /* generic lists                   */
+#include        "listoper.h"            /* operations for generic lists    */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
 #define INCLUDE_DECLARATION_PART
-#include        "vector.h"              /* declaration part of the package */
+#include        "vector.h"              /* functions for plain vectors     */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "range.h"               /* GET_LEN_RANGE, GET_LOW_RANGE,...*/
-
-#include        "gap.h"                 /* Error                           */
+#include        "range.h"               /* ranges                          */
 
 
 /****************************************************************************
 **
+
 *F  IsXTNumEmpty(<list>)  . test if a list is an empty list (almost a vector)
 */
 Int             IsXTNumEmpty (
@@ -761,11 +766,17 @@ Obj             ProdVectorMatrix (
 
 /****************************************************************************
 **
-*F  InitVector()  . . . . . . . . . . . . . . . . . initialize vector package
-**
-**  'InitVector' initializes the vector package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitVector ( void )
+
+
+/****************************************************************************
+**
+
+*F  SetupVector() . . . . . . . . . . . . . . . initialize the vector package
+*/
+void SetupVector ( void )
 {
     Int                 t1;
     Int                 t2;
@@ -793,4 +804,30 @@ void            InitVector ( void )
 }
 
 
+/****************************************************************************
+**
+*F  InitVector()  . . . . . . . . . . . . . . . initialize the vector package
+**
+**  'InitVector' initializes the vector package.
+*/
+void InitVector ( void )
+{
+}
 
+
+/****************************************************************************
+**
+*F  CheckVector() . . . . . .  check the initialisation of the vector package
+*/
+void CheckVector ( void )
+{
+    SET_REVISION( "vector_c",   Revision_vector_c );
+    SET_REVISION( "vector_h",   Revision_vector_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  vector.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

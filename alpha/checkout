@@ -1,0 +1,43 @@
+#!/bin/sh
+#############################################################################
+##
+#W  checkout							 Frank Celler
+##
+##  this shell script checks out the next version of the alpha release
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# create an alpha directory
+cd ${ALPHAROOT}
+rm -rf alpha
+
+
+# checkout the files
+echo "$0: checking out version $VERSION of $DATE"
+cvs -Q checkout -D "$DATE" -d alpha GAP/4.0
+if [ \! -d alpha ];  then
+    echo "PANIC: cvs did not create an alpha directory"
+    exit 1
+fi
+
+
+# and add a tag
+echo "$0: tagging version $VERSION of $DATE"
+cvs -Q tag -F -D "$DATE" "ALPHA$VERSION"
+
+
+# set the version
+chmod 644 alpha/lib/version.g
+echo "VERSION := \"Alpha $VERSION\";" > alpha/lib/version.g
+echo "DATE := \"$DATE\";" >> alpha/lib/version.g
+
+
+# that's it
+exit 0

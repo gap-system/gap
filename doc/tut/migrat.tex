@@ -498,6 +498,12 @@ If you want to check whether a general mapping that respects the group
 operations is really a mapping, you can construct it via
 `GroupGeneralMappingByImages' and then call `IsMapping' for it.
 
+Note that checking `IsGroupHomomorphism' is equivalent to checking
+`IsGroupGeneralMapping' and `IsMapping'.
+Further note that there is *no* function `IsHomomorphism' in {\GAP}~4,
+since there are several different operations with respect to which a
+mapping can be a homomorphism.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Homomorphisms vs. Factor Structures}

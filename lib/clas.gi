@@ -17,7 +17,7 @@ InstallMethod( Enumerator, true, [ IsExternalOrbitByStabilizerRep ], 0,
     
     enum := Objectify( NewType( FamilyObj( xorb ),
                     IsExternalOrbitByStabilizerEnumerator ),
-        rec( rightTransversal := RightTransversal( ActingDomain( xorb ),
+        rec( rightTransversal := RightTransversalInParent(
                     StabilizerOfExternalSet( xorb ) ) ) );
     SetUnderlyingCollection( enum, xorb );
     return enum;
@@ -138,7 +138,7 @@ InstallMethod( Size,
     [ IsConjugacyClassGroupRep ], 0,
     cl -> Index( ActingDomain( cl ), StabilizerOfExternalSet( cl ) ) );
 
-InstallOtherMethod( Centralizer, true, [ IsConjugacyClassGroupRep ], 0,
+InstallOtherMethod( CentralizerOp, true, [ IsConjugacyClassGroupRep ], 0,
     StabilizerOfExternalSet );
 
 #############################################################################
@@ -247,7 +247,8 @@ ConjugacyClassesTry := function ( G, classes, elm, length, fixes )
 
 end;
 
-InstallMethod( ConjugacyClasses, true, [ IsGroup ], 20,
+InstallMethod( ConjugacyClasses, "try solvable method", true,
+    [ IsGroup ], 0,
     function( G )
     local   cls,  cl,  c;
     
@@ -298,7 +299,7 @@ InstallMethod( \=, IsIdentical, [ IsRationalClassGroupRep,
     return ForAny( RightTransversalInParent( GaloisGroup( cl1 ) ), e ->
                    RepresentativeOperation( ActingDomain( cl1 ),
                            Representative( cl1 ),
-                           Representative( cl2 ) ^ ( 1 ^ e ) ) <> fail );
+                           Representative( cl2 ) ^ Int( e ) ) <> fail );
 end );
 
 #############################################################################
@@ -310,7 +311,7 @@ InstallMethod( \in, IsElmsColls, [ IsObject, IsRationalClassGroupRep ], 0,
     return ForAny( RightTransversalInParent( GaloisGroup( cl ) ), e ->
                    RepresentativeOperation( ActingDomain( cl ),
                            Representative( cl ),
-                           g ^ ( 1 ^ e ) ) <> fail );
+                           g ^ Int( e ) ) <> fail );
 end );
     
 #############################################################################
@@ -353,10 +354,10 @@ DecomposedRationalClass := function( cl )
     C := StabilizerOfExternalSet( cl );
     rep := Representative( cl );
     gal := GaloisGroup( cl );
-    T := RightTransversal( Parent( gal ), gal );
+    T := RightTransversalInParent( gal );
     cls := [  ];
     for e  in T  do
-        c := ConjugacyClass( G, rep ^ ( 1 ^ e ) );
+        c := ConjugacyClass( G, rep ^ Int( e ) );
         SetStabilizerOfExternalSet( c, C );
         Add( cls, c );
     od;
@@ -400,7 +401,7 @@ InstallMethod( \[\], true, [ IsRationalClassGroupEnumerator,
     pos := pos - 1;
     pow := QuoInt( pos, Length( T ) ) + 1;
     pos := pos mod Length( T ) + 1;
-    return ( rep ^ T[ pos ] ) ^ ( 1 ^ gal[ pow ] );
+    return ( rep ^ T[ pos ] ) ^ Int( gal[ pow ] );
 end );
 
 InstallMethod( PositionCanonical, true,
@@ -414,7 +415,7 @@ InstallMethod( PositionCanonical, true,
     gal := RightTransversalInParent( GaloisGroup( rcl ) );
     T := enum!.rightTransversal;
     for pow  in [ 1 .. Length( gal ) ]  do
-        t := RepresentativeOperation( G, rep ^ ( 1 ^ gal[ pow ] ), elm );
+        t := RepresentativeOperation( G, rep ^ Int( gal[ pow ] ), elm );
         if t <> fail  then
             break;
         fi;
@@ -426,7 +427,7 @@ InstallMethod( PositionCanonical, true,
     fi;
 end );
 
-InstallOtherMethod( Centralizer, true, [ IsRationalClassGroupRep ], 0,
+InstallOtherMethod( CentralizerOp, true, [ IsRationalClassGroupRep ], 0,
     StabilizerOfExternalSet );
 
 #############################################################################
@@ -440,106 +441,55 @@ InstallMethod( AsList, true, [ IsRationalClassGroupRep ], 0,
     aslist := [  ];
     orb := Orbit( ActingDomain( rcl ), Representative( rcl ) );
     for e  in RightTransversalInParent( GaloisGroup( rcl ) )  do
-        Append( aslist, List( orb, g -> g ^ ( 1 ^ e ) ) );
+        Append( aslist, List( orb, g -> g ^ Int( e ) ) );
     od;
     return aslist;
 end );
 
 #############################################################################
 ##
-#F  PermResidueClass( <r>, <n> )  . .  residue class as permutation on [1..n]
-##
-PermResidueClass := function( r, n )
-    return PermList( List( [ 1 .. n - 1 ] * r, i -> i mod n ) );
-end;
-
-#############################################################################
-##
-#F  GeneratorsPrimeResidueClassGroup(<m>) . . . residue class representatives
-##
-GeneratorsPrimeResidueClassGroup := function(m)
-local   gens,       # generating residues
-	p, q,       # prime and prime power dividing <m>
-	r,          # primitive root modulo <q>
-	g;          # is = <r> mod <q> and = 1 mod <m> / <q>
-
-    # add generators for each prime power factor <q> of <m>
-    gens := [];
-    for p  in Set( FactorsInt( m ) )  do
-        q := p;
-        while m mod (q * p) = 0  do q := q * p;  od;
-
-        # $ Z / 4Z = < 3 > $
-        if   q = 4  then
-            r := 3;
-            g := r + q * (((1/q mod (m/q)) * (1 - r)) mod (m/q));
-            Add( gens, g );
-
-        # $ Z / 8nZ = < 5, -1 > $ is *not* cyclic
-        elif q mod 8 = 0  then
-            r := q-1;
-            g := r + q * (((1/q mod (m/q)) * (1 - r)) mod (m/q));
-            Add( gens,  g);
-            r := 5;
-            g := r + q * (((1/q mod (m/q)) * (1 - r)) mod (m/q));
-            Add( gens, g );
-
-        # for odd <q> $ Z / qZ $ is cyclic
-        elif q <> 2  then
-            r :=  PrimitiveRootMod( q );
-            g := r + q * (((1/q mod (m/q)) * (1 - r)) mod (m/q));
-            Add( gens, g );
-        fi;
-
-    od;
-  return gens;
-end;
-
-#############################################################################
-##
-#F  PrimeResidueClassGroup(<m>) . . . . . . .  full prime residue class group
-##
-PrimeResidueClassGroups := [ Group( () ) ];
-
-PrimeResidueClassGroup := function ( m )
-    local   G;          # group $Z/mZ$, result
-
-  if not IsBound( PrimeResidueClassGroups[ m ] )  then
-
-    # return the group generated by <gens>
-    G := Group(List(GeneratorsPrimeResidueClassGroup(m),
-                    i->PermResidueClass(i,m)),
-	       PermResidueClass( 1, m ) );
-    SetSize( G, Phi( m ) );
-    PrimeResidueClassGroups[ m ] := G;
-
-  fi;
-  return PrimeResidueClassGroups[ m ];
-end;
-
-#############################################################################
-##
 #M  GaloisGroup( <cl> ) . . . . . . . . . . . . . . . . . of a rational class
 ##
 InstallOtherMethod( GaloisGroup, true, [ IsRationalClassGroupRep ], 0,
-    function( cl )
-    local   rep,  ord,  gals,  i;
+function( cl )
+local   rep,  ord,  gals,  i, pr;
     
     rep := Representative( cl );
     ord := Order( rep );
     gals := [  ];
-    for i  in [ 1 .. ord - 1 ]  do
-        if     GcdInt( i, ord ) = 1
-           and RepresentativeOperation( ActingDomain( cl ),
-                       rep, rep ^ i ) <> fail  then
-            Add( gals, PermResidueClass( i, ord ) );
+    if ord>1 then
+      pr:=PrimeResidues(ord);
+    else
+      pr:=[];
+    fi;
+    for i in pr do
+        if RepresentativeOperation( ActingDomain( cl ),
+                   rep, rep ^ i ) <> fail  then
+            Add( gals, i );
         fi;
     od;
-    return SubgroupNC( PrimeResidueClassGroup( ord ), gals );
+    return GroupByPrimeResidues( gals, ord );
 end );
     
 #############################################################################
 ##
+#F  GroupByPrimeResidues( <gens>, <oh> )  . . . . . . . . . . . . . . . local
+##
+GroupByPrimeResidues := function( gens, oh )
+    local   R;
+    
+    # Replace 1 by 2, because (Z/1Z)* is a nasty group (for GAP).
+    if oh = 1  then
+        oh := 2;
+    fi;
+    
+    R := Integers mod oh;
+    return SubgroupNC( Units( R ), gens * One( R ) );
+end;
+
+#############################################################################
+##
+
 #M  RationalClasses( <G> )  . . . . . . . . . . . . . . . . . . .  of a group
 ##
 InstallMethod( RationalClasses, true, [ IsGroup ], 0,
@@ -612,7 +562,6 @@ InstallMethod( RationalClasses, true, [ IsSolvableGroup ], 20,
 end );
 
 #############################################################################
-
 #F  RationalClassesInEANS( <G>, <E> ) . . . . . . . . by projective operation
 ##
 RationalClassesInEANS := function( G, E )
@@ -627,7 +576,7 @@ RationalClassesInEANS := function( G, E )
     pcgs := Pcgs( E );
     ff := GF( RelativeOrders( pcgs )[ 1 ] );
     one := One( ff );
-    pro := ProjectiveSpace( ff ^ Length( pcgs ) );
+    pro := OneDimSubspacesTransversal( ff ^ Length( pcgs ) );
     opr := function( v, g )
         return one * ExponentsOfPcElement( pcgs,
                        PcElementByExponents( pcgs, v ) ^ g );

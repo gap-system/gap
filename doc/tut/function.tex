@@ -55,7 +55,7 @@ separated by commas.  Note that there  must be  *no* semicolon behind the
 closing   parenthesis.   The  function  definition  is  terminated by the
 keyword `end'.
 
-A {\GAP}  function is an expression  like integers,  sums  and lists.  It
+A {\GAP} function is an expression like an integer, a sum and a list.  It
 therefore  may be assigned to a  variable.   The terminating semicolon in
 the example does not belong to the function definition but terminates the
 assignment of the function to the name `sayhello'.  Unlike in the case of
@@ -124,9 +124,10 @@ part  of the  `if' statement may be omitted.   An  `if'  statement  is no
 expression and  can therefore not be assigned to a variable.  Furthermore
 an `if' statement does not return a value.
 
-Fibonacci numbers are defined recursively by $f(1) = f(2) =  1$ and $f(n)
-=  f(n-1) + f(n-2)$.  Since  functions in {\GAP} may call  themselves,  a
-function  `fib'  that  computes  Fibonacci  numbers  can  be  implemented
+Fibonacci numbers are defined recursively by $f(1) = f(2) =  1$ and
+$f(n) =  f(n-1) + f(n-2)$ for $n \geq 3$.
+Since functions in {\GAP} may call themselves,
+a function `fib' that computes Fibonacci numbers can be implemented
 basically by typing the above equations.
 
 \beginexample

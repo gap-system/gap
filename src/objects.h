@@ -13,7 +13,7 @@
 **  dispatcher for the printing of objects, etc.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_objects_h =
+SYS_CONST char * Revision_objects_h =
    "@(#)$Id$";
 #endif
 
@@ -251,8 +251,10 @@ char *          Revision_objects_h =
 #define T_COMOBJ                (FIRST_EXTERNAL_TNUM+ 0)
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
-#define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 3)
-#define LAST_EXTERNAL_TNUM      T_DUMMYOBJ
+#define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
+     /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
+        remove to get parity right */
+#define LAST_EXTERNAL_TNUM      T_WPOBJ
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
 
 #define FIRST_VIRTUAL_TNUM      (LAST_EXTERNAL_TNUM+1)
@@ -333,6 +335,13 @@ char *          Revision_objects_h =
 */
 #define TNUM_OBJ(obj)   (IS_INTOBJ( obj ) ? T_INT : \
                          (IS_FFE( obj ) ? T_FFE : TNUM_BAG( obj )))
+
+
+/****************************************************************************
+**
+*F  TNAM_OBJ( <obj> ) . . . . . . . . . . . . . name of the type of an object
+*/
+#define TNAM_OBJ(obj)   (InfoBags[TNUM_OBJ(obj)].name)
 
 
 /****************************************************************************
@@ -461,7 +470,10 @@ extern Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 
 extern void (*SaveObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj);
 
-     /****************************************************************************
+extern void SaveObjError ( Obj obj );
+
+
+/****************************************************************************
 **
 *V  LoadObjFuncs (<type>) . . . . . . . . . . . . . functions to load objects
 **
@@ -476,8 +488,11 @@ extern void (*SaveObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj);
 **  No loading function may allocate any bag
 */
 
-extern void (*LoadObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj, Bag bag);
+extern void (*LoadObjFuncs[ LAST_REAL_TNUM + 1]) (Bag bag);
 
+extern void LoadObjError (
+                   Bag bag
+                   );
 
 /****************************************************************************
 **
@@ -696,11 +711,32 @@ extern void (* PrintPathFuncs [ LAST_REAL_TNUM+PRINTING+1 ]) (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupObjects()  . . . . . . . . . . . . .  initialize the objects package
+*/
+extern void SetupObjects ( void );
+
+
+/****************************************************************************
+**
 *F  InitObjects() . . . . . . . . . . . . . .  initialize the objects package
 **
-**  'InitObjects' initializes the objects package.
+** 'InitObjects' initializes the objects package.
 */
 extern void InitObjects ( void );
+
+
+/****************************************************************************
+**
+*F  CheckObjects()  . . . . . check the initialisation of the objects package
+*/
+extern void CheckObjects ( void );
 
 
 /****************************************************************************

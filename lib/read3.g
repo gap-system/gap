@@ -88,6 +88,11 @@ ReadLib( "ghom.gd"     );
 ReadLib( "ghompcgs.gd" );
 ReadLib( "gprd.gd"     );
 ReadLib( "ghomperm.gd" );
+ReadLib( "gpprmsya.gd" );
+
+# family predicates (needed for all 'InstallMethod' and oprt.gd)
+ReadLib( "fampred.g"   );
+
 ReadLib( "oprt.gd"     );
 ReadLib( "stbc.gd"     );
 ReadLib( "clas.gd"     );
@@ -106,6 +111,7 @@ ReadLib( "grppcfp.gd");
 ReadLib( "morpheus.gd" );
 ReadLib( "grplatt.gd"  );
 ReadLib( "oprtglat.gd" );
+ReadLib( "grppclat.gd" );
 
 
 # files dealing with fp groups
@@ -122,10 +128,8 @@ ReadLib( "hash.gd"     );
 ReadLib( "dt.g" );
 
 
-# family predicates (needed for all 'InstallMethod')
-ReadLib( "fampred.g"   );
-
 ReadLib( "list.gi"     ); # was too early
+ReadLib( "wpobj.gi"    );
 
 
 # files dealing with nice monomorphism

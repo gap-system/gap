@@ -457,6 +457,7 @@ local c,a1,a2,r,s,t,rg,st,i,j,q,nr,o,nu,step,p,set,img,k,sch,rep,
     od;
     stabs:=nstab;
     r:=nr;
+    Info(InfoCoset,3,Length(r)," double cosets so far.");
   od;
 
   return dcs;
@@ -472,7 +473,7 @@ end);
 ##
 #M  RightTransversal   generic
 ##
-InstallMethod(RightTransversal, "generic, use RightCosets",
+InstallMethod(RightTransversalOp, "generic, use RightCosets",
   IsIdentical,[IsGroup,IsGroup],0,
 function(G,U)
   return List(RightCosets(G,U),Representative);

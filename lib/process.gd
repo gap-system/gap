@@ -14,6 +14,7 @@ Revision.process_gd :=
 
 #############################################################################
 ##
+
 #O  Process( <dir>, <prg>, <in>, <out>, <args> )  . . . . . . start a process
 ##
 Process := NewOperation(
@@ -26,32 +27,24 @@ Process := NewOperation(
 #F  Exec  . . . . . . . . . . . . . . . . . . . . . . . . . execute a command
 ##
 Exec := function( arg )
-    local   cmd,  shell,  dir,  out;
+    local   cmd,  i,  shell,  dir;
 
-    if not Length( arg ) in [1,2] then
-        return Error( "usage: Exec( <cmd> [, <shell>] )" );
-    fi;
-
+    # simply concatenate the arguments
     cmd := arg[1];
+    for i  in [ 2 .. Length(arg) ]  do
+        Append( cmd, " " );
+        Append( cmd, arg[i] );
+    od;
 
-    ##  Select the shell, bourne shell is the default.
-    if Length( arg ) = 1 then
-        shell := Filename( DirectoriesSystemPrograms(), "sh" );
-    else
-        shell := Filename( DirectoriesSystemPrograms(), arg[2] );
-    fi;
+    # select the shell, bourne shell is the default
+    shell := Filename( DirectoriesSystemPrograms(), "sh" );
 
-    ##  Execute in the current directory.
+    # execute in the current directory
     dir := DirectoryCurrent();
 
-    ##  Output goes to standard out.
-    out := OutputTextFile( "*stdout*", false );
+    # execute the command
+    Process( dir, shell, InputTextUser(), OutputTextUser(), [ "-c", cmd ] );
 
-    ##  Execute the command.
-    Process( dir, shell, InputTextNone(), out, [ "-c", cmd ] );
-
-    ##  Close the output stream.
-    CloseStream( out );
 end;
 
 

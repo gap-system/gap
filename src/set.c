@@ -18,40 +18,42 @@
 **  make sets, either  by converting a  list to  a  set, or  by computing the
 **  union, intersection, or difference of two sets.
 */
-char *          Revision_set_c =
+#include        <assert.h>              /* assert                          */
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_set_c =
    "@(#)$Id$";
 
-#include        <assert.h>              /* assert                          */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "system.h"              /* system dependent functions      */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
-#include        "scanner.h"             /* Pr                              */
-
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gvars.h"               /* global variables                */
 
 #include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations package      */
+#include        "opers.h"               /* generic operations              */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* generic list package            */
+#include        "ariths.h"              /* basic arithmetic                */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "listfunc.h"            /* SortDensePlist, PositionSorte...*/
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "plist.h"               /* GET_LEN_PLIST, GET_ELM_PLIST,...*/
-
+#include        "lists.h"               /* generic lists                   */
+#include        "listfunc.h"            /* functions for generic lists     */
+#include        "plist.h"               /* plain lists                     */
 #define INCLUDE_DECLARATION_PART
-#include        "set.h"                 /* declaration part of the package */
+#include        "set.h"                 /* plain sets                      */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* Error                           */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
 **
+
 *F  IsSet( <list> ) . . . . . . . . . . . . . . . . . test if a list is a set
 **
 **  'IsSet' returns 1 if the list <list> is a proper set  and 0 otherwise.  A
@@ -79,7 +81,7 @@ Int             IsSet (
 
         /* if <list> is the empty list, its a set (:-)                     */
         if ( LEN_PLIST(list) == 0 ) {
-            RetypeBag( list, T_PLIST_EMPTY + IS_IMM_PLIST(list) );
+            SET_FILT_LIST( list, FN_IS_EMPTY );
             isSet = 1;
         }
 
@@ -101,15 +103,15 @@ Int             IsSet (
         /* if <list> is the empty list, its a set (:-)                     */
         if ( LEN_LIST(list) == 0 ) {
             PLAIN_LIST( list );
-            RetypeBag( list, T_PLIST_EMPTY + IS_IMM_PLIST(list) );
+            SET_FILT_LIST( list, FN_IS_EMPTY );
             isSet = 1;
         }
 
         /* if <list> homogeneous and strictly sorted, its a set            */
         else if ( IS_HOMOG_LIST(list) && IS_SSORT_LIST(list) ) {
             PLAIN_LIST( list );
-            /*N 1996/05/17 mschoene assumes only plists have mutable elms  */
-            RetypeBag( list, T_PLIST_HOM_SSORT + IS_IMM_PLIST(list) );
+            SET_FILT_LIST( list, FN_IS_HOMOG );
+            SET_FILT_LIST( list, FN_IS_SSORT );
             isSet = 1;
         }
 
@@ -182,9 +184,9 @@ Obj             SetList (
 
 /****************************************************************************
 **
-*F  SetListHandler( <self>, <list> )  . . . . . . . .  make a set from a list
+*F  FuncLIST_SORTED_LIST( <self>, <list> )  . . . . . . . .  make a set from a list
 **
-**  'SetListHandler' implements the internal function 'SetList'.
+**  'FuncLIST_SORTED_LIST' implements the internal function 'SetList'.
 **
 **  'SetList( <list> )'
 **
@@ -194,9 +196,7 @@ Obj             SetList (
 **  'SetList' returns a new list even if the list <list> is already a  proper
 **  set, in this case it is equivalent to 'ShallowCopy' (see  "ShallowCopy").
 */
-Obj             SetListFunc;
-
-Obj             SetListHandler (
+Obj             FuncLIST_SORTED_LIST (
     Obj                 self,
     Obj                 list )
 {
@@ -206,7 +206,7 @@ Obj             SetListHandler (
     while ( ! IS_LIST( list ) ) {
         list = ErrorReturnObj(
             "Set: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
 
@@ -232,9 +232,9 @@ Obj             SetListHandler (
 
 /****************************************************************************
 **
-*F  IsEqualSetHandler(<self>,<l1>,<l2>) test if a two lists are equal as sets
+*F  FuncIS_EQUAL_SET(<self>,<l1>,<l2>) test if a two lists are equal as sets
 **
-**  'IsEqualSetHandler' implements the internal function 'IsEqualSet'.
+**  'FuncIS_EQUAL_SET' implements the internal function 'IsEqualSet'.
 **
 **  'IsEqualSet( <list1>, <list2> )'
 **
@@ -273,9 +273,7 @@ Int             EqSet (
     return 1L;
 }
 
-Obj             IsEqualSetFunc;
-
-Obj             IsEqualSetHandler (
+Obj             FuncIS_EQUAL_SET (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
@@ -284,14 +282,14 @@ Obj             IsEqualSetHandler (
     while ( ! IS_LIST(list1) ) {
         list1 = ErrorReturnObj(
             "IsEqualSet: <list1> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
+            (Int)TNAM_OBJ(list1), 0L,
             "you can return a list for <list1>" );
     }
     if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
     while ( ! IS_LIST(list2) ) {
         list2 = ErrorReturnObj(
             "IsEqualSet: <list2> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
+            (Int)TNAM_OBJ(list2), 0L,
             "you can return a list for <list2>" );
     }
     if ( ! IsSet( list2 ) )  list2 = SetList( list2 );
@@ -303,9 +301,9 @@ Obj             IsEqualSetHandler (
 
 /****************************************************************************
 **
-*F  IsSubsetSetHandler(<self>,<s1>,<s2>) test if a set is a subset of another
+*F  FuncIS_SUBSET_SET(<self>,<s1>,<s2>) test if a set is a subset of another
 **
-**  'IsSubsetSetHandler' implements the internal function 'IsSubsetSet'.
+**  'FuncIS_SUBSET_SET' implements the internal function 'IsSubsetSet'.
 **
 **  'IsSubsetSet( <set1>, <set2> )'
 **
@@ -314,9 +312,7 @@ Obj             IsEqualSetHandler (
 **  Either  argument may also  be a list that is  not a proper  set, in which
 **  case 'IsSubsetSet' silently applies 'Set' (see "Set") to it first.
 */
-Obj             IsSubsetSetFunc;
-
-Obj             IsSubsetSetHandler (
+Obj             FuncIS_SUBSET_SET (
     Obj                 self,
     Obj                 set1,
     Obj                 set2 )
@@ -333,13 +329,13 @@ Obj             IsSubsetSetHandler (
     while ( ! IS_LIST(set1) ) {
         set1 = ErrorReturnObj(
             "IsSubsetSet: <set1> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set1)].name), 0L,
+            (Int)TNAM_OBJ(set1), 0L,
             "you can return a list for <set1>" );
     }
     while ( ! IS_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "IsSubsetSet: <set2> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set2)].name), 0L,
+            (Int)TNAM_OBJ(set2), 0L,
             "you can return a list for <set2>" );
     }
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
@@ -406,9 +402,17 @@ Obj             IsSubsetSetHandler (
 
 /****************************************************************************
 **
-*F  AddSetHandler(<self>,<set>,<obj>) . . . . . . . . add an element to a set
+
+*F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
 **
-**  'AddSetHandler' implements the internal function 'AddSet'.
+
+
+*F  FuncADD_SET( <self>, <set>, <obj> ) . . . . . . . add an element to a set
+**
+**  'FuncADD_SET' implements the internal function 'AddSet'.
 **
 **  'AddSet( <set>, <obj> )'
 **
@@ -420,9 +424,7 @@ Obj             IsSubsetSetHandler (
 **  'AddSet' does not return  anything, it is only  called for the sideeffect
 **  of changing <set>.
 */
-Obj             AddSetFunc;
-
-Obj             AddSetHandler (
+Obj FuncADD_SET (
     Obj                 self,
     Obj                 set,
     Obj                 obj )
@@ -432,13 +434,13 @@ Obj             AddSetHandler (
     UInt                i;              /* loop variable                   */
 
     /* check the arguments                                                 */
-    while ( ! IsSet( set ) || ! IS_MUTABLE_OBJ( set ) ) {
+    while ( ! IsSet(set) || ! IS_MUTABLE_OBJ(set) ) {
         set = ErrorReturnObj(
             "AddSet: <set> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set)].name), 0L,
+            (Int)TNAM_OBJ(set), 0L,
             "you can return a set for <set>" );
     }
-    len = LEN_LIST( set );
+    len = LEN_LIST(set);
 
     /* perform the binary search to find the position                      */
     pos = PositionSortedDensePlist( set, obj );
@@ -452,18 +454,20 @@ Obj             AddSetHandler (
         }
         SET_ELM_PLIST( set, pos, obj );
         CHANGED_BAG( set );
+
         /* fix up the type of the result                                   */
-        /*N 1996/07/17 mschoene this is a hack                             */
-        assert( TNUM_OBJ(set) == T_PLIST_DENSE \
-             || TNUM_OBJ(set) == T_PLIST_EMPTY \
-             || TNUM_OBJ(set) == T_PLIST_HOM_SSORT \
-             || TNUM_OBJ(set) == T_PLIST_TAB_SSORT \
-             || TNUM_OBJ(set) == T_PLIST_CYC_SSORT );
-        if ( IS_MUTABLE_OBJ(obj) ) {
-            RetypeBag( set, T_PLIST_DENSE );
+        if ( HAS_FILT_LIST( set, FN_IS_SSORT ) ) {
+            CLEAR_FILTS_LIST(set);
+            if ( IS_MUTABLE_OBJ(obj) ) {
+                SET_FILT_LIST( set, FN_IS_DENSE );
+            }
+            else {
+                SET_FILT_LIST( set, FN_IS_SSORT );
+            }
         }
-        else if ( TNUM_OBJ(set) == T_PLIST_EMPTY ) {
-            RetypeBag( set, T_PLIST_HOM_SSORT );
+        else {
+            CLEAR_FILTS_LIST(set);
+            SET_FILT_LIST( set, FN_IS_DENSE );
         }
     }
 
@@ -474,9 +478,9 @@ Obj             AddSetHandler (
 
 /****************************************************************************
 **
-*F  RemoveSetHandler(<self>,<set>,<obj>). . . .  remove an element from a set
+*F  FuncREM_SET( <self>, <set>, <obj> ) . . . .  remove an element from a set
 **
-**  'RemoveSetHandler' implements the internal function 'RemoveSet'.
+**  'FuncREM_SET' implements the internal function 'RemoveSet'.
 **
 **  'RemoveSet( <set>, <obj> )'
 **
@@ -489,9 +493,7 @@ Obj             AddSetHandler (
 **  'RemoveSet'   does   not return anything,  it   is  only called  for  the
 **  sideeffect of changing <set>.
 */
-Obj             RemoveSetFunc;
-
-Obj             RemoveSetHandler (
+Obj FuncREM_SET (
     Obj                 self,
     Obj                 set,
     Obj                 obj )
@@ -501,13 +503,13 @@ Obj             RemoveSetHandler (
     UInt                i;              /* loop variable                   */
 
     /* check the arguments                                                 */
-    while ( ! IsSet( set ) || ! IS_MUTABLE_OBJ( set ) ) {
+    while ( ! IsSet(set) || ! IS_MUTABLE_OBJ(set) ) {
         set = ErrorReturnObj(
             "RemoveSet: <set> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set)].name), 0L,
+            (Int)TNAM_OBJ(set), 0L,
             "you can return a set for <set>" );
     }
-    len = LEN_LIST( set );
+    len = LEN_LIST(set);
 
     /* perform the binary search to find the position                      */
     pos = PositionSortedDensePlist( set, obj );
@@ -519,14 +521,11 @@ Obj             RemoveSetHandler (
         }
         SET_ELM_PLIST( set, len, 0 );
         SET_LEN_PLIST( set, len-1 );
+
         /* fix up the type of the result                                   */
-        /*N 1996/07/17 mschoene this is a hack                             */
-        assert( TNUM_OBJ(set) == T_PLIST_DENSE \
-             || TNUM_OBJ(set) == T_PLIST_EMPTY \
-             || TNUM_OBJ(set) == T_PLIST_HOM_SSORT \
-             || TNUM_OBJ(set) == T_PLIST_CYC_SSORT );
         if ( len-1 == 0 ) {
-            RetypeBag( set, T_PLIST_EMPTY );
+            CLEAR_FILTS_LIST(set);
+            SET_FILT_LIST( set, FN_IS_EMPTY );
         }
     }
 
@@ -537,10 +536,10 @@ Obj             RemoveSetHandler (
 
 /****************************************************************************
 **
-*F  UniteSetHandler(<self>,<set1>,<set2>) . . . .  unite one set with another
 *V  TmpUnion  . . . . . . . . . . . . . . . . . . buffer for the union, local
+*F  FuncUNITE_SET( <self>, <set1>, <set2> ) . . .  unite one set with another
 **
-**  'UniteSetHandler' implements the internal function 'UniteSet'.
+**  'FuncUNITE_SET' implements the internal function 'UniteSet'.
 **
 **  'UniteSet( <set1>, <set2> )'
 **
@@ -550,17 +549,15 @@ Obj             RemoveSetHandler (
 **  that are in <set2>.  <set2> may be a list that  is  not  a proper set, in
 **  which case 'Set' is silently applied to it.
 **
-**  'UniteSetHandler' merges <set1> and <set2> into a buffer that is allocated at
-**  initialization time.
+**  'FuncUNITE_SET' merges <set1> and <set2> into a  buffer that is allocated
+**  at initialization time.
 **
 **  'TmpUnion' is the global  bag that serves as  temporary bag for the union.
 **  It is created in 'InitSet' and is resized when necessary.
 */
-Obj             TmpUnion;
+Obj TmpUnion;
 
-Obj             UniteSetFunc;
-
-Obj             UniteSetHandler (
+Obj FuncUNITE_SET (
     Obj                 self,
     Obj                 set1,
     Obj                 set2 )
@@ -574,19 +571,19 @@ Obj             UniteSetHandler (
     Obj                 e2;             /* element of right set            */
 
     /* check the arguments                                                 */
-    while ( ! IsSet( set1 ) || ! IS_MUTABLE_OBJ( set1 ) ) {
+    while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
         set1 = ErrorReturnObj(
             "UniteSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set1)].name), 0L,
+            (Int)TNAM_OBJ(set1), 0L,
             "you can return a set for <set1>" );
     }
     while ( ! IS_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "UniteSet: <set2> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set2)].name), 0L,
+            (Int)TNAM_OBJ(set2), 0L,
             "you can return a list for <set2>" );
     }
-    if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
+    if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );
@@ -634,40 +631,19 @@ Obj             UniteSetHandler (
         i2++;
     }
 
+    /* fix up the type of the result                                       */
+    CLEAR_FILTS_LIST(set1);
+    if ( 0 == LEN_PLIST(set1) ) {
+        RetypeBag( set1, MUTABLE_TNUM(TNUM_OBJ(set2)) );
+    }
+
     /* resize the result and copy back from the union                      */
     GROW_PLIST(    set1, lenr );
     SET_LEN_PLIST( set1, lenr );
-    for ( i1 = 1; i1 <= lenr; i1++ ) {
+    for ( i1 = 1;  i1 <= lenr;  i1++ ) {
         SET_ELM_PLIST( set1, i1, ELM_PLIST( TmpUnion, i1 ) );
         CHANGED_BAG( set1 );
         SET_ELM_PLIST( TmpUnion, i1, (Obj)0 );
-    }
-
-    /* fix up the type of the result                                       */
-    /*N 1996/07/17 mschoene this is a hack                                 */
-    assert( TNUM_OBJ(set1) == T_PLIST_DENSE \
-         || TNUM_OBJ(set1) == T_PLIST_EMPTY \
-         || TNUM_OBJ(set1) == T_PLIST_HOM_SSORT \
-         || TNUM_OBJ(set1) == T_PLIST_TAB_SSORT \
-         || TNUM_OBJ(set1) == T_PLIST_CYC_SSORT );
-    assert( TNUM_OBJ(set2) == T_PLIST_DENSE \
-         || TNUM_OBJ(set2) == T_PLIST_EMPTY \
-         || TNUM_OBJ(set2) == T_PLIST_HOM_SSORT \
-         || TNUM_OBJ(set2) == T_PLIST_TAB_SSORT \
-         || TNUM_OBJ(set2) == T_PLIST_CYC_SSORT \
-         || TNUM_OBJ(set2) == T_PLIST_DENSE + IMMUTABLE \
-         || TNUM_OBJ(set2) == T_PLIST_EMPTY + IMMUTABLE \
-         || TNUM_OBJ(set2) == T_PLIST_HOM_SSORT + IMMUTABLE \
-         || TNUM_OBJ(set2) == T_PLIST_TAB_SSORT + IMMUTABLE \
-         || TNUM_OBJ(set2) == T_PLIST_CYC_SSORT + IMMUTABLE );
-    if ( TNUM_OBJ(set1) == T_PLIST_EMPTY ) {
-        RetypeBag( set1, MUTABLE_TNUM(TNUM_OBJ(set2)) );
-    }
-    else if ( TNUM_OBJ(set2)==T_PLIST_DENSE ) {
-        RetypeBag( set1, T_PLIST_DENSE );
-    }
-    else if ( TNUM_OBJ(set2)==T_PLIST_DENSE + IMMUTABLE ) {
-        RetypeBag( set1, T_PLIST_DENSE );
     }
 
     /* return void, this is a procedure                                    */
@@ -677,9 +653,9 @@ Obj             UniteSetHandler (
 
 /****************************************************************************
 **
-*F  IntersectSetHandler(<self>,<set1>,<set2>)  intersect one set with another
+*F  FuncINTER_SET( <self>, <set1>, <set2> ) .  intersect one set with another
 **
-**  'IntersectSetHandler' implements the internal function 'IntersectSet'.
+**  'FuncINTER_SET' implements the internal function 'IntersectSet'.
 **
 **  'IntersectSet( <set1>, <set2> )'
 **
@@ -689,9 +665,7 @@ Obj             UniteSetHandler (
 **  all elements from <set1> that are not  in  <set2>.  <set2> may be a  list
 **  that is not a proper set, in which case 'Set' is silently applied to it.
 */
-Obj             IntersectSetFunc;
-
-Obj             IntersectSetHandler (
+Obj FuncINTER_SET (
     Obj                 self,
     Obj                 set1,
     Obj                 set2 )
@@ -705,19 +679,19 @@ Obj             IntersectSetHandler (
     Obj                 e2;             /* element of right set            */
 
     /* check the arguments                                                 */
-    while ( ! IsSet( set1 ) || ! IS_MUTABLE_OBJ( set1 ) ) {
+    while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
         set1 = ErrorReturnObj(
             "IntersectSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set1)].name), 0L,
+            (Int)TNAM_OBJ(set1), 0L,
             "you can return a set for <set1>" );
     }
     while ( ! IS_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "IntersectSet: <set2> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set2)].name), 0L,
+            (Int)TNAM_OBJ(set2), 0L,
             "you can return a list for <set2>" );
     }
-    if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
+    if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );
@@ -748,21 +722,9 @@ Obj             IntersectSetHandler (
     SHRINK_PLIST(  set1, lenr );
 
     /* fix up the type of the result                                       */
-    /*N 1996/07/17 mschoene this is a hack                                 */
-    assert( TNUM_OBJ(set1) == T_PLIST_DENSE \
-         || TNUM_OBJ(set1) == T_PLIST_EMPTY \
-         || TNUM_OBJ(set1) == T_PLIST_HOM_SSORT \
-         || TNUM_OBJ(set1) == T_PLIST_CYC_SSORT );
-    assert( TNUM_OBJ(set2) == T_PLIST_DENSE \
-         || TNUM_OBJ(set2) == T_PLIST_EMPTY \
-         || TNUM_OBJ(set2) == T_PLIST_HOM_SSORT \
-         || TNUM_OBJ(set2) == T_PLIST_CYC_SSORT \
-         || TNUM_OBJ(set2) == T_PLIST_DENSE + IMMUTABLE \
-         || TNUM_OBJ(set2) == T_PLIST_EMPTY + IMMUTABLE \
-         || TNUM_OBJ(set2) == T_PLIST_HOM_SSORT + IMMUTABLE \
-         || TNUM_OBJ(set2) == T_PLIST_CYC_SSORT + IMMUTABLE );
     if ( lenr == 0 ) {
-        RetypeBag( set1, T_PLIST_EMPTY );
+        CLEAR_FILTS_LIST(set1);
+        SET_FILT_LIST( set1, FN_IS_EMPTY );
     }
 
     /* return void, this is a procedure                                    */
@@ -772,9 +734,9 @@ Obj             IntersectSetHandler (
 
 /****************************************************************************
 **
-*F  SubstractSetHandler(<self>,<set1>,<set2>) . subtract one set from another
+*F  FuncSUBTR_SET( <self>, <set1>, <set2> ) . . subtract one set from another
 **
-**  'SubtractSetHandler' implements the internal function 'SubstractSet'.
+**  'FuncSUBTR_SET' implements the internal function 'SubstractSet'.
 **
 **  'SubstractSet( <set1>, <set2> )'
 **
@@ -784,9 +746,7 @@ Obj             IntersectSetHandler (
 **  all elements from <set1> that are in <set2>.   <set2> may  be a list that
 **  is not a proper set, in which case 'Set' is silently applied to it.
 */
-Obj             SubtractSetFunc;
-
-Obj             SubtractSetHandler (
+Obj FuncSUBTR_SET (
     Obj                 self,
     Obj                 set1,
     Obj                 set2 )
@@ -800,19 +760,19 @@ Obj             SubtractSetHandler (
     Obj                 e2;             /* element of right set            */
 
     /* check the arguments                                                 */
-    while ( ! IsSet( set1 ) || ! IS_MUTABLE_OBJ( set1 ) ) {
+    while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
         set1 = ErrorReturnObj(
             "SubtractSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set1)].name), 0L,
+            (Int)TNAM_OBJ(set1), 0L,
             "you can return a set for <set1>" );
     }
     while ( ! IS_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "SubtractSet: <set2> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set2)].name), 0L,
+            (Int)TNAM_OBJ(set2), 0L,
             "you can return a list for <set2>" );
     }
-    if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
+    if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );
@@ -849,14 +809,9 @@ Obj             SubtractSetHandler (
     SHRINK_PLIST(  set1, lenr );
 
     /* fix up the type of the result                                       */
-    /*N 1996/07/17 mschoene this is a hack                                 */
-    assert( TNUM_OBJ(set1) == T_PLIST_DENSE \
-         || TNUM_OBJ(set1) == T_PLIST_EMPTY \
-         || TNUM_OBJ(set1) == T_PLIST_HOM_SSORT \
-         || TNUM_OBJ(set1) == T_PLIST_TAB_SSORT \
-         || TNUM_OBJ(set1) == T_PLIST_CYC_SSORT );
     if ( lenr == 0 ) {
-        RetypeBag( set1, T_PLIST_EMPTY );
+        CLEAR_FILTS_LIST(set1);
+        SET_FILT_LIST( set1, FN_IS_EMPTY );
     }
 
     /* return void, this is a procedure                                    */
@@ -866,55 +821,85 @@ Obj             SubtractSetHandler (
 
 /****************************************************************************
 **
-*F  InitSet() . . . . . . . . . . . . . . . . . .  initialize the set package
-**
-**  'InitSet' initializes the set package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitSet ( void )
+
+/****************************************************************************
+**
+
+*F  SetupSet()  . . . . . . . . . . . . . . . . .  initialize the set package
+*/
+void SetupSet ( void )
 {
-    /* install internal functions                                          */
-    InitHandlerFunc( SetListHandler, "LIST_SORTED_LIST" );
-    SetListFunc = NewFunctionC(
-        "LIST_SORTED_LIST", 1L, "list", SetListHandler );
-    AssGVar( GVarName( "LIST_SORTED_LIST" ), SetListFunc );
-
-    InitHandlerFunc( IsEqualSetHandler, "IS_EQUAL_SET" );
-    IsEqualSetFunc = NewFunctionC(
-        "IS_EQUAL_SET", 2L, "set1, set2", IsEqualSetHandler );
-    AssGVar( GVarName( "IS_EQUAL_SET" ), IsEqualSetFunc );
-    InitHandlerFunc( IsSubsetSetHandler, "IS_SUBSET_SET" );
-    IsSubsetSetFunc = NewFunctionC(
-        "IS_SUBSET_SET", 2L, "set1, set2", IsSubsetSetHandler );
-    AssGVar( GVarName( "IS_SUBSET_SET" ), IsSubsetSetFunc );
-    InitHandlerFunc( AddSetHandler, "ADD_SET" );
-    AddSetFunc = NewFunctionC(
-        "ADD_SET", 2L, "set, val", AddSetHandler );
-    AssGVar( GVarName( "ADD_SET" ), AddSetFunc );
-    InitHandlerFunc( RemoveSetHandler, "REM_SET" );
-    RemoveSetFunc = NewFunctionC(
-        "REM_SET", 2L, "set, val", RemoveSetHandler );
-    AssGVar( GVarName( "REM_SET" ), RemoveSetFunc );
-    InitHandlerFunc( UniteSetHandler, "UNITE_SET" );
-    UniteSetFunc = NewFunctionC(
-        "UNITE_SET", 2L, "set1, set2", UniteSetHandler );
-    AssGVar( GVarName( "UNITE_SET" ), UniteSetFunc );
-    InitHandlerFunc( IntersectSetHandler, "INTER_SET" );
-    IntersectSetFunc = NewFunctionC(
-        "INTER_SET", 2L, "set1, set2", IntersectSetHandler );
-    AssGVar( GVarName( "INTER_SET" ), IntersectSetFunc );
-    InitHandlerFunc( SubtractSetHandler, "SUBTR_SET" );
-    SubtractSetFunc = NewFunctionC(
-        "SUBTR_SET", 2L, "set1, set2", SubtractSetHandler );
-    AssGVar( GVarName( "SUBTR_SET" ), SubtractSetFunc );
-
-    /* create the temporary union bag                                      */
-    InitGlobalBag( &TmpUnion, "set: temporary union" );
-    TmpUnion = NEW_PLIST( T_PLIST_HOM_SSORT, 1024 );
-    SET_LEN_PLIST( TmpUnion, 1024 );
 }
 
 
 /****************************************************************************
 **
+*F  InitSet() . . . . . . . . . . . . . . . . . .  initialize the set package
+**
+**  'InitSet' initializes the set package.
+*/
+void InitSet ( void )
+{
+    /* install internal functions                                          */
+    C_NEW_GVAR_FUNC( "LIST_SORTED_LIST", 1, "list",
+                  FuncLIST_SORTED_LIST,
+           "src/set.c:LIST_SORTED_LIST" );
+
+    C_NEW_GVAR_FUNC( "IS_EQUAL_SET", 2, "set1, set2",
+                  FuncIS_EQUAL_SET,
+           "src/set.c:IS_EQUAL_SET" );
+
+    C_NEW_GVAR_FUNC( "IS_SUBSET_SET", 2, "set1, set2",
+                  FuncIS_SUBSET_SET,
+           "src/set.c:IS_SUBSET_SET" );
+
+
+    C_NEW_GVAR_FUNC( "ADD_SET", 2, "set, val",
+                  FuncADD_SET,
+           "src/set.c:ADD_SET" );
+
+    C_NEW_GVAR_FUNC( "REM_SET", 2, "set, val",
+                  FuncREM_SET,
+           "src/set.c:REM_SET" );
+
+    C_NEW_GVAR_FUNC( "UNITE_SET", 2, "set1, set2",
+                  FuncUNITE_SET,
+           "src/set.c:UNITE_SET" );
+
+    C_NEW_GVAR_FUNC( "INTER_SET", 2, "set1, set2",
+                  FuncINTER_SET,
+           "src/set.c:INTER_SET" );
+
+    C_NEW_GVAR_FUNC( "SUBTR_SET", 2, "set1, set2",
+                  FuncSUBTR_SET,
+           "src/set.c:SUBTR_SET" );
+
+
+    /* create the temporary union bag                                      */
+    InitGlobalBag( &TmpUnion, "src/set.c:TmpUnion" );
+    if ( ! SyRestoring ) {
+        TmpUnion = NEW_PLIST( T_PLIST, 1024 );
+        SET_LEN_PLIST( TmpUnion, 1024 );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  CheckSet()  . . . . . . . . . check the initialisation of the set package
+*/
+void CheckSet ( void )
+{
+    SET_REVISION( "set_c",      Revision_set_c );
+    SET_REVISION( "set_h",      Revision_set_h );
+}
+
+
+/****************************************************************************
+**
+
 *E  set.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  ariths.c                    GAP source                       Frank Celler
+*W  ariths.h                    GAP source                       Frank Celler
 *W                                                         & Martin Schoenert
 **
 *H  @(#)$Id$
@@ -606,11 +606,27 @@ extern void InstallModObject ( Int );
 /****************************************************************************
 **
 
+*F  SetupAriths() . . . . . . .  initialize the arithmetic operations package
+**
+**  'InitAriths' initializes the arithmetic operations package.
+*/
+extern void SetupAriths ( void );
+
+
+/****************************************************************************
+**
 *F  InitAriths()  . . . . . . .  initialize the arithmetic operations package
 **
 **  'InitAriths' initializes the arithmetic operations package.
 */
 extern void InitAriths ( void );
+
+
+/****************************************************************************
+**
+*F  CheckAriths() . check initialisation of the arithmetic operations package
+*/
+extern void CheckAriths ( void );
 
 
 /****************************************************************************

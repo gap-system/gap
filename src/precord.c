@@ -12,34 +12,38 @@
 **  entries.  The odd entries are the record  names of the components and the
 **  even entries are the corresponding values.
 */
-char *          Revision_precord_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_precord_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
 
 #include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations mechanism    */
+#include        "opers.h"               /* generic operations              */
 
-#include        "ariths.h"              /* generic operations package      */
+#include        "ariths.h"              /* basic arithmetic                */
 #include        "records.h"             /* generic records                 */
 #include        "lists.h"               /* generic lists                   */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
 #define INCLUDE_DECLARATION_PART
-#include        "precord.h"             /* declaration part of the package */
+#include        "precord.h"             /* plain records                   */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "plist.h"               /* NEW_PLIST, SET_LEN_PLIST, SET...*/
-#include        "string.h"              /* NEW_STRING, CSTR_STRING         */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
-#include        "gap.h"                 /* Error                           */
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
@@ -634,12 +638,12 @@ Obj FuncPRINT_PREC_DEFAULT (
     /* print the record                                                    */
     Pr( "%2>rec(\n%2>", 0L, 0L );
     for ( PrintObjIndex=1; PrintObjIndex<=LEN_PREC(rec); PrintObjIndex++ ) {
-	Pr( "%I", (Int)NAME_RNAM(GET_RNAM_PREC(rec,PrintObjIndex)), 0L );
-	Pr( "%< := %>", 0L, 0L );
-	PrintObj( GET_ELM_PREC( rec, PrintObjIndex ) );
-	if ( PrintObjIndex < LEN_PREC(rec) ) {
-	    Pr( "%2<,\n%2>", 0L, 0L );
-	}
+        Pr( "%I", (Int)NAME_RNAM(GET_RNAM_PREC(rec,PrintObjIndex)), 0L );
+        Pr( "%< := %>", 0L, 0L );
+        PrintObj( GET_ELM_PREC( rec, PrintObjIndex ) );
+        if ( PrintObjIndex < LEN_PREC(rec) ) {
+            Pr( "%2<,\n%2>", 0L, 0L );
+        }
     }
     Pr( " %4<)", 0L, 0L );
     return 0L;
@@ -670,7 +674,7 @@ Obj FuncPRINT_PREC (
     /* try to find an applicable method                                    */
     if ( ! (method = MethodPRec( rec, PrintRNam )) )
     {
-	return FuncPRINT_PREC_DEFAULT( self, rec );
+        return FuncPRINT_PREC_DEFAULT( self, rec );
     }
 
     /* call that function                                                  */
@@ -702,7 +706,7 @@ Obj FuncREC_NAMES (
             TNUM_OBJ(rec) != T_PREC + IMMUTABLE ) {
         rec = ErrorReturnObj(
             "RecNames: <rec> must be a record (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
+            (Int)TNAM_OBJ(rec), 0L,
             "you can return a record for <rec>" );
     }
 
@@ -742,7 +746,7 @@ Obj FuncREC_NAMES_ROBJ (
     while ( TNUM_OBJ(rec) != T_COMOBJ ) {
         rec = ErrorReturnObj(
             "RecNames: <rec> must be a component object (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
+            (Int)TNAM_OBJ(rec), 0L,
             "you can return a component object for <rec>" );
     }
 
@@ -788,7 +792,7 @@ Obj FuncSUM_PREC (
     if ( ! (method = MethodPRec( right, SumRNam ))
       && ! (method = MethodPRec( left,  SumRNam )) )
     {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -819,7 +823,7 @@ Obj FuncDIFF_PREC (
     if ( ! (method = MethodPRec( right, DiffRNam ))
       && ! (method = MethodPRec( left,  DiffRNam )) )
     {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -850,7 +854,7 @@ Obj FuncPROD_PREC (
     if ( ! (method = MethodPRec( right, ProdRNam ))
       && ! (method = MethodPRec( left,  ProdRNam )) )
     {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -881,7 +885,7 @@ Obj FuncQUO_PREC (
     if ( ! (method = MethodPRec( right, QuoRNam ))
       && ! (method = MethodPRec( left,  QuoRNam )) ) 
     {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -913,7 +917,7 @@ Obj FuncLQUO_PREC (
     if ( ! (method = MethodPRec( right, LQuoRNam ))
       && ! (method = MethodPRec( left,  LQuoRNam )) ) 
     {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -944,7 +948,7 @@ Obj FuncPOW_PREC (
     if ( ! (method = MethodPRec( right, PowRNam ))
       && ! (method = MethodPRec( left,  PowRNam )) ) 
     {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -975,7 +979,7 @@ Obj FuncCOMM_PREC (
     if ( ! (method = MethodPRec( right, CommRNam ))
       && ! (method = MethodPRec( left,  CommRNam )) )
     {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -1006,7 +1010,7 @@ Obj FuncMOD_PREC (
     if ( ! (method = MethodPRec( right, ModRNam ))
       && ! (method = MethodPRec( left,  ModRNam )) )
     {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -1035,7 +1039,7 @@ Obj FuncIN_PREC (
 
     /* try to find an applicable method                                    */
     if ( ! (method = MethodPRec( right, InRNam )) ) {
-	return TRY_NEXT_METHOD;
+        return TRY_NEXT_METHOD;
     }
 
     /* call that function                                                  */
@@ -1059,11 +1063,11 @@ Obj FuncEQ_PREC_DEFAULT (
 
     /* quick first checks                                                  */
     if ( TNUM_OBJ(left)!=T_PREC && TNUM_OBJ(left)!=T_PREC+IMMUTABLE )
-	return False;
+        return False;
     if ( TNUM_OBJ(right)!=T_PREC && TNUM_OBJ(right)!=T_PREC+IMMUTABLE )
-	return False;
+        return False;
     if ( LEN_PREC(left) != LEN_PREC(right) )
-	return False;
+        return False;
 
     /* sort both records                                                   */
     SortPRec(left);
@@ -1072,15 +1076,15 @@ Obj FuncEQ_PREC_DEFAULT (
     /* compare componentwise                                               */
     for ( i = 1; i <= LEN_PREC(right); i++ ) {
 
-	/* compare the names                                               */
-	if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-	    return False;
-	}
+        /* compare the names                                               */
+        if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
+            return False;
+        }
 
-	/* compare the values                                              */
-	if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
-	    return False;
-	}
+        /* compare the values                                              */
+        if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
+            return False;
+        }
     }
 
     /* the records are equal                                               */
@@ -1112,7 +1116,7 @@ Obj FuncEQ_PREC (
     if ( ! (method = MethodPRec( right, EqRNam ))
       && ! (method = MethodPRec( left,  EqRNam )) )
     {
-	return FuncEQ_PREC_DEFAULT( self, left, right );
+        return FuncEQ_PREC_DEFAULT( self, left, right );
     }
 
     /* call that function                                                  */
@@ -1150,25 +1154,25 @@ Obj FuncLT_PREC_DEFAULT (
     /* compare componentwise                                               */
     for ( i = 1; i <= LEN_PREC(right); i++ ) {
 
-	/* if the left is a proper prefix of the right one                 */
-	if ( LEN_PREC(left) < i )  return True;
+        /* if the left is a proper prefix of the right one                 */
+        if ( LEN_PREC(left) < i )  return True;
 
-	/* compare the names                                               */
-	if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-	    if ( SyStrcmp( NAME_RNAM( GET_RNAM_PREC(left,i) ),
-			   NAME_RNAM( GET_RNAM_PREC(right,i) ) ) < 0 ) {
-		return True;
-	    }
-	    else {
-		return False;
-	    }
-	}
+        /* compare the names                                               */
+        if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
+            if ( SyStrcmp( NAME_RNAM( GET_RNAM_PREC(left,i) ),
+                           NAME_RNAM( GET_RNAM_PREC(right,i) ) ) < 0 ) {
+                return True;
+            }
+            else {
+                return False;
+            }
+        }
 
-	/* compare the values                                              */
-	if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
-	    return LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) ) ?
+        /* compare the values                                              */
+        if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
+            return LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) ) ?
                    True : False;
-	}
+        }
 
     }
 
@@ -1202,13 +1206,49 @@ Obj FuncLT_PREC (
     if ( ! (method = MethodPRec( right, LtRNam ))
       && ! (method = MethodPRec( left,  LtRNam )) )
     {
-	return FuncLT_PREC_DEFAULT( self, left, right );
+        return FuncLT_PREC_DEFAULT( self, left, right );
     }
 
     /* call that function                                                  */
     return CALL_2ARGS( method, left, right );
 }
 
+
+/****************************************************************************
+**
+*F  SavePRec( <prec> )
+**
+*/
+
+void SavePRec( Obj prec )
+{
+  UInt len,i;
+  len = LEN_PREC(prec);
+  for (i = 1; i <= len; i++)
+    {
+      SaveUInt(GET_RNAM_PREC(prec, i));
+      SaveSubObj(GET_ELM_PREC(prec, i));
+    }
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadPRec( <prec> )
+**
+*/
+
+void LoadPRec( Obj prec )
+{
+  UInt len,i;
+  len = LEN_PREC(prec);
+  for (i = 1; i <= len; i++)
+    {
+      SET_RNAM_PREC(prec, i, LoadUInt());
+      SET_ELM_PREC(prec, i, LoadSubObj());
+    }
+  return;
+}
 
 /****************************************************************************
 **
@@ -1219,25 +1259,27 @@ Obj FuncLT_PREC (
 /****************************************************************************
 **
 
-*F  InitPRecord() . . . . . . . . . . . . . . . . . initialize record package
-**
-**  'InitPRecord' initializes the record package.
+*F  SetupPRecord()  . . . . . . . . . . . . . . initialize the record package
 */
-void            InitPRecord ( void )
+void SetupPRecord ( void )
 {
     /* install the marking function                                        */
-    InfoBags[         T_PREC                     ].name
-        = "record (plain)";
+    InfoBags[         T_PREC                     ].name = "record (plain)";
+    InfoBags[         T_PREC +IMMUTABLE          ].name = "record (plain,imm)";
+    InfoBags[         T_PREC            +COPYING ].name = "record (plain,copied)";
+    InfoBags[         T_PREC +IMMUTABLE +COPYING ].name = "record (plain,imm,copied)";
+
     InitMarkFuncBags( T_PREC                     , MarkAllSubBags );
-    InfoBags[         T_PREC +IMMUTABLE          ].name
-        = "record (plain,immutable)";
     InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkAllSubBags );
-    InfoBags[         T_PREC            +COPYING ].name
-        = "record (plain,copied)";
     InitMarkFuncBags( T_PREC            +COPYING , MarkAllSubBags );
-    InfoBags[         T_PREC +IMMUTABLE +COPYING ].name
-        = "record (plain,immutable,copied)";
     InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkAllSubBags );
+
+
+    /* Install saving functions                                            */
+    SaveObjFuncs[ T_PREC            ] = SavePRec;
+    SaveObjFuncs[ T_PREC +IMMUTABLE ] = SavePRec;
+    LoadObjFuncs[ T_PREC            ] = LoadPRec;
+    LoadObjFuncs[ T_PREC +IMMUTABLE ] = LoadPRec;
 
 
     /* install into record function tables                                 */
@@ -1249,14 +1291,6 @@ void            InitPRecord ( void )
     AssRecFuncs[ T_PREC +IMMUTABLE ] = AssPRecImm;
     UnbRecFuncs[ T_PREC            ] = UnbPRec;
     UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRecImm;
-
-
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
-    ImportGVarFromLibrary( "TYPE_PREC_IMMUTABLE", &TYPE_PREC_IMMUTABLE );
-
-    TypeObjFuncs[ T_PREC            ] = TypePRecMut;
-    TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
 
 
     /* install mutability test                                             */
@@ -1282,6 +1316,23 @@ void            InitPRecord ( void )
     PrintObjFuncs[  T_PREC +IMMUTABLE ] = PrintPRec;
     PrintPathFuncs[ T_PREC            ] = PrintPathPRec;
     PrintPathFuncs[ T_PREC +IMMUTABLE ] = PrintPathPRec;
+}
+
+
+/****************************************************************************
+**
+*F  InitPRecord() . . . . . . . . . . . . . . . initialize the record package
+**
+**  'InitPRecord' initializes the record package.
+*/
+void InitPRecord ( void )
+{
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
+    ImportGVarFromLibrary( "TYPE_PREC_IMMUTABLE", &TYPE_PREC_IMMUTABLE );
+
+    TypeObjFuncs[ T_PREC            ] = TypePRecMut;
+    TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
 
 
     /* get the appropriate record record name                              */
@@ -1347,6 +1398,17 @@ void            InitPRecord ( void )
        "src/precord.c:LT_PREC" );
     C_NEW_GVAR_FUNC( "LT_PREC_DEFAULT",2L,"left, right",FuncLT_PREC_DEFAULT,
        "src/precord.c:LT_PREC_DEFAULT" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckPRecord()  . . . . .  check the initialisation of the record package
+*/
+void CheckPRecord ( void )
+{
+    SET_REVISION( "precord_c",  Revision_precord_c );
+    SET_REVISION( "precord_h",  Revision_precord_h );
 }
 
 

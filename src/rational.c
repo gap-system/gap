@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  rational.c                  GAP source                   Martin Schoenert
+*W  rational.c                  GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -41,35 +41,44 @@
 **  would reduce the overhead  introduced by the  calls to the functions like
 **  'SumInt', 'ProdInt' or 'GcdInt'.
 */
-char *          Revision_rational_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_rational_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gvars.h"               /* global variables                */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
 
-#include        "calls.h"               /* NewFunctionC                    */
-#include        "opers.h"               /* NewFilterC                      */
+#include        "ariths.h"              /* basic arithmetic                */
 
-#include        "ariths.h"              /* generic operations package      */
+#include        "bool.h"                /* booleans                        */
 
-#include        "bool.h"                /* True, False                     */
-
-#include        "integer.h"             /* SumInt, DiffInt, ProdInt, Quo...*/
+#include        "integer.h"             /* integers                        */
 
 #define INCLUDE_DECLARATION_PART
-#include        "rational.h"            /* declaration part of the package */
+#include        "rational.h"            /* rationals                       */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "gap.h"                 /* Error                           */
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "string.h"              /* strings                         */
+
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
 **
+
 *F  NUM_RAT(<rat>)  . . . . . . . . . . . . . . . . . numerator of a rational
 *F  DEN_RAT(<rat>)  . . . . . . . . . . . . . . . . denominator of a rational
 */
@@ -786,29 +795,53 @@ Obj             FuncDenominatorRat (
     }
 }
 
+/****************************************************************************
+**
+*F  SaveRat( <rat> )
+**
+*/
+
+void SaveRat(Obj rat)
+{
+  SaveSubObj(NUM_RAT(rat));
+  SaveSubObj(DEN_RAT(rat));
+}
 
 /****************************************************************************
 **
-*F  InitRat() . . . . . . . . . . . . . . . . initialize the rational package
+*F  LoadRat( <rat> )
 **
-**  'InitRat' initializes the rational package.
 */
-void            InitRat ( void )
+
+void LoadRat(Obj rat)
+{
+  NUM_RAT(rat) = LoadSubObj();
+  DEN_RAT(rat) = LoadSubObj();
+}
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupRat()  . . . . . . . . . . . . . . . initialize the rational package
+*/
+void SetupRat ( void )
 {
     /* install the marking function                                        */
-    InfoBags[           T_RAT           ].name = "rational";
-    InitMarkFuncBags(   T_RAT           , MarkTwoSubBags );
+    InfoBags[         T_RAT ].name = "rational";
+    InitMarkFuncBags( T_RAT, MarkTwoSubBags );
 
-
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );
-    ImportGVarFromLibrary( "TYPE_RAT_NEG", &TYPE_RAT_NEG );
-
-    TypeObjFuncs[       T_RAT           ] = TypeRat;
-
+    /* install a saving function */
+    SaveObjFuncs[ T_RAT ] = SaveRat;
+    LoadObjFuncs[ T_RAT ] = LoadRat;
 
     /* install the printer                                                 */
-    PrintObjFuncs[      T_RAT           ] = PrintRat;
+    PrintObjFuncs[ T_RAT ] = PrintRat;
 
 
     /* install the comparisons                                             */
@@ -881,20 +914,51 @@ void            InitRat ( void )
     PowFuncs [ T_RAT    ][ T_INT    ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTPOS ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTNEG ] = PowRat;
-
-
-    /* install the internal functions                                      */
-    InitHandlerFunc( IsRatHandler, "IS_RAT" );
-    IsRatFilt = NewFilterC( "IS_RAT", 1L, "obj",
-                                IsRatHandler );
-    AssGVar( GVarName( "IS_RAT" ), IsRatFilt );
-    InitHandlerFunc( FuncNumeratorRat, "NUMERATOR_RAT" );
-    AssGVar( GVarName( "NUMERATOR_RAT" ),
-             NewFunctionC( "NUMERATOR_RAT", 1L, "rat", FuncNumeratorRat ) );
-    InitHandlerFunc( FuncDenominatorRat, "DENOMINATOR_RAT" );
-    AssGVar( GVarName( "DENOMINATOR_RAT" ),
-             NewFunctionC( "DENOMINATOR_RAT", 1L, "rat", FuncDenominatorRat ) );
 }
 
 
+/****************************************************************************
+**
+*F  InitRat() . . . . . . . . . . . . . . . . initialize the rational package
+**
+**  'InitRat' initializes the rational package.
+*/
+void InitRat ( void )
+{
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );
+    ImportGVarFromLibrary( "TYPE_RAT_NEG", &TYPE_RAT_NEG );
 
+    TypeObjFuncs[ T_RAT ] = TypeRat;
+
+
+    /* install the internal functions                                      */
+    C_NEW_GVAR_FILT( "IS_RAT", "obj", IsRatFilt, IsRatHandler,
+      "src/rational.c:IS_RAT" );
+
+    C_NEW_GVAR_FUNC( "NUMERATOR_RAT", 1, "rat",
+                  FuncNumeratorRat,
+      "src/rational.c:NUMERATOR_RAT" );
+
+    C_NEW_GVAR_FUNC( "DENOMINATOR_RAT", 1, "rat",
+                  FuncDenominatorRat,
+      "src/rational.c:DENOMINATOR_RAT" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckRat()  . . . . . .  check the initialisation of the rational package
+*/
+void CheckRat ( void )
+{
+    SET_REVISION( "rational_c", Revision_rational_c );
+    SET_REVISION( "rational_h", Revision_rational_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  rational.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

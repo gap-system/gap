@@ -18,11 +18,11 @@ SYS_CONST char * Revision_ariths_c =
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#include        "gap.h"                 /* error handling                  */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* operation, property, attribute  */
+#include        "opers.h"               /* generic operations              */
 
 #define INCLUDE_DECLARATION_PART
 #include        "ariths.h"              /* basic arithmetic                */
@@ -30,50 +30,11 @@ SYS_CONST char * Revision_ariths_c =
 
 #include        "bool.h"                /* booleans                        */
 
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-/****************************************************************************
-**
-
-*T  CompaMethod . . . . . . . . . . type of methods for comparison operations
-**
-**  'CompaMethod'  is the type of methods  for comparison operations, i.e., a
-**  function accepting two arguments of type 'Obj' and returning an 'Int'.
-**
-**  'CompaMethod' is  defined  in the  declaration  part of  this package  as
-**  follows
-**
-typedef Int (* CompaMethod) ( Obj opL, Obj opR );
-*/
-
-
-/****************************************************************************
-**
-*T  ArithMethod1  . . . . . . . . . type of methods for arithmetic operations
-**
-**  'ArithMethod1'  is the type of  methods  for unary arithmetic operations,
-**  i.e.,  a function accepting  one argument of type  'Obj' and returning an
-**  'Obj'.
-**
-**  'ArithMethod1'  is  defined in the   declaration part of  this package as
-**  follows
-**
-typedef Obj (* ArithMethod1) ( Obj op );
-*/
-
-
-/****************************************************************************
-**
-*T  ArithMethod2  . . . . . . . . . type of methods for arithmetic operations
-**
-**  'ArithMethod2' is the type  of methods for binary arithmetic  operations,
-**  i.e., a function  accepting two arguments  of type 'Obj' and returning an
-**  'Obj'.
-**
-**  'ArithMethod2'  is  defined in the   declaration part of  this package as
-**  follows
-**
-typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
-*/
+#include        "lists.h"               /* generic lists                   */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
@@ -524,8 +485,8 @@ Int InUndefined (
 {
     return (ErrorReturnObj(
         "operations: IN of %s and %s is not defined",
-        (Int)(InfoBags[TNUM_OBJ(opL)].name),
-        (Int)(InfoBags[TNUM_OBJ(opR)].name),
+        (Int)TNAM_OBJ(opL),
+        (Int)TNAM_OBJ(opR),
         "you can return a value for the result" ) == True);
 }
 
@@ -1368,20 +1329,17 @@ void InstallModObject ( Int verb )
 /****************************************************************************
 **
 
-*F  InitAriths()  . . . . . . .  initialize the arithmetic operations package
+*F  SetupAriths() . . . . . . .  initialize the arithmetic operations package
 **
 **  'InitAriths' initializes the arithmetic operations package.
 */
-void InitAriths ( void )
+void SetupAriths ( void )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
 
 
     /* make and install the 'ZERO' arithmetic operation                    */
-    C_NEW_GVAR_ATTR( "ZERO", "op", ZeroAttr, ZeroHandler,
-        "src/ariths.c:ZERO" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         ZeroFuncs[t1] = ZeroObject;
     }
@@ -1389,9 +1347,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'AINV' arithmetic operation                    */
-    C_NEW_GVAR_ATTR( "AINV", "op", AInvAttr, AInvHandler,
-        "src/ariths.c:AINV" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         AInvFuncs[t1] = AInvObject;
     }
@@ -1399,9 +1354,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'ONE' arithmetic operation                     */
-    C_NEW_GVAR_ATTR( "ONE", "op", OneAttr, OneHandler,
-        "src/ariths.c:ONE" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         OneFuncs[t1] = OneObject;
     }
@@ -1409,9 +1361,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'INV' arithmetic operation                     */
-    C_NEW_GVAR_ATTR( "INV", "op", InvAttr, InvHandler,
-        "src/ariths.c:INV" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         InvFuncs[t1] = InvObject;
     }
@@ -1419,9 +1368,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'EQ' comparison operation                      */
-    C_NEW_GVAR_OPER( "EQ", 2L, "opL, opR", EqOper, EqHandler,
-        "src/ariths.c:EQ" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             EqFuncs[t1][t2] = EqNot;
@@ -1431,9 +1377,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'LT' comparison operation                      */
-    C_NEW_GVAR_OPER( "LT", 2L, "opL, opR", LtOper, LtHandler,
-        "src/ariths.c:LT" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             LtFuncs[t1][t2] = LtObject;
@@ -1443,9 +1386,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'IN' comparison operation                      */
-    C_NEW_GVAR_OPER( "IN", 2L, "opL, opR", InOper, InHandler,
-        "src/ariths.c:IN" );
-
     for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_VIRTUAL_TNUM; t1++ ) {
         for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
             InFuncs[t1][t2] = InUndefined;
@@ -1455,9 +1395,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'SUM' arithmetic operation                     */
-    C_NEW_GVAR_OPER( "SUM", 2L, "opL, opR", SumOper, SumHandler,
-        "src/ariths.c:SUM" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             SumFuncs[t1][t2] = SumObject;
@@ -1467,11 +1404,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'DIFF' arithmetic operation                    */
-    C_NEW_GVAR_OPER( "DIFF", 2L, "opL, opR", DiffOper, DiffHandler,
-        "src/ariths.c:DIFF" );
-    C_NEW_GVAR_FUNC( "DIFF_DEFAULT", 2L, "opL, opR", DiffDefaultHandler,
-        "src/ariths.c:DIFF_DEFAULT" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             DiffFuncs[t1][t2] = DiffDefault;
@@ -1481,9 +1413,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'PROD' arithmetic operation                    */
-    C_NEW_GVAR_OPER( "PROD", 2L, "opL, opR", ProdOper, ProdHandler,
-        "src/ariths.c:PROD" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             ProdFuncs[t1][t2] = ProdObject;
@@ -1493,11 +1422,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'QUO' arithmetic operation                     */
-    C_NEW_GVAR_OPER( "QUO", 2L, "opL, opR", QuoOper, QuoHandler,
-        "src/ariths.c:QUO" );
-    C_NEW_GVAR_FUNC( "QUO_DEFAULT", 2L, "opL, opR", QuoDefaultHandler,
-        "src/ariths.c:QUO_DEFAULT" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             QuoFuncs[t1][t2] = QuoDefault;
@@ -1507,11 +1431,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'LQUO' arithmetic operation                    */
-    C_NEW_GVAR_OPER( "LQUO", 2L, "opL, opR", LQuoOper, LQuoHandler,
-        "src/ariths.c:LQUO" );
-    C_NEW_GVAR_FUNC( "LQUO_DEFAULT", 2L, "opL, opR", LQuoDefaultHandler,
-        "src/ariths.c:LQUO_DEFAULT" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             LQuoFuncs[t1][t2] = LQuoDefault;
@@ -1521,11 +1440,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'POW' arithmetic operation                     */
-    C_NEW_GVAR_OPER( "POW", 2L, "opL, opR", PowOper, PowHandler,
-        "src/ariths.c:POW" );
-    C_NEW_GVAR_FUNC( "POW_DEFAULT", 2L, "opL, opR", PowDefaultHandler,
-        "src/ariths.c:POW_DEFAULT" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             PowFuncs[t1][t2] = PowObject;
@@ -1535,11 +1449,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'COMM' arithmetic operation                    */
-    C_NEW_GVAR_OPER( "COMM", 2L, "opL, opR", CommOper, CommHandler,
-        "src/ariths.c:COMM" );
-    C_NEW_GVAR_FUNC( "COMM_DEFAULT", 2L, "opL, opR", CommDefaultHandler,
-        "src/ariths.c:COMM_DEFAULT" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             CommFuncs[t1][t2] = CommDefault;
@@ -1549,9 +1458,6 @@ void InitAriths ( void )
 
 
     /* make and install the 'MOD' arithmetic operation                     */
-    C_NEW_GVAR_OPER( "MOD", 2L, "opL, opR", ModOper, ModHandler,
-        "src/ariths.c:MOD" );
-
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
             ModFuncs[t1][t2] = ModObject;
@@ -1563,6 +1469,121 @@ void InitAriths ( void )
 
 /****************************************************************************
 **
+*F  InitAriths()  . . . . . . .  initialize the arithmetic operations package
+**
+**  'InitAriths' initializes the arithmetic operations package.
+*/
+void InitAriths ( void )
+{
+    /* make and install the 'ZERO' arithmetic operation                    */
+    C_NEW_GVAR_ATTR( "ZERO", "op", ZeroAttr, ZeroHandler,
+        "src/ariths.c:ZERO" );
+
+
+    /* make and install the 'AINV' arithmetic operation                    */
+    C_NEW_GVAR_ATTR( "AINV", "op", AInvAttr, AInvHandler,
+        "src/ariths.c:AINV" );
+
+
+    /* make and install the 'ONE' arithmetic operation                     */
+    C_NEW_GVAR_ATTR( "ONE", "op", OneAttr, OneHandler,
+        "src/ariths.c:ONE" );
+
+
+    /* make and install the 'INV' arithmetic operation                     */
+    C_NEW_GVAR_ATTR( "INV", "op", InvAttr, InvHandler,
+        "src/ariths.c:INV" );
+
+
+    /* make and install the 'EQ' comparison operation                      */
+    C_NEW_GVAR_OPER( "EQ", 2L, "opL, opR", EqOper, EqHandler,
+        "src/ariths.c:EQ" );
+
+
+    /* make and install the 'LT' comparison operation                      */
+    C_NEW_GVAR_OPER( "LT", 2L, "opL, opR", LtOper, LtHandler,
+        "src/ariths.c:LT" );
+
+
+    /* make and install the 'IN' comparison operation                      */
+    C_NEW_GVAR_OPER( "IN", 2L, "opL, opR", InOper, InHandler,
+        "src/ariths.c:IN" );
+
+
+    /* make and install the 'SUM' arithmetic operation                     */
+    C_NEW_GVAR_OPER( "SUM", 2L, "opL, opR", SumOper, SumHandler,
+        "src/ariths.c:SUM" );
+
+
+    /* make and install the 'DIFF' arithmetic operation                    */
+    C_NEW_GVAR_OPER( "DIFF", 2L, "opL, opR", DiffOper, DiffHandler,
+        "src/ariths.c:DIFF" );
+    C_NEW_GVAR_FUNC( "DIFF_DEFAULT", 2L, "opL, opR", DiffDefaultHandler,
+        "src/ariths.c:DIFF_DEFAULT" );
+
+
+    /* make and install the 'PROD' arithmetic operation                    */
+    C_NEW_GVAR_OPER( "PROD", 2L, "opL, opR", ProdOper, ProdHandler,
+        "src/ariths.c:PROD" );
+
+
+    /* make and install the 'QUO' arithmetic operation                     */
+    C_NEW_GVAR_OPER( "QUO", 2L, "opL, opR", QuoOper, QuoHandler,
+        "src/ariths.c:QUO" );
+    C_NEW_GVAR_FUNC( "QUO_DEFAULT", 2L, "opL, opR", QuoDefaultHandler,
+        "src/ariths.c:QUO_DEFAULT" );
+
+
+    /* make and install the 'LQUO' arithmetic operation                    */
+    C_NEW_GVAR_OPER( "LQUO", 2L, "opL, opR", LQuoOper, LQuoHandler,
+        "src/ariths.c:LQUO" );
+    C_NEW_GVAR_FUNC( "LQUO_DEFAULT", 2L, "opL, opR", LQuoDefaultHandler,
+        "src/ariths.c:LQUO_DEFAULT" );
+
+
+    /* make and install the 'POW' arithmetic operation                     */
+    C_NEW_GVAR_OPER( "POW", 2L, "opL, opR", PowOper, PowHandler,
+        "src/ariths.c:POW" );
+    C_NEW_GVAR_FUNC( "POW_DEFAULT", 2L, "opL, opR", PowDefaultHandler,
+        "src/ariths.c:POW_DEFAULT" );
+
+
+    /* make and install the 'COMM' arithmetic operation                    */
+    C_NEW_GVAR_OPER( "COMM", 2L, "opL, opR", CommOper, CommHandler,
+        "src/ariths.c:COMM" );
+    C_NEW_GVAR_FUNC( "COMM_DEFAULT", 2L, "opL, opR", CommDefaultHandler,
+        "src/ariths.c:COMM_DEFAULT" );
+
+
+    /* make and install the 'MOD' arithmetic operation                     */
+    C_NEW_GVAR_OPER( "MOD", 2L, "opL, opR", ModOper, ModHandler,
+        "src/ariths.c:MOD" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckAriths() . check initialisation of the arithmetic operations package
+*/
+void CheckAriths ( void )
+{
+    SET_REVISION( "ariths_c",   Revision_ariths_c );
+    SET_REVISION( "ariths_h",   Revision_ariths_h );
+}
+
+
+/****************************************************************************
+**
 
 *E  ariths.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
+
+
+
+
+
+
+
+
+
+

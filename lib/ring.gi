@@ -1724,13 +1724,6 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  ``in parent'' attributes
-##
-InstallInParentMethod( IsLeftIdealInParent,  IsRing, IsLeftIdeal  );
-InstallInParentMethod( IsRightIdealInParent, IsRing, IsRightIdeal );
-
-#############################################################################
-##
 #E  ring.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

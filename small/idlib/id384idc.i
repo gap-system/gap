@@ -3,7 +3,7 @@
 #W  id384idc.i             GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id384idc_i :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 384 ].next[ 9 ].next[ 4 ].next[ 87 ] :=
 rec(

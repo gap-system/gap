@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  integer.h                   GAP source                   Martin Schoenert
+*W  integer.h                   GAP source                   Martin Schoenert
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
@@ -11,13 +11,14 @@
 **  This file declares the functions handling arbitrary size integers.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_integer_h =
+SYS_CONST char * Revision_integer_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *T  TypDigit  . . . . . . . . . . . . . . . . . . . .  type of a single digit
 **
 **  'TypDigit' is the type of a single digit of an  arbitrary  size  integer.
@@ -199,11 +200,38 @@ extern  Obj             GcdInt (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**                                              \
+                                                \
+*F  SetupInt()  . . . . . . . . . . . . . . . initializes the integer package
+*/
+extern void SetupInt ( void );
+
+
+/****************************************************************************
+**                                              \
 *F  InitInt() . . . . . . . . . . . . . . . . initializes the integer package
 **
 **  'InitInt' initializes the arbitrary size integer package.
 */
-extern  void            InitInt ( void );
+extern void InitInt ( void );
 
 
+/****************************************************************************
+**                                              \
+*F  CheckInt()  . . . . . . . check the initialisation of the integer package
+**
+**  'InitInt' initializes the arbitrary size integer package.
+*/
+extern void CheckInt ( void );
 
+
+/****************************************************************************
+**
+
+*E  integer.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -20,36 +20,36 @@
 **  such  a  vector, you *must* clear   it afterwards, because  all functions
 **  assume that the vectors are cleared.
 */
-char * Revision_objscoll_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_objscoll_c =
+   "@(#)$Id$";
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
-#include        "gap.h"                 /* Error                           */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "calls.h"               /* NAMI_FUNC, ENVI_FUNC            */
+#include        "gvars.h"               /* global variables                */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "records.h"             /* ASS_REC, UNB_REC, ELM_REC       */
-#include        "lists.h"               /* generic lists package           */
+#include        "calls.h"               /* generic call mechanism          */
 
-#include        "bool.h"                /* True, False                     */
+#include        "records.h"             /* generic records                 */
+#include        "lists.h"               /* generic lists                   */
 
-#include        "precord.h"             /* AssPRec, UnbPRec, ElmPRec, ...  */
+#include        "bool.h"                /* booleans                        */
 
-#include        "plist.h"               /* ELM_PLIST, SET_ELM_PLIST, ...   */
-#include        "string.h"              /* CSTR_STRING used by NAME_RNAM   */
+#include        "precord.h"             /* plain records                   */
 
-#include        "code.h"                /* Stat, Expr, TNUM_EXPR, ADDR_E...*/
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
-#include        "objfgelm.h"            /* NEW_WORD, WORKTYPE, ...         */
+#include        "code.h"                /* coder                           */
+
+#include        "objfgelm.h"            /* objects of free groups          */
 
 #define INCLUDE_DECLARATION_PART
-#include        "objscoll.h"            /* declaration part of the package */
+#include        "objscoll.h"            /* single collector                */
 #undef  INCLUDE_DECLARATION_PART
 
 
@@ -153,7 +153,7 @@ Int C8Bits_VectorWord ( Obj vv, Obj v, Int num )
         }
         else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(vv) ].name, 0L );
+                       (Int)TNAM_OBJ(vv), 0L );
             return -1;
         }
     }
@@ -470,7 +470,7 @@ Int C8Bits_Solution(
         }
         else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(ww) ].name, 0L );
+                       (Int)TNAM_OBJ(ww), 0L );
             return -1;
         }
     }
@@ -490,7 +490,7 @@ Int C8Bits_Solution(
             RetypeBag( ww, T_STRING );
         } else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(uu) ].name, 0L );
+                       (Int)TNAM_OBJ(uu), 0L );
             return -1;
         }
     }
@@ -608,7 +608,7 @@ Int C16Bits_VectorWord ( Obj vv, Obj v, Int num )
         }
         else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(vv) ].name, 0L );
+                       (Int)TNAM_OBJ(vv), 0L );
             return -1;
         }
     }
@@ -925,7 +925,7 @@ Int C16Bits_Solution(
         }
         else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(ww) ].name, 0L );
+                       (Int)TNAM_OBJ(ww), 0L );
             return -1;
         }
     }
@@ -946,7 +946,7 @@ Int C16Bits_Solution(
         }
         else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(uu) ].name, 0L );
+                       (Int)TNAM_OBJ(uu), 0L );
             return -1;
         }
     }
@@ -1064,7 +1064,7 @@ Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
         }
         else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(vv) ].name, 0L );
+                       (Int)TNAM_OBJ(vv), 0L );
             return -1;
         }
     }
@@ -1385,7 +1385,7 @@ Int C32Bits_Solution(
         }
         else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(ww) ].name, 0L );
+                       (Int)TNAM_OBJ(ww), 0L );
             return -1;
         }
     }
@@ -1406,7 +1406,7 @@ Int C32Bits_Solution(
         }
         else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TNUM_OBJ(uu) ].name, 0L );
+                       (Int)TNAM_OBJ(uu), 0L );
             return -1;
         }
     }
@@ -1964,110 +1964,117 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 /****************************************************************************
 **
 
-*F  InitSingleCollector()
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupSingleCollector()  . . . . . . . . .  initalize the single collector
+*/
+void SetupSingleCollector ( void )
+{
+}
+
+
+/****************************************************************************
+**
+*F  InitSingleCollector() . . . . . . . . . .  initalize the single collector
 */
 void InitSingleCollector ( void )
 {
-
     /* export position numbers 'SCP_SOMETHING'                             */
-    AssGVar( GVarName( "SCP_UNDERLYING_FAMILY" ),
-             INTOBJ_INT(SCP_UNDERLYING_FAMILY) );
-    AssGVar( GVarName( "SCP_RWS_GENERATORS" ),
-             INTOBJ_INT(SCP_RWS_GENERATORS) );
-    AssGVar( GVarName( "SCP_NUMBER_RWS_GENERATORS" ),
-             INTOBJ_INT(SCP_NUMBER_RWS_GENERATORS) );
-    AssGVar( GVarName( "SCP_DEFAULT_TYPE" ),
-             INTOBJ_INT(SCP_DEFAULT_TYPE) );
-    AssGVar( GVarName( "SCP_IS_DEFAULT_TYPE" ),
-             INTOBJ_INT(SCP_IS_DEFAULT_TYPE) );
-    AssGVar( GVarName( "SCP_RELATIVE_ORDERS" ),
-             INTOBJ_INT(SCP_RELATIVE_ORDERS) );
-    AssGVar( GVarName( "SCP_POWERS" ),
-             INTOBJ_INT(SCP_POWERS) );
-    AssGVar( GVarName( "SCP_CONJUGATES" ),
-             INTOBJ_INT(SCP_CONJUGATES) );
-    AssGVar( GVarName( "SCP_INVERSES" ),
-             INTOBJ_INT(SCP_INVERSES) );
-    AssGVar( GVarName( "SCP_NW_STACK" ),
-             INTOBJ_INT(SCP_NW_STACK) );
-    AssGVar( GVarName( "SCP_LW_STACK" ),
-             INTOBJ_INT(SCP_LW_STACK) );
-    AssGVar( GVarName( "SCP_PW_STACK" ),
-             INTOBJ_INT(SCP_PW_STACK) );
-    AssGVar( GVarName( "SCP_EW_STACK" ),
-             INTOBJ_INT(SCP_EW_STACK) );
-    AssGVar( GVarName( "SCP_GE_STACK" ),
-             INTOBJ_INT(SCP_GE_STACK) );
-    AssGVar( GVarName( "SCP_CW_VECTOR" ),
-             INTOBJ_INT(SCP_CW_VECTOR) );
-    AssGVar( GVarName( "SCP_CW2_VECTOR" ),
-             INTOBJ_INT(SCP_CW2_VECTOR) );
-    AssGVar( GVarName( "SCP_MAX_STACK_SIZE" ),
-             INTOBJ_INT(SCP_MAX_STACK_SIZE) );
-    AssGVar( GVarName( "SCP_COLLECTOR" ),
-             INTOBJ_INT(SCP_COLLECTOR) );
-    AssGVar( GVarName( "SCP_AVECTOR" ),
-             INTOBJ_INT(SCP_AVECTOR) );
-
+    if ( ! SyRestoring ) {
+        AssGVar( GVarName( "SCP_UNDERLYING_FAMILY" ),
+                 INTOBJ_INT(SCP_UNDERLYING_FAMILY) );
+        AssGVar( GVarName( "SCP_RWS_GENERATORS" ),
+                 INTOBJ_INT(SCP_RWS_GENERATORS) );
+        AssGVar( GVarName( "SCP_NUMBER_RWS_GENERATORS" ),
+                 INTOBJ_INT(SCP_NUMBER_RWS_GENERATORS) );
+        AssGVar( GVarName( "SCP_DEFAULT_TYPE" ),
+                 INTOBJ_INT(SCP_DEFAULT_TYPE) );
+        AssGVar( GVarName( "SCP_IS_DEFAULT_TYPE" ),
+                 INTOBJ_INT(SCP_IS_DEFAULT_TYPE) );
+        AssGVar( GVarName( "SCP_RELATIVE_ORDERS" ),
+                 INTOBJ_INT(SCP_RELATIVE_ORDERS) );
+        AssGVar( GVarName( "SCP_POWERS" ),
+                 INTOBJ_INT(SCP_POWERS) );
+        AssGVar( GVarName( "SCP_CONJUGATES" ),
+                 INTOBJ_INT(SCP_CONJUGATES) );
+        AssGVar( GVarName( "SCP_INVERSES" ),
+                 INTOBJ_INT(SCP_INVERSES) );
+        AssGVar( GVarName( "SCP_NW_STACK" ),
+                 INTOBJ_INT(SCP_NW_STACK) );
+        AssGVar( GVarName( "SCP_LW_STACK" ),
+                 INTOBJ_INT(SCP_LW_STACK) );
+        AssGVar( GVarName( "SCP_PW_STACK" ),
+                 INTOBJ_INT(SCP_PW_STACK) );
+        AssGVar( GVarName( "SCP_EW_STACK" ),
+                 INTOBJ_INT(SCP_EW_STACK) );
+        AssGVar( GVarName( "SCP_GE_STACK" ),
+                 INTOBJ_INT(SCP_GE_STACK) );
+        AssGVar( GVarName( "SCP_CW_VECTOR" ),
+                 INTOBJ_INT(SCP_CW_VECTOR) );
+        AssGVar( GVarName( "SCP_CW2_VECTOR" ),
+                 INTOBJ_INT(SCP_CW2_VECTOR) );
+        AssGVar( GVarName( "SCP_MAX_STACK_SIZE" ),
+                 INTOBJ_INT(SCP_MAX_STACK_SIZE) );
+        AssGVar( GVarName( "SCP_COLLECTOR" ),
+                 INTOBJ_INT(SCP_COLLECTOR) );
+        AssGVar( GVarName( "SCP_AVECTOR" ),
+                 INTOBJ_INT(SCP_AVECTOR) );
+    }
 
     /* export collector number                                             */
-    AssGVar( GVarName( "8Bits_SingleCollector" ),
-            INTOBJ_INT(C8Bits_SingleCollectorNo) );
-    AssGVar( GVarName( "16Bits_SingleCollector" ),
-            INTOBJ_INT(C16Bits_SingleCollectorNo) );
-    AssGVar( GVarName( "32Bits_SingleCollector" ),
-            INTOBJ_INT(C32Bits_SingleCollectorNo) );
-
+    if ( ! SyRestoring ) {
+        AssGVar( GVarName( "8Bits_SingleCollector" ),
+                INTOBJ_INT(C8Bits_SingleCollectorNo) );
+        AssGVar( GVarName( "16Bits_SingleCollector" ),
+                INTOBJ_INT(C16Bits_SingleCollectorNo) );
+        AssGVar( GVarName( "32Bits_SingleCollector" ),
+                INTOBJ_INT(C32Bits_SingleCollectorNo) );
+    }
 
     /* collector methods                                                   */
-    InitHandlerFunc( FuncFinPowConjCol_CollectWordOrFail,
-                     "FinPowConjCol_CollectWordOrFail" );
-    AssGVar( GVarName( "FinPowConjCol_CollectWordOrFail" ),
-         NewFunctionC( "FinPowConjCol_CollectWordOrFail", 3L,
-                           "collector, list, word",
-                    FuncFinPowConjCol_CollectWordOrFail ) );
+    C_NEW_GVAR_FUNC( "FinPowConjCol_CollectWordOrFail", 3, "sc, list, word",
+                  FuncFinPowConjCol_CollectWordOrFail,
+      "src/objscoll.c:FinPowConjCol_CollectWordOrFail" );
 
-    InitHandlerFunc( FuncFinPowConjCol_ReducedComm,
-                     "FinPowConjCol_ReducedComm" );
-    AssGVar( GVarName( "FinPowConjCol_ReducedComm" ),
-         NewFunctionC( "FinPowConjCol_ReducedComm", 3L, 
-                           "collector, word, word",
-                    FuncFinPowConjCol_ReducedComm ) );
+    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedComm", 3, "sc, word, word",
+                  FuncFinPowConjCol_ReducedComm,
+      "src/objscoll.c:FinPowConjCol_ReducedComm" );
 
-    InitHandlerFunc( FuncFinPowConjCol_ReducedForm,
-                     "FinPowConjCol_ReducedForm" );
-    AssGVar( GVarName( "FinPowConjCol_ReducedForm" ),
-         NewFunctionC( "FinPowConjCol_ReducedForm", 2L, 
-                           "collector, word",
-                    FuncFinPowConjCol_ReducedForm ) );
+    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedForm", 2, "sc, word",
+                  FuncFinPowConjCol_ReducedForm,
+      "src/objscoll.c:FinPowConjCol_ReducedForm" );
 
-    InitHandlerFunc( FuncFinPowConjCol_ReducedLeftQuotient,
-                     "FinPowConjCol_ReducedLeftQuotient" );
-    AssGVar( GVarName( "FinPowConjCol_ReducedLeftQuotient" ),
-         NewFunctionC( "FinPowConjCol_ReducedLeftQuotient", 3L,
-                           "collector, word, word",
-                    FuncFinPowConjCol_ReducedLeftQuotient ) );
+    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedLeftQuotient", 3, "sc, word, word",
+                  FuncFinPowConjCol_ReducedLeftQuotient,
+      "src/objscoll.c:FinPowConjCol_ReducedLeftQuotient" );
 
-    InitHandlerFunc( FuncFinPowConjCol_ReducedPowerSmallInt,
-                     "FinPowConjCol_ReducedPowerSmallInt" );
-    AssGVar( GVarName( "FinPowConjCol_ReducedPowerSmallInt" ),
-         NewFunctionC( "FinPowConjCol_ReducedPowerSmallInt", 3L, 
-                           "collector, word, small_int",
-                    FuncFinPowConjCol_ReducedPowerSmallInt ) );
+    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedPowerSmallInt", 3, "sc, word, int",
+                  FuncFinPowConjCol_ReducedPowerSmallInt,
+      "src/objscoll.c:FinPowConjCol_ReducedPowerSmallInt" );
 
-    InitHandlerFunc( FuncFinPowConjCol_ReducedProduct,
-                     "FinPowConjCol_ReducedProduct" );
-    AssGVar( GVarName( "FinPowConjCol_ReducedProduct" ),
-         NewFunctionC( "FinPowConjCol_ReducedProduct", 3L, 
-                           "collector, word, word",
-                    FuncFinPowConjCol_ReducedProduct ) );
+    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedProduct", 3, "sc, word, word",
+                  FuncFinPowConjCol_ReducedProduct,
+      "src/objscoll.c:FinPowConjCol_ReducedProduct" );
 
-    InitHandlerFunc( FuncFinPowConjCol_ReducedQuotient,
-                     "FinPowConjCol_ReducedQuotient" );
-    AssGVar( GVarName( "FinPowConjCol_ReducedQuotient" ),
-         NewFunctionC( "FinPowConjCol_ReducedQuotient", 3L, 
-                           "collector, word, word",
-                    FuncFinPowConjCol_ReducedQuotient ) );
+    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedQuotient", 3, "sc, word, word",
+                  FuncFinPowConjCol_ReducedQuotient,
+      "src/objscoll.c:FinPowConjCol_ReducedQuotient" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckSingleCollector()   check the initialisation of the single collector
+*/
+void CheckSingleCollector ( void )
+{
+    SET_REVISION( "objscoll_c", Revision_objscoll_c );
+    SET_REVISION( "objscoll_h", Revision_objscoll_h );
 }
 
 

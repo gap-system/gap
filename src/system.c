@@ -382,6 +382,20 @@ Int SyCheckForCompletion = 1;
 
 /****************************************************************************
 **
+*V  SyCheckCompletionCrcComp  . . .  check crc while reading completion files
+*/
+Int SyCheckCompletionCrcComp = 0;
+
+
+/****************************************************************************
+**
+*V  SyCheckCompletionCrcRead  . . . . . . .  check crc while completing files
+*/
+Int SyCheckCompletionCrcRead = 1;
+
+
+/****************************************************************************
+**
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
 */
 Char SyCompileInput [256];
@@ -554,12 +568,24 @@ UInt SyQuiet = 0;
 
 /****************************************************************************
 **
+*V  SyRestoring . . . . . . . . . . . . . . . . . . . . restoring a workspace
+**
+**  `SyRestoring' determines whether GAP is restoring a workspace or not.  If
+**  it is zero no restoring should take place otherwise it holds the filename
+**  of a workspace to restore.
+**
+*/
+Char * SyRestoring;
+
+
+/****************************************************************************
+**
 *V  SyStorMax . . . . . . . . . . . . . . . . . . . maximal size of workspace
 **
 **  'SyStorMax' is the maximal size of the workspace allocated by Gasman.
 **
 **  This is per default 64 MByte,  which is often a  reasonable value.  It is
-**  usually changed with the '-t' option in the script that starts GAP.
+**  usually changed with the '-o' option in the script that starts GAP.
 **
 **  This is used in the function 'SyAllocBags'below.
 **
@@ -582,11 +608,11 @@ Int SyStorMax = 64 * 1024 * 1024L;
 **  Put in this package because the command line processing takes place here.
 */
 #if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX
-Int SyStorMin = 4 * 1024 * 1024;
+Int SyStorMin = 8 * 1024 * 1024;
 #endif
 
 #if SYS_MSDOS_DJGPP
-Int SyStorMin = 4 * 1024 * 1024;
+Int SyStorMin = 8 * 1024 * 1024;
 #endif
 
 #if SYS_TOS_GCC2
@@ -594,7 +620,7 @@ Int SyStorMin = 0;
 #endif
 
 #if SYS_VMS
-Int SyStorMin = 4 * 1024 * 1024;
+Int SyStorMin = 8 * 1024 * 1024;
 #endif
 
 #if SYS_MAC_MPW || SYS_MAC_SYC
@@ -1698,9 +1724,145 @@ void InitSystem (
         switch ( argv[1][1] ) {
 
 
+        /* '-B', name of the directory containing execs within root/bin    */
+        case 'B':
+            if ( argc < 3 ) {
+                fputs("gap: option '-B' must have an argument.\n",stderr);
+                goto usage;
+            }
+            SyArchitecture = argv[2];
+            ++argv;  --argc;
+            break;
+        
+
+        /* -C <output> <input> <name> <magic1>                             */
+        case 'C':
+            if ( argc < 6 ) {
+                fputs("gap: option '-C' must have 4 arguments.\n",stderr);
+                goto usage;
+            }
+            SyCompilePlease = 1;
+            SyStrncat( SyCompileOutput, argv[2], sizeof(SyCompileOutput)-2 );
+            ++argv; --argc;
+            SyStrncat( SyCompileInput, argv[2], sizeof(SyCompileInput)-2 );
+            ++argv; --argc;
+            SyStrncat( SyCompileName, argv[2], sizeof(SyCompileName)-2 );
+            ++argv; --argc;
+            SyCompileMagic1 = argv[2];
+            ++argv; --argc;
+            break;
+
+
+        /* '-D', debug loading of files                                    */
+        case 'D':
+            SyDebugLoading = ! SyDebugLoading;
+            break;
+
+
+        /* '-E', running under Emacs under OS/2                            */
+#if SYS_OS2_EMX
+        case 'E':
+            SyLineEdit = 2;
+            syBuf[2].fp = stdin;
+            syBuf[2].echo = stderr;
+            break;
+#endif
+
+
+        /* '-L', restore a saved workspace                                 */
+        case 'L':
+            if ( argc < 3 ) {
+                fputs("gap: option '-L' must have an argument.\n",stderr);
+                goto usage;
+            }
+            SyRestoring = argv[2];
+            ++argv;  --argc;
+            break;
+
+        /* '-M', no dynamic/static modules                                 */
+        case 'M':
+            SyUseModule = ! SyUseModule;
+            break;
+
+
+        /* '-N', check for completion files in "init.g"                    */
+        case 'N':
+            SyCheckForCompletion = ! SyCheckForCompletion;
+            break;
+
+
+        /* '-X' check crc value while reading completion files             */
+        case 'X':
+            SyCheckCompletionCrcComp = ! SyCheckCompletionCrcComp;
+            break;
+
+        /* '-Y' check crc value while reading completion files             */
+        case 'Y':
+            SyCheckCompletionCrcRead = ! SyCheckCompletionCrcRead;
+            break;
+
+        /* '-Z', specify background check frequency                        */
+#if SYS_MAC_SYC
+        case 'Z':
+            if ( argc < 3 ) {
+                fputs("gap: option '-Z' must have an argument.\n",stderr);
+                goto usage;
+            }
+            syIsBackFreq = atoi(argv[2]);
+            ++argv; --argc;
+            break;
+#endif
+
+
+        /* '-a <memory>', set amount to pre'm*a*lloc'ate                   */
+        case 'a':
+            if ( argc < 3 ) {
+                fputs("gap: option '-a' must have an argument.\n",stderr);
+                goto usage;
+            }
+            pre = atoi(argv[2]);
+            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
+              || argv[2][SyStrlen(argv[2])-1] == 'K' )
+                pre = pre * 1024;
+            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
+              || argv[2][SyStrlen(argv[2])-1] == 'M' )
+                pre = pre * 1024 * 1024;
+            ++argv; --argc;
+            break;
+
+
         /* '-b', supress the banner                                        */
         case 'b':
             SyBanner = ! SyBanner;
+            break;
+
+
+        /* '-c', change the value of 'SyCacheSize'                         */
+        case 'c':
+            if ( argc < 3 ) {
+                fputs("gap: option '-c' must have an argument.\n",stderr);
+                goto usage;
+            }
+            SyCacheSize = atoi(argv[2]);
+            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
+              || argv[2][SyStrlen(argv[2])-1] == 'K' )
+                SyCacheSize = SyCacheSize * 1024;
+            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
+              || argv[2][SyStrlen(argv[2])-1] == 'M' )
+                SyCacheSize = SyCacheSize * 1024 * 1024;
+            ++argv; --argc;
+            break;
+
+
+        /* '-e', do not quit GAP on '<ctr>-D'                              */
+        case 'e':
+            SyCTRD = ! SyCTRD;
+            break;
+
+
+        /* '-f', force line editing                                        */
+        case 'f':
+            SyLineEdit = 2;
             break;
 
 
@@ -1709,6 +1871,10 @@ void InitSystem (
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
             break;
 
+
+        /* '-h', print a usage help                                        */
+        case 'h':
+            goto usage;
 
         /* '-i' <initname>, changes the name of the init file              */
         case 'i':
@@ -1733,35 +1899,6 @@ void InitSystem (
             break;
 
 
-        /* '-B', name of the directory containing execs within root/bin    */
-        case 'B':
-            if ( argc < 3 ) {
-                fputs("gap: option '-B' must have an argument.\n",stderr);
-                goto usage;
-            }
-            SyArchitecture = argv[2];
-            ++argv;  --argc;
-            break;
-        
-
-        /* '-N', check for completion files in "init.g"                    */
-        case 'N':
-            SyCheckForCompletion = ! SyCheckForCompletion;
-            break;
-
-
-        /* '-D', debug loading of files                                    */
-        case 'D':
-            SyDebugLoading = ! SyDebugLoading;
-            break;
-
-
-        /* '-M', no dynamic/static modules                                 */
-        case 'M':
-            SyUseModule = ! SyUseModule;
-            break;
-
-
         /* '-m <memory>', change the value of 'SyStorMin'                  */
         case 'm':
             if ( argc < 3 ) {
@@ -1779,7 +1916,13 @@ void InitSystem (
             break;
 
 
-        /* '-o <memory>', change the value of 'SyStorMin'                  */
+        /* '-n', disable command line editing                              */
+        case 'n':
+            SyLineEdit = 0;
+            break;
+
+
+        /* '-o <memory>', change the value of 'SyStorMax'                  */
         case 'o':
             if ( argc < 3 ) {
                 fputs("gap: option '-o' must have an argument.\n",stderr);
@@ -1796,55 +1939,23 @@ void InitSystem (
             break;
 
 
-        /* '-c', change the value of 'SyCacheSize'                         */
-        case 'c':
-            if ( argc < 3 ) {
-                fputs("gap: option '-c' must have an argument.\n",stderr);
-                goto usage;
-            }
-            SyCacheSize = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-                SyCacheSize = SyCacheSize * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                SyCacheSize = SyCacheSize * 1024 * 1024;
-            ++argv; --argc;
+        /* '-p', start GAP package mode for output                         */
+#if SYS_BSD || SYS_MACH || SYS_USG
+        case 'p':
+            SyWindow = ! SyWindow;
             break;
-
-
-        /* '-a <memory>', set amount to pre'm*a*lloc'ate                   */
-        case 'a':
-            if ( argc < 3 ) {
-                fputs("gap: option '-a' must have an argument.\n",stderr);
-                goto usage;
-            }
-            pre = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-                pre = pre * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                pre = pre * 1024 * 1024;
-            ++argv; --argc;
-            break;
-
-
-        /* '-n', disable command line editing                              */
-        case 'n':
-            SyLineEdit = 0;
-            break;
-
-
-        /* '-f', force line editing                                        */
-        case 'f':
-            SyLineEdit = 2;
-            break;
+#endif
 
 
         /* '-q', GAP should be quiet                                       */
         case 'q':
             SyQuiet = ! SyQuiet;
+            break;
+
+
+        /* '-r', don't read the '.gaprc' file                              */
+        case 'r':
+            gaprc = ! gaprc;
             break;
 
 
@@ -1870,20 +1981,6 @@ void InitSystem (
             break;
 
 
-        /* '-e', do not quit GAP on '<ctr>-D'                              */
-        case 'e':
-            SyCTRD = ! SyCTRD;
-            break;
-
-
-        /* '-p', start GAP package mode for output                         */
-#if SYS_BSD || SYS_MACH || SYS_USG
-        case 'p':
-            SyWindow = ! SyWindow;
-            break;
-#endif
-
-
         /* '-z', specify interrupt check frequency                         */
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 || SYS_MAC_MPW || SYS_MAC_SYC
         case 'z':
@@ -1895,53 +1992,6 @@ void InitSystem (
             ++argv; --argc;
             break;
 #endif
-
-
-        /* '-Z', specify background check frequency                        */
-#if SYS_MAC_SYC
-        case 'Z':
-            if ( argc < 3 ) {
-                fputs("gap: option '-Z' must have an argument.\n",stderr);
-                goto usage;
-            }
-            syIsBackFreq = atoi(argv[2]);
-            ++argv; --argc;
-            break;
-#endif
-
-
-        /* '-E', running under Emacs under OS/2                            */
-#if SYS_OS2_EMX
-        case 'E':
-            SyLineEdit = 2;
-            syBuf[2].fp = stdin;
-            syBuf[2].echo = stderr;
-            break;
-#endif
-
-
-        /* '-r', don't read the '.gaprc' file                              */
-        case 'r':
-            gaprc = ! gaprc;
-            break;
-
-
-        /* -C <output> <input> <name> <magic1>                             */
-        case 'C':
-            if ( argc < 6 ) {
-                fputs("gap: option '-C' must have 4 arguments.\n",stderr);
-                goto usage;
-            }
-            SyCompilePlease = 1;
-            SyStrncat( SyCompileOutput, argv[2], sizeof(SyCompileOutput)-2 );
-            ++argv; --argc;
-            SyStrncat( SyCompileInput, argv[2], sizeof(SyCompileInput)-2 );
-            ++argv; --argc;
-            SyStrncat( SyCompileName, argv[2], sizeof(SyCompileName)-2 );
-            ++argv; --argc;
-            SyCompileMagic1 = argv[2];
-            ++argv; --argc;
-            break;
 
 
         /* default, no such option                                         */
@@ -1958,7 +2008,12 @@ void InitSystem (
 
     /* fix max if it is lower than min                                     */
     if ( SyStorMax < SyStorMin ) {
-	SyStorMax = SyStorMin;
+        SyStorMax = SyStorMin;
+    }
+
+    /* only check once                                                     */
+    if ( SyCheckCompletionCrcComp ) {
+        SyCheckCompletionCrcRead = 0;
     }
 
     /* set the library path                                                */
@@ -1994,12 +2049,12 @@ void InitSystem (
     if ( ptr != 0 )  free( ptr );
 
     /* try to find 'LIBNAME/init.g' to read it upon initialization         */
-    if ( SyCompilePlease ) {
+    if ( SyCompilePlease || SyRestoring ) {
         SySystemInitFile[0] = 0;
     }
 
     /* the compiler will *not* read in the .gaprc file                     */
-    if ( gaprc && ! SyCompilePlease ) {
+    if ( gaprc && ! ( SyCompilePlease || SyRestoring ) ) {
         sySetGapRCFile();
     }
 
@@ -2062,17 +2117,57 @@ void InitSystem (
     return;
 
     /* print a usage message                                               */
- usage:
-    fputs("usage: gap [-b] [-e] [-f] [-g] [-n] [-p] [-q] [-r]\n",stderr);
-    fputs("           [-D] [-E] [-M] [-N]\n", stderr );
-    fputs("           [-a <memory>] [-c <cache size>] [-i <init>]\n",stderr);
-    fputs("           [-l <root1>;...] [-m <memory>] [-o <memory>]\n",stderr );
-    fputs("           [-x <lines>] [-y <cols>] [-z <frequency>]\n",stderr);
-    fputs("           [-B <execs>] [-Z <frequency>]\n",stderr );
-    fputs("           [-C <output> <input> <name> <magic1>]\n",stderr);
-    fputs("           [<file>...]\n",stderr);
-    fputs("  run the Groups, Algorithms and Programming system.\n",stderr);
-    SyExit( 1 );
+usage:
+ fputs("usage: gap [OPTIONS] [FILES]\n",stderr);
+ fputs("       run the Groups, Algorithms and Programming system.\n",stderr);
+ fputs("\n",stderr);
+
+ fputs("  -b          toggle banner supression\n",stderr);
+ fputs("  -q          toggle quiet mode\n",stderr);
+ fputs("  -e          toggle quitting on <ctr>-D\n",stderr);
+ fputs("  -f          force line editing\n",stderr);
+ fputs("  -n          disable line editing\n",stderr);
+ fputs("  -x <num>    set line width\n",stderr);
+ fputs("  -y <num>    set number of lines\n",stderr);
+#if SYS_OS2_EMX
+ fputs("  -E          running under Emacs under OS/2\n",stderr);
+#endif
+
+ fputs("\n",stderr);
+ fputs("  -g          toggle GASMAN messages\n",stderr);
+ fputs("  -m <mem>    set the initial workspace size\n",stderr);
+ fputs("  -o <mem>    set the maximal workspace size\n",stderr);
+ fputs("  -c <mem>    set the cache size value\n",stderr);
+ fputs("  -a <mem>    set amount to pre-malloc-ate\n",stderr);
+ fputs("              postfix 'k' = *1024, 'm' = *1024*1024\n",stderr);
+
+ fputs("\n",stderr);
+ fputs("  -l <paths>  set the GAP root paths\n",stderr);
+ fputs("  -r          toggle reading of the '.gaprc' file \n",stderr);
+ fputs("  -D          toggle debuging the loading of library files\n",stderr);
+ fputs("  -B <name>   current architecture\n",stderr);
+ fputs("  -M          toggle loading of compiled modules\n",stderr);
+ fputs("  -N          toggle check for completion files\n",stderr);
+ fputs("  -X          toggle CRC for comp. files while reading\n",stderr);
+ fputs("  -Y          toggle CRC for comp. files while completing\n",stderr);
+ fputs("  -i <file>   change the name of the init file\n",stderr);
+
+ fputs("\n",stderr);
+ fputs("  -L <file>   restore a saved workspace\n",stderr);
+
+ fputs("\n",stderr);
+#if SYS_MAC_SYC
+ fputs("  -Z <freq>   set background check frequency\n",stderr);
+#endif
+#if SYS_BSD || SYS_MACH || SYS_USG
+ fputs("  -p          toggle package output mode\n",stderr);
+#endif
+#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 || SYS_MAC_MPW || SYS_MAC_SYC
+ fputs("  -z <freq>   set interrupt check frequency\n",stderr);
+#endif
+
+ fputs("\n",stderr);
+ SyExit( 1 );
 }
 
 

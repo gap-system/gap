@@ -249,6 +249,14 @@ InputTextNone := NewOperationArgs(
 
 #############################################################################
 ##
+#O  InputTextUser() . . . . . . . . . . . . . input text stream from the user
+##
+InputTextUser := NewOperationArgs(
+    "InputTextUser" );
+
+
+#############################################################################
+##
 #O  OutputTextString( <string>, <append> )  . . . . create output text stream
 ##
 OutputTextString := NewOperation(
@@ -271,6 +279,14 @@ OutputTextFile := NewOperation(
 ##
 OutputTextNone := NewOperationArgs(
     "OutputTextNone" );
+
+
+#############################################################################
+##
+#O  OutputTextUser()  . . . . . . . . . . . .  output text stream to the user
+##
+OutputTextUser := NewOperationArgs(
+    "OutputTextUser" );
 
 
 #############################################################################

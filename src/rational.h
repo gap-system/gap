@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  rational.h                  GAP source                   Martin Schoenert
+*W  rational.h                  GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -17,9 +17,23 @@
 **  something must not be an integer.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_rational_h =
+SYS_CONST char * Revision_rational_h =
    "@(#)$Id$";
 #endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupRat()  . . . . . . . . . . . . . . . initialize the rational package
+*/
+extern void SetupRat ( void );
 
 
 /****************************************************************************
@@ -28,7 +42,19 @@ char *          Revision_rational_h =
 **
 **  'InitRat' initializes the rational package.
 */
-extern  void            InitRat ( void );
+extern void InitRat ( void );
 
 
+/****************************************************************************
+**
+*F  CheckRat()  . . . . . .  check the initialisation of the rational package
+*/
+extern void CheckRat ( void );
+
+
+/****************************************************************************
+**
+
+*E  rational.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 

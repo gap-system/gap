@@ -30,6 +30,11 @@ IsLatticeSubgroupsRep := NewRepresentation("IsLatticeSubgroupsRep",
 ##
 #A  Zuppos(<G>) .  set of generators for cyclic subgroups of prime power size
 ##
+## The *Zuppos* of a group are the cyclic subgroups of prime power order.
+## (The name ``Zuppo'' derives from the German abbreviation.) This attribute
+## gives generators of all such subgroups of a group <G>. That is all elements
+## of <G> of prime power order up to the equivalence that they generate the
+## same cyclic subgroup.
 Zuppos := NewAttribute("Zuppos",IsGroup);
 SetZuppos := Setter(Zuppos);
 HasZuppos := Tester(Zuppos);
@@ -53,13 +58,6 @@ MaximalSubgroupsLattice :=
 ##
 MinimalSupergroupsLattice :=
   NewAttribute("MinimalSupergroupsLattice",IsLatticeSubgroupsRep);
-
-#############################################################################
-##
-#A  NormalSubgroups
-##
-NormalSubgroups := NewAttribute( "NormalSubgroups", IsGroup );
-NormalSubgroupsAbove := NewOperationArgs( "NormalSubgroupsAbove" );
 
 #############################################################################
 ##

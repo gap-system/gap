@@ -9,7 +9,7 @@
 **  This file declares the various read-eval-print loops and  related  stuff.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char * Revision_gap_h =
+SYS_CONST char * Revision_gap_h =
    "@(#)$Id$";
 #endif
 
@@ -89,6 +89,62 @@ extern void ErrorQuit (
 
 /****************************************************************************
 **
+*F  ErrorQuitBound( <name> )  . . . . . . . . . . . . . . .  unbound variable
+*/
+extern void ErrorQuitBound (
+    Char *              name );
+
+
+/****************************************************************************
+**
+*F  ErrorQuitFuncResult() . . . . . . . . . . . . . . . . must return a value
+*/
+extern void ErrorQuitFuncResult ( void );
+
+
+/****************************************************************************
+**
+*F  ErrorQuitIntSmall( <obj> )  . . . . . . . . . . . . . not a small integer
+*/
+extern void ErrorQuitIntSmall (
+    Obj                 obj );
+
+
+/****************************************************************************
+**
+*F  ErrorQuitIntSmallPos( <obj> ) . . . . . . .  not a positive small integer
+*/
+extern void ErrorQuitIntSmallPos (
+    Obj                 obj );
+
+
+/****************************************************************************
+**
+*F  ErrorQuitBool( <obj> )  . . . . . . . . . . . . . . . . . . not a boolean
+*/
+extern void ErrorQuitBool (
+    Obj                 obj );
+
+
+/****************************************************************************
+**
+*F  ErrorQuitFunc( <obj> )  . . . . . . . . . . . . . . . . .  not a function
+*/
+extern void ErrorQuitFunc (
+    Obj                 obj );
+
+
+/****************************************************************************
+**
+*F  ErrorQuitNrArgs( <narg>, <args> ) . . . . . . . wrong number of arguments
+*/
+extern void ErrorQuitNrArgs (
+    Int                 narg,
+    Obj                 args );
+
+
+/****************************************************************************
+**
 *F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
 */
 extern Obj ErrorReturnObj (
@@ -107,11 +163,6 @@ extern void ErrorReturnVoid (
             Int                 arg1,
             Int                 arg2,
             SYS_CONST Char *    msg2 );
-
-
-extern void InitGap (
-            int *               pargc,
-            char *              argv [] );
 
 
 /****************************************************************************
@@ -204,6 +255,77 @@ extern Obj DoCompleteXargs (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * important filters  * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*V  FN_IS_MUTABLE . . . . . . . . . . . . . . . filter number for `IsMutable'
+*/
+#define FN_IS_MUTABLE           1
+
+
+/****************************************************************************
+**
+*V  FN_IS_EMPTY . . . . . . . . . . . . . . . . . filter number for `IsEmpty'
+*/
+#define FN_IS_EMPTY             2
+
+
+/****************************************************************************
+**
+*V  FN_IS_SSORT . . . . . . . . . . . . . . filter number for `IsSSortedList'
+*/
+#define FN_IS_SSORT             3
+
+
+/****************************************************************************
+**
+*V  FN_IS_NSORT . . . . . . . . . . . . . . filter number for `IsNSortedList'
+*/
+#define FN_IS_NSORT             4
+
+
+/****************************************************************************
+**
+*V  FN_IS_DENSE . . . . . . . . . . . . . . . filter number for `IsDenseList'
+*/
+#define FN_IS_DENSE             5
+
+
+/****************************************************************************
+**
+*V  FN_IS_NDENSE  . . . . . . . . . . . . .  filter number for `IsNDenseList'
+*/
+#define FN_IS_NDENSE            6
+
+
+/****************************************************************************
+**
+*V  FN_IS_HOMOG . . . . . . . . . . . . filter number for `IsHomogeneousList'
+*/
+#define FN_IS_HOMOG             7
+
+
+/****************************************************************************
+**
+*V  FN_IS_NHOMOG  . . . . . . . . .  filter number for `IsNonHomogeneousList'
+*/
+#define FN_IS_NHOMOG            8
+
+
+/****************************************************************************
+**
+*V  FN_IS_TABLE . . . . . . . . . . . . . . . . . filter number for `IsTable'
+*/
+#define FN_IS_TABLE             9
+#define LAST_FN                 FN_IS_TABLE
+
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -224,6 +346,38 @@ extern void ImportGVarFromLibrary(
 extern void ImportFuncFromLibrary(
             SYS_CONST Char *    name,
             Obj *               address );
+
+
+/****************************************************************************
+**
+*V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
+*/
+extern Obj Revisions;
+
+
+/****************************************************************************
+**
+*F  SET_REVISION( <file>, <revision> )
+*/
+#define SET_REVISION( file, revision ) \
+  do { \
+      extern SYS_CONST char * revision; \
+      UInt                    rev_rnam; \
+      Obj                     rev_str; \
+      rev_rnam = RNamName(file); \
+      C_NEW_STRING( rev_str, SyStrlen(revision), revision ); \
+      RESET_FILT_LIST( rev_str, FN_IS_MUTABLE ); \
+      AssPRec( Revisions, rev_rnam, rev_str ); \
+  } while (0)
+
+
+/****************************************************************************
+**
+*F  InitializeGap( <argc>, <argv> ) . . . . . . . . . . . . . . . .  init GAP
+*/
+extern void InitializeGap (
+            int *               pargc,
+            char *              argv [] );
 
 
 /****************************************************************************

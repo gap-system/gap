@@ -3,7 +3,7 @@
 #W  id480s.g               GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id480s_g :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 480 ].next[ 19 ].next[ 7 ] := 
 rec(

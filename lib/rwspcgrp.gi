@@ -1077,9 +1077,6 @@ function( efam, gens, rels )
                    conjnp, conjnn, conflicts );
     fi;
 
-    # give the system a chance to optimise itself
-    ReduceRules(col);
-
     # check that the system is confluent
     e1 := ReducedOne(col);
     for rel  in conflicts  do

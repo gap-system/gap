@@ -156,7 +156,7 @@ However, if an object is immutable then the set of categories it lies in
 is fixed.
 
 All categories are created during initialization,
-especially they are not created dynamically at runtime.
+in particular they are not created dynamically at runtime.
 
 The following list gives an overview of important categories of
 arithmetic objects.
@@ -276,7 +276,7 @@ Objects may change their representation,
 for example a mutable list of characters can be converted into a string.
 
 All representations are created during initialization,
-especially they are not created dynamically at runtime.
+in particular they are not created dynamically at runtime.
 
 Examples of subrepresentations of `IsPositionalObjectRep' are
 `IsModulusRep',
@@ -309,7 +309,7 @@ the attribute value is known.
 For example, all groups whose order is known lie in the set of the
 attribute `Size'.
 
-Obviously, the set of attributes to that an object belongs can change;
+Obviously, the set of attributes to which an object belongs can change;
 in general, an object belongs to few attributes when it is created,
 and will lie in more and more attributes as their values are computed.
 
@@ -339,7 +339,7 @@ for example, `Setter( Size )( <obj>, <val> )' sets <val> as size of the
 object <obj> if the size was not yet known.
 
 All attributes are created during initialization,
-especially they are not created dynamically at runtime.
+in particular they are not created dynamically at runtime.
 
 Examples of attributes for multiplicative elements are `Inverse', `One',
 and `Order'.
@@ -352,7 +352,7 @@ and `DerivedSubgroup' is an attribute for groups.
 The properties of an object are those of its attributes whose values are
 `true' or `false'.
 
-The only difference between attributes and properties is that a property
+The main difference between attributes and properties is that a property
 defines two sets,
 namely the usual set of all objects for which the value is known,
 and the set of all objects for which the value is known to be `true'.
@@ -422,22 +422,25 @@ created, see the sections about the creation of filters
 "Creating Categories", "Creating Representations",
 "Creating Attributes and Properties", "Creating Other Filters".
 For an arbitrary filter, its rank is given by the sum of incremental
-ranks of the involved simple filters.
+ranks of the *involved* simple filters (again see the sections about the
+creation of filters).
 
-Note that also those filters are regarded as involved that were
-explicitly notified as *implied filters* of <filt> when <filt> was
-created, although an object in <filt> does not necessarily lie in all
-implied filters of <filt> (again see the sections about the creation of
-filters).
-
+Note that an object in <filt> does not necessarily lie in all involved
+filters of <filt>.
 For example, `Size' is defined as an attribute for domains,
-and `IsDomain' is an implied filter of the filter `Tester( Size )';
-But there are also methods for `Size' to compute the size of lists,
+and `IsDomain' is an involved filter of the filter `Tester( Size )';
+but there are also methods for `Size' to compute the size of lists,
 which are not domains.
 
 \>NamesFilter( <filt> )
 
-returns a list of names of the implied filters of the filter <filt>.
+`NamesFilter' returns a list of names of the *implied* simple filters
+of the filter <filt>, these are all those simple filters <imp> such that
+every object in <filt> does also lie in <imp>.
+For implications between filters, see the sections "Filters",
+"Logical Implications", "Creating Categories",
+"Creating Representations", "Creating Attributes and Properties".
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Types}

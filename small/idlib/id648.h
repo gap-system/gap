@@ -3,7 +3,7 @@
 #W  id648.h                GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id648_h :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 648 ].next[ 8 ] :=
 rec(

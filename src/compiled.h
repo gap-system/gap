@@ -5,23 +5,74 @@
 **  This package defines macros and functions that are used by compiled code.
 **  Those macros and functions should go into the appropriate packages.
 */
-#include        "system.h"
-#include        "gasman.h"
-#include        "objects.h"
-#include        "gvars.h"
-#include        "calls.h"
-#include        "ariths.h"
-#include        "records.h"
-#include        "lists.h"
-#include        "bool.h"
-#include        "integer.h"
-#include        "precord.h"
-#include        "plist.h"
-#include        "string.h"
-#include        "code.h"
-#include        "vars.h"
-#include        "gap.h"
-#include        "permutat.h"
+#include        "system.h"              /* system dependent part           */
+
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
+
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "read.h"                /* reader                          */
+
+#include        "gvars.h"               /* global variables                */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
+
+#include        "ariths.h"              /* basic arithmetic                */
+
+#include        "integer.h"             /* integers                        */
+#include        "rational.h"            /* rationals                       */
+#include        "cyclotom.h"            /* cyclotomics                     */
+#include        "finfield.h"            /* finite fields and ff elements   */
+
+#include        "bool.h"                /* booleans                        */
+#include        "permutat.h"            /* permutations                    */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "listoper.h"            /* operations for generic lists    */
+#include        "listfunc.h"            /* functions for generic lists     */
+#include        "plist.h"               /* plain lists                     */
+#include        "set.h"                 /* plain sets                      */
+#include        "vector.h"              /* functions for plain vectors     */
+#include        "blister.h"             /* boolean lists                   */
+#include        "range.h"               /* ranges                          */
+#include        "string.h"              /* strings                         */
+
+#include        "objfgelm.h"            /* objects of free groups          */
+#include        "objpcgel.h"            /* objects of polycyclic groups    */
+#include        "objscoll.h"            /* single collector                */
+#include        "objcftl.h"             /* from the left collect           */
+
+#include        "dt.h"                  /* deep thought                    */
+#include        "dteval.h"              /* deep though evaluation          */
+
+#include        "sctable.h"             /* structure constant table        */
+#include        "costab.h"              /* coset table                     */
+#include        "tietze.h"              /* tietze helper functions         */
+
+#include        "code.h"                /* coder                           */
+
+#include        "vars.h"                /* variables                       */
+#include        "exprs.h"               /* expressions                     */
+#include        "stats.h"               /* statements                      */
+#include        "funcs.h"               /* functions                       */
+
+
+#include        "intrprtr.h"            /* interpreter                     */
+
+#include        "compiler.h"            /* compiler                        */
+
+#include        "compstat.h"            /* statically linked modules       */
+
+#include        "saveload.h"            /* saving and loading              */
+
+#include        "streams.h"             /* streams package                 */
+#include        "sysfiles.h"            /* file input/output               */
+#include        "weakptr.h"             /* weak pointers                   */
 
 
 extern Obj InfoDecision;
@@ -31,10 +82,6 @@ extern Obj CurrentAssertionLevel;
 extern Obj NewAndFilter (
     Obj                 oper1,
     Obj                 oper2 );
-
-
-extern Obj Array2Perm(
-    Obj                 array );
 
 
 /* types, should go into 'gvars.c' and 'records.c' * * * * * * * * * * * * */
@@ -49,44 +96,23 @@ typedef UInt    RNam;
 #define CHECK_BOUND(obj,name) \
  if ( obj == 0 ) ErrorQuitBound(name);
 
-extern  void            ErrorQuitBound (
-            Char *              name );
-
 #define CHECK_FUNC_RESULT(obj) \
  if ( obj == 0 ) ErrorQuitFuncResult();
-
-extern  void            ErrorQuitFuncResult ( void );
 
 #define CHECK_INT_SMALL(obj) \
  if ( ! IS_INTOBJ(obj) ) ErrorQuitIntSmall(obj);
 
-extern  void            ErrorQuitIntSmall (
-            Obj                 obj );
-
 #define CHECK_INT_SMALL_POS(obj) \
  if ( ! IS_INTOBJ(obj) || INT_INTOBJ(obj) <= 0 ) ErrorQuitIntSmallPos(obj);
-
-extern  void            ErrorQuitIntSmallPos (
-            Obj                 obj );
 
 #define CHECK_BOOL(obj) \
  if ( obj != True && obj != False ) ErrorQuitBool(obj);
 
-extern  void            ErrorQuitBool (
-            Obj                 obj );
-
 #define CHECK_FUNC(obj) \
  if ( TNUM_OBJ(obj) != T_FUNCTION ) ErrorQuitFunc(obj);
 
-extern  void            ErrorQuitFunc (
-            Obj                 obj );
-
 #define CHECK_NR_ARGS(narg,args) \
  if ( narg != LEN_PLIST(args) ) ErrorQuitNrArgs(narg,args);
-
-extern  void            ErrorQuitNrArgs (
-            Int                 narg,
-            Obj                 args );
 
 
 /* higher variables, should go into 'vars.c' * * * * * * * * * * * * * * * */
@@ -269,40 +295,6 @@ extern  void            AddPlist (
 extern  Obj             GF_ITERATOR;
 extern  Obj             GF_IS_DONE_ITER;
 extern  Obj             GF_NEXT_ITER;
-
-extern  Obj             ElmsListCheck (
-            Obj                 list,
-            Obj                 poss );
-
-extern  void            ElmsListLevelCheck (
-            Obj                 lists,
-            Obj                 poss,
-            Int                 level );
-
-extern  void            AsssListCheck (
-            Obj                 list,
-            Obj                 poss,
-            Obj                 rhss );
-
-extern  void            AsssListLevelCheck (
-            Obj                 lists,
-            Obj                 poss,
-            Obj                 rhss,
-            Int                 level );
-
-
-/* strings, should go into 'string.c'  * * * * * * * * * * * * * * * * * * */
-
-/* ranges, should go into 'range.c'  * * * * * * * * * * * * * * * * * * * */
-
-extern  Obj             Range2Check (
-            Obj                 first,
-            Obj                 last );
-
-extern  Obj             Range3Check (
-            Obj                 first,
-            Obj                 second,
-            Obj                 last );
 
 
 /****************************************************************************

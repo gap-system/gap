@@ -27,7 +27,7 @@ HasIsSemigroup := Tester( IsSemigroup );
 ##
 #A  AsSemigroup( <D> )  . . . . . . . . . . . . domain <D> viewed as semigroup
 ##
-AsSemigroup := NewAttribute( "AsSemigroup", IsMagma );
+AsSemigroup := NewAttribute( "AsSemigroup", IsCollection );
 SetAsSemigroup := Setter( AsSemigroup );
 HasAsSemigroup := Tester( AsSemigroup );
 

@@ -5,48 +5,6 @@ This chapter explains a couple of possibilities to increase the performance
 of GAP.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Completion files}
-
-When starting, {\GAP}4 takes some time to read all library files. This time
-is mainly spent for computing the values of the different methods. If the
-library files are not changed, however, one can compute these values once
-and thus vastly increase the speed of loading {\GAP}. This is done using
-``completion files''.
-
-A completion file is a file containing condensed information about
-declarations and the according filter values.
-
-The completion files reside in the `lib' directory of the {\GAP}
-distribution. When starting {\GAP}, it is checked if completion files exist.
-If they do, they are read in.
-
-The command line option `-D' prints information about files and completion.
-The command line option `-N' suppresses the reading of completion files.
-
-\>CreateCompletionFiles(<path>)
-
-To create completion files you must have write permissions for the `lib'
-directory. Start {\GAP} with the `-N' option (to suppress
-the reading of any existing completion files), then execute the command
-`CreateCompletionFiles(<path>);', where <path> is a string giving a path to
-the home directory of {\GAP} (the directory containing the `lib' directory).
-
-This produces, among lots of informational output, completion files.
-
-\begintt
-M114 /home/ahulpke > gap4 -N
-gap> CreateCompletionFiles("gap4");
-#I  converting "gap4/lib/read2.g" to "gap4/lib/read2.co"
-#I    parsing "gap4/lib/process.gd"
-#I    parsing "gap4/lib/listcoef.gi"
-\endtt
-(The remaining screen output has been left out here.)
-
-Note that currently no CRC check is performed, so loading a changed library
-with old completion files can result in strange behaviour. To remedy this,
-simply remove all completion files or create them anew.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The compiler}
 \index{gac}
 
@@ -144,6 +102,9 @@ function ( <<arg-1>>, <<arg-2>> )
     <<compiled code>>
 end
 \endtt
+
+The command line option `-M'  disables the loading of compiled modules and
+always reads code from the library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{CRC Numbers}

@@ -3,7 +3,7 @@
 #W  grppcfp.gd                  GAP library                      Bettina Eick
 ##
 Revision.grppcfp_gd :=
-    "@(#)$Id:"; 
+    "@(#)$Id$"; 
 
 #############################################################################
 ##

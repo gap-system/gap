@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  gvars.h                     GAP source                   Martin Schoenert
+*W  gvars.h                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -25,13 +25,14 @@
 **  Otherwise the internal copies reference functions that signal an error.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_gvars_h =
+SYS_CONST char * Revision_gvars_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
 *V  PtrGVars  . . . . . . . . . . . . . pointer to values of global variables
 **
@@ -134,10 +135,22 @@ extern  UInt            GVarName (
 **
 **  'InitCopyGVar'  makes the C  variable <cvar> at  address <copy> a copy of
 **  <gvar>.
+**
+*F  RemoveCopyFopyInfo( )  . . . remove the information about copies of gvars from
+**                               the workspace
+*F  RestoreCopyFopyInfo( )  . .  restore this information from the copy in the kernel
+**
+**  The Restore function is also intended to be used after loading a saved workspace
+**
 */
+
 extern  void            InitCopyGVar (
-            UInt                gvar,
+            Char *              name,
             Obj *               copy );
+
+extern void RemoveCopyFopyInfo( void );
+
+extern void RestoreCopyFopyInfo( void );
 
 
 /****************************************************************************
@@ -153,9 +166,10 @@ extern  void            InitCopyGVar (
 **  reference a  function  that  signals  the error  ``<gvar>  must  have  an
 **  assigned value''.
 */
-extern  void            InitFopyGVar (
-            UInt                gvar,
-            Obj *               copy );
+
+extern void            InitFopyGVar (
+    Char *                name,
+    Obj *               copy );
 
 
 /****************************************************************************
@@ -199,11 +213,119 @@ extern void MakeReadOnlyGVar (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * *  create a new gvars *  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  C_NEW_GVAR_FUNC( <name>, <nargs>, <nams>, <hdlr>, <cookie> )
+*/
+#define C_NEW_GVAR_FUNC( name, nargs, nams, hdlr, cookie ) \
+  do { \
+    InitHandlerFunc( hdlr, cookie ); \
+    if ( ! SyRestoring ) \
+      AssGVar( GVarName(name), NewFunctionC( name, nargs, nams, hdlr ) ); \
+      MakeReadOnlyGVar( GVarName(name) ); \
+  } while (0)
+
+
+/****************************************************************************
+**
+*F  C_NEW_GVAR_ATTR( <name>, <nams>, <attr>, <hdlr>, <cookie> )
+**
+**  WARNING: <attr> must *always* be a global C variable never a local one.
+*/
+#define C_NEW_GVAR_ATTR( name, nams, attr, hdlr, cookie ) \
+  do { \
+    InitHandlerFunc( hdlr, cookie ); \
+    InitFopyGVar( name, &attr ); \
+    if ( ! SyRestoring ) \
+      AssGVar( GVarName(name), NewAttributeC( name, 1L, nams, hdlr ) ); \
+      MakeReadOnlyGVar( GVarName(name) ); \
+  } while (0)
+
+
+/****************************************************************************
+**
+*F  C_NEW_GVAR_PROP( <name>, <nams>, <prop>, <hdlr>, <cookie> )
+**
+**  WARNING: <prop> must *always* be a global C variable never a local one.
+*/
+#define C_NEW_GVAR_PROP( name, nams, attr, hdlr, cookie ) \
+  do { \
+    InitHandlerFunc( hdlr, cookie ); \
+    InitFopyGVar( name, &attr ); \
+    if ( ! SyRestoring ) \
+      AssGVar( GVarName(name), NewPropertyC( name, 1L, nams, hdlr ) ); \
+      MakeReadOnlyGVar( GVarName(name) ); \
+  } while (0)
+
+
+/****************************************************************************
+**
+*F  C_NEW_GVAR_OPER( <name>, <nargs>, <nams>, <oper>, <hdlr>, <cookie> )
+**
+**  WARNING: <oper> must *always* be a global C variable never a local one.
+*/
+#define C_NEW_GVAR_OPER( name, nargs, nams, oper, hdlr, cookie ) \
+  do { \
+    InitHandlerFunc( hdlr, cookie ); \
+    InitFopyGVar( name, &oper ); \
+    if ( ! SyRestoring ) \
+      AssGVar( GVarName(name), NewOperationC( name, nargs, nams, hdlr ) ); \
+      MakeReadOnlyGVar( GVarName(name) ); \
+  } while (0)
+
+
+/****************************************************************************
+**
+*F  C_NEW_GVAR_FILT( <name>, <nams>, <filt>, <hdlr>, <cookie> )
+*/
+#define C_NEW_GVAR_FILT( name, nams, filt, hdlr, cookie ) \
+  do { \
+    InitHandlerFunc( hdlr, cookie ); \
+    InitFopyGVar( name, &filt ); \
+    if ( ! SyRestoring ) \
+      AssGVar( GVarName(name), NewFilterC( name, 1L, nams, hdlr ) ); \
+      MakeReadOnlyGVar( GVarName(name) ); \
+  } while (0)
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupGVars()  . . . . . . . . . . initialize the global variables package
+*/
+extern void SetupGVars ( void );
+
+
+/****************************************************************************
+**
 *F  InitGVars() . . . . . . . . . . . initialize the global variables package
 **
 **  'InitGVars' initializes the global variables package.
 */
-extern  void            InitGVars ( void );
+extern void InitGVars ( void );
 
 
+/****************************************************************************
+**
+*F  CheckGVars()  .  check the initialisation of the global variables package
+*/
+extern void CheckGVars ( void );
 
+
+/****************************************************************************
+**
+
+*E  gvars.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -59,8 +59,9 @@ IsHandledByNiceMonomorphism := NewProperty(
 SetIsHandledByNiceMonomorphism := Setter(IsHandledByNiceMonomorphism);
 HasIsHandledByNiceMonomorphism := Tester(IsHandledByNiceMonomorphism);
 
-InstallSubsetMaintainedMethod(IsHandledByNiceMonomorphism,
-  IsHandledByNiceMonomorphism and IsGroup,IsGroup);
+InstallSubsetMaintainedMethod( IsHandledByNiceMonomorphism,
+    IsHandledByNiceMonomorphism and IsGroup,
+    IsGroup);
 
 #############################################################################
 ##
@@ -218,68 +219,6 @@ end;
 
 #############################################################################
 ##
-#F  SubgroupMethodByNiceMonomorphism( <oper>, <par> )
-##
-SubgroupMethodByNiceMonomorphism := function( oper, par )
-
-    # check the argument length
-    if 1 <> Length(par)  then
-        Error( "need only one argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism",
-        true,
-        par,
-        NICE_FLAGS,
-        function( obj )
-            local   nice,  img,  sub;
-            nice := NiceMonomorphism(obj);
-            img  := oper( NiceObject(obj) );
-            sub  := GroupByNiceMonomorphism( nice, img );
-            SetParent( sub, obj );
-            return sub;
-        end );
-end;
-
-
-#############################################################################
-##
-#F  SubgroupMethodByNiceMonomorphismCollColl( <oper>, <par> )
-##
-SubgroupMethodByNiceMonomorphismCollColl := function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-    par[2] := par[2] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism",
-        IsIdentical,
-        par,
-        NICE_FLAGS,
-        function( obj1, obj2 )
-            local   nice,  img;
-            if not IsSubgroup( obj1, obj2 )  then
-                TryNextMethod();
-            fi;
-            nice := NiceMonomorphism(obj1);
-            img := oper( NiceObject(obj1), Image(nice,obj2) );
-            return GroupByNiceMonomorphism( nice, img );
-        end );
-end;
-
-
-#############################################################################
-##
 #F  GroupMethodByNiceMonomorphismCollOther( <oper>, <par> )
 ##
 GroupMethodByNiceMonomorphismCollOther := function( oper, par )
@@ -366,6 +305,135 @@ GroupMethodByNiceMonomorphismCollElm := function( oper, par )
             fi;
             img1 := oper( NiceObject(obj1), img );
             return GroupByNiceMonomorphism( nice, img1 );
+        end );
+end;
+
+
+#############################################################################
+##
+
+#F  SubgroupMethodByNiceMonomorphism( <oper>, <par> )
+##
+SubgroupMethodByNiceMonomorphism := function( oper, par )
+
+    # check the argument length
+    if 1 <> Length(par)  then
+        Error( "need only one argument for ", NameFunction(oper) );
+    fi;
+    par    := ShallowCopy(par);
+    par[1] := par[1] and IsHandledByNiceMonomorphism;
+
+    # install the method
+    InstallOtherMethod( oper,
+        "handled by nice monomorphism",
+        true,
+        par,
+        NICE_FLAGS,
+        function( obj )
+            local   nice,  img,  sub;
+            nice := NiceMonomorphism(obj);
+            img  := oper( NiceObject(obj) );
+            sub  := GroupByNiceMonomorphism( nice, img );
+            SetParent( sub, obj );
+            return sub;
+        end );
+end;
+
+
+#############################################################################
+##
+#F  SubgroupMethodByNiceMonomorphismCollOther( <oper>, <par> )
+##
+SubgroupMethodByNiceMonomorphismCollOther := function( oper, par )
+
+    # check the argument length
+    if 2 <> Length(par)  then
+        Error( "need two argument for ", NameFunction(oper) );
+    fi;
+    par    := ShallowCopy(par);
+    par[1] := par[1] and IsHandledByNiceMonomorphism;
+
+    # install the method
+    InstallOtherMethod( oper,
+        "handled by nice monomorphism",
+        true,
+        par,
+        NICE_FLAGS,
+        function( obj, other )
+            local   nice,  img,  sub;
+            nice := NiceMonomorphism(obj);
+            img  := oper( NiceObject(obj), other );
+            sub  := GroupByNiceMonomorphism( nice, img );
+            SetParent( sub, obj );
+            return sub;
+        end );
+end;
+
+
+#############################################################################
+##
+#F  SubgroupMethodByNiceMonomorphismCollColl( <oper>, <par> )
+##
+SubgroupMethodByNiceMonomorphismCollColl := function( oper, par )
+
+    # check the argument length
+    if 2 <> Length(par)  then
+        Error( "need two arguments for ", NameFunction(oper) );
+    fi;
+    par    := ShallowCopy(par);
+    par[1] := par[1] and IsHandledByNiceMonomorphism;
+    par[2] := par[2] and IsHandledByNiceMonomorphism;
+
+    # install the method
+    InstallOtherMethod( oper,
+        "handled by nice monomorphism",
+        IsIdentical,
+        par,
+        NICE_FLAGS,
+        function( obj1, obj2 )
+            local   nice,  img,  sub;
+            if not IsSubgroup( obj1, obj2 )  then
+                TryNextMethod();
+            fi;
+            nice := NiceMonomorphism(obj1);
+            img := oper( NiceObject(obj1), Image(nice,obj2) );
+            sub := GroupByNiceMonomorphism( nice, img );
+            SetParent( sub, obj1 );
+            return sub;
+        end );
+end;
+
+
+#############################################################################
+##
+#F  SubgroupMethodByNiceMonomorphismCollElm( <oper>, <par> )
+##
+SubgroupMethodByNiceMonomorphismCollElm := function( oper, par )
+
+    # check the argument length
+    if 2 <> Length(par)  then
+        Error( "need two arguments for ", NameFunction(oper) );
+    fi;
+    par    := ShallowCopy(par);
+    par[1] := par[1] and IsHandledByNiceMonomorphism;
+
+    # install the method
+    InstallOtherMethod( oper,
+        "handled by nice monomorphism",
+        IsCollsElms,
+        par,
+        NICE_FLAGS,
+        function( obj1, obj2 )
+            local   nice,  img,  img1,  sub;
+            nice := NiceMonomorphism(obj1);
+            img  := ImagesRepresentative( nice, obj2 );
+            if img = fail  then
+                TryNextMethod();
+            fi;
+            img1 := oper( NiceObject(obj1), img );
+            sub  := GroupByNiceMonomorphism( nice, img1 );
+            SetParent( sub, obj1 );
+            return sub;
         end );
 end;
 

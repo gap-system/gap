@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  funcs.h                     GAP source                   Martin Schoenert
+*W  funcs.h                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -13,13 +13,14 @@
 **  expressions, and the handlers for the execution of function bodies.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_funcs_h =
+SYS_CONST char * Revision_funcs_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *F  MakeFunction(<fexp>)  . . . . . . . . . . . . . . . . . . make a function
 **
 **  'MakeFunction' makes a function from the function expression bag <fexp>.
@@ -41,6 +42,21 @@ extern  void            ExecEnd (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupFuncs()  . . . . . . . . . . . . . . . . initialize function package
+*/
+extern void SetupFuncs ( void );
+
+
+/****************************************************************************
+**
 *F  InitFuncs() . . . . . . . . . . . . . . . . . initialize function package
 **
 **  'InitFuncs' installs the  executing   functions that  are  needed by  the
@@ -50,7 +66,21 @@ extern  void            ExecEnd (
 **  expressions.   It  also  installs the printing    functions for procedure
 **  calls, function calls, and function expressions.
 */
-extern  void            InitFuncs ( void );
+extern void InitFuncs ( void );
+
+
+/****************************************************************************
+**
+*F  CheckFuncs()  . . . . .  check the initialisation of the function package
+*/
+extern void CheckFuncs ( void );
+
+
+/****************************************************************************
+**
+
+*E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 
 
 

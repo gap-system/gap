@@ -14,6 +14,7 @@ ReadLib( "function.g"  );
 ReadLib( "object.gd"   );
 ReadLib( "coll.gd"     );
 ReadLib( "list.gd"     );
+ReadLib( "wpobj.gd"    );
 ReadLib( "arith.gd"    );
 ReadLib( "ffe.gd"      );
 
@@ -29,6 +30,7 @@ ReadLib( "record.g"    );
 ReadLib( "ffe.g"       );
 ReadLib( "arith.gi"    );
 ReadLib( "list.g"      );
+ReadLib( "wpobj.g"      );
 ReadLib( "permutat.g"  );
 
 ReadLib( "object.gi"   );

@@ -41,6 +41,7 @@ end;
 IdentificationPermGroup := function(D,el)
   local s,t,i,l; # guter Programmier s t i l !
   s:=CycleStructurePerm(el);
+  s:=ShallowCopy(s);
   if not IsPerfectGroup(D.group) then
     Add(s,CanonicalRightCosetElement(DerivedSubgroup(D.group),el));
   fi;
@@ -218,28 +219,6 @@ local k,sum,perm,structures,ambiguousStructures,i,j,p,e,cem,ces,z,t,cen,a,
 
 end);
 
-
-#############################################################################
-##
-#F  NaturalCharacter(<G>,<U>)  . . . . permutation character
-##
-##  'NaturalCharacter'  will either  compute the permutation character of
-##  <U> in <G> or the permutation character of the natural representation.
-##
-InstallOtherMethod(NaturalCharacter,"natural permutation action",
-  true,[IsPermGroup],0,
-function(G)
-  local    i,  c,  cl,  s;
-
-  s  := MovedPoints(G);
-  c  := [Length(s)];
-  cl := ConjugacyClasses(G);
-  for i  in [ 2 .. Length(cl) ]  do
-    Add( c, Length( Difference( s, MovedPoints(
-      Group( [Representative(cl[i])],() ) ) ) ) );
-  od;
-  return c;
-end);
 
 #############################################################################
 ##

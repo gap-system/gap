@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  plist.h                     GAP source                   Martin Schoenert
+*W  plist.h                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -22,7 +22,7 @@
 **  installed in the appropriate tables by 'InitPlist'.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_plist_h =
+SYS_CONST char * Revision_plist_h =
    "@(#)$Id$";
 #endif
 
@@ -135,19 +135,44 @@ extern  Int             GrowPlist (
 
 /****************************************************************************
 **
-*F  IS_IMM_PLIST( <list> )  . . . . . . . . . . .  is a plain listy immutable
+*F  IS_MUTABLE_PLIST( <list> )  . . . . . . . . . . . is a plain list mutable
 */
-#define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
+#define IS_MUTABLE_PLIST(list)  (!((TNUM_OBJ(list) - T_PLIST) % 2))
 
 
 /****************************************************************************
 **
 
-*F  InitPlist() . . . . . . . . . . . . . . . . . initialize the list package
-**
-**  'InitPlist' initializes the plain list package.
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-extern  void            InitPlist ( void );
 
 
+/****************************************************************************
+**
 
+*F  SetupPlist(). . . . . . . . . . . . . . initialize the plain list package
+*/
+extern void SetupPlist ( void );
+
+
+/****************************************************************************
+**
+*F  InitPlist() . . . . . . . . . . . . . . initialize the plain list package
+**
+**  Is called during  the  initialization  to  initialize  the  list package.
+*/
+extern void InitPlist ( void );
+
+
+/****************************************************************************
+**
+*F  CheckPlist()  . . . .  check the initialisation of the plain list package
+*/
+extern void CheckPlist ( void );
+
+
+/****************************************************************************
+**
+
+*E  plist.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

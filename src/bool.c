@@ -7,6 +7,10 @@
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 **
 **  This file contains the functions for the boolean package.
+**
+**  Note that boolean objects actually contain no data. The three of them
+**  are distinguished by their addresses, kept in the C globals False, 
+**  True and Fail.
 */
 #include        "system.h"              /* system dependent part           */
 
@@ -17,17 +21,23 @@ SYS_CONST char * Revision_bool_c =
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#include        "gap.h"                 /* error handling                  */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations package      */
+#include        "opers.h"               /* generic operations              */
 
 #include        "ariths.h"              /* basic arithmetic                */
 
 #define INCLUDE_DECLARATION_PART
 #include        "bool.h"                /* booleans                        */
 #undef  INCLUDE_DECLARATION_PART
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
@@ -173,14 +183,7 @@ Obj IsBoolHandler (
 /****************************************************************************
 **
 
-*F  ReturnTrueFunc  . . . . . . . . . . . . . .  function that returns 'True'
-*/
-Obj ReturnTrueFunc;
-
-
-/****************************************************************************
-**
-*f  ReturnTrue1( <val1> ) . . . . . . . . . . . . . . . . . .  return  'True'
+*F  ReturnTrue1( <val1> ) . . . . . . . . . . . . . . . . . .  return  'True'
 **
 **  'ReturnTrue?'  simply return  'True'  independent of  the values of   the
 **  arguments.
@@ -198,7 +201,7 @@ Obj ReturnTrue1 (
 
 /****************************************************************************
 **
-*f  ReturnTrue2( <val1>, <val2> ) . . . . . . . . . . . . . .  return  'True'
+*F  ReturnTrue2( <val1>, <val2> ) . . . . . . . . . . . . . .  return  'True'
 */
 Obj ReturnTrue2 (
     Obj                 self,
@@ -211,7 +214,7 @@ Obj ReturnTrue2 (
 
 /****************************************************************************
 **
-*f  ReturnTrue3( <val1>, <val2>, <val3> ) . . . . . . . . . .  return  'True'
+*F  ReturnTrue3( <val1>, <val2>, <val3> ) . . . . . . . . . .  return  'True'
 */
 Obj ReturnTrue3 (
     Obj                 self,
@@ -225,14 +228,7 @@ Obj ReturnTrue3 (
 
 /****************************************************************************
 **
-*F  ReturnFalseFunc . . . . . . . . . . . . . . function that returns 'False'
-*/
-Obj ReturnFalseFunc;
-
-
-/****************************************************************************
-**
-*f  ReturnFalse1( <val1> )  . . . . . . . . . . . . . . . . .  return 'False'
+*F  ReturnFalse1( <val1> )  . . . . . . . . . . . . . . . . .  return 'False'
 **
 **  'ReturnFalse?' likewise return 'False'.
 */
@@ -246,7 +242,7 @@ Obj ReturnFalse1 (
 
 /****************************************************************************
 **
-*f  ReturnFalse2( <val1>, <val2> )  . . . . . . . . . . . . .  return 'False'
+*F  ReturnFalse2( <val1>, <val2> )  . . . . . . . . . . . . .  return 'False'
 */
 Obj ReturnFalse2 (
     Obj                 self,
@@ -259,7 +255,7 @@ Obj ReturnFalse2 (
 
 /****************************************************************************
 **
-*f  ReturnFalse3( <val1>, <val2>, <val3> )  . . . . . . . . .  return 'False'
+*F  ReturnFalse3( <val1>, <val2>, <val3> )  . . . . . . . . .  return 'False'
 */
 Obj ReturnFalse3 (
     Obj                 self,
@@ -273,14 +269,7 @@ Obj ReturnFalse3 (
 
 /****************************************************************************
 **
-*F  ReturnFailFunc  . . . . . . . . . . . . . .  function that returns 'Fail'
-*/
-Obj ReturnFailFunc;
-
-
-/****************************************************************************
-**
-*f  ReturnFail1( <val1> ) . . . . . . . . . . . . . . . . . .  return  'Fail'
+*F  ReturnFail1( <val1> ) . . . . . . . . . . . . . . . . . .  return  'Fail'
 **
 **  'ReturnFail?' likewise return 'Fail'.
 */
@@ -294,7 +283,7 @@ Obj ReturnFail1 (
 
 /****************************************************************************
 **
-*f  ReturnFail2( <val1>, <val2> ) . . . . . . . . . . . . . .  return  'Fail'
+*F  ReturnFail2( <val1>, <val2> ) . . . . . . . . . . . . . .  return  'Fail'
 */
 Obj ReturnFail2 (
     Obj                 self,
@@ -307,7 +296,7 @@ Obj ReturnFail2 (
 
 /****************************************************************************
 **
-*f  ReturnFail3( <val1>, <val2>, <val3> ) . . . . . . . . . .  return  'Fail'
+*F  ReturnFail3( <val1>, <val2>, <val3> ) . . . . . . . . . .  return  'Fail'
 */
 Obj ReturnFail3 (
     Obj                 self,
@@ -322,28 +311,51 @@ Obj ReturnFail3 (
 /****************************************************************************
 **
 
+*F  SaveBool( <bool> ) . . . . . . . . . . . . . . . . . . . . save a Boolean 
+**
+**  Actually, there is nothing to do
+*/
+
+void SaveBool( Obj obj )
+{
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadBool( <bool> ) . . . . . . . . . . . . . . . . . . . . save a Boolean 
+**
+**  Actually, there is nothing to do
+*/
+
+void LoadBool( Obj obj )
+{
+  return;
+}
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
 
-*E  InitBool()  . . . . . . . . . . . . . . . initialize the booleans package
-**
-**  'InitBool' initializes the boolean package.
+*E  SetupBool() . . . . . . . . . . . . . . . initialize the booleans package
 */
-void InitBool ( void )
+void SetupBool ( void )
 {
-    UInt            gvar;
-
     /* install the marking functions for boolean values                    */
-    InfoBags[         T_BOOL ].name = "boolean";
+    InfoBags[ T_BOOL ].name = "boolean";
     InitMarkFuncBags( T_BOOL, MarkNoSubBags );
 
 
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );
-    TypeObjFuncs[ T_BOOL ] = TypeBool;
+    /* install the saving functions                                       */
+    SaveObjFuncs[ T_BOOL ] = SaveBool;
+
+    /* install the loading functions                                       */
+    LoadObjFuncs[ T_BOOL ] = LoadBool;
 
 
     /* install the printer for boolean values                              */
@@ -353,16 +365,43 @@ void InitBool ( void )
     /* install the comparison functions                                    */
     EqFuncs[ T_BOOL ][ T_BOOL ] = EqBool;
     LtFuncs[ T_BOOL ][ T_BOOL ] = LtBool;
+}
+
+
+/****************************************************************************
+**
+*E  InitBool()  . . . . . . . . . . . . . . . initialize the booleans package
+**
+**  'InitBool' initializes the boolean package.
+*/
+void InitBool ( void )
+{
+    UInt            gvar;
+    Obj             tmp;
+
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );
+    TypeObjFuncs[ T_BOOL ] = TypeBool;
 
 
     /* make the three boolean bags                                         */
-    InitGlobalBag( &True,  "TRUE"  ); True  = NewBag( T_BOOL, 0L );
-    InitGlobalBag( &False, "FALSE" ); False = NewBag( T_BOOL, 0L );
-    InitGlobalBag( &Fail,  "FAIL"  ); Fail  = NewBag( T_BOOL, 0L );
+    InitGlobalBag( &True,  "src/bool.c:TRUE"  );
+    InitGlobalBag( &False, "src/bool.c:FALSE" );
+    InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
 
-    gvar = GVarName( "fail" );
-    AssGVar( gvar, Fail );
-    MakeReadOnlyGVar(gvar);
+    if ( ! SyRestoring ) {
+        True  = NewBag( T_BOOL, 0L );
+        False = NewBag( T_BOOL, 0L );
+        Fail  = NewBag( T_BOOL, 0L );
+    }
+
+
+    /* `fail' is a variable not a language construct                       */
+    if ( ! SyRestoring ) {
+        gvar = GVarName( "fail" );
+        AssGVar( gvar, Fail );
+        MakeReadOnlyGVar(gvar);
+    }
 
 
     /* make and install the 'IS_BOOL' filter*/
@@ -371,40 +410,60 @@ void InitBool ( void )
 
 
     /* make and install the 'RETURN_TRUE' function                         */
-    InitHandlerFunc( ReturnTrue1, "src/bool.c:ReturnTrue1");
-    InitHandlerFunc( ReturnTrue2, "src/bool.c:ReturnTrue2");
-    InitHandlerFunc( ReturnTrue3, "src/bool.c:ReturnTrue");
+    InitHandlerFunc( ReturnTrue1, "src/bool.c:ReturnTrue1" );
+    InitHandlerFunc( ReturnTrue2, "src/bool.c:ReturnTrue2" );
+    InitHandlerFunc( ReturnTrue3, "src/bool.c:ReturnTrue3" );
 
-    ReturnTrueFunc = NewFunctionC( "RETURN_TRUE", -1L, "args", ReturnTrue1 );
-    HDLR_FUNC( ReturnTrueFunc, 1 ) = ReturnTrue1;
-    HDLR_FUNC( ReturnTrueFunc, 2 ) = ReturnTrue2;
-    HDLR_FUNC( ReturnTrueFunc, 3 ) = ReturnTrue3;
-    AssGVar( GVarName( "RETURN_TRUE" ), ReturnTrueFunc );
+    if ( ! SyRestoring ) {
+        tmp = NewFunctionC( "RETURN_TRUE", -1L, "args", ReturnTrue1 );
+        HDLR_FUNC( tmp, 1 ) = ReturnTrue1;
+        HDLR_FUNC( tmp, 2 ) = ReturnTrue2;
+        HDLR_FUNC( tmp, 3 ) = ReturnTrue3;
+        AssGVar( GVarName("RETURN_TRUE"), tmp );
+    }
 
 
     /* make and install the 'RETURN_FALSE' function                        */
-    InitHandlerFunc( ReturnFalse1, "src/bool.c:ReturnFalse1");
-    InitHandlerFunc( ReturnFalse2, "src/bool.c:ReturnFalse2");
-    InitHandlerFunc( ReturnFalse3, "src/bool.c:ReturnFalse3");
+    InitHandlerFunc( ReturnFalse1, "src/bool.c:ReturnFalse1" );
+    InitHandlerFunc( ReturnFalse2, "src/bool.c:ReturnFalse2" );
+    InitHandlerFunc( ReturnFalse3, "src/bool.c:ReturnFalse3" );
 
-    ReturnFalseFunc = NewFunctionC("RETURN_FALSE",-1L,"args",ReturnFalse1);
-    HDLR_FUNC( ReturnFalseFunc, 1 ) = ReturnFalse1;
-    HDLR_FUNC( ReturnFalseFunc, 2 ) = ReturnFalse2;
-    HDLR_FUNC( ReturnFalseFunc, 3 ) = ReturnFalse3;
-    AssGVar( GVarName( "RETURN_FALSE" ), ReturnFalseFunc );
+    if ( ! SyRestoring ) {
+        tmp = NewFunctionC("RETURN_FALSE",-1L,"args",ReturnFalse1);
+        HDLR_FUNC( tmp, 1 ) = ReturnFalse1;
+        HDLR_FUNC( tmp, 2 ) = ReturnFalse2;
+        HDLR_FUNC( tmp, 3 ) = ReturnFalse3;
+        AssGVar( GVarName( "RETURN_FALSE" ), tmp );
+    }
 
 
     /* make and install the 'RETURN_FAIL' function                        */
-    InitHandlerFunc( ReturnFail1, "src/bool.c:ReturnFail1");
-    InitHandlerFunc( ReturnFail2, "src/bool.c:ReturnFail2");
-    InitHandlerFunc( ReturnFail3, "src/bool.c:ReturnFail3");
+    InitHandlerFunc( ReturnFail1, "src/bool.c:ReturnFail1" );
+    InitHandlerFunc( ReturnFail2, "src/bool.c:ReturnFail2" );
+    InitHandlerFunc( ReturnFail3, "src/bool.c:ReturnFail3" );
 
-    ReturnFailFunc = NewFunctionC("RETURN_FAIL", -1L, "args", ReturnFail1);
-    HDLR_FUNC( ReturnFailFunc, 1 ) = ReturnFail1;
-    HDLR_FUNC( ReturnFailFunc, 2 ) = ReturnFail2;
-    HDLR_FUNC( ReturnFailFunc, 3 ) = ReturnFail3;
-    AssGVar( GVarName( "RETURN_FAIL" ), ReturnFailFunc );
+    if ( ! SyRestoring ) {
+        tmp = NewFunctionC("RETURN_FAIL", -1L, "args", ReturnFail1);
+        HDLR_FUNC( tmp, 1 ) = ReturnFail1;
+        HDLR_FUNC( tmp, 2 ) = ReturnFail2;
+        HDLR_FUNC( tmp, 3 ) = ReturnFail3;
+        AssGVar( GVarName( "RETURN_FAIL" ), tmp );
+    }
 }
+
+
+/****************************************************************************
+**
+*E  CheckBool() . check the initialisation of initialize the booleans package
+**
+**  'InitBool' initializes the boolean package.
+*/
+void CheckBool ( void )
+{
+    SET_REVISION( "bool_c",     Revision_bool_c );
+    SET_REVISION( "bool_h",     Revision_bool_h );
+}
+
 
 /****************************************************************************
 **

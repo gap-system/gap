@@ -120,6 +120,7 @@ AlternatingCohortOnSets := function( n, k )
     A := AlternatingGroup( n );
     orb := Combinations( [ 1 .. n ], k );
     G := Operation( A, orb, OnSets );
+    SetSize( G, Size( A ) );
     out := Permutation( (1,2), orb, OnSets );
     G!.normalizer := ClosureGroup( G, out );
     coh := CohortOfGroup( G );
@@ -136,7 +137,7 @@ LinearCohortOnProjectivePoints := function( n, q )
     local   fld,  pro,  gens,  M,  coh;
     
     fld := GF( q );
-    pro := ProjectiveSpace( fld ^ n );
+    pro := OneDimSubspacesTransversal( fld ^ n );
     gens := GeneratorsOfGroup( Operation( SL( n, q ), pro ) );
     M := MutableIdentityMat( n, fld );
     M[ 1 ][ 1 ] := PrimitiveRoot( fld );
@@ -156,7 +157,7 @@ SymplecticCohortOnProjectivePoints := function( n, q )
     local   fld,  pro,  gens,  M,  coh,  i;
     
     fld := GF( q );
-    pro := ProjectiveSpace( fld ^ n );
+    pro := OneDimSubspacesTransversal( fld ^ n );
     gens := GeneratorsOfGroup( Operation( Sp( n, q ), pro ) );
     if q mod 2 = 0  then
         M := PrimitiveRoot( fld );
@@ -207,7 +208,7 @@ UnitaryCohortOnProjectivePoints := function( n, q, iso )
         P[ n + 1 - i ] := ( zeta ^ q * id[ i ] - id[ n + 1 - i ] ) * imag;
     od;
     M := M ^ P;
-    pro := ProjectiveSpace( fld ^ n );
+    pro := OneDimSubspacesTransversal( fld ^ n );
     if iso  then  v := id[ 1 ];
             else  v := P[ 1 ];   fi;
     pro := ExternalOrbit( G, pro, v );
@@ -232,8 +233,11 @@ CohortProductAction := function( coh, n )
     
     S := SymmetricGroup( n );
     N := WreathProductProductAction( Source( coh ), S );
-    G := WreathProductProductAction( KernelOfMultiplicativeGeneralMapping
-                 ( coh ), TrivialSubgroup( S ) );
+    G := WreathProductProductAction
+         ( OperationHomomorphism
+           ( KernelOfMultiplicativeGeneralMapping( coh ),
+             MovedPoints( Source( coh ) ) ),
+           OperationHomomorphism( TrivialSubgroup( S ), MovedPoints( S ) ) );
     prd := ConstructCohort( N, G, MovedPoints( G ) );
     SetName( prd, Concatenation( Name( coh ), "^", String( n ) ) );
     return prd;
@@ -472,10 +476,6 @@ end;
 ##
 #F  Rank( <arg> ) . . . . . . . . . . . . . . . . . . . . number of suborbits
 ##
-Rank := function( arg )
-    return AttributeOperation( RankOp, RankAttr, false, arg );
-end;
-
 InstallMethod( RankOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     local   hom;

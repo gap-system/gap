@@ -1151,5 +1151,31 @@ end );
 #############################################################################
 ##
 
+#F  # # # # # # # # # # # # # # user streams  # # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+#M  InputTextUser() . . . . . . . . . . . . . input text stream from the user
+##
+InputTextUser := function()
+    return InputTextFile("*stdin*");
+end;
+
+
+#############################################################################
+##
+#M  OutputTextUser()  . . . . . . . . . . . .  output text stream to the user
+##
+OutputTextUser := function()
+    return OutputTextFile("*stdout*",false);
+end;
+
+
+#############################################################################
+##
+
+
 #E  streams.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

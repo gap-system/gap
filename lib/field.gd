@@ -387,6 +387,12 @@ SubfieldNC := NewOperationArgs( "SubfieldNC" );
 
 #############################################################################
 ##
+#M  IsFinite( <G> ) . . . . . . . . . . . . . . .  for magmas of ffes
+##
+InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFFECollection and IsMagma );
+
+#############################################################################
+##
 #E  field.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

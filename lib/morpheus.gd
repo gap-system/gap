@@ -97,7 +97,7 @@ IsomorphismGroups := NewOperationArgs("IsomorphismGroups");
 ##
 #F  GQuotients
 ##
-GQuotients := NewOperationArgs("GQuotients");
+GQuotients := NewOperation("GQuotients",[IsGroup,IsGroup]);
 
 #############################################################################
 ##

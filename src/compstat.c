@@ -7,7 +7,7 @@
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 */
 #include        "system.h"
-#include        "compstat.h"
+#include        "compstat.h"            /* statically linked modules       */
 
 
 /****************************************************************************
@@ -15,7 +15,7 @@
 
 *V  CompInitFuncs . . . . . . . . . .  list of compiled module init functions
 **
-**  This a dummy list in case no module statically linked.
+**  This a dummy list in case no module is statically linked.
 */
 #ifdef USE_PRECOMPILED
 extern StructCompInitInfo * Init_lib_methsel_g ( void );

@@ -22,6 +22,34 @@ InstallMethod( IsPcgsComputable, true, [ IsGroup ], 0, ReturnFalse );
 
 #############################################################################
 ##
+#M  Pcgs( <A> ) . . . . . . . .  from independent generators of abelian group
+##
+PcgsByIndependentGeneratorsOfAbelianGroup := function( A )
+    local   pcgs,  pcs,  rel,  gen,  f;
+    
+    pcs := [  ];
+    rel := [  ];
+    for gen  in IndependentGeneratorsOfAbelianGroup( A )  do
+        for f  in FactorsInt( Order( gen ) )  do
+            Add( pcs, gen );
+            Add( rel, f );
+            gen := gen ^ f;
+        od;
+    od;
+    pcgs := PcgsByPcSequenceNC( FamilyObj( One( A ) ), pcs );
+    SetOneOfPcgs( pcgs, One( A ) );
+    SetRelativeOrders( pcgs, rel );
+    SetIsPrimeOrdersPcgs( pcgs, true );
+    return pcgs;
+end;
+
+InstallMethod( Pcgs, "from independent generators of abelian group", true,
+    [ IsGroup and IsAbelian and HasIndependentGeneratorsOfAbelianGroup ], 0,
+    PcgsByIndependentGeneratorsOfAbelianGroup );
+        
+
+#############################################################################
+##
 #M  SetPcgs( <G>, fail )  . . . . . . . . . . . . . . . . .  never set `fail'
 ##
 ##  `HasPcgs' implies  `IsPcgsComputable',  which implies `IsSolvable',  so a

@@ -214,6 +214,8 @@ LinearCombination := NewOperation( "LinearCombination",
 ##
 ##  is defined only for semi-echelonized bases of Gaussian row and matrix
 ##  vector spaces.
+##  If the scalars in the vector <v> are not all contained in the
+##  underlying left module of <B> then `fail' is returned.
 ##
 SiftedVector := NewOperation( "SiftedVector", [ IsBasis, IsVector ] );
 #T more restrictive (SEB)?

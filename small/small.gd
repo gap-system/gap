@@ -4,7 +4,7 @@
 #W                                                             & Bettina Eick
 ##
 Revision.small_gd :=
-    "@(#)$Id: ";
+    "@(#)$Id$";
 
 InfoIdGroup := NewInfoClass( "InfoIdGroup" );
 

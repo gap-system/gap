@@ -36,9 +36,16 @@ HasGeneratorsOfMonoid := HasGeneratorsOfMagmaWithOne;
 ##
 #A  AsMonoid( <D> ) . . . . . . . . . . . . . . . . . . .  view <D> as monoid
 ##
-AsMonoid := NewAttribute( "AsMonoid", IsMonoid );
+AsMonoid := NewAttribute( "AsMonoid", IsCollection );
 SetAsMonoid := Setter( AsMonoid );
 HasAsMonoid := Tester( AsMonoid );
+
+
+#############################################################################
+##
+#O  AsSubmonoid( <M>, <N> ) .  view a monoid as a submonoid of another monoid
+##
+AsSubmonoid := NewOperation( "AsSubmonoid", [ IsMonoid, IsMonoid ] );
 
 
 #############################################################################

@@ -42,7 +42,7 @@ SYS_CONST char * Revision_calls_c =
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#include        "gap.h"                 /* error handling                  */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
 
@@ -50,19 +50,24 @@ SYS_CONST char * Revision_calls_c =
 #include        "calls.h"               /* generic call mechanism          */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "opers.h"               /* generic operations package      */
+#include        "opers.h"               /* generic operations              */
 
-#include        "lists.h"               /* generic list package            */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
 
 #include        "bool.h"                /* booleans                        */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings and characters          */
+#include        "string.h"              /* strings                         */
 
-#include        "code.h"                /* coder package                   */
-#include        "vars.h"                /* local variables                 */
+#include        "code.h"                /* coder                           */
+#include        "vars.h"                /* variables                       */
 
-#include        "stats.h"               /* statment package                */
+#include        "stats.h"               /* statements                      */
+
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
@@ -883,24 +888,27 @@ Obj DoProfXargs (
 #endif
 
 typedef struct {
-    ObjFunc		hdlr;
+    ObjFunc             hdlr;
     SYS_CONST Char *    cookie;
 }
-TNumHandlerInfo;
+TypeHandlerInfo;
 
-static TNumHandlerInfo HandlerFuncs[MAX_HANDLERS];
+static UInt HandlerSortingStatus = 0;
+
+static TypeHandlerInfo HandlerFuncs[MAX_HANDLERS];
 static UInt NHandlerFuncs = 0;
  
 void InitHandlerFunc (
-    ObjFunc		hdlr,
-    SYS_CONST Char *	cookie )
+    ObjFunc             hdlr,
+    SYS_CONST Char *    cookie )
 {
     if ( NHandlerFuncs >= MAX_HANDLERS ) {
-	Pr( "No room left for function handler\n", 0L, 0L );
-	SyExit(1);
+        Pr( "No room left for function handler\n", 0L, 0L );
+        SyExit(1);
     }
     HandlerFuncs[NHandlerFuncs].hdlr   = hdlr;
     HandlerFuncs[NHandlerFuncs].cookie = cookie;
+    HandlerSortingStatus = 0; /* no longer sorted by handler or cookie */
     NHandlerFuncs++;
 }
 
@@ -911,44 +919,154 @@ void InitHandlerFunc (
 *f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
 */
 static void CheckHandlersBag(
-    Bag 	bag )
+    Bag         bag )
 {
 #ifdef DEBUG_HANDLER_REGISTRATION
-    UInt	i;
-    UInt	j;
-    ObjFunc	hdlr;
+    UInt        i;
+    UInt        j;
+    ObjFunc     hdlr;
 
     if ( TNUM_BAG(bag) == T_FUNCTION ) {
-	for ( j = 0;  j < 8;  j++ ) {
-	    hdlr = HDLR_FUNC(bag,j);
+        for ( j = 0;  j < 8;  j++ ) {
+            hdlr = HDLR_FUNC(bag,j);
 
-	    /* zero handlers are used in a few odd places                  */
-	    if ( hdlr != 0 ) {
-		for ( i = 0;  i < NHandlerFuncs;  i++ ) {
-		    if ( hdlr == HandlerFuncs[i].hdlr )
-			break;
-		}
-		if ( i == NHandlerFuncs ) {
-		    Pr("Unregistered Handler %d args  ", j, 0L);
-		    PrintObj(NAME_FUNC(bag));
-		    Pr("\n",0L,0L);
-		}
-	    }
-	}
+            /* zero handlers are used in a few odd places                  */
+            if ( hdlr != 0 ) {
+                for ( i = 0;  i < NHandlerFuncs;  i++ ) {
+                    if ( hdlr == HandlerFuncs[i].hdlr )
+                        break;
+                }
+                if ( i == NHandlerFuncs ) {
+                    Pr("Unregistered Handler %d args  ", j, 0L);
+                    PrintObj(NAME_FUNC(bag));
+                    Pr("\n",0L,0L);
+                }
+            }
+        }
     }
 #endif
+  return;
+}
+
+void CheckAllHandlers(
+       void )
+{
+  CallbackForAllBags( CheckHandlersBag);
     return;
 }
 
 
-/****************************************************************************
-**
-*F  CheckAllHandlers()  . . . . . . . . . . . . . check all function handlers
-*/
-void CheckAllHandlers( void )
+static int IsLessHandlerInfo( TypeHandlerInfo *h1, 
+                              TypeHandlerInfo *h2,
+                              UInt byWhat)
 {
-    CallbackForAllBags(CheckHandlersBag);
+  switch(byWhat) {
+  case 1:
+    return h1->hdlr < h2->hdlr;
+  case 2:
+    return SyStrcmp(h1->cookie, h2->cookie) < 0;
+  default:
+    ErrorQuit("Invalid sort mode %u", byWhat,0L);
+    return 0; /* please lint */
+  }
 }
+
+void SortHandlers( UInt byWhat )
+{
+  TypeHandlerInfo tmp;
+  UInt len, h, i, k;
+  if (HandlerSortingStatus == byWhat)
+    return;
+  len = NHandlerFuncs;
+  h = 1;
+  while ( 9*h + 4 < len ) 
+    { h = 3*h + 1; }
+  while ( 0 < h ) {
+    for ( i = h; i < len; i++ ) {
+      tmp = HandlerFuncs[i];
+      k = i;
+      while ( h <= k && IsLessHandlerInfo(&tmp, HandlerFuncs+(k-h), byWhat))
+        {
+          HandlerFuncs[k] = HandlerFuncs[k-h];
+          k -= h;
+        }
+      HandlerFuncs[k] = tmp;
+    }
+    h = h / 3;
+  }
+  HandlerSortingStatus = byWhat;
+  return;
+}
+
+
+SYS_CONST Char * CookieOfHandler(
+       ObjFunc hdlr )
+{
+  UInt i, top, bottom, middle;
+  if (HandlerSortingStatus != 1)
+    {
+      for (i = 0; i < NHandlerFuncs; i++)
+        {
+          if (hdlr == HandlerFuncs[i].hdlr)
+            return HandlerFuncs[i].cookie;
+        }
+      ErrorQuit("No Cookie for Handler", 0L, 0L);
+      return (Char *)0L;
+    }
+  else
+    {
+      top = NHandlerFuncs;
+      bottom = 0;
+      while (top >= bottom) {
+        middle = (top + bottom)/2;
+        if (hdlr < HandlerFuncs[middle].hdlr)
+          top = middle-1;
+        else if (hdlr > HandlerFuncs[middle].hdlr)
+          bottom = middle+1;
+        else
+          return HandlerFuncs[middle].cookie;
+      }
+      ErrorQuit("No Cookie for Handler", 0L, 0L);
+      return (Char *)0L;
+    }
+}
+                                      
+                       
+ObjFunc HandlerOfCookie(
+       SYS_CONST Char * cookie )
+{
+  UInt i,top,bottom,middle;
+  Int res;
+  if (HandlerSortingStatus != 2) 
+    {
+      for (i = 0; i < NHandlerFuncs; i++)
+        {
+          if (SyStrcmp(cookie, HandlerFuncs[i].cookie) == 0)
+            return HandlerFuncs[i].hdlr;
+        }
+      ErrorQuit("No Handler for Cookie", 0L, 0L);
+      return (ObjFunc)0L;
+    }
+  else
+    {
+      top = NHandlerFuncs;
+      bottom = 0;
+      while (top >= bottom) {
+        middle = (top + bottom)/2;
+        res = SyStrcmp(cookie,HandlerFuncs[middle].cookie);
+        if (res < 0)
+          top = middle-1;
+        else if (res > 0)
+          bottom = middle+1;
+        else
+          return HandlerFuncs[middle].hdlr;
+      }
+      ErrorQuit("No Handler for Cookie", 0L, 0L);
+      return (ObjFunc)0L;
+    }
+}
+                                      
+                       
 
 /****************************************************************************
 **
@@ -1101,6 +1219,7 @@ Obj NewFunctionCT (
         }
         name_o = NEW_STRING( l-k );
         SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );
+        RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
         SET_ELM_PLIST( nams_o, i, name_o );
         k = l;
     }
@@ -1109,6 +1228,7 @@ Obj NewFunctionCT (
     len = SyStrlen( name_c );
     name_o = NEW_STRING(len);
     SyStrncat( CSTR_STRING(name_o), name_c, (UInt)len );
+    RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
 
     /* make the function                                                   */
     return NewFunctionT( type, size, name_o, narg, nams_o, hdlr );
@@ -1157,7 +1277,7 @@ void PrintFunction (
 
     /* complete the function if necessary                                  */
     if ( IS_UNCOMPLETED_FUNC(func) ) {
-	COMPLETE_FUNC(func);
+        COMPLETE_FUNC(func);
     }
 
     /* print 'function ('                                                  */
@@ -1195,12 +1315,12 @@ void PrintFunction (
                 if ( i != nloc )  Pr("%<, %>",0L,0L);
             }
             Pr("%<;\n",0L,0L);
-	}
+        }
 
         /* print the body                                                  */
- 	if ( IS_UNCOMPLETED_FUNC(func) )  {
-	    Pr( "<<uncompletable function>>", 0L, 0L );
-	}
+        if ( IS_UNCOMPLETED_FUNC(func) )  {
+            Pr( "<<uncompletable function>>", 0L, 0L );
+        }
         else if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0 ) {
             Pr("<<compiled code>>",0L,0L);
         }
@@ -1442,7 +1562,7 @@ Obj FuncNAME_FUNC (
         if ( name == 0 ) {
             name = NEW_STRING(SyStrlen(deflt));
             SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );
-	    RetypeBag( name, IMMUTABLE_TNUM(TNUM_OBJ(name)) );
+            RESET_FILT_LIST( name, FN_IS_MUTABLE );
             NAME_FUNC(func) = name;
 
         }
@@ -1466,12 +1586,12 @@ Obj FuncNARG_FUNC (
 {
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         if ( IS_UNCOMPLETED_FUNC(func) )  {
-	    COMPLETE_FUNC(func);
-	    if ( IS_UNCOMPLETED_FUNC(func) ) {
-		ErrorQuit( "<func> did not complete", 0L, 0L );
-		return 0;
-	    }
-	}
+            COMPLETE_FUNC(func);
+            if ( IS_UNCOMPLETED_FUNC(func) ) {
+                ErrorQuit( "<func> did not complete", 0L, 0L );
+                return 0;
+            }
+        }
         return INTOBJ_INT( NARG_FUNC(func) );
     }
     else {
@@ -1492,12 +1612,12 @@ Obj FuncNAMS_FUNC (
 {
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         if ( IS_UNCOMPLETED_FUNC(func) )  {
-	    COMPLETE_FUNC(func);
-	    if ( IS_UNCOMPLETED_FUNC(func) ) {
-		ErrorQuit( "<func> did not complete", 0L, 0L );
-		return 0;
-	    }
-	}
+            COMPLETE_FUNC(func);
+            if ( IS_UNCOMPLETED_FUNC(func) ) {
+                ErrorQuit( "<func> did not complete", 0L, 0L );
+                return 0;
+            }
+        }
         return NAMS_FUNC(func);
     }
     else {
@@ -1549,11 +1669,11 @@ Obj FuncCLEAR_PROFILE_FUNC(
         return 0;
     }
     if ( IS_UNCOMPLETED_FUNC(func) ) {
-	COMPLETE_FUNC(func);
-	if ( IS_UNCOMPLETED_FUNC(func) ) {
-	    ErrorQuit( "<func> did not complete", 0L, 0L );
-	    return 0;
-	}
+        COMPLETE_FUNC(func);
+        if ( IS_UNCOMPLETED_FUNC(func) ) {
+            ErrorQuit( "<func> did not complete", 0L, 0L );
+            return 0;
+        }
     }
 
     /* clear profile info                                                  */
@@ -1596,11 +1716,11 @@ Obj FuncPROFILE_FUNC(
         return 0;
     }
     if ( IS_UNCOMPLETED_FUNC(func) ) {
-	COMPLETE_FUNC(func);
-	if ( IS_UNCOMPLETED_FUNC(func) ) {
-	    ErrorQuit( "<func> did not complete", 0L, 0L );
-	    return 0;
-	}
+        COMPLETE_FUNC(func);
+        if ( IS_UNCOMPLETED_FUNC(func) ) {
+            ErrorQuit( "<func> did not complete", 0L, 0L );
+            return 0;
+        }
     }
 
     /* uninstall trace handler                                             */
@@ -1654,11 +1774,11 @@ Obj FuncIS_PROFILED_FUNC(
         return 0;
     }
     if ( IS_UNCOMPLETED_FUNC(func) ) {
-	COMPLETE_FUNC(func);
-	if ( IS_UNCOMPLETED_FUNC(func) ) {
-	    ErrorQuit( "<func> did not complete", 0L, 0L );
-	    return 0;
-	}
+        COMPLETE_FUNC(func);
+        if ( IS_UNCOMPLETED_FUNC(func) ) {
+            ErrorQuit( "<func> did not complete", 0L, 0L );
+            return 0;
+        }
     }
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
@@ -1680,11 +1800,11 @@ Obj FuncUNPROFILE_FUNC(
         return 0;
     }
     if ( IS_UNCOMPLETED_FUNC(func) ) {
-	COMPLETE_FUNC(func);
-	if ( IS_UNCOMPLETED_FUNC(func) ) {
-	    ErrorQuit( "<func> did not complete", 0L, 0L );
-	    return 0;
-	}
+        COMPLETE_FUNC(func);
+        if ( IS_UNCOMPLETED_FUNC(func) ) {
+            ErrorQuit( "<func> did not complete", 0L, 0L );
+            return 0;
+        }
     }
 
     /* uninstall trace handler                                             */
@@ -1708,6 +1828,52 @@ Obj FuncUNPROFILE_FUNC(
     return (Obj)0;
 }
 
+/****************************************************************************
+**
+*F  SaveFunction( <func> )                           save a function
+**
+*/
+
+void SaveFunction( Obj func)
+{
+  UInt i;
+  for (i = 0; i <= 7; i++)
+    SaveHandler(HDLR_FUNC(func,i));
+  SaveSubObj(NAME_FUNC(func));
+  SaveUInt(NARG_FUNC(func));
+  SaveSubObj(NAMS_FUNC(func));
+  SaveSubObj(PROF_FUNC(func));
+  SaveUInt(NLOC_FUNC(func));
+  SaveSubObj(BODY_FUNC(func));
+  SaveSubObj(ENVI_FUNC(func));
+  SaveSubObj(FEXS_FUNC(func));
+  if (SIZE_OBJ(func) != SIZE_FUNC)
+    SaveOperationExtras( func );
+}
+
+/****************************************************************************
+**
+*F  LoadFunction( <func> )                           Load a function
+**
+*/
+
+void LoadFunction( Obj func)
+{
+  UInt i;
+  for (i = 0; i <= 7; i++)
+    HDLR_FUNC(func,i) = LoadHandler();
+  NAME_FUNC(func) = LoadSubObj();
+  NARG_FUNC(func) = LoadUInt();
+  NAMS_FUNC(func) = LoadSubObj();
+  PROF_FUNC(func) = LoadSubObj();
+  NLOC_FUNC(func) = LoadUInt();
+  BODY_FUNC(func) = LoadSubObj();
+  ENVI_FUNC(func) = LoadSubObj();
+  FEXS_FUNC(func) = LoadSubObj();
+  if (SIZE_OBJ(func) != SIZE_FUNC)
+    LoadOperationExtras( func );
+}
+
 
 /****************************************************************************
 **
@@ -1718,25 +1884,36 @@ Obj FuncUNPROFILE_FUNC(
 /****************************************************************************
 **
 
-*F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
-**
-**  'InitCalls' initializes the call package.
+*F  SetupCalls()  . . . . . . . . . . . . . . . . initialize the call package
 */
-void InitCalls ()
+void SetupCalls ( void )
 {
     /* install the marking functions                                       */
     InfoBags[         T_FUNCTION ].name = "function";
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
 
 
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
-    ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
-    TypeObjFuncs[ T_FUNCTION ] = TypeFunction;
+    /* and the saving function */
+    SaveObjFuncs[ T_FUNCTION ] = SaveFunction;
 
 
     /* install the printer                                                 */
     PrintObjFuncs[ T_FUNCTION ] = PrintFunction;
+}
+
+
+/****************************************************************************
+**
+*F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
+**
+**  'InitCalls' initializes the call package.
+*/
+void InitCalls ( void )
+{
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
+    ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
+    TypeObjFuncs[ T_FUNCTION ] = TypeFunction;
 
 
     /* make and install the 'IS_FUNCTION' filter                           */
@@ -1752,7 +1929,7 @@ void InitCalls ()
 
     /* make and install the 'CALL_FUNC_LIST' operation                     */
     C_NEW_GVAR_OPER( "CALL_FUNC_LIST", 2L, "func, list",
-		     CallFuncListOper, CallFuncListHandler,
+                     CallFuncListOper, CallFuncListHandler,
          "src/calls.c:CALL_FUNC_LIST" );
 
 
@@ -1777,47 +1954,59 @@ void InitCalls ()
     /* make and install the profile functions                              */
     C_NEW_GVAR_FUNC( "CLEAR_PROFILE_FUNC", 1L, "func",
                   FuncCLEAR_PROFILE_FUNC,
-	 "src/calls.c:CLEAR_PROFILE_FUNC" );
+         "src/calls.c:CLEAR_PROFILE_FUNC" );
 
     C_NEW_GVAR_FUNC( "IS_PROFILED_FUNC", 1L, "func",
                   FuncIS_PROFILED_FUNC,
-	 "src/calls.c:IS_PROFILED_FUNC" );
+         "src/calls.c:IS_PROFILED_FUNC" );
 
     C_NEW_GVAR_FUNC( "PROFILE_FUNC", 1L, "func",
                   FuncPROFILE_FUNC,
-	 "src/calls.c:PROFILE_FUNC" );
+         "src/calls.c:PROFILE_FUNC" );
 
     C_NEW_GVAR_FUNC( "UNPROFILE_FUNC", 1L, "func",
                   FuncUNPROFILE_FUNC,
-	 "src/calls.c:UNPROFILE_FUNC" );
+         "src/calls.c:UNPROFILE_FUNC" );
 
 
-    /* initialise all 'Do<Something><N>args' handlers                      */
-    InitHandlerFunc( DoFail0args, "src/calls.c:DoFail0args" );
-    InitHandlerFunc( DoFail1args, "src/calls.c:DoFail1args" );
-    InitHandlerFunc( DoFail2args, "src/calls.c:DoFail2args" );
-    InitHandlerFunc( DoFail3args, "src/calls.c:DoFail3args" );
-    InitHandlerFunc( DoFail4args, "src/calls.c:DoFail4args" );
-    InitHandlerFunc( DoFail5args, "src/calls.c:DoFail5args" );
-    InitHandlerFunc( DoFail6args, "src/calls.c:DoFail6args" );
-    InitHandlerFunc( DoFailXargs, "src/calls.c:DoFailXargs" );
+    /* initialise all 'Do<Something><N>args' handlers, give the most       */
+    /* common ones short cookies to save space in in the saved workspace   */
+    InitHandlerFunc( DoFail0args, "f0" );
+    InitHandlerFunc( DoFail1args, "f1" );
+    InitHandlerFunc( DoFail2args, "f2" );
+    InitHandlerFunc( DoFail3args, "f3" );
+    InitHandlerFunc( DoFail4args, "f4" );
+    InitHandlerFunc( DoFail5args, "f5" );
+    InitHandlerFunc( DoFail6args, "f6" );
+    InitHandlerFunc( DoFailXargs, "f7" );
 
-    InitHandlerFunc( DoWrap0args, "src/calls.c:DoWrap0args" );
-    InitHandlerFunc( DoWrap1args, "src/calls.c:DoWrap1args" );
-    InitHandlerFunc( DoWrap2args, "src/calls.c:DoWrap2args" );
-    InitHandlerFunc( DoWrap3args, "src/calls.c:DoWrap3args" );
-    InitHandlerFunc( DoWrap4args, "src/calls.c:DoWrap4args" );
-    InitHandlerFunc( DoWrap5args, "src/calls.c:DoWrap5args" );
-    InitHandlerFunc( DoWrap6args, "src/calls.c:DoWrap6args" );
+    InitHandlerFunc( DoWrap0args, "w0" );
+    InitHandlerFunc( DoWrap1args, "w1" );
+    InitHandlerFunc( DoWrap2args, "w2" );
+    InitHandlerFunc( DoWrap3args, "w3" );
+    InitHandlerFunc( DoWrap4args, "w4" );
+    InitHandlerFunc( DoWrap5args, "w5" );
+    InitHandlerFunc( DoWrap6args, "w6" );
 
-    InitHandlerFunc( DoProf0args, "src/calls.c:DoProf0args" );
-    InitHandlerFunc( DoProf1args, "src/calls.c:DoProf1args" );
-    InitHandlerFunc( DoProf2args, "src/calls.c:DoProf2args" );
-    InitHandlerFunc( DoProf3args, "src/calls.c:DoProf3args" );
-    InitHandlerFunc( DoProf4args, "src/calls.c:DoProf4args" );
-    InitHandlerFunc( DoProf5args, "src/calls.c:DoProf5args" );
-    InitHandlerFunc( DoProf6args, "src/calls.c:DoProf6args" );
-    InitHandlerFunc( DoProfXargs, "src/calls.c:DoProfXargs" );
+    InitHandlerFunc( DoProf0args, "p0" );
+    InitHandlerFunc( DoProf1args, "p1" );
+    InitHandlerFunc( DoProf2args, "p2" );
+    InitHandlerFunc( DoProf3args, "p3" );
+    InitHandlerFunc( DoProf4args, "p4" );
+    InitHandlerFunc( DoProf5args, "p5" );
+    InitHandlerFunc( DoProf6args, "p6" );
+    InitHandlerFunc( DoProfXargs, "pX" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckCalls()  . . . . . . .  check the initialisation of the call package
+*/
+void CheckCalls ( void )
+{
+    SET_REVISION( "calls_c",    Revision_calls_c );
+    SET_REVISION( "calls_h",    Revision_calls_h );
 }
 
 

@@ -50,9 +50,36 @@ InstallMethod( SemigroupByGenerators, true, [ IsCollection ], 0,
 
 #############################################################################
 ##
-#M  AsSemigroup( <S> )  . . . . . . . . . . . view a semigroup as a semigroup
+#M  AsSemigroup( <D> ) . . . . . . . . . . .  domain <D>, viewed as semigroup
 ##
-InstallMethod( AsSemigroup, true, [ IsSemigroup ], 0, IdFunc );
+InstallMethod( AsSemigroup, true, [ IsSemigroup ], 100, IdFunc );
+
+InstallMethod( AsSemigroup,
+    "generic method for collections",
+    true,
+    [ IsCollection ], 0,
+    function ( D )
+    local   S,  L;
+
+    D := AsListSorted( D );
+    L := ShallowCopy( D );
+    S := Submagma( SemigroupByGenerators( D ), [] );
+    SubtractSet( L, AsListSorted( S ) );
+    while not IsEmpty(L)  do
+        S := ClosureMagmaDefault( S, L[1] );
+        SubtractSet( L, AsListSorted( S ) );
+    od;
+    if Length( AsListSorted( S ) ) <> Length( D )  then
+        return fail;
+    fi;
+    S := SemigroupByGenerators( GeneratorsOfSemigroup( S ) );
+    SetAsListSorted( S, D );
+    SetIsFinite( S, true );
+    SetSize( S, Length( D ) );
+
+    # return the semigroup
+    return S;
+    end );
 
 
 #############################################################################
@@ -68,7 +95,7 @@ Semigroup := function( arg )
 
     # list of generators
     elif Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] ) then
-      return SemigroupByGenerators( arg );
+      return SemigroupByGenerators( arg[1] );
 
     # generators
     elif 0 < Length( arg ) then

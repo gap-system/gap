@@ -332,7 +332,7 @@ end);
 
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . . . . . for pc groups
 ##
-InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
         [ IsPcGroup, IsPcGroup ], 0,
     function( G, N )
     local   pcgsG,  pcgsN,  pcgsK,  pcgsF,  F,  hom;
@@ -364,7 +364,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
     return hom;
 end );
 
-InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
         [ IsGroup and HasSpecialPcgs, 
           IsGroup and HasInducedPcgsWrtSpecialPcgs ], 0,
     function( G, N )

@@ -17,18 +17,22 @@ Revision.modfree_gi :=
 #M  \=( <V>, <W> )  . . . . . . . . . test if two free left modules are equal
 ##
 InstallMethod( \=,
-    "method for two free left modules",
-    IsIdentical, [ IsFreeLeftModule, IsFreeLeftModule ], 0,
+    "method for two free left modules (at least one fin. dim.)",
+    IsIdentical,
+    [ IsFreeLeftModule, IsFreeLeftModule ], 0,
     function( V, W )
-
+    local inter;
     if IsFiniteDimensional( V ) then
-      if LeftActingDomain( V ) = LeftActingDomain( W ) then
+      if IsFiniteDimensional( W ) then
+        if LeftActingDomain( V ) <> LeftActingDomain( W ) then
+          inter:= Intersection2( LeftActingDomain(V), LeftActingDomain(W) );
+          V:= AsVectorSpace( inter, V );
+          W:= AsVectorSpace( inter, W );
+        fi;
         return     Dimension( V ) = Dimension( W )
                and ForAll( GeneratorsOfLeftModule( V ), x -> x in W );
       else
-        return   Dimension( V ) * DegreeOverPrimeField( LeftActingDomain(V) )
-               = Dimension( W ) * DegreeOverPrimeField( LeftActingDomain(W) )
-            and ForAll( GeneratorsOfLeftModule( V ), x -> x in W );
+        return false;
       fi;
     elif IsFiniteDimensional( W ) then
       return false;

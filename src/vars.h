@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  vars.h                      GAP source                   Martin Schoenert
+*W  vars.h                      GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -16,13 +16,14 @@
 **  global variables, list elements, and record elements.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_vars_h =
+SYS_CONST char * Revision_vars_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
 **
 **  'T_LVARS' is the type of bags used to store values of local variables.
@@ -210,11 +211,37 @@ extern  Char *          NAME_HVAR (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupVars() . . . . . . . . . . . . . . . .  initialize variables package
+*/
+extern void SetupVars ( void );
+
+
+/****************************************************************************
+**
 *F  InitVars()  . . . . . . . . . . . . . . . .  initialize variables package
 **
 **  'InitVars' initializes the variables package.
 */
-extern  void            InitVars ( void );
+extern void InitVars ( void );
 
 
+/****************************************************************************
+**
+*F  CheckVars() . . . . . . check the initialisation of the variables package
+*/
+extern void CheckVars ( void );
 
+
+/****************************************************************************
+**
+
+*E  vars.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

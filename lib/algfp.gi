@@ -179,7 +179,51 @@ InstallMethod( \=,
     return ExtRepOfObj( x ) = ExtRepOfObj( y );
     end );
 
-#T missing: \<, \= method to look for normal form in the family
+#T missing: \= method to look for normal form in the family
+
+
+#############################################################################
+##
+#M  \<( <x>, <y> )  . . . . . . . .  for two normalized f.p. algebra elements
+##
+##  The ordering is defined as follows.
+##  Expressions with less summands are shorter,
+##  and for expressions with the same number of summands,
+##  the words in algebra generators and the coefficients are compared
+##  according to the ordering in the external representation.
+##
+InstallMethod( \<,
+    "method for two normalized f.p. algebra elements",
+    IsIdentical,
+    [ IsElementOfFpAlgebra and IsNormalForm,
+      IsElementOfFpAlgebra and IsNormalForm ], 0,
+    function( x, y )
+    local lenx, leny, i;
+
+    x:= ExtRepOfObj( x )[2];
+    y:= ExtRepOfObj( y )[2];
+    lenx:= Length( x );
+    leny:= Length( y );
+
+    # Compare the lengths.
+    if lenx < leny then
+      return true;
+    elif leny < lenx then
+      return false;
+    fi;
+
+    # For expressions of same length, compare the summands.
+    for i in [ 1 .. lenx ] do
+      if x[i] < y[i] then
+        return true;
+      elif y[i] < x[i] then
+        return false;
+      fi;
+    od;
+
+    # The operands are equal.
+    return false;
+    end );
 
 
 #############################################################################
@@ -300,6 +344,24 @@ end);
 
 #############################################################################
 ##
+#M  One( <fp alg elm> )
+##
+InstallOtherMethod( One,
+    "method for an f.p. algebra element",
+    true,
+    [ IsElementOfFpAlgebra and IsPackedAlgebraElmDefaultRep ], 0,
+    function( elm )
+    local one;
+    one:= One( elm![1] );
+    if one <> fail then
+      one:= ElementOfFpAlgebra( FamilyObj( elm ), one );
+    fi;
+    return one;
+    end );
+
+
+#############################################################################
+##
 #M  Zero( <fp alg elm>)
 ##
 InstallMethod( Zero,
@@ -339,7 +401,8 @@ function(a,b)
   return ElementOfFpAlgebra(FamilyObj(a),a![1]*b);
 end);
 
-#AH  Embedding can only be defined reasonably if a 'One' is present
+#AH  Embedding can only be defined reasonably if a 'One' different from
+#AH  the zero is present
 #AH  (The factor may collaps).
 
 

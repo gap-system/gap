@@ -10,30 +10,33 @@
 **
 **  This file contains the functions of for coset tables.
 */
-char * Revision_costab_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_costab_c =
    "@(#)$Id$";
 
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "system.h"              /* Ints, UInts, SyIsIntr           */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gasman.h"              /* Retype                          */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
-
-#include        "gvars.h"               /* AssGVar, GVarName               */
-#include        "gap.h"                 /* Error                           */
-
-#include        "calls.h"               /* NAMI_FUNC, ENVI_FUNC            */
-
-#include        "bool.h"                /* True, False                     */
-#include        "lists.h"               /* lists                           */
-
-#include        "plist.h"               /* plain lists                     */
+#include        "gvars.h"               /* global variables                */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
 
 #include        "integer.h"             /* integers                        */
+#include        "bool.h"                /* booleans                        */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
 #define INCLUDE_DECLARATION_PART
-#include        "costab.h"              /* declaration part                */
+#include        "costab.h"              /* coset table                     */
 #undef  INCLUDE_DECLARATION_PART
 
 
@@ -106,7 +109,7 @@ Obj FuncApplyRel (
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     if ( ! IS_PLIST(app) ) {
         ErrorQuit( "<app> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(app)].name), 0L );
+                   (Int)TNAM_OBJ(app), 0L );
         return 0;
     }
     if ( LEN_PLIST(app) != 4 ) {
@@ -125,7 +128,7 @@ Obj FuncApplyRel (
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     if ( ! IS_PLIST(rel) ) {
         ErrorQuit( "<rel> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(rel)].name), 0L );
+                   (Int)TNAM_OBJ(rel), 0L );
         return 0;
     }
 
@@ -152,7 +155,6 @@ Obj FuncApplyRel (
     SET_ELM_PLIST( app, 2, INTOBJ_INT( lc ) );
     SET_ELM_PLIST( app, 3, INTOBJ_INT( rp ) );
     SET_ELM_PLIST( app, 4, INTOBJ_INT( rc ) );
-    CHANGED_BAG(app);
 
     /* return 'true' if a coincidence or deduction was found               */
     if ( lp == rp+1
@@ -396,7 +398,7 @@ Obj FuncMakeConsequences (
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     if ( ! IS_PLIST(list) ) {
         ErrorQuit( "<list> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(list)].name), 0L );
+                   (Int)TNAM_OBJ(list), 0L );
         return 0;
     }
 
@@ -534,7 +536,6 @@ Obj FuncMakeConsequences (
     SET_ELM_PLIST( list, 7, INTOBJ_INT( lastFree  ) );
     SET_ELM_PLIST( list, 8, INTOBJ_INT( firstDef  ) );
     SET_ELM_PLIST( list, 9, INTOBJ_INT( lastDef   ) );
-    CHANGED_BAG(list);
 
     return INTOBJ_INT( nrdel );
 }
@@ -564,7 +565,7 @@ Obj FuncStandardizeTable (
     objTable = list;
     if ( ! IS_PLIST(objTable) ) {
         ErrorQuit( "<table> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(objTable)].name), 0L );
+                   (Int)TNAM_OBJ(objTable), 0L );
         return 0;
     }
     ptTable  = &(ELM_PLIST(objTable,1)) - 1;
@@ -574,7 +575,7 @@ Obj FuncStandardizeTable (
             ErrorQuit(
                 "<table>[%d] must be a plain list (not a %s)",
                 (Int)j,
-                (Int)(InfoBags[TNUM_OBJ(ptTable[j])].name) );
+                (Int)TNAM_OBJ(ptTable[j]) );
             return 0;
         }
     }
@@ -631,10 +632,7 @@ Obj FuncStandardizeTable (
     for ( j = 1; j <= nrgen; j++ ) {
         SET_LEN_PLIST( ptTable[2*j-1], lcos );
         SET_LEN_PLIST( ptTable[2*j  ], lcos );
-        CHANGED_BAG(ptTable[2*j-1]);
-        CHANGED_BAG(ptTable[2*j  ]);
     }
-    CHANGED_BAG(objTable);
 
     /* return void                                                         */
     return 0;
@@ -667,7 +665,6 @@ static void InitializeCosetFactorWord ( void )
         for ( i = 1;  i <= treeWordLength;  i++ ) {
             ptWord[i] = INTOBJ_INT(0);
         }
-        CHANGED_BAG(objTree2);
     }
 
     /* handle the general case                                             */
@@ -762,12 +759,12 @@ static Int TreeEntryC ( void )
         if ( treesize < numgens ) {
             treesize = 2 * treesize;
             GROW_PLIST( objTree1, treesize );
+            CHANGED_BAG(objTree);
         }
         objNew = NEW_PLIST( T_PLIST, leng );
         SET_LEN_PLIST( objNew, leng );
 
         SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
-        CHANGED_BAG(objTree);
 
         SET_LEN_PLIST( objTree1, treesize );
         SET_ELM_PLIST( objTree1, numgens, objNew );
@@ -780,7 +777,6 @@ static Int TreeEntryC ( void )
             ptNew[leng] = ptWord[leng];
             leng--;
         }
-        CHANGED_BAG(objNew);
 
         return sign * numgens;
     }
@@ -869,13 +865,11 @@ static Int TreeEntryC ( void )
                     ptTree2 = &(ELM_PLIST(objTree2,1)) - 1;
                     SET_LEN_PLIST( objTree1, treesize );
                     SET_LEN_PLIST( objTree2, treesize );
+                    CHANGED_BAG(objTree);
                 }
                 ptTree1[numgens] = INTOBJ_INT( t1 );
                 ptTree2[numgens] = INTOBJ_INT( t2 );
                 SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
-                CHANGED_BAG(objTree);
-                CHANGED_BAG(objTree1);
-                CHANGED_BAG(objTree2);
             }
             gen = ( u > - v ) ? -k : k;
             break;
@@ -940,7 +934,6 @@ static void AddCosetFactor2 (
                 ptWord[i] = sum;
             }
         }
-        CHANGED_BAG(objTree2);
     }
 
     /* handle the general case                                             */
@@ -1003,7 +996,7 @@ Obj FuncApplyRel2 (
     /* get and check the application list                                  */
     if ( ! IS_PLIST(app) ) {
         ErrorQuit( "<app> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(app)].name), 0L );
+                   (Int)TNAM_OBJ(app), 0L );
         return 0;
     }
     if ( LEN_PLIST(app) != 9 ) {
@@ -1023,7 +1016,7 @@ Obj FuncApplyRel2 (
     objRel = rel;
     if ( ! IS_PLIST(rel) ) {
         ErrorQuit( "<rel> must be a plain list (not a %s)", 
-                   (Int)(InfoBags[TNUM_OBJ(rel)].name), 0L );
+                   (Int)TNAM_OBJ(rel), 0L );
         return 0;
     }
 
@@ -1035,7 +1028,7 @@ Obj FuncApplyRel2 (
     objNums = nums;
     if ( ! IS_PLIST(objNums) ) {
         ErrorQuit( "<nums> must be a plain list (not a %s)", 
-                   (Int)(InfoBags[TNUM_OBJ(objNums)].name), 0L );
+                   (Int)TNAM_OBJ(objNums), 0L );
         return 0;
     }
 
@@ -1043,7 +1036,7 @@ Obj FuncApplyRel2 (
     objTable2 = ptApp[6];
     if ( ! IS_PLIST(objTable2) ) {
         ErrorQuit( "<nums> must be a plain list (not a %s)", 
-                   (Int)(InfoBags[TNUM_OBJ(objTable2)].name), 0L );
+                   (Int)TNAM_OBJ(objTable2), 0L );
         return 0;
     }
 
@@ -1093,7 +1086,7 @@ Obj FuncApplyRel2 (
         word = ptApp[7];
         if ( ! IS_PLIST(word) ) {
             ErrorQuit( "<word> must be a plain list (not a %s)", 
-                       (Int)(InfoBags[TNUM_OBJ(word)].name), 0L );
+                       (Int)TNAM_OBJ(word), 0L );
             return 0;
         }
 
@@ -1156,7 +1149,6 @@ Obj FuncApplyRel2 (
                     ptWord[i] = ptTree2[i];
                 }
                 SET_LEN_PLIST( word, LEN_PLIST(objTree2) );
-                CHANGED_BAG(word);
             }
         }
 
@@ -1169,6 +1161,7 @@ Obj FuncApplyRel2 (
             if ( size < bound ) {
                 size = ( bound > 2 * size ) ? bound : 2 * size;
                 GROW_PLIST( word, size );
+                CHANGED_BAG(app);
             }
 
             /* initialize some local variables                             */
@@ -1227,7 +1220,6 @@ Obj FuncApplyRel2 (
 
             /* save the word length                                        */
             SET_LEN_PLIST( word, last );
-            CHANGED_BAG(word);
         }
     }
 
@@ -1236,7 +1228,6 @@ Obj FuncApplyRel2 (
     SET_ELM_PLIST( app, 2, INTOBJ_INT( lc ) );
     SET_ELM_PLIST( app, 3, INTOBJ_INT( rp ) );
     SET_ELM_PLIST( app, 4, INTOBJ_INT( rc ) );
-    CHANGED_BAG(app);
 
     /* return nothing                                                      */
     return 0;
@@ -1262,7 +1253,7 @@ Obj FuncCopyRel (
     /* Get and check argument                                              */
     if ( ! IS_PLIST(rel) ) {
         ErrorQuit( "<rel> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(rel)].name), 0L );
+                   (Int)TNAM_OBJ(rel), 0L );
         return 0;
     }
     leng = LEN_PLIST(rel);
@@ -1306,7 +1297,7 @@ Obj FuncMakeCanonical (
     /* Get and check the argument                                          */
     if ( ! IS_PLIST(rel) ) {
         ErrorQuit( "<rel> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(rel)].name), 0L );
+                   (Int)TNAM_OBJ(rel), 0L );
         return 0;
     }
     ptRel = &(ELM_PLIST(rel,1));
@@ -1330,7 +1321,7 @@ Obj FuncMakeCanonical (
 
     /*  Loop over the relator and find the maximal postitve and negative   */
     /*  entries                                                            */
-    max = min = INT_INTOBJ( ptRel[0] );
+    max = min = INT_INTOBJ(ptRel[0]);
     i = 0;  j = 0;
     for ( k = 1;  k < leng;  k++ ) {
         next = INT_INTOBJ( ptRel[k] );
@@ -1536,7 +1527,7 @@ Obj FuncTreeEntry(
 
         for ( k = 1;  k <= numgens;  k++ ) {
             ptFac = &(ELM_PLIST(ptTree1[k],1)) - 1;
-            if ( INT_INTOBJ( ptFac[0] ) == leng ) {
+            if ( LEN_PLIST(ptTree1[k]) == leng ) {
                 for ( i = 1;  i <= leng;  i++ ) {
                     if ( ptFac[i] != ptWord[i] ) {
                         break;
@@ -1554,12 +1545,14 @@ Obj FuncTreeEntry(
             treesize = 2 * treesize;
             GROW_PLIST( objTree1, treesize );
             SET_LEN_PLIST( objTree1, treesize );
+            CHANGED_BAG(objTree);
         }
         new = NEW_PLIST( T_PLIST, leng );
         SET_LEN_PLIST( new, leng );
 
         SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
         SET_ELM_PLIST( objTree1, numgens, new );
+        CHANGED_BAG(objTree1);
 
         /* copy the word to the new bag                                    */
         ptWord = &(ELM_PLIST(objTree2,1)) - 1;
@@ -1689,6 +1682,7 @@ Obj FuncTreeEntry(
                     SET_LEN_PLIST( objTree2, treesize );
                     ptTree1 = &(ELM_PLIST(objTree1,1)) - 1;
                     ptTree2 = &(ELM_PLIST(objTree2,1)) - 1;
+                    CHANGED_BAG(objTree);
                 }
                 ptTree1[numgens] = INTOBJ_INT( t1 );
                 ptTree2[numgens] = INTOBJ_INT( t2 );
@@ -2155,7 +2149,7 @@ Obj FuncMakeConsequences2 (
     /* get the list of arguments                                           */
     if ( ! IS_PLIST(list) ) {
         ErrorQuit( "<list> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(list)].name), 0L );
+                   (Int)TNAM_OBJ(list), 0L );
         return 0;
     }
     if ( LEN_PLIST(list) != 16 ) {
@@ -2497,7 +2491,7 @@ Obj FuncMakeConsequences2 (
                         objRep = ELM_PLIST(objRep,lc);
                         rep    = INT_INTOBJ(objRep);
                         if ( rep != 0 ) {
-                            AddCosetFactor2(rep);
+                            AddCosetFactor2(-rep);
                         }
                         lc = tc;
                         lp = lp + 2;
@@ -2644,7 +2638,7 @@ Obj FuncStandardizeTable2 (
     objTable = list;
     if ( ! IS_PLIST(objTable) ) {
         ErrorQuit( "<table> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(objTable)].name), 0L );
+                   (Int)TNAM_OBJ(objTable), 0L );
         return 0;
     }
     ptTable = &(ELM_PLIST(objTable,1)) - 1;
@@ -2654,14 +2648,14 @@ Obj FuncStandardizeTable2 (
             ErrorQuit(
                 "<table>[%d] must be a plain list (not a %s)",
                 (Int)j,
-                (Int)(InfoBags[TNUM_OBJ(ptTable[j])].name) );
+                (Int)TNAM_OBJ(ptTable[j]) );
             return 0;
         }
     }
     objTable2 = list2;
     if ( ! IS_PLIST(objTable2) ) {
         ErrorQuit( "<table2> must be a plain list (not a %s)",
-                   (Int)(InfoBags[TNUM_OBJ(objTable)].name), 0L );
+                   (Int)TNAM_OBJ(objTable), 0L );
         return 0;
     }
     ptTabl2 = &(ELM_PLIST(objTable2,1)) - 1;
@@ -2728,13 +2722,7 @@ Obj FuncStandardizeTable2 (
         SET_LEN_PLIST( ptTable[2*j  ], lcos );
         SET_LEN_PLIST( ptTabl2[2*j-1], lcos );
         SET_LEN_PLIST( ptTabl2[2*j  ], lcos );
-        CHANGED_BAG(ptTable[2*j-1]);
-        CHANGED_BAG(ptTable[2*j  ]);
-        CHANGED_BAG(ptTabl2[2*j-1]);
-        CHANGED_BAG(ptTabl2[2*j  ]);
     }
-    CHANGED_BAG(objTable);
-    CHANGED_BAG(objTable2);
 
     /* return void                                                         */
     return 0;
@@ -2763,13 +2751,13 @@ Obj FuncAddAbelianRelator (
     /* check the arguments                                                 */
     if ( ! IS_PLIST(rels) ) {
         ErrorQuit( "<rels> must be a plain list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(rels)].name), 0L );
+            (Int)TNAM_OBJ(rels), 0L );
         return 0;
     }
     ptRels = &(ELM_PLIST(rels,1)) - 1;
     if ( TNUM_OBJ(number) != T_INT ) {
         ErrorQuit( "<number> must be a small integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(number)].name), 0L );
+            (Int)TNAM_OBJ(number), 0L );
         return 0;
     }
 
@@ -2832,76 +2820,92 @@ Obj FuncAddAbelianRelator (
 /****************************************************************************
 **
 
-*F  InitCosetTable()
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupCosetTable() . . . . . . . . . .  initialize the coset table package
+*/
+void SetupCosetTable ( void )
+{
+}
+
+
+/****************************************************************************
+**
+*F  InitCosetTable()  . . . . . . . . . .  initialize the coset table package
 */
 void InitCosetTable ( void )
 {
 
     /* functions for coset tables                                          */
-    InitHandlerFunc( FuncApplyRel, "costab: apply relator");
-    AssGVar( GVarName( "ApplyRel" ),
-         NewFunctionC( "ApplyRel", 2L, "app, relator",
-                    FuncApplyRel ) );
+    C_NEW_GVAR_FUNC( "ApplyRel", 2, "app, relator",
+                  FuncApplyRel,
+         "src/costab.c:ApplyRel" );
 
-    InitHandlerFunc( FuncMakeConsequences, "costab: make consequences");
-    AssGVar( GVarName( "MakeConsequences" ),
-         NewFunctionC( "MakeConsequences", 1L, "list",
-                    FuncMakeConsequences ) );
+    C_NEW_GVAR_FUNC( "MakeConsequences", 1, "list",
+                  FuncMakeConsequences,
+        "src/costab.c:MakeConsequences" );
 
-    InitHandlerFunc( FuncStandardizeTable, "costab: standardize table");
-    AssGVar( GVarName( "StandardizeTable" ),
-         NewFunctionC( "StandardizeTable", 1L, "table",
-                    FuncStandardizeTable ) );
+    C_NEW_GVAR_FUNC( "StandardizeTable", 1, "table",
+                  FuncStandardizeTable,
+        "src/costab.c:StandardizeTable" );
 
-    InitHandlerFunc( FuncApplyRel2, "costab: apply rel 2");
-    AssGVar( GVarName( "ApplyRel2" ),
-         NewFunctionC( "ApplyRel2", 3L, "app, relator, nums",
-                    FuncApplyRel2 ) );
+    C_NEW_GVAR_FUNC( "ApplyRel2", 3, "app, relators, nums",
+                  FuncApplyRel2,
+        "src/costab.c:ApplyRel2" );
 
-    InitHandlerFunc( FuncCopyRel, "costab: copy relator");
-    AssGVar( GVarName( "CopyRel" ),
-         NewFunctionC( "CopyRel", 1L, "relator",
-                    FuncCopyRel ) );
+    C_NEW_GVAR_FUNC( "CopyRel", 1, "relator",
+                  FuncCopyRel,
+        "src/costab.c:CopyRel" );
 
-    InitHandlerFunc( FuncMakeCanonical, "costab: make canonical");
-    AssGVar( GVarName( "MakeCanonical" ),
-         NewFunctionC( "MakeCanonical", 1L, "relator",
-                    FuncMakeCanonical ) );
+    C_NEW_GVAR_FUNC( "MakeCanonical", 1, "relator",
+                  FuncMakeCanonical,
+        "src/costab.c:MakeCanonical" );
 
-    InitHandlerFunc( FuncTreeEntry, "costab: tree entry");
-    AssGVar( GVarName( "TreeEntry" ),
-         NewFunctionC( "TreeEntry", 2L, "relator, word",
-                    FuncTreeEntry ) );
+    C_NEW_GVAR_FUNC( "TreeEntry", 2, "relator, word",
+                  FuncTreeEntry,
+        "src/costab.c:TreeEntry" );
 
-    InitHandlerFunc( FuncMakeConsequences2, "costab: make consequences 2");
-    AssGVar( GVarName( "MakeConsequences2" ),
-         NewFunctionC( "MakeConsequences2", 1L, "list",
-                    FuncMakeConsequences2 ) );
+    C_NEW_GVAR_FUNC( "MakeConsequences2", 1, "list",
+                  FuncMakeConsequences2,
+        "src/costab.c:MakeConsequences2" );
 
-    InitHandlerFunc( FuncStandardizeTable2, "costab: standardize table 2");
-    AssGVar( GVarName( "StandardizeTable2" ),
-         NewFunctionC( "StandardizeTable2", 2L, "table, table",
-                    FuncStandardizeTable2 ) );
+    C_NEW_GVAR_FUNC( "StandardizeTable2", 2, "table, table",
+                  FuncStandardizeTable2,
+        "src/costab.c:StandardizeTable2" );
 
-    InitHandlerFunc( FuncAddAbelianRelator, "costab: add abelian relator");
-    AssGVar( GVarName( "AddAbelianRelator" ),
-         NewFunctionC( "AddAbelianRelator", 2L, "rels, number",
-                    FuncAddAbelianRelator ) );
+    C_NEW_GVAR_FUNC( "AddAbelianRelator", 2, "rels, number",
+                  FuncAddAbelianRelator,
+        "src/costab.c:AddAbelianRelator" );
 
 
     /* static variables                                                    */
-    InitGlobalBag( &objRel      , "costab: relator" );
-    InitGlobalBag( &objNums     , "costab: parallel numbers list" );
-    InitGlobalBag( &objFactor   , "costab: factor" );
-    InitGlobalBag( &objTable    , "costab: table" );
-    InitGlobalBag( &objTable2   , "costab: factor table" );
-    InitGlobalBag( &objNext     , "costab: next" );
-    InitGlobalBag( &objPrev     , "costab: prev" );
-    InitGlobalBag( &objTree     , "costab: subgroup gens tree" );
-    InitGlobalBag( &objTree1    , "costab: first tree compt" );
-    InitGlobalBag( &objTree2    , "costab: second tree compt" );
-    InitGlobalBag( &objWordValue, "costab: word value" );
-    InitGlobalBag( &objExponent , "costab: subgroup order" );
+    InitGlobalBag( &objRel      , "src/costab.c:objRel"       );
+    InitGlobalBag( &objNums     , "src/costab.c:objNums"      );
+    InitGlobalBag( &objFactor   , "src/costab.c:objFactor"    );
+    InitGlobalBag( &objTable    , "src/costab.c:objTable"     );
+    InitGlobalBag( &objTable2   , "src/costab.c:objTable2"    );
+    InitGlobalBag( &objNext     , "src/costab.c:objNext"      );
+    InitGlobalBag( &objPrev     , "src/costab.c:objPrev"      );
+    InitGlobalBag( &objTree     , "src/costab.c:objTree"      );
+    InitGlobalBag( &objTree1    , "src/costab.c:objTree1"     );
+    InitGlobalBag( &objTree2    , "src/costab.c:objTree2"     );
+    InitGlobalBag( &objWordValue, "src/costab.c:objWordValue" );
+    InitGlobalBag( &objExponent , "src/costab.c:objExponent"  );
+}
+
+
+/****************************************************************************
+**
+*F  CheckCosetTable() . . check the initialisation of the coset table package
+*/
+void CheckCosetTable ( void )
+{
+    SET_REVISION( "costab_c",   Revision_costab_c );
+    SET_REVISION( "costab_h",   Revision_costab_h );
 }
 
 

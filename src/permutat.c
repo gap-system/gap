@@ -36,34 +36,43 @@
 **
 *N  13-Jan-91 martin should add 'CyclesPerm', 'CycleLengthsPerm'
 */
-char *          Revision_permutat_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_permutat_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gvars.h"               /* global variables                */
 
-#include        "calls.h"               /* Function                        */
-#include        "opers.h"               /* NewFilterC                      */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* generic lists package           */
+#include        "ariths.h"              /* basic arithmetic                */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "integer.h"             /* SumInt, DiffInt, ProdInt, Quo...*/
+#include        "integer.h"             /* integers                        */
 
 #define INCLUDE_DECLARATION_PART
-#include        "permutat.h"            /* declaration part of the package */
+#include        "permutat.h"            /* permutations                    */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "plist.h"               /* plain lists                     */
 
-#include        "gap.h"                 /* Error                           */
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
+
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
@@ -2315,7 +2324,7 @@ Obj             FuncPermList (
     while ( ! IS_LIST( list ) ) {
         list = ErrorReturnObj(
             "PermList: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
     PLAIN_LIST( list );
@@ -2461,9 +2470,9 @@ Obj             FuncPermList (
 
 /****************************************************************************
 **
-*F  FuncLargestMovedPointPerm( <self>, <perm> ) largest point moved by a perm
+*F  FuncLARGEST_MOVED_POINT_PERM( <self>, <perm> ) largest point moved by a perm
 **
-**  'FuncLargestMovedPointPerm' implements the internal function
+**  'FuncLARGEST_MOVED_POINT_PERM' implements the internal function
 **  'LargestMovedPointPerm'.
 **
 **  'LargestMovedPointPerm( <perm> )'
@@ -2473,7 +2482,7 @@ Obj             FuncPermList (
 **
 **  This is easy, except that permutations may  contain  trailing  fixpoints.
 */
-Obj             FuncLargestMovedPointPerm (
+Obj             FuncLARGEST_MOVED_POINT_PERM (
     Obj                 self,
     Obj                 perm )
 {
@@ -2485,7 +2494,7 @@ Obj             FuncLargestMovedPointPerm (
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "LargestMovedPointPerm: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
+            (Int)TNAM_OBJ(perm), 0L,
             "you can return a permutation for <perm>" );
     }
 
@@ -2557,13 +2566,13 @@ Obj             FuncCycleLengthPermInt (
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "CycleLengthPermInt: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
+            (Int)TNAM_OBJ(perm), 0L,
             "you can return a permutation for <perm>" );
     }
     while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
          "CycleLengthPermInt: <point> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(point)].name), 0L,
+            (Int)TNAM_OBJ(point), 0L,
             "you can return a positive integer for <point>" );
     }
 
@@ -2635,13 +2644,13 @@ Obj             FuncCyclePermInt (
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "CyclePermInt: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
+            (Int)TNAM_OBJ(perm), 0L,
             "you can return a permutation for <perm>" );
     }
     while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
             "CyclePermInt: <point> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(point)].name), 0L,
+            (Int)TNAM_OBJ(point), 0L,
             "you can return a positive integer for <point>" );
     }
 
@@ -2743,7 +2752,7 @@ Obj             FuncOrderPerm (
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "OrderPerm: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
+            (Int)TNAM_OBJ(perm), 0L,
             "you can return a permutation for <perm>" );
     }
 
@@ -2867,7 +2876,7 @@ Obj             FuncSignPerm (
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "SignPerm: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
+            (Int)TNAM_OBJ(perm), 0L,
             "you can return a permutation for <perm>" );
     }
 
@@ -2992,7 +3001,7 @@ Obj             FuncSmallestGeneratorPerm (
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "SmallestGeneratorPerm: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
+            (Int)TNAM_OBJ(perm), 0L,
             "you can return a permutation for <perm>" );
     }
 
@@ -3390,16 +3399,197 @@ Obj             OnSetsPerm (
     return res;
 }
 
+/****************************************************************************
+**
+*F  SavePerm2( <perm2> )
+**
+*/
+
+void SavePerm2( Obj perm)
+{
+  UInt i;
+  UInt2 *ptr;
+  UInt len;
+  len = DEG_PERM2(perm);
+  ptr = ADDR_PERM2(perm);
+  for (i = 0; i < len; i++)
+    SaveUInt2( *ptr++);
+}
+
+/****************************************************************************
+**
+*F  SavePerm4( <perm4> )
+**
+*/
+
+void SavePerm4( Obj perm)
+{
+  UInt i;
+  UInt4 *ptr;
+  UInt len;
+  len = DEG_PERM4(perm);
+  ptr = ADDR_PERM4(perm);
+  for (i = 0; i < len; i++)
+    SaveUInt4( *ptr++);
+}
+
+/****************************************************************************
+**
+*F  LoadPerm2( <perm2> )
+**
+*/
+
+void LoadPerm2( Obj perm)
+{
+  UInt i;
+  UInt2 *ptr;
+  UInt len;
+  len = DEG_PERM2(perm);
+  ptr = ADDR_PERM2(perm);
+  for (i = 0; i < len; i++)
+    *ptr++ = LoadUInt2();
+}
+
+/****************************************************************************
+**
+*F  LoadPerm4( <perm4> )
+**
+*/
+
+void LoadPerm4( Obj perm)
+{
+  UInt i;
+  UInt4 *ptr;
+  UInt len;
+  len = DEG_PERM4(perm);
+  ptr = ADDR_PERM4(perm);
+  for (i = 0; i < len; i++)
+    *ptr++ = LoadUInt4( );
+}
+
+
+/****************************************************************************
+**
+*F  Array2Perm( <array> ) . . . . . . . . . convert array of cycles into perm
+*/
+Obj Array2Perm (
+    Obj                 array )
+{
+    Obj                 perm;           /* permutation, result             */
+    UInt4 *             ptr4;           /* pointer into perm               */
+    UInt2 *             ptr2;           /* pointer into perm               */
+    Obj                 val;            /* one entry as value              */
+    UInt                c, p, l;        /* entries in permutation          */
+    UInt                m;              /* maximal entry in permutation    */
+    Obj                 cycle;          /* one cycle of permutation        */
+    UInt                i, j, k;        /* loop variable                   */
+
+    /* special case for identity permutation                               */
+    if ( LEN_LIST(array) == 0 ) {
+        return IdentityPerm;
+    }
+
+    /* allocate the new permutation                                        */
+    m = 0;
+    perm = NEW_PERM4( 0 );
+
+    /* loop over the cycles                                                */
+    for ( i = 1; i <= LEN_LIST(array); i++ ) {
+        cycle = ELM_LIST( array, i );
+        while ( ! IS_LIST(cycle) ) {
+            cycle = ErrorReturnObj(
+                "Arra2Perm: <cycle> must be a list (not a %s)",
+                (Int)TNAM_OBJ(cycle), 0L,
+                "you can return a list" );
+        }
+
+        /* loop over the entries of the cycle                              */
+        c = p = l = 0;
+        for ( j = LEN_LIST(cycle); 1 <= j; j-- ) {
+
+            /* get and check current entry for the cycle                   */
+            val = ELM_LIST( cycle, j );
+            while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
+                val = ErrorReturnObj(
+              "Permutation: <expr> must be a positive integer (not to a %s)",
+                    (Int)TNAM_OBJ(val), 0L,
+                    "you can return a positive integer" );
+            }
+            c = INT_INTOBJ(val);
+
+            /* if necessary resize the permutation                         */
+            if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {
+                ResizeBag( perm, (c + 1023) / 1024 * 1024 * sizeof(UInt4) );
+                ptr4 = ADDR_PERM4( perm );
+                for ( k = m+1; k <= SIZE_OBJ(perm)/sizeof(UInt4); k++ ) {
+                    ptr4[k-1] = k-1;
+                }
+            }
+            if ( m < c ) {
+                m = c;
+            }
+
+            /* check that the cycles are disjoint                          */
+            ptr4 = ADDR_PERM4( perm );
+            if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
+                return ErrorReturnObj(
+                    "Permutation: cycles must be disjoint",
+                    0L, 0L,
+                    "you can return a permutation" );
+            }
+
+            /* enter the previous entry at current location                */
+            ptr4 = ADDR_PERM4( perm );
+            if ( p != 0 ) { ptr4[c-1] = p-1; }
+            else          { l = c;          }
+
+            /* remember current entry for next round                       */
+            p = c;
+        }
+
+        /* enter first (last popped) entry at last (first popped) location */
+        ptr4 = ADDR_PERM4( perm );
+        ptr4[l-1] = p-1;
+
+    }
+
+    /* if possible represent the permutation with short entries            */
+    if ( m <= 65536UL ) {
+        ptr2 = ADDR_PERM2( perm );
+        ptr4 = ADDR_PERM4( perm );
+        for ( k = 1; k <= m; k++ ) {
+            ptr2[k-1] = ptr4[k-1];
+        };
+        RetypeBag( perm, T_PERM2 );
+        ResizeBag( perm, m * sizeof(UInt2) );
+    }
+
+    /* otherwise just shorten the permutation                              */
+    else {
+        ResizeBag( perm, m * sizeof(UInt4) );
+    }
+
+    /* return the permutation                                              */
+    return perm;
+}
+
+
 
 /****************************************************************************
 **
 
-*F  InitPermutat()  . . . . . . . . . . . initializes the permutation package
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupPermutat() . . . . . . . . . . . initializes the permutation package
 **
 **  Is  called  during  the  initialization  to  initialize  the  permutation
 **  package.
 */
-void            InitPermutat ( void )
+void SetupPermutat ( void )
 {
     /* install the marking function                                        */
     InfoBags[           T_PERM2         ].name = "permutation (small)";
@@ -3407,13 +3597,11 @@ void            InitPermutat ( void )
     InfoBags[           T_PERM4         ].name = "permutation (large)";
     InitMarkFuncBags(   T_PERM4         , MarkNoSubBags );
 
-
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
-    ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
-
-    TypeObjFuncs[ T_PERM2 ] = TypePerm2;
-    TypeObjFuncs[ T_PERM4 ] = TypePerm4;
+    /* install the saving functions */
+    SaveObjFuncs[ T_PERM2 ] = SavePerm2;
+    SaveObjFuncs[ T_PERM4 ] = SavePerm4;
+    LoadObjFuncs[ T_PERM2 ] = LoadPerm2;
+    LoadObjFuncs[ T_PERM4 ] = LoadPerm4;
 
 
     /* install the printing functions                                      */
@@ -3469,65 +3657,90 @@ void            InitPermutat ( void )
     CommFuncs[ T_PERM4  ][ T_PERM4  ] = CommPerm44;
 
 
-    /* install the internal functions                                      */
-    InitHandlerFunc( IsPermHandler, "IS_PERM" );
-    IsPermFilt = NewFilterC( "IS_PERM", 1L, "obj",
-                                IsPermHandler );
-    AssGVar( GVarName( "IS_PERM" ), IsPermFilt );
-
-    InitHandlerFunc( FuncPermList, "PermList" );
-    AssGVar( GVarName( "PermList" ),
-         NewFunctionC( "PermList", 1L, "list",
-                    FuncPermList                   ) );
-
-    InitHandlerFunc( FuncLargestMovedPointPerm, "LargestMovedPointPerm" );
-    AssGVar( GVarName( "LARGEST_MOVED_POINT_PERM" ),
-         NewFunctionC( "LargestMovedPointPerm", 1L, "perm",
-                    FuncLargestMovedPointPerm      ) );
-
-    InitHandlerFunc( FuncCycleLengthPermInt, "CycleLengthPermInt" );
-    AssGVar( GVarName( "CycleLengthPermInt" ),
-         NewFunctionC( "CycleLengthPermInt", 2L, "perm, point",
-                    FuncCycleLengthPermInt         ) );
-
-    InitHandlerFunc( FuncCyclePermInt, "CyclePermInt" );
-    AssGVar( GVarName( "CyclePermInt" ),
-         NewFunctionC( "CyclePermInt", 2L, "perm, point",
-                    FuncCyclePermInt               ) );
-
-    InitHandlerFunc( FuncOrderPerm, "OrderPerm" );
-    AssGVar( GVarName( "OrderPerm" ),
-         NewFunctionC( "OrderPerm", 1L, "perm",
-                    FuncOrderPerm                  ) );
-
-    InitHandlerFunc( FuncSignPerm, "SignPerm" );
-    AssGVar( GVarName( "SignPerm" ),
-         NewFunctionC( "SignPerm", 1L, "perm",
-                    FuncSignPerm                   ) );
-
-    InitHandlerFunc( FuncSmallestGeneratorPerm, "SmallestGeneratorPerm" );
-    AssGVar( GVarName( "SmallestGeneratorPerm" ),
-         NewFunctionC( "SmallestGeneratorPerm", 1L, "perm",
-                    FuncSmallestGeneratorPerm      ) );
-
-
-    /* make the buffer bag                                                 */
-    TmpPerm = NEW_PERM4( 1000 );
-    InitGlobalBag( &TmpPerm, "permutation: buffer" );
-
-
-    /* make the identity permutation                                       */
-    IdentityPerm = NEW_PERM2( 0 );
-    InitGlobalBag( &IdentityPerm, "permutation: ()" );
-
-
     /* install the 'ONE' function for permutations                         */
     OneFuncs[ T_PERM2 ] = OnePerm;
     OneFuncs[ T_PERM4 ] = OnePerm;
 
+
     /* install the 'INV' function for permutations                         */
     InvFuncs[ T_PERM2 ] = InvPerm;
     InvFuncs[ T_PERM4 ] = InvPerm;
+}
+
+
+/****************************************************************************
+**
+*F  InitPermutat()  . . . . . . . . . . . initializes the permutation package
+**
+**  Is  called  during  the  initialization  to  initialize  the  permutation
+**  package.
+*/
+void InitPermutat ( void )
+{
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
+    ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
+
+    TypeObjFuncs[ T_PERM2 ] = TypePerm2;
+    TypeObjFuncs[ T_PERM4 ] = TypePerm4;
+
+
+    /* install the internal functions                                      */
+    C_NEW_GVAR_FILT( "IS_PERM", "obj", IsPermFilt, IsPermHandler,
+      "src/permutat.c:IS_PERM" );
+
+    C_NEW_GVAR_FUNC( "PermList", 1, "list",
+                  FuncPermList,
+      "src/permutat.c:PermList" );
+
+    C_NEW_GVAR_FUNC( "LARGEST_MOVED_POINT_PERM", 1, "perm",
+                  FuncLARGEST_MOVED_POINT_PERM,
+      "src/permutat.c:LARGEST_MOVED_POINT_PERM" );
+
+    C_NEW_GVAR_FUNC( "CycleLengthPermInt", 2, "perm, point",
+                  FuncCycleLengthPermInt,
+      "src/permutat.c:CycleLengthPermInt" );
+
+    C_NEW_GVAR_FUNC( "CyclePermInt", 2, "perm, point",
+                  FuncCyclePermInt,
+      "src/permutat.c:CyclePermInt" );
+
+    C_NEW_GVAR_FUNC( "OrderPerm", 1, "perm",
+                  FuncOrderPerm,
+      "src/permutat.c:OrderPerm" );
+
+    C_NEW_GVAR_FUNC( "SignPerm", 1, "perm",
+                  FuncSignPerm,
+      "src/permutat.c:SignPerm" );
+
+    C_NEW_GVAR_FUNC( "SmallestGeneratorPerm", 1, "perm",
+                  FuncSmallestGeneratorPerm,
+      "src/permutat.c:SmallestGeneratorPerm" );
+
+
+    /* make the buffer bag                                                 */
+    InitGlobalBag( &TmpPerm, "src/permutat.c:TmpPerm" );
+    if ( ! SyRestoring ) {
+        TmpPerm = NEW_PERM4( 1000 );
+    }
+
+
+    /* make the identity permutation                                       */
+    InitGlobalBag( &IdentityPerm, "src/permutat.c:IdentityPerm" );
+    if ( ! SyRestoring ) {
+        IdentityPerm = NEW_PERM2(0);
+    }
+}
+
+
+/****************************************************************************
+**
+*F  CheckPermutat() . . . check the initialisation of the permutation package
+*/
+void CheckPermutat ( void )
+{
+    SET_REVISION( "permutat_c", Revision_permutat_c );
+    SET_REVISION( "permutat_h", Revision_permutat_h );
 }
 
 

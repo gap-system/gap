@@ -1,5 +1,5 @@
 #ifdef  INCLUDE_DECLARATION_PART
-char * Revision_dt_h =
+SYS_CONST char * Revision_dt_h =
    "@(#)$Id$";
 #endif
 
@@ -120,8 +120,6 @@ extern Obj      Part(
 
 
 
-extern void     InitDeepThought( void );
-
 /*
 **  Functions from dteval.c.
 */
@@ -135,3 +133,42 @@ extern Obj Power(
                 Obj         x,
                 Obj         n,
                 Obj         pseudoreps     );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupDeepThought()  . . . . . . . . . initialize the Deep Thought package
+*/
+extern void SetupDeepThought( void );
+
+
+/****************************************************************************
+**
+*F  InitDeepThought() . . . . . . . . . . initialize the Deep Thought package
+**
+**  'InitDeepThought' initializes the Deep Thought package.
+*/
+extern void InitDeepThought( void );
+
+
+/****************************************************************************
+**
+*F  CheckDeepThought()   check the initialisation of the Deep Thought package
+*/
+extern void CheckDeepThought( void );
+
+
+/****************************************************************************
+**
+
+*E  dt.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+**
+*/

@@ -830,42 +830,6 @@ end);
 
 #############################################################################
 ##
-#F  NormalSubgroups( <G> )
-##
-InstallMethod(NormalSubgroups,"generic method for groups",true,[IsGroup],0,
-function ( G )
-    local   nrm;
-    nrm := NormalSubgroupsAbove(G,TrivialSubgroup(G),[]);
-    Sort( nrm, function( a, b ) return Size( a ) < Size( b ); end );
-    return nrm;
-end );
-
-NormalSubgroupsAbove := function ( G, N, avoid )
-    local   R, C, g, M;
-
-    R     := [ N ];
-    avoid := ShallowCopy( avoid );
-    for C  in ConjugacyClasses( G )  do
-        g := Representative( C );
-        if not g in avoid  and not g in N  then
-
-            # compute the normal closure of <N> and <g> in <G>
-            M := NormalClosure( G, ClosureGroup( N, g ) );
-            if ForAll( avoid, rep -> not rep in M )  then
-                Append( R, NormalSubgroupsAbove(G,M,avoid) );
-            fi;
-
-            # from now on avoid this representative
-            Add( avoid, g );
-        fi;
-    od;
-
-    # return the list of normal subgroups
-    return R;
-end;
-
-#############################################################################
-##
 #M  TableOfMarks(<G>)   . . . . . . . . . . . . . . . . make a table of marks
 ##
 InstallMethod(TableOfMarks,"cyclic extension",true,[IsGroup],0,

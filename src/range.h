@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  range.h                     GAP source                   Martin Schoenert
+*W  range.h                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -21,13 +21,14 @@
 **  installed in the appropriate tables by 'InitRange'.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_range_h =
+SYS_CONST char * Revision_range_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *F  NEW_RANGE() . . . . . . . . . . . . . . . . . . . . . .  make a new range
 **
 **  'NEW_RANGE' returns a new range.  Note that  you must set the length, the
@@ -159,11 +160,56 @@ extern  Int             PosRange (
 
 /****************************************************************************
 **
-*V  InitRange() . . . . . . . . . . . . . . . . initialize the ranges package
-**
-**  'InitRange' initializes the ranges package.
+*F  Range2Check( <first>, <last> )  . . . . . . . . . . . . . construct range
 */
-extern  void            InitRange ( void );
+extern Obj Range2Check (
+    Obj                 first,
+    Obj                 last );
 
 
+/****************************************************************************
+**
+*F  Range3Check( <first>, <second>, <last> )  . . . . . . . . construct range
+*/
+extern Obj Range3Check (
+    Obj                 first,
+    Obj                 second,
+    Obj                 last );
 
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupRange() . . . . . . . . . . . . . . . . initialize the range package
+*/
+extern void SetupRange ( void );
+
+
+/****************************************************************************
+**
+*F  InitRange() . . . . . . . . . . . . . . . .  initialize the range package
+**
+**  'InitRange' initializes the range package.
+*/
+extern void InitRange ( void );
+
+
+/****************************************************************************
+**
+*F  CheckRange()  . . . . . . . check the initialisation of the range package
+*/
+extern void CheckRange ( void );
+
+
+/****************************************************************************
+**
+
+*E  range.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -57,6 +57,49 @@ InstallMethod( Random, true,
     return rnd;
     end );
 
+#############################################################################
+##
+#M  Units( <F> )  . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
+##
+InstallMethod( Units, true,
+    [ IsField and IsFinite ], 0,
+    F -> Group( PrimitiveRoot( F ) ) );
+
+InstallTrueMethod( IsHandledByNiceMonomorphism,
+        IsGroup and IsFFECollection );
+
+#############################################################################
+##
+#M  <elm> in <G>  . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
+##
+InstallMethod( \in, "for groups of FFE, Z/pZ, p<>2", IsElmsColls,
+        [ IsFFE, IsGroup and IsFFECollection ], 0,
+    function( elm, G )
+    local   F;
+    
+    F := Field( Concatenation( GeneratorsOfGroup( G ), [ One( G ) ] ) );
+    return LogFFE( elm, PrimitiveRoot( F ) ) mod
+           ( ( Size( F ) - 1 ) / Size( G ) ) = 0;
+end );
+
+#############################################################################
+##
+#M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
+##
+InstallMethod( Pcgs, "for groups of FFE", true,
+        [ IsGroup and IsFFECollection ], 0,
+    function( G )
+    local   F;
+    
+    if IsTrivial( G )  then
+        TryNextMethod();
+    else
+        F := Field( Concatenation( GeneratorsOfGroup( G ), [ One( G ) ] ) );
+        SetIndependentGeneratorsOfAbelianGroup( G,
+                [ PrimitiveRoot( F ) ^ ( ( Size( F ) - 1 ) / Size( G ) ) ] );
+        return PcgsByIndependentGeneratorsOfAbelianGroup( G );
+    fi;
+end );
 
 #############################################################################
 ##

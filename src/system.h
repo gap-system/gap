@@ -15,11 +15,6 @@
 **  The  file 'system.c'  declares  all operating system  dependent functions
 **  except file/stream handling which is done in "sysfiles.h".
 */
-#ifdef  INCLUDE_DECLARATION_PART
-char * Revision_system_h =
-   "@(#)$Id$";
-#endif
-
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 
 
@@ -51,6 +46,16 @@ char * Revision_system_h =
 # else
 #  define SYS_CONST
 # endif
+#endif
+
+
+/****************************************************************************
+**
+*V  Revision_system_h . . . . . . . . . . . . . . . . . . . . revision number
+*/
+#ifdef  INCLUDE_DECLARATION_PART
+SYS_CONST char * Revision_system_h =
+   "@(#)$Id$";
 #endif
 
 
@@ -280,6 +285,20 @@ extern Int SyCheckForCompletion;
 
 /****************************************************************************
 **
+*V  SyCheckCompletionCrcComp  . . .  check crc while reading completion files
+*/
+extern Int SyCheckCompletionCrcComp;
+
+
+/****************************************************************************
+**
+*V  SyCheckCompletionCrcRead  . . . . . . .  check crc while completing files
+*/
+extern Int SyCheckCompletionCrcRead;
+
+
+/****************************************************************************
+**
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
 */
 extern Char SyCompileInput [256];
@@ -447,6 +466,18 @@ extern UInt SyNrRows;
 **  Put in this package because the command line processing takes place here.
 */
 extern UInt SyQuiet;
+
+
+/****************************************************************************
+**
+*V  SyRestoring . . . . . . . . . . . . . . . . . . . . restoring a workspace
+**
+**  `SyRestoring' determines whether GAP is restoring a workspace or not.  If
+**  it is zero no restoring should take place otherwise it holds the filename
+**  of a workspace to restore.
+**
+*/
+extern Char * SyRestoring;
 
 
 /****************************************************************************

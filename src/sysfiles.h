@@ -11,7 +11,7 @@
 **  except file/stream handling which is done in "sysfiles.h".
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char * Revision_sysfiles_h =
+SYS_CONST char * Revision_sysfiles_h =
    "@(#)$Id$";
 #endif
 
@@ -42,7 +42,7 @@ char * Revision_sysfiles_h =
 */
 extern Int SyFindOrLinkGapRootFile (
             Char *          filename,
-            UInt4           crc_gap,
+            Int4            crc_gap,
             Char *          result,
             Int             len );
 
@@ -54,7 +54,7 @@ extern Int SyFindOrLinkGapRootFile (
 **  This function should  be clever and handle  white spaces and comments but
 **  one has to certain that such characters are not ignored in strings.
 */
-extern UInt4 SyGAPCRC(
+extern Int4 SyGAPCRC(
             Char *          name );
 
 
@@ -135,7 +135,7 @@ extern SYS_SY_BUF syBuf [256];
 **
 *F  SyFileno( <fid> ) . . . . . . . . . . . . . . get operating system fileno
 */
-#define SyFileno(fid)	(fid==-1?-1:fileno(syBuf[fid].fp))
+#define SyFileno(fid)   (fid==-1?-1:fileno(syBuf[fid].fp))
 
 
 /****************************************************************************

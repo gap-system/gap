@@ -8,17 +8,17 @@
 **
 **  This module contains the functions to read expressions and statements.
 */
-char * Revision_read_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_read_c =
    "@(#)$Id$";
 
-
-#include        "system.h"              /* system dependent part           */
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#include        "gap.h"                 /* error handling                  */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
@@ -26,6 +26,7 @@ char * Revision_read_c =
 #include        "vars.h"                /* variables                       */
 
 #include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
@@ -34,7 +35,7 @@ char * Revision_read_c =
 #include        "intrprtr.h"            /* interpreter                     */
 
 #define INCLUDE_DECLARATION_PART
-#include        "read.h"                /* declaration part of the package */
+#include        "read.h"                /* reader                          */
 #undef  INCLUDE_DECLARATION_PART
 
 
@@ -393,9 +394,9 @@ void ReadCallVarAss (
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && Symbol == S_ASSIGN) ) {
         if ( type != 'c' ) {
-	    Match( S_ASSIGN, ":=", follow );
-	    if ( CountNams == 0 ) { CurrLHSGVar = var; }
-	    ReadExpr( follow, 'r' );
+            Match( S_ASSIGN, ":=", follow );
+            if ( CountNams == 0 ) { CurrLHSGVar = var; }
+            ReadExpr( follow, 'r' );
         }
         if ( READ_ERROR() ) {}
         else if ( type == 'l' ) { IntrAssLVar( var );           }
@@ -1340,27 +1341,6 @@ void ReadSaveWS (
     if ( ! READ_ERROR() ) { IntrSaveWSEnd(); }
 }
 
-/****************************************************************************
-**
-*F  ReadLoadWS( <follow> )  . . . . . . . . . .read a LoadWorkspace statement
-**
-**  'ReadLoadWS' reads a LoadWorkspace statement.
-**  In case of an error it skips all
-**  symbols up to one contained in <follow>.
-**
-**  <Statment> := 'LoadWorkspace' '(' <Expr> ')'
-*/
-void ReadLoadWS (
-    TypSymbolSet        follow )
-{
-    if ( ! READ_ERROR() ) { IntrLoadWSBegin(); }
-    Match( S_LOADWS, "LoadWorkspace", follow );
-    Match( S_LPAREN, "(", follow );
-    ReadExpr( S_RPAREN | follow, 'r' );
-    Match( S_RPAREN, ")", follow );
-    if ( ! READ_ERROR() ) { IntrLoadWSEnd(); }
-}
-
 
 /****************************************************************************
 **
@@ -1799,7 +1779,6 @@ UInt ReadEvalCommand ( void )
     else if (Symbol==S_INFO      ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_ASSERT    ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
     else if (Symbol== S_SAVEWS   ) { ReadSaveWS( S_SEMICOLON|S_EOF      ); }
-    else if (Symbol== S_LOADWS   ) { ReadLoadWS( S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_IF        ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_FOR       ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_WHILE     ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
@@ -1814,16 +1793,16 @@ UInt ReadEvalCommand ( void )
 
     /* every statement must be terminated by a semicolon                   */
     if ( Symbol != S_SEMICOLON ) {
-	SyntaxError( "; expected");
+        SyntaxError( "; expected");
     }
 
     /* check for dual semicolon                                            */
     if ( *In == ';' ) {
-	GetSymbol();
-	DualSemicolon = 1;
+        GetSymbol();
+        DualSemicolon = 1;
     }
     else {
-	DualSemicolon = 0;
+        DualSemicolon = 0;
     }
 
     /* end the interpreter                                                 */
@@ -2000,14 +1979,36 @@ void            ReadEvalError ( void )
 /****************************************************************************
 **
 
+*F  SetupRead() . . . . . . . . . . . . . . . . . . . . initialize the reader
+*/
+void SetupRead ( void )
+{
+}
+
+
+/****************************************************************************
+**
 *F  InitRead()  . . . . . . . . . . . . . . . . . . . . initialize the reader
 **
 **  'InitRead' initializes the reader.
 */
-void            InitRead ( void )
+void InitRead ( void )
 {
-    InitGlobalBag( &ReadEvalResult, "read: ReadEvalResult" );
-    InitGlobalBag( &StackNams, "read: names stack" );
+    InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" );
+    InitGlobalBag( &StackNams,      "src/read.c:StackNams"      );
+}
+
+
+/****************************************************************************
+**
+*F  CheckRead() . . . . . . . . . . .  check the initialisation of the reader
+**
+**  'InitRead' initializes the reader.
+*/
+void CheckRead ( void )
+{
+    SET_REVISION( "read_c",     Revision_read_c );
+    SET_REVISION( "read_h",     Revision_read_h );
 }
 
 

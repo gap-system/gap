@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  code.c                      GAP source                   Martin Schoenert
+*W  code.c                      GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -11,35 +11,41 @@
 **  The  coder package  is   the part of   the interpreter  that creates  the
 **  expressions.  Its functions are called from the reader.
 */
-char *          Revision_code_c =
-   "@(#)$Id$";
-
 #include        <assert.h>              /* assert                          */
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                             ?*/
+SYS_CONST char * Revision_code_c =
+   "@(#)$Id$";
 
-#include        "calls.h"               /* NARG_FUNC, NLOC_FUNC, NAMS_FU...*/
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
+
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "calls.h"               /* generic call mechanism          */
 /*N 1996/06/16 mschoene func expressions should be different from funcs    */
 
-#include        "records.h"             /* RNamIntg                        */
+#include        "records.h"             /* generic records                 */
 
-#include        "integer.h"             /* SumInt, ProdInt                 */
+#include        "integer.h"             /* integers                        */
 
-#include        "plist.h"               /* LEN_PLIST, ELM_PLIST, ...       */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "funcs.h"               /* MakeFunction                    */
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
+
+#include        "funcs.h"               /* functions                       */
 
 #define INCLUDE_DECLARATION_PART
-#include        "code.h"                /* declaration part of the package */
+#include        "code.h"                /* coder                           */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "vars.h"                /* SWITCH_TO_NEW_LVARS, ...        */
+#include        "vars.h"                /* variables                       */
 
-#include        "gap.h"                 /* CompNowFuncs, CompNowCount      */
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
@@ -567,7 +573,7 @@ void CodeFuncExprEnd (
         PushStat( stat1 );
         if ( TNUM_STAT(stat1) != T_RETURN_VOID
           && TNUM_STAT(stat1) != T_RETURN_OBJ )
-	{
+        {
             CodeReturnVoid();
             nr++;
         }
@@ -872,8 +878,8 @@ void CodeWhileEndBody (
 
     /* collect the statements into a statement sequence if necessary       */
     if ( nr == 0 ) {
-	ErrorQuit( "Error, statement expected between while/od", 
-	           0L, 0L );
+        ErrorQuit( "Error, statement expected between while/od", 
+                   0L, 0L );
     }
     if ( 3 < nr ) {
         PushStat( PopSeqStat( nr ) );
@@ -959,8 +965,8 @@ void CodeRepeatEnd ( void )
 
     /* collect the statements into a statement sequence if necessary       */
     if ( nr == 0 ) {
-	ErrorQuit( "Error, statement expected between repeat/until", 
-	           0L, 0L );
+        ErrorQuit( "Error, statement expected between repeat/until", 
+                   0L, 0L );
     }
     if ( 3 < nr ) {
         PushStat( PopSeqStat( nr ) );
@@ -2594,7 +2600,7 @@ void CodeIsbComObjName (
 
 /****************************************************************************
 **
-*F  CodeIsbComObjExpr()	. . . . . . . . . .  code bound com object expr check
+*F  CodeIsbComObjExpr() . . . . . . . . . .  code bound com object expr check
 */
 void CodeIsbComObjExpr ( void )
 {
@@ -2705,6 +2711,47 @@ void CodeAssertEnd3Args ( void )
     PushStat( stat );
 }
 
+/****************************************************************************
+**
+*F  SaveBody( <body> ) . . . . . . . . . . . . . . .  workspace saving method
+**
+**  A body is made up of statements and expressions, and these are all
+**  organised to regular boundaries based on the types Stat and Expr, which
+**  are currently both UInt
+**
+**  String literals should really be saved byte-wise, to be safe across machines
+**  of different endianness, but this would mean parsing the bag as we save it
+**  which it would be nice to avoid just now.
+*/
+void SaveBody ( Obj body )
+{
+  UInt i;
+  UInt *ptr;
+  ptr = (UInt *) ADDR_OBJ(body);
+  for (i = 0; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
+    SaveUInt(*ptr++);
+}
+
+/****************************************************************************
+**
+*F  LoadBody( <body> ) . . . . . . . . . . . . . . . workspace loading method
+**
+**  A body is made up of statements and expressions, and these are all
+**  organised to regular boundaries based on the types Stat and Expr, which
+**  are currently both UInt
+**
+*/
+void LoadBody ( Obj body )
+{
+  UInt i;
+  UInt *ptr;
+  ptr = (UInt *) ADDR_OBJ(body);
+  for (i = 0; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
+    *ptr++ = LoadUInt();
+}
+
+
+
 
 /****************************************************************************
 **
@@ -2715,24 +2762,48 @@ void CodeAssertEnd3Args ( void )
 /****************************************************************************
 **
 
+*F  SetupCode() . . . . . . . . . . . . . . . .  initialize the coder package
+*/
+void SetupCode ( void )
+{
+    /* install the marking functions for function body bags                */
+    InfoBags[         T_BODY           ].name = "function body bag";
+    InitMarkFuncBags( T_BODY           , MarkNoSubBags );
+
+    SaveObjFuncs[ T_BODY ] = SaveBody;
+    LoadObjFuncs[ T_BODY ] = LoadBody;
+}
+
+
+/****************************************************************************
+**
 *F  InitCode()  . . . . . . . . . . . . . . . .  initialize the coder package
 **
 **  'InitCode' initializes the coder package.
 */
-void            InitCode ( void )
+void InitCode ( void )
 {
     /* make the result variable known to Gasman                            */
     InitGlobalBag( &CodeResult, "CodeResult" );
 
     /* allocate the statements and expressions stacks                      */
     InitGlobalBag( &StackStat, "StackStat" );
-    StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
     InitGlobalBag( &StackExpr, "StackExpr" );
-    StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+    if ( ! SyRestoring ) {
+        StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
+        StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+    }
+}
 
-    /* install the marking functions for function body bags                */
-    InfoBags[         T_BODY           ].name = "function body bag";
-    InitMarkFuncBags( T_BODY           , MarkNoSubBags );
+
+/****************************************************************************
+**
+*F  CheckCode() . . . . . . . . check the initialisation of the coder package
+*/
+void CheckCode ( void )
+{
+    SET_REVISION( "code_c",     Revision_code_c );
+    SET_REVISION( "code_h",     Revision_code_h );
 }
 
 

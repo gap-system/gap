@@ -1935,8 +1935,10 @@ local G,     # group
   D.raeume:=[r];
 
   # Galois group operating on the columns
-  ga:=Group(Set(List(GeneratorsPrimeResidueClassGroup( Exponent(G)),
-       i->PermList(List([1..k],j->PowerMap(D.charTable,i,j))))),());
+  ga:=Group(Set(List(Flat(GeneratorsPrimeResidues(
+                        Exponent(G)).generators),
+      i->PermList(List([1..k],j->PowerMap(D.charTable,i,j))))),());
+
   D.galMorphisms:=ga;
   D.galoisOrbits:=List([1..k],i->Set(Orbit(ga,i)));
   D.matrices:=Difference(Set(List(D.galoisOrbits,i->i[1])),[1]);
@@ -2092,7 +2094,9 @@ local G,k,C,D,opt;
 
   od;
 
-  return DixontinI(D);
+  C:=DixontinI(D);
+  SetIrr(OrdinaryCharacterTable(G),C);
+  return C;
 
 end;
 

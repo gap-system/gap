@@ -26,7 +26,7 @@ local G,morph,N,s,p,e,i,j,k,ise;
     e:=[G,N];
   else
     N:=TrivialSubgroup(G);
-    e:=DerivedSeries(G);
+    e:=DerivedSeriesOfGroup(G);
   fi;
   e:=ElementaryAbelianSeries(e);
   s:=[G];
@@ -87,6 +87,9 @@ local g,op,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,dims;
   op:=arg[2];
   if not IsElementaryAbelian(g) then
     Error("<g> must be a vector space");
+  fi;
+  if IsTrivial(g) then
+    return [g];
   fi;
   pcgs:=Pcgs(g);
   d:=Length(pcgs);
@@ -220,6 +223,7 @@ end;
 ##                  normal:   just search for normal subgroups
 ##                  consider: function(A,N,B,M) indicator function, whether 
 ##			      complements of this type would be needed
+##                  retnorm:  return normalizers
 ##
 InvariantSubgroupsPcGroup := function(arg)
 local g,	# group
@@ -239,6 +243,7 @@ local g,	# group
       opt,	# options record
       normal,	# flag for 'normal' option
       consider,	# optional 'consider' function
+      retnorm,	# option: return all normalizers
       f,	# g/e[i]
       epi,	# g -> f
       lastepi,  # epi of last step
@@ -306,6 +311,9 @@ local g,	# group
   else
     consider:=false;
   fi;
+
+  retnorm:=IsBound(opt.retnorm) and opt.retnorm;
+
   isom:=fail;
 
   # get automorphisms and compute their normalizer, if applicable
@@ -334,14 +342,13 @@ local g,	# group
 
     # get the normalizer of <func>
     funcnorm:=Normalizer(g,Subgroup(b,func));
-Assert(1,IsSubgroup(g,funcnorm));
-funcnorm:=Subgroup(g,Filtered(GeneratorsOfGroup(funcnorm),i->i in g));
+    Assert(1,IsSubgroup(g,funcnorm));
 
     func:=List(func,i->InnerAutomorphism(b,i));
 
     # compute <func> characteristic series
     e:=InvariantElementaryAbelianSeries(g,func);
-    f:=DerivedSeries(g);
+    f:=DerivedSeriesOfGroup(g);
     if Length(e)>Length(f) and
       ForAll([1..Length(f)-1],i->IsElementaryAbelian(f[i]/f[i+1])) then
       Info(InfoPcSubgroup,1,"  Preferring Derived Series");
@@ -536,7 +543,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 
 	      # compute fusion
 	      kconh:=List([1..Length(com)],i->[i]);
-	      if i<len then
+	      if i<len or retnorm then
 		# we need to compute normalizers
 		comnorms:=[];
 	      else
@@ -564,8 +571,12 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 
 	      elif comnorms<>fail then
 		comnorms:=List(com,i->z.cocycleToComplement(i));
-		comnorms:=List(comnorms,
-                            i->ClosureGroup(CentralizerModulo(n,b,i),i));
+		if Size(a)=Size(bsnorms[bpos]) then
+		  comnorms:=List(comnorms,
+			      i->ClosureGroup(CentralizerModulo(n,b,i),i));
+	        else
+		  comnorms:=List(comnorms,i->Normalizer(bsnorms[bpos],i));
+		fi;
 	      fi;
 
 
@@ -669,8 +680,8 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 
 		      # a possible conjugating element is a solution of the
 		      # large LGS
-		      l:=SolutionMat(glsyl,glsyr);
-		      if l<>false then
+		      l:= SolutionMat(glsyl,glsyr);
+		      if l <> fail then
 			m:=Product([1..Length(l)],
 				   i->nag[i]^IntFFE(l[i]));
 			# note that we found one!
@@ -744,14 +755,68 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 
     grps:=ngrps;
     grpsnorms:=ngrpsnorms;
+    Info(InfoPcSubgroup,5,List(grps,Size),List(grpsnorms,Size));
   od;
 
   if isom<>fail then
     grps:=List(grps,j->PreImage(isom,j));
+    if retnorm then
+      grpsnorms:=List(grpsnorms,j->PreImage(isom,j));
+    fi;
   fi;
   
-  return grps;
+  if retnorm then
+    return [grps,grpsnorms];
+  else
+    return grps;
+  fi;
 end;
+
+
+#############################################################################
+##
+#M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
+##
+InstallMethod(LatticeSubgroups,"elementary abelian extension",true,
+  [IsSolvableGroup],0,
+function(G)
+local s,i,c,classes, lattice;
+  s:=InvariantSubgroupsPcGroup(G,rec(retnorm:=true));
+  classes:=[];
+  for i in [1..Length(s[1])] do
+    c:=ConjugacyClassSubgroups(G,s[1][i]);
+    SetStabilizerOfExternalSet(c,s[2][i]);
+    Add(classes,c);
+  od;
+
+  # create the lattice
+  lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
+		     rec());
+  lattice!.conjugacyClassesSubgroups:=classes;
+  lattice!.group     :=G;
+
+  # return the lattice
+  return lattice;
+
+end);
+
+#############################################################################
+##
+#M  NormalSubgroups(<G>)  . . . . . . . . . .  list of normal subgroups
+##
+InstallMethod(NormalSubgroups,"elementary abelian extension",true,
+  [IsSolvableGroup],0,
+function(G)
+local n;
+  n:=InvariantSubgroupsPcGroup(G,rec(
+       actions:=List(GeneratorsOfGroup(G),i->InnerAutomorphism(G,i)),
+       normal:=true));
+
+  # sort the normal subgroups according to their size
+  Sort(n,function(a,b) return Size(a) < Size(b); end);
+
+  return n;
+end);
 
 #############################################################################
 ##

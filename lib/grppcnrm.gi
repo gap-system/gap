@@ -1062,7 +1062,7 @@ end );
 ##
 #M  Normalizer( <pc-group>, <pc-group> )
 ##
-InstallMethod( Normalizer,
+InstallMethod( NormalizerOp,
     "for groups with home pcgs",
     IsIdentical,
     [ IsGroup and HasHomePcgs,

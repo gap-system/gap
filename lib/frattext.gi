@@ -3,7 +3,7 @@
 #W  frattext.gi                 GAP library                      Bettina Eick
 ##
 Revision.frattext_gi :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 #############################################################################
 ##

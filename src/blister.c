@@ -1,6 +1,7 @@
 /****************************************************************************
 **
-*W  blister.c                   GAP source                   Martin Schoenert
+*W  blister.c                   GAP source                       Frank Celler
+*W                                                         & Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -57,15 +58,15 @@
 **  the other parts of  the {\GAP} kernel can access and modify boolean lists
 **  without actually being aware that they are dealing with a boolean list.
 **
-**  The   third part  consists of   the  functions 'IsBlist',  'FuncIsBlist',
+**  The third part consists   of the functions  'IsBlistConv', 'FuncIsBlist',
 **  'FuncBLIST_LIST', 'FuncLIST_BLIST', 'FuncSIZE_BLIST', 'FuncIS_SUB_BLIST',
-**  'FuncUNITE_BLIST',   'FuncINTER_BLIST', and 'FuncSUBTR_BLIST'.      These
-**  functions make it possible to make boolean lists,  either by converting a
+**  'FuncUNITE_BLIST', 'FuncINTER_BLIST',   and    'FuncSUBTR_BLIST'.   These
+**  functions make it possible to make  boolean lists, either by converting a
 **  list to  a boolean list, or by  computing the characteristic boolean list
-**  of a sublist, or  by computing the union,  intersection or  difference of
+**  of a sublist, or  by computing the  union, intersection or  difference of
 **  two boolean lists.
 **
-*N 1992/12/16 martin should have 'LtBlist'
+*N  1992/12/16 martin should have 'LtBlist'
 */
 #include        "system.h"              /* system dependent part           */
 
@@ -76,234 +77,49 @@ SYS_CONST char * Revision_blister_c =
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#include        "gap.h"                 /* error handling                  */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations package      */
+#include        "opers.h"               /* generic operations              */
 
 #include        "ariths.h"              /* basic arithmetic                */
-#include        "lists.h"               /* generic list package            */
 
 #include        "bool.h"                /* booleans                        */
 
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
-
 #define INCLUDE_DECLARATION_PART
 #include        "blister.h"             /* boolean lists                   */
 #undef  INCLUDE_DECLARATION_PART
+#include        "range.h"               /* ranges                          */
+#include        "string.h"              /* strings                         */
 
-#include        "range.h"               /* GET_LEN_RANGE, GET_LOW_RANGE,...*/
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gap.h"                 /* Error                           */
-
-
-/****************************************************************************
-**
-*V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
-**
-**  'BIPEB' is the number of bits per block, where a block fills a UInt, which
-**   must be the same size as a bag identifier.
-**
-**  'BIPEB' is defined in  the  declaration  part of this  package as
-**  follows:
-**
-
-#define BIPEB                           (sizeof(UInt) * 8L)
-
-*/
-
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
 **
 
-*F  PLEN_SIZE_BLIST(<size>) . .  physical length from size for a boolean list
-**
-**  'PLEN_SIZE_BLIST'  computes  the  physical  length  (e.g.  the  number of
-**  elements that could be stored  in a list) from the <size> (as reported by
-**  'SIZE') for a boolean list.
-**
-**  Note that 'PLEN_SIZE_BLIST' is a macro, so  do not call it with arguments
-**  that have sideeffects.
-**
-**  'PLEN_SIZE_BLIST' is defined in  the  declaration  part of this  package as
-**  follows:
-**
-
-
-#define PLEN_SIZE_BLIST(size) \
-                        ((((size)-sizeof(Obj))/sizeof(UInt)) * BIPEB)
-*/
-
-/****************************************************************************
-**
-*F  SIZE_PLEN_BLIST(<plen>)size for a boolean list with given physical length
-**
-**  'SIZE_PLEN_BLIST' returns  the size  that a boolean list  with  room  for
-**  <plen> elements must at least have.
-**
-**  Note that 'SIZE_PLEN_BLIST' is a macro, so do not call it with  arguments
-**  that have sideeffects.
-**
-**  'SIZE_PLEN_BLIST' is defined in  the  declaration  part of this  package as
-**  follows:
-** 
-#define SIZE_PLEN_BLIST(plen) \
-                        (sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(UInt))
-*/
-
-
-/****************************************************************************
-**
-*F  LEN_BLIST(<list>) . . . . . . . . . . . . . . .  length of a boolean list
-**
-**  'LEN_BLIST' returns the logical length of the boolean list <list>, as a C
-**  integer.
-**
-**  Note that 'LEN_BLIST' is a macro, so do not call it  with  arguments that
-**  have sideeffects.
-**
-**  'LEN_BLIST' is defined in  the  declaration  part of this  package as
-**  follows:
-**
-#define LEN_BLIST(list) \
-                        (INT_INTOBJ(ADDR_OBJ(list)[0]))
-*/
-
-
-/***************************************************************************
-**
-*F  NUMBER_BLOCKS_BLIST(<list>) .  . . . . . . number of UInt blocks in list
-**
-**
-**  'NUMBER_BLOCKS_BLIST' is defined in the declaration part of this package 
-**  as  follows:
-**
-#define NUMBER_BLOCKS_BLIST( blist ) ((LEN_BLIST((blist)) + BIPEB -1)/BIPEB)
-*/
-
-
-/****************************************************************************
-**
-*F  SET_LEN_BLIST(<list>,<len>) . . . . . .  set the length of a boolean list
-**
-**  'SET_LEN_BLIST' sets the  length of the boolean list  <list> to the value
-**  <len>, which must be a positive C integer.
-**
-**  Note that 'SET_LEN_BLIST' is a macro, so do  not  call it with  arguments
-**  that have sideeffects.
-**
-**  'SET_LEN_BLIST' is defined in  the  declaration  part of this  package as
-**  follows:
-**
-#define SET_LEN_BLIST(list,len) \
-                        (ADDR_OBJ(list)[0] = INTOBJ_INT(len))
-*/
-
-/****************************************************************************
-**
-*F  BLOCKS_BLIST( <list> ) . . . . . . . . first block of a boolean list
-**
-**  returns a pointer to the start of the data of the Boolean list
-**
-**
-
-#define BLOCKS_BLIST( list )  ((UInt*)(ADDR_OBJ(list)+1))
-*/
-/****************************************************************************
-**
-*F  BLOCK_ELM_BLIST(<list>,<pos>) . . . . . . . . . .block  of a boolean list
-**
-**  'BLOCK_ELM_BLIST' return the block containing the <pos>-th element of 
-**   the boolean list <list> as a UInt value, which is also a valid left
-**  hand side.
-**  <pos> must  be a positive integer less than
-**  or equal to the length of <hdList>.
-**
-**  Note that 'BLOCK_ELM_BLIST' is a macro, so do not call it  with arguments
-**  that have sideeffects.
-
-
-#define BLOCK_ELM_BLIST(list, pos) (BLOCKS_BLIST( list )[((pos)-1)/BIPEB])
-*/
-
-/****************************************************************************
-**
-*F  MASK_POS_BLIST(<pos>) . . .  . . .bit mask for position of a Boolean list
-**
-**  MASK_POS_BLIST(<pos>) returns a UInt with a single set bit in position
-**  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
-**
-**  Note that 'MASK_POS_BLIST' is a macro, so do not call it  with arguments
-**  that have sideeffects.
-**
-**  'MASK_POS_BLIST' is defined in  the  declaration  part of this  package as
-**  follows:
-**
-
-
-#define MASK_POS_BLIST( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
-
-*/
-
-/****************************************************************************
-**
-*F  ELM_BLIST(<list>,<pos>) . . . . . . . . . . . . element of a boolean list
-**
-**  'ELM_BLIST' return the <pos>-th element of the boolean list <list>, which
-**  is either 'true' or 'false'.  <pos> must  be a positive integer less than
-**  or equal to the length of <hdList>.
-**
-**  Note that 'ELM_BLIST' is a macro, so do not call it  with arguments  that
-**  have sideeffects.
-**
-**  'ELM_BLIST' is defined in  the  declaration  part of this  package as
-**  follows:
-**
-#define ELM_BLIST(list,pos) \
-  BLOCK_ELM_BLIST(list,pos) & MASK_POS_BLIST(pos) ?  True : False
-*/
-
-
-/****************************************************************************
-**
-*F  SET_ELM_BLIST(<list>,<pos>,<val>) . . .  set an element of a boolean list
-**
-**  'SET_ELM_BLIST' sets  the element at position <pos>   in the boolean list
-**  <list> to the value <val>.  <pos> must be a positive integer less than or
-**  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
-**
-**  Note that  'SET_ELM_BLIST' is  a macro, so do not  call it with arguments
-**  that have sideeffects.
-**
-**  'SET_ELM_BLIST' is defined in  the  declaration  part of this  package as
-**  follows:
-
-
-#define SET_ELM_BLIST(list,pos,val)  \
- ((val) == True ? \
-  (BLOCK_ELM_BLIST(list, pos) |= MASK_POS_BLIST(pos)) : \
-  (BLOCK_ELM_BLIST(list, pos) &= ~MASK_POS_BLIST(pos)))
-*/
-
-
-/****************************************************************************
-**
 *F  TypeBlist(<list>) . . . . . . . . . . . . . . . .  kind of a boolean list
 **
 **  'TypeBlist' returns the kind of a boolean list.
 **
 **  'TypeBlist' is the function in 'KindObjFuncs' for boolean lists.
 */
-extern  Obj             KIND_LIST_EMPTY_MUTABLE;
-extern  Obj             KIND_LIST_EMPTY_IMMUTABLE;
+extern Obj KIND_LIST_EMPTY_MUTABLE;
+extern Obj KIND_LIST_EMPTY_IMMUTABLE;
 
-extern  Obj             KIND_LIST_HOM;
+extern Obj KIND_LIST_HOM;
 
 
-Obj             TypeBlist (
+Obj TypeBlist (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -313,7 +129,7 @@ Obj             TypeBlist (
 
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
-        if ( ! IS_IMM_BLIST(list) ) {
+        if ( IS_MUTABLE_OBJ(list) ) {
             return TYPE_LIST_EMPTY_MUTABLE;
         }
         else {
@@ -332,12 +148,55 @@ Obj             TypeBlist (
     kind = ELM0_LIST( kinds, ktype-T_BLIST+1 );
     if ( kind == 0 ) {
         kind = CALL_2ARGS( TYPE_LIST_HOM,
-            family, INTOBJ_INT(ktype-T_BLIST+1) );
+                           family, INTOBJ_INT(ktype-T_BLIST+1) );
         ASS_LIST( kinds, ktype-T_BLIST+1, kind );
     }
 
     /* return the kind                                                     */
     return kind;
+}
+
+
+/****************************************************************************
+**
+*F  SaveBlist( <bl> )  . . . . . . . . . . . . . . . . . . . . . save a blist
+**
+**   The saving method for the blist tnums
+*/
+void SaveBlist (
+    Obj                 bl )
+{
+    UInt                i;
+    UInt *              ptr;
+
+    /* logical length                                                      */
+    SaveSubObj(ADDR_OBJ(bl)[0]);
+    ptr = BLOCKS_BLIST(bl);
+    for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
+        SaveUInt(*ptr);
+    return;
+}
+
+/****************************************************************************
+**
+*F  LoadBlist( <bl> )  . . . . . . . . . . . . . . . . . . . . . load a blist
+**
+**   The loading method for the blist tnums
+*/
+void LoadBlist (
+    Obj                 bl )
+{
+    UInt                i;
+    UInt *              ptr;
+  
+    /* get the length back, then NUMBER_BLOCKS_BLIST is OK                 */
+    ADDR_OBJ(bl)[0] = LoadSubObj(); 
+  
+    /* Now load the real data                                              */
+    ptr = (UInt *)BLOCKS_BLIST(bl);
+    for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
+        *ptr++ = LoadUInt();
+    return;
 }
 
 
@@ -374,8 +233,8 @@ Obj CopyBlist (
     Int                 mut )
 {
     Obj                 copy;           /* handle of the copy, result      */
-    UInt *             l;              /* pointer into the list           */
-    UInt *             c;              /* pointer into the copy           */
+    UInt *              l;              /* pointer into the list           */
+    UInt *              c;              /* pointer into the copy           */
     UInt                i;              /* loop variable                   */
 
     /* don't change immutable objects                                      */
@@ -397,7 +256,7 @@ Obj CopyBlist (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    RetypeBag( list, TNUM_OBJ(list) + COPYING );
+    MARK_LIST( list, COPYING );
 
     /* copy the subvalues                                                  */
     l = (UInt*)(ADDR_OBJ(list)+1);
@@ -443,7 +302,7 @@ void CleanBlistCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    RetypeBag( list, TNUM_OBJ(list) - COPYING );
+    UNMARK_LIST( list, COPYING );
 }
 
 
@@ -776,13 +635,13 @@ void AssBlist (
     /* if <pos> is less than the logical length and <elm> is 'true'        */
     if      ( pos <= LEN_BLIST(list) && val == True ) {
         SET_ELM_BLIST( list, pos, True );
-        RetypeBag( list, T_BLIST );
+        CLEAR_FILTS_LIST(list);
     }
 
     /* if <i> is less than the logical length and <elm> is 'false'         */
     else if ( pos <= LEN_BLIST(list) && val == False ) {
         SET_ELM_BLIST( list, pos, False );
-        RetypeBag( list, T_BLIST );
+        CLEAR_FILTS_LIST(list);
     }
 
     /* if <i> is one more than the logical length and <elm> is 'true'      */
@@ -791,22 +650,22 @@ void AssBlist (
             ResizeBag( list, SIZE_PLEN_BLIST(pos) );
         SET_LEN_BLIST( list, pos );
         SET_ELM_BLIST( list, pos, True );
-        RetypeBag( list, T_BLIST );
+        CLEAR_FILTS_LIST(list);
     }
 
-    /* if <i> is one more than the logical length and <elm> is 'true'      */
+    /* if <i> is one more than the logical length and <elm> is 'false'     */
     else if ( pos == LEN_BLIST(list)+1 && val == False ) {
         if ( SIZE_OBJ(list) < SIZE_PLEN_BLIST(pos) )
             ResizeBag( list, SIZE_PLEN_BLIST(pos) );
         SET_LEN_BLIST( list, pos );
         SET_ELM_BLIST( list, pos, False );
-        RetypeBag( list, T_BLIST );
+        CLEAR_FILTS_LIST(list);
     }
 
     /* otherwise convert to ordinary list and assign as in 'AssList'       */
     else {
-        PLAIN_LIST( list );
-        RetypeBag( list, T_PLIST );
+        PLAIN_LIST(list);
+        CLEAR_FILTS_LIST(list);
         if ( LEN_PLIST(list) < pos ) {
             GROW_PLIST( list, (UInt)pos );
             SET_LEN_PLIST( list, pos );
@@ -855,8 +714,8 @@ void AsssBlist (
     Obj                 vals )
 {
     /* convert <list> to a plain list                                      */
-    PLAIN_LIST( list );
-    RetypeBag( list, T_PLIST );
+    PLAIN_LIST(list);
+    CLEAR_FILTS_LIST(list);
 
     /* and delegate                                                        */
     ASSS_LIST( list, poss, vals );
@@ -876,91 +735,6 @@ void AsssBlistImm (
         "Lists Assignments: <list> must be a mutable list",
         0L, 0L,
         "you can return and ignore the assignment" );
-}
-
-
-/****************************************************************************
-**
-*F  IsDenseBlist( <list> )  . . .  dense list test function for boolean lists
-**
-**  'IsDenseBlist' returns 1, since boolean lists are always dense.
-**
-**  'IsDenseBlist' is the function in 'IsDenseBlistFuncs' for boolean lists.
-*/
-Int IsDenseBlist (
-    Obj                 list )
-{
-    return 1L;
-}
-
-
-/****************************************************************************
-**
-*F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
-*/
-Int IsHomogBlist (
-    Obj                 list )
-{
-    return (0 < LEN_BLIST(list));
-}
-
-
-/****************************************************************************
-**
-*F  IsSSortBlist( <list> )  . . . . . . .  check if <list> is strictly sorted
-*/
-Int IsSSortBlist (
-    Obj                 list )
-{
-    Int                 isSort;
-    if ( LEN_BLIST(list) <= 1 ) {
-        isSort = 1;
-    }
-    else if ( LEN_BLIST(list) == 2 ) {
-        isSort = (ELM_BLIST(list,1) == True && ELM_BLIST(list,2) == False);
-    }
-    else {
-        isSort = 0;
-    }
-    RetypeBag( list, (isSort ? T_BLIST_SSORT : T_BLIST_NSORT)
-                     + IS_IMM_BLIST(list) );
-    return isSort;
-}
-
-
-/****************************************************************************
-**
-*F  IsSSortBlistNot( <list> ) . . . . . . . . . . . . . unsorted boolean list
-*/
-Int IsSSortBlistNot (
-    Obj                 list )
-{
-    return 0L;
-}
-
-
-/****************************************************************************
-**
-*F  IsSSortBlistYes( <list> ) . . . . . . . . . . . . . . sorted boolean list
-*/
-Int IsSSortBlistYes (
-    Obj                 list )
-{
-    return 1L;
-}
-
-
-/****************************************************************************
-**
-*F  IsPossBlist( <list> ) . .  positions list test function for boolean lists
-**
-**  'IsPossBlist' returns  1 if  <list> is  empty, and 0 otherwise, since a
-**  boolean list is a positions list if and only if it is empty.
-*/
-Int IsPossBlist (
-    Obj                 list )
-{
-    return LEN_BLIST(list) == 0;
 }
 
 
@@ -1057,8 +831,8 @@ void PlainBlist (
     UInt                i;              /* loop variable                   */
 
     /* resize the list and retype it, in this order                        */
-    len = LEN_BLIST( list );
-    RetypeBag( list, T_PLIST );
+    len = LEN_BLIST(list);
+    RetypeBag( list, IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE );
     GROW_PLIST( list, (UInt)len );
     SET_LEN_PLIST( list, len );
 
@@ -1071,27 +845,152 @@ void PlainBlist (
 }
 
 
+
 /****************************************************************************
 **
-*F  IsBlist( <list> ) . . . . . . . . . test whether a list is a boolean list
+*F  IsPossBlist( <list> ) . .  positions list test function for boolean lists
 **
-**  'IsBlist'  returns 1 if the list  <list> is a  boolean list, i.e., a list
-**  that has no holes and contains only  'true' and 'false', and 0 otherwise.
-**  As a sideeffect  'IsBlist'  changes the representation of   boolean lists
-**  into the compact representation of type 'T_BLIST' described above.
+**  'IsPossBlist' returns  1 if  <list> is  empty, and 0 otherwise, since a
+**  boolean list is a positions list if and only if it is empty.
 */
-Int IsBlist (
+Int IsPossBlist (
     Obj                 list )
 {
-    UInt                isBlist;        /* result of the test              */
+    return LEN_BLIST(list) == 0;
+}
+
+
+/****************************************************************************
+**
+
+*F  IsDenseBlist( <list> )  . . .  dense list test function for boolean lists
+**
+**  'IsDenseBlist' returns 1, since boolean lists are always dense.
+**
+**  'IsDenseBlist' is the function in 'IsDenseBlistFuncs' for boolean lists.
+*/
+Int IsDenseBlist (
+    Obj                 list )
+{
+    return 1L;
+}
+
+
+/****************************************************************************
+**
+*F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
+*/
+Int IsHomogBlist (
+    Obj                 list )
+{
+    return (0 < LEN_BLIST(list));
+}
+
+
+/****************************************************************************
+**
+*F  IsSSortBlist( <list> )  . . . . . . .  check if <list> is strictly sorted
+*/
+Int IsSSortBlist (
+    Obj                 list )
+{
+    Int                 isSort;
+
+    if ( LEN_BLIST(list) <= 1 ) {
+        isSort = 1;
+    }
+    else if ( LEN_BLIST(list) == 2 ) {
+        isSort = (ELM_BLIST(list,1) == True && ELM_BLIST(list,2) == False);
+    }
+    else {
+        isSort = 0;
+    }
+    SET_FILT_LIST( list, (isSort ? FN_IS_SSORT : FN_IS_NSORT) );
+
+    return isSort;
+}
+
+
+/****************************************************************************
+**
+*F  IsSSortBlistNot( <list> ) . . . . . . . . . . . . . unsorted boolean list
+*/
+Int IsSSortBlistNot (
+    Obj                 list )
+{
+    return 0L;
+}
+
+
+/****************************************************************************
+**
+*F  IsSSortBlistYes( <list> ) . . . . . . . . . . . . . . sorted boolean list
+*/
+Int IsSSortBlistYes (
+    Obj                 list )
+{
+    return 1L;
+}
+
+
+/****************************************************************************
+**
+
+*F  ConvBlist( <list> ) . . . . . . . . .  convert a list into a boolean list
+**
+**  `ConvBlist' changes the representation of boolean  lists into the compact
+**  representation of type 'T_BLIST' described above.
+*/
+void ConvBlist (
+    Obj                 list )
+{
     Int                 len;            /* logical length of the list      */
     UInt                block;          /* one block of the boolean list   */
     UInt                bit;            /* one bit of a block              */
     UInt                i;              /* loop variable                   */
 
     /* if <list> is known to be a boolean list, it is very easy            */
-    if ( T_BLIST <= TNUM_OBJ(list)
-      && TNUM_OBJ(list) <= T_BLIST_SSORT ) {
+    if ( IS_BLIST_REP(list) ) {
+        return;
+    }
+
+    /* change its representation                                           */
+    block = 0;
+    bit = 1;
+    len = LEN_LIST( list );
+    for ( i = 1; i <= len; i++ ) {
+        if ( ELMW_LIST( list, (Int)i ) == True )
+            block |= bit;
+        bit = bit << 1;
+        if ( bit == 0 || i == len ) {
+            BLOCK_ELM_BLIST(list,i) = block;
+            block = 0;
+            bit = 1;
+        }
+    }
+    RetypeBag( list, IS_MUTABLE_OBJ(list) ? T_BLIST : T_BLIST+IMMUTABLE );
+    ResizeBag( list, SIZE_PLEN_BLIST(len) );
+    SET_LEN_BLIST( list, len );
+}
+
+
+/****************************************************************************
+**
+*F  IsBlist( <list> ) . . . . . . . . . test whether a list is a boolean list
+**
+**  'IsBlist' returns  1  if  the  list  <list> is  a  boolean list, i.e.,  a
+**  list that   has no holes  and contains  only  'true' and  'false',  and 0
+**  otherwise.
+*/
+Int IsBlist (
+    Obj                 list )
+{
+    UInt                isBlist;        /* result of the test              */
+    Int                 len;            /* logical length of the list      */
+    UInt                i;              /* loop variable                   */
+
+    /* if <list> is known to be a boolean list, it is very easy            */
+    if ( IS_BLIST_REP(list) ) {
         isBlist = 1;
     }
 
@@ -1113,27 +1012,59 @@ Int IsBlist (
             }
         }
 
+        isBlist = (len < i);
+    }
+
+    /* return the result                                                   */
+    return isBlist;
+}
+
+
+/****************************************************************************
+**
+*F  IsBlistConv( <list> ) . test whether a list is a boolean list and convert
+**
+**  'IsBlistConv' returns 1 if  the list <list> is  a  boolean list, i.e.,  a
+**  list that   has no holes  and contains  only  'true' and  'false',  and 0
+**  otherwise.  As a  sideeffect 'IsBlistConv' changes the representation  of
+**  boolean lists into the compact representation of type 'T_BLIST' described
+**  above.
+*/
+Int IsBlistConv (
+    Obj                 list )
+{
+    UInt                isBlist;        /* result of the test              */
+    Int                 len;            /* logical length of the list      */
+    UInt                i;              /* loop variable                   */
+
+    /* if <list> is known to be a boolean list, it is very easy            */
+    if ( IS_BLIST_REP(list) ) {
+        isBlist = 1;
+    }
+
+    /* if <list> is not a list, its not a boolean list (convert to list)   */
+    else if ( ! IS_LIST(list) ) {
+        isBlist = 0;
+    }
+
+    /* otherwise test if there are holes and if all elements are boolean   */
+    else {
+
+        /* test that all elements are bound and either 'true' or 'false'   */
+        len = LEN_LIST( list );
+        for ( i = 1;  i <= len;  i++ ) {
+            if ( ELMV0_LIST( list, (Int)i ) == 0
+              || (ELMW_LIST( list, (Int)i ) != True
+               && ELMW_LIST( list, (Int)i ) != False) ) {
+                break;
+            }
+        }
+
         /* if <list> is a boolean list, change its representation        */
         isBlist = (len < i);
         if ( isBlist ) {
-            block = 0;
-            bit = 1;
-            for ( i = 1; i <= len; i++ ) {
-                if ( ELMW_LIST( list, (Int)i ) == True )
-                    block |= bit;
-                bit = bit << 1;
-                if ( bit == 0 || i == len ) {
-		    BLOCK_ELM_BLIST(list,i) = block;
-                    block = 0;
-                    bit = 1;
-                }
-            }
-            RetypeBag( list, (IS_MUTABLE_OBJ(list) ?
-                              T_BLIST : T_BLIST+IMMUTABLE) );
-            ResizeBag( list, SIZE_PLEN_BLIST( len ) );
-            SET_LEN_BLIST( list, len );
+            ConvBlist(list);
         }
-
     }
 
     /* return the result                                                   */
@@ -1153,7 +1084,7 @@ Int IsBlist (
 
 *F  IsBlistHandler( <self>, <val> ) . . . . test if a value is a boolean list
 **
-**  'IsBlistHandler' implements the internal function 'IsBlist'.
+**  'IsBlistHandler' handles the internal function 'IsBlist'.
 **
 **  'IsBlist( <val> )'
 **
@@ -1170,6 +1101,114 @@ Obj IsBlistHandler (
     /* let 'IsBlist' do the work                                           */
     return IsBlist( val ) ? True : False;
 }
+
+
+/****************************************************************************
+**
+*F  SizeBlist( <blist> )  . . . .  number of 'true' entries in a boolean list
+**
+**  'SizeBlist' returns   the number of  entries of  the boolean list <blist>
+**  that are 'true'.
+**
+**  The sequence to compute the  number of bits in  a block is quite  clever.
+**  The idea is that after the <i>-th instruction each subblock of $2^i$ bits
+**  holds the number of   bits of this  subblock  in the original block  <m>.
+**  This is illustrated in the example below for a block of with 8 bits:
+**
+**       // a b c d e f g h
+**      m = (m & 0x55)       +  ((m >> 1) & 0x55);
+**       // . b . d . f . h  +  . a . c . e . g   =  a+b c+d e+f g+h
+**      m = (m & 0x33)       +  ((m >> 2) & 0x33);
+**       // . . c+d . . g+h  +  . . a+b . . e+f   =  a+b+c+d e+f+g+h
+**      m = (m & 0x0f)       +  ((m >> 4) & 0x0f);
+**       // . . . . e+f+g+h  +  . . . . a+b+c+d   =  a+b+c+d+e+f+g+h
+**
+**  In the actual  code  some unnecessary mask  have  been removed, improving
+**  performance quite a bit,  because masks are 32  bit immediate values  for
+**  which most RISC  processors need two  instructions to load them.  Talking
+**  about performance.  The code is  close to optimal,  it should compile  to
+**  only about  22 MIPS  or SPARC instructions.   Dividing the  block into  4
+**  bytes and looking up the number of bits  of a byte in a  table may be 10%
+**  faster, but only if the table lives in the data cache.
+**
+*N  1992/12/15 martin this depends on 'BIPEB' being 32 
+*N  1996/11/12 Steve  altered to handle 64 bit also
+**
+**  Introduced the SizeBlist function for kernel use, and the 
+**  COUNT_TRUES_BLOCK( <var> ) macro which replaces a block of bits in <var> 
+**  by the number of ones it contains. It will fail horribly if <var> is not 
+**  a variable.
+*/
+#ifdef SYS_IS_64_BIT
+
+#define COUNT_TRUES_BLOCK( block )                                                          \
+        do {                                                                                \
+        (block) = ((block) & 0x5555555555555555L) + (((block) >> 1) & 0x5555555555555555L); \
+        (block) = ((block) & 0x3333333333333333L) + (((block) >> 2) & 0x3333333333333333L); \
+        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f0f0f0f0fL;                        \
+        (block) = ((block) + ((block) >>  8));                                              \
+        (block) = ((block) + ((block) >> 16));                                              \
+        (block) = ((block) + ((block) >> 32)) & 0x00000000000000ffL; } while (0)            
+
+#else
+
+#define COUNT_TRUES_BLOCK( block )                                        \
+        do {                                                              \
+        (block) = ((block) & 0x55555555) + (((block) >> 1) & 0x55555555); \
+        (block) = ((block) & 0x33333333) + (((block) >> 2) & 0x33333333); \
+        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f;               \
+        (block) = ((block) + ((block) >>  8));                            \
+        (block) = ((block) + ((block) >> 16)) & 0x000000ff; } while (0)   
+#endif
+
+UInt SizeBlist (
+    Obj                 blist )
+{
+    UInt *              ptr;            /* pointer to blist                */
+    UInt                nrb;            /* number of blocks in blist       */
+    UInt                m;              /* number of bits in a block       */
+    UInt                n;              /* number of bits in blist         */
+    UInt                i;              /* loop variable                   */
+
+    /* get the number of blocks and a pointer                              */
+    nrb = NUMBER_BLOCKS_BLIST(blist);
+    ptr = BLOCKS_BLIST( blist );
+
+    /* loop over the blocks, adding the number of bits of each one         */
+    n = 0;
+    for ( i = 1; i <= nrb; i++ ) {
+        m = *ptr++;
+        COUNT_TRUES_BLOCK(m);
+        n += m;
+    }
+
+    /* return the number of bits                                           */
+    return n;
+}
+
+
+/****************************************************************************
+**
+
+*F  FuncSIZE_BLIST( <self>, <blist> ) . . number of 'true' entries in <blist>
+**
+**  'FuncSIZE_BLIST' implements the internal function 'SizeBlist'
+*/
+Obj FuncSIZE_BLIST (
+    Obj                 self,
+    Obj                 blist )
+{
+    /* get and check the argument                                          */
+    while ( ! IsBlistConv(blist) ) {
+        blist = ErrorReturnObj(
+            "SizeBlist: <blist> must be a boolean list (not a %s)",
+            (Int)TNAM_OBJ(blist), 0L,
+            "you can return a boolean list for <blist>" );
+    }
+  
+    return INTOBJ_INT(SizeBlist(blist));
+}
+
 
 
 /****************************************************************************
@@ -1207,13 +1246,13 @@ Obj FuncBLIST_LIST (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "BlistList: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
     while ( ! IS_LIST(sub) ) {
         sub = ErrorReturnObj(
             "BlistList: <sub> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(sub)].name), 0L,
+            (Int)TNAM_OBJ(sub), 0L,
             "you can return a list for <sub>" );
     }
 
@@ -1315,7 +1354,7 @@ Obj FuncBLIST_LIST (
                     /* set bit if <sub>[<l>] was found at position k       */
                     if ( k <= lenList
                       && EQ( ADDR_OBJ(list)[k], ADDR_OBJ(sub)[l] ) )
-		      SET_ELM_BLIST( blist, k, True);
+                      SET_ELM_BLIST( blist, k, True);
                 }
             }
 
@@ -1355,9 +1394,9 @@ Obj FuncBLIST_LIST (
                 /* if block is full add it to boolean list and start next  */
                 bit = bit << 1;
                 if ( bit == 0 || l == lenList ) {
-		  BLOCK_ELM_BLIST( blist, l) = block;
-		  block = 0;
-		  bit   = 1;
+                  BLOCK_ELM_BLIST( blist, l) = block;
+                  block = 0;
+                  bit   = 1;
                 }
 
             }
@@ -1429,112 +1468,7 @@ Obj FuncBLIST_LIST (
 
 /****************************************************************************
 **
-*F  SizeBlist( <blist> ) . . . . . number of 'true' entries in a boolean list
-*F  FuncSIZE_BLIST(<self>,<blist>)  number of 'true' entries in a boolean list
-**
-**  'FuncSIZE_BLIST' implements the internal function 'SizeBlist'
-**  'SizeBlist' is a C function that does the same calculation
-**
-**  'SizeBlist( <blist> )'
-**
-**  'SizeBlist' returns   the number of  entries of  the boolean list <blist>
-**  that are 'true'.
-**
-**  The sequence to compute the  number of bits in  a block is quite  clever.
-**  The idea is that after the <i>-th instruction each subblock of $2^i$ bits
-**  holds the number of   bits of this  subblock  in the original block  <m>.
-**  This is illustrated in the example below for a block of with 8 bits:
-**
-**       // a b c d e f g h
-**      m = (m & 0x55)       +  ((m >> 1) & 0x55);
-**       // . b . d . f . h  +  . a . c . e . g   =  a+b c+d e+f g+h
-**      m = (m & 0x33)       +  ((m >> 2) & 0x33);
-**       // . . c+d . . g+h  +  . . a+b . . e+f   =  a+b+c+d e+f+g+h
-**      m = (m & 0x0f)       +  ((m >> 4) & 0x0f);
-**       // . . . . e+f+g+h  +  . . . . a+b+c+d   =  a+b+c+d+e+f+g+h
-**
-**  In the actual  code  some unnecessary mask  have  been removed, improving
-**  performance quite a bit,  because masks are 32  bit immediate values  for
-**  which most RISC  processors need two  instructions to load them.  Talking
-**  about performance.  The code is  close to optimal,  it should compile  to
-**  only about  22 MIPS  or SPARC instructions.   Dividing the  block into  4
-**  bytes and looking up the number of bits  of a byte in a  table may be 10%
-**  faster, but only if the table lives in the data cache.
-**
-*N  1992/12/15 martin this depends on 'BIPEB' being 32 
-*N  1996/11/12 Steve  altered to handle 64 bit also
-**
-**  Introduced the SizeBlist function for kernel use, and the 
-**  COUNT_TRUES_BLOCK( <var> ) macro which replaces a block of bits in <var> 
-**  by the number of ones it contains. It will fail horribly if <var> is not 
-**  a variable.
-*/
-
-#ifdef SYS_IS_64_BIT
-#define COUNT_TRUES_BLOCK( block )                                                          \
-        do {                                                                                \
-        (block) = ((block) & 0x5555555555555555L) + (((block) >> 1) & 0x5555555555555555L); \
-        (block) = ((block) & 0x3333333333333333L) + (((block) >> 2) & 0x3333333333333333L); \
-        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f0f0f0f0fL;                        \
-        (block) = ((block) + ((block) >>  8));                                              \
-        (block) = ((block) + ((block) >> 16));                                              \
-        (block) = ((block) + ((block) >> 32)) & 0x00000000000000ffL; } while (0)            
-#else
-#define COUNT_TRUES_BLOCK( block )                                        \
-        do {                                                              \
-        (block) = ((block) & 0x55555555) + (((block) >> 1) & 0x55555555); \
-        (block) = ((block) & 0x33333333) + (((block) >> 2) & 0x33333333); \
-        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f;               \
-        (block) = ((block) + ((block) >>  8));                            \
-        (block) = ((block) + ((block) >> 16)) & 0x000000ff; } while (0)   
-#endif
-
-UInt             SizeBlist (
-    Obj                 blist )
-{
-    UInt *               ptr;            /* pointer to blist                */
-    UInt                nrb;            /* number of blocks in blist       */
-    UInt                m;              /* number of bits in a block       */
-    UInt                n;              /* number of bits in blist         */
-    UInt                i;              /* loop variable                   */
-
-    /* get the number of blocks and a pointer                              */
-    nrb = NUMBER_BLOCKS_BLIST(blist);
-    ptr = BLOCKS_BLIST( blist );
-
-    /* loop over the blocks, adding the number of bits of each one         */
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m);
-        n += m;
-    }
-
-    /* return the number of bits                                           */
-    return n;
-}
-
-
-Obj             FuncSIZE_BLIST (
-    Obj                 self,
-    Obj                 blist )
-{
-    /* get and check the argument                                          */
-  while ( TNUM_OBJ(blist) != T_BLIST && ! IsBlist(blist) ) {
-    blist = ErrorReturnObj(
-			   "SizeBlist: <blist> must be a boolean list (not a %s)",
-			   (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
-			   "you can return a boolean list for <blist>" );
-  }
-  
-  return INTOBJ_INT(SizeBlist(blist));
-}
-
-
-
-/****************************************************************************
-**
-*F  FuncListBlist(<self>,<list>,<blist>)   make a sublist from a boolean list
+*F  FuncListBlist( <self>, <list>, <blist> )  . make a sublist from a <blist>
 **
 **  'FuncListBlist' implements the internal function 'ListBlist'.
 **
@@ -1561,14 +1495,14 @@ Obj FuncLIST_BLIST (
     while ( ! IS_LIST( list ) ) {
         list = ErrorReturnObj(
             "ListBlist: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
     /* get and check the second argument                                   */
-    if ( ! IsBlist( blist ) ) {
+    while ( ! IsBlistConv( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
+            (Int)TNAM_OBJ(blist), 0L,
             "you can return a boolean list for <blist>" );
     }
     while ( LEN_LIST( list ) != LEN_BLIST( blist ) ) {
@@ -1606,7 +1540,7 @@ Obj FuncLIST_BLIST (
 *F  FuncPositionsTrueBlist( <self>, <blist> ) . . . true positions in a blist
 **
 *N  1992/12/15 martin this depends on 'BIPEB' being 32
-*N Fix up for 64 bit SL
+*N  Fix up for 64 bit SL
 */
 Obj FuncPositionsTrueBlist (
     Obj                 self,
@@ -1622,10 +1556,10 @@ Obj FuncPositionsTrueBlist (
     UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
-    if ( ! IsBlist( blist ) ) {
+    while ( ! IsBlistConv( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
+            (Int)TNAM_OBJ(blist), 0L,
             "you can return a boolean list for <blist>" );
     }
 
@@ -1663,7 +1597,7 @@ Obj FuncPositionsTrueBlist (
 
 /****************************************************************************
 **
-*F  FuncPositionNthTrueBlist( <self>, <blist>, <Nth> )	. . . find true value
+*F  FuncPositionNthTrueBlist( <self>, <blist>, <Nth> )  . . . find true value
 **
 *N  1992/12/15 martin this depends on 'BIPEB' being 32
 *N  Fixed up for 64 SL
@@ -1680,16 +1614,16 @@ Obj FuncPositionNthTrueBlist (
     UInt  *             ptr;
 
     /* Check the arguments. */    
-    while ( ! IsBlist( blist ) ) {
+    while ( ! IsBlistConv( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
+            (Int)TNAM_OBJ(blist), 0L,
             "you can return a boolean list for <blist>" );
     }
     while ( ! IS_INTOBJ(Nth) || INT_INTOBJ(Nth) <= 0 ) {
         Nth = ErrorReturnObj(
             "Position: <nth> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(Nth)].name), 0L,
+            (Int)TNAM_OBJ(Nth), 0L,
             "you can return a positive integer for <nth>" );
     }
     
@@ -1706,8 +1640,8 @@ Obj FuncPositionNthTrueBlist (
         nth -= m;
         pos += BIPEB;
         ptr++;
-	m = *ptr;
-	COUNT_TRUES_BLOCK(m);
+        m = *ptr;
+        COUNT_TRUES_BLOCK(m);
     }
     m = *ptr;
     mask = 0x1;
@@ -1722,8 +1656,7 @@ Obj FuncPositionNthTrueBlist (
 
 /****************************************************************************
 **
-*F  FuncIsSubsetBlist(<self>,<list1>,<list2>) . . . . . . . . . . . . . . . .
-*F  . . . . . . . . . . . . . . . test if a boolean list is subset of another
+*F  FuncIsSubsetBlist( <self>, <list1>, <list2> ) . . . . . . . . subset test
 **
 **  'FuncIsSubsetBlist' implements the internal function 'IsSubsetBlist'.
 **
@@ -1738,21 +1671,21 @@ Obj FuncIS_SUB_BLIST (
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt *             ptr1;           /* pointer to the first argument   */
-    UInt *             ptr2;           /* pointer to the second argument  */
+    UInt *              ptr1;           /* pointer to the first argument   */
+    UInt *              ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlist( list1 ) ) {
+    while ( ! IsBlistConv( list1 ) ) {
         list1 = ErrorReturnObj(
             "IsSubsetBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
+            (Int)TNAM_OBJ(list1), 0L,
             "you can return a boolean list for <blist1>" );
     }
-    while ( ! IsBlist( list2 ) ) {
+    while ( ! IsBlistConv( list2 ) ) {
         list2 = ErrorReturnObj(
             "IsSubsetBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
+            (Int)TNAM_OBJ(list2), 0L,
             "you can return a boolean list for <blist2>" );
     }
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
@@ -1794,21 +1727,21 @@ Obj FuncUNITE_BLIST (
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt *             ptr1;           /* pointer to the first argument   */
-    UInt *             ptr2;           /* pointer to the second argument  */
+    UInt *              ptr1;           /* pointer to the first argument   */
+    UInt *              ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlist( list1 ) ) {
+    while ( ! IsBlistConv( list1 ) ) {
         list1 = ErrorReturnObj(
             "UniteBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
+            (Int)TNAM_OBJ(list1), 0L,
             "you can return a boolean list for <blist1>" );
     }
-    while ( ! IsBlist( list2 ) ) {
+    while ( ! IsBlistConv( list2 ) ) {
         list2 = ErrorReturnObj(
             "UniteBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
+            (Int)TNAM_OBJ(list2), 0L,
             "you can return a boolean list for <blist2>" );
     }
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
@@ -1852,16 +1785,16 @@ Obj FuncINTER_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlist( list1 ) ) {
+    while ( ! IsBlistConv( list1 ) ) {
         list1 = ErrorReturnObj(
             "IntersectBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
+            (Int)TNAM_OBJ(list1), 0L,
             "you can return a boolean list for <blist1>" );
     }
-    while ( ! IsBlist( list2 ) ) {
+    while ( ! IsBlistConv( list2 ) ) {
         list2 = ErrorReturnObj(
             "IntersectBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
+            (Int)TNAM_OBJ(list2), 0L,
             "you can return a boolean list for <blist2>" );
     }
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
@@ -1885,7 +1818,7 @@ Obj FuncINTER_BLIST (
 
 /****************************************************************************
 **
-*F  FuncSUBTR_BLIST( <self>, <list1>, <list2> )	. . . . . . <list1> - <list2>
+*F  FuncSUBTR_BLIST( <self>, <list1>, <list2> ) . . . . . . <list1> - <list2>
 **
 **  'FuncSUBTR_BLIST' implements the internal function 'SubtractBlist'.
 **
@@ -1900,21 +1833,21 @@ Obj FuncSUBTR_BLIST (
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt *             ptr1;           /* pointer to the first argument   */
-    UInt *             ptr2;           /* pointer to the second argument  */
+    UInt *              ptr1;           /* pointer to the first argument   */
+    UInt *              ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlist( list1 ) ) {
+    while ( ! IsBlistConv( list1 ) ) {
         list1 = ErrorReturnObj(
             "SubtractBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
+            (Int)TNAM_OBJ(list1), 0L,
             "you can return a boolean list for <blist1>" );
     }
-    while ( ! IsBlist( list2 ) ) {
+    while ( ! IsBlistConv( list2 ) ) {
         list2 = ErrorReturnObj(
             "SubtractBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
+            (Int)TNAM_OBJ(list2), 0L,
             "you can return a boolean list for <blist2>" );
     }
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
@@ -1929,47 +1862,278 @@ Obj FuncSUBTR_BLIST (
     ptr2 = BLOCKS_BLIST(list2); 
     for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) 
       { 
-	*ptr1++ &= ~ *ptr2++; 
+        *ptr1++ &= ~ *ptr2++; 
       }
 
     /* return nothing, this function is a procedure */ return 0; }
+
+/****************************************************************************
+**
+**
+*F  FuncCONV_BLIST( <self>, <blist> ) . . . . convert into a boolean list rep
+*/
+Obj FuncCONV_BLIST (
+    Obj                 self,
+    Obj                 blist )
+{
+    /* check whether <blist> is a boolean list                             */
+    while ( ! IsBlistConv(blist) ) {
+        blist = ErrorReturnObj(
+            "CONV_BLIST: <blist> must be a boolean list (not a %s)",
+            (Int)TNAM_OBJ(blist), 0L,
+            "you can return a blist for <blist>" );
+    }
+
+    /* return nothing                                                      */
+    return 0;
+}
+
+/****************************************************************************
+**
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
 
 
 /****************************************************************************
 **
 
-*F  InitBlist() . . . . . . . . . . . . . initialize the boolean list package
-**
-**  'InitBlist' initializes the boolean list package.
+*F  SetupBlist()  . . . . . . . . . . . . initialize the boolean list package
 */
-void InitBlist ( void )
+void SetupBlist ( void )
 {
     UInt                 t1;
     UInt                 t2;
 
 
     /* install the names                                                   */
-    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
-        InfoBags[t1                  ].name="list (boolean list)";
-        InfoBags[t1+IMMUTABLE        ].name="list (boolean list,imm)";
-        InfoBags[t1          +COPYING].name="list (boolean list,copied)";
-        InfoBags[t1+IMMUTABLE+COPYING].name="list (boolean list,imm,copied)";
-    }
+    InfoBags[T_BLIST                          ].name = "list (boolean)";
+    InfoBags[T_BLIST       +IMMUTABLE         ].name = "list (boolean,imm)";
+    InfoBags[T_BLIST                  +COPYING].name = "list (boolean,copied)";
+    InfoBags[T_BLIST       +IMMUTABLE +COPYING].name = "list (boolean,imm,copied)";
+
+    InfoBags[T_BLIST_NSORT                    ].name = "list (boolean,nsort)";
+    InfoBags[T_BLIST_NSORT +IMMUTABLE         ].name = "list (boolean,nsort,imm)";
+    InfoBags[T_BLIST_NSORT            +COPYING].name = "list (boolean,nsort,copied)";
+    InfoBags[T_BLIST_NSORT +IMMUTABLE +COPYING].name = "list (boolean,nsort,imm,copied)";
+
+    InfoBags[T_BLIST_SSORT                    ].name = "list (boolean,ssort)";
+    InfoBags[T_BLIST_SSORT +IMMUTABLE         ].name = "list (boolean,ssort,imm)";
+    InfoBags[T_BLIST_SSORT            +COPYING].name = "list (boolean,ssort,copied)";
+    InfoBags[T_BLIST_SSORT +IMMUTABLE +COPYING].name = "list (boolean,ssort,imm,copied)";
 
 
     /* install the marking function                                        */
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
-	InitMarkFuncBags( t1,                      MarkNoSubBags  );
-	InitMarkFuncBags( t1 +IMMUTABLE,           MarkNoSubBags  );
-	InitMarkFuncBags( t1            +COPYING , MarkOneSubBags );
-	InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
+        InitMarkFuncBags( t1,                      MarkNoSubBags  );
+        InitMarkFuncBags( t1 +IMMUTABLE,           MarkNoSubBags  );
+        InitMarkFuncBags( t1            +COPYING , MarkOneSubBags );
+        InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
     }
 
 
-    /* install the type method                                             */
+    /* install the filter and property maps                                */
+    ClearFiltsTNums   [T_BLIST                ] = T_BLIST;
+    ClearFiltsTNums   [T_BLIST      +IMMUTABLE] = T_BLIST+IMMUTABLE;
+    ClearFiltsTNums   [T_BLIST_NSORT          ] = T_BLIST;
+    ClearFiltsTNums   [T_BLIST_NSORT+IMMUTABLE] = T_BLIST+IMMUTABLE;
+    ClearFiltsTNums   [T_BLIST_SSORT          ] = T_BLIST;
+    ClearFiltsTNums   [T_BLIST_SSORT+IMMUTABLE] = T_BLIST+IMMUTABLE;
+
+    /* mutable boolean list                                                */
+    HasFiltListTNums  [T_BLIST                ][FN_IS_MUTABLE] = 1;
+    HasFiltListTNums  [T_BLIST                ][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_BLIST                ][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_BLIST                ][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_BLIST                ][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_BLIST                ][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_BLIST                ][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_BLIST                ][FN_IS_SSORT  ] = 0;
+    HasFiltListTNums  [T_BLIST                ][FN_IS_NSORT  ] = 0;
+
+    SetFiltListTNums  [T_BLIST                ][FN_IS_MUTABLE] = T_BLIST;
+    SetFiltListTNums  [T_BLIST                ][FN_IS_EMPTY  ] = T_BLIST_SSORT;
+    SetFiltListTNums  [T_BLIST                ][FN_IS_DENSE  ] = T_BLIST;
+    SetFiltListTNums  [T_BLIST                ][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_BLIST                ][FN_IS_HOMOG  ] = T_BLIST;
+    SetFiltListTNums  [T_BLIST                ][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_BLIST                ][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_BLIST                ][FN_IS_SSORT  ] = T_BLIST_SSORT;
+    SetFiltListTNums  [T_BLIST                ][FN_IS_NSORT  ] = T_BLIST_NSORT;
+
+    ResetFiltListTNums[T_BLIST                ][FN_IS_MUTABLE] = T_BLIST      +IMMUTABLE;
+    ResetFiltListTNums[T_BLIST                ][FN_IS_EMPTY  ] = T_BLIST;
+    ResetFiltListTNums[T_BLIST                ][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_BLIST                ][FN_IS_NDENSE ] = T_BLIST;
+    ResetFiltListTNums[T_BLIST                ][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_BLIST                ][FN_IS_NHOMOG ] = T_BLIST;
+    ResetFiltListTNums[T_BLIST                ][FN_IS_TABLE  ] = T_BLIST;
+    ResetFiltListTNums[T_BLIST                ][FN_IS_SSORT  ] = T_BLIST;
+    ResetFiltListTNums[T_BLIST                ][FN_IS_NSORT  ] = T_BLIST;
+
+    /* immutable boolean list                                               */
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_MUTABLE] = 0;
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_SSORT  ] = 0;
+    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NSORT  ] = 0;
+
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_MUTABLE] = T_BLIST;
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_DENSE  ] = T_BLIST      +IMMUTABLE;
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_HOMOG  ] = T_BLIST      +IMMUTABLE;
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_SSORT  ] = T_BLIST_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NSORT  ] = T_BLIST_NSORT+IMMUTABLE;
+
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_MUTABLE] = T_BLIST      +IMMUTABLE;
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST      +IMMUTABLE;
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_NDENSE ] = T_BLIST      +IMMUTABLE;
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_NHOMOG ] = T_BLIST      +IMMUTABLE;
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_NSORT  ] = T_BLIST      +IMMUTABLE;
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_SSORT  ] = T_BLIST      +IMMUTABLE;
+    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_TABLE  ] = T_BLIST      +IMMUTABLE;
+
+    /* nsort mutable boolean list                                          */
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_MUTABLE] = 1;
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_SSORT  ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NSORT  ] = 1;
+
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_MUTABLE] = T_BLIST_NSORT;
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_EMPTY  ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_DENSE  ] = T_BLIST_NSORT;
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_HOMOG  ] = T_BLIST_NSORT;
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_SSORT  ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NSORT  ] = T_BLIST_NSORT;
+
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_MUTABLE] = T_BLIST_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_EMPTY  ] = T_BLIST_NSORT;
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_NDENSE ] = T_BLIST_NSORT;
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_NHOMOG ] = T_BLIST_NSORT;
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_TABLE  ] = T_BLIST_NSORT;
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_SSORT  ] = T_BLIST_NSORT;
+    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_NSORT  ] = T_BLIST;
+
+    /* nsort immutable boolean list                                        */
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_MUTABLE] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_SSORT  ] = 0;
+    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NSORT  ] = 1;
+
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_MUTABLE] = T_BLIST_NSORT;
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_DENSE  ] = T_BLIST_NSORT+IMMUTABLE;
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = T_BLIST_NSORT+IMMUTABLE;
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_SSORT  ] = -1;
+    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NSORT  ] = T_BLIST_NSORT+IMMUTABLE;
+
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_MUTABLE] = T_BLIST_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_NDENSE ] = T_BLIST_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = T_BLIST_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_TABLE  ] = T_BLIST_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_SSORT  ] = T_BLIST_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_NSORT  ] = T_BLIST      +IMMUTABLE;
+
+    /* ssort mutable boolean list                                          */
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_MUTABLE] = 1;
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_SSORT  ] = 1;
+    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NSORT  ] = 0;
+
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_MUTABLE] = T_BLIST_SSORT;
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_EMPTY  ] = T_BLIST_SSORT;
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_DENSE  ] = T_BLIST_SSORT;
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_HOMOG  ] = T_BLIST_SSORT;
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_SSORT  ] = T_BLIST_SSORT;
+    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NSORT  ] = -1;
+
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_MUTABLE] = T_BLIST_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_EMPTY  ] = T_BLIST_SSORT;
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_NDENSE ] = T_BLIST_SSORT;
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_NHOMOG ] = T_BLIST_SSORT;
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_TABLE  ] = T_BLIST_SSORT;
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_SSORT  ] = T_BLIST;
+    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_NSORT  ] = T_BLIST_SSORT;
+
+    /* ssort immutable boolean list                                        */
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_MUTABLE] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_SSORT  ] = 1;
+    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NSORT  ] = 0;
+
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_MUTABLE] = T_BLIST_SSORT;
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_DENSE  ] = T_BLIST_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = T_BLIST_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_SSORT  ] = T_BLIST_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NSORT  ] = -1;
+
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_MUTABLE] = T_BLIST_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_NDENSE ] = T_BLIST_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = T_BLIST_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_TABLE  ] = T_BLIST_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_SSORT  ] = T_BLIST      +IMMUTABLE;
+    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_NSORT  ] = T_BLIST_SSORT+IMMUTABLE;
+
+
+    /* Install the saving functions -- cannot save while copying           */
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
-       TypeObjFuncs[ t1            ] = TypeBlist;
-        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeBlist;
+        SaveObjFuncs[ t1            ] = SaveBlist;
+        SaveObjFuncs[ t1 +IMMUTABLE ] = SaveBlist;
+        LoadObjFuncs[ t1            ] = LoadBlist;
+        LoadObjFuncs[ t1 +IMMUTABLE ] = LoadBlist;
     }
 
 
@@ -2035,6 +2199,22 @@ void InitBlist ( void )
     IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = IsSSortBlistNot;
     IsSSortListFuncs[ T_BLIST_SSORT            ] = IsSSortBlistYes;
     IsSSortListFuncs[ T_BLIST_SSORT +IMMUTABLE ] = IsSSortBlistYes;
+}
+
+
+/****************************************************************************
+**
+*F  InitBlist() . . . . . . . . . . . . . initialize the boolean list package
+*/
+void InitBlist ( void )
+{
+    UInt                 t1;
+
+    /* install the type method                                             */
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
+        TypeObjFuncs[ t1            ] = TypeBlist;
+        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeBlist;
+    }
 
 
     /* install the internal functions                                      */
@@ -2046,7 +2226,7 @@ void InitBlist ( void )
        "src/blister.c:BLIST_LIST" );
 
     C_NEW_GVAR_FUNC( "LIST_BLIST", 2L, "list, blist",
-		  FuncLIST_BLIST,
+                  FuncLIST_BLIST,
        "src/blister.c:LIST_BLIST" );
 
     C_NEW_GVAR_FUNC( "SIZE_BLIST", 1L, "blist",
@@ -2054,11 +2234,11 @@ void InitBlist ( void )
        "src/blister.c:SIZE_BLIST" );
 
     C_NEW_GVAR_FUNC( "IS_SUB_BLIST", 2L, "blist1, blist2",
- 		  FuncIS_SUB_BLIST,
+                  FuncIS_SUB_BLIST,
        "src/blister.c:IS_SUB_BLIST" );
 
     C_NEW_GVAR_FUNC( "UNITE_BLIST", 2L, "blist1, blist2",
-		  FuncUNITE_BLIST,
+                  FuncUNITE_BLIST,
        "src/blister.c:UNITE_BLIST" );
 
     C_NEW_GVAR_FUNC( "INTER_BLIST", 2L, "blist1, blist2",
@@ -2066,16 +2246,31 @@ void InitBlist ( void )
        "src/blister.c:INTER_BLIST" );
 
     C_NEW_GVAR_FUNC( "SUBTR_BLIST", 2L, "blist1, blist2",
-		  FuncSUBTR_BLIST,
+                  FuncSUBTR_BLIST,
        "src/blister.c:SUBTR_BLIST" );
 
     C_NEW_GVAR_FUNC( "PositionNthTrueBlist", 2L, "blist, nth",
-		  FuncPositionNthTrueBlist,
+                  FuncPositionNthTrueBlist,
        "src/blister.c:PositionNthTrueBlist" );
 
     C_NEW_GVAR_FUNC( "PositionsTrueBlist", 1L, "blist",
                   FuncPositionsTrueBlist,
        "src/blister.c:PositionsTrueBlist" );
+
+    C_NEW_GVAR_FUNC( "CONV_BLIST", 1L, "blist",
+                  FuncCONV_BLIST,
+       "src/blister.c:CONV_BLIST" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckBlist()  . . .  check the initialisation of the boolean list package
+*/
+void CheckBlist ( void )
+{
+    SET_REVISION( "blister_c",  Revision_blister_c );
+    SET_REVISION( "blister_h",  Revision_blister_h );
 }
 
 

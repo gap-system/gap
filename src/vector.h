@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  vector.h                    GAP source                   Martin Schoenert
+*W  vector.h                    GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -27,18 +27,44 @@
 **  is just that the kernel does not known this.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_vector_h =
+SYS_CONST char * Revision_vector_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
-*F  InitVector()  . . . . . . . . . . . . . . . . . initialize vector package
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupVector() . . . . . . . . . . . . . . . initialize the vector package
+*/
+extern void SetupVector ( void );
+
+
+/****************************************************************************
+**
+*F  InitVector()  . . . . . . . . . . . . . . . initialize the vector package
 **
 **  'InitVector' initializes the vector package.
 */
-extern  void            InitVector ( void );
+extern void InitVector ( void );
 
 
+/****************************************************************************
+**
+*F  CheckVector() . . . . . .  check the initialisation of the vector package
+*/
+extern void CheckVector ( void );
 
+
+/****************************************************************************
+**
+
+*E  vector.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -20,6 +20,65 @@ Revision.grp_gd :=
 GroupString := function(arg) return "Group"; end;
 #T !!!
 
+IsPrimeInt := "2b defined";
+
+#############################################################################
+##
+#F  KeyDependentFOA( <name>, <grpreq>, <keyreq>, <keytest> )  . e.g., `PCore'
+##
+KeyDependentFOA := function( name, grpreq, keyreq, keytest )
+    local str, oper, attr, func;
+    
+    if keytest = "prime"  then
+        keytest := function( key )
+            if not IsPrimeInt( key )  then
+                Error( name, ": <p> must be a prime" );
+            fi;
+        end;
+    fi;
+
+    # Create the two-argument operation.
+    str:= SHALLOW_COPY_OBJ( name );
+    APPEND_LIST_INTR( str, "Op" );
+    oper:= NewOperation( str, [ grpreq, keyreq ] );
+
+    # Create the mutable attribute and install the default method.
+    str := "Computed";
+    APPEND_LIST_INTR( str, name );
+    APPEND_LIST_INTR( str, "s" );
+    attr:= NewAttribute( str, grpreq, "mutable" );
+    InstallMethod( attr, true, [ grpreq ], 0, grp -> [  ] );
+
+    # Create the function that mainly calls the operation.
+    func:= function( grp, key )
+        local   known,  i, erg;
+        
+        if not IsFinite( grp )  then
+            Error( name, ": <G> must be finite" );
+        fi;
+        keytest( key );
+        known := attr( grp );
+        i := 1;
+        while     i < Length( known )
+              and known[ i ] < key  do
+            i := i + 2;
+        od;
+	# start storing only after the result has been computed. This avoids
+	# errors if a calculation had been interrupted.
+	erg := oper( grp, key );
+        if i > Length( known )  or  known[ i ] <> key  then
+            known{ [ i .. Length( known ) ] + 2 } :=
+              known{ [ i .. Length( known ) ] };
+            known[ i ] := key;
+            known[ i + 1 ] := erg;
+        fi;
+        return known[ i + 1 ];
+    end;
+    
+    # Return the triple.
+    return [ func, oper, attr ];
+end;
+
 
 #############################################################################
 ##
@@ -99,6 +158,27 @@ InstallFactorMaintainedMethod( IsFinitelyGeneratedGroup,
 
 InstallTrueMethod( IsFinitelyGeneratedGroup, IsGroup and IsTrivial );
 
+#############################################################################
+##
+#P  IsSubsetLocallyFiniteGroup(<M>) . . . . test if a group is locally finite
+##
+##  A group is called locally finite if every finitely generated subgroup is
+##  finite.
+##
+IsSubsetLocallyFiniteGroup :=
+    NewProperty( "IsSubsetLocallyFiniteGroup", IsGroup );
+SetIsSubsetLocallyFiniteGroup := Setter( IsSubsetLocallyFiniteGroup );
+HasIsSubsetLocallyFiniteGroup := Tester( IsSubsetLocallyFiniteGroup );
+
+# this true method will enforce that many groups are finite, which is needed
+# implicitly
+InstallTrueMethod( IsFinite, IsFinitelyGeneratedGroup and IsGroup
+                             and IsSubsetLocallyFiniteGroup );
+
+InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFinite and IsGroup );
+
+InstallSubsetMaintainedMethod( IsSubsetLocallyFiniteGroup,
+    IsGroup and IsSubsetLocallyFiniteGroup, IsGroup );
 
 #############################################################################
 ##
@@ -482,13 +562,24 @@ HasNrConjugacyClasses := Tester( NrConjugacyClasses );
 
 #############################################################################
 ##
-#A  Omega( <G> )
+#O  OmegaOp( <G>, <p>, <n> )
 ##
 ##  is the largest elementary abelian normal subgroup in the $p$-group <G>.
 ##
-Omega := NewAttribute( "Omega", IsGroup );
-SetOmega := Setter( Omega );
-HasOmega := Tester( Omega );
+Omega := NewOperationArgs( "Omega" );
+OmegaOp := NewOperation( "OmegaOp",
+    [ IsGroup, IsPosRat and IsInt, IsPosRat and IsInt ] );
+ComputedOmegas := NewAttribute( "ComputedOmegas", IsGroup, "mutable" );
+
+
+#############################################################################
+##
+#O  AgemoOp( <G>, <p>, <n> )
+##
+Agemo := NewOperationArgs( "Agemo" );
+AgemoOp := NewOperation( "AgemoOp",
+    [ IsGroup, IsPosRat and IsInt, IsPosRat and IsInt ] );
+ComputedAgemos := NewAttribute( "ComputedAgemos", IsGroup, "mutable" );
 
 
 #############################################################################
@@ -598,6 +689,23 @@ HasSupersolvableResiduum := Tester( SupersolvableResiduum );
 
 #############################################################################
 ##
+#F  SupersolvableResiduumDefault( <G> ) . . . . supersolvable residuum of <G>
+##
+##  `SupersolvableResiduumDefault' returns a record with components
+##  `ssr' :
+##      the supersolvable residuum of the group <G>, that is,
+##      the largest normal subgroup of <G> with supersolvable factor group,
+##  `ds' :
+##      a chain of normal subgroups of <G>, descending from <G> to the
+##      supersolvable residuum, such that any refinement of this chain
+##      is a normal series.
+##
+SupersolvableResiduumDefault := NewOperationArgs(
+    "SupersolvableResiduumDefault" );
+
+
+#############################################################################
+##
 #A  ComplementSystem( <G> )
 ##
 ComplementSystem := NewAttribute( "ComplementSystem", IsGroup );
@@ -639,17 +747,6 @@ UpperCentralSeriesOfGroup := NewAttribute( "UpperCentralSeriesOfGroup",
     IsGroup );
 SetUpperCentralSeriesOfGroup := Setter( UpperCentralSeriesOfGroup );
 HasUpperCentralSeriesOfGroup := Tester( UpperCentralSeriesOfGroup );
-
-
-#############################################################################
-##
-#O  Agemo( <G>, <p> )
-##
-##  is the subgroup of the $p$-group <G> that is generated by the $p$-th
-##  powers of the generators of <G>.
-#T why not an attribute??
-##
-Agemo := NewOperation( "Agemo", [ IsGroup, IsPosRat and IsInt ] );
 
 
 #############################################################################
@@ -743,14 +840,10 @@ ConjugateSubgroups := NewOperation( "ConjugateSubgroups",
 ##
 #O  Core( <S>, <U> )
 ##
-Core := NewOperation( "Core", [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
-#A  CoreInParent( <G> )
-##
-CoreInParent := NewAttribute( "CoreInParent", IsGroup );
+tmp:= InParentFOA( "Core", IsGroup, IsGroup, NewAttribute );
+Core         := tmp[1];
+CoreOp       := tmp[2];
+CoreInParent := tmp[3];
 SetCoreInParent := Setter( CoreInParent );
 HasCoreInParent := Tester( CoreInParent );
 
@@ -782,14 +875,10 @@ FactorGroup := NewOperation( "FactorGroup", [ IsGroup, IsGroup ] );
 ##
 #O  Index( <G>, <U> )
 ##
-Index := NewOperation( "Index", [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
-#A  IndexInParent( <G> )
-##
-IndexInParent := NewAttribute( "IndexInParent", IsGroup );
+tmp:= InParentFOA( "Index", IsGroup, IsGroup, NewAttribute );
+Index         := tmp[1];
+IndexOp       := tmp[2];
+IndexInParent := tmp[3];
 SetIndexInParent := Setter( IndexInParent );
 HasIndexInParent := Tester( IndexInParent );
 
@@ -805,6 +894,18 @@ HasIndexInWholeGroup := Tester( IndexInWholeGroup );
 
 #############################################################################
 ##
+#A  IndependentGeneratorsOfAbelianGroup( <A> )
+##
+IndependentGeneratorsOfAbelianGroup := NewAttribute
+    ( "IndependentGeneratorsOfAbelianGroup", IsGroup and IsAbelian );
+SetIndependentGeneratorsOfAbelianGroup :=
+  Setter( IndependentGeneratorsOfAbelianGroup );
+HasIndependentGeneratorsOfAbelianGroup :=
+  Tester( IndependentGeneratorsOfAbelianGroup );
+
+
+#############################################################################
+##
 #O  IsConjugate( <G>, <x>, <y> )
 ##
 IsConjugate := NewOperation( "IsConjugate",
@@ -813,34 +914,36 @@ IsConjugate := NewOperation( "IsConjugate",
 
 #############################################################################
 ##
-#P  IsNormalInParent( <G> )
+#O  IsNormal( <G>, <U> )
 ##
-IsNormalInParent := NewProperty( "IsNormalInParent", IsGroup );
+tmp:= InParentFOA( "IsNormal", IsGroup, IsGroup, NewProperty );
+IsNormal         := tmp[1];
+IsNormalOp       := tmp[2];
+IsNormalInParent := tmp[3];
 SetIsNormalInParent := Setter( IsNormalInParent );
 HasIsNormalInParent := Tester( IsNormalInParent );
 
 
 #############################################################################
 ##
-#O  IsNormal( <G>, <U> )
+#F  IsPNilpotent( <G>, <p> )
 ##
-IsNormal := NewOperation( "IsNormal", [ IsGroup, IsGroup ] );
+tmp := KeyDependentFOA( "IsPNilpotent", IsGroup,
+               IsPosRat and IsInt, "prime" );
+IsPNilpotent          := tmp[1];
+IsPNilpotentOp        := tmp[2];
+ComputedIsPNilpotents := tmp[3];
 
 
 #############################################################################
 ##
-#O  IsPNilpotent( <G>, <p> )
+#F  IsPSolvable( <G>, <p> )
 ##
-IsPNilpotent := NewOperation( "IsPNilpotent",
-    [ IsGroup, IsPosRat and IsInt ] );
-
-
-#############################################################################
-##
-#O  IsPSolvable( <G>, <p> )
-##
-IsPSolvable := NewOperation( "IsPSolvable",
-    [ IsGroup, IsPosRat and IsInt ] );
+tmp := KeyDependentFOA( "IsPSolvable", IsGroup,
+               IsPosRat and IsInt, "prime" );
+IsPSolvable          := tmp[1];
+IsPSolvableOp        := tmp[2];
+ComputedIsPSolvables := tmp[3];
 
 
 #############################################################################
@@ -862,14 +965,10 @@ IsSubnormal := NewOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 ##
 #O  NormalClosure( <G>, <U> )
 ##
-NormalClosure := NewOperation( "NormalClosure", [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
-#A  NormalClosureInParent( <G> )
-##
-NormalClosureInParent := NewAttribute( "NormalClosureInParent", IsGroup );
+tmp:= InParentFOA( "NormalClosure", IsGroup, IsGroup, NewAttribute );
+NormalClosure         := tmp[1];
+NormalClosureOp       := tmp[2];
+NormalClosureInParent := tmp[3];
 SetNormalClosureInParent := Setter( NormalClosureInParent );
 HasNormalClosureInParent := Tester( NormalClosureInParent );
 
@@ -887,16 +986,13 @@ NormalIntersection := NewOperation( "NormalIntersection",
 #O  Normalizer( <G>, <g> )
 #O  Normalizer( <G>, <U> )
 ##
-Normalizer := NewOperation( "Normalizer", [ IsGroup, IsObject ] );
-
-
-#############################################################################
-##
-#A  NormalizerInParent( <G> )
-##
-NormalizerInParent := NewAttribute( "NormalizerInParent", IsGroup );
+tmp:= InParentFOA( "Normalizer", IsGroup, IsObject, NewAttribute );
+Normalizer         := tmp[1];
+NormalizerOp       := tmp[2];
+NormalizerInParent := tmp[3];
 SetNormalizerInParent := Setter( NormalizerInParent );
 HasNormalizerInParent := Tester( NormalizerInParent );
+
 
 #############################################################################
 ##
@@ -909,60 +1005,35 @@ CentralizerModulo := NewOperation("CentralizerModulo",
 #############################################################################
 ##
 #F  PCentralSeries( <G>, <p> )
-#O  PCentralSeriesOp( <G>, <p> )
-#A  ComputedPCentralSeriess( <G> )  . . . . . . . .  known $p$-central series
 ##
-##  'PCentralSeries' returns the <p>-central series of the group <G>.
-##
-##  The series that were computed already by 'PCentralSeries' are
-##  stored as value of the attribute 'ComputedPCentralSeriess'.
-##  Methods for the computation of a <p>-central series can be installed for
-##  the operation 'PCentralSeriesOp'.
-##
-PCentralSeries := NewOperationArgs( "PCentralSeries" );
+tmp := KeyDependentFOA( "PCentralSeries", IsGroup,
+               IsPosRat and IsInt,
+               "prime" );
+PCentralSeries          := tmp[1];
+PCentralSeriesOp        := tmp[2];
+ComputedPCentralSeriess := tmp[3];
 
-PCentralSeriesOp := NewOperation( "PCentralSeriesOp",
-    [ IsGroup, IsPosRat and IsInt ] );
-
-ComputedPCentralSeriess := NewAttribute( "ComputedPCentralSeriess",
-    IsGroup, "mutable" );
 
 #############################################################################
 ##
 #F  PRump( <G>, <p> )
-#O  PRumpOp( <G>, <p> )
-#A  ComputedPRumps( <G> )
 ##
-PRump := NewOperationArgs( "PRump" );
-
-PRumpOp := NewOperation( "PRumpOp",
-    [ IsGroup, IsPosRat and IsInt ] );
-
-ComputedPRumps := NewAttribute( "ComputedPRumps",
-    IsGroup, "mutable" );
+tmp := KeyDependentFOA( "PRump", IsGroup,
+               IsPosRat and IsInt, "prime" );
+PRump          := tmp[1];
+PRumpOp        := tmp[2];
+ComputedPRumps := tmp[3];
 
 
 #############################################################################
 ##
 #F  PCore( <G>, <p> )
-#O  PCoreOp( <G>, <p> )
-#A  ComputedPCores( <G> ) . . . . . . . . . . . . . . . . . . known $p$ cores
 ##
-##  'PCore' returns the <p>-core of the group <G>, where <p> is a prime
-##  integer.
-##  The <p>-core of <G> is the largest normal subgroup of <G> whose size is a
-##  power of <p>.
-##
-##  The <p>-cores that were computed already by 'PCore' are
-##  stored as value of the attribute 'ComputedPCores'.
-##  Methods for the computation of a <p>-core can be installed for
-##  the operation 'PCoreOp'.
-##
-PCoreOp := NewOperation( "PCoreOp", [ IsGroup, IsPosRat and IsInt ] );
-
-PCore := NewOperationArgs( "PCore" );
-
-ComputedPCores := NewAttribute( "ComputedPCores", IsGroup, "mutable" );
+tmp := KeyDependentFOA( "PCore", IsGroup,
+               IsPosRat and IsInt, "prime" );
+PCore          := tmp[1];
+PCoreOp        := tmp[2];
+ComputedPCores := tmp[3];
 
 
 #############################################################################
@@ -978,15 +1049,10 @@ Stabilizer := NewOperation( "Stabilizer",
 ##
 #O  SubnormalSeries( <G>, <U> )
 ##
-SubnormalSeries := NewOperation( "SubnormalSeries", [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
-#A  SubnormalSeriesInParent( <G> )
-##
-SubnormalSeriesInParent := NewAttribute( "SubnormalSeriesInParent",
-    IsGroup );
+tmp:= InParentFOA( "SubnormalSeries", IsGroup, IsGroup, NewAttribute );
+SubnormalSeries         := tmp[1];
+SubnormalSeriesOp       := tmp[2];
+SubnormalSeriesInParent := tmp[3];
 SetSubnormalSeriesInParent := Setter( SubnormalSeriesInParent );
 HasSubnormalSeriesInParent := Tester( SubnormalSeriesInParent );
 
@@ -994,67 +1060,33 @@ HasSubnormalSeriesInParent := Tester( SubnormalSeriesInParent );
 #############################################################################
 ##
 #F  SylowSubgroup( <G>, <p> )
-#O  SylowSubgroupOp( <G>, <p> )
-#A  ComputedSylowSubgroups( <G> ) . . . . . . . . . . . known Sylow subgroups
 ##
-##  'SylowSubgroup' returns a Sylow <p> subgroup of the group <G>.
-##
-##  The Sylow subgroups that were computed already by 'SylowSubgroup' are
-##  stored as value of the attribute 'ComputedSylowSubgroups'.
-##  Methods for the computation of a Sylow subgroup can be installed for
-##  the operation 'SylowSubgroupOp'.
-##
-SylowSubgroup := NewOperationArgs( "SylowSubgroup" );
-
-SylowSubgroupOp := NewOperation( "SylowSubgroupOp",
-    [ IsGroup, IsPosRat and IsInt ] );
-
-ComputedSylowSubgroups := NewAttribute( "ComputedSylowSubgroups",
-    IsGroup, "mutable" );
+tmp := KeyDependentFOA( "SylowSubgroup", IsGroup,
+               IsPosRat and IsInt, "prime" );
+SylowSubgroup          := tmp[1];
+SylowSubgroupOp        := tmp[2];
+ComputedSylowSubgroups := tmp[3];
 
 
 #############################################################################
 ##
 #F  SylowComplement( <G>, <p> )
-#O  SylowComplementOp( <G>, <p> )
-#A  ComputedSylowComplements( <G> ) . . . . . . . . . known Sylow complements
 ##
-##  'SylowComplement' returns a Sylow <p> complement of the group <G>.
-##
-##  The Sylow complements that were computed already by 'SylowComplement' are
-##  stored as value of the attribute 'ComputedSylowComplements'.
-##  Methods for the computation of a Sylow complement can be installed for
-##  the operation 'SylowComplementOp'.
-##
-SylowComplement := NewOperationArgs( "SylowComplement" );
-
-SylowComplementOp := NewOperation( "SylowComplementOp",
-    [ IsGroup, IsPosRat and IsInt ] );
-
-ComputedSylowComplements := NewAttribute( "ComputedSylowComplements", 
-    IsGroup, "mutable" );
+tmp := KeyDependentFOA( "SylowComplement", IsGroup,
+               IsPosRat and IsInt, "prime" );
+SylowComplement          := tmp[1];
+SylowComplementOp        := tmp[2];
+ComputedSylowComplements := tmp[3];
 
 
 #############################################################################
 ##
 #F  HallSubgroup( <G>, <pi> )
-#O  HallSubgroupOp( <G>, <pi> )
-#A  ComputedHallSubgroups( <G> ) . . . . . . . . . . . known Hall subgroups
 ##
-##  'HallSubgroup' returns a Hall <pi> subgroup of the group <G>.
-##
-##  The Hall subgroups that were computed already by 'HallSubgroup' are
-##  stored as value of the attribute 'ComputedHallSubgroups'.
-##  Methods for the computation of a Hall subgroup can be installed for
-##  the operation 'HallSubgroupOp'.
-##
-HallSubgroup := NewOperationArgs( "HallSubgroup" );
-
-HallSubgroupOp := NewOperation( "HallSubgroupOp",
-    [ IsGroup, IsObject ] );
-
-ComputedHallSubgroups := NewAttribute( "ComputedHallSubgroups",
-    IsGroup, "mutable" );
+tmp := KeyDependentFOA( "HallSubgroup", IsGroup, IsList, ReturnTrue );
+HallSubgroup          := tmp[1];
+HallSubgroupOp        := tmp[2];
+ComputedHallSubgroups := tmp[3];
 
 
 #############################################################################
@@ -1122,9 +1154,14 @@ IsRightTransversal := NewRepresentation( "IsRightTransversal",
     IsComponentObjectRep and IsAttributeStoringRep,
     [ "group", "subgroup" ] );
 
-RightTransversal := NewOperation( "RightTransversal", [ IsGroup, IsGroup ] );
-RightTransversalInParent := NewAttribute( "RightTransversalInParent",
-                                    IsGroup );
+#############################################################################
+##
+#O  RightTransversal( <G>, <U> )  . . . . . . . . . . . . . right transversal
+##
+tmp:= InParentFOA( "RightTransversal", IsGroup, IsGroup, NewAttribute );
+RightTransversal         := tmp[1];
+RightTransversalOp       := tmp[2];
+RightTransversalInParent := tmp[3];
 SetRightTransversalInParent := Setter( RightTransversalInParent );
 HasRightTransversalInParent := Tester( RightTransversalInParent );
 

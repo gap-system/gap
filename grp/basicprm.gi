@@ -26,7 +26,7 @@ InstallMethod( AbelianGroupCons,
     0,
 
 function( filter, ints )
-    local   grp;
+    local   grp,  grps;
 
     if not ForAll( ints, IsInt )  then
         Error( "<ints> must be a list of integers" );
@@ -36,8 +36,8 @@ function( filter, ints )
     fi;
 
     ints := Filtered( ints, x -> 1 < x );
-    ints := List( ints, x -> CyclicGroupCons( IsPermGroup, x ) );
-    grp  := CallFuncList( DirectProduct, ints );
+    grps := List( ints, x -> CyclicGroupCons( IsPermGroup, x ) );
+    grp  := CallFuncList( DirectProduct, grps );
     SetSize( grp, Product(ints) );
     SetIsAbelian( grp, true );
     return grp;
@@ -266,114 +266,8 @@ function( filter, dom )
 end );
 
 
-#############################################################################
-##
-
-#M  IsNaturalAlternatingGroup( <sym> )
-##
-InstallMethod( IsNaturalAlternatingGroup,
-    "size comparison",
-    true,
-    [ IsPermGroup ],
-    0,
-
-function( alt )
-    if 0 = NrMovedPoints(alt)  then
-        return IsTrivial(alt);
-    else
-        return Size(alt) * 2 = Factorial( NrMovedPoints(alt) );
-    fi;
-end );
-
 
 #############################################################################
 ##
-#M  IsNaturalSymmetricGroup( <sym> )
-##
-InstallMethod( IsNaturalSymmetricGroup,
-    "size comparison",
-    true,
-    [ IsPermGroup ],
-    0,
-
-function( sym )
-    return Size(sym) = Factorial( NrMovedPoints(sym) );
-end );
-
-
-#############################################################################
-##
-#M  <perm> in <nat-sym-grp>
-##
-InstallMethod( \in,
-    true,
-    [ IsPerm,
-      IsNaturalSymmetricGroup ],
-    0,
-
-function( g, S )
-    local   m,  l;
-
-    m := MovedPoints(S);
-    l := NrMovedPoints(S);
-    
-    if g = One( g )  then
-        return true;
-    elif l = 0  then
-        return false;
-    elif IsRange(m) and ( l = 1 or m[2] - m[1] = 1 )  then
-        return SmallestMovedPointPerm(g) >= m[1]
-           and LargestMovedPointPerm(g)  <= m[l];
-    else
-        return IsSubset( m, MovedPointsPerms([g]) );
-    fi;
-end );
-
-
-#############################################################################
-##
-#M  Size( <nat-sym-grp> )
-##
-InstallMethod( Size,
-    true,
-    [ IsNaturalSymmetricGroup ],
-    0,
-    sym -> Factorial( NrMovedPoints(sym) ) );
-
-
-#############################################################################
-##
-#M  StabilizerOp( <nat-sym-grp>, <int>, OnPoints )
-##
-InstallOtherMethod( StabilizerOp,
-    true,
-    [ IsNaturalSymmetricGroup, IsPosRat and IsInt, IsFunction ],
-    0,
-
-function( sym, p, opr )
-    if opr <> OnPoints  then
-        TryNextMethod();
-    fi;
-    return AsSubgroup( sym,
-           SymmetricGroup( Difference( MovedPoints( sym ), [ p ] ) ) );
-end );
-
-#############################################################################
-##
-#M  PrintObj( <nat-sym-grp> )
-##
-InstallMethod( PrintObj,
-    true,
-    [ IsNaturalSymmetricGroup ],
-    0,
-
-function(sym)
-    Print( "Sym( ", MovedPoints(sym), " )" );
-end );
-
-
-#############################################################################
-##
-
 #E  basicperm.gd  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

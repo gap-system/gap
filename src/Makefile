@@ -70,19 +70,20 @@ SHELL = /bin/sh
 ##
 unknown:
 	@echo "usage: 'make <target>' where target is one of"
-	@echo "'alpha-dec-OSF32-gcc2'      for DECalpha under OSF 3.2 with GNU cc 2"
-	@echo "'mips-dec-ultrix-cc'        for DECstation under Ultrix with cc"
-	@echo "'hppa1.1-hp-hpux-gcc2'      for HP9000 under HP-UX with GNU cc 2"
-	@echo "'i386-ibm-freebsd-gcc2'     for IBM PC under FreeBSD 2.x with GNU cc 2"
-	@echo "                            (GNU cc 2.6 comes with FreeBSD 2.0)"
-	@echo "'i386-ibm-linux-gcc2'       for IBM PC under Linux with GNU cc 2"
-	@echo "'i386-ibm-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2"
-	@echo "                            (GNU cc 2.5.8 comes with NeXTSTEP 3.3)"
-	@echo "'mips-sgi-irix-gcc2'        for SGI Mips under IRIX 5/6 with GNU cc 2"
-	@echo "'mips-sgi-irix-cc'          for SGI Mips under IRIX 5/6 with cc"
-	@echo "'power-ibm-aix-cc'	   for IBM RS/600 under AIX 4.2 with cc"
-	@echo "'sparc-sun-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2"
-	@echo "'sparc-sun-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2"
+	@echo "'alpha-dec-OSF32-gcc2'   for DECalpha   & OSF 3.2 with GNU cc 2"
+	@echo "'mips-dec-ultrix-cc'     for DECstation & Ultrix with cc"
+	@echo "'hppa1.1-hp-hpux-gcc2'   for HP9000 & HP-UX with GNU cc 2"
+	@echo "'i386-ibm-freebsd-gcc2'  for IBM PC & FreeBSD 2.x with GNU cc 2"
+	@echo "                         (GNU cc 2.6 comes with FreeBSD 2.0)"
+	@echo "'i386-ibm-linux-gcc2'    for IBM PC & Linux with GNU cc 2"
+	@echo "'i386-ibm-nextstep-cc'   for IBM PC & NeXTSTEP 3.x with GNUcc 2"
+	@echo "                         (GNU cc 2.5.8 comes with NeXTSTEP 3.3)"
+	@echo "'ppc-generic-linux-gcc2' for generic PPC & Linux with GNU cc 2"
+	@echo "'mips-sgi-irix-gcc2'     for SGI Mips &  IRIX 5/6 with GNU cc 2"
+	@echo "'mips-sgi-irix-cc'       for SGI Mips & IRIX 5/6 with cc"
+	@echo "'power-ibm-aix-gcc2'     for IBM RS/6000 & AIX with GNU cc 2"
+	@echo "'sparc-sun-sunos-gcc2'   for Sun Sparc  & SunOS with GCC 2"
+	@echo "'sparc-sun-solaris-gcc2' for Sun Sparc  & Solaris with GCC 2"
 	@echo ""
 	@echo "  targets are listed according to preference, i.e.,"
 	@echo "    'mips-sgi-irix-gcc2' is better than 'mips-sgi-irix-cc'."
@@ -144,7 +145,7 @@ mips-dec-ultrix-cc:
 	@(cd ../bin/mips-dec-ultrix-cc; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
-	    CC="gcc -ansi -Wall" \
+	    CC="cc" \
 	    LFLAGS="$(LOPTS)" \
 	    CFLAGS="$(COPTS) -O2 -Olimit 1000" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
@@ -289,14 +290,15 @@ i386-ibm-linux-gcc2:
 	@(cd ../bin/i386-ibm-linux-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
-	    CC="gcc -ansi -Wall -g" \
+	    CC="gcc -ansi -Wall -g -O2" \
 	    LFLAGS="$(LOPTS)  -export-dynamic -ldl" \
-	    CFLAGS="$(COPTS) -O2" \
+	    CFLAGS="$(COPTS) " \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) \
               -DSYS_IS_USG \
 	      -D_POSIX_SOURCE \
 	      -D__USE_MISC \
+	      -D_USE_SVID \
               -DSYS_HAS_STACK_ALIGN=2 \
 	      -DSYS_HAS_STDIO_PROTO \
               -DSYS_HAS_READ_PROTO \
@@ -318,6 +320,112 @@ i386-ibm-linux-gcc2:
             CDYNLINKER="ld" \
             CDYNLINKING="-Bshareable -x" \
 	)
+
+
+#############################################################################
+##
+#F  i386-ibm-linux-pgcc
+##
+##  Linux with Portland group  CC  -- shares include files with gcc2
+##
+##  'stdio.h' claims 'fgets' has second argument 'size_t' (ANSI says 'int')
+##  'unistd.h' claims 'read' has third argument 'size_t' (UNIX says 'int')
+##  'unistd.h' has 'sbrk' with argument 'ptrdiff_t' (but this lost when
+##   using -ansi)
+##  -D_POSIX_SOURCE is needed to prevent -ansi losing 'popen', 'pclose',
+##   and 'fileno'
+##  'sys/signal.h' claims 'kill' has first argument 'pid_t' (UNIX says 'int')
+##  'sys/times.h' claims 'times' has return value 'clock_t'
+##
+
+i386-ibm-linux-pgcc:
+	@(if test ! -d ../bin; then mkdir ../bin; fi; \
+	  cd ../bin; \
+	  if test ! -d i386-ibm-linux-pgcc; then \
+		mkdir i386-ibm-linux-pgcc; \
+	  fi; \
+	  cd ../bin/i386-ibm-linux-pgcc; \
+	)
+	@(cd ../bin/i386-ibm-linux-pgcc; \
+	  $(MAKE) -f ../../src/Makefile gap \
+	    SRC="../../src" \
+	    CC="pgcc  -g -O2 -tp p6 -Minfo=all" \
+	    LFLAGS="$(LOPTS)" \
+	    CFLAGS="$(COPTS) " \
+	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+	    CFLAGS_SYS="$(COPTS) \
+              -DSYS_IS_USG \
+	      -D_POSIX_SOURCE \
+	      -D__USE_MISC \
+	      -D_USE_SVID \
+              -DSYS_HAS_STACK_ALIGN=2 \
+	      -DSYS_HAS_STDIO_PROTO \
+              -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_WAIT_PROTO \
+              -DSYS_HAS_SIGNAL_PROTO \
+	      -DSYS_HAS_TIME_PROTO \
+              -DSYS_HAS_WAITPID \
+	      -DSYS_ARCH='\"i386-ibm-linux-pgcc\"'" \
+        )
+	@(cd ../bin/i386-ibm-linux-pgcc; \
+	  $(MAKE) -f ../../src/Makefile gac \
+	    SRC="../../src" \
+	    CC="pgcc" \
+            TARGET="i386-ibm-linux-pgcc" \
+            COPTIONS="-ansi -Wall -O2" \
+	)
+
+
+#############################################################################
+##
+#F  ppc-generic-linux-gcc2
+##
+##  LinuxPPC with GNU CC version 2.1.y
+##
+##  From: Michael Smith <Michael.Smith@maths.anu.edu.au>
+##
+ppc-generic-linux-gcc2:
+	@(if test ! -d ../bin; then mkdir ../bin; fi; \
+	  cd ../bin; \
+	  if test ! -d ppc-generic-linux-gcc2; then \
+		mkdir ppc-generic-linux-gcc2; \
+	  fi; \
+	  cd ../bin/ppc-generic-linux-gcc2; \
+	)
+	@(cd ../bin/ppc-generic-linux-gcc2; \
+	  $(MAKE) -f ../../src/Makefile gap \
+	    SRC="../../src" \
+	    CC="gcc -ansi -Wall -g" \
+	    LFLAGS="$(LOPTS)  -export-dynamic -ldl" \
+	    CFLAGS="$(COPTS) -O2" \
+	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+	    CFLAGS_SYS="$(COPTS) \
+              -DSYS_IS_USG \
+	      -D_POSIX_SOURCE \
+	      -D__USE_MISC \
+              -DSYS_HAS_STACK_ALIGN=2 \
+	      -DSYS_HAS_STDIO_PROTO \
+              -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_WAIT_PROTO \
+              -DSYS_HAS_SIGNAL_PROTO \
+	      -DSYS_HAS_IOCTL_PROTO \
+	      -DSYS_HAS_TIME_PROTO \
+              -DSYS_HAS_DL_LIBRARY \
+              -DSYS_HAS_WAITPID \
+	      -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
+	      -DSYS_ARCH='\"ppc-generic-linux-gcc2\"'" \
+        )
+	@(cd ../bin/ppc-generic-linux-gcc2; \
+	  $(MAKE) -f ../../src/Makefile gac \
+	    SRC="../../src" \
+	    CC="gcc" \
+            TARGET="ppc-generic-linux-gcc2" \
+            COPTIONS="-ansi -Wall -O2" \
+            CDYNOPTIONS="-fpic -ansi -Wall -O2" \
+            CDYNLINKER="ld" \
+            CDYNLINKING="-Bshareable -x" \
+	)
+
 
 
 #############################################################################
@@ -398,51 +506,37 @@ i386-next-nextstep-cc-prof:
 		ADIR="i386" EXTDIR="-prof" \
 		CDYNOPTIONS="-pg"
 
-
 #############################################################################
 ##
-#F  power-ibm-aix-cc
+#F  power-ibm-aix-gcc2
 ##
-##  IBM RS/6000 with AIX 4.2
-##  From: Jens Rosenboom <jens@exp-math.uni-essen.de>
-##  
-power-ibm-aix-cc:
-	(if test ! -d ../bin; then mkdir ../bin; fi; \
-	  cd ../bin; \
-	  if test ! -d power-ibm-aix-cc; then \
-	      mkdir power-ibm-aix-cc; \
-	  fi; \
-	  cd ../bin/power-ibm-aix-cc; \
+##  IBM RS/6000 with AIX and GCC 2
+##  From: Jan van den Heuvel <jan@cdam.lse.ac.uk>
+##
+power-ibm-aix-gcc2:
+	@(if test ! -d ../bin; then mkdir ../bin; fi; \
+          cd ../bin; \
+          if test ! -d power-ibm-aix-gcc2; then \
+                mkdir power-ibm-aix-gcc2; \
+          fi; \
+	  cd ../bin/power-ibm-aix-gcc2; \
 	)
-	(cd ../bin/power-ibm-aix-cc; \
+	@(cd ../bin/power-ibm-aix-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
             SRC="../../src" \
-	    CC="cc" \
-	    LFLAGS="$(LOPTS) -g -bmaxdata:0x80000000 -ldl" \
-	    CFLAGS="$(COPTS) -g -O2" \
-	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) \
-	      -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
-	      -DSYS_HAS_DL_LIBRARY \
-              -DSYS_HAS_READ_PROTO \
-	      -DSYS_HAS_SIGNAL_PROTO \
+            CC="gcc" \
+            LFLAGS="$(LOPTS)" \
+            CFLAGS="$(COPTS) -O2 -fsigned-char" \
+            CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+            CFLAGS_SYS="$(COPTS)  -fsigned-char\
+	      -DSYS_ARCH='\"power-ibm-aix-gcc2\"' \
+	      -DSYS_IS_USG \
+	      -DSYS_HAS_ANSI \
 	      -DSYS_HAS_IOCTL_PROTO \
-	      -DSYS_HAS_STRING_PROTO \
 	      -DSYS_HAS_MISC_PROTO \
-	      -DSYS_ARCH='\"power-ibm-aix-cc\"'" \
+	      -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_NO_VFORK" \
 	)
-	@(cd ../bin/power-ibm-aix-cc; \
-	  $(MAKE) -f ../../src/Makefile gac \
-	    SRC="../../src" \
-	    CC="cc" \
-            TARGET="power-ibm-aix-cc" \
-            COPTIONS="-g -O2" \
-	    CLINKER="cc -ldl" \
-            CDYNOPTIONS="-g -brtl -O2" \
-            CDYNLINKER="ld" \
-            CDYNLINKING="-brtl " \
-	)
-
 
 #############################################################################
 ##
@@ -647,7 +741,6 @@ OBJECTS =   \
  bool.o     \
  calls.o    \
  code.o     \
- compiled.o \
  compiler.o \
  costab.o   \
  cyclotom.o \
@@ -684,8 +777,10 @@ OBJECTS =   \
  stats.o    \
  streams.o  \
  string.o   \
+ tietze.o   \
  vars.o     \
- vector.o
+ vector.o   \
+ weakptr.o
 
 gap: $(OBJECTS) compstat.o c_type.o c_methse.o
 	$(CC) $(LFLAGS)  -o gap  $(OBJECTS) compstat.o c_type.o c_methse.o
@@ -699,11 +794,24 @@ gap: $(OBJECTS) compstat.o c_type.o c_methse.o
 ##  the commands needed to compile them (those must  be  given,  because  the
 ##  implicit rules work only if the source is in the same directory).
 ##
-c_type.o: $(SRC)/c_type.c     $(SRC)/compstat.h $(SRC)/system.h
+c_type.o: $(SRC)/c_type.c     $(SRC)/compstat.h \
+	$(SRC)/system.h $(SRC)/gasman.h $(SRC)/objects.h  \
+	$(SRC)/gvars.h $(SRC)/calls.h $(SRC)/ariths.h \
+	$(SRC)/records.h $(SRC)/lists.h $(SRC)/bool.h \
+	$(SRC)/integer.h $(SRC)/precord.h $(SRC)/plist.h \
+	$(SRC)/string.h $(SRC)/code.h $(SRC)/vars.h \
+	$(SRC)/gap.h $(SRC)/permutat.h	
 	$(CC) $(CFLAGS)  -o c_type.o      -c $(SRC)/c_type.c
 
-c_methse.o: $(SRC)/c_methse.c $(SRC)/compstat.h $(SRC)/system.h
+c_methse.o: $(SRC)/c_methse.c $(SRC)/compstat.h $(SRC)/system.h \
+	$(SRC)/system.h $(SRC)/gasman.h $(SRC)/objects.h  \
+	$(SRC)/gvars.h $(SRC)/calls.h $(SRC)/ariths.h \
+	$(SRC)/records.h $(SRC)/lists.h $(SRC)/bool.h \
+	$(SRC)/integer.h $(SRC)/precord.h $(SRC)/plist.h \
+	$(SRC)/string.h $(SRC)/code.h $(SRC)/vars.h \
+	$(SRC)/gap.h $(SRC)/permutat.h	
 	$(CC) $(CFLAGS)  -o c_methse.o    -c $(SRC)/c_methse.c
+
 
 system.o:   $(SRC)/system.c   $(SRC)/system.h
 	$(CC) $(CFLAGS_SYS) $(CFLAGS_SIG)  -o system.o    -c $(SRC)/system.c
@@ -712,30 +820,33 @@ sysfiles.o: $(SRC)/sysfiles.c $(SRC)/sysfiles.h                         \
             $(SRC)/system.h
 	$(CC) $(CFLAGS_SYS) $(CFLAGS_SIG)  -o sysfiles.o  -c $(SRC)/sysfiles.c
 
-scanner.o:  $(SRC)/scanner.c  $(SRC)/scanner.h                          \
-	    $(SRC)/system.h
-	$(CC) $(CFLAGS)  -o scanner.o     -c $(SRC)/scanner.c
 
-gasman.o:   $(SRC)/gasman.c   $(SRC)/gasman.h                           \
-	    $(SRC)/system.h
-	$(CC) $(CFLAGS)  -o gasman.o      -c $(SRC)/gasman.c
+ariths.o:   $(SRC)/ariths.c   $(SRC)/ariths.h                           \
+	    $(SRC)/system.h                                             \
+	    $(SRC)/gasman.h   $(SRC)/objects.h                          \
+	    $(SRC)/gap.h                                                \
+	    $(SRC)/gvars.h    $(SRC)/calls.h    $(SRC)/opers.h          \
+	    $(SRC)/bool.h
+	$(CC) $(CFLAGS)  -o ariths.o      -c $(SRC)/ariths.c
 
-objects.o:  $(SRC)/objects.c  $(SRC)/objects.h                          \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	                      $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+blister.o:  $(SRC)/blister.c  $(SRC)/blister.h                          \
+	    $(SRC)/system.h                                             \
+            $(SRC)/gasman.h   $(SRC)/objects.h  $(SRC)/scanner.h        \
+	    $(SRC)/gap.h                                                \
+            $(SRC)/gvars.h    $(SRC)/calls.h    $(SRC)/opers.h          \
+	    $(SRC)/ariths.h                                             \
 	    $(SRC)/bool.h                                               \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o objects.o     -c $(SRC)/objects.c
+            $(SRC)/lists.h                                              \
+	    $(SRC)/plist.h    $(SRC)/set.h      $(SRC)/range.h
+	$(CC) $(CFLAGS)  -o blister.o     -c $(SRC)/blister.c
 
-gvars.o:    $(SRC)/gvars.c    $(SRC)/gvars.h                            \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h                                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/lists.h                                              \
-	    $(SRC)/plist.h    $(SRC)/string.h                           \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o gvars.o       -c $(SRC)/gvars.c
+bool.o:     $(SRC)/bool.c     $(SRC)/bool.h                             \
+	    $(SRC)/system.h                                             \
+            $(SRC)/gasman.h   $(SRC)/objects.h  $(SRC)/scanner.h        \
+	    $(SRC)/gap.h                                                \
+	    $(SRC)/gvars.h    $(SRC)/calls.h    $(SRC)/opers.h          \
+	    $(SRC)/ariths.h
+	$(CC) $(CFLAGS)  -o bool.o        -c $(SRC)/bool.c
 
 calls.o:    $(SRC)/calls.c    $(SRC)/calls.h                            \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
@@ -750,68 +861,42 @@ calls.o:    $(SRC)/calls.c    $(SRC)/calls.h                            \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o calls.o       -c $(SRC)/calls.c
 
-opers.o:    $(SRC)/opers.c    $(SRC)/opers.h                            \
+code.o:     $(SRC)/code.c     $(SRC)/code.h                             \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/ariths.h   $(SRC)/calls.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/plist.h    $(SRC)/blister.h  $(SRC)/string.h         \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o opers.o       -c $(SRC)/opers.c
-
-ariths.o:   $(SRC)/ariths.c   $(SRC)/ariths.h                           \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o ariths.o      -c $(SRC)/ariths.c
-
-records.o:  $(SRC)/records.c  $(SRC)/records.h                          \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/plist.h    $(SRC)/string.h                           \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o records.o     -c $(SRC)/records.c
-
-lists.o:    $(SRC)/lists.c    $(SRC)/lists.h                            \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h   $(SRC)/records.h                          \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/precord.h                                            \
-	    $(SRC)/plist.h    $(SRC)/range.h                            \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o lists.o       -c $(SRC)/lists.c
-
-bool.o:     $(SRC)/bool.c     $(SRC)/bool.h                             \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h                                             \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o bool.o        -c $(SRC)/bool.c
-
-integer.o:  $(SRC)/integer.c  $(SRC)/integer.h                          \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h                                             \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o integer.o     -c $(SRC)/integer.c
-
-rational.o: $(SRC)/rational.c $(SRC)/rational.h                         \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h                                             \
-	    $(SRC)/bool.h                                               \
+	    $(SRC)/objects.h                                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/records.h                                            \
 	    $(SRC)/integer.h                                            \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/vars.h                                               \
+	    $(SRC)/funcs.h                                              \
 	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o rational.o    -c $(SRC)/rational.c
+	$(CC) $(CFLAGS)  -o code.o        -c $(SRC)/code.c
+
+compiler.o: $(SRC)/compiler.c $(SRC)/compiler.h                         \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/records.h                                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/string.h                                             \
+	    $(SRC)/code.h     $(SRC)/vars.h
+	$(CC) $(CFLAGS)  -o compiler.o    -c $(SRC)/compiler.c
+
+compstat.o: $(SRC)/compstat.c $(SRC)/compstat.h                         \
+	    $(SRC)/system.h
+	$(CC) $(CFLAGS)  -o compstat.o    -c $(SRC)/compstat.c
+
+costab.o:   $(SRC)/costab.c   $(SRC)/costab.h                           \
+	    $(SRC)/system.h                                             \
+            $(SRC)/gasman.h   $(SRC)/objects.h  $(SRC)/scanner.h        \
+	    $(SRC)/gap.h                                                \
+            $(SRC)/gvars.h    $(SRC)/calls.h    $(SRC)/opers.h          \
+	    $(SRC)/integer.h  $(SRC)/bool.h                             \
+	    $(SRC)/lists.h                                              \
+            $(SRC)/plist.h
+	$(CC) $(CFLAGS)  -o costab.o      -c $(SRC)/costab.c
 
 cyclotom.o: $(SRC)/cyclotom.c $(SRC)/cyclotom.h                         \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
@@ -824,6 +909,36 @@ cyclotom.o: $(SRC)/cyclotom.c $(SRC)/cyclotom.h                         \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o cyclotom.o    -c $(SRC)/cyclotom.c
 
+dt.o:       $(SRC)/dt.c       $(SRC)/dt.h                               \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/bool.h     $(SRC)/calls.h          \
+	    $(SRC)/integer.h  $(SRC)/gvars.h                            \
+	    $(SRC)/plist.h    $(SRC)/lists.h    $(SRC)/listfunc.h       \
+	    $(SRC)/precord.h  $(SRC)/records.h                          \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o dt.o          -c $(SRC)/dt.c
+
+dteval.o:   $(SRC)/dteval.c   $(SRC)/dteval.h                           \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/bool.h     $(SRC)/calls.h          \
+	    $(SRC)/integer.h  $(SRC)/gvars.h    $(SRC)/plist.h          \
+	    $(SRC)/lists.h    $(SRC)/listfunc.h $(SRC)/precord.h        \
+	    $(SRC)/records.h                                            \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o dteval.o      -c $(SRC)/dteval.c
+
+exprs.o:    $(SRC)/exprs.c    $(SRC)/exprs.h                            \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/ariths.h   $(SRC)/records.h  $(SRC)/lists.h          \
+	    $(SRC)/bool.h                                               \
+	                      $(SRC)/permutat.h                         \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/range.h    $(SRC)/string.h                           \
+	    $(SRC)/code.h     $(SRC)/vars.h                             \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o exprs.o       -c $(SRC)/exprs.c
+
 finfield.o: $(SRC)/finfield.c $(SRC)/finfield.h                         \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
 	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
@@ -835,27 +950,71 @@ finfield.o: $(SRC)/finfield.c $(SRC)/finfield.h                         \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o finfield.o    -c $(SRC)/finfield.c
 
-permutat.o: $(SRC)/permutat.c $(SRC)/permutat.h                         \
+funcs.o:    $(SRC)/funcs.c    $(SRC)/funcs.h                            \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/integer.h                                            \
+	    $(SRC)/objects.h                                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/lists.h                                              \
 	    $(SRC)/plist.h                                              \
+	    $(SRC)/code.h     $(SRC)/vars.h                             \
+	    $(SRC)/exprs.h    $(SRC)/stats.h                            \
 	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o permutat.o    -c $(SRC)/permutat.c
+	$(CC) $(CFLAGS)  -o funcs.o       -c $(SRC)/funcs.c
 
-precord.o:  $(SRC)/precord.c  $(SRC)/precord.h                          \
+gap.o:      $(SRC)/gap.c      $(SRC)/gap.h                              \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
 	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
 	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
+	    $(SRC)/ariths.h   $(SRC)/records.h  $(SRC)/lists.h          \
 	    $(SRC)/bool.h                                               \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/string.h                                             \
+	    $(SRC)/integer.h  $(SRC)/rational.h $(SRC)/cyclotom.h       \
+	    $(SRC)/finfield.h $(SRC)/permutat.h                         \
+	    $(SRC)/listfunc.h $(SRC)/listoper.h                         \
+	    $(SRC)/plist.h    $(SRC)/set.h      $(SRC)/vector.h         \
+	    $(SRC)/blister.h  $(SRC)/range.h    $(SRC)/string.h         \
+            $(SRC)/objfgelm.h $(SRC)/objscoll.h $(SRC)/sctable.h        \
+            $(SRC)/costab.h                                             \
+	    $(SRC)/code.h     $(SRC)/vars.h                             \
+	    $(SRC)/exprs.h    $(SRC)/stats.h    $(SRC)/funcs.h          \
+	    $(SRC)/intrprtr.h $(SRC)/read.h     $(SRC)/saveload.h	\
+            $(SRC)/weakptr.h
+	$(CC) $(CFLAGS)  -o gap.o         -c $(SRC)/gap.c
+
+gasman.o:   $(SRC)/gasman.c   $(SRC)/gasman.h                           \
+	    $(SRC)/system.h
+	$(CC) $(CFLAGS)  -o gasman.o      -c $(SRC)/gasman.c
+
+gvars.o:    $(SRC)/gvars.c    $(SRC)/gvars.h                            \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h                                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/lists.h                                              \
+	    $(SRC)/plist.h    $(SRC)/string.h                           \
 	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o precord.o     -c $(SRC)/precord.c
+	$(CC) $(CFLAGS)  -o gvars.o       -c $(SRC)/gvars.c
+
+integer.o:  $(SRC)/integer.c  $(SRC)/integer.h                          \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/ariths.h                                             \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o integer.o     -c $(SRC)/integer.c
+
+intrprtr.o: $(SRC)/intrprtr.c $(SRC)/intrprtr.h                         \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/ariths.h   $(SRC)/records.h  $(SRC)/lists.h          \
+	    $(SRC)/bool.h                                               \
+	                      $(SRC)/permutat.h                         \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/range.h    $(SRC)/string.h                           \
+	    $(SRC)/code.h     $(SRC)/vars.h                             \
+	    $(SRC)/funcs.h                                              \
+	    $(SRC)/gap.h      $(SRC)/saveload.h
+	$(CC) $(CFLAGS)  -o intrprtr.o    -c $(SRC)/intrprtr.c
 
 listfunc.o: $(SRC)/listfunc.c $(SRC)/listfunc.h                         \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
@@ -878,6 +1037,123 @@ listoper.o: $(SRC)/listoper.c $(SRC)/listoper.h                         \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o listoper.o    -c $(SRC)/listoper.c
 
+lists.o:    $(SRC)/lists.c    $(SRC)/lists.h                            \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/ariths.h   $(SRC)/records.h                          \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/precord.h                                            \
+	    $(SRC)/plist.h    $(SRC)/range.h                            \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o lists.o       -c $(SRC)/lists.c
+
+objects.o:  $(SRC)/objects.c  $(SRC)/objects.h                          \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	                      $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o objects.o     -c $(SRC)/objects.c
+
+opers.o:    $(SRC)/opers.c    $(SRC)/opers.h                            \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/ariths.h   $(SRC)/calls.h                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/plist.h    $(SRC)/blister.h  $(SRC)/string.h         \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o opers.o       -c $(SRC)/opers.c
+
+range.o:    $(SRC)/range.c    $(SRC)/range.h                            \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o range.o       -c $(SRC)/range.c
+
+rational.o: $(SRC)/rational.c $(SRC)/rational.h                         \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/ariths.h                                             \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/integer.h                                            \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o rational.o    -c $(SRC)/rational.c
+
+records.o:  $(SRC)/records.c  $(SRC)/records.h                          \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/plist.h    $(SRC)/string.h                           \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o records.o     -c $(SRC)/records.c
+
+scanner.o:  $(SRC)/scanner.c  $(SRC)/scanner.h                          \
+	    $(SRC)/system.h
+	$(CC) $(CFLAGS)  -o scanner.o     -c $(SRC)/scanner.c
+
+string.o:   $(SRC)/string.c   $(SRC)/string.h                           \
+	    $(SRC)/system.h                                             \
+            $(SRC)/gasman.h   $(SRC)/objects.h  $(SRC)/scanner.h        \
+	    $(SRC)/gap.h                                                \
+	    $(SRC)/gvars.h    $(SRC)/calls.h    $(SRC)/opers.h          \
+	    $(SRC)/ariths.h                                             \
+	    $(SRC)/bool.h                                               \
+            $(SRC)/lists.h                                              \
+	    $(SRC)/plist.h                      $(SRC)/range.h
+	$(CC) $(CFLAGS)  -o string.o      -c $(SRC)/string.c
+
+objcftl.o:  $(SRC)/objcftl.c  $(SRC)/objcftl.h  $(SRC)/dt.h             \
+            $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+            $(SRC)/objects.h  $(SRC)/plist.h    $(SRC)/gvars.h          \
+            $(SRC)/calls.h    $(SRC)/records.h  $(SRC)/precord.h        \
+            $(SRC)/gap.h      $(SRC)/bool.h
+	$(CC) $(CFLAGS)  -o objcftl.o     -c $(SRC)/objcftl.c
+
+
+objfgelm.o: ${SRC}/objfgelm.c $(SRC)/objfgelm.h                         \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/lists.h    $(SRC)/plist.h                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o objfgelm.o    -c $(SRC)/objfgelm.c
+
+objpcgel.o: ${SRC}/objpcgel.c $(SRC)/objpcgel.h $(SRC)/objfgelm.h       \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/lists.h    $(SRC)/plist.h                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o objpcgel.o    -c $(SRC)/objpcgel.c
+
+objscoll.o: ${SRC}/objscoll.c $(SRC)/objscoll.h                         \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/lists.h    $(SRC)/plist.h                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o objscoll.o    -c $(SRC)/objscoll.c
+
+permutat.o: $(SRC)/permutat.c $(SRC)/permutat.h                         \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/integer.h                                            \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o permutat.o    -c $(SRC)/permutat.c
+
 plist.o:    $(SRC)/plist.c    $(SRC)/plist.h                            \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
 	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
@@ -887,6 +1163,41 @@ plist.o:    $(SRC)/plist.c    $(SRC)/plist.h                            \
 	    $(SRC)/range.h                                              \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o plist.o       -c $(SRC)/plist.c
+
+precord.o:  $(SRC)/precord.c  $(SRC)/precord.h                          \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/opers.h                            \
+	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/string.h                                             \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o precord.o     -c $(SRC)/precord.c
+
+read.o:     $(SRC)/read.c     $(SRC)/read.h                             \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/records.h  $(SRC)/lists.h                            \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/string.h                                             \
+	    $(SRC)/intrprtr.h                                           \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o read.o        -c $(SRC)/read.c
+
+saveload.o: $(SRC)/saveload.c $(SRC)/saveload.h  $(SRC)/bool.h          \
+            $(SRC)/gap.h      $(SRC)/objects.h   $(SRC)/gasman.h        \
+            $(SRC)/system.h   $(SRC)/calls.h     $(SRC)/gvars.h
+	$(CC) $(CFLAGS)  -o saveload.o    -c $(SRC)/saveload.c
+
+sctable.o:  $(SRC)/sctable.c  $(SRC)/sctable.h                          \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/lists.h    $(SRC)/plist.h                            \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o sctable.o     -c $(SRC)/sctable.c
 
 set.o:      $(SRC)/set.c      $(SRC)/set.h                              \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
@@ -899,130 +1210,36 @@ set.o:      $(SRC)/set.c      $(SRC)/set.h                              \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o set.o         -c $(SRC)/set.c
 
-vector.o:   $(SRC)/vector.c   $(SRC)/vector.h                           \
+stats.o:    $(SRC)/stats.c    $(SRC)/stats.h                            \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
 	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
+	    $(SRC)/calls.h    $(SRC)/intrprtr.h $(SRC)/ariths.h         \
+	    $(SRC)/code.h     $(SRC)/vars.h                             \
+	    $(SRC)/exprs.h                                              \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS) $(CFLAGS_SIG)  -o stats.o    -c $(SRC)/stats.c
+
+streams.o:  $(SRC)/streams.c $(SRC)/streams.h				\
+	    $(SRC)/system.h  $(SRC)/sysfiles.h				\
+	    $(SRC)/gasman.h  $(SRC)/objects.h   $(SRC)/scanner.h        \
+	    $(SRC)/gap.h     $(SRC)/read.h                              \
+	    $(SRC)/gvars.h   $(SRC)/calls.h                             \
+            $(SRC)/bool.h                                               \
+            $(SRC)/lists.h                                              \
+            $(SRC)/plist.h                                              \
+	    $(SRC)/string.h
+	$(CC) $(CFLAGS)  -o streams.o     -c $(SRC)/streams.c
+
+tietze.o:   $(SRC)/tietze.c   $(SRC)/tietze.h                           \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h    $(SRC)/lists.h     $(SRC)/plist.h          \
+	    $(SRC)/ariths.h   $(SRC)/records.h                          \
 	    $(SRC)/bool.h                                               \
-	    $(SRC)/integer.h                                            \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/range.h                                              \
-	    $(SRC)/listoper.h                                           \
+	    $(SRC)/precord.h                                            \
+	    $(SRC)/plist.h    $(SRC)/range.h                            \
 	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o vector.o      -c $(SRC)/vector.c
-
-blister.o:  $(SRC)/blister.c  $(SRC)/blister.h                          \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/plist.h    $(SRC)/set.h                              \
-	    $(SRC)/range.h                                              \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o blister.o     -c $(SRC)/blister.c
-
-range.o:    $(SRC)/range.c    $(SRC)/range.h                            \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o range.o       -c $(SRC)/range.c
-
-string.o:   $(SRC)/string.c   $(SRC)/string.h                           \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/range.h                                              \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o string.o      -c $(SRC)/string.c
-
-objfgelm.o: ${SRC}/objfgelm.c $(SRC)/objfgelm.h                         \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/lists.h    $(SRC)/plist.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o objfgelm.o    -c $(SRC)/objfgelm.c
-
-objscoll.o: ${SRC}/objscoll.c $(SRC)/objscoll.h                         \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/lists.h    $(SRC)/plist.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o objscoll.o    -c $(SRC)/objscoll.c
-
-objpcgel.o: ${SRC}/objpcgel.c $(SRC)/objpcgel.h $(SRC)/objfgelm.h       \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/lists.h    $(SRC)/plist.h                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o objpcgel.o    -c $(SRC)/objpcgel.c
-
-sctable.o:  $(SRC)/sctable.c  $(SRC)/sctable.h                          \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/lists.h    $(SRC)/plist.h                            \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o sctable.o     -c $(SRC)/sctable.c
-
-costab.o:   $(SRC)/costab.c   $(SRC)/costab.h                           \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/lists.h    $(SRC)/plist.h                            \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o costab.o      -c $(SRC)/costab.c
-
-objcftl.o:  $(SRC)/objcftl.c  $(SRC)/objcftl.h  $(SRC)/dt.h             \
-            $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-            $(SRC)/objects.h  $(SRC)/plist.h    $(SRC)/gvars.h          \
-            $(SRC)/calls.h    $(SRC)/records.h  $(SRC)/precord.h        \
-            $(SRC)/gap.h      $(SRC)/bool.h
-	$(CC) $(CFLAGS)  -o objcftl.o     -c $(SRC)/objcftl.c
-
-
-dt.o:       $(SRC)/dt.c       $(SRC)/dt.h                               \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/bool.h     $(SRC)/calls.h          \
-	    $(SRC)/integer.h  $(SRC)/gvars.h                            \
-	    $(SRC)/plist.h    $(SRC)/lists.h    $(SRC)/listfunc.h       \
-	    $(SRC)/precord.h  $(SRC)/records.h                          \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o dt.o          -c $(SRC)/dt.c
-
-dteval.o:   $(SRC)/dteval.c   $(SRC)/dteval.h                           \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/bool.h     $(SRC)/calls.h          \
-	    $(SRC)/integer.h  $(SRC)/gvars.h    $(SRC)/plist.h          \
-	    $(SRC)/lists.h    $(SRC)/listfunc.h $(SRC)/precord.h        \
-	    $(SRC)/records.h                                            \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o dteval.o      -c $(SRC)/dteval.c
-
-code.o:     $(SRC)/code.c     $(SRC)/code.h                             \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h                                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/records.h                                            \
-	    $(SRC)/integer.h                                            \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/vars.h                                               \
-	    $(SRC)/funcs.h                                              \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o code.o        -c $(SRC)/code.c
+	$(CC) $(CFLAGS)  -o tietze.o      -c $(SRC)/tietze.c
 
 vars.o:     $(SRC)/vars.c     $(SRC)/vars.h                             \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
@@ -1037,123 +1254,24 @@ vars.o:     $(SRC)/vars.c     $(SRC)/vars.h                             \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o vars.o        -c $(SRC)/vars.c
 
-exprs.o:    $(SRC)/exprs.c    $(SRC)/exprs.h                            \
+vector.o:   $(SRC)/vector.c   $(SRC)/vector.h                           \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
 	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/ariths.h   $(SRC)/records.h  $(SRC)/lists.h          \
-	    $(SRC)/bool.h                                               \
-	                      $(SRC)/permutat.h                         \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/range.h    $(SRC)/string.h                           \
-	    $(SRC)/code.h     $(SRC)/vars.h                             \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o exprs.o       -c $(SRC)/exprs.c
-
-stats.o:    $(SRC)/stats.c    $(SRC)/stats.h                            \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/intrprtr.h $(SRC)/ariths.h         \
-	    $(SRC)/code.h     $(SRC)/vars.h                             \
-	    $(SRC)/exprs.h                                              \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS) $(CFLAGS_SIG)  -o stats.o    -c $(SRC)/stats.c
-
-funcs.o:    $(SRC)/funcs.c    $(SRC)/funcs.h                            \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h                                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/lists.h                                              \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/code.h     $(SRC)/vars.h                             \
-	    $(SRC)/exprs.h    $(SRC)/stats.h                            \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o funcs.o       -c $(SRC)/funcs.c
-
-intrprtr.o: $(SRC)/intrprtr.c $(SRC)/intrprtr.h                         \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h   $(SRC)/records.h  $(SRC)/lists.h          \
-	    $(SRC)/bool.h                                               \
-	                      $(SRC)/permutat.h                         \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/range.h    $(SRC)/string.h                           \
-	    $(SRC)/code.h     $(SRC)/vars.h                             \
-	    $(SRC)/funcs.h                                              \
-	    $(SRC)/gap.h      $(SRC)/saveload.h
-	$(CC) $(CFLAGS)  -o intrprtr.o    -c $(SRC)/intrprtr.c
-
-compiler.o: $(SRC)/compiler.c $(SRC)/compiler.h                         \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/records.h                                            \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/string.h                                             \
-	    $(SRC)/code.h     $(SRC)/vars.h
-	$(CC) $(CFLAGS)  -o compiler.o    -c $(SRC)/compiler.c
-
-compiled.o: $(SRC)/compiled.c $(SRC)/compiled.h                         \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/ariths.h   $(SRC)/records.h  $(SRC)/lists.h          \
+	    $(SRC)/ariths.h   $(SRC)/lists.h                            \
 	    $(SRC)/bool.h                                               \
 	    $(SRC)/integer.h                                            \
-	    $(SRC)/precord.h                                            \
 	    $(SRC)/plist.h                                              \
-	    $(SRC)/string.h                                             \
-	    $(SRC)/code.h     $(SRC)/vars.h                             \
+	    $(SRC)/range.h                                              \
+	    $(SRC)/listoper.h                                           \
 	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o compiled.o    -c $(SRC)/compiled.c
+	$(CC) $(CFLAGS)  -o vector.o      -c $(SRC)/vector.c
 
-read.o:     $(SRC)/read.c     $(SRC)/read.h                             \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h                                              \
-	    $(SRC)/records.h  $(SRC)/lists.h                            \
-	    $(SRC)/plist.h                                              \
-	    $(SRC)/string.h                                             \
-	    $(SRC)/intrprtr.h                                           \
-	    $(SRC)/gap.h
-	$(CC) $(CFLAGS)  -o read.o        -c $(SRC)/read.c
+weakptr.o:  $(SRC)/weakptr.c   $(SRC)/weakptr.h  $(SRC)/objects.h       \
+            $(SRC)/gasman.h    $(SRC)/system.h   $(SRC)/gap.h           \
+            $(SRC)/gvars.h     $(SRC)/bool.h     $(SRC)/lists.h         \
+            $(SRC)/calls.h     $(SRC)/opers.h    $(SRC)/plist.h
+	$(CC) $(CFLAGS)  -o weakptr.o      -c $(SRC)/weakptr.c
 
-gap.o:      $(SRC)/gap.c      $(SRC)/gap.h                              \
-	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
-	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
-	    $(SRC)/calls.h    $(SRC)/opers.h                            \
-	    $(SRC)/ariths.h   $(SRC)/records.h  $(SRC)/lists.h          \
-	    $(SRC)/bool.h                                               \
-	    $(SRC)/integer.h  $(SRC)/rational.h $(SRC)/cyclotom.h       \
-	    $(SRC)/finfield.h $(SRC)/permutat.h                         \
-	    $(SRC)/listfunc.h $(SRC)/listoper.h                         \
-	    $(SRC)/plist.h    $(SRC)/set.h      $(SRC)/vector.h         \
-	    $(SRC)/blister.h  $(SRC)/range.h    $(SRC)/string.h         \
-            $(SRC)/objfgelm.h $(SRC)/objscoll.h $(SRC)/sctable.h        \
-            $(SRC)/costab.h                                             \
-	    $(SRC)/code.h     $(SRC)/vars.h                             \
-	    $(SRC)/exprs.h    $(SRC)/stats.h    $(SRC)/funcs.h          \
-	    $(SRC)/intrprtr.h $(SRC)/read.h     $(SRC)/saveload.h
-	$(CC) $(CFLAGS)  -o gap.o         -c $(SRC)/gap.c
-
-streams.o:  $(SRC)/streams.c $(SRC)/streams.h				\
-	    $(SRC)/system.h  $(SRC)/sysfiles.h				\
-	    $(SRC)/gasman.h  $(SRC)/objects.h   $(SRC)/scanner.h        \
-	    $(SRC)/gap.h     $(SRC)/read.h      $(SRC)/gvars.h          \
-	    $(SRC)/calls.h   $(SRC)/lists.h     $(SRC)/plist.h          \
-	    $(SRC)/bool.h    $(SRC)/string.h
-	$(CC) $(CFLAGS)  -o streams.o     -c $(SRC)/streams.c
-
-compstat.o: $(SRC)/compstat.c $(SRC)/compstat.h                         \
-	    $(SRC)/system.h
-	$(CC) $(CFLAGS)  -o compstat.o    -c $(SRC)/compstat.c
-
-saveload.o: $(SRC)/saveload.c $(SRC)/saveload.h  $(SRC)/bool.h          \
-            $(SRC)/gap.h      $(SRC)/objects.h   $(SRC)/gasman.h        \
-            $(SRC)/system.h   $(SRC)/calls.h     $(SRC)/gvars.h
-	$(CC) $(CFLAGS)  -o saveload.o    -c $(SRC)/saveload.c
-           
 
 #############################################################################
 ##

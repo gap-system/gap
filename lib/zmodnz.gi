@@ -65,7 +65,7 @@ InstallMethod( ZmodnZObj,
     [ IsZmodnZObjNonprimeFamily, IsInt ], 0,
     function( Fam, residue )
     return Objectify( Fam!.typeOfZmodnZObj,
-                      [ residue mod Fam!.modulus ] );
+                   [ residue mod Fam!.modulus ] );
     end );
 
 InstallOtherMethod( ZmodnZObj,
@@ -351,7 +351,8 @@ InstallMethod( \/,
     function( x, y )
     # Avoid to touch the rational arithmetics.
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                 [ QuotientMod( x![1], y![1], DataType( TypeObj( x ) ) ) ] );
+               [ QuotientMod( Integers, x![1], y![1],
+                              DataType( TypeObj( x ) ) ) ] );
     end );
 
 InstallMethod( \/,
@@ -361,7 +362,8 @@ InstallMethod( \/,
     function( x, y )
     # Avoid to touch the rational arithmetics.
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                     [ QuotientMod( x![1], y, DataType( TypeObj( x ) ) ) ] );
+               [ QuotientMod( Integers, x![1], y,
+                              DataType( TypeObj( x ) ) ) ] );
     end );
 
 InstallMethod( \/,
@@ -371,7 +373,8 @@ InstallMethod( \/,
     function( x, y )
     # Avoid to touch the rational arithmetics.
     return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
-                     [ QuotientMod( x, y![1], DataType( TypeObj( y ) ) ) ] );
+               [ QuotientMod( x, y![1],
+                              DataType( TypeObj( y ) ) ) ] );
     end );
 
 InstallMethod( \/,
@@ -439,7 +442,7 @@ InstallMethod( Inverse,
     [ IsZmodnZObj and IsModulusRep ], 0,
     function( elm )
     local modulus;
-    modulus:= QuotientMod( 1, elm![1], FamilyObj( elm )!.modulus );
+    modulus:= QuotientMod( Integers, 1, elm![1], FamilyObj( elm )!.modulus );
     if modulus <> fail then
       modulus:= ZmodnZObj( FamilyObj( elm ), modulus );
     fi;
@@ -456,6 +459,19 @@ InstallMethod( DegreeFFE,
     true,
     [ IsZmodpZObj and IsModulusRep ], 0,
     z -> 1 );
+
+
+#############################################################################
+##
+#M  LogFFE( <n>, <r> )  . . . . . . . . . . . . . . . . . . for 'IsZmodpZObj'
+##
+InstallMethod( LogFFE,
+    "method for two elements in Z/pZ (ModulusRep)",
+    IsIdentical,
+    [ IsZmodpZObj and IsModulusRep, IsZmodpZObj and IsModulusRep ], 0,
+    function( n, r )
+    return LogMod( n![1], r![1], Characteristic( n ) );
+    end );
 
 
 #############################################################################
@@ -548,10 +564,43 @@ InstallMethod( Units,
     true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing ], 0,
     function( R )
-    local F;
-    F:= ElementsFamily( FamilyObj( R ) );
-    return List( PrimeResidues( Size( R ) ), x -> ZmodnZObj( F, x ) );
-    end );
+    local   G,  gens;
+    
+    gens := GeneratorsPrimeResidues( Size( R ) ).generators;
+    if not IsEmpty( gens )  and  gens[ 1 ] = 1  then
+        gens := gens{ [ 2 .. Length( gens ) ] };
+    fi;
+    gens := Flat( gens ) * One( R );
+    G := GroupByGenerators( gens, One( R ) );
+    SetIsAbelian( G, true );
+    SetIndependentGeneratorsOfAbelianGroup( G, gens );
+    SetIsHandledByNiceMonomorphism(G,true);
+    return G;
+end );
+
+#InstallTrueMethod( IsHandledByNiceMonomorphism,
+#        IsGroup and IsZmodnZObjNonprimeCollection );
+
+#############################################################################
+##
+#M  <res> in <G>  . . . . . . . . . . . for cyclic prime residue class groups
+##
+InstallMethod( \in, "for subgroups of Z/p^aZ, p<>2", IsElmsColls,
+        [ IsZmodnZObjNonprime, IsGroup and IsZmodnZObjNonprimeCollection ],0,
+    function( res, G )
+    local   m;
+
+    m := FamilyObj( res )!.modulus;
+    res := Int( res );
+    if GcdInt( res, m ) <> 1  then
+        return false;
+    elif m mod 2 <> 0  and  IsPrimePowerInt( m )  then
+        return LogMod( res, PrimitiveRootMod( m ), m ) mod
+               ( Phi( m ) / Size( G ) ) = 0;
+    else
+        TryNextMethod();
+    fi;
+end );
 
 
 #############################################################################

@@ -17,7 +17,6 @@ Revision.grppclat_gd:=
 #V  Information function
 ##
 InfoPcSubgroup := NewInfoClass("InfoPcSubgroup");
-SetInfoLevel(InfoPcSubgroup,4);
 
 #############################################################################
 ##

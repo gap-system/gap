@@ -17,36 +17,6 @@
 ##           <points> which is in cell <j>
 ##  lengths: a list of the cell lengths
 ##
-##  This file also contains the general partition backtracking function.
-##
-#H  $Log$
-#H  Revision 4.7  1997/06/06 12:16:40  htheisse
-#H  used `ListWithIdenticalEntries'
-#H
-#H  Revision 4.6  1997/05/28 13:19:40  fceller
-#H  changed 'DeepCopy' to 'StructuralCopy'
-#H
-#H  Revision 4.5  1997/01/20 17:00:26  htheisse
-#H  re-introduced `generators'
-#H
-#H  Revision 4.4  1996/12/19 09:59:10  htheisse
-#H  added revision lines
-#H
-#H  Revision 4.3  1996/11/27 15:32:56  htheisse
-#H  replaced `Copy' by `StructuralCopy'
-#H
-#H  Revision 4.2  1996/11/21 16:50:50  htheisse
-#H  allowed stabilizer chains as arguments for `OrbitsPartition'
-#H
-#H  Revision 4.1  1996/09/23 16:47:37  htheisse
-#H  added files for permutation groups (incl. backtracking)
-#H                  stabiliser chains
-#H                  group homomorphisms (of permutation groups)
-#H                  operation homomorphisms
-#H                  polycyclic generating systems of soluble permutation groups
-#H                     (general concept tentatively)
-#H
-##
 Revision.partitio_gi :=
     "@(#)$Id$";
 
@@ -60,7 +30,13 @@ Partition := function( list )
     P := rec( points := Concatenation( list ),
               firsts := [  ],
              lengths := [  ] );
-    P.cellno := ListWithIdenticalEntries( Maximum( P.points ), 0 );
+
+    if Length(list)>0 then
+      P.cellno := ListWithIdenticalEntries( Maximum( P.points ), 0 );
+    else
+      Info(InfoWarning,2,"empty partition created!");
+      P.cellno:=[];
+    fi;
     i := 1;
     for c  in [ 1 .. Length( list ) ]  do
         if Length( list[ c ] ) = 0  then
@@ -136,6 +112,9 @@ end;
 ##
 #F  Fixcells( <P> ) . . . . . . . . . . . . . . . . . . . .  fixcells as list
 ##
+##  Returns a list of the points along in their  cell, ordered as these cells
+##  are ordered
+##
 Fixcells := function( P )
     local   fix,  i;
     
@@ -150,7 +129,17 @@ end;
 
 #############################################################################
 ##
-#F  SplitCell( <P>, <i>, <Q>, <j>, <g> )  . . . . . . . . . . .  split a cell
+#F  SplitCell( <P>, <i>, <Q>, <j>, <g>, <out> ) . . . . . . . .  split a cell
+##
+##  Splits <P>[ <i> ],  by taking out all  the points that are also contained
+##  in <Q>[ <j> ]  ^ g. The  new cell is appended to  <P> unless it would  be
+##  empty. If the old cell would remain empty, nothing is changed either.
+##
+##  Returns the length of the new cell, or `false' if nothing was changed.
+##
+##  Shortcuts of  the  splitting algorithm:  If  the last  argument  <out> is
+##  `true', at least one point will  move out. If <out> is  a number, at most
+##  <out> points will move out.
 ##
 SplitCell := function( P, i, Q, j, g, out )
     local   a,  b,  l,  B,  tmp,  m,  x,  k;
@@ -174,23 +163,37 @@ SplitCell := function( P, i, Q, j, g, out )
     if out <> true  then  B := l - out;
                     else  B := 0;        fi;
     if B > 0  then
+
+        # Points left of <a>  remain in the cell,   points right of  <b> move
+        # out.
         while a < b  do
+
+            # Decrease <b> until a point remains in the cell.
             repeat
                 b := b - 1;
+                
+                # $b < B$ means that more than <out> points move out.
                 if b < B  then
                     return false;
                 fi;
+                
             until Q[ P.points[ b ] ^ g ] <> j;
+
+            # Increase <a> until a point moved out.
             repeat
                 a := a + 1;
             until Q[ P.points[ a ] ^ g ] =  j;
+
+            # Swap the points.
             if a < b  then
                 tmp := P.points[ a ];
                 P.points[ a ] := P.points[ b ];
                 P.points[ b ] := tmp;
             fi;
+            
         od;
-    else
+        
+    else  # Same as above, but without $b < B$ check.
         while a < b  do
             repeat
                 b := b - 1;
@@ -220,6 +223,12 @@ end;
 ##
 #F  IsolatePoint( <P>, <a> )  . . . . . . . . . . . . . . . . isolate a point
 ##
+##  Takes point <a> out of its cell in <P>, putting it into a new cell, which
+##  is appended to <P>. However, does nothing, if <a> was already isolated.
+##
+##  Returns the  number of the cell   from <a> was  taken out,  or `false' if
+##  nothing was changed.
+##
 IsolatePoint := function( P, a )
     local   i,  pos,  l,  m;
     
@@ -245,6 +254,17 @@ end;
 ##
 #F  UndoRefinement( <P> ) . . . . . . . . . . . . . . . . . undo a refinement
 ##
+##  Undoes the  effect of   the  last  cell-splitting actually performed   by
+##  `SplitCell' or `IsolatePoint'. (This means that  if the last call of such
+##  a function had no effect, `UndoRefinement' looks at the second-last etc.)
+##  This fuses the last cell of <P> with an earlier cell.
+##
+##  Returns  the number of the  cell with which  the  last cell was fused, or
+##  `false'   if the last  cell starts   at  `<P>.points[1]', because then it
+##  cannot have been split off.
+##
+##  May behave undefined if there was no splitting before.
+##
 UndoRefinement := function( P )
     local   M,  m;
     
@@ -253,6 +273,7 @@ UndoRefinement := function( P )
         return false;
     fi;
     
+    # Fuse the last cell with the one stored before it in `<P>.points'.
     m := P.cellno[ P.points[ P.firsts[ M ] - 1 ] ];
     P.lengths[ m ] := P.lengths[ m ] + P.lengths[ M ];
     P.cellno{ P.points
@@ -282,6 +303,8 @@ end;
 ##
 #F  FixpointCellNo( <P>, <i> )  . . . . . . . . .  fixpoint from cell no. <i>
 ##
+##  Returns the first point of <P>[ <i> ] (should be a one-point cell).
+##
 FixpointCellNo := function( P, i )
     return P.points[ P.firsts[ i ] ];
 end;
@@ -289,6 +312,11 @@ end;
 #############################################################################
 ##
 #F  FixcellPoint( <P>, <old> )  . . . . . . . . . . . . . . . . . . . . local
+##
+##  Returns a random cell number which is not yet contained  in <old> and has
+##  length 1.
+##
+##  Adds this cell number to <old>.
 ##
 FixcellPoint := function( P, old )
     local   lens,  poss,  p;
@@ -308,6 +336,11 @@ end;
 #############################################################################
 ##
 #F  FixcellsCell( <P>, <cellno>, <conj>, <old> )  . . . . . . . . . . . local
+##
+##  Returns [ <K>, <I>  ] such that  for j=1,...|K|=|I|,  all points  in cell
+##  <P>[  <I>[j] ], mapped  with <conj> have value  <K>[j] in <cellno> (i.e.,
+##  lie   in cell <K>[j]  of a  partition whose `cellno'  entry is <cellno>).
+##  Returns `false' if <K> and <I> are empty.
 ##
 FixcellsCell := function( P, cellno, conj, old )
     local   K,  I,  i,  k,  start;
@@ -370,6 +403,12 @@ end;
 #############################################################################
 ##
 #F  CollectedPartition( <P>, <size> ) . orbits on cells under group of <size>
+##
+##  Returns a  partition into unions of cells  of <P> of equal length, sorted
+##  by  this length. However,  if there are $n$ cells  of equal length, which
+##  cannot be fused under the action of a group of  order <size> (because $n$
+##  < SmallestPrimeDivisor(  <size>  )), leaves   these $n$  cells   unfused.
+##  (<size> = 1 suppresses this extra feature.)
 ##
 CollectedPartition := function( P, size )
     local   lens,  C,  div,  typ,  p,  i;

@@ -11,7 +11,7 @@
 **  This file contains the functions for coset tables.
 */
 #ifdef INCLUDE_DECLARATION_PART
-char * Revision_costab_h =
+SYS_CONST char * Revision_costab_h =
    "@(#)$Id$";
 #endif
 
@@ -19,9 +19,29 @@ char * Revision_costab_h =
 /****************************************************************************
 **
 
-*F  InitCosetTable()
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupCosetTable() . . . . . . . . . .  initialize the coset table package
+*/
+extern void SetupCosetTable ( void );
+
+
+/****************************************************************************
+**
+*F  InitCosetTable()  . . . . . . . . . .  initialize the coset table package
 */
 extern void InitCosetTable ( void );
+
+
+/****************************************************************************
+**
+*F  CheckCosetTable() . . check the initialisation of the coset table package
+*/
+extern void CheckCosetTable ( void );
 
 
 /****************************************************************************

@@ -48,34 +48,40 @@
 **  Zech-Logarithm  table.  The zeroth  entry in the  finite field bag is the
 **  order of the finite field minus one.
 */
-char *          Revision_finfield_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_finfield_c =
+   "@(#)$Id$";
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "calls.h"               /* NewFunctionC                    */
-#include        "opers.h"               /* NewFilterC, NewOperationC       */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* generic lists package           */
+#include        "gvars.h"               /* global variables                */
 
-#include        "bool.h"                /* True, False                     */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
 
-#include        "integer.h"             /* SumInt, DiffInt, ProdInt, Quo...*/
+#include        "ariths.h"              /* basic arithmetic                */
+
+#include        "bool.h"                /* booleans                        */
+
+#include        "integer.h"             /* integers                        */
 
 #define INCLUDE_DECLARATION_PART
-#include        "finfield.h"            /* declaration part of the package */
+#include        "finfield.h"            /* finite fields and ff elements   */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "plist.h"               /* plain lists                     */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gap.h"                 /* Error                           */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
@@ -1853,7 +1859,7 @@ Obj             ZHandler (
     if ( TNUM_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 || 65536<INT_INTOBJ(q) ) {
         q = ErrorReturnObj(
             "Z: <q> must be a positive prime power (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(q)].name), 0L,
+            (Int)TNAM_OBJ(q), 0L,
             "you can return a positive integer for <q>" );
         return ZHandler( self, q );
     }
@@ -1877,7 +1883,7 @@ Obj             ZHandler (
     if ( r != INT_INTOBJ(q) ) {
         q = ErrorReturnObj(
             "Z: <q> must be a positive prime power (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(q)].name), 0L,
+            (Int)TNAM_OBJ(q), 0L,
             "you can return a positive integer for <q>" );
         return ZHandler( self, q );
     }
@@ -1892,26 +1898,31 @@ Obj             ZHandler (
 
 /****************************************************************************
 **
-*F  InitFinfield()  . . . . . . . . . . . . . initialize finite field package
-**
-**  'InitFinfield' initializes the finite field package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitFinfield ( void )
+
+
+/****************************************************************************
+**
+
+*F  SetupFinfield() . . . . . . . . . . . initialize the finite field package
+*/
+void SetupFinfield ( void )
 {
     /* install the marking function                                        */
-    InfoBags[           T_FFE               ].name = "finite field element";
-    InitMarkFuncBags(   T_FFE               , MarkNoSubBags );
+    InfoBags[ T_FFE ].name = "ffe should never happen";
+    /* InitMarkFuncBags( T_FFE, MarkNoSubBags );                           */
 
-    /* install the kind function                                           */
-    ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
-    TypeObjFuncs[ T_FFE ] = TypeFFE;
 
     /* install the printing method                                         */
     PrintObjFuncs[ T_FFE ] = PrFFE;
 
+
     /* install the comparison methods                                      */
     EqFuncs[   T_FFE ][ T_FFE ] = EqFFE;
     LtFuncs[   T_FFE ][ T_FFE ] = LtFFE;
+
 
     /* install the arithmetic methods                                      */
     ZeroFuncs[ T_FFE ] = ZeroFFE;
@@ -1932,23 +1943,53 @@ void            InitFinfield ( void )
     QuoFuncs[  T_INT ][ T_FFE ] = QuoIntFFE;
     PowFuncs[  T_FFE ][ T_INT ] = PowFFEInt;
     PowFuncs[  T_FFE ][ T_FFE ] = PowFFEFFE;
+}
+
+
+/****************************************************************************
+**
+*F  InitFinfield()  . . . . . . . . . . . initialize the finite field package
+**
+**  'InitFinfield' initializes the finite field package.
+*/
+void InitFinfield ( void )
+{
+    /* install the kind function                                           */
+    ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
+    TypeObjFuncs[ T_FFE ] = TypeFFE;
+
 
     /* create the fields and integer conversion bags                       */
-    CharFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( CharFF, 0 );
-    InitGlobalBag( &CharFF, "finfield: characteristics" );
-    DegrFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( DegrFF, 0 );
-    InitGlobalBag( &DegrFF, "finfield: degree" );
-    SuccFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( SuccFF, 0 );
-    InitGlobalBag( &SuccFF, "finfield: successor" );
-    TypeFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( TypeFF, 0 );
-    InitGlobalBag( &TypeFF, "finfield: element kinds" );
-    IntFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( IntFF, 0 );
-    InitGlobalBag( &IntFF, "finifield: integer conversion" );
+    InitGlobalBag( &CharFF, "src/finfield.c:CharFF" );
+    if ( ! SyRestoring ) {
+        CharFF = NEW_PLIST( T_PLIST, 0 );
+        SET_LEN_PLIST( CharFF, 0 );
+    }
+
+    InitGlobalBag( &DegrFF, "src/finfield.c:DegrFF" );
+    if ( ! SyRestoring ) {
+        DegrFF = NEW_PLIST( T_PLIST, 0 );
+        SET_LEN_PLIST( DegrFF, 0 );
+    }
+
+    InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
+    if ( ! SyRestoring ) {
+        SuccFF = NEW_PLIST( T_PLIST, 0 );
+        SET_LEN_PLIST( SuccFF, 0 );
+    }
+
+    InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
+    if ( ! SyRestoring ) {
+        TypeFF = NEW_PLIST( T_PLIST, 0 );
+        SET_LEN_PLIST( TypeFF, 0 );
+    }
+
+    InitGlobalBag( &IntFF, "src/finifield.c:IntFF" );
+    if ( ! SyRestoring ) {
+        IntFF = NEW_PLIST( T_PLIST, 0 );
+        SET_LEN_PLIST( IntFF, 0 );
+    }
+
 
     /* install the functions that handle overflow                          */
     ImportFuncFromLibrary( "SUM_FFE_LARGE",  &SUM_FFE_LARGE  );
@@ -1957,35 +1998,46 @@ void            InitFinfield ( void )
     ImportFuncFromLibrary( "QUO_FFE_LARGE",  &QUO_FFE_LARGE  );
     ImportFuncFromLibrary( "LOG_FFE_LARGE",  &LOG_FFE_LARGE  );
 
+
     /* install the internal functions                                      */
-    InitHandlerFunc( IsFFEHandler, "IS_FFE" );
-    IsFFEFilt = NewFilterC(
-        "IS_FFE", 1L, "obj", IsFFEHandler );
-    AssGVar( GVarName( "IS_FFE" ), IsFFEFilt );
+    C_NEW_GVAR_FILT( "IS_FFE", "obj", IsFFEFilt, IsFFEHandler,
+     "src/finifield.c:IS_FFE" );
 
-    InitHandlerFunc( CharFFEDefaultHandler, "ffe: characteristic of FFE default");
-    CharFFEDefaultFunc = NewFunctionC(
-        "CHAR_FFE_DEFAULT", 1L, "z", CharFFEDefaultHandler );
-    AssGVar( GVarName( "CHAR_FFE_DEFAULT" ), CharFFEDefaultFunc );
+    C_NEW_GVAR_FUNC( "CHAR_FFE_DEFAULT", 1, "z",
+                      CharFFEDefaultHandler,
+     "src/finifield.c:CHAR_FFE_DEFAULT" );
 
-    InitHandlerFunc( DegreeFFEDefaultHandler, "ffe: degree of FFE default");
-    DegreeFFEDefaultFunc = NewFunctionC(
-        "DEGREE_FFE_DEFAULT", 1L, "z", DegreeFFEDefaultHandler );
-    AssGVar( GVarName( "DEGREE_FFE_DEFAULT" ), DegreeFFEDefaultFunc );
+    C_NEW_GVAR_FUNC( "DEGREE_FFE_DEFAULT", 1, "z",
+                      DegreeFFEDefaultHandler,
+     "src/finifield.c:DEGREE_FFE_DEFAULT" );
 
-    InitHandlerFunc( LogFFEDefaultHandler, "ffe: log in FFE default");
-    LogFFEDefaultFunc = NewFunctionC(
-        "LOG_FFE_DEFAULT", 2L, "z, r", LogFFEDefaultHandler );
-    AssGVar( GVarName( "LOG_FFE_DEFAULT" ), LogFFEDefaultFunc );
+    C_NEW_GVAR_FUNC( "LOG_FFE_DEFAULT", 2, "z, root",
+                      LogFFEDefaultHandler,
+     "src/finifield.c:LOG_FFE_DEFAULT" );
 
-    InitHandlerFunc( IntFFEDefaultHandler, "ffe: int -> FFE default");
-    IntFFEDefaultFunc = NewFunctionC(
-        "INT_FFE_DEFAULT", 1L, "z", IntFFEDefaultHandler );
-    AssGVar( GVarName( "INT_FFE_DEFAULT" ), IntFFEDefaultFunc );
+    C_NEW_GVAR_FUNC( "INT_FFE_DEFAULT", 1, "z",
+                      IntFFEDefaultHandler,
+     "src/finifield.c:INT_FFE_DEFAULT" );
 
-    InitHandlerFunc( ZHandler, "ffe: Z function");
-    ZFunc = NewFunctionC(
-        "Z", 1L, "q", ZHandler );
-    AssGVar( GVarName( "Z" ), ZFunc );
-
+    C_NEW_GVAR_FUNC( "Z", 1, "q",
+                      ZHandler,
+     "src/finifield.c:Z" );
 }
+
+
+/****************************************************************************
+**
+*F  CheckFinfield() . .  check the initialisation of the finite field package
+*/
+void CheckFinfield ( void )
+{
+    SET_REVISION( "finfield_c", Revision_finfield_c );
+    SET_REVISION( "finfield_h", Revision_finfield_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  finfield.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

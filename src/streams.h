@@ -10,7 +10,7 @@
 **  stuff.  The system depend part is in "sysfiles.c".
 */
 #ifdef INCLUDE_DECLARATION_PART
-char * Revision_streams_h =
+SYS_CONST char * Revision_streams_h =
    "@(#)$Id$";
 #endif
 
@@ -70,9 +70,23 @@ extern Int READ_GAP_ROOT ( Char * filename );
 /****************************************************************************
 **
 
-*F  InitStreams() . . . . . . . . . . . . . . . . . . . . . intialize streams
+*F  SetupStreams(). . . . . . . . . . . . . . . intialize the streams package
 */
-extern void InitStreams ();
+extern void SetupStreams ( void );
+
+
+/****************************************************************************
+**
+*F  InitStreams() . . . . . . . . . . . . . . . intialize the streams package
+*/
+extern void InitStreams ( void );
+
+
+/****************************************************************************
+**
+*F  CheckStreams()  . . . . . check the initialisation of the streams package
+*/
+extern void CheckStreams ( void );
 
 
 /****************************************************************************

@@ -76,17 +76,18 @@
 \def\onepageout#1{{\setbox255=\vbox{#1}
   \hsize=\pagewidth \vsize=\pageheight \plainoutput}}
 \def\normaloutput{\onepageout{\unvbox255}}
+\maxdeadcycles=100 % \output is called quite often
 
 \output={\normaloutput}
 \newbox\partialpage \newdimen\origvsize \newif\ifrigid
-\def\begindoublecolumns{\origvsize=\vsize \begingroup
+\def\begindoublecolumns{\global\origvsize=\vsize \begingroup
   \output={\global\setbox\partialpage=\vbox{\unvbox255\kern0pt}}\eject
   \output={\doublecolumnout} \hsize=\colwidth \dimen@=\pageheight
   \advance\dimen@ by-\ht\partialpage \multiply\dimen@ by2
   \ifdim\dimen@<2\baselineskip \dimen@=2\baselineskip\fi
   \vsize=\dimen@}
 \def\enddoublecolumns{\output={\balancecolumns}\eject
-  \endgroup \pagegoal=\vsize}
+  \endgroup \global\vsize=\origvsize \pagegoal=\vsize}
 \def\doublecolumnout{\splittopskip=\topskip \splitmaxdepth=\maxdepth
   \setbox0=\vsplit255 to.5\vsize \setbox2=\vsplit255 to.5\vsize
   \onepageout\pagesofar \global\vsize=2\pageheight
@@ -109,7 +110,7 @@
     \setbox0=\vbox to\dimen@{\unvbox1}
     \setbox2=\vbox to\dimen@{\dimen2=\dp3 \unvbox3\kern-\dimen2 \vfil}
   \fi
-  \global\output={\normaloutput}\global\vsize=\origvsize \pagesofar}
+  \global\vsize=\origvsize \pagesofar}
 \catcode`@=12
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -270,11 +271,12 @@
   \ifx\thechapter\normalchapter
     \immediate\write\secindout{C \filename\space\thechapter. \chapname}\fi
   \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
-  \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-2em
-    \leftskip 0pt plus 1fil \parfillskip 0pt \baselineskip 44pt\relax #1}
-  \line{\box0\hfil\box1}\nobreak \vskip 40pt \noindent}
+  \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-1em
+    \hyphenpenalty=10000 \linepenalty=10000
+    \leftskip 0pt plus\hsize \parfillskip 0pt \baselineskip 44pt\relax #1}
+  \line{\box0\hfil\box1}\nobreak \vskip 40pt}
 
-\outer\def\Section#1#2\par{\medskip \advance\secno by1
+\outer\def\Section#1#2\par{\bigbreak \advance\secno by1
   \ifx\thechapter\emptychapter
     \edef\tempa{\the\secno}
   \else
@@ -285,7 +287,7 @@
   \ifx#2\null\else \edef\tempb{{#1}}
     \expandafter\doindex\tempb{|indexit}{}\fi
   \noindent{\baselineskip 18pt\let!=\space \mark{Section \the\secno. #1}%
-  \secfont \tempa \enspace #1}\par\nobreak\medskip\noindent}
+  \secfont \tempa \enspace #1}\par\nobreak\medskip}
 
 \def\writesecline#1\\#2{\write\tocout{\noexpand\seccontents{#1}{#2}
   {\the\pageno}}}
@@ -307,8 +309,9 @@
   \endgraf\nobreak\oporfunc#1\end}%
 \gdef\cloparen#1
   {\endgroup \ifx\par\fpar \else%
-    \ifvmode \vskip -\lastskip \fi \medskip \begingroup\let\par=\fpar\fi%
-  \endgraf {\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}\def\|{\vrule\relax}%
+    \ifvmode \vskip -\lastskip \fi \medskip%
+    \begingroup\let\par=\fpar \parskip 0pt \fi%
+  \endgraf{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}\def\|{\vrule\relax}%
   \noindent\typewriter#1'}}%
 \gdef\scanparen#1(#2\end{\def\tempa{#2}\ifx\tempa\empty%
   \def\next{\begingroup\cloparen\fmark#1

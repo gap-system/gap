@@ -1030,6 +1030,17 @@ InstallMethod( PermutationCharacter,
     return CharacterByValues( OrdinaryCharacterTable( G ), c );
     end );
 
+#############################################################################
+##
+#M  PermutationCharacter( <G> )  . . . . . . . . . . .  for group action
+##
+InstallOtherMethod( PermutationCharacter,
+  "group action on domain",true,[IsPermGroup,IsListOrCollection,IsFunction],0,
+function(G,dom,opr)
+    return CharacterByValues(OrdinaryCharacterTable(G),
+	     List(ConjugacyClasses(G),
+	          i->Number(dom,j->j=opr(j,Representative(i)))));
+end);
 
 #T #############################################################################
 #T ##
@@ -1048,6 +1059,61 @@ InstallMethod( PermutationCharacter,
 #T         List( ConjugacyClasses( G ),
 #T         C -> I * Length( Intersection2( AsList( C ), E ) ) / Size( C ) ) );
 #T     end );
+
+
+#############################################################################
+##
+#F  CycleStructureClass( <permchar>, <class> )
+##
+CycleStructureClass := function( permchar, class )
+
+    local tbl,         # underlying character table
+          n,           # element order of `class'
+          divs,        # divisors of `n'
+          i, d, j,     # loop over `divs'
+          fixed,       # numbers of fixed points
+          cycstruct;   # cycle structure, result
+
+    # Check the arguments.
+    if not ( IsClassFunction( permchar ) and IsInt( class )
+                                         and IsPosRat( class ) ) then
+      Error( "<permchar> must be a class function, <class> a position" );
+    fi;
+
+    # Compute the numbers of fixed points of powers.
+    tbl:= UnderlyingCharacterTable( permchar );
+    permchar:= ValuesOfClassFunction(  permchar );
+    n:= OrdersClassRepresentatives( tbl )[ class ];
+    divs:= DivisorsInt( n );
+    fixed:= [];
+    for i in [ 1 .. Length( divs ) ] do
+    
+      # Compute the number of cycles of the element of order `n / d'.
+      d:= divs[i];
+      fixed[d]:= permchar[ PowerMap( tbl, d, class ) ];
+      for j in [ 1 .. i-1 ] do
+        if d mod divs[j] = 0 then
+    
+          # Subtract the number of fixed points with stabilizer exactly
+          # of order `n / divs[j]'.
+          fixed[d]:= fixed[d] - fixed[ divs[j] ];
+    
+        fi;
+      od;
+    
+    od;
+
+    # Convert these numbers into numbers of cycles.
+    cycstruct:= [];
+    for i in divs do
+      if fixed[i] <> 0 and 1 < i then
+        cycstruct[ i-1 ]:= fixed[i] / i;
+      fi;
+    od;
+    
+    # Return the cycle structure.
+    return cycstruct;
+end;
 
 
 #############################################################################
@@ -1300,6 +1366,12 @@ InstallOtherMethod( EigenvaluesChar,
         # mod 'n', and thus powering with 'i' is Galois conjugate to
         # powering with 'Gcd(n,i)'
         powers[i]:= char[ PowerMap( tbl, i, class ) ];
+#T better approach:
+#T only write down values for one representative of each
+#T Galois family, and compute traces;
+#T for rational characters, this avoids computation with
+#T non-rational values at all.
+#T (how much does this help?)
         for j in PrimeResidues( n/i ) do
 
           # Note that the position cannot be 0.
@@ -2912,17 +2984,20 @@ InstallOtherMethod( GroupByGenerators,
     true,
     [ IsHomogeneousList and IsClassFunctionCollection ], 0,
     function( gens )
-    local G;
+    local filter,G;
 
     # Check that the class functions are invertible.
     if ForAny( gens, psi -> Inverse( psi ) = fail ) then
       Error( "class functions in <gens> must be invertible" );
     fi;
 
+    filter:=IsGroup and IsAttributeStoringRep;
+    if IsFinite(gens) then
+      filter:=filter and IsFinitelyGeneratedGroup;
+    fi;
+
     # Construct the group.
-    G:= Objectify( NewType( FamilyObj( gens ),
-                            IsGroup and IsAttributeStoringRep ),
-                   rec() );
+    G:= Objectify( NewType( FamilyObj( gens ),filter), rec() );
     SetGeneratorsOfMagmaWithInverses( G, AsList( gens ) );
     return G;
     end );
@@ -2932,7 +3007,7 @@ InstallOtherMethod( GroupByGenerators,
     IsCollsElms,
     [ IsHomogeneousList and IsClassFunctionCollection, IsClassFunction ], 0,
     function( gens, id )
-    local G;
+    local filter,G;
 
     # Check that the class functions are invertible.
     if ForAny( gens, psi -> Inverse( psi ) = fail ) then
@@ -2941,10 +3016,13 @@ InstallOtherMethod( GroupByGenerators,
       Error( "<id> must be an identity" );
     fi;
 
+    filter:=IsGroup and IsAttributeStoringRep;
+    if IsFinite(gens) then
+      filter:=filter and IsFinitelyGeneratedGroup;
+    fi;
+
     # Construct the group.
-    G:= Objectify( NewType( FamilyObj( gens ),
-                            IsGroup and IsAttributeStoringRep ),
-                   rec() );
+    G:= Objectify( NewType( FamilyObj( gens ),filter), rec() );
     SetGeneratorsOfMagmaWithInverses( G, AsList( gens ) );
     SetOne( G, id );
     return G;
@@ -2964,7 +3042,8 @@ InstallOtherMethod( GroupByGenerators,
 
     # Construct the group.
     G:= Objectify( NewType( CollectionsFamily( FamilyObj( id ) ),
-                            IsGroup and IsAttributeStoringRep ),
+                            IsGroup and IsAttributeStoringRep and
+			    IsFinitelyGeneratedGroup ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( G, [] );
     SetOne( G, id );

@@ -211,11 +211,25 @@ InstallMethod( Representative,
 
 InstallImmediateMethod( RepresentativeSmallest,
     IsCollection and HasEnumeratorSorted, 1000,
-    C -> EnumeratorSorted( C )[1] );
+    function( C )
+    C:= EnumeratorSorted( C );
+    if IsEmpty( C ) then
+      TryNextMethod();
+    else
+      return C[1];
+    fi;
+    end );
 
 InstallImmediateMethod( RepresentativeSmallest,
     IsCollection and HasAsListSorted, 1000,
-    C -> AsListSorted( C )[1] );
+    function( C )
+    C:= AsListSorted( C );
+    if IsEmpty( C ) then
+      TryNextMethod();
+    else
+      return C[1];
+    fi;
+    end );
 
 InstallMethod( RepresentativeSmallest,
     "method for a collection",

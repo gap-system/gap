@@ -200,7 +200,7 @@ HasTrivialSubmodule := HasTrivialSubadditiveMagmaWithZero;
 ##
 #O  AsLeftModule( <R>, <D> )
 ##
-AsLeftModule := NewOperation( "AsModule", [ IsRing, IsDomain ] );
+AsLeftModule := NewOperation( "AsModule", [ IsRing, IsCollection ] );
 
 
 #############################################################################

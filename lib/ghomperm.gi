@@ -163,9 +163,9 @@ CoKernelGensPermHom := function( hom )
 
     C := [  ];
     for sch  in CoKernelGensIterator( hom )  do
-        if sch <> One( sch )  and  not sch in C  then
-            Add( C, sch );
-        fi;
+      if not (sch=One(sch) or sch in C) then
+	Add( C, sch );
+      fi;
     od;
     return C;
 end;
@@ -755,7 +755,7 @@ end );
 ##
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . .  for blocks hom
 ##
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
+InstallMethod( ImagesRepresentative, "blocks homomorphism", FamSourceEqFamElm,
         [ IsBlocksHomomorphism, IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
     local   img,  D,  i;
@@ -844,7 +844,8 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . .  for blocks hom
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentative, "blocks homomorphism",
+        FamRangeEqFamElm,
         [ IsBlocksHomomorphism, IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
     local   D,          # the block system
@@ -862,11 +863,16 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
     while Length( S.genlabels ) <> 0  do
 
         # Find the image block <B> of the current block.
-        b := hom!.reps[ S.orbit[ 1 ] ] ^ elm;
-        if b > Length( D )  then
-            return fail;
-        fi;
-        B := D[ b ];
+	if IsBound(hom!.reps[S.orbit[1]]) then
+	  b := hom!.reps[ S.orbit[ 1 ] ] ^ elm;
+	  if b > Length( D )  then
+	      return fail;
+	  fi;
+	  B := D[ b ];
+        else
+	  # the point is in no block (non-transitive action)
+	  B:=[S.orbit[1]];
+	fi;
         
         # Find a point in <B> that can be hit by the preimage.
         pos := PositionProperty( B, pnt ->

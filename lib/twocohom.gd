@@ -3,7 +3,7 @@
 #W  twocohom.gd                 GAP library                      Bettina Eick
 ##
 Revision.twocohom_gd :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 #############################################################################
 ##

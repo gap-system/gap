@@ -169,8 +169,8 @@ RANK_FILTER_STORE := function( filter )
     fi;
     hash := HASH_FLAGS(flags);
     rank := RANK_FILTER(flags);
-    ADD_LIST( RANK_FILTER_LIST, hash );
-    ADD_LIST( RANK_FILTER_LIST, rank );
+    ADD_LIST( RANK_FILTER_LIST_CURRENT, hash );
+    ADD_LIST( RANK_FILTER_LIST_CURRENT, rank );
     return rank;
 
 end;

@@ -12,14 +12,41 @@ Revision.ghom_gi :=
 
 #############################################################################
 ##
-
 #M  <a> = <b> . . . . . . . . . . . . . . . . . . . . . . . . . .  via images
 ##
-InstallMethod( \=, IsIdentical, [ IsGroupGeneralMapping,
-        IsGroupGeneralMapping ], 0,
-    function( a, b )
-    return AsGroupGeneralMappingByImages( a ) =
-           AsGroupGeneralMappingByImages( b );
+InstallMethod( \=, "compare their AsGroupGeneralMappingByImages",
+  IsIdentical, [ IsGroupGeneralMapping, IsGroupGeneralMapping ], 0,
+function( a, b )
+local i;
+  # force both to GroupGeneralMappingsByImages
+  if not IsGroupGeneralMapping(a) then
+    a:=AsGroupGeneralMappingByImages( a );
+  fi;
+  if not IsGroupGeneralMapping(b) then
+    b:=AsGroupGeneralMappingByImages( b );
+  fi;
+
+  # try to fall back on homomorphism routines
+  if IsSingleValued(a) and IsSingleValued(b) then
+    # as both are single valued (and the appropriate flags are now set)
+    # we will automatically fall in the routines for homomorphisms.
+    # So this is not an infinite recursion
+    return a=b;
+  fi;
+
+  # now do the hard test
+  if Source(a)<>Source(b) 
+     or Range(a)<>Range(b)
+     or PreImagesRange(a)<>PreImagesRange(b)
+     or ImagesSource(a)<>ImagesSource(b) then
+    return false;
+  fi;
+  for i in PreImagesRange(a) do
+    if Set(Images(a,i))<>Set(Images(b,i)) then
+      return false;
+    fi;
+  od;
+  return true;
 end );
 
 #############################################################################
@@ -135,6 +162,14 @@ InstallMethod( GroupGeneralMappingByImages, true,
     fi;
     if IsPermGroup( H )  then
         filter := filter and IsToPermGroupGeneralMappingByImages;
+    fi;
+
+    # Do we map a free group or an fp group by its standard generators?
+    # (So we can used MappedWord for mapping)?
+    if ((IsSubgroupFpGroup(G) and not HasParent(G))
+        or IsFreeGroup(G)) and 
+       gens=GeneratorsOfGroup(G) then
+      filter := filter and IsFromFpGroupStdGensGeneralMappingByImages;
     fi;
     if IsSubgroupFpGroup(H) then
         filter := filter and IsToFpGroupGeneralMappingByImages;
@@ -504,24 +539,29 @@ end );
 
 #############################################################################
 ##
-
-#F  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) check whether N \unlhd G?
+#M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) check whether N \unlhd G?
 ##
-InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
+NaturalHomomorphismByNormalSubgroup := function(G,N)
+  if not IsNormal(G,N) then
+    Error("<N> must be normal in <G>");
+  fi;
+  return NaturalHomomorphismByNormalSubgroupNC(G,N);
+end;
+
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
         [ IsGroup, IsGroup and IsTrivial ], SUM_FLAGS,
     function( G, T )
     return IdentityMapping( G );
 end );
-
-InstallInParentMethod( NaturalHomomorphismByNormalSubgroupInParent,
-        IsGroup, NaturalHomomorphismByNormalSubgroup );
 
 #############################################################################
 ##
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . .  if given by pcgs
 ##
 InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsGroupGeneralMappingByPcgs, IsMultiplicativeElementWithInverse ],
+        [ IsGroupGeneralMappingByPcgs and IsTotal,
+                                        # ^ because of `ExponentsOfPcElement'
+          IsMultiplicativeElementWithInverse ],
         100,  # to override methods for `IsPerm( <elm> )'
     function( hom, elm )
     local   exp;
@@ -530,18 +570,6 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     return WordVector( hom!.genimages, One( Range( hom ) ), exp );
 end );
 
-
-#############################################################################
-##
-#F  GroupIsomorphismByFunctions( <G>, <H>, <I>, <P> ) . . . . . . . for Frank
-##
-GroupIsomorphismByFunctions := function( G, H, I, P )
-    local   hom;
-    
-    hom := MappingByFunction( G, H, I, P );
-    Setter( IsGroupHomomorphism )( hom, true );
-    return hom;
-end;
 
 #############################################################################
 ##

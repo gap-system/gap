@@ -788,7 +788,7 @@ end;
 ##
 #M  Centralizer( <A>, <mat> ) . . . . . . . . .  for matrix FLMLOR and matrix
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for associative Gaussian matrix FLMLOR, and matrix",
     IsCollsElms,
     [ IsMatrixFLMLOR and IsAssociative and IsGaussianSpace,
@@ -806,7 +806,7 @@ InstallMethod( Centralizer,
 ##
 #M  Centralizer( <A>, <C> ) . . . . . . . for matrix FLMLOR and matrix FLMLOR
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for associative Gaussian matrix FLMLOR, and FLMLOR",
     IsIdentical,
     [ IsMatrixFLMLOR and IsAssociative and IsGaussianSpace,
@@ -824,7 +824,7 @@ InstallMethod( Centralizer,
 ##
 #M  Centralizer( <A>, <mat> ) . . . . . for matrix FLMLOR-with-one and matrix
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for associative Gaussian matrix FLMLOR-with-one, and matrix",
     IsCollsElms,
     [ IsMatrixFLMLOR and IsFLMLORWithOne
@@ -843,7 +843,7 @@ InstallMethod( Centralizer,
 ##
 #M  Centralizer( <A>, <C> ) . .  for matrix FLMLOR-with-one and matrix FLMLOR
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for associative Gaussian matrix FLMLOR-with-one, and FLMLOR",
     IsIdentical,
     [ IsMatrixFLMLOR and IsFLMLORWithOne
@@ -923,7 +923,7 @@ end;
 ##
 #M  Centralizer( <A>, <S> ) . . . . . . . for full associative matrix algebra
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for full (associative) matrix FLMLOR, and FLMLOR",
     IsIdentical,
     [ IsMatrixFLMLOR and IsFullMatrixModule, IsFLMLOR ], 0,
@@ -935,7 +935,7 @@ InstallMethod( Centralizer,
                                          GeneratorsOfAlgebra( S ) );
     end );
 
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for full (associative) matrix FLMLOR, and left module",
     IsIdentical,
     [ IsMatrixFLMLOR and IsFullMatrixModule, IsLeftModule ], 0,
@@ -947,7 +947,7 @@ InstallMethod( Centralizer,
                                          GeneratorsOfLeftModule( S ) );
     end );
 
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for full (associative) matrix FLMLOR, and list of matrices",
     IsIdentical,
     [ IsMatrixFLMLOR and IsFullMatrixModule, IsCollection and IsList ], 0,
@@ -958,7 +958,7 @@ InstallMethod( Centralizer,
     return FullMatrixAlgebraCentralizer( LeftActingDomain( A ), S );
     end );
 
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for full (associative) matrix FLMLOR, and empty list",
     true,
     [ IsMatrixFLMLOR and IsFullMatrixModule, IsList and IsEmpty ], 0,

@@ -15,7 +15,6 @@ Revision.basic_gd :=
 
 #############################################################################
 ##
-
 #O  AbelianGroupCons( <filter>, <ints> )
 ##
 AbelianGroupCons := NewConstructor(
@@ -57,44 +56,6 @@ AlternatingGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#P  IsNaturalAlternatingGroup( <group> )
-##
-##  A   group is a  natural  alternating group if  it is  a permutation group
-##  acting as alternating group on its moved points.
-##
-IsNaturalAlternatingGroup := NewProperty(
-    "IsNaturalAlternatingGroup",
-    IsPermGroup );
-
-SetIsNaturalAlternatingGroup := Setter(IsNaturalAlternatingGroup);
-HasIsNaturalAlternatingGroup := Tester(IsNaturalAlternatingGroup);
-
-
-#############################################################################
-##
-#P  IsAlternatingGroup( <group> )
-##
-##  A group is a group isomorphic to a natural alterning group.
-##
-IsAlternatingGroup := NewProperty(
-    "IsAlternatingGroup",
-    IsGroup );
-
-SetIsAlternatingGroup := Setter(IsAlternatingGroup);
-HasIsAlternatingGroup := Tester(IsAlternatingGroup);
-
-
-#############################################################################
-##
-#M  IsAlternatingGroup( <nat-alt-grp> )
-##
-InstallTrueMethod(
-    IsAlternatingGroup,
-    IsNaturalAlternatingGroup );
-
-
-#############################################################################
-##
 #F  AlternatingGroup( <deg> ) . . . . . . . . . . . . . . . alternating group
 ##
 AlternatingGroup := function ( arg )
@@ -113,15 +74,6 @@ AlternatingGroup := function ( arg )
     fi;
 
 end;
-
-
-#############################################################################
-##
-#P  IsOneGeneratorGroup
-##
-IsOneGeneratorGroup := NewProperty(
-    "IsOneGeneratorGroup",
-    IsGroup );
 
 
 #############################################################################
@@ -325,44 +277,6 @@ SymmetricGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#P  IsNaturalSymmetricGroup( <group> )
-##
-##  A group is a natural symmetric group if it is  a permutation group acting
-##  as symmetric group on its moved points.
-##
-IsNaturalSymmetricGroup := NewProperty(
-    "IsNaturalSymmetricGroup",
-    IsPermGroup );
-
-SetIsNaturalSymmetricGroup := Setter(IsNaturalSymmetricGroup);
-HasIsNaturalSymmetricGroup := Tester(IsNaturalSymmetricGroup);
-
-
-#############################################################################
-##
-#P  IsSymmetricGroup( <group> )
-##
-##  A group is a group isomorphic to a natural symmetric group.
-##
-IsSymmetricGroup := NewProperty(
-    "IsSymmetricGroup",
-    IsGroup );
-
-SetIsSymmetricGroup := Setter(IsSymmetricGroup);
-HasIsSymmetricGroup := Tester(IsSymmetricGroup);
-
-
-#############################################################################
-##
-#M  IsSymmetricGroup( <nat-sym-grp> )
-##
-InstallTrueMethod(
-    IsSymmetricGroup,
-    IsNaturalSymmetricGroup );
-
-
-#############################################################################
-##
 #F  SymmetricGroup( <deg> ) . . . . . . . . . . . . . . . . . symmetric group
 ##
 SymmetricGroup := function ( arg )
@@ -385,6 +299,5 @@ end;
 
 #############################################################################
 ##
-
 #E  basic.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

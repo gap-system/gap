@@ -31,7 +31,8 @@ InstallMethod( FamiliesOfGeneralMappingsAndRanges,
     "method for a family (return empty list)",
     true,
     [ IsFamily ], 0,
-    Fam -> [] );
+#   Fam -> [] );
+    Fam -> WeakPointerObj( [] ) );
 
 
 #############################################################################
@@ -39,13 +40,24 @@ InstallMethod( FamiliesOfGeneralMappingsAndRanges,
 #F  GeneralMappingsFamily( <famsourceelms>, <famrangeelms> )
 ##
 GeneralMappingsFamily := function( FS, FR )
-    local info, i, Fam;
+
+    local info, i, len, entry, Fam;
 
     # Check whether this family was already constructed.
     info:= FamiliesOfGeneralMappingsAndRanges( FS );
-    for i in [ 2, 4 .. Length( info ) ] do
-      if IsIdentical( info[ i-1 ], FR ) then
-        return info[i];
+    len:= LengthWPObj( info );
+    if len mod 2 = 1 then
+      len:= len - 1;
+    fi;
+    for i in [ 2, 4 .. len ] do
+      if IsIdentical( ElmWPObj( info, i-1 ), FR ) then
+        entry:= ElmWPObj( info, i );
+        if entry <> fail then
+          return entry;
+        else
+          UnbindElmWPObj( info, i-1 );
+          break;
+        fi;
       fi;
     od;
 
@@ -55,7 +67,8 @@ GeneralMappingsFamily := function( FS, FR )
     SetFamilySource( Fam, FS );
 
     # Store the family.
-    Append( info, [ FR, Fam ] );
+    SetElmWPObj( info, len+1, FR  );
+    SetElmWPObj( info, len+2, Fam );
 
     # Return the family.
     return Fam;

@@ -11,23 +11,6 @@
 Revision.morpheus_gi:=
   "@(#)$Id$";
 
-DecomposedRationalClass := function( cl )
-    local   G,  C,  rep,  gal,  T,  cls,  e,  c;
-
-    G := ActingDomain( cl );
-    C := StabilizerOfExternalSet( cl );
-    rep := Representative( cl );
-    gal := GaloisGroup( cl );
-    T := RightTransversal( Parent( gal ), gal );
-    cls := [  ];
-    for e  in T  do
-        c := ConjugacyClass( G, rep ^ ( 1 ^ e ) );
-        SetStabilizerOfExternalSet( c, C );
-        Add( cls, c );
-    od;
-    return cls;
-end;
-
 #############################################################################
 ##
 #V  MORPHEUSELMS . . . .  limit up to which size to store element lists
@@ -498,10 +481,10 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
   # get standard generating system
   if not IsPermGroup(G) then
     p:=IsomorphismPermGroup(G);
-    gens:=IndependentGeneratorsAbelianPermGroup(Image(p));
+    gens:=IndependentGeneratorsOfAbelianGroup(Image(p));
     gens:=List(gens,i->PreImagesRepresentative(p,i));
   else
-    gens:=IndependentGeneratorsAbelianPermGroup(G);
+    gens:=IndependentGeneratorsOfAbelianGroup(G);
   fi;
 
   au:=[];
@@ -542,8 +525,8 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
   
       # multiplications
 
-      for k in List(GeneratorsOfGroup(PrimeResidueClassGroup(i^j[1])),
-                    i->1^i) do
+      for k in List( Flat( GeneratorsPrimeResidues(i^j[1])!.generators ),
+              Int )  do
 
 	Add(au,GroupHomomorphismByImages(G,G,Concatenation(nl,nj,j[2]),
 	    #1->1^k
@@ -602,19 +585,19 @@ local o,p,gens,hens;
   # get standard generating system
   if not IsPermGroup(G) then
     p:=IsomorphismPermGroup(G);
-    gens:=IndependentGeneratorsAbelianPermGroup(Image(p));
+    gens:=IndependentGeneratorsOfAbelianGroup(Image(p));
     gens:=List(gens,i->PreImagesRepresentative(p,i));
   else
-    gens:=IndependentGeneratorsAbelianPermGroup(G);
+    gens:=IndependentGeneratorsOfAbelianGroup(G);
   fi;
 
   # get standard generating system
   if not IsPermGroup(H) then
     p:=IsomorphismPermGroup(H);
-    hens:=IndependentGeneratorsAbelianPermGroup(Image(p));
+    hens:=IndependentGeneratorsOfAbelianGroup(Image(p));
     hens:=List(hens,i->PreImagesRepresentative(p,i));
   else
-    hens:=IndependentGeneratorsAbelianPermGroup(H);
+    hens:=IndependentGeneratorsOfAbelianGroup(H);
   fi;
 
   o:=List(gens,i->Order(i));
@@ -641,7 +624,11 @@ InstallMethod(AutomorphismGroup,"Group",true,[IsGroup],0,
 function(G)
 local a;
   if IsAbelian(G) then
-    return AutomorphismGroupAbelianGroup(G);
+    a:=AutomorphismGroupAbelianGroup(G);
+    if HasIsFinite(G) and IsFinite(G) then
+      SetIsFinite(a,true);
+    fi;
+    return a;
   fi;
   a:=Morphium(G,G,true);
   if IsList(a.aut) then
@@ -649,6 +636,9 @@ local a;
     a.inner:=SubgroupNC(a.aut,a.inner);
   fi;
   SetInnerAutomorphismsAutomorphismGroup(a.aut,a.inner);
+  if HasIsFinite(G) and IsFinite(G) then
+    SetIsFinite(a.aut,true);
+  fi;
   return a.aut;
 end);
 
@@ -699,7 +689,9 @@ end;
 ##
 #F  GQuotients(<F>,<G>)  . . . . . epimorphisms from F onto G up to conjugacy
 ##
-GQuotients := function (F,G)
+InstallMethod(GQuotients,"for groups which can compute element orders",true,
+  [IsGroup,IsGroup and IsFinite],1,
+function (F,G)
 local Fgens,	# generators of F
       cl,	# classes of G
       u,	# trial generating set's group
@@ -713,6 +705,12 @@ local Fgens,	# generators of F
       len,	# nr. gens tried
       fak,	# multiplication factor
       cnt;	# countdown for finish
+
+  # if we have a pontentially infinite fp group we cannot be clever
+  if IsSubgroupFpGroup(F) and not HasParent(F) and
+    (not HasSize(F) or Size(F)=infinity) then
+    TryNextMethod();
+  fi;
 
   Fgens:=GeneratorsOfGroup(F);
   if IsAbelian(G) and not IsAbelian(F) then
@@ -813,7 +811,108 @@ local Fgens,	# generators of F
 
   Info(InfoMorph,1,Length(h)," found -> ",Length(cl)," homs");
   return cl;
-end;
+end);
+
+InstallMethod(GQuotients,"without computing element orders",true,
+  [IsSubgroupFpGroup,IsGroup and IsFinite],1,
+function (F,G)
+local Fgens,	# generators of F
+      Fam,	# free elements family
+      rels,	# power relations
+      cl,	# classes of G
+      u,	# trial generating set's group
+      pimgs,	# possible images
+      val,	# its value
+      best,	# best generating set
+      bestval,	# its value
+      sz,	# |class|
+      i,	# loop
+      h,	# epis
+      len,	# nr. gens tried
+      cnt;	# countdown for finish
+
+  Fgens:=GeneratorsOfGroup(F);
+
+  if Length(Fgens)=0 then
+    if Size(G)>1 then
+      return [];
+    else
+      return [GroupHomomorphismByImages(F,G,[],[])];
+    fi;
+  fi;
+
+  if Size(G)=1 then
+    return [GroupHomomorphismByImages(F,G,Fgens,
+			  List(Fgens,i->One(G)))];
+  elif Length(Fgens)=1 then
+    Info(InfoMorph,1,"Cyclic group: only one quotient possible");
+    # a cyclic group has at most one quotient
+    if not IsCyclic(G) then
+      return [];
+    else
+      # get the cyclic gens
+      h:=First(AsList(G),i->Order(i)=Size(G));
+      # just map them
+      return [GroupHomomorphismByImages(F,G,Fgens,[h])];
+    fi;
+  fi;
+
+  cl:=ConjugacyClasses(G);
+
+  # search relators in only one generator
+  rels:=ListWithIdenticalEntries(Length(Fgens),false);
+  if IsSubgroupFpGroup(F) and IsWholeFamily(F) then
+    Fam:=ElementsFamily(FamilyObj(F));
+    for i in Fam!.relators do
+      u:=List([1..LengthWord(i)],j->Subword(i,j,j));
+      if Length(Set(u))=1 then
+        # found relator in only one generator
+	val:=Position(GeneratorsOfGroup(Fam!.freeGroup),u[1]);
+	if val=fail then
+	  val:=Position(GeneratorsOfGroup(Fam!.freeGroup),u[1]^-1);
+	  if val=fail then Error();fi;
+	fi;
+	u:=Length(u);
+	if rels[val]=false then
+	  rels[val]:=u;
+	else
+	  rels[val]:=Gcd(rels[val],u);
+	fi;
+      fi;
+    od;
+  fi;
+
+  # find potential images
+  pimgs:=[];
+
+  for i in [1..Length(Fgens)] do
+    if rels[i]<>false then
+      Info(InfoMorph,2,"generator order must divide ",rels[i]);
+      u:=Filtered(cl,j->IsInt(rels[i]/Order(Representative(j))));
+    else
+      Info(InfoMorph,2,"no restriction on generator order");
+      u:=ShallowCopy(cl);
+    fi;
+    Add(pimgs,u);
+  od;
+
+  val:=Product(pimgs,i->Sum(i,Size));
+  Info(InfoMorph,2,"Value: ",val);
+
+  h:=MorClassLoop(G,pimgs,rec(gens:=Fgens,to:=G,from:=F),13);
+  Info(InfoMorph,2,"Test kernels");
+  cl:=[];
+  u:=[];
+  for i in h do
+    if not KernelOfMultiplicativeGeneralMapping(i) in u then
+      Add(u,KernelOfMultiplicativeGeneralMapping(i));
+      Add(cl,i);
+    fi;
+  od;
+
+  Info(InfoMorph,1,Length(h)," found -> ",Length(cl)," homs");
+  return cl;
+end);
 
 #############################################################################
 ##

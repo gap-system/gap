@@ -584,9 +584,9 @@ end;
 
 #############################################################################
 ##
-#F  PcGroupPcgs( <pcgs>, <index>, <isNilp> ) . . . . . .  pcp group from pcgs
+#F  PcGroupPcgs( <pcgs>, <index>, <isPcgsCentral> )  . .  pcp group from pcgs
 ##
-PcGroupPcgs := function( pcgs, index, isNilp )
+PcGroupPcgs := function( pcgs, index, isPcgsCentral )
     local   m,  sc,  gens,  p,  start,  i,  i2,  n,  n2;
 
     m := Length( pcgs );
@@ -609,7 +609,7 @@ PcGroupPcgs := function( pcgs, index, isNilp )
     for i  in [ 1 .. Length( index ) - 1 ]  do
         for n  in [ index[ i ] .. index[ i + 1 ] - 1 ]  do
             for i2  in [ 1 .. i - 1 ]  do
-                if isNilp then
+                if isPcgsCentral then
                     start := index[ i + 1 ];
                     gens := GeneratorsOfRws( sc ){ [ start .. m ] };
                     for n2  in [ index[ i2 ] .. index[ i2 + 1 ] - 1 ]  do
@@ -774,7 +774,8 @@ InstallMethod( IsPcgsComputable, true, [ IsPermGroup ], 0, ReturnFalse );
 ##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . .  pcgs for perm groups
 ##
-InstallMethod( Pcgs, "Sims's method", true, [ IsPermGroup ], 0,
+InstallMethod( Pcgs, "Sims's method", true, [ IsPermGroup ],
+        100,  # to override method ``from independent generators''
     function( G )
     local   pcgs;
     
@@ -784,7 +785,7 @@ InstallMethod( Pcgs, "Sims's method", true, [ IsPermGroup ], 0,
 end );
 
 InstallMethod( Pcgs, "tail of perm pcgs", true,
-        [ IsMemberPcSeriesPermGroup ], 0,
+        [ IsMemberPcSeriesPermGroup ], 100,
         PcgsMemberPcSeriesPermGroup );
 
 #############################################################################
@@ -1029,7 +1030,7 @@ end );
 ##
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . .  for solvable factors
 ##
-InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
         [ IsPermGroup, IsPermGroup ], 0,
     function( G, N )
     local   map,  pcgs,  A;

@@ -348,7 +348,11 @@ InstallMethod( SiftedVector,
           vectors, # basis vectors of <B>
           i;       # loop over basis vectors
 
-    zero:= 0 * v[1];
+    if not IsSubset( LeftActingDomain( UnderlyingLeftModule( B ) ), v ) then
+      return fail;
+    fi;
+
+    zero:= Zero( v[1] );
 
     # Compute the coefficients of the 'B' vectors.
     v:= ShallowCopy( v );
@@ -477,10 +481,11 @@ InstallMethod( \in,
     function( v, V )
     if IsEmpty( v ) then
       return V!.vectordim = 0;
+    elif V!.vectordim <> Length( v ) then
+      return false;
     else
-      return     V!.vectordim = Length( v )
-             and V!.vectordim <
-                  PositionNot( SiftedVector( Basis( V ), v ), Zero( v[1] ) );
+      v:= SiftedVector( Basis( V ), v );
+      return v <> fail and V!.vectordim < PositionNot( v, Zero( v[1] ) );
     fi;
     end );
 
@@ -734,7 +739,7 @@ InstallMethod( IsZero,
 ##
 #M  AsLeftModule( <F>, <rows> ) . . . . . . . .  for division ring and matrix
 ##
-InstallOtherMethod( AsLeftModule,
+InstallMethod( AsLeftModule,
     "method for division ring and matrix",
     IsElmsColls,
     [ IsDivisionRing, IsMatrix ], 0,
@@ -743,7 +748,7 @@ InstallOtherMethod( AsLeftModule,
     local m;
 
     if not IsPrimePowerInt( Length( vectors ) ) then
-      Error( "<vectors> cannot be a vector space" );
+      return fail;
     elif ForAll( vectors, v -> IsSubset( F, v ) ) then
 #T other check!
 
@@ -753,7 +758,7 @@ InstallOtherMethod( AsLeftModule,
       if IsEmpty( m ) then
         m:= LeftModuleByGenerators( F, [], vectors[1] );
       else
-        m:= LeftModuleByGenerators( F, m, "basis" );
+        m:= FreeLeftModule( F, m, "basis" );
       fi;
 
     else
@@ -765,7 +770,7 @@ InstallOtherMethod( AsLeftModule,
 
     # Check that the space equals the list of vectors.
     if Size( m ) <> Length( vectors ) then
-      Error( "<vectors> is not an <F>-space" );
+      return fail;
     fi;
 
     # Return the space.
@@ -1597,104 +1602,78 @@ InstallMethod( ImmutableBasis,
 
 #############################################################################
 ##
-IsAffineSpace := NewRepresentation( "IsAffineSpace",
-    IsDomain and IsAttributeStoringRep, [ "space" ] );
-
-IsAffineSpaceEnumerator := NewRepresentation( "IsAffineSpaceEnumerator",
-    IsDomainEnumerator and IsAttributeStoringRep, [ "affineSpace" ] );
-
-IsProjectiveSpace := NewRepresentation( "IsProjectiveSpace",
-    IsDomain and IsAttributeStoringRep, [ "space" ] );
-
-IsProjectiveSpaceEnumerator := NewRepresentation
-    ( "IsProjectiveSpaceEnumerator",
-      IsDomainEnumerator and IsAttributeStoringRep, [ "projectiveSpace" ] );
-
-#############################################################################
+#F  ExtendedVectors( <V> )  . . . . . . . . . . . . . . . . . . . . . . . . .
 ##
-#F  AffineSpace( <space> )  . . . . .  constructor function for affine spaces
-##
-AffineSpace := function( space )
-    return Objectify( NewType( FamilyObj( space ), IsAffineSpace ),
-                   rec( space := space ) );
+IsExtendedVectors := NewRepresentation( "IsExtendedVectors",
+                                    IsEnumerator and IsAttributeStoringRep,
+                                    [ "spaceEnumerator", "one" ] );
+
+ExtendedVectors := function( V )
+    return Objectify( NewType( FamilyObj( V ),
+        IsExtendedVectors ), rec(
+                   spaceEnumerator := Enumerator( V ),
+                               one := One( LeftActingDomain( V ) ) ) );
 end;
-
-InstallMethod( PrintObj, true, [ IsAffineSpace ], 0,
-    function( obj )
-    Print( "AffineSpace( ", obj!.space, " )" );
-end );
-
-InstallMethod( Size, true, [ IsAffineSpace ], 0, obj -> Size( obj!.space ) );
-
-InstallMethod( Enumerator,"affine", true, [ IsAffineSpace ], 0,
-    function( aspace )
-    local   enum;
     
-    enum := Objectify( NewType( FamilyObj( aspace ),
-                    IsAffineSpaceEnumerator ), rec
-            ( spaceEnumerator := Enumerator( aspace!.space ) ) );
-    SetUnderlyingCollection( enum, aspace );
-    return enum;
+InstallMethod( PrintObj, true, [ IsExtendedVectors ], 0,
+    function( T )
+    Print( "A( ", UnderlyingCollection( T!.spaceEnumerator ), " )" );
 end );
 
-InstallMethod( \[\], true, [ IsAffineSpaceEnumerator, IsInt ], 0,
-    function( aspace, num )
-    return Concatenation( aspace!.spaceEnumerator[ num ],
-      [ One( LeftActingDomain( UnderlyingCollection( aspace )!.space ) ) ] );
+InstallMethod( Length, true, [ IsExtendedVectors ], 0,
+        T -> Length( T!.spaceEnumerator ) );
+
+InstallMethod( \[\], true, [ IsExtendedVectors, IsInt ], 0,
+    function( T, num )
+    return Concatenation( T!.spaceEnumerator[ num ], [ T!.one ] );
 end );
         
 InstallMethod( Position, true,
-        [ IsAffineSpaceEnumerator, IsObject, IsZeroCyc ], 0,
-    function( aspace, elm, zero )
-    return Position( aspace!.spaceEnumerator,
+        [ IsExtendedVectors, IsObject, IsZeroCyc ], 0,
+    function( T, elm, zero )
+    return Position( T!.spaceEnumerator,
                    elm{ [ 1 .. Length( elm ) - 1 ] } );
 end );
 
 #############################################################################
 ##
-#F  ProjectiveSpace( <space> )  .  constructor function for projective spaces
+#F  OneDimSubspacesTransversal( <V> ) . . . . . . . . . . . . . . . . . . . .
 ##
-ProjectiveSpace := function( space )
-    return Objectify( NewType( FamilyObj( space ), IsProjectiveSpace ),
-                   rec( space := space ) );
+IsOneDimSubspacesTransversal := NewRepresentation
+                                ( "IsOneDimSubspacesTransversal",
+                                  IsEnumerator and IsAttributeStoringRep,
+                                  [ "enumeratorField", "dimension", "one" ] );
+
+OneDimSubspacesTransversal := function( V )
+    return Objectify( NewType( FamilyObj( V ),
+        IsOneDimSubspacesTransversal ), rec(
+                   enumeratorField := Enumerator( LeftActingDomain( V ) ),
+                         dimension := Dimension( V ),
+                               one := One( LeftActingDomain( V ) ) ) );
 end;
-    
-InstallMethod( PrintObj, true, [ IsProjectiveSpace ], 0,
-    function( obj )
-    Print( "ProjectiveSpace( ", obj!.space, " )" );
+
+InstallMethod( PrintObj, true, [ IsOneDimSubspacesTransversal ], 0,
+    function( T )
+    Print( "P( ", Length( T!.enumeratorField ), "^", T!.dimension, " )" );
 end );
 
-InstallMethod( Size, true, [ IsProjectiveSpace ], 0,
-    function( obj )
+InstallMethod( Length, true, [ IsOneDimSubspacesTransversal ], 0,
+    function( T )
     local  q,  d;
     
-    q := Size( LeftActingDomain( obj!.space ) );
-    d := Dimension( obj!.space );
+    q := Length( T!.enumeratorField );
+    d := T!.dimension;
     return ( q ^ d - 1 ) / ( q - 1 );
 end );
 
-InstallMethod( Enumerator,"projective", true, [ IsProjectiveSpace ], 0,
-    function( pspace )
-    local   enum;
+InstallMethod( \[\], true, [ IsOneDimSubspacesTransversal, IsInt ], 0,
+    function( T, num )
+    local   f,  v,  q,  n,  i,  l,  L;
     
-    enum := Objectify( NewType( FamilyObj( pspace ),
-        IsProjectiveSpaceEnumerator ), rec( enumeratorField :=
-                    Enumerator( LeftActingDomain( pspace!.space ) ) ) );
-    SetUnderlyingCollection( enum, pspace );
-    return enum;
-end );
-
-InstallMethod( \[\], true, [ IsProjectiveSpaceEnumerator, IsInt ], 0,
-    function( pspace, num )
-    local   F,  sp,  f,  v,  zero,  q,  n,  i,  l,  L;
-    
-    f := pspace!.enumeratorField;
-    pspace := UnderlyingCollection( pspace );
-    sp := pspace!.space;
-    F := LeftActingDomain( sp );
-    q := Size( F );
-    n := Dimension( sp );
-    v := ListWithIdenticalEntries( n, Zero( F ) );
+    f := T!.enumeratorField;
+    q := Length( f );
+    n := T!.dimension;
+    v := ListWithIdenticalEntries( n, Zero( T!.one ) );
     num := num - 1;
     
     # Find the number of entries after the leading 1.
@@ -1705,7 +1684,7 @@ InstallMethod( \[\], true, [ IsProjectiveSpaceEnumerator, IsInt ], 0,
         L := L * q + 1;
     od;
     num := num - ( L - 1 ) / q;
-    v[ n - l ] := One( F );
+    v[ n - l ] := T!.one;
     for i  in [ n - l + 1 .. n ]  do
         v[ i ] := f[ num mod q + 1 ];
         num := QuoInt( num, q );
@@ -1714,17 +1693,14 @@ InstallMethod( \[\], true, [ IsProjectiveSpaceEnumerator, IsInt ], 0,
 end );
         
 InstallMethod( PositionCanonical, true,
-        [ IsProjectiveSpaceEnumerator, IsObject ], 0,
-    function( pspace, elm )
-    local   F,  sp,  f,  zero,  q,  n,  l,  num,  val,  i;
+        [ IsOneDimSubspacesTransversal, IsObject ], 0,
+    function( T, elm )
+    local   f,  zero,  q,  n,  l,  num,  val,  i;
     
-    f := pspace!.enumeratorField;
-    pspace := UnderlyingCollection( pspace );
-    sp := pspace!.space;
-    F := LeftActingDomain( sp );
-    zero := Zero( F );
-    q := Size( F );
-    n := Dimension( sp );
+    f := T!.enumeratorField;
+    zero := Zero( T!.one );
+    q := Length( f );
+    n := T!.dimension;
     l := 1;
     
     # Find the first entry different from zero.
@@ -1752,7 +1728,7 @@ end );
 OnLines := function( vec, g )
     local c;
     vec:= vec * g;
-    c:= DepthVector( vec );
+    c:= PositionNot( vec, Zero( vec[1] ) );
     if c <= Length( vec ) then
       vec:= vec / vec[c];
     fi;

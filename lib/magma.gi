@@ -167,21 +167,10 @@ InstallMethod( IsCommutative,
 
 #############################################################################
 ##
-#M  CentralizerInParent( <M> )
-##
-InstallMethod( CentralizerInParent,
-    "method for a magma with parent",
-    true,
-    [ IsMagma and HasParent ], 0,
-    M -> Centralizer( Parent( M ), M ) );
-
-
-#############################################################################
-##
 #M  Centralizer( <M>, <elm> ) . . . . .  centralizer of an element in a magma
 #M  Centralizer( <M>, <N> ) . . . . . . . . centralizer of a magma in a magma
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for a magma, and a mult. element",
     IsCollsElms,
     [ IsMagma, IsMultiplicativeElement ], 0,
@@ -189,7 +178,7 @@ InstallMethod( Centralizer,
     return Filtered( AsList( M ), x -> x * obj = obj * x );
     end );
 
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for a commutative magma, and a mult. element",
     IsCollsElms,
     [ IsMagma and IsCommutative, IsMultiplicativeElement ], SUM_FLAGS,
@@ -201,7 +190,7 @@ InstallMethod( Centralizer,
     fi;
     end );
 
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for two magmas",
     IsIdentical,
     [ IsMagma, IsMagma ], 0,
@@ -209,7 +198,7 @@ InstallMethod( Centralizer,
     return Filtered( M, x -> ForAll( N, y -> x * y = y * x ) );
     end );
 
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "method for two magmas, the first being commutative",
     IsIdentical,
     [ IsMagma and IsCommutative, IsMagma ], SUM_FLAGS,
@@ -814,6 +803,106 @@ InstallMethod( EnumeratorSorted,
 
 #############################################################################
 ##
+#F  ClosureMagmaDefault( <M>, <elm> ) . . . . . closure of magma with element
+##
+ClosureMagmaDefault := function( M, elm )
+
+    local   C,          # closure '\< <M>, <obj> \>', result
+            gens,       # generators of <M>
+            gen,        # generator of <M> or <C>
+            Celements,  # intermediate list of elements
+            len;        # current number of elements
+
+    gens:= GeneratorsOfMagma( M );
+
+    # try to avoid adding an element to a magma that already contains it
+    if   elm in gens
+      or ( HasAsListSorted( M ) and elm in AsListSorted( M ) )
+    then
+        return M;
+    fi;
+
+    # make the closure magma
+    gens:= Concatenation( gens, [ elm ] );
+    C:= MagmaByGenerators( gens );
+    UseSubsetRelation( C, M );
+    
+    # if the elements of <M> are known then extend this list
+    # (multiply each element from the left and right with the new
+    # generator, and then multiply with all elements until the
+    # list becomes stable)
+    if HasAsListSorted( M ) then
+
+        Celements := ShallowCopy( AsListSorted( M ) );
+        AddSet( Celements, elm );
+        UniteSet( Celements, Celements * elm );
+        UniteSet( Celements, elm * Celements );
+        repeat
+            len:= Length( Celements );
+            for gen in Celements do
+                UniteSet( Celements, Celements * gen );
+                UniteSet( Celements, gen * Celements );
+            od;
+        until len = Length( Celements );
+
+        SetAsListSorted( C, AsListSorted( Celements ) );
+        SetIsFinite( C, true );
+        SetSize( C, Length( Celements ) );
+
+    fi;
+
+    # return the closure
+    return C;
+end;
+
+
+#############################################################################
+##
+#M  Enumerator( <M> ) . . . . . . . . . . . .  set of the elements of a magma
+#M  EnumeratorSorted( <M> ) . . . . . . . . .  set of the elements of a magma
+##
+EnumeratorOfMagma := function( M )
+
+    local   gens,       # magma generators of <M>
+            H,          # submagma of the first generators of <M>
+            gen;        # generator of <M>
+
+    # handle the case of an empty magma
+    gens:= GeneratorsOfMagma( M );
+    if IsEmpty( gens ) then
+      return [];
+    fi;
+
+    # start with the empty magma and its element list
+    H:= Submagma( M, [] );
+    SetAsListSorted( H, Immutable( [ ] ) );
+
+    # Add the generators one after the other.
+    # We use a function that maintains the elements list for the closure.
+    for gen in gens do
+      H:= ClosureMagmaDefault( H, gen );
+    od;
+
+    # return the list of elements
+    Assert( 2, HasAsListSorted( H ) );
+    return AsListSorted( H );
+end;
+
+InstallMethod( Enumerator,
+    "generic method for a magma",
+    true,
+    [ IsMagma and IsAttributeStoringRep ], 0,
+    EnumeratorOfMagma );
+
+InstallMethod( EnumeratorSorted,
+    "generic method for a magma",
+    true,
+    [ IsMagma and IsAttributeStoringRep ], 0,
+    EnumeratorOfMagma );
+
+
+#############################################################################
+##
 #M  IsCentral( <M>, <N> ) . . . . . . . . . . . . . . . . . .  for two magmas
 ##
 InstallMethod( IsCentral,
@@ -885,7 +974,60 @@ InstallMethod( IsSubset,
     return IsSubset( M, GeneratorsOfMagmaWithInverses( N ) );
     end );
 
-InstallInParentMethod( CentralizerInParent, IsMagma, Centralizer );
+
+#############################################################################
+##
+#M  AsMagma( <D> ) . . . . . . . . . . . . . . .  domain <D>, viewed as magma
+##
+InstallMethod( AsMagma, true, [ IsMagma ], 100, IdFunc );
+
+InstallMethod( AsMagma,
+    "generic method for collections",
+    true,
+    [ IsCollection ], 0,
+    function( D )
+    local   M,  L;
+
+    D := AsListSorted( D );
+    L := ShallowCopy( D );
+    M := Submagma( MagmaByGenerators( D ), [] );
+    SubtractSet( L, AsListSorted( M ) );
+    while not IsEmpty(L)  do
+        M := ClosureMagmaDefault( M, L[1] );
+        SubtractSet( L, AsListSorted( M ) );
+    od;
+    if Length( AsListSorted( M ) ) <> Length( D )  then
+        return fail;
+    fi;
+    M := MagmaByGenerators( GeneratorsOfMagma( M ) );
+    SetAsListSorted( M, D );
+    SetIsFinite( M, true );
+    SetSize( M, Length( D ) );
+
+    # return the magma
+    return M;
+    end );
+
+
+#############################################################################
+##
+#M  AsSubmagma( <G>, <U> )
+##
+InstallMethod( AsSubmagma,
+    "generic method for magmas",
+    IsIdentical,
+    [ IsMagma, IsMagma ], 0,
+    function( G, U )
+    local S;
+    if not IsSubset( G, U ) then
+      return fail;
+    fi;
+    S:= SubmagmaNC( G, GeneratorsOfMagma( U ) );
+    UseIsomorphismRelation( U, S );
+    UseSubsetRelation( U, S );
+    return S;
+    end );
+
 
 #############################################################################
 ##

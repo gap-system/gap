@@ -269,17 +269,23 @@ InstallMethod( ImagesSet,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ], 0,
     function( map, elms )
-    local genimages;
+    local genimages,  img;
     genimages:= List( GeneratorsOfMagmaWithInverses( elms ),
                       gen -> ImagesRepresentative( map, gen ) );
     if fail in genimages then
       TryNextMethod();
     fi;
 
-    return SubgroupNC( Range( map ), Concatenation(
+    img := SubgroupNC( Range( map ), Concatenation(
                GeneratorsOfMagmaWithInverses( 
                    CoKernelOfMultiplicativeGeneralMapping( map ) ),
                genimages ) );
+    if     HasSize( CoKernelOfMultiplicativeGeneralMapping( map ) )
+       and HasSize( elms )  then
+        SetSize( img, Size( CoKernelOfMultiplicativeGeneralMapping( map ) )
+                * Size( elms ) );
+    fi;
+    return img;
     end );
 
 InstallMethod( ImagesSet,
@@ -343,17 +349,23 @@ InstallMethod( PreImagesSet,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ], 0,
     function( map, elms )
-    local genpreimages;
+    local genpreimages,  pre;
     genpreimages:= List( GeneratorsOfMagmaWithInverses( elms ),
                       gen -> PreImagesRepresentative( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
 
-    return SubgroupNC( Source( map ), Concatenation(
+    pre := SubgroupNC( Source( map ), Concatenation(
                GeneratorsOfMagmaWithInverses( 
                    KernelOfMultiplicativeGeneralMapping( map ) ),
                genpreimages ) );
+    if     HasSize( KernelOfMultiplicativeGeneralMapping( map ) )
+       and HasSize( elms )  then
+        SetSize( pre, Size( KernelOfMultiplicativeGeneralMapping( map ) )
+                * Size( elms ) );
+    fi;
+    return pre;
     end );
 
 InstallMethod( PreImagesSet,

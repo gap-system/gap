@@ -3,7 +3,7 @@
 #W  id69.0                 GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id69_0 :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 690 ] := 
 rec(

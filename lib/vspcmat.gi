@@ -503,12 +503,18 @@ InstallMethod( SiftedVector,
     [ IsBasis and IsSemiEchelonBasisOfGaussianMatrixSpaceRep, IsMatrix ], 0,
     function( B, v )
 
-    local zero,     # zero of the field
+    local F,        # field of scalars
+          zero,     # zero of the field
           m,        # number of rows
           vectors,  # basis vectors of 'B'
           i, j, k,  # loop over rows and columns
           scalar,   # one field element
           bvec;     # one basis vector
+
+    F:= LeftActingDomain( UnderlyingLeftModule( B ) );
+    if not ForAll( v, row -> IsSubset( F, row ) ) then
+      return fail;
+    fi;
 
     v:= List( v, ShallowCopy );
     zero:= Zero( v[1][1] );
@@ -655,7 +661,8 @@ InstallMethod( \in,
     else
       zero:= Zero( mat[1][1] );
       ncols:= V!.vectordim[2];
-      return ForAll( SiftedVector( BasisOfDomain( V ), mat ),
+      mat:= SiftedVector( BasisOfDomain( V ), mat );
+      return mat <> fail and ForAll( mat,
                      row -> ncols < PositionNot( row, zero ) );
     fi;
     end );
@@ -1172,7 +1179,7 @@ InstallMethod( MutableBasisByGenerators,
                               and IsMutableBasisOfGaussianMatrixSpaceRep ),
                      rec(
                           basisVectors     := ShallowCopy( newmats.vectors ),
-                          heads            := ShallowCopy( newmats.heads ),
+                          heads            := newmats.heads,
                           zero             := Zero( mats[1] ),
                           leftActingDomain := R
                         ) );
@@ -1220,13 +1227,13 @@ InstallOtherMethod( MutableBasisByGenerators,
 
         B!.basisVectors:= [];
         z:= ListWithIdenticalEntries( Length( zero[1] ), 0 );
-        B!.heads:= List( zero, i -> z );
+        B!.heads:= List( zero, i -> ShallowCopy( z ) );
 
       else
 
         mats:= SemiEchelonMats( mats );
         B!.basisVectors:= ShallowCopy( mats.vectors );
-        B!.heads:= ShallowCopy( mats.heads );
+        B!.heads:= mats.heads;
 
       fi;
 

@@ -61,13 +61,45 @@ InstallOtherMethod( LeftModuleByGenerators,
 
 #############################################################################
 ##
+#M  AsLeftModule( <R>, <D> )  . . . . . domain <D>, viewed as left <R>-module
+##
+InstallMethod( AsLeftModule,
+    "generic method for a ring and a collection",
+    true,
+    [ IsRing, IsCollection ], 0,
+    function ( R, D )
+    local   S,  L;
+
+    D := AsListSorted( D );
+    L := ShallowCopy( D );
+    S := TrivialSubmodule( LeftModuleByGenerators( R, D ) );
+    SubtractSet( L, AsListSorted( S ) );
+    while not IsEmpty(L)  do
+        S := ClosureLeftModule( S, L[1] );
+        SubtractSet( L, AsListSorted( S ) );
+    od;
+    if Length( AsListSorted( S ) ) <> Length( D )  then
+        return fail;
+    fi;
+    S := LeftModuleByGenerators( R, GeneratorsOfLeftModule( S ) );
+    SetAsListSorted( S, D );
+    SetIsFinite( S, true );
+    SetSize( S, Length( D ) );
+
+    # return the left module
+    return S;
+    end );
+
+
+#############################################################################
+##
 #M  AsLeftModule( <R>, <M> )  . . . . . . . . . . .  for ring and left module
 ##
-##  View the collection <M> as a left module over the ring <R>.
+##  View the left module <M> as a left module over the ring <R>.
 ##
-#T InstallMethod( AsLeftModule, true, [ IsRing, IsCollection ], 0,
-
-InstallMethod( AsLeftModule, true, [ IsRing, IsLeftModule ], 0,
+InstallMethod( AsLeftModule,
+    true,
+    [ IsRing, IsLeftModule ], 0,
     function( R, M )
 
     local W,        # the space, result
@@ -128,8 +160,8 @@ InstallMethod( AsLeftModule, true, [ IsRing, IsLeftModule ], 0,
       # View 'M' first as module over the intersection of rings,
       # and then over the desired ring.
       return AsLeftModule( R,
-                 AsLeftModule( Intersection( R,
-                     LeftActingDomain( M ) ), M ) );
+                 AsLeftModule( Intersection2( R, LeftActingDomain( M ) ),
+                               M ) );
 
     fi;
 

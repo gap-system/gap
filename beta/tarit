@@ -1,0 +1,35 @@
+#!/bin/sh
+#############################################################################
+##
+#W  tarit							 Frank Celler
+##
+##  this shell script tars up the next version of the beta release
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# clean the old files
+cd ${TARDIR}
+[ -d OLD ] || mkdir OLD
+mv [a-z]*.tar.gz OLD
+
+
+# go into the source directoy and create the tar files
+echo "$0: taring version $VERSION of $DATE"
+
+(cd $BETAROOT;
+tar -c -z -f ${TARDIR}/gap4b${VERSION}.tar.gz --exclude CVS \
+    --exclude .cvsignore ${BETANAME}/src ${BETANAME}/lib ${BETANAME}/grp \
+    ${BETANAME}/small ${BETANAME}/trans ${BETANAME}/prim ${BETANAME}/tbl \
+    ${BETANAME}/tst ${BETANAME}/bin/gap.sh ${BETANAME}/etc;
+tar -c -z -f ${TARDIR}/doc4b${VERSION}.tar.gz --exclude CVS \
+    --exclude .cvsignore ${BETANAME}/doc
+)
+
+exit 0

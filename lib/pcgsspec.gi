@@ -80,12 +80,14 @@ end;
 #F  PcgsSystemWithWf( <pcgs> <wf> )
 ##
 PcgsSystemWithWf := function( pcgs, wf )
-    local   m,  list,  weights,  work,  nilp,  h,  i,  j,  g,  S,  
+    local   ppcgs,  m,  list,  weights,  work,  nilp,  h,  i,  j,  g,  S,  
             pos,  s,  wt,  newpcgs,  wset,  layers,  first;
+
+    ppcgs := PrimePowerPcSequence( pcgs );
    
     # initialise
     m    := Length( pcgs );
-    list := PrimePowerPcSequence( pcgs );
+    list := ShallowCopy( ppcgs );
     weights := List( list, x -> wf.one( pcgs, x ) );
     work    := List( [1..m], x -> List( [1..x], y -> true ) );
 
@@ -142,8 +144,14 @@ PcgsSystemWithWf := function( pcgs, wf )
     # sort
     SortParallel( weights, list );
 
-    # compute pcgs
-    newpcgs := PcgsByPcSequenceNC( FamilyObj(OneOfPcgs(pcgs)), list );
+    # compute pcgs - be careful!
+    if ppcgs = AsList( pcgs ) and 
+       ForAll( [1..m], x -> DepthOfPcElement(pcgs, list[x]) = x ) 
+    then
+        newpcgs := pcgs;
+    else
+        newpcgs := PcgsByPcSequenceNC( FamilyObj(OneOfPcgs(pcgs)), list );
+    fi;
 
     # set up layers
     wset := Set( weights );
@@ -158,18 +166,10 @@ PcgsSystemWithWf := function( pcgs, wf )
     od;
     Add( first, m+1 );
 
-    # check the induced case
-    if ForAll( [1..m], x -> DepthOfPcElement(pcgs, list[x]) = x ) then
-        return rec( pcgs    := pcgs,
-                    weights := weights, 
-                    layers  := layers,
-                    first   := first );
-    else
-        return rec( pcgs    := newpcgs, 
-                    weights := weights, 
-                    layers  := layers,
-                    first   := first );
-    fi;
+    return rec( pcgs    := newpcgs, 
+                weights := weights, 
+                layers  := layers,
+                first   := first );
 end;
 
 
@@ -329,7 +329,7 @@ PcgsSystemWithHallSystem := function( pcgssys )
     m   := Length( pcgssys.pcgs );
     F   := FamilyObj(OneOfPcgs(pcgssys.pcgs));
 
-    # find starting index
+    # find starting index 
     n := m;
     while 1 <= n and pcgssys.weights[n][1] = pcgssys.weights[m][1] do
          n := n - 1;
@@ -558,6 +558,13 @@ end;
 
 #M  SpecialPcgs( <pcgs> )
 ##
+InstallMethod( SpecialPcgs,
+    "method for special pcgs",
+    true,
+    [ IsSpecialPcgs ],
+    0, pcgs -> pcgs );
+
+
 InstallMethod( SpecialPcgs,
     "generic method for pcgs",
     true,

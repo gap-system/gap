@@ -1,0 +1,25 @@
+#!/bin/sh
+#############################################################################
+##
+#W  texdoc						     Alexander Hulpke
+##
+##  this shell script TeXs the next version of the beta release
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# go into the source directoy and compile
+cd ${BETAROOT}/${BETANAME}/doc
+echo "TeXing documentation"
+(cd ext; tex manual; tex manual; tex manual; dvips manual)
+(cd prg; tex manual; tex manual; tex manual; dvips manual)
+(cd ref; tex manual; tex manual; tex manual; dvips manual)
+(cd tut; tex manual; tex manual; tex manual; dvips manual)
+
+exit 0

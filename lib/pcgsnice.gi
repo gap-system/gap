@@ -5,6 +5,11 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.3  1997/10/14 10:36:09  ahulpke
+#H  Moved the generic method for 'Pcgs' (which got too high due to the Value for
+#H  'IsFinite') down in the hierarchy. Added some installation messages. Told
+#H  automorphism groups to be finite. AH
+#H
 #H  Revision 4.2  1997/04/09 07:05:18  htheisse
 #H  added flag `IsPrimeOrdersPcgs' for pcgs by nice monomorphisms
 #H
@@ -19,7 +24,8 @@ Revision.pcgsnice_gi :=
 ##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . . via nice monomorphism
 ##
-InstallMethod( Pcgs, true, [ IsGroup and IsHandledByNiceMonomorphism ], 0,
+InstallMethod( Pcgs, "via niceomorphism", true, 
+  [ IsGroup and IsHandledByNiceMonomorphism ], 0,
     function( G )
     local   nice,  npcgs,  pcgs;
     
@@ -93,7 +99,7 @@ end );
 ##
 #M  ExponentOfPcElement( <pcgs>, <g>, <pos> ) . . . . . via nice monomorphism
 ##
-InstallMethod( ExponentOfPcElement, true,
+InstallMethod( ExponentOfPcElement, "via nicoemorphism", true,
         [ IsPcgs and IsHandledByNiceMonomorphism,
           IsMultiplicativeElementWithInverse,
           IsPosRat and IsInt ], 0,

@@ -109,6 +109,19 @@ FreeGroupOfFpGroup := NewOperationArgs( "FreeGroupOfFpGroup" );
 
 ############################################################################
 ##
+#F  IsFromFpGroupStdGensGeneralMappingByImages . . . Mapping from Fp group,
+##                                    just mapping the standard generators
+##
+IsFromFpGroupStdGensGeneralMappingByImages := NewRepresentation
+    ( "IsFromFpGroupStdGensGeneralMappingByImages",
+      IsGroupGeneralMappingByImages,
+      [ "generators", "genimages" ] );
+IsFromFpGroupStdGensHomomorphismByImages :=
+  IsFromFpGroupStdGensGeneralMappingByImages and IsMapping;
+
+
+############################################################################
+##
 #F  IsToFpGroupGeneralMappingByImages
 ##
 IsToFpGroupGeneralMappingByImages := NewRepresentation
@@ -153,6 +166,16 @@ RelatorRepresentatives := NewOperationArgs("RelatorRepresentatives");
 #F  RelsSortedByStartGen
 ##
 RelsSortedByStartGen := NewOperationArgs("RelsSortedByStartGen");
+
+
+#############################################################################
+##
+#F  SubgroupGeneratorsCosetTable(<freegens>,<fprels>,<table>)
+##     determinate subgroup generators form fee generators, relators and
+##     coset table. It returns elements of the free group!
+##
+SubgroupGeneratorsCosetTable := NewOperationArgs(
+  "SubgroupGeneratorsCosetTable" );
 
 
 #############################################################################

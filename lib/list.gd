@@ -15,7 +15,6 @@ Revision.list_gd :=
 
 #############################################################################
 ##
-
 #C  IsList( <obj> ) . . . . . . . . . . . . . . . test if an object is a list
 ##
 IsList := NewCategoryKernel( "IsList",
@@ -93,9 +92,9 @@ IsBound\[\] := NewOperationKernel(
 
 #############################################################################
 ##
-#O  ELM0_LIST( <list>, <pos> )
+#O  Elm0List( <list>, <pos> )
 ##
-ELM0_LIST := NewOperationKernel(
+Elm0List := NewOperationKernel(
     "ELM0_LIST",
     [ IsList, IS_INT ],
     ELM0_LIST );
@@ -372,6 +371,30 @@ Collected :=
     NewOperation( "Collected",
         [ IsList ] );
 
+
+#############################################################################
+##
+#O  Unique(<list>)  . . . . . . . . . . . .duplicate free list of list elements
+#O  DuplicateFreeList(<list>)
+##
+##  `Unique' returns a new (mutable) list whose entries are the elements
+##  of <list> with
+##  duplicates removed. `Unique' only uses the `=' comparison and will not
+##  sort the result. Therefore it can be used even if the objects in the
+##  list are not in the same family. `DuplicateFreeList' is an alias for
+##  `Unique'
+##
+DuplicateFreeList := NewOperation( "DuplicateFreeList", [ IsList ] );
+Unique := DuplicateFreeList;
+
+#############################################################################
+##
+#A  AsDuplicateFreeList(<list>)   . . . .duplicate free list of list elements
+##
+##  returns the same result as `DuplicateFreeList' ("DuplicateFreeList"),
+##  but as an attribute returns an immutable list.
+##
+AsDuplicateFreeList := NewAttribute( "AsDuplicateFreeList", IsList );
 
 #############################################################################
 ##

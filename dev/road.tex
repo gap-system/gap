@@ -1,0 +1,261 @@
+\documentclass[12pt]{article}
+\usepackage{a4wide}
+\newcommand{\GAP}{\textsf{GAP}}
+\newcommand{\bd}{\begin{description}}
+\newcommand{\ed}{\end{description}}
+\parindent=0pt
+\parskip=\medskipamount
+\title{The Road to \GAP\ 4.1 (and points beyond)}
+\author{Steve Linton}
+\begin{document}
+\maketitle
+\section{Introduction}
+
+The purpose of this document is to identify all the remaining tasks
+which must be performed before we can release \GAP\ version 4.1, so
+that we can allocate, schedule and monitor them. It also includes some
+ideas about developments not essential to 4.1, but which might be
+nice, or which we might consider for release in
+subsequent versions.
+
+At this stage I am not considering tasks at the level of detail of
+``fix bug x'' or the tasks involved in the actual release.
+
+This document is based on discussions with Werner Nickel, Alexander
+Hulpke, Frank Celler, Thomas Breuer, Volkmar Felsch and Joachim
+Neub\"user in September 1997.
+
+\section{Kernel tasks required for 4.1}
+
+\bd
+\item[Save/load workspace] partly implemented (SL), must be finished by 4.1 (SL to do).
+\item[Fast vecffe arithmetic] in hand now (FC/TB) as part of a general overhaul of lists
+in the kernel
+\item[DOS and Mac ports] Must be done. Some code exists, but
+interaction with streams etc will need work. Problems with some PC compilers.
+\ed
+
+\section{Library Packaging}
+
+The library is now provisionally divided into packages:
+\bd
+\item[Essentials] Core things needed to keep \GAP\ running
+\item[Algebra bootstrap] Definitions and naive methods for basic
+algebraic domains
+\item[Algebras] Lie, associative and generic algebras, includes ELIAS
+\item[Abstract Groups] General methods, includes Morpheus
+\item[PermGroups] Includes things like external sets
+\item[FpGroups] Includes Tietze
+\item[PcGroups] Groups using a PCGS
+\item[Pcgs] computing and manipulating a Pcgs -- probably includes pQ
+and nq
+\item[Rewriting Systems] The boundaries around here aren't quite
+settled
+\item[Matrix Groups] 
+\item[Character Tables basic] The electronic ATLAS
+\item[Character Tables advanced] Interactive Character Table
+Construction
+\item[Finite Fields] Some things are in ``essentials''
+\item[Number Theory] 
+\item[Mappings]
+\item[Vectorspaces]
+\item[Polynomials]
+\item[Tables of Marks]
+\item[Compatibility]
+\item[Data libraries] possibly one package per library
+\ed
+
+At this stage this is a purely administrative division. 
+
+Someone should be assigned to oversee the maintenance of each package,
+even in the run-up to 4.1, and surely afterwards. Many packages should
+not need more than maintenance before 4.1.
+
+\section{Library Tasks Required for 4.1}
+
+\bd
+\item[Quotient Algorithms] At a minimum, we need effective abelian
+quotient and p-quotient code. As a last resort, a port of the
+\texttt{anupq} package would do instead of a \GAP\ pq. At least an
+architecture for, and preferably implementations of, nq and soluble
+quotient would be nice.
+\item[Tables of marks] Thomas Merkwitz is doing something here. As
+with character tables, there is code to access and handle completed
+tables, and there is code for interactively constructing them. The
+latter is less urgent.
+\item[Character Tables] The remaining work here is in hand. Thomas
+Breuer will do it.
+\item[2 and 3 group libraries] Frank Celler agreed to do this. At
+least some of this is incorporated in Bettina's small groups library.
+\item[Crystallographic Groups library] 
+\item[Transitive Groups degrees 24 --31] If Alexander is happy to
+release them
+\item[Factorization over number fields] Alexander is doing
+\item[Character degrees code for solvable groups] 
+\item[Clifford matrices code] does this fall into the ``Character
+tables'' work above
+\item[Galois group determination] Alexander has plans for this
+\item[General FP Group algorithms] Volkmar Felsch is working on
+this. There is a lot to do, because of new concepts.
+He will identify a suitable stopping point for 4.1.
+\ed
+
+\section{Share Packages}
+
+Not, obviously entirely within our control. Clearly, we would like all
+share packages upgraded to \GAP\ 4, but some are more important,
+because they are central to some people's use of \GAP. In many cases,
+functionality could be improved using \GAP\ 4 features. Maintainers
+should probably be encouraged to port first and then improve in most
+cases, in the interest of getting a \GAP\ 4 version out as soon as possible.
+
+A list of \GAP\ 3 share packages, and what I know about their status:
+
+\bd
+\item[anupq] High priority. Single external program, so should be easy.
+\item[anusq] Single external program, so should be easy.
+\item[autag] Bettina is working in this area. Code exists in the \GAP
+4 library, but may need final installation and tidying up.
+\item[chevie] Medium Priority. Jean Michel and Frank L\"ubeck are certainly interested
+in porting this
+\item[cohomolo] 
+\item[cryst] 
+\item[dce]   
+\item[gliss] In hand, I think.
+\item[grape] High Priority. Len plans to do it after Christmas. Not
+hard unless it is extended
+\item[grim] Not hard
+\item[guava] Medium Priority -- could be a problem (no maintainers)
+\item[kbmag] Medium Priority -- shouldn't be a problem
+\item[matrix] High Priority
+\item[meataxe] Medium Priority unless kernel vecffe arithmetic is fast
+enough. TB estimates it would take him 1 week
+\item[monoid] Medium Priority (perhaps even absorb into the library)
+\item[nq]     Medium Priority unless we have a \GAP\ nq by 4.1.
+\item[pcqa]   Medium Priority
+\item[sisyphos]
+\item[specht]
+\item[ve]     Medium Priority
+\item[xgap]   See below
+\item[xmod]   In hand
+\ed
+
+There are a couple of rumored forthcoming packages, such as the LBFM
+sq.
+
+\subsection{xgap} 
+
+This breaks into several pieces. The core  xgap functionality and the
+low-level \GAP\ functions to access it should be easily ported, and
+should be done before \GAP\ 4.1. This may, in fact, already work.
+
+There are various applications using xgap, to display and explore
+subgroup lattices, tables of marks, submodule lattices and other
+things. These need more thought: (a) because they may need to change
+to match new concepts in the library and (b) because they grew up
+rather haphazardly and should be organized better. This is not a key
+priority for \GAP\ 4.1.
+
+A Windows version exists, which worked under Windows NT 3.5, but has
+stopped working under 4.0. Again not a 4.1 priority, but it must be
+sorted eventually.
+
+
+\section{Documentation}
+
+There are four books in the current \GAP\ 4 manual. One or two books
+of substantial worked examples may be added  (not a 4.1 priority).
+
+\bd
+\item[Users Tutorial] Some additional material is really needed here:
+naming conventions \texttt{As} and \texttt{Is}, \texttt{Of} and
+\texttt{By}, for example; some aspects of domains, possibly
+more. Perhaps someone should be appointed ``editor'' and charged with
+working out what is needed and then procuring and integrating it.
+
+\item[Users Reference] The scheme for building this from skeleton
+files and comments in the sources was basically agreed. This gives one
+(rather urgent) task to implement that scheme and one task for each
+package, to actually write (or convert from \GAP\ 3) the
+documentation. Accuracy and completeness are more important here than
+beautiful English composition.
+
+\item[Programming Tutorial] A slightly lower priority than the user
+documentation, but again an editor should be appointed. Use of the
+compiler should be covered. Porting guidelines should be included.
+
+\item[Programming Reference] This is essentially the same job as the
+Users reference, but for certain parts of the ``Essentials''
+package. Complicated by the rather elaborate rules that sometimes have
+to be followed. The compiler interface should be documented.
+
+\ed
+
+\section{Kernel Issues not Essential for 4.1}
+\bd
+
+\item[A careful look at the break loop and debugging] There are still
+a few bits of unexpected behaviour here, and more debugging support
+could be added.
+\item[Portability of compiled code] Some C compilers choke on the
+output of the \GAP\ compiler. Can we avoid this?
+\item[Windows NT Port] This will become increasingly necessary. See
+also discussion of XGAP.
+\item[Use of Autoconf or similar] This should simplify \GAP\ porting
+and installation, especially if the C share packages can be made to
+work with it as well.
+\item[Making GASMAN malloc tolerant] This basically means enabling
+operation with a non-contiguous workspace. There are a few issues. It
+would simplify various other things though.
+\item[Kernel support for marshalling] Marshalling is gathering all the
+``pieces'' of an object for saving, loading, sending across the net,
+etc. The problem is to avoid every object picking up the whole
+library.
+\item[Possible RPM package] .rpm and .deb packages would simplify
+installation on popular flavours of Linux.
+\item[Threads] Probably a \GAP 5 issue. Eventually a threaded kernel
+would be nice.
+\item[User Interface] Again a long-term issue, but there are a lot of
+things that could be done here.
+\ed
+
+\section{Library Issues not essential for 4.1}
+
+\bd
+\item[Expression DAGs] an efficient representation for words in some
+contexts
+\item[Data libraries] New features in \GAP\ 4 might allow better and
+more uniform presentation of data libraries
+\item[FpGroups] This is a general area in need of review and update
+\item[Beyond Lie algebras] A possible extension in the direction of
+Kac-Moody algebras, quantum groups and related concepts would be of
+considerable interest 
+\item[(Transformation) Semigroups] There is a scope for a lot of
+library development here.  
+\item[MOC and meataxe] It is planned to try and incorporate most or
+all of the functionality of MOC (somewhat urgent as it is very old
+code) and the meataxe into \GAP. 
+\ed 
+\section{Schedule}
+
+Frank will provisionally come to St Andrews in November (before I go
+to Japan). Our goal at that time is to have the 4.1 kernel complete apart
+form bug fixes, and (conceivably) additional algebraic functionality
+moved into the kernel from elsewhere.  
+
+Also by that time, it should be possible to finish nearly all the
+essential library tasks, except perhaps the quotient algorithms
+development.
+
+Ideally beta 3 around Christmas should have the kernel and library
+ready apart from bug fixes. Quotients is the most likely problem area here.
+
+At this point it \emph{may} be appropriate to split off a 4.2 branch for
+technical developments and merge in bug fixes from the 4.1 branch
+after the release.
+
+After that, there remains only documentation and key share packages,
+plus any problems that arise. These will determine when 4.1 can
+be released.
+
+\end{document}

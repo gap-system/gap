@@ -9,36 +9,38 @@
 **  This file contains the  various read-eval-print loops and streams related
 **  stuff.  The system depend part is in "sysfiles.c".
 */
-char * Revision_streams_c =
+#include        <stdio.h>
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_streams_c =
    "@(#)$Id$";
 
 
-#include        <stdio.h>
-
-#include        "system.h"              /* system dependent part           */
 #include        "sysfiles.h"            /* file input/output               */
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#include        "gap.h"                 /* error handling                  */
+#include        "gap.h"                 /* error handling, initialisation  */
 #include        "read.h"                /* reader                          */
 
 #include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
 
-#include        "lists.h"               /* generic lists package           */
-#include        "plist.h"               /* plain lists                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "records.h"             /* generic records package         */
+#include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
 
-#include        "bool.h"                /* booleans                        */
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
+#include        "saveload.h"            /* saving and loading              */
+
 #define INCLUDE_DECLARATION_PART
-#include        "streams.h"             /* declaration part of the package */
+#include        "streams.h"             /* streams package                 */
 #undef  INCLUDE_DECLARATION_PART
 
 
@@ -63,7 +65,7 @@ Int READ ( void )
 
     /* now do the reading                                                  */
     while ( 1 ) {
-	ClearError();
+        ClearError();
         type = ReadEvalCommand();
 
         /* handle return-value or return-void command                      */
@@ -146,7 +148,7 @@ Int READ_TEST ( void )
     while ( 1 ) {
 
         /* read and evaluate the command                                   */
-	ClearError();
+        ClearError();
         type = ReadEvalCommand();
 
         /* stop the stopwatch                                              */
@@ -162,7 +164,7 @@ Int READ_TEST ( void )
 
             /* print the result                                            */
             if ( ! DualSemicolon ) {
-		ViewObjHandler( ReadEvalResult );
+                ViewObjHandler( ReadEvalResult );
             }
         }
 
@@ -204,8 +206,10 @@ Int READ_GAP_ROOT ( Char * filename )
     Char                result[256];
     Int                 res;
     UInt                type;
+    UInt                len;
     StructCompInitInfo* info;
     Obj                 func;
+    Obj                 fname;
 
     /* try to find the file                                                */
     res = SyFindOrLinkGapRootFile( filename, 0L, result, 256 );
@@ -225,6 +229,10 @@ Int READ_GAP_ROOT ( Char * filename )
         (info->link)();
         func = (Obj)(info->function1)();
         CALL_0ARGS(func);
+        len = SyStrlen(filename);
+        fname = NEW_STRING( len );
+        SyStrncat( CSTR_STRING(fname), filename, len );
+        RecordLoadedModule(fname, info->magic1);
         return 1;
     }
 
@@ -238,6 +246,10 @@ Int READ_GAP_ROOT ( Char * filename )
         (info->link)();
         func = (Obj)(info->function1)();
         CALL_0ARGS(func);
+        len = SyStrlen(filename);
+        fname = NEW_STRING( len );
+        SyStrncat( CSTR_STRING(fname), filename, len );
+        RecordLoadedModule(fname, info->magic1);
         return 1;
     }
 
@@ -249,7 +261,7 @@ Int READ_GAP_ROOT ( Char * filename )
         }
         if ( OpenInput(result) ) {
             while ( 1 ) {
-		ClearError();
+                ClearError();
                 type = ReadEvalCommand();
                 if ( type == 1 || type == 2 ) {
                     Pr( "'return' must not be used in file", 0L, 0L );
@@ -259,7 +271,7 @@ Int READ_GAP_ROOT ( Char * filename )
                 }
             }
             CloseInput();
-	    ClearError();
+            ClearError();
             return 1;
         }
         else {
@@ -319,7 +331,7 @@ Obj FuncLOG_TO (
     while ( ! IsStringConv(filename) ) {
         filename = ErrorReturnObj(
             "LogTo: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     if ( ! OpenLog( CSTR_STRING(filename) ) ) {
@@ -391,7 +403,7 @@ Obj FuncINPUT_LOG_TO (
     while ( ! IsStringConv(filename) ) {
         filename = ErrorReturnObj(
             "InputLogTo: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     if ( ! OpenInputLog( CSTR_STRING(filename) ) ) {
@@ -463,7 +475,7 @@ Obj FuncOUTPUT_LOG_TO (
     while ( ! IsStringConv(filename) ) {
         filename = ErrorReturnObj(
             "OutputLogTo: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     if ( ! OpenOutputLog( CSTR_STRING(filename) ) ) {
@@ -503,12 +515,15 @@ Obj FuncPrint (
 {
     volatile Obj        arg;
     volatile UInt       i;
-    jmp_buf		readJmpError;
+    jmp_buf             readJmpError;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
+        if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+            PrintString1(arg);
+        }
+        else if ( IS_STRING_REP(arg) ) {
             PrintString1(arg);
         }
         else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
@@ -517,17 +532,17 @@ Obj FuncPrint (
             PrintObjFull = 0;
         }
         else {
-	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
-	    /* if an error occurs stop printing                            */
-	    if ( ! READ_ERROR() ) {
-		PrintObj( arg );
-	    }
-	    else {
-		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-		ReadEvalError();
-	    }
-	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            /* if an error occurs stop printing                            */
+            if ( ! READ_ERROR() ) {
+                PrintObj( arg );
+            }
+            else {
+                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                ReadEvalError();
+            }
+            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -546,14 +561,14 @@ Obj FuncPRINT_TO (
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
-    jmp_buf		readJmpError;
+    jmp_buf             readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
     while ( ! IsStringConv(filename) ) {
         filename = ErrorReturnObj(
             "PrintTo: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -567,7 +582,10 @@ Obj FuncPRINT_TO (
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
+        if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+            PrintString1(arg);
+        }
+        else if ( IS_STRING_REP(arg) ) {
             PrintString1(arg);
         }
         else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
@@ -576,18 +594,18 @@ Obj FuncPRINT_TO (
             PrintObjFull = 0;
         }
         else {
-	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
-	    /* if an error occurs stop printing                            */
-	    if ( ! READ_ERROR() ) {
-		PrintObj( arg );
-	    }
-	    else {
-		CloseOutput();
-		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-		ReadEvalError();
-	    }
-	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            /* if an error occurs stop printing                            */
+            if ( ! READ_ERROR() ) {
+                PrintObj( arg );
+            }
+            else {
+                CloseOutput();
+                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                ReadEvalError();
+            }
+            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -612,7 +630,7 @@ Obj FuncPRINT_TO_STREAM (
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
-    jmp_buf		readJmpError;
+    jmp_buf             readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
@@ -627,27 +645,30 @@ Obj FuncPRINT_TO_STREAM (
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
 
-	/* if an error occurs stop printing                                */
-	memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
-	if ( ! READ_ERROR() ) {
-	    if (IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING) {
-		PrintString1(arg);
-	    }
-	    else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-		PrintObjFull = 1;
-		PrintFunction( arg );
-		PrintObjFull = 0;
-	    }
-	    else {
-		PrintObj( arg );
-	    }
-	}
-	else {
-	    CloseOutput();
-	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-	    ReadEvalError();
-	}
-	memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+        /* if an error occurs stop printing                                */
+        memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+        if ( ! READ_ERROR() ) {
+            if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+                PrintString1(arg);
+            }
+            else if ( IS_STRING_REP(arg) ) {
+                PrintString1(arg);
+            }
+            else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+                PrintObjFull = 1;
+                PrintFunction( arg );
+                PrintObjFull = 0;
+            }
+            else {
+                PrintObj( arg );
+            }
+        }
+        else {
+            CloseOutput();
+            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            ReadEvalError();
+        }
+        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -671,14 +692,14 @@ Obj FuncAPPEND_TO (
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
-    jmp_buf		readJmpError;
+    jmp_buf             readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
     while ( ! IsStringConv(filename) ) {
         filename = ErrorReturnObj(
             "AppendTo: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -692,27 +713,30 @@ Obj FuncAPPEND_TO (
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
+        if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
             PrintString1(arg);
         }
-        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+        else if ( IS_STRING_REP(arg) ) {
+            PrintString1(arg);
+        }
+        else if ( TNUM_OBJ(arg) == T_FUNCTION ) {
             PrintObjFull = 1;
             PrintFunction( arg );
             PrintObjFull = 0;
         }
         else {
-	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
-	    /* if an error occurs stop printing                            */
-	    if ( ! READ_ERROR() ) {
-		PrintObj( arg );
-	    }
-	    else {
-		CloseOutput();
-		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-		ReadEvalError();
-	    }
-	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            /* if an error occurs stop printing                            */
+            if ( ! READ_ERROR() ) {
+                PrintObj( arg );
+            }
+            else {
+                CloseOutput();
+                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                ReadEvalError();
+            }
+            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -737,7 +761,7 @@ Obj FuncAPPEND_TO_STREAM (
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
-    jmp_buf		readJmpError;
+    jmp_buf             readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
@@ -752,27 +776,30 @@ Obj FuncAPPEND_TO_STREAM (
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
 
-	/* if an error occurs stop printing                                */
-	memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
-	if ( ! READ_ERROR() ) {
-	    if (IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING) {
-		PrintString1(arg);
-	    }
-	    else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-		PrintObjFull = 1;
-		PrintFunction( arg );
-		PrintObjFull = 0;
-	    }
-	    else {
-		PrintObj( arg );
-	    }
-	}
-	else {
-	    CloseOutput();
-	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-	    ReadEvalError();
-	}
-	memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+        /* if an error occurs stop printing                                */
+        memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+        if ( ! READ_ERROR() ) {
+            if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+                PrintString1(arg);
+            }
+            else if ( IS_STRING_REP(arg) ) {
+                PrintString1(arg);
+            }
+            else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+                PrintObjFull = 1;
+                PrintFunction( arg );
+                PrintObjFull = 0;
+            }
+            else {
+                PrintObj( arg );
+            }
+        }
+        else {
+            CloseOutput();
+            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            ReadEvalError();
+        }
+        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -797,7 +824,7 @@ Obj FuncREAD (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "READ: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -841,7 +868,7 @@ Obj FuncREAD_TEST (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "ReadTest: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -885,7 +912,7 @@ Obj FuncREAD_AS_FUNC (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "READ_AS_FUNC: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -929,7 +956,7 @@ Obj FuncREAD_GAP_ROOT (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "READ: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -951,7 +978,7 @@ Obj FuncTmpName (
 
     tmp = SyTmpname();
     if ( tmp == 0 )
-	return Fail;
+        return Fail;
     C_NEW_STRING( name, SyStrlen(tmp), tmp );
     return name;
 }
@@ -969,7 +996,7 @@ Obj FuncTmpDirectory (
 
     tmp = SyTmpdir("tmp");
     if ( tmp == 0 )
-	return Fail;
+        return Fail;
     C_NEW_STRING( name, SyStrlen(tmp), tmp );
     return name;
 }
@@ -987,7 +1014,7 @@ Obj FuncRemoveFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -1022,16 +1049,16 @@ Obj FuncLastSystemError (
 
     /* check if an errors has occured                                      */
     if ( SyLastErrorNo != 0 ) {
-	ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(SyLastErrorNo) );
-	C_NEW_STRING(msg, SyStrlen(SyLastErrorMessage), SyLastErrorMessage);
-	ASS_REC( err, ErrorMessageRNam, msg );
+        ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(SyLastErrorNo) );
+        C_NEW_STRING(msg, SyStrlen(SyLastErrorMessage), SyLastErrorMessage);
+        ASS_REC( err, ErrorMessageRNam, msg );
     }
 
     /* no error has occured                                                */
     else {
-	ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(0) );
-	C_NEW_STRING( msg, 8, "no error" );
-	ASS_REC( err, ErrorMessageRNam, msg );
+        ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(0) );
+        C_NEW_STRING( msg, 8, "no error" );
+        ASS_REC( err, ErrorMessageRNam, msg );
     }
 
     /* return the error record                                             */
@@ -1053,7 +1080,7 @@ Obj FuncIsExistingFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -1077,7 +1104,7 @@ Obj FuncIsReadableFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -1101,7 +1128,7 @@ Obj FuncIsWritableFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -1125,7 +1152,7 @@ Obj FuncIsExecutableFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -1149,7 +1176,7 @@ Obj FuncIsDirectoryPath (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -1180,7 +1207,7 @@ Obj FuncCLOSE_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
+            (Int)TNAM_OBJ(fid), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -1204,7 +1231,7 @@ Obj FuncINPUT_TEXT_FILE (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -1212,7 +1239,7 @@ Obj FuncINPUT_TEXT_FILE (
     SyClearErrorNo();
     fid = SyFopen( CSTR_STRING(filename), "r" );
     if ( fid == - 1)
-	SySetErrorNo();
+        SySetErrorNo();
     return fid == -1 ? Fail : INTOBJ_INT(fid);
 }
 
@@ -1231,7 +1258,7 @@ Obj FuncIS_END_OF_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
+            (Int)TNAM_OBJ(fid), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -1255,26 +1282,26 @@ Obj FuncOUTPUT_TEXT_FILE (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            (Int)TNAM_OBJ(filename), 0L,
             "you can return a string for <filename>" );
     }
     while ( append != True && append != False ) {
         filename = ErrorReturnObj(
             "<append> must be a boolean (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(append)].name), 0L,
+            (Int)TNAM_OBJ(append), 0L,
             "you can return a string for <append>" );
     }
     
     /* call the system dependent function                                  */
     SyClearErrorNo();
     if ( append == True ) {
-	fid = SyFopen( CSTR_STRING(filename), "a" );
+        fid = SyFopen( CSTR_STRING(filename), "a" );
     }
     else {
-	fid = SyFopen( CSTR_STRING(filename), "w" );
+        fid = SyFopen( CSTR_STRING(filename), "w" );
     }
     if ( fid == - 1)
-	SySetErrorNo();
+        SySetErrorNo();
     return fid == -1 ? Fail : INTOBJ_INT(fid);
 }
 
@@ -1293,7 +1320,7 @@ Obj FuncPOSITION_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
+            (Int)TNAM_OBJ(fid), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -1316,7 +1343,7 @@ Obj FuncREAD_BYTE_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
+            (Int)TNAM_OBJ(fid), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -1343,7 +1370,7 @@ Obj FuncREAD_LINE_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
+            (Int)TNAM_OBJ(fid), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -1385,13 +1412,13 @@ Obj FuncSEEK_POSITION_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
+            (Int)TNAM_OBJ(fid), 0L,
             "you can return an integer for <fid>" );
     }
     while ( ! IS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "<pos> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return an integer for <pos>" );
     }
     
@@ -1415,13 +1442,13 @@ Obj FuncWRITE_BYTE_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
+            (Int)TNAM_OBJ(fid), 0L,
             "you can return an integer for <fid>" );
     }
     while ( ! IS_INTOBJ(ch) ) {
         ch = ErrorReturnObj(
             "<ch> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(ch)].name), 0L,
+            (Int)TNAM_OBJ(ch), 0L,
             "you can return an integer for <ch>" );
     }
     
@@ -1447,74 +1474,74 @@ static Obj    ExecArgs  [ 1024 ];
 static Char * ExecCArgs [ 1024 ];
 
 Obj FuncExecuteProcess (
-    Obj		    	self,
-    Obj             	dir,
-    Obj		    	prg,
-    Obj             	in,
-    Obj             	out,
-    Obj             	args )
+    Obj                 self,
+    Obj                 dir,
+    Obj                 prg,
+    Obj                 in,
+    Obj                 out,
+    Obj                 args )
 {
     Obj                 tmp;
-    Int             	res;
+    Int                 res;
     Int                 i;
 
     /* check the argument                                                  */
     while ( ! IsStringConv(dir) ) {
         dir = ErrorReturnObj(
             "<dir> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(dir)].name), 0L,
+            (Int)TNAM_OBJ(dir), 0L,
             "you can return a string for <dir>" );
     }
     while ( ! IsStringConv(prg) ) {
         prg = ErrorReturnObj(
             "<prg> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(prg)].name), 0L,
+            (Int)TNAM_OBJ(prg), 0L,
             "you can return a string for <prg>" );
     }
     while ( ! IS_INTOBJ(in) ) {
         in = ErrorReturnObj(
             "<in> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(in)].name), 0L,
+            (Int)TNAM_OBJ(in), 0L,
             "you can return an integer for <in>" );
     }
     while ( ! IS_INTOBJ(out) ) {
         out = ErrorReturnObj(
             "<out> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(out)].name), 0L,
+            (Int)TNAM_OBJ(out), 0L,
             "you can return an integer for <out>" );
     }
     while ( ! IS_LIST(args) ) {
         args = ErrorReturnObj(
             "<args> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(args)].name), 0L,
+            (Int)TNAM_OBJ(args), 0L,
             "you can return an integer for <args>" );
     }
 
     /* create an argument array                                            */
     for ( i = 1;  i <= LEN_LIST(args);  i++ ) {
-	if ( i == 1023 )
-	    break;
-	tmp = ELM_LIST( args, i );
-	while ( ! IsStringConv(tmp) ) {
-	    tmp = ErrorReturnObj(
-		"<tmp> must be a string (not a %s)",
-		(Int)(InfoBags[TNUM_OBJ(tmp)].name), 0L,
-		"you can return a string for <tmp>" );
-	}
-	ExecArgs[i] = tmp;
+        if ( i == 1023 )
+            break;
+        tmp = ELM_LIST( args, i );
+        while ( ! IsStringConv(tmp) ) {
+            tmp = ErrorReturnObj(
+                "<tmp> must be a string (not a %s)",
+                (Int)TNAM_OBJ(tmp), 0L,
+                "you can return a string for <tmp>" );
+        }
+        ExecArgs[i] = tmp;
     }
     ExecCArgs[0]   = CSTR_STRING(prg);
-    ExecCArgs[i+1] = 0;
+    ExecCArgs[i] = 0;
     for ( i--;  0 < i;  i-- ) {
-	ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
+        ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
     }
 
     /* execute the process                                                 */
     res = SyExecuteProcess( CSTR_STRING(dir),
-			    CSTR_STRING(prg),
-			    INT_INTOBJ(in),
-			    INT_INTOBJ(out),
-			    ExecCArgs );
+                            CSTR_STRING(prg),
+                            INT_INTOBJ(in),
+                            INT_INTOBJ(out),
+                            ExecCArgs );
 
     return res == 255 ? Fail : INTOBJ_INT(res);
 }
@@ -1530,10 +1557,23 @@ Obj FuncExecuteProcess (
 /****************************************************************************
 **
 
-*F  InitStreams() . . . . . . . . . . . . . . . . . . . . . intialize streams
+*F  SetupStreams(). . . . . . . . . . . . . . . intialize the streams package
 */
-void InitStreams ()
+void SetupStreams ( void )
 {
+}
+
+
+/****************************************************************************
+**
+*F  InitStreams() . . . . . . . . . . . . . . . intialize the streams package
+*/
+void InitStreams ( void )
+{
+    /* file access test functions                                          */
+    ErrorNumberRNam  = RNamName("number");
+    ErrorMessageRNam = RNamName("message");
+
     /* streams and files related functions                                 */
     C_NEW_GVAR_FUNC( "READ", 1L, "filename",
                   FuncREAD,
@@ -1633,9 +1673,6 @@ void InitStreams ()
 
 
     /* file access test functions                                          */
-    ErrorNumberRNam  = RNamName("number");
-    ErrorMessageRNam = RNamName("message");
-
     C_NEW_GVAR_FUNC( "LastSystemError", 0L, "", 
                   FuncLastSystemError,
         "src/sreams.c:LastSystemError" );
@@ -1702,6 +1739,15 @@ void InitStreams ()
     C_NEW_GVAR_FUNC( "ExecuteProcess", 5L, "dir, prg, in, out, args",
                   FuncExecuteProcess,
         "src/sreams.c:ExecuteProcess" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckStreams()  . . . . . check the initialisation of the streams package
+*/
+void CheckStreams ( void )
+{
 }
 
 

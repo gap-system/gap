@@ -842,10 +842,13 @@ end;
 SET_FILTER_OBJ := SetFilterObj;
 
 
+
+
 #############################################################################
 ##
 #F  ResetFilterObj( <obj>, <filter> )
 ##
+
 ResetFilterObj := function ( obj, filter )
     if IS_POSOBJ( obj ) then
         SET_TYPE_POSOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );

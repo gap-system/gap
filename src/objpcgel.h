@@ -7,7 +7,7 @@
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char * Revision_objpcgel_h =
+SYS_CONST char * Revision_objpcgel_h =
    "@(#)$Id$";
 #endif
 
@@ -52,9 +52,31 @@ char * Revision_objpcgel_h =
 /****************************************************************************
 **
 
-*F  InitPcElements()  . . . . . . . . initialize the single collector package
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+
+*F  SetupPcElements() . . . . . . .  initialize the pc group elements package
+*/
+extern void SetupPcElements ( void );
+
+
+/****************************************************************************
+**
+*F  InitPcElements()  . . . . . . .  initialize the pc group elements package
 */
 extern void InitPcElements ( void );
+
+
+/****************************************************************************
+**
+*F  CheckPcElements() . check initialisation of the pc group elements package
+*/
+extern void CheckPcElements ( void );
 
 
 /****************************************************************************

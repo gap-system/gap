@@ -1,27 +1,39 @@
 /****************************************************************************
 **
-*A  pcc.c                       GAP source                   Werner Nickel
+*W  objcftl.c                      GAP source                   Werner Nickel
 **
 **
 **  This file contains a collector from the left for polycyclic
 **  presentations.
 */
-
 #include "system.h"
-#include "gasman.h"
-#include "objects.h"
-#include "scanner.h"
-#include "plist.h"
-#include "gvars.h"
-#include "calls.h"
-#include "records.h"
-#include "precord.h"
-#include "gap.h"
-#include "bool.h"
-#include "integer.h"
 
-#include "dt.h"
-#include "objcftl.h"
+SYS_CONST char * Revision_objcftl_c =
+   "@(#)$Id$";
+
+
+
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
+#include        "gvars.h"               /* global variables                */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "gap.h"                 /* error handling, initialisation  */
+#include        "bool.h"                /* booleans                        */
+#include        "integer.h"             /* integers                        */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
+
+#include        "dt.h"                  /* deep thought                    */
+
+#define INCLUDE_DECLARATION_PART
+#include        "objcftl.h"             /* from the left collect           */
+#undef  INCLUDE_DECLARATION_PART
 
 
 
@@ -362,68 +374,106 @@ Obj FunBinaryPower( Obj self, Obj pcp, Obj w, Obj e ) {
   return BinaryPower( pcp, w, e );
 }
 
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupPcc()  . . . . . . . . . . . . . initialize the polycyclic collector
+*/
+void SetupPcc ( void )
+{
+}
+
+
+/****************************************************************************
+**
+*F  InitPcc() . . . . . . . . . . . . . . initialize the polycyclic collector
+*/
 void InitPcc ( void ) {
 
-    AssGVar( GVarName( "DTBound" ), INTOBJ_INT(1) );
-
     DebugPcc = GVarName( "DebugPcc" );
-    AssGVar( DebugPcc, False );
+    if ( ! SyRestoring ) {
+        AssGVar( GVarName( "DTBound" ), INTOBJ_INT(1) );
 
-    AssGVar( GVarName( "PC_NUMBER_OF_GENERATORS" ),
-            INTOBJ_INT( PC_NUMBER_OF_GENERATORS ) );
-    AssGVar( GVarName( "PC_GENERATORS" ),
-            INTOBJ_INT( PC_GENERATORS ) );
-    AssGVar( GVarName( "PC_INVERSES" ),
-            INTOBJ_INT( PC_INVERSES ) );
-    AssGVar( GVarName( "PC_COMMUTE" ),
-            INTOBJ_INT( PC_COMMUTE ) );
-    AssGVar( GVarName( "PC_POWERS" ),
-            INTOBJ_INT( PC_POWERS ) );
-    AssGVar( GVarName( "PC_INVERSEPOWERS" ),
-            INTOBJ_INT( PC_INVERSEPOWERS ) );
-    AssGVar( GVarName( "PC_EXPONENTS" ),
-            INTOBJ_INT( PC_EXPONENTS ) );
-    AssGVar( GVarName( "PC_CONJUGATES" ),
-            INTOBJ_INT( PC_CONJUGATES ) );
-    AssGVar( GVarName( "PC_INVERSECONJUGATES" ),
-            INTOBJ_INT( PC_INVERSECONJUGATES ) );
-    AssGVar( GVarName( "PC_CONJUGATESINVERSE" ),
-            INTOBJ_INT( PC_CONJUGATESINVERSE ) );
-    AssGVar( GVarName( "PC_INVERSECONJUGATESINVERSE" ),
-            INTOBJ_INT( PC_INVERSECONJUGATESINVERSE ) );
-    AssGVar( GVarName( "PC_DEEP_THOUGHT_POLS" ),
-            INTOBJ_INT( PC_DEEP_THOUGHT_POLS ) );
-    AssGVar( GVarName( "PC_DEEP_THOUGHT_BOUND" ),
-            INTOBJ_INT( PC_DEEP_THOUGHT_BOUND ) );
-    AssGVar( GVarName( "PC_ORDERS" ), INTOBJ_INT( PC_ORDERS ) );
-    AssGVar( GVarName( "PC_WORD_STACK" ),
-            INTOBJ_INT( PC_WORD_STACK ) );
-    AssGVar( GVarName( "PC_STACK_SIZE" ),
-            INTOBJ_INT( PC_STACK_SIZE ) );
-    AssGVar( GVarName( "PC_WORD_EXPONENT_STACK" ),
-            INTOBJ_INT( PC_WORD_EXPONENT_STACK ) );
-    AssGVar( GVarName( "PC_SYLLABLE_STACK" ),
-            INTOBJ_INT( PC_SYLLABLE_STACK ) );
-    AssGVar( GVarName( "PC_EXPONENT_STACK" ),
-            INTOBJ_INT( PC_EXPONENT_STACK ) );
-    AssGVar( GVarName( "PC_STACK_POINTER" ),
-            INTOBJ_INT( PC_STACK_POINTER ) );
-    AssGVar( GVarName( "PC_DEFAULT_TYPE" ), INTOBJ_INT( PC_DEFAULT_TYPE ) );
+        AssGVar( DebugPcc, False );
+
+        AssGVar( GVarName( "PC_NUMBER_OF_GENERATORS" ),
+                INTOBJ_INT( PC_NUMBER_OF_GENERATORS ) );
+        AssGVar( GVarName( "PC_GENERATORS" ),
+                INTOBJ_INT( PC_GENERATORS ) );
+        AssGVar( GVarName( "PC_INVERSES" ),
+                INTOBJ_INT( PC_INVERSES ) );
+        AssGVar( GVarName( "PC_COMMUTE" ),
+                INTOBJ_INT( PC_COMMUTE ) );
+        AssGVar( GVarName( "PC_POWERS" ),
+                INTOBJ_INT( PC_POWERS ) );
+        AssGVar( GVarName( "PC_INVERSEPOWERS" ),
+                INTOBJ_INT( PC_INVERSEPOWERS ) );
+        AssGVar( GVarName( "PC_EXPONENTS" ),
+                INTOBJ_INT( PC_EXPONENTS ) );
+        AssGVar( GVarName( "PC_CONJUGATES" ),
+                INTOBJ_INT( PC_CONJUGATES ) );
+        AssGVar( GVarName( "PC_INVERSECONJUGATES" ),
+                INTOBJ_INT( PC_INVERSECONJUGATES ) );
+        AssGVar( GVarName( "PC_CONJUGATESINVERSE" ),
+                INTOBJ_INT( PC_CONJUGATESINVERSE ) );
+        AssGVar( GVarName( "PC_INVERSECONJUGATESINVERSE" ),
+                INTOBJ_INT( PC_INVERSECONJUGATESINVERSE ) );
+        AssGVar( GVarName( "PC_DEEP_THOUGHT_POLS" ),
+                INTOBJ_INT( PC_DEEP_THOUGHT_POLS ) );
+        AssGVar( GVarName( "PC_DEEP_THOUGHT_BOUND" ),
+                INTOBJ_INT( PC_DEEP_THOUGHT_BOUND ) );
+        AssGVar( GVarName( "PC_ORDERS" ), INTOBJ_INT( PC_ORDERS ) );
+        AssGVar( GVarName( "PC_WORD_STACK" ),
+                INTOBJ_INT( PC_WORD_STACK ) );
+        AssGVar( GVarName( "PC_STACK_SIZE" ),
+                INTOBJ_INT( PC_STACK_SIZE ) );
+        AssGVar( GVarName( "PC_WORD_EXPONENT_STACK" ),
+                INTOBJ_INT( PC_WORD_EXPONENT_STACK ) );
+        AssGVar( GVarName( "PC_SYLLABLE_STACK" ),
+                INTOBJ_INT( PC_SYLLABLE_STACK ) );
+        AssGVar( GVarName( "PC_EXPONENT_STACK" ),
+                INTOBJ_INT( PC_EXPONENT_STACK ) );
+        AssGVar( GVarName( "PC_STACK_POINTER" ),
+                INTOBJ_INT( PC_STACK_POINTER ) );
+        AssGVar( GVarName( "PC_DEFAULT_TYPE" ), INTOBJ_INT( PC_DEFAULT_TYPE ) );
+    }
 
     /* Install internal functions. */
 
-    InitHandlerFunc( FuncCollectPolycyc, "CollectPolycyclic");
-    AssGVar( GVarName( "CollectPolycyclic" ), 
-        NewFunctionC( "CollectPolycyclic", 3L, 
-                    "pcp, list, word", FuncCollectPolycyc ) );
+    C_NEW_GVAR_FUNC( "CollectPolycyclic", 3, "pcp, list, word",
+                  FuncCollectPolycyc,
+      "src/objcftl.c:CollectPolycyclic" );
 
-    InitHandlerFunc( FunBinaryPower, "BinaryPower");
-    AssGVar( GVarName( "BinaryPower" ), 
-        NewFunctionC( "BinaryPower", 3L, 
-                    "pcp, word, exponent", FunBinaryPower ) );
+    C_NEW_GVAR_FUNC( "BinaryPower", 3, "pcp, word, exponent",
+                   FunBinaryPower,
+      "src/objcftl.c:BinaryPower" );
 
     /* Keep track of variables containing library functions called in this
     ** module. */
-    InitFopyGVar( GVarName("PowerAutomorphism"), &PowerAutomorphism );
+    InitFopyGVar( "PowerAutomorphism", &PowerAutomorphism );
 
 }
+
+/****************************************************************************
+**
+*F  CheckPcc()  . . . . . .  check the initialisation of polycyclic collector
+*/
+void CheckPcc ( void )
+{
+    SET_REVISION( "objcftl_c",  Revision_objcftl_c  );
+    SET_REVISION( "objcftl_h",  Revision_objcftl_h  );
+}
+
+
+/****************************************************************************
+**
+
+*E  objcftl.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

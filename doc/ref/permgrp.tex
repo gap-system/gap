@@ -246,12 +246,13 @@ the  *orbit-stabilizer theorem*,  any such $R_i$  is  in bijection to the
 taking $b_i$ to $p\in O_i$. Then the order  of <G> is  the product of the
 indices  $[G^{(i)}:G^{(i+1)}]$,  i.e.,  the product   of the  transversal
 lengths $|R_i|$. If <g> is a permutation mapping $b_i$ to $c_i$, then
-$$\centerline{\vbox{\halign{\hfil$#$& $\iff #$\hfil & \quad #\hfil \cr
+$$
+  \vbox{\halign{\hfil$#$& $\iff #$\hfil & \quad #\hfil \cr
   g\in G & gr_1^{-1}\in G^{(2)} & (with $r_1=R_1[c_1]$) \cr
          & gr_1^{-1}r_2^{-1}\in G^{(3)} &
                                   (with $r_2=R_1[c_2r_1^{-1}]$) \cr
   \ldots & gr_1^{-1}\ldots r_n^{-1}\in G^{(n+1)}=\{{\rm id}\} &
-           (with $r_n=R_n[c_nr_1^{-1}\ldots r_{n-1}^{-1}]$).\cr}}}$$
+           (with $r_n=R_n[c_nr_1^{-1}\ldots r_{n-1}^{-1}]$).\cr}}$$
 This   method  of  dividing  <g> by  transversal  elements   is known  as
 _reduction of a permutation   along a stabilizer  chain_\index{stabilizer
 chain!reduction of permutation along}, and it gives a membership test for
@@ -305,14 +306,15 @@ dealing    with          permutation    group       homomorphisms    (see
 
 \>StabChain( <G> \[, <options> \| <list> \] )
 
-`StabChain( <G> )' performs the  same calculations as  `Base( <G> )', but
+`StabChain( <G> )' performs  the same calculations  as `Base( <G> )', but
 returns the whole stabilizer  chain, not just  the base. If no stabilizer
-chain has been entered  into the group  record of <G> so far, `StabChain'
-stores its result in  `<G>.stabChain'. See "Stabilizer chain records" for
-detailed information on how this component looks like. Note that the base
-can   be reconstructed  from  the  stabilizer chain by  looping  over the
-Schreier trees and collecting the root points. This  is what the function
-`Base' does when a stabilizer chain has already been calculated.
+chain has been entered into  the group record  of <G> so far, `StabChain'
+stores its result in `<G>.stabChain'.  See "ext:Stabilizer chain records"
+in  the extension manual for  detailed information on  how this component
+looks like. Note that  the base can  be reconstructed from the stabilizer
+chain by looping over the Schreier  trees and collecting the root points.
+This is what the function `Base' does when a stabilizer chain has already
+been calculated.
 
 A second argument <options>  may be given to `StabChain',   it must be  a
 record that may contain the components listed  below. If they are absent,
@@ -424,8 +426,9 @@ solvable permutation groups" below.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Set functions!for permutation groups}
 
-See "Set functions" for  general remarks on   set functions and  also for
-other set functions that are not overlaid for permutation groups.
+See "Set functions!for domains" for general  remarks on set functions and
+also for other  set functions   that  are not  overlaid for   permutation
+groups.
 
 \>`<g> in <G>'{membership test}!{for permutation groups}
 \>Elements( <G> )!{for permutation groups}
@@ -509,71 +512,11 @@ algorithm, e.g., to centralizer and normalizer calculations.
 
 \>ConjugateGroup( <G>, <p> )!{for permutation groups}
 
-This function  returns the conjugate  of the  permutation group <G> under
-the permutation <p>. <p> must  be an element of  the parent group of <G>.
-If a stabilizer chain for <G> is already known, it is also conjugated.
-
-\danger Conjugating   a  stabilizer  chain by   a permutation   <p> means
-replacing all the points which appear in  the `orbit' components by their
-images under  <p> and replacing every  permutation <g> which appears in a
-`labels' or `transversal' component by its conjugate $g^p$. The conjugate
-$g^p$ acts on  the  mapped points  exactly   as <g> did on  the  original
-points, i.e.,  $(pnt.p). g^p  =  (pnt.g).p$. Since   the entries  in  the
-`translabels' components are  integers    pointing to positions of    the
-`labels' list, the  `translabels' lists just  have to be permuted by  <p>
-for the conjugated  stabilizer. Then   `generators' is reconstructed   as
-`labels\{  genlabels   \}'  and `transversal\{  orbit   \}'  as `labels\{
-translabels\{ orbit \} \}'.
-
-This    conjugation technique    can be    generalized.\index{generalized
-conjugation technique}  Instead of mapping  points and permutations under
-the same permutation <p>, it is sometimes desirable (e.g., in the context
-of permutation  group homomorphisms) to  map the points with an arbitrary
-mapping <map>  and the permutations with  a homomorphism <hom>  such that
-the  compatibility  of the actions is  still   valid: $map(pnt). hom(g) =
-map(pnt.g)$. (Of course   the ordinary conjugation is  a  special case of
-this, with $map(pnt) = pnt.p$ and $hom(g) = g^p$.)
-
-In the    generalized case,  the ``conjugated''   chain   need  not be  a
-stabilizer chain  for the image of <hom>,  since  the ``preimage'' of the
-stabilizer of $map(b)$ (where <b> is a base  point) need not fix <b>, but
-only fixes the  preimage $map^{-1}(map(b))$ setwise. Therefore the method
-can be applied only to one level and the next stabilizer must be computed
-explicitly. But if <map> is injective, we have $map(b).hom(g)=map(b) \iff
-b.g=b$, and if  this holds, then  $g=w(g_1,\ldots,g_n)$ is a  word in the
-generators $g_1,\ldots,g_n$ of     the  stabilizer of~<b>  and    $hom(g)
-\buildrel\*\over  = w(hom(g_1),\ldots,hom(g_n))$ is in the ``conjugated''
-stabilizer.  If,  more  generally,  <hom>   is  a  right   inverse to   a
-homomorphism~$\varphi$   (i.e.,      $\varphi(hom(g))=g\,\forall     g$),
-equality~$\*$ holds modulo   ${\rm  Ker}\,\varphi$;  in  this  case   the
-``conjugated''   chain can  be  made  into   a  real stabilizer  chain by
-extending  each level  with    the generators ${\rm  Ker}\,\varphi$   and
-appending a  proper stabilizer chain of~${\rm  Ker}\,\varphi$ at the end.
-These special cases will  occur in the  algorithms for permutation  group
-homomorphisms (see~"Homomorphisms!for permutation groups").
-
-To ``conjugate''  the  points  (i.e., `orbit')  and  permutations  (i.e.,
-`labels') of the Schreier  tree, a loop is  set up over the `orbit'  list
-constructed  during the  orbit algorithm,  and for each  vertex  <b> with
-unique edge $a\labelto l b$ ending at  <b>, the label  <l> is mapped with
-<hom> and <b> with   <map>. We assume  that  the `orbit' list   was built
-w.r.t.~a  certain ordering of the  labels, where $l'\<l$ means that every
-point in the  orbit was mapped with  $l'$ before it  was mapped with <l>.
-This shape of the  `orbit'  list is guaranteed if   the Schreier tree  is
-extended only by  `AddGeneratorsExtendSchreierTree', and it  is then also
-guaranteed  for the ``conjugated''  Schreier  tree. (The  ordering of the
-labels cannot be read from the Schreier tree, however.)
-
-In the generalized case, it   can happen that the   edge $a\labelto l  b$
-bears a label <l> whose image is ``old'', i.e.,  equal to the image of an
-earlier label  $l'\<l$. Because of  the  compatibility of the  actions we
-then have   $map(b)    = map(a).  hom(l)^{-1}   =   map(a).hom(l')^{-1} =
-map(a{l'}^{-1})$, so $map(b)$ is already equal to the image of the vertex
-$a{l'}^{-1}$. This vertex must have been encountered before $b = al^{-1}$
-because $l'\<l$. We  conclude that the image of   a label can  be ``old''
-only if the vertex at  the end of  the corresponding edge has an  ``old''
-image,  too, but then  it need  not be  ``conjugated''  at all. A similar
-remark applies to labels which map under <hom> to the identity.
+This  function returns the  conjugate of the  permutation group <G> under
+the permutation <p>. <p> must be  an element of  the parent group of <G>.
+If a stabilizer  chain for <G> is already  known, it is also  conjugated.
+The   method    for this  and  some    generalizations   are explained in
+"ext:Generalized conjugation technique" in the extension manual.
 
 \>Centralizer( <G>, <U> \| <u> )!{for permutation groups}
 \>Normalizer( <G>, <U> )!{for permutation groups}
@@ -584,14 +527,14 @@ These functions    are    applications  of  the   method   described   in
 "SubgroupProperty". Below the refinements  used  in each particular  case
 are described.
 
-\medskip\noindent
+\medskip
 *Centralizer:* $\Pi \mapsto \Pi  \wedge \Pi u$.  Here, $\wedge$ denotes a
 ``meet'' of partitions which obeys $(\Psi \wedge  \Psi')h = \Psi h \wedge
 \Psi'h$   for arbitrary partitions $\Psi,\Psi'$   and for any permutation
 <h>. If <U> is a subgroup, this refinement is used for each generator <u>
 of~<U>.
 
-\medskip\noindent
+\medskip
 *Normalizer:*  First, every $g\in N_G(U)$ must  permute the <U>-orbits of
 equal  length among   themselves  (and if  <g>   is  in a  multiple-point
 stabilizer $U^{(i)}$,  also the   $U^{(i)}$-orbits). Furthermore, if  the
@@ -620,7 +563,7 @@ permutation  groups"),  this socle is   regular (and elementary abelian);
 then the refinements   for the regular   socle are also  employed in  the
 calculation of the normalizer of~<U>.
 
-% \medskip\noindent
+% \medskip
 % *Two-closure:* By definition, an element of the full symmetric group lies
 % in the two-closure of <G> if it preserves all the orbital graphs $(a,b)G$
 % of~<G>,   and the   refinements  derived   from  this  condition  for the
@@ -631,7 +574,7 @@ calculation of the normalizer of~<U>.
 % is shown  in~\cite{LPS88}  that an element    belongs to the  two-closure
 % of~<G> if and only if it normalizes~<G> and preserves all orbital graphs.
 
-\medskip\noindent
+\medskip
 *Intersection:*      If     $\Delta_i$   is  the       partition     into
 $H_{a_1,\ldots,a_{i-1}}$-orbits, then the  refinement  used to  construct
 $\Pi_i$    resp.~$\Sigma_i$    is   $\Pi\mapsto      \Pi\wedge  \Delta_i$
@@ -660,6 +603,30 @@ nontrivial  centre. Then the <p>-Sylow  subgroup   of the centralizer  is
 computed and returned. Note  that the centralizer  operates imprimitively
 on the cycles of <g>, and hence must be a proper subgroup of <G>.
 
+\>ConjugacyClasses( <G> )!{for permutation groups}
+\>RationalClasses( <G> )!{for permutation groups}
+
+The default method for computing conjugacy classes in a permutation group
+is to compute the  rational classes and decompose   them as shows in  the
+example in "Rational classes!for groups".  But this method is replaced by
+more elementary methods in the following cases:
+\beginlist
+  \item{$\bullet$} if  <G> has order at most  1000 or `HasAsList( <G> )',
+    an orbit algorithm is performed on the element list,
+  \item{$\bullet$}   if <G> is  simple,   classes  are  found by   random
+    searching and conjugacy tests,
+  \item{$\bullet$} if  <G> is  solvable (this  is tested),   the solvable
+    method from "ConjugacyClasses!for solvable groups" is used.
+\endlist
+The  determination of the rational  classes follows  the method described
+in~\cite{Butler94}:  The rational  classes  of  the Sylow subgroups   are
+determined by the special method for $p$-groups (see "RationalClasses!for
+p-groups"), they  are then fused in the  full group. The rational classes
+of elements of non  prime power order are  found as homomorphic images in
+the   centralizers of  the  $p$-class representatives  (among whose roots
+representatives  of all  classes can be  found).  If  <G>  is a $p$-group
+itself, only the first step of this computation is needed.
+
 \>Socle( <G> )!{for primitive permutation groups}
 \>Earns( <G>, <D> \[, OnPoints \] )!{for permutation groups}
 
@@ -673,6 +640,19 @@ developed  by  P.~Neumann. The theorem and   the algorithms are described
 in~\cite{Neumann87}. `Earns'  returns  `false'  if <G>  is  not primitive
 on~<D>  or not  of  affine type,  whereas `Socle'  signals  an error  for
 non-primitive~<G>.
+
+\>Omega( <G>, <p> \[, <n> \] )!{for abelian permutation p-groups}
+
+If <G> is an abelian <p>-group in  normal form $G=C_{p^n_1} \times \ldots
+\times  C_{p^n_r}$ where the  direct factor  $C_{p^n_i}$ is generated  by
+$\zeta_i\in   G$,   then  `Omega(   <G>,      <p>,  <n>  )   =   $\langle
+\zeta_1^{p^{n_1-n}}\rangle      \times              \ldots         \times
+\langle\zeta_r^{p^{n_r-n}}\rangle$', where negative powers of $p$ must be
+replaced     by~1  (e.g.,  if   $\zeta$    has  order~<p>, then   `Omega(
+$\langle\zeta\rangle$,  <p>, 2 )' would be $\langle\zeta^{1/{<p>}}\rangle
+:= \langle\zeta\rangle$, i.e., the whole group). The generators~$\zeta_i$
+are   determined by  the  function `IndependentGeneratorsOfAbelianGroup',
+which has an efficient method for permutation groups.
 
 \>RightTransversal( <G>, <U> )!{for permutation groups} 
 
@@ -767,19 +747,6 @@ solvable   permutation groups is    not  exceeded. Nilpotency is   tested
 analogously with  a pcgs whose series has  central factors (and  with the
 bound   on  the   nilpotency  class  mentioned  in    the description  of
 `LowerCentralSeries' for nilpotent permutation groups).
-
-\>IndependentGeneratorsAbelianPermGroup( <G> )
-
-This is for you to explain, Martin.
-
-\>Omega( <G>, <p>, <n> )!{for permutation groups}
-
-If <G> is an abelian <p>-group in normal  form $G=Z_{p^n_1} \times \ldots
-\times  Z_{p^n_r}$ where  the  direct factor $Z_{p^n_i}$  is generated by
-$\zeta_i\in  G$, then $\Omega_n(G)  = \langle  \zeta_1^{p^{n_1-n}}\rangle
-\times \ldots    \times      \langle\zeta_r^{p^{n_r-n}}\rangle$.      The
-generators~$\zeta_i$    are     determined           by  the     function
-`IndependentGeneratorsAbelianPermGroup'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Group functions!for solvable permutation groups}
@@ -913,12 +880,12 @@ characteristic properties of a pcgs.
 orbits $b_jG_i^{(j)}g_i^k$ for  $k=0,\ldots,  p-1$ with <p>  the relative
 order of~$g_i$.
 
-(3) The `labels' components  (as explained in "Stabilizer chain records")
-are  identical  on every level  of  the stabilizer chain  and this common
-`labels' list  (except  for the first  entry, which  is the  identity) is
-equal  to  the list <pcgs>.  In fact,  the calculation of  the generating
-sequence  is a side-effect of  the  stabilizer chain extensions performed
-according to rules (1) and~(2).
+(3) The `labels'  components   (as  explained in  "ext:Stabilizer   chain
+records" in the  extension manual) are  identical on  every level  of the
+stabilizer  chain and  this common  `labels'  list (except  for the first
+entry, which is the  identity) is equal to the  list <pcgs>. In fact, the
+calculation of the generating sequence is a side-effect of the stabilizer
+chain extensions performed according to rules (1) and~(2).
 
 \>ExponentsOfPcElement( <pcgs>, <g> )!{for solvable permutation groups}
 \>DepthOfPcElement( <pcgs>, <g> )!{for solvable permutation groups}
@@ -1099,25 +1066,26 @@ which uses the size of the source to know when to stop.
 \>CoKernel( <ghom> )%
   !{for `GroupGeneralMappingByImages'!for permutation groups}
 
-The  cokernel  of   <ghom> is determined   by   the method   described in
-"CoKernel!for `GroupGeneralMappingByImages'",  where  we take the  set of
+The  cokernel   of  <ghom>  is  determined by   the   method described in
+"CoKernel!for  `GroupGeneralMappingByImages'", where  we  take the set of
 all Schreier generators as a defining set of relations  for the source of
-<ghom>. More  precisely, for each  level  <S> of the  stabilizer chain of
+<ghom>. More precisely, for  each  level <S>  of the stabilizer  chain of
 <ghom>, for each `$p\in S$.orbit'  and for each `$g\in S$.generators', we
-form the  Schreier generator `<s>  := InverseRepresentative( <S>, <p> ) ^
--1 \* <g> \* InverseRepresentative( <S>, <p> ^ <g> )'. This  is a word in
-the labels of <S> (and so in <gens>) which  lies in `<S>.stabilizer' (see
-"Stabilizer chain records"), and we consider as relator the quotient `<s>
-/ $w(gens)$' where $w(gens)$  is  the factorization  of <s> by  reduction
-along the  stabilizer chain `<S>.stabilizer'  as described in "Stabilizer
-chains". The Reidemeister-Schreier rewriting method shows that this gives
-indeed a set  of  defining relations. Each  relator is  a word $w_j$   in
-<gens> which yields the identity in the source of <ghom>, because it is a
-relator in the free  group. The normal closure in  the range of <ghom> of
-the set  $\{w_j(imgs)\}$ of  the  values of these  words  with the images
-substituted is then the subgroup of images of the identity element of the
-source.  In particular,  a  total  <ghom> is  a   mapping if  and only if
-$w_j(imgs)$ is the identity for all~<j>.
+form the Schreier generator  `<s> := InverseRepresentative(  <S>, <p> ) ^
+-1 \* <g> \* InverseRepresentative( <S>, <p> ^ <g>  )'. This is a word in
+the labels of <S> (and so in  <gens>) which lies in `<S>.stabilizer' (see
+"ext:Stabilizer chain records" in the  extension manual), and we consider
+as  relator  the  quotient  `<s>  /  $w(gens)$' where  $w(gens)$   is the
+factorization  of   <s>   by   reduction  along  the   stabilizer   chain
+`<S>.stabilizer'   as    described    in "Stabilizer     chains".     The
+Reidemeister-Schreier rewriting method shows that this gives indeed a set
+of defining   relations. Each relator  is  a word $w_j$   in <gens> which
+yields the identity in the source  of <ghom>, because  it is a relator in
+the free group. The  normal closure  in the  range of  <ghom> of the  set
+$\{w_j(imgs)\}$ of the values of  these words with the images substituted
+is then the subgroup of images of the identity  element of the source. In
+particular, a total <ghom> is a mapping if and only if $w_j(imgs)$ is the
+identity for all~<j>.
 
 \>ImagesRepresentative( <ghom>, <elm> )%
   !{for `GroupGeneralMappingByImages'!for permutation groups}

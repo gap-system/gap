@@ -13,7 +13,7 @@
 **  various  labels determine which operating  system is  actually used, they
 **  are described in "system.c".
 */
-#include        "system.h"              /* system dependent stuff          */
+#include        "system.h"              /* system dependent part           */
 
 SYS_CONST char * Revision_sysfiles_c =
    "@(#)$Id$";
@@ -26,13 +26,15 @@ SYS_CONST char * Revision_sysfiles_c =
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
+#include        "gap.h"                 /* error handling, initialisation  */
+
 #include        "gvars.h"               /* global variables                */
 
-#include        "lists.h"               /* generic list package            */
-#include        "listfunc.h"            /* generic list functions          */
+#include        "lists.h"               /* generic lists                   */
+#include        "listfunc.h"            /* functions for generic lists     */
 
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings and characters          */
+#include        "string.h"              /* strings                         */
 
 #include        "records.h"             /* generic records                 */
 
@@ -84,15 +86,17 @@ extern int write ( int, char *, int );
 #endif
 
 
+/* HP-UX already defines SYS_FORK */
+
 #ifdef SYS_HAS_NO_VFORK
-# define SYS_FORK_NAME	fork
+# define SYS_MY_FORK    fork
 #else
-# define SYS_FORK_NAME	vfork
+# define SYS_MY_FORK    vfork
 #endif
 
 
 #ifndef SYS_HAS_EXEC_PROTO
-extern int SYS_FORK_NAME ( void );
+extern int SYS_MY_FORK ( void );
 #ifndef SYS_HAS_BROKEN_EXEC_PROTO
 extern int execve (SYS_CONST char*,char * SYS_CONST [],char * SYS_CONST []);
 #else
@@ -134,11 +138,11 @@ extern int             kill ( int, int );
 */
 #if SYS_BSD || SYS_MACH || SYS_USG
 
-#include "compstat.h"
+#include        "compstat.h"            /* statically linked modules       */
 
 Int SyFindOrLinkGapRootFile (
     Char *              filename,
-    UInt4               crc_gap,
+    Int4                crc_gap,
     Char *              result, 
     Int                 len )
 {
@@ -150,15 +154,15 @@ Int SyFindOrLinkGapRootFile (
     Char *              tmp;
     Char                module [256];
     Char                name [256];
-    StructCompInitInfo* info_dyn;
-    StructCompInitInfo* info_sta;
+    StructCompInitInfo* info_dyn = 0;
+    StructCompInitInfo* info_sta = 0;
     Int                 k;
 
 #if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY)
     Char *              p;
     Char *              dot;
     Int                 pos;
-    Int                 pot;
+    Int                 pot = 0;
     CompInitFunc        init;
 #endif
 
@@ -167,8 +171,8 @@ Int SyFindOrLinkGapRootFile (
     tmp = SyFindGapRootFile(filename);
     if ( tmp ) {
         SyStrncat( result, tmp, len );
-	name[0] = '\0';
-	SyStrncat( name, tmp, 255 );
+        name[0] = '\0';
+        SyStrncat( name, tmp, 255 );
     }
     if ( result[0] ) {
         if ( SyIsReadableFile(result) == 0 ) {
@@ -252,7 +256,7 @@ Int SyFindOrLinkGapRootFile (
 
     /* check if we have to compute the crc                                 */
     if ( crc_gap == 0 && found_gap && ( found_dyn || found_sta ) ) {
-	crc_gap = SyGAPCRC(name);
+        crc_gap = SyGAPCRC(name);
     }
 
     /* now decide what to do                                               */
@@ -292,7 +296,9 @@ Int SyFindOrLinkGapRootFile (
 *F  SyGAPCRC( <name> )  . . . . . . . . . . . . . . . . . . crc of a GAP file
 **
 **  This function should  be clever and handle  white spaces and comments but
-**  one has to certain that such characters are not ignored in strings.
+**  one has to make certain that such characters are not ignored in strings.
+**
+**  This function *never* returns a 0 unless an error occurred.
 */
 static UInt4 syCcitt32[ 256 ] = 
 {
@@ -341,7 +347,7 @@ static UInt4 syCcitt32[ 256 ] =
 0x2a6f2b94L, 0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL, 0x2d02ef8dL
 };
 
-UInt4 SyGAPCRC( Char * name )
+Int4 SyGAPCRC( Char * name )
 {
     UInt4       crc;
     UInt4       old;
@@ -358,6 +364,7 @@ UInt4 SyGAPCRC( Char * name )
 
     /* read in the file byte by byte and compute the CRC                   */
     crc = 0x12345678L;
+    seen_nl = 0;
     while ( ( ch = fgetc(syBuf[fid].fp) ) != EOF ) {
         if ( ch == '\377' || ch == '\n' || ch == '\r' )
             ch = '\n';
@@ -373,10 +380,13 @@ UInt4 SyGAPCRC( Char * name )
         new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
         crc = old ^ new;
     }
+    if ( crc == 0 ) {
+        crc = 1;
+    }
 
     /* and close it again                                                  */
     SyFclose( fid );
-    return crc;
+    return ((Int4) crc) >> 4;
 }
 
 
@@ -3594,20 +3604,20 @@ extern char * sys_errlist[];
 
 void SySetErrorNo ( void )
 {
-    SYS_CONST Char *	err;
+    SYS_CONST Char *    err;
 
     if ( errno != 0 ) {
-	SyLastErrorNo = errno;
+        SyLastErrorNo = errno;
 #ifdef SYS_HAS_NO_STRERROR
-	err = sys_errlist[errno];
+        err = sys_errlist[errno];
 #else
-	err = strerror(errno);
+        err = strerror(errno);
 #endif
-	SyLastErrorMessage[0] = '\0';
-	SyStrncat( SyLastErrorMessage, err, 1023 );
+        SyLastErrorMessage[0] = '\0';
+        SyStrncat( SyLastErrorMessage, err, 1023 );
     }
     else {
-	SyClearErrorNo();
+        SyClearErrorNo();
     }
 }
 
@@ -3710,8 +3720,10 @@ UInt SyExecuteProcess (
     Int                     out,
     Char *                  args[] )
 {
-    SYS_PID_T               pid;
-    int                     status;                    /* do not use `Int' */
+    SYS_PID_T               pid;                    /* process id          */
+    int                     status;                 /* do not use `Int'    */
+    Int                     tin;                    /* temp in             */
+    Int                     tout;                   /* temp out            */
     SYS_SIG_T               (*func)(int);
 
 #ifdef SYS_HAS_WAIT4
@@ -3720,7 +3732,7 @@ UInt SyExecuteProcess (
 
 
     /* clone the process                                                   */
-    pid = SYS_FORK_NAME();
+    pid = SYS_MY_FORK();
     if ( pid == -1 ) {
         return -1;
     }
@@ -3728,34 +3740,34 @@ UInt SyExecuteProcess (
     /* we are the parent                                                   */
     if ( pid != 0 ) {
 
-	/* ignore a CTRL-C                                                 */
-	func = signal( SIGINT, SIG_IGN );
+        /* ignore a CTRL-C                                                 */
+        func = signal( SIGINT, SIG_IGN );
 
-	/* wait for some action                                            */
+        /* wait for some action                                            */
 #ifdef SYS_HAS_WAIT4
 
         if ( wait4( pid, &status, 0, &usage ) == -1 ) {
-	    signal( SIGINT, func );
+            signal( SIGINT, func );
             return -1;
         }
-	if ( WIFSIGNALED(status) ) {
-	    signal( SIGINT, func );
-	    return -1;
-	}
-	signal( SIGINT, func );
+        if ( WIFSIGNALED(status) ) {
+            signal( SIGINT, func );
+            return -1;
+        }
+        signal( SIGINT, func );
         return WEXITSTATUS(status);
 
 #else
 
         if ( waitpid( pid, &status, 0 ) == -1 ) {
-	    signal( SIGINT, func );
+            signal( SIGINT, func );
             return -1;
         }
-	if ( WIFSIGNALED(status) ) {
-	    signal( SIGINT, func );
-	    return -1;
-	}
-	signal( SIGINT, func );
+        if ( WIFSIGNALED(status) ) {
+            signal( SIGINT, func );
+            return -1;
+        }
+        signal( SIGINT, func );
         return WEXITSTATUS(status);
 
 #endif
@@ -3771,36 +3783,36 @@ UInt SyExecuteProcess (
 
         /* if <in> is -1 open "/dev/null"                                  */
         if ( in == -1 ) {
-            in = open( "/dev/null", O_RDONLY );
-            if ( in == -1 ) {
+            tin = open( "/dev/null", O_RDONLY );
+            if ( tin == -1 ) {
                 _exit(-1);
             }
         }
-	else {
-	    in = SyFileno(in);
-	}
+        else {
+            tin = SyFileno(in);
+        }
 
         /* if <out> is -1 open "/dev/null"                                 */
         if ( out == -1 ) {
-            out = open( "/dev/null", O_WRONLY );
-            if ( out == -1 ) {
+            tout = open( "/dev/null", O_WRONLY );
+            if ( tout == -1 ) {
                 _exit(-1);
             }
         }
-	else {
-	    out = SyFileno(out);
-	}
+        else {
+            tout = SyFileno(out);
+        }
 
         /* set standard input to <in>, standard output to <out>            */
-        if ( in != 0 ) {
-            if ( dup2( in, 0 ) == -1 ) {
+        if ( tin != 0 ) {
+            if ( dup2( tin, 0 ) == -1 ) {
                 _exit(-1);
             }
         }
         fcntl( 0, F_SETFD, 0 );
 
-        if ( out != 1 ) {
-            if ( dup2( out, 1 ) == -1 ) {
+        if ( tout != 1 ) {
+            if ( dup2( tout, 1 ) == -1 ) {
                 _exit(-1);
             }
         }
@@ -3837,17 +3849,17 @@ UInt SyExecuteProcess (
 
 Int SyIsExistingFile ( Char * name )
 {
-    Int		res;
+    Int         res;
 
     SyClearErrorNo();
     res = access( name, F_OK );
     if ( res == -1 ) {
-	if ( errno != ENOENT ) {
-	    SySetErrorNo();
-	}
-	else {
-	    res = 1;
-	}
+        if ( errno != ENOENT ) {
+            SySetErrorNo();
+        }
+        else {
+            res = 1;
+        }
     }
     return res;
 }
@@ -3872,12 +3884,12 @@ Int SyIsExistingFile ( Char * name )
 
 Int SyIsReadableFile ( Char * name )
 {
-    Int		res;
+    Int         res;
 
     SyClearErrorNo();
     res = access( name, R_OK );
     if ( res == -1 ) {
-	SySetErrorNo();
+        SySetErrorNo();
     }
     return res;
 }
@@ -3902,17 +3914,17 @@ Int SyIsReadableFile ( Char * name )
 
 Int SyIsWritableFile ( Char * name )
 {
-    Int		res;
+    Int         res;
 
     SyClearErrorNo();
     res = access( name, W_OK );
     if ( res == -1 ) {
-	if ( errno != EROFS && errno != EACCES ) {
-	    SySetErrorNo();
-	}
-	else {
-	    res = 1;
-	}
+        if ( errno != EROFS && errno != EACCES ) {
+            SySetErrorNo();
+        }
+        else {
+            res = 1;
+        }
     }
     return res;
 }
@@ -3937,23 +3949,23 @@ Int SyIsWritableFile ( Char * name )
 
 Int SyIsExecutableFile ( Char * name )
 {
-    Int		res;
+    Int         res;
 
     SyClearErrorNo();
     res = access( name, X_OK );
     if ( res == -1 ) {
-	if ( errno == EACCES ) {
-	    if ( SyIsExistingFile(name) == 0 ) {
-		res = 1;
-	    }
-	    else {
-		errno = EACCES;
-		SySetErrorNo();
-	    }
-	}
-	else {
-	    SySetErrorNo();
-	}
+        if ( errno == EACCES ) {
+            if ( SyIsExistingFile(name) == 0 ) {
+                res = 1;
+            }
+            else {
+                errno = EACCES;
+                SySetErrorNo();
+            }
+        }
+        else {
+            SySetErrorNo();
+        }
     }
     return res;
 }
@@ -3984,7 +3996,7 @@ Int SyIsDirectoryPath ( Char * name )
 
     SyClearErrorNo();
     if ( stat( name, &buf ) == -1 ) {
-	SySetErrorNo();
+        SySetErrorNo();
         return -1;
     }
     return S_ISDIR(buf.st_mode) ? 0 : 1;
@@ -4076,7 +4088,7 @@ Char * SyTmpname ( void )
         base = tmpnam( (char*)0 );
     }
     if ( base == 0 ) {
-	SySetErrorNo();
+        SySetErrorNo();
         return 0;
     }
     name[0] = 0;
@@ -4125,7 +4137,7 @@ Char * SyTmpdir ( Char * hint )
     /* create a new directory                                              */
     res = mkdir( tmp, 0777 );
     if ( res == -1 ) {
-	SySetErrorNo();
+        SySetErrorNo();
         return 0;
     }
 

@@ -45,6 +45,18 @@ gap> gens[9], gens[10], gens[11], gens[12], gens[13], gens[14] );;
 gap> v:=Group( gens[1], gens[2], gens[3]*gens[5], gens[4]*gens[6],
 gap> gens[7]*gens[11],gens[8]*gens[12],gens[9]*gens[13], gens[10]*gens[14]);;
 gap> Intersection(u,v);;
+gap> g:=Group((1,15,8,4,14,9)(2,16,7,3,13,10)(5,18,12)(6,17,11),
+gap> (1,3)(2,4)(7,9)(8,10)(13,15)(14,16),
+gap> (1,3,6)(2,4,5)(7,9,12)(8,10,11)(13,15,18)(14,16,17),
+gap> (5,6)(7,8)(9,10)(13,14)(15,16),(1,2)(7,8)(13,14),(1,2)(3,4)(5,6),
+gap> (7,8)(9,10)(11,12),(13,14)(15,16)(17,18));;
+gap> cl:=ConjugacyClasses(Image(IsomorphismPcGroup(g),g));;
+gap> G := Group( ( 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14), (15,16) );;
+gap> sys := SylowSystem( G );;
+gap> List( sys, Size );                                                
+[ 4, 7 ]
+gap> List(sys,i->Length(AsList(i)));
+[ 4, 7 ]
 
 # that's all, folks
 gap> STOP_TEST( "grppc.tst", 46360000 );

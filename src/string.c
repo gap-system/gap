@@ -1,6 +1,7 @@
 /****************************************************************************
 **
-*A  string.c                    GAP source                   Martin Schoenert
+*W  string.c                    GAP source                       Frank Celler
+*W                                                         & Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -45,38 +46,48 @@
 **  by 'FunPrint', and 'IsString', which test whether an arbitrary list  is a
 **  string, and if so converts it into the above format.
 */
-char *          Revision_string_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_string_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* system dependent functions      */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
-
+#include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations package      */
+#include        "opers.h"               /* generic operations              */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* generic list package            */
+#include        "ariths.h"              /* basic arithmetic                */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "plist.h"               /* GET_LEN_PLIST, GET_ELM_PLIST,...*/
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "range.h"               /* GET_LEN_RANGE, GET_LOW_RANGE,...*/
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "range.h"               /* ranges                          */
 
 #define INCLUDE_DECLARATION_PART
-#include        "string.h"              /* declaration part of the package */
+#include        "string.h"              /* strings                         */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "gap.h"                 /* Error                           */
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * * character functions  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 
 *V  ObjsChar[<chr>] . . . . . . . . . . . . . . . . table of character values
 **
@@ -161,6 +172,37 @@ void PrintChar (
 
 /****************************************************************************
 **
+*F  SaveChar( <char> )  . . . . . . . . . . . . . . . . . .  save a character
+**
+*/
+void SaveChar ( Obj c )
+{
+    SaveUInt1( *(UChar *)ADDR_OBJ(c));
+}
+
+
+/****************************************************************************
+**
+*F  LoadChar( <char> )  . . . . . . . . . . . . . . . . . .  load a character
+**
+*/
+void LoadChar( Obj c )
+{
+    *(UChar *)ADDR_OBJ(c) = LoadUInt1();
+}
+
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+
 *F  FuncCHAR_INT( <self>, <int> ) . . . . . . . . . . . . . . char by integer
 */
 Obj FuncCHAR_INT (
@@ -174,7 +216,7 @@ again:
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
             "<val> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
+            (Int)TNAM_OBJ(val), 0L,
             "you can return an integer for <val>" );
     }
     chr = INT_INTOBJ(val);
@@ -202,7 +244,7 @@ Obj FuncINT_CHAR (
     while ( TNUM_OBJ(val) != T_CHAR ) {
         val = ErrorReturnObj(
             "<val> must be a character (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
+            (Int)TNAM_OBJ(val), 0L,
             "you can return a character for <val>" );
     }
 
@@ -214,58 +256,12 @@ Obj FuncINT_CHAR (
 /****************************************************************************
 **
 
-*F  NEW_STRING(<len>) . . . . . . . . . . . . . . . . . . . make a new string
-**
-**  'NEW_STRING' makes a new string with room for <len> characters.
-**
-**  Note that 'NEW_STRING' is a macro, so do not  call it with arguments that
-**  have sideeffects.
-**
-**  'NEW_STRING'  is  defined in   the declaration part  of this   package as
-**  follows
-**
-#define NEW_STRING(len) \
-                        NewBag( T_STRING, (len) + 1 )
+*F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
 */
-
 
 /****************************************************************************
 **
-*F  CSTR_STRING(<list>) . . . . . . . . . . . . . . . .  C string of a string
-**
-**  'CSTR_STRING'  returns the (address  of the)  C  character string of  the
-**  string <list>.
-**
-**  Note that 'CSTR_STRING' is a macro, so do not call it with arguments that
-**  have sideeffects.
-**
-**  'CSTR_STRING' is  defined  in the declaration part   of  this package  as
-**  follows
-**
-#define CSTR_STRING(list) \
-                        ((Char*)ADDR_OBJ(list))
-*/
 
-
-/****************************************************************************
-**
-*F  GET_LEN_STRING(<list>)  . . . . . . . . . . . . . . .  length of a string
-**
-**  'GET_LEN_STRING' returns the length of the string <list>, as a C integer.
-**
-**  Note that  'GET_LEN_STRING' is a macro, so  do not call it with arguments
-**  that have sideeffects.
-**
-**  'GET_LEN_STRING' is defined  in the declaration  part of this  package as
-**  follows
-**
-#define GET_LEN_STRING(list) \
-                        (SIZE_OBJ(list)-1)
-*/
-
-
-/****************************************************************************
-**
 *F  GET_ELM_STRING(<list>,<pos>)  . . . . . . . select an element of a string
 **
 **  'GET_ELM_STRING'  returns the  <pos>-th  element  of  the string  <list>.
@@ -291,13 +287,12 @@ Obj FuncINT_CHAR (
 **
 **  'TypeString' is the function in 'TypeObjFuncs' for strings.
 */
-extern  Obj             TYPE_LIST_EMPTY_MUTABLE;
+extern Obj TYPE_LIST_EMPTY_MUTABLE;
+extern Obj TYPE_LIST_EMPTY_IMMUTABLE;
+extern Obj TYPE_LIST_HOM;
 
-extern  Obj             TYPE_LIST_EMPTY_IMMUTABLE;
 
-extern  Obj             TYPE_LIST_HOM;
-
-Obj             TypeString (
+Obj TypeString (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -337,6 +332,35 @@ Obj             TypeString (
 
 /****************************************************************************
 **
+*F  SaveString( <string> )  . . . . . . . . . . . . . . . . . . save a string
+**
+*/
+void SaveString ( Obj string )
+{
+    SaveCStr( CSTR_STRING(string) );
+}
+
+/****************************************************************************
+**
+*F  LoadString( <string> )
+**
+*/
+void LoadString ( Obj string )
+{
+    LoadCStr( CSTR_STRING(string),
+              SIZE_OBJ(string)*(sizeof(Obj)/sizeof(Char)) );
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * copy functions * * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 
 *F  CopyString( <list>, <mut> ) . . . . . . . . . . . . . . . . copy a string
 **
@@ -382,7 +406,7 @@ Obj CopyString (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    RetypeBag( list, TNUM_OBJ(list) + COPYING );
+    MARK_LIST( list, COPYING );
 
     /* copy the subvalues                                                  */
     for ( i = 1; i < (SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj); i++ ) {
@@ -427,12 +451,19 @@ void CleanStringCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    RetypeBag( list, TNUM_OBJ(list) - COPYING );
+    UNMARK_LIST( list, COPYING );
 }
 
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * * list functions * * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 
 *F  PrintString(<list>) . . . . . . . . . . . . . . . . . . .  print a string
 **
@@ -441,7 +472,7 @@ void CleanStringCopy (
 **  No  linebreaks are allowed,  if one must be  inserted  anyhow, it must be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-void            PrintString (
+void PrintString (
     Obj                 list )
 {
     Pr( "\"%S\"", (Int)CSTR_STRING(list), 0L );
@@ -455,7 +486,7 @@ void            PrintString (
 **  'PrintString1' prints the string  constant  in  the  format  used  by the
 **  'Print' and 'PrintTo' function.
 */
-void            PrintString1 (
+void PrintString1 (
     Obj                 list )
 {
     Pr( "%s", (Int)CSTR_STRING(list), 0L );
@@ -469,7 +500,7 @@ void            PrintString1 (
 **  'EqString'  returns  'true' if the  two  strings <listL>  and <listR> are
 **  equal and 'false' otherwise.
 */
-Int             EqString (
+Int EqString (
     Obj                 listL,
     Obj                 listR )
 {
@@ -484,7 +515,7 @@ Int             EqString (
 **  'LtString' returns 'true' if  the string <listL> is  less than the string
 **  <listR> and 'false' otherwise.
 */
-Int             LtString (
+Int LtString (
     Obj                 listL,
     Obj                 listR )
 {
@@ -500,7 +531,7 @@ Int             LtString (
 **
 **  'LenString' is the function in 'LenListFuncs' for strings.
 */
-Int             LenString (
+Int LenString (
     Obj                 list )
 {
     return GET_LEN_STRING( list );
@@ -522,7 +553,7 @@ Int             LenString (
 **  'IsbString'  is the function in 'IsbListFuncs'  for strings.
 **  'IsbvString' is the function in 'IsbvListFuncs' for strings.
 */
-Int             IsbString (
+Int IsbString (
     Obj                 list,
     Int                 pos )
 {
@@ -530,7 +561,7 @@ Int             IsbString (
     return (pos <= GET_LEN_STRING(list));
 }
 
-Int             IsbvString (
+Int IsbvString (
     Obj                 list,
     Int                 pos )
 {
@@ -554,7 +585,7 @@ Int             IsbvString (
 **  'Elm0String'  is the function on 'Elm0ListFuncs'  for strings.
 **  'Elm0vString' is the function in 'Elm0vListFuncs' for strings.
 */
-Obj             Elm0String (
+Obj Elm0String (
     Obj                 list,
     Int                 pos )
 {
@@ -566,7 +597,7 @@ Obj             Elm0String (
     }
 }
 
-Obj             Elm0vString (
+Obj Elm0vString (
     Obj                 list,
     Int                 pos )
 {
@@ -593,7 +624,7 @@ Obj             Elm0vString (
 **  'ElmfString' is the function in 'ElmfListFuncs' for strings.
 **  'ElmwString' is the function in 'ElmwListFuncs' for strings.
 */
-Obj             ElmString (
+Obj ElmString (
     Obj                 list,
     Int                 pos )
 {
@@ -627,7 +658,7 @@ Obj             ElmString (
 **
 **  'ElmsString' is the function in 'ElmsListFuncs' for strings.
 */
-Obj             ElmsString (
+Obj ElmsString (
     Obj                 list,
     Obj                 poss )
 {
@@ -738,14 +769,14 @@ Obj             ElmsString (
 **
 *N  1996/06/11 mschoene this is the default and should probably not be here
 */
-void            AssString (
+void AssString (
     Obj                 list,
     Int                 pos,
     Obj                 val )
 {
     /* convert the range into a plain list                                 */
-    PLAIN_LIST( list );
-    RetypeBag( list, T_PLIST );
+    PLAIN_LIST(list);
+    CLEAR_FILTS_LIST(list);
 
     /* resize the list if necessary                                        */
     if ( LEN_PLIST(list) < pos ) {
@@ -758,7 +789,7 @@ void            AssString (
     CHANGED_BAG( list );
 }
 
-void            AssStringImm (
+void AssStringImm (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -786,20 +817,20 @@ void            AssStringImm (
 **  same stuff as 'AsssPlist'.  This is because a  string  is not very likely
 **  to stay a string after the assignment.
 */
-void            AsssString (
+void AsssString (
     Obj                 list,
     Obj                 poss,
     Obj                 vals )
 {
     /* convert <list> to a plain list                                      */
-    PLAIN_LIST( list );
-    RetypeBag( list, T_PLIST );
+    PLAIN_LIST(list);
+    CLEAR_FILTS_LIST(list);
 
     /* and delegate                                                        */
     ASSS_LIST( list, poss, vals );
 }
 
-void            AsssStringImm (
+void AsssStringImm (
     Obj                 list,
     Obj                 poss,
     Obj                 val )
@@ -819,7 +850,7 @@ void            AsssStringImm (
 **
 **  'IsDenseString' is the function in 'IsDenseListFuncs' for strings.
 */
-Int             IsDenseString (
+Int IsDenseString (
     Obj                 list )
 {
     return 1L;
@@ -835,7 +866,7 @@ Int             IsDenseString (
 **
 **  'IsHomogString' is the function in 'IsHomogListFuncs' for strings.
 */
-Int             IsHomogString (
+Int IsHomogString (
     Obj                 list )
 {
     return (0 < GET_LEN_STRING(list));
@@ -851,32 +882,33 @@ Int             IsHomogString (
 **
 **  'IsSSortString' is the function in 'IsSSortListFuncs' for strings.
 */
-Int             IsSSortString (
+Int IsSSortString (
     Obj                 list )
 {
     Int                 len;
     Int                 i;
+    UInt1 *             ptr;
 
     /* test whether the string is strictly sorted                          */
     len = GET_LEN_STRING( list );
+    ptr = (UInt1*) CSTR_STRING(list);
     for ( i = 1; i < len; i++ ) {
-        if ( ! (CSTR_STRING(list)[i] < CSTR_STRING(list)[i+1]) )
+        if ( ! (ptr[i] < ptr[i+1]) )
             break;
     }
 
     /* retype according to the outcome                                     */
-    RetypeBag( list, (len <= i ? T_STRING_SSORT : T_STRING_NSORT)
-                   + (IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE) );
+    SET_FILT_LIST( list, (len <= i) ? FN_IS_SSORT : FN_IS_NSORT );
     return (len <= i);
 }
 
-Int             IsSSortStringNot (
+Int IsSSortStringNot (
     Obj                 list )
 {
     return 0L;
 }
 
-Int             IsSSortStringYes (
+Int IsSSortStringYes (
     Obj                 list )
 {
     return 1L;
@@ -891,7 +923,7 @@ Int             IsSSortStringYes (
 **
 **  'IsPossString' is the function in 'TabIsPossList' for strings.
 */
-Int             IsPossString (
+Int IsPossString (
     Obj                 list )
 {
     return GET_LEN_STRING( list ) == 0;
@@ -908,7 +940,7 @@ Int             IsPossString (
 **
 **  'PosString' is the function in 'PosListFuncs' for strings.
 */
-Int             PosString (
+Int PosString (
     Obj                 list,
     Obj                 val,
     Int                 start )
@@ -945,7 +977,7 @@ Int             PosString (
 **
 **  'PlainString' is the function in 'PlainListFuncs' for strings.
 */
-void            PlainString (
+void PlainString (
     Obj                 list )
 {
     Int                 lenList;        /* logical length of the string    */
@@ -975,39 +1007,29 @@ void            PlainString (
 
 /****************************************************************************
 **
-*F  IS_STRING(<obj>)  . . . . . . . . . . . . . test if an object is a string
+
+*F  IS_STRING( <obj> )  . . . . . . . . . . . . test if an object is a string
 **
 **  'IS_STRING' returns 1  if the object <obj>  is a string  and 0 otherwise.
 **  It does not change the representation of <obj>.
-**
-**  'IS_STRING' is defined in the declaration part of this package as follows
-**
-#define IS_STRING(obj)  ((*IsStringFuncs[ TNUM_OBJ( obj ) ])( obj ))
 */
-Int             (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+Int (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-Obj             IsStringFilt;
+Obj IsStringFilt;
 
-Obj             IsStringHandler (
-    Obj                 self,
-    Obj                 obj )
-{
-    return (IS_STRING( obj ) ? True : False);
-}
-
-Int             IsStringNot (
+Int IsStringNot (
     Obj                 obj )
 {
     return 0;
 }
 
-Int             IsStringYes (
+Int IsStringYes (
     Obj                 obj )
 {
     return 1;
 }
 
-Int             IsStringList (
+Int IsStringList (
     Obj                 list )
 {
     Int                 lenList;
@@ -1024,13 +1046,13 @@ Int             IsStringList (
     return (lenList < i);
 }
 
-Int             IsStringListHom (
+Int IsStringListHom (
     Obj                 list )
 {
     return (TNUM_OBJ( ELM_LIST(list,1) ) == T_CHAR);
 }
 
-Int             IsStringObject (
+Int IsStringObject (
     Obj                 obj )
 {
     return (DoFilter( IsStringFilt, obj ) != False);
@@ -1039,13 +1061,11 @@ Int             IsStringObject (
 
 /****************************************************************************
 **
-*F  ConvString(<string>)  . . . convert a string to the string representation
+*F  ConvString( <string> )  . . convert a string to the string representation
 **
 **  'ConvString' converts the string <list> to the string representation.
 */
-Obj             ConvStringFunc;
-
-void            ConvString (
+void ConvString (
     Obj                 string )
 {
     Int                 lenString;      /* length of the string            */
@@ -1067,11 +1087,78 @@ void            ConvString (
         CSTR_STRING(string)[i-1] = *((UChar*)ADDR_OBJ(elm));
     }
     CSTR_STRING(string)[lenString] = '\0';
-    RetypeBag( string, T_STRING + (IS_MUTABLE_OBJ(string)?0:IMMUTABLE) );
+    RetypeBag( string, IS_MUTABLE_OBJ(string)?T_STRING:T_STRING+IMMUTABLE );
     ResizeBag( string, lenString+1 );
 }
 
-Obj             ConvStringHandler (
+
+
+/****************************************************************************
+**
+*F  IsStringConv( <obj> ) . . . . . test if an object is a string and convert
+**
+**  'IsStringConv'   returns 1  if   the object <obj>  is   a  string,  and 0
+**  otherwise.   If <obj> is a  string it  changes  its representation to the
+**  string representation.
+*/
+Obj IsStringConvFilt;
+
+Int IsStringConv (
+    Obj                 obj )
+{
+    Int                 res;
+
+    /* test whether the object is a string                                 */
+    res = IS_STRING( obj );
+
+    /* if so, convert it to the string representation                      */
+    if ( res ) {
+        ConvString( obj );
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+
+*F  IsStringHandler( <self>, <obj> )  . . . . . . . .  test value is a string
+*/
+Obj IsStringHandler (
+    Obj                 self,
+    Obj                 obj )
+{
+    return (IS_STRING( obj ) ? True : False);
+}
+
+
+/****************************************************************************
+**
+*F  FuncIS_STRING_CONV( <self>, <obj> ) . . . . . . . . . . check and convert
+*/
+Obj FuncIS_STRING_CONV (
+    Obj                 self,
+    Obj                 obj )
+{
+    /* return 'true' if <obj> is a string and 'false' otherwise            */
+    return (IsStringConv(obj) ? True : False);
+}
+
+
+/****************************************************************************
+**
+*F  FuncCONV_STRING( <self>, <string> ) . . . . . . . . convert to string rep
+*/
+Obj FuncCONV_STRING (
     Obj                 self,
     Obj                 string )
 {
@@ -1079,9 +1166,9 @@ Obj             ConvStringHandler (
     if ( ! IS_STRING( string ) ) {
         string = ErrorReturnObj(
             "ConvString: <string> must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(string)].name), 0L,
+            (Int)TNAM_OBJ(string), 0L,
             "you can return a string for <string>" );
-        return ConvStringHandler( self, string );
+        return FuncCONV_STRING( self, string );
     }
 
     /* convert to the string representation                                */
@@ -1094,111 +1181,263 @@ Obj             ConvStringHandler (
 
 /****************************************************************************
 **
-*F  IsStringConv(<obj>) . . . . . . test if an object is a string and convert
-**
-**  'IsStringConv'   returns 1  if   the object <obj>  is   a  string,  and 0
-**  otherwise.   If <obj> is a  string it  changes  its representation to the
-**  string representation.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-Obj             IsStringConvFilt;
-
-Int             IsStringConv (
-    Obj                 obj )
-{
-    Int                 res;
-
-    /* test whether the object is a string                                 */
-    res = IS_STRING( obj );
-
-    /* if so, convert it to the string representation                      */
-    /* NOTE that the empty list must not be converted into a string,       */
-    /* so the string literal "" is the only empty list of type 'T_STRING'. */
-    /* This is used in 'Print' to distinguish between empty strings (which */
-    /* print nothing) and empty lists (which print as '[ ]').              */
-    if ( res && LEN_LIST( obj ) != 0 ) {
-        ConvString( obj );
-    }
-
-    /* return the result                                                   */
-    return res;
-}
-
-Obj             IsStringConvHandler (
-    Obj                 self,
-    Obj                 obj )
-{
-    /* return 'true' if <obj> is a string and 'false' otherwise            */
-    return (IsStringConv(obj) ? True : False);
-}
-
 
 /****************************************************************************
 **
 
-*F  InitString()  . . . . . . . . . . . . . . . .  initializes string package
-**
-**  'InitString' initializes the string package.
-**
-**  CharCookie is a space for the cookies passed into InitGlobalBags with the
-**  character   constants. This  must  be   static, and   different for  each
-**  character, as the cookies are only copied as pointers in InitGlobalBags.
-**
+*F  SetupString() . . . . . . . . . . . . . . . .  initializes string package
 */
-static Char CharCookie[256][17];
-
-void InitString ( void )
+void SetupString ( void )
 {
-    Int                 i,j;
     Int                 t1, t2;
-    Char *              cookie_base = "string: char ";
     
     /* install the marking function                                        */
-    InfoBags[         T_CHAR ].name = "character";
+    InfoBags[ T_CHAR ].name = "character";
     InitMarkFuncBags( T_CHAR , MarkNoSubBags );
 
-    /* make all the character constants once and for all                   */
-    for ( i = 0; i < 256; i++ ) {
-        ObjsChar[i] = NewBag( T_CHAR, 1L );
-        *(UChar*)ADDR_OBJ(ObjsChar[i]) = (UChar)i;
-        for (j = 0; j < 13; j++)
-          CharCookie[i][j] = cookie_base[j];
-        CharCookie[i][13] = '0' + i/100;
-        CharCookie[i][14] = '0' + (i % 100)/10;
-        CharCookie[i][15] = '0' + i % 10;
-        CharCookie[i][16] = '\0';
-        InitGlobalBag( &ObjsChar[i], &(CharCookie[i][0]) );
-    }
+    /* Install the saving function                                         */
+    SaveObjFuncs[ T_CHAR ] = SaveChar;
+    LoadObjFuncs[ T_CHAR ] = LoadChar;
 
-    /* install the kind method                                             */
-    ImportGVarFromLibrary( "TYPE_CHAR", &TYPE_CHAR );
-    TypeObjFuncs[ T_CHAR ] = TypeChar;
 
     /* install the character functions                                     */
     PrintObjFuncs[ T_CHAR ] = PrintChar;
     EqFuncs[ T_CHAR ][ T_CHAR ] = EqChar;
     LtFuncs[ T_CHAR ][ T_CHAR ] = LtChar;
 
+
     /* install the marking functions                                       */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
-        InfoBags[         t1                     ].name
-            = "list (string)";
         InitMarkFuncBags( t1                     , MarkOneSubBags );
-        InfoBags[         t1          +IMMUTABLE ].name
-            = "list (string)";
         InitMarkFuncBags( t1          +IMMUTABLE , MarkOneSubBags );
-        InfoBags[         t1 +COPYING            ].name
-            = "list (string), copied";
         InitMarkFuncBags( t1 +COPYING            , MarkOneSubBags );
-        InfoBags[         t1 +COPYING +IMMUTABLE ].name
-            = "list (string), copied";
         InitMarkFuncBags( t1 +COPYING +IMMUTABLE , MarkOneSubBags );
     }
 
-    /* install the kind method                                             */
+
+    /* install the names                                                   */
+    InfoBags[T_STRING                        ].name = "list (string)";
+    InfoBags[T_STRING              +IMMUTABLE].name = "list (string,imm)";
+    InfoBags[T_STRING      +COPYING          ].name = "list (string,copied)";
+    InfoBags[T_STRING      +COPYING+IMMUTABLE].name = "list (string,imm,copied)";
+
+    InfoBags[T_STRING_SSORT                  ].name = "list (string,ssort)";
+    InfoBags[T_STRING_SSORT        +IMMUTABLE].name = "list (string,ssort,imm)";
+    InfoBags[T_STRING_SSORT+COPYING          ].name = "list (string,ssort,copied)";
+    InfoBags[T_STRING_SSORT+COPYING+IMMUTABLE].name = "list (string,ssort,imm,copied)";
+
+    InfoBags[T_STRING_NSORT                  ].name = "list (string,nsort)";
+    InfoBags[T_STRING_NSORT        +IMMUTABLE].name = "list (string,nsort,imm)";
+    InfoBags[T_STRING_NSORT+COPYING          ].name = "list (string,nsort,copied)";
+    InfoBags[T_STRING_NSORT+COPYING+IMMUTABLE].name = "list (string,nsort,imm,copied)";
+
+
+    /* install the filter and property maps                                */
+    ClearFiltsTNums   [T_STRING                ] = T_STRING;
+    ClearFiltsTNums   [T_STRING      +IMMUTABLE] = T_STRING+IMMUTABLE;
+    ClearFiltsTNums   [T_STRING_NSORT          ] = T_STRING;
+    ClearFiltsTNums   [T_STRING_NSORT+IMMUTABLE] = T_STRING+IMMUTABLE;
+    ClearFiltsTNums   [T_STRING_SSORT          ] = T_STRING;
+    ClearFiltsTNums   [T_STRING_SSORT+IMMUTABLE] = T_STRING+IMMUTABLE;
+
+    /* mutable string                                                      */
+    HasFiltListTNums  [T_STRING                ][FN_IS_MUTABLE] = 1;
+    HasFiltListTNums  [T_STRING                ][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_STRING                ][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_STRING                ][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_STRING                ][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_STRING                ][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_STRING                ][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_STRING                ][FN_IS_SSORT  ] = 0;
+    HasFiltListTNums  [T_STRING                ][FN_IS_NSORT  ] = 0;
+
+    SetFiltListTNums  [T_STRING                ][FN_IS_MUTABLE] = T_STRING;
+    SetFiltListTNums  [T_STRING                ][FN_IS_EMPTY  ] = T_STRING_SSORT;
+    SetFiltListTNums  [T_STRING                ][FN_IS_DENSE  ] = T_STRING;
+    SetFiltListTNums  [T_STRING                ][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_STRING                ][FN_IS_HOMOG  ] = T_STRING;
+    SetFiltListTNums  [T_STRING                ][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_STRING                ][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_STRING                ][FN_IS_SSORT  ] = T_STRING_SSORT;
+    SetFiltListTNums  [T_STRING                ][FN_IS_NSORT  ] = T_STRING_NSORT;
+
+    ResetFiltListTNums[T_STRING                ][FN_IS_MUTABLE] = T_STRING      +IMMUTABLE;
+    ResetFiltListTNums[T_STRING                ][FN_IS_EMPTY  ] = T_STRING;
+    ResetFiltListTNums[T_STRING                ][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_STRING                ][FN_IS_NDENSE ] = T_STRING;
+    ResetFiltListTNums[T_STRING                ][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_STRING                ][FN_IS_NHOMOG ] = T_STRING;
+    ResetFiltListTNums[T_STRING                ][FN_IS_TABLE  ] = T_STRING;
+    ResetFiltListTNums[T_STRING                ][FN_IS_SSORT  ] = T_STRING;
+    ResetFiltListTNums[T_STRING                ][FN_IS_NSORT  ] = T_STRING;
+
+    /* immutable string                                                    */
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_MUTABLE] = 0;
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_SSORT  ] = 0;
+    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NSORT  ] = 0;
+
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_MUTABLE] = T_STRING;
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_EMPTY  ] = T_STRING_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_DENSE  ] = T_STRING      +IMMUTABLE;
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_HOMOG  ] = T_STRING      +IMMUTABLE;
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_SSORT  ] = T_STRING_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NSORT  ] = T_STRING_NSORT+IMMUTABLE;
+
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_MUTABLE] = T_STRING      +IMMUTABLE;
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_EMPTY  ] = T_STRING      +IMMUTABLE;
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_NDENSE ] = T_STRING      +IMMUTABLE;
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_NHOMOG ] = T_STRING      +IMMUTABLE;
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_TABLE  ] = T_STRING      +IMMUTABLE;
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_SSORT  ] = T_STRING      +IMMUTABLE;
+    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_NSORT  ] = T_STRING      +IMMUTABLE;
+
+    /* ssort mutable string                                                */
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_MUTABLE] = 1;
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_SSORT  ] = 1;
+    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_NSORT  ] = 0;
+
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_MUTABLE] = T_STRING_SSORT;
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_EMPTY  ] = T_STRING_SSORT;
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_DENSE  ] = T_STRING_SSORT;
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_HOMOG  ] = T_STRING_SSORT;
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_SSORT  ] = T_STRING_SSORT;
+    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_NSORT  ] = -1;
+
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_MUTABLE] = T_STRING_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_EMPTY  ] = T_STRING_SSORT;
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_NDENSE ] = T_STRING_SSORT;
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_NHOMOG ] = T_STRING_SSORT;
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_TABLE  ] = T_STRING_SSORT;
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_SSORT  ] = T_STRING;
+    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_NSORT  ] = T_STRING_SSORT;
+
+    /* ssort immutable string                                              */
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_MUTABLE] = 0;
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_SSORT  ] = 1;
+    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NSORT  ] = 0;
+
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_MUTABLE] = T_STRING_SSORT;
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_STRING_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_DENSE  ] = T_STRING_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = T_STRING_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_SSORT  ] = T_STRING_SSORT+IMMUTABLE;
+    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NSORT  ] = -1;
+
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_MUTABLE] = T_STRING_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_STRING_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_NDENSE ] = T_STRING_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = T_STRING_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_TABLE  ] = T_STRING_SSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_SSORT  ] = T_STRING      +IMMUTABLE;
+    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_NSORT  ] = T_STRING_SSORT+IMMUTABLE;
+
+    /* nsort mutable string                                                */
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_MUTABLE] = 1;
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_SSORT  ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_NSORT  ] = 1;
+
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_MUTABLE] = T_STRING_NSORT;
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_EMPTY  ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_DENSE  ] = T_STRING_NSORT;
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_HOMOG  ] = T_STRING_NSORT;
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_SSORT  ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_NSORT  ] = T_STRING_NSORT;
+
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_MUTABLE] = T_STRING_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_EMPTY  ] = T_STRING_NSORT;
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_NDENSE ] = T_STRING_NSORT;
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_NHOMOG ] = T_STRING_NSORT;
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_TABLE  ] = T_STRING_NSORT;
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_SSORT  ] = T_STRING_NSORT;
+    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_NSORT  ] = T_STRING;
+
+    /* nsort immutable string                                              */
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_MUTABLE] = 0;
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_DENSE  ] = 1;
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NDENSE ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = 1;
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_TABLE  ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_SSORT  ] = 0;
+    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NSORT  ] = 1;
+
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_MUTABLE] = T_STRING_NSORT;
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_DENSE  ] = T_STRING_NSORT+IMMUTABLE;
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NDENSE ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = T_STRING_NSORT+IMMUTABLE;
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_TABLE  ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_SSORT  ] = -1;
+    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NSORT  ] = T_STRING_NSORT+IMMUTABLE;
+
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_MUTABLE] = T_STRING_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_STRING_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_DENSE  ] = -1;
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_NDENSE ] = T_STRING_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = -1;
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = T_STRING_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_TABLE  ] = T_STRING_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_SSORT  ] = T_STRING_NSORT+IMMUTABLE;
+    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_NSORT  ] = T_STRING      +IMMUTABLE;
+
+
+    /* install the saving method                                             */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
-        TypeObjFuncs[ t1            ] = TypeString;
-        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeString;
+        SaveObjFuncs[ t1            ] = SaveString;
+        SaveObjFuncs[ t1 +IMMUTABLE ] = SaveString;
+        LoadObjFuncs[ t1            ] = LoadString;
+        LoadObjFuncs[ t1 +IMMUTABLE ] = LoadString;
     }
+
 
     /* install the copy method                                             */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
@@ -1268,49 +1507,108 @@ void InitString ( void )
     IsSSortListFuncs[ T_STRING_SSORT            ] = IsSSortStringYes;
     IsSSortListFuncs[ T_STRING_SSORT +IMMUTABLE ] = IsSSortStringYes;
 
-    /* install the internal function                                       */
+
+    /* install the `IsString' functions                                    */
     for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_REAL_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringNot;
     }
+
     for ( t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringList;
     }
+
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringYes;
     }
+
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringObject;
     }
-    InitHandlerFunc( IsStringHandler, "IS_STRING" );
-    IsStringFilt = NewFilterC(
-        "IS_STRING", 1L, "obj", IsStringHandler );
-    AssGVar( GVarName( "IS_STRING" ), IsStringFilt );
-
-    InitHandlerFunc( ConvStringHandler, "CONV_STRING" );
-    ConvStringFunc = NewFunctionC(
-        "CONV_STRING", 1L, "string", ConvStringHandler );
-    AssGVar( GVarName( "CONV_STRING" ), ConvStringFunc );
-
-    IsStringConvFilt = NewBag( TNUM_OBJ(IsStringFilt),
-                               SIZE_OBJ(IsStringFilt) );
-    for ( i = 0; i < SIZE_OBJ(IsStringFilt)/sizeof(Obj); i++ ) {
-        ADDR_OBJ(IsStringConvFilt)[i] = ADDR_OBJ(IsStringFilt)[i];
-    }
-    InitHandlerFunc( IsStringConvHandler, "IS_STRING_CONV" );
-    HDLR_FUNC(IsStringConvFilt,1) = IsStringConvHandler;
-    AssGVar( GVarName( "IS_STRING_CONV" ), IsStringConvFilt );
-
-    InitHandlerFunc( FuncCHAR_INT, "CHAR_INT" );
-    AssGVar( GVarName( "CHAR_INT" ),
-         NewFunctionC( "CHAR_INT", 1L, "integer",
-                    FuncCHAR_INT ) );
-
-    InitHandlerFunc( FuncINT_CHAR, "INT_CHAR" );
-    AssGVar( GVarName( "INT_CHAR" ),
-         NewFunctionC( "INT_CHAR", 1L, "character",
-                    FuncINT_CHAR ) );
 }
 
 
+/****************************************************************************
+**
+*F  InitString()  . . . . . . . . . . . . . . . .  initializes string package
+**
+**  <CharCookie> is a space for the cookies passed into `InitGlobalBags' with
+**  the  character constants.  This  must be static,  and  different for each
+**  character,   as    the   cookies   are  only  copied    as  pointers   in
+**  `InitGlobalBags'.
+**
+*/
+static Char CharCookie[256][21];
+
+void InitString ( void )
+{
+    Int                 i, j;
+    Int                 t1;
+    Char *              cookie_base = "src/string.c:Char";
+    
+
+    /* make all the character constants once and for all                   */
+    for ( i = 0; i < 256; i++ ) {
+        for (j = 0; j < 17; j++)
+            CharCookie[i][j] = cookie_base[j];
+        CharCookie[i][j++] = '0' + i/100;
+        CharCookie[i][j++] = '0' + (i % 100)/10;
+        CharCookie[i][j++] = '0' + i % 10;
+        CharCookie[i][j++] = '\0';
+        InitGlobalBag( &ObjsChar[i], &(CharCookie[i][0]) );
+        if ( ! SyRestoring ) {
+            ObjsChar[i] = NewBag( T_CHAR, 1L );
+            *(UChar*)ADDR_OBJ(ObjsChar[i]) = (UChar)i;
+        }
+    }
 
 
+    /* install the kind method                                             */
+    ImportGVarFromLibrary( "TYPE_CHAR", &TYPE_CHAR );
+    TypeObjFuncs[ T_CHAR ] = TypeChar;
+
+
+    /* install the kind method                                             */
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
+        TypeObjFuncs[ t1            ] = TypeString;
+        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeString;
+    }
+
+
+    /* install the internal function                                       */
+    C_NEW_GVAR_FILT( "IS_STRING", "obj", IsStringFilt, IsStringHandler,
+        "src/string.c:IS_STRING" );
+
+    C_NEW_GVAR_FUNC( "IS_STRING_CONV", 1L, "string",
+                  FuncIS_STRING_CONV,
+        "src/string.c:IS_STRING_CONV" );
+
+    C_NEW_GVAR_FUNC( "CONV_STRING", 1L, "string",
+                  FuncCONV_STRING,
+        "src/string.c:CONV_STRING" );
+
+    C_NEW_GVAR_FUNC( "CHAR_INT", 1L, "integer",
+                  FuncCHAR_INT,
+        "src/string.c:CHAR_INT" );
+
+    C_NEW_GVAR_FUNC( "INT_CHAR", 1L, "char",
+                  FuncINT_CHAR,
+        "src/string.c:INT_CHAR" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckString() . . . . . .  check the initialisation of the string package
+*/
+void CheckString ( void )
+{
+    SET_REVISION( "string_c",   Revision_string_c );
+    SET_REVISION( "string_h",   Revision_string_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  string.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

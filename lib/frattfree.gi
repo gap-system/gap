@@ -3,7 +3,7 @@
 #W  frattfree.gi                GAP library                      Bettina Eick
 ##
 Revision.frattfree_gi :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 #############################################################################
 ##

@@ -7,7 +7,7 @@
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char * Revision_objscoll_h =
+SYS_CONST char * Revision_objscoll_h =
    "@(#)$Id$";
 #endif
 
@@ -154,13 +154,35 @@ extern Obj FuncFinPowConjCol_ReducedQuotient ( Obj, Obj, Obj, Obj );
 /****************************************************************************
 **
 
-*F InitSingleCollector()
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupSingleCollector()  . . . . . . . . .  initalize the single collector
+*/
+extern void SetupSingleCollector ( void );
+
+
+/****************************************************************************
+**
+*F  InitSingleCollector() . . . . . . . . . .  initalize the single collector
 */
 extern void InitSingleCollector ( void );
 
 
 /****************************************************************************
 **
+*F  CheckSingleCollector()   check the initialisation of the single collector
+*/
+extern void CheckSingleCollector ( void );
+
+
+/****************************************************************************
+**
+
 
 *E  objscoll.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

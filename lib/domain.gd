@@ -188,19 +188,10 @@ UnderlyingCollection := NewAttribute( "UnderlyingCollection",
 SetUnderlyingCollection := Setter( UnderlyingCollection );
 HasUnderlyingCollection := Tester( UnderlyingCollection );
 
-InstallInParentMethod := function( attr, filter, op )
-    InstallMethod( attr, true, [ filter ], 0,
-        dom -> op( Parent( dom ), dom ) );
-end;
 
-
-#############################################################################
-##
-#F  OperationSubdomain( ... ) makes `ConjugateSubgroup' from `ConjugateGroup'
-##
-OperationSubdomain := function( name, opr, rel )
-    local   req,  i,  oper,  method;
-
+OperationSubdomainRequiredFilters := function( opr )
+    local   req,  i;
+    
     req := false;
     for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
         if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
@@ -209,9 +200,21 @@ OperationSubdomain := function( name, opr, rel )
         fi;
     od;
     if req = false  then
-        Error( "unknown operation ", NameFunction(opr) );
+        Error( "unknown operation ", NAME_FUNC(opr) );
+    elif Length( req ) <> 2  then
+        Error( "operation ", NAME_FUNC(opr), " does not take 2 arguments" );
     fi;
-    req := ShallowCopy( req );
+    return req;
+end;
+
+#############################################################################
+##
+#F  OperationSubdomain( ... ) makes `ConjugateSubgroup' from `ConjugateGroup'
+##
+OperationSubdomain := function( name, opr, rel )
+    local   req,  oper,  method;
+
+    req := SHALLOW_COPY_OBJ( OperationSubdomainRequiredFilters( opr ) );
     req[ 1 ] := WITH_HIDDEN_IMPS_FLAGS( AND_FLAGS
                         ( req[ 1 ], FLAGS_FILTER( HasParent ) ) );
     oper := NEW_OPERATION( name );
@@ -226,8 +229,60 @@ OperationSubdomain := function( name, opr, rel )
         return E;
     end;
 
-    INSTALL_METHOD_FLAGS( oper, NameFunction(oper), rel, req, 0, method );
+    INSTALL_METHOD_FLAGS( oper, false, rel, req, 0, method );
     return oper;
+end;
+
+#############################################################################
+##
+#F  InParentFOA( <name>, <super>, <sub>, <AorP> ) . dispatcher, oper and attr
+##
+InParentFOA := function( name, superreq, subreq, NewAorP )
+    local str, oper, attr, func;
+
+    # Create the two-argument operation.
+    str:= SHALLOW_COPY_OBJ( name );
+    APPEND_LIST_INTR( str, "Op" );
+    oper:= NewOperation( str, [ superreq, subreq ] );
+
+    # Create the attribute or property
+    # (for cases where the first argument is the parent of the second).
+    str:= SHALLOW_COPY_OBJ( name );
+    APPEND_LIST_INTR( str, "InParent" );
+    attr:= NewAorP( str, subreq );
+
+    # Create the function that mainly calls the operation,
+    # but also checks resp. sets the attribute if the first argument
+    # is identical with the parent of the second.
+    func:= function( arg )
+        local   super,  sub,  value;
+        if Length( arg ) <> 2  then
+            return CallFuncList( oper, arg );
+        fi;
+        super := arg[1];
+        sub   := arg[2];
+        if HasParent( sub ) and IsIdentical( super, Parent( sub ) ) then
+          if Tester( attr )( sub ) then
+            value:= attr( sub );
+          else
+            value:= oper( super, sub );
+            Setter( attr )( sub, value );
+          fi;
+        else
+          value:= oper( super, sub );
+        fi;
+        return value;
+    end;
+
+    # Install the method for the attribute that calls the operation.
+    str:= "method that calls the two-argument operation ";
+    APPEND_LIST_INTR( str, name );
+    APPEND_LIST_INTR( str, "Op" );
+    InstallMethod( attr, str, true, [ subreq ], 0,
+            D -> oper( Parent( D ), D ) );
+ 
+    # Return the triple.
+    return [ func, oper, attr ];
 end;
 
 
@@ -252,6 +307,3 @@ end;
 #############################################################################
 ##
 #E  domain.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

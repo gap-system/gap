@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  permutat.h                  GAP source                   Martin Schoenert
+*W  permutat.h                  GAP source                   Martin Schoenert
 **                                                           & Alice Niemeyer
 **
 *H  @(#)$Id$
@@ -10,13 +10,14 @@
 **  This file defines the functions for permutations (small and large).
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_permutat_h =
+SYS_CONST char * Revision_permutat_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *F  NEW_PERM2(<deg>)  . . . . . . . . . . . .  make a new (small) permutation
 *F  DEG_PERM2(<perm>) . . . . . . . . . . . . . degree of (small) permutation
 *F  ADDR_PERM2(<perm>)  . . . . . . . absolute address of (small) permutation
@@ -67,12 +68,48 @@ extern  Obj             OnSetsPerm (
 
 /****************************************************************************
 **
+*F  Array2Perm( <array> ) . . . . . . . . . convert array of cycles into perm
+*/
+extern Obj Array2Perm (
+    Obj                 array );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupPermutat() . . . . . . . . . . . initializes the permutation package
+**
+**  Is  called  during  the  initialization  to  initialize  the  permutation
+**  package.
+*/
+extern void SetupPermutat ( void );
+
+
+/****************************************************************************
+**
 *F  InitPermutat()  . . . . . . . . . . . initializes the permutation package
 **
 **  Is  called  during  the  initialization  to  initialize  the  permutation
 **  package.
 */
-extern  void            InitPermutat ( void );
+extern void InitPermutat ( void );
 
 
+/****************************************************************************
+**
+*F  CheckPermutat() . . . check the initialisation of the permutation package
+*/
+extern void CheckPermutat ( void );
 
+
+/****************************************************************************
+**
+
+*E  permutat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

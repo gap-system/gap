@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  cyclotom.h                  GAP source                   Martin Schoenert
+*W  cyclotom.h                  GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -10,9 +10,24 @@
 **  $Q(e^{{2 \pi i}/n}) = Q(e_n)$,  which  we  call  cyclotomics  for  short.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_cyclotom_h =
+SYS_CONST char * Revision_cyclotom_h =
    "@(#)$Id$";
 #endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupCyc()  . . . . . . . . . . . . . . initialize the cyclotomic package
+*/
+extern void SetupCyc ( void );
 
 
 /****************************************************************************
@@ -21,7 +36,23 @@ char *          Revision_cyclotom_h =
 **
 **  'InitCyc' initializes the cyclotomic package.
 */
-extern  void            InitCyc ( void );
+extern void InitCyc ( void );
 
+
+
+/****************************************************************************
+**
+*F  CheckCyc()  . . . . .  check the initialisation of the cyclotomic package
+**
+**  'InitCyc' initializes the cyclotomic package.
+*/
+extern void CheckCyc ( void );
+
+
+/****************************************************************************
+**
+
+*E  cyclotom.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 
 

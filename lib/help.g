@@ -476,35 +476,58 @@ HELP_PRINT_SECTION := function( book, chapter, section )
                         Add( lines, line );
                     fi;
 
-                # ignore lines starting or ending with '%'
-                elif line[1] = '%'  or  line[Length(line)] = '%'  then
-                    ;
-
                 # ignore answers to exercises
                 elif MATCH_BEGIN(line,"\\answer")  then
                     repeat
                         line := ReadLine(stream);
                     until line = fail  or  line = "\n";
                     
+                # ignore displays for TeX or HTML
+                elif MATCH_BEGIN(line,"%display{tex}")
+                  or MATCH_BEGIN(line,"%display{html}")
+                  or MATCH_BEGIN(line,"%display{jpeg}")  then
+                    repeat
+                        line := ReadLine(stream);
+                    until line = fail
+                       or MATCH_BEGIN(line,"%display{text}")
+                       or MATCH_BEGIN(line,"%enddisplay");
+                    if MATCH_BEGIN(line,"%display{text}")  then
+                        verbatim := true;
+                        Add( lines, "" );
+                    fi;
+                    
                 # example environment
                 elif MATCH_BEGIN(line,"\\beginexample")
-                  or MATCH_BEGIN(line,"\\begintt")  then
+                  or MATCH_BEGIN(line,"\\begintt")
+                  or MATCH_BEGIN(line,"%display{text}")  then
                     verbatim := true;
                     Add( lines, "" );
                 elif MATCH_BEGIN(line,"\\endexample")
-                  or MATCH_BEGIN(line,"\\endtt")  then
+                  or MATCH_BEGIN(line,"\\endtt")
+                  or MATCH_BEGIN(line,"%enddisplay")  then
                     verbatim := false;
                     Add( lines, "" );
-                
+
+                # verbatim mode
+                elif verbatim  and line[1] = '%'  then
+                    Add( lines, line{[2..Length(line)]} );
+                    
+                # ignore lines starting or ending with '%'
+                elif line[1] = '%'  or  line[Length(line)] = '%'  then
+                    ;
+
                 # use everything else
                 else
                     if not verbatim  then
-                        if MATCH_BEGIN(line,"\\exercise")  then
+                        if   MATCH_BEGIN(line,"\\exercise")  then
                             line{[1..9]} := "EXERCISE:";
+                        elif MATCH_BEGIN(line,"\\danger")  then
+                            line{[1..7]} := "DANGER:";
                         fi;
                         REPLACE_SUBSTRING( line, "~", " " );
                         REPLACE_SUBSTRING( line, "{\\GAP}", "  GAP " );
-                        REPLACE_SUBSTRING( line, "\\", " " );
+                        REPLACE_SUBSTRING( line, "\\dots",  ". . ."  );
+                        REPLACE_SUBSTRING( line, "\\",      " "      );
                     fi;
                     Add( lines, line );
                 fi;

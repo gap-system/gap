@@ -55,6 +55,7 @@
 %F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \FrontMatter
+\immediate\write\citeout{\bs bibdata{mrabbrev,algebra,manual}}
 \input ../tut/copyrigh
 %
 %
@@ -63,17 +64,18 @@
 %F  Chapters  . . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \Chapters
-%\Input{lists}
-%\Input{domain}
-%\Input{group}
-%\Input{solvgrp}
-%\Input{permgrp}
-%\Input{grplib}
 \Input{files}
 \Input{streams}
 \Input{process}
 \Input{debug}
 \Input{speedup}
+\Input{lists}
+\Input{domain}
+\Input{group}
+\Input{solvgrp}
+\Input{permgrp}
+\Input{grplib}
+\Input{install}
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,8 +83,8 @@
 %F  Appendices  . . . . . . . . . . . .  Extending GAP 4 Reference Manual
 %%
 \Appendices
-%\input glossary
-%\Bibliography
+\input glossary
+\Bibliography
 \Index
 %
 %

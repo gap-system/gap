@@ -15,13 +15,13 @@ IsPermGroup := IsGroup and IsPermCollection;
 
 #############################################################################
 ##
-#M  IsFinite( <G> ) . . . . . . . . . . . . . . .  for magmas of permutations
+#M  IsSubsetLocallyFiniteGroup( <G> ) . . . . . .  for magmas of permutations
 ##
-#T  To tell the truth, we should ask whether the magma is finitely generated.
+#T  Here we assume implicitly that all permutations are finitary!
 #T  (What would be a permutation with unbounded largest moved point?
 #T  Perhaps a permutation of possibly infinite order?)
 ##
-InstallTrueMethod( IsFinite, IsPermCollection and IsMagma );
+InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsPermCollection );
     
 
 IsFactorGroup := ReturnFalse;  # temporarily
@@ -49,7 +49,6 @@ NumberCoset := NewOperationArgs( "NumberCoset" );
 CosetNumber := NewOperationArgs( "CosetNumber" );
 
 IndependentGeneratorsAbelianPPermGroup := NewOperationArgs( "IndependentGeneratorsAbelianPPermGroup" );
-IndependentGeneratorsAbelianPermGroup := NewOperationArgs( "IndependentGeneratorsAbelianPermGroup" );
 OrbitPerms := NewOperationArgs( "OrbitPerms" );
 OrbitsPerms := NewOperationArgs( "OrbitsPerms" );
 SmallestMovedPointPerms := NewOperationArgs( "SmallestMovedPointPerms" );
@@ -57,7 +56,6 @@ LargestMovedPointPerms := NewOperationArgs( "LargestMovedPointPerms" );
 MovedPointsPerms := NewOperationArgs( "MovedPointsPerms" );
 NrMovedPointsPerms := NewOperationArgs( "NrMovedPointsPerms" );
 SylowSubgroupPermGroup := NewOperationArgs( "SylowSubgroupPermGroup" );
-OmegaPN := NewOperationArgs( "OmegaPN" );
 SignPermGroup := NewOperationArgs( "SignPermGroup" );
 CycleStructuresGroup := NewOperationArgs( "CycleStructuresGroup" );
 #############################################################################

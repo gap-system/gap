@@ -40,6 +40,11 @@ gap> p:=IsomorphismPcGroup(a);;
 gap> Image(p,a.1);;
 gap> Image(p,a.1*a.2);;
 gap> Pcgs(a);;
+gap> s4 := Group( (3,4), (1,2,3,4) );;
+gap> d8 := Subgroup( s4, [ (1,2)(3,4), (1,2,3,4) ] );;
+gap> autd8 := AutomorphismGroup( d8 );;
+gap> Size(autd8);
+8
 
 # that's all, folks
 gap> STOP_TEST( "morpheus.tst", 657320000 );

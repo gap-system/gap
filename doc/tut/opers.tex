@@ -136,11 +136,12 @@ all testers (of attributes or properties) uniformly. These boolean-valued
 functions  are called  *filters*.  You can imagine  a filter  as a switch
 which is  set either  to `true' or  to `false'.  For every  {\GAP} object
 there is a boolean list which has reserved a  bit for every filter {\GAP}
-knows  about. Strictly speaking, there   is one bit for every  *primitive
-filter*, and these  primitive filters can be  combined with `and' to form
+knows  about. Strictly speaking, there   is one bit for every  *simple
+filter*, and these  simple filters can be  combined with `and' to form
 other filters (which are then `true' if and only if all the corresponding
-bits are    set  to `true').  For example,    the filter `IsPermGroup and
-IsSolvableGroup' is made up from two primitive filters.
+bits are set to `true').
+For example, the filter `IsPermGroup and IsSolvableGroup' is made up from
+several simple filters.
 
 Since they allow only two values, the bits which represent filters can be
 compared very quickly, and the scheme by which {\GAP} chooses the method,
@@ -152,10 +153,10 @@ manual.
 
 We  only present the following  rule  of the  thumb here: Each  installed
 method for an attribute, say `Size(  <obj> )', has a ``required filter'',
-which is made  up from certain primitive filters  which must yield `true'
+which is made  up from certain simple filters  which must yield `true'
 for <obj> if this method is to be applicable. To execute a call of `Size(
 <obj>   )', {\GAP} selects  the  applicable  method whose required filter
-combines the most  primitive filters because  it thinks that the more  an
+combines the most  simple filters because  it thinks that the more  an
 algorithm requires of <obj>, the more efficient  it will be. For example,
 if <obj>  is a permutation group  that is not  (known to be)  solvable, a
 method  with required filter   `IsPermGroup  and IsSolvableGroup'  is not
@@ -186,7 +187,7 @@ looks like
 \endtt
 This method would then be tried on every permutation group (whether known
 to be  solvable or  not),  and it would  include a  mandatory solvability
-test.  {\GAP} persues  such  a strategy for   `Size',  using the solvable
+test.  {\GAP} pursues  such  a strategy for   `Size',  using the solvable
 method from \cite{Sims90b}.
 
 \edef\solsimsex{\the\chapno.\the\exno}%

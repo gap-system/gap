@@ -3,7 +3,7 @@
 #W  id896jba.c             GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id896jba_c :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 896 ].next[ 10 ].next[ 2 ].next[ 29 ] :=
 rec(

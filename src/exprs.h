@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  exprs.h                     GAP source                   Martin Schoenert
+*W  exprs.h                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -12,7 +12,7 @@
 **  expressions to their values and prints expressions.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_exprs_h =
+SYS_CONST char * Revision_exprs_h =
    "@(#)$Id$";
 #endif
 
@@ -147,11 +147,39 @@ extern  void            (* PrintExprFuncs [256] ) ( Expr expr );
 
 /****************************************************************************
 **
-*F  InitExprs . . . . . . . . . . . . . .  initialize the expressions package
-**
-**  'InitEval' initializes the expressions package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-extern  void            InitExprs ( void );
 
 
+/****************************************************************************
+**
 
+*F  SetupExprs()  . . . . . . . . . . . .  initialize the expressions package
+*/
+extern void SetupExprs ( void );
+
+
+/****************************************************************************
+**
+*F  InitExprs() . . . . . . . . . . . . .  initialize the expressions package
+**
+**  'InitExprs' initializes the expressions package.
+*/
+extern void InitExprs ( void );
+
+
+/****************************************************************************
+**
+*F  CheckExprs()  . . . . check the initialisation of the expressions package
+**
+**  'InitExprs' initializes the expressions package.
+*/
+extern void CheckExprs ( void );
+
+
+/****************************************************************************
+**
+
+*E  exprs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

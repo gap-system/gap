@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  saveload.h                  GAP source                   Steve Linton
+*W  saveload.h                  GAP source                   Steve Linton
 **
 *H  @(#)$Id$
 **
@@ -11,12 +11,13 @@
 **  throughout the kernel
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_saveload_h =
+SYS_CONST char * Revision_saveload_h =
    "@(#)$Id$";
 #endif
 
 /***************************************************************************
 **
+
 *F  SaveWorkspace( <fname> ) . . . . . .save the workspace to the named file
 **
 **  'SaveWorkspace' is the entry point to the workspace saving. It is not
@@ -31,26 +32,68 @@ char *          Revision_saveload_h =
 
 extern Obj SaveWorkspace( Obj fname );
 
+extern void RecordLoadedModule( Obj filename, UInt crc);
+
+extern void SaveUInt1(UInt1 x);
+extern void SaveUInt2(UInt2 x);
+extern void SaveUInt4(UInt4 x);
+extern void SaveUInt(UInt x);
+#ifdef SYS_IS_64BIT
+extern void SaveUInt8(UInt8 x);
+#endif
+extern void SaveCStr(Char *s);
+extern void SaveSubObj(Obj o);
+extern void SaveHandler(ObjFunc hdlr);
+
+extern UInt1 LoadUInt1( void );
+extern UInt2 LoadUInt2( void );
+extern UInt4 LoadUInt4( void );
+extern UInt LoadUInt( void );
+#ifdef SYS_IS_64BIT
+extern UInt8 LoadUInt8( void);
+#endif
+extern void LoadCStr(Char *buf, UInt maxlen );
+extern Obj LoadSubObj( void );
+extern ObjFunc LoadHandler();
+
+
+
 /***************************************************************************
 **
-*F  LoadWorkspace( <fname> ) . . . . . .load the workspace to the named file
-**
-**  'LoadWorkspace' is the entry point to the workspace saving. It is not
-**  installed as a GAP function, but instead as a keyword, so that we can be
-**  sure it is only being called from the top-most prompt level
-**  The file saveload.tex in the dev directory describes the saved format
-**  in more detail. Most of the work will be done from inside GASMAN, because
-**  we need to fiddle with Bag internals somewhat
-**
-**  It may return Fail, in the original workspace, True, in the new workspace
-**  or abort the system if an error arises too late to be safely averted
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
-extern Obj LoadWorkspace( Obj fname );
 
-/***************************************************************************
+/****************************************************************************
 **
-*F  InitSaveLoad( void ) . . . . . . . . . . . . . .initialize this package
+
+*F  SetupSaveLoad( void ) . . . . . . . .  initialize the save/load workspace
+*/
+extern void SetupSaveLoad ( void );
+               
+
+/****************************************************************************
+**
+*F  InitSaveLoad( void )  . . . . . . . .  initialize the save/load workspace
+*/
+extern void InitSaveLoad ( void );
+               
+
+/****************************************************************************
+**
+*F  CheckSaveLoad( void ) check the initialisation of the save/load workspace
+*/
+extern void CheckSaveLoad ( void );
+               
+
+/****************************************************************************
+**
+
+*E  saveload.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 
-extern void InitSaveLoad( void );
+
+
+
+

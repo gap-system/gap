@@ -3,7 +3,7 @@
 #W  grppcaut.gi                 GAP library                      Bettina Eick
 ##
 Revision.grppcaut_gi :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -586,7 +586,7 @@ LiftInduciblePair := function( epi, ind, M, weight )
 
     # solve system
     u := SolutionMat( E, v );
-    if IsBool( u ) then Error("no lifting found"); fi;
+    if u = fail then Error("no lifting found"); fi;
 
     # correct images 
     for i in [1..n] do

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  funcs.c                     GAP source                   Martin Schoenert
+*W  funcs.c                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -14,37 +14,46 @@
 **
 **  It uses the function call mechanism defined by the calls package.
 */
-char *          Revision_funcs_c =
-   "@(#)$Id$";
-
 #include        <assert.h>              /* assert                          */
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_funcs_c =
+   "@(#)$Id$";
 
-#include        "calls.h"               /* CALL_<i>ARGS, Function, ObjFunc */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "lists.h"               /* ELM_LIST, LEN_LIST              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "plist.h"               /* SET_ELM_PLIST, SET_LEN_PLIST,...*/
+#include        "calls.h"               /* generic call mechanism          */
 
-#include        "code.h"                /* Stat, Expr, FUNC_CALL, ARGI_C...*/
-#include        "vars.h"                /* ASS_LVAR, SWITCH_TO_NEW_LVARS...*/
-#include        "exprs.h"               /* EVAL_EXPR, EvalExprFuncs        */
-#include        "stats.h"               /* EXEC_STAT, ReturnObjStat, ...   */
+#include        "code.h"                /* coder                           */
+#include        "vars.h"                /* variables                       */
+#include        "exprs.h"               /* expressions                     */
+#include        "stats.h"               /* statements                      */
 
 #define INCLUDE_DECLARATION_PART
-#include        "funcs.h"               /* declaration part of the package */
+#include        "funcs.h"               /* functions                       */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "gap.h"                 /* Error                           */
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
+
+#include        "saveload.h"            /* saving and loading              */
+
+#include        "opers.h"               /* generic operations              */
 
 
 /****************************************************************************
 **
+
 *F  ExecProccall0args(<call>)  .  execute a procedure call with 0    arguments
 *F  ExecProccall1args(<call>)  .  execute a procedure call with 1    arguments
 *F  ExecProccall2args(<call>)  .  execute a procedure call with 2    arguments
@@ -69,7 +78,7 @@ UInt            ExecProccall0args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -93,7 +102,7 @@ UInt            ExecProccall1args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -121,7 +130,7 @@ UInt            ExecProccall2args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -151,7 +160,7 @@ UInt            ExecProccall3args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -183,7 +192,7 @@ UInt            ExecProccall4args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -217,7 +226,7 @@ UInt            ExecProccall5args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -253,7 +262,7 @@ UInt            ExecProccall6args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -287,7 +296,7 @@ UInt            ExecProccallXargs (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -335,7 +344,7 @@ Obj             EvalFunccall0args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -363,7 +372,7 @@ Obj             EvalFunccall1args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -395,7 +404,7 @@ Obj             EvalFunccall2args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -429,7 +438,7 @@ Obj             EvalFunccall3args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -465,7 +474,7 @@ Obj             EvalFunccall4args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -503,7 +512,7 @@ Obj             EvalFunccall5args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -543,7 +552,7 @@ Obj             EvalFunccall6args (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -581,7 +590,7 @@ Obj             EvalFunccallXargs (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -634,11 +643,35 @@ Obj             EvalFunccallXargs (
 **  Note that these functions are never called directly, they are only called
 **  through the function call mechanism.
 */
-Obj             DoExecFunc0args (
+#ifdef DEBUG_RECURSION
+static Int RecursionDepth;
+#define CHECK_RECURSION_BEFORE {                                \
+    RecursionDepth++;                                           \
+    if ( RecursionDepth == DEBUG_RECURSION ) {                  \
+        RecursionDepth = 0;                                     \
+        ErrorReturnVoid( "recursion depth overflow (%d)\n",     \
+                         (Int)DEBUG_RECURSION, 0L,              \
+                         "you may return" );                    \
+    }                                                           \
+}
+#define CHECK_RECURSION_AFTER { \
+    RecursionDepth--;                                           \
+    if ( RecursionDepth == -1 ) {                               \
+        RecursionDepth = 0;                                     \
+    }                                                           \
+}
+#else
+#define CHECK_RECURSION_BEFORE          /* NO CHECK */
+#define CHECK_RECURSION_AFTER           /* NO CHECK */
+#endif
+
+Obj DoExecFunc0args (
     Obj                 func )
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 0, NLOC_FUNC(func), oldLvars );
@@ -651,6 +684,8 @@ Obj             DoExecFunc0args (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    CHECK_RECURSION_AFTER
+
     /* return the result                                                   */
     return ReturnObjStat;
 }
@@ -661,6 +696,8 @@ Obj             DoExecFunc1args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 1, NLOC_FUNC(func), oldLvars );
@@ -676,6 +713,8 @@ Obj             DoExecFunc1args (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    CHECK_RECURSION_AFTER
+
     /* return the result                                                   */
     return ReturnObjStat;
 }
@@ -687,6 +726,8 @@ Obj             DoExecFunc2args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 2, NLOC_FUNC(func), oldLvars );
@@ -703,6 +744,8 @@ Obj             DoExecFunc2args (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    CHECK_RECURSION_AFTER
+
     /* return the result                                                   */
     return ReturnObjStat;
 }
@@ -715,6 +758,8 @@ Obj             DoExecFunc3args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 3, NLOC_FUNC(func), oldLvars );
@@ -732,6 +777,8 @@ Obj             DoExecFunc3args (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    CHECK_RECURSION_AFTER
+
     /* return the result                                                   */
     return ReturnObjStat;
 }
@@ -745,6 +792,8 @@ Obj             DoExecFunc4args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 4, NLOC_FUNC(func), oldLvars );
@@ -763,6 +812,8 @@ Obj             DoExecFunc4args (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    CHECK_RECURSION_AFTER
+
     /* return the result                                                   */
     return ReturnObjStat;
 }
@@ -777,6 +828,8 @@ Obj             DoExecFunc5args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 5, NLOC_FUNC(func), oldLvars );
@@ -796,6 +849,8 @@ Obj             DoExecFunc5args (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    CHECK_RECURSION_AFTER
+
     /* return the result                                                   */
     return ReturnObjStat;
 }
@@ -811,6 +866,8 @@ Obj             DoExecFunc6args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 6, NLOC_FUNC(func), oldLvars );
@@ -831,6 +888,8 @@ Obj             DoExecFunc6args (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    CHECK_RECURSION_AFTER
+
     /* return the result                                                   */
     return ReturnObjStat;
 }
@@ -843,6 +902,8 @@ Obj             DoExecFuncXargs (
     OLD_BRK_CURR_STAT                   /* old executing statement         */
     UInt                len;            /* number of arguments             */
     UInt                i;              /* loop variable                   */
+
+    CHECK_RECURSION_BEFORE
 
     /* check the number of arguments                                       */
     len = NARG_FUNC( func );
@@ -869,6 +930,8 @@ Obj             DoExecFuncXargs (
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
     return ReturnObjStat;
@@ -1056,20 +1119,18 @@ void            ExecEnd (
 
 /****************************************************************************
 **
-*F  InitFuncs() . . . . . . . . . . . . . . . . . initialize function package
-**
-**  'InitFuncs' installs the  executing   functions that  are  needed by  the
-**  executor  to execute procedure  calls,  the evaluating functions that are
-**  needed by the  evaluator to evaluate function  calls, and  the evaluating
-**  function that   is   needed  by  the  evaluator to    evaluate   function
-**  expressions.   It  also  installs the printing    functions for procedure
-**  calls, function calls, and function expressions.
-*/
-void            InitFuncs ( void )
-{
-    /* make the global variable known to Gasman                            */
-    InitGlobalBag( &ExecState, "funcs: ExecState" );
 
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupFuncs()  . . . . . . . . . . . . . . . . initialize function package
+*/
+void SetupFuncs ( void )
+{
     /* install the evaluators and executors                                */
     ExecStatFuncs [ T_PROCCALL_0ARGS ] = ExecProccall0args;
     ExecStatFuncs [ T_PROCCALL_1ARGS ] = ExecProccall1args;
@@ -1107,21 +1168,52 @@ void            InitFuncs ( void )
     PrintExprFuncs[ T_FUNCCALL_6ARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNCCALL_XARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNC_EXPR      ] = PrintFuncExpr;
-
-
-    InitHandlerFunc( DoExecFunc0args, "0 arg interpreted function");
-    InitHandlerFunc( DoExecFunc1args, "1 arg interpreted function");
-    InitHandlerFunc( DoExecFunc2args, "2 arg interpreted function");
-    InitHandlerFunc( DoExecFunc3args, "3 arg interpreted function");
-    InitHandlerFunc( DoExecFunc4args, "4 arg interpreted function");
-    InitHandlerFunc( DoExecFunc5args, "5 arg interpreted function");
-    InitHandlerFunc( DoExecFunc6args, "6 arg interpreted function");
-    InitHandlerFunc( DoExecFuncXargs, "X arg interpreted function");
 }
 
 
 /****************************************************************************
 **
+*F  InitFuncs() . . . . . . . . . . . . . . . . . initialize function package
+**
+**  'InitFuncs' installs the  executing   functions that  are  needed by  the
+**  executor  to execute procedure  calls,  the evaluating functions that are
+**  needed by the  evaluator to evaluate function  calls, and  the evaluating
+**  function that   is   needed  by  the  evaluator to    evaluate   function
+**  expressions.   It  also  installs the printing    functions for procedure
+**  calls, function calls, and function expressions.
+*/
+void InitFuncs ( void )
+{
+    /* make the global variable known to Gasman                            */
+    InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
+
+
+    /* Use short cookies to save space in saved workspace                  */
+    InitHandlerFunc( DoExecFunc0args, "i0");
+    InitHandlerFunc( DoExecFunc1args, "i1");
+    InitHandlerFunc( DoExecFunc2args, "i2");
+    InitHandlerFunc( DoExecFunc3args, "i3");
+    InitHandlerFunc( DoExecFunc4args, "i4");
+    InitHandlerFunc( DoExecFunc5args, "i5");
+    InitHandlerFunc( DoExecFunc6args, "i6");
+    InitHandlerFunc( DoExecFuncXargs, "iX");
+}
+
+
+/****************************************************************************
+**
+*F  CheckFuncs()  . . . . .  check the initialisation of the function package
+*/
+void CheckFuncs ( void )
+{
+    SET_REVISION( "funcs_c",    Revision_funcs_c );
+    SET_REVISION( "funcs_h",    Revision_funcs_h );
+}
+
+
+/****************************************************************************
+**
+
 *E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

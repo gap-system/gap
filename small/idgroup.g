@@ -7,7 +7,7 @@
 ##  up to 1000 without the orders 256, 512 and 768.
 ##
 Revision.idgroup_g :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 if not IsBound( IdGroupTree ) then
     IdGroupTree := rec( fp := [ 1 .. 1000 ], next := [ ] );

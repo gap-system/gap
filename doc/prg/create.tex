@@ -20,7 +20,7 @@ and~"Creating Objects" describe how families, types,
 and objects are created.
 
 A small example of the implementation of list objects is given
-in Section~"Implementing List Objects".
+in Section~"Implementing New List Objects".
 
 Section~"External Representation" introduces the external representation
 of objects.
@@ -37,6 +37,7 @@ rules for the organization of {\GAP} packages.
 `NewCategory' returns a new category <cat> that has the name <name> and
 is contained in the filter <super>, see~"Filters".
 This means that every object in <cat> lies automatically also in <super>.
+We say also that <super> is an implied filter of <cat>.
 
 For example, if one wants to create a category of group elements
 then <super> should be `IsMultiplicativeElementWithInverses' or a
@@ -81,6 +82,8 @@ argument to be a family of tuples.
 `NewRepresentation' returns a new representation <rep> that has the name
 <name> and is a subrepresentation of the representation <super>.
 This means that every object in <rep> lies automatically also in <super>.
+We say also that <super> is an implied filter of <rep>.
+
 The third argument <slots> is a list either of integers or of strings.
 In the former case, <rep> must be `IsPositionalObjectRep' or a
 subrepresentation of it, and <slots> tells what positions of the objects
@@ -104,15 +107,15 @@ an object in the representation <rep>.
 \)NewAttribute( <name>, <filt>, <rank> )
 
 `NewAttribute' returns a new attribute <attr> with name <name>.
-The arguments for <attr> are expected to lie in the filter <filt>,
-for example the attribute `Size' was created with second argument
+The filter <filt> describes the involved filters of <attr>,
+see~"Filters".
+That is, the argument for <attr> is expected to lie in <filt>.
+For example the attribute `Size' was created with second argument
 `IsDomain'.
 Note that a method for <attr> that does not require its argument to lie
 in <filt> must be installed using `InstallOtherMethod'.
-For the example, there is a method for `Size' that is applicable to
-lists.
-
-<filt> describes also the implied filters of <attr>, see~"Filters".
+In other words, <filt> is not implied by <attr>.
+For example, there is a method for `Size' that is applicable to lists.
 
 The optional third argument <rank> denotes the incremental rank
 (see~"Filters") of the tester of <attr>, the default value is 1.
@@ -133,8 +136,9 @@ as they are computed.
 \)NewProperty( <name>, <filt>, <rank> )
 
 `NewProperty' returns a new property <prop> with name <name>.
-The arguments for <prop> are expected to lie in the filter <filt>,
-and <filt> describes the implied filters of <prop>.
+The filter <filt> describes the involved filters of <prop>.
+As in the case of attributes, <filt> is not implied by <prop>.
+
 The optional third argument <rank> denotes the incremental rank
 (see~"Filters") of the property <prop> itself, i.e. *not* of its tester,
 the default value is 1.
@@ -176,7 +180,7 @@ In order to change the value of <filt> for an object <obj>,
 one can use only the functions
 
 \>SetFilterObj( <obj>, <filt> )
-\)ResetFilterObj( <obj>, <filt> )
+\>ResetFilterObj( <obj>, <filt> )
 
 `SetFilterObj' sets the value of <filt> for <obj> to `true',
 `ResetFilterObj' sets the value of <filt> for <obj> to `false'.
@@ -291,7 +295,7 @@ components even if <cobj> claims that it is immutable, i.e., if <cobj>
 is not in the category `IsMutable'.
 
 So one must be *very careful* when `!.' is used.
-Especially, <name> must be among the admissible component names for
+In particular, <name> must be among the admissible component names for
 the representation of <cobj>, see~"Creating Representations".
 
 The following example shows the implementation of an iterator
@@ -349,11 +353,11 @@ Also analogously to lists, values can be assigned to positions of
 <pobj> via `<pobj>![<pos>]:= <val>'.
 
 Note that it is possible to add entries and to change the values of
-positions also if <pobj> claims that it is immutable, i.e., if <pobj>
+positions even if <pobj> claims that it is immutable, i.e., if <pobj>
 is not in the category `IsMutable'.
 
-So one must be *very careful* when `![]' shall be used.
-Especially, <pos> must be among the admissible positions for
+So one must be *very careful* when `![]' is used.
+In particular, <pos> must be among the admissible positions for
 the representation of <pobj>, see~"Creating Representations".
 
 The following example shows the implementation of an iterator
@@ -397,7 +401,7 @@ See~"Component Objects" for an implementation using component objects.
 \endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Implementing List Objects}
+\Section{Implementing New List Objects}
 
 A list in {\GAP} is an object in the category `IsList'.
 Basic operations for lists are `Length', `\\[\\]', and `IsBound\\[\\]'.
@@ -427,10 +431,11 @@ are based on these operations.
 This means that it is sufficient to install methods for the new list
 objects only for the basic operations.
 
-So new list objects are created as objects in the category `IsList'
-for that methods for `Length', `\\[\\]', and `IsBound\\[\\]' are
-installed,
-and perhaps also for `\\[\\]\\:\\=' and `Unbind\\[\\]'.
+So if one wants to implement new list objects then one creates them
+as objects in the category `IsList', and installs methods for `Length',
+`\\[\\]', and `IsBound\\[\\]'.
+If the new lists shall be mutable, one needs to install also methods
+for `\\[\\]\\:\\=' and `Unbind\\[\\]'.
 
 One application for this is the implementation of *enumerators*
 for domains.
@@ -442,7 +447,7 @@ This works also for infinite domains.
 
 In this situation, one implements a new representation of the
 lists that are already available in {\GAP},
-especially the family of such a list is the same as the family of
+in particular the family of such a list is the same as the family of
 the domain $D$.
 
 But it is also possible to implement new kinds of lists that lie in
@@ -517,6 +522,11 @@ must be equal to <obj>.
 But it is *not* required that equal objects have equal external
 representations.
 
+Note that if one defines a new representation of objects for which an
+external representation exists already
+then one *must* install a method to compute this external representation
+for the objects in the new representation.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Declaration and Implementation Part}
@@ -545,7 +555,7 @@ and that will print an error message if it is called.
 
 Calls to the following functions belong to the declaration part.
 
-`InstallTrueMethod'
+`InstallTrueMethod',
 `NewAttribute',
 `NewCategory',
 `NewFilter',
@@ -566,4 +576,4 @@ Calls to the following functions belong to the implementation part.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%E
+%E  create.tex

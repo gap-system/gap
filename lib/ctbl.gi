@@ -392,12 +392,12 @@ InstallOtherMethod( Irr,
           dec;     # decomposition of ordinary characters
                    # into known Brauer characters
 
-    if not IsPSolvable( OrdinaryCharacterTable( modtbl ) ) then
-      TryNextMethod();
-    fi;
-
     p:= UnderlyingCharacteristic( modtbl );
     ordtbl:= OrdinaryCharacterTable( modtbl );
+
+    if not IsPSolvable( ordtbl, p ) then
+      TryNextMethod();
+    fi;
 
     rest:= RestrictedClassFunctions( ordtbl, modtbl, Irr( ordtbl ) );
     irr:= Set( Filtered( rest, x -> DegreeOfCharacter( x ) = 1 ) );
@@ -3557,7 +3557,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 ##
 #M  IsPSolvable( <tbl>, <p> )
 ##
-InstallOtherMethod( IsPSolvable,
+InstallOtherMethod( IsPSolvableOp,
     "method for an ordinary character table, an a positive integer",
     true,
     [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
@@ -4118,7 +4118,7 @@ InstallOtherMethod( IsPSolvable,
 #T ##
 #T #M  NormalClosure( <tbl>, <classes> )
 #T ##
-#T InstallOtherMethod( NormalClosure, true, [ IsOrdinaryTable, IsList ], 0,
+#T InstallOtherMethod( NormalClosureOp, true, [ IsOrdinaryTable, IsList ], 0,
 #T     function( tbl, classes )
 #T 
 #T     local closure,   # classes forming the normal closure, result

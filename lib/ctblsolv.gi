@@ -261,7 +261,7 @@ ProjectiveCharDeg := function( G, z, q )
 
     # 'P' is the direct product of the Sylow 'p' subgroup of 'z'
     # and an elementary abelian 'p' subgroup.
-    O:= Omega( P );
+    O:= Omega( P, p );
     Opcgs:= Pcgs( O );
     Gpcgs:= Pcgs( G );
 
@@ -582,7 +582,7 @@ CoveringTriplesCharacters := function( G, z )
 
     fi;
 
-    O:= Omega( P );
+    O:= Omega( P, p );
     Opcgs:= Pcgs( O );
     Gpcgs:= Pcgs( G );
 

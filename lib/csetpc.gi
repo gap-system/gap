@@ -151,7 +151,7 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 	# modify later: if U trivial
 	if Length(mats)>0 then
 
-	  affsp:=AffineSpace(FullRowSpace(f,Length(wg)));
+	  affsp:=ExtendedVectors(FullRowSpace(f,Length(wg)));
 	  ao:=ExternalSet(U,affsp,Upcgs,mats);
 	  ao:=ExternalOrbits(ao);
 	  ao:=rec(representatives:=List(ao,i->
@@ -232,7 +232,7 @@ IsRightTransversalPcGroup := NewRepresentation
 ##
 #M  RightTransversal( <G>, <U> ) . . . . . . . . . for pc groups
 ##
-InstallMethod( RightTransversal, "PC",IsIdentical,
+InstallMethod( RightTransversalOp, "PC",IsIdentical,
         [ IsSolvableGroup, IsGroup ], 100,
 function( G, U )
 local elements, g, u, e, i,t,depths,gens,p;

@@ -90,7 +90,7 @@ true
 gap> IsSubset( w, GF(2)^2 );
 false
 gap> IsSubset( GF(2)^2, w );
-true
+false
 gap> IsSubset( w, GF(4)^2 );
 false
 gap> IsSubset( GF(4)^2, w );

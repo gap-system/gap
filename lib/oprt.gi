@@ -9,148 +9,6 @@ Revision.oprt_gi :=
 
 #############################################################################
 ##
-#F  AttributeOperation( <arg> ) . . . . . . . . . .  attribute for operations
-##
-##  `AttributeOperation(  op, attr,  usetype,   args  )' calls an   operation
-##  function with   the arguments <args>: If  <args>  specify an external set
-##  <xset> or a group <G>  operating `OnPoints' on  its `MovedPoints', and if
-##  <xset> resp. <G>  has  the  attribute <attr>,   its  value  is  returned.
-##  Otherwise, <args> are parsed  and converted into  the form `( G, D, gens,
-##  oprs, opr )' and the operation <op> is called with this argument list. If
-##  <xset>  or <G>  was specified   as above, the   result  is stored as  the
-##  attribute <attr>  in <hom>  resp. <G>. If  <usetype> is  true and  <xset>
-##  present, it is passed instead of <D>, to allow usage of `TypeObj(xset)'.
-##
-AttributeOperation := function( propop, propat, usetype, args )
-    local   G,  D,  gens,  oprs,  opr,  xset,  result,  attrG;
-    
-    # Get the arguments.
-    if IsExternalSet( args[ 1 ] )  then
-        xset := args[ 1 ];
-        
-        # In the case of an external set, look at the attribute.
-        if Tester( propat )( xset )  then
-            return propat( xset );
-        fi;
-        
-        G := ActingDomain( xset );
-        D := Enumerator( xset );
-        if IsExternalSetByOperatorsRep( xset )  then
-            gens := xset!.generators;
-            oprs := xset!.operators;
-            opr  := xset!.funcOperation;
-        else
-            opr := FunctionOperation( xset );
-        fi;
-        
-    else
-        G := args[ 1 ];
-        D := args[ 2 ];
-        if IsDomain( D )  then
-            D := Enumerator( D );
-        fi;
-        if Length( args ) > 3  then
-            gens := args[ 3 ];
-            oprs := args[ 4 ];
-        fi;
-        if IsFunction( args[ Length( args ) ] )  then
-            opr := args[ Length( args ) ];
-        else
-            opr := OnPoints;
-        fi;
-    fi;
-    
-    if not IsBound( gens )  then
-        if IsPcgsComputable( G )  then  gens := Pcgs( G );
-                                  else  gens := GeneratorsOfGroup( G );  fi;
-        oprs := gens;
-    fi;
-    
-    # In the case of a permutation group $G$ acting on  its moved points, use
-    # an attribute for $G$.
-    attrG := gens = oprs
-         and opr = OnPoints
-         and HasMovedPoints( G )
-         and D = MovedPoints( G );
-    if attrG  and  Tester( propat )( G )  then
-        result := propat( G );
-    elif     usetype
-         and IsBound( xset )  then
-        result := propop( G, xset, gens, oprs, opr );
-    else
-        result := propop( G, D, gens, oprs, opr );
-    fi;
-
-    # Store the result in the case of an attribute.
-    if   IsBound( xset )  then  Setter( propat )( xset, result );
-    elif attrG            then  Setter( propat )( G,    result );  fi;
-    
-    return result;
-end;
-
-#############################################################################
-##
-#F  OrbitishOperation( <arg> )  . . . . . . . . . . . .  orbit-like operation
-##
-OrbitishOperation := function( orbish, famrel, usetype, args )
-    local   G,  D,  pnt,  gens,  oprs,  opr,  xset,  p;
-    
-    # Get the arguments.
-    if IsExternalSet( args[ 1 ] )  then
-        xset := args[ 1 ];
-        pnt := args[ 2 ];
-        G := ActingDomain( xset );
-        if HasHomeEnumerator( xset )  then
-            D := HomeEnumerator( xset );
-        fi;
-        if IsExternalSetByOperatorsRep( xset )  then
-            gens := xset!.generators;
-            oprs := xset!.operators;
-            opr  := xset!.funcOperation;
-        else
-            opr := FunctionOperation( xset );
-        fi;
-    else
-        G := args[ 1 ];
-        if     Length( args ) > 2
-           and famrel( FamilyObj( args[ 2 ] ), FamilyObj( args[ 3 ] ) )  then
-            D := args[ 2 ];
-            if IsDomain( D )  then
-                D := Enumerator( D );
-            fi;
-            p := 3;
-        else
-            p := 2;
-        fi;
-        pnt := args[ p ];
-        if Length( args ) > p + 1  then
-            gens := args[ p + 1 ];
-            oprs := args[ p + 2 ];
-        fi;
-        if IsFunction( args[ Length( args ) ] )  then
-            opr := args[ Length( args ) ];
-        else
-            opr := OnPoints;
-        fi;
-    fi;
-    
-    if not IsBound( gens )  then
-        if IsPcgsComputable( G )  then  gens := Pcgs( G );
-                                  else  gens := GeneratorsOfGroup( G );  fi;
-        oprs := gens;
-    fi;
-    if     usetype
-       and IsBound( xset )  then
-        return orbish( G, xset, pnt, gens, oprs, opr );
-    elif IsBound( D )  then
-        return orbish( G, D, pnt, gens, oprs, opr );
-    else
-        return orbish( G, pnt, gens, oprs, opr );
-    fi;
-end;
-
-#############################################################################
-##
 #R  IsSubsetEnumerator  . . . . . . . . . . . . . . .  enumerator for subsets
 ##
 IsSubsetEnumerator := NewRepresentation( "IsSubsetEnumerator",
@@ -204,10 +62,6 @@ InstallMethod( AsList, true, [ IsSubsetEnumerator ], 0,
 
 #F  ExternalSet( <arg> )  . . . . . . . . . . . . .  external set constructor
 ##
-ExternalSet := function( arg )
-    return AttributeOperation( ExternalSetOp, ExternalSetAttr, false, arg );
-end;
-
 InstallMethod( ExternalSetOp,
         "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
@@ -240,6 +94,10 @@ ExternalSetByFilterConstructor := function( filter, G, D, gens, oprs, opr )
     return xset;
 end;
 
+# The following function expects the type as first argument,  to avoid a call
+# of `NewType'. It is called by `ExternalSubsetOp' and `ExternalOrbitOp' when
+# they are called with an external set (which has already stored this type).
+#
 ExternalSetByTypeConstructor := function( type, G, D, gens, oprs, opr )
     local   xset;
     
@@ -256,14 +114,6 @@ ExternalSetByTypeConstructor := function( type, G, D, gens, oprs, opr )
     fi;
     return xset;
 end;
-
-#############################################################################
-##
-#M  Size( <xset> )  . . . . . . . . . . . . . . . . . . . . .  via enumerator
-##
-InstallMethod( Size, true, [ IsExternalSet ], 0,
-    xset -> Length( Enumerator( xset ) ) );
-#T is this necessary at all? (method in 'coll.gi')
 
 #############################################################################
 ##
@@ -304,10 +154,6 @@ InstallMethod( Representative, true, [ IsExternalSet ], 0,
 ##
 #F  ExternalSubset( <arg> ) . . . . . . . . . . . . .  external set on subset
 ##
-ExternalSubset := function( arg )
-    return OrbitishOperation( ExternalSubsetOp, IsIdentical, true, arg );
-end;
-
 InstallMethod( ExternalSubsetOp,
         "G, D, start, gens, oprs, opr", true,
         [ IsGroup, IsList, IsList,
@@ -333,6 +179,9 @@ InstallOtherMethod( ExternalSubsetOp,
     local   type,  xsset;
 
     type := TypeObj( xset );
+
+    # The type of an external set can store the type of its external subsets,
+    # to avoid repeated calls of `NewType'.
     if not IsBound( type![XSET_XSSETTYPE] )  then
         xsset := ExternalSetByFilterConstructor( IsExternalSubset,
                          G, HomeEnumerator( xset ), gens, oprs, opr );
@@ -341,6 +190,7 @@ InstallOtherMethod( ExternalSubsetOp,
         xsset := ExternalSetByTypeConstructor( type![XSET_XSSETTYPE],
                          G, HomeEnumerator( xset ), gens, oprs, opr );
     fi;
+    
     xsset!.start := Immutable( start );
     return xsset;
 end );
@@ -397,10 +247,6 @@ end );
 ##
 #F  ExternalOrbit( <arg> )  . . . . . . . . . . . . . . external set on orbit
 ##
-ExternalOrbit := function( arg )
-    return OrbitishOperation( ExternalOrbitOp, IsCollsElms, true, arg );
-end;
-    
 InstallMethod( ExternalOrbitOp,
         "G, D, pnt, gens, oprs, opr", true,
         OrbitishReq, 0,
@@ -424,6 +270,9 @@ InstallOtherMethod( ExternalOrbitOp,
     local   type,  xorb;
 
     type := TypeObj( xset );
+    
+    # The type of  an external set  can store the type  of external orbits of
+    # its points, to avoid repeated calls of `NewType'.
     if not IsBound( type![XSET_XORBTYPE] )  then
         xorb := ExternalSetByFilterConstructor( IsExternalOrbit,
                         G, HomeEnumerator( xset ), gens, oprs, opr );
@@ -432,6 +281,7 @@ InstallOtherMethod( ExternalOrbitOp,
         xorb := ExternalSetByTypeConstructor( type![XSET_XORBTYPE],
                         G, HomeEnumerator( xset ), gens, oprs, opr );
     fi;
+    
     SetRepresentative( xorb, pnt );
     xorb!.start := Immutable( [ pnt ] );
     return xorb;
@@ -607,7 +457,7 @@ OperationHomomorphismConstructor := function( xset, surj )
     if IsExternalSetByOperatorsRep( xset )  then
         filter := filter and IsOperationHomomorphismByOperators;
     elif     IsMatrixGroup( G )
-         and not IsProjectiveSpaceEnumerator( D )
+         and not IsOneDimSubspacesTransversal( D )
          and IsScalarList( D[ 1 ] )
          and opr in [ OnPoints, OnRight ]  then
         if     not IsExternalSubset( xset )
@@ -615,7 +465,7 @@ OperationHomomorphismConstructor := function( xset, surj )
            and IsFreeLeftModule( UnderlyingCollection( D ) )
            and IsFullRowModule( UnderlyingCollection( D ) )
            and IsLeftActedOnByDivisionRing( UnderlyingCollection( D ) )  then
-            filter := filter and IsGeneralLinearOperationHomomorphismWithBase;
+            filter := filter and IsLinearOperationHomomorphism;
         else
             if IsExternalSubset( xset )  then
                 if HasEnumerator( xset )  then  D := Enumerator( xset );
@@ -623,10 +473,7 @@ OperationHomomorphismConstructor := function( xset, surj )
             fi;
             if IsSubset( D, IdentityMat
                        ( Length( D[ 1 ] ), One( D[ 1 ][ 1 ] ) ) )  then
-                filter := filter and
-                          IsGeneralLinearOperationHomomorphismWithBase;
-            else
-                filter := filter and IsGeneralLinearOperationHomomorphism;
+                filter := filter and IsLinearOperationHomomorphism;
             fi;
         fi;
     elif not IsExternalSubset( xset )
@@ -814,10 +661,6 @@ end;
 ##
 #F  Orbit( <arg> )  . . . . . . . . . . . . . . . . . . . . . . . . . . orbit
 ##
-Orbit := function( arg )
-    return OrbitishOperation( OrbitOp, IsCollsElms, false, arg );
-end;
-
 InstallMethod( OrbitOp,
         "G, D, pnt, [ 1gen ], [ 1opr ], opr", true,
         OrbitishReq, SUM_FLAGS,
@@ -889,10 +732,6 @@ end );
 ##
 #F  OrbitStabilizer( <arg> )  . . . . . . . . . . . . .  orbit and stabilizer
 ##
-OrbitStabilizer := function( arg )
-    return OrbitishOperation( OrbitStabilizerOp, IsCollsElms, false, arg );
-end;
-
 InstallMethod( OrbitStabilizerOp,
         "G, D, pnt, gens, oprs, opr", true,
         OrbitishReq, 0,
@@ -997,10 +836,6 @@ end;
 ##
 #F  Orbits( <arg> ) . . . . . . . . . . . . . . . . . . . . . . . . .  orbits
 ##
-Orbits := function( arg )
-    return AttributeOperation( OrbitsOp, OrbitsAttr, false, arg );
-end;
-
 InstallMethod( OrbitsOp,
         "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
@@ -1038,11 +873,6 @@ end );
 ##
 #F  SparseOperationHomomorphism( <arg> )   operation homomorphism on `[1..n]'
 ##
-SparseOperationHomomorphism := function( arg )
-    return OrbitishOperation( SparseOperationHomomorphismOp, IsIdentical,
-                   false, arg );
-end;
-
 InstallMethod( SparseOperationHomomorphismOp,
         "G, D, start, gens, oprs, opr", true,
         [ IsGroup, IsList, IsList,
@@ -1113,11 +943,6 @@ end );
 ##
 #F  ExternalOrbits( <arg> ) . . . . . . . . . . . .  list of transitive xsets
 ##
-ExternalOrbits := function( arg )
-    return AttributeOperation( ExternalOrbitsOp, ExternalOrbitsAttr,
-                   true, arg );
-end;
-
 InstallMethod( ExternalOrbitsOp,
         "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
@@ -1168,11 +993,6 @@ end );
 ##
 #F  ExternalOrbitsStabilizers( <arg> )  . . . . . .  list of transitive xsets
 ##
-ExternalOrbitsStabilizers := function( arg )
-    return AttributeOperation( ExternalOrbitsStabilizersOp,
-                   ExternalOrbitsStabilizersAttr, true, arg );
-end;
-
 InstallMethod( ExternalOrbitsStabilizersOp,
         "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
@@ -1531,10 +1351,6 @@ end );
 ##
 #F  Blocks( <arg> ) . . . . . . . . . . . . . . . . . . . . . . . . .  blocks
 ##
-Blocks := function( arg )
-    return OrbitishOperation( BlocksOp, IsIdentical, true, arg );
-end;
-    
 InstallOtherMethod( BlocksOp,
         "G, D, gens, oprs, opr", true,
         [ IsGroup, IsList,
@@ -1573,10 +1389,6 @@ end );
 ##
 #F  MaximalBlocks( <arg> )  . . . . . . . . . . . . . . . . .  maximal blocks
 ##
-MaximalBlocks := function( arg )
-    return OrbitishOperation( MaximalBlocksOp, IsIdentical, true, arg );
-end;
-
 InstallOtherMethod( MaximalBlocksOp,
         "G, D, gens, oprs, opr", true,
         [ IsGroup, IsList,
@@ -1621,10 +1433,6 @@ end );
 
 #F  OrbitLength( <arg> )  . . . . . . . . . . . . . . . . . . .  orbit length
 ##
-OrbitLength := function( arg )
-    return OrbitishOperation( OrbitLengthOp, IsCollsElms, false, arg );
-end;
-
 InstallMethod( OrbitLengthOp, true, OrbitishReq, 0,
     function( G, D, pnt, gens, oprs, opr )
     return Length( OrbitOp( G, D, pnt, gens, oprs, opr ) );
@@ -1643,10 +1451,6 @@ end );
 ##
 #F  OrbitLengths( <arg> ) . . . . . . . . . . . . . . . . . . . orbit lengths
 ##
-OrbitLengths := function( arg )
-    return AttributeOperation( OrbitLengthsOp, OrbitLengthsAttr, false, arg );
-end;
-
 InstallMethod( OrbitLengthsOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     return Immutable( List( Orbits( G, D, gens, oprs, opr ), Length ) );
@@ -1772,10 +1576,6 @@ end );
 
 #F  IsTransitive( <G>, <D>, <gens>, <oprs>, <opr> ) . . . . transitivity test
 ##
-IsTransitive := function( arg )
-    return AttributeOperation( IsTransitiveOp, IsTransitiveProp, false, arg );
-end;
-
 InstallMethod( IsTransitiveOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     return IsSubset( OrbitOp( G, D[ 1 ], gens, oprs, opr ), D );
@@ -1785,10 +1585,6 @@ end );
 ##
 #F  Transitivity( <arg> ) . . . . . . . . . . . . . . . . transitivity degree
 ##
-Transitivity := function( arg )
-    return AttributeOperation( TransitivityOp, TransitivityAttr, false, arg );
-end;
-
 InstallMethod( TransitivityOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     local   hom;
@@ -1811,10 +1607,6 @@ end );
 ##
 #F  IsPrimitive( <G>, <D>, <gens>, <oprs>, <opr> )  . . . .  primitivity test
 ##
-IsPrimitive := function( arg )
-    return AttributeOperation( IsPrimitiveOp, IsPrimitiveProp, false, arg );
-end;
-
 InstallMethod( IsPrimitiveOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     return     IsTransitive( G, D, gens, oprs, opr )
@@ -1825,10 +1617,6 @@ end );
 ##
 #F  Earns( <arg> ) . . . . . . . . elementary abelian regular normal subgroup
 ##
-Earns := function( arg )
-    return AttributeOperation( EarnsOp, EarnsAttr, false, arg );
-end;
-
 InstallMethod( EarnsOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     Error( "`Earns' only implemented for primitive permutation groups" );
@@ -1838,7 +1626,8 @@ end );
 ##
 #M  Setter( EarnsAttr )( <G>, fail )  . . . . . . . . . . .  never set `fail'
 ##
-InstallMethod( Setter( EarnsAttr ), true, [ IsGroup, IsBool ], SUM_FLAGS,
+InstallOtherMethod( Setter( EarnsAttr ), true, [ IsGroup, IsBool ],
+        SUM_FLAGS,
     function( G, fail )
     Setter( IsPrimitiveAffineProp )( G, false );
 end );
@@ -1847,11 +1636,6 @@ end );
 ##
 #F  IsPrimitiveAffine( <arg> )  . . . . . . . . . . . .  is operation affine?
 ##
-IsPrimitiveAffine := function( arg )
-    return AttributeOperation( IsPrimitiveAffineOp, IsPrimitiveAffineProp,
-                   false, arg );
-end;
-
 InstallMethod( IsPrimitiveAffineOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     return     IsPrimitive( G, D, gens, oprs, opr )
@@ -1862,11 +1646,6 @@ end );
 ##
 #F  IsSemiRegular( <arg> )  . . . . . . . . . . . . . . . semiregularity test
 ##
-IsSemiRegular := function( arg )
-    return AttributeOperation( IsSemiRegularOp, IsSemiRegularProp,
-                   false, arg );
-end;
-
 InstallMethod( IsSemiRegularOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     local   hom;
@@ -1899,10 +1678,6 @@ end );
 ##
 #F  IsRegular( <arg> )  . . . . . . . . . . . . . . . . . . . regularity test
 ##
-IsRegular := function( arg )
-    return AttributeOperation( IsRegularOp, IsRegularProp, false, arg );
-end;
-
 InstallMethod( IsRegularOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     return     IsTransitive( G, D, gens, oprs, opr )
@@ -2095,7 +1870,7 @@ Stabilizer := function( arg )
     if Length( arg ) = 1  then
         return StabilizerOfExternalSet( arg[ 1 ] );
     else
-        return OrbitishOperation( StabilizerOp, IsCollsElms, false, arg );
+        return CallFuncList( StabilizerFunc, arg );
     fi;
 end;
 
@@ -2275,20 +2050,20 @@ end );
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
 ##
 InstallMethod( PreImagesRepresentative, true,
-        [ IsGeneralLinearOperationHomomorphism, IsPerm ], 0,
+        [ IsLinearOperationHomomorphism, IsPerm ], 0,
     function( hom, elm )
     local   V,  base,  mat,  b;
-
+    
+    if not elm in Image( hom )  then
+        return fail;
+    fi;
     V := HomeEnumerator( UnderlyingExternalSet( hom ) );
     base := One( Source( hom ) );
     mat := [  ];
     for b  in base  do
         Add( mat, V[ PositionCanonical( V, b ) ^ elm ] );
     od;
-    if    IsGeneralLinearOperationHomomorphismWithBase( hom )
-       or IsGeneralLinearGroup( Source( hom ) )
-       or mat in Source( hom )  then  return mat;
-                                else  return fail;  fi;
+    return mat;
 end );
 
 #############################################################################

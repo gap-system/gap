@@ -11,7 +11,7 @@ P("                ftp://ftp.math.rwth-aachen.de");
 P("");
 P("Please report bugs and problems to");
 P("");
-P("                  gap4@Math.RWTH-Aachen.DE");
+P("                  gap-trouble@dcs.st-and.ac.uk");
 P("");
 P("quoting the Version and Date below and the machine, operation system,");
 P("and compiler used.");

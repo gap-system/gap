@@ -4,7 +4,7 @@
 ##
 #W  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 Revision.addmagma_gi :=
     "@(#)$Id$";
@@ -557,6 +557,106 @@ InstallMethod( Enumerator,
 InstallMethod( EnumeratorSorted,
     true, [ IsAdditiveMagmaWithZero and IsTrivial ], 0,
     EnumeratorOfTrivialAdditiveMagmaWithZero );
+
+
+#############################################################################
+##
+#F  ClosureAdditiveMagmaDefault( <A>, <elm> )  closure of add. magma with elm
+##
+ClosureAdditiveMagmaDefault := function( A, elm )
+
+    local   C,          # closure '\< <a>, <obj> \>', result
+            gens,       # generators of <A>
+            gen,        # generator of <A> or <C>
+            Celements,  # intermediate list of elements
+            len;        # current number of elements
+
+    gens:= GeneratorsOfAdditiveMagma( A );
+
+    # try to avoid adding an element to a add. magma that already contains it
+    if   elm in gens
+      or ( HasAsListSorted( A ) and elm in AsListSorted( A ) )
+    then
+        return A;
+    fi;
+
+    # make the closure add. magma
+    gens:= Concatenation( gens, [ elm ] );
+    C:= AdditiveMagmaByGenerators( gens );
+    UseSubsetRelation( C, A );
+    
+    # if the elements of <A> are known then extend this list
+    # (multiply each element from the left and right with the new
+    # generator, and then multiply with all elements until the
+    # list becomes stable)
+    if HasAsListSorted( A ) then
+
+        Celements := ShallowCopy( AsListSorted( A ) );
+        AddSet( Celements, elm );
+        UniteSet( Celements, Celements + elm );
+        UniteSet( Celements, elm + Celements );
+        repeat
+            len:= Length( Celements );
+            for gen in Celements do
+                UniteSet( Celements, Celements + gen );
+                UniteSet( Celements, gen + Celements );
+            od;
+        until len = Length( Celements );
+
+        SetAsListSorted( C, AsListSorted( Celements ) );
+        SetIsFinite( C, true );
+        SetSize( C, Length( Celements ) );
+
+    fi;
+
+    # return the closure
+    return C;
+end;
+
+
+#############################################################################
+##
+#M  Enumerator( <A> ) . . . . . . . . .  set of the elements of an add. magma
+#M  EnumeratorSorted( <A> ) . . . . . .  set of the elements of an add. magma
+##
+EnumeratorOfAdditiveMagma := function( A )
+
+    local   gens,       # add. magma generators of <A>
+            H,          # subadd. magma of the first generators of <A>
+            gen;        # generator of <A>
+
+    # handle the case of an empty add. magma
+    gens:= GeneratorsOfAdditiveMagma( A );
+    if IsEmpty( gens ) then
+      return [];
+    fi;
+
+    # start with the empty add. magma and its element list
+    H:= SubadditiveMagma( A, [] );
+    SetAsListSorted( H, Immutable( [ ] ) );
+
+    # Add the generators one after the other.
+    # We use a function that maintains the elements list for the closure.
+    for gen in gens do
+      H:= ClosureAdditiveMagmaDefault( H, gen );
+    od;
+
+    # return the list of elements
+    Assert( 2, HasAsListSorted( H ) );
+    return AsListSorted( H );
+end;
+
+InstallMethod( Enumerator,
+    "generic method for an add. magma",
+    true,
+    [ IsAdditiveMagma and IsAttributeStoringRep ], 0,
+    EnumeratorOfAdditiveMagma );
+
+InstallMethod( EnumeratorSorted,
+    "generic method for an add. magma",
+    true,
+    [ IsAdditiveMagma and IsAttributeStoringRep ], 0,
+    EnumeratorOfAdditiveMagma );
 
 
 #############################################################################

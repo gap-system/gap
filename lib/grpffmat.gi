@@ -141,7 +141,7 @@ end );
 ##
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . . .  via nicomorphism
 ##
-InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
         [ IsFFEMatrixGroup, IsFFEMatrixGroup ], 0,
     function( G, N )
     local   nice;

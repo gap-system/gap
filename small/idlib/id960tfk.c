@@ -3,7 +3,7 @@
 #W  id960tfk.c             GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id960tfk_c :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 960 ].next[ 20 ].next[ 6 ].next[ 289 ] :=
 rec(

@@ -20,19 +20,17 @@ SYS_CONST char * Revision_blister_h =
    "@(#)$Id$";
 #endif
 
+
 /****************************************************************************
 **
 
 *V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
 **
-**  'BIPEB' is the number of bits per block, where a block fills a UInt, which
-**   must be the same size as a bag identifier.
+**  'BIPEB' is the  number of bits  per  block, where a  block  fills a UInt,
+**  which must be the same size as a bag identifier.
 **
 */
-
 #define BIPEB                           (sizeof(UInt) * 8L)
-
-
 
 
 /****************************************************************************
@@ -75,16 +73,14 @@ SYS_CONST char * Revision_blister_h =
 **  Note that 'LEN_BLIST' is a macro, so do not call it  with  arguments that
 **  have sideeffects.
 */
-#define LEN_BLIST(list) \
-                        (INT_INTOBJ(ADDR_OBJ(list)[0]))
+#define LEN_BLIST(list)         (INT_INTOBJ(ADDR_OBJ(list)[0]))
 
 /***************************************************************************
 **
-*F  NUMBER_BLOCKS_BLIST(<list>) .  . . . . . . number of UInt blocks in list
+*F  NUMBER_BLOCKS_BLIST(<list>) . . . . . . . . number of UInt blocks in list
 **
 **
 */
-
 #define NUMBER_BLOCKS_BLIST( blist ) ((LEN_BLIST((blist)) + BIPEB -1)/BIPEB)
 
 
@@ -103,49 +99,45 @@ SYS_CONST char * Revision_blister_h =
 
 /****************************************************************************
 **
-*F  BLOCKS_BLIST( <list> ) . . . . . . . . first block of a boolean list
+*F  BLOCKS_BLIST( <list> )  . . . . . . . . . . first block of a boolean list
 **
 **  returns a pointer to the start of the data of the Boolean list
 **
 */
-
 #define BLOCKS_BLIST( list )  ((UInt*)(ADDR_OBJ(list)+1))
+
 
 /****************************************************************************
 **
-*F  BLOCK_ELM_BLIST(<list>,<pos>) . . . . . . . . . .block  of a boolean list
+*F  BLOCK_ELM_BLIST( <list>, <pos> )  . . . . . . . .block  of a boolean list
 **
-**  'BLOCK_ELM_BLIST' return the block containing the <pos>-th element of 
-**   the boolean list <list> as a UInt value, which is also a valid left
-**  hand side.
-**  <pos> must  be a positive integer less than
-**  or equal to the length of <hdList>.
+**  'BLOCK_ELM_BLIST' return the block containing the <pos>-th element of the
+**  boolean list <list> as   a UInt value, which  is  also a valid left  hand
+**  side.  <pos> must be a positive integer less than  or equal to the length
+**  of <List>.
 **
 **  Note that 'BLOCK_ELM_BLIST' is a macro, so do not call it  with arguments
 **  that have sideeffects.
 */
-
 #define BLOCK_ELM_BLIST(list, pos) (BLOCKS_BLIST( list )[((pos)-1)/BIPEB])
 
 
 /****************************************************************************
 **
-*F  MASK_POS_BLIST(<pos>) . . .  . . .bit mask for position of a Boolean list
+*F  MASK_POS_BLIST( <pos> )  . . . .  bit mask for position of a Boolean list
 **
-**  MASK_POS_BLIST(<pos>) returns a UInt with a single set bit in position
+**  MASK_POS_BLIST(<pos>) returns a UInt with   a single set bit in  position
 **  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
 **
-**  Note that 'MASK_POS_BLIST' is a macro, so do not call it  with arguments
+**  Note that 'MASK_POS_BLIST' is a  macro, so do  not call it with arguments
 **  that have sideeffects.
 */
-
 #define MASK_POS_BLIST( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
-
 
 
 /****************************************************************************
 **
-*F  ELM_BLIST(<list>,<pos>) . . . . . . . . . . . . element of a boolean list
+*F  ELM_BLIST( <list>, <pos> ) . . . . . . . . . .  element of a boolean list
 **
 **  'ELM_BLIST' return the <pos>-th element of the boolean list <list>, which
 **  is either 'true' or 'false'.  <pos> must  be a positive integer less than
@@ -178,9 +170,10 @@ SYS_CONST char * Revision_blister_h =
 
 /****************************************************************************
 **
-*F  IS_IMM_BLIST( <list> )  . . . . . .  check if boolean <list> is immutable
+*F  IS_BLIST_REP( <list> )  . . . . .  check if <list> is in boolean list rep
 */
-#define IS_IMM_BLIST(list)  ((TNUM_OBJ(list) - T_BLIST) % 2)
+#define IS_BLIST_REP(list)  \
+  ( T_BLIST <= TNUM_OBJ(list) && TNUM_OBJ(list) <= T_BLIST_SSORT+IMMUTABLE )
 
 
 /****************************************************************************
@@ -191,12 +184,24 @@ SYS_CONST char * Revision_blister_h =
 
 /****************************************************************************
 **
-*F  InitBlist() . . . . . . . . . . . . . initialize the boolean list package
-**
-**  'InitBlist' initializes the boolean list package.
-*/
-extern  void            InitBlist ( void );
 
+*F  SetupBlist()  . . . . . . . . . . . . initialize the boolean list package
+*/
+extern void SetupBlist ( void );
+
+
+/****************************************************************************
+**
+*F  InitBlist() . . . . . . . . . . . . . initialize the boolean list package
+*/
+extern void InitBlist ( void );
+
+
+/****************************************************************************
+**
+*F  CheckBlist()  . . .  check the initialisation of the boolean list package
+*/
+extern void CheckBlist ( void );
 
 
 /****************************************************************************

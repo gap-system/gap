@@ -6,31 +6,35 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 */
-char * Revision_objpcgel_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_objpcgel_c =
+   "@(#)$Id$";
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
-#include        "gap.h"                 /* Error                           */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "calls.h"               /* CALL_2ARGS                      */
+#include        "gvars.h"               /* global variables                */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "lists.h"               /* generic lists package           */
-#include        "plist.h"               /* ELM_PLIST, SET_ELM_PLIST, ...   */
+#include        "calls.h"               /* generic call mechanism          */
 
-#include        "ariths.h"              /* LT, EQ                          */
-#include        "bool.h"                /* True, False                     */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "objfgelm.h"            /* NPAIRS_WORD, EDBITS_WORD, ...   */
-#include        "objscoll.h"            /* collectors                      */
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
+
+#include        "ariths.h"              /* basic arithmetic                */
+#include        "bool.h"                /* booleans                        */
+
+#include        "objfgelm.h"            /* objects of free groups          */
+#include        "objscoll.h"            /* single collector                */
 
 #define INCLUDE_DECLARATION_PART
-#include        "objpcgel.h"
+#include        "objpcgel.h"            /* objects of polycyclic groups    */
 #undef  INCLUDE_DECLARATION_PART
 
 
@@ -418,142 +422,126 @@ Obj Func32Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 /****************************************************************************
 **
 
-*F  InitPcElements()  . . . . . . . . initialize the single collector package
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+
+*F  SetupPcElements() . . . . . . .  initialize the pc group elements package
+*/
+void SetupPcElements ( void )
+{
+}
+
+
+/****************************************************************************
+**
+*F  InitPcElements()  . . . . . . .  initialize the pc group elements package
 */
 void InitPcElements ( void )
 {
 
     /* export position numbers 'PCWP_SOMETHING'                            */
-    AssGVar( GVarName( "PCWP_FIRST_ENTRY" ),
-             INTOBJ_INT(PCWP_FIRST_ENTRY) );
-    AssGVar( GVarName( "PCWP_NAMES" ),
-             INTOBJ_INT(PCWP_NAMES) );
-    AssGVar( GVarName( "PCWP_COLLECTOR" ),
-             INTOBJ_INT(PCWP_COLLECTOR) );
-    AssGVar( GVarName( "PCWP_FIRST_FREE" ),
-             INTOBJ_INT(PCWP_FIRST_FREE) );
-
+    if ( ! SyRestoring ) {
+        AssGVar( GVarName( "PCWP_FIRST_ENTRY" ),
+                 INTOBJ_INT(PCWP_FIRST_ENTRY) );
+        AssGVar( GVarName( "PCWP_NAMES" ),
+                 INTOBJ_INT(PCWP_NAMES) );
+        AssGVar( GVarName( "PCWP_COLLECTOR" ),
+                 INTOBJ_INT(PCWP_COLLECTOR) );
+        AssGVar( GVarName( "PCWP_FIRST_FREE" ),
+                 INTOBJ_INT(PCWP_FIRST_FREE) );
+    }
 
     /* methods for boxed objs                                              */
-    InitHandlerFunc( FuncLessBoxedObj, "LessBoxedObj" );
-    AssGVar( GVarName( "LessBoxedObj" ),
-         NewFunctionC( "LessBoxedObj", 2L, "lobj, lobj",
-                    FuncLessBoxedObj ) );
+    C_NEW_GVAR_FUNC( "LessBoxedObj", 2, "lobj, lobj",
+                  FuncLessBoxedObj,
+      "src/objpcgel.c:LessBoxedObj" );
 
-    InitHandlerFunc( FuncEqualBoxedObj, "EqualBoxedObj" );
-    AssGVar( GVarName( "EqualBoxedObj" ),
-         NewFunctionC( "EqualBoxedObj", 2L, "lobj, lobj",
-                    FuncEqualBoxedObj ) );
+    C_NEW_GVAR_FUNC( "EqualBoxedObj", 2, "lobj, lobj",
+                  FuncEqualBoxedObj,
+      "src/objpcgel.c:EqualBoxedObj" );
 
 
     /* finite power conjugate collector words                              */
-    InitHandlerFunc( FuncNBitsPcWord_Comm, "NBitsPcWord_Comm" );
-    AssGVar( GVarName( "NBitsPcWord_Comm" ),
-         NewFunctionC( "NBitsPcWord_Comm", 2L,
+    C_NEW_GVAR_FUNC( "NBitsPcWord_Comm", 2,
                        "n_bits_pcword, n_bits_pcword",
-                    FuncNBitsPcWord_Comm ) );
+                  FuncNBitsPcWord_Comm,
+      "src/objpcgel.c:NBitsPcWord_Comm" );
 
-    InitHandlerFunc( FuncNBitsPcWord_Conjugate,
-                     "NBitsPcWord_Conjugate" );
-    AssGVar( GVarName( "NBitsPcWord_Conjugate" ),
-         NewFunctionC( "NBitsPcWord_Conjugate", 2L,
-                       "n_bits_pcword, n_bits_pcword",
-                    FuncNBitsPcWord_Conjugate ) );
+    C_NEW_GVAR_FUNC( "NBitsPcWord_Conjugate", 2, "n_bits_pcword, n_bits_pcword",
+                  FuncNBitsPcWord_Conjugate,
+      "src/objpcgel.c:NBitsPcWord_Conjugate" );
 
-    InitHandlerFunc( FuncNBitsPcWord_LeftQuotient,
-                     "NBitsPcWord_LeftQuotient" );
-    AssGVar( GVarName( "NBitsPcWord_LeftQuotient" ),
-         NewFunctionC( "NBitsPcWord_LeftQuotient", 2L, 
-                       "n_bits_pcword, n_bits_pcword",
-                    FuncNBitsPcWord_LeftQuotient ) );
+    C_NEW_GVAR_FUNC( "NBitsPcWord_LeftQuotient", 2, "n_bits_pcword, n_bits_pcword",
+                  FuncNBitsPcWord_LeftQuotient,
+      "src/objpcgel.c:NBitsPcWord_LeftQuotient" );
 
-    InitHandlerFunc( FuncNBitsPcWord_PowerSmallInt,
-                     "NBitsPcWord_PowerSmallInt" );
-    AssGVar( GVarName( "NBitsPcWord_PowerSmallInt" ),
-         NewFunctionC( "NBitsPcWord_PowerSmallInt", 2L, 
-                       "n_bits_pcword, small_integer",
-                    FuncNBitsPcWord_PowerSmallInt ) );
+    C_NEW_GVAR_FUNC( "NBitsPcWord_PowerSmallInt", 2, "n_bits_pcword, small_integer",
+                  FuncNBitsPcWord_PowerSmallInt,
+      "src/objpcgel.c:NBitsPcWord_PowerSmallInt" );
 
-    InitHandlerFunc( FuncNBitsPcWord_Product,
-                     "NBitsPcWord_Product" );
-    AssGVar( GVarName( "NBitsPcWord_Product" ),
-         NewFunctionC( "NBitsPcWord_Product", 2L, 
-                       "n_bits_pcword, n_bits_pcword",
-                    FuncNBitsPcWord_Product ) );
+    C_NEW_GVAR_FUNC( "NBitsPcWord_Product", 2, "n_bits_pcword, n_bits_pcword",
+                  FuncNBitsPcWord_Product,
+      "src/objpcgel.c:NBitsPcWord_Product" );
 
-    InitHandlerFunc( FuncNBitsPcWord_Quotient,
-                     "NBitsPcWord_Quotient" );
-    AssGVar( GVarName( "NBitsPcWord_Quotient" ),
-         NewFunctionC( "NBitsPcWord_Quotient", 2L, 
-                       "n_bits_pcword, n_bits_pcword",
-                    FuncNBitsPcWord_Quotient ) );
+    C_NEW_GVAR_FUNC( "NBitsPcWord_Quotient", 2, "n_bits_pcword, n_bits_pcword",
+                  FuncNBitsPcWord_Quotient,
+      "src/objpcgel.c:NBitsPcWord_Quotient" );
 
 
     /* 8 bits word                                                         */
-    InitHandlerFunc( Func8Bits_DepthOfPcElement,
-                     "8Bits_DepthOfPcElement" );
-    AssGVar( GVarName( "8Bits_DepthOfPcElement" ),
-         NewFunctionC( "8Bits_DepthOfPcElement", 2L, 
-                       "8_bits_pcgs, 8_bits_pcword",
-                    Func8Bits_DepthOfPcElement ) );
+    C_NEW_GVAR_FUNC( "8Bits_DepthOfPcElement", 2, "8_bits_pcgs, 8_bits_pcword",
+                  Func8Bits_DepthOfPcElement,
+      "src/objpcgel.c:8Bits_DepthOfPcElement" );
 
-    InitHandlerFunc( Func8Bits_ExponentOfPcElement,
-                     "8Bits_ExponentOfPcElement" );
-    AssGVar( GVarName( "8Bits_ExponentOfPcElement" ),
-         NewFunctionC( "8Bits_ExponentOfPcElement", 3L, 
-                       "8_bits_pcgs, 8_bits_pcword, int",
-                    Func8Bits_ExponentOfPcElement ) );
+    C_NEW_GVAR_FUNC( "8Bits_ExponentOfPcElement", 3, "8_bits_pcgs, 8_bits_pcword, int",
+                  Func8Bits_ExponentOfPcElement,
+      "src/objpcgel.c:8Bits_ExponentOfPcElement" );
 
-    InitHandlerFunc( Func8Bits_LeadingExponentOfPcElement,
-                     "8Bits_LeadingExponentOfPcElement" );
-    AssGVar( GVarName( "8Bits_LeadingExponentOfPcElement" ),
-         NewFunctionC( "8Bits_LeadingExponentOfPcElement", 2L, 
-                       "8_bits_pcgs, 8_bits_word",
-                    Func8Bits_LeadingExponentOfPcElement ) );
+    C_NEW_GVAR_FUNC( "8Bits_LeadingExponentOfPcElement", 2, "8_bits_pcgs, 8_bits_word",
+                  Func8Bits_LeadingExponentOfPcElement,
+      "src/objpcgel.c:8Bits_LeadingExponentOfPcElement" );
 
     /* 16 bits word                                                        */
-    InitHandlerFunc( Func16Bits_DepthOfPcElement,
-                     "16Bits_DepthOfPcElement" );
-    AssGVar( GVarName( "16Bits_DepthOfPcElement" ),
-         NewFunctionC( "16Bits_DepthOfPcElement", 2L, 
-                       "16_bits_pcgs, 16_bits_pcword",
-                    Func16Bits_DepthOfPcElement ) );
+    C_NEW_GVAR_FUNC( "16Bits_DepthOfPcElement", 2, "16_bits_pcgs, 16_bits_pcword",
+                  Func16Bits_DepthOfPcElement,
+      "src/objpcgel.c:16Bits_DepthOfPcElement" );
 
-    InitHandlerFunc( Func16Bits_ExponentOfPcElement,
-                     "16Bits_ExponentOfPcElement" );
-    AssGVar( GVarName( "16Bits_ExponentOfPcElement" ),
-         NewFunctionC( "16Bits_ExponentOfPcElement", 3L, 
-                       "16_bits_pcgs, 16_bits_pcword, int",
-                    Func16Bits_ExponentOfPcElement ) );
+    C_NEW_GVAR_FUNC( "16Bits_ExponentOfPcElement", 3, "16_bits_pcgs, 16_bits_pcword, int",
+                  Func16Bits_ExponentOfPcElement,
+      "src/objpcgel.c:16Bits_ExponentOfPcElement" );
 
-    InitHandlerFunc( Func16Bits_LeadingExponentOfPcElement,
-                     "16Bits_LeadingExponentOfPcElement" );
-    AssGVar( GVarName( "16Bits_LeadingExponentOfPcElement" ),
-         NewFunctionC( "16Bits_LeadingExponentOfPcElement", 2L, 
-                       "16_bits_pcgs, 16_bits_word",
-                    Func16Bits_LeadingExponentOfPcElement ) );
+    C_NEW_GVAR_FUNC( "16Bits_LeadingExponentOfPcElement", 2, "16_bits_pcgs, 16_bits_word",
+                  Func16Bits_LeadingExponentOfPcElement,
+      "src/objpcgel.c:16Bits_LeadingExponentOfPcElement" );
 
     /* 32 bits word                                                        */
-    InitHandlerFunc( Func32Bits_DepthOfPcElement,
-                     "32Bits_DepthOfPcElement" );
-    AssGVar( GVarName( "32Bits_DepthOfPcElement" ),
-         NewFunctionC( "32Bits_DepthOfPcElement", 2L, 
-                       "32_bits_pcgs, 32_bits_pcword",
-                    Func32Bits_DepthOfPcElement ) );
+    C_NEW_GVAR_FUNC( "32Bits_DepthOfPcElement", 2, "32_bits_pcgs, 32_bits_pcword",
+                  Func32Bits_DepthOfPcElement,
+      "src/objpcgel.c:32Bits_DepthOfPcElement" );
 
-    InitHandlerFunc( Func32Bits_ExponentOfPcElement,
-                     "32Bits_ExponentOfPcElement" );
-    AssGVar( GVarName( "32Bits_ExponentOfPcElement" ),
-         NewFunctionC( "32Bits_ExponentOfPcElement", 3L, 
-                       "32_bits_pcgs, 32_bits_pcword, int",
-                    Func32Bits_ExponentOfPcElement ) );
+    C_NEW_GVAR_FUNC( "32Bits_ExponentOfPcElement", 3, "32_bits_pcgs, 32_bits_pcword, int",
+                  Func32Bits_ExponentOfPcElement,
+      "src/objpcgel.c:32Bits_ExponentOfPcElement" );
 
-    InitHandlerFunc( Func32Bits_LeadingExponentOfPcElement,
-                     "32Bits_LeadingExponentOfPcElement" );
-    AssGVar( GVarName( "32Bits_LeadingExponentOfPcElement" ),
-         NewFunctionC( "32Bits_LeadingExponentOfPcElement", 2L, 
-                       "32_bits_pcgs, 32_bits_word",
-                    Func32Bits_LeadingExponentOfPcElement ) );
+    C_NEW_GVAR_FUNC( "32Bits_LeadingExponentOfPcElement", 2, "32_bits_pcgs, 32_bits_word",
+                  Func32Bits_LeadingExponentOfPcElement,
+      "src/objpcgel.c:32Bits_LeadingExponentOfPcElement" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckPcElements() . check initialisation of the pc group elements package
+*/
+void CheckPcElements ( void )
+{
+    SET_REVISION( "objpcgel_c", Revision_objpcgel_c );
+    SET_REVISION( "objpcgel_h", Revision_objpcgel_h );
 }
 
 

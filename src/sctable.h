@@ -10,9 +10,23 @@
 **  and the multiplication of two elements using a structure constants table.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_sctable_h =
+SYS_CONST char * Revision_sctable_h =
    "@(#)$Id$";
 #endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupSCTable()  . . . . . . . . . .  initialize structure constant tables
+*/
+extern void SetupSCTable ( void );
 
 
 /****************************************************************************
@@ -22,11 +36,19 @@ char *          Revision_sctable_h =
 **  Is called  during the initialization  of GAP to initialize  the structure
 **  constant table package.
 */
-extern  void            InitSCTable ( void );
+extern void InitSCTable ( void );
 
 
 /****************************************************************************
 **
+*F  CheckSCTable()  . . check the initialisation of structure constant tables
+*/
+extern void CheckSCTable ( void );
+
+
+/****************************************************************************
+**
+
 *E  sctable.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

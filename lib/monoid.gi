@@ -83,9 +83,56 @@ InstallOtherMethod( MonoidByGenerators,
 
 #############################################################################
 ##
-#M  AsMonoid( <M> ) . . . . . . . . . . . . . . . . view a monoid as a monoid
+#M  AsMonoid( <D> ) . . . . . . . . . . . . . .  domain <D>, viewed as monoid
 ##
-InstallMethod( AsMonoid, true, [ IsMonoid ], 0, IdFunc );
+InstallMethod( AsMonoid, true, [ IsMonoid ], 100, IdFunc );
+
+InstallMethod( AsMonoid,
+    "generic method for a collection",
+    true,
+    [ IsCollection ], 0,
+    function ( D )
+    local   M,  L;
+
+    D := AsListSorted( D );
+    L := ShallowCopy( D );
+    M := TrivialSubmagmaWithOne( MonoidByGenerators( D ) );
+    SubtractSet( L, AsListSorted( M ) );
+    while not IsEmpty(L)  do
+        M := ClosureMagmaDefault( M, L[1] );
+        SubtractSet( L, AsListSorted( M ) );
+    od;
+    if Length( AsListSorted( M ) ) <> Length( D )  then
+        return fail;
+    fi;
+    M := MonoidByGenerators( GeneratorsOfMonoid( M ), One( D[1] ) );
+    SetAsListSorted( M, D );
+    SetIsFinite( M, true );
+    SetSize( M, Length( D ) );
+
+    # return the monoid
+    return M;
+    end );
+
+
+#############################################################################
+##
+#M  AsSubmonoid( <M>, <U> )
+##
+InstallMethod( AsSubmonoid,
+    "generic method for monoids",
+    IsIdentical,
+    [ IsMonoid, IsMonoid ], 0,
+    function( M, U )
+    local S;
+    if not IsSubset( M, U ) then
+      return fail;
+    fi;
+    S:= SubmonoidNC( M, GeneratorsOfMonoid( U ) );
+    UseIsomorphismRelation( U, S );
+    UseSubsetRelation( U, S );
+    return S;
+    end );
 
 
 #############################################################################
@@ -117,7 +164,7 @@ Monoid := function( arg )
 
     # list of generators
     elif Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] ) then
-      return MonoidByGenerators( arg );
+      return MonoidByGenerators( arg[1] );
 
     # list of generators plus identity
     elif Length( arg ) = 2 and IsList( arg[1] ) then

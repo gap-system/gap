@@ -415,7 +415,7 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo;
   if IsGroup(oh) then
     # unless it is too hard compared to what we know already
     if DegreeNaturalHomomorphismsPool(G,N)=fail 
-       or Index(G,oh)*SIZE_OBJ(GeneratorsOfGroup(G)[1])<=2000000 then
+       or Index(G,oh)<=10000 then
       oh:=FactorCosetOperation(G,oh,N); #stores implicitely!
     else
       return fail;
@@ -526,7 +526,7 @@ local G,N,u,v,cnt,zen,uc,nu,totalcnt,interupt,cor;
   # look if it is worth to look at action on N
   # if not abelian: later replace by abelian Normal subgroup
   if IsAbelian(N) and (Size(N)>50 or Index(G,N)<Factorial(Size(N)))
-      and Size(N)*SIZE_OBJ(GeneratorsOfGroup(G)[1])<1000000 then
+      and Size(N)<50000 then
     zen:=Centralizer(G,N);
     if Size(zen)=Size(N) then
       cnt:=0;
@@ -608,7 +608,7 @@ local G,N,u,v,cnt,zen,uc,nu,totalcnt,interupt,cor;
   fi;
 
   # will we need the coset operation?
-  if (Length(arg)=2 and Index(G,u)*SIZE_OBJ(GeneratorsOfGroup(G)[1])<1000000) 
+  if (Length(arg)=2 and Index(G,u)<10000) 
      or(Length(arg)>2 and arg[3]>Index(G,u)) then
     #FactorCosetOperation(G,u,N);
     ImproveOperationDegreeByBlocks(G,N,u); # computes and stores
@@ -769,7 +769,7 @@ end);
 ##                             this function returns an epimorphism from G
 ##  with kernel N. The range of this mapping is a suitable (isomorphic) 
 ##  permutation group (with which we can compute much easier).
-InstallMethod(NaturalHomomorphismByNormalSubgroup,
+InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "search for operation",IsIdentical,[IsGroup,IsGroup],0,
 function(G,N)
 local h;

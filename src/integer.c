@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  integer.c                   GAP source                   Martin Schoenert
+*W  integer.c                   GAP source                   Martin Schoenert
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
@@ -81,33 +81,42 @@
 **  Base 10000 would have the advantage that printing is  very  much  easier,
 **  but 'PrInt' keeps a terminal at 9600 baud busy for almost  all  integers.
 */
-char *          Revision_integer_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_integer_c =
+   "@(#)$Id$";
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "calls.h"               /* NewFunctionC                    */
-#include        "opers.h"               /* NewFilterC                      */
+#include        "gvars.h"               /* global variables                */
 
-#include        "ariths.h"              /* generic operations package      */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
 
-#include        "bool.h"                /* True, False                     */
+#include        "ariths.h"              /* basic arithmetic                */
+
+#include        "bool.h"                /* booleans                        */
 
 #define INCLUDE_DECLARATION_PART
-#include        "integer.h"             /* declaration part of the package */
+#include        "integer.h"             /* integers                        */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "gap.h"                 /* Error                           */
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "string.h"              /* strings                         */
+
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
 **
+
 *T  TypDigit  . . . . . . . . . . . . . . . . . . . .  type of a single digit
 **
 **  'TypDigit' is the type of a single digit of an  arbitrary  size  integer.
@@ -115,8 +124,17 @@ char *          Revision_integer_c =
 **
 **  'TypDigit' is defined in the declaration file of the package as follows:
 **
+#ifdef SYS_IS_64_BIT
+typedef UInt4           TypDigit;
+#else
 typedef UInt2           TypDigit;
+#endif
+#define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
+#define INTBASE            (1L << NR_DIGIT_BITS)
+#define NR_SMALL_INT_BITS  (2*NR_DIGIT_BITS - 4)
 */
+
+
 
 #define SIZE_INT(op)    (SIZE_OBJ(op) / sizeof(TypDigit))
 #define ADDR_INT(op)    ((TypDigit*)ADDR_OBJ(op))
@@ -517,7 +535,7 @@ Obj             SumInt (
 
         /* propagate the carry, this loop is almost never executed         */
         for ( k=(SIZE_INT(opL)-SIZE_INT(opR))/4;
-	     k!=0 && (c>>NR_DIGIT_BITS)!=0; k-- ) {
+             k!=0 && (c>>NR_DIGIT_BITS)!=0; k-- ) {
             c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
             c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
             c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *s++ = c;
@@ -587,9 +605,9 @@ Obj         AInvInt (
         /* special case (ugh)                                              */
         if ( TNUM_OBJ(op) == T_INTPOS && SIZE_INT(op) == 4
           && ADDR_INT(op)[3] == 0 
-	  && ADDR_INT(op)[2] == 0 
+          && ADDR_INT(op)[2] == 0 
           && ADDR_INT(op)[1] == (1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS))
-	  && ADDR_INT(op)[0] == 0 ) {
+          && ADDR_INT(op)[0] == 0 ) {
             inv = INTOBJ_INT( -(1L<<NR_SMALL_INT_BITS) );
         }
 
@@ -804,7 +822,7 @@ Obj             DiffInt (
 
         /* propagate the carry, this loop is almost never executed         */
         for ( k=(SIZE_INT(opL)-SIZE_INT(opR))/4; 
-	     k!=0 && (c>>NR_DIGIT_BITS)!=0; k-- ) {
+             k!=0 && (c>>NR_DIGIT_BITS)!=0; k-- ) {
             c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
             c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
             c = (Int)*l++ + (c>>NR_DIGIT_BITS);  *d++ = c;
@@ -906,13 +924,13 @@ Obj             ProdInt (
         /* multiply digitwise                                              */
         c = (Int)(TypDigit)i * (TypDigit)k;            p[0] = c;
         c = (Int)(TypDigit)i * (k>>NR_DIGIT_BITS) 
-	  + (c>>NR_DIGIT_BITS);                        p[1] = c;
+          + (c>>NR_DIGIT_BITS);                        p[1] = c;
         p[2] = c>>NR_DIGIT_BITS;
 
         c = (Int)(TypDigit)(i>>NR_DIGIT_BITS) * (TypDigit)k 
-	  + p[1];                                      p[1] = c;
+          + p[1];                                      p[1] = c;
         c = (Int)(TypDigit)(i>>NR_DIGIT_BITS) * (TypDigit)(k>>NR_DIGIT_BITS)
-	  + p[2] + (c>>NR_DIGIT_BITS);                 p[2] = c;
+          + p[2] + (c>>NR_DIGIT_BITS);                 p[2] = c;
         p[3] = c>>NR_DIGIT_BITS;
 
     }
@@ -938,9 +956,9 @@ Obj             ProdInt (
         if ( i == -1
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
           && ADDR_INT(opR)[3] == 0
-	  && ADDR_INT(opR)[2] == 0
+          && ADDR_INT(opR)[2] == 0
           && ADDR_INT(opR)[1] == (1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS))
-	  && ADDR_INT(opR)[0] == 0 )
+          && ADDR_INT(opR)[0] == 0 )
             return INTOBJ_INT( -(1L<<NR_SMALL_INT_BITS) );
 
         /* multiplication by -1 is easy, just switch the sign and copy     */
@@ -1147,7 +1165,7 @@ Obj             ProdIntObj (
 
 Obj             ProdIntObjFunc;
 
-Obj             ProdIntObjHandler (
+Obj             FuncPROD_INT_OBJ (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1332,7 +1350,7 @@ Obj             PowObjInt (
 
 Obj             PowObjIntFunc;
 
-Obj             PowObjIntHandler (
+Obj             FuncPOW_OBJ_INT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1407,9 +1425,9 @@ Obj             ModInt (
         if ( opL == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
           && ADDR_INT(opR)[3] == 0 
-	  && ADDR_INT(opR)[2] == 0
+          && ADDR_INT(opR)[2] == 0
           && ADDR_INT(opR)[1] == (NR_SMALL_INT_BITS-NR_DIGIT_BITS)
-	  && ADDR_INT(opR)[0] == 0 )
+          && ADDR_INT(opR)[0] == 0 )
             mod = INTOBJ_INT(0);
 
         /* in all other cases the remainder is equal the left operand      */
@@ -1425,7 +1443,7 @@ Obj             ModInt (
     /* compute the remainder of a large integer by a small integer         */
     else if ( IS_INTOBJ(opR)
            && INT_INTOBJ(opR) < INTBASE
-	   && -INTBASE <= INT_INTOBJ(opR) ) {
+           && -INTBASE <= INT_INTOBJ(opR) ) {
 
         /* pathological case first                                         */
         if ( opR == INTOBJ_INT(0) ) {
@@ -1506,8 +1524,8 @@ Obj             ModInt (
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
         for ( e = 0;
-	     ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
-	                       < INTBASE/2; e++ ) ;
+             ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
+                               < INTBASE/2; e++ ) ;
 
         r1 = ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
         r2 = ((Int)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
@@ -1518,15 +1536,15 @@ Obj             ModInt (
             /* guess the factor                                            */
             m = ADDR_INT(mod) + rs + i;
             m01 = ((INTBASE*m[0]+m[-1])<<e) 
-	                   + (m[-2]>>(NR_DIGIT_BITS-e));
+                           + (m[-2]>>(NR_DIGIT_BITS-e));
             if ( m01 == 0 )  continue;
             m2  = ((Int)m[-2]<<e) + (rs+i>=3 ? m[-3]>>(NR_DIGIT_BITS-e) : 0);
             if ( ((Int)m[0]<<e)+(m[-1]>>(NR_DIGIT_BITS-e)) < r1 )
-	            qi = m01 / r1;
+                    qi = m01 / r1;
             else    qi = INTBASE - 1;
             while ( m01-(Int)qi*r1 < INTBASE 
-		    && INTBASE*(m01-(Int)qi*r1)+m2 < (Int)qi*r2 )
-	            qi--;
+                    && INTBASE*(m01-(Int)qi*r1)+m2 < (Int)qi*r2 )
+                    qi--;
 
             /* m = m - qi * r;                                             */
             d = 0;
@@ -1544,8 +1562,8 @@ Obj             ModInt (
                 r = ADDR_INT(opR);
                 for ( k = 0; k < rs; ++k, ++m, ++r ) {
                     c = (Int)*m + (Int)*r + (Int)d;
-		    *m = c; 
-		    d = (c>>NR_DIGIT_BITS);
+                    *m = c; 
+                    d = (c>>NR_DIGIT_BITS);
                 }
                 c = (Int)*m + d;  *m = c;  d = (c>>NR_DIGIT_BITS);
                 qi--;
@@ -1673,7 +1691,7 @@ Obj             QuoInt (
 
         /* the small int -(1<<28) divided by -1 is the large int (1<<28)   */
         if ( opL == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS)) 
-	    && opR == INTOBJ_INT(-1) ) {
+            && opR == INTOBJ_INT(-1) ) {
             quo = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
             ADDR_INT(quo)[1] = 1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS);
             ADDR_INT(quo)[0] = 0;
@@ -1701,9 +1719,9 @@ Obj             QuoInt (
         if ( opL == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
           && ADDR_INT(opR)[3] == 0 
-	  && ADDR_INT(opR)[2] == 0
+          && ADDR_INT(opR)[2] == 0
           && ADDR_INT(opR)[1] == 1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS)
-	  && ADDR_INT(opR)[0] == 0 )
+          && ADDR_INT(opR)[0] == 0 )
             quo = INTOBJ_INT(-1);
 
         /* in all other cases the quotient is of course zero               */
@@ -1715,7 +1733,7 @@ Obj             QuoInt (
     /* divide a large integer by a small integer                           */
     else if ( IS_INTOBJ(opR)
            && INT_INTOBJ(opR) < INTBASE 
-	   && -INTBASE  <= INT_INTOBJ(opR) ) {
+           && -INTBASE  <= INT_INTOBJ(opR) ) {
 
         /* pathological case first                                         */
         if ( opR == INTOBJ_INT(0) ) {
@@ -1758,11 +1776,11 @@ Obj             QuoInt (
         if ( SIZE_INT(quo) == 4 && q[-2] == 0 && q[-1] == 0 ) {
             if ( TNUM_OBJ(quo) == T_INTPOS
               &&(UInt)(INTBASE*q[-3]+q[-4]) 
-		< (1L<<NR_SMALL_INT_BITS))
+                < (1L<<NR_SMALL_INT_BITS))
                 quo = INTOBJ_INT( INTBASE*q[-3]+q[-4] );
             else if ( TNUM_OBJ(quo) == T_INTNEG
               && (UInt)(INTBASE*q[-3]+q[-4])
-		     <= (1L<<NR_SMALL_INT_BITS) )
+                     <= (1L<<NR_SMALL_INT_BITS) )
                 quo = INTOBJ_INT( -(INTBASE*q[-3]+q[-4]) );
         }
 
@@ -1804,8 +1822,8 @@ Obj             QuoInt (
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
         for ( e = 0;
-	     ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
-	                       < INTBASE/2 ; e++ ) ;
+             ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
+                               < INTBASE/2 ; e++ ) ;
 
         r1 = ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
         r2 = ((Int)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
@@ -1822,15 +1840,15 @@ Obj             QuoInt (
             /* guess the factor                                            */
             l = ADDR_INT(opL) + rs + i;
             l01 = ((INTBASE*l[0]+l[-1])<<e) 
-	      + (l[-2]>>(NR_DIGIT_BITS-e));
+              + (l[-2]>>(NR_DIGIT_BITS-e));
 
             if ( l01 == 0 )  continue;
             l2  = ((Int)l[-2]<<e) + (rs+i>=3 ? l[-3]>>(NR_DIGIT_BITS-e) : 0);
             if ( ((Int)l[0]<<e)+(l[-1]>>(NR_DIGIT_BITS-e)) < r1 )
-	             qi = l01 / r1;
+                     qi = l01 / r1;
             else     qi = INTBASE - 1;
             while ( l01-(Int)qi*r1 < INTBASE 
-		    && INTBASE*(l01-(Int)qi*r1)+l2 < (Int)qi*r2 )
+                    && INTBASE*(l01-(Int)qi*r1)+l2 < (Int)qi*r2 )
                 qi--;
 
             /* l = l - qi * r;                                             */
@@ -1849,8 +1867,8 @@ Obj             QuoInt (
                 r = ADDR_INT(opR);
                 for ( k = 0; k < rs; ++k, ++l, ++r ) {
                     c = (Int)*l + (Int)*r + (Int)d;
-		    *l = c;
-		    d = (c>>NR_DIGIT_BITS);
+                    *l = c;
+                    d = (c>>NR_DIGIT_BITS);
                 }
                 c = *l + d; d = (c>>NR_DIGIT_BITS);
                 qi--;
@@ -1888,9 +1906,9 @@ Obj             QuoInt (
 
 /****************************************************************************
 **
-*F  FuncQuoInt(<self>,<opL>,<opR>)  . . . . . . .  internal function 'QuoInt'
+*F  FuncQUO_INT(<self>,<opL>,<opR>) . . . . . . .  internal function 'QuoInt'
 **
-**  'FuncQuoInt' implements the internal function 'QuoInt'.
+**  'FuncQUO_INT' implements the internal function 'QuoInt'.
 **
 **  'QuoInt( <i>, <k> )'
 **
@@ -1901,7 +1919,7 @@ Obj             QuoInt (
 **  'Sign( Quo(<i>,<k>) ) = Sign(<i>) * Sign(<k>)'.  Dividing by 0  causes an
 **  error.  'Rem' (see "Rem") can be used to compute the remainder.
 */
-Obj             FuncQuoInt (
+Obj FuncQUO_INT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1912,7 +1930,7 @@ Obj             FuncQuoInt (
          && TNUM_OBJ(opL) != T_INTNEG ) {
         opL = ErrorReturnObj(
             "QuoInt: <left> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L,
+            (Int)TNAM_OBJ(opL), 0L,
             "you can return an integer for <left>" );
     }
     while ( TNUM_OBJ(opR) != T_INT
@@ -1920,7 +1938,7 @@ Obj             FuncQuoInt (
          && TNUM_OBJ(opR) != T_INTNEG ) {
         opR = ErrorReturnObj(
             "QuoInt: <right> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L,
+            (Int)TNAM_OBJ(opR), 0L,
             "you can return an integer for <rigth>" );
     }
 
@@ -1994,9 +2012,9 @@ Obj             RemInt (
         if ( opL == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
           && ADDR_INT(opR)[3] == 0 
-	  && ADDR_INT(opR)[2] == 0
+          && ADDR_INT(opR)[2] == 0
           && ADDR_INT(opR)[1] == 1L << (NR_SMALL_INT_BITS-NR_DIGIT_BITS)
-	  && ADDR_INT(opR)[0] == 0 )
+          && ADDR_INT(opR)[0] == 0 )
             rem = INTOBJ_INT(0);
 
         /* in all other cases the remainder is equal the left operand      */
@@ -2008,7 +2026,7 @@ Obj             RemInt (
     /* compute the remainder of a large integer by a small integer         */
     else if ( IS_INTOBJ(opR)
            && INT_INTOBJ(opR) < INTBASE
-	   && -INTBASE <= INT_INTOBJ(opR) ) {
+           && -INTBASE <= INT_INTOBJ(opR) ) {
 
         /* pathological case first                                         */
         if ( opR == INTOBJ_INT(0) ) {
@@ -2080,8 +2098,8 @@ Obj             RemInt (
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
         for ( e = 0;
-	     ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
-	                       < INTBASE/2; e++ ) ;
+             ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
+                               < INTBASE/2; e++ ) ;
 
         r1 = ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
         r2 = ((Int)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
@@ -2095,10 +2113,10 @@ Obj             RemInt (
             if ( m01 == 0 )  continue;
             m2  = ((Int)m[-2]<<e) + (rs+i>=3 ? m[-3]>>(NR_DIGIT_BITS-e) : 0);
             if ( ((Int)m[0]<<e)+(m[-1]>>(NR_DIGIT_BITS-e)) < r1 )
-	            qi = m01 / r1;
+                    qi = m01 / r1;
             else    qi = INTBASE - 1;
             while ( m01-(Int)qi*r1 < INTBASE 
-		   && INTBASE*(m01-(Int)qi*r1)+m2 < (Int)qi*r2 )
+                   && INTBASE*(m01-(Int)qi*r1)+m2 < (Int)qi*r2 )
                 qi--;
 
             /* m = m - qi * r;                                             */
@@ -2107,8 +2125,8 @@ Obj             RemInt (
             r = ADDR_INT(opR);
             for ( k = 0; k < rs; ++k, ++m, ++r ) {
                 c = (Int)*m - (Int)qi * *r - (Int)d;
-		*m = c;
-		d = -(c>>NR_DIGIT_BITS);
+                *m = c;
+                d = -(c>>NR_DIGIT_BITS);
             }
             c = *m - d;  *m = c;  d = -(c>>NR_DIGIT_BITS);
 
@@ -2119,8 +2137,8 @@ Obj             RemInt (
                 r = ADDR_INT(opR);
                 for ( k = 0; k < rs; ++k, ++m, ++r ) {
                     c = (Int)*m + (Int)*r + (Int)d;
-		    *m = c;
-		    d = (c>>NR_DIGIT_BITS);
+                    *m = c;
+                    d = (c>>NR_DIGIT_BITS);
                 }
                 c = *m + d;  *m = c;  d = (c>>NR_DIGIT_BITS);
                 qi--;
@@ -2160,7 +2178,7 @@ Obj             RemInt (
 
 /****************************************************************************
 **
-*F  FuncRemInt(<self>,<opL>,<opR>)  . . . . . . .  internal function 'RemInt'
+*F  FuncREM_INT(<self>,<opL>,<opR>)  . . . . . . .  internal function 'RemInt'
 **
 **  'FuncRem' implements the internal function 'RemInt'.
 **
@@ -2172,7 +2190,7 @@ Obj             RemInt (
 **  has the same sign as <i> and its absolute value is strictly less than the
 **  absolute value of <k>.  Dividing by 0 causes an error.
 */
-Obj             FuncRemInt (
+Obj             FuncREM_INT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -2183,7 +2201,7 @@ Obj             FuncRemInt (
          && TNUM_OBJ(opL) != T_INTNEG ) {
         opL = ErrorReturnObj(
             "RemInt: <left> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L,
+            (Int)TNAM_OBJ(opL), 0L,
             "you can return an integer for <left>" );
     }
     while ( TNUM_OBJ(opR) != T_INT
@@ -2191,7 +2209,7 @@ Obj             FuncRemInt (
          && TNUM_OBJ(opR) != T_INTNEG ) {
         opR = ErrorReturnObj(
             "RemInt: <right> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L,
+            (Int)TNAM_OBJ(opR), 0L,
             "you can return an integer for <rigth>" );
     }
 
@@ -2366,8 +2384,8 @@ Obj             GcdInt (
 
             /* get the leading two digits                                  */
             for ( e = 0;
-		 ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
-		                   < INTBASE/2; e++ ) ;
+                 ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) 
+                                   < INTBASE/2; e++ ) ;
             r1 = ((Int)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
             r2 = ((Int)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
 
@@ -2380,10 +2398,10 @@ Obj             GcdInt (
                 if ( l01 == 0 )  continue;
                 l2  = ((Int)l[-2]<<e) + (rs+i>=3 ? l[-3]>>(NR_DIGIT_BITS-e):0);
                 if ( ((Int)l[0]<<e)+(l[-1]>>(NR_DIGIT_BITS-e)) < r1 )
-		        qi = l01 / r1;
+                        qi = l01 / r1;
                 else    qi = INTBASE - 1;
                 while ( l01-(Int)qi*r1 < INTBASE 
-		        && INTBASE*(l01-(Int)qi*r1)+l2 < (Int)qi*r2 )
+                        && INTBASE*(l01-(Int)qi*r1)+l2 < (Int)qi*r2 )
                     qi--;
 
                 /* l = l - qi * r;                                         */
@@ -2392,8 +2410,8 @@ Obj             GcdInt (
                 r = ADDR_INT(opR);
                 for ( k = 0; k < rs; ++k, ++l, ++r ) {
                     c = (Int)*l - (Int)qi * *r - (Int)d;
-		    *l = c;
-		    d = -(c>>NR_DIGIT_BITS);
+                    *l = c;
+                    d = -(c>>NR_DIGIT_BITS);
                 }
                 c = *l - d;  *l = c;  d = -(c>>NR_DIGIT_BITS);
 
@@ -2404,8 +2422,8 @@ Obj             GcdInt (
                     r = ADDR_INT(opR);
                     for ( k = 0; k < rs; ++k, ++l, ++r ) {
                         c = (Int)*l + (Int)*r + (Int)d;
-			*l = c;
-			d = (c>>NR_DIGIT_BITS);
+                        *l = c;
+                        d = (c>>NR_DIGIT_BITS);
                     }
                     c = *l + d;  *l = c;  d = (c>>NR_DIGIT_BITS);
                     qi--;
@@ -2496,9 +2514,9 @@ Obj             GcdInt (
 
 /****************************************************************************
 **
-*F  FuncGcdInt(<self>,<opL>,<opR>)  . . . . . . .  internal function 'GcdInt'
+*F  FuncGCD_INT(<self>,<opL>,<opR>)  . . . . . . .  internal function 'GcdInt'
 **
-**  'FuncGcdInt' implements the internal function 'GcdInt'.
+**  'FuncGCD_INT' implements the internal function 'GcdInt'.
 **
 **  'GcdInt( <i>, <k> )'
 **
@@ -2507,7 +2525,7 @@ Obj             GcdInt (
 **  greatest common divisor is never negative, even if the arguments are.  We
 **  define $gcd( m, 0 ) = gcd( 0, m ) = abs( m )$ and $gcd( 0, 0 ) = 0$.
 */
-Obj             FuncGcdInt (
+Obj             FuncGCD_INT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -2518,7 +2536,7 @@ Obj             FuncGcdInt (
          && TNUM_OBJ(opL) != T_INTNEG ) {
         opL = ErrorReturnObj(
             "GcdInt: <left> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L,
+            (Int)TNAM_OBJ(opL), 0L,
             "you can return an integer for <left>" );
     }
     while ( TNUM_OBJ(opR) != T_INT
@@ -2526,7 +2544,7 @@ Obj             FuncGcdInt (
          && TNUM_OBJ(opR) != T_INTNEG ) {
         opR = ErrorReturnObj(
             "GcdInt: <right> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L,
+            (Int)TNAM_OBJ(opR), 0L,
             "you can return an integer for <rigth>" );
     }
 
@@ -2534,14 +2552,61 @@ Obj             FuncGcdInt (
     return GcdInt( opL, opR );
 }
 
+/****************************************************************************
+**
+*F  SaveInt( <int> )
+**
+**  Since the type is saved, we don't need to worry about sign
+*/
+
+void SaveInt( Obj bigint)
+{
+  TypDigit *ptr;
+  UInt i;
+  ptr = (TypDigit *)ADDR_OBJ(bigint);
+  for (i = 0; i < SIZE_INT(bigint); i++)
+#ifdef SYS_IS_64BIT
+    SaveUInt4(*ptr++);
+#else
+    SaveUInt2(*ptr++);
+#endif
+  return;
+}
 
 /****************************************************************************
 **
-*F  InitInt() . . . . . . . . . . . . . . . . initializes the integer package
+*F  LoadInt( <int> )
 **
-**  'InitInt' initializes the arbitrary size integer package.
+**  Since the type is loaded, we don't need to worry about sign
 */
-void            InitInt ( void )
+
+void LoadInt( Obj bigint)
+{
+  TypDigit *ptr;
+  UInt i;
+  ptr = (TypDigit *)ADDR_OBJ(bigint);
+  for (i = 0; i < SIZE_INT(bigint); i++)
+#ifdef SYS_IS_64BIT
+    *ptr++ = LoadUInt4();
+#else
+    *ptr++ = LoadUInt2();
+#endif
+  return;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupInt()  . . . . . . . . . . . . . . . initializes the integer package
+*/
+void SetupInt ( void )
 {
     UInt                t1,  t2;
 
@@ -2558,16 +2623,11 @@ void            InitInt ( void )
     InfoBags[           T_INTNEG        ].name = "integer (< -2^28)";
 #endif
 
-    /* install the kind functions                                          */
-    ImportGVarFromLibrary( "TYPE_INT_SMALL_ZERO", &TYPE_INT_SMALL_ZERO );
-    ImportGVarFromLibrary( "TYPE_INT_SMALL_POS",  &TYPE_INT_SMALL_POS );
-    ImportGVarFromLibrary( "TYPE_INT_SMALL_NEG",  &TYPE_INT_SMALL_NEG );
-    ImportGVarFromLibrary( "TYPE_INT_LARGE_POS",  &TYPE_INT_LARGE_POS );
-    ImportGVarFromLibrary( "TYPE_INT_LARGE_NEG",  &TYPE_INT_LARGE_NEG );
-
-    TypeObjFuncs[ T_INT    ] = TypeIntSmall;
-    TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
-    TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
+    /* Install the saving methods */
+    SaveObjFuncs [ T_INTPOS ] = SaveInt;
+    SaveObjFuncs [ T_INTNEG ] = SaveInt;
+    LoadObjFuncs [ T_INTPOS ] = LoadInt;
+    LoadObjFuncs [ T_INTNEG ] = LoadInt;
 
 
     /* install the printing function                                       */
@@ -2626,36 +2686,70 @@ void            InitInt ( void )
             ModFuncs [ t1 ][ t2 ] = ModInt;
         }
     }
-
-
-    /* install the internal function                                       */
-    InitHandlerFunc( IsIntHandler, "IS_INT" );
-    IsIntFilt = NewFilterC(
-        "IS_INT", 1L, "obj", IsIntHandler );
-    AssGVar( GVarName( "IS_INT" ), IsIntFilt );
-
-    InitHandlerFunc( FuncQuoInt, "QUO_INT");
-    AssGVar( GVarName( "QUO_INT" ),
-             NewFunctionC( "QUO_INT", 2L, "int1, int2", FuncQuoInt ) );
-
-    InitHandlerFunc( FuncRemInt, "REM_INT");
-    AssGVar( GVarName( "REM_INT" ),
-             NewFunctionC( "REM_INT", 2L, "int1, int2", FuncRemInt ) );
-
-    InitHandlerFunc( FuncGcdInt, "GCD_INT");
-    AssGVar( GVarName( "GCD_INT" ),
-             NewFunctionC( "GCD_INT", 2L, "int1, int2", FuncGcdInt ) );
-
-    InitHandlerFunc( ProdIntObjHandler, "PROD_INT_OBJ");
-    ProdIntObjFunc = NewFunctionC(
-        "PROD_INT_OBJ", 2L, "n, op", ProdIntObjHandler );
-    AssGVar( GVarName( "PROD_INT_OBJ" ), ProdIntObjFunc );
-
-    InitHandlerFunc( PowObjIntHandler, "POW_OBJ_INT");
-    PowObjIntFunc = NewFunctionC(
-        "POW_OBJ_INT", 2L, "op, n", PowObjIntHandler );
-    AssGVar( GVarName( "POW_OBJ_INT" ), PowObjIntFunc );
 }
 
 
+/****************************************************************************
+**
+*F  InitInt() . . . . . . . . . . . . . . . . initializes the integer package
+**
+**  'InitInt' initializes the arbitrary size integer package.
+*/
+void InitInt ( void )
+{
+    /* install the kind functions                                          */
+    ImportGVarFromLibrary( "TYPE_INT_SMALL_ZERO", &TYPE_INT_SMALL_ZERO );
+    ImportGVarFromLibrary( "TYPE_INT_SMALL_POS",  &TYPE_INT_SMALL_POS );
+    ImportGVarFromLibrary( "TYPE_INT_SMALL_NEG",  &TYPE_INT_SMALL_NEG );
+    ImportGVarFromLibrary( "TYPE_INT_LARGE_POS",  &TYPE_INT_LARGE_POS );
+    ImportGVarFromLibrary( "TYPE_INT_LARGE_NEG",  &TYPE_INT_LARGE_NEG );
 
+    TypeObjFuncs[ T_INT    ] = TypeIntSmall;
+    TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
+    TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
+
+
+    /* install the internal function                                       */
+    C_NEW_GVAR_FILT( "IS_INT", "obj", IsIntFilt, IsIntHandler,
+       "src/integer.c:IS_INT" );
+
+    C_NEW_GVAR_FUNC( "QUO_INT", 2, "int1, int2",
+                  FuncQUO_INT,
+       "src/integer.c:QUO_INT" );
+
+    C_NEW_GVAR_FUNC( "REM_INT", 2, "int1, int2",
+                  FuncREM_INT,
+       "src/integer.c:REM_INT" );
+
+    C_NEW_GVAR_FUNC( "GCD_INT", 2, "int1, int2",
+                  FuncGCD_INT,
+       "src/integer.c:GCD_INT" );
+
+    C_NEW_GVAR_FUNC( "PROD_INT_OBJ", 2, "int, obj",
+                  FuncPROD_INT_OBJ,
+       "src/integer.c:PROD_INT_OBJ" );
+
+    C_NEW_GVAR_FUNC( "POW_OBJ_INT", 2, "obj, int",
+                  FuncPOW_OBJ_INT,
+       "src/integer.c:POW_OBJ_INT" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckInt()  . . . . . . . check the initialisation of the integer package
+**
+**  'InitInt' initializes the arbitrary size integer package.
+*/
+void CheckInt ( void )
+{
+    SET_REVISION( "integer_c",  Revision_integer_c );
+    SET_REVISION( "integer_h",  Revision_integer_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  integer.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -389,6 +389,12 @@ SemiEchelonBasis( VectorSpace( Rationals,
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] ), 
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] )
 
+gap> mb:= MutableBasisByGenerators( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
+<mutable basis over Rationals, 0 vectors>
+gap> CloseMutableBasis( mb, [ [ 1, 0 ], [ 0, 1 ] ] );
+gap> CloseMutableBasis( mb, [ [ 0, 1 ], [ 1, 0 ] ] );   
+gap> IsContainedInSpan( mb, [ [ 1, 1 ], [ 1, 1 ] ] );
+true
 
 gap> STOP_TEST( "vspcmat.tst", 35560000 );
 

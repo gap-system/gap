@@ -9,7 +9,7 @@
 **  This module declares the functions to read  expressions  and  statements.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_read_h =
+SYS_CONST char * Revision_read_h =
    "@(#)$Id$";
 #endif
 
@@ -96,11 +96,27 @@ extern void ReadEvalError ( void );
 /****************************************************************************
 **
 
+*F  SetupRead() . . . . . . . . . . . . . . . . . . . . initialize the reader
+*/
+extern void SetupRead ( void );
+
+
+/****************************************************************************
+**
 *F  InitRead()  . . . . . . . . . . . . . . . . . . . . initialize the reader
 **
 **  'InitRead' initializes the reader.
 */
 extern void InitRead ( void );
+
+
+/****************************************************************************
+**
+*F  CheckRead() . . . . . . . . . . .  check the initialisation of the reader
+**
+**  'InitRead' initializes the reader.
+*/
+extern void CheckRead ( void );
 
 
 /****************************************************************************

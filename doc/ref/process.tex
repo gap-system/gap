@@ -32,8 +32,55 @@ runs  a new process.  `Process' returns  when the process terminates.  It
 returns the return value of the process (if the operating system supports
 such a concept).
 
-<dir> must be a directory  object (see "Directories") which specifies the
-directory in which the process is run.
+The first argument <dir> is a directory object which  will be the current
+directory (in the usual UNIX  or MSDOS sense) when   the program is  run.
+This will  only matter if  the program accesses  files (including running
+other programs)  via relative path names.   In particular, it has nothing
+to do with finding the binary to run.
+
+In general the  directory will either  be the current directory, which is
+returned by `DirectoryCurrent'  (which was the behaviour  of GAP 3), or a
+temporary returned  by  `DirectoryTemporary'.  If  one  expects  that the
+process creates temporary or log files the latter  should be used because
+{\GAP} will attempt  to remove these  directories  together with all  the
+files in them when quitting.
+
+If  a program of a  share  package needs  to be  launched  in a directory
+relative  to  certain  data    libraries,   then  the first     entry  of
+`DirectoryPackageLibrary'    should  be   used.     The     argument   of
+`DirectoryPackageLibrary' should be the path to the data library relative
+to the package directory.
+
+If a program calls other programs and needs to be launched in a directory
+containing the executables for the share package then  the first entry of
+`DirectoriesPackagePrograms' should be used.
+
+The latter  two alternatives should only  be used if absolutely necessary
+because otherwise one risks accumulating log or core files in the package
+directory.
+
+Examples
+
+\beginexample
+   gap> path := DirectoriesSystemPrograms();;
+   gap> ls := Filename( path, "ls" );;
+   gap> stdin := InputTextUser();;
+   gap> stdout := OutputTextUser();;
+   gap> Process( path[1], ls, stdin, stdout, ["-c"] );;
+   awk    ls     mkdir
+
+   # current directory, here the root directory
+   gap> Process( DirectoryCurrent(), ls, stdin, stdout, ["-c"] );;
+   bin    lib    trans  tst    CVS    grp    prim   thr    two
+   src    dev    etc    tbl    doc    pkg    small  tom
+
+   # create a temporary directory
+   gap> tmpdir := DirectoryTemporary();;                          
+   gap> Process( tmpdir, ls, stdin, stdout, ["-c"] );;            
+   gap> PrintTo( Filename( tmpdir, "emil" ) );
+   gap> Process( tmpdir, ls, stdin, stdout, ["-c"] );;
+   emil
+\endexample
 
 <prg> is the filename of the program to launch, for portability it should
 be   the  result  of   `Filename'   (see   "Filename") and   should  pass
@@ -88,14 +135,10 @@ a string stream.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Exec}
 
-\>Exec( <cmd> )
-\>Exec( <cmd>, <shell> )
+\>Exec( <cmd>, <option1>, ..., <optionN> )
 
-runs a shell in the current directory to execute  the command <cmd>.  The
-first form runs a  Bourne shell while the  second command runs  the shell
-<shell>.  <shell> needs  to understand the  option  <-c> followed by  the
-command to be executed as a string.  Any  output of <cmd>  is sent to the
-standard output.
+runs a shell in the  current directory to execute  the command <cmd> with
+options <option1> ... <optionN>.
 
 \begintt
     gap> Exec( "date" )

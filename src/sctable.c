@@ -33,43 +33,47 @@
 **  zero is the zero element of the coefficient ring/field of the algebra.
 **
 **  NOTE: most of the code consists of dimension- and type checks,  as a user
-**        can fool around with SCTables as he likes. 
+**        can fool around with SCTables as s/he likes. 
 */
-char *          Revision_sctable_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_sctable_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* Bag, NewBag                     */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gvars.h"               /* global variables                */
 
-#include        "calls.h"               /* NewFunctionC                    */
-#include        "ariths.h"              /* EQ, LT                          */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "ariths.h"              /* basic arithmetic                */
 
-#include        "lists.h"               /* IS_LIST, LEN_LIST, ELM_LIST, ...*/
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "plist.h"               /* SET_LEN_PLIST, SET_ELM_PLIST,...*/
+#include        "lists.h"               /* generic lists                   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
 #define INCLUDE_DECLARATION_PART
-#include        "sctable.h"             /* declaration part of the package */
+#include        "sctable.h"             /* structure constant table        */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* Error                           */
 
 
 /****************************************************************************
 **
+
 *F  SCTableEntry(<table>,<i>,<j>,<k>) . . . . . . .  entry of structure table
 **
 **  'SCTableEntry' returns the coefficient $c_{i,j}^{k}$ from the structure
 **  constants table <table>.
 */
-Obj         SCTableEntryFunc;
+Obj SCTableEntryFunc;
 
-Obj         SCTableEntryHandler (
+Obj SCTableEntryHandler (
     Obj                 self,
     Obj                 table,
     Obj                 i,
@@ -87,7 +91,7 @@ Obj         SCTableEntryHandler (
     if ( ! IS_LIST(table) ) {
         table = ErrorReturnObj(
             "SCTableEntry: <table> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(table)].name), 0L,
+            (Int)TNAM_OBJ(table), 0L,
             "you can return a list for <table>" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
@@ -201,7 +205,7 @@ Obj         SCTableEntryHandler (
 **  'SCTableProduct'  returns the product   of  the two elements <list1>  and
 **  <list2> with respect to the structure constants table <table>.
 */
-void            SCTableProdAdd (
+void SCTableProdAdd (
     Obj                 res,
     Obj                 coeff,
     Obj                 basis_coeffs,
@@ -234,9 +238,9 @@ void            SCTableProdAdd (
     }
 }
 
-Obj             SCTableProductFunc;
+Obj SCTableProductFunc;
 
-Obj             SCTableProductHandler (
+Obj SCTableProductHandler (
     Obj                 self,
     Obj                 table,
     Obj                 list1,
@@ -255,7 +259,7 @@ Obj             SCTableProductHandler (
     if ( ! IS_LIST(table) ) {
         table = ErrorReturnObj(
             "SCTableProduct: <table> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(table)].name), 0L,
+            (Int)TNAM_OBJ(table), 0L,
             "you can return a list for <table>" );
         return SCTableProductHandler( self, table, list1, list2 );
     }
@@ -361,26 +365,53 @@ Obj             SCTableProductHandler (
 
 /****************************************************************************
 **
-*F  InitSCTable() . . . . . . . . . . .  initialize structure constant tables
-**
-**  Is called  during the initialization  of GAP to initialize  the structure
-**  constant table package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitSCTable ( void )
+
+/****************************************************************************
+**
+
+*F  SetupSCTable()  . . . . . . . . . .  initialize structure constant tables
+*/
+void SetupSCTable ( void )
 {
-    InitHandlerFunc( SCTableEntryHandler, "SC_TABLE_ENTRY" );
-    SCTableEntryFunc = NewFunctionC(
-        "SC_TABLE_ENTRY", 4L, "table,i,j,k", SCTableEntryHandler );
-    AssGVar( GVarName( "SC_TABLE_ENTRY" ), SCTableEntryFunc );
-    InitHandlerFunc( SCTableProductHandler, "SC_TABLE_PRODUCT" );
-    SCTableProductFunc = NewFunctionC(
-        "SC_TABLE_PRODUCT", 3L, "table,list1,list2", SCTableProductHandler );
-    AssGVar( GVarName( "SC_TABLE_PRODUCT" ), SCTableProductFunc );
 }
 
 
 /****************************************************************************
 **
+*F  InitSCTable() . . . . . . . . . . .  initialize structure constant tables
+**
+**  Is called  during the initialization  of GAP to initialize  the structure
+**  constant table package.
+*/
+void InitSCTable ( void )
+{
+    C_NEW_GVAR_FUNC( "SC_TABLE_ENTRY", 4, "table, i, j, k",
+                      SCTableEntryHandler,
+       "src/sctable.c:SC_TABLE_ENTRY" );
+
+    C_NEW_GVAR_FUNC( "SC_TABLE_PRODUCT", 3, "table, list1, list2",
+                      SCTableProductHandler,
+       "src/sctable.c:SC_TABLE_PRODUCT" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckSCTable()  . . check the initialisation of structure constant tables
+*/
+void CheckSCTable ( void )
+{
+    SET_REVISION( "sctable_c",  Revision_sctable_c );
+    SET_REVISION( "sctable_h",  Revision_sctable_h );
+}
+
+
+/****************************************************************************
+**
+
 *E  sctable.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

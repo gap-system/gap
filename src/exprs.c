@@ -11,39 +11,41 @@
 **  The expressions  package is the  part  of the interpreter  that evaluates
 **  expressions to their values and prints expressions.
 */
-char *          Revision_exprs_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_exprs_c =
+   "@(#)$Id$";
 
-#include        "gvars.h"               /* Tilde, VAL_GVAR, AssGVar, GVa...*/
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "ariths.h"              /* generic operations              */
+#include        "gap.h"                 /* error handling, initialisation  */
+
+#include        "gvars.h"               /* global variables                */
+
+#include        "ariths.h"              /* basic arithmetic                */
 #include        "records.h"             /* generic records                 */
-#include        "lists.h"               /* POS_LIST                        */
+#include        "lists.h"               /* generic lists                   */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "permutat.h"            /* NEW_PERM4, ADDR_PERM4, ...      */
+#include        "permutat.h"            /* permutations                    */
 
-#include        "precord.h"             /* SET_RNAM_PREC, SET_ELM_PREC, ...*/
+#include        "precord.h"             /* plain records                   */
 
-#include        "plist.h"               /* SET_LEN_PLIST, SET_ELM_PLIST,...*/
-#include        "range.h"               /* NEW_RANGE, SET_LEN_RANGE, SET...*/
-#include        "string.h"              /* NEW_STRING, CSTR_STRING         */
+#include        "plist.h"               /* plain lists                     */
+#include        "range.h"               /* ranges                          */
+#include        "string.h"              /* strings                         */
 
-#include        "code.h"                /* Expr, TNUM_EXPR, SIZE_EXPR,  ...*/
-#include        "vars.h"                /* used by EVAL_EXPR               */
+#include        "code.h"                /* coder                           */
+#include        "vars.h"                /* variables                       */
 
 #define INCLUDE_DECLARATION_PART
-#include        "exprs.h"               /* declaration part of the package */
+#include        "exprs.h"               /* expressions                     */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "gap.h"                 /* Error                           */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 
 /****************************************************************************
@@ -199,7 +201,7 @@ Obj             EvalUnknownBool (
     while ( val != True && val != False ) {
         val = ErrorReturnObj(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
+            (Int)TNAM_OBJ(val), 0L,
             "you can return 'true' or 'false'" );
     }
 
@@ -289,7 +291,7 @@ Obj             EvalAnd (
         else {
             ErrorQuit(
                 "<expr> must be 'true' or 'false' (not to a %s)",
-                (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
+                (Int)TNAM_OBJ(opL), 0L );
         }
     }
     
@@ -297,7 +299,7 @@ Obj             EvalAnd (
     else {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
+            (Int)TNAM_OBJ(opL), 0L );
     }
     
     /* please 'lint'                                                       */
@@ -949,7 +951,7 @@ Obj             EvalPermExpr (
             while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
                 val = ErrorReturnObj(
               "Permutation: <expr> must be a positive integer (not to a %s)",
-                    (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
+                    (Int)TNAM_OBJ(val), 0L,
                     "you can return a positive integer" );
             }
             c = INT_INTOBJ(val);
@@ -1184,7 +1186,7 @@ Obj             EvalRangeExpr (
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
+            (Int)TNAM_OBJ(val), 0L,
             "you can return an integer for <first>" );
     }
     low = INT_INTOBJ( val );
@@ -1196,7 +1198,7 @@ Obj             EvalRangeExpr (
             if ( ! IS_INTOBJ(val) ) {
                 val = ErrorReturnObj(
                     "Range: <second> must be an integer (not a %s)",
-                    (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
+                    (Int)TNAM_OBJ(val), 0L,
                     "you can return an integer for <second>" );
             }
             else {
@@ -1218,7 +1220,7 @@ Obj             EvalRangeExpr (
         if ( ! IS_INTOBJ(val) ) {
             val = ErrorReturnObj(
                 "Range: <last> must be an integer (not a %d)",
-                (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
+                (Int)TNAM_OBJ(val), 0L,
                 "you can return an integer for <last>" );
         }
         else {
@@ -1826,11 +1828,17 @@ void            PrintRecExpr (
 
 /****************************************************************************
 **
-*F  InitExprs . . . . . . . . . . . . . .  initialize the expressions package
-**
-**  'InitExprs' initializes the expressions package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitExprs ( void )
+
+
+/****************************************************************************
+**
+
+*F  SetupExprs()  . . . . . . . . . . . .  initialize the expressions package
+*/
+void SetupExprs ( void )
 {
     UInt                type;           /* loop variable                   */
 
@@ -1940,4 +1948,32 @@ void            InitExprs ( void )
 }
 
 
+/****************************************************************************
+**
+*F  InitExprs() . . . . . . . . . . . . .  initialize the expressions package
+**
+**  'InitExprs' initializes the expressions package.
+*/
+void InitExprs ( void )
+{
+}
 
+
+/****************************************************************************
+**
+*F  CheckExprs()  . . . . check the initialisation of the expressions package
+**
+**  'InitExprs' initializes the expressions package.
+*/
+void CheckExprs ( void )
+{
+    SET_REVISION( "exprs_c",    Revision_exprs_c );
+    SET_REVISION( "exprs_h",    Revision_exprs_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  exprs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -256,10 +256,9 @@ gap> List( [ 1 .. Length( rings ) ], i -> Random( rings[i] ) in rings[i] );
 gap> List( rings, Size );
 [ 2, 3, 4, 6, 8 ]
 gap> List( rings, Units );
-[ [ Z(2)^0 ], [ Z(3)^0, Z(3) ], [ ZmodnZObj( 1, 4 ), ZmodnZObj( 3, 4 ) ], 
-  [ ZmodnZObj( 1, 6 ), ZmodnZObj( 5, 6 ) ], 
-  [ ZmodnZObj( 1, 8 ), ZmodnZObj( 3, 8 ), ZmodnZObj( 5, 8 ), 
-      ZmodnZObj( 7, 8 ) ] ]
+[ Group( [ Z(2)^0 ], ... ), Group( [ Z(3) ], ... ),
+  Group( [ ZmodnZObj( 3, 4 ) ], ... ), Group( [ ZmodnZObj( 5, 6 ) ], ... ),
+  Group( [ ZmodnZObj( 7, 8 ), ZmodnZObj( 5, 8 ) ], ... ) ]
 
 gap> enum:= Enumerator( Integers mod 9 );
 <enumerator of (Integers mod 9)>

@@ -61,6 +61,16 @@ PrintArray := function( array )
 end;
 
 
+##########################################################################
+##
+#M  Display( <mat> )
+##
+InstallMethod( Display,
+    true,
+    [IsMatrix ],
+    0,PrintArray);
+
+
 #############################################################################
 ##
 #F  DaysInYear( <year> )  . . . . . . . . .  days in a year, knows leap-years

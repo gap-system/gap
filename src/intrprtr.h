@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  intrprtr.h                  GAP source                   Martin Schoenert
+*W  intrprtr.h                  GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -15,7 +15,7 @@
 **  coder.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_intrprtr_h =
+SYS_CONST char * Revision_intrprtr_h =
    "@(#)$Id$";
 #endif
 
@@ -818,18 +818,20 @@ extern void              IntrSaveWSBegin ( void );
 
 extern void              IntrSaveWSEnd ( void );     
 
+
 /****************************************************************************
 **
-*F  IntrLoadWSBegin() . . . . . . . . . . . . . Start interpeting a save WS
-**
-*F  IntrLoadWSEnd() . . . . . . . . . . . . . . Actually save the workspace
-**
-**  'IntrLoadWSBegin' is called when the reader starts reading a
-**  LoadWorkspace command.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
-extern void              IntrLoadWSBegin ( void );
-extern void              IntrLoadWSEnd ( void );
+
+/****************************************************************************
+**
+
+*F  SetupIntrprtr() . . . . . . . . . . . . . . .  initialize the interpreter
+*/
+extern void SetupIntrprtr ( void );
 
 
 /****************************************************************************
@@ -838,7 +840,18 @@ extern void              IntrLoadWSEnd ( void );
 **
 **  'InitIntrprtr' initializes the interpreter.
 */
-extern  void            InitIntrprtr ( void );
+extern void InitIntrprtr ( void );
 
 
+/****************************************************************************
+**
+*F  CheckIntrprtr() . . . . . . . check the initialisation of the interpreter
+*/
+extern void CheckIntrprtr ( void );
 
+
+/****************************************************************************
+**
+
+*E  intrprtr.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

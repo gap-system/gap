@@ -169,10 +169,10 @@ and the following works already.
 
 Of course we must install some methods for arithmetic and other
 operations if the elements are to behave as we want.
-We start with a method that allows to print elements nicely.
+We start with a method for printing elements nicely.
 
 \begintt
-    InstallMethod( ViewObj,
+    InstallMethod( PrintObj,
         "method for element in Z/nZ (ModulusRep)",
         true,
         [ IsZmodnZObj and IsModulusRep ], 0,
@@ -181,7 +181,7 @@ We start with a method that allows to print elements nicely.
         end );
 \endtt
 
-So we installed a method for the operation `ViewObj' (first argument),
+So we installed a method for the operation `PrintObj' (first argument),
 and we gave it a suitable information message (second argument),
 see~"tut:ApplicableMethod" and~"tut:Tracing Methods" for applications of
 this information string.

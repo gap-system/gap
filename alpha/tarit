@@ -1,0 +1,40 @@
+#!/bin/sh
+#############################################################################
+##
+#W  tarit							 Frank Celler
+##
+##  this shell script tars up the next version of the alpha release
+##
+if [ -z "$BINDIR" ];  then
+    echo "PANIC: you must set 'BINDIR'"
+    exit 1
+fi
+if ${BINDIR}/checkvar;  then echo;  else
+    exit 1
+fi
+
+
+# clean the old files
+cd ${TARDIR}
+[ -d OLD ] || mkdir OLD
+mv [a-z]*.tar.gz OLD
+
+
+# go into the source directoy and create the tar files
+cd ${ALPHAROOT}
+echo "$0: taring version $VERSION of $DATE"
+
+tar -c -z -f ${TARDIR}/gap4a${VERSION}.tar.gz --exclude CVS \
+             alpha/src alpha/lib
+
+tar -c -z -f ${TARDIR}/grp4a${VERSION}.tar.gz --exclude CVS \
+             alpha/grp alpha/small alpha/trans alpha/prim
+
+tar -c -z -f ${TARDIR}/tbl4a${VERSION}.tar.gz --exclude CVS \
+             alpha/tbl
+
+tar -c -z -f ${TARDIR}/tst4a${VERSION}.tar.gz --exclude CVS \
+             alpha/tst
+
+
+exit 0

@@ -120,8 +120,9 @@ ReadLib( "ghompcgs.gi" );
 ReadLib( "gprd.gi"     );
 ReadLib( "ghomperm.gi" );
 ReadLib( "grpperm.gi"  );
+ReadLib( "gpprmsya.gi" );
 ReadLib( "gprdperm.gi" );
-ReadLib( "gprdpc.gi" );
+ReadLib( "gprdpc.gi"   );
 ReadLib( "oprt.gi"     );
 ReadLib( "oprtperm.gi" );
 ReadLib( "oprtpcgs.gi" );
@@ -155,6 +156,7 @@ ReadLib( "grpnice.gi"  );
 ReadLib( "morpheus.gi" );
 ReadLib( "grplatt.gi"  );
 ReadLib( "oprtglat.gi" );
+ReadLib( "grppclat.gi" );
 
 ReadLib( "grppcaut.gi" );
 

@@ -3,7 +3,7 @@
 #W  id800k.c               GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id800k_c :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 800 ].next[ 11 ].next[ 3 ] := 
 rec(

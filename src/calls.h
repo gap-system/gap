@@ -237,46 +237,6 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 /****************************************************************************
 **
 
-*F  C_NEW_GVAR_FUNC( <name>, <nargs>, <nams>, <hdlr>, <cookie> )
-*/
-#define C_NEW_GVAR_FUNC( name, nargs, nams, hdlr, cookie ) \
-    InitHandlerFunc( hdlr, cookie ); \
-    AssGVar( GVarName( name ), NewFunctionC( name, nargs, nams, hdlr ) )
-
-
-/****************************************************************************
-**
-*F  C_NEW_GVAR_ATTR( <name>, <nams>, <attr>, <hdlr>, <cookie> )
-*/
-#define C_NEW_GVAR_ATTR( name, nams, attr, hdlr, cookie ) \
-    InitHandlerFunc( hdlr, cookie ); \
-    attr = NewAttributeC( name, 1L, nams, hdlr ); \
-    AssGVar( GVarName( name ), attr )
-
-
-/****************************************************************************
-**
-*F  C_NEW_GVAR_OPER( <name>, <nargs>, <nams>, <oper>, <hdlr>, <cookie> )
-*/
-#define C_NEW_GVAR_OPER( name, nargs, nams, oper, hdlr, cookie ) \
-    InitHandlerFunc( hdlr, cookie ); \
-    oper = NewOperationC( name, nargs, nams, hdlr ); \
-    AssGVar( GVarName( name ), oper )
-
-
-/****************************************************************************
-**
-*F  C_NEW_GVAR_FILT( <name>, <nams>, <filt>, <hdlr>, <cookie> )
-*/
-#define C_NEW_GVAR_FILT( name, nams, filt, hdlr, cookie ) \
-    InitHandlerFunc( hdlr, cookie ); \
-    filt = NewFilterC( name, 1L, nams, hdlr ); \
-    AssGVar( GVarName( name ), filt )
-
-
-/****************************************************************************
-**
-
 *F * * * * * * * * * * * * *  create a new function * * * * * * * * * * * * *
 */
 
@@ -292,8 +252,15 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 */
 extern void InitHandlerFunc (
      ObjFunc            hdlr,
-     SYS_CONST Char *	cookie );
+     SYS_CONST Char *   cookie );
 
+extern SYS_CONST Char * CookieOfHandler(
+       ObjFunc hdlr );
+
+extern ObjFunc HandlerOfCookie (
+     SYS_CONST Char *   cookie );
+
+extern void SortHandlers( UInt byWhat );
 
 /****************************************************************************
 **
@@ -392,11 +359,25 @@ extern Obj CallFuncListHandler (
 /****************************************************************************
 **
 
+*F  SetupCalls()  . . . . . . . . . . . . . . . . initialize the call package
+*/
+extern void SetupCalls ( void );
+
+
+/****************************************************************************
+**
 *F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
 **
 **  'InitCalls' initializes the call package.
 */
-extern void InitCalls ( void );
+extern void InitCalls ();
+
+
+/****************************************************************************
+**
+*F  CheckCalls()  . . . . . . .  check the initialisation of the call package
+*/
+extern void CheckCalls ( void );
 
 
 /****************************************************************************

@@ -75,13 +75,13 @@ that is, a collection of operations under which the domain is closed.
 For example, a group is closed under multiplication,
 taking the zeroth power of elements, and taking inverses of elements.
 
-The operations under that a domain is closed are a subset of
+The operations under which a domain is closed are a subset of
 the operations that the elements of a domain admit.
 It is possible that the elements admit more operations.
 For example, matrices can be multiplied and added.
 But addition plays no role in a group of matrices,
 and multiplication plays no role in a vector space of matrices.
-Especially, a matrix group is not closed under addition.
+In particular, a matrix group is not closed under addition.
 
 Note that the elements of a domain exist independently of this domain,
 usually they existed already before the domain was created.
@@ -112,8 +112,8 @@ properties of a domain is that the operational structure is fixed when
 the domain is constructed, whereas properties can be found out later.
 For example, take a domain whose operational structure is given by
 closure under multiplication.
-Also if it is found out that by chance also the inverses of all elements
-lie in this domain,
+Also if it is found out that also the inverses of all its elements
+do (by chance) lie in this domain,
 being closed under taking inverses is not added to the operational
 structure.
 But a domain with operational structure multiplication,
@@ -197,7 +197,7 @@ then this is obtained as
 The subobjects of `ShallowCopy( <obj> )' are *identical* to the
 subobjects of <obj>.
 Note that the object returned by `ShallowCopy' is always a new object,
-especially it is not identical with the argument <obj>,
+in particular it is not identical with the argument <obj>,
 no matter whether <obj> is mutable or immutable.
 
 Further note that it is not possible to turn a mutable object into an
@@ -225,7 +225,7 @@ Examples of copyable objects are of course lists and records.
 Given an immutable matrix <mat>,
 `ShallowCopy' returns a mutable matrix whose rows are identical with the
 rows of <mat>,
-especially the rows are immutable.
+in particular the rows are immutable.
 To get a matrix whose rows are mutable,
 one can use `List( <mat>, ShallowCopy )'.
 

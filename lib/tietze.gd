@@ -375,34 +375,6 @@ TzUpdateGeneratorImages := NewOperationArgs("TzUpdateGeneratorImages");
 
 
 #############################################################################
-#############################################################################
-##
-##  added temporarily to avoid error messages 
-##
-
-
-############################################################################
-##
-#F  TzSubstituteGen
-##
-TzSubstituteGen := NewOperationArgs("TzSubstituteGen");
-
-
-############################################################################
-##
-#F  TzOccurrences
-##
-TzOccurrences := NewOperationArgs("TzOccurrences");
-
-
-############################################################################
-##
-#F  TzSearchC
-##
-TzSearchC := NewOperationArgs("TzSearchC");
-
-
-#############################################################################
 ##
 #E  tietze.gd  . . . . . . . . . . . . . . . . . . . . . . . . . .  ends here
 

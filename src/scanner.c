@@ -24,7 +24,7 @@
 **  The scanner relies on the functions  provided  by  the  operating  system
 **  dependent module 'system.c' for the low level input/output.
 */
-#include        "system.h"              /* system dependent functions      */
+#include        "system.h"              /* system dependent part           */
 
 SYS_CONST char * Revision_scanner_c =
    "@(#)$Id$";
@@ -38,13 +38,17 @@ SYS_CONST char * Revision_scanner_c =
 #include        "scanner.h"             /* scanner                         */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "gap.h"                 /* error handling                  */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "calls.h"               /* generic call mechanism          */
 
 #include        "bool.h"                /* booleans                        */
 
-#include        "string.h"              /* ObjsChar, NEW_STRING, CSTR_ST...*/
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
@@ -1612,8 +1616,6 @@ void GetIdent ( void )
     case 256*'A'+'t': if(!SyStrcmp(Value,"Assert"))  Symbol=S_ASSERT;  break;
     case 256*'S'+'e': if(!SyStrcmp(Value,"SaveWorkspace"))
                                                      Symbol=S_SAVEWS;  break;
-    case 256*'L'+'e': if(!SyStrcmp(Value,"LoadWorkspace"))
-                                                     Symbol=S_LOADWS;  break;
       
     default: ;
     }
@@ -2420,6 +2422,22 @@ void Pr (
 /****************************************************************************
 **
 
+*F  SetupScanner()  . . . . . . . . . . . . .  initialize the scanner package
+*/
+void SetupScanner ( void )
+{
+    Int                 ignore;
+
+    Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
+    Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
+
+    InputLog  = 0;  OutputLog  = 0;
+    TestInput = 0;  TestOutput = 0;
+}
+
+
+/****************************************************************************
+**
 *F  InitScanner() . . . . . . . . . . . . . .  initialize the scanner package
 **
 **  'InitScanner' initializes  the  scanner  package.  This  justs  sets  the
@@ -2427,16 +2445,10 @@ void Pr (
 */
 void InitScanner ( void )
 {
-    Int                 ignore;
     Int                 i;
     static Char         cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
 
-    Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
-    Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
-
-    InputLog  = 0;  OutputLog  = 0;
-    TestInput = 0;  TestOutput = 0;
-
+    /* initialize cookies for streams                                      */
     for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
         cookie[i][0] = 's';  cookie[i][1] = 't';  cookie[i][2] = 'r';
         cookie[i][3] = 'e';  cookie[i][4] = 'a';  cookie[i][5] = 'm';
@@ -2455,6 +2467,17 @@ void InitScanner ( void )
     /* import functions from the library                                   */
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );
     ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );
+}
+
+
+/****************************************************************************
+**
+*F  CheckScanner()  . . . . . check the initialisation of the scanner package
+*/
+void CheckScanner ( void )
+{
+    SET_REVISION( "scanner_c",  Revision_scanner_c );
+    SET_REVISION( "scanner_h",  Revision_scanner_h );
 }
 
 

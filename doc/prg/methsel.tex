@@ -36,7 +36,7 @@ called the *methods* of the operation.
 
 Each call of an operation causes a suitable method to be selected
 and then called.
-The choice of what method to select is made according to the types
+The choice of which method to select is made according to the types
 of the arguments,
 the underlying mechanism is described in the following sections.
 
@@ -47,7 +47,7 @@ and `PrintObj' is the operation that is called for each argument of
 Also all attributes and properties are operations.
 Each attribute has a special method which is called
 if the attribute value is already stored;
-this method should of course simply return this value.
+this method of course simply returns this value.
 
 As stated above, the setter of an attribute is called automatically
 if an attribute value has been computed.
@@ -115,7 +115,7 @@ Otherwise, the applicable method with highest *rank* is selected and then
 called.
 This rank is given by the sum of the ranks of the filters in the list
 <args-filt>,
-*including implied filters*,
+*including involved filters*,
 plus the number <val> used in the call of `InstallMethod'.
 So the argument <val> can be used to raise the priority of a method
 relative to other methods for <opr>.
@@ -222,8 +222,8 @@ invalidated.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Logical Implications}
 
-It may happen that a property <prop> is implied by another filter <filt>,
-which is usually a meet of other properties,
+It may happen that a property <prop> shall be implied by another filter
+<filt>, which is usually a meet of other properties,
 or the meet of some properties and some categories.
 Such a logical implication can be installed as an immediate method for
 <prop> that requires <filt> and that always returns `true'.
@@ -231,12 +231,17 @@ It should be installed via
 
 \>InstallTrueMethod( <prop>, <filt> )
 
+This has the effect that <prop> becomes an implied filter of <filt>,
+see~"Filters".
+
 For example, each cyclic group is abelian,
 each finite vector space is finite dimensional,
 and each division ring is integral.
-The installation of the first of these implications is
+The first of these implications is installed as follows.
 
-\>InstallTrueMethod( IsCommutative, IsGroup and IsCyclic )
+\begintt
+    InstallTrueMethod( IsCommutative, IsGroup and IsCyclic )
+\endtt
 
 Contrary to other immediate methods,
 logical implications cannot be switched off.
@@ -246,5 +251,5 @@ one can rely on the fact that every object in the filter
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%E
+%E  methsel.tex
 

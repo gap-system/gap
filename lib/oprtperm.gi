@@ -7,16 +7,30 @@
 Revision.oprtperm_gi :=
     "@(#)$Id$";
 
+
+#############################################################################
+##
+#V  RANK_SOLV
+##
+##  Some operations have methods for permutations that are expected to be
+##  more effective than possible methods that use a PCGS;
+##  these methods are usually applicable only for special <oprt> arguments,
+##  and call `TryNextMethod' in other cases.
+##  We install the methods with incremental rank `RANK_SOLV'.
+##
+RANK_SOLV := RankFilter( IsSolvableGroup );
+
+
 #############################################################################
 ##
 #M  Orbit( <G>, <pnt>, <gens>, <oprs>, <OnPoints> ) . . . . . . . on integers
 ##
 InstallOtherMethod( OrbitOp,
-        "G, int, gens, perms, opr", true,
+        "G, int, gens, perms, opr = `OnPoints'", true,
         [ IsPermGroup, IsInt,
           IsList,
           IsList,
-          IsFunction ], 0,
+          IsFunction ], RANK_SOLV,
     function( G, pnt, gens, oprs, opr )
     if gens <> oprs  or  opr <> OnPoints  then
         TryNextMethod();
@@ -37,7 +51,7 @@ InstallOtherMethod( OrbitStabilizerOp,
         [ IsPermGroup, IsInt,
           IsList,
           IsList,
-          IsFunction ], 0,
+          IsFunction ], RANK_SOLV,
     function( G, pnt, gens, oprs, opr )
     local   S;
     
@@ -64,7 +78,7 @@ InstallMethod( OrbitsOp,
         [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList and IsPermCollection,
-          IsFunction ], 0,
+          IsFunction ], RANK_SOLV,
     function( G, D, gens, oprs, opr )
     if opr <> OnPoints  then
         TryNextMethod();
@@ -78,7 +92,7 @@ end );
 ##
 InstallOtherMethod( CycleOp,
         "perm, int, opr", true,
-        [ IsPerm, IsInt, IsFunction ], 0,
+        [ IsPerm, IsInt, IsFunction ], RANK_SOLV,
     function( g, pnt, opr )
     if opr <> OnPoints  then
         TryNextMethod();
@@ -92,7 +106,7 @@ end );
 ##
 InstallOtherMethod( CycleLengthOp,
         "perm, int, opr", true,
-        [ IsPerm, IsInt, IsFunction ], 0,
+        [ IsPerm, IsInt, IsFunction ], RANK_SOLV,
     function( g, pnt, opr )
     if opr <> OnPoints  then
         TryNextMethod();
@@ -109,7 +123,7 @@ InstallMethod( BlocksOp,
         [ IsGroup, IsList and IsCyclotomicsCollection, IsList and IsEmpty,
           IsList,
           IsList and IsPermCollection,
-          IsFunction ], 0,
+          IsFunction ], RANK_SOLV,
     function( G, D, noseed, gens, oprs, opr )
     local   blocks,     # block system of <G>, result
             orbit,      # orbit of 1 under <G>
@@ -394,7 +408,7 @@ InstallMethod( BlocksOp,
           IsList and IsCyclotomicsCollection,
           IsList,
           IsList and IsPermCollection,
-          IsFunction ], 0,
+          IsFunction ], RANK_SOLV,
     function( G, D, seed, gens, oprs, opr )
     local   blks,       # list of blocks, result
             rep,        # representative of a point
@@ -502,16 +516,355 @@ end );
 
 #############################################################################
 ##
+#M  MinimalBlocks( <G>, <D>, <gens>, <oprs>, <OnPoints> ) 
+## Adaptation of the code for BlocksNoSeed to return _all_ minimal blocks 
+## containing D[1].
+## By Graham Sharp (Oxford), August 1997
+##
+InstallOtherMethod( MinimalBlocksOp,
+        "G, domain, gens, perms, opr", true,
+        [ IsGroup, IsList and IsCyclotomicsCollection,
+          IsList,
+          IsList and IsPermCollection,
+          IsFunction ], RANK_SOLV,
+function( G, D, gens, oprs, opr )
+local   blocks,   # block system of <G>, result
+      orbit,    # orbit of 1 under <G>
+      trans,    # factored inverse transversal for <orbit>
+      eql,    # '<i> = <eql>[<k>]' means $\beta(i)  = \beta(k)$,
+      next,     # the points that are equivalent are linked
+      last,     # last point on the list linked through 'next'
+      leq,    # '<i> = <leq>[<k>]' means $\beta(i) <= \beta(k)$
+      gen,    # one generator of <G> or 'Stab(<G>,1)'
+      rnd,    # random element of <G>
+      pnt,    # one point in an orbit
+      img,    # the image of <pnt> under <gen>
+      cur,    # the current representative of an orbit
+      rep,    # the representative of a block in the block system
+      block,    # the block, result
+      changed,  # number of random Schreier generators
+      nrorbs,   # number of orbits of subgroup $H$ of $G_1$
+      i,      # loop variable
+      minblocks,  # set of minimal blocks, result
+      poss,     # flag to indicate whether we might have a block
+      iter,     # which points we've checked when
+      start;    # index of first cur for this iteration (non-dec)
 
-#M  Earns( <G>, <Omega> ) . . . . . . . . . . earns of affine primitive group
+  if opr<>OnPoints then
+    TryNextMethod();
+  fi;
+
+  # handle trivial domain
+  if Length( D ) = 1  or IsPrime( Length( D ) )  then
+    return Immutable([ D ]);
+  fi;
+ 
+  # handle trivial group
+  if Length( oprs )=0  then
+    Error("<G> must operate transitively on <D>");
+  fi;
+
+  # compute the orbit of $G$ and a factored transversal
+  orbit := [ D[1] ];
+  trans := [];
+  trans[ D[1] ] := ();
+  for pnt  in orbit  do
+    for gen  in oprs  do
+      if not IsBound( trans[ pnt / gen ] )  then
+        Add( orbit, pnt / gen );
+        trans[ pnt / gen ] := gen;
+      fi;
+    od;
+  od;
+
+  # check that the group is transitive
+  if Length( orbit ) <> Length( D )  then
+    Error("<G> must operate transitively on <D>");
+  fi;
+  Info(InfoOperation,1,"MinimalBlocks transversal computed");
+  nrorbs := Length( orbit );
+
+  # since $i \in k^{G_1}$ implies $\beta(i)=\beta(k)$,  we initialize <eql>
+  # so that the connected components are orbits of some subgroup  $H < G_1$
+  eql := [];
+  leq := [];
+  next := [];
+  last := [];
+  iter := [];
+  for pnt  in orbit  do
+    eql[pnt]  := pnt;
+    leq[pnt]  := pnt;
+    next[pnt] := 0;
+    last[pnt] := pnt;
+    iter[pnt] := 0;
+  od;
+
+  # repeat until we run out of points
+  minblocks := [];
+  changed := 0;
+  rnd := ();
+
+  for start in orbit{[2..Length(D)]} do
+  
+    # repeat until we have a block system
+    cur := start;
+    # unless this is a new point, ignore and go on to the next
+    # -we could do this by a linked list to avoid these checks but the 
+    #  O(n) overheads involved in setting it up are greater than those saved
+    if iter[cur] = 0 then
+  
+    repeat
+  
+      # compute such an $H$ by taking random Schreier generators of $G_1$
+      # and stop if 2 successive generators dont change the orbits any
+      # more
+      while changed < 2  do
+
+        # compute a random Schreier generator of $G_1$
+        i := Length( orbit );
+        while 1 <= i  do
+          rnd := rnd * Random( oprs );
+          i   := QuoInt( i, 2 );
+        od;
+        gen := rnd;
+        while D[1] ^ gen <> D[1]  do
+          gen := gen * trans[ D[1] ^ gen ];
+        od;
+        changed := changed + 1;
+
+        # compute the image of every point under <gen>
+        for pnt  in orbit  do
+          img := pnt ^ gen;
+
+          # find the representative of the orbit of <pnt>
+          while eql[pnt] <> pnt  do
+            pnt := eql[pnt];
+          od;
+
+          # find the representative of the orbit of <img>
+          while eql[img] <> img  do
+            img := eql[img];
+          od;
+
+          # if the don't agree merge their orbits
+          if   pnt < img  then
+            eql[img] := pnt;
+            next[ last[pnt] ] := img;
+            last[pnt] := last[img];
+            nrorbs := nrorbs - 1;
+            changed := 0;
+          elif img < pnt  then
+            eql[pnt] := img;
+            next[ last[img] ] := pnt;
+            last[img] := last[pnt];
+            nrorbs := nrorbs - 1;
+            changed := 0;
+          fi;
+
+        od;
+
+      od;
+      Info(InfoOperation,1,"MinimalBlocks ",
+               "number of orbits of <H> < <G>_1 is ",nrorbs);
+
+      # take arbitrary point <cur>,  and an element <gen> taking 1 to <cur>
+      while eql[cur] <> cur  do
+        cur := eql[cur];
+      od;
+      # Mark the points in this new H-orbit as visited
+      if iter[cur] <> start then
+        img := cur;
+        while img <> 0 do
+        iter[img] := start;
+        img := next[img];
+        od;
+      fi;
+      gen := [];
+      img := cur;
+      while img <> D[1]  do
+        Add( gen, trans[img] );
+        img := img ^ trans[img];
+      od;
+      gen := Reversed( gen );
+
+      # compute an alleged block as orbit of 1 under $< H, gen >$
+      pnt := cur;
+      poss := true;
+      while pnt <> 0  do
+
+        # compute the representative of the block containing the image
+        img := pnt;
+        for i  in gen  do
+          img := img / i;
+        od;
+        while eql[img] <> img  do
+          img := eql[img];
+        od;
+
+        # if its not our current block but a new block
+        if   img <> D[1]  and img <> cur and leq[img] = img
+            and (iter[img] = 0 or iter[img] = start) then
+
+          # then try <img> as a new start
+          leq[cur] := img;
+          cur := img;
+          if iter[cur] <> start then
+            img := cur;
+            while img <> 0 do
+            iter[img] := start;
+            img := next[img];
+            od;
+          fi;
+          gen := [];
+          img := cur;
+          while img <> D[1]  do
+            Add( gen, trans[img] );
+            img := img ^ trans[img];
+          od;
+          gen := Reversed( gen );
+          pnt := cur;
+
+        # otherwise if its not our current block but contains it
+        # by construction a nonminimal block contains the current block
+        # - not any more it doesn't! Now we also have to check whether 
+        # the block appeared this time or earlier. 
+        elif img <> D[1]  and img <> cur  
+               and leq[img] <> img  and iter[img] = start then
+
+          # then merge all blocks it contains with <cur>
+          while img <> cur  do
+            eql[img] := cur;
+            next[ last[cur] ] := img;
+            last[ cur ] := last[ img ];
+            img := leq[img];
+            while img <> eql[img]  do
+              img := eql[img];
+            od;
+          od;
+          pnt := next[pnt];
+
+        # else if the block appeared in a previous iteration
+        elif iter[img] <> start and iter[img] <> 0 then
+
+           # then end this iteration as this is not a minimal block
+          pnt := 0;
+          poss := false;
+
+        # otherwise go on to the next point in the orbit
+        else
+
+          pnt := next[pnt];
+
+        fi;
+
+      od;
+
+      # Skip this bit if we know we haven't got a block
+      if poss = true then
+      # make the alleged block
+      block := [ D[1] ];
+      pnt := cur;
+      while pnt <> 0  do
+        Add( block, pnt );
+        pnt := next[pnt];
+      od;
+      block := Set( block );
+      blocks := [ block ];
+      Info(InfoOperation,1,"MinimalBlocks ",
+               "length of alleged block is ",Length(block));
+
+      # quick test to see if the group is primitive
+      if Length( block ) = Length( orbit )  then
+        Info(InfoOperation,1,"MinimalBlocks <G> is primitive");
+        return Immutable([ D ]);
+      fi;
+
+      # quick test to see if the orbit can be a block
+      if Length( orbit ) mod Length( block ) <> 0  then
+        Info(InfoOperation,1,"MinimalBlocks ",
+                 "alleged block is clearly not a block");
+        changed := -1000;
+      fi;
+
+      # '<rep>[<i>]' is the representative of the block containing <i>
+      rep := [];
+      for pnt  in orbit  do
+        rep[pnt] := 0;
+      od;
+      for pnt  in block  do
+        rep[pnt] := 1;
+      od;
+
+      # compute the block system with an orbit algorithm
+      i := 1;
+      while 0 <= changed  and i <= Length( blocks )  do
+
+        # loop over the generators
+        for gen  in oprs  do
+
+          # compute the image of the block under the generator
+          img := OnSets( blocks[i], gen );
+
+          # if this block is new
+          if rep[ img[1] ] = 0  then
+
+            # add the new block to the list of blocks
+            Add( blocks, img );
+
+            # check that all points in the image are new
+            for pnt  in img  do
+              if rep[pnt] <> 0  then
+                Info(InfoOperation,1,
+                "MinimalBlocks, alleged block is not a block");
+                changed := -1000;
+              fi;
+              rep[pnt] := img[1];
+            od;
+
+          # if this block is old
+          else
+
+            # check that all points in the image lie in the block
+            for pnt  in img  do
+              if rep[pnt] <> rep[img[1]]  then
+                Info(InfoOperation,1,
+                 "MinimalBlocks , alleged block is not a block");
+                changed := -1000;
+              fi;
+            od;
+
+          fi;
+
+        od;
+
+        # on to the next block in the orbit
+        i := i + 1;
+      od;
+      fi;
+
+    until 0 <= changed;
+    if poss = true then AddSet(minblocks, block); fi;
+  
+    # loop back to get another minimal block
+    fi;
+  od;
+
+  # return the block system
+  return Immutable(minblocks);
+end);
+
+#############################################################################
+##
+
+#M  Earns( <G>, <D> ) . . . . . . . . . . . . earns of affine primitive group
 ##
 InstallMethod( EarnsOp,
         "G, ints, gens, perms, opr", true,
         [ IsPermGroup, IsList,
           IsList,
           IsList,
-          IsFunction ], 0,
-    function( G, Omega, gens, oprs, opr )
+          IsFunction ], RANK_SOLV,
+    function( G, D, gens, oprs, opr )
     local   pcgs,  n,  fac,  p,  d,  alpha,  beta,  G1,  G2,  orb,
             Gamma,  M,  C,  f,  P,  Q,  Q0,  R,  R0,  pre,  gen,  g,
             ord,  pa,  a,  x,  y,  z;
@@ -520,10 +873,10 @@ InstallMethod( EarnsOp,
         TryNextMethod();
     fi;
     
-    n := Length( Omega );
+    n := Length( D );
     if not IsPrimePowerInt( n )  then
         return fail;
-    elif not IsPrimitive( G, Omega )  then
+    elif not IsPrimitive( G, D )  then
         TryNextMethod();
     fi;
     
@@ -550,14 +903,14 @@ InstallMethod( EarnsOp,
     fi;
     
     # If <G> is not a Frobenius group ...
-    for orb  in Orbits( G1, Omega )  do
+    for orb  in Orbits( G1, D )  do
         beta := orb[ 1 ];
         if beta <> alpha  then
             G2 := Stabilizer( G1, beta );
             if not IsTrivial( G2 )  then
-                Gamma := Filtered( Omega, p -> ForAll( GeneratorsOfGroup( G2 ),
+                Gamma := Filtered( D, p -> ForAll( GeneratorsOfGroup( G2 ),
                                  g -> p ^ g = p ) );
-                if not IsPrimePowerInt( Length( Gamma ) )  then
+                if Set( FactorsInt( Length( Gamma ) ) ) <> [ p ]  then
                     return fail;
                 fi;
                 C := Centralizer( G, G2 );
@@ -597,14 +950,14 @@ InstallMethod( EarnsOp,
                 fi;
                 
                 R := ClosureGroup( Q, gens );
-                R0 := OmegaPN( R, p, 1 );
+                R0 := OmegaOp( R, p, 1 );
                 y := First( GeneratorsOfGroup( R0 ),
-                            y -> not # y in Q = Centre(G2)
+                            y -> not # y in Q = Centre(G2)_p
                             (     alpha ^ y = alpha
                               and beta  ^ y = beta
                               and ForAll( GeneratorsOfGroup( G2 ),
                                       gen -> gen ^ y = gen ) ) );
-                Q0 := OmegaPN( Q, p, 1 );
+                Q0 := OmegaOp( Q, p, 1 );
                 for z  in Q0  do
                     M := SolvableNormalClosurePermGroup( G, [ y * z ] );
                     if M <> fail  and  Size( M ) = n  then
@@ -634,7 +987,7 @@ InstallMethod( TransitivityOp,
         [ IsPermGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList,
-          IsFunction ], 0,
+          IsFunction ], RANK_SOLV,
     function( G, D, gens, oprs, opr )
     if gens <> oprs  or  opr <> OnPoints  then
         TryNextMethod();
@@ -658,7 +1011,7 @@ InstallMethod( IsSemiRegularOp,
         [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList and IsPermCollection,
-          IsFunction ], 0,
+          IsFunction ], RANK_SOLV,
     function( G, D, gens, oprs, opr )
     local   used,       #
             perm,       #
@@ -785,7 +1138,7 @@ end );
 #M  RepresentativeOperation( <G>, <d>, <e>, <opr> ) . . . . . for perm groups
 ##
 InstallOtherMethod( RepresentativeOperationOp, true, [ IsPermGroup,
-        IsObject, IsObject, IsFunction ], 0,
+        IsObject, IsObject, IsFunction ], RANK_SOLV,
     function ( G, d, e, opr )
     local   rep,                # representative, result
             r,                  # slice of the representative
@@ -882,7 +1235,7 @@ InstallOtherMethod( StabilizerOp,
         [ IsPermGroup, IsObject,
           IsList,
           IsList,
-          IsFunction ], 0,
+          IsFunction ], RANK_SOLV,
     function( G, d, gens, oprs, opr )
     local   K,          # stabilizer <K>, result
             S,  base;
@@ -955,13 +1308,6 @@ local S,j;
   return GroupStabChain(G,S.stabilizer,true);
 end;
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##

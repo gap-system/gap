@@ -86,7 +86,7 @@ InstallMethod( AsSubspace,
     local newW, feature;
 
     if not IsSubset( V, W ) then
-      Error( "<W> must be contained in <V>" );
+      return fail;
     fi;
 
     newW:= LeftModuleByGenerators( LeftActingDomain( W ),
@@ -102,13 +102,10 @@ InstallMethod( AsSubspace,
 
 #############################################################################
 ##
-#M  AsLeftModule( <F>, <V> )  . . . . . . .  for division ring and collection
 #M  AsLeftModule( <F>, <V> )  . . . . . .  for division ring and vector space
 ##
-##  View the collection <V> as a vector space over the division ring <F>.
+##  View the vector space <V> as a vector space over the division ring <F>.
 ##
-#T InstallMethod( AsLeftModule, true, [ IsDivisionRing, IsCollection ], 0,
-
 InstallMethod( AsLeftModule,
     "method for a division ring and a vector space",
     true,

@@ -695,6 +695,49 @@ function( pcgs, elm )
     return led;
 end );
 
+#############################################################################
+##
+
+#M  Order( <obj> )  . . . . . . . . . . . . . . . . . . order of a pc-element
+##
+
+#############################################################################
+InstallMethod( Order,
+        "method for a pc-element",
+        HasDefiningPcgs,
+        [ IsMultiplicativeElementWithOne ], 3,
+        function( g )
+    local   pcgs,  rorders,  one,  ord,  d,  rord;
+
+    pcgs := DefiningPcgs( FamilyObj( g ) );
+    rorders := RelativeOrders( pcgs );
+    
+    one := g^0;
+    ord := 1;
+
+    if IsPrimeOrdersPcgs( pcgs ) then
+        while g <> one do
+            d    := DepthOfPcElement( pcgs, g );
+            rord := rorders[ d ];
+            ord  := ord * rord;
+            g    := g^rord;
+        od;
+    else
+        while g <> one do
+            d    := DepthOfPcElement( pcgs, g );
+            if not IsBound( rorders[d] ) or rorders[ d ] = 0 then
+                return infinity;
+            fi;
+            rord := rorders[ d ];
+            rord := rord / Gcd( ExponentOfPcElement( pcgs, g, d ), rord );
+            ord  := ord * rord;
+            g    := g^rord;
+        od;
+    fi;
+    return ord;
+end );
+
+
 
 #############################################################################
 ##

@@ -16,28 +16,31 @@ SYS_CONST char * Revision_listoper_c =
 
 #include        "sysfiles.h"            /* file input/output               */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "calls.h"               /* NewFunctionC                    */
+#include        "gvars.h"               /* global variables                */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* XTNum, LEN_LIST, ELM_LIST,  ... */
+#include        "calls.h"               /* generic call mechanism          */
 
-#include        "bool.h"                /* True, False                     */
+#include        "ariths.h"              /* basic arithmetic                */
 
-#include        "integer.h"             /* TypDigit                        */
+#include        "bool.h"                /* booleans                        */
 
+#include        "integer.h"             /* integers                        */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
 #define INCLUDE_DECLARATION_PART
-#include        "listoper.h"            /* declaration part of the package */
+#include        "listoper.h"            /* operations for generic lists    */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "plist.h"               /* LEN_PLIST, SET_LEN_PLIST,   ... */
-
-#include        "gap.h"                 /* Error                           */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
@@ -84,8 +87,6 @@ Int             EqListList (
     /* no differences found, the lists are equal                           */
     return 1L;
 }
-
-Obj             EqListListFunc;
 
 Obj             EqListListHandler (
     Obj                 self,
@@ -137,8 +138,6 @@ Int             LtListList (
     return (lenL < lenR);
 }
 
-Obj             LtListListFunc;
-
 Obj             LtListListHandler (
     Obj                 self,
     Obj                 listL,
@@ -161,8 +160,6 @@ Int             InList (
 {
     return POS_LIST( listR, objL, 0L );
 }
-
-Obj             InListDefaultFunc;
 
 Obj             InListDefaultHandler (
     Obj                 self,
@@ -293,8 +290,6 @@ Obj             SumListList (
     return listS;
 }
 
-Obj             SumSclListFunc;
-
 Obj             SumSclListHandler (
     Obj                 self,
     Obj                 listL,
@@ -303,8 +298,6 @@ Obj             SumSclListHandler (
     return SumSclList( listL, listR );
 }
 
-Obj             SumListSclFunc;
-
 Obj             SumListSclHandler (
     Obj                 self,
     Obj                 listL,
@@ -312,8 +305,6 @@ Obj             SumListSclHandler (
 {
     return SumListScl( listL, listR );
 }
-
-Obj             SumListListFunc;
 
 Obj             SumListListHandler (
     Obj                 self,
@@ -369,8 +360,6 @@ Obj             ZeroListDefault (
     return res;
 }
 
-Obj             ZeroListDefaultFunc;
-
 Obj             ZeroListDefaultHandler (
     Obj                 self,
     Obj                 list )
@@ -422,8 +411,6 @@ Obj             AInvListDefault (
     /* return the result                                                   */
     return res;
 }
-
-Obj             AInvListDefaultFunc;
 
 Obj             AInvListDefaultHandler (
     Obj                 self,
@@ -553,8 +540,6 @@ Obj             DiffListList (
     return listD;
 }
 
-Obj             DiffSclListFunc;
-
 Obj             DiffSclListHandler (
     Obj                 self,
     Obj                 listL,
@@ -563,8 +548,6 @@ Obj             DiffSclListHandler (
     return DiffSclList( listL, listR );
 }
 
-Obj             DiffListSclFunc;
-
 Obj             DiffListSclHandler (
     Obj                 self,
     Obj                 listL,
@@ -572,8 +555,6 @@ Obj             DiffListSclHandler (
 {
     return DiffListScl( listL, listR );
 }
-
-Obj             DiffListListFunc;
 
 Obj             DiffListListHandler (
     Obj                 self,
@@ -709,8 +690,6 @@ Obj             ProdListList (
     return listP;
 }
 
-Obj             ProdSclListFunc;
-
 Obj             ProdSclListHandler (
     Obj                 self,
     Obj                 listL,
@@ -719,8 +698,6 @@ Obj             ProdSclListHandler (
     return ProdSclList( listL, listR );
 }
 
-Obj             ProdListSclFunc;
-
 Obj             ProdListSclHandler (
     Obj                 self,
     Obj                 listL,
@@ -728,8 +705,6 @@ Obj             ProdListSclHandler (
 {
     return ProdListScl( listL, listR );
 }
-
-Obj             ProdListListFunc;
 
 Obj             ProdListListHandler (
     Obj                 self,
@@ -798,8 +773,6 @@ Obj             OneMatrix (
     /* return the identity matrix                                          */
     return res;
 }
-
-Obj             OneMatrixFunc;
 
 Obj             OneMatrixHandler (
     Obj                 self,
@@ -927,8 +900,6 @@ Obj             InvMatrix (
     /* return the result                                                   */
     return res;
 }
-
-Obj             InvMatrixFunc;
 
 Obj             InvMatrixHandler (
     Obj                 self,
@@ -1083,8 +1054,6 @@ Obj             PowMatrixInt (
     return res;
 }
 
-Obj             PowMatrixIntFunc;
-
 Obj             PowMatrixIntHandler (
     Obj                 self,
     Obj                 opL,
@@ -1116,9 +1085,14 @@ Obj             CommList (
 /****************************************************************************
 **
 
-*F  InitListOper()  . . . . . . . . . . .  initialize generic list operations
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
 **
-**  'InitListOper' initializes the generic list operations.
+
+*F  SetupListOper() . . . . . . . . .  initialize the generic list operations
 **
 **  C = constant, R = record, L = list,   X = extrnl, V = virtual
 **
@@ -1132,7 +1106,7 @@ Obj             CommList (
 Char * CAT =
   "ssssssss----ssiiiiiiiieeiiiiiiiiiiiivvvvvvvvvvvvvvvv-----------------mm]";
 
-void InitListOper ( void )
+void SetupListOper ( void )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
@@ -1256,91 +1230,95 @@ void InitListOper ( void )
             
         }
     }
+}
 
-    InitHandlerFunc( EqListListHandler, "EQ_LIST_LIST_DEFAULT");
-    EqListListFunc = NewFunctionC(
-        "EQ_LIST_LIST_DEFAULT", 2L, "listL, listR", EqListListHandler );
-    AssGVar( GVarName( "EQ_LIST_LIST_DEFAULT" ), EqListListFunc );
 
-    InitHandlerFunc( LtListListHandler, "LT_LIST_LIST_DEFAULT");
-    LtListListFunc = NewFunctionC(
-        "LT_LIST_LIST_DEFAULT", 2L, "listL, listR", LtListListHandler );
-    AssGVar( GVarName( "LT_LIST_LIST_DEFAULT" ), LtListListFunc );
+/****************************************************************************
+**
+*F  InitListOper()  . . . . . . . . .  initialize the generic list operations
+**
+**  'InitListOper' initializes the generic list operations.
+*/
+void InitListOper ( void )
+{
+    C_NEW_GVAR_FUNC( "EQ_LIST_LIST_DEFAULT", 2, "listL, listR",
+                      EqListListHandler,
+      "src/listoper.c:EQ_LIST_LIST_DEFAULT" );
 
-    InitHandlerFunc( InListDefaultHandler, "IN_LIST_DEFAULT");
-    InListDefaultFunc = NewFunctionC(
-        "IN_LIST_DEFAULT", 2L, "obj, list", InListDefaultHandler );
-    AssGVar( GVarName( "IN_LIST_DEFAULT" ), InListDefaultFunc );
+    C_NEW_GVAR_FUNC( "LT_LIST_LIST_DEFAULT", 2, "listL, listR",
+                      LtListListHandler,
+      "src/listoper.c:LT_LIST_LIST_DEFAULT" );
 
-    InitHandlerFunc( SumSclListHandler, "SUM_SCL_LIST_DEFAULT");
-    SumSclListFunc = NewFunctionC(
-        "SUM_SCL_LIST_DEFAULT", 2L, "listL, listR", SumSclListHandler );
-    AssGVar( GVarName( "SUM_SCL_LIST_DEFAULT" ), SumSclListFunc );
+    C_NEW_GVAR_FUNC( "IN_LIST_DEFAULT", 2, "obj, list",
+                      InListDefaultHandler,
+      "src/listoper.c:IN_LIST_DEFAULT" );
 
-    InitHandlerFunc( SumListSclHandler, "SUM_LIST_SCL_DEFAULT");
-    SumListSclFunc = NewFunctionC(
-        "SUM_LIST_SCL_DEFAULT", 2L, "listL, listR", SumListSclHandler );
-    AssGVar( GVarName( "SUM_LIST_SCL_DEFAULT" ), SumListSclFunc );
+    C_NEW_GVAR_FUNC( "SUM_SCL_LIST_DEFAULT", 2, "listL, listR",
+                      SumSclListHandler,
+      "src/listoper.c:SUM_SCL_LIST_DEFAULT" );
 
-    InitHandlerFunc( SumListListHandler, "SUM_LIST_LIST_DEFAULT");
-    SumListListFunc = NewFunctionC(
-        "SUM_LIST_LIST_DEFAULT", 2L, "listL, listR", SumListListHandler );
-    AssGVar( GVarName( "SUM_LIST_LIST_DEFAULT" ), SumListListFunc );
+    C_NEW_GVAR_FUNC( "SUM_LIST_SCL_DEFAULT", 2, "listL, listR",
+                      SumListSclHandler,
+      "src/listoper.c:SUM_LIST_SCL_DEFAULT" );
 
-    InitHandlerFunc( ZeroListDefaultHandler, "ZERO_LIST_DEFAULT");
-    ZeroListDefaultFunc = NewFunctionC(
-        "ZERO_LIST_DEFAULT", 1L, "list", ZeroListDefaultHandler );
-    AssGVar( GVarName( "ZERO_LIST_DEFAULT" ), ZeroListDefaultFunc );
+    C_NEW_GVAR_FUNC( "SUM_LIST_LIST_DEFAULT", 2, "listL, listR",
+                      SumListListHandler,
+      "src/listoper.c:SUM_LIST_LIST_DEFAULT" );
 
-    InitHandlerFunc( AInvListDefaultHandler, "AINV_LIST_DEFAULT");
-    AInvListDefaultFunc = NewFunctionC(
-        "AINV_LIST_DEFAULT", 1L, "list", AInvListDefaultHandler );
-    AssGVar( GVarName( "AINV_LIST_DEFAULT" ), AInvListDefaultFunc );
+    C_NEW_GVAR_FUNC( "ZERO_LIST_DEFAULT", 1, "list",
+                      ZeroListDefaultHandler,
+      "src/listoper.c:ZERO_LIST_DEFAULT" );
 
-    InitHandlerFunc( DiffSclListHandler, "DIFF_SCL_LIST_DEFAULT");
-    DiffSclListFunc = NewFunctionC(
-        "DIFF_SCL_LIST_DEFAULT", 2L, "listL, listR", DiffSclListHandler );
-    AssGVar( GVarName( "DIFF_SCL_LIST_DEFAULT" ), DiffSclListFunc );
+    C_NEW_GVAR_FUNC( "AINV_LIST_DEFAULT", 1, "list",
+                      AInvListDefaultHandler,
+      "src/listoper.c:AINV_LIST_DEFAULT" );
 
-    InitHandlerFunc( DiffListSclHandler, "DIFF_LIST_SCL_DEFAULT");
-    DiffListSclFunc = NewFunctionC(
-        "DIFF_LIST_SCL_DEFAULT", 2L, "listL, listR", DiffListSclHandler );
-    AssGVar( GVarName( "DIFF_LIST_SCL_DEFAULT" ), DiffListSclFunc );
+    C_NEW_GVAR_FUNC( "DIFF_SCL_LIST_DEFAULT", 2, "listL, listR",
+                      DiffSclListHandler,
+      "src/listoper.c:DIFF_SCL_LIST_DEFAULT" );
 
-    InitHandlerFunc( DiffListListHandler, "DIFF_LIST_LIST_DEFAULT");
-    DiffListListFunc = NewFunctionC(
-        "DIFF_LIST_LIST_DEFAULT", 2L, "listL, listR", DiffListListHandler );
-    AssGVar( GVarName( "DIFF_LIST_LIST_DEFAULT" ), DiffListListFunc );
+    C_NEW_GVAR_FUNC( "DIFF_LIST_SCL_DEFAULT", 2, "listL, listR",
+                      DiffListSclHandler,
+      "src/listoper.c:DIFF_LIST_SCL_DEFAULT" );
 
-    InitHandlerFunc( ProdSclListHandler, "PROD_SCL_LIST_DEFAULT");
-    ProdSclListFunc = NewFunctionC(
-        "PROD_SCL_LIST_DEFAULT", 2L, "listL, listR", ProdSclListHandler );
-    AssGVar( GVarName( "PROD_SCL_LIST_DEFAULT" ), ProdSclListFunc );
+    C_NEW_GVAR_FUNC( "DIFF_LIST_LIST_DEFAULT", 2, "listL, listR",
+                      DiffListListHandler,
+      "src/listoper.c:DIFF_LIST_LIST_DEFAULT" );
 
-    InitHandlerFunc( ProdListSclHandler, "PROD_LIST_SCL_DEFAULT");
-    ProdListSclFunc = NewFunctionC(
-        "PROD_LIST_SCL_DEFAULT", 2L, "listL, listR", ProdListSclHandler );
-    AssGVar( GVarName( "PROD_LIST_SCL_DEFAULT" ), ProdListSclFunc );
+    C_NEW_GVAR_FUNC( "PROD_SCL_LIST_DEFAULT", 2, "listL, listR",
+                      ProdSclListHandler,
+      "src/listoper.c:PROD_SCL_LIST_DEFAULT" );
 
-    InitHandlerFunc( ProdListListHandler, "PROD_LIST_LIST_DEFAULT");
-    ProdListListFunc = NewFunctionC(
-        "PROD_LIST_LIST_DEFAULT", 2L, "listL, listR", ProdListListHandler );
-    AssGVar( GVarName( "PROD_LIST_LIST_DEFAULT" ), ProdListListFunc );
+    C_NEW_GVAR_FUNC( "PROD_LIST_SCL_DEFAULT", 2, "listL, listR",
+                      ProdListSclHandler,
+      "src/listoper.c:PROD_LIST_SCL_DEFAULT" );
 
-    InitHandlerFunc( OneMatrixHandler, "ONE_MATRIX");
-    OneMatrixFunc = NewFunctionC(
-        "ONE_MATRIX", 1L, "list", OneMatrixHandler );
-    AssGVar( GVarName( "ONE_MATRIX" ), OneMatrixFunc );
+    C_NEW_GVAR_FUNC( "PROD_LIST_LIST_DEFAULT", 2, "listL, listR",
+                      ProdListListHandler,
+      "src/listoper.c:PROD_LIST_LIST_DEFAULT" );
 
-    InitHandlerFunc( InvMatrixHandler, "INV_MATRIX");
-    InvMatrixFunc = NewFunctionC(
-        "INV_MATRIX", 1L, "list", InvMatrixHandler );
-    AssGVar( GVarName( "INV_MATRIX" ), InvMatrixFunc );
+    C_NEW_GVAR_FUNC( "ONE_MATRIX", 1, "list",
+                      OneMatrixHandler,
+      "src/listoper.c:ONE_MATRIX" );
 
-    InitHandlerFunc( PowMatrixIntHandler, "POW_MATRIX_INT");
-    InvMatrixFunc = NewFunctionC(
-        "POW_MATRIX_INT", 2L, "list, int", PowMatrixIntHandler );
-    AssGVar( GVarName( "POW_MATRIX_INT" ), PowMatrixIntFunc );
+    C_NEW_GVAR_FUNC( "INV_MATRIX", 1, "list",
+                      InvMatrixHandler,
+      "src/listoper.c:INV_MATRIX" );
+
+    C_NEW_GVAR_FUNC( "POW_MATRIX_INT", 2, "list, int",
+                      PowMatrixIntHandler,
+      "src/listoper.c:POW_MATRIX_INT" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckListOper() . check the initialisation of the generic list operations
+*/
+void CheckListOper ( void )
+{
+    SET_REVISION( "listoper_c", Revision_listoper_c );
+    SET_REVISION( "listoper_h", Revision_listoper_h );
 }
 
 

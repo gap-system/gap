@@ -15,10 +15,6 @@ SmallestMovedPoint := NewAttribute( "SmallestMovedPoint", IsPermGroup );
 SetSmallestMovedPoint := Setter( SmallestMovedPoint );
 HasSmallestMovedPoint := Tester( SmallestMovedPoint );
 
-MovedPoints := NewAttribute( "MovedPoints", IsPermGroup );
-SetMovedPoints := Setter( MovedPoints );
-HasMovedPoints := Tester( MovedPoints );
-
 NrMovedPoints := NewAttribute( "NrMovedPoints", IsPermGroup );
 SetNrMovedPoints := Setter( NrMovedPoints );
 HasNrMovedPoints := Tester( NrMovedPoints );

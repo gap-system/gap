@@ -15,39 +15,42 @@
 **  locals), higher variables (i.e., local variables of enclosing functions),
 **  global variables, list elements, and record elements.
 */
-char * Revision_vars_c =
+#include        "system.h"              /* system dependent part           */
+
+SYS_CONST char * Revision_vars_c =
    "@(#)$Id$";
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gvars.h"               /* global variables                */
 
-#include        "calls.h"               /* NAMI_FUNC, ENVI_FUNC            */
+#include        "calls.h"               /* generic call mechanism          */
 
-#include        "records.h"             /* ASS_REC, UNB_REC, ELM_REC       */
-#include        "lists.h"               /* generic lists package           */
+#include        "records.h"             /* generic records                 */
+#include        "lists.h"               /* generic lists                   */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "precord.h"             /* AssPRec, UnbPRec, ElmPRec, ...  */
+#include        "precord.h"             /* plain records                   */
 
-#include        "plist.h"               /* ELM_PLIST, SET_ELM_PLIST, ...   */
-#include        "string.h"              /* CSTR_STRING used by NAME_RNAM   */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
-#include        "code.h"                /* Stat, Expr, TNUM_EXPR, ADDR_E...*/
+#include        "code.h"                /* coder                           */
 
 #define INCLUDE_DECLARATION_PART
-#include        "vars.h"                /* declaration part of the package */
+#include        "vars.h"                /* variables                       */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "exprs.h"               /* EVAL_EXPR, EvalExprFuncs        */
-#include        "stats.h"               /* EXEC_STAT, ExecStatFuncs        */
+#include        "exprs.h"               /* expressions                     */
+#include        "stats.h"               /* statements                      */
 
-#include        "gap.h"                 /* Error                           */
+#include        "gap.h"                 /* error handling, initialisation  */
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
@@ -1291,7 +1294,7 @@ UInt            ExecAssList (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -1353,7 +1356,7 @@ UInt            ExecAsssList (
         if ( ! IS_DENSE_LIST( rhss ) ) {
             rhss = ErrorReturnObj(
                 "List Assignment: <rhss> must be a dense list (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(rhss)].name), 0L,
+                (Int)TNAM_OBJ(rhss), 0L,
                 "you can return a dense list for <rhss>" );
         }
         else /* if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) */ {
@@ -1405,7 +1408,7 @@ UInt            ExecAssListLevel (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -1497,7 +1500,7 @@ UInt            ExecUnbList (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -1533,7 +1536,7 @@ Obj             EvalElmList (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
@@ -1623,7 +1626,7 @@ Obj             EvalElmListLevel (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
@@ -1706,7 +1709,7 @@ Obj             EvalIsbList (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
@@ -2200,7 +2203,7 @@ UInt            ExecAssPosObj (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -2250,7 +2253,7 @@ UInt            ExecUnbPosObj (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -2293,7 +2296,7 @@ Obj             EvalElmPosObj (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
@@ -2348,7 +2351,7 @@ Obj             EvalIsbPosObj (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+            (Int)TNAM_OBJ(pos), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
@@ -2849,22 +2852,71 @@ void            VarsAfterCollectBags ( void )
     PtrGVars = PTR_BAG( ValGVars );
 }
 
+/****************************************************************************
+**
+*F  SaveLVars ( <lvars> )
+**
+*/
+
+void SaveLVars( Obj lvars )
+{
+  UInt len,i;
+  Obj *ptr;
+  SaveSubObj(ADDR_OBJ(lvars)[0]);
+  SaveUInt((UInt)ADDR_OBJ(lvars)[1]);
+  SaveSubObj(ADDR_OBJ(lvars)[2]);
+  len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
+  ptr = ADDR_OBJ(lvars)+3;
+  for (i = 0; i < len; i++)
+    SaveSubObj(*ptr++);
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadLVars ( <lvars> )
+**
+*/
+
+void LoadLVars( Obj lvars )
+{
+  UInt len,i;
+  Obj *ptr;
+  ADDR_OBJ(lvars)[0] = LoadSubObj();
+  ((UInt *)ADDR_OBJ(lvars))[1] = LoadUInt();
+  ADDR_OBJ(lvars)[2] = LoadSubObj();
+  len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
+  ptr = ADDR_OBJ(lvars)+3;
+  for (i = 0; i < len; i++)
+    *ptr++ = LoadSubObj();
+  return;
+}
 
 /****************************************************************************
 **
 
-*F  InitVars()  . . . . . . . . . . . . . . . .  initialize variables package
-**
-**  'InitVars' initializes the variables package.
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitVars ( )
+
+
+/****************************************************************************
+**
+
+*F  SetupVars() . . . . . . . . . . . . . . . .  initialize variables package
+*/
+void SetupVars ( void )
 {
     UInt                i;              /* loop variable                   */
-    Obj                 tmp;
 
     /* install the marking functions for local variables bag               */
     InfoBags[         T_LVARS          ].name = "values bag";
     InitMarkFuncBags( T_LVARS          , MarkAllSubBags );
+
+
+    /* and the save restore functions */
+    SaveObjFuncs[ T_LVARS ] = SaveLVars;
+    LoadObjFuncs[ T_LVARS ] = LoadLVars;
+
 
     /* install executors, evaluators, and printers for local variables     */
     ExecStatFuncs [ T_ASS_LVAR       ] = ExecAssLVar;
@@ -2904,16 +2956,21 @@ void            InitVars ( )
     EvalExprFuncs [ T_REF_LVAR_16    ] = EvalRefLVar16;
     EvalExprFuncs [ T_ISB_LVAR       ] = EvalIsbLVar;
     PrintStatFuncs[ T_ASS_LVAR       ] = PrintAssLVar;
+
     for ( i = T_ASS_LVAR_01; i <= T_ASS_LVAR_16; i++ ) {
         PrintStatFuncs[ i ] = PrintAssLVar;
     }
+
     PrintStatFuncs[ T_UNB_LVAR       ] = PrintUnbLVar;
     PrintExprFuncs[ T_REFLVAR        ] = PrintRefLVar;
     PrintExprFuncs[ T_REF_LVAR       ] = PrintRefLVar;
+
     for ( i = T_REF_LVAR_01; i <= T_REF_LVAR_16; i++ ) {
         PrintExprFuncs[ i ] = PrintRefLVar;
     }
+
     PrintExprFuncs[ T_ISB_LVAR       ] = PrintIsbLVar;
+
 
     /* install executors, evaluators, and printers for higher variables    */
     ExecStatFuncs [ T_ASS_HVAR       ] = ExecAssHVar;
@@ -2925,6 +2982,7 @@ void            InitVars ( )
     PrintExprFuncs[ T_REF_HVAR       ] = PrintRefHVar;
     PrintExprFuncs[ T_ISB_HVAR       ] = PrintIsbHVar;
 
+
     /* install executors, evaluators, and printers for global variables    */
     ExecStatFuncs [ T_ASS_GVAR       ] = ExecAssGVar;
     ExecStatFuncs [ T_UNB_GVAR       ] = ExecUnbGVar;
@@ -2934,6 +2992,7 @@ void            InitVars ( )
     PrintStatFuncs[ T_UNB_GVAR       ] = PrintUnbGVar;
     PrintExprFuncs[ T_REF_GVAR       ] = PrintRefGVar;
     PrintExprFuncs[ T_ISB_GVAR       ] = PrintIsbGVar;
+
 
     /* install executors, evaluators, and printers for list elements       */
     ExecStatFuncs [ T_ASS_LIST       ] = ExecAssList;
@@ -2957,6 +3016,7 @@ void            InitVars ( )
     PrintExprFuncs[ T_ELMS_LIST_LEV  ] = PrintElmsList;
     PrintExprFuncs[ T_ISB_LIST       ] = PrintIsbList;
 
+
     /* install executors, evaluators, and printers for record elements     */
     ExecStatFuncs [ T_ASS_REC_NAME   ] = ExecAssRecName;
     ExecStatFuncs [ T_ASS_REC_EXPR   ] = ExecAssRecExpr;
@@ -2975,6 +3035,7 @@ void            InitVars ( )
     PrintExprFuncs[ T_ISB_REC_NAME   ] = PrintIsbRecName;
     PrintExprFuncs[ T_ISB_REC_EXPR   ] = PrintIsbRecExpr;
 
+
     /* install executors, evaluators, and printers for list elements       */
     ExecStatFuncs [ T_ASS_POSOBJ       ] = ExecAssPosObj;
     ExecStatFuncs [ T_UNB_POSOBJ       ] = ExecUnbPosObj;
@@ -2984,6 +3045,7 @@ void            InitVars ( )
     PrintStatFuncs[ T_UNB_POSOBJ       ] = PrintUnbPosObj;
     PrintExprFuncs[ T_ELM_POSOBJ       ] = PrintElmPosObj;
     PrintExprFuncs[ T_ISB_POSOBJ       ] = PrintIsbPosObj;
+
 
     /* install executors, evaluators, and printers for record elements     */
     ExecStatFuncs [ T_ASS_COMOBJ_NAME  ] = ExecAssComObjName;
@@ -3003,19 +3065,48 @@ void            InitVars ( )
     PrintExprFuncs[ T_ISB_COMOBJ_NAME  ] = PrintIsbComObjName;
     PrintExprFuncs[ T_ISB_COMOBJ_EXPR  ] = PrintIsbComObjExpr;
 
+
     /* install before and after actions for garbage collections            */
     InitCollectFuncBags( VarsBeforeCollectBags, VarsAfterCollectBags );
+}
+
+
+/****************************************************************************
+**
+*F  InitVars()  . . . . . . . . . . . . . . . .  initialize variables package
+**
+**  'InitVars' initializes the variables package.
+*/
+void InitVars ( void )
+{
+    Obj                 tmp;
 
     /* make 'CurrLVars' known to Gasman                                    */
-    InitGlobalBag( &CurrLVars, "vars: current LVars" );
-    InitGlobalBag( &BottomLVars, "vars: bottom LVars" );
-    BottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
-    CurrLVars   = BottomLVars;
-    tmp = NewFunctionC( "bottom", 0, "", 0 );
-    PTR_BAG(BottomLVars)[0] = tmp;
-    tmp = NewBag( T_BODY, 0 );
-    BODY_FUNC( PTR_BAG(BottomLVars)[0] ) = tmp;
-    SWITCH_TO_OLD_LVARS( BottomLVars );
+    InitGlobalBag( &CurrLVars,   "src/vars.c:CurrLVars"   );
+    InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" );
+    if ( ! SyRestoring ) {
+        BottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
+        CurrLVars   = BottomLVars;
+        tmp = NewFunctionC( "bottom", 0, "", 0 );
+        PTR_BAG(BottomLVars)[0] = tmp;
+        tmp = NewBag( T_BODY, 0 );
+        BODY_FUNC( PTR_BAG(BottomLVars)[0] ) = tmp;
+        SWITCH_TO_OLD_LVARS( BottomLVars );
+    }
+    else {
+        Pr( "#W  check `InitVars' in \"vars.c\"\n", 0L, 0L );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  CheckVars() . . . . . . check the initialisation of the variables package
+*/
+void CheckVars ( void )
+{
+    SET_REVISION( "vars_c",     Revision_vars_c );
+    SET_REVISION( "vars_h",     Revision_vars_h );
 }
 
 

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  lists.h                     GAP source                   Martin Schoenert
+*W  lists.h                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -14,7 +14,7 @@
 **  'LEN_LIST' and 'ELM_LIST' independently of the type of the list.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_lists_h =
+SYS_CONST char * Revision_lists_h =
    "@(#)$Id$";
 #endif
 
@@ -661,11 +661,227 @@ extern  Obj             TYPES_LIST_FAM (
 
 /****************************************************************************
 **
+
+*V  SetFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . new tnum after filter set
+**
+**  If a list  with type number <tnum>  gains  the filter  with filter number
+**  <fnum>, then the new type number is stored in:
+**
+**  `SetFiltListTNums[<tnum>][<fnum>]'
+**
+**  The macro  `SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
+**  changing its type number.
+*/
+extern Int SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+
+
+/****************************************************************************
+**
+*F  SET_FILT_LIST( <list>, <fnum> ) . . . . . . . . . . . . . .  set a filter
+*/
+#define SET_FILT_LIST(list,fn) \
+  do { \
+    Int     new; \
+    new = SetFiltListTNums[TNUM_OBJ(list)][fn]; \
+    if ( new > 0 ) \
+      RetypeBag( list, new ); \
+    else if ( new < 0 ) { \
+      Pr( "#E  SET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
+      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+    } \
+  } while (0)
+
+
+/****************************************************************************
+**
+*V  ResetFiltListTNums[ <tnum> ][ <fnum> ]  . . . new tnum after filter reset
+**
+**  If a list  with type number <tnum>  loses  the filter  with filter number
+**  <fnum>, then the new type number is stored in:
+**
+**  `ResetFiltListTNums[<tnum>][<fnum>]'
+**
+**  The macro `RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
+**  changing its type number.
+*/
+extern Int ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+
+
+/****************************************************************************
+**
+*F  RESET_FILT_LIST( <list>, <fnum> ) . . . . . . . . . . . .  reset a filter
+*/
+#define RESET_FILT_LIST(list,fn) \
+  do { \
+    Int     new; \
+    new = ResetFiltListTNums[TNUM_OBJ(list)][fn]; \
+    if ( new > 0 ) \
+      RetypeBag( list, new ); \
+    else if ( new < 0 ) { \
+      Pr( "#E  RESET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
+      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+    } \
+  } while (0)
+
+
+/****************************************************************************
+**
+*V  HasFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . . . . . . . .  has filter
+*/
+extern Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+
+
+/****************************************************************************
+**
+*F  HAS_FILT_LIST( <list>, <fnum> ) . . . . . . . . . . . . . . .  has filter
+*/
+#define HAS_FILT_LIST(list,fn)   HasFiltListTNums[TNUM_OBJ(list)][fn]
+
+
+/****************************************************************************
+**
+*V  ClearFiltsTNums[ <tnum> ] . clear all list filters except `FN_IS_MUTABLE'
+**
+**  The type  number without any  known properties  of a  list of type number
+**  <tnum> is stored in:
+**
+**  `ClearPropsTNums[<tnum>]'
+**
+**  The macro `CLEAR_PROPS_LIST' is used to clear all properties of a list.
+*/
+extern Int ClearFiltsTNums [ LAST_REAL_TNUM ];
+
+
+/****************************************************************************
+**
+*F  CLEAR_FILTS_LIST( <list> )  . . . . . . . . . . . . . .  clear properties
+*/
+#define CLEAR_FILTS_LIST(list) \
+  do { \
+    Int     new; \
+    new = ClearFiltsTNums[TNUM_OBJ(list)]; \
+    if ( new > 0 ) \
+      RetypeBag( list, new ); \
+    else if ( new < 0 ) { \
+      Pr( "#E  CLEAR_FILTS_LIST[%s] in ", (Int)TNAM_OBJ(list), 0 ); \
+      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+    } \
+  } while (0)
+
+
+/****************************************************************************
+**
+*F  MARK_LIST( <list>, <what> ) . . . . . . . . . . . . . . . . . . mark list
+*/
+#define MARK_LIST( list, what ) \
+    RetypeBag( list, TNUM_OBJ(list) + what );
+
+
+/****************************************************************************
+**
+*F  UNMARK_LIST( <list>, <what> ) . . . . . . . . . . . . . . . . unmark list
+*/
+#define UNMARK_LIST( list, what ) \
+    RetypeBag( list, TNUM_OBJ(list) - what );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * functions with checking  * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  ElmsListCheck( <list>, <poss> ) . . . . . . . . . . . . . . . . ELMS_LIST
+*/
+extern Obj ElmsListCheck (
+    Obj                 list,
+    Obj                 poss );
+
+
+/****************************************************************************
+**
+*F  ElmsListLevelCheck( <lists>, <poss>, <level> )  . . . . . . ElmsListLevel
+*/
+extern void ElmsListLevelCheck (
+    Obj                 lists,
+    Obj                 poss,
+    Int                 level );
+
+
+/****************************************************************************
+**
+*F  AsssListCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . . ASSS_LIST
+*/
+extern void AsssListCheck (
+    Obj                 list,
+    Obj                 poss,
+    Obj                 rhss );
+
+
+/****************************************************************************
+**
+*F  AsssPosObjCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . ASSS_LIST
+*/
+extern void AsssPosObjCheck (
+    Obj                 list,
+    Obj                 poss,
+    Obj                 rhss );
+
+
+/****************************************************************************
+**
+*F  AsssListLevelCheck( <lists>, <poss>, <rhss>, <level> )  . . AsssListLevel
+*/
+extern void AsssListLevelCheck (
+    Obj                 lists,
+    Obj                 poss,
+    Obj                 rhss,
+    Int                 level );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupLists()  . . . . . . . . . . . . initialize the generic list package
+*/
+extern void SetupLists ( void );
+
+
+/****************************************************************************
+**
 *F  InitLists() . . . . . . . . . . . . . initialize the generic list package
 **
-**  'InitLists' initializes the generic list package.
+**  'InitLists' initializes the dispatch tables with the error handlers.
 */
-extern  void            InitLists ( void );
+extern void InitLists ( void );
+
+
+/****************************************************************************
+**
+*F  CheckLists()  . . .  check the initialisation of the generic list package
+**
+**  This  function does  a  few pre-init sanity  checks  for the various list
+**  packages.
+*/
+extern void CheckLists ( void );
+
+
+/****************************************************************************
+**
+
+*E  lists.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 
 
 

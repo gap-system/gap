@@ -3,7 +3,7 @@
 #W  id640jfc.v             GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id640jfc_v :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 640 ].next[ 10 ].next[ 6 ].next[ 100 ] :=
 rec(

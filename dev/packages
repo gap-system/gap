@@ -1,0 +1,336 @@
+Packages
+========
+
+Essentials (GAP4 can't run sensibly without them, all .g files)
+  arith.gd
+  arith.gi
+  assert.gd
+  assert.gi
+  boolean.g
+  coll.gd
+  coll.gi
+  combinat.gi
+  cyclotom.g
+  domain.gd
+  domain.gi
+  fampred.g
+  ffe.g
+  files.gd
+  files.gi
+  filter.g
+  flag.g
+  function.g
+  hash.gd
+  hash.gi
+  help.g
+  info.gd
+  info.gi
+  init.g
+  kernel.g
+  list.g
+  list.gd
+  list.gi
+  listcoef.gd
+  listcoef.gi
+  methsel.g
+  methwhy.g
+  object.gd
+  object.gi
+  oper.g
+  package.g
+  permutat.g
+  process.gd
+  process.gi
+  profile.g
+  read*.g
+  record.g
+  set.g
+  word.gd
+  word.gi
+  wordass.gd
+  wordass.gi
+  wordrep.gi
+  streams.gd
+  streams.gi
+  string.g
+  string.gi
+  tuples.gd
+  tuples.gi
+  type.g
+  unknown.gd
+  unknown.gi
+  version.g
+  *.co
+
+Algebra Bootstrap (Definitions for basic algebraic domains. The methods
+contained are not deep)
+  addcoset.gd
+  addcoset.gi
+  addmagma.gd
+  addmagma.gi
+  extaset.gd
+  extlset.gd
+  extrset.gd
+  extuset.gd
+  field.gd
+  field.gi
+  grptbl.gd
+  grptbl.gi
+  magma.gd
+  magma.gi
+  mgmfree.gi
+  mgmring.gd
+  mgmring.gi
+  modfree.gi
+  module.gd
+  module.gi
+  modulmat.gi
+  modulrow.gi
+  monofree.gi
+  monoid.gd
+  monoid.gi
+  ring.gd
+  ring.gi
+  semigrp.gd
+  semigrp.gi
+  smgrpfre.gi
+
+Algebras (probably later split)
+  algebra.gd
+  algebra.gi
+  algfp.gd
+  algfp.gi
+  alghom.gd
+  alghom.gi
+  alglie.gd
+  alglie.gi
+  algliess.gi
+  algmat.gi
+  algsc.gd
+  algsc.gi
+  liefam.gd
+  liefam.gi
+
+Abstract Groups (several independent subpackages are possible)
+  clas.gd
+  clas.gi
+  csetgrp.gd
+  csetgrp.gi
+  ctblgrp.gd
+  ctblgrp.gi
+  factgrp.gd
+  factgrp.gi (probably split off permutation part)
+  gprd.gd
+  gprd.gi
+  gprdpc.gi
+  gprdperm.gi
+  grp.gd
+  grp.gi
+  grpcompl.gi (or PcGroups ?)
+  grplatt.gd
+  grplatt.gi
+  grpnice.gd
+  grpnice.gi
+  morpheus.gd
+  morpheus.gi
+  oprt.gd
+  oprt.gi
+  oprtglat.gd
+  oprtglat.gi
+
+PermGroups
+  clasperm.gi
+  csetperm.gi
+  grpperm.gd
+  grpperm.gi
+  grpprmcs.gd
+  grpprmcs.gi
+  oprtperm.gi
+  partitio.gi (renaming, confusion with general 'partitions')
+  stbc.gd
+  stbc.gi
+  stbcbckt.gd
+  stbcbckt.gi
+  stbcrand.gi
+  pcgsperm.gd
+  pcgsperm.gi
+
+FpGroup
+  grpfp.gd
+  grpfp.gi
+  grpfree.gi
+  sgpres.gd
+  sgpres.gi
+  tietze.gd
+  tietze.gi
+
+PcGroups (functions for groups using a Pcgs)
+  claspcgs.gi
+  csetpc.gi
+  ctblpc.gi
+  ctblsolv.gi
+  frattext.gd
+  frattext.gi
+  frattfree.gd
+  frattfree.gi
+  grppc.gd
+  grppc.gi
+  grppcatr.gi
+  grppcaut.gi
+  grppccom.gd
+  grppccom.gi
+  grppcext.gd
+  grppcext.gi
+  grppcfp.gd
+  grppcfp.gi
+  grppcint.gi
+  grppclat.gd
+  grppclat.gi
+  grppcnrm.gd
+  grppcnrm.gi
+  grppcprp.gi
+  grppcrep.gd
+  grppcrep.gi
+  grpreps.gd
+  grpreps.gi
+  onecohom.gd
+  onecohom.gi
+  oprtpcgs.gi
+  twocohom.gd
+  twocohom.gi
+
+Pcgs (functions to compute/modify &c. a pcgs)
+
+  pcgs.gd
+  pcgs.gi
+  pcgscomp.gi
+  pcgsind.gd
+  pcgsind.gi
+  pcgsmodu.gd
+  pcgsmodu.gi
+  pcgsnice.gi
+  pcgspcg.gd
+  pcgspcg.gi
+  pcgsspec.gd
+  pcgsspec.gi
+
+Rewriting systems (strong interaction with Pcgs)
+  dt.g (Why is it not dt.gi ?)
+  rws.gd
+  rws.gi
+  rwsdt.gi
+  rwsgrp.gd
+  rwsgrp.gi
+  rwspcclt.gd
+  rwspcclt.gi
+  rwspcftl.gi
+  rwspcgrp.gd
+  rwspcgrp.gi
+  rwspcsng.gi
+
+Matrix groups (relation to matrix algebras)
+  grpffmat.gd
+  grpffmat.gi
+  grpmat.gd
+  grpmat.gi
+  meataxe.gi
+
+Character Tables basic (elementary functions and constructions)
+  ctbl.gd
+  ctbl.gi
+  ctblchar.gd
+  ctblchar.gi
+  ctblfuns.gd
+  ctblfuns.gi
+  ctbllatt.gd
+  ctbllatt.gi
+  ctblmaps.gd
+  ctblmaps.gi
+  ctblmoli.gd
+  ctblmoli.gi
+  ctblmono.gd
+  ctblmono.gi
+  ctblperm.gi
+  ctblpope.gd
+  ctblpope.gi
+  ctblsymm.gd
+  ctblsymm.gi
+
+Character Tables Advanced (advanced methods to construct character tables)
+
+Finite fields
+  ffe.gd
+  ffe.gi
+  fieldfin.gi
+  polyconw.gd
+  polyconw.gi
+  zmodnz.gd
+  zmodnz.gi
+
+Number Theory
+  algfld.gd
+  algfld.gi
+  cyclotom.gd
+  cyclotom.gi
+  fldabnum.gd
+  fldabnum.gi
+  gaussian.gi
+  integer.gd
+  integer.gi
+  numtheor.gd
+  numtheor.gi
+  padics.gd (or are they essentials ?)
+  padics.gi
+  rational.gi
+
+Mappings (Functions also interact heavily with the areas for hich they
+implement mappings. Still, they have so much in common to deserve an own
+class.)
+  ghom.gd
+  ghom.gi
+  ghompcgs.gd
+  ghompcgs.gi
+  ghomperm.gd
+  ghomperm.gi
+  mapphomo.gd
+  mapphomo.gi
+  mapping.gd
+  mapping.gi
+  mapprep.gi
+
+Vectorspaces, Z-Modules (we might want to split Z-Modules off)
+  basis.gd
+  basis.gi
+  basismut.gd
+  basismut.gi
+  lattice.gd
+  lattice.gi
+  matrix.gd (as some of these routines are used at a lot of places, we
+  matrix.gi  probably want to move it to the 'Essentials' category?)
+  rvecempt.gd
+  rvecempt.gi
+  vspc.gd
+  vspc.gi
+  vspchom.gd
+  vspchom.gi
+  vspcmat.gi
+  vspcrow.gi
+
+Polynomials
+  polyfinf.gi
+  polyrat.gd
+  polyrat.gi
+  ratfun.gd
+  ratfun.gi
+  ratfunul.gi
+  ringpoly.gd
+  ringpoly.gi
+  upoly.gd
+  upoly.gi
+
+Compatibility:
+  compat3a.g
+  compat3b.g
+  compat3c.g
+  compat3d.g
+  overload.g

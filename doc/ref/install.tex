@@ -1,0 +1,322 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  install.tex               GAP documentation              Frank Celler
+%W                                                     & Martin Schoenert
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file contains the  description of the installation procedure and
+%%  command line options for various operating systems.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Installing GAP}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Features of GAP for UNIX}
+
+When you start {\GAP}  for UNIX, you may  specify a number of  options on
+the command-line to change  the default behaviour  of {\GAP}.  All  these
+options  start with a  hyphen `-', followed by a  single letter.  Options
+must not be   grouped, e.g.,  `gap  -gq' is   illegal, use   `gap -g  -q'
+instead.  Some options  require an argument, this  must follow the option
+and  must be separated   by a <space>, e.g.,  `gap   -m 256k', it is  not
+correct to say `gap -m256k' instead.
+
+{\GAP} for UNIX will only accept lower case options.
+
+As is  described in  the previous section  (see  "Installation of GAP for
+UNIX") usually you  will not execute {\GAP}  directly.  Instead  you will
+call a shell script, with the name `gap',  which in turn executes {\GAP}.
+This shell script sets some options as  necessary to make {\GAP} work on
+your  system.  This means that the   default settings mentioned below may
+not be what you experience when you execute {\GAP} on your system.
+
+`-h'
+
+The  options  `-h' tells {\GAP}   to print  a   summary of all  available
+options.  {\GAP} exits after printing the summary,  all other options are
+ignored.
+
+`-b'
+
+The option `-b'  tells {\GAP} to  suppress the banner.  That  means  that
+{\GAP} immediately prints the prompt.  This is useful  when you get tired
+of the banner after a while.
+
+`-q'
+
+The option  `-q' tells {\GAP} to be  quiet.  This means that  {\GAP} does
+not display the banner nor the prompt `gap>'.  This is useful if you want
+to run {\GAP} as a filter with  input and output  redirection and want to
+avoid the banner and the prompts clobbering the output file.
+
+`-e'
+
+The option `-e' tells {\GAP} not to quit when receiving a `<ctr>-D' on an
+empty  input line.  This option  should not be  used when  the input is a
+file or pipe.
+
+`-f'
+
+The option `-f' tells {\GAP} to enable the line  editing and history (see
+"Line Editing").
+
+In general  line editing will  be enabled if the input  is connected to a
+terminal.  There are rare circumstances, for  example when using a remote
+session with a broken telnet  implementation, when this detection  fails.
+Try to use `-f' in this case to enable line editing.
+
+`-n'
+
+The option  `-n'  tells {\GAP}  to disable  the line editing  and history
+(see "Line Editing").
+
+You may want to do this if the command line  editing is incompatible with
+another program that is used to run {\GAP}.  For example if {\GAP} is run
+from inside a GNU Emacs shell window, `-n' should be used since otherwise
+every input line will be echoed twice, once by Emacs and once by {\GAP}.
+
+`-x <length>'
+
+With this option  you can tell  {\GAP}  how long lines  are.  {\GAP} uses
+this value to decide when to split long lines.
+
+The default value is 80, which is the right value if you have  a standard
+ASCII terminal.  If you have a larger monitor, or use a  smaller font, or
+redirect the output to a printer, you may want to increase this value.
+
+`-y <length>'
+
+With this option   you can tell {\GAP} how   many lines your  screen has.
+{\GAP} uses this value to decide after how many lines  of on-line help it
+should wait.
+
+The default value is 24, which is the right  value if you have a standard
+ASCII terminal.  If you have a larger monitor, or use  a smaller font, or
+redirect the output to a printer, you may want to increase this value.
+
+`-g'
+
+The option  `-g' tells {\GAP} to print a information message every time a
+full garbage collection is performed.
+
+\begintt
+    #G  FULL 44580/2479kb live   57304/4392kb dead   734/4096kb free
+\endtt
+
+For example, this tells   you that  there   are 44580 live  objects  that
+survived a  full garbage   collection,  that 57304  unused  objects  were
+reclaimed by it, and that 734 KByte of totally  allocated 4096 KBytes are
+available afterwards.
+
+`-g -g'
+
+If  you  give the option `-g'  twice  {\GAP} prints a information message
+every time a partial or full garbage collection is performed.
+
+\begintt
+    #G  PART 9405/961kb+live   7525/1324kb+dead   2541/4096kb free
+\endtt
+
+For  example,  this  tells you  that  9405  objects survived  the partial
+garbage collection and  7525 objects were  reclaimed, and that 2541 KByte
+of totally allocated 4096 KByte are available afterwards.
+
+`-m <memory>'
+
+The option `-m' tells {\GAP} to allocate <memory>  bytes at startup time.
+If the last character of <memory> is `k' or `K' it is taken in KBytes and
+if the last character is `m' or `M' <memory> is taken in MBytes.
+
+Under UNIX the default amount  of memory allocated  by {\GAP} is 8 MByte.
+The amount of memory  should be large  enough so that computations do not
+require  too  many  garbage  collections.  On the   other hand  if {\GAP}
+allocates more virtual memory than  is physically available it will spend
+most of  the  time  paging.  
+
+`-o <memory>'
+
+The option `-o' tells {\GAP} to allocate  at most <memory> bytes.  If the
+last character of <memory> is `k' or `K' it is taken in KBytes and if the
+last character is `m' or `M' <memory> is taken in MBytes.
+
+Under UNIX the  default amount is 64 MByte.   If more than this amount is
+required {\GAP} prints an error messages and quits.
+
+`-l <pathname>'
+
+The option `-l' tells  {\GAP}  that the  {\GAP} root directory  "GAP Root
+Directory" is <pathname>.  Per default <pathname> is './', i.e., the root
+directory is normally   expected  to be the   current  directory.  {\GAP}
+searches for the library   files  which contain the functions   initially
+known to  {\GAP},  in the   subdirectory `lib/'  of  the  root directory.
+<pathname> should end with a   pathname separator, i.e., '/', but  {\GAP}
+will silently   add one  if  it is  missing.  {\GAP}   will read the file
+'<pathname>/lib/init.g' during startup.  If  {\GAP} cannot find this file
+it will print the following warning
+
+\begintt
+    gap: hmm, I cannot find 'lib/init.g' maybe use option '-l <gaproot>'?
+\endtt
+
+It is not possible  to use {\GAP} without the  library files, so you must
+not  ignore this warning.  You  should leave {\GAP}   and start it again,
+specifying the correct root path using the '-l' option.
+
+It  is  also possible  to  specify several  alternative library  paths by
+separating them  with semicolons  ';'.  This is explained  in detail in
+"GAP Root Directory".
+
+`-r'
+
+The option `-r'  tells {\GAP}  not to  read the user  supplied `~/.gaprc'
+files.
+
+`<filename> ...'
+
+Further arguments are taken as filenames of files that are read by {\GAP}
+during startup, after the system  and private init   files are read,  but
+before the first prompt is  printed.  The files are read  in the order in
+that they  appear on the command line.   {\GAP} only accepts 14 filenames
+on the command  line.  If a  file cannot  be opened {\GAP}  will print an
+error message and will abort.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Advanced Features of GAP}
+
+The following options are in general not needed  for the normal operation
+of {\GAP}.  They are mostly used for debugging.
+
+`-a <memory>' 
+
+GASMAN, the storage manager of {\GAP} uses `sbrk' to get blocks of memory
+from (certain) operating systems and it is required that subsequent calls
+to `sbrk' produce  adjacent blocks of memory  in this case because {\GAP}
+only wants to  deal with one large  block  of memory.  If the  C function
+`malloc' is called for whatever reason it is likely that `sbrk' no longer
+produces adjacent blocks, therefore GAP does not use `malloc' itself.
+
+However some operation systems insist on calling `malloc'  when a file is
+open to fill a buffer.  In order to catch these  cases GAP preallocates a
+block of memory with  `malloc' which is immediately  freed. The amount of
+prealloc can be  controlled with the  `-a' option.  If the last character
+of <memory> is `k' or `K' it is taken in KBytes and if the last character
+is `m' or `M' <memory> is taken in MBytes.
+
+`-D'
+
+The `-D' options tells {\GAP} to print short  messages when it is reading
+or completing files or loading modules.
+
+\begintt
+    |#I  READ_GAP_ROOT: loading 'lib/kernel.g' as GAP file
+\endtt
+
+Tells   you  that   {\GAP}  has  started    to  read the   library   file
+``lib/kernel.g''.
+
+\begintt
+    |#I  READ_GAP_ROOT: loading 'lib/kernel.g' statically
+\endtt
+
+Tells you that {\GAP}  has used the compiled  version of the library file
+``lib/kernel.g''.  This compiled    module was statically linked to   the
+{\GAP} kernel at the time the kernel was created.
+
+\begintt
+    |#I  READ_GAP_ROOT: loading 'lib/kernel.g' dynamically
+\endtt
+
+Tells you that {\GAP} has loaded the compiled version of the library file
+``lib/kernel.g''.   This compiled module  was  dynamically loaded to  the
+{\GAP} kernel at runtime from a corresponding `.so' file.
+
+\begintt
+    |#I  completing 'lib/domain.gd'
+\endtt
+
+Tells you   that {\GAP} has   completed the file  ``lib/domain.gd''.  See
+"Completion Files" for more information about completion of files.
+
+`-M'
+
+The `-M' option  tells  {\GAP}  not to check   for  nor to  use  compiled
+versions of library files.
+
+`-N'
+
+The `-N' option tells  {\GAP}  not to check   for nor to use   completion
+files, see "Completion Files".
+
+`-X'
+
+The `-X' option  tells {\GAP} to make  a consistency check of the library
+file and the corresponding completion   file when reading the  completion
+file.
+
+`-Y'
+
+The `-X' option tells {\GAP}  to make a  consistency check of the library
+file and  the corresponding completion  file  when completing the library
+file.
+
+`-i <filename>'
+
+The `-i' changes the name of the init file from the default ``init.g'' to
+<filename>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Completion Files}
+
+The standard distribution of {\GAP} already  contains completion files so
+in general *you do not need to create these files by yourself*.
+
+When starting, {\GAP} reads  in the  whole  library.  As this takes  some
+time library files are  normally condensed into  completion files.  These
+completion files contain the  basic skeleton of  the library but  not the
+function bodies.   When a function  body is required, for example because
+you  want   to  execute the  corresponding    function, the  library file
+containing the function body is completed.
+
+Completion files reduce the startup time of {\GAP} drastically.  However,
+it also means that the information stored in the completion files and the
+library must  be  consistent.   If you   changes a library  file  without
+recreating the completion files disaster is bound to happen.
+
+Bugfixes distributed for {\GAP}  will  also update the completion  files,
+therefore you only  need to update  them if  you  changed the  library by
+yourself.
+
+However, if you are modifying a library file  a more convenient way is to
+use the `-X' option that allows you (in most cases) to use the completion
+files   for the unchanged  parts of  library   files and avoids using the
+completion files for the changed parts.  After you are finished modifying
+the library files you can recreate the completion files using:
+
+\>CreateCompletionFiles()
+\)CreateCompletionFiles( <path> )
+
+To create  completion files you must  have write permissions to `<path>',
+which defaults to the  first root directory.   Start {\GAP} with the `-N'
+option (to  suppress the reading  of any existing completion files), then
+execute the command `CreateCompletionFiles( <path> );', where <path> is a
+string giving a   path to the home   directory of  {\GAP} (the  directory
+containing the `lib' directory).
+
+This produces, among lots of informational output, the completion files.
+
+\begintt
+    $ gap4 -N
+    gap> CreateCompletionFiles();
+    |#I  converting "gap4/lib/read2.g" to "gap4/lib/read2.co"
+    |#I    parsing "gap4/lib/process.gd"
+    |#I    parsing "gap4/lib/listcoef.gi"
+    ...
+\endtt
+
+
+

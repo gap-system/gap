@@ -87,9 +87,9 @@ end;
 IsSlicedPerm := NewRepresentation( "isSlicedPerm", IsPerm,
                         [ "length", "word", "lftObj", "rgtObj", "opr" ] );
 
-InstallMethod( \^, true, [ IsPerm, IsSlicedPerm ], 0,
+InstallMethod( \^, "sliced perm",true, [ IsPerm, IsSlicedPerm ], 0,
     function( p, perm )  return p ^ AsPerm( perm );  end );
-InstallMethod( \^, true, [ IsInt, IsSlicedPerm ], 0,
+InstallMethod( \^, "sliced perm",true, [ IsInt, IsSlicedPerm ], 0,
     function( p, perm )
     local   i;
     
@@ -99,7 +99,7 @@ InstallMethod( \^, true, [ IsInt, IsSlicedPerm ], 0,
     return p;
 end );
 
-InstallOtherMethod( \/, true, [ IsObject, IsSlicedPerm ], 0,
+InstallOtherMethod( \/,"sliced perm", true, [ IsObject, IsSlicedPerm ], 0,
     function( p, perm )
     local   i;
     
@@ -109,7 +109,7 @@ InstallOtherMethod( \/, true, [ IsObject, IsSlicedPerm ], 0,
     return p;
 end );
 
-InstallMethod( PrintObj, true, [ IsSlicedPerm ], 0,
+InstallMethod( PrintObj,"sliced perm", true, [ IsSlicedPerm ], 0,
     function( perm )
     Print( "<perm word of length ", perm!.length, ">" );
 end );
@@ -117,7 +117,7 @@ end );
 IsSlicedPermInv := NewRepresentation( "isSlicedPermInv", IsPerm,
                            [ "length", "word", "lftObj", "rgtObj", "opr" ] );
 
-InstallOtherMethod( \^, true, [ IsObject, IsSlicedPermInv ], 0,
+InstallOtherMethod( \^,"sliced perm", true, [ IsObject, IsSlicedPermInv ], 0,
     function( p, perm )
     local   i;
     
@@ -127,7 +127,7 @@ InstallOtherMethod( \^, true, [ IsObject, IsSlicedPermInv ], 0,
     return p;
 end );
 
-InstallMethod( PrintObj, true, [ IsSlicedPermInv ], 0,
+InstallMethod( PrintObj,"sliced perm", true, [ IsSlicedPermInv ], 0,
     function( perm )
     Print( "<perm word of length ", perm!.length, ">" );
 end );
@@ -347,6 +347,26 @@ end;
 #############################################################################
 ##
 #F  Suborbits( <G>, <tofix>, <b>, <Omega> ) . . . . . . . . . . . . suborbits
+##
+##  Returns a record with the following components:
+##
+##     domain: the set <Omega>
+##  stabChain: a stabilizer chain for  $G_tofix$ (pointwise stabilizer)  with
+##             base point <a> (may be different from <b>)
+##       conj: an element mapping <b> to <a>
+##      which: a list  whose  <p>th entry   is the  number   of the  suborbit
+##             containing <p>
+##    lengths: a (not strictly) sorted list of suborbit lengths (subdegrees)
+##  byLengths: a list whose <i>th entry is the set of numbers of suborbits of
+##             the <i>th distinct length appearing in `lengths'
+##  partition: the partition into unions of suborbits of equal length
+##  The  next three entries  are lists  whose <k>  entry refers  to the <k>th
+##  suborbit.
+##     blists: the suborbits as boolean lists
+##       reps: a transversal  in  <G> s.t.   $a.reps[k]$  lies in  the  <k>th
+##             suborbit (reps[k] = `false' if this is impossible)
+##  orbitalPartitions:
+##             a list to store the `OrbitalPartition' for each suborbit in
 ##
 Suborbits := function( arg )
     local   H,  tofix,  b,  Omega,  suborbits,  len,  bylen,
@@ -1414,6 +1434,9 @@ end;
 ##
 #F  Refinements._RegularOrbit1( <d>, <len> )  . . . . . . extend mapped orbit
 ##
+##  Computes orbit and transversal `bF' for group <F>  = `data[6]' regular on
+##  that orbit.
+##
 Refinements._RegularOrbit1 := function( rbase, image, d, len )
     local   F,  trees;
     
@@ -1444,6 +1467,14 @@ end;
 ##
 #F  Refinements.RegularOrbit2( <d>, <orb>, <strat> )  . . . meet mapped orbit
 ##
+##  Compute images `bhg' of `bh' under  $g$ in `trees[<d>].orbit = bE$ ($h\in
+##  E$).
+##  Entries in <strat> have the following meaning:
+##    [i,j] means  that the image `bhg\in  P[j]' of  `bh  = orb[<i>]'  can be
+##          calculated from `bg'.
+##   [-p,j] means that fixpoint <p> was mapped to fixpoint in `P[j]',
+##          i.e., `P[j]' has become a one-point cell.
+##
 Refinements.RegularOrbit2 := function( rbase, image, d, orbit, strat )
     local   P,  trees,  orb,  i;
     
@@ -1465,6 +1496,14 @@ end;
 #############################################################################
 ##
 #F  Refinements.RegularOrbit3( <f>, <strat> ) . . . . .  find images of orbit
+##
+##  Register images `yhg' of `yh' under $g$ in an arbitrary orbit `yE' ($h\in
+##  E$). `yg\in P[f]' is a one-point cell.
+##  Entries in <strat> have the following meaning:
+##    [yh,i,j] means that  the image `yhg\in P[j]' of  `yh' can be calculated
+##             from `yg' and `bhg\in P[i]' (a one-point cell).
+##      [-p,j] means that fixpoint <p> was mapped to fixpoint in `P[j]',
+##             i.e., `P[j]' has become a one-point cell.
 ##
 Refinements.RegularOrbit3 := function( rbase, image, f, strat )
     local   P,  yg,  bhg,  hg,  yhg,  i;
@@ -1494,6 +1533,15 @@ end;
 ##
 #F  Refinements.Suborbits0( <tra>, <f>, <lens>, <byLen>, <strat> ) subdegrees
 ##
+##  Computes   suborbits of the stabilizer in   <F> =  `image.data[2]' of the
+##  fixpoint in cell no. <f>.  (If <F> is multiply  transitive, replace it by
+##  the stabilizer of the first <tra>-1 images of R-base points.)
+##
+##  Returns `true' if (1)~the  list  of suborbit lengths (subdegrees)  equals
+##  <lens>, (2)~the list of subdegree  frequencies equals <byLen> and (3)~the
+##  meet  with  the  partition  into unions   of   suborbits of equal  length
+##  succeeds.
+##
 Refinements.Suborbits0 := function( rbase, image, tra, f, lens, byLen, strat )
     local   F,  pnt,  subs;
     
@@ -1514,6 +1562,10 @@ end;
 ##
 #F  Refinements.Suborbits1( <rbase>, <image>, <tra>, <f>, <k>, <strat> )  . .
 ##
+##  Meets  the  image partition with the  orbital  partition of the  union of
+##  orbital graphs of suborbits of length `subs.byLengths[ <k> ]'. (<tra> and
+##  <f> as in `Suborbits0'.)
+##
 Refinements.Suborbits1 := function( rbase, image, tra, f, k, strat )
     local   F,  pnt,  subs,  Q;
     
@@ -1527,7 +1579,12 @@ end;
 
 #############################################################################
 ##
-#F  Refinements.Suborbits2( <rbase>, <image>, <tra>, <f>, <coll> )  . . . . .
+#F  Refinements.Suborbits2( <rbase>, <image>, <tra>, <f>, <start>, <coll> ) .
+##
+##  Computes  for each suborbit the  intersection sizes with cells <start> or
+##  more in the image partition. Stores the  result in `data[3]' (needed only
+##  on this level,  hence no  '_'). Returns  `true'  if the collected  result
+##  equals <coll>.
 ##
 Refinements.Suborbits2 := function( rbase, image, tra, f, start, coll )
     local   F,  types,  pnt,  subs,  i,  p,  k;
@@ -1553,6 +1610,10 @@ end;
 ##
 #F  Refinements.Suborbits3( <rbase>, <image>, <tra>, <f>, <typ>, <strat> )  .
 ##
+##  Meets  the image  partition with  the orbital partition   of the union of
+##  orbital  graphs of suborbits of type  <typ>. Returns `false' if there are
+##  not <many> of them. (<tra> and <f> as in `Suborbits0'.)
+##  
 Refinements.Suborbits3 := function( rbase, image, tra, f, typ, many, strat )
     local   F,  types,  pnt,  subs,  k,  Q;
     
@@ -1581,6 +1642,10 @@ NextLevelRegularGroups := function( P, rbase )
     
     d := Length( rbase.base ) + 1;
     p := fail;
+
+    # All images of  a regular orbit are  known if $s$  are known  (where the
+    # regular group has $s$ generators). See sec. 3.7  of my thesis, read `b'
+    # for `\omega'.
     if d = 1  then
         p := rbase.regorb.orbit[ 1 ];
         RegisterRBasePoint( P, rbase, p );
@@ -1625,6 +1690,7 @@ NextLevelRegularGroups := function( P, rbase )
     fi;
     
     # If the image of a point is known, the image of its <E>-orbit is known.
+    # See sec. 3.7 of my thesis, read `y' for `\gamma'.
     fix := Set( P.cellno{ rbase.regorb.orbit } );
     f := FixcellPoint( P, fix );
     while f <> false  do
@@ -1742,22 +1808,26 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
         a := rbase.base[ len ];
         if len >= tra  then
             
-            # For each fixpoint in <P>, consider the suborbits rooted at it.
+            # For each  fixpoint  in   <P>,  consider  the orbits    of   its
+            # stabilizer.
             f := FixcellPoint( P, doneroot );
             while f <> false  do
               fpt := FixpointCellNo( P, f );
               subs := Suborbits( E, rbase.base{ [ 1 .. tra - 1 ] },
                                 fpt, Omega );
               
-              # Consider the   partition  into unions of suborbits   of equal
-              # length.
+              # `Suborbits0' computes and  meets the partition into unions of
+              # suborbits of equal length.
               strat := StratMeetPartition( rbase, P, subs.partition,
                                subs.conj );
               AddRefinement( rbase, "Suborbits0", [ tra, f, subs.lengths,
                       List( subs.byLengths, Length ), strat ] );
 
-              # Consider the corresponding  orbital  partitions  for positive
-              # lengths (i.e. in the component of the root).
+              # For each such   length, `Suborbits1' computes  and  meets the
+              # `OrbitalPartition' of the   union of orbital  graphs for  the
+              # suborbits of  that  length  (only   if there are  less   than
+              # sqrt(subdegree) many and if they are  in the component of the
+              # root).
               for k  in [ 1 .. Length( subs.byLengths ) ]  do
                   if Length( subs.byLengths[ k ] ) ^ 2
                    < Length( subs.blists )
@@ -1772,13 +1842,16 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
                   fi;
               od;
               
-              # Find the types of the suborbits, i.e.,  the cells of <P> they
-              # intersect and their lengths.
+              # Find   the types of the suborbits,   i.e., the sizes of their
+              # intersections with the cells of <P>.
               if LARGE_TASK  then  start := NumberCells( P ) + 1;
                              else  start := 1;  oldstart := 1;     fi;
               types := List( subs.blists, o -> [ -SizeBlist( o ) ] );
               done := Set( subs.byLengths );
               while start <= NumberCells( P )  do
+
+                # Do not  consider a cell number  in <P> twice (consider only
+                # cell numbers between <oldstart> and <start>).
                 for i  in [ start .. NumberCells( P ) ]  do
                     for k  in Set( subs.which
                               { OnTuples( Cell( P, i ), subs.conj ) } )  do
@@ -1787,6 +1860,9 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
                 od;
                 coll := Collected( StructuralCopy( types ) );
                 start := NumberCells( P ) + 1;
+
+                # For each type, consider the `OrbitalPartition' of the union
+                # of orbital graphs of that type.
                 for typ  in coll  do
                   k := Filtered( [ 1 .. Length( subs.blists ) ],
                          k -> types[ k ] = typ[ 1 ] );
@@ -1795,11 +1871,18 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
                     Q := OrbitalPartition( subs, k );
                     strat := StratMeetPartition( rbase, P, Q, subs.conj );
                     if Length( strat ) <> 0  then
+
+                      # `Suborbits2' computes the types  in the image (stored
+                      # in `data[3]') and compares them with <coll> (only for
+                      # new cells between <oldstart> and <start>).
                       if oldstart < start  then
                         AddRefinement( rbase, "Suborbits2",
                                 [ tra, f, oldstart, coll ] );
                         oldstart := start;
                       fi;
+
+                      # `Suborbits3' computes and meets the orbital partition
+                      # for the image.
                       AddRefinement( rbase, "Suborbits3", [ tra, f,
                               typ[ 1 ], Length( k ), strat ] );
                       if IsTrivialRBase( rbase )  then
@@ -1808,6 +1891,7 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
                     fi;
                   fi;
                 od;
+                
               od;
               
               # Orbital graphs rooted at a point from the same <E>-orbit seem
@@ -2149,7 +2233,7 @@ AutomorphismGroupPermGroup := function( arg )
     return N;
 end;
 
-InstallMethod( Normalizer, IsIdentical, [ IsPermGroup, IsPermGroup ], 0,
+InstallMethod( NormalizerOp,"perm group", IsIdentical, [ IsPermGroup, IsPermGroup ], 0,
         AutomorphismGroupPermGroup );
 
 #############################################################################
@@ -2214,21 +2298,23 @@ end;
 ##
 #M  Centralizer( <G>, <e> ) . . . . . . . . . . . . . . in permutation groups
 ##
-InstallMethod( Centralizer, true, [ IsPermGroup, IsPerm ], 10,
+InstallMethod( CentralizerOp, "perm group,elm",IsCollsElms,
+  [ IsPermGroup, IsPerm ], 10,
     function( G, e )
     e := [ e ];
     return RepOpElmTuplesPermGroup( false, G, e, e,
                    TrivialSubgroup( G ), TrivialSubgroup( G ) );
 end );
 
-InstallMethod( Centralizer, IsIdentical, [ IsPermGroup, IsPermGroup ], 10,
+InstallMethod( CentralizerOp, "perm group, perm group", IsIdentical, 
+  [ IsPermGroup, IsPermGroup ], 10,
     function( G, E )
     return RepOpElmTuplesPermGroup( false, G,
                    GeneratorsOfGroup( E ), GeneratorsOfGroup( E ),
                    TrivialSubgroup( G ), TrivialSubgroup( G ) );
 end );
 
-InstallOtherMethod( Centralizer, "with given subgroup", true,
+InstallOtherMethod( CentralizerOp, "with given subgroup", true,
         [ IsPermGroup, IsPerm, IsPermGroup ], 0,
     function( G, e, U )
     e := [ e ];
@@ -2239,7 +2325,8 @@ end );
 ##
 #M  Intersection( <G>, <H> )  . . . . . . . . . . . . . of permutation groups
 ##
-InstallMethod( Intersection2, IsIdentical, [ IsPermGroup, IsPermGroup ], 0,
+InstallMethod( Intersection2, "perm groups", IsIdentical,
+  [ IsPermGroup, IsPermGroup ], 0,
     function( G, H )
     local   Omega,  P,  rbase,  L;
     

@@ -18,36 +18,36 @@
 **  'LEN_PLIST', 'SET_LEN_PLIST',   'ELM_PLIST', and 'SET_ELM_PLIST' exported
 **  by the plain list package to access and modify plain lists.
 */
-char *          Revision_lists_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_lists_c =
+   "@(#)$Id$";
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "calls.h"               /* ObjFunc                         */
-#include        "opers.h"               /* NewFilter, NewOperation, ...    */
-#include        "ariths.h"              /* EQ, LT                          */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "records.h"             /* RNamName (for TYPES_LIST_FAM)   */
+#include        "gvars.h"               /* global variables                */
+
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
+#include        "ariths.h"              /* basic arithmetic                */
+
+#include        "records.h"             /* generic records                 */
 
 #define INCLUDE_DECLARATION_PART
-#include        "lists.h"               /* declaration part of the package */
+#include        "lists.h"               /* generic lists                   */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "precord.h"             /* ElmPRec (for TYPES_LIST_FAM)    */
+#include        "precord.h"             /* plain records                   */
 
-#include        "plist.h"               /* LEN_PLIST, SET_LEN_PLIST,   ... */
-#include        "range.h"               /* IS_RANGE, GET_LEN_RANGE, ...    */
-#include        "string.h"              /* strings and characters          */
-
-#include        "gap.h"                 /* Error                           */
+#include        "plist.h"               /* plain lists                     */
+#include        "range.h"               /* ranges                          */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
@@ -183,7 +183,7 @@ Int LenListError (
 {
     list = ErrorReturnObj(
         "Length: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     return LEN_LIST( list );
 }
@@ -198,7 +198,7 @@ Int LenListObject (
     while ( TNUM_OBJ(len) != T_INT || INT_INTOBJ(len) < 0 ) {
         len = ErrorReturnObj(
             "Length: method must return a nonnegative value (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(len)].name), 0L,
+            (Int)TNAM_OBJ(len), 0L,
             "you can return a nonnegative integer value for <length>" );
     }
     return INT_INTOBJ( len );
@@ -246,7 +246,7 @@ Int             IsbListError (
 {
     list = ErrorReturnObj(
         "IsBound: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     return ISB_LIST( list, pos );
 }
@@ -307,7 +307,7 @@ Obj             Elm0ListError (
 {
     list = ErrorReturnObj(
         "List Element: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     return ELM0_LIST( list, pos );
 }
@@ -319,10 +319,11 @@ Obj             Elm0ListObject (
     Obj                 elm;
     elm = DoOperation2Args( Elm0ListOper, list, INTOBJ_INT(pos) );
     if ( elm == Fail ) {
-        return 0;
-    }
-    else {
-        return elm;
+      return 
+        (DoOperation2Args( IsbListOper, list, INTOBJ_INT(pos) ) == True)
+        ? Fail : 0;
+    } else {
+      return elm;
     }
 }
 
@@ -375,7 +376,7 @@ Obj             ElmListError (
 {
     list = ErrorReturnObj(
         "List Element: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     return ELM_LIST( list, pos );
 }
@@ -384,7 +385,12 @@ Obj             ElmListObject (
     Obj                 list,
     Int                 pos )
 {
-    return DoOperation2Args( ElmListOper, list, INTOBJ_INT(pos) );
+  Obj elm;
+  elm = DoOperation2Args( ElmListOper, list, INTOBJ_INT(pos) );
+  while (elm == 0)
+    elm =  ErrorReturnObj("List access method must return a value",0L,0L,
+                          "you can return a value or quit");
+  return elm;
 }
 
 
@@ -424,7 +430,7 @@ Obj             ElmsListError (
 {
     list = ErrorReturnObj(
         "List Elements: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     return ELMS_LIST( list, poss );
 }
@@ -542,7 +548,12 @@ Obj             ElmsListObject (
     Obj                 list,
     Obj                 poss )
 {
-    return DoOperation2Args( ElmsListOper, list, poss );
+  Obj elm;
+  elm = DoOperation2Args( ElmsListOper, list, poss );
+  while (elm == 0)
+    elm = ErrorReturnObj("List multi-access method must return a value", 0L, 0L,
+                         "You can return a value or quit");
+  return elm;
 }
 
 Obj             ElmsListDefaultFunc;
@@ -584,7 +595,7 @@ void            UnbListError (
 {
     list = ErrorReturnObj(
         "Unbind: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     UNB_LIST( list, pos );
 }
@@ -642,7 +653,7 @@ void            AssListError (
 {
     list = ErrorReturnObj(
         "List Assignment: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     ASS_LIST( list, pos, obj );
 }
@@ -703,7 +714,7 @@ void            AsssListError (
 {
     list = ErrorReturnObj(
         "List Assignments: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     ASSS_LIST( list, poss, objs );
 }
@@ -1112,8 +1123,6 @@ Int             IsSSortListObject (
     return (DoProperty( IsSSortListProp, obj ) == True);
 }
 
-Obj             IsSSortListDefaultFunc;
-
 Obj             IsSSortListDefaultHandler (
     Obj                 self,
     Obj                 obj )
@@ -1256,7 +1265,7 @@ Obj             PosListHandler3 (
     while ( ! IS_INTOBJ(start) || INT_INTOBJ(start) < 0 ) {
         start = ErrorReturnObj(
             "Position: <start> must be a nonnegative integer (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(start)].name), 0L,
+            (Int)TNAM_OBJ(start), 0L,
             "you can return a nonnegative integer for <start>" );
     }
     pos = POS_LIST( list, obj, INT_INTOBJ(start) );
@@ -1270,7 +1279,7 @@ Int             PosListError (
 {
     list = ErrorReturnObj(
         "Position: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+        (Int)TNAM_OBJ(list), 0L,
         "you can return a list for <list>" );
     return POS_LIST( list, obj, start );
 }
@@ -1314,13 +1323,11 @@ Int             PosListObject (
     while ( pos!=Fail && ( TNUM_OBJ(pos)!=T_INT || INT_INTOBJ(pos)<1 ) ) {
       pos = ErrorReturnObj(
         "Position: method must return a positive integer (not a %s) or fail",
-        (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
+        (Int)TNAM_OBJ(pos), 0L,
         "you can return a positive integer for <pos> or fail" );
     }
     return ( pos == Fail ? 0 : INT_INTOBJ( pos ) );
 }
-
-Obj             PosListDefaultFunc;
 
 Obj             PosListDefaultHandler (
     Obj                 self,
@@ -1478,7 +1485,7 @@ void            AssListLevel (
         if ( ! IS_DENSE_LIST(objs) ) {
             objs = ErrorReturnObj(
                 "List Assignment: <objs> must be a dense list (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(objs)].name), 0L,
+                (Int)TNAM_OBJ(objs), 0L,
                 "you can return a new dense list for <objs>" );
         }
         if ( LEN_LIST(lists) != LEN_LIST(objs) ) {
@@ -1556,7 +1563,7 @@ void            AsssListLevel (
         if ( ! IS_DENSE_LIST(objs) ) {
             objs = ErrorReturnObj(
                 "List Assignment: <objs> must be a dense list (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(objs)].name), 0L,
+                (Int)TNAM_OBJ(objs), 0L,
                 "you can return a new dense list for <objs>" );
         }
         if ( LEN_LIST(lists) != LEN_LIST(objs) ) {
@@ -1584,7 +1591,7 @@ void            AsssListLevel (
                 if ( ! IS_DENSE_LIST( obj ) ) {
                     obj = ErrorReturnObj(
                   "List Assignments: <objs> must be a dense list (not a %s)",
-                        (Int)(InfoBags[TNUM_OBJ(obj)].name), 0L,
+                        (Int)TNAM_OBJ(obj), 0L,
                         "you can return a new dense list for <objs>" );
                 }
                 if ( LEN_LIST( poss ) != LEN_LIST( obj ) ) {
@@ -1649,7 +1656,7 @@ void            PlainListError (
 {
     ErrorQuit(
         "Panic: cannot convert <list> (is a %s) to a plain list",
-        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L );
+        (Int)TNAM_OBJ(list), 0L );
 }
 
 
@@ -1759,9 +1766,9 @@ void            PrintListDefault (
 {
     Obj                 elm;
 
-    if ( IsStringConv(list) && MUTABLE_TNUM(TNUM_OBJ(list))==T_STRING ) {
-	PrintString(list);
-	return;
+    if ( 0 < LEN_LIST(list) && IsStringConv(list) ) {
+        PrintString(list);
+        return;
     }
 
     Pr("%2>[ %2>",0L,0L);
@@ -1788,19 +1795,197 @@ void            PrintPathList (
 
 /****************************************************************************
 **
-*F  InitLists() . . . . . . . . . . . . . initialize the generic list package
+
+*V  SetFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . new tnum after filter set
 **
-**  'InitLists' initializes the dispatch tables with the error handlers.
+**  If a list  with type number <tnum>  gains  the filter  with filter number
+**  <fnum>, then the new type number is stored in:
+**
+**  `SetFiltListTNums[<tnum>][<fnum>]'
+**
+**  The macro  `SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
+**  changing its type number.
 */
-void            InitLists ()
+Int SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+
+
+/****************************************************************************
+**
+*V  ResetFiltListTNums[ <tnum> ][ <fnum> ]  . . . new tnum after filter reset
+**
+**  If a list  with type number <tnum>  loses  the filter  with filter number
+**  <fnum>, then the new type number is stored in:
+**
+**  `ResetFiltListTNums[<tnum>][<fnum>]'
+**
+**  The macro `RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
+**  changing its type number.
+*/
+Int ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+
+
+/****************************************************************************
+**
+*V  HasFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . . . . . . . .  has filter
+*/
+Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+
+
+/****************************************************************************
+**
+*V  ClearFiltsTNums[ <tnum> ] . clear all list filters except `FN_IS_MUTABLE'
+**
+**  The type  number without any  known properties  of a  list of type number
+**  <tnum> is stored in:
+**
+**  `ClearPropsTNums[<tnum>]'
+**
+**  The macro `CLEAR_PROPS_LIST' is used to clear all properties of a list.
+*/
+Int ClearFiltsTNums [ LAST_REAL_TNUM ];
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * functions with checking  * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  ElmsListCheck( <list>, <poss> ) . . . . . . . . . . . . . . . . ELMS_LIST
+*/
+Obj ElmsListCheck (
+    Obj                 list,
+    Obj                 poss )
+{
+    if ( ! IS_POSS_LIST(poss) ) {
+        ErrorQuit(
+      "List Elements: <positions> must be a dense list of positive integers",
+            0L, 0L );
+    }
+    return ELMS_LIST( list, poss );
+}
+
+
+/****************************************************************************
+**
+*F  ElmsListLevelCheck( <lists>, <poss>, <level> )  . . . . . . ElmsListLevel
+*/
+void ElmsListLevelCheck (
+    Obj                 lists,
+    Obj                 poss,
+    Int                 level )
+{
+    if ( ! IS_POSS_LIST(poss) ) {
+        ErrorQuit(
+      "List Elements: <positions> must be a dense list of positive integers",
+            0L, 0L );
+    }
+    ElmsListLevel( lists, poss, level );
+}
+
+
+/****************************************************************************
+**
+*F  AsssListCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . . ASSS_LIST
+*/
+void AsssListCheck (
+    Obj                 list,
+    Obj                 poss,
+    Obj                 rhss )
+{
+    if ( ! IS_POSS_LIST(poss) ) {
+        ErrorQuit(
+    "List Assignment: <positions> must be a dense list of positive integers",
+            0L, 0L );
+    }
+    if ( ! IS_DENSE_LIST(rhss) ) {
+        ErrorQuit(
+            "List Assignment: <rhss> must be a dense list",
+            0L, 0L );
+    }
+    if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
+        ErrorQuit(
+     "List Assignment: <rhss> must have the same length as <positions> (%d)",
+            (Int)LEN_LIST(poss), 0L );
+    }
+    ASSS_LIST( list, poss, rhss );
+}
+
+
+/****************************************************************************
+**
+*F  AsssPosObjCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . ASSS_LIST
+*/
+void AsssPosObjCheck (
+    Obj                 list,
+    Obj                 poss,
+    Obj                 rhss )
+{
+    if ( ! IS_POSS_LIST(poss) ) {
+        ErrorQuit(
+    "List Assignment: <positions> must be a dense list of positive integers",
+            0L, 0L );
+    }
+    if ( ! IS_DENSE_LIST(rhss) ) {
+        ErrorQuit(
+            "List Assignment: <rhss> must be a dense list",
+            0L, 0L );
+    }
+    if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
+        ErrorQuit(
+     "List Assignment: <rhss> must have the same length as <positions> (%d)",
+            (Int)LEN_LIST(poss), 0L );
+    }
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
+    }
+    else {
+        ASSS_LIST( list, poss, rhss );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  AsssListLevelCheck( <lists>, <poss>, <rhss>, <level> )  . . AsssListLevel
+*/
+void AsssListLevelCheck (
+    Obj                 lists,
+    Obj                 poss,
+    Obj                 rhss,
+    Int                 level )
+{
+    if ( ! IS_POSS_LIST(poss) ) {
+        ErrorQuit(
+    "List Assignment: <positions> must be a dense list of positive integers",
+            0L, 0L );
+    }
+    AsssListLevel( lists, poss, rhss, level );
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupLists()  . . . . . . . . . . . . initialize the generic list package
+*/
+void SetupLists ( void )
 {
     UInt                type;           /* loop variable                   */
+    Int                 i;              /* loop variable                   */
 
     /* make and install the 'IS_LIST' filter                               */
-    InitHandlerFunc( IsListHandler, "IS_LIST" );
-    IsListFilt = NewFilterC(
-        "IS_LIST", 1L, "obj", IsListHandler );
-    AssGVar( GVarName( "IS_LIST" ), IsListFilt );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsListFuncs[ type ] = IsListNot;
     }
@@ -1811,14 +1996,8 @@ void            InitLists ()
         IsListFuncs[ type ] = IsListObject;
     }
 
-    /* make and install the length attribute                               */
-    C_NEW_GVAR_ATTR( "LENGTH", "list", LengthAttr, LENGTHHandler,
-         "src/lists.c:LENGTH" );
 
     /* make and install the 'LEN_LIST' function                            */
-    C_NEW_GVAR_FUNC( "LEN_LIST", 1L, "list", LenListHandler,
-         "src/lists.c:LEN_LIST" );
-
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         LenListFuncs[ type ] = LenListError;
     }
@@ -1826,27 +2005,21 @@ void            InitLists ()
         LenListFuncs[ type ] = LenListObject;
     }
 
+
     /* make and install the 'ISB_LIST' operation                           */
-    InitHandlerFunc( IsbListHandler, "ISB_LIST" );
-    IsbListOper = NewOperationC(
-        "ISB_LIST", 2L, "list, pos", IsbListHandler );
-    AssGVar( GVarName( "ISB_LIST" ), IsbListOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsbListFuncs[ type ] = IsbListError;
+        IsbListFuncs[  type ] = IsbListError;
         IsbvListFuncs[ type ] = IsbListError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
-        IsbListFuncs[ type ] = IsbListObject;
+        IsbListFuncs[  type ] = IsbListObject;
         IsbvListFuncs[ type ] = IsbListObject;
     }
 
+
     /* make and install the 'ELM0_LIST' operation                          */
-    InitHandlerFunc( Elm0ListHandler, "ELM0_LIST" );
-    Elm0ListOper = NewOperationC(
-        "ELM0_LIST", 2L, "list, pos", Elm0ListHandler );
-    AssGVar( GVarName( "ELM0_LIST" ), Elm0ListOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        Elm0ListFuncs[ type ] = Elm0ListError;
+        Elm0ListFuncs[  type ] = Elm0ListError;
         Elm0vListFuncs[ type ] = Elm0ListError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -1854,11 +2027,8 @@ void            InitLists ()
         Elm0vListFuncs[ type ] = Elm0ListObject;
     }
 
+
     /* make and install the 'ELM_LIST' operation                           */
-    InitHandlerFunc( ElmListHandler, "ELM_LIST" );
-    ElmListOper = NewOperationC(
-        "ELM_LIST", 2L, "list, pos", ElmListHandler );
-    AssGVar( GVarName( "ELM_LIST" ), ElmListOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         ElmListFuncs[  type ] = ElmListError;
         ElmvListFuncs[ type ] = ElmListError;
@@ -1870,11 +2040,8 @@ void            InitLists ()
         ElmwListFuncs[ type ] = ElmListObject;
     }
 
+
     /* make and install the 'ELMS_LIST' operation                          */
-    InitHandlerFunc( ElmsListHandler, "ELMS_LIST" );
-    ElmsListOper = NewOperationC(
-        "ELMS_LIST", 2L, "list, poss", ElmsListHandler );
-    AssGVar( GVarName( "ELMS_LIST" ), ElmsListOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         ElmsListFuncs[ type ] = ElmsListError;
     }
@@ -1886,16 +2053,7 @@ void            InitLists ()
     }
 
 
-    InitHandlerFunc( ElmsListDefaultHandler, "ELMS_LIST_DEFAULT");
-    ElmsListDefaultFunc = NewFunctionC(
-         "ELMS_LIST_DEFAULT", 2L, "list, poss", ElmsListDefaultHandler );
-    AssGVar( GVarName( "ELMS_LIST_DEFAULT" ), ElmsListDefaultFunc );
-
     /* make and install the 'UNB_LIST' operation                           */
-    InitHandlerFunc( UnbListHandler, "UNB_LIST" );
-    UnbListOper = NewOperationC(
-        "UNB_LIST", 2L, "list, pos", UnbListHandler );
-    AssGVar( GVarName( "UNB_LIST" ), UnbListOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         UnbListFuncs[ type ] = UnbListError;
     }
@@ -1906,11 +2064,8 @@ void            InitLists ()
         UnbListFuncs[ type ] = UnbListObject;
     }
 
+
     /* make and install the 'ASS_LIST' operation                           */
-    InitHandlerFunc( AssListHandler, "ASS_LIST" );
-    AssListOper = NewOperationC(
-        "ASS_LIST", 3L, "list, pos, obj", AssListHandler );
-    AssGVar( GVarName( "ASS_LIST" ), AssListOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         AssListFuncs[ type ] = AssListError;
     }
@@ -1921,11 +2076,8 @@ void            InitLists ()
         AssListFuncs[ type ] = AssListObject;
     }
 
+
     /* make and install the 'ASSS_LIST' operation                          */
-    InitHandlerFunc( AsssListHandler, "ASSS_LIST" );
-    AsssListOper = NewOperationC(
-        "ASSS_LIST", 3L, "list, poss, objs", AsssListHandler );
-    AssGVar( GVarName( "ASSS_LIST" ), AsssListOper );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         AsssListFuncs[ type ] = AsssListError;
     }
@@ -1936,16 +2088,8 @@ void            InitLists ()
         AsssListFuncs[ type ] = AsssListObject;
     }
     
-    InitHandlerFunc( AsssListDefaultHandler, "ASSS_LIST_DEFAULT");
-    AsssListDefaultFunc = NewFunctionC(
-        "ASSS_LIST_DEFAULT", 3L, "list, poss, objs", AsssListDefaultHandler );
-    AssGVar( GVarName( "ASSS_LIST_DEFAULT" ), AsssListDefaultFunc );
 
     /* make and install the 'IS_DENSE_LIST' filter                         */
-    InitHandlerFunc( IsDenseListHandler, "IS_DENSE_LIST" );
-    IsDenseListFilt = NewFilterC(
-        "IS_DENSE_LIST", 1L, "obj", IsDenseListHandler );
-    AssGVar( GVarName( "IS_DENSE_LIST" ), IsDenseListFilt );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsDenseListFuncs[ type ] = IsDenseListNot;
     }
@@ -1956,11 +2100,8 @@ void            InitLists ()
         IsDenseListFuncs[ type ] = IsDenseListObject;
     }
 
+
     /* make and install the 'IS_HOMOG_LIST' filter                         */
-    InitHandlerFunc( IsHomogListHandler, "IS_HOMOG_LIST" );
-    IsHomogListFilt = NewFilterC(
-        "IS_HOMOG_LIST", 1L, "obj", IsHomogListHandler );
-    AssGVar( GVarName( "IS_HOMOG_LIST" ), IsHomogListFilt );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsHomogListFuncs[ type ] = IsHomogListNot;
     }
@@ -1971,11 +2112,8 @@ void            InitLists ()
         IsHomogListFuncs[ type ] = IsHomogListObject;
     }
 
+
     /* make and install the 'IS_TABLE_LIST' filter                         */
-    InitHandlerFunc( IsTableListHandler, "IS_TABLE_LIST" );
-    IsTableListFilt = NewFilterC(
-        "IS_TABLE_LIST", 1L, "obj", IsTableListHandler );
-    AssGVar( GVarName( "IS_TABLE_LIST" ), IsTableListFilt );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsTableListFuncs[ type ] = IsTableListNot;
     }
@@ -1986,11 +2124,8 @@ void            InitLists ()
         IsTableListFuncs[ type ] = IsTableListObject;
     }
 
+
     /* make and install the 'IS_SSORT_LIST' property                       */
-    InitHandlerFunc( IsSSortListHandler, "IS_SSORT_LIST" );
-    IsSSortListProp = NewPropertyC(
-        "IS_SSORT_LIST", 1L, "obj", IsSSortListHandler );
-    AssGVar( GVarName( "IS_SSORT_LIST" ), IsSSortListProp );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsSSortListFuncs[ type ] = IsSSortListNot;
     }
@@ -2001,22 +2136,8 @@ void            InitLists ()
         IsSSortListFuncs[ type ] = IsSSortListObject;
     }
 
-    InitHandlerFunc( IsSSortListDefaultHandler, "IS_SSORT_LIST_DEFAULT");
-    IsSSortListDefaultFunc = NewFunctionC(
-        "IS_SSORT_LIST_DEFAULT",1L,"obj", IsSSortListDefaultHandler );
-    AssGVar( GVarName( "IS_SSORT_LIST_DEFAULT" ), IsSSortListDefaultFunc );
-
-    /* make and install the 'IS_NSORT_LIST' property                       */
-    InitHandlerFunc( IsNSortListHandler, "IS_NSORT_LIST" );
-    IsNSortListProp = NewPropertyC(
-        "IS_NSORT_LIST", 1L, "obj", IsNSortListHandler );
-    AssGVar( GVarName( "IS_NSORT_LIST" ), IsNSortListProp );
 
     /* make and install the 'IS_POSS_LIST' property                        */
-    InitHandlerFunc( IsPossListHandler, "IS_POSS_LIST" );
-    IsPossListProp = NewPropertyC(
-        "IS_POSS_LIST", 1L, "obj", IsPossListHandler );
-    AssGVar( GVarName( "IS_POSS_LIST" ), IsPossListProp );
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsPossListFuncs[ type ] = IsPossListNot;
     }
@@ -2027,19 +2148,8 @@ void            InitLists ()
         IsPossListFuncs[ type ] = IsPossListObject;
     }
 
-    InitHandlerFunc( IsPossListDefaultHandler, "IS_POSS_LIST_DEFAULT");
-    IsPossListDefaultFunc = NewFunctionC(
-        "IS_POSS_LIST_DEFAULT",1L,"obj", IsPossListDefaultHandler );
-    AssGVar( GVarName( "IS_POSS_LIST_DEFAULT" ), IsPossListDefaultFunc );
 
-    /* make and install the 'POS_LIST' operation                           */    
-    InitHandlerFunc( PosListHandler2, "POS_LIST 2 args" );
-    InitHandlerFunc( PosListHandler3, "POS_LIST 3 args" );
-    PosListOper = NewOperationC(
-        "POS_LIST", -1, "list, obj", DoOperation0Args );
-    HDLR_FUNC( PosListOper, 2 ) = PosListHandler2;
-    HDLR_FUNC( PosListOper, 3 ) = PosListHandler3;
-    AssGVar( GVarName( "POS_LIST" ), PosListOper );
+    /* make and install the 'POS_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         PosListFuncs[ type ] = PosListError;
     }
@@ -2050,18 +2160,12 @@ void            InitLists ()
         PosListFuncs[ type ] = PosListObject;
     }
 
-    InitHandlerFunc( PosListDefaultHandler, "POS_LIST_DEFAULT");
-    PosListDefaultFunc = NewFunctionC(
-        "POS_LIST_DEFAULT", 3L, "list, obj, start", PosListDefaultHandler );
-    AssGVar( GVarName( "POS_LIST_DEFAULT" ), PosListDefaultFunc );
 
     /* install the error functions into the other tables                   */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        PlainListFuncs  [ type ] = PlainListError;
+        PlainListFuncs [ type ] = PlainListError;
     }
 
-    /* whats that?                                                         */
-    TYPES_LIST_FAM_RNam = RNamName( "TYPES_LIST_FAM" );
 
     /* install the generic mutability test function                        */
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type += 2 ) {
@@ -2077,6 +2181,370 @@ void            InitLists ()
         PrintPathFuncs[ type ] = PrintPathList;
     }
 
+
+    /* initialise filter table                                             */
+    for ( type = FIRST_LIST_TNUM;  type <= LAST_LIST_TNUM;  type +=2 ) {
+        ClearFiltsTNums   [ type            ] = 0;
+        ClearFiltsTNums   [ type +IMMUTABLE ] = 0;
+        for ( i = 0;  i <= LAST_FN;  i++ ) {
+            SetFiltListTNums  [ type            ][i] = 0;
+            SetFiltListTNums  [ type +IMMUTABLE ][i] = 0;
+            ResetFiltListTNums[ type            ][i] = 0;
+            ResetFiltListTNums[ type +IMMUTABLE ][i] = 0;
+            HasFiltListTNums  [ type            ][i] = -1;
+            HasFiltListTNums  [ type +IMMUTABLE ][i] = -1;
+        }
+    }
+}
+
+
+
+/****************************************************************************
+**
+*F  InitLists() . . . . . . . . . . . . . initialize the generic list package
+**
+**  'InitLists' initializes the dispatch tables with the error handlers.
+*/
+void InitLists ( void )
+{
+    /* whats that?                                                         */
+    TYPES_LIST_FAM_RNam = RNamName( "TYPES_LIST_FAM" );
+
+
+    /* make and install the 'IS_LIST' filter                               */
+    C_NEW_GVAR_FILT( "IS_LIST", "obj", IsListFilt, IsListHandler,
+         "src/lists.c:IS_LIST" );
+
+
+    /* make and install the length attribute                               */
+    C_NEW_GVAR_ATTR( "LENGTH", "list", LengthAttr, LENGTHHandler,
+         "src/lists.c:LENGTH" );
+
+
+    /* make and install the 'LEN_LIST' function                            */
+    C_NEW_GVAR_FUNC( "LEN_LIST", 1, "list", LenListHandler,
+         "src/lists.c:LEN_LIST" );
+
+
+    /* make and install the 'ISB_LIST' operation                           */
+    C_NEW_GVAR_OPER( "ISB_LIST", 2, "list, pos", IsbListOper, IsListHandler,
+         "src/lists.c:ISB_LIST" );
+
+
+    /* make and install the 'ELM0_LIST' operation                          */
+    C_NEW_GVAR_OPER( "ELM0_LIST", 2, "list, pos", Elm0ListOper, Elm0ListHandler,
+         "src/lists.c:ELM0_LIST" );
+
+
+    /* make and install the 'ELM_LIST' operation                           */
+    C_NEW_GVAR_OPER( "ELM_LIST", 2, "list, pos", ElmListOper, ElmListHandler,
+         "src/lists.c:ELM_LIST" );
+
+
+    /* make and install the 'ELMS_LIST' operation                          */
+    C_NEW_GVAR_OPER( "ELMS_LIST", 2, "list, poss", ElmsListOper, ElmsListHandler,
+         "src/lists.c:ELMS_LIST" );
+
+    C_NEW_GVAR_FUNC( "ELMS_LIST_DEFAULT", 2, "list, poss",
+                      ElmsListDefaultHandler,
+          "src/list.c:ELMS_LIST_DEFAULT" );
+
+
+    /* make and install the 'UNB_LIST' operation                           */
+    C_NEW_GVAR_OPER( "UNB_LIST", 2, "list, pos", UnbListOper, UnbListHandler,
+         "src/lists.c:UNB_LIST" );
+
+
+    /* make and install the 'ASS_LIST' operation                           */
+    C_NEW_GVAR_OPER( "ASS_LIST", 3, "list, pos, obj", AssListOper, AssListHandler,
+         "src/lists.c:ASS_LIST" );
+
+
+    /* make and install the 'ASSS_LIST' operation                          */
+    C_NEW_GVAR_OPER( "ASSS_LIST", 3, "list, poss, objs", AsssListOper, AsssListHandler,
+         "src/lists.c:ASSS_LIST" );
+
+    C_NEW_GVAR_FUNC( "ASSS_LIST_DEFAULT", 3, "list, poss, objs",
+                      AsssListDefaultHandler,
+          "src/list.c:ASSS_LIST_DEFAULT" );
+    
+
+    /* make and install the 'IS_DENSE_LIST' filter                         */
+    C_NEW_GVAR_FILT( "IS_DENSE_LIST", "obj", IsDenseListFilt, IsDenseListHandler,
+         "src/lists.c:IS_DENSE_LIST" );
+
+
+    /* make and install the 'IS_HOMOG_LIST' filter                         */
+    C_NEW_GVAR_FILT( "IS_HOMOG_LIST", "obj", IsHomogListFilt, IsHomogListHandler,
+         "src/lists.c:IS_HOMOG_LIST" );
+
+
+    /* make and install the 'IS_TABLE_LIST' filter                         */
+    C_NEW_GVAR_FILT( "IS_TABLE_LIST", "obj", IsTableListFilt, IsTableListHandler,
+         "src/lists.c:IS_TABLE_LIST" );
+
+
+    /* make and install the 'IS_SSORT_LIST' property                       */
+    C_NEW_GVAR_PROP( "IS_SSORT_LIST", "obj", IsSSortListProp, IsSSortListHandler,
+         "src/lists.c:IS_SSORT_LIST" );
+
+    C_NEW_GVAR_FUNC( "IS_SSORT_LIST_DEFAULT", 1, "list",
+                      IsSSortListDefaultHandler,
+          "src/list.c:IS_SSORT_LIST_DEFAULT" );
+
+
+    /* make and install the 'IS_NSORT_LIST' property                       */
+    C_NEW_GVAR_PROP( "IS_NSORT_LIST", "obj", IsNSortListProp, IsNSortListHandler,
+         "src/lists.c:IS_NSORT_LIST" );
+
+
+    /* make and install the 'IS_POSS_LIST' property                        */
+    C_NEW_GVAR_PROP( "IS_POSS_LIST", "obj", IsPossListProp, IsPossListHandler,
+         "src/lists.c:IS_POSS_LIST" );
+
+    C_NEW_GVAR_FUNC( "IS_POSS_LIST_DEFAULT", 1, "list",
+                      IsPossListDefaultHandler,
+          "src/list.c:IS_POSS_LIST_DEFAULT" );
+
+
+    /* make and install the 'POS_LIST' operation                           */
+    InitHandlerFunc( PosListHandler2, "src/lists.c:PosListHandler2" );
+    InitHandlerFunc( PosListHandler3, "src/lists.c:PosListHandler3" );
+    C_NEW_GVAR_OPER( "POS_LIST", -1, "list, obj", PosListOper, DoOperation0Args,
+         "src/lists.c:POS_LIST" );
+    if ( ! SyRestoring ) {
+        HDLR_FUNC( PosListOper, 2 ) = PosListHandler2;
+        HDLR_FUNC( PosListOper, 3 ) = PosListHandler3;
+    }
+
+    C_NEW_GVAR_FUNC( "POS_LIST_DEFAULT", 3, "list, obj, start",
+                      PosListDefaultHandler,
+          "src/list.c:POS_LIST_DEFAULT" );
+}
+
+
+
+/****************************************************************************
+**
+*F  CheckLists()  . . .  check the initialisation of the generic list package
+**
+**  This  function does  a  few pre-init sanity  checks  for the various list
+**  packages.
+*/
+void CheckLists ( void )
+{
+    Int         i;              /* loop variable                           */
+    Int         j;              /* loop variable                           */
+
+    Int         fnums[] = { FN_IS_MUTABLE, FN_IS_EMPTY, FN_IS_DENSE,
+                            FN_IS_NDENSE, FN_IS_HOMOG, FN_IS_NHOMOG,
+                            FN_IS_TABLE, FN_IS_SSORT, FN_IS_NSORT };
+    Char *      fnams[] = { "mutable", "empty", "dense", "ndense",
+                            "homog", "nhomog", "table", "ssort",
+                            "nsort" };
+
+
+    SET_REVISION( "lists_c",    Revision_lists_c );
+    SET_REVISION( "lists_h",    Revision_lists_h );
+
+    /* fix unknown list types                                              */
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i +=2 ) {
+        if ( InfoBags[i].name == 0 ) {
+            InfoBags[i].name = "unknown list type";
+        }
+        if ( InfoBags[i+IMMUTABLE].name == 0 ) {
+            InfoBags[i+IMMUTABLE].name = "unknown immutable list type";
+        }
+    }
+
+    return; /* XXX */
+
+    /* check that all relevant `ClearFiltListTNums' are installed          */
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
+        if ( ClearFiltsTNums[i] == 0 ) {
+            Pr( "#W  ClearFiltsListTNums [%s] missing\n",
+                    (Int)(InfoBags[i].name), 0L );
+        }
+    }
+
+
+    /* check that all relevant `HasFiltListTNums' are installed            */
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
+        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+            if ( HasFiltListTNums[i][fnums[j]] == -1 ) {
+                Pr( "#W  HasFiltListTNums [%s] [%s] missing\n",
+                    (Int)(InfoBags[i].name), (Int)fnams[j] );
+                HasFiltListTNums[i][fnums[j]] = 0;
+            }
+        }
+    }
+
+
+    /* check that all relevant `SetFiltListTNums' are installed            */
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
+        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+            if ( SetFiltListTNums[i][fnums[j]] == 0 ) {
+                Pr( "#W  SetFiltListTNums [%s] [%s] missing\n",
+                    (Int)(InfoBags[i].name), (Int)fnams[j] );
+            }
+        }
+    }
+
+
+    /* check that all relevant `ResetFiltListTNums' are installed          */
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
+        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+            if ( ResetFiltListTNums[i][fnums[j]] == 0 ) {
+                Pr( "#W  ResetFiltListTNums [%s] [%s] missing\n",
+                    (Int)(InfoBags[i].name), (Int)fnams[j] );
+            }
+        }
+    }
+
+    /* if a tnum has a filter, reset must change the tnum                  */
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
+        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+            if ( HasFiltListTNums[i][fnums[j]] ) {
+                Int     new;
+                new = ResetFiltListTNums[i][fnums[j]];
+                if ( new == i ) {
+                    Pr(
+                     "#W  ResetFiltListTNums [%s] [%s] failed to change\n",
+                     (Int)(InfoBags[i].name), (Int)fnams[j] );
+                }
+                else if ( new != -1 && HasFiltListTNums[new][fnums[j]] ) {
+                    Pr(
+                     "#W  ResetFiltListTNums [%s] [%s] failed to reset\n",
+                     (Int)(InfoBags[i].name), (Int)fnams[j] );
+                }
+            }
+        }
+    }
+
+    /* if a tnum has a filter, set must not change the tnum                */
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
+        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+            if ( HasFiltListTNums[i][fnums[j]] ) {
+                Int     new;
+                new = SetFiltListTNums[i][fnums[j]];
+                if ( new != -1 && new != i ) {
+                    Pr(
+                     "#W  SetFiltListTNums [%s] [%s] must not change\n",
+                     (Int)(InfoBags[i].name), (Int)fnams[j] );
+                }
+            }
+        }
+    }
+
+    /* check implications                                                  */
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
+
+        if ( HasFiltListTNums[i][FN_IS_EMPTY] ) {
+            if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ empty -> dense ] missing\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ empty + ndense ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( ! HasFiltListTNums[i][FN_IS_HOMOG] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ empty -> homog ] missing\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( HasFiltListTNums[i][FN_IS_NHOMOG] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ empty + nhomog ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( ! HasFiltListTNums[i][FN_IS_SSORT] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ empty -> ssort ] missing\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( HasFiltListTNums[i][FN_IS_NSORT] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ empty + nsort ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ empty + table ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+        }
+
+        if ( HasFiltListTNums[i][FN_IS_DENSE] ) {
+            if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ dense + ndense ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+        }
+
+        if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
+            if ( HasFiltListTNums[i][FN_IS_HOMOG] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ ndense + homog ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ ndense + table ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+        }
+
+        if ( HasFiltListTNums[i][FN_IS_HOMOG] ) {
+            if ( HasFiltListTNums[i][FN_IS_NHOMOG] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ homog + nhomog ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ homog -> dense ] missing\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ homog + ndense ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+        }
+
+        if ( HasFiltListTNums[i][FN_IS_NHOMOG] ) {
+            if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ nhomog + table ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+        }
+
+        if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
+            if ( ! HasFiltListTNums[i][FN_IS_HOMOG] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ table -> homog ] missing\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+            if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ table -> dense ] missing\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+        }
+
+        if ( HasFiltListTNums[i][FN_IS_SSORT] ) {
+            if ( HasFiltListTNums[i][FN_IS_NSORT] ) {
+                Pr(
+                 "#W  HasFiltListTNums [%s] [ ssort + nsort ] illegal\n",
+                 (Int)(InfoBags[i].name), 0L );   
+            }
+        }           
+    }
 }
 
 

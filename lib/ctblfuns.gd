@@ -341,6 +341,18 @@ PermutationCharacter := NewOperation( "PermutationCharacter",
 
 #############################################################################
 ##
+#F  CycleStructureClass( <permchar>, <class> )
+##
+##  Let <permchar> be a permutation character, and <class> the position of a
+##  conjugacy class.
+##  `CycleStructureClass' returns the cycle structure of the elements in
+##  class <class> in the underlying permutation representation.
+##
+CycleStructureClass := NewOperationArgs( "CycleStructureClass" );
+
+
+#############################################################################
+##
 #O  ClassFunctionByValues( <tbl>, <values> )
 ##
 ##  Note that the characteristic of the class function is determined by

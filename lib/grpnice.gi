@@ -15,34 +15,41 @@ Revision.grpnice_gi :=
 
 #############################################################################
 ##
-#M  GeneratorsOfMagmaWithInverses( <nice> )
+
+#M  GeneratorsOfMagmaWithInverses( <group> )  .  get generators from nice obj
 ##
 InstallMethod( GeneratorsOfMagmaWithInverses,
     true,
     [ IsGroup and IsHandledByNiceMonomorphism ],
     0,
 
-function( G )
+function( grp )
     local   nice;
-    nice := NiceMonomorphism(G);
-    return List( GeneratorsOfGroup(NiceObject(G)),
+    nice := NiceMonomorphism(grp);
+    return List( GeneratorsOfGroup(NiceObject(grp)),
                  x -> PreImagesRepresentative(nice,x) );
 end );
 
 
 #############################################################################
 ##
-#M  One( <nice> )
+#M  One( <group> )  . . . . . . . . . . . . . . . . . . get one from nice obj
 ##
-InstallOtherMethod( One,"via niceomorphism",true,
-    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
-function( G )
-    return PreImagesRepresentative(NiceMonomorphism(G),One(NiceObject(G)));
+InstallOtherMethod( One,
+    true,
+    [ IsGroup and IsHandledByNiceMonomorphism ],
+    0,
+
+function( grp )
+    local   nice;
+    nice := NiceMonomorphism(grp);
+    return PreImagesRepresentative(nice,One(NiceObject(grp)));
 end );
+
 
 #############################################################################
 ##
-#M  GroupByNiceMonomorphism( <nice>, <grp> )
+#M  GroupByNiceMonomorphism( <nice>, <group> )  construct group with nice obj
 ##
 InstallMethod( GroupByNiceMonomorphism,
     true,
@@ -64,7 +71,7 @@ end );
 
 #############################################################################
 ##
-#M  NiceObject( <nice> )
+#M  NiceObject( <group> ) . . . . . . . . . . . . .  get nice object of group
 ##
 InstallMethod( NiceObject,
     true,
@@ -91,31 +98,51 @@ end );
 
 #############################################################################
 ##
-#M  NiceMonomorphism
+#M  NiceMonomorphism( <group> )	. . construct a nice monomorphism from parent
 ##
 InstallMethod(NiceMonomorphism,
-  "for subgroups that get the nice monomorphism by their parent",true,
-    [ IsGroup and IsHandledByNiceMonomorphism and HasParent],0,
+    "for subgroups that get the nice monomorphism by their parent",
+    true,
+    [ IsGroup and IsHandledByNiceMonomorphism and HasParent],
+    0,
+
 function(G)
-local P;
-  P:=Parent(G);
-  if not IsHandledByNiceMonomorphism(P) then
-    TryNextMethod();
-  fi;
-  return NiceMonomorphism(P);
-end);
+    local P;
+
+    P :=Parent(G);
+    if not IsHandledByNiceMonomorphism(P)  then
+        TryNextMethod();
+    fi;
+    return NiceMonomorphism(P);
+end );
+
+#############################################################################
+##
+#M  NiceMonomorphism( <G> ) . . . . . . . . . . . . . . . . regular operation
+##
+InstallMethod( NiceMonomorphism, "regular operation", true,
+        [ IsGroup and IsHandledByNiceMonomorphism ], 0,
+    function( G )
+    local   mon;
+    
+    if not HasGeneratorsOfGroup( G )  then
+        TryNextMethod();
+    elif not HasOne( G )  then
+        if IsEmpty( GeneratorsOfGroup( G ) )  then
+            TryNextMethod();
+        else
+            SetOne( G, One( GeneratorsOfGroup( G )[ 1 ] ) );
+        fi;
+    fi;
+    mon := OperationHomomorphism( G, AsList( G ), OnRight );
+    SetIsInjective( mon, true );
+    return mon;
+end );
+
 
 #############################################################################
 ##
 
-#M  \^( <G>, <g> )
-##
-GroupMethodByNiceMonomorphismCollElm( \^,
-    [ IsGroup, IsMultiplicativeElementWithInverse ] );
-
-
-#############################################################################
-##
 #M  \=( <G>, <H> )  . . . . . . . . . . . . . .  test if two groups are equal
 ##
 PropertyMethodByNiceMonomorphismCollColl( \=,
@@ -124,18 +151,22 @@ PropertyMethodByNiceMonomorphismCollColl( \=,
 
 #############################################################################
 ##
-#M  \in( <elm>, <G> )  . . . . . . . . . . . .  test if elm \in G
+#M  \in( <elm>, <G> ) . . . . . . . . . . . . . . . . .  test if <elm> in <G>
 ##
-InstallMethod( \in, "by nice monomorphism", IsElmsColls,
-        [ IsMultiplicativeElementWithInverse,
-          IsGroup and IsHandledByNiceMonomorphism ], 0,
-    function( elm, G )
+InstallMethod( \in,
+    "by nice monomorphism",
+    IsElmsColls,
+    [ IsMultiplicativeElementWithInverse,
+      IsGroup and IsHandledByNiceMonomorphism ],
+    0,
+
+function( elm, G )
     local   nice,  img;
     
     nice := NiceMonomorphism( G );
-    img := ImagesRepresentative( nice, elm );
-    return     img in NiceObject( G )
-           and PreImagesRepresentative( nice, img ) = elm;
+    img  := ImagesRepresentative( nice, elm );
+    return img in NiceObject( G )
+       and PreImagesRepresentative( nice, img ) = elm;
 end );
 
 
@@ -151,7 +182,7 @@ AttributeMethodByNiceMonomorphism( AbelianInvariants,
 ##
 #M  Centralizer( <G>, <H> )   . . . . . . . . . . . . centralizer of subgroup
 ##
-GroupMethodByNiceMonomorphismCollColl( Centralizer,
+SubgroupMethodByNiceMonomorphismCollColl( CentralizerOp,
     [ IsGroup, IsGroup ] );
 
 
@@ -159,7 +190,7 @@ GroupMethodByNiceMonomorphismCollColl( Centralizer,
 ##
 #M  Centralizer( <G>, <elm> ) . . . . . . . . . . . .  centralizer of element
 ##
-GroupMethodByNiceMonomorphismCollElm( Centralizer,
+SubgroupMethodByNiceMonomorphismCollElm( CentralizerOp,
     [ IsGroup, IsObject ] );
 
 
@@ -191,7 +222,7 @@ GroupMethodByNiceMonomorphismCollElm( ClosureGroup,
 ##
 #M  CommutatorFactorGroup( <G> )  . . . .  commutator factor group of a group
 ##
-SubgroupMethodByNiceMonomorphism( CommutatorFactorGroup,
+AttributeMethodByNiceMonomorphism( CommutatorFactorGroup,
     [ IsGroup ] );
 
 
@@ -205,9 +236,31 @@ GroupMethodByNiceMonomorphismCollColl( CommutatorSubgroup,
 
 #############################################################################
 ##
-#M  ConjugateSubgroup( <G>, <g> ) . . . . . . . . . . . . .  conjugate of <G>
+#M  ConjugacyClasses
 ##
-GroupMethodByNiceMonomorphismCollElm( ConjugateSubgroup,
+InstallMethod(ConjugacyClasses,"via niceomorphism",true,
+  [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
+function(g)
+local mon,cl,clg,c,i;
+   mon:=NiceMonomorphism(g);
+   cl:=ConjugacyClasses(NiceObject(g));
+   clg:=[];
+   for i in cl do
+     c:=ConjugacyClass(g,PreImagesRepresentative(mon,Representative(i)));
+     if HasStabilizerOfExternalSet(i) then
+       SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
+     fi;
+     Add(clg,c);
+   od;
+   return clg;
+end);
+
+
+#############################################################################
+##
+#M  ConjugateGroup( <G>, <g> )	. . . . . . . . . . . . . .  conjugate of <G>
+##
+GroupMethodByNiceMonomorphismCollElm( ConjugateGroup,
     [ IsGroup and HasParent, IsMultiplicativeElementWithInverse ] );
 
 
@@ -215,7 +268,7 @@ GroupMethodByNiceMonomorphismCollElm( ConjugateSubgroup,
 ##
 #M  Core( <G>, <U> )  . . . . . . . . . . . . . . . .  core of a <U> in a <G>
 ##
-GroupMethodByNiceMonomorphismCollColl( Core,
+GroupMethodByNiceMonomorphismCollColl( CoreOp,
     [ IsGroup, IsGroup ] );
 
 
@@ -279,7 +332,7 @@ SubgroupMethodByNiceMonomorphism( FrattiniSubgroup,
 ##
 #M  Index( <G>, <H> ) . . . . . . . . . . . . . . . . . . index of <H> in <G>
 ##
-AttributeMethodByNiceMonomorphismCollColl( Index,
+AttributeMethodByNiceMonomorphismCollColl( IndexOp,
     [ IsGroup, IsGroup ] );
 
 
@@ -335,7 +388,7 @@ PropertyMethodByNiceMonomorphism( IsNilpotentGroup,
 ##
 #M  IsNormal( <G>, <U> )  . . . . . . . . . . . . . test if <U> normal in <G>
 ##
-PropertyMethodByNiceMonomorphismCollColl( IsNormal,
+PropertyMethodByNiceMonomorphismCollColl( IsNormalOp,
     [ IsGroup, IsGroup ] );
 
 
@@ -389,6 +442,34 @@ PropertyMethodByNiceMonomorphism( IsSupersolvableGroup,
 
 #############################################################################
 ##
+#M  IsomorphismPcGroup
+##
+InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
+  [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
+function(g)
+local mon,iso,xset;
+   mon:=NiceMonomorphism(g);
+   if not IsOperationHomomorphism( mon )  then
+       TryNextMethod();
+   fi;
+   xset := UnderlyingExternalSet( mon );
+   if IsExternalSetByOperatorsRep( xset )  then
+       mon := OperationHomomorphism( g, HomeEnumerator( xset ),
+                      xset!.generators, xset!.operators, xset!.funcOperation );
+   else
+       mon := OperationHomomorphism( g, HomeEnumerator( xset ),
+                      FunctionOperation( xset ) );
+   fi;
+   iso:=IsomorphismPcGroup(NiceObject(g));
+   if iso=fail then
+     return fail;
+   else
+     return mon*iso;
+   fi;
+end);
+
+#############################################################################
+##
 #M  JenningsSeries( <G> ) . . . . . . . . . . .  jennings series of a p-group
 ##
 GroupSeriesMethodByNiceMonomorphism( JenningsSeries,
@@ -407,7 +488,7 @@ GroupSeriesMethodByNiceMonomorphism( LowerCentralSeriesOfGroup,
 ##
 #M  NormalClosure( <G>, <U> ) . . . . normal closure of a subgroup in a group
 ##
-GroupMethodByNiceMonomorphismCollColl( NormalClosure,
+GroupMethodByNiceMonomorphismCollColl( NormalClosureOp,
     [ IsGroup, IsGroup ] );
 
 
@@ -423,9 +504,7 @@ GroupMethodByNiceMonomorphismCollColl( NormalIntersection,
 ##
 #M  Normalizer( <G>, <U> )  . . . . . . . . . . . .  normalizer of <U> in <G>
 ##
-GroupMethodByNiceMonomorphismCollColl( Normalizer,
-    [ IsGroup, IsGroup ] );
-SubgroupMethodByNiceMonomorphismCollColl( Normalizer,
+SubgroupMethodByNiceMonomorphismCollColl( NormalizerOp,
     [ IsGroup, IsGroup ] );
 
 
@@ -465,7 +544,7 @@ GroupSeriesMethodByNiceMonomorphismCollOther( PCentralSeriesOp,
 ##
 #M  PCoreOp( <G>, <p> ) . . . . . . . . . . . . . . . . . . p-core of a group
 ##
-GroupMethodByNiceMonomorphismCollOther( PCoreOp,
+SubgroupMethodByNiceMonomorphismCollOther( PCoreOp,
     [ IsGroup, IsPosRat and IsInt ] );
 
 
@@ -475,6 +554,46 @@ GroupMethodByNiceMonomorphismCollOther( PCoreOp,
 ##
 SubgroupMethodByNiceMonomorphism( RadicalGroup,
     [ IsGroup ] );
+
+
+#############################################################################
+##
+#M  RationalClasses
+##
+InstallMethod(RationalClasses,"via niceomorphism",true,
+  [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
+function(g)
+local mon,cl,clg,c,i;
+   mon:=NiceMonomorphism(g);
+   cl:=RationalClasses(NiceObject(g));
+   clg:=[];
+   for i in cl do
+     c:=RationalClass(g,PreImagesRepresentative(mon,Representative(i)));
+     if HasStabilizerOfExternalSet(i) then
+       SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
+     fi;
+     if HasGaloisGroup(i) then
+       SetGaloisGroup(c,GaloisGroup(i));
+     fi;
+     Add(clg,c);
+   od;
+   return clg;
+end);
+
+
+#############################################################################
+##
+#M  RightTransversal
+##
+InstallMethod(RightTransversalOp,"via niceomorphism",true,
+  [IsGroup and IsHandledByNiceMonomorphism,IsGroup],NICE_FLAGS,
+function(g,u)
+local mon,rt;
+   mon:=NiceMonomorphism(g);
+   rt:=RightTransversal(ImagesSet(mon,g),ImagesSet(mon,u));
+   rt:=List(rt,i->PreImagesRepresentative(mon,i));
+   return rt;
+end);
 
 
 #############################################################################
@@ -505,7 +624,7 @@ AttributeMethodByNiceMonomorphism( SizesConjugacyClasses,
 ##
 #M  SubnormalSeries( <G>, <U> ) . subnormal series from a group to a subgroup
 ##
-GroupSeriesMethodByNiceMonomorphismCollColl( SubnormalSeries,
+GroupSeriesMethodByNiceMonomorphismCollColl( SubnormalSeriesOp,
     [ IsGroup, IsGroup ] );
 
 
@@ -513,16 +632,8 @@ GroupSeriesMethodByNiceMonomorphismCollColl( SubnormalSeries,
 ##
 #M  SylowSubgroupOp( <G>, <p> ) . . . . . . . . . . Sylow subgroup of a group
 ##
-GroupMethodByNiceMonomorphismCollOther( SylowSubgroupOp,
+SubgroupMethodByNiceMonomorphismCollOther( SylowSubgroupOp,
     [ IsGroup, IsPosRat and IsInt ] );
-
-
-#############################################################################
-##
-#M  TrivialSubgroup( <G> ) . . . . . . . . . . .  trivial subgroup of a group
-##
-SubgroupMethodByNiceMonomorphism( TrivialSubgroup,
-    [ IsGroup ] );
 
 
 #############################################################################
@@ -531,71 +642,6 @@ SubgroupMethodByNiceMonomorphism( TrivialSubgroup,
 ##
 GroupSeriesMethodByNiceMonomorphism( UpperCentralSeriesOfGroup,
     [ IsGroup ] );
-
-
-#############################################################################
-##
-#M  IsomorphismPcGroup
-##
-InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
-  [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
-function(g)
-local mon,iso,xset;
-   mon:=NiceMonomorphism(g);
-   if not IsOperationHomomorphism( mon )  then
-       TryNextMethod();
-   fi;
-   xset := UnderlyingExternalSet( mon );
-   if IsExternalSetByOperatorsRep( xset )  then
-       mon := OperationHomomorphism( g, HomeEnumerator( xset ),
-                      xset!.generators, xset!.operators, xset!.funcOperation );
-   else
-       mon := OperationHomomorphism( g, HomeEnumerator( xset ),
-                      FunctionOperation( xset ) );
-   fi;
-   iso:=IsomorphismPcGroup(NiceObject(g));
-   if iso=fail then
-     return fail;
-   else
-     return mon*iso;
-   fi;
-end);
-
-#############################################################################
-##
-#M  ConjugacyClasses
-##
-InstallMethod(ConjugacyClasses,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
-function(g)
-local mon,cl,clg,c,i;
-   mon:=NiceMonomorphism(g);
-   cl:=ConjugacyClasses(NiceObject(g));
-   clg:=[];
-   for i in cl do
-     c:=ConjugacyClass(g,PreImagesRepresentative(mon,Representative(i)));
-     if HasStabilizerOfExternalSet(i) then
-       SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
-     fi;
-     Add(clg,c);
-   od;
-   return clg;
-end);
-
-
-#############################################################################
-##
-#M  RightTransversal
-##
-InstallMethod(RightTransversal,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism,IsGroup],NICE_FLAGS,
-function(g,u)
-local mon,rt;
-   mon:=NiceMonomorphism(g);
-   rt:=RightTransversal(ImagesSet(mon,g),ImagesSet(mon,u));
-   rt:=List(rt,i->PreImagesRepresentative(mon,i));
-   return rt;
-end);
 
 
 #############################################################################

@@ -110,11 +110,16 @@ end );
 InstallMethod( Pcgs,
     "generic method using CompositionSeries",
     true,
-    [ IsGroup and IsFinite ],
-    0,
+#T Why was 'IsFinite' required here? This gave this method a higher value it
+#T deserved
+    [ IsGroup],0,
 
 function( grp )
     local   series,  pcgs,  orders,  i,  elm,  o;
+
+    if HasIsFinite(grp) and not IsFinite(grp) then
+      Error("requires group to be finite!");
+    fi;
 
     series := CompositionSeries(grp);
     pcgs   := [];

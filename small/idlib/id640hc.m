@@ -3,7 +3,7 @@
 #W  id640hc.m              GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id640hc_m :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 640 ].next[ 8 ].next[ 3 ].next[ 13 ] := 
 rec(

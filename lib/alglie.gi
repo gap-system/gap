@@ -2583,9 +2583,9 @@ FindSl2 := function( L, x )
 
     v:= SolutionMat( eqs, b );
 
-    if v = false then
+    if v = fail then
       # There is no sl_2 containing <x>.
-      return false;
+      return fail;
     fi;
 
     z:= LinearCombination( B, v{ [   1 ..   n ] } );
@@ -3548,7 +3548,7 @@ InstallMethod( UniversalEnvelopingAlgebra,
 
     # Enter knowledge about 'U'.
     SetDimension( U, infinity );
-    for gen in GeneratorsOfLeftOperatorRing( U ) do
+    for gen in GeneratorsOfLeftOperatorRingWithOne( U ) do
       SetIsNormalForm( gen, true );
     od;
     SetIsNormalForm( Zero( U ), true );

@@ -10,39 +10,41 @@
 **  This file contains the functions of the  filters, operations, attributes,
 **  and properties package.
 */
-char * Revision_opers_c =
+#include        <assert.h>
+#include        "system.h"              /* Ints, UInts                     */
+
+SYS_CONST char * Revision_opers_c =
    "@(#)$Id$";
 
 
-#include        <assert.h>
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gvars.h"               /* global variables                */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
-
-#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "calls.h"               /* generic call mechanism          */
 
 #define INCLUDE_DECLARATION_PART
-#include        "opers.h"               /* declaration part of the package */
+#include        "opers.h"               /* generic operations              */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "ariths.h"              /* arithmetic operations           */
-#include        "lists.h"               /* generic list package            */
+#include        "ariths.h"              /* basic arithmetic                */
+#include        "lists.h"               /* generic lists                   */
 
-#include        "bool.h"                /* True, False                     */
+#include        "bool.h"                /* booleans                        */
 
-#include        "plist.h"               /* NEW_PLIST, SET_LEN_PLIST, SET...*/
-#include        "blister.h"             /* SIZE_PLEN_BLIST, SET_LEN_BLIST  */
-#include        "string.h"              /* NEW_STRING, CSTR_STRING         */
+#include        "plist.h"               /* plain lists                     */
+#include        "blister.h"             /* boolean lists                   */
+#include        "string.h"              /* strings                         */
 
-#include        "records.h"             /* ASS_REC, ELM_REC                */
-#include        "precord.h"             /* AssPRec, ElmPRec                */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "gap.h"                 /* Error                           */
+#include        "gap.h"                 /* error handling, initialisation  */
+#include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
@@ -264,7 +266,7 @@ Obj FuncLEN_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
+            (Int)TNAM_OBJ(flags), 0L,
             "you can return a list for <flags>" );
     }
 
@@ -285,7 +287,7 @@ Obj FuncELM_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
+            (Int)TNAM_OBJ(flags), 0L,
             "you can return a list for <flags>" );
     }
 
@@ -304,17 +306,17 @@ Obj FuncHASH_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
-    Int                 hash;
-    Int                 x;
-    Int                 len;
-    UInt *              ptr;
-    Int                 i;
+    Int4                 hash;
+    Int4                 x;
+    Int                  len;
+    UInt4 *              ptr;
+    Int                  i;
 
     /* do some trivial checks                                              */
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
             flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
+            (Int)TNAM_OBJ(flags), 0L,
             "you can return a list for <flags>" );
     }
     if ( HASH_FLAGS(flags) != 0 ) {
@@ -322,16 +324,16 @@ Obj FuncHASH_FLAGS (
     }
 
     /* do the real work                                                    */
-    len = NRB_FLAGS(flags);
-    ptr = DATA_FLAGS(flags);
+    len = NRB_FLAGS(flags)*(sizeof(UInt)/sizeof(UInt4));
+    ptr = (UInt4 *)DATA_FLAGS(flags);
     hash = 0;
     x    = 1;
     for ( i = 1; i <= len; i++ ) {
         hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt)-1) * x) % HASH_FLAGS_SIZE;
+        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
         ptr++;
     }
-    SET_HASH_FLAGS( flags, INTOBJ_INT(hash+1) );
+    SET_HASH_FLAGS( flags, INTOBJ_INT((UInt)hash+1) );
     CHANGED_BAG(flags);
     return HASH_FLAGS(flags);
 }
@@ -356,13 +358,13 @@ Obj FuncIS_EQUAL_FLAGS (
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags1)].name), 0L,
+            (Int)TNAM_OBJ(flags1), 0L,
             "you can return a list for <flags1>" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags2)].name), 0L,
+            (Int)TNAM_OBJ(flags2), 0L,
             "you can return a list for <flags2>" );
     }
     if ( flags1 == flags2 ) {
@@ -469,13 +471,13 @@ Obj FuncAND_FLAGS (
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags1)].name), 0L,
+            (Int)TNAM_OBJ(flags1), 0L,
             "you can return a list for <flags1>" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags2)].name), 0L,
+            (Int)TNAM_OBJ(flags2), 0L,
             "you can return a list for <flags2>" );
     }
 
@@ -543,13 +545,13 @@ Obj FuncSUB_FLAGS (
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags1)].name), 0L,
+            (Int)TNAM_OBJ(flags1), 0L,
             "you can return a list for <flags1>" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags2)].name), 0L,
+            (Int)TNAM_OBJ(flags2), 0L,
             "you can return a list for <flags2>" );
     }
 
@@ -628,7 +630,7 @@ Obj FuncTRUES_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
+            (Int)TNAM_OBJ(flags), 0L,
             "you can return a list for <flags>" );
     }
     if ( TRUES_FLAGS(flags) != 0 ) {
@@ -641,7 +643,7 @@ Obj FuncTRUES_FLAGS (
     n = 0;
     for ( i = 1; i <= nrb; i++ ) {
         m = *ptr++;
-	COUNT_TRUES_BLOCK(m); 
+        COUNT_TRUES_BLOCK(m); 
         n += m;
     }
 
@@ -691,13 +693,13 @@ Obj FuncIS_SUBSET_FLAGS (
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags1)].name), 0L,
+            (Int)TNAM_OBJ(flags1), 0L,
             "you can return a list for <flags1>" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags2)].name), 0L,
+            (Int)TNAM_OBJ(flags2), 0L,
             "you can return a list for <flags2>" );
     }
     if ( flags1 == flags2 ) {
@@ -787,7 +789,7 @@ Obj FuncSIZE_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
+            (Int)TNAM_OBJ(flags), 0L,
             "you can return a list for <flags>" );
     }
 
@@ -799,7 +801,7 @@ Obj FuncSIZE_FLAGS (
     n = 0;
     for ( i = 1; i <= nrb; i++ ) {
         m = *ptr++;
-	COUNT_TRUES_BLOCK(m);
+        COUNT_TRUES_BLOCK(m);
         n += m;
     }
 
@@ -1029,8 +1031,6 @@ Obj NewFilterC (
     return getter;    
 }
 
-
-Obj NewFilterFunc;
 
 Obj NewFilterHandler (
     Obj                 self,
@@ -2848,8 +2848,6 @@ Obj NewOperationC (
 **
 *f  NewOperationHandler( <name> )
 */
-Obj NewOperationFunc;
-
 Obj NewOperationHandler (
     Obj                 self,
     Obj                 name )
@@ -4182,8 +4180,6 @@ Obj NewConstructorC (
 **
 *f  NewConstructorHandler( <name> )
 */
-Obj NewConstructorFunc;
-
 Obj NewConstructorHandler (
     Obj                 self,
     Obj                 name )
@@ -4541,8 +4537,6 @@ Obj NewAttributeC (
 **
 *f  NewAttributeHandler( <name> )
 */
-Obj NewAttributeFunc;
-
 Obj NewAttributeHandler (
     Obj                 self,
     Obj                 name )
@@ -4562,8 +4556,6 @@ Obj NewAttributeHandler (
 **
 *f  NewMutableAttributeHandler( <name> )
 */
-Obj NewMutableAttributeFunc;
-
 Obj NewMutableAttributeHandler (
     Obj                 self,
     Obj                 name )
@@ -4926,8 +4918,6 @@ Obj NewPropertyC (
 **
 *f  NewPropertyHandler( <self>, <name> )
 */
-Obj NewPropertyFunc;
-
 Obj NewPropertyHandler (
     Obj                 self,
     Obj                 name )
@@ -4948,8 +4938,6 @@ Obj NewPropertyHandler (
 
 *F  FuncSetterFunction( <self>, <name> )
 */
-Obj SetterFunctionFunc;
-
 Obj DoSetterFunction (
     Obj                 self,
     Obj                 obj,
@@ -5012,8 +5000,6 @@ Obj FuncSetterFunction (
 **
 *F  FuncGetterFunction( <self>, <name> )
 */
-Obj GetterFunctionFunc;
-
 Obj DoGetterFunction (
     Obj                 self,
     Obj                 obj )
@@ -5235,273 +5221,356 @@ Obj FuncCLEAR_CACHE_INFO (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  SaveFlags( <flags> )
+**
+*/
+
+void SaveFlags( Obj flags)
+{
+  UInt i, len, *ptr;
+  SaveSubObj(TRUES_FLAGS(flags));
+  SaveSubObj(HASH_FLAGS(flags));
+  SaveSubObj(ADDR_OBJ(flags)[2]); /* length, as an object */
+  len = NRB_FLAGS(flags);
+  ptr = DATA_FLAGS(flags);
+  for (i = 1; i <= len; i++)
+    SaveUInt(*ptr++);
+  return;
+}
+
+/****************************************************************************
+**
+*F  SaveOperationExtras( <oper> ) . . . .additional savng for functions which
+**                                       are operations
+**
+**  This is called by SaveFunction when the function bag is too large to be
+**  a simple function, and so must be an operation
+**
+*/
+
+void SaveOperationExtras( Obj oper )
+{
+  UInt i;
+  SaveSubObj(FLAG1_FILT(oper));
+  SaveSubObj(FLAG2_FILT(oper));
+  SaveSubObj(FLAGS_FILT(oper));
+  SaveSubObj(SETTR_FILT(oper));
+  SaveSubObj(TESTR_FILT(oper));
+  for (i = 0; i <= 7; i++)
+    SaveSubObj(METHS_OPER(oper,i));
+  for (i = 0; i <= 7; i++)
+    SaveSubObj(CACHE_OPER(oper,i));
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadFlags( <flags> )
+**
+*/
+
+void LoadFlags( Obj flags)
+{
+  UInt i, len, *ptr;
+  TRUES_FLAGS(flags) = LoadSubObj();
+  HASH_FLAGS(flags) = LoadSubObj();
+  ADDR_OBJ(flags)[2] = LoadSubObj(); /* length, as an object */
+  len = NRB_FLAGS(flags);
+  ptr = DATA_FLAGS(flags);
+  for (i = 1; i <= len; i++)
+    *ptr++ = LoadUInt();
+  return;
+}
+
+/****************************************************************************
+**
+*F  LoadOperationExtras( <oper> ) . . . .additional loading for functions which
+**                                       are operations
+**
+**  This is called by LoadFunction when the function bag is too large to be
+**  a simple function, and so must be an operation
+**
+*/
+
+void LoadOperationExtras( Obj oper )
+{
+  UInt i;
+  FLAG1_FILT(oper) = LoadSubObj();
+  FLAG2_FILT(oper) = LoadSubObj();
+  FLAGS_FILT(oper) = LoadSubObj();
+  SETTR_FILT(oper) = LoadSubObj();
+  TESTR_FILT(oper) = LoadSubObj();
+  for (i = 0; i <= 7; i++)
+    METHS_OPER(oper,i) = LoadSubObj();
+  for (i = 0; i <= 7; i++)
+    CACHE_OPER(oper,i) = LoadSubObj();
+  return;
+}
+
+
+/****************************************************************************
+**
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
 
 
 /****************************************************************************
 **
 
-*F  InitOpers() . . . . . . . . . . . . . . initialize the operations package
+*F  SetupOpers() . . . . . . . . . . . . . . initialize the operations package
 */
-void InitOpers ( void )
+void SetupOpers ( void )
 {
-    Int                        i;
-
-    /* declare the handlers used in various places */
-    InitHandlerFunc( DoFilter, "DoFilter");
-    InitHandlerFunc( DoSetFilter, "DoSetFilter");
-    InitHandlerFunc( DoAndFilter, "DoAndFilter");
-    InitHandlerFunc( DoSetAndFilter, "DoSetAndFilter");
-    InitHandlerFunc( DoReturnTrueFilter, "DoReturnTrueFilter");
-    InitHandlerFunc( DoSetReturnTrueFilter, "DoSetReturnTrueFilter");
-    
-    InitHandlerFunc( DoAttribute, "DoAttribute");
-    InitHandlerFunc( DoSetAttribute, "DoSetAttribute");
-    InitHandlerFunc( DoTestAttribute, "DoTestAttribute");
-    InitHandlerFunc( DoVerboseAttribute, "DoVerboseAttribute");
-    InitHandlerFunc( DoMutableAttribute, "DoMutableAttribute");
-    InitHandlerFunc( DoVerboseMutableAttribute, "DoVerboseMutableAttribute");
-
-    InitHandlerFunc( DoProperty, "DoProperty");
-    InitHandlerFunc( DoSetProperty, "DoSetProperty");
-    InitHandlerFunc( DoTestProperty, "DoTestProperty");
-    InitHandlerFunc( DoVerboseProperty, "DoVerboseProperty");
-
-    InitHandlerFunc( DoSetterFunction, "DoSetterFunction");
-    InitHandlerFunc( DoGetterFunction, "DoGetterFunction");
-    
-    InitHandlerFunc( DoOperation0Args, "DoOperation0Args");
-    InitHandlerFunc( DoOperation1Args, "DoOperation1Args");
-    InitHandlerFunc( DoOperation2Args, "DoOperation2Args");
-    InitHandlerFunc( DoOperation3Args, "DoOperation3Args");
-    InitHandlerFunc( DoOperation4Args, "DoOperation4Args");
-    InitHandlerFunc( DoOperation5Args, "DoOperation5Args");
-    InitHandlerFunc( DoOperation6Args, "DoOperation6Args");
-    InitHandlerFunc( DoOperationXArgs, "DoOperationXArgs");
-
-    InitHandlerFunc( DoVerboseOperation0Args, "DoVerboseOperation0Args");
-    InitHandlerFunc( DoVerboseOperation1Args, "DoVerboseOperation1Args");
-    InitHandlerFunc( DoVerboseOperation2Args, "DoVerboseOperation2Args");
-    InitHandlerFunc( DoVerboseOperation3Args, "DoVerboseOperation3Args");
-    InitHandlerFunc( DoVerboseOperation4Args, "DoVerboseOperation4Args");
-    InitHandlerFunc( DoVerboseOperation5Args, "DoVerboseOperation5Args");
-    InitHandlerFunc( DoVerboseOperation6Args, "DoVerboseOperation6Args");
-    InitHandlerFunc( DoVerboseOperationXArgs, "DoVerboseOperationXArgs");
-    
-    InitHandlerFunc( DoConstructor0Args, "DoConstructor0Args");
-    InitHandlerFunc( DoConstructor1Args, "DoConstructor1Args");
-    InitHandlerFunc( DoConstructor2Args, "DoConstructor2Args");
-    InitHandlerFunc( DoConstructor3Args, "DoConstructor3Args");
-    InitHandlerFunc( DoConstructor4Args, "DoConstructor4Args");
-    InitHandlerFunc( DoConstructor5Args, "DoConstructor5Args");
-    InitHandlerFunc( DoConstructor6Args, "DoConstructor6Args");
-    InitHandlerFunc( DoConstructorXArgs, "DoConstructorXArgs");
-
-    InitHandlerFunc( DoVerboseConstructor0Args, "DoVerboseConstructor0Args");
-    InitHandlerFunc( DoVerboseConstructor1Args, "DoVerboseConstructor1Args");
-    InitHandlerFunc( DoVerboseConstructor2Args, "DoVerboseConstructor2Args");
-    InitHandlerFunc( DoVerboseConstructor3Args, "DoVerboseConstructor3Args");
-    InitHandlerFunc( DoVerboseConstructor4Args, "DoVerboseConstructor4Args");
-    InitHandlerFunc( DoVerboseConstructor5Args, "DoVerboseConstructor5Args");
-    InitHandlerFunc( DoVerboseConstructor6Args, "DoVerboseConstructor6Args");
-    InitHandlerFunc( DoVerboseConstructorXArgs, "DoVerboseConstructorXArgs");
-    
-    
-    /* make the property blist functions                                   */
-    InitHandlerFunc( FuncAND_FLAGS, "AND_FLAGS" );
-    AssGVar( GVarName( "AND_FLAGS" ),
-         NewFunctionC( "AND_FLAGS", 2L, "oper1, oper2",
-                    FuncAND_FLAGS ) );
-
-    InitHandlerFunc( FuncSUB_FLAGS, "SUB_FLAGS" );
-    AssGVar( GVarName( "SUB_FLAGS" ),
-         NewFunctionC( "SUB_FLAGS", 2L, "oper1, oper2",
-                    FuncSUB_FLAGS ) );
-
-    InitHandlerFunc( FuncHASH_FLAGS, "HASH_FLAGS" );
-    AssGVar( GVarName( "HASH_FLAGS" ),
-         NewFunctionC( "HASH_FLAGS", 1L, "flags",
-                    FuncHASH_FLAGS ) );
-
-    InitHandlerFunc( FuncIS_EQUAL_FLAGS, "IS_EQUAL_FLAGS" );
-    AssGVar( GVarName( "IS_EQUAL_FLAGS" ),
-         NewFunctionC( "IS_EQUAL_FLAGS", 2L, "flags1, flags2",
-                    FuncIS_EQUAL_FLAGS ) );
-
-    InitHandlerFunc( FuncIS_SUBSET_FLAGS, "IS_SUBSET_FLAGS" );
-    AssGVar( GVarName( "IS_SUBSET_FLAGS" ),
-         NewFunctionC( "IS_SUBSET_FLAGS", 2L, "flags1, flags2",
-                    FuncIS_SUBSET_FLAGS ) );
-
-    InitHandlerFunc( FuncTRUES_FLAGS, "TRUES_FLAGS" );
-    AssGVar( GVarName( "TRUES_FLAGS" ),
-         NewFunctionC( "TRUES_FLAGS", 1L, "flags",
-                    FuncTRUES_FLAGS ) );
-
-    InitHandlerFunc( FuncSIZE_FLAGS, "SIZE_FLAGS" );
-    AssGVar( GVarName( "SIZE_FLAGS" ),
-         NewFunctionC( "SIZE_FLAGS", 1L, "flags",
-                    FuncSIZE_FLAGS ) );
-
-    InitHandlerFunc( FuncLEN_FLAGS, "LEN_FLAGS" );
-    AssGVar( GVarName( "LEN_FLAGS" ),
-         NewFunctionC( "LEN_FLAGS", 1L, "flags",
-                    FuncLEN_FLAGS ) );
-
-    InitHandlerFunc( FuncELM_FLAGS, "ELM_FLAGS" );
-    AssGVar( GVarName( "ELM_FLAGS" ),
-         NewFunctionC( "ELM_FLAGS", 2L, "flags, pos",
-                    FuncELM_FLAGS ) );
+    /* install the marking function                                        */
+    InfoBags[T_FLAGS].name = "flags list";
+    InitMarkFuncBags( T_FLAGS, MarkTwoSubBags );
 
 
     /* install the printing function                                       */
     PrintObjFuncs[ T_FLAGS ] = PrintFlags;
 
 
+    /* and the saving function */
+    SaveObjFuncs[ T_FLAGS ] = SaveFlags;
+}
+
+
+
+/****************************************************************************
+**
+*F  InitOpers() . . . . . . . . . . . . . . initialize the operations package
+*/
+void InitOpers ( void )
+{
+    Int                        i;
+
+    /* Declare the handlers used in various places.  Some of the commonest */
+    /* ones are abbreviated to save space in saved workspace.              */
+
+    InitHandlerFunc( DoFilter,                  "df"                                    );
+    InitHandlerFunc( DoSetFilter,               "dsf"                                   );
+    InitHandlerFunc( DoAndFilter,               "daf"                                   );
+    InitHandlerFunc( DoSetAndFilter,            "dsaf"                                  );
+    InitHandlerFunc( DoReturnTrueFilter,        "src/opers.c:DoReturnTrueFilter"        );
+    InitHandlerFunc( DoSetReturnTrueFilter,     "src/opers.c:DoSetReturnTrueFilter"     );
+    
+    InitHandlerFunc( DoAttribute,               "src/opers.c:DoAttribute"               );
+    InitHandlerFunc( DoSetAttribute,            "src/opers.c:DoSetAttribute"            );
+    InitHandlerFunc( DoTestAttribute,           "src/opers.c:DoTestAttribute"           );
+    InitHandlerFunc( DoVerboseAttribute,        "src/opers.c:DoVerboseAttribute"        );
+    InitHandlerFunc( DoMutableAttribute,        "src/opers.c:DoMutableAttribute"        );
+    InitHandlerFunc( DoVerboseMutableAttribute, "src/opers.c:DoVerboseMutableAttribute" );
+
+    InitHandlerFunc( DoProperty,                "src/opers.c:DoProperty"                );
+    InitHandlerFunc( DoSetProperty,             "src/opers.c:DoSetProperty"             );
+    InitHandlerFunc( DoTestProperty,            "src/opers.c:DoTestProperty"            );
+    InitHandlerFunc( DoVerboseProperty,         "src/opers.c:DoVerboseProperty"         );
+
+    InitHandlerFunc( DoSetterFunction,          "src/opers.c:DoSetterFunction"          );
+    InitHandlerFunc( DoGetterFunction,          "src/opers.c:DoGetterFunction"          );
+    
+    InitHandlerFunc( DoOperation0Args,          "o0"                                    );
+    InitHandlerFunc( DoOperation1Args,          "o1"                                    );
+    InitHandlerFunc( DoOperation2Args,          "o2"                                    );
+    InitHandlerFunc( DoOperation3Args,          "o3"                                    );
+    InitHandlerFunc( DoOperation4Args,          "o4"                                    );
+    InitHandlerFunc( DoOperation5Args,          "o5"                                    );
+    InitHandlerFunc( DoOperation6Args,          "o6"                                    );
+    InitHandlerFunc( DoOperationXArgs,          "o7"                                    );
+
+    InitHandlerFunc( DoVerboseOperation0Args,   "src/opers.c:DoVerboseOperation0Args"   );
+    InitHandlerFunc( DoVerboseOperation1Args,   "src/opers.c:DoVerboseOperation1Args"   );
+    InitHandlerFunc( DoVerboseOperation2Args,   "src/opers.c:DoVerboseOperation2Args"   );
+    InitHandlerFunc( DoVerboseOperation3Args,   "src/opers.c:DoVerboseOperation3Args"   );
+    InitHandlerFunc( DoVerboseOperation4Args,   "src/opers.c:DoVerboseOperation4Args"   );
+    InitHandlerFunc( DoVerboseOperation5Args,   "src/opers.c:DoVerboseOperation5Args"   );
+    InitHandlerFunc( DoVerboseOperation6Args,   "src/opers.c:DoVerboseOperation6Args"   );
+    InitHandlerFunc( DoVerboseOperationXArgs,   "src/opers.c:DoVerboseOperationXArgs"   );
+    
+    InitHandlerFunc( DoConstructor0Args,        "src/opers.c:DoConstructor0Args"        );
+    InitHandlerFunc( DoConstructor1Args,        "src/opers.c:DoConstructor1Args"        );
+    InitHandlerFunc( DoConstructor2Args,        "src/opers.c:DoConstructor2Args"        );
+    InitHandlerFunc( DoConstructor3Args,        "src/opers.c:DoConstructor3Args"        );
+    InitHandlerFunc( DoConstructor4Args,        "src/opers.c:DoConstructor4Args"        );
+    InitHandlerFunc( DoConstructor5Args,        "src/opers.c:DoConstructor5Args"        );
+    InitHandlerFunc( DoConstructor6Args,        "src/opers.c:DoConstructor6Args"        );
+    InitHandlerFunc( DoConstructorXArgs,        "src/opers.c:DoConstructorXArgs"        );
+
+    InitHandlerFunc( DoVerboseConstructor0Args, "src/opers.c:DoVerboseConstructor0Args" );
+    InitHandlerFunc( DoVerboseConstructor1Args, "src/opers.c:DoVerboseConstructor1Args" );
+    InitHandlerFunc( DoVerboseConstructor2Args, "src/opers.c:DoVerboseConstructor2Args" );
+    InitHandlerFunc( DoVerboseConstructor3Args, "src/opers.c:DoVerboseConstructor3Args" );
+    InitHandlerFunc( DoVerboseConstructor4Args, "src/opers.c:DoVerboseConstructor4Args" );
+    InitHandlerFunc( DoVerboseConstructor5Args, "src/opers.c:DoVerboseConstructor5Args" );
+    InitHandlerFunc( DoVerboseConstructor6Args, "src/opers.c:DoVerboseConstructor6Args" );
+    InitHandlerFunc( DoVerboseConstructorXArgs, "src/opers.c:DoVerboseConstructorXArgs" );
+
+    
+    /* make the property blist functions                                   */
+    C_NEW_GVAR_FUNC( "AND_FLAGS", 2, "oper1, oper2",
+                  FuncAND_FLAGS,
+         "src/opers.c:AND_FLAGS" );
+
+    C_NEW_GVAR_FUNC( "SUB_FLAGS", 2, "oper1, oper2",
+                  FuncSUB_FLAGS,
+         "src/opers.c:SUB_FLAGS" );
+
+    C_NEW_GVAR_FUNC( "HASH_FLAGS", 1, "flags",
+                  FuncHASH_FLAGS,
+         "src/opers.c:HASH_FLAGS" );
+
+    C_NEW_GVAR_FUNC( "IS_EQUAL_FLAGS", 2, "flags1, flags2",
+                  FuncIS_EQUAL_FLAGS,
+         "src/opers.c:IS_EQUAL_FLAGS" );
+
+    C_NEW_GVAR_FUNC( "IS_SUBSET_FLAGS", 2, "flags1, flags2",
+                  FuncIS_SUBSET_FLAGS,
+         "src/opers.c:IS_SUBSET_FLAGS" );
+
+    C_NEW_GVAR_FUNC( "TRUES_FLAGS", 1, "flags",
+                  FuncTRUES_FLAGS,
+         "src/opers.c:TRUES_FLAGS" );
+
+    C_NEW_GVAR_FUNC( "SIZE_FLAGS", 1, "flags",
+                  FuncSIZE_FLAGS,
+         "src/opers.c:SIZE_FLAGS" );
+
+    C_NEW_GVAR_FUNC( "LEN_FLAGS", 1, "flags",
+                  FuncLEN_FLAGS,
+         "src/opers.c:LEN_FLAGS" );
+
+    C_NEW_GVAR_FUNC( "ELM_FLAGS", 2, "flags, pos",
+                  FuncELM_FLAGS,
+         "src/opers.c:ELM_FLAGS" );
+
+
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
     TypeObjFuncs[ T_FLAGS ] = TypeFlags;
 
-    /* install the marking function                                        */
-    InfoBags[T_FLAGS].name = "flags list";
-    InitMarkFuncBags( T_FLAGS, MarkTwoSubBags );
-
 
     /* make the functions that support new operations                      */
     C_NEW_GVAR_FILT( "IS_OPERATION", "obj", IsOperationFilt,
-		  FuncIS_OPERATION,
+                  FuncIS_OPERATION,
          "src/opers.c:IS_OPERATION" );
 
-    InitHandlerFunc( FuncFlag1Filter, "FLAG1_FILTER" );
-    AssGVar( GVarName( "FLAG1_FILTER" ),
-         NewFunctionC( "FLAG1_FILTER", 1L, "oper",
-                    FuncFlag1Filter ) );
+    C_NEW_GVAR_FUNC( "FLAG1_FILTER", 1, "oper",
+                  FuncFlag1Filter,
+         "src/opers.c:FLAG1_FILTER" );
 
-    InitHandlerFunc( FuncSetFlag1Filter, "SET_FLAG1_FILTER" );
-    AssGVar( GVarName( "SET_FLAG1_FILTER" ),
-         NewFunctionC( "SET_FLAG1_FILTER", 2L, "oper, flag1",
-                    FuncSetFlag1Filter ) );
+    C_NEW_GVAR_FUNC( "SET_FLAG1_FILTER", 2, "oper, flag1",
+                  FuncSetFlag1Filter,
+         "src/opers.c:SET_FLAG1_FILTER" );
 
-    InitHandlerFunc( FuncFlag2Filter, "FLAG2_FILTER" );
-    AssGVar( GVarName( "FLAG2_FILTER" ),
-         NewFunctionC( "FLAG2_FILTER", 1L, "oper",
-                    FuncFlag2Filter ) );
+    C_NEW_GVAR_FUNC( "FLAG2_FILTER", 1, "oper",
+                  FuncFlag2Filter,
+         "src/opers.c:FLAG2_FILTER" );
 
-    InitHandlerFunc( FuncSetFlag2Filter, "SET_FLAG2_FILTER" );
-    AssGVar( GVarName( "SET_FLAG2_FILTER" ),
-         NewFunctionC( "SET_FLAG2_FILTER", 2L, "oper, flag2",
-                    FuncSetFlag2Filter ) );
+    C_NEW_GVAR_FUNC( "SET_FLAG2_FILTER", 2, "oper, flag2",
+                  FuncSetFlag2Filter,
+         "src/opers.c:SET_FLAG2_FILTER" );
 
-    InitHandlerFunc( FuncFlagsFilter, "FLAGS_FILTER" );
-    AssGVar( GVarName( "FLAGS_FILTER" ),
-         NewFunctionC( "FLAGS_FILTER", 1L, "oper",
-                    FuncFlagsFilter ) );
+    C_NEW_GVAR_FUNC( "FLAGS_FILTER", 1, "oper",
+                  FuncFlagsFilter,
+         "src/opers.c:FLAGS_FILTER" );
 
-    InitHandlerFunc( FuncSetFlagsFilter, "SET_FLAGS_FILTER" );
-    AssGVar( GVarName( "SET_FLAGS_FILTER" ),
-         NewFunctionC( "SET_FLAGS_FILTER", 2L, "oper, flags",
-                    FuncSetFlagsFilter ) );
+    C_NEW_GVAR_FUNC( "SET_FLAGS_FILTER", 2, "oper, flags",
+                  FuncSetFlagsFilter,
+         "src/opers.c:SET_FLAGS_FILTER" );
 
-    InitHandlerFunc( FuncSetterFilter, "SETTER_FILTER" );
-    AssGVar( GVarName( "SETTER_FILTER" ),
-         NewFunctionC( "SETTER_FILTER", 1L, "oper",
-                    FuncSetterFilter ) );
+    C_NEW_GVAR_FUNC( "SETTER_FILTER", 1, "oper",
+                  FuncSetterFilter,
+         "src/opers.c:SETTER_FILTER" );
 
-    InitHandlerFunc( FuncSetSetterFilter, "SET_SETTER_FILTER" );
-    AssGVar( GVarName( "SET_SETTER_FILTER" ),
-         NewFunctionC( "SET_SETTER_FILTER", 2L, "oper, other",
-                    FuncSetSetterFilter ) );
+    C_NEW_GVAR_FUNC( "SET_SETTER_FILTER", 2, "oper, other",
+                  FuncSetSetterFilter,
+         "src/opers.c:SET_SETTER_FILTER" );
 
-    InitHandlerFunc( FuncTesterFilter, "TESTER_FILTER" );
-    AssGVar( GVarName( "TESTER_FILTER" ),
-         NewFunctionC( "TESTER_FILTER", 1L, "oper",
-                    FuncTesterFilter ) );
+    C_NEW_GVAR_FUNC( "TESTER_FILTER", 1, "oper",
+                  FuncTesterFilter,
+         "src/opers.c:TESTER_FILTER" );
 
-    InitHandlerFunc( FuncSetTesterFilter, "SET_TESTER_FILTER" );
-    AssGVar( GVarName( "SET_TESTER_FILTER" ),
-         NewFunctionC( "SET_TESTER_FILTER", 2L, "oper, other",
-                    FuncSetTesterFilter ) );
+    C_NEW_GVAR_FUNC( "SET_TESTER_FILTER", 2, "oper, other",
+                  FuncSetTesterFilter,
+         "src/opers.c:SET_TESTER_FILTER" );
 
-    InitHandlerFunc( FuncMethodsOperation, "METHODS_OPERATION" );
-    AssGVar( GVarName( "METHODS_OPERATION" ),
-         NewFunctionC( "METHODS_OPERATION", 2L, "oper, narg",
-                    FuncMethodsOperation ) );
+    C_NEW_GVAR_FUNC( "METHODS_OPERATION", 2, "oper, narg",
+                  FuncMethodsOperation,
+         "src/opers.c:METHODS_OPERATION" );
 
-    InitHandlerFunc( FuncSetMethodsOperation, "SET_METHODS_OPERATION" );
-    AssGVar( GVarName( "SET_METHODS_OPERATION" ),
-         NewFunctionC( "SET_METHODS_OPERATION", 3L, "oper, narg, meths",
-                    FuncSetMethodsOperation ) );
+    C_NEW_GVAR_FUNC( "SET_METHODS_OPERATION", 3, "oper, narg, meths",
+                  FuncSetMethodsOperation,
+         "src/opers.c:SET_METHODS_OPERATION" );
 
-    InitHandlerFunc( FuncChangedMethodsOperation, "CHANGED_METHODS_OPERATION" );
-    AssGVar( GVarName( "CHANGED_METHODS_OPERATION" ),
-         NewFunctionC( "CHANGED_METHODS_OPERATION", 2L, "oper, narg",
-                    FuncChangedMethodsOperation) );
+    C_NEW_GVAR_FUNC( "CHANGED_METHODS_OPERATION", 2, "oper, narg",
+                  FuncChangedMethodsOperation,
+         "src/opers.c:CHANGED_METHODS_OPERATION" );
 
 
     /* make the functions for filter, operations, properties, attributes   */
-    InitHandlerFunc( NewFilterHandler, "NewFilter" );
-    NewFilterFunc = NewFunctionC(
-        "NewFilter", 1L, "name", NewFilterHandler );
-    AssGVar( GVarName( "NEW_FILTER" ), NewFilterFunc );
+    C_NEW_GVAR_FUNC( "NEW_FILTER", 1, "name",
+                      NewFilterHandler,
+         "src/opers.c:NEW_FILTER" );
 
-    InitHandlerFunc( NewOperationHandler, "NewOperation" );
-    NewOperationFunc = NewFunctionC(
-        "NewOperation", 1L, "name", NewOperationHandler );
-    AssGVar( GVarName( "NEW_OPERATION" ), NewOperationFunc );
+    C_NEW_GVAR_FUNC( "NEW_OPERATION", 1, "name",
+                      NewOperationHandler,
+         "src/opers.c:NEW_OPERATION" );
 
-    InitHandlerFunc( NewConstructorHandler, "NewConstructor" );
-    NewConstructorFunc = NewFunctionC(
-        "NewConstructor", 1L, "name", NewConstructorHandler );
-    AssGVar( GVarName( "NEW_CONSTRUCTOR" ), NewConstructorFunc );
+    C_NEW_GVAR_FUNC( "NEW_CONSTRUCTOR", 1, "name",
+                      NewConstructorHandler,
+         "src/opers.c:NEW_CONSTRUCTOR" );
 
-    InitHandlerFunc( NewAttributeHandler, "NewAttribute" );
-    NewAttributeFunc = NewFunctionC(
-        "NewAttribute", 1L, "name", NewAttributeHandler );
-    AssGVar( GVarName( "NEW_ATTRIBUTE" ), NewAttributeFunc );
+    C_NEW_GVAR_FUNC( "NEW_ATTRIBUTE", 1, "name",
+                      NewAttributeHandler,
+         "src/opers.c:NEW_ATTRIBUTE" );
 
-    InitHandlerFunc( NewMutableAttributeHandler, "NewMutableAttribute" );
-    NewMutableAttributeFunc = NewFunctionC(
-        "NewMutableAttribute", 1L, "name", NewMutableAttributeHandler );
-    AssGVar( GVarName( "NEW_MUTABLE_ATTRIBUTE" ), NewMutableAttributeFunc );
+    C_NEW_GVAR_FUNC( "NEW_MUTABLE_ATTRIBUTE", 1, "name",
+                      NewMutableAttributeHandler,
+         "src/opers.c:NEW_MUTABLE_ATTRIBUTE" );
 
-    InitHandlerFunc( NewPropertyHandler, "NewProperty" );
-    NewPropertyFunc = NewFunctionC(
-        "NewProperty", 1L, "name", NewPropertyHandler );
-    AssGVar( GVarName( "NEW_PROPERTY" ), NewPropertyFunc );
+    C_NEW_GVAR_FUNC( "NEW_PROPERTY", 1, "name",
+                      NewPropertyHandler,
+         "src/opers.c:NEW_PROPERTY" );
 
-    InitHandlerFunc( FuncSetterFunction, "SetterFunction" );
-    SetterFunctionFunc = NewFunctionC(
-        "SetterFunction", 2L, "name, filter", FuncSetterFunction );
-    AssGVar( GVarName( "SETTER_FUNCTION" ), SetterFunctionFunc );
+    C_NEW_GVAR_FUNC( "SETTER_FUNCTION", 2, "name, filter",
+                      FuncSetterFunction,
+         "src/opers.c:SETTER_FUNCTION" );
 
-    InitHandlerFunc( FuncGetterFunction, "GetterFunction" );
-    GetterFunctionFunc = NewFunctionC(
-        "GetterFunction", 1L, "name", FuncGetterFunction );
-    AssGVar( GVarName( "GETTER_FUNCTION" ), GetterFunctionFunc );
+    C_NEW_GVAR_FUNC( "GETTER_FUNCTION", 1, "name",
+                      FuncGetterFunction,
+         "src/opers.c:GETTER_FUNCTION" );
 
 
     /* make the trace functions                                            */
-    InitHandlerFunc( FuncTraceMethods, "TRACE_METHODS" );
-    AssGVar( GVarName( "TRACE_METHODS" ),
-         NewFunctionC( "TRACE_METHODS", 1L, "oper",
-                    FuncTraceMethods ) );
+    C_NEW_GVAR_FUNC( "TRACE_METHODS", 1, "oper",
+                  FuncTraceMethods,
+         "src/opers.c:TRACE_METHODS" );
 
-    InitHandlerFunc( FuncUntraceMethods, "UNTRACE_METHODS" );
-    AssGVar( GVarName( "UNTRACE_METHODS" ),
-         NewFunctionC( "UNTRACE_METHODS", 1L, "oper",
-                    FuncUntraceMethods ) );
+    C_NEW_GVAR_FUNC( "UNTRACE_METHODS", 1, "oper",
+                  FuncUntraceMethods,
+         "src/opers.c:UNTRACE_METHODS" );
 
 
     /* make the 'true' operation                                           */  
-    ReturnTrueFilter = NewReturnTrueFilter();
-    AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
+    InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
+    if ( ! SyRestoring ) {
+        ReturnTrueFilter = NewReturnTrueFilter();
+        AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
+    }
 
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
-    TRY_NEXT_METHOD = NEW_STRING( 16 );
-    SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );
-    AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
-
+    InitGlobalBag( &TRY_NEXT_METHOD, "src/opers.c:TRY_NEXT_METHOD" );
+    if ( ! SyRestoring ) {
+        TRY_NEXT_METHOD = NEW_STRING( 16 );
+        SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );
+        AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
+    }
     ImportGVarFromLibrary( "TRY_NEXT_METHOD", &TRY_NEXT_METHOD );
 
     ImportFuncFromLibrary( "METHOD_0ARGS", &Method0Args );
@@ -5581,26 +5650,37 @@ void InitOpers ( void )
 
     /* create the hash tables                                              */
 #ifdef AND_FLAGS_HASH_SIZE
-    AndFlagsCache = NEW_PLIST( T_PLIST, 3*AND_FLAGS_HASH_SIZE );
-    SET_LEN_PLIST( AndFlagsCache, 3*AND_FLAGS_HASH_SIZE );
-    AssGVar( GVarName( "AND_FLAGS_CACHE" ), AndFlagsCache );
-
-    for ( i = 1;  i <= 3*AND_FLAGS_HASH_SIZE;  i++ ) {
-         SET_ELM_PLIST( AndFlagsCache, i, INTOBJ_INT(0) );
+    InitGlobalBag( &AndFlagsCache, "src/opers.c:AndFlagsCache" );
+    if ( ! SyRestoring ) {
+        AndFlagsCache = NEW_PLIST( T_PLIST, 3*AND_FLAGS_HASH_SIZE );
+        SET_LEN_PLIST( AndFlagsCache, 3*AND_FLAGS_HASH_SIZE );
+        AssGVar( GVarName( "AND_FLAGS_CACHE" ), AndFlagsCache );
+        for ( i = 1;  i <= 3*AND_FLAGS_HASH_SIZE;  i++ ) {
+            SET_ELM_PLIST( AndFlagsCache, i, INTOBJ_INT(0) );
+        }
     }
 #endif
 
-    InitHandlerFunc( FuncOPERS_CACHE_INFO, "OPERS_CACHE_INFO" );
-    AssGVar( GVarName( "OPERS_CACHE_INFO" ),
-         NewFunctionC( "OPERS_CACHE_INFO", 0L, "",
-                    FuncOPERS_CACHE_INFO ) );
+    C_NEW_GVAR_FUNC( "OPERS_CACHE_INFO", 0, "",
+                  FuncOPERS_CACHE_INFO,
+         "src/opers.c:OPERS_CACHE_INFO" );
 
-    InitHandlerFunc( FuncCLEAR_CACHE_INFO, "CLEAR_CACHE_INFO" );
-    AssGVar( GVarName( "CLEAR_CACHE_INFO" ),
-         NewFunctionC( "CLEAR_CACHE_INFO", 0L, "",
-                    FuncCLEAR_CACHE_INFO ) );
+    C_NEW_GVAR_FUNC( "CLEAR_CACHE_INFO", 0, "",
+                  FuncCLEAR_CACHE_INFO,
+         "src/opers.c:CLEAR_CACHE_INFO" );
 }
 
+
+
+/****************************************************************************
+**
+*F  CheckOpers()  . . . .  check the initialisation of the operations package
+*/
+void CheckOpers ( void )
+{
+    SET_REVISION( "opers_c",    Revision_opers_c );
+    SET_REVISION( "opers_h",    Revision_opers_h );
+}
 
 
 /****************************************************************************

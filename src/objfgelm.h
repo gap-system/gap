@@ -7,7 +7,7 @@
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char * Revision_objfgelm_h =
+SYS_CONST char * Revision_objfgelm_h =
    "@(#)$Id$";
 #endif
 
@@ -142,10 +142,29 @@ char * Revision_objfgelm_h =
 /****************************************************************************
 **
 
-*F  InitFreeGroupElements()
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupFreeGroupElements()  . . . initialize the free group element helpers
+*/
+extern void SetupFreeGroupElements ( void );
+
+
+/****************************************************************************
+**
+*F  InitFreeGroupElements()   . . . initialize the free group element helpers
 */
 extern void InitFreeGroupElements ( void );
 
+
+/****************************************************************************
+**
+*F  CheckFreeGroupElements()  . . . . .  check the free group element helpers
+*/
+extern void CheckFreeGroupElements ( void );
 
 
 /****************************************************************************

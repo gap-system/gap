@@ -107,7 +107,11 @@ DisplayCompositionSeries := function( S )
     # display the composition series
     Print( GroupString( S[1], "G" ), "\n" );
     for i  in [2..Length(S)]  do
-        f := Image( NaturalHomomorphismByNormalSubgroupInParent( S[ i ] ) );
+	if Parent(S[i])=S[i-1] then
+	  f:=Image( NaturalHomomorphismByNormalSubgroupInParent( S[ i ] ) );
+	else
+	  f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
+	fi;
         Print( " | ",IsomorphismTypeFiniteSimpleGroup(f),"\n");
         if i < Length(S)  then
             Print( GroupString( S[i], "S" ), "\n" );
@@ -2458,9 +2462,10 @@ local G,H,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
       Add(nser,cs);
       n:=cs;
     else
-      o:=GroupOnSubgroupsOrbit(H,cs);
-      Info(InfoGroup,1,"orblen=",Length(o));
-      n:=Intersection(o);
+      n:=Core(H,cs);
+      #o:=GroupOnSubgroupsOrbit(H,cs);
+      #Info(InfoGroup,1,"orblen=",Length(o));
+      #n:=Intersection(o);
       #n:=o[1];
       #for i in o{[2..Length(o)]} do
         #n:=IntersectionNormalClosurePermGroup(n,i);

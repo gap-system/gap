@@ -1,5 +1,15 @@
 #############################################################################
 ##
+#W  testall.g                   GAP library                      Frank Celler
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+
+
+#############################################################################
+##
 #F  START_TEST( <id> )  . . . . . . . . . . . . . . . . . . . start test file
 ##
 start_TEST := START_TEST;
@@ -25,6 +35,8 @@ STONE_STONE := 0;
 STONE_FILE  := 0;
 STONE_SUM   := 0;
 STONE_FSUM  := 0;
+STONE_PROD  := 1;
+STONE_COUNT := 0;
 
 STOP_TEST := function( file, fac )
     local   time;
@@ -33,7 +45,9 @@ STOP_TEST := function( file, fac )
     STONE_RTIME := Runtime() - START_TIME;
     STONE_STONE := QuoInt( fac, STONE_RTIME );
     STONE_SUM   := STONE_SUM + STONE_RTIME;
-    STONE_FSUM  := STONE_FSUM + fac;
+    STONE_FSUM   := STONE_FSUM + fac;
+    STONE_PROD  := STONE_PROD*STONE_STONE;
+    STONE_COUNT :=STONE_COUNT + 1;
 end;
 
 
@@ -63,10 +77,10 @@ end;
 ##
 TestDir := DirectoriesLibrary("tst");
 
-Print("You should start GAP4 using: `gap -N -M -m 16m'. The more \n");
-Print("GAP4stones you get, the faster your system is.  The runtime of\n");
-Print("the following tests (in general) increases.  You should expect\n");
-Print("about 10000 GAP4stones on a Pentium 5, 133 MHz, about 22000 on\n");
+Print("You should  start  GAP4  using:  `gap -N -M -m 16m'.  The  more\n");
+Print("GAP4stones you get, the faster your  system is.  The runtime of\n");
+Print("the following tests (in general)  increases.  You should expect\n");
+Print("about 10000 GAP4stones on a Pentium 5, 133 MHz,  about 28000 on\n");
 Print("a Pentium Pro, 200 Mhz.  The `next' time is an approximation of\n");
 Print("the running time for the next test.\n");
 Print("\n");
@@ -79,7 +93,6 @@ infoRead1 := InfoRead1;  InfoRead1 := Ignore;
 infoRead2 := InfoRead2;  InfoRead2 := Ignore;
 
 ReadTest( Filename( TestDir, "unknown.tst"  ) );  SHOW_STONES(64);
-ReadTest( Filename( TestDir, "boolean.tst"  ) );  SHOW_STONES(64);
 ReadTest( Filename( TestDir, "listgen.tst"  ) );  SHOW_STONES(89);
 ReadTest( Filename( TestDir, "gaussian.tst" ) );  SHOW_STONES(218);
 ReadTest( Filename( TestDir, "grpfree.tst"  ) );  SHOW_STONES(481);
@@ -108,11 +121,16 @@ ReadTest( Filename( TestDir, "grplatt.tst"  ) );  SHOW_STONES(0);
 
 Print("-------------------------------------------\n");
 Print( FormattedString("total",-16), "    ",
-       FormattedString(QuoInt(STONE_FSUM,STONE_SUM),8), "       ",
-       FormattedString(STONE_RTIME,8), "\n" );
+       FormattedString(RootInt(STONE_PROD,STONE_COUNT),8), "       ",
+       FormattedString(STONE_SUM,8), "\n" );
 Print("\n");
 
 InfoRead1  := infoRead1;
 InfoRead2  := infoRead2;
 START_TEST := start_TEST;
-STOP_TEST  := STOP_TEST;
+STOP_TEST  := stop_TEST;
+
+
+#############################################################################
+##
+#E  testall.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

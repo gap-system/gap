@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  listfunc.c                  GAP source                   Martin Schoenert
+*W  listfunc.c                  GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -8,40 +8,47 @@
 **
 **  This file contains the functions for generic lists.
 */
-char *          Revision_listfunc_c =
-   "@(#)$Id$";
-
 #include        "system.h"              /* Ints, UInts                     */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+SYS_CONST char * Revision_listfunc_c =
+   "@(#)$Id$";
 
-#include        "gvars.h"               /* AssGVar, GVarName               */
 
-#include        "calls.h"               /* Function                        */
-#include        "opers.h"               /* operations                      */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* XTNum, LEN_LIST, ELM_LIST,  ... */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "bool.h"                /* True, False                     */
+#include        "gvars.h"               /* global variables                */
 
-#include        "permutat.h"            /* OnTuplesPerm, OnSetsPerm        */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
+
+#include        "ariths.h"              /* basic arithmetic                */
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "string.h"              /* strings                         */
+
+#include        "bool.h"                /* booleans                        */
+
+#include        "permutat.h"            /* permutations                    */
 
 #define INCLUDE_DECLARATION_PART
-#include        "listfunc.h"            /* declaration part of the package */
+#include        "listfunc.h"            /* functions for generic lists     */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "plist.h"               /* LEN_PLIST, SET_LEN_PLIST,   ... */
-#include        "set.h"                 /* IsSet                           */
-#include        "range.h"               /* SET_LEN_RANGE, LEN_RANGE,   ... */
-
-#include        "gap.h"                 /* Error                           */
+#include        "plist.h"               /* plain lists                     */
+#include        "set.h"                 /* plain sets                      */
+#include        "range.h"               /* ranges                          */
 
 
 /****************************************************************************
 **
+
 *F  AddList(<list>,<obj>) . . . . . . . .  add an object to the end of a list
 **
 **  'AddList' adds the object <obj> to the end  of  the  list  <list>,  i.e.,
@@ -69,7 +76,7 @@ void            AddPlist (
 {
     Int                 pos;            /* position to assign to           */
 
-    if ( IS_IMM_PLIST(list) ) {
+    if ( ! IS_MUTABLE_PLIST(list) ) {
         list = ErrorReturnObj(
                 "Lists Assignment: <list> must be a mutable list",
                 0L, 0L,
@@ -122,8 +129,6 @@ Obj             AddListHandler (
 **  in which case the corresponding positions  will be left empty in <list1>.
 **  'AppendList' returns nothing, it is called only for its side effect.
 */
-Obj             AppendListIntrFunc;
-
 Obj             AppendListIntrHandler (
     Obj                 self,
     Obj                 list1,
@@ -141,7 +146,7 @@ Obj             AppendListIntrHandler (
         while ( ! IS_LIST( list1 ) ) {
             list1 = ErrorReturnObj(
                 "AppendList: <list1> must be a list (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
+                (Int)TNAM_OBJ(list1), 0L,
                 "you can return a list for <list1>" );
         }
         PLAIN_LIST( list1 );
@@ -154,7 +159,7 @@ Obj             AppendListIntrHandler (
         while ( ! IS_LIST( list2 ) ) {
             list2 = ErrorReturnObj(
                 "AppendList: <list2> must be a list (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
+                (Int)TNAM_OBJ(list2), 0L,
                 "you can return a list for <list2>"  );
         }
         len2 = LEN_LIST( list2 );
@@ -269,8 +274,6 @@ UInt            PositionSortedDensePlist (
     return h;
 }
 
-Obj             PositionSortedListFunc;
-
 Obj             PositionSortedListHandler (
     Obj                 self,
     Obj                 list,
@@ -282,7 +285,7 @@ Obj             PositionSortedListHandler (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "PositionSortedList: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
 
@@ -362,8 +365,6 @@ UInt            PositionSortedDensePlistComp (
     return h;
 }
 
-Obj             PositionSortedListCompFunc;
-
 Obj             PositionSortedListCompHandler (
     Obj                 self,
     Obj                 list,
@@ -376,7 +377,7 @@ Obj             PositionSortedListCompHandler (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "PositionSortedListComp: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
 
@@ -384,7 +385,7 @@ Obj             PositionSortedListCompHandler (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "PositionSortedListComp: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -490,8 +491,6 @@ void            SortDensePlist (
     }
 }
 
-Obj             SortListFunc;
-
 Obj             SortListHandler (
     Obj                 self,
     Obj                 list )
@@ -500,7 +499,7 @@ Obj             SortListHandler (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "SortList: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
 
@@ -584,8 +583,6 @@ void            SortDensePlistComp (
     }
 }
 
-Obj             SortListCompFunc;
-
 Obj             SortListCompHandler (
     Obj                 self,
     Obj                 list,
@@ -595,7 +592,7 @@ Obj             SortListCompHandler (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "SortListComp: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
+            (Int)TNAM_OBJ(list), 0L,
             "you can return a list for <list>" );
     }
 
@@ -603,7 +600,7 @@ Obj             SortListCompHandler (
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "SortListComp: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
+            (Int)TNAM_OBJ(func), 0L,
             "you can return a function for <func>" );
     }
 
@@ -713,7 +710,7 @@ Obj             FuncOnPairs (
     while ( ! IS_LIST( pair ) || LEN_LIST( pair ) != 2 ) {
         pair = ErrorReturnObj(
             "OnPairs: <pair> must be a list of length 2 (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(pair)].name), 0L,
+            (Int)TNAM_OBJ(pair), 0L,
             "you can return a list of length 2 for <pair>" );
     }
 
@@ -759,7 +756,7 @@ Obj             FuncOnTuples (
     while ( ! IS_LIST( tuple ) ) {
         tuple = ErrorReturnObj(
             "OnTuples: <tuple> must be a list (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(tuple)].name), 0L,
+            (Int)TNAM_OBJ(tuple), 0L,
             "you can return a list for <tuple>" );
     }
 
@@ -808,7 +805,7 @@ Obj             FuncOnSets (
     while ( TNUM_OBJ( set ) != T_PLIST_HOM_SSORT && ! IsSet( set ) ) {
         set = ErrorReturnObj(
             "OnSets: <set> must be a set (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(set)].name), 0L,
+            (Int)TNAM_OBJ(set), 0L,
             "you can return a set for <set>" );
     }
 
@@ -923,7 +920,7 @@ Obj             DepthListx (
              && TNUM_OBJ(tmp) <= LAST_LIST_TNUM ) {
             tmp = ErrorReturnObj(
                 "DepthVector: <list> must be a vector (not a %s)",
-                (Int)(InfoBags[TNUM_OBJ(tmp)].name), 0L,
+                (Int)TNAM_OBJ(tmp), 0L,
                 "you can return a vector for <list>" );
         }
         if ( ! EQ( zero, tmp ) )
@@ -946,7 +943,7 @@ Obj       CantDepthVector (
 {
     vec = ErrorReturnObj(
         "DepthVector: <vec> must be a vector (not a %s)",
-        (Int)(InfoBags[TNUM_OBJ(vec)].name), 0L,
+        (Int)TNAM_OBJ(vec), 0L,
         "you can return a vector for <vec>" );
     return DepthVectorFuncs[XTNum(vec)]( vec );
 }
@@ -962,11 +959,17 @@ Obj       DepthVectorHandler (
 
 /****************************************************************************
 **
-*F  InitListFunc()  . . . . . . . . . . .  initialize lists functions package
-**
-**  'InitListFunc' initializes the lists functions package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void            InitListFunc ( void )
+
+
+/****************************************************************************
+**
+
+*F  SetupListFunc() . . . . . . . . .  initialize the lists functions package
+*/
+void SetupListFunc ( void )
 {
     UInt                type;           /* loop variable                   */
 
@@ -974,92 +977,106 @@ void            InitListFunc ( void )
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         DepthVectorFuncs[ type ] = CantDepthVector;
     }
-    /* DepthVectorFuncs[ T_LISTX           ] = DepthListx; */
     DepthVectorFuncs[ T_PLIST_CYC       ] = DepthListx;
     DepthVectorFuncs[ T_PLIST_CYC_NSORT ] = DepthListx;
     DepthVectorFuncs[ T_PLIST_CYC_SSORT ] = DepthListx;
-
-    /* install the internal functions                                      */
-    InitHandlerFunc( AddListHandler, "ADD_LIST" );
-    AddListOper = NewOperationC(
-        "ADD_LIST", 2L, "list, val", AddListHandler );
-    AssGVar( GVarName( "ADD_LIST" ),
-        AddListOper );
-
-    InitHandlerFunc( AppendListHandler, "APPEND_LIST");
-    AppendListOper = NewOperationC(
-	"APPEND_LIST", 2L, "list, list", AppendListHandler );
-    AssGVar( GVarName( "APPEND_LIST" ),
-	AppendListOper );
-
-    InitHandlerFunc( AppendListIntrHandler, "APPEND_LIST_INTR");
-    AppendListIntrFunc = NewFunctionC(
-        "APPEND_LIST_INTR", 2L, "list1, list2", AppendListIntrHandler );
-    AssGVar( GVarName( "APPEND_LIST_INTR" ),
-        AppendListIntrFunc );
-
-    /* make and install the 'POSITION_SORTED_LIST' function                */
-    InitHandlerFunc( PositionSortedListHandler, "POSITION_SORTED_LIST");
-    PositionSortedListFunc = NewFunctionC(
-        "POSITION_SORTED_LIST", 2L, "list, obj", PositionSortedListHandler );
-    AssGVar( GVarName( "POSITION_SORTED_LIST" ),
-        PositionSortedListFunc );
-
-    /* make and install the 'POSITION_SORTED_LIST_COMP' function           */
-    InitHandlerFunc( PositionSortedListCompHandler, "POSITION_SORTED_LIST_COMP");
-    PositionSortedListCompFunc = NewFunctionC(
-        "POSITION_SORTED_LIST_COMP", 3L, "list, obj, func",
-        PositionSortedListCompHandler );
-    AssGVar( GVarName( "POSITION_SORTED_LIST_COMP" ),
-        PositionSortedListCompFunc );
-
-    /* make and install the 'SORT_LIST' function                           */
-    InitHandlerFunc( SortListHandler, "SORT_LIST");
-    SortListFunc = NewFunctionC(
-        "SORT_LIST", 1L, "list", SortListHandler );
-    AssGVar( GVarName( "SORT_LIST" ),
-        SortListFunc );
-
-    /* make and install the 'SORT_LIST_COMP' function                      */
-    InitHandlerFunc( SortListCompHandler, "SORT_LIST_COMP");
-    SortListCompFunc = NewFunctionC(
-        "SORT_LIST_COMP", 2L, "list, func", SortListCompHandler );
-    AssGVar( GVarName( "SORT_LIST_COMP" ),
-        SortListCompFunc );
-
-    InitHandlerFunc( FuncOnPoints, "OnPoints");
-    AssGVar( GVarName( "OnPoints" ),
-              NewFunctionC( "OnPoints", 2L, "pnt, elm",
-                                FuncOnPoints ) );
-    InitHandlerFunc( FuncOnPairs, "OnPairs");
-    AssGVar( GVarName( "OnPairs" ),
-              NewFunctionC( "OnPairs", 2L, "pair, elm",
-                                FuncOnPairs ) );
-    InitHandlerFunc( FuncOnTuples, "OnTuples");
-    AssGVar( GVarName( "OnTuples" ),
-              NewFunctionC( "OnTuples", 2L, "tuple, elm",
-                                FuncOnTuples ) );
-    InitHandlerFunc( FuncOnSets, "OnSets");
-    AssGVar( GVarName( "OnSets" ),
-              NewFunctionC( "OnSets", 2L, "set, elm",
-                                FuncOnSets ) );
-    InitHandlerFunc( FuncOnRight, "OnRight");
-    AssGVar( GVarName( "OnRight" ),
-              NewFunctionC( "OnRight", 2L, "pnt, elm",
-                                FuncOnRight ) );
-    InitHandlerFunc( FuncOnLeft, "OnLeftAntiOperation");
-    AssGVar( GVarName( "OnLeftAntiOperation" ),
-              NewFunctionC( "OnLeftAntiOperation", 2L, "pnt, elm",
-                                FuncOnLeft ) );
-    InitHandlerFunc( FuncOnLeftInverse, "OnLeftInverse");
-    AssGVar( GVarName( "OnLeftInverse" ),
-              NewFunctionC( "OnLeftInverse", 2L, "pnt, elm",
-                                FuncOnLeftInverse ) );
-    InitHandlerFunc( DepthVectorHandler, "Depthvector");
-    AssGVar( GVarName( "DepthVector" ),
-              NewFunctionC( "DepthVector", 1L, "list",
-                                DepthVectorHandler ) );
 }
 
 
 
+/****************************************************************************
+**
+*F  InitListFunc()  . . . . . . . . .  initialize the lists functions package
+**
+**  'InitListFunc' initializes the lists functions package.
+*/
+void InitListFunc ( void )
+{
+    /* install the internal functions                                      */
+    C_NEW_GVAR_OPER( "ADD_LIST", 2, "list, val", AddListOper, AddListHandler,
+      "src/listfunc.c:ADD_LIST" );
+
+    C_NEW_GVAR_OPER( "APPEND_LIST", 2, "list, val", AppendListOper, AppendListHandler,
+      "src/listfunc.c:APPEND_LIST" );
+
+    C_NEW_GVAR_FUNC( "APPEND_LIST_INTR", 2, "list1, list2", 
+                    AppendListIntrHandler,
+      "src/listfunc.c:APPEND_LIST_INTR" );
+
+
+    /* make and install the 'POSITION_SORTED_LIST' function                */
+    C_NEW_GVAR_FUNC( "POSITION_SORTED_LIST", 2, "list, obj", 
+                      PositionSortedListHandler,
+      "src/listfunc.c:POSITION_SORTED_LIST" );
+
+
+    /* make and install the 'POSITION_SORTED_LIST_COMP' function           */
+    C_NEW_GVAR_FUNC( "POSITION_SORTED_LIST_COMP", 3, "list, obj, func", 
+                      PositionSortedListCompHandler,
+      "src/listfunc.c:POSITION_SORTED_LIST_COMP" );
+
+
+    /* make and install the 'SORT_LIST' function                           */
+    C_NEW_GVAR_FUNC( "SORT_LIST", 1, "list",
+                      SortListHandler,
+      "src/listfunc.c:SORT_LIST" );
+
+
+    /* make and install the 'SORT_LIST_COMP' function                      */
+    C_NEW_GVAR_FUNC( "SORT_LIST_COMP", 2, "list, func",
+                      SortListCompHandler,
+      "src/listfunc.c:SORT_LIST_COMP" );
+
+
+    /* make and install the `OnSomething' functions                        */
+    C_NEW_GVAR_FUNC( "OnPoints", 2, "pnt, elm",
+                  FuncOnPoints,
+      "src/listfunc.c:OnPoints" );
+
+    C_NEW_GVAR_FUNC( "OnPairs", 2, "pair, elm",
+                  FuncOnPairs,
+      "src/listfunc.c:OnPairs" );
+
+    C_NEW_GVAR_FUNC( "OnTuples", 2, "tuple, elm",
+                  FuncOnTuples,
+      "src/listfunc.c:OnTuples" );
+
+    C_NEW_GVAR_FUNC( "OnSets", 2, "set, elm",
+                  FuncOnSets,
+      "src/listfunc.c:OnSets" );
+
+    C_NEW_GVAR_FUNC( "OnRight", 2, "pnt, elm",
+                  FuncOnRight,
+      "src/listfunc.c:OnRight" );
+
+    C_NEW_GVAR_FUNC( "OnLeftAntiOperation", 2, "pnt, elm",
+                  FuncOnLeft,
+      "src/listfunc.c:OnLeftAntiOperation" );
+
+    C_NEW_GVAR_FUNC( "OnLeftInverse", 2, "pnt, elm",
+                  FuncOnLeftInverse,
+      "src/listfunc.c:OnLeftInverse" );
+
+    C_NEW_GVAR_FUNC( "Depthvector", 1, "list",
+                  DepthVectorHandler,
+      "src/listfunc.c:Depthvector" );
+}
+
+
+
+/****************************************************************************
+**
+*F  CheckListFunc() . check the initialisation of the lists functions package
+*/
+void CheckListFunc ( void )
+{
+    SET_REVISION( "listfunc_c", Revision_listfunc_c );
+    SET_REVISION( "listfunc_h", Revision_listfunc_h );
+}
+
+
+/****************************************************************************
+**
+
+*E  listfunc.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

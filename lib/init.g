@@ -108,20 +108,50 @@ end;
 ##  this  name  must   include an extension.     The file  must  also  define
 ##  'Revision.<name_ext>'.
 ##
+IS_READ_OR_COMPLETE := false;
+
 READED_FILES := [];
+
+RANK_FILTER_LIST         := [];
+RANK_FILTER_LIST_CURRENT := fail;
+RANK_FILTER_COUNT        := fail;
+
+RANK_FILTER_COMPLETION   := Error;	# defined in "filter.g"
+RANK_FILTER_STORE        := Error;	# defined in "filter.g"
+RANK_FILTER              := Error;	# defined in "filter.g"
+RankFilter               := Error;      # defined in "filter.g"
+
 
 ReadAndCheckFunc := function( path )
 
     return function( name )
         local    ext,  libname;
 
+        # create a filename from <path> and <name>
         libname := SHALLOW_COPY_OBJ(path);
         APPEND_LIST_INTR( libname, "/" );
         APPEND_LIST_INTR( libname, name );
-        ADD_LIST( READED_FILES, libname );
-        if not READ_GAP_ROOT(libname)  then
-            Error("the library file '",name,"' must exist and be readable");
+
+        # we are completing, store the filename and filter ranks
+        if IS_READ_OR_COMPLETE  then
+            ADD_LIST( READED_FILES, libname );
+            RANK_FILTER_LIST_CURRENT := [];
+            RANK_FILTER_COUNT := 0;
+            ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
+            if not READ_GAP_ROOT(libname)  then
+                Error( "the library file '", name, "' must exist and ",
+                       "be readable");
+            fi;
+            Unbind(RANK_FILTER_LIST_CURRENT);
+            Unbind(RANK_FILTER_COUNT);
+        else
+            if not READ_GAP_ROOT(libname)  then
+                Error( "the library file '", name, "' must exist and ",
+                       "be readable");
+            fi;
         fi;
+
+        # check the revision entry
         ext := ReplacedString( name, ".", "_" );
         if not IsBound(Revision.(ext))  then
             Print( "#W  revision entry missing in \"", name, "\"\n" );
@@ -136,37 +166,32 @@ end;
 #F  ReadOrComplete( <name> )  . . . . . . . . . . . . read file or completion
 ##
 COMPLETABLE_FILES := [];
-
-RANK_FILTER_LIST       := [];
-RANK_FILTER_COUNT      := 0;
-RANK_FILTER_COMPLETION := Error;	# defined in "filter.g"
-RANK_FILTER_STORE      := Error;	# defined in "filter.g"
-RANK_FILTER            := Error;	# defined in "filter.g"
-RankFilter             := Error;        # defined in "filter.g"
-
+COMPLETED_FILES   := [];
 
 ReadOrComplete := function( name )
     local   comp,  check;
 
     READED_FILES := [];
+    check        := CHECK_INSTALL_METHOD;
 
     # use completion files
     if CHECK_FOR_COMP_FILES  then
         comp := ReplacedString( name, ".g", ".co" );
 
         # do not check installation and use cached ranks
-        check := CHECK_INSTALL_METHOD;
         CHECK_INSTALL_METHOD := false;
-        RankFilter := RANK_FILTER_COMPLETION;
-        RANK_FILTER_COUNT := 1;
+        RankFilter           := RANK_FILTER_COMPLETION;
 
         # check for the completion file
         if not READ_GAP_ROOT(comp)  then
 
-            # read the original file
+            # set filter functions to store
+            IS_READ_OR_COMPLETE  := true;
             CHECK_INSTALL_METHOD := check;
-            RankFilter := RANK_FILTER_STORE;
-            RANK_FILTER_LIST := [];
+            RankFilter           := RANK_FILTER_STORE;
+            RANK_FILTER_LIST     := [];
+
+            # read the original file
             InfoRead1( "#I  reading ", name, "\n" );
             if not READ_GAP_ROOT(name)  then
                 Error( "cannot read or complete file ", name );
@@ -174,30 +199,50 @@ ReadOrComplete := function( name )
             ADD_LIST( COMPLETABLE_FILES, 
                       [ name, READED_FILES, RANK_FILTER_LIST ] );
 
-            # reset rank
-            RANK_FILTER_LIST := [];
-            RANK_FILTER_COUNT := 0;
-            RankFilter := RANK_FILTER;
-
         # file completed
         else
-            CHECK_INSTALL_METHOD := check;
-            RankFilter := RANK_FILTER;
+            ADD_LIST( COMPLETED_FILES, name );
             InfoRead1( "#I  completed ", name, "\n" );
         fi;
+
     else
 
-        # hash the ranks
-        RankFilter := RANK_FILTER_STORE;
-        RANK_FILTER_LIST := [];
-        RANK_FILTER_COUNT := 0;
+        # set `RankFilter' to hash the ranks
+        IS_READ_OR_COMPLETE := true;
+        RankFilter          := RANK_FILTER_STORE;
+        RANK_FILTER_LIST    := [];
+
+        # read the file
         if not READ_GAP_ROOT(name)  then
             Error( "cannot read file ", name );
         fi;
         ADD_LIST( COMPLETABLE_FILES,
                   [ name, READED_FILES, RANK_FILTER_LIST ] );    
-        RANK_FILTER_LIST := [];
     fi;
+
+    # reset rank and filter functions
+    IS_READ_OR_COMPLETE  := false;
+    CHECK_INSTALL_METHOD := check;
+    RankFilter           := RANK_FILTER;
+    Unbind(RANK_FILTER_LIST);
+    Unbind(READED_FILES);
+end;
+
+
+#############################################################################
+##
+#F  READ_CHANGED_GAP_ROOT( <name> ) . . . . . .  completion file is out-dated
+##
+READ_CHANGED_GAP_ROOT := function( name )
+    local   rankFilter;
+
+    rankFilter := RankFilter;
+    RankFilter := RANK_FILTER;
+    Print( "#W  inconsistent completion for \"", name, "\"\n" );
+    if not READ_GAP_ROOT(name)  then
+        Error( "cannot read file ", name );
+    fi;
+    RankFilter := rankFilter;
 end;
 
 

@@ -50,35 +50,37 @@
 **  entry contains num( <a> ) and the last entry finally gives a boundary
 **  for pos( <b> ) for all trees <b> which are represented by <a>.
 */
-char * Revision_dt_c =
+#include       "system.h"
+
+SYS_CONST char * Revision_dt_c =
    "@(#)$Id$";
 
 
-
-
-
-#include       "system.h"
-#include       "gasman.h"
-#include       "objects.h"
-#include       "scanner.h"
-#include       "bool.h"
-#include       "calls.h"
-#include       "gap.h"
-#include       "gvars.h"
-#include       "plist.h"
-#include       "lists.h"
-#include       "listfunc.h"
-#include       "precord.h"
-#include       "records.h"
-#include       "integer.h"
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
+#include        "bool.h"                /* booleans                        */
+#include        "calls.h"               /* generic call mechanism          */
+#include        "gap.h"                 /* error handling, initialisation  */
+#include        "gvars.h"               /* global variables                */
+#include        "integer.h"             /* integers                        */
 
 #define INCLUDE_DECLARATION_PART
-#include       "dt.h"
+#include        "dt.h"                  /* deep thought                    */
 #undef  INCLUDE_DECLARATION_PART
+
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
+
+#include        "lists.h"               /* generic lists                   */
+#include        "listfunc.h"            /* functions for generic lists     */
+#include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
 
 /****************************************************************************
 **
+
 *F  DT_POS(tree, index) . . . . . . . . . . . . . position of (<tree>, index)
 **
 **  'DT_POS' returns pos(<a>) where <a> is the subtree of <tree> rooted at
@@ -315,27 +317,27 @@ UInt   Mark(
         **  num(<tree>, i) > num(<reftree>, index)     */
         while( i < len && 
                DT_GEN(tree, i)  >  refgen )
-	    i++;
-	if ( AlmostEqual(tree, i, reftree, index) )
-	{
-	    DT_MARK(tree, i);
-	    if ( m < INT_INTOBJ( DT_POS(tree, i) )  )
-	        m = INT_INTOBJ( DT_POS(tree, i) );
-	}
-	/*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
-	**  tree <b> we can now skip the whole tree rooted at (<tree>, i).
+            i++;
+        if ( AlmostEqual(tree, i, reftree, index) )
+        {
+            DT_MARK(tree, i);
+            if ( m < INT_INTOBJ( DT_POS(tree, i) )  )
+                m = INT_INTOBJ( DT_POS(tree, i) );
+        }
+        /*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
+        **  tree <b> we can now skip the whole tree rooted at (<tree>, i).
         **  If (<tree>, i) is the left subnode of another node we can even
         **  skip the tree rooted at that node,  because of 
         **  num( right(a) )  <  num( left(a) ) for all trees <a>.
         **  Note that (<tree>, i) is the left subnode of another node,  if and
         **  only if the previous node (<tree>, i-1) is not an atom. in this
         **  case (<tree>, i) is the left subnode of (<tree>, i-1).          */
-	if ( DT_LENGTH(tree, i-1) == 1 )
-	    /*   skip the tree rooted at (<tree>, i).                    */
-	    i = i + DT_LENGTH(tree, i);
-	else
-	    /*   skip the tree rooted at (<tree>, i-1)                   */
-	    i = i - 1 + DT_LENGTH(tree, i-1);
+        if ( DT_LENGTH(tree, i-1) == 1 )
+            /*   skip the tree rooted at (<tree>, i).                    */
+            i = i + DT_LENGTH(tree, i);
+        else
+            /*   skip the tree rooted at (<tree>, i-1)                   */
+            i = i - 1 + DT_LENGTH(tree, i-1);
     }
     return m;
 }
@@ -499,17 +501,17 @@ Obj    Mark2(
             }
             /*  add i to <list>[ pos(tree(<tree>, i)) ]                    */ 
             else
-	    {
-	        new = ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) )  );
-		GROW_PLIST(new, LEN_PLIST(new) + 1);
-		SET_LEN_PLIST(new, LEN_PLIST(new) + 1);
-		SET_ELM_PLIST(new, LEN_PLIST(new), INTOBJ_INT(i) );
-		/*  tell gasman that new has changed                         */
-		CHANGED_BAG(new);
-	    }
-	}
-	/*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
-	**  tree <b> we can now skip the whole tree rooted at (<tree>, i).
+            {
+                new = ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) )  );
+                GROW_PLIST(new, LEN_PLIST(new) + 1);
+                SET_LEN_PLIST(new, LEN_PLIST(new) + 1);
+                SET_ELM_PLIST(new, LEN_PLIST(new), INTOBJ_INT(i) );
+                /*  tell gasman that new has changed                         */
+                CHANGED_BAG(new);
+            }
+        }
+        /*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
+        **  tree <b> we can now skip the whole tree rooted at (<tree>, i).
         **  If (<tree>, i) is the left subnode of another node we can even
         **  skip the tree rooted at that node,  because of 
         **  num( right(a) )  <  num( left(a) ) for all trees <a>.
@@ -873,31 +875,31 @@ void    GetPols(
     lenl = LEN_PLIST(lreps);
     for  (i=1; i<=lenl; i++)
         for  (j=1; j<=lenr; j++)
-	    {
-	        /* now get all representatives, which can be constructed from
-	        ** <lreps>[<i>] and <rreps>[<j>] and add the corresponding
-	        ** deep thought monomials to <pols>                         */
-	        k = LEN_PLIST( ELM_PLIST(lreps, i) )
-		  + LEN_PLIST( ELM_PLIST(rreps, j) ) + 5;/* m"ogliche Inkom-*/
-		tree = NEW_PLIST(T_PLIST, k);            /* patibilit"at nach*/
-		SET_LEN_PLIST(tree, k);        /*"Anderung der Datenstruktur */
-		SET_ELM_PLIST(tree, 1, INTOBJ_INT(1) );
-		SET_ELM_PLIST(tree, 2, ELM_PLIST( list, 3) );
-		SET_ELM_PLIST(tree, 3, INTOBJ_INT(0) );
-		SET_ELM_PLIST(tree, 4, INTOBJ_INT((int)(k/5)) );
-		SET_ELM_PLIST(tree, 5, INTOBJ_INT(0) );
-		tree1 = ELM_PLIST(lreps, i);
-		len = LEN_PLIST( tree1 );
-		for  (l=1; l<=len; l++)
-		    SET_ELM_PLIST(tree, l+5, ELM_PLIST(tree1, l) );
-		k = LEN_PLIST(tree1) + 5;
-		tree1 = ELM_PLIST(rreps, j);
-		len = LEN_PLIST( tree1 );
-		for  (l=1; l<=len; l++)
-		    SET_ELM_PLIST(tree, l+k, ELM_PLIST(tree1, l) );
-		UnmarkTree(tree);
-		FindNewReps2(tree, pols, pr);
-	    }
+            {
+                /* now get all representatives, which can be constructed from
+                ** <lreps>[<i>] and <rreps>[<j>] and add the corresponding
+                ** deep thought monomials to <pols>                         */
+                k = LEN_PLIST( ELM_PLIST(lreps, i) )
+                  + LEN_PLIST( ELM_PLIST(rreps, j) ) + 5;/* m"ogliche Inkom-*/
+                tree = NEW_PLIST(T_PLIST, k);            /* patibilit"at nach*/
+                SET_LEN_PLIST(tree, k);        /*"Anderung der Datenstruktur */
+                SET_ELM_PLIST(tree, 1, INTOBJ_INT(1) );
+                SET_ELM_PLIST(tree, 2, ELM_PLIST( list, 3) );
+                SET_ELM_PLIST(tree, 3, INTOBJ_INT(0) );
+                SET_ELM_PLIST(tree, 4, INTOBJ_INT((int)(k/5)) );
+                SET_ELM_PLIST(tree, 5, INTOBJ_INT(0) );
+                tree1 = ELM_PLIST(lreps, i);
+                len = LEN_PLIST( tree1 );
+                for  (l=1; l<=len; l++)
+                    SET_ELM_PLIST(tree, l+5, ELM_PLIST(tree1, l) );
+                k = LEN_PLIST(tree1) + 5;
+                tree1 = ELM_PLIST(rreps, j);
+                len = LEN_PLIST( tree1 );
+                for  (l=1; l<=len; l++)
+                    SET_ELM_PLIST(tree, l+k, ELM_PLIST(tree1, l) );
+                UnmarkTree(tree);
+                FindNewReps2(tree, pols, pr);
+            }
 }
 
 
@@ -935,8 +937,8 @@ Obj      FuncGetPols(
 */
 
 void    GetReps( 
-		Obj    list,
-		Obj    reps     )
+                Obj    list,
+                Obj    reps     )
 {
     Obj    lreps,
            rreps,
@@ -963,9 +965,9 @@ void    GetReps(
     lenr = LEN_PLIST( rreps );
     for  (i=1; i<=lenl; i++)
         for  (j=1; j<=lenr; j++)
-	{
-	    /* compute all representatives which can be constructed from
-	    ** <lreps>[<i>] and <rreps>[<j>] and add them to <reps>.   */
+        {
+            /* compute all representatives which can be constructed from
+            ** <lreps>[<i>] and <rreps>[<j>] and add them to <reps>.   */
             k = LEN_PLIST( ELM_PLIST(lreps, i) )
                 + LEN_PLIST( ELM_PLIST(rreps, j) ) + 5;/* m"ogliche Inkom-*/
             tree = NEW_PLIST(T_PLIST, k);            /* patibilit"at nach*/
@@ -1770,40 +1772,69 @@ Obj    Funcposition(Obj      self,
 
 /****************************************************************************
 **
-*F  InitDeepThought() . . . . . . . . . . . . initialize Deep Thought package
-**
-**  'InitDeepThought' initializes the Deep Thought package.
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-void    InitDeepThought( void )
+
+
+/****************************************************************************
+**
+
+*F  SetupDeepThought()  . . . . . . . . . initialize the Deep Thought package
+*/
+void SetupDeepThought ( void )
 {
-
-    /*  install the internal functions                                      */
-    InitHandlerFunc( FuncMakeFormulaVector, "dt: make formula vector");
-    AssGVar( GVarName( "MakeFormulaVector" ), NewFunctionC("MakeFormulaVector",
-             2L, "tree, presentation", FuncMakeFormulaVector )       );
-
-    InitHandlerFunc( FuncFindNewReps, "dt: find new reps");
-    AssGVar( GVarName( "FindNewReps" ), NewFunctionC("FindNewReps",
-             4L, "tree, representatives, presentation, maximum",
-             FuncFindNewReps )                                    );
-
-    InitHandlerFunc( FuncUnmarkTree, "dt: unmark tree");
-    AssGVar( GVarName( "UnmarkTree" ), NewFunctionC("UnmarkTree",
-             1L, "tree",             FuncUnmarkTree )  );
-
-    InitHandlerFunc( FuncGetPols, "dt: get polynomials");
-    AssGVar( GVarName( "GetPols" ), NewFunctionC(" GetPols",
-             3L, "list, presentation, polynomials", FuncGetPols)      );
-    
-    InitHandlerFunc( Funcposition, "dt: evaluation");
-    AssGVar( GVarName( "DT_evaluation" ), NewFunctionC( "DT_evaluation",
-             1L, "vector", Funcposition)         );
-    InitFopyGVar( GVarName( "dt_add" ), &Dt_add );
 }
 
 
 /****************************************************************************
 **
+*F  InitDeepThought() . . . . . . . . . . initialize the Deep Thought package
+**
+**  'InitDeepThought' initializes the Deep Thought package.
+*/
+void InitDeepThought ( void )
+{
+
+    /*  install the internal functions                                      */
+    C_NEW_GVAR_FUNC( "MakeFormulaVector", 2, "tree, presentation",
+                  FuncMakeFormulaVector,
+            "src/dt.c:MakeFormulaVector" );
+
+    C_NEW_GVAR_FUNC( "FindNewReps", 4, "tree, representatives, presentation, maximum",
+                  FuncFindNewReps,
+            "src/dt.c:FindNewReps" );
+
+    C_NEW_GVAR_FUNC( "UnmarkTree", 1, "tree",
+                  FuncUnmarkTree,
+            "src/dt.c:UnmarkTree" );
+
+    C_NEW_GVAR_FUNC( "GetPols", 3, "list, presentation, polynomial",
+                  FuncGetPols,
+            "src/dt.c:GetPols" );
+    
+    C_NEW_GVAR_FUNC( "DT_evaluation", 1, "vector",
+                  Funcposition,
+            "src/dt.c:DT_evaluation" );
+
+    InitFopyGVar( "dt_add" , &Dt_add );
+}
+
+
+/****************************************************************************
+**
+*F  CheckDeepThought()   check the initialisation of the Deep Thought package
+*/
+void CheckDeepThought ( void )
+{
+    SET_REVISION( "dt_c",       Revision_dt_c );
+    SET_REVISION( "dt_h",       Revision_dt_h );
+}
+
+
+/****************************************************************************
+**
+
 *E  dt.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 **
 */

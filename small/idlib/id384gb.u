@@ -3,7 +3,7 @@
 #W  id384gb.u              GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id384gb_u :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 IdGroupTree.next[ 384 ].next[ 7 ].next[ 2 ].next[ 21 ] := 
 rec(

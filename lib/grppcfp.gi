@@ -6,7 +6,7 @@
 ##  fp group and vice versa.
 ##
 Revision.grppcfp_gi :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -479,7 +479,8 @@ LiftEpimorphismSQ := function( epi, M, c )
     sol := SolutionMat( A, V );
 
     # if there is no solution, then there is no lift
-    if IsBool( sol ) then return false; fi;
+    if sol = fail then return false; fi;
+#T return value should be fail?
 
     # create lift
     elms := [];

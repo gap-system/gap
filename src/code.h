@@ -36,7 +36,7 @@ SYS_CONST char * Revision_code_h =
 **  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
 **  break.
 */
-#define Stat            UInt4
+#define Stat            UInt
 
 
 /****************************************************************************
@@ -1205,11 +1205,25 @@ extern  void            CodeAssertEnd3Args ( void );
 /****************************************************************************
 **
 
+*F  SetupCode() . . . . . . . . . . . . . . . .  initialize the coder package
+*/
+extern void SetupCode ( void );
+
+
+/****************************************************************************
+**
 *F  InitCode()  . . . . . . . . . . . . . . . .  initialize the coder package
 **
 **  'InitCode' initializes the coder package.
 */
-extern  void            InitCode ( void );
+extern void InitCode ( void );
+
+
+/****************************************************************************
+**
+*F  CheckCode() . . . . . . . . check the initialisation of the coder package
+*/
+extern void CheckCode ( void );
 
 
 /****************************************************************************

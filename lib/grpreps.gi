@@ -3,7 +3,7 @@
 #W  grpreps.gi                  GAP library                      Bettina Eick
 ##
 Revision.grpreps_gi :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 #############################################################################
 ##

@@ -45,82 +45,41 @@ extern Obj Fail;
 /****************************************************************************
 **
 
-*F  ReturnTrue1( <val1> ) . . . . . . . . . . . . . . . . . .  return  'True'
-*F  ReturnTrue2( <val1>, <val2> ) . . . . . . . . . . . . . .  return  'True'
-*F  ReturnTrue3( <val1>, <val2>, <val3> ) . . . . . . . . . .  return  'True'
-*F  ReturnFalse1( <val1> )  . . . . . . . . . . . . . . . . .  return 'False'
-*F  ReturnFalse2( <val1>, <val2> )  . . . . . . . . . . . . .  return 'False'
-*F  ReturnFalse3( <val1>, <val2>, <val3> )  . . . . . . . . .  return 'False'
-*F  ReturnFail1( <val1> ) . . . . . . . . . . . . . . . . . .  return  'Fail'
-*F  ReturnFail2( <val1>, <val2> ) . . . . . . . . . . . . . .  return  'Fail'
-*F  ReturnFail3( <val1>, <val2>, <val3> ) . . . . . . . . . .  return  'Fail'
-**
-**  'ReturnTrue?'  simply return  'True'  independent of  the values of   the
-**  arguments.
-**
-**  'ReturnFalse?' likewise return 'False'.
-**
-**  'ReturnFail?' likewise return 'Fail'.
-**
-**  Those  functions are  useful for  dispatcher  tables if the types already
-**  determine the outcome.
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-extern  Obj ReturnTrue1 (
-            Obj                 self,
-            Obj                 val1 );
 
-extern  Obj ReturnTrue2 (
-            Obj                 self,
-            Obj                 val1,
-            Obj                 val2 );
+/****************************************************************************
+**
 
-extern  Obj ReturnTrue3 (
-            Obj                 self,
-            Obj                 val1,
-            Obj                 val2,
-            Obj                 val3 );
+*E  SetupBool() . . . . . . . . . . . . . . . initialize the booleans package
+*/
+extern void SetupBool ( void );
 
 
-extern  Obj ReturnFalse1 (
-            Obj                 self,
-            Obj                 val1 );
-
-extern  Obj ReturnFalse2 (
-            Obj                 self,
-            Obj                 val1,
-            Obj                 val2 );
-
-extern  Obj ReturnFalse3 (
-            Obj                 self,
-            Obj                 val1,
-            Obj                 val2,
-            Obj                 val3 );
+/****************************************************************************
+**
+*E  InitBool()  . . . . . . . . . . . . . . . initialize the booleans package
+**
+**  'InitBool' initializes the boolean package.
+*/
+extern void InitBool ( void );
 
 
-extern  Obj ReturnFail1 (
-            Obj                 self,
-            Obj                 val1 );
-
-extern  Obj ReturnFail2 (
-            Obj                 self,
-            Obj                 val1,
-            Obj                 val2 );
-
-extern  Obj ReturnFail3 (
-            Obj                 self,
-            Obj                 val1,
-            Obj                 val2,
-            Obj                 val3 );
+/****************************************************************************
+**
+*E  CheckBool() . check the initialisation of initialize the booleans package
+**
+**  'InitBool' initializes the boolean package.
+*/
+extern void CheckBool ( void );
 
 
 /****************************************************************************
 **
 
-*E  InitBool()  . . . . . . . . . . . . . . . initialize the booleans package
-**
-**  'InitBool' initializes the boolean package.
+*E  bool.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-extern  void            InitBool ( void );
+
 
 
 

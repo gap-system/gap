@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  set.h                       GAP source                   Martin Schoenert
+*W  set.h                       GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -13,13 +13,14 @@
 **  Read also section "More about Sets" about the internal flag for sets.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_set_h =
+SYS_CONST char * Revision_set_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *F  SetList(<list>) . . . . . . . . . . . . . . . . .  make a set from a list
 **
 **  'SetList' returns  a new set that contains  the elements of <list>.  Note
@@ -54,11 +55,36 @@ extern  Int             IsSet (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupSet()  . . . . . . . . . . . . . . . . .  initialize the set package
+*/
+extern void SetupSet ( void );
+
+
+/****************************************************************************
+**
 *F  InitSet() . . . . . . . . . . . . . . . . . .  initialize the set package
 **
 **  'InitSet' initializes the set package.
 */
-extern  void            InitSet ( void );
+extern void InitSet ( void );
 
 
+/****************************************************************************
+**
+*F  CheckSet()  . . . . . . . . . check the initialisation of the set package
+*/
+extern void CheckSet ( void );
 
+
+/****************************************************************************
+**
+
+*E  set.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

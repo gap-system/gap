@@ -75,7 +75,7 @@
 ##  resp. 'ImagesRepresentative' and the appropriate cokernel.
 ##  Conversely, if 'AsList' for the underlying relation is known then
 ##  'ImagesElm' resp. 'ImagesRepresentative' may delegate to it, the general
-##  mapping gets the property 'IsConstantTimeAccesseneralMapping' for this;
+##  mapping gets the property 'IsConstantTimeAccessGeneralMapping' for this;
 ##  note that this is not allowed if only an enumerator of the underlying
 ##  relation is known.)
 ##
@@ -453,6 +453,8 @@ ImagesElm := NewOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 ##  images of <elm> under <map> or 'fail', the latter if and only if <elm>
 ##  has no images under <map>.
 ##
+##  Anything may happen if <elm> is not an element of the source of <map>.
+##
 ImagesRepresentative := NewOperation( "ImagesRepresentative",
     [ IsGeneralMapping, IsObject ] );
 
@@ -581,6 +583,8 @@ PreImageElm := NewOperation( "PreImageElm",
 ##  'PreImagesRepresentative' returns either a representative of the set of
 ##  preimages of <elm> under <map> or 'fail', the latter if and only if <elm>
 ##  has no preimages under <map>.
+##
+##  Anything may happen if <elm> is not an element of the range of <map>.
 ##
 PreImagesRepresentative := NewOperation( "PreImagesRepresentative",
     [ IsGeneralMapping, IsObject ] );

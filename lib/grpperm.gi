@@ -12,6 +12,28 @@ Revision.grpperm_gi :=
 
 #############################################################################
 ##
+#M  AsSubgroup( <G>, <U> )  . . . . . . . . . . . .  with stab chain transfer
+##
+InstallMethod( AsSubgroup,
+    "perm groups",
+    IsIdentical, [ IsPermGroup, IsPermGroup ], 0,
+    function( G, U )
+    local S;
+    if not IsSubset( G, U ) then
+      return fail;
+    fi;
+    S:= SubgroupNC( G, GeneratorsOfGroup( U ) );
+    UseIsomorphismRelation( U, S );
+    UseSubsetRelation( U, S );
+    if HasStabChain( U )  then
+        SetStabChain( S, StabChainAttr( U ) );
+    fi;
+    return S;
+end );
+
+#############################################################################
+##
+
 #F  IndependentGeneratorsAbelianPPermGroup( <P>, <p> )  . . . nice generators
 ##
 IndependentGeneratorsAbelianPPermGroup := function ( P, p )
@@ -97,9 +119,11 @@ end;
 
 #############################################################################
 ##
-#F  IndependentGeneratorsAbelianPermGroup( <G> )  . . . . . . nice generators
+#M  IndependentGeneratorsOfAbelianGroup( <G> )  . . . . . . . nice generators
 ##
-IndependentGeneratorsAbelianPermGroup := function ( G )
+InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group", true,
+        [ IsPermGroup and IsAbelian ], 0,
+    function ( G )
     local   inds,       # independent generators, result
             p,          # prime factor of group size
             gens,       # generators of <p>-Sylowsubgroup
@@ -129,7 +153,7 @@ IndependentGeneratorsAbelianPermGroup := function ( G )
 
     # return the independent generators
     return inds;
-end;
+end );
 
 #############################################################################
 ##
@@ -555,7 +579,7 @@ end );
 ##
 #M  NormalClosure( <G>, <U> ) . . . . . . . . . . . . . . . . . in perm group
 ##
-InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
+InstallMethod( NormalClosureOp, true, [ IsPermGroup, IsPermGroup ], 0,
     function ( G, U )
     local   N,          # normal closure of <U> in <G>, result
             chain,      # stabilizer chain for the result
@@ -952,17 +976,6 @@ end );
 #############################################################################
 ##
 
-#M  IsNormal( <G>, <N> )  . . . . . . . . . . . . . . . . . . for perm groups
-##
-InstallMethod( IsNormal, true, [ IsPermGroup, IsPermGroup ], 0,
-    function( G, N )
-    return ForAll( GeneratorsOfGroup( N ), genN ->
-                   ForAll( GeneratorsOfGroup( G ), genG ->
-                           genN ^ genG in N ) );
-end );
-
-#############################################################################
-##
 #M  IsSolvableGroup( <G> )  . . . . . . . . . . . . . . . .  solvability test
 ##
 InstallMethod( IsSolvableGroup, true, [ IsPermGroup ], 0,
@@ -1182,26 +1195,6 @@ end;
 
 #############################################################################
 ##
-#F  OmegaPN( <G>, <p>, <n> )  . . . . . . . . roots of unity in abelian group
-##
-OmegaPN := function( G, p, n )
-    local   gens,  i,  ord;
-    
-    if not IsAbelian( G )  then
-        TryNextMethod();
-    fi;
-    gens := IndependentGeneratorsAbelianPermGroup( G );
-    for i  in [ 1 .. Length( gens ) ]  do
-        ord := Order( gens[ i ] );
-        if ord mod p = 0  then
-            gens[ i ] := gens[ i ] ^ ( ord / p ^ n );
-        fi;
-    od;
-    return SubgroupNC( G, gens );
-end;
-
-#############################################################################
-##
 #M  Socle( <G> )  . . . . . . . . . . .  socle of primitive permutation group
 ##
 InstallMethod( Socle, true, [ IsPermGroup ], 0,
@@ -1297,6 +1290,30 @@ InstallMethod( FrattiniSubgroup, true, [ IsPermGroup ], 0,
     return SolvableNormalClosurePermGroup( G, k );
 end );
         
+#############################################################################
+##
+#M  OmegaOp( <G>, <p>, <n> )  . . . . . . . . . . . . for abelian perm groups
+##
+InstallMethod( OmegaOp, "in abelian perm groups", true,
+        [ IsPermGroup, IsPosRat and IsInt, IsPosRat and IsInt ], 0,
+    function( G, p, n )
+    local   gens,  q,  gen,  ord,  o;
+    
+    if not IsAbelian( G )  then
+        TryNextMethod();
+    fi;
+    q := p ^ n;
+    gens := [  ];
+    for gen  in IndependentGeneratorsOfAbelianGroup( G )  do
+        ord := Order( gen );
+        o := GcdInt( ord, q );
+        if o <> 1  then
+            Add( gens, gen ^ ( ord / o ) );
+        fi;
+    od;
+    return SubgroupNC( G, gens );
+end );
+
 #############################################################################
 ##
 
@@ -1395,7 +1412,7 @@ end );
 ##
 #M  RightTransversal( <G>, <U> )  . . . . . . . . . . . . . . for perm groups
 ##
-InstallMethod( RightTransversal, IsIdentical,
+InstallMethod( RightTransversalOp, IsIdentical,
         [ IsPermGroup, IsPermGroup ], 0,
     function( G, U )
     return RightTransversalPermGroupConstructor( IsRightTransversalPermGroup,

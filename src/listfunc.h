@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  listfunc.h                  GAP source                   Martin Schoenert
+*W  listfunc.h                  GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -9,13 +9,14 @@
 **  This file declares the functions for generic lists.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_listfunc_h =
+SYS_CONST char *          Revision_listfunc_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *F  AddList(<list>,<obj>) . . . . . . . .  add an object to the end of a list
 **
 **  'AddList' adds the object <obj> to the end  of  the  list  <list>,  i.e.,
@@ -84,11 +85,38 @@ extern  UInt            RemoveDupsDensePlist (
 
 /****************************************************************************
 **
-*F  InitListFunc()  . . . . . . . . . . .  initialize lists functions package
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupListFunc() . . . . . . . . .  initialize the lists functions package
+*/
+extern void SetupListFunc ( void );
+
+
+/****************************************************************************
+**
+*F  InitListFunc()  . . . . . . . . .  initialize the lists functions package
 **
 **  'InitListFunc' initializes the lists functions package.
 */
-extern  void            InitListFunc ( void );
+extern void InitListFunc ( void );
 
 
+/****************************************************************************
+**
+*F  CheckListFunc() . check the initialisation of the lists functions package
+*/
+extern void CheckListFunc ( void );
+
+
+/****************************************************************************
+**
+
+*E  listfunc.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  precord.h                   GAP source                   Martin Schoenert
+*W  precord.h                   GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -9,13 +9,14 @@
 **  This file declares the functions for plain records.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_precord_h =
+SYS_CONST char * Revision_precord_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *F  NEW_PREC(<len>) . . . . . . . . . . . . . . . . . make a new plain record
 **
 **  'NEW_PREC' returns a new plain record with room for <len> components.
@@ -128,11 +129,39 @@ extern  void            UnbPRec (
 
 /****************************************************************************
 **
-*F  InitPRecord() . . . . . . . . . . . . . . . . . initialize record package
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SetupPRecord()  . . . . . . . . . . . . . . initialize the record package
+*/
+extern void SetupPRecord ( void );
+
+
+/****************************************************************************
+**
+*F  InitPRecord() . . . . . . . . . . . . . . . initialize the record package
 **
 **  'InitPRecord' initializes the record package.
 */
-extern  void            InitPRecord ( void );
+extern void InitPRecord ( void );
+
+
+/****************************************************************************
+**
+*F  CheckPRecord()  . . . . .  check the initialisation of the record package
+*/
+extern void CheckPRecord ( void );
+
+
+/****************************************************************************
+**
+
+*E  precord.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 
 
 

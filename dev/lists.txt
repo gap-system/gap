@@ -17,7 +17,7 @@ a dense list, which is mutable
 
 T_PLIST_DENSE_NHOM
 ------------------
-a dense list, which is immutable and not homogeneous
+a dense list, which contains immutables and is not homogeneous
 
 T_PLIST_EMPTY
 -------------
@@ -25,32 +25,32 @@ a list of length zero
 
 T_PLIST_HOM
 -----------
-a dense list, which is immutable and homogeneous and not a table
+a dense list, which contains immutable and is homogeneous and not a table
 
 T_PLIST_HOM_NSORT
 -----------------
-a dense list, which is immutable and homogeneous and not a table and
+a dense list, which contains immutable and is homogeneous and not a table and
 is known to be unsorted.  NSORT means that the list is not strictly
 sorted.
 
 T_PLIST_HOM_SSORT
 -----------------
-a dense list, which is immutable and homogeneous and not a table and
+a dense list, which contains immutable and is homogeneous and not a table and
 is known to be strictly sorted
 
 T_PLIST_TAB
 -----------
-a dense list, which is immutable and homogeneous and a table;  a table
+a dense list, which contains immutable and is homogeneous and a table;  a table
 is a list of lists of equal lengths which not empty
 
 T_PLIST_TAB_NSORT
 -----------------
-a dense list, which is immutable and homogeneous and a table and
+a dense list, which contains immutable and is homogeneous and a table and
 is known to be unsorted
 
 T_PLIST_TAB_SSORT
 -----------------
-a dense list, which is immutable and homogeneous and a table and
+a dense list, which contains immutable and is homogeneous and a table and
 is known to be strictly sorted
 
 T_PLIST_CYC
@@ -358,3 +358,90 @@ vector.c
 
    ( PLIST_CYC - PLIST_CYC_SORT ) * T_MAT_CYC
    = ProdVectorMatrix
+
+List Packages
+-------------
+
+IS_listtype_REP( <list> )
+--------------------------
+return true if <list> is of "listtype"
+
+
+IsListtype( <list> )
+--------------------
+return true if <list> could be converted into "listtype"
+
+
+IsListtypeConv( <list> )
+------------------------
+return true if <list> could be converted into "listtype".  Convert in this
+case
+
+
+ConvListtype( <list> )
+----------------------
+convert into "listtype".  If <list> does not pass "IsListtype"
+anything can happen.
+
+
+ClearFiltsTNums[ <tnum> ]
+-------------------------
+contains the type number corresponding to <tnum> without any
+filters set.
+
+
+SetFiltListTNums[ <tnum> ][ <fnum> ]
+------------------------------------
+set filter number <fnum> for an object of type number <tnum> by encoding
+it into the type number.
+
+
+ResetFiltListTNums[ <tnum> ][ <fnum> ]
+--------------------------------------
+reset filter number <fnum> for an object of type number <tnum> by encoding
+it into the type number.
+
+
+HasFiltListTNums[ <tnum> ][ <fnum> ]
+------------------------------------
+check filter number <fnum> for an object of type number <tnum>.
+
+
+SET_FILT_LIST( <list>, <fnum> )
+-------------------------------
+encode "set filter" in tnum of <list>
+
+
+RESET_FILT_LIST( <list>, <fnum> )
+---------------------------------
+encode "reset filter" in tnum of <list>
+
+
+HAS_FILT_LIST( <list>, <fnum> )
+-------------------------------
+check if filter <fnum> is known for <list>
+
+
+filter numbers
+--------------
+FN_IS_MUTABLE:          mutable list
+FN_IS_EMPTY:            empty list
+FN_IS_SSORT:            strictly sorted
+FN_IS_NSORT:            not strictly sorted
+FN_IS_DENSE:            dense
+FN_IS_NDENSE:           not dense
+FN_IS_HOMOG:            homogeneous
+FN_IS_NHOMOG:           not homogeneous
+FN_IS_TABLE:            table
+
+
+PLIST TNums
+-----------
+EMPTY:			empty list
+SSORT:			dense, homogeneous, strictly sorted
+NSORT:			dense, not empty, homogeneous, not sorted
+DENSE:			dense
+NDENSE:			not dense, not empty
+HOMOG:			dense, homogeneous
+NHOM:			dense, not empty, not homogeneous
+TAB:			dense, not empty, homogeneous, table

@@ -134,7 +134,7 @@ InstallMethod( PositionCanonical, true,
     T := enum!.rightTransversal;
     for pow  in [ 1 .. Length( gal ) ]  do
         t := RepOpElmTuplesPermGroup( true, G,
-                     [ elm ], [ rep ^ ( 1 ^ gal[ pow ] ) ],
+                     [ elm ], [ rep ^ Int( gal[ pow ] ) ],
                      TrivialSubgroup( G ),
                      StabilizerOfExternalSet( rcl ) );
         if t <> fail  then
@@ -148,7 +148,7 @@ InstallMethod( PositionCanonical, true,
     fi;
 end );
 
-InstallOtherMethod( Centralizer, true, [ IsRationalClassGroupRep ], 0,
+InstallOtherMethod( CentralizerOp, true, [ IsRationalClassGroupRep ], 0,
     StabilizerOfExternalSet );
 
 #############################################################################
@@ -164,7 +164,7 @@ InstallMethod( \=, IsIdentical, [ IsRationalClassPermGroupRep,
     return ForAny( RightTransversalInParent( GaloisGroup( cl1 ) ), e ->
                    RepOpElmTuplesPermGroup( true, ActingDomain( cl1 ),
                            [ Representative( cl1 ) ],
-                           [ Representative( cl2 ) ^ ( 1 ^ e ) ],
+                           [ Representative( cl2 ) ^ Int( e ) ],
                            StabilizerOfExternalSet( cl1 ),
                            StabilizerOfExternalSet( cl2 ) ) <> fail );
 end );
@@ -180,7 +180,7 @@ InstallMethod( \in, true, [ IsPerm, IsRationalClassPermGroupRep ], 0,
     G := ActingDomain( cl );
     return ForAny( RightTransversalInParent( GaloisGroup( cl ) ), e ->
                    RepOpElmTuplesPermGroup( true, G,
-                           [ g ^ ( 1 ^ e ) ],
+                           [ g ^ Int( e ) ],
                            [ Representative( cl ) ],
                            TrivialSubgroup( G ),
                            StabilizerOfExternalSet( cl ) ) <> fail );
@@ -199,7 +199,7 @@ end );
 ##  is nothing to be done, since the Galois group is a 2-group then.
 ##
 CompleteGaloisGroupPElement := function( class, gal, power, p )
-    local  G,  rep,  order,
+    local  G,  rep,  order,  F,
            phi,             # size of the prime residue class group
            primitiveRoot,   # generator of the cyclic prime residue class group
            sizeKnownPart,   # size of the known part of the Galois group
@@ -219,6 +219,7 @@ CompleteGaloisGroupPElement := function( class, gal, power, p )
         G := ActingDomain( class );
         rep := Representative( class );
         order := Order( rep );
+        F := FamilyObj( One( ZmodnZ( order ) ) );
         
         # <power> = 1 means that the power is the identity class.
         if power = 1  then
@@ -234,8 +235,7 @@ CompleteGaloisGroupPElement := function( class, gal, power, p )
         phi                  := order / p * ( p - 1 );
         sizeKnownPart        := Size( gal );
         sizeUnknownPart      := GcdInt( p - 1, phi / sizeKnownPart );
-        primitiveRoot        := PermResidueClass
-                                ( PrimitiveRootMod( order ), order );
+        primitiveRoot        := ZmodnZObj( F, PrimitiveRootMod( order ) );
         generatorUnknownPart := primitiveRoot ^ ( phi / sizeUnknownPart );
         q := Size( G ) / Size( StabilizerOfExternalSet( class ) ) /
              sizeKnownPart;
@@ -263,22 +263,23 @@ CompleteGaloisGroupPElement := function( class, gal, power, p )
                         fusingElement := power!.fusingElement ^
                                          (Size(GaloisGroup(power)) /
                                           (sizeKnownPart*div[i]));
-                        if rep ^ fusingElement <> rep ^ ( 1 ^ exp )  then
+                        if rep ^ fusingElement <> rep ^ Int( exp )  then
                             fusingElement := fail;
                         fi;
                     fi;
         
                 elif    order = p
-                     or PermResidueClass( 1 ^ exp, order / p )
-                        in GaloisGroup( power )  then
+                     or LogMod( Int( exp ), PrimitiveRootMod( order / p ),
+                                order / p ) mod
+                        IndexInParent( GaloisGroup( power ) ) = 0  then
                     if IsPerm( rep )  then
                         fusingElement := RepOpElmTuplesPermGroup( true, G,
-                            [ rep ], [ rep ^ ( 1 ^ exp ) ],
+                            [ rep ], [ rep ^ Int( exp ) ],
                             StabilizerOfExternalSet( class ),
                             StabilizerOfExternalSet( class ) );
                     else
                         fusingElement := RepresentativeOperation( G,
-                                         rep, rep ^ ( 1 ^ exp ) );
+                                         rep, rep ^ Int( exp ) );
                     fi;
                 fi;
             fi;
@@ -288,8 +289,9 @@ CompleteGaloisGroupPElement := function( class, gal, power, p )
         # Construct the Galois  group as  subgroup of  a prime residue  class
         # group   and enter  the  conjugating   element   which induces   the
         # generating automorphism into the class record.
-        gal := SubgroupNC( PrimeResidueClassGroup( order ),
-                [ primitiveRoot ^ ( phi / sizeKnownPart / div[ i ] ) ] );
+        gal := GroupByPrimeResidues(
+                   [ primitiveRoot ^ ( phi / sizeKnownPart / div[ i ] ) ],
+                   order );
         class!.fusingElement := fusingElement;
 
     fi;
@@ -298,9 +300,9 @@ end;
 
 #############################################################################
 ##
-#F  ConstructList( <T>, <list>, <roots>, <power> )  . . . . . . . . . . local
+#F  RatClasPElmArrangeClasses( <T>, <list>, <roots>, <power> )
 ##
-ConstructList := function( T, list, roots, power )
+RatClasPElmArrangeClasses := function( T, list, roots, power )
     local  i,  j,  allRoots;
     
     allRoots := [ power ];
@@ -309,7 +311,7 @@ ConstructList := function( T, list, roots, power )
             j := Length( list ) + 1;
             list[ j ] := i;
             roots[ j ] := [  ];
-            Append( roots[ j ], ConstructList( T, list, roots, i ) );
+            Append( roots[ j ],RatClasPElmArrangeClasses(T,list,roots,i));
             Append( allRoots, roots[ j ] );
         fi;
     od;
@@ -390,9 +392,14 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
         fusedClasses := [  ];
         for orb  in orbs  do
             cl := rationalClasses[ Representative( orb ) ];
-            cl.centralizer := Centralizer
-                    ( StabilizerOfExternalSet( orb ), cl.representative,
-                      cl.centralizer );
+#
+#T We may *NOT* set a known (larger) centralizer here as the centralizers
+# themselves are used later to arrange the classes correctly (Lemma 3.3 in
+# Heiko's diploma thesis, page 59/60).               AH
+#
+#            cl.centralizer := Centralizer
+#                    ( StabilizerOfExternalSet( orb ), cl.representative,
+#                      cl.centralizer );
             Add( fusedClasses, cl );
         od;
         
@@ -510,7 +517,7 @@ RationalClassesPElements := function( arg )
     # Determine the order in which to process the <S>-classes.
     list  := [ 1 ];
     roots := [ [  ] ];
-    ConstructList( rationalSClasses, list, roots, 1 );
+    RatClasPElmArrangeClasses( rationalSClasses, list, roots, 1 );
     found   := [ 1 ];
     movedTo := [ 0 ];
 
@@ -533,7 +540,7 @@ RationalClassesPElements := function( arg )
                   ( RightTransversalInParent( Scl.galoisGroup ), e ->
                      RepOpElmTuplesPermGroup( true, G,
                              [ Scl.representative ],
-                             [ Representative( c ) ^ ( 1 ^ e ) ],
+                             [ Representative( c ) ^ Int( e ) ],
                              Scl.centralizer,
                              StabilizerOfExternalSet( c ) ) <> fail ) );
             fi;
@@ -680,7 +687,7 @@ RationalClassesPermGroup := function( G, primes )
                                 (GaloisGroup(rationalClasses_[pos]))  do
                                 conj := RepOpElmTuplesPermGroup( true, C_,
                                   [ cl ], [ Representative
-                                            (rationalClasses_[pos])^(1^m) ],
+                                            (rationalClasses_[pos])^Int(m) ],
                                   TrivialSubgroup( C_ ),
                                   StabilizerOfExternalSet
                                                 (rationalClasses_[ pos ]) );
@@ -698,10 +705,10 @@ RationalClassesPermGroup := function( G, primes )
                         # Now   $Hom(y^{g^i})  ~  Hom(y^m)$.  $Gal(y)$ is the
                         # direct product   of $Gal(Hom(y))$ and  the subgroup
                         # generated by $mj^i$.
-                        gens := [ ChineseRem( moduli, [ 1 ^ ji, 1 ^ m ] ) ];
+                        gens := [ ChineseRem( moduli, [ Int(ji), Int(m) ] ) ];
                         for gen  in GeneratorsOfGroup( GaloisGroup( class_ ) )
                           do
-                            Add( gens, ChineseRem( moduli, [ 1, 1 ^ gen ] ) );
+                            Add( gens, ChineseRem( moduli, [ 1, Int(gen)] ) );
                         od;
                         class := RationalClass( G, y );
                         SetStabilizerOfExternalSet( class, Centralizer
@@ -748,6 +755,8 @@ InstallMethod( ConjugacyClasses, "perm group", true, [ IsPermGroup ], 0,
     function( G )
     if Size( G ) <= 1000  or  IsSimpleGroup( G )  then
         return ConjugacyClassesByRandomSearch( G );
+    elif IsSolvableGroup( G )  then
+        TryNextMethod();
     else
         return Concatenation( List( RationalClasses( G ),
 	                      DecomposedRationalClass ) );

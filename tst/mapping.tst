@@ -263,6 +263,12 @@ gap> ImagesSource( map );
 gap> PreImagesRange( map );
 [ 0*Z(3), Z(3)^0, Z(3) ]
 
+gap> g := Group((1,2),(3,4));;
+gap> i := IdentityMapping( g );;
+gap> i2 := AsGroupGeneralMappingByImages(i);;
+gap> j:=GroupGeneralMappingByImages(g,g,AsListSorted(g),AsListSorted(g));;
+gap> i2 = j;
+true
 
 gap> STOP_TEST( "mapping.tst", 9860000 );
 

@@ -22,7 +22,7 @@ not indexed by numbers but by  names (i.e., identifiers).   An entry in a
 record is called a *record component*.
 
 In  the following sections  you  will see how to  define  and how to  use
-records.  Record objects are changed by assignments to record fields.
+records.  Record objects are changed by assignments to record components.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Plain Records}
@@ -75,8 +75,8 @@ component  changes the original  object.    The remarks made in  Sections
 
 Sometimes it is interesting to know which  components of a certain record
 are  bound.  This information is available  from the function `RecNames',
-which  takes a record as  its  argument and  returns  a list of all bound
-components of this record as a list of strings.
+which  takes a record as  its  argument and  returns  a list of names of
+all bound components of this record as a list of strings.
 
 \beginexample
     gap> RecNames(date);
@@ -107,7 +107,7 @@ a recursive object.
 \Section{Further Reading}
 
 Now return to Sections "Identical Lists"  and "Immutability" and find out
-what that section means for records.
+what these sections mean for records.
 
 Records and functions  for records are  described in  detail  in  Chapter
 "ref:Records".

@@ -10,43 +10,43 @@
 **
 **  This file contains the GAP to C compiler.
 */
-char * Revision_compiler_c =
+#include        <stdarg.h>              /* variable argument list macros   */
+#include        "system.h"              /* Ints, UInts                     */
+
+SYS_CONST char * Revision_compiler_c =
    "@(#)$Id$";
 
 
-#include        <stdarg.h>              /* variable argument list macros   */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "system.h"              /* Ints, UInts                     */
+#include        "gvars.h"               /* global variables                */
 
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "gap.h"                 /* error handling, initialisation  */
 
-#include        "gvars.h"               /* InitGVars                       */
-
-#include        "calls.h"               /* NARG_FUNC, NLOC_FUNC, NAMS_FU...*/
+#include        "calls.h"               /* generic call mechanism          */
 /*N 1996/06/16 mschoene func expressions should be different from funcs    */
 
-#include        "lists.h"               /* ELM_LIST                        */
+#include        "lists.h"               /* generic lists                   */
 
-#include        "records.h"             /* RNamIntg                        */
+#include        "records.h"             /* generic records                 */
+#include        "precord.h"             /* plain records                   */
 
-#include        "plist.h"               /* LEN_PLIST, ELM_PLIST, ...       */
+#include        "plist.h"               /* plain lists                     */
 
-#include        "string.h"              /* LEN_STRING, CSTR_STRING, ...    */
+#include        "string.h"              /* strings                         */
 
-#include        "code.h"                /* Stat, Expr, TNUM_EXPR, ADDR_E...*/
+#include        "code.h"                /* coder                           */
 
-#include        "exprs.h"               /* PrintExpr                       */
-#include        "stats.h"               /* PrintStat                       */
+#include        "exprs.h"               /* expressions                     */
+#include        "stats.h"               /* statements                      */
 
-#include        "vars.h"                /* SWITCH_TO_NEW_LVARS, ...        */
+#include        "vars.h"                /* variables                       */
 
 #define INCLUDE_DECLARATION_PART
-#include        "compiler.h"            /* declaration part of the package */
+#include        "compiler.h"            /* compiler                        */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* Error                           */
 
 
 /****************************************************************************
@@ -5471,11 +5471,11 @@ Int CompileFunc (
                    NameGVar(i), NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_COPY ) {
-            Emit( "InitCopyGVar( G_%n, &GC_%n );\n",
+            Emit( "InitCopyGVar( \"%s\", &GC_%n );\n",
                   NameGVar(i), NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_FOPY ) {
-            Emit( "InitFopyGVar( G_%n, &GF_%n );\n",
+            Emit( "InitFopyGVar( \"%s\", &GF_%n );\n",
                   NameGVar(i), NameGVar(i) );
         }
     }
@@ -5586,8 +5586,6 @@ Int CompileFunc (
 **
 *F  CompileFuncHandle( <self>, <output>, <func>, <name>, <magic1>, <magic2> )
 */
-Obj CompileFuncFunc;
-
 Obj CompileFuncHandler (
     Obj                 self,
     Obj                 output,
@@ -5634,9 +5632,9 @@ Obj CompileFuncHandler (
 /****************************************************************************
 **
 
-*F  InitCompiler()  . . . . . . . . . . . . . . . . . initialize the compiler
+*F  SetupCompiler() . . . . . . . . . . . . . . . . . initialize the compiler
 */
-void            InitCompiler ( void )
+void SetupCompiler ( void )
 {
     Int                 i;              /* loop variable                   */
 
@@ -5839,26 +5837,41 @@ void            InitCompiler ( void )
     CompStatFuncs[ T_INFO            ] = CompInfo;
     CompStatFuncs[ T_ASSERT_2ARGS    ] = CompAssert2;
     CompStatFuncs[ T_ASSERT_3ARGS    ] = CompAssert3;
+}
 
 
+/****************************************************************************
+**
+*F  InitCompiler()  . . . . . . . . . . . . . . . . . initialize the compiler
+*/
+void InitCompiler ( void )
+{
     /* get the identifiers of 'Length' and 'Add' (for inlining)            */
     G_Length = GVarName( "Length" );
-    G_Add = GVarName( "Add" );
+    G_Add    = GVarName( "Add"    );
 
 
     /* announce the global variables                                       */
-    InitGlobalBag( &CompInfoGVar, "CompInfoGVar" );
-    InitGlobalBag( &CompInfoRNam, "CompInfoRNam" );
-    InitGlobalBag( &CompFunctions, "CompFunctions"  );
+    InitGlobalBag( &CompInfoGVar,  "src/compiler.c:CompInfoGVar"  );
+    InitGlobalBag( &CompInfoRNam,  "src/compiler.c:CompInfoRNam"  );
+    InitGlobalBag( &CompFunctions, "src/compiler.c:CompFunctions" );
 
 
     /* make the compile function                                           */
-    InitHandlerFunc(CompileFuncHandler,"Compile function");
-    CompileFuncFunc = NewFunctionC(
-        "CompileFunc", 5L, "output, func, name, magic1, magic2",
-        CompileFuncHandler );
-    AssGVar( GVarName( "CompileFunc" ),
-        CompileFuncFunc );
+    C_NEW_GVAR_FUNC( "CompileFunc", 5, "output, func, name, magic1, magic2",
+                      CompileFuncHandler,
+      "src/compiler.c:CompileFunc" );
+}
+
+
+/****************************************************************************
+**
+*F  CheckCompiler() . . . . . . . .  check the initialisation of the compiler
+*/
+void CheckCompiler ( void )
+{
+    SET_REVISION( "compiler_c", Revision_compiler_c );
+    SET_REVISION( "compiler_h", Revision_compiler_h );
 }
 
 

@@ -282,6 +282,7 @@ end;
 
 #############################################################################
 ##
+
 #V  EDITOR  . . . . . . . . . . . . . . . . . . . . default editor for `Edit'
 ##
 EDITOR := "vi";
@@ -289,78 +290,24 @@ EDITOR := "vi";
 
 #############################################################################
 ##
-#F  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
+#O  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
 ##
-Edit := function( name )
-    local   editor,  ret;
-
-    editor := Filename( DirectoriesSystemPrograms(), EDITOR );
-    if editor = fail  then
-        Error( "cannot locate editor `", EDITOR, "'" );
-    fi;
-    ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
-                    OutputTextUser(), [ name ] );
-    if ret <> 0  then
-        Error( "editor returned ", ret );
-    fi;
-    Read(name);
-end;
+Edit := NewOperationArgs("Edit");
 
 
 #############################################################################
 ##
 
-#F  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
+#O  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
 ##
-CreateCompletionFiles := function( arg )
-    local   path,  input,  i,  com,  read,  j,  crc;
+CreateCompletionFiles := NewOperationArgs("CreateCompletionFiles");
 
-    # get the path to the output
-    if 0 = Length(arg)  then
-        path := DirectoriesLibrary("")[1];
-    elif 1 = Length(arg)  then
-        path := Directory(arg[1]);
-    fi;
-    input := DirectoriesLibrary("");
 
-    # loop over the list of completable files
-    for i  in COMPLETABLE_FILES  do
-
-        # convert "read" into "comp"
-        com := Filename( path, ReplacedString( i[1], ".g", ".co" ) );
-        if com = fail  then
-            Error( "cannot create output file" );
-        fi;
-        Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
-
-        # now find the input file
-        read := List( i[2], x -> [ x, Filename( input, x ) ] );
-        if ForAny( read, x -> x[2] = fail )  then
-            Error( "cannot locate input files" );
-        fi;
-
-        # create the completion files
-        PRINT_TO( com, "# completion of \"", i[1], "\"\n" );
-        APPEND_TO( com, "RANK_FILTER_LIST := ", i[3], ";\n" );
-        for j  in read  do
-
-            # create a crc value
-            Print( "#I    parsing \"", j[1], "\"\n" );
-            crc := GAP_CRC(j[2]);
-
-            # create header
-            APPEND_TO( com, "COM_RESULT := COM_FILE( \"", j[1], "\", ",
-                crc, " );\n", "if not IsBound(COM_RESULT)  then\nError(\"",
-                "cannot locate file \\\"", j[1], "\\\"\");\nelif ",
-                "COM_RESULT ", " = 3  then\n" );
-
-            # create completion
-            MAKE_INIT( com, j[2] );
-
-            APPEND_TO( com, "fi;\n" );
-        od;
-    od;
-end;
+#############################################################################
+##
+#O  CheckCompletionFiles()  . . . . . . . . . . .  check the completion files
+##
+CheckCompletionFiles := NewOperationArgs("CheckCompletionFiles");
 
 
 #############################################################################

@@ -4,45 +4,6 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.12  1997/06/10 14:47:15  stand
-#H  Added declaration of 'GeneratorsPrimeResidueClassGroup'. AH
-#H
-#H  Revision 4.11  1997/05/29 06:51:19  sam
-#H  moved `InstallTrueMethod' calls to the `gd' files
-#H
-#H  Revision 4.10  1997/03/11 12:44:25  ahulpke
-#H  Moved random class serach into a separate function
-#H
-#H  Revision 4.9  1997/01/16 10:46:18  fceller
-#H  renamed 'NewConstructor' to 'NewOperation',
-#H  renamed 'NewOperationFlags1' to 'NewConstructor'
-#H
-#H  Revision 4.8  1997/01/11 13:02:40  htheisse
-#H  fixed an error in `CentralStepRatClPGroup'; cleaned up the code
-#H
-#H  Revision 4.7  1997/01/10 08:45:31  htheisse
-#H  added conjugacy class functions for perm groups and pcgs groups
-#H
-#H  Revision 4.6  1996/12/19 09:58:51  htheisse
-#H  added revision lines
-#H
-#H  Revision 4.5  1996/12/17 13:49:45  htheisse
-#H  improved enumerator for rational classes
-#H
-#H  Revision 4.4  1996/10/31 12:23:06  htheisse
-#H  changed representation of conjugacy classes to `ExternalOrbitByStabilizer'
-#H
-#H  Revision 4.3  1996/10/11 07:04:27  htheisse
-#H  added operation `RightTransversal'
-#H
-#H  Revision 4.2  1996/10/09 13:31:29  htheisse
-#H  made conjugacy class functions work (at least for M24)
-#H
-#H  Revision 4.1  1996/10/09 11:37:56  htheisse
-#H  made first steps towards computation of conjugacy classes
-#H
-##
 Revision.clas_gd :=
     "@(#)$Id$";
 
@@ -67,7 +28,11 @@ IsExternalOrbitByStabilizerEnumerator := NewRepresentation
 #############################################################################
 ##
 #R  IsConjugacyClassGroupRep  . . . . . . . . . . .  conjugacy class in group
+#R  IsConjugacyClassPermGroupRep  . . . . . . . . .  conjugacy class in group
 ##
+##  Conjugacy classes have the representation `IsConjugacyClassGroupRep', a
+##  subrepresentation is `IsConjugacyClassPermGroupRep' for permutation
+##  groups.
 IsConjugacyClassGroupRep := NewRepresentation( "IsConjugacyClassGroupRep",
     IsExternalOrbitByStabilizerRep, [  ] );
 
@@ -78,6 +43,12 @@ IsConjugacyClassPermGroupRep := NewRepresentation
 ##
 #C  ConjugacyClass( <G>, <g> )  . . . . . . . . . conjugacy class constructor
 ##
+##  creates the conjugacy class in $G$ with representative $g$.
+##  A conjugacy class is an
+##  external orbit ("ExternalOrbit") of group elements with the group acting
+##  by conjugation on it. Thus element tests or operation representatives can be
+##  computed.  The attribute `Centralizer' gives the centralizer of
+##  the representative which is the same result as `StabilizerOfExternalSet'.
 ConjugacyClass := NewOperation( "ConjugacyClass", [ IsGroup, IsObject ] );
 #T 1997/01/16 fceller was old 'NewConstructor'
 
@@ -86,6 +57,9 @@ ConjugacyClass := NewOperation( "ConjugacyClass", [ IsGroup, IsObject ] );
 ##
 #R  IsRationalClassGroupRep . . . . . . . . . . . . . rational class in group
 ##
+##  Rational classes have the representation `IsRationalClassGroupRep', a
+##  subrepresentation is `IsRationalClassPermGroupRep' for permutation
+##  groups.
 IsRationalClassGroupRep := NewRepresentation( "IsRationalClassGroupRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
     [ "galoisGroup", "power" ] );
@@ -108,14 +82,31 @@ InstallTrueMethod( IsFinite, IsRationalClassGroupRep and IsDomain );
 ##
 #C  RationalClass( <G>, <g> ) . . . . . . . . . .  rational class constructor
 ##
+##  creates the rational class in $G$ with representative $g$.
+##  A rational class consists of elements that are conjugate to
+##  $g$ or to a power $g^i$ where $i$ is coprime to the order of $g$. Thus a
+##  rational class can be interpreted as a conjugacy class of cyclic subgroups.
+##  A rational class is an external set ("IsExternalSet") of group elements with
+##  the group acting by conjugation on it but not an external orbit.
+##
+##  The exponents $i$  for which $<g>^i$
+##  lies  already in the ordinary  conjugacy  class of  <g>, form a  subgroup
+##  of the *prime residue class group* $P_n$ (see "where"), the so-called 
+##  *Galois group*  of the rational class. The prime residue class group $P_n$ 
+##  is obtained in {\GAP}  as `Units( Integers mod <n> )', the  unit group
+##  of a residue  class ring. The Galois group of a rational class <rcl>
+##  is stored in the attribute `GaloisGroup( <rcl>)' as a subgroup of this
+##  group.
+#T Is the next true? should it be that way?
+##  There is an exeception for the class of the identity element, because the
+##  residue class ring `Integers mod 1' has  no units. Since the Galois group
+##  of the identity is trivial, it is  simply represented as `Units( Integers
+##  mod 2 )'.
 RationalClass := NewOperation( "RationalClass", [ IsGroup, IsObject ] );
 #T 1997/01/16 fceller was old 'NewConstructor'
 
 DecomposedRationalClass := NewOperationArgs( "DecomposedRationalClass" );
-PermResidueClass := NewOperationArgs( "PermResidueClass" );
-GeneratorsPrimeResidueClassGroup :=
-  NewOperationArgs( "GeneratorsPrimeResidueClassGroup" );
-PrimeResidueClassGroup := NewOperationArgs( "PrimeResidueClassGroup" );
+GroupByPrimeResidues := NewOperationArgs( "GroupByPrimeResidues" );
 ConjugacyClassesByRandomSearch :=
   NewOperationArgs( "ConjugacyClassesByRandomSearch" );
 ConjugacyClassesTry := NewOperationArgs( "ConjugacyClassesTry" );
@@ -133,7 +124,7 @@ GeneralStepClEANS := NewOperationArgs( "GeneralStepClEANS" );
 ClassesSolvableGroup := NewOperationArgs( "ClassesSolvableGroup" );
 
 CompleteGaloisGroupPElement := NewOperationArgs( "CompleteGaloisGroupPElement" );
-ConstructList := NewOperationArgs( "ConstructList" );
+RatClasPElmArrangeClasses := NewOperationArgs( "RatClasPElmArrangeClasses" );
 SortRationalClasses := NewOperationArgs( "SortRationalClasses" );
 FusionRationalClassesPSubgroup := NewOperationArgs( "FusionRationalClassesPSubgroup" );
 RationalClassesPElements := NewOperationArgs( "RationalClassesPElements" );

@@ -6,6 +6,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.3  1997/08/13 08:43:22  heiko
+#H  introduced FOA to operation functions
+#H
 #H  Revision 4.2  1997/07/17 15:29:43  htheisse
 #H  reflects the state of my thesis
 #H
@@ -24,9 +27,11 @@ coh := "2b defined";
 PerfectResiduum := NewAttribute( "PerfectResiduum", IsGroup );
 SimsNo := NewAttribute( "SimsNo", IsPermGroup );
 SimsName := NewAttribute( "SimsName", IsPermGroup );
-Rank := NewOperationArgs( "Rank" );
-RankOp := NewOperation( "Rank", OrbitsishReq );
-RankAttr := NewAttribute( "Rank", IsObject );
+
+tmp := OrbitsishFOA( "Rank", OrbitsishReq, false, NewAttribute );
+Rank     := tmp[1];
+RankOp   := tmp[2];
+RankAttr := tmp[3];
 
 RepOpSuborbits := NewOperationArgs( "RepOpSuborbits" );
 OnSuborbits := NewOperationArgs( "OnSuborbits" );

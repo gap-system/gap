@@ -1,11 +1,16 @@
 /****************************************************************************
 **
-*A  pcc.h                      GAP source                   Werner Nickel
+*W  objcftl.h                      GAP source                   Werner Nickel
 **
 **
 **  This file declares the function collecting from the left with polycyclic
 **  presentations.
 */
+#ifdef  INCLUDE_DECLARATION_PART
+SYS_CONST char * Revision_objcftl_h =
+   "@(#)$Id$";
+#endif
+
 
 #define PC_NUMBER_OF_GENERATORS      1
 #define PC_GENERATORS                2
@@ -30,4 +35,37 @@
 #define PC_STACK_POINTER            20
 #define PC_DEFAULT_TYPE             21
 
-extern void InitPcc( void );
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SetupPcc()  . . . . . . . . . . . . . initialize the polycyclic collector
+*/
+extern void SetupPcc ( void );
+
+
+/****************************************************************************
+**
+*F  InitPcc() . . . . . . . . . . . . . . initialize the polycyclic collector
+*/
+extern void InitPcc ( void );
+
+
+/****************************************************************************
+**
+*F  CheckPcc()  . . . . . .  check the initialisation of polycyclic collector
+*/
+extern void CheckPcc ( void );
+
+
+/****************************************************************************
+**
+
+*E  objcftl.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -660,7 +660,7 @@ end );
 ##
 #M  Core( <U>, <V> )
 ##
-InstallMethod( Core,
+InstallMethod( CoreOp,
     "pcgs computable groups",
     true, 
     [ IsGroup and IsPcgsComputable,
@@ -859,7 +859,7 @@ end );
 ##
 #M  NormalClosure( <G>, <U> )
 ##
-InstallMethod( NormalClosure,
+InstallMethod( NormalClosureOp,
     "groups with home pcgs",
     true, 
     [ IsGroup and HasHomePcgs,
@@ -936,7 +936,7 @@ end );
 ##
 #M  Centralizer( <G>, <g> ) . . . . . . . . . . . . . .  using affine methods
 ##
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "pcgs computable group and element",
     IsCollsElms,
     [ IsGroup and IsPcgsComputable and IsFinite,
@@ -947,7 +947,7 @@ function( G, g )
     return ClassesSolvableGroup( G, Group( g ), true, 0, g );
 end );
 
-InstallMethod( Centralizer,
+InstallMethod( CentralizerOp,
     "pcgs computable groups",
     IsIdentical,
     [ IsGroup and IsPcgsComputable and IsFinite,
@@ -976,7 +976,7 @@ InstallOtherMethod( RepresentativeOperationOp,
     0,
 
 function( G, d, e, opr )
-    if opr <> OnPoints  then
+    if opr <> OnPoints or not (IsPcGroup(G) or (d in G and e in G)) then
         TryNextMethod();
     fi;
     return ClassesSolvableGroup( G, G, true, 4, [ d, e ] );

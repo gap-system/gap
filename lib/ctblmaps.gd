@@ -334,11 +334,22 @@ InitPowermap := NewOperationArgs( "InitPowermap" );
 #F  Congruences( <tbl>, <chars>, <prime_powermap>, <prime>, true )
 ##
 ##  improves <prime_powermap> which is an approximation for the <prime>-th
-##  powermap of <tbl> using the property that for each element <chi> of
-##  <chars> the congruence
-##  $'Gal'( <chi>(g), <prime> ) \equiv <chi>(g^{<prime>}) \pmod{<prime>}$ holds;
-##  if the representative order of $g$ is relative prime to <prime> we have
-##  $'GaloisCyc( <chi>(g), <prime> ) = <chi>(g^{<prime>})$.
+##  powermap of <tbl> using the property that for each character <chi> in the
+##  list <chars> the congruence
+##  \[
+##     `GaloisCyc'( <chi>(g), <prime> )
+##         \equiv <chi>(g^{<prime>}) \pmod{<prime>}
+##  \]
+##  holds for all group elements $g$.
+##  If the representative order of $g$ is relative prime to <prime> we check
+##  the stronger condition
+##  \[
+##     `GaloisCyc'( <chi>(g), <prime> ) = <chi>(g^{<prime>}).
+##  \]
+##  If <chi> is a linear character then we check
+##  \[
+##     <chi>(g)^{<prime>} = <chi>(g^{<prime>}).
+##  \]
 ##  
 ##  If \"quick\" is specified, only those classes with ambiguous images are
 ##  considered.
@@ -346,8 +357,8 @@ InitPowermap := NewOperationArgs( "InitPowermap" );
 ##  If there are classes for which no images are possible, the value is the
 ##  empty list (not undefined!)
 ##
-##  'Congruences' returns 'true' if no inconsistencies were detected, and
-##  'false' otherwise.
+##  `Congruences' returns `true' if no inconsistencies were detected, and
+##  `false' otherwise.
 ##
 Congruences := NewOperationArgs( "Congruences" );
 

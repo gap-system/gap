@@ -13,14 +13,15 @@ Revision.oprtpcgs_gi :=
 ##
 InstallMethod( OrbitStabilizerOp,
         "G, D, pnt, pcgs, oprs, opr", true,
-        [ IsGroup, IsList, IsObject, IsPcgs, IsList, IsFunction ], 0,
+        [ IsGroup, IsList, IsObject, IsPrimeOrdersPcgs, IsList, IsFunction ],
+        0,
     function( G, D, pnt, pcgs, oprs, opr )
     return OrbitStabilizerOp( G, pnt, pcgs, oprs, opr );
 end );
 
 InstallOtherMethod( OrbitStabilizerOp,
         "G, pnt, pcgs, oprs, opr", true,
-        [ IsGroup, IsObject, IsPcgs, IsList, IsFunction ], 0,
+        [ IsGroup, IsObject, IsPrimeOrdersPcgs, IsList, IsFunction ], 0,
     function( G, pnt, pcgs, oprs, opr )
     local   orb,             # orbit
             len,             # lengths of orbit before each extension
@@ -265,14 +266,15 @@ end );
 ##
 InstallMethod( OrbitOp,
         "G, D, pnt, pcgs, oprs, opr", true,
-        [ IsGroup, IsList, IsObject, IsPcgs, IsList, IsFunction ], 0,
+        [ IsGroup, IsList, IsObject, IsPrimeOrdersPcgs, IsList, IsFunction ],
+        0,
     function( G, D, pnt, pcgs, oprs, opr )
     return OrbitOp( G, pnt, pcgs, oprs, opr );
 end );
 
 InstallOtherMethod( OrbitOp,
         "G, pnt, pcgs, oprs, opr", true,
-        [ IsGroup, IsObject, IsPcgs, IsList, IsFunction ], 0,
+        [ IsGroup, IsObject, IsPrimeOrdersPcgs, IsList, IsFunction ], 0,
     function( G, pt, U, V, op )
     local   orb,  v,  img,  len,  i,  j,  k;
     
@@ -301,7 +303,8 @@ end );
 #M  RepresentativeOperationOp( <G>, <D>, <d>, <e>, <pcgs>, <oprs>, <opr> )  .
 ##
 InstallOtherMethod( RepresentativeOperationOp, true,
-    [ IsGroup, IsList, IsObject, IsObject, IsPcgs, IsList, IsFunction ], 0,
+        [ IsGroup, IsList, IsObject, IsObject, IsPrimeOrdersPcgs,
+          IsList, IsFunction ], 0,
     function( G, D, d, e, pcgs, oprs, opr )
     local   dset,  eset;
     
@@ -316,19 +319,17 @@ end );
 #M  StabilizerOp( <G>, <D>, <pt>, <U>, <V>, <op> )  . . . . . . based on pcgs
 ##
 InstallMethod( StabilizerOp,
-        "G, D, pnt, pcgs, oprs, opr", true,
-        [ IsGroup, IsList, IsObject, IsPcgs,
-          IsList,
-          IsFunction ], 0,
+        "G, D, pnt, pcgs, oprs, opr, calling 'OrbitStabilizerOp'", true,
+        [ IsGroup, IsList, IsObject, IsPrimeOrdersPcgs,
+          IsList, IsFunction ], 0,
     function( G, D, pt, U, V, op )
     return OrbitStabilizerOp( G, pt, U, V, op ).stabilizer;
 end );
 
 InstallOtherMethod( StabilizerOp,
-        "G, pnt, pcgs, oprs, opr", true,
-        [ IsGroup, IsObject, IsPcgs,
-          IsList,
-          IsFunction ], 0,
+        "G, pnt, pcgs, oprs, opr, calling 'OrbitStabilizerOp'", true,
+        [ IsGroup, IsObject, IsPrimeOrdersPcgs,
+          IsList, IsFunction ], 0,
     function( G, pt, U, V, op )
     return OrbitStabilizerOp( G, pt, U, V, op ).stabilizer;
 end );
