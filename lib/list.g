@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  listtype.gi                   GAP library                Martin Schoenert
+#W  list.g                        GAP library                Martin Schoenert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file contains some list types that have to be known very early in
-##  the bootstrap stage (therefore they are not in list.gi)
+##  This file contains some  list types and functions that  have to be  known
+##  very early in the bootstrap stage (therefore they are not in list.gi)
 ##
-Revision.listtype_gi :=
+Revision.list_g :=
     "@(#)$Id$";
 
 
@@ -23,7 +23,7 @@ ListsFamily := NewFamily(  "ListsFamily", IsList );
 
 #############################################################################
 ##
-#K  TYPE_LIST_NDENSE_MUTABLE
+#V  TYPE_LIST_NDENSE_MUTABLE  . . . . . . . . type of non-dense, mutable list
 ##
 TYPE_LIST_NDENSE_MUTABLE := NewType( ListsFamily,
     IsMutable and IsList and IsInternalRep );
@@ -31,7 +31,7 @@ TYPE_LIST_NDENSE_MUTABLE := NewType( ListsFamily,
 
 #############################################################################
 ##
-#K  TYPE_LIST_NDENSE_IMMUTABLE
+#V  TYPE_LIST_NDENSE_IMMUTABLE	. . . . . . type of non-dense, immutable list
 ##
 TYPE_LIST_NDENSE_IMMUTABLE := NewType( ListsFamily,
     IsList and IsInternalRep );
@@ -39,15 +39,14 @@ TYPE_LIST_NDENSE_IMMUTABLE := NewType( ListsFamily,
 
 #############################################################################
 ##
-#K  TYPE_LIST_DENSE_NHOM_MUTABLE
+#V  TYPE_LIST_DENSE_NHOM_MUTABLE  . . . type of dense, non-homo, mutable list
 ##
 TYPE_LIST_DENSE_NHOM_MUTABLE := NewType( ListsFamily,
     IsMutable and IsList and IsDenseList and IsInternalRep );
 
 
 #############################################################################
-##
-#K  TYPE_LIST_DENSE_NHOM_IMMUTABLE
+##V  TYPE_LIST_DENSE_NHOM_IMMUTABLE  . type of dense, non-homo, immutable list
 ##
 TYPE_LIST_DENSE_NHOM_IMMUTABLE := NewType( ListsFamily,
     IsList and IsDenseList and IsInternalRep );
@@ -55,7 +54,7 @@ TYPE_LIST_DENSE_NHOM_IMMUTABLE := NewType( ListsFamily,
 
 #############################################################################
 ##
-#K  TYPE_LIST_EMPTY_MUTABLE
+#V  TYPE_LIST_EMPTY_MUTABLE . . . . . . . . . type of the empty, mutable list
 ##
 TYPE_LIST_EMPTY_MUTABLE := NewType( ListsFamily,
     IsMutable and IsList and IsDenseList and IsHomogeneousList
@@ -64,7 +63,7 @@ TYPE_LIST_EMPTY_MUTABLE := NewType( ListsFamily,
 
 #############################################################################
 ##
-#K  TYPE_LIST_EMPTY_IMMUTABLE
+#V  TYPE_LIST_EMPTY_IMMUTABLE . . . . . . . type of the empty, immutable list
 ##
 TYPE_LIST_EMPTY_IMMUTABLE := NewType( ListsFamily,
     IsList and IsDenseList and IsHomogeneousList
@@ -73,7 +72,7 @@ TYPE_LIST_EMPTY_IMMUTABLE := NewType( ListsFamily,
 
 #############################################################################
 ##
-#F  TYPE_LIST_HOM( <family>, <kernel_number> )
+#F  TYPE_LIST_HOM( <family>, <kernel_number> )	. . return the type of a list
 ##
 ##  For <kernel_number> see "objects.h" and "plist.c":
 ##
@@ -186,12 +185,157 @@ TYPE_LIST_HOM := function ( family, knr )
                         and IsInternalRep );
 
     else
-        Error("what?");
+        Error( "what?  Unknown kernel number ", knr );
     fi;
 end;
 
 
 #############################################################################
 ##
-#E  listtype.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+#C  IsRange . . . . . . . . . . . . . . . . . . . . . . .  category of ranges
+##
+IsRange := NewCategoryKernel(
+    "IsRange",
+    IsCollection and IsDenseList,
+    IS_RANGE );
+
+
+#############################################################################
+##
+#V  TYPE_RANGE_SSORT_MUTABLE  . . . . . . . . . type of sorted, mutable range
+##
+TYPE_RANGE_SSORT_MUTABLE := Subtype(
+                            TYPE_LIST_HOM( CyclotomicsFamily, 4 ),
+                            IsRange and IsMutable );
+
+
+#############################################################################
+##
+#V  TYPE_RANGE_NSORT_MUTABLE  . . . . . . . . type of unsorted, mutable range
+##
+TYPE_RANGE_NSORT_MUTABLE := Subtype(
+                            TYPE_LIST_HOM( CyclotomicsFamily, 2 ),
+                            IsRange and IsMutable );
+
+
+#############################################################################
+##
+#V  TYPE_RANGE_SSORT_IMMUTABLE  . . . . . . . type of sorted, immutable range
+##
+TYPE_RANGE_SSORT_IMMUTABLE := Subtype(
+                              TYPE_LIST_HOM( CyclotomicsFamily, 4 ),
+                              IsRange );
+
+
+#############################################################################
+##
+#V  TYPE_RANGE_NSORT_IMMUTABLE  . . . . . . type of unsorted, immutable range
+##
+TYPE_RANGE_NSORT_IMMUTABLE := Subtype(
+                              TYPE_LIST_HOM( CyclotomicsFamily, 2 ),
+                              IsRange );
+
+
+#############################################################################
+##
+
+#C  IsBlist . . . . . . . . . . . . . . . . . . . . category of boolean lists
+##
+IsBlist := NewCategoryKernel(
+    "IsBlist",
+    IsHomogeneousList,
+    IS_BLIST );
+
+
+#############################################################################
+##
+#F  BlistList( <list>, <sub> )  . . . . . . . . . boolean list from a sublist
+##
+BlistList := BLIST_LIST;
+
+
+#############################################################################
+##
+#F  ListBlist( <list>, <blist> )  . . . . . . .  sublist from a list by blist
+##
+ListBlist := LIST_BLIST;
+
+
+#############################################################################
+##
+#F  SizeBlist( <blist> )  . . . . . . . . . . . . . . . . . . number of trues
+##
+SizeBlist               := SIZE_BLIST;
+
+
+#############################################################################
+##
+#F  IsSubsetBlist( <blist1>, <blist2> ) . .  <blist2> and <blist1> = <blist2>
+##
+IsSubsetBlist := IS_SUB_BLIST;
+
+
+#############################################################################
+##
+#F  UniteBlist( <blist1>, <blist2> )  . . .  <blist1> := <blist1> or <blist2>
+##
+UniteBlist := UNITE_BLIST;
+
+
+#############################################################################
+##
+#F  IntersectBlist( <blist1>, <blist2> )  . <blist1> := <blist1> and <blist2>
+##
+IntersectBlist := INTER_BLIST;
+
+
+#############################################################################
+##
+#F  SubtractBlist( <blist1>, <blist2> ) <blist1> := <blist1> and not <blist2>
+##
+SubtractBlist := SUBTR_BLIST;
+
+
+#############################################################################
+##
+#F  ConvertToVectorRep( <list> )  . . . . . . . . convert to internal vectors
+##
+ConvertToVectorRep := Ignore;
+
+
+#############################################################################
+##
+#F  PositionNot( <list>, <val> [,<from-minus-one>] )  . . . .  find not <val>
+##
+PositionNot := function( arg )
+    local i;
+
+    if Length(arg) = 2  then
+        for i  in [ 1 .. Length(arg[1]) ]  do
+            if arg[1][i] <> arg[2] then
+                return i;
+            fi;
+        od;
+        return Length(arg[1]) + 1;
+
+    elif Length(arg) = 3 then
+        for i  in [ arg[3]+1 .. Length(arg[1]) ]  do
+            if arg[1][i] <> arg[2] then
+                return i;
+            fi;
+        od;
+        return Length(arg[1]) + 1;
+
+    else
+      Error( "usage: PositionNot( <list>, <val>[, <from>] )" );
+    fi;
+
+end;
+
+
+#############################################################################
+##
+
+#E  list.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

@@ -283,6 +283,8 @@ Obj ReturnFail3 (
 */
 void            InitBool ( void )
 {
+    UInt            gvar;
+
     /* install the marking functions for boolean values                    */
     InfoBags[           T_BOOL          ].name = "boolean";
     InitMarkFuncBags(   T_BOOL          , MarkNoSubBags );
@@ -294,7 +296,9 @@ void            InitBool ( void )
     False = NewBag( T_BOOL, 0L );
     InitGlobalBag( &Fail, "FAIL" );
     Fail = NewBag( T_BOOL, 0L );
-    AssGVar( GVarName( "FAIL" ), Fail );
+    gvar = GVarName( "fail" );
+    AssGVar( gvar, Fail );
+    MakeReadOnlyGVar(gvar);
 
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );

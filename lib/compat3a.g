@@ -87,6 +87,13 @@ end;
 
 #############################################################################
 ##
+#F  CharDegAgGroup( <G> ) . . . . . . . . . . . . . . . . . character degrees
+##
+CharDegAgGroup := CharacterDegrees;
+
+
+#############################################################################
+##
 #F  CharFFE( <ffe> )  . . . . . . . . . . . . . . . . . characteristic of FFE
 ##
 CharFFE := Characteristic;
@@ -95,8 +102,52 @@ CharFFE := Characteristic;
 #############################################################################
 ##
 #F  CharTable( <G> )
+#F  CharTableHead( <G> )
+#F  CharTableRegular( <tbl>, <p> )
+#F  CharTableDirectProduct( <tbl1>, <tbl2> )
+#F  CharTableFactorGroup( <tbl>, <classes> )
+#F  CharTableNormalSubgroup( <tbl>, <classes> )
+#F  CharTableIsoclinic( <tbl>, <classes> )
+#F  CharTableQuaternionic( <4n> )
+#F  CharTableSpecialized( <gentbl>, <param> )
 ##
 CharTable := CharacterTable;
+CharTableHead := CharacterTable;
+CharTableRegular := CharacterTableRegular;
+CharTableDirectProduct := CharacterTableDirectProduct;
+CharTableFactorGroup := CharacterTableFactorGroup;
+CharTableNormalSubgroup := CharacterTableOfNormalSubgroup;
+CharTableIsoclinic := CharacterTableIsoclinic;
+CharTableQuaternionic := CharacterTableQuaternionic;
+CharTableSpecialized := CharacterTableSpecialized;
+
+
+#############################################################################
+##
+#F  Character( <tbl>, <values> )
+##
+Character := CharacterByValues;
+
+
+#############################################################################
+##
+#F  ClassFunction( <tbl>, <values> )
+##
+ClassFunction := ClassFunctionByValues;
+
+
+#############################################################################
+##
+#F  ClassMultCoeffCharTable( <tbl>, <i>, <j>, <k> )
+##
+ClassMultCoeffCharTable := ClassMultiplicationCoefficient;
+
+
+#############################################################################
+##
+#F  ClassNamesCharTable( <tbl> )
+##
+ClassNamesCharTable := ClassNames;
 
 
 #############################################################################
@@ -120,9 +171,24 @@ end;
 
 #############################################################################
 ##
+#F  COEFFSCYC( <cyc> )
+##
+COEFFSCYC := COEFFS_CYC;
+
+
+#############################################################################
+##
 #F  Denominator( <rat> )
 ##
 Denominator := DenominatorRat;
+
+
+#############################################################################
+##
+#F  DisplayCharTable( <tbl> )
+#F  DisplayCharTable( <tbl>, <options> )
+##
+DisplayCharTable := Display;
 
 
 #############################################################################
@@ -235,8 +301,10 @@ IsBijection := IsBijective;
 #############################################################################
 ##
 #F  IsCharTable( <tbl> )
+#F  IsCharTableHead( <tbl> )
 ##
 IsCharTable := IsNearlyCharacterTable;
+IsCharTableHead := IsNearlyCharacterTable;
 
 
 #############################################################################
@@ -321,6 +389,13 @@ InstallOtherMethod( List,
 ##  (was already obsolete in {\GAP}-3)
 ##
 Mod := EuclideanRemainder;
+
+
+#############################################################################
+##
+#F  NofCyc( <cyc> )
+##
+NofCyc := Conductor;
 
 
 #############################################################################
@@ -466,7 +541,12 @@ TestCharTable := IsInternallyConsistent;
 
 #############################################################################
 ##
+#F  VirtualCharacter( <tbl>, <values> )
+##
+VirtualCharacter := VirtualCharacterByValues;
+
+
+#############################################################################
+##
 #E  compat3a.g  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

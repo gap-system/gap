@@ -1922,6 +1922,44 @@ void            SyExec (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * * * directories  * * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SyTmpdir( <hint> )	. . . . . . . . . . . .  return a temporary directory
+**
+**  'SyTmpdir'  returns the directory   for  a temporary directory.  This  is
+**  guaranteed  to be newly  created and empty  immediately after the call to
+**  'SyTmpdir'. <hint> should be used by 'SyTmpdir' to  construct the name of
+**  the directory (but 'SyTmpdir' is free to use only  a part of <hint>), and
+**  must be a string of at most 8 alphanumerical characters.  Under UNIX this
+**  would   usually   represent   '/usr/tmp/<hint>_<proc_id>_<cnt>/',   e.g.,
+**  '/usr/tmp/guava_17188_1/'.
+*/
+
+
+/****************************************************************************
+**
+*f  SyTmpdir( <hint> )  . . . . . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
+
+Char * SyTmpdir ( Char * hint )
+{
+    Char	dir [ 1024 ];
+
+    
+}
+
+#endif
+
+
+/****************************************************************************
+**
 *F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
 **
 **  'SyTmpname' creates and returns a new temporary name.
@@ -1937,7 +1975,7 @@ extern  char * tmpnam ( char * );
 
 #ifdef SYS_HAS_BROKEN_TMPNAM
 
-Char * SyTmpname ()
+Char * SyTmpname ( void )
 {
     static Char   * base = 0;
     static Char     name[1024];
@@ -1991,9 +2029,12 @@ void InitSysFiles( void )
     Int             len;
     Int             i;
     Int             j;
+    Char *          p;
+    Char *          q;
 
     /* GAP_ARCHITECTURE                                                    */
     tmp = NEW_STRING(SyStrlen(SyArchitecture));
+    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
     SyStrncat( CSTR_STRING(tmp), SyArchitecture, SyStrlen(SyArchitecture) );
     gvar = GVarName("GAP_ARCHITECTURE");
     AssGVar( gvar, tmp );
@@ -2001,11 +2042,12 @@ void InitSysFiles( void )
 
 
     /* GAP_ROOT_PATH                                                       */
-    list = NEW_PLIST( T_PLIST, MAX_GAP_DIRS );
+    list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
     for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
         if ( SyGapRootPaths[i][0] ) {
             len = SyStrlen(SyGapRootPaths[i]);
             tmp = NEW_STRING(len);
+	    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
             SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
             SET_ELM_PLIST( list, j, tmp );
             j++;
@@ -2015,6 +2057,44 @@ void InitSysFiles( void )
     gvar = GVarName("GAP_ROOT_PATHS");
     AssGVar( gvar, list );
     MakeReadOnlyGVar(gvar);
+
+    /* DIRECTORIES_SYSTEM_PROGRAMS                                         */
+#if SYS_BSD || SYS_MACH || SYS_USG
+    list = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( list, 0 );
+    for ( p = getenv("PATH"), i = 0, q = p;  ;  p++, i++ ) {
+	if ( *p == ':' || *p == '\0' ) {
+	    if ( i == 0 ) {
+		tmp = NEW_STRING(2);
+		RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+		SyStrncat( CSTR_STRING(tmp), "./", 2 );
+	    }
+	    else {
+		if ( q[-1] == '/' ) {
+		    tmp = NEW_STRING(i);
+		    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+		    SyStrncat( CSTR_STRING(tmp), q, i );
+		}
+		else {
+		    tmp = NEW_STRING(i+1);
+		    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+		    SyStrncat( CSTR_STRING(tmp), q, i );
+		    SyStrncat( CSTR_STRING(tmp), "/", 1 );
+		}
+	    }
+	    AddPlist( list, tmp );
+	    i = -1;
+	    q = p+1;
+	}
+	if ( *p == '\0' )
+	    break;
+    }
+#endif
+    RetypeBag( list, IMMUTABLE_TNUM(TNUM_OBJ(list)) );
+    gvar = GVarName("DIRECTORIES_SYSTEM_PROGRAMS");
+    AssGVar( gvar, list );
+    MakeReadOnlyGVar(gvar);
+
 }
 
 

@@ -7,6 +7,7 @@ Revision.ghompcgs_gd :=
 
 #############################################################################
 ##
+
 #P  IsPcGroupHomomorphismByImages( <G>, <H>, <gens>, <imgs> )
 ##
 IsPcGroupGeneralMappingByImages := NewRepresentation
@@ -26,3 +27,18 @@ IsToPcGroupGeneralMappingByImages := NewRepresentation
       [ "generators", "genimages", "imagePcgs", "imagePcgsPreimages" ] );
 IsToPcGroupHomomorphismByImages := IsToPcGroupGeneralMappingByImages
                                    and IsMapping;
+
+#############################################################################
+##
+#O  NaturalIsomorphismByPcgs( <grp>, <pcgs> ) . . presentation through <pcgs>
+##
+NaturalIsomorphismByPcgs := NewOperation(
+    "NaturalIsomorphismByPcgs",
+    [ IsGroup, IsPcgs ] );
+
+
+#############################################################################
+##
+
+#E  ghompcgs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

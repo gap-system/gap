@@ -326,9 +326,10 @@ end);
 
 #############################################################################
 ##
-#M  Gcd( <pring>, <upol>, <upol> ) . . . . . . . . . . gcd
+#M  GcdOp( <pring>, <upol>, <upol> )  . . . . . .  for univariate polynomials
 ##
-InstallMethod(Gcd,"Gcd(Pol,Pol)",true,[IsEuclideanRing,
+InstallMethod( GcdOp,"Gcd(Pol,Pol)",
+    IsCollsElmsElms,[IsEuclideanRing,
                 IsUnivariatePolynomial,IsUnivariatePolynomial],0,
 function(R,f,g)
 local gcd,u,v,w,val,brci;

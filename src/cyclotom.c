@@ -1534,7 +1534,7 @@ Obj             IsCycIntHandler (
 **  'NofCyc' returns the N of the cyclotomic <cyc>, i.e., the  order  of  the
 **  roots of which <cyc> is written as a linear combination.
 */
-Obj             NofCycOper;
+Obj             NofCycAttr;
 
 Obj             NofCycHandler (
     Obj                 self,
@@ -1548,7 +1548,7 @@ Obj             NofCycHandler (
 
     /* do full operation                                                   */
     if ( FIRST_EXTERNAL_TNUM <= TNUM_OBJ(cyc) ) {
-        return DoOperation1Args( self, cyc );
+        return DoAttribute( NofCycAttr, cyc );
     }
 
     /* check the argument                                                  */
@@ -1970,10 +1970,8 @@ void            InitCyc ( void )
                                 IsCycIntHandler );
     AssGVar( GVarName( "IS_CYC_INT" ), IsCycIntOper );
 
-    InitHandlerFunc( NofCycHandler, "N_OF_CYC" );
-    NofCycOper = NewOperationC( "N_OF_CYC", 1L, "cyc",
-                                NofCycHandler );
-    AssGVar( GVarName( "N_OF_CYC" ), NofCycOper );
+    C_NEW_GVAR_ATTR( "CONDUCTOR", "cyc", NofCycAttr, NofCycHandler,
+      "src/cyclotom.c:NofCycHandler" );
 
     InitHandlerFunc( CoeffsCycHandler, "COEFFS_CYC" );
     CoeffsCycOper = NewOperationC( "COEFFS_CYC", 1L, "cyc",

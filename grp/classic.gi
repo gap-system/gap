@@ -1,14 +1,47 @@
 #############################################################################
 ##
-#W  classic.gi                  GAP group library              Heiko Thei"sen
+#W  classic.gi                  GAP group library                Frank Celler
+#W                                                           & Heiko Thei"sen
 ##
 #H  @(#)$Id$
+##
+##  This file contains  the definitions of of  the basic  matrix groups.  The
+##  generators of the linear, symplectic, unitary groups are taken from
+##
+##    D.E. Taylor, Pairs of Generators for Matrix Groups. I, in:
+##    The Cayley Bulletin no. 3, 1987
+##
+##  Note that the  following convention is used for  orthogonal groups: O (or
+##  O-, O0, O+) is this group  of isometries fixing  a quadratic form, SO (or
+##  SO-, SO0,  SO+)  is the intersection   of O with  SL,  Omega  (or Omega-,
+##  Omega0, Omega0+)  is  the   subgroup with  square    spinor norm  in  odd
+##  characteristic or Dickson invariant 0  in even characteristic.  Omega has
+##  always  index 2 in SO and  SO has index 1  in O  if the characteristic is
+##  even and index 2 if the characteristic is odd.
+##
+##  The defining quadratic   form  $Q$ is  return  in the   record  component
+##  'quadraticForm', the associate symmetric bilinear form $f$ in 'form'.  In
+##  order to compute the value $Q(v)$ or $f(v,w)$ use
+##
+##              $Q(v) = v*g.quadraticForm*v$  or $f(v,w) = v*g.form*w$
+##
+##  For O0(d,q), q odd, a quadratic form with discriminant -2^(d-2) is used.
+##
+##  References:
+##
+##    H.Ishibashi,  A.G.Earnest  "Two-Element Generation of Orthogonal Groups
+##    over Finite Fields",
+##
+##    P.Kleidman,  M.Liebeck "The Subgroup Structure  of the Finite Classical
+##    Groups"
 ##
 Revision.classic_gi :=
     "@(#)$Id$";
 
+
 #############################################################################
 ##
+
 #F  Sp( <d>, <q> )  . . . . . . . . . . . . . . . . . . . .  symplectic group
 ##
 Sp := function( d, q )
@@ -1435,5 +1468,6 @@ end;
 
 #############################################################################
 ##
+
 #E  classic.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 

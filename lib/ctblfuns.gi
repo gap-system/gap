@@ -356,10 +356,16 @@ InstallOtherMethod( Order,
     true,
     [ IsCharacter ], 0,
     function( chi )
+    local order, values;
     if DegreeOfCharacter( chi ) <> 1 then
       Error( "nonlinear character <chi> has no order" );
     fi;
-    return Lcm( ValuesOfClassFunction( chi ), NofCyc );
+    values:= ValuesOfClassFunction( chi );
+    order:= Lcm( values, Conductor );
+    if order mod 2 = 1 and -1 in values then
+      order:= 2*order;
+    fi;
+    return order;
     end );
 
 
@@ -805,7 +811,7 @@ InstallOtherMethod( CentreChar,
     char -> Filtered( [ 1 .. Length( char ) ],
                      i -> char[i] = char[1] or
                           char[i] = - char[1] or
-                          IsCyc( char[i] ) and ForAny( COEFFSCYC( char[i] ),
+                          IsCyc( char[i] ) and ForAny( COEFFS_CYC( char[i] ),
                                             x -> AbsInt( x ) = char[1] ) ) );
 
 
@@ -2691,7 +2697,7 @@ OrbitChar := function( chi, linear )
           image;     # one image of 'chi' under operation
 
     classes:= [ 1 .. Length( chi ) ];
-    nofcyc:= NofCyc( chi );
+    nofcyc:= Conductor( chi );
 
     # Apply Galois automorphisms if necessary.
     orb:= [ chi ];
@@ -2774,7 +2780,7 @@ OrbitsCharacters := function( irr )
 
         # Make 'linear' closed under Galois automorphisms.
         gens:= Flat( GeneratorsPrimeResidues(
-                        NofCyc( Flat( linear ) ) ).generators );
+                        Conductor( Flat( linear ) ) ).generators );
 
         for chi in orb do
           for gen in gens do

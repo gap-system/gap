@@ -169,7 +169,7 @@ Obj             (* EvalBoolFuncs [256]) ( Expr expr );
 Obj             EvalUnknownExpr (
     Expr                expr )
 {
-    Pr( "Panic: tried to evaluate an expression of unknown type '%d'",
+    Pr( "Panic: tried to evaluate an expression of unknown type '%d'\n",
         (Int)TNUM_EXPR(expr), 0L );
     return 0;
 }
@@ -1481,7 +1481,7 @@ void            (* PrintExprFuncs[256] ) ( Expr expr );
 void            PrintUnknownExpr (
     Expr                expr )
 {
-    Pr( "Panic: tried to print an expression of unknown type '%d'",
+    Pr( "Panic: tried to print an expression of unknown type '%d'\n",
         (Int)TNUM_EXPR(expr), 0L );
 }
 

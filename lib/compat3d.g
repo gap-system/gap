@@ -59,117 +59,13 @@ end;
 ##  In the compatibility mode, 'fail' and 'false' are identical.
 ##  This is necessary to handle the different behaviour of e.g. 'Position'.
 ##
+#T This does not work, the kernel returns the proper `FAIL' object in many
+#T cases.
+#T The destructive part of the compatibility mode can be available only via
+#T a command line option.
+##
+MakeReadWriteGVar( "fail" );
 fail := false;
-
-
-#############################################################################
-##
-#F  Gcd( [<R>,] <r1>, <r2>... ) . .  greatest common divisor of ring elements
-##
-##  Allow calls with arbitrarily many arguments.
-##
-if not IsBound( OLDGCD ) then
-    OLDGCD := Gcd;
-fi;
-
-Gcd := function ( arg )
-    local   R, ns, i, gcd;
-
-    # get and check the arguments (what a pain)
-    if   Length(arg) = 0  then
-        Error("usage: Gcd( [<R>,] <r1>, <r2>... )");
-    elif Length(arg) = 1  then
-        ns := arg[1];
-    elif Length(arg) = 2 and IsRing(arg[1])  then
-        R := arg[1];
-        ns := arg[2];
-    elif  IsRing(arg[1])  then
-        R := arg[1];
-        ns := arg{ [2..Length(arg)] };
-    else
-        R := DefaultRing( arg );
-        ns := arg;
-    fi;
-    if not IsList( ns )  or Length(ns) = 0  then
-        Error("usage: Gcd( [<R>,] <r1>, <r2>... )");
-    fi;
-    if not IsBound( R )  then
-        R := DefaultRing( ns );
-    else
-        if not ForAll( ns, n -> n in R )  then
-            Error("<r> must be an element of <R>");
-        fi;
-    fi;
-    if not IsEuclideanRing( R )  then
-        Error("<R> must be a Euclidean ring");
-    fi;
-
-    # compute the gcd by iterating
-    gcd := ns[1];
-    for i  in [2..Length(ns)]  do
-        gcd := OLDGCD( R, gcd, ns[i] );
-    od;
-
-    # return the gcd
-    return gcd;
-end;
-
-
-#############################################################################
-##
-#F  GcdRepresentation( [<R>,] <r>, <s> )  . . . . . representation of the gcd
-##
-##  Allow calls with arbitrarily many arguments.
-##
-if not IsBound( OLDGCDREPRESENTATION ) then
-    OLDGCDREPRESENTATION := GcdRepresentation;
-fi;
-
-GcdRepresentation := function ( arg )
-    local   R, ns, i, gcd, rep, tmp;
-
-    # get and check the arguments (what a pain)
-    if   Length(arg) = 0  then
-        Error("usage: Gcd( [<R>,] <r1>, <r2>... )");
-    elif Length(arg) = 1  then
-        ns := arg[1];
-    elif Length(arg) = 2 and IsRing(arg[1])  then
-        R := arg[1];
-        ns := arg[2];
-    elif  IsRing(arg[1])  then
-        R := arg[1];
-        ns := arg{ [2..Length(arg)] };
-    else
-        R := DefaultRing( arg );
-        ns := arg;
-    fi;
-    if not IsList( ns )  or Length(ns) = 0  then
-        Error("usage: GcdRepresentation( [<R>,] <r1>, <r2>... )");
-    fi;
-    if not IsBound( R )  then
-        R := DefaultRing( ns );
-    else
-        if not ForAll( ns, n -> n in R )  then
-            Error("<r> must be an element of <R>");
-        fi;
-    fi;
-    if not IsEuclideanRing( R )  then
-        Error("<R> must be a Euclidean ring");
-    fi;
-
-    # compute the gcd by iterating
-    gcd := ns[1];
-    rep := [ R.one ];
-    for i  in [2..Length(ns)]  do
-        tmp := OLDGCDREPRESENTATION ( R, gcd, ns[i] );
-        gcd := tmp[1] * gcd + tmp[2] * ns[i];
-        rep := List( rep, x -> x * tmp[1] );
-        Add( rep, tmp[2] );
-    od;
-
-    # return the gcd representation
-    return rep;
-end;
 
 
 #############################################################################
@@ -195,59 +91,6 @@ end;
 
 #############################################################################
 ##
-#F  Lcm( [<R>,] <r1>, <r2>,.. ) .  least common multiple of two ring elements
-##
-##  Allow calls with arbitrarily many arguments.
-##
-if not IsBound( OLDLCM ) then
-    OLDLCM := Lcm;
-fi;
-
-Lcm := function ( arg )
-    local   ns,  R,  lcm,  i;
-
-    # get and check the arguments (what a pain)
-    if   Length(arg) = 0  then
-        Error("usage: Lcm( [<R>,] <r1>, <r2>... )");
-    elif Length(arg) = 1  then
-        ns := arg[1];
-    elif Length(arg) = 2 and IsRing(arg[1])  then
-        R := arg[1];
-        ns := arg[2];
-    elif  IsRing(arg[1])  then
-        R := arg[1];
-        ns := arg{ [2..Length(arg)] };
-    else
-        R := DefaultRing( arg );
-        ns := arg;
-    fi;
-    if not IsList( ns )  or Length(ns) = 0  then
-        Error("usage: Lcm( [<R>,] <r1>, <r2>... )");
-    fi;
-    if not IsBound( R )  then
-        R := DefaultRing( ns );
-    else
-        if not ForAll( ns, n -> n in R )  then
-            Error("<r> must be an element of <R>");
-        fi;
-    fi;
-    if not IsEuclideanRing( R )  then
-        Error("<R> must be a Euclidean ring");
-    fi;
-
-    # compute the least common multiple
-    lcm := ns[1];
-    for i  in [2..Length(ns)]  do
-        lcm := OLDLCM( R, lcm, ns[i] );
-    od;
-
-    # return the lcm
-    return lcm;
-end;
-
-
-#############################################################################
-##
 #M  Order( <D>, <elm> ) . . . . . . . . . . . . . . two argument order method
 ##
 if not IsBound( OLDORDER ) then
@@ -255,7 +98,11 @@ if not IsBound( OLDORDER ) then
 fi;
 
 Order := function( arg )
-    return OLDORDER( arg[1] );
+    if Length( arg ) = 2 then
+      return OLDORDER( arg[2] );
+    else
+      Error( "usage: Order( <D>, <d> )" );
+    fi;
 end;
 
 

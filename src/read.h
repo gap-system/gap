@@ -25,11 +25,31 @@ char *          Revision_read_h =
 */
 extern jmp_buf ReadJmpError;
 
+#ifndef DEBUG_READ_ERROR
+
 #define READ_ERROR()    (NrError || (NrError+=setjmp(ReadJmpError)))
+
+#else
+
+#define READ_ERROR()                                                     \
+    ( NrError ||                                                         \
+      ( ( NrError += setjmp(ReadJmpError) ) ?                            \
+        Pr( "READ_ERROR( %s, %d )\n", (Int)__FILE__, __LINE__ ),0 : 0 ), \
+      NrError )
+
+#endif
 
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * read and evaluate symbols  * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
 *V  ReadEvalResult  . . . . . . . . result of reading one command immediately
 */
 extern Obj ReadEvalResult;
@@ -66,6 +86,12 @@ extern UInt ReadEvalFile ( void );
 */
 extern void ReadEvalError ( void );
 
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
 
 /****************************************************************************
 **

@@ -765,7 +765,7 @@ end );
 
 #############################################################################
 ##
-#M OmegaSeries( G )
+#M  OmegaSeries( G )
 ##
 InstallMethod( OmegaSeries,
                "for p-groups",

@@ -14,54 +14,13 @@ Revision.cyclotom_gi :=
 
 #############################################################################
 ##
-#M  Int( <cyc> )  . . . . . . . . . . . . .  cyclotomic integer near to <cyc>
-##
-InstallMethod( Int, true, [ IsCyc ], 0,
-    function ( x )
-    local i, int, n, cfs;
-    n:= NofCyc( x );
-    cfs:= COEFFSCYC( x );
-    int:= 0;
-    for i in [ 1 .. n ] do
-      int:= int + Int( cfs[i] ) * E(n)^(i-1);
-    od;
-    return int;
-    end );
-
-
-#############################################################################
-##
-#M  Order( <z> ) . . . . . . . . . . . . . . . . . .  order of an alg. number
-##
-InstallMethod( Order, true, [ IsCyc ], 0,
-    function ( cyc )
-    local ord, val;
-    if cyc = 0 then
-      Error( "argument must be nonzero" );
-    elif cyc * GaloisCyc( cyc, -1 ) <> 1 then   # not a root of unity
-      return infinity;
-    else
-      ord:= 1;
-      val:= cyc;
-      while val <> 1 do
-        val:= val * cyc;
-        ord:= ord + 1;
-      od;
-      return ord;
-#T improve!
-    fi;
-    end );
-
-
-##########################################################################
-##
 #F  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
 ##
 RoundCyc := function ( x )
     local i, int, n, cfs, e;
-    n:= NofCyc( x );
+    n:= Conductor( x );
     e:= E(n);
-    cfs:= COEFFSCYC( x );
+    cfs:= COEFFS_CYC( x );
     int:= 0;
     for i in [ 1 .. n ]  do
       if cfs[i] < 0 then
@@ -74,69 +33,6 @@ RoundCyc := function ( x )
     return int;
 end;
 #T operation 'Round' ?
-
-
-#############################################################################
-##
-#M  String( <cyc> ) . . . . . . . . . . . .  convert cyclotomic into a string
-##
-InstallMethod( String, true, [ IsCyc ], 0,
-    function( cyc )
-    local i, j, En, coeffs, str;
-
-    # get the coefficients
-    coeffs := COEFFSCYC( cyc );
-
-    # get the root as a string
-    En := Concatenation( "E(", String( Length( coeffs ) ), ")" );
-
-    # print the first non zero coefficient
-    i := 1;
-    while coeffs[i] = 0 do i:= i+1; od;
-    if i = 1  then
-        str := ShallowCopy( String( coeffs[1] ) );
-    elif coeffs[i] = -1 then
-        str := Concatenation( "-", En );
-    elif coeffs[i] = 1 then
-        str := En;
-    else
-        str := Concatenation( String( coeffs[i] ), "*", En );
-    fi;
-    if 2 < i  then
-        Add( str, '^' );
-        Append( str, String(i-1) );
-    fi;
-
-    # print the other coefficients
-    for j  in [i+1..Length(coeffs)]  do
-        if   coeffs[j] = 1 then
-            Add( str, '+' );
-            Append( str, En );
-        elif coeffs[j] = -1 then
-            Add( str, '-' );
-            Append( str, En );
-        elif 0 < coeffs[j] then
-            Add( str, '+' );
-            Append( str, String( coeffs[j] ) );
-            Add( str, '*' );
-            Append( str, En );
-        elif coeffs[j] < 0 then
-            Append( str, String( coeffs[j] ) );
-            Add( str, '*' );
-            Append( str, En );
-        fi;
-        if 2 < j  and coeffs[j] <> 0  then
-            Add( str, '^' );
-            Append( str, String( j-1 ) );
-        fi;
-    od;
-
-    # Convert to string representation.
-    ConvertToStringRep( str );
-
-    # Return the string.
-    return str;
-    end );
 
 
 #############################################################################
@@ -186,8 +82,8 @@ CoeffsCyc := function( z, N )
       # 'z' is an internal cyclotomic, and therefore it is represented
       # in the smallest possible cyclotomic field.
 
-      coeffs:= COEFFSCYC( z );     # the internal function,
-                                   # returns 'CoeffsCyc( z, NofCyc( z ) )'
+      coeffs:= COEFFS_CYC( z );  # the internal function,
+                                 # returns 'CoeffsCyc( z, Conductor( z ) )'
       n:= Length( coeffs );
       quo:= N / n;
       if not IsInt( quo ) then
@@ -330,8 +226,8 @@ end;
 ##
 ##  (mainly used to read tables produced by 'ctoc')
 ##
-##  *Note*\: 'CycList( COEFFSCYC( <cyc> ) )' = <cyc>, but
-##           'COEFFSCYC( CycList( <coeffs> ))' need not be equal to <coeffs>.
+##  *Note*\: 'CycList( COEFFS_CYC( <cyc> ) )' = <cyc>, but
+##          'COEFFS_CYC( CycList( <coeffs> ))' need not be equal to <coeffs>.
 ##
 CycList := function( coeffs )
     local e, n;
@@ -346,7 +242,7 @@ end;
 #F  IsGaussInt(<x>) . . . . . . . . . test if an object is a Gaussian integer
 ##
 IsGaussInt := function ( x )
-    return IsCycInt( x ) and (NofCyc( x ) = 1 or NofCyc( x ) = 4);
+    return IsCycInt( x ) and (Conductor( x ) = 1 or Conductor( x ) = 4);
 end;
 
 
@@ -355,7 +251,7 @@ end;
 #F  IsGaussRat( <x> ) . . . . . . .  test if an object is a Gaussian rational
 ##
 IsGaussRat := function ( x )
-    return IsCyc( x ) and (NofCyc( x ) = 1 or NofCyc( x ) = 4);
+    return IsCyc( x ) and (Conductor( x ) = 1 or Conductor( x ) = 4);
 end;
 
 
@@ -678,7 +574,7 @@ EI := n -> E(4) * ER(n);
 StarCyc := function( cyc )
     local i, conj;
     conj:= [];
-    for i in PrimeResidues( NofCyc( cyc ) ) do
+    for i in PrimeResidues( Conductor( cyc ) ) do
       AddSet( conj, GaloisCyc( cyc, i ) );
     od;
     if Length( conj ) = 2 then
@@ -720,7 +616,7 @@ Quadratic := function( cyc )
                  );
     fi;
 
-    coeffs:= COEFFSCYC( cyc );
+    coeffs:= COEFFS_CYC( cyc );
     facts:= FactorsInt( Length( coeffs ) );
     factsset:= Set( facts );
     two_part:= Number( facts, x -> x = 2 );
@@ -1053,7 +949,7 @@ GaloisMat := function( mat )
       elif ForAll( mat[i], IsRat ) then
         galoisfams[i]:= 1;
       else
-        n:= LcmInt( n, NofCyc( mat[i] ) );
+        n:= LcmInt( n, Conductor( mat[i] ) );
       fi;
     od;
 
@@ -1132,7 +1028,7 @@ GaloisMat := function( mat )
         orders:= [];    # orders[k] will be the order of the k-th generator
         for j in [ 1 .. Length( genexp ) ] do
           exp:= genexp[j];
-          image:= List( irrats, x -> GaloisCyc( x, exp mod NofCyc(x) ) );
+          image:= List( irrats, x -> GaloisCyc( x, exp mod Conductor(x) ) );
 #T GaloisCyc should do the 'mod'!
           oldorder:= Length( automs );  # group order up to now
           cosets:= [];
@@ -1141,7 +1037,7 @@ GaloisMat := function( mat )
             orders[j]:= orders[j] + 1;
             for k in [ 1 .. oldorder ] do
               auto:= ( automs[k] * exp ) mod n;
-              image:= List( irrats, x -> GaloisCyc( x, auto mod NofCyc(x)) );
+              image:= List( irrats, x -> GaloisCyc( x, auto mod Conductor(x)) );
 #T GaloisCyc should do the 'mod'!
               conj:= [];    # the conjugate character
               for l in [ 1 .. nccl ] do
@@ -1178,7 +1074,7 @@ GaloisMat := function( mat )
               Add( cosets, image );
             od;
             exp:= exp * genexp[j];
-            image:= List( irrats, x -> GaloisCyc( x, exp mod NofCyc(x)) );
+            image:= List( irrats, x -> GaloisCyc( x, exp mod Conductor(x)) );
 #T GaloisCyc should do the 'mod'!
           od;
           irratsimages:= Concatenation( irratsimages, cosets );
@@ -1214,7 +1110,7 @@ GaloisMat := function( mat )
           for l in [ 1 .. innerlength ] do
             generator[ l + blocklength - innerlength ]:=
                  Position( irratsimages, List( irrats,
-                             x -> GaloisCyc( x, exp*automs[l] mod NofCyc(x)) ) );
+                             x -> GaloisCyc( x, exp*automs[l] mod Conductor(x)) ) );
 #T GaloisCyc should do the 'mod'!
           od;
 

@@ -92,7 +92,7 @@ RootsRepresentative := function( R, f, n )
 
     p := Characteristic(br);
     d := DegreeOverPrimeField(br);
-    z := GeneratorsOfField(br)[1];
+    z := PrimitiveRoot(br);
     f := CoefficientsOfUnivariateLaurentPolynomial(f);
     v := f[2];
     f := f[1];

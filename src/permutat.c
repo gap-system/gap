@@ -3481,7 +3481,7 @@ void            InitPermutat ( void )
                     FuncPermList                   ) );
 
     InitHandlerFunc( FuncLargestMovedPointPerm, "LargestMovedPointPerm" );
-    AssGVar( GVarName( "LargestMovedPointPerm" ),
+    AssGVar( GVarName( "LARGEST_MOVED_POINT_PERM" ),
          NewFunctionC( "LargestMovedPointPerm", 1L, "perm",
                     FuncLargestMovedPointPerm      ) );
 

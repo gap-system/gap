@@ -27,29 +27,14 @@ Revision.ctadmin_tbi :=
 
 #############################################################################
 ##
-##  The global variable 'LIBLIST' that was defined in the file 'ctprimar.tbl'
-##  must be modified here.
+#V  LIBLIST
 ##
-##  (Note that 'ctprimar.tbl' is also used by {\GAP}-3.4.4.)
+##  is a record with information about admissible names, fusion sources
+##  etc. of all library tables;
+##  the components are mainly computed by the `awk' script `maketbl',
+##  and they are stored in the file 'ctprimar.tbl',
 ##
-if IsBound( LIBLIST ) then
-
-  LIBLIST.firstnames :=   Immutable( LIBLIST.firstnames   );
-  LIBLIST.files :=        Immutable( LIBLIST.files        );
-  LIBLIST.fusionsource := Immutable( LIBLIST.fusionsource );
-  LIBLIST.allnames:=      Immutable( LIBLIST.allnames     );
-  LIBLIST.projections :=  Immutable( LIBLIST.projections  );
-  LIBLIST.simpleInfo :=   Immutable( LIBLIST.simpleInfo   );
-
-  LIBLIST.sporadicSimple := Immutable( [
-    "M11", "M12", "J1", "M22", "J2", "M23", "HS", "J3", "M24", "McL", "He",
-    "Ru", "Suz", "ON", "Co3", "Co2", "Fi22", "HN", "Ly", "Th", "Fi23", "Co1",
-    "J4", "F3+", "B", "M" ] );
-
-  LIBTABLE.LIBLIST := LIBLIST;
-  Unbind( LIBLIST );
-
-fi;
+AUTO( ReadTbl, "ctprimar.tbl", "LIBLIST" );
 
 
 #############################################################################
@@ -104,7 +89,7 @@ ALF := function( arg )
 
       # A file is read that does not belong to the official library.
       # Check that the names are valid.
-      pos:= Position( LIBTABLE.LIBLIST.firstnames, arg[2] );
+      pos:= Position( LIBLIST.firstnames, arg[2] );
       if not arg[1] in RecNames( LIBTABLE.( LIBTABLE.TABLEFILENAME ) ) then
         Error( "source '", arg[1], "' is not stored in 'LIBTABLE.",
                LIBTABLE.TABLEFILENAME, "'" );
@@ -113,14 +98,14 @@ ALF := function( arg )
       fi;
 
       # Check whether there was already such a fusion.
-      if arg[1] in LIBTABLE.LIBLIST.fusionsource[ pos ] then
+      if arg[1] in LIBLIST.fusionsource[ pos ] then
         Error( "there is already a fusion from '",
                arg[1], "' to '", arg[2], "'" );
       fi;
 
       # Store the fusion source.
-      LIBTABLE.LIBLIST.fusionsource[ pos ]:= Immutable( Concatenation(
-          LIBTABLE.LIBLIST.fusionsource[ pos ], [ arg[1] ] ) );
+      LIBLIST.fusionsource[ pos ]:= Immutable( Concatenation(
+          LIBLIST.fusionsource[ pos ], [ arg[1] ] ) );
 
     fi;
 
@@ -184,23 +169,23 @@ NotifyNameOfCharacterTable := function( firstname, newnames )
       Error( "Brauer tables must not have explicitly given 'othernames'" );
     fi;
 
-    pos:= Position( LIBTABLE.LIBLIST.firstnames, firstname );
+    pos:= Position( LIBLIST.firstnames, firstname );
     if pos = fail then
       Error( "no GAP library table with first name '", firstname, "'" );
     fi;
     lower:= List( newnames, LowercaseString );
-    if ForAny( lower, x -> x in LIBTABLE.LIBLIST.allnames ) then
+    if ForAny( lower, x -> x in LIBLIST.allnames ) then
       Error( "<newnames> must contain only new names" );
     fi;
 
-    # Change 'LIBTABLE.LIBLIST'.
-    LIBTABLE.LIBLIST.allnames:= Concatenation(
-        LIBTABLE.LIBLIST.allnames, lower );
-    LIBTABLE.LIBLIST.position:= Concatenation(
-        LIBTABLE.LIBLIST.position, List( lower, x -> pos ) );
-    SortParallel( LIBTABLE.LIBLIST.allnames, LIBTABLE.LIBLIST.position );
-    LIBTABLE.LIBLIST.allnames := Immutable( LIBTABLE.LIBLIST.allnames );
-    LIBTABLE.LIBLIST.position := Immutable( LIBTABLE.LIBLIST.position );
+    # Change 'LIBLIST'.
+    LIBLIST.allnames:= Concatenation(
+        LIBLIST.allnames, lower );
+    LIBLIST.position:= Concatenation(
+        LIBLIST.position, List( lower, x -> pos ) );
+    SortParallel( LIBLIST.allnames, LIBLIST.position );
+    LIBLIST.allnames := Immutable( LIBLIST.allnames );
+    LIBLIST.position := Immutable( LIBLIST.position );
 end;
 
 
@@ -234,27 +219,27 @@ NotifyCharacterTable := function( firstname, filename, othernames )
              "<othernames> must be a list" );
     fi;
 
-    if LowercaseString( firstname ) in LIBTABLE.LIBLIST.allnames then
+    if LowercaseString( firstname ) in LIBLIST.allnames then
       Error( "'", firstname, "' is already a valid name" );
     fi;
 
-    # Change 'LIBTABLE.LIBLIST'.
-    LIBTABLE.LIBLIST.firstnames:= Immutable( Concatenation(
-        LIBTABLE.LIBLIST.firstnames, [ firstname ] ) );
-    if not filename in LIBTABLE.LIBLIST.files then
-      LIBTABLE.LIBLIST.files:= Immutable( Concatenation(
-          LIBTABLE.LIBLIST.files, [ filename ] ) );
+    # Change 'LIBLIST'.
+    LIBLIST.firstnames:= Immutable( Concatenation(
+        LIBLIST.firstnames, [ firstname ] ) );
+    if not filename in LIBLIST.files then
+      LIBLIST.files:= Immutable( Concatenation(
+          LIBLIST.files, [ filename ] ) );
     fi;
-    len:= Length( LIBTABLE.LIBLIST.firstnames );
-    LIBTABLE.LIBLIST.filenames:= ShallowCopy( LIBTABLE.LIBLIST.filenames );
-    LIBTABLE.LIBLIST.filenames[ len ]:=
-        Position( LIBTABLE.LIBLIST.files, filename );
-    LIBTABLE.LIBLIST.filenames:= Immutable( LIBTABLE.LIBLIST.filenames );
-    LIBTABLE.LIBLIST.fusionsource:= ShallowCopy(
-        LIBTABLE.LIBLIST.fusionsource );
-    LIBTABLE.LIBLIST.fusionsource[ len ]:= [];
-    LIBTABLE.LIBLIST.fusionsource:= Immutable(
-        LIBTABLE.LIBLIST.fusionsource );
+    len:= Length( LIBLIST.firstnames );
+    LIBLIST.filenames:= ShallowCopy( LIBLIST.filenames );
+    LIBLIST.filenames[ len ]:=
+        Position( LIBLIST.files, filename );
+    LIBLIST.filenames:= Immutable( LIBLIST.filenames );
+    LIBLIST.fusionsource:= ShallowCopy(
+        LIBLIST.fusionsource );
+    LIBLIST.fusionsource[ len ]:= [];
+    LIBLIST.fusionsource:= Immutable(
+        LIBLIST.fusionsource );
     NotifyNameOfCharacterTable( firstname, [ firstname ] );
     NotifyNameOfCharacterTable( firstname, othernames );
 
@@ -376,21 +361,21 @@ LibInfoCharacterTable := function( tblname )
     od;
 
     # The name might belong to an ordinary table.
-    pos:= Position( LIBTABLE.LIBLIST.allnames, tblname );
+    pos:= Position( LIBLIST.allnames, tblname );
     if pos <> fail then
-      pos:= LIBTABLE.LIBLIST.position[ pos ];
+      pos:= LIBLIST.position[ pos ];
       if pos <> fail then
-        return rec( firstName := LIBTABLE.LIBLIST.firstnames[ pos ],
-                    fileName  := LIBTABLE.LIBLIST.files[
-                                     LIBTABLE.LIBLIST.filenames[ pos ] ] );
+        return rec( firstName := LIBLIST.firstnames[ pos ],
+                    fileName  := LIBLIST.files[
+                                     LIBLIST.filenames[ pos ] ] );
       fi;
       return fail;
     fi;
 
     # The name might belong to a generic table.
-    if tblname in LIBTABLE.LIBLIST.GENERIC.allnames then
-      return rec( firstName := LIBTABLE.LIBLIST.GENERIC.firstnames[
-                            Position( LIBTABLE.LIBLIST.GENERIC.allnames,
+    if tblname in LIBLIST.GENERIC.allnames then
+      return rec( firstName := LIBLIST.GENERIC.firstnames[
+                            Position( LIBLIST.GENERIC.allnames,
                                       tblname ) ],
                   fileName  := "ctgeneri" );
     fi;
@@ -522,9 +507,9 @@ CharacterTableFromLibrary := function( arglist )
         fi;
 
         # Store the fusion sources.
-        pos:= Position( LIBTABLE.LIBLIST.firstnames, firstname );
+        pos:= Position( LIBLIST.firstnames, firstname );
         libtbl.NamesOfFusionSources:=
-            ShallowCopy( LIBTABLE.LIBLIST.fusionsource[ pos ] );
+            ShallowCopy( LIBLIST.fusionsource[ pos ] );
 
         # Evaluate characters encoded as '[GALOIS,[i,j]]'
         # or '[TENSOR,[i,j]]'.
@@ -533,7 +518,7 @@ CharacterTableFromLibrary := function( arglist )
           libtbl.projectives:= [];
           for i in [ 1, 3 .. Length( fld ) - 1 ] do
             EvalChars( fld[i+1] );
-            for fus in LIBTABLE.LIBLIST.projections do
+            for fus in LIBLIST.projections do
               if fus[2] = firstname and fus[1] = fld[i] then
                 Add( libtbl.projectives, rec(
                                               name  := fld[i],
@@ -1130,8 +1115,12 @@ InstallMethod( \mod,
     [ IsOrdinaryTable and IsLibraryCharacterTableRep,
       IsPosRat and IsInt ], 0,
     function( tbl, p )
-    return BrauerTable( Concatenation( Identifier( tbl ), "mod", String(p) ),
-                        tbl );
+    tbl:= BrauerTable( Concatenation( Identifier( tbl ), "mod", String(p) ),
+                       tbl );
+    if not IsBrauerTable( tbl ) then
+      TryNextMethod();
+    fi;
+    return tbl;
     end );
 
 
@@ -2136,17 +2125,17 @@ AllCharacterTableNames := function( arg )
     if IsEmpty( arg ) then
 
       # all table names in the library
-      return ShallowCopy( LIBTABLE.LIBLIST.firstnames );
+      return ShallowCopy( LIBLIST.firstnames );
 
     fi;
 
     # table names of sporadic simple groups
     # (sorted according to size)
 
-    sporsimp:= LIBTABLE.LIBLIST.sporadicSimple;
-    multinfo:= List( LIBTABLE.LIBLIST.simpleInfo, x -> x[1] );
-    simpinfo:= List( LIBTABLE.LIBLIST.simpleInfo, x -> x[2] );
-    autoinfo:= List( LIBTABLE.LIBLIST.simpleInfo, x -> x[3] );
+    sporsimp:= LIBLIST.sporadicSimple;
+    multinfo:= List( LIBLIST.simpleInfo, x -> x[1] );
+    simpinfo:= List( LIBLIST.simpleInfo, x -> x[2] );
+    autoinfo:= List( LIBLIST.simpleInfo, x -> x[3] );
 
     # initialize the names list;
     # supported up to now: special cases 'IsSimpleGroup', 'IsSporadicSimple'
@@ -2158,7 +2147,7 @@ AllCharacterTableNames := function( arg )
     elif arg[1] = IsSporadicSimple and arg[2] = true then
       list:= sporsimp;
     else
-      list:= Filtered( LIBTABLE.LIBLIST.firstnames,
+      list:= Filtered( LIBLIST.firstnames,
                 x -> arg[1]( CharacterTableFromLibrary( [ x ] ) ) = arg[2] );
     fi;
 
@@ -2403,10 +2392,10 @@ ShrinkChars := function( chars )
           if fams[i][1][j] <= Length( chars ) then
             chi:= chars[ fams[i][1][j] ];
             if not IsString( chi ) then
-              N:= Lcm( List( chi, NofCyc ) );
+              N:= Lcm( Conductor( chi ) );
               k:= First( [ 2..N ], x -> chi = List( oldchars[i],
                                                     y -> GaloisCyc(y,x) ) );
-              chars[ fams[i][1][j] ]:=Concatenation("\n[GALOIS,[",
+              chars[ fams[i][1][j] ]:= Concatenation("\n[GALOIS,[",
                                                String(i),",",String(k),"]]");
             fi;
           fi;

@@ -152,7 +152,7 @@ ReadOrComplete := function( name )
 
     # use completion files
     if CHECK_FOR_COMP_FILES  then
-        comp := ReplacedString( name, "read", "comp" );
+        comp := ReplacedString( name, ".g", ".co" );
 
         # do not check installation and use cached ranks
         check := CHECK_INSTALL_METHOD;

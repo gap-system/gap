@@ -95,9 +95,9 @@ CyclotomicField := function ( arg )
       Error("usage: CF( <n> ) or CF( <subfield>, <gens> )");
     fi;
 
-    # Replace generators by their 'NofCyc'.
+    # Replace generators by their conductor.
     if not IsInt( xtension ) then
-      xtension:= NofCyc( xtension );
+      xtension:= Conductor( xtension );
     fi;
     if xtension mod 2 = 0 and xtension mod 4 <> 0 then
       xtension:= xtension / 2;
@@ -356,7 +356,7 @@ InstallMethod( \in,
     IsElmsColls,
     [ IsCyc, IsAbelianNumberField and IsCyclotomicsCollection ], 0,
     function ( z, F )
-    return     Conductor( F ) mod NofCyc( z ) = 0
+    return     Conductor( F ) mod Conductor( z ) = 0
            and ForAll( GaloisStabilizer( F ), x -> GaloisCyc( z, x ) = z );
     end );
 
@@ -365,7 +365,7 @@ InstallMethod( \in,
     IsElmsColls,
     [ IsCyc, IsCyclotomicField and IsCyclotomicsCollection ], 0,
     function ( z, F )
-    return Conductor( F ) mod NofCyc( z ) = 0;
+    return Conductor( F ) mod Conductor( z ) = 0;
     end );
 
 
@@ -464,11 +464,11 @@ InstallMethod( GeneratorsOfDivisionRing,
 ##
 #M  Conductor( <F> )  . . . . . . . . .  conductor of an abelian number field
 ##
-InstallMethod( Conductor,
+InstallOtherMethod( Conductor,
     "method for abelian number field of cyclotomics",
     true,
     [ IsAbelianNumberField and IsCyclotomicsCollection ], 0,
-    F -> NofCyc( GeneratorsOfField( F ) ) );
+    F -> Conductor( GeneratorsOfField( F ) ) );
 
 
 #############################################################################
@@ -1187,7 +1187,7 @@ InstallMethod( CanonicalBasis,
                                                GaloisStabilizer( F ) ) );
       m:= Length( subbase );
       k:= Length( normalbase );
-      N:= NofCyc( normalbase );
+      N:= Conductor( normalbase );
       C:= [];
       for j in normalbase do
 
@@ -1319,7 +1319,7 @@ InstallOtherMethod( FieldByGenerators,
 
     local N, stab;
 
-    N:= NofCyc( gens );
+    N:= Conductor( gens );
 
     # Handle trivial cases.
     if   N = 1 then
@@ -1346,7 +1346,7 @@ InstallMethod( FieldByGenerators,
 
     local N, stab;
 
-    N:= NofCyc( gens );
+    N:= Conductor( gens );
 
     # Handle trivial cases.
     if   N = 1 then
@@ -1373,7 +1373,7 @@ InstallMethod( DefaultFieldByGenerators,
     "method for collection of cyclotomics",
     true,
     [ IsCyclotomicsCollection ], 0,
-    gens -> CyclotomicField( NofCyc( gens ) ) );
+    gens -> CyclotomicField( Conductor( gens ) ) );
 
 
 #############################################################################
@@ -1560,7 +1560,7 @@ InstallMethod( Coefficients,
 #T
 #T NumberRingOps.\in := function( z, R )
 #T     return IsCycInt( z )
-#T            and NofCyc( R.generators ) mod NofCyc( z ) = 0
+#T            and Conductor( R.generators ) mod Conductor( z ) = 0
 #T            and ForAll( GaloisStabilizer( R ), x -> GaloisCyc( z, x ) = z );
 #T     end;
 #T
@@ -1582,7 +1582,7 @@ InstallMethod( Coefficients,
 #T     local F;
 #T     if ForAll( gens, IsCycInt ) then
 #T
-#T       if NofCyc( gens ) = 4 then
+#T       if Conductor( gens ) = 4 then
 #T         return GaussianIntegers;
 #T       fi;
 #T
@@ -1615,7 +1615,7 @@ InstallMethod( Coefficients,
 #T     local F;
 #T     if ForAll( gens, IsCycInt ) then
 #T
-#T       if NofCyc( gens ) = 4 then
+#T       if Conductor( gens ) = 4 then
 #T         return GaussianIntegers;
 #T       fi;
 #T

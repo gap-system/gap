@@ -48,9 +48,6 @@ AddCosetInfoStabChain := NewOperationArgs( "AddCosetInfoStabChain" );
 NumberCoset := NewOperationArgs( "NumberCoset" );
 CosetNumber := NewOperationArgs( "CosetNumber" );
 
-CycleStructurePerm := NewOperationArgs( "CycleStructurePerm" );
-RestrictedPerm := NewOperationArgs( "RestrictedPerm" );
-MappingPermListList := NewOperationArgs( "MappingPermListList" );
 IndependentGeneratorsAbelianPPermGroup := NewOperationArgs( "IndependentGeneratorsAbelianPPermGroup" );
 IndependentGeneratorsAbelianPermGroup := NewOperationArgs( "IndependentGeneratorsAbelianPermGroup" );
 OrbitPerms := NewOperationArgs( "OrbitPerms" );

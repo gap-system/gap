@@ -594,6 +594,7 @@ Obj ErrorMode (
 
         /* read and evaluate one command                                   */
 	ClearError();
+        DualSemicolon = 0;
         type = ReadEvalCommand();
 
         /* handle ordinary command                                         */
@@ -603,19 +604,19 @@ Obj ErrorMode (
             AssGVar( Last,  ReadEvalResult   );
 
             /* print the result                                            */
+	    IsStringConv( ReadEvalResult );
 	    if ( ! DualSemicolon ) {
-                IsStringConv( ReadEvalResult );
 		memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 		if ( ! READ_ERROR() ) {
-		    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
 		    PrintObj( ReadEvalResult );
+		    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
 		    Pr( "\n", 0L, 0L );
 		}
 		else {
 		    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
 		    break;
 		}
-            }
+	    }
 
         }
 
@@ -632,7 +633,7 @@ Obj ErrorMode (
                 return ReadEvalResult;
             }
             else {
-                Pr( "'return <value>;' cannot be used in this break-loop",
+                Pr( "'return <value>;' cannot be used in this break-loop\n",
                     0L, 0L );
             }
         }
@@ -650,7 +651,7 @@ Obj ErrorMode (
                 return (Obj)0;
             }
             else {
-                Pr( "'return;' cannot be used in this break-loop",
+                Pr( "'return;' cannot be used in this break-loop\n",
                     0L, 0L );
             }
         }
@@ -2404,8 +2405,7 @@ void InitGap (
 		ClearError();
             }
             else {
-                ErrorQuit(
-                    "file \"%s\" must exist and be readable",
+                Pr( "Error, file \"%s\" must exist and be readable\n",
                     (Int)SyInitfiles[i], 0L );
             }
         }

@@ -318,7 +318,7 @@ InstallMethod( NormalBase,
     repeat
       normal:= Conjugates( F, ValuePol( poly, i ) * val );
       i:= i + 1;
-    until RankMat( List( normal, COEFFSCYC ) ) = Dimension( F );
+    until RankMat( List( normal, COEFFS_CYC ) ) = Dimension( F );
 
     return normal;
     end );

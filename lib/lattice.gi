@@ -426,7 +426,7 @@ IntegralizedMat := function( arg )
             # if 'tr' contains conjugates of the row, delete them
             f:= FieldByGenerators( tr[i] );
             stab:= GaloisStabilizer( f );
-            nofcyc:= NofCyc( GeneratorsOfField( f ) );
+            nofcyc:= Conductor( GeneratorsOfField( f ) );
             galaut:= PrimeResidues( nofcyc );
             SubtractSet( galaut, stab );
             repr:= [];

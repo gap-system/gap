@@ -294,319 +294,321 @@ gap> n := GeneratorsOfGroup(g);;
 gap> s := Subgroup( g, n{[1]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3, f.4*f.8^2, f.7*f.8, f.9, f.10*f.11^3, f.12, f.13, 
-  f.14, f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, 
-  f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, 
-  f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, 
-  f.51, f.52, f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, 
-  f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3, f4*f8^2, f7*f8, f9, f10*f11^3, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59*f65 ])
 
 gap> s := Subgroup( g, n{[1]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, true, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3, f.4*f.8^2, f.7*f.8, f.9, f.10*f.11^3, f.12, f.13, 
-  f.14, f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, 
-  f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, 
-  f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, 
-  f.51, f.52, f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, 
-  f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3, f4*f8^2, f7*f8, f9, f10*f11^3, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59*f65 ])
 
 gap> s := Subgroup( g, n{[1]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, true, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3, f.4*f.8^2, f.7*f.8, f.9, f.10*f.11^3, f.12, f.13, 
-  f.14, f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, 
-  f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, 
-  f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, 
-  f.51, f.52, f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, 
-  f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3, f4*f8^2, f7*f8, f9, f10*f11^3, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59*f65 ])
 
 gap> s := Subgroup( g, n{[1]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, false, true, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3, f.4*f.8^2, f.7*f.8, f.9, f.10*f.11^3, f.12, f.13, 
-  f.14, f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, 
-  f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, 
-  f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, 
-  f.51, f.52, f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, 
-  f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3, f4*f8^2, f7*f8, f9, f10*f11^3, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59*f65 ])
 
 gap> s := Subgroup( g, n{[1]} );;
 gap> CanonicalPcgsWrtHomePcgs( Normalizer( g, s ) );
-Pcgs([ f.1, f.2*f.8, f.3, f.4*f.8^2, f.7*f.8, f.9, f.10*f.11^3, f.12, f.13, 
-  f.14, f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, 
-  f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, 
-  f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, 
-  f.51, f.52, f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, 
-  f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3, f4*f8^2, f7*f8, f9, f10*f11^3, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59*f65 ])
 
 
 gap> s := Subgroup( g, n{[1,20]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3*f.10^2*f.11^6, f.4*f.8^2, f.18, f.19, f.20, f.21, 
-  f.22, f.23, f.24*f.36, f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, 
-  f.29*f.41, f.30*f.42, f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, 
-  f.35*f.47, f.48, f.49, f.50, f.51, f.52, f.53, f.54*f.60, f.55*f.61, 
-  f.56*f.62, f.57*f.63, f.58*f.64, f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3*f10^2*f11^6, f4*f8^2, f18, f19, f20, f21, f22, f23, 
+  f24*f36, f25*f37, f26*f38, f27*f39, f28*f40, f29*f41, f30*f42, f31*f43,
+  f32*f44, f33*f45, f34*f46, f35*f47, f48, f49, f50, f51, f52, f53, f54*f60,
+  f55*f61, f56*f62, f57*f63, f58*f64, f59*f65 ])
 
 gap> s := Subgroup( g, n{[1,20]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3*f.10^2*f.11^6, f.4*f.8^2, f.18, f.19, f.20, f.21, 
-  f.22, f.23, f.24*f.36, f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, 
-  f.29*f.41, f.30*f.42, f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, 
-  f.35*f.47, f.48, f.49, f.50, f.51, f.52, f.53, f.54*f.60, f.55*f.61, 
-  f.56*f.62, f.57*f.63, f.58*f.64, f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3*f10^2*f11^6, f4*f8^2, f18, f19, f20, f21, f22, f23, 
+  f24*f36, f25*f37, f26*f38, f27*f39, f28*f40, f29*f41, f30*f42, f31*f43,
+  f32*f44, f33*f45, f34*f46, f35*f47, f48, f49, f50, f51, f52, f53, f54*f60,
+  f55*f61, f56*f62, f57*f63, f58*f64, f59*f65 ])
 
 gap> s := Subgroup( g, n{[1,20]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, true, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3*f.10^2*f.11^6, f.4*f.8^2, f.18, f.19, f.20, f.21, 
-  f.22, f.23, f.24*f.36, f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, 
-  f.29*f.41, f.30*f.42, f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, 
-  f.35*f.47, f.48, f.49, f.50, f.51, f.52, f.53, f.54*f.60, f.55*f.61, 
-  f.56*f.62, f.57*f.63, f.58*f.64, f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3*f10^2*f11^6, f4*f8^2, f18, f19, f20, f21, f22, f23, 
+  f24*f36, f25*f37, f26*f38, f27*f39, f28*f40, f29*f41, f30*f42, f31*f43,
+  f32*f44, f33*f45, f34*f46, f35*f47, f48, f49, f50, f51, f52, f53, f54*f60,
+  f55*f61, f56*f62, f57*f63, f58*f64, f59*f65 ])
 
 gap> s := Subgroup( g, n{[1,20]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, true, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3*f.10^2*f.11^6, f.4*f.8^2, f.18, f.19, f.20, f.21, 
-  f.22, f.23, f.24*f.36, f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, 
-  f.29*f.41, f.30*f.42, f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, 
-  f.35*f.47, f.48, f.49, f.50, f.51, f.52, f.53, f.54*f.60, f.55*f.61, 
-  f.56*f.62, f.57*f.63, f.58*f.64, f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3*f10^2*f11^6, f4*f8^2, f18, f19, f20, f21, f22, f23,
+  f24*f36, f25*f37, f26*f38, f27*f39, f28*f40, f29*f41, f30*f42, f31*f43,
+  f32*f44, f33*f45, f34*f46, f35*f47, f48, f49, f50, f51, f52, f53, f54*f60,
+  f55*f61, f56*f62, f57*f63, f58*f64, f59*f65 ])
 
 gap> s := Subgroup( g, n{[1,20]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, false, true, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.8, f.3*f.10^2*f.11^6, f.4*f.8^2, f.18, f.19, f.20, f.21, 
-  f.22, f.23, f.24*f.36, f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, 
-  f.29*f.41, f.30*f.42, f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, 
-  f.35*f.47, f.48, f.49, f.50, f.51, f.52, f.53, f.54*f.60, f.55*f.61, 
-  f.56*f.62, f.57*f.63, f.58*f.64, f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3*f10^2*f11^6, f4*f8^2, f18, f19, f20, f21, f22, f23,
+  f24*f36, f25*f37, f26*f38, f27*f39, f28*f40, f29*f41, f30*f42, f31*f43,
+  f32*f44, f33*f45, f34*f46, f35*f47, f48, f49, f50, f51, f52, f53, f54*f60,
+  f55*f61, f56*f62, f57*f63, f58*f64, f59*f65 ])
 
 gap> s := Subgroup( g, n{[1,20]} );;
 gap> CanonicalPcgsWrtHomePcgs( Normalizer( g, s ) );
-Pcgs([ f.1, f.2*f.8, f.3*f.10^2*f.11^6, f.4*f.8^2, f.18, f.19, f.20, f.21, 
-  f.22, f.23, f.24*f.36, f.25*f.37, f.26*f.38, f.27*f.39, f.28*f.40, 
-  f.29*f.41, f.30*f.42, f.31*f.43, f.32*f.44, f.33*f.45, f.34*f.46, 
-  f.35*f.47, f.48, f.49, f.50, f.51, f.52, f.53, f.54*f.60, f.55*f.61, 
-  f.56*f.62, f.57*f.63, f.58*f.64, f.59*f.65 ])
+Pcgs([ f1, f2*f8, f3*f10^2*f11^6, f4*f8^2, f18, f19, f20, f21, f22, f23, 
+  f24*f36, f25*f37, f26*f38, f27*f39, f28*f40, f29*f41, f30*f42, f31*f43,
+  f32*f44, f33*f45, f34*f46, f35*f47, f48, f49, f50, f51, f52, f53, f54*f60,
+  f55*f61, f56*f62, f57*f63, f58*f64, f59*f65 ])
 
 
 
 gap> s := Subgroup( g, n{[1,20,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, f.25*f.37, 
-  f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, f.31*f.43, 
-  f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, f.51, f.52, 
-  f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, f.59, f.65 ])
+Pcgs([ f1, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59, f65 ])
 
 gap> s := Subgroup( g, n{[1,20,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, f.25*f.37, 
-  f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, f.31*f.43, 
-  f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, f.51, f.52, 
-  f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, f.59, f.65 ])
+Pcgs([ f1, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59, f65 ])
 
 gap> s := Subgroup( g, n{[1,20,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, true, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, f.25*f.37, 
-  f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, f.31*f.43, 
-  f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, f.51, f.52, 
-  f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, f.59, f.65 ])
+Pcgs([ f1, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59, f65 ])
 
 gap> s := Subgroup( g, n{[1,20,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, true, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, f.25*f.37, 
-  f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, f.31*f.43, 
-  f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, f.51, f.52, 
-  f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, f.59, f.65 ])
+Pcgs([ f1, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59, f65 ])
 
 gap> s := Subgroup( g, n{[1,20,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, false, true, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, f.25*f.37, 
-  f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, f.31*f.43, 
-  f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, f.51, f.52, 
-  f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, f.59, f.65 ])
+Pcgs([ f1, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59, f65 ])
 
 gap> s := Subgroup( g, n{[1,20,65]} );;
 gap> CanonicalPcgsWrtHomePcgs( Normalizer( g, s ) );
-Pcgs([ f.1, f.18, f.19, f.20, f.21, f.22, f.23, f.24*f.36, f.25*f.37, 
-  f.26*f.38, f.27*f.39, f.28*f.40, f.29*f.41, f.30*f.42, f.31*f.43, 
-  f.32*f.44, f.33*f.45, f.34*f.46, f.35*f.47, f.48, f.49, f.50, f.51, f.52, 
-  f.53, f.54*f.60, f.55*f.61, f.56*f.62, f.57*f.63, f.58*f.64, f.59, f.65 ])
+Pcgs([ f1, f18, f19, f20, f21, f22, f23, f24*f36, f25*f37, f26*f38, f27*f39,
+  f28*f40, f29*f41, f30*f42, f31*f43, f32*f44, f33*f45, f34*f46, f35*f47,
+  f48, f49, f50, f51, f52, f53, f54*f60, f55*f61, f56*f62, f57*f63, f58*f64,
+  f59, f65 ])
 
 
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,20,21,24,26,65,30]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,20,21,24,26,65,30]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,20,21,24,26,65,30]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, true, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16, 
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,20,21,24,26,65,30]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, true, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,20,21,24,26,65,30]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, false, true, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,20,21,24,26,65,30]} );;
 gap> CanonicalPcgsWrtHomePcgs( Normalizer( g, s ) );
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, true, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, true, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, false, true, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,18,30,21,24,26,65]} );;
 gap> CanonicalPcgsWrtHomePcgs( Normalizer( g, s ) );
-Pcgs([ f.1, f.2*f.7*f.8^2, f.3, f.4*f.8^2*f.9, f.10, f.11, f.12, f.13, f.14, 
-  f.15, f.16, f.17, f.18, f.19, f.20, f.21, f.22, f.23, f.24, f.25, f.26, 
-  f.27, f.28, f.29, f.30, f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, 
-  f.41, f.42, f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, 
-  f.55, f.56, f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f2*f7*f8^2, f3, f4*f8^2*f9, f10, f11, f12, f13, f14, f15, f16,
+  f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+  f31*f33*f34, f32, f36, f37, f38, f39, f40, f41, f42, f43*f45*f46, f44, f48,
+  f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63,
+  f64, f65 ])
 
 
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.3, f.10, f.11, f.12, f.13, f.14, f.15, f.16, f.17, 
-  f.19*f.22*f.23, f.20*f.22, f.21, f.24, f.25, f.26, f.27, f.28, f.29, f.30, 
-  f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, f.41, f.42, 
-  f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, f.55, f.56, 
-  f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f3, f10, f11, f12, f13, f14, f15, f16, f17, f19*f22*f23, f20*f22,
+  f21, f24, f25, f26, f27, f28, f29, f30, f31*f33*f34, f32, f36, f37, f38,
+  f39, f40, f41, f42, f43*f45*f46, f44, f48, f49, f50, f51, f52, f53, f54,
+  f55, f56, f57, f58, f59, f60, f61, f62, f63, f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, false, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.3, f.10, f.11, f.12, f.13, f.14, f.15, f.16, f.17, 
-  f.19*f.22*f.23, f.20*f.22, f.21, f.24, f.25, f.26, f.27, f.28, f.29, f.30, 
-  f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, f.41, f.42, 
-  f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, f.55, f.56, 
-  f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f3, f10, f11, f12, f13, f14, f15, f16, f17, f19*f22*f23, f20*f22,
+  f21, f24, f25, f26, f27, f28, f29, f30, f31*f33*f34, f32, f36, f37, f38,
+  f39, f40, f41, f42, f43*f45*f46, f44, f48, f49, f50, f51, f52, f53, f54,
+  f55, f56, f57, f58, f59, f60, f61, f62, f63, f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, false, false, true, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.3, f.10, f.11, f.12, f.13, f.14, f.15, f.16, f.17, 
-  f.19*f.22*f.23, f.20*f.22, f.21, f.24, f.25, f.26, f.27, f.28, f.29, f.30, 
-  f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, f.41, f.42, 
-  f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, f.55, f.56, 
-  f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f3, f10, f11, f12, f13, f14, f15, f16, f17, f19*f22*f23, f20*f22,
+  f21, f24, f25, f26, f27, f28, f29, f30, f31*f33*f34, f32, f36, f37, f38,
+  f39, f40, f41, f42, f43*f45*f46, f44, f48, f49, f50, f51, f52, f53, f54,
+  f55, f56, f57, f58, f59, f60, f61, f62, f63, f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, true, false, false );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.3, f.10, f.11, f.12, f.13, f.14, f.15, f.16, f.17, 
-  f.19*f.22*f.23, f.20*f.22, f.21, f.24, f.25, f.26, f.27, f.28, f.29, f.30, 
-  f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, f.41, f.42, 
-  f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, f.55, f.56, 
-  f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f3, f10, f11, f12, f13, f14, f15, f16, f17, f19*f22*f23, f20*f22,
+  f21, f24, f25, f26, f27, f28, f29, f30, f31*f33*f34, f32, f36, f37, f38,
+  f39, f40, f41, f42, f43*f45*f46, f44, f48, f49, f50, f51, f52, f53, f54,
+  f55, f56, f57, f58, f59, f60, f61, f62, f63, f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,30,21,24,26,65]} );;
 gap> w := PcGroup_NormalizerWrtHomePcgs( s, true, false, true, true );;
 gap> CanonicalPcgs(w);
-Pcgs([ f.1, f.3, f.10, f.11, f.12, f.13, f.14, f.15, f.16, f.17, 
-  f.19*f.22*f.23, f.20*f.22, f.21, f.24, f.25, f.26, f.27, f.28, f.29, f.30, 
-  f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, f.41, f.42, 
-  f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, f.55, f.56, 
-  f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f3, f10, f11, f12, f13, f14, f15, f16, f17, f19*f22*f23, f20*f22,
+  f21, f24, f25, f26, f27, f28, f29, f30, f31*f33*f34, f32, f36, f37, f38,
+  f39, f40, f41, f42, f43*f45*f46, f44, f48, f49, f50, f51, f52, f53, f54,
+  f55, f56, f57, f58, f59, f60, f61, f62, f63, f64, f65 ])
 
 gap> s := Subgroup( g, n{[1,10,11,12,16,30,21,24,26,65]} );;
 gap> CanonicalPcgsWrtHomePcgs( Normalizer( g, s ) );
-Pcgs([ f.1, f.3, f.10, f.11, f.12, f.13, f.14, f.15, f.16, f.17, 
-  f.19*f.22*f.23, f.20*f.22, f.21, f.24, f.25, f.26, f.27, f.28, f.29, f.30, 
-  f.31*f.33*f.34, f.32, f.36, f.37, f.38, f.39, f.40, f.41, f.42, 
-  f.43*f.45*f.46, f.44, f.48, f.49, f.50, f.51, f.52, f.53, f.54, f.55, f.56, 
-  f.57, f.58, f.59, f.60, f.61, f.62, f.63, f.64, f.65 ])
+Pcgs([ f1, f3, f10, f11, f12, f13, f14, f15, f16, f17, f19*f22*f23, f20*f22,
+  f21, f24, f25, f26, f27, f28, f29, f30, f31*f33*f34, f32, f36, f37, f38,
+  f39, f40, f41, f42, f43*f45*f46, f44, f48, f49, f50, f51, f52, f53, f54,
+  f55, f56, f57, f58, f59, f60, f61, f62, f63, f64, f65 ])
+
+
+#############################################################################
+
+gap> f := FreeGroup(9);;
+gap> g := GeneratorsOfGroup(f);;
+gap> g1 := g[1];;  g2 := g[2];;  g3 := g[3];;  g4 := g[4];;  g5 := g[5];;
+gap> g6 := g[6];;  g7 := g[7];;  g8 := g[8];;  g9 := g[9];;
+gap> rws := SingleCollector(f,[ 2, 2, 2, 3, 3, 3, 3, 3, 3 ]);;
+gap> r := [ [5,1,g6], [6,1,g6], [7,1,g7], [8,1,g8], [9,1,g9], [4,2,g4],
+gap> [5,2,g5*g7^2], [6,2,g6*g7^2], [8,2,g8], [9,2,g8], [5,3,g6], [6,3,g6],
+gap> [7,3,g7], [8,3,g8], [9,3,g9], [5,4,g6^2*g7], [6,4,g6^2*g7], 
+gap> [7,4,g6^2*g7], [8,4,g8*g9^2], [9,4,g8*g9^2], [8,5,g7], [9,5,g6] ];;
+gap> for x in r do SetCommutator(rws,x[1],x[2],x[3]); od;
+gap> g := GroupByRwsNC(rws);;
+gap> u := Subgroup( g, GeneratorsOfGroup(g){[4]} );;
+gap> n := Normalizer( g, u );;
+gap> CanonicalPcgsWrtFamilyPcgs(n);
+Pcgs([ f1, f2, f3, f4, f5*f7^2, f6*f7^2, f8*f9^2 ])
 
 
 #############################################################################

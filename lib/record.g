@@ -1,6 +1,7 @@
 #############################################################################
 ##
-#W  record.gi                   GAP library                      Frank Celler
+#W  record.g                    GAP library                     Thomas Breuer
+#W                                                             & Frank Celler
 ##
 #H  @(#)$Id$
 ##
@@ -19,12 +20,87 @@
 ##  or such that a record can be compared via `\<' with objects in other
 ##  families, one can load the file `compat3c.g'.
 ##  
-Revision.record_gi :=
+Revision.record_g :=
     "@(#)$Id$";
 
 
 #############################################################################
 ##
+
+#C  IsRecord  . . . . . . . . . . . . . . . . . . . . . . category of records
+##
+IsRecord := NewCategoryKernel(
+    "IsRecord",
+    IsObject,
+    IS_REC );
+
+
+#############################################################################
+##
+
+#V  RecordsFamily . . . . . . . . . . . . . . . . . . . . . family of records
+##
+RecordsFamily := NewFamily(  "RecordsFamily", IS_REC );
+
+
+#############################################################################
+##
+#V  TYPE_PREC_MUTABLE . . . . . . . . . . . type of a mutable internal record
+##
+TYPE_PREC_MUTABLE := NewType( RecordsFamily,
+    IS_MUTABLE_OBJ and IS_REC and IsInternalRep );
+
+
+#############################################################################
+##
+#V  TYPE_PREC_IMMUTABLE . . . . . . . .  type of an immutable internal record
+##
+TYPE_PREC_IMMUTABLE := NewType( RecordsFamily,
+    IS_REC and IsInternalRep );
+
+
+#############################################################################
+##
+
+#O  \.( <rec>, <name> )	. . . . . . . . . . . . . . . . get a component value
+##
+\. := NewOperationKernel( "ELM_REC", [ IsObject, IsObject ], ELM_REC );
+
+
+#############################################################################
+##
+#O  IsBound\.( <rec>, <name> )  . . . . . . . . . . . . . .  test a component
+##
+IsBound\. := NewOperationKernel( "ISB_REC", 
+    [ IsObject, IsObject ], ISB_REC );
+
+
+#############################################################################
+##
+#O  \.\:\=( <rec>, <name>, <val> )  . . . . . . . . . . . . .  assign a value
+##
+\.\:\= := NewOperationKernel( "ASS_REC", 
+    [ IsObject, IsObject, IsObject ], ASS_REC );
+
+
+#############################################################################
+##
+#O  Unbind\.( <rec>, <name> ) . . . . . . . . . . . . . . .  unbind component
+##
+Unbind\. := NewOperationKernel( "UNB_REC", [ IsObject, IsObject ], UNB_REC );
+
+
+#############################################################################
+##
+
+#F  RecNames  . . . . . . . . . . . . . . . . . . . . . . names of components
+##
+RecNames := REC_NAMES;
+
+
+#############################################################################
+##
+
 #M  PrintObj( <record> )
 ##
 ##  The record <record> is printed by printing all its components.
@@ -93,6 +169,7 @@ InstallMethod( \<,
 
 #############################################################################
 ##
+
 #E  record.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

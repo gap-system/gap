@@ -15,19 +15,29 @@ ReadLib( "object.gd"   );
 ReadLib( "coll.gd"     );
 ReadLib( "list.gd"     );
 ReadLib( "arith.gd"    );
-ReadLib( "rest.gd"     );
-ReadLib( "listcoef.gd" );
 ReadLib( "ffe.gd"      );
+
+ReadLib( "string.g"    );
+ReadLib( "cyclotom.g"  );
+ReadLib( "set.g"       );
+
+ReadLib( "coll.gi"     );
+
+ReadLib( "flag.g"      );
+ReadLib( "boolean.g"   );
+ReadLib( "record.g"    );
+ReadLib( "ffe.g"       );
+ReadLib( "list.g"      );
+ReadLib( "permutat.g"  );
+
+ReadLib( "object.gi"   );
+ReadLib( "listcoef.gd" );
 ReadLib( "info.gd"     );
 ReadLib( "assert.gd"   );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
 
-ReadLib( "object.gi"   );
-ReadLib( "coll.gi"     );
-ReadLib( "listtype.gi" );
 ReadLib( "arith.gi"    );
-ReadLib( "rest.gi"     );
 ReadLib( "info.gi"     );
 ReadLib( "assert.gi"   );
 

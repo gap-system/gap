@@ -6,7 +6,8 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 **
-**  This file contains the various read-eval-print loops and  related  stuff.
+**  This file contains the  various read-eval-print loops and streams related
+**  stuff.  The system depend part is in "sysfiles.c".
 */
 char * Revision_streams_c =
    "@(#)$Id$";
@@ -14,70 +15,24 @@ char * Revision_streams_c =
 
 #include        <stdio.h>
 
-#include        "system.h"              /* Ints, UInts                     */
-extern char * In;
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
-#include        "scanner.h"             /* Pr                              */
+#include        "system.h"              /* system dependent part           */
+#include        "sysfiles.h"            /* file input/output               */
 
-#include        "gvars.h"               /* InitGVars                       */
+#include        "gasman.h"              /* garbage collector               */
+#include        "objects.h"             /* objects                         */
+#include        "scanner.h"             /* scanner                         */
 
-#include        "calls.h"               /* InitCalls                       */
-#include        "opers.h"               /* InitOpers                       */
+#include        "gap.h"                 /* error handling                  */
+#include        "read.h"                /* reader                          */
 
-#include        "ariths.h"              /* InitAriths                      */
-#include        "records.h"             /* InitRecords                     */
-#include        "lists.h"               /* InitLists                       */
+#include        "gvars.h"               /* global variables                */
+#include        "calls.h"               /* generic call mechanism          */
 
-#include        "bool.h"                /* InitBool                        */
+#include        "lists.h"               /* generic lists package           */
+#include        "plist.h"               /* plain lists                     */
 
-#include        "integer.h"             /* InitInt                         */
-#include        "rational.h"            /* InitRat                         */
-#include        "cyclotom.h"            /* InitCyc                         */
-
-#include        "finfield.h"            /* InitFinfield                    */
-#include        "permutat.h"            /* InitPermutat                    */
-
-#include        "precord.h"             /* InitPRecord                     */
-
-#include        "listoper.h"            /* InitListOper                    */
-#include        "listfunc.h"            /* InitListFunc                    */
-
-#include        "plist.h"               /* InitPlist                       */
-#include        "set.h"                 /* InitSet                         */
-#include        "vector.h"              /* InitVector                      */
-
-#include        "blister.h"             /* InitBlist                       */
-#include        "range.h"               /* InitRange                       */
-#include        "string.h"              /* InitString                      */
-
-#include        "objfgelm.h"            /* InitFreeGroupElements           */
-#include        "objscoll.h"            /* InitSingleCollector             */
-#include        "objpcgel.h"            /* InitPcElements                  */
-#include        "objcftl.h"             /* Init polycyclic collector       */
-
-#include        "sctable.h"             /* InitSCTable                     */
-#include        "costab.h"              /* InitCosetTable                  */
-
-#include        "code.h"                /* InitCode                        */
-
-#include        "vars.h"                /* InitVars                        */
-#include        "exprs.h"               /* InitExprs                       */
-#include        "stats.h"               /* InitStats                       */
-#include        "funcs.h"               /* InitFuncs                       */
-
-#include        "dt.h"                  /* InitDeepThought                 */
-#include        "dteval.h"              /* InitDTEvaluation                */
-
-#include        "intrprtr.h"            /* InitInterpreter                 */
-
-#include        "compiler.h"            /* InitCompiler                    */
-
-#include        "read.h"                /* ReadEvalCommand, ReadEvalResult */
-
-#include        "compstat.h"            /* statically linked modules       */
-
-#include        "gap.h"                 
+#include        "bool.h"                /* booleans                        */
+#include        "string.h"              /* strings                         */
 
 #define INCLUDE_DECLARATION_PART
 #include        "streams.h"             /* declaration part of the package */
@@ -206,9 +161,10 @@ Int READ_TEST ( void )
             /* print the result                                            */
             if ( ! DualSemicolon ) {
                 IsStringConv( ReadEvalResult );
+
+		/* if an error occurs stop printing                        */
 		if ( ! READ_ERROR() ) {
 		    PrintObj( ReadEvalResult );
-		    Pr( "\n", 0L, 0L );
 		}
                 Pr( "\n", 0L, 0L );
             }
@@ -566,6 +522,8 @@ Obj FuncPrint (
         }
         else {
 	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+	    /* if an error occurs stop printing                            */
 	    if ( ! READ_ERROR() ) {
 		PrintObj( arg );
 	    }
@@ -623,6 +581,8 @@ Obj FuncPRINT_TO (
         }
         else {
 	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+	    /* if an error occurs stop printing                            */
 	    if ( ! READ_ERROR() ) {
 		PrintObj( arg );
 	    }
@@ -679,6 +639,8 @@ Obj FuncPRINT_TO_STREAM (
         }
         else {
 	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+	    /* if an error occurs stop printing                            */
 	    if ( ! READ_ERROR() ) {
 		PrintObj( arg );
 	    }
@@ -742,6 +704,8 @@ Obj FuncAPPEND_TO (
         }
         else {
 	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+	    /* if an error occurs stop printing                            */
 	    if ( ! READ_ERROR() ) {
 		PrintObj( arg );
 	    }
@@ -798,6 +762,8 @@ Obj FuncAPPEND_TO_STREAM (
         }
         else {
 	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+	    /* if an error occurs stop printing                            */
 	    if ( ! READ_ERROR() ) {
 		PrintObj( arg );
 	    }

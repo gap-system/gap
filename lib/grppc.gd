@@ -32,7 +32,7 @@ InfoPcGroup:=NewInfoClass("InfoPcGroup");
 #############################################################################
 ##
 
-#A  CanonicalPcgsWrtFamilyPcgs( <grp> )
+#A  CanonicalPcgsWrtFamilyPcgs( <grp> )	. . . . . . .  with respect to family
 ##
 CanonicalPcgsWrtFamilyPcgs := NewAttribute(
     "CanonicalPcgsWrtFamilyPcgs",
@@ -44,7 +44,7 @@ HasCanonicalPcgsWrtFamilyPcgs := Tester(CanonicalPcgsWrtFamilyPcgs);
 
 #############################################################################
 ##
-#A  CanonicalPcgsWrtHomePcgs( <grp> )
+#A  CanonicalPcgsWrtHomePcgs( <grp> ) . . . . . . . . .  with respect to home
 ##
 CanonicalPcgsWrtHomePcgs := NewAttribute(
     "CanonicalPcgsWrtHomePcgs",
@@ -56,7 +56,7 @@ HasCanonicalPcgsWrtHomePcgs := Tester(CanonicalPcgsWrtHomePcgs);
 
 #############################################################################
 ##
-#A  FamilyPcgs( <grp> )
+#A  FamilyPcgs( <grp> ) . . . . . . . . . . . . . . . . .  pcgs of the family
 ##
 FamilyPcgs := NewAttribute(
     "FamilyPcgs",
@@ -70,7 +70,7 @@ InstallSubsetMaintainedMethod( FamilyPcgs, IsGroup, IsGroup );
 
 #############################################################################
 ##
-#A  HomePcgs( <grp> ) . . . . . . . . . . . . . . . must be subset maintained
+#A  HomePcgs( <grp> ) . . . . . . . . . . . . . . . . . . .  pcgs of the home
 ##
 HomePcgs := NewAttribute(
     "HomePcgs",
@@ -84,7 +84,7 @@ InstallSubsetMaintainedMethod( HomePcgs, IsGroup, IsGroup );
 
 #############################################################################
 ##
-#A  InducedPcgsWrtFamilyPcgs( <grp> )
+#A  InducedPcgsWrtFamilyPcgs( <grp> ) . . . . . . . .  with respect to family
 ##
 InducedPcgsWrtFamilyPcgs := NewAttribute(
     "InducedPcgsWrtFamilyPcgs",
@@ -96,7 +96,7 @@ HasInducedPcgsWrtFamilyPcgs := Tester(InducedPcgsWrtFamilyPcgs);
 
 #############################################################################
 ##
-#A  InducedPcgsWrtHomePcgs( <grp> )
+#A  InducedPcgsWrtHomePcgs( <grp> ) . . . . . . . . . .  with respect to home
 ##
 InducedPcgsWrtHomePcgs := NewAttribute(
     "InducedPcgsWrtHomePcgs",
@@ -108,7 +108,7 @@ HasInducedPcgsWrtHomePcgs := Tester(InducedPcgsWrtHomePcgs);
 
 #############################################################################
 ##
-#A  Pcgs( <grp> )
+#A  Pcgs( <grp> ) . . . . . . . . . . . . . . . . . . . . . . pcgs of a group
 ##
 Pcgs := NewAttribute(
     "Pcgs",
@@ -121,7 +121,7 @@ HasPcgs := Tester( Pcgs );
 #############################################################################
 ##
 
-#P  IsPcgsComputable( <grp> )
+#P  IsPcgsComputable( <grp> ) . . . . . . .  group is willing to compute pcgs
 ##
 IsPcgsComputable := NewProperty(
     "IsPcgsComputable",
@@ -133,7 +133,7 @@ HasIsPcgsComputable := Tester(IsPcgsComputable);
 
 #############################################################################
 ##
-#M  IsPcgsComputable( <pcgrp> )
+#M  IsPcgsComputable( <pcgrp> ) . . . . . . . . . . . . . . . . . .  pc group
 ##
 InstallTrueMethod(
     IsPcgsComputable,
@@ -146,7 +146,7 @@ InstallTrueMethod(
 
 #############################################################################
 ##
-#M  IsPcgsComputable( <grp> )
+#M  IsPcgsComputable( <grp> ) . . . . . . . . . . . home or family pcgs known
 ##
 InstallTrueMethod( IsPcgsComputable, IsGroup and HasHomePcgs );
 InstallTrueMethod( IsPcgsComputable, IsGroup and HasFamilyPcgs );
@@ -154,6 +154,7 @@ InstallTrueMethod( IsPcgsComputable, IsGroup and HasFamilyPcgs );
 
 #############################################################################
 ##
+
 #O  SubgroupByPcgs( <G>, <pcgs> )
 ##
 SubgroupByPcgs := NewOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
@@ -236,5 +237,6 @@ OmegaSeries := NewAttribute( "OmegaSeries", IsGroup );
 
 #############################################################################
 ##
+
 #E  grppc.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

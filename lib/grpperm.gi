@@ -12,104 +12,6 @@ Revision.grpperm_gi :=
 
 #############################################################################
 ##
-#F  CycleStructurePerm( <perm> )  . . . . . . . . .  length of cycles of perm
-##
-CycleStructurePerm := function ( perm )
-    local   cys,    # collected cycle lengths, result
-            degree, # degree of perm
-            mark,   # boolean list to mark elements already processed
-            i,j,    # loop variables 
-            len,    # length of a cycle 
-            cyc;    # a cycle of perm
-
-    if perm = () then
-        cys := [];
-    else
-        degree := LargestMovedPointPerm(perm);
-        mark := BlistList([1..degree], []);
-        cys := [];
-        for i in [1..degree] do
-            if not mark[i] then 
-               cyc := CyclePermInt( perm, i );
-               len := Length(cyc) - 1;
-               if 0 < len  then
-                  if IsBound(cys[len])  then
-                     cys[len] := cys[len]+1;
-                  else
-                     cys[len] := 1;
-                  fi;
-               fi;
-               for j in cyc do
-                  mark[j] := true;
-               od;
-            fi;
-        od;
-    fi;
-    return cys;
-end;
-
-#############################################################################
-##
-#F  RestrictedPerm(<g>,<D>)  restriction of a permutation to an invariant set
-##
-RestrictedPerm := function( g, D )
-    local   res, d, e, max;
-
-    # check the arguments
-    if not IsPerm( g )  then
-        Error("<g> must be a permutation");
-    elif not IsList( D )  then
-        Error("<D> must be a list");
-    fi;
-
-    # special case for the identity
-    if g = ()  then return ();  fi;
-
-    # compute the largest point that we must consider
-    max := 1;
-    for d  in D  do
-        e := d ^ g;
-        if d <> e  and max < d  then
-            max := d;
-        fi;
-    od;
-
-    # compute the restricted permutation <res>
-    res := [ 1 .. max ];
-    for d  in D  do
-        e := d ^ g;
-        if d <= max  then
-            res[d] := e;
-        fi;
-    od;
-
-    # return the restricted permutation <res>
-    return PermList( res );
-end;
-
-
-#############################################################################
-##
-#F  MappingPermListList(<src>,<dst>)  permutation mapping one list to another
-##
-MappingPermListList := function( src, dst )
-
-    if not IsList(src) or not IsList(dst) or Length(src) <> Length(dst)  then
-       Error("usage: MappingPermListList( <lst1>, <lst2> )");
-    fi;
-
-    if IsEmpty( src )  then
-        return ();
-    fi;
-
-    src := Concatenation( src, Difference( [1..Maximum(src)], src ) );
-    dst := Concatenation( dst, Difference( [1..Maximum(dst)], dst ) );
-
-    return LeftQuotient( PermList( src ), PermList( dst ) );
-end;
-
-#############################################################################
-##
 #F  IndependentGeneratorsAbelianPPermGroup( <P>, <p> )  . . . nice generators
 ##
 IndependentGeneratorsAbelianPPermGroup := function ( P, p )
@@ -185,7 +87,7 @@ IndependentGeneratorsAbelianPPermGroup := function ( P, p )
 
         # prepare for the next round
         gens := gens2;
-        pows := OnTuples( pows, p );
+        pows := List( pows,i->i^ p );
 
     od;
 

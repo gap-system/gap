@@ -214,7 +214,7 @@ ZassenhausIntersection := function( pcgs, pcgsN, pcgsU )
     # weights instead. Otherwise 'IntersectionSumAgGroup' will do the work.
     sw := DepthOfPcElement( pcgs, pcgsN[1] );
     m  := Length( pcgs );
-    if pcgs{[sw..m]} = pcgs then
+    if pcgs{[sw..m]} = pcgsN then
         ins := [];
         for g in pcgsU do
             if DepthOfPcElement( pcgs, g ) >= sw  then

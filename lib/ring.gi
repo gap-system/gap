@@ -1437,17 +1437,68 @@ InstallMethod( PowerMod,
 
 #############################################################################
 ##
-#M  Gcd( <r>, <s> ) . . . . . . . . . . . . . .  delegate to the default ring
-#M  Gcd( <R>, <r>, <s> )  . . . . .  greatest common divisor of ring elements
+#F  Gcd( <r1>, <r2>, ... )
+#F  Gcd( <list> )
+#F  Gcd( <R>, <r1>, <r2>, ... )
+#F  Gcd( <R>, <list> )
 ##
-InstallOtherMethod( Gcd,
+Gcd := function ( arg )
+    local   R, ns, i, gcd;
+
+    # get and check the arguments (what a pain)
+    if   Length(arg) = 0  then
+        Error("usage: Gcd( [<R>,] <r1>, <r2>... )");
+    elif Length(arg) = 1  then
+        ns := arg[1];
+    elif Length(arg) = 2 and IsRing(arg[1])  then
+        R := arg[1];
+        ns := arg[2];
+    elif  IsRing(arg[1])  then
+        R := arg[1];
+        ns := arg{ [2..Length(arg)] };
+    else
+        R := DefaultRing( arg );
+        ns := arg;
+    fi;
+    if not IsList( ns )  or IsEmpty(ns)  then
+        Error("usage: Gcd( [<R>,] <r1>, <r2>... )");
+    fi;
+    if not IsBound( R )  then
+        R := DefaultRing( ns );
+    else
+        if not IsSubset( R, ns ) then
+            Error("<ns> must be a subset of <R>");
+        fi;
+    fi;
+    if not IsEuclideanRing( R )  then
+        Error("<R> must be a Euclidean ring");
+    fi;
+
+    # compute the gcd by iterating
+    gcd := ns[1];
+    for i  in [2..Length(ns)]  do
+        gcd := GcdOp( R, gcd, ns[i] );
+    od;
+
+    # return the gcd
+    return gcd;
+end;
+
+
+#############################################################################
+##
+#M  GcdOp( <r>, <s> ) . . . . . . . . . . . . .  delegate to the default ring
+#M  GcdOp( <R>, <r>, <s> )  . . . .  greatest common divisor of ring elements
+##
+InstallOtherMethod( GcdOp,
     "method for two ring elements",
-    IsIdentical, [ IsRingElement, IsRingElement ], 0,
+    IsIdentical,
+    [ IsRingElement, IsRingElement ], 0,
     function( r, s )
     return Gcd( DefaultRing( [ r, s ] ), r, s );
     end );
 
-InstallMethod( Gcd,
+InstallMethod( GcdOp,
     "method for a Euclidean ring and two ring elements",
     IsCollsElmsElms,
     [ IsEuclideanRing, IsRingElement, IsRingElement ], 0,
@@ -1478,38 +1529,71 @@ InstallMethod( Gcd,
 
 #############################################################################
 ##
-#M  Gcd( <ring>, <list> ) . . . . . . . . . . . . . for list of ring elements
+#F  GcdRepresentation( <r1>, <r2>, ... )
+#F  GcdRepresentation( <list> )
+#F  GcdRepresentation( <R>, <r1>, <r2>, ... )
+#F  GcdRepresentation( <R>, <list> )
 ##
-InstallOtherMethod( Gcd,
-    "method for Euclidean ring and list of ring elements",
-    IsIdentical,
-    [ IsEuclideanRing, IsHomogeneousList ], 0,
-    function( R, list )
-    local i,g;
-    if not IsSubset( R, list ) then
-      Error( "all entries in <list> must lie in <R>" );
+GcdRepresentation := function ( arg )
+    local   R, ns, i, gcd, rep, tmp;
+
+    # get and check the arguments (what a pain)
+    if   Length(arg) = 0  then
+        Error("usage: GcdRepresentation( [<R>,] <r1>, <r2>... )");
+    elif Length(arg) = 1  then
+        ns := arg[1];
+    elif Length(arg) = 2 and IsRing(arg[1])  then
+        R := arg[1];
+        ns := arg[2];
+    elif  IsRing(arg[1])  then
+        R := arg[1];
+        ns := arg{ [2..Length(arg)] };
+    else
+        R := DefaultRing( arg );
+        ns := arg;
     fi;
-    g:= list[1];
-    for i in [ 2 .. Length( list ) ] do
-      g:= Gcd( R, g, list[i] );
+    if not IsList( ns )  or IsEmpty(ns)  then
+        Error("usage: GcdRepresentation( [<R>,] <r1>, <r2>... )");
+    fi;
+    if not IsBound( R )  then
+        R := DefaultRing( ns );
+    else
+        if not IsSubset( R, ns )  then
+            Error("<ns> must be a subset of <R>");
+        fi;
+    fi;
+    if not IsEuclideanRing( R )  then
+        Error("<R> must be a Euclidean ring");
+    fi;
+
+    # compute the gcd by iterating
+    gcd := ns[1];
+    rep := [ One( R ) ];
+    for i  in [2..Length(ns)]  do
+        tmp := GcdRepresentationOp ( R, gcd, ns[i] );
+        gcd := tmp[1] * gcd + tmp[2] * ns[i];
+        rep := List( rep, x -> x * tmp[1] );
+        Add( rep, tmp[2] );
     od;
-    return g;
-    end );
+
+    # return the gcd representation
+    return rep;
+end;
 
 
 #############################################################################
 ##
-#M  GcdRepresentation( <r>, <s> ) . . . . . . .  delegate to the default ring
-#M  GcdRepresentation( <R>, <r>, <s> )  . . . . . . representation of the gcd
+#M  GcdRepresentationOp( <r>, <s> ) . . . . . .  delegate to the default ring
+#M  GcdRepresentationOp( <R>, <r>, <s> )  . . . . . representation of the gcd
 ##
-InstallOtherMethod( GcdRepresentation,
+InstallOtherMethod( GcdRepresentationOp,
     "method for two ring elements",
     IsIdentical, [ IsRingElement, IsRingElement ], 0,
     function( r, s )
     return GcdRepresentation( DefaultRing( [ r, s ] ), r, s );
     end );
 
-InstallMethod( GcdRepresentation,
+InstallMethod( GcdRepresentationOp,
     "method for a Euclidean ring and two ring elements",
     IsCollsElmsElms,
     [ IsEuclideanRing, IsRingElement, IsRingElement ], 0,
@@ -1534,39 +1618,60 @@ InstallMethod( GcdRepresentation,
 
 #############################################################################
 ##
-#M  GcdRepresentation( <ring>, <list> ) . . . . . . for list of ring elements
+#F  Lcm( <r1>, <r2>, ... )
+#F  Lcm( <list> )
+#F  Lcm( <R>, <r1>, <r2>, ... )
+#F  Lcm( <R>, <list> )
 ##
-InstallOtherMethod( GcdRepresentation,
-    "method for Euclidean ring and list of ring elements",
-    IsIdentical,
-    [ IsEuclideanRing, IsHomogeneousList ], 0,
-    function( R, list )
-    local gcd, rep, i, tmp;
-    if not IsSubset( R, list ) then
-      Error( "all entries in <list> must lie in <R>" );
+Lcm := function ( arg )
+    local   ns,  R,  lcm,  i;
+
+    # get and check the arguments (what a pain)
+    if   Length(arg) = 0  then
+        Error("usage: Lcm( [<R>,] <r1>, <r2>... )");
+    elif Length(arg) = 1  then
+        ns := arg[1];
+    elif Length(arg) = 2 and IsRing(arg[1])  then
+        R := arg[1];
+        ns := arg[2];
+    elif  IsRing(arg[1])  then
+        R := arg[1];
+        ns := arg{ [2..Length(arg)] };
+    else
+        R := DefaultRing( arg );
+        ns := arg;
+    fi;
+    if not IsList( ns )  or IsEmpty(ns)  then
+        Error("usage: Lcm( [<R>,] <r1>, <r2>... )");
+    fi;
+    if not IsBound( R )  then
+        R := DefaultRing( ns );
+    else
+        if not IsSubset( R, ns ) then
+            Error("<ns> must be a subset of <R>");
+        fi;
+    fi;
+    if not IsEuclideanRing( R )  then
+        Error("<R> must be a Euclidean ring");
     fi;
 
-    # compute the gcd by iterating
-    gcd := list[1];
-    rep := [ One( R ) ];
-    for i  in [ 2 .. Length( list ) ] do
-        tmp := GcdRepresentation( R, gcd, list[i] );
-        gcd := tmp[1] * gcd + tmp[2] * list[i];
-        rep := List( rep, x -> x * tmp[1] );
-        Add( rep, tmp[2] );
+    # compute the least common multiple
+    lcm := ns[1];
+    for i  in [2..Length(ns)]  do
+        lcm := LcmOp( R, lcm, ns[i] );
     od;
 
-    # return the gcd representation
-    return rep;
-    end );
+    # return the lcm
+    return lcm;
+end;
 
 
 #############################################################################
 ##
-#M  Lcm( <r>, <s> ) . . . . . . . . . . . . . .  delegate to the default ring
-#M  Lcm( <R>, <r>, <s> )  . . . .  least common multiple of two ring elements
+#M  LcmOp( <r>, <s> ) . . . . . . . . . . . . .  delegate to the default ring
+#M  LcmOp( <R>, <r>, <s> )  . . .  least common multiple of two ring elements
 ##
-InstallOtherMethod( Lcm,
+InstallOtherMethod( LcmOp,
     "method for two ring elements",
     IsIdentical,
     [ IsRingElement, IsRingElement ], 0,
@@ -1574,7 +1679,7 @@ InstallOtherMethod( Lcm,
     return Lcm( DefaultRing( [ r, s ] ), r, s );
     end );
 
-InstallMethod( Lcm,
+InstallMethod( LcmOp,
     "method for a Euclidean ring and two ring elements",
     IsCollsElmsElms,
     [ IsEuclideanRing, IsRingElement, IsRingElement ], 0,
@@ -1588,27 +1693,6 @@ InstallMethod( Lcm,
     else
       Error( "<r> and <s> must lie in <R>" );
     fi;
-    end );
-
-
-#############################################################################
-##
-#M  Lcm( <ring>, <list> ) . . . . . . . . . . . . . for list of ring elements
-##
-InstallOtherMethod( Lcm,
-    "method for Euclidean ring and list of ring elements",
-    IsIdentical,
-    [ IsEuclideanRing, IsHomogeneousList ], 0,
-    function( R, list )
-    local i,g;
-    if not IsSubset( R, list ) then
-      Error( "all entries in <list> must lie in <R>" );
-    fi;
-    g:= list[1];
-    for i in [ 2 .. Length( list ) ] do
-      g:= Lcm( R, g, list[i] );
-    od;
-    return g;
     end );
 
 

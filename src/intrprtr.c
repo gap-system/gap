@@ -474,27 +474,19 @@ void            IntrFuncExprEnd (
         return;
     }
 
-    /* catch read errors                                                   */
-    if ( READ_ERROR() ) {
-	CodeFuncExprEnd( 0, mapsto );
-	CodeEnd( 1 );
-    }
-
     /* must be coding                                                      */
-    else {
-	assert( IntrCoding > 0 );
+    assert( IntrCoding > 0 );
 
-	/* code a function expression                                      */
-	CodeFuncExprEnd( nr, mapsto );
+    /* code a function expression                                          */
+    CodeFuncExprEnd( nr, mapsto );
 
-	/* switch back to immediate mode, get the function                 */
-	CodeEnd( 0 );
-    }
+    /* switch back to immediate mode, get the function                     */
+    CodeEnd(0);
     IntrCoding = 0;
     func = CodeResult;
 
     /* push the function                                                   */
-    PushObj( func );
+    PushObj(func);
 }
 
 
@@ -3832,7 +3824,7 @@ void            IntrInfoEnd( UInt narg )
 /****************************************************************************
 **
 *F  IntrAssertBegin()  . . . . . . . start interpretation of Assert statement
-*F  IntrAsseerAfterLevel() . .  called after the first argument has been read
+*F  IntrAssertAfterLevel() . .  called after the first argument has been read
 **
 **  At this stage, we can decide whether to evaluate the second argument --
 **   the check in question

@@ -51,12 +51,16 @@ FFEFamily := NewOperationArgs( "FFEFamily" );
 
 #############################################################################
 ##
-#V  FAMS_FFE_EXT
+#V  FAMS_FFE_LARGE
 ##
 ##  At position 1 the ordered list of characteristics is stored,
 ##  at position 2 the families of field elements of these characteristics.
 ##
-FAMS_FFE_EXT := [ [], [] ];
+##  Known families of FFE in characteristic at most `MAXSIZE_GF_INTERNAL'
+##  are stored in `FAMS_FFE', the family of characteristic $p$ at position
+##  $p$.
+##
+FAMS_FFE_LARGE := [ [], [] ];
 
 
 #############################################################################

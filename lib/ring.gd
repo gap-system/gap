@@ -701,13 +701,17 @@ PowerMod := NewOperation( "PowerMod",
 
 #############################################################################
 ##
-#O  Gcd( <r>, <s> )
-#O  Gcd( <R>, <r>, <s> )
+#F  Gcd( <r1>, <r2>, ... )
+#F  Gcd( <list> )
+#F  Gcd( <R>, <r1>, <r2>, ... )
+#F  Gcd( <R>, <list> )
 ##
-##  In the first form 'Gcd' returns the greatest common divisor of the ring
-##  elements <r>, <s> in their default ring (see "DefaultRing").
-##  In the second form 'Gcd' returns the greatest common divisor of the ring
-##  elements <r>, <s> in the ring <R>.
+##  In the first two forms 'Gcd' returns the greatest common divisor of the
+##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
+##  <list> in their default ring (see "DefaultRing").
+##  In the second two forms 'Gcd' returns the greatest common divisor of the
+##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
+##  <list> in the ring <R>.
 ##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that
 ##  'QuotientRemainder' (see "QuotientRemainder") can be applied to its
 ##  elements.
@@ -720,23 +724,34 @@ PowerMod := NewOperation( "PowerMod",
 ##  We define $gcd( r, 0_R ) = gcd( 0_R, r ) = StandardAssociate( r )$
 ##  and $gcd( 0_R, 0_R ) = 0_R$.
 ##  
-Gcd := NewOperation( "Gcd",
+#O  GcdOp( <r>, <s> )
+#O  GcdOp( <R>, <r>, <s> )
+##
+##  `GcdOp' is the operation to compute the greatest common divisor of
+##  two ring elements <r>, <s> in their default ring or in the ring <R>.
+##
+Gcd := NewOperationArgs( "Gcd" );
+
+GcdOp := NewOperation( "GcdOp",
     [ IsEuclideanRing, IsRingElement, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  GcdRepresentation( <r>, <s> )
-#O  GcdRepresentation( <R>, <r>, <s> )
+#F  GcdRepresentation( <r1>, <r2>, ... )
+#F  GcdRepresentation( <list> )
+#F  GcdRepresentation( <R>, <r1>, <r2>, ... )
+#F  GcdRepresentation( <R>, <list> )
 ##
-##  In the first form 'GcdRepresentation' returns the representation of the
-##  greatest common divisor of the ring elements <r>, <s> in their default
-##  ring (see "DefaultRing").
-##  In the second form 'GcdRepresentation' returns the representation of the
-##  greatest common divisor of the ring elements <r>, <s> in the ring <R>.
-##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that 'Gcd'
-##  (see "Gcd") can be applied to its elements.
-##  The representation is returned as a list of ring elements.
+##  In the first two forms 'GcdRepresentation' returns the representation of
+##  the greatest common divisor of the ring elements `<r1>, <r2>, ...' resp.
+##  of the ring elements in the list <list> in their default ring
+##  (see "DefaultRing").
+##  In the second two forms 'GcdRepresentation' returns the representation of
+##  the greatest common divisor of the ring elements `<r1>, <r2>, ...' resp.
+##  of the ring elements in the list <list> in the ring <R>.
+##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that
+##  'Gcd' (see "Gcd") can be applied to its elements.
 ##  
 ##  The representation of the gcd  $g$ of  the elements $r_1$, $r_2$...  etc.
 ##  of a ring $R$ is a list of ring elements $s_1$, $s_2$... etc. of $R$,
@@ -744,19 +759,33 @@ Gcd := NewOperation( "Gcd",
 ##  That this representation exists can be shown using the Euclidean
 ##  algorithm, which in fact can compute those coefficients.
 ##  
-GcdRepresentation := NewOperation( "GcdRepresentation",
+#O  GcdRepresentationOp( <r>, <s> )
+#O  GcdRepresentationOp( <R>, <r>, <s> )
+##
+##  `GcdRepresentationOp' is the operation to compute the representation of
+##  the greatest common divisor of two ring elements <r>, <s> in their
+##  default ring or in the ring <R>.
+##
+GcdRepresentation := NewOperationArgs( "GcdRepresentation" );
+
+GcdRepresentationOp := NewOperation( "GcdRepresentationOp",
     [ IsEuclideanRing, IsRingElement, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  Lcm( <r>, <s> )
-#O  Lcm( <R>, <r>, <s> )
+#F  Lcm( <r1>, <r2>, ... )
+#F  Lcm( <list> )
+#F  Lcm( <R>, <r1>, <r2>, ... )
+#F  Lcm( <R>, <list> )
 ##
-##  In the first form 'Lcm' returns the least common multiple of the ring
-##  elements <r>, <s> in their default ring (see "DefaultRing").
-##  In the second form 'Lcm' returns the least common multiple of the ring
-##  elements <r>, <s> in the ring <R>.
+##  In the first two forms 'Lcm' returns the least common multiple of the
+##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
+##  <list> in their default ring (see "DefaultRing").
+##  In the second two forms 'Lcm' returns the least common multiple of the
+##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
+##  <list> in the ring <R>.
+##
 ##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that 'Gcd'
 ##  (see "Gcd") can be applied to its elements.
 ##  'Lcm' returns the standard associate (see "StandardAssociate") of the
@@ -770,15 +799,16 @@ GcdRepresentation := NewOperation( "GcdRepresentation",
 ##  
 ##  'Lcm' uses the equality $lcm(m,n) = m\*n / gcd(m,n)$ (see "Gcd").
 ##  
-Lcm := NewOperation( "Lcm",
+#O  LcmOp( <r>, <s> )
+#O  LcmOp( <R>, <r>, <s> )
+##
+##  `LcmOp' is the operation to compute the least common multiple of
+##  two ring elements <r>, <s> in their default ring or in the ring <R>.
+##
+Lcm := NewOperationArgs( "Lcm" );
+
+LcmOp := NewOperation( "LcmOp",
     [ IsEuclideanRing, IsRingElement, IsRingElement ] );
-
-
-#############################################################################
-##
-#A  NiceRing( <D> )
-##
-NiceRing := NewAttribute( "NiceRing", IsRing );
 
 
 #############################################################################

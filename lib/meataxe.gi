@@ -407,7 +407,7 @@ SMTX.NormedBasisAndBaseChange := function(sub)
 local l,m;
   l:=Length(sub);
   m:=MutableIdentityMat(l,One(sub[1][1]));
-  sub:=List([1..l],i->Concatenation(sub[i],m[i]));
+  sub:=List([1..l],i->Concatenation(List(sub[i],ShallowCopy),m[i]));
   TriangulizeMat(sub);
   m:=Length(sub[1]);
   return [sub{[1..l]}{[1..l]},sub{[1..l]}{[l+1..m]}];
@@ -776,7 +776,7 @@ SMTX.IrreducibilityTest := function ( module )
                ans := true;
                trying := false; 
                bestfacno := 1;
-               v := matrices[1][1] * zero;
+               v := ListWithIdenticalEntries(dim,zero);
                v[1] := One (F);
                ndim := dim;
             fi; 
@@ -1152,7 +1152,7 @@ SMTX.FrobeniusAction := function ( arg )
    one :=One(A[1][1]);
    zero := Zero(one);
    d := Length ( A );
-   M := zero * A[1];
+   M := ListWithIdenticalEntries(Length(A[1]),zero);
    Add ( M, M[1] );
 
    # L[i] (length d) will contain a vector with head entry 1 at position i,
@@ -1382,7 +1382,7 @@ AbsoluteIrreducibilityTest := function ( module )
 
    zero := Zero (F);
    one:= One (F);
-   v0 := zero * M0[1];
+   v0 := ListWithIdenticalEntries(Length(M0[1]),zero);
    v0[1] := one;
 
    # v0 is just the vector (1, 0, 0....0) of length ndim. It has nothing
@@ -2513,7 +2513,7 @@ local q,b,s,ser,queue;
     if SMTX.IsIrreducible(m) then
       Info(InfoMeatAxe,3,Length(m.smashMeataxe.csbasis)," ",
                          Length(m.smashMeataxe.denombasis));
-      m:=Concatenation(m.smashMeataxe.denombasis,
+      m:=Concatenation(List(m.smashMeataxe.denombasis,ShallowCopy),
                  List(m.smashMeataxe.csbasis,
 		      i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i)));
       TriangulizeMat(m);
@@ -2534,8 +2534,9 @@ local q,b,s,ser,queue;
       s.smashMeataxe.csbasis:=IdentityMat(SMTX.Dimension(s),One(SMTX.Field(s)));
       s.smashMeataxe.fakbasis:=
         List(b,i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i));
-      q.smashMeataxe.denombasis:=Concatenation(m.smashMeataxe.denombasis,
-				   s.smashMeataxe.fakbasis{[1..s.dimension]});
+      q.smashMeataxe.denombasis:=Concatenation(
+        List(m.smashMeataxe.denombasis,ShallowCopy),
+        List(s.smashMeataxe.fakbasis{[1..s.dimension]},ShallowCopy));
       q.smashMeataxe.csbasis:=IdentityMat(SMTX.Dimension(q),
       					  One(SMTX.Field(q)));
       q.smashMeataxe.fakbasis:=List(b{[SMTX.Dimension(s)+1..Length(b)]},
@@ -2559,17 +2560,21 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin;
   for i in [2..cl-1] do 
     neu:=[];
     for j in min do
-      sq:=SMTX.InducedAction(m,j,3);
-      f:=sq[2];
-      sb:=sq[3]{[1..SMTX.Dimension(sq[1])]};
-      fb:=sq[3]{[SMTX.Dimension(sq[1])+1..Length(sq[3])]};
+      f:=List(j,i->List(i,i->i));
+      sq:=SMTX.InducedAction(m,j,2);
+      Assert(2,j=f);
+      f:=sq[1];
+      sb:=j;
+      fb:=sq[2]{[Length(j)+1..Length(sq[2])]};
       # actually we might want to count frequencies to speed up the process,
       # so far I'm lazy
       nmin:=Concatenation(List(cf,i->SMTX.MinimalSubGModules(i,f)));
       Info(InfoMeatAxe,3,Length(nmin),"minimal submodules");
       for k in nmin do 
-        sq:=Concatenation(sb,List(k,i->LinearCombinationVecs(fb,i)));
+        sq:=Concatenation(List(sb,ShallowCopy), # don't destroy old basis
+	                  List(k,i->LinearCombinationVecs(fb,i)));
 	TriangulizeMat(sq);
+	Assert(2,SMTX.InducedAction(m,sq)<>fail);
 	if not sq in neu then
           Info(InfoMeatAxe,2,"submodule dimension ",Length(sq));
 	  Add(neu,sq);

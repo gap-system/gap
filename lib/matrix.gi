@@ -664,7 +664,7 @@ function( mat )
 
     deg := 1;
     for j  in mat  do
-        deg := LcmInt( deg, NofCyc(j) );
+        deg := LcmInt( deg, Conductor(j) );
     od;
     return CF( deg );
 end );

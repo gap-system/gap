@@ -116,8 +116,8 @@ Obj             ReturnObjStat;
 UInt            ExecUnknownStat (
     Stat                stat )
 {
-    ErrorQuit(
-        "Panic: tried to execute a statement of unknown type '%d'",
+    Pr(
+        "Panic: tried to execute a statement of unknown type '%d'\n",
         (Int)TNUM_STAT(stat), 0L );
     return 0;
 }

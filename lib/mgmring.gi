@@ -795,15 +795,21 @@ InstallMethod( Centre,
 #M  \in( <r>, <RM> )  . . . . . . . . .  for ring element and free magma ring
 ##
 InstallMethod( \in,
-    "method for a ring element, and a free magma ring",
+    "method for ring element, and magma ring",
     IsElmsColls,
-    [ IsElementOfFreeMagmaRing, IsFreeMagmaRing ], 0,
+    [ IsElementOfMagmaRingModuloRelations, IsMagmaRingModuloRelations ], 0,
     function( r, RM )
     r:= CoefficientsAndMagmaElements( r );
-    return     ForAll( [ 2, 4 .. Length( r ) ],
-                       i -> r[i] in LeftActingDomain( RM ) )
-           and ForAll( [ 1, 3 .. Length( r ) - 1 ],
-                       i -> r[i] in UnderlyingMagma( RM ) );
+    if (    ForAll( [ 2, 4 .. Length( r ) ],
+                    i -> r[i] in LeftActingDomain( RM ) )
+        and ForAll( [ 1, 3 .. Length( r ) - 1 ],
+                    i -> r[i] in UnderlyingMagma( RM ) ) ) then
+      return true;
+    elif IsFreeMagmaRing( RM ) then
+      return false;
+    else
+      TryNextMethod();
+    fi;
     end );
 
 
@@ -1059,7 +1065,8 @@ InstallMethod( ObjByExtRep,
     [ IsFamilyElementOfMagmaRingModuloRelations, IsList ], 0,
     function( Fam, descr )
     local FM, elm, i;
-    FM:= Fam!.familyMagma;
+    FM:= ElementsFamily( Fam!.familyMagma );
+#T why not store the elements family itself?
     elm:= ShallowCopy( descr[2] );
     for i in [ 1, 3 .. Length( elm ) - 1 ] do
       elm[i]:= ObjByExtRep( FM, elm[i] );

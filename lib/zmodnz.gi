@@ -64,7 +64,8 @@ InstallMethod( ZmodnZObj,
     true,
     [ IsZmodnZObjNonprimeFamily, IsInt ], 0,
     function( Fam, residue )
-    return Objectify( Fam!.typeOfZmodnZObj, [ residue mod Fam!.modulus ] );
+    return Objectify( Fam!.typeOfZmodnZObj,
+                      [ residue mod Fam!.modulus ] );
     end );
 
 InstallOtherMethod( ZmodnZObj,
@@ -72,8 +73,19 @@ InstallOtherMethod( ZmodnZObj,
     true,
     [ IsFFEFamily, IsInt ], 0,
     function( Fam, residue )
-    return Objectify( Fam!.typeOfZmodnZObj,
-                      [ residue mod Characteristic( Fam ) ] );
+    local p;
+    p:= Characteristic( Fam );
+    if not IsBound( Fam!.typeOfZmodnZObj ) then
+
+      # Store the type for the representation of prime field elements
+      # via residues.
+      Fam!.typeOfZmodnZObj:= NewType( Fam,
+                                 IsZmodpZObjSmall and IsModulusRep );
+      SetDataType( Fam!.typeOfZmodnZObj, p );
+      Fam!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= Fam!.typeOfZmodnZObj;
+
+    fi;
+    return Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] );
     end );
 
 

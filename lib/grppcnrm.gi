@@ -312,10 +312,21 @@ end;
 ##
 #F  PCGS_NORMALIZER( <home>, <norm>, <point>, <pcgs>, <modulo> )
 ##
-PCGS_NORMALIZER_OPB := POW;
+PCGS_NORMALIZER_OPB := function( home, elm, obj )
+    local   ord;
+
+    elm := elm^obj;
+    ord := RelativeOrderOfPcElement( home, elm );
+    return elm ^ ( 1 / LeadingExponentOfPcElement( home, elm ) mod ord );
+end;
 
 PCGS_NORMALIZER_OPC1 := function( data, elm, obj )
-    return HeadPcElementByNumber( data[1], elm^obj, data[2] );
+    local   ord;
+
+    elm := elm^obj;
+    ord := RelativeOrderOfPcElement( data[1], elm );
+    elm := elm ^ ( 1 / LeadingExponentOfPcElement( data[1], elm ) mod ord );
+    return HeadPcElementByNumber( data[1], elm, data[2] );
 end;
 
 PCGS_NORMALIZER_OPC2 := function( data, elm, obj )
@@ -411,7 +422,8 @@ PCGS_NORMALIZER := function( home, pcgs, pnt, modulo )
             Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER case B" );
             pnt  := pnt[1];
             op   := PCGS_NORMALIZER_OPB;
-            s    := PCGS_STABILIZER( pcgs, pnt, op );
+            data := home;
+            s    := PCGS_STABILIZER( pcgs, pnt, op, home );
         else
             pnt  := pnt mod modulo;
             pnt  := pnt[1];
@@ -797,7 +809,16 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
     id := OneOfPcgs(g);
     e  := ElementaryAbelianSubseries(g);
     if e = fail  then
-        Error( "not ready yet" );
+        s := SpecialPcgs(g);
+        k := NaturalIsomorphismByPcgs( GroupOfPcgs(g), s );
+        if ElementaryAbelianSubseries(Pcgs(Image(k))) = fail  then
+            Error( "corrupted special pcgs" );
+        fi;
+        tmp := InducedPcgsByGeneratorsNC( g, List(
+                PcGroup_NormalizerWrtHomePcgs( Image(k,u), f1, f2, f3, f4 ),
+                x -> PreImage( k, x ) ) );
+        SetHomePcgs( tmp, g );
+        return tmp;
     fi;
     r := Length(e);
 

@@ -92,19 +92,12 @@ InstallIsomorphismMaintainedMethod( IsPrimeField,
 
 #############################################################################
 ##
-#A  Conductor( <F> )
+#M  Conductor( <F> )
 ##
-##  is the smallest integer $n$ such that the field <F> is contained in the
-##  $n$-th cyclotomic field.
-##  If <F> is not an abelian extension of the rationals then 'fail' is
-##  returned.
+##  The attribute is defined in `cyclotom.g'.
 ##
-Conductor := NewAttribute( "Conductor", IsAbelianNumberField );
-SetConductor := Setter( Conductor );
-HasConductor := Tester( Conductor );
-
-InstallIsomorphismMaintainedMethod( Conductor,
-    IsField and IsAbelianNumberField, IsField );
+#T  InstallIsomorphismMaintainedMethod( Conductor,
+#T      IsField and IsAbelianNumberField, IsField );
 
 
 #############################################################################

@@ -41,7 +41,6 @@ ReadLib( "ctblgrp.gi"  );
 ReadLib( "ctblperm.gi" );
 ReadLib( "ctblpc.gi" );
 
-ReadTbl( "ctprimar.tbl" );
 ReadTbl( "ctadmin.tbi"  );
 
 

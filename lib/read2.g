@@ -2,7 +2,6 @@
 ##
 #X  now read the basic methods
 ##
-ReadLib( "record.gi"   );
 ReadLib( "listcoef.gi" );
 ReadLib( "files.gi"    );
 ReadLib( "streams.gi"  );

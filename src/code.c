@@ -520,6 +520,10 @@ Expr            NewExpr (
     OffsBody = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
 
     /* make certain that the current body bag is large enough              */
+    if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
+        ResizeBag( BODY_FUNC(CURR_FUNC), OffsBody );
+        PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+    }
     while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < OffsBody ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
@@ -1011,7 +1015,8 @@ void            CodeFuncExprEnd (
         stat1 = PopStat();
         PushStat( stat1 );
         if ( TNUM_STAT(stat1) != T_RETURN_VOID
-          && TNUM_STAT(stat1) != T_RETURN_OBJ ) {
+          && TNUM_STAT(stat1) != T_RETURN_OBJ )
+	{
             CodeReturnVoid();
             nr++;
         }
@@ -1035,9 +1040,8 @@ void            CodeFuncExprEnd (
     /* make the body smaller                                               */
     ResizeBag( BODY_FUNC(fexp), OffsBody );
 
-    /* switch back to the previous function (can be 0 in case of errors)   */
-    if ( ENVI_FUNC(fexp) != 0 )
-	SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
+    /* switch back to the previous function                                */
+    SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
 
     /* restore the remembered offset                                       */
     OffsBody = BRK_CALL_TO();
@@ -1316,7 +1320,11 @@ void CodeWhileEndBody (
     UInt                i;              /* loop variable                   */
 
     /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr || nr == 0 ) {
+    if ( nr == 0 ) {
+	ErrorQuit( "Error, statement expected between while/od", 
+	           0L, 0L );
+    }
+    if ( 3 < nr ) {
         PushStat( PopSeqStat( nr ) );
         nr = 1;
     }
@@ -1399,7 +1407,11 @@ void CodeRepeatEnd ( void )
     nr = INT_INTEXPR( tmp );
 
     /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr || nr == 0 ) {
+    if ( nr == 0 ) {
+	ErrorQuit( "Error, statement expected between repeat/until", 
+	           0L, 0L );
+    }
+    if ( 3 < nr ) {
         PushStat( PopSeqStat( nr ) );
         nr = 1;
     }

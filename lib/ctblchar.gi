@@ -227,7 +227,7 @@ FrobeniusCharacterValue := function( value, p )
       return ( value mod p ) * Z(p)^0;
     fi;
 
-    n:= NofCyc( value );
+    n:= Conductor( value );
     if n mod p = 0 then
       Error( "<value> belongs to a <p>-singular element" );
     fi;
@@ -287,7 +287,7 @@ FrobeniusCharacterValue := function( value, p )
       conwaypol:= UnivariatePolynomial( primefield,
                       ConwayPol( p, k ) * One( GF( p ) ) );
       x:= Indeterminate( primefield );
-      value:= ValuePol( List( COEFFSCYC( value ), y -> y mod p )
+      value:= ValuePol( List( COEFFS_CYC( value ), y -> y mod p )
                         * One( primefield ),
                         PowerMod( x, power, conwaypol ) ) mod conwaypol;
       value:= CoefficientsOfUnivariatePolynomial( value );
@@ -997,7 +997,7 @@ PrimeBlocks := function( tbl, prime )
       if IsInt( value ) then
         if value mod prime <> 0 then return false; fi;
       elif IsCyc( value ) then
-        coeffs:= List( COEFFSCYC( value ), x -> x mod prime );
+        coeffs:= List( COEFFS_CYC( value ), x -> x mod prime );
         value:= 0;
         n:= Length( coeffs );
         for j in [ 1 .. Length( coeffs ) ] do

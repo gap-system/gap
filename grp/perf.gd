@@ -25,9 +25,9 @@ IsPerfectLibraryGroup := NewCategory("IsPerfectLibraryGroup", IsGroup );
 
 #############################################################################
 ##
-#O  PerfGrpConst(<filter>,<pos>,<nr>) 
+#O  PerfGrpConst(<filter>,<descriptor>) 
 ##
-PerfGrpConst := NewConstructor("PerfGrpConst",[IsGroup,IsInt,IsInt]);
+PerfGrpConst := NewConstructor("PerfGrpConst",[IsGroup,IsList]);
 
 
 #############################################################################

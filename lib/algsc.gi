@@ -582,9 +582,11 @@ QuaternionAlgebra := function( arg )
               "e", "i", "j", "k" ],
             IsSCAlgebraObj and IsQuaternion );
 
-    # A quaternion algebra with parameters $-1$ over the rationals
+    # A quaternion algebra with parameters $-1$ over a real field
     # is a division ring.
-    if F = Rationals and a = -1 and b = -1 then
+    if     a = -1 and b = -1
+       and ForAll( GeneratorsOfDivisionRing( F ),
+                   x -> x = ComplexConjugate( x ) ) then
       SetFilterObj( A, IsMagmaWithInversesIfNonzero );
 #T better: use 'DivisionRingByGenerators' !
     fi;

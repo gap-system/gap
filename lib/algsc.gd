@@ -42,6 +42,20 @@ Revision.algsc_gd :=
 
 #############################################################################
 ##
+#F  SCTableEntry
+##
+SCTableEntry := SC_TABLE_ENTRY;
+
+
+#############################################################################
+##
+#F  SCTableProduct
+##
+SCTableProduct := SC_TABLE_PRODUCT;
+
+
+#############################################################################
+##
 #C  IsFamilyOverFullCoefficientsFamily( <Fam> )
 ##
 ##  If the family <Fam> has this category, all coefficients tuples over

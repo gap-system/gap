@@ -79,55 +79,46 @@ InstallOtherMethod( IntVecFFE,
 ##
 FFEFamily := function( p )
     local F;
-    if not IsInt( p ) or not IsPosRat( p ) then
-      Error( "<p> must be a positive integer" );
-    elif p in FAMS_FFE_EXT[1] then
 
-      F:= FAMS_FFE_EXT[2][ PositionSorted( FAMS_FFE_EXT[1], p ) ];
+    if MAXSIZE_GF_INTERNAL < p then
 
-    else
+      # large characteristic
+      if p in FAMS_FFE_LARGE[1] then
 
-      if not IsPrimeInt( p ) then
+        F:= FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
 
-        Error( "<p> must be a prime" );
-
-      elif MAXSIZE_GF_INTERNAL < p then
+      else
 
         F:= NewFamily( "FFEFamily", IsFFE );
         SetCharacteristic( F, p );
-
+  
         # Store the type for the representation of prime field elements
         # via residues.
         F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge and IsModulusRep );
         SetDataType( F!.typeOfZmodnZObj, p );
         F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
         F!.modulus:= p;
-
+  
         SetOne(  F, ZmodnZObj( F, 1 ) );
         SetZero( F, ZmodnZObj( F, 0 ) );
-
-      else
-
-        TYPE_FFE( p );
-        F:= FAMS_FFE[p];
-
-        # Store the type for the representation of prime field elements
-        # via residues.
-        F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjSmall and IsModulusRep );
-        SetDataType( F!.typeOfZmodnZObj, p );
-        F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
-
-        SetOne(  F, Z(p)^0 );
-        SetZero( F, 0*Z(p) );
+  
+        # The whole family is a unique factorisation domain.
+        SetIsUFDFamily( F, true );
+  
+        Add( FAMS_FFE_LARGE[1], p );
+        Add( FAMS_FFE_LARGE[2], F );
+        SortParallel( FAMS_FFE_LARGE[1], FAMS_FFE_LARGE[2] );
 
       fi;
 
-      # The whole family is a unique factorisation domain.
-      SetIsUFDFamily( F, true );
+    else
 
-      Add( FAMS_FFE_EXT[1], p );
-      Add( FAMS_FFE_EXT[2], F );
-      SortParallel( FAMS_FFE_EXT[1], FAMS_FFE_EXT[2] );
+      # small characteristic
+      # (The list `FAMS_FFE' is used to store types and families.)
+      TYPE_FFE( p );
+      F:= FAMS_FFE[p];
+      SetOne(  F, Z(p)^0 );
+      SetZero( F, 0*Z(p) );
 
     fi;
     return F;
@@ -139,13 +130,18 @@ end;
 #M  Zero( <ffe-family> )
 ##
 InstallOtherMethod( Zero,
+    "method for a family of FFEs",
     true,
-    [ IsFFEFamily ],
-    0,
-
-function( fam )
-    return 0*Z(Characteristic(fam));
-end );
+    [ IsFFEFamily ], 0,
+    function( fam )
+    local char;
+    char:= Characteristic( fam );
+    if char <= MAXSIZE_GF_INTERNAL then
+      return Zero( Z( char ) );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################
@@ -153,13 +149,18 @@ end );
 #M  One( <ffe-family> )
 ##
 InstallOtherMethod( One,
+    "method for a family of FFEs",
     true,
-    [ IsFFEFamily ],
-    0,
-
-function( fam )
-    return Z(Characteristic(fam))^0;
-end );
+    [ IsFFEFamily ], 0,
+    function( fam )
+    local char;
+    char:= Characteristic( fam );
+    if char <= MAXSIZE_GF_INTERNAL then
+      return One( Z( char ) );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################
@@ -378,7 +379,9 @@ GF := GaloisField;
 ##
 #M  FieldExtension( <subfield>, <poly> )
 ##
-InstallOtherMethod( FieldExtension, true,
+InstallOtherMethod( FieldExtension,
+    "method for a field of FFEs, and a univ. Laurent polynomial",
+    true,
 #T CollPoly
     [ IsField and IsFFECollection, IsUnivariateLaurentPolynomial ], 0,
     function( F, poly )
@@ -420,7 +423,10 @@ InstallOtherMethod( FieldExtension, true,
 ##
 #M  PrintObj( <F> ) . . . . . . . . . . . . . . . . . print a field of 'FFE's
 ##
-InstallMethod( PrintObj, true, [ IsField and IsFFECollection ], 10,
+InstallMethod( PrintObj,
+    "method for a field of FFEs",
+    true,
+    [ IsField and IsFFECollection ], 10,
     function( F )
     if IsPrimeField( F ) then
       Print( "GF(", Characteristic( F ), ")" );
@@ -443,7 +449,10 @@ InstallMethod( PrintObj, true, [ IsField and IsFFECollection ], 10,
 ##
 #M  \in( <z> ,<F> ) . . . . . . . .  test if an object lies in a finite field
 ##
-InstallMethod( \in, IsElmsColls, [ IsFFE, IsField and IsFFECollection ], 0,
+InstallMethod( \in,
+    "method for a FFE, and a field of FFEs",
+    IsElmsColls,
+    [ IsFFE, IsField and IsFFECollection ], 0,
     function ( z, F )
     return DegreeOverPrimeField( F ) mod DegreeFFE( z ) = 0;
     end );
@@ -453,7 +462,9 @@ InstallMethod( \in, IsElmsColls, [ IsFFE, IsField and IsFFECollection ], 0,
 ##
 #M  Intersection( <F>, <G> )  . . . . . . . intersection of two finite fields
 ##
-InstallMethod( Intersection2, IsIdentical,
+InstallMethod( Intersection2,
+    "method for two fields of FFEs",
+    IsIdentical,
     [ IsField and IsFFECollection, IsField and IsFFECollection ], 0,
     function ( F, G )
     return GF( Characteristic( F ), GcdInt( DegreeOverPrimeField( F ),
@@ -465,7 +476,9 @@ InstallMethod( Intersection2, IsIdentical,
 ##
 #M  Conjugates( <F>, <z> ) . . . . . . . conjugates of a finite field element
 ##
-InstallMethod( Conjugates, IsCollsElms,
+InstallMethod( Conjugates,
+    "method for a field of FFEs, and a FFE",
+    IsCollsElms,
     [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
     function ( F, z )
     local   cnjs,       # conjugates of <z> in <F>, result
@@ -495,7 +508,9 @@ InstallMethod( Conjugates, IsCollsElms,
 ##
 #F  Norm( <F>, <z> )  . . . . . . . . . . . .  norm of a finite field element
 ##
-InstallMethod( Norm, IsCollsElms,
+InstallMethod( Norm,
+    "method for a field of FFEs, and a FFE",
+    IsCollsElms,
     [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
     function ( F, z )
     local   nrm,        # norm of <z> in <F>, result
@@ -522,7 +537,9 @@ InstallMethod( Norm, IsCollsElms,
 ##
 #M  Trace( <F>, <z> ) . . . . . . . . . . . . trace of a finite field element
 ##
-InstallMethod( Trace, IsCollsElms,
+InstallMethod( Trace,
+    "method for a field of FFEs, and a FFE",
+    IsCollsElms,
     [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
     function ( F, z )
     local   trc,        # trace of <z> in <F>, result
@@ -552,7 +569,10 @@ InstallMethod( Trace, IsCollsElms,
 ##
 #M  Order( <z> )  . . . . . . . . . . . . . . order of a finite field element
 ##
-InstallMethod( Order, true, [ IsFFE and IsInternalRep ], 0,
+InstallMethod( Order,
+    "method for an internal FFE",
+    true,
+    [ IsFFE and IsInternalRep ], 0,
     function ( z )
     local   ord,        # order of <z>, result
             chr,        # characteristic of <F> (and <z>)
@@ -575,7 +595,9 @@ InstallMethod( Order, true, [ IsFFE and IsInternalRep ], 0,
 ##
 #M  SquareRoots( <F>, <z> )
 ##
-InstallMethod( SquareRoots, IsCollsElms,
+InstallMethod( SquareRoots,
+    "method for a field of FFEs, and a FFE",
+    IsCollsElms,
     [ IsField and IsFFECollection, IsFFE ], 0,
     function( F, z )
     local r;
@@ -607,14 +629,21 @@ InstallMethod( SquareRoots, IsCollsElms,
 ##
 #M  Int( <z> ) . . . . . . . . . convert a finite field element to an integer
 ##
-InstallMethod( Int, true, [ IsFFE and IsInternalRep ], 0, IntFFE );
+InstallMethod( Int,
+    "method for an internal FFE",
+    true,
+    [ IsFFE and IsInternalRep ], 0,
+    IntFFE );
 
 
 #############################################################################
 ##
 #M  String( <ffe> ) . . . . . .  convert a finite field element into a string
 ##
-InstallMethod( String, true, [ IsFFE and IsInternalRep ], 0,
+InstallMethod( String,
+    "method for an internal FFE",
+    true,
+    [ IsFFE and IsInternalRep ], 0,
     function ( ffe )
     local   str, root;
     if   ffe = 0 * ffe  then
@@ -639,7 +668,10 @@ InstallMethod( String, true, [ IsFFE and IsInternalRep ], 0,
 ##
 #M  FieldOverItselfByGenerators( <elms> )
 ##
-InstallMethod( FieldOverItselfByGenerators, true, [ IsFFECollection ], 0,
+InstallMethod( FieldOverItselfByGenerators,
+    "method for a collection of FFEs",
+    true,
+    [ IsFFECollection ], 0,
     function( elms )
 
     local F, d, q;
@@ -672,11 +704,13 @@ InstallMethod( FieldOverItselfByGenerators, true, [ IsFFECollection ], 0,
 ##
 #M  FieldByGenerators( <F>, <elms> )  . . . . . . . . . . field by generators
 ##
-InstallMethod( FieldByGenerators, IsIdentical,
+InstallMethod( FieldByGenerators,
+    "method for two coll. of FFEs, the first a field",
+    IsIdentical,
     [ IsFFECollection and IsField, IsFFECollection ], 0,
     function( subfield, gens )
 
-    local F, d, q;
+    local F, d, q, z;
 
     F := Objectify( NewType( FamilyObj( gens ),
                              IsField and IsAttributeStoringRep ),
@@ -693,15 +727,18 @@ InstallMethod( FieldByGenerators, IsIdentical,
     SetIsPrimeField( F, d = 1 );
     SetIsFinite( F, true );
     SetSize( F, q );
-    SetGeneratorsOfDivisionRing( F, gens );
-    SetGeneratorsOfRing( F, gens );
     SetDegreeOverPrimeField( F, d );
     SetDimension( F, d / DegreeOverPrimeField( subfield ) );
 
     if q < MAXSIZE_GF_INTERNAL then
-      SetRootOfDefiningPolynomial( F, Z(q) );
-      SetPrimitiveRoot( F, Z(q) );
+      z:= Z(q);
+      SetRootOfDefiningPolynomial( F, z );
+      SetPrimitiveRoot( F, z );
+      gens:= [ z ];
     fi;
+
+    SetGeneratorsOfDivisionRing( F, gens );
+    SetGeneratorsOfRing( F, gens );
 
     return F;
     end );
@@ -712,11 +749,15 @@ InstallMethod( FieldByGenerators, IsIdentical,
 #M  DefaultFieldByGenerators( <z> ) . . . . . . default field containing ffes
 #M  DefaultFieldByGenerators( <F>, <elms> ) . . default field containing ffes
 ##
-InstallMethod( DefaultFieldByGenerators, true,
+InstallMethod( DefaultFieldByGenerators,
+    "method for a collection of FFEs that is a list",
+    true,
     [ IsFFECollection and IsList ], 0,
     gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
 
-InstallOtherMethod( DefaultFieldByGenerators, IsIdentical,
+InstallOtherMethod( DefaultFieldByGenerators,
+    "method for a finite field, and a collection of FFEs that is a list",
+    IsIdentical,
     [ IsField and IsFinite, IsFFECollection and IsList ], 0,
     function( F, gens )
     return GF( F, DegreeFFE( gens ) );

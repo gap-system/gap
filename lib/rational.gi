@@ -354,31 +354,6 @@ InstallMethod( \[\], true, [ IsRationalsEnumerator, IsPosRat and IsInt ], 0,
 
 #############################################################################
 ##
-#M  Int( <rat> ) . . . . . . . . . . . .   convert a rational into an integer
-##
-InstallMethod( Int, true, [ IsRat ], 0,
-    obj -> QuoInt( NumeratorRat( obj ), DenominatorRat( obj ) ) );
-
-
-#############################################################################
-##
-#M  String( <rat> ) . . . . . . . . . . . .  convert a rational into a string
-##
-InstallMethod( String, true, [ IsRat ], 0,
-    function ( rat )
-    local   str;
-
-    str := String( NumeratorRat( rat ) );
-    if DenominatorRat( rat ) <> 1  then
-        str := Concatenation( str, "/", String( DenominatorRat( rat ) ) );
-    fi;
-    ConvertToStringRep( str );
-    return str;
-    end );
-
-
-#############################################################################
-##
 #F  EvalF(<number>) . . . . . .  floating point evaluation of rational number
 ##
 EvalF := function(arg)

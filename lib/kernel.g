@@ -67,13 +67,6 @@ end;
 
 #############################################################################
 ##
-#F  LARGEST_MOVED_POINT_PERM( <perm> )  . . . . . . . . . largest moved point
-##
-LARGEST_MOVED_POINT_PERM := LargestMovedPointPerm;
-
-
-#############################################################################
-##
 #F  STRING_INT( <int> ) . . . . . . . . . . . . . . . .  string of an integer
 ##
 STRING_INT := function ( n )
@@ -121,13 +114,6 @@ end;
 
 
 ############################################################################
-##
-#F  CallFuncList( <func>, <args> )  . . . . . . . . . . . . . call a function
-##
-CallFuncList := CALL_FUNC_LIST;
-
-
-#############################################################################
 ##
 
 #F  REPLACE_SUBSTRING( <string>, <old>, <new> ) . . .  replace <old> by <new>

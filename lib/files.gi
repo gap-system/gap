@@ -61,7 +61,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <directory> )
+#M  PrintObj( <directory> ) . . . . . . . . . . . . . print a directory object
 ##
 InstallMethod( PrintObj,
     "default directory rep",
@@ -77,7 +77,7 @@ end );
 #############################################################################
 ##
 
-#M  Filename( <directory>, <string> )
+#M  Filename( <directory>, <string> ) . . . . . . . . . . .  create a filename
 ##
 InstallOtherMethod( Filename,
     "string",
@@ -96,7 +96,7 @@ end );
 
 #############################################################################
 ##
-#M  Filename( <directories>, <string> )
+#M  Filename( <directories>, <string> ) . . . . . . . .  search for a filename
 ##
 InstallMethod( Filename,
     "string",
@@ -121,7 +121,7 @@ end );
 
 #############################################################################
 ##
-#M  Read( <filename> )
+#M  Read( <filename> )  . . . . . . . . . . . . . . . . . . . . read in a file
 ##
 READ_INDENT := "";
 
@@ -150,7 +150,7 @@ end );
 
 #############################################################################
 ##
-#M  ReadTest( <filename> )
+#M  ReadTest( <filename> )  . . . . . . . . . . . . . . . . . read a test file
 ##
 InstallMethod( ReadTest,
     "string",

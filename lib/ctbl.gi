@@ -4751,7 +4751,7 @@ CASString := function( tbl )
 
     convertcyclotom:= function( cyc )
     local i, str, coeffs;
-    coeffs:= COEFFSCYC( cyc );
+    coeffs:= COEFFS_CYC( cyc );
     str:= Concatenation( "\n<w", String( Length( coeffs ) ), "," );
     if coeffs[1] <> 0 then
       str:= Concatenation( str, String( coeffs[1] ) );

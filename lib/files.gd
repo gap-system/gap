@@ -147,6 +147,21 @@ end;
 
 #############################################################################
 ##
+#F  DirectoriesSystemPrograms() . . . . .  directories of the system programs
+##
+DIRECTORIES_PROGRAMS := false;
+
+DirectoriesSystemPrograms := function()
+    if DIRECTORIES_PROGRAMS = false  then
+        DIRECTORIES_PROGRAMS := List( DIRECTORIES_SYSTEM_PROGRAMS,
+                                      x -> Directory(x) );
+    fi;
+    return DIRECTORIES_PROGRAMS;
+end;
+
+
+#############################################################################
+##
 
 #F  CreateCompletionFiles( <path> ) . . . . . . .  create "lib/compX.g" files
 ##
@@ -165,7 +180,7 @@ CreateCompletionFiles := function( arg )
     for i  in COMPLETABLE_FILES  do
 
         # convert "read" into "comp"
-        com := Filename( path, ReplacedString( i[1], "read", "comp" ) );
+        com := Filename( path, ReplacedString( i[1], ".g", ".co" ) );
         if com = fail  then
             Error( "cannot create output file" );
         fi;

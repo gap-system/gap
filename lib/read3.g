@@ -139,6 +139,7 @@ ReadLib( "grpffmat.gd" );
 # group library
 ReadGrp( "basic.gd"    );
 ReadGrp( "perf.gd"     );
+ReadPrim( "primitiv.gd" );
 ReadSmall( "small.gd" );
 
 # group constructions

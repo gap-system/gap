@@ -7,7 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file dealing with functions
+##  This file deals with functions.
 ##
 Revision.function_g :=
     "@(#)$Id$";
@@ -66,6 +66,43 @@ TYPE_OPERATION := NewType( FunctionsFamily,
 ##  If objects simulate functions this must become an operation.
 ##
 NameFunction := NAME_FUNC;
+
+
+#############################################################################
+##
+#F  CallFuncList( <func>, <args> )  . . . . . . . . . . . . . call a function
+##
+##  If objects simulate functions this must become an operation.
+##
+CallFuncList := CALL_FUNC_LIST;
+
+
+#############################################################################
+##
+#F  ReturnTrue( ... ) . . . . . . . . . . . . . . . . . . . . . . always true
+##
+ReturnTrue := RETURN_TRUE;
+
+
+#############################################################################
+##
+#F  ReturnFalse( ... )  . . . . . . . . . . . . . . . . . . . .  always false
+##
+ReturnFalse := RETURN_FALSE;
+
+
+#############################################################################
+##
+#F  ReturnFail( ... ) . . . . . . . . . . . . . . . . . . . . . . always fail
+##
+ReturnFail := RETURN_FAIL;
+
+
+#############################################################################
+##
+#F  IdFunc( <obj> ) . . . . . . . . . . . . . . . . . . . . . .  return <obj>
+##
+IdFunc := ID_FUNC;
 
 
 #############################################################################

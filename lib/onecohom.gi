@@ -1367,7 +1367,8 @@ local   ocr,erg;
 	  complement          := ocr.complement,
 	  cocycleToList       := ocr.cocycleToList,
 	  listToCocycle       := ocr.listToCocycle,
-	  cocycleToComplement := ocr.cocycleToComplement);
+	  cocycleToComplement := ocr.cocycleToComplement,
+	  factorGens          := ocr.generators);
       if IsBound(ocr.complementToCocycle) then
 	erg.complementToCocycle := ocr.complementToCocycle;
       fi;

@@ -1040,8 +1040,12 @@ gap.o:      $(SRC)/gap.c      $(SRC)/gap.h                              \
 	    $(SRC)/intrprtr.h $(SRC)/read.h
 	$(CC) $(CFLAGS)  -o gap.o         -c $(SRC)/gap.c
 
-streams.o:  $(SRC)/streams.c $(SRC)/streams.h                         \
-	    $(SRC)/system.h  $(SRC)/sysfiles.h
+streams.o:  $(SRC)/streams.c $(SRC)/streams.h				\
+	    $(SRC)/system.h  $(SRC)/sysfiles.h				\
+	    $(SRC)/gasman.h  $(SRC)/objects.h   $(SRC)/scanner.h        \
+	    $(SRC)/gap.h     $(SRC)/read.h      $(SRC)/gvars.h          \
+	    $(SRC)/calls.h   $(SRC)/lists.h     $(SRC)/plist.h          \
+	    $(SRC)/bool.h    $(SRC)/string.h
 	$(CC) $(CFLAGS)  -o streams.o     -c $(SRC)/streams.c
 
 compstat.o: $(SRC)/compstat.c $(SRC)/compstat.h                         \

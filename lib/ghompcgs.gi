@@ -8,6 +8,7 @@ Revision.ghompcgs_gi :=
 
 #############################################################################
 ##
+
 #M  GroupHomomorphismByImages( <G>, <H>, <gens>, <imgs> )
 ##
 ##  Add NC later
@@ -444,6 +445,38 @@ InstallMethod( PrintObj,
     function( map )
     Print(map!.sourcePcgs, " -> ", map!.sourcePcgsImages );
     end );
+
+#############################################################################
+##
+#M  NaturalIsomorphismByPcgs( <grp>, <pcgs> ) . . presentation through <pcgs>
+##
+InstallMethod( NaturalIsomorphismByPcgs,
+    IsIdentical,
+    [ IsGroup,
+      IsPcgs ],
+    0,
+
+function( grp, pcgs )
+    local   new;
+
+    # <pcgs> must be a subset of <grp>
+    if ForAny( pcgs, x -> not x in grp )  then
+        Error( "<pcgs> must be a subset of <grp>" );
+    fi;
+
+    # compute a new group and check the size
+    new := GroupByPcgs(pcgs);
+    if Size(new) <> Size(grp)  then
+        Error( "<pcgs> must generate <grp>" );
+    fi;
+
+    # return the isomomorphism
+    new := GroupHomomorphismByImages( grp, new, pcgs, FamilyPcgs(new) );
+    SetIsBijective( new, true );
+    return new;
+
+end );
+
 
 #############################################################################
 ##

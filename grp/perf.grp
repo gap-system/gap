@@ -156,7 +156,7 @@ local source,orbsize,nargs,grp1,grp2,names1,names2,names,F,fgens,
   grp2:=PERFGRP[PerfGrpLoad(source[4])][source[5]];
   # construct names for the generators of the group G to be constructed.
   names1:=List(grp1[1][2],i->Concatenation([i],"1"));
-  names2:=List(grp2[2][2],i->Concatenation([i],"2"));
+  names2:=List(grp2[1][2],i->Concatenation([i],"2"));
   names := Concatenation( names1, names2 );
 
   # get the associated free group generators.
@@ -180,12 +180,12 @@ local source,orbsize,nargs,grp1,grp2,names1,names2,names,F,fgens,
     od;
   od;
 
+  sub:=[];
   # in case of a central product compute additional relations and store
   # suitable subgroups for a faithful permutation representation.
   if Length(source)>5 then
     Add(rels,Product(List(source{[6..Length(source)]},
         i->fgens[Position(names,i)])));
-    sub:=[];
     for i in words1[2] do
       for j in words2[2] do
         Add(sub,Concatenation(i,j));
@@ -284,29 +284,56 @@ local source,grp1,grp2,grp0,ngens0,ngens1,ngens2,gens0,gens1,gens2,nrels0,
   return [F,fgens,rels];
 end;
 
+#############################################################################
+##
+#M  PerfGrpConst(<IsSubgroupFpGroup>,<descript>)
+##
+InstallMethod(PerfGrpConst,"fp grp",true,[IsSubgroupFpGroup,IsList],0,
+function(filter,l)
+local G,n;
+  if Length(l)=0 then 
+    G:=FreeGroup(1);
+    return G/GeneratorsOfGroup(G);
+  fi;
+  n:=l[1][1];
+  if n=1 then
+    G:=FreeGroup(List(l[1][2],i->[i]));
+    G:=Concatenation([G,GeneratorsOfGroup(G)],
+                     CallFuncList(l[1][3],GeneratorsOfGroup(G)));
+  elif n in [2,3] then
+    G:=PerfectCentralProduct(l);
+  elif n=4 then
+    G:=PerfectSubdirectProduct(l);
+  else
+    Error("not supported");
+  fi;
+  G:=G[1]/G[3];
+  if Length(l)>1 then
+    SetName(G,l[2]);
+  fi;
+  return G;
+end);
 
 #############################################################################
 ##
-#M  PerfGrpConst(<IsPermGroup>,<pos>,<nr>) 
+#M  PerfGrpConst(<IsPermGroup>,<descript>)
 ##
-InstallMethod(PerfGrpConst,"perm grp",true,[IsPermGroup,IsInt,IsInt],0,
-function(filter,pos,nr)
-local l,G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
-  if pos=1 then
+InstallMethod(PerfGrpConst,"perm grp",true,[IsPermGroup,IsList],0,
+function(filter,l)
+local G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
+  if Length(l)=0 then
     # special treatment for the trivial group
     G:=Group(());
-    SetPerfectIdentification(G,[1,1]);
     return G;
   fi;
-  l:=PERFGRP[pos][nr];
   if l[1][1]=1 then
     gens:=GeneratorsOfGroup(FreeGroup(List(l[1][2],i->[i])));
     rels:=CallFuncList(l[1][3],gens);
     subs:=rels[2];
     rels:=rels[1];
   elif l[1][1] in [2,4] then
-    g1:=PerfGrpConst(IsPermGroup,PerfGrpLoad(l[1][2]),l[1][3]);
-    g2:=PerfGrpConst(IsPermGroup,PerfGrpLoad(l[1][4]),l[1][5]);
+    g1:=PerfGrpConst(IsPermGroup,PERFGRP[PerfGrpLoad(l[1][2])][l[1][3]]);
+    g2:=PerfGrpConst(IsPermGroup,PERFGRP[PerfGrpLoad(l[1][4])][l[1][5]]);
     G:=DirectProduct(g1,g2);
     if l[1][2]=3 then
       gl:=Length(PERFGRP[PerfGrpLoad(l[1][6])][1][1][2]);
@@ -323,8 +350,6 @@ local l,G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
       od;
       G:=Subgroup(G,gens);
     fi;
-    SetSize(G,PERFRec.sizes[pos]);
-    SetPerfectIdentification(G,[Size(G),nr]);
     if Length(l)>1 then
       SetName(G,l[2]);
     fi;
@@ -368,8 +393,6 @@ local l,G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
 #  SetIsomorphismPermGroup(fp,GroupHomomorphismByImages(fp,G,
 #                          GeneratorsOfGroup(fp),pgens));
 
-  SetSize(G,PERFRec.sizes[pos]);
-  SetPerfectIdentification(G,[Size(G),nr]);
   if Length(l)>1 then
     SetName(G,l[2]);
   fi;
@@ -408,7 +431,9 @@ local func,sz,p;
   if p=fail or sz[2]>PERFRec.number[p] then
     Error("PerfectGroup(",sz[1],",",sz[2],") does not exist !");
   fi;
-  p:=PerfGrpConst(func,p,sz[2]);
+  p:=PerfGrpConst(func,PERFGRP[p][sz[2]]);
+  SetSize(p,sz[1]);
+  SetPerfectIdentification(p,ShallowCopy(sz));
   SetIsPerfectGroup(p,true);
   SetFilterObj(p,IsPerfectLibraryGroup);
   return p;

@@ -41,13 +41,6 @@ Revision.ctadmin_tbd :=
 ##     a record whose components are names of files in the table library,
 ##     with value one of '"loaded"', '"unloaded"', '"userloaded"',
 ##
-##  'LIBLIST'
-##     a record with information about admissible names, fusion sources
-##     etc. of all library tables;
-##     the components are mainly computed by an 'awk' script,
-##     and they are stored in the file 'ctprimar.tbl',
-##     (This component is added when the file 'ctadmin.tbi' is read.)
-##
 ##  'TABLEFILENAME'
 ##     the name of the file to be read at the moment
 ##     (is set by 'SET_TABLEFILENAME'),
@@ -182,7 +175,7 @@ EvalChars := NewOperationArgs( "EvalChars" );
 #F  ALF( <from>, <to>, <map>, <text> )
 ##     stores a fusion between library tables in the component 'classFusions'
 ##     of the table <from>,
-##     and adjusts the global list 'LIBTABLE.LIBLIST.fusionsource'.
+##     and adjusts the global list 'LIBLIST.fusionsource'.
 ##
 #F  ACM( <spec>, <dim>, <val> )
 ##     adds a Clifford matrix to the library.
@@ -215,7 +208,7 @@ ARC := NewOperationArgs( "ARC" );
 ##
 ##  'ALN' is a shorthand for 'NotifyCharTableName'.
 ##  In those library tables for that the 'awk' script has produced the
-##  necessary information for 'LIBTABLE.LIBLIST', 'ALN' is set to 'Ignore'
+##  necessary information for 'LIBLIST', 'ALN' is set to 'Ignore'
 ##  in the beginning and back to 'NotifyCharTableName' in the end.
 ##
 NotifyCharTableName := NewOperationArgs( "NotifyCharTableName" );
@@ -232,7 +225,7 @@ ALN := NotifyCharTableName;
 ##  and it is known to have also the names contained in the list
 ##  <othernames>.
 ##
-##  'NotifyCharTable' modifies the global variable 'LIBTABLE.LIBLIST'
+##  'NotifyCharTable' modifies the global variable 'LIBLIST'
 ##  after having checked that there is no other table yet with admissible
 ##  name equal to <firstname> or contained in <othernames>.
 ##
@@ -806,11 +799,11 @@ PrintToLib := NewOperationArgs( "PrintToLib" );
 ##
 #F  PrintClmsToLib( <file>, <clms> )
 ##
-##   prints the Clifford matrices in library format in a list on the file
-##   <file> which are not yet in the Clifford matrix library or in this list.
+##  prints the Clifford matrices in library format in a list on the file
+##  <file> which are not yet in the Clifford matrix library or in this list.
 ##
-##   <clms> must be a Clifford table or a list of Clifford records.
-##   In case of splitting, each Clifford record must contain 'splitinfos'.
+##  <clms> must be a Clifford table or a list of Clifford records.
+##  In case of splitting, each Clifford record must contain 'splitinfos'.
 ##
 PrintClmsToLib := NewOperationArgs( "PrintClmsToLib" );
 

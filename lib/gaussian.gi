@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for Gaussian rationals and Gaussian integers.
 ##
@@ -36,7 +36,7 @@ InstallMethod( \in,
     "method for Gaussian integers",
     IsElmsColls, [ IsCyc, IsGaussianIntegers ], 0,
     function( cyc, GaussianIntegers )
-    return IsCycInt( cyc ) and 4 mod NofCyc( cyc ) = 0;
+    return IsCycInt( cyc ) and 4 mod Conductor( cyc ) = 0;
     end );
 
 
@@ -85,7 +85,9 @@ InstallMethod( CanonicalBasis,
 ##
 #M  Coefficients( <B>, <z> )  . for the canon. basis of the Gaussian integers
 ##
-InstallMethod( Coefficients, true,
+InstallMethod( Coefficients,
+    "method for canon. basis of Gaussian integers, and cyclotomic",
+    true,
     [ IsBasis and IsCanonicalBasis and IsCanonicalBasisGaussianIntegersRep,
       IsCyc ], 0,
     function( B, z )
@@ -176,11 +178,11 @@ InstallMethod( StandardAssociate,
         return x;
     elif IsRat(x)  then
         return -x;
-    elif 0 <  COEFFSCYC(x)[1]       and 0 <= COEFFSCYC(x)[2]       then
+    elif 0 <  COEFFS_CYC(x)[1]       and 0 <= COEFFS_CYC(x)[2]       then
         return x;
-    elif      COEFFSCYC(x)[1] <= 0  and 0 <  COEFFSCYC(x)[2]       then
+    elif      COEFFS_CYC(x)[1] <= 0  and 0 <  COEFFS_CYC(x)[2]       then
         return - E(4) * x;
-    elif      COEFFSCYC(x)[1] <  0  and      COEFFSCYC(x)[2] <= 0  then
+    elif      COEFFS_CYC(x)[1] <  0  and      COEFFS_CYC(x)[2] <= 0  then
         return - x;
     else
         return E(4) * x;
@@ -340,7 +342,6 @@ InstallMethod( Factors,
     end );
 
 
-#T hier!
 #T #############################################################################
 #T ##
 #T #F  GaussianRationalsOps.CharPol(<GaussRat>,<x>)  . .  characteristic polynom
@@ -363,151 +364,10 @@ InstallMethod( Factors,
 #T         return [ x * GaloisCyc(x,-1), -x-GaloisCyc(x,-1), 1 ];
 #T     fi;
 #T end;
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #E  gaussian.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-#T 
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  Enumerator( Integers )
-#T ##
-#T ##  $a_n = \frac{n}{2}$ if $n$ is even, and
-#T ##  $a_n = \frac{1-n}{2}$ otherwise.
-#T ##
-#T IsIntegersEnumerator := NewRepresentation( "IsIntegersEnumerator",
-#T     IsDomainEnumerator and IsAttributeStoringRep, [] );
-#T 
-#T InstallMethod( Enumerator, true, [ IsIntegers ], 0,
-#T     function( Integers )
-#T     local enum;
-#T     enum:= Objectify( NewType( FamilyObj( Integers ), IsIntegersEnumerator ),
-#T                       rec() );
-#T     SetUnderlyingCollection( enum, Integers );
-#T     return enum;
-#T     end );
-#T 
-#T InstallMethod( \[\], true, [ IsIntegersEnumerator, IsPosRat and IsInt ], 0,
-#T     function( e, x )
-#T     if x > 0 then
-#T       return 2 * x;
-#T     else
-#T       return -2 * x + 1;
-#T     fi;
-#T     end );
-#T 
-#T InstallMethod( Position, true, [ IsIntegersEnumerator, IsCyc, IsZeroCyc ], 0,
-#T     function( e, n, zero )
-#T     if not IsInt(n)  then
-#T         return fail;
-#T     elif n mod 2 = 0 then
-#T         return n / 2;
-#T     else
-#T         return ( 1 - n ) / 2;
-#T     fi;
-#T     end );
-#T 
-#T 
-#T ############################################################################
-#T ##
-#T #M  Iterator( Integers )
-#T ##
-#T ##  uses the succession $0, 1, -1, 2, -2, 3, -3, \ldots$, that is,
-#T ##  $a_n = \frac{n}{2}$ if $n$ is even, and $a_n = \frac{1-n}{2}$
-#T ##  otherwise.
-#T ##
-#T IsIntegersIterator := NewRepresentation( "IsIntegersIterator",
-#T     IsIterator,
-#T     [ "structure", "counter" ] );
-#T 
-#T InstallMethod( Iterator, true, [ IsIntegers ], 0,
-#T     function( Integers )
-#T     return Objectify( NewType( IteratorsFamily, IsIntegersIterator ),
-#T                       rec(
-#T                            structure := Integers,
-#T                            counter   := 0         ) );
-#T     end );
-#T 
-#T InstallMethod( IsDoneIterator, true, [ IsIntegersIterator ], 0,
-#T     ReturnFalse );
-#T 
-#T InstallMethod( NextIterator, true, [ IsIntegersIterator ], 0,
-#T     function( iter )
-#T     iter!.counter:= iter!.counter + 1;
-#T     if iter!.counter mod 2 = 0 then
-#T       return iter!.counter / 2;
-#T     else
-#T       return ( 1 - iter!.counter ) / 2;
-#T     fi;
-#T     end );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  QuotientMod( Integers , <r>, <s>, <m> ) . . . . . . . quotient modulo <m>
-#T ##
-#T InstallMethod( QuotientMod, true, [ IsIntegers, IsInt, IsInt, IsInt ], 0,
-#T     function ( Integers, r, s, m )
-#T     if r mod GcdInt( s, m ) = 0  then
-#T         return r/s mod m;
-#T     else
-#T         return false;
-#T     fi;
-#T     end );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  PowerMod( Integers, <r>, <e>, <m> ) . . . power of an integer mod another
-#T ##
-#T InstallMethod( PowerMod, true, [ IsIntegers, IsInt, IsInt, IsInt ], 0,
-#T     function ( Integers, r, e, m )
-#T     return PowerModInt( r, e, m );
-#T     end );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  Gcd( Integers, <n>, <m> ) . . . . . . . . . . . . . . gcd of two integers
-#T ##
-#T InstallMethod( Gcd, true, [ IsIntegers, IsInt, IsInt ], 0,
-#T     function ( Integers, n, m )
-#T     return GcdInt( n, m );
-#T     end );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  Gcd( <int-list> )
-#T ##
-#T InstallOtherMethod( Gcd,
-#T     true,
-#T     [ IsRowVector ],
-#T     0,
-#T 
-#T function( list )
-#T     local   gcd,  i;
-#T 
-#T     if not ForAll( list, IsInt )  then
-#T         TryNextMethod();
-#T     fi;
-#T     gcd := list[1];
-#T     for i  in [ 2 .. Length(list) ]  do
-#T         gcd := GcdInt( gcd, list[i] );
-#T     od;
-#T     return gcd;
-#T end );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  Lcm( Integers, <n>, <m> ) . . . . . . . least common multiple of integers
-#T ##
-#T InstallMethod( Lcm, true, [ IsIntegers, IsInt, IsInt ], 0,
-#T     function ( Integers, n, m )
-#T     return LcmInt( n, m );
-#T     end );
-#T 
+
+
+#############################################################################
+##
+#E  gaussian.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+

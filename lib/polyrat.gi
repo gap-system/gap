@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains functions for polynomials over the rationals
 ##
@@ -652,9 +652,11 @@ end;
 
 #############################################################################
 ##
-#F  Gcd(<R>,<f>,<g>)  for rational polynomials
+#F  GcdOp( <R>, <f>, <g> )  . . . . . . . for rational univariate polynomials
 ##
-InstallMethod(Gcd,"RatPol",true,
+InstallMethod( GcdOp,
+    "RatPol",
+    IsCollsElmsElms,
   [IsRationalsPolynomialRing and IsEuclideanRing,
    IsUnivariatePolynomial,IsUnivariatePolynomial],0,
 function(R,f,g)
@@ -1800,6 +1802,6 @@ end);
 
 #############################################################################
 ##
-#E  polyrat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E  polyrat.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 

@@ -1860,7 +1860,7 @@ end;
 DxGeneratePrimeCyclotomic := function(e,r) # exponent,Primitive Root
   return function(a)
   local l,n,w,s,i,o;
-    l:=COEFFSCYC(a);
+    l:=COEFFS_CYC(a);
     n:=Length(l);
     o:=r^0;
     w:=0*o;
