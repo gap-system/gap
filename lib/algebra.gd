@@ -712,15 +712,6 @@ MatAlgebra := FullMatrixFLMLOR;
 
 #############################################################################
 ##
-#O  NaturalHomomorphismBySubspace( <G>, <N> ) . . . . . map onto factor space
-##
-NaturalHomomorphismBySubspace := NewOperation(
-    "NaturalHomomorphismBySubspace",
-    [ IsLeftModule, IsLeftModule ] );
-
-
-#############################################################################
-##
 #O  NaturalHomomorphismByIdeal( <G>, <I> )  . . . . . map onto factor algebra
 ##
 NaturalHomomorphismByIdeal := NewOperation( "NaturalHomomorphismByIdeal",

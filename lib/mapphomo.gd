@@ -29,7 +29,8 @@ Revision.mapphomo_gd :=
 ##
 #P  RespectsMultiplication( <mapp> )
 ##
-##  Let <mapp> be a general mapping, viewed as a set $F \subseteq S \times R$
+##  Let <mapp> be a general mapping with underlying relation
+##  $F \subseteq S \times R$,
 ##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
 ##  Then 'RespectsMultiplication' returns 'true' if
 ##  $S$ and $R$ are magmas such that
@@ -51,7 +52,8 @@ HasRespectsMultiplication := Tester( RespectsMultiplication );
 ##
 #P  RespectsOne( <mapp> )
 ##
-##  Let <mapp> be a general mapping, viewed as a set $F \subseteq S \times R$
+##  Let <mapp> be a general mapping with underlying relation
+##  $F \subseteq S \times R$,
 ##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
 ##  Then 'RespectsOne' returns 'true' if
 ##  $S$ and $R$ are magmas-with-one such that
@@ -72,7 +74,8 @@ HasRespectsOne := Tester( RespectsOne );
 ##
 #P  RespectsInverses( <mapp> )
 ##
-##  Let <mapp> be a general mapping, viewed as a set $F \subseteq S \times R$
+##  Let <mapp> be a general mapping with underlying relation
+##  $F \subseteq S \times R$,
 ##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
 ##  Then 'RespectsInverses' returns 'true' if
 ##  $S$ and $R$ are magmas-with-inverses such that
@@ -112,16 +115,17 @@ IsGroupHomomorphism := IsGroupGeneralMapping and IsMapping;
 ##
 #A  KernelOfMultiplicativeGeneralMapping( <mapp> )
 ##
-##  Let <mapp> be a general mapping that respects multiplication and one.
+##  Let <mapp> be a general mapping.
 ##  Then 'KernelOfMultiplicativeGeneralMapping' returns the set of all
 ##  elements in the source of <mapp> that have the identity of the range in
 ##  their set of images.
 ##
-##  (This is a monoid if the source of <mapp> is associative.)
+##  (This is a monoid if <mapp> respects multiplication and one,
+##  and if the source of <mapp> is associative.)
 ##
 KernelOfMultiplicativeGeneralMapping := NewAttribute(
     "KernelOfMultiplicativeGeneralMapping",
-    IsGeneralMapping and RespectsMultiplication and RespectsOne );
+    IsGeneralMapping );
 SetKernelOfMultiplicativeGeneralMapping := Setter(
     KernelOfMultiplicativeGeneralMapping );
 HasKernelOfMultiplicativeGeneralMapping := Tester(
@@ -132,16 +136,17 @@ HasKernelOfMultiplicativeGeneralMapping := Tester(
 ##
 #A  CoKernelOfMultiplicativeGeneralMapping( <mapp> )
 ##
-##  Let <mapp> be a general mapping that respects multiplication and one.
+##  Let <mapp> be a general mapping.
 ##  Then 'CoKernelOfMultiplicativeGeneralMapping' returns the set of all
 ##  elements in the range of <mapp> that have the identity of the source in
 ##  their set of preimages.
 ##
-##  (This is a monoid if the range of <mapp> is associative.)
+##  (This is a monoid if <mapp> respects multiplication and one,
+##  and if the range of <mapp> is associative.)
 ##
 CoKernelOfMultiplicativeGeneralMapping := NewAttribute(
     "CoKernelOfMultiplicativeGeneralMapping",
-    IsGeneralMapping and RespectsMultiplication and RespectsOne );
+    IsGeneralMapping );
 SetCoKernelOfMultiplicativeGeneralMapping := Setter(
     CoKernelOfMultiplicativeGeneralMapping );
 HasCoKernelOfMultiplicativeGeneralMapping := Tester(
@@ -157,7 +162,8 @@ HasCoKernelOfMultiplicativeGeneralMapping := Tester(
 ##
 #P  RespectsAddition( <mapp> )
 ##
-##  Let <mapp> be a general mapping, viewed as a set $F \subseteq S \times R$
+##  Let <mapp> be a general mapping with underlying relation
+##  $F \subseteq S \times R$,
 ##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
 ##  Then 'RespectsAddition' returns 'true' if
 ##  $S$ and $R$ are additive magmas such that
@@ -178,7 +184,8 @@ HasRespectsAddition := Tester( RespectsAddition );
 ##
 #P  RespectsZero( <mapp> )
 ##
-##  Let <mapp> be a general mapping, viewed as a set $F \subseteq S \times R$
+##  Let <mapp> be a general mapping with underlying relation
+##  $F \subseteq S \times R$,
 ##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
 ##  Then 'RespectsZero' returns 'true' if
 ##  $S$ and $R$ are additive-magmas-with-zero such that
@@ -199,7 +206,8 @@ HasRespectsZero := Tester( RespectsZero );
 ##
 #P  RespectsAdditiveInverses( <mapp> )
 ##
-##  Let <mapp> be a general mapping, viewed as a set $F \subseteq S \times R$
+##  Let <mapp> be a general mapping with underlying relation
+##  $F \subseteq S \times R$,
 ##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
 ##  Then 'RespectsAdditiveInverses' returns 'true' if
 ##  $S$ and $R$ are additive-magmas-with-inverses such that
@@ -240,14 +248,14 @@ IsAdditiveGroupHomomorphism := IsAdditiveGroupGeneralMapping and IsMapping;
 ##
 #A  KernelOfAdditiveGeneralMapping( <mapp> )
 ##
-##  Let <mapp> be a general mapping that respects addition and zero.
+##  Let <mapp> be a general mapping.
 ##  Then 'KernelOfAdditiveGeneralMapping' returns the set of all
 ##  elements in the source of <mapp> that have the zero of the range in
 ##  their set of images.
 ##
 KernelOfAdditiveGeneralMapping := NewAttribute(
     "KernelOfAdditiveGeneralMapping",
-    IsGeneralMapping and RespectsAddition and RespectsZero );
+    IsGeneralMapping );
 SetKernelOfAdditiveGeneralMapping := Setter(
     KernelOfAdditiveGeneralMapping );
 HasKernelOfAdditiveGeneralMapping := Tester(
@@ -258,14 +266,14 @@ HasKernelOfAdditiveGeneralMapping := Tester(
 ##
 #A  CoKernelOfAdditiveGeneralMapping( <mapp> )
 ##
-##  Let <mapp> be a general mapping that respects addition and zero.
+##  Let <mapp> be a general mapping.
 ##  Then 'KernelOfAdditiveGeneralMapping' returns the set of all
 ##  elements in the source of <mapp> that have the zero of the range in
 ##  their set of images.
 ##
 CoKernelOfAdditiveGeneralMapping := NewAttribute(
     "CoKernelOfAdditiveGeneralMapping",
-    IsGeneralMapping and RespectsAddition and RespectsZero );
+    IsGeneralMapping );
 SetCoKernelOfAdditiveGeneralMapping := Setter(
     CoKernelOfAdditiveGeneralMapping );
 HasCoKernelOfAdditiveGeneralMapping := Tester(
@@ -281,7 +289,8 @@ HasCoKernelOfAdditiveGeneralMapping := Tester(
 ##
 #P  RespectsScalarMultiplication( <mapp> )
 ##
-##  Let <mapp> be a general mapping, viewed as a set $F \subseteq S \times R$
+##  Let <mapp> be a general mapping, with underlying relation
+##  $F \subseteq S \times R$,
 ##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
 ##  Then 'RespectsScalarMultiplication' returns 'true' if
 ##  $S$ and $R$ are left modules with the left acting domain $D$ of $S$

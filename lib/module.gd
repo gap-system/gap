@@ -130,7 +130,7 @@ HasIsFullMatrixModule := Tester( IsFullMatrixModule );
 ##
 IsHandledByNiceBasis := NewCategory( "IsHandledByNiceBasis",
     IsFreeLeftModule and IsAttributeStoringRep );
-#T induvidually choose for each repres. in this category?
+#T individually choose for each repres. in this category?
 
 
 #############################################################################
@@ -233,9 +233,6 @@ ClosureLeftModule := NewOperation( "ClosureLeftModule",
 LeftModuleByGenerators := NewOperation( "LeftModuleByGenerators",
     [ IsRing, IsCollection ] );
 #T 1997/01/16 fceller was old 'NewConstructor'
-
-FreeLeftModuleByGenerators := LeftModuleByGenerators;
-#T really?
 
 
 #############################################################################

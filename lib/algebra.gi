@@ -215,7 +215,7 @@ SubFLMLORNC := function( arg )
                               and IsAttributeStoringRep ),
                      rec() );
       SetLeftActingDomain( S, LeftActingDomain( arg[1] ) );
-      SetGeneratorsOfLeftOperatorRing( S, AsList( arg[2] ) );
+      SetGeneratorsOfLeftModule( S, AsList( arg[2] ) );
     else
       S:= FLMLORByGenerators( LeftActingDomain( arg[1] ), arg[2] );
     fi;
@@ -1190,170 +1190,23 @@ InstallMethod( Intersection2,
 ##  is the factor algebra of the finite dimensional algebra <A> modulo
 ##  the ideal <I> or the list of ideal generators <relators>.
 ##  
-##  Factor algebras are represented as s.c. algebras in the generic case.
-##
 InstallOtherMethod( \/,
     "method for FLMLOR and collection",
     IsIdentical, [ IsFLMLOR, IsCollection ], 0,
     function( A, relators )
-    return A / IdealByGenerators( A, relators );
+    if IsFLMLOR( relators ) then
+      TryNextMethod();
+    else
+      return A / IdealByGenerators( A, relators );
+    fi;
     end );
 
-#T InstallOtherMethod( \/,
-#T     "generic method for two finite dimensional FLMLORs",
-#T     IsIdentical, [ IsFLMLOR, IsFLMLOR ], 0,
-#T     function( A, I )
-#T 
-#T     local Igens,    # list of ideal generators
-#T           B,        # a basis of 'A'
-#T           VA,
-#T           VI,
-#T           hom,
-#T           VB,
-#T           reps,
-#T           zero,
-#T           empty,
-#T           n,
-#T           T,
-#T           i, j,
-#T           prod,
-#T           coeff,
-#T           pos,
-#T           F;
-#T 
-#T     # Check the arguments.
-#T     if not IsFiniteDimensional( A ) then
-#T       TryNextMethod();
-#T     elif not IsIdeal( A, I ) then
-#T       Error( "<I> must be an ideal in <A>" );
-#T     fi;
-#T     Igens:= GeneratorsOfVectorSpace( I );
-#T 
-#T     # Construct a complementary basis.
-#T     B:= BasisOfDomain( A );
-#T     VA:= FullRowSpace( LeftActingDomain( A ), Dimension( A ) );
-#T     VI:= Subspace( VA, List( Igens, x -> Coefficients( B, x ) ) );
-#T     hom:= NaturalHomomorphism( VA, VA / VI );
-#T     VB:= BasisOfDomain( Range( hom ) );
-#T     reps:= List( VB!.vectorsrepresentatives, x -> LinearCombination( B, x ) );
-#T #T !!
-#T 
-#T     # Compute the structure constants of the quotient algebra.
-#T     zero:= Zero( LeftActingDomain( A ) );
-#T     empty:= [ [], [] ];
-#T     n:= Length( BasisVectors( VB ) );
-#T     T:= [];
-#T     for i in [ 1 .. Length( reps ) ] do
-#T       T[i]:= [];
-#T       for j in [ 1 .. Length( reps ) ] do
-#T         prod:= Image( hom, Coefficients( B, reps[i] * reps[j] ) );
-#T         coeff:= Coefficients( VB, prod );
-#T         pos:= Filtered( [ 1 .. n ], i -> coeff[i] <> zero );
-#T         if not IsEmpty( pos ) then
-#T           T[i][j]:= [ pos, coeff{ pos } ];
-#T         else
-#T           T[i][j]:= empty;
-#T         fi;
-#T       od;
-#T     od;
-#T     T[ Length( T ) + 1 ]:= 0;
-#T     T[ Length( T ) + 1 ]:= zero;
-#T 
-#T     # Construct the image algebra.
-#T     F:= AlgebraByStructureConstants( LeftActingDomain( A ), T );
-#T 
-#T     # Add the components that make it into a generic factor structure.
-#T     SetFactorNum( F, A );
-#T     SetFactorDen( F, I );
-#T 
-#T     # Add the information needed to compute the natural homomorphism.
-#T     F!.hominfo:= rec(
-#T #T !!
-#T                      basisimage          := CanonicalBasis( F ),
-#T                      preimagesbasisimage := reps 
-#T                     );
-#T     F!.hominfo.basissource       := A.basis;
-#T     F!.hominfo.imagesbasissource := List( BasisVectors( CanonicalBasis( VA ) ),
-#T            x -> LinearCombination( F.canonicalBasis,
-#T                       Coefficients( VB, Image( hom, x ) ) ) );
-#T 
-#T     # Return the factor algebra.
-#T     return F;
-#T     end );
-
-
-#############################################################################
-##
-#M  NaturalHomomorphism( <V>, <W> )
-##
-##  is the natural homomorphism from the algebra <V> to the algebra <W>.
-##  <V> must be a subalgebra or a subspace of 'FactorNum( <W> )'.
-##
-#T InstallMethod( NaturalHomomorphism, true,
-#T     [ IsVectorSpace, IsAlgebra and HasFactorNum ], 0,
-#T     function( V, W )
-
-#T InstallMethod( NaturalHomomorphism, true,
-#T     [ IsAlgebra, IsAlgebra and HasFactorNum ], 0,
-#T     function( V, W )
-#T 
-#T     local   hom;        # natural homomorphism from <V> onto <W>, result
-#T 
-#T     # Make the algebra homomorphism.
-#T     hom:= rec(
-#T                isGeneralMapping := true,
-#T                domain           := Mappings,
-#T                source           := V,
-#T                range            := W,
-#T            
-#T                # enter useful information
-#T                isMapping        := true,
-#T                isHomomorphism   := true,
-#T                isAlgebraHomomorphism   := true,
-#T                isEndomorphism   := false,
-#T                isAutomorphism   := false
-#T               );
-#T 
-#T     hom.preImage:= hom.source;
-#T 
-#T     if V = W.factorNum then
-#T       hom.isInjective     := IsTrivial( W.factorDen );
-#T       hom.isSurjective    := true;
-#T       hom.isBijection     := hom.isInjective;
-#T       hom.isMonomorphism  := hom.isInjective;
-#T       hom.isEpimorphism   := true;
-#T       hom.isIsomorphism   := hom.isInjective;
-#T       hom.image           := hom.range;
-#T       hom.kernel          := W.factorDen;
-#T     fi;
-#T 
-#T     # Enter the operations record.
-#T     hom.operations        := NaturalHomomorphismAlgebraOps;
-#T 
-#T     # Enter the defining information.
-#T     if not IsBound( W.hominfo ) then
-#T       Error( "need the 'hominfo' component" );
-#T     elif V = W.factorNum then
-#T       hom.basissource         := W.hominfo.basissource;
-#T       hom.imagesbasissource   := W.hominfo.imagesbasissource;
-#T       hom.basisimage          := W.hominfo.basisimage;
-#T       hom.preimagesbasisimage := W.hominfo.preimagesbasisimage;
-#T     else
-#T       hom.basissource         := BasisOfDomain( V );
-#T       hom.imagesbasissource   := List( BasisVectors( hom.basissource ),
-#T                 x -> LinearCombination( W.hominfo.imagesbasissource,
-#T                              Coefficients( W.hominfo.basissource, x ) ) );
-#T       hom.image               := Subalgebra( hom.range,
-#T                                              hom.imagesbasissource );
-#T       hom.basisimage          := BasisOfDomain( hom.image );
-#T       hom.preimagesbasisimage := List( BasisVectors( hom.basisimage ),
-#T                 x -> LinearCombination( W.hominfo.preimagesbasisimage,
-#T                              Coefficients( W.hominfo.basisimage, x ) ) );
-#T     fi;
-#T 
-#T     # Return the homomorphism.
-#T     return hom;
-#T     end );
+InstallOtherMethod( \/,
+    "generic method for two FLMLORs",
+    IsIdentical, [ IsFLMLOR, IsFLMLOR ], 0,
+    function( A, I )
+    return ImagesSource( NaturalHomomorphismByIdeal( A, I ) );
+    end );
 
 
 #############################################################################
@@ -1377,23 +1230,6 @@ InstallMethod( IsFinite,
     A -> IsFiniteDimensional( A ) and IsFinite( LeftActingDomain( A ) ) );
 
 
-#T#############################################################################
-#T##
-#T#M  Size( <A> ) . . . . . . . . . . . . . . . . . . . . . .  size of a FLMLOR
-#T##
-#TInstallMethod( Size,
-#T    "generic method for a FLMLOR",
-#T    true, [ IsFLMLOR ], 0,
-#T    function( A )
-#T    if not (    IsFinite( LeftActingDomain( A ) )
-#T             or IsFiniteDimensional( A ) ) then
-#T      return infinity;
-#T    else
-#T      return Size( LeftActingDomain( A ) ) ^ Dimension( A );
-#T    fi;
-#T    end );
-#T
-#T
 #############################################################################
 ##
 #M  TrivialSubadditiveMagmaWithZero( <A> )  . . . . . . . . .  for an algebra

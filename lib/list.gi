@@ -86,6 +86,24 @@ InstallMethod( String,
     return str;
     end );
 
+InstallMethod( String,
+    true, [ IsRange ], 0,
+    function( list )
+    local   str;
+    str := Concatenation( "[ ", String( list[ 1 ] ) );
+    if Length( list ) > 1  then
+        if list[ 2 ] - list[ 1 ] <> 1  then
+            Append( str, ", " );
+            Append( str, String( list[ 2 ] ) );
+        fi;
+        Append( str, " .. " );
+        Append( str, String( list[ Length( list ) ] ) );
+    fi;
+    Append( str, " ]" );
+    return str;
+    end );
+
+InstallMethod( String, true, [ IsList and IsEmpty ], 0, list -> "[  ]" );
 
 #############################################################################
 ##

@@ -86,11 +86,7 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
            and ( not HasIsSolvableGroup( G )  or  IsSolvableGroup( G ) )  then
             S := EmptyStabChain( [  ], One( G ) );
             if IsBound( options.base )  then
-                T := S;
-                for pnt  in options.base  do
-                    InsertTrivialStabilizer( T, pnt );
-                    T := T.stabilizer;
-                od;
+                S.base := options.base;
             fi;
             pcgs := TryPcgsPermGroup( [ G, GroupStabChain( G, S, true ) ],
                             false, false, false );
@@ -98,10 +94,6 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
         if IsPcgs( pcgs )  then
             options.random := 1000;
             S := pcgs!.stabChain;
-            if options.reduced  and  IsBound( options.base )  then
-                S := DeepCopy( S );
-                ReduceStabChain( S );
-            fi;
             
         else
             degree := LargestMovedPoint( G );
@@ -363,7 +355,7 @@ AddGeneratorsExtendSchreierTree := function( S, new )
                         S.translabels[ img ] := j;
                         S.transversal[ img ] := S.labels[ j ];
                         Add( S.orbit, img );
-                        S.cycles[ Length( S.orbit ) ] := false;
+                        Add( S.cycles, false );
                     fi;
                 fi;
                 
@@ -404,8 +396,8 @@ StabChainStrong := function( S, newgens, options )
             pnts,       # points to use for Schreier generators
             p,          # point in orbit of <S>
             rep,  r,    # representative of <p>
-            gens,       # generators of <S> to be used for Schreier gens
-            g,          # one element of <gens>
+            gen1, old,  # numbers of labels to be used for Schreier gens
+            g,          # one of these labels
             sch,        # Schreier generator for '<S>.stabilizer'
             img,  i,  j;# loop variables
 
@@ -461,6 +453,7 @@ StabChainStrong := function( S, newgens, options )
     # Add the new generators to <S>.
     pnt := S.orbit[ 1 ];
     len := Length( S.orbit );
+    old := Length( S.genlabels );
     AddGeneratorsExtendSchreierTree( S, newgens );
 
     # If a new generator fixes the base point, put it into the stabilizer.
@@ -476,9 +469,9 @@ StabChainStrong := function( S, newgens, options )
     else
         pnts := [ 1 .. Length( S.orbit ) ];
     fi;
-    gens := S.labels{ S.genlabels };
-    for i  in Reversed( [ 1 .. Length( pnts ) ] )  do
-        p := S.orbit[ pnts[ i ] ];
+    gen1 := 2;
+    for i  in Reversed( pnts )  do
+        p := S.orbit[ i ];
         if IsBound( options.knownBase )  then
             rep := InverseRepresentativeWord( S, p );
         else
@@ -486,15 +479,19 @@ StabChainStrong := function( S, newgens, options )
         fi;
 
         # Take only new generators for old, all generators for new points.
-        if pnts[ i ] = len  then
-            gens := newgens;
+        if i <= len  then
+            gen1 := old + 1;
         fi;
-        for g  in gens  do
+        for j  in [ gen1 .. Length( S.genlabels ) ]  do
+          g := S.labels[ S.genlabels[ j ] ];
+
+          # Avoid computing Schreier generators that will be trivial.
+          if S.translabels[ p / g ] <> S.genlabels[ j ]  then
             
             # If a base is known, use it to test the Schreier generator.
             if IsBound( options.knownBase )  then
                 if not MembershipTestKnownBase( S,
-                           options.knownBase, [ rep, g ] )  then
+                           options.knownBase, [ rep, [ g ] ] )  then
 
                     # If this is the  first Schreier generator for this orbit
                     # point, multiply the representative.
@@ -506,7 +503,7 @@ StabChainStrong := function( S, newgens, options )
                         rep := r;
                     fi;
                     
-                    sch := rep * g;
+                    sch := rep / g;
                     img := pnt ^ sch;
                     while img <> pnt  do
                         sch := sch * S.transversal[ img ];
@@ -518,12 +515,13 @@ StabChainStrong := function( S, newgens, options )
             # If no  base is known, construct the  Schreier generator and put
             # it in the chain if it is non-trivial.
             else
-                sch := SiftedPermutation( S, LeftQuotient( rep, g ) );
+                sch := SiftedPermutation( S, ( g * rep ) ^ -1 );
                 if sch <> S.identity  then
                     StabChainStrong( S.stabilizer, [ sch ], options );
                 fi;
             fi;
-
+            
+          fi;
         od;
     od;
 end;
@@ -1167,7 +1165,7 @@ end;
 InstallMethod( MembershipTestKnownBase, true, [ IsRecord,
         IsList and IsCyclotomicsCollection, IsList ], 0,
     function( S, knownBase, word )
-    local   base,  g,  i,  j,  T,  bpt;
+    local   base,  g,  i,  j,  bpt;
     
     base := Concatenation( BaseStabChain( S ), knownBase );
     for g  in word  do
@@ -1181,15 +1179,14 @@ InstallMethod( MembershipTestKnownBase, true, [ IsRecord,
             od;
         fi;
     od;
-    T := S;
-    while     IsBound( T.stabilizer )
-          and IsBound( T.translabels[ base[ 1 ] ] )  do
-        bpt := T.orbit[ 1 ];
+    while     IsBound( S.stabilizer )
+          and IsBound( S.translabels[ base[ 1 ] ] )  do
+        bpt := S.orbit[ 1 ];
         while base[ 1 ] <> bpt  do
-            base := OnTuples( base, T.transversal[ base[ 1 ] ] );
+            base := OnTuples( base, S.transversal[ base[ 1 ] ] );
         od;
         base := base{ [ 2 .. Length( base ) ] };
-        T := T.stabilizer;
+        S := S.stabilizer;
     od;
     return base = knownBase;
 end );

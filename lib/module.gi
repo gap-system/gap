@@ -35,17 +35,26 @@ InstallMethod( LeftModuleByGenerators,
     end );
 
 InstallOtherMethod( LeftModuleByGenerators,
-    "method for ring, collection, and vector",
+    "method for ring, homogeneous list, and vector",
     true,
-    [ IsRing, IsCollection, IsVector ], 0,
+    [ IsRing, IsHomogeneousList, IsVector ], 0,
     function( R, gens, zero )
     local V;
-    V:= Objectify( NewKind( FamilyObj( gens ),
+
+    if     IsCollection( gens )
+       and not IsCollsElms( FamilyObj( gens ), FamilyObj( zero ) ) then
+      Error( "the elements of <gens> must lie in the family of <zero>" );
+    fi;
+
+    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( V, R );
     SetGeneratorsOfLeftModule( V, AsList( gens ) );
     SetZero( V, zero );
+    if IsEmpty( gens ) then
+      SetIsTrivial( V, true );
+    fi;
     return V;
     end );
 

@@ -1334,7 +1334,7 @@ Blocks := function( arg )
     return OrbitishOperation( BlocksOp, IsIdentical, true, arg );
 end;
     
-InstallOtherMethod( BlocksOp,
+InstallMethod( BlocksOp,
         "G, D, [  ], gens, oprs, opr", true,
         [ IsGroup, IsList, IsList and IsEmpty,
           IsList,
@@ -1342,6 +1342,20 @@ InstallOtherMethod( BlocksOp,
           IsFunction ], 0,
     function( G, D, noseed, gens, oprs, opr )
     return BlocksOp( G, D, gens, oprs, opr );
+end );
+
+InstallMethod( BlocksOp,
+        "G, D, seed, gens, oprs, opr", true,
+        [ IsGroup, IsList, IsList,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, D, seed, gens, oprs, opr )
+    local   hom,  B;
+    
+    hom := OperationHomomorphism( G, D, gens, oprs, opr );
+    B := Blocks( ImagesSource( hom ), [ 1 .. Length( D ) ] );
+    return List( B, b -> D{ b } );
 end );
 
 #############################################################################
@@ -1354,9 +1368,41 @@ end;
 
 InstallOtherMethod( MaximalBlocksOp,
         "G, D, gens, oprs, opr", true,
-        OrbitsishReq, 0,
+        [ IsGroup, IsList,
+          IsList,
+          IsList,
+          IsFunction ], 0,
     function( G, D, gens, oprs, opr )
     return MaximalBlocksOp( G, D, [  ], gens, oprs, opr );
+end );
+
+InstallMethod( MaximalBlocksOp,
+        "G, D, seed, gens, oprs, opr", true,
+        [ IsGroup, IsList, IsList,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function ( G, D, seed, gens, oprs, opr )
+    local   blks,       # blocks, result
+            H,          # image of <G>
+            blksH,      # blocks of <H>
+            i;          # loop variable
+
+    blks := BlocksOp( G, D, seed, gens, oprs, opr );
+
+    # iterate until the operation becomes primitive
+    H := G;
+    blksH := blks;
+    while Length( blksH ) <> 1  do
+        H     := Operation( H, blksH, OnSets );
+        blksH := Blocks( H, [1..Length(blksH)] );
+        if Length( blksH ) <> 1  then
+            blks := List( blksH, bl -> Union( blks{ bl } ) );
+        fi;
+    od;
+
+    # return the blocks <blks>
+    return Immutable( blks );
 end );
 
 #############################################################################

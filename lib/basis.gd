@@ -429,7 +429,7 @@ RelativeBasisNC := NewOperation( "RelativeBasisNC",
 ##  nice bases means
 ##  1. to create a new representation of free left modules in the category
 ##     'IsHandledByNiceBasis';
-##     for that, one has to install methods for 'FreeLeftModuleByGenerators'
+##     for that, one has to install methods for 'LeftModuleByGenerators'
 ##     (and in the case of FLMLORs also for 'FLMLORByGenerators')
 ##  2. to install methods for the operations
 ##     'PrepareNiceFreeLeftModule( <V> )' : \\

@@ -165,13 +165,8 @@ end;
 #F  FamRangeEqFamElm( <FamMap>, <FamElm> )
 ##
 FamRangeEqFamElm := function( FamMap, FamElm )
-    if HasElementsFamily( FamMap ) then
-      FamMap:= ElementsFamily( FamMap );
-      if HasComponentsOfTuplesFamily( FamMap ) then
-        return IsIdentical( FamElm, ComponentsOfTuplesFamily( FamMap )[2] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilyRange( FamMap )
+           and IsIdentical( FamElm, FamilyRange( FamMap ) );
 end;
 
 
@@ -180,13 +175,8 @@ end;
 #F  FamSourceEqFamElm( <FamMap>, <FamElm> )
 ##
 FamSourceEqFamElm := function( FamMap, FamElm )
-    if HasElementsFamily( FamMap ) then
-      FamMap:= ElementsFamily( FamMap );
-      if HasComponentsOfTuplesFamily( FamMap ) then
-        return IsIdentical( FamElm, ComponentsOfTuplesFamily( FamMap )[1] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilySource( FamMap )
+           and IsIdentical( FamElm, FamilySource( FamMap ) );
 end;
 
 
@@ -195,14 +185,10 @@ end;
 #F  CollFamRangeEqFamElms( <FamMap>, <FamElms> )
 ##
 CollFamRangeEqFamElms := function( FamMap, FamElms )
-    if HasElementsFamily( FamMap ) and HasElementsFamily( FamElms ) then
-      FamMap:= ElementsFamily( FamMap );
-      if HasComponentsOfTuplesFamily( FamMap ) then
-        return IsIdentical( ElementsFamily( FamElms ),
-                            ComponentsOfTuplesFamily( FamMap )[2] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilyRange( FamMap )
+           and HasElementsFamily( FamElms )
+           and IsIdentical( ElementsFamily( FamElms ),
+                            FamilyRange( FamMap ) );
 end;
 
 
@@ -211,29 +197,10 @@ end;
 #F  CollFamSourceEqFamElms( <FamMap>, <FamElms> )
 ##
 CollFamSourceEqFamElms := function( FamMap, FamElms )
-    if HasElementsFamily( FamMap ) and HasElementsFamily( FamElms ) then
-      FamMap:= ElementsFamily( FamMap );
-      if HasComponentsOfTuplesFamily( FamMap ) then
-        return IsIdentical( ElementsFamily( FamElms ),
-                            ComponentsOfTuplesFamily( FamMap )[1] );
-      fi;
-    fi;
-    return false;
-end;
-
-
-#############################################################################
-##
-#F  FamElmEqFamSource( <FamElm>, <FamMap> )
-##
-FamElmEqFamSource := function( FamElm, FamMap )
-    if HasElementsFamily( FamMap ) then
-      FamMap:= ElementsFamily( FamMap );
-      if HasComponentsOfTuplesFamily( FamMap ) then
-        return IsIdentical( FamElm, ComponentsOfTuplesFamily( FamMap )[1] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilySource( FamMap )
+           and HasElementsFamily( FamElms )
+           and IsIdentical( ElementsFamily( FamElms ),
+                            FamilySource( FamMap ) );
 end;
 
 
@@ -242,13 +209,18 @@ end;
 #F  FamElmEqFamRange( <FamElm>, <FamMap> )
 ##
 FamElmEqFamRange := function( FamElm, FamMap )
-    if HasElementsFamily( FamMap ) then
-      FamMap:= ElementsFamily( FamMap );
-      if HasComponentsOfTuplesFamily( FamMap ) then
-        return IsIdentical( FamElm, ComponentsOfTuplesFamily( FamMap )[2] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilyRange( FamMap )
+           and IsIdentical( FamElm, FamilyRange( FamMap ) );
+end;
+
+
+#############################################################################
+##
+#F  FamElmEqFamSource( <FamElm>, <FamMap> )
+##
+FamElmEqFamSource := function( FamElm, FamMap )
+    return     HasFamilySource( FamMap )
+           and IsIdentical( FamElm, FamilySource( FamMap ) );
 end;
 
 
@@ -257,16 +229,9 @@ end;
 #F  FamSource2EqFamRange1( <Fam1>, <Fam2> )
 ##
 FamSource2EqFamRange1 := function( Fam1, Fam2 )
-    if HasElementsFamily( Fam1 ) and HasElementsFamily( Fam2 ) then
-      Fam1:= ElementsFamily( Fam1 );
-      Fam2:= ElementsFamily( Fam2 );
-      if     HasComponentsOfTuplesFamily( Fam1 )
-         and HasComponentsOfTuplesFamily( Fam2 ) then
-        return IsIdentical( ComponentsOfTuplesFamily( Fam2 )[1],
-                            ComponentsOfTuplesFamily( Fam1 )[2] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilySource( Fam2 )
+           and HasFamilyRange(  Fam1 )
+           and IsIdentical( FamilyRange( Fam1 ), FamilySource( Fam2 ) );
 end;
 
 
@@ -275,16 +240,9 @@ end;
 #F  FamSource1EqFamRange2( <Fam1>, <Fam2> )
 ##
 FamSource1EqFamRange2 := function( Fam1, Fam2 )
-    if HasElementsFamily( Fam1 ) and HasElementsFamily( Fam2 ) then
-      Fam1:= ElementsFamily( Fam1 );
-      Fam2:= ElementsFamily( Fam2 );
-      if     HasComponentsOfTuplesFamily( Fam1 )
-         and HasComponentsOfTuplesFamily( Fam2 ) then
-        return IsIdentical( ComponentsOfTuplesFamily( Fam1 )[1],
-                            ComponentsOfTuplesFamily( Fam2 )[2] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilySource( Fam1 )
+           and HasFamilyRange(  Fam2 )
+           and IsIdentical( FamilyRange( Fam2 ), FamilySource( Fam1 ) );
 end;
 
 
@@ -293,16 +251,9 @@ end;
 #F  FamRange1EqFamRange2( <Fam1>, <Fam2> )
 ##
 FamRange1EqFamRange2 := function( Fam1, Fam2 )
-    if HasElementsFamily( Fam1 ) and HasElementsFamily( Fam2 ) then
-      Fam1:= ElementsFamily( Fam1 );
-      Fam2:= ElementsFamily( Fam2 );
-      if     HasComponentsOfTuplesFamily( Fam1 )
-         and HasComponentsOfTuplesFamily( Fam2 ) then
-        return IsIdentical( ComponentsOfTuplesFamily( Fam1 )[2],
-                            ComponentsOfTuplesFamily( Fam2 )[2] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilyRange( Fam1 )
+           and HasFamilyRange( Fam2 )
+           and IsIdentical( FamilyRange( Fam1 ), FamilyRange( Fam2 ) );
 end;
 
 
@@ -311,16 +262,9 @@ end;
 #F  FamSource1EqFamSource2( <Fam1>, <Fam2> )
 ##
 FamSource1EqFamSource2 := function( Fam1, Fam2 )
-    if HasElementsFamily( Fam1 ) and HasElementsFamily( Fam2 ) then
-      Fam1:= ElementsFamily( Fam1 );
-      Fam2:= ElementsFamily( Fam2 );
-      if     HasComponentsOfTuplesFamily( Fam1 )
-         and HasComponentsOfTuplesFamily( Fam2 ) then
-        return IsIdentical( ComponentsOfTuplesFamily( Fam1 )[1],
-                            ComponentsOfTuplesFamily( Fam2 )[1] );
-      fi;
-    fi;
-    return false;
+    return     HasFamilySource( Fam1 )
+           and HasFamilySource( Fam2 )
+           and IsIdentical( FamilySource( Fam1 ), FamilySource( Fam2 ) );
 end;
 
 
@@ -329,14 +273,10 @@ end;
 #F  FamMapFamSourceFamRange( <FamMap>, <FamElm1>, <FamElm2> )
 ##
 FamMapFamSourceFamRange := function( FamMap, FamElm1, FamElm2 )
-    if HasElementsFamily( FamMap ) then
-      FamMap:= ElementsFamily( FamMap );
-      if HasComponentsOfTuplesFamily( FamMap ) then
-        return IsIdentical( ComponentsOfTuplesFamily( FamMap )[1], FamElm1 )
-           and IsIdentical( ComponentsOfTuplesFamily( FamMap )[2], FamElm2 );
-      fi;
-    fi;
-    return false;
+    return     HasFamilySource( FamMap )
+           and HasFamilyRange(  FamMap )
+           and IsIdentical( FamilySource( FamMap ), FamElm1 )
+           and IsIdentical( FamilyRange(  FamMap ), FamElm2 );
 end;
 
 
@@ -345,20 +285,11 @@ end;
 #F  FamSourceRgtEqFamsLft( <FamLft>, <FamRgt> )
 ##
 FamSourceRgtEqFamsLft := function( FamLft, FamRgt )
-    if HasElementsFamily( FamLft ) then
-      FamLft:= ElementsFamily( FamLft );
-      if HasComponentsOfTuplesFamily( FamLft ) then
-        FamLft:= ComponentsOfTuplesFamily( FamLft );
-        if     IsIdentical( FamLft[1], FamLft[2] )
-           and HasElementsFamily( FamRgt ) then
-          FamRgt:= ElementsFamily( FamRgt );
-          if HasComponentsOfTuplesFamily( FamRgt ) then
-            return IsIdentical( ComponentsOfTuplesFamily( FamRgt )[1],
-                                    FamLft[2] );
-          fi;
-        fi;
-      fi;
-    fi;
+    return     HasFamilySource( FamLft )
+           and HasFamilyRange(  FamLft )
+           and IsIdentical( FamilySource( FamLft ), FamilyRange(  FamLft ) )
+           and HasFamilySource( FamRgt )
+           and IsIdentical( FamilySource( FamRgt ), FamilyRange(  FamLft ) );
 end;
 
 

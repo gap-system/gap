@@ -18,6 +18,7 @@ Revision.coll_gi :=
 #M  CollectionsFamily(<F>)  . . . . . . . . . . . . . . . . .  generic method
 ##
 InstallMethod( CollectionsFamily,
+    "method for a family",
     true, [ IsFamily ], 90,
     function ( F )
     local   colls, coll_req, coll_imp, elms_flags, tmp;
@@ -46,7 +47,9 @@ IteratorsFamily := NewFamily( "IteratorsFamily", IsIterator );
 ##
 #M  PrintObj( <iter> )  . . . . . . . . . . . . . . . . . . print an iterator
 ##
-InstallMethod( PrintObj, true, [ IsIterator ], 0,
+InstallMethod( PrintObj,
+    "method for an iterator",
+    true, [ IsIterator ], 0,
     function( iter ) Print( "<iterator>" ); end );
 
 
@@ -61,6 +64,7 @@ InstallImmediateMethod( IsEmpty,
     end );
 
 InstallMethod( IsEmpty,
+    "method for a collection",
     true, [ IsCollection ], 0,
     function ( C )
     return (Size( C ) = 0);
@@ -78,6 +82,7 @@ InstallImmediateMethod( IsTrivial,
     end );
 
 InstallMethod( IsTrivial,
+    "method for a collection",
     true, [ IsCollection ], 0,
     function ( C )
     return (Size( C ) = 1);
@@ -95,6 +100,7 @@ InstallImmediateMethod( IsFinite,
     end );
 
 InstallMethod( IsFinite,
+    "method for a collection",
     true, [ IsCollection ], 0,
     function ( C )
     return not IsIdentical( Size( C ), infinity );
@@ -106,6 +112,7 @@ InstallMethod( IsFinite,
 #M  IsWholeFamily(<C>)  . . .  test if a collection contains the whole family
 ##
 InstallMethod( IsWholeFamily,
+    "method for a collection",
     true, [ IsCollection ], 0,
     function ( C )
     Error( "cannot test whether <C> contains the family of its elements" );
@@ -132,10 +139,12 @@ InstallImmediateMethod( Size,
     end );
 
 InstallMethod( Size,
+    "method for a collection",
     true, [ IsCollection ], 0,
     function ( C )
     return Length( Enumerator( C ) );
     end );
+
 
 #############################################################################
 ##
@@ -172,6 +181,7 @@ InstallImmediateMethod( RepresentativeSmallest,
     C -> AsListSorted( C )[1] );
 
 InstallMethod( RepresentativeSmallest,
+    "method for a collection",
     true, [ IsCollection ], 0,
     function ( C )
     local   elm;
@@ -187,7 +197,7 @@ InstallMethod( RepresentativeSmallest,
 #M  Random(<C>)
 ##
 InstallMethod( Random,
-    "method for collections that are lists",
+    "method for a collection that is a list",
     true, [ IsCollection and IsList ], 100,
 #T ?
     function ( C )
@@ -195,7 +205,7 @@ InstallMethod( Random,
     end );
 
 InstallMethod( Random,
-    "method for collections",
+    "method for a collection",
     true, [ IsCollection ], 10,
     function ( C )
     if not IsFinite( C ) then
@@ -227,7 +237,7 @@ InstallTrueMethod( IsConstantTimeAccessListRep, IsList and IsInternalRep );
 #M  AsList( <coll> )
 ##
 InstallMethod( AsList,
-    "method for collections",
+    "method for a collection",
     true,
     [ IsCollection ],
     0,
@@ -246,14 +256,14 @@ InstallMethod( AsList,
 #M  AsListSorted( <coll> )
 ##
 InstallMethod( AsListSorted,
-    "method for collections",
+    "method for a collection",
     true,
     [ IsCollection ],
     0,
     coll -> ConstantTimeAccessList( EnumeratorSorted( coll ) ) );
 
 InstallOtherMethod( AsListSorted,
-    "method for collections that are constant time access lists",
+    "method for a collection that is a constant time access list",
     true,
     [ IsCollection and IsConstantTimeAccessListRep ],
     0,
@@ -269,7 +279,7 @@ InstallImmediateMethod( Enumerator,
     AsList );
 
 InstallMethod( Enumerator,
-    "method for collections that are lists",
+    "method for a collection that is a list",
     true, [ IsCollection and IsList ], 0,
     Immutable );
 
@@ -278,7 +288,9 @@ InstallMethod( Enumerator,
 ##
 #M  PrintObj( <enum> )  . . . . . . . . . . . . . . . . . print an enumerator
 ##
-InstallMethod( PrintObj, true, [ IsEnumerator ], 0,
+InstallMethod( PrintObj,
+    "method for an enumerator",
+    true, [ IsEnumerator ], 0,
     function( enum )
     Print( "<enumerator>" );
     end );
@@ -288,10 +300,13 @@ InstallMethod( PrintObj, true, [ IsEnumerator ], 0,
 ##
 #M  IsBound( <enum>, <pos> )  . . . . . . . . . . . . . . . . for enumerators
 ##
-InstallMethod( IsBound\[\], true, [ IsList, IsPosRat and IsInt ], 0,
+InstallMethod( IsBound\[\],
+    "method for a list and a positive integer",
+    true, [ IsList, IsPosRat and IsInt ], 0,
     function( enum, pos )
     return enum[ pos ] <> fail;
     end );
+#T is that reasonable at all?
 
 
 #############################################################################
@@ -303,11 +318,12 @@ InstallImmediateMethod( EnumeratorSorted,
     AsListSorted );
 
 InstallMethod( EnumeratorSorted,
+    "method for a collection",
     true, [ IsCollection ], 0,
     coll -> AsListSortedList( Enumerator( coll ) ) );
 
 InstallMethod( EnumeratorSorted,
-    "method for collections that are lists",
+    "method for a collection that is a list",
     true, [ IsCollection and IsList ], 0,
     AsListSortedList );
 
@@ -317,16 +333,22 @@ InstallMethod( EnumeratorSorted,
 #M  List( <coll> )
 ##
 InstallMethod( List,
-    "method for collections",
+    "method for a collection",
     true, [ IsCollection ], 0,
     C -> ShallowCopy( Enumerator( C ) ) );
 
 InstallMethod( List,
-    "method for collections that are lists",
+    "method for a collection that is a list",
     true, [ IsCollection and IsList ], 0,
     ShallowCopy );
 
+
+#############################################################################
+##
+#M  List( <coll>, <func> )
+##
 InstallOtherMethod( List,
+    "method for a list/collection, and a function",
     true, [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
     local   res, elm;
@@ -343,12 +365,12 @@ InstallOtherMethod( List,
 #M  ListSorted( <C> )
 ##
 InstallMethod( ListSorted,
-    "method for collections",
+    "method for a collection",
     true, [ IsCollection ], 0,
     C -> ShallowCopy( EnumeratorSorted( C ) ) );
 
 InstallMethod( ListSorted,
-    "method for collections that are lists",
+    "method for a collection that is a list",
     true, [ IsCollection and IsList ], 0,
     C -> ShallowCopy( ListSortedList( C ) ) );
 
@@ -357,7 +379,9 @@ InstallMethod( ListSorted,
 ##
 #M  ListSorted( <C>, <func> )
 ##
-InstallOtherMethod( ListSorted, true, [ IsCollection, IsFunction ], 0,
+InstallOtherMethod( ListSorted,
+    "method for a collection, and a function",
+    true, [ IsCollection, IsFunction ], 0,
     function ( C, func )
     return ListSortedList( List( C, func ) );
     end );
@@ -368,17 +392,17 @@ InstallOtherMethod( ListSorted, true, [ IsCollection, IsFunction ], 0,
 #M  Iterator(<C>)
 ##
 InstallMethod( Iterator,
-    "method for collections",
+    "method for a collection",
     true, [ IsCollection ], 0,
     C -> IteratorList( Enumerator( C ) ) );
 
 InstallMethod( Iterator,
-    "method for collections that are lists",
+    "method for a collection that is a list",
     true, [ IsCollection and IsList ], 0,
     C -> IteratorList( C ) );
 
 InstallOtherMethod( Iterator,
-    "method for iterators",
+    "method for an iterator",
     true, [ IsIterator ], 0,
     IdFunc );
 #T or change the for-loop to accept iterators?
@@ -389,12 +413,12 @@ InstallOtherMethod( Iterator,
 #M  IteratorSorted(<C>)
 ##
 InstallMethod( IteratorSorted,
-    "method for collections",
+    "method for a collection",
     true, [ IsCollection ], 0,
     C -> IteratorList( EnumeratorSorted( C ) ) );
 
 InstallMethod( IteratorSorted,
-    "method for collections that are lists",
+    "method for a collection that is a list",
     true, [ IsCollection and IsList ], 0,
     C -> IteratorList( ListSortedList( C ) ) );
 
@@ -418,10 +442,12 @@ TrivialIterator := function( elm )
 end;
 
 InstallMethod( IsDoneIterator,
+    "method for a trivial iterator",
     true, [ IsIterator and IsTrivialIterator ], SUM_FLAGS,
     iter -> iter!.isDone );
 
 InstallMethod( NextIterator,
+    "method for a trivial iterator",
     true, [ IsIterator and IsTrivialIterator ], SUM_FLAGS,
     function( iter )
     iter!.isDone:= true;
@@ -436,9 +462,10 @@ InstallMethod( Iterator,
 
 #############################################################################
 ##
-#M  Sum(<C>)
+#M  Sum( <C> )
 ##
 InstallMethod( Sum,
+    "method for a list/collection",
     true, [ IsListOrCollection ], 0,
     function ( C )
     local   sum, i;
@@ -454,7 +481,13 @@ InstallMethod( Sum,
     return sum;
     end );
 
+
+#############################################################################
+##
+#M  Sum( <C>, <func> )
+##
 InstallOtherMethod( Sum,
+    "method for a list/collection, and a function",
     true, [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
     local   sum, i;
@@ -473,9 +506,10 @@ InstallOtherMethod( Sum,
 
 #############################################################################
 ##
-#M  Product(<C>
+#M  Product( <C> )
 ##
 InstallMethod( Product,
+    "method for a list/collection",
     true, [ IsListOrCollection ], 0,
     function ( C )
     local   prod, i;
@@ -491,7 +525,13 @@ InstallMethod( Product,
     return prod;
     end );
 
+
+#############################################################################
+##
+#M  Product( <C>, <func> )
+##
 InstallOtherMethod( Product,
+    "method for a list/collection, and a function",
     true, [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
     local   prod, i;
@@ -531,6 +571,7 @@ end;
 #M  Filtered(<C>,<func>)  . . . . . . . extract elements that have a property
 ##
 InstallMethod( Filtered,
+    "method for a list/collection, and a function",
     true, [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
     local res, elm;
@@ -543,16 +584,20 @@ InstallMethod( Filtered,
     return res;
     end );
 
-InstallMethod( Filtered, true, [ IsEmpty, IsFunction ], 0,
+InstallMethod( Filtered,
+    "method for an empty list/collection, and a function",
+    true, [ IsEmpty, IsFunction ], SUM_FLAGS,
     function( list, func )
     return [];
     end );
 
+
 #############################################################################
 ##
-#M  Number(<C>,<func>)  . . . . . . . . . count elements that have a property
+#M  Number( <C>, <func> ) . . . . . . . . count elements that have a property
 ##
 InstallMethod( Number,
+    "method for a list/collection, and a function",
     true, [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
     local nr, elm;
@@ -565,7 +610,14 @@ InstallMethod( Number,
     return nr;
     end );
 
-InstallOtherMethod( Number, true,
+
+#############################################################################
+##
+#M  Number( <C> ) . . . . . . . . . . . . count elements that have a property
+##
+InstallOtherMethod( Number,
+    "method for a list/collection",
+    true,
     [ IsListOrCollection ], 0,
     function ( C )
     local nr, elm;
@@ -582,6 +634,7 @@ InstallOtherMethod( Number, true,
 #M  ForAll(<C>,<func>)  . . . . .  test a property for all elements of a list
 ##
 InstallMethod( ForAll,
+    "method for a list/collection, and a function",
     true, [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
     local elm;
@@ -593,8 +646,10 @@ InstallMethod( ForAll,
     return true;
     end );
 
-InstallOtherMethod( ForAll, true,
-    [ IsEmpty, IsFunction ], 0,
+InstallOtherMethod( ForAll,
+    "method for an empty list/collection, and a function",
+    true,
+    [ IsEmpty, IsFunction ], SUM_FLAGS,
     ReturnTrue );
 
 
@@ -603,6 +658,7 @@ InstallOtherMethod( ForAll, true,
 #M  ForAny(<C>,<func>)  . . . . . . test a property for any element of a list
 ##
 InstallMethod( ForAny,
+    "method for a list/collection, and a function",
     true, [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
     local elm;
@@ -614,8 +670,10 @@ InstallMethod( ForAny,
     return false;
     end );
 
-InstallOtherMethod( ForAny, true,
-    [ IsEmpty, IsFunction ], 0,
+InstallOtherMethod( ForAny,
+    "method for an empty list/collection, and a function",
+    true,
+    [ IsEmpty, IsFunction ], SUM_FLAGS,
     ReturnFalse );
 
 
@@ -1100,22 +1158,42 @@ end;
 #M  IsSubset( <C1>, <C2> )
 ##
 InstallMethod( IsSubset,
+    "method for two collections in different families",
     IsNotIdentical,
     [ IsCollection,
       IsCollection ],
     0,
-    false );
-
+    ReturnFalse );
 
 InstallMethod( IsSubset,
+    "method for empty list and collection",
+    true,
+    [ IsList and IsEmpty,
+      IsCollection ],
+    0,
+    function( empty, coll )
+    return IsEmpty( coll );
+    end );
+
+InstallMethod( IsSubset,
+    "method for collection and empty list",
+    true,
+    [ IsCollection,
+      IsList and IsEmpty ],
+    0,
+    ReturnTrue );
+
+InstallMethod( IsSubset,
+    "method for two collections, the first containing the whole family",
     IsIdentical,
     [ IsCollection and IsWholeFamily,
       IsCollection ], 
     SUM_FLAGS+2,
-    true );
+    ReturnTrue );
 
 
 InstallMethod( IsSubset,
+    "method for two collections, check for identity",
     IsIdentical, 
     [ IsCollection,
       IsCollection ],
@@ -1130,6 +1208,7 @@ end );
 
 
 InstallMethod( IsSubset,
+    "method for two collections with known sizes, check sizes",
     IsIdentical, 
     [ IsCollection and HasSize,
       IsCollection and HasSize ],
@@ -1144,14 +1223,24 @@ end );
 
 
 InstallOtherMethod( IsSubset,
+    "method for two internal lists",
     IsIdentical,
-    [ IsList,
-      IsList ],
+    [ IsList and IsInternalRep,
+      IsList and IsInternalRep ],
     0,
     IsSubsetSet );
 
 
 InstallMethod( IsSubset,
+    "method for two collections that are internal lists",
+    IsIdentical,
+    [ IsCollection and IsList and IsInternalRep,
+      IsCollection and IsList and IsInternalRep ], 0,
+    IsSubsetSet );
+
+
+InstallMethod( IsSubset,
+    "method for two collections with known 'AsListSorted'",
     IsIdentical,
     [ IsCollection and HasAsListSorted,
       IsCollection and HasAsListSorted ],
@@ -1163,6 +1252,7 @@ end );
 
 
 InstallMethod( IsSubset,
+    "method for two collections (loop over the elements of the second)",
     IsIdentical,
     [ IsCollection,
       IsCollection ],
@@ -1190,10 +1280,18 @@ IntersectionSet := function ( C1, C2 )
 end;
 
 InstallOtherMethod( Intersection2,
+    "method for two lists",
     true, [ IsList, IsList ], 0,
     IntersectionSet );
 
 InstallMethod( Intersection2,
+    "method for two collections that are lists",
+    IsIdentical,
+    [ IsCollection and IsList, IsCollection and IsList ], 0,
+    IntersectionSet );
+
+InstallMethod( Intersection2,
+    "method for two collections, the second being a list",
     IsIdentical, [ IsCollection, IsCollection and IsList ], 0,
     function ( C1, C2 )
     local   I, elm;
@@ -1212,6 +1310,7 @@ InstallMethod( Intersection2,
     end );
 
 InstallMethod( Intersection2,
+    "method for two collections, the first being a list",
     IsIdentical, [ IsCollection and IsList, IsCollection ], 0,
     function ( C1, C2 )
     local   I, elm;
@@ -1230,6 +1329,7 @@ InstallMethod( Intersection2,
     end );
 
 InstallMethod( Intersection2,
+    "method for two collections",
     IsIdentical, [ IsCollection, IsCollection ], 0,
     function ( C1, C2 )
     local   I, elm;
@@ -1310,11 +1410,19 @@ UnionSet := function ( C1, C2 )
     return I;
 end;
 
+InstallMethod( Union2,
+    "method for two collections that are lists",
+    IsIdentical,
+    [ IsCollection and IsList, IsCollection and IsList ], 0,
+    UnionSet );
+
 InstallOtherMethod( Union2,
+    "method for two lists",
     true, [ IsList, IsList ], 0,
     UnionSet );
 
 InstallMethod( Union2,
+    "method for two collections, the second being a list",
     IsIdentical, [ IsCollection, IsCollection and IsList ], 0,
     function ( C1, C2 )
     local   I, elm;
@@ -1328,6 +1436,7 @@ InstallMethod( Union2,
     end );
 
 InstallMethod( Union2,
+    "method for two collections, the first being a list",
     IsIdentical, [ IsCollection and IsList, IsCollection ], 0,
     function ( C1, C2 )
     local   I, elm;
@@ -1341,6 +1450,7 @@ InstallMethod( Union2,
     end );
 
 InstallMethod( Union2,
+    "method for two collections",
     IsIdentical, [ IsCollection, IsCollection ], 0,
     function ( C1, C2 )
     local   I, elm;
@@ -1405,18 +1515,21 @@ end;
 #M  Difference(<C1>,<C2>)
 ##
 InstallOtherMethod( Difference,
+    "method for empty list, and collection",
     true, [ IsList and IsEmpty, IsCollection ], 0,
     function ( C1, C2 )
     return [];
     end );
 
 InstallOtherMethod( Difference,
+    "method for collection, and empty list",
     true, [ IsCollection, IsList and IsEmpty ], 0,
     function ( C1, C2 )
     return ShallowCopy( C1 );
     end );
 
 InstallMethod( Difference,
+    "method for two collections that are lists",
     IsIdentical, [ IsCollection and IsList, IsCollection and IsList ], 0,
     function ( C1, C2 )
     C1 := Set( C1 );
@@ -1425,6 +1538,7 @@ InstallMethod( Difference,
     end );
 
 InstallMethod( Difference,
+    "method for two collections",
     IsIdentical, [ IsCollection, IsCollection ], 0,
     function ( C1, C2 )
     local   D, elm;
@@ -1447,6 +1561,7 @@ InstallMethod( Difference,
     end );
 
 InstallMethod( Difference,
+    "method for two collections, the first being a list",
     IsIdentical, [ IsCollection and IsList, IsCollection ], 0,
     function ( C1, C2 )
     local   D, elm;
@@ -1465,6 +1580,7 @@ InstallMethod( Difference,
     end );
 
 InstallMethod( Difference,
+    "method for two collections, the second being a list",
     IsIdentical, [ IsCollection, IsCollection and IsList ], 0,
     function ( C1, C2 )
     local   D;

@@ -371,10 +371,11 @@ InstallMethod( ImmutableBasis,
 
       nice:= ImmutableBasis( MB!.niceMutableBasis );
       vectors:= List( BasisVectors( nice ), v -> UglyVector( M, v ) );
-      M:= LeftModuleByGenerators( LeftActingDomain( M ), vectors );
-
-      PrepareNiceFreeLeftModule( M );
-      SetNiceFreeLeftModule( M, UnderlyingLeftModule( nice ) );
+      if not IsEmpty( vectors ) then
+        M:= LeftModuleByGenerators( LeftActingDomain( M ), vectors );
+        PrepareNiceFreeLeftModule( M );
+        SetNiceFreeLeftModule( M, UnderlyingLeftModule( nice ) );
+      fi;
 
 #T use that we have the nice basis already!
 #T (do not construct it twice!)

@@ -702,11 +702,11 @@ InstallMethod( NiceFreeLeftModule,
 
     gens:= GeneratorsOfLeftModule( V );
     if IsEmpty( gens ) then
-      return FreeLeftModuleByGenerators( LeftActingDomain( V ), [],
-                              NiceVector( V, Zero( V ) ) );
+      return LeftModuleByGenerators( LeftActingDomain( V ), [],
+                          NiceVector( V, Zero( V ) ) );
     else
-      return FreeLeftModuleByGenerators( LeftActingDomain( V ),
-                              List( gens, v -> NiceVector( V, v ) ) );
+      return LeftModuleByGenerators( LeftActingDomain( V ),
+                          List( gens, v -> NiceVector( V, v ) ) );
     fi;
     end );
 

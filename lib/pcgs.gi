@@ -222,6 +222,29 @@ end );
 
 #############################################################################
 ##
+#M  DepthOfPcElement( <pcgs>, <elm>, <min> )
+##
+InstallOtherMethod( DepthOfPcElement,
+    "pcgs modulo pcgs, ignoring <min>",
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsPcgs,
+      IsObject,
+      IsInt ],
+    0,
+
+function( pcgs, elm, min )
+    local   dep;
+
+    dep := DepthOfPcElement( pcgs, elm );
+    if dep < min  then
+        Error( "minimal depth <min> is incorrect" );
+    fi;
+    return dep;
+end );
+
+
+#############################################################################
+##
 #M  DifferenceOfPcElement( <pcgs>, <left>, <right> )
 ##
 InstallMethod( DifferenceOfPcElement,

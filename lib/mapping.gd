@@ -10,17 +10,34 @@
 ##
 ##  This file declares the operations for general mappings.
 ##
-##  A *general mapping* $F$ in {\GAP} is a subset of the direct product of
-##  the source $S$ of $F$ and the range $R$ of $F$.
-##  (Usually this is called a relation by mathematicians.)
+##  A *general mapping* $F$ in {\GAP} is described by
+##  its source $S$, its range $R$, and a subset $Rel$ of the direct product
+##  $S \times R$, which is called the underlying relation of $F$.
+##  $S$, $R$, and $Rel$ are domains.
+##  The corresponding attributes for general mappings are 'Source', 'Range',
+##  and 'UnderlyingRelation'.
 ##
-##  A general mapping is a domain,
-##  each of its elements is in the category of tuples.
+##  Note that general mappings themselves are *not* domains.
+##  One reason for this is that two general mappings with same underlying
+##  relation are regarded as equal only if also the sources are equal and
+##  the ranges are equal.
+##  Other, more technical, reasons are that general mappings and domains
+##  have different basic operations, and that general mappings are
+##  arithmetic objects, which domains should better not have.
 ##
-##  For each $s \in S$, the set $\{ r \in R | (s,r) \in F \}$
+##  Each element of an underlying relation of a general mapping lies in the
+##  category of tuples.
+##
+##  For each $s \in S$, the set $\{ r \in R | (s,r) \in Rel \}$
 ##  is called the set of *images* of $s$.
-##  Analogously, for $r \in R$, the set $\{ s \in S | (s,r) \in F \}$
+##  Analogously, for $r \in R$, the set $\{ s \in S | (s,r) \in Rel \}$
 ##  is called the set of *preimages* of $r$.
+##
+##  'Source' and 'Range' are basic operations for mappings.
+##  'UnderlyingRelation' is secondary, its default method sets up a
+##  domain that delegates tasks to the general mapping.
+##  (Note that this allows to handle also infinite relations by generic
+##  methods if source or range of the general mapping is finite.)
 ##
 ##  The distinction between basic operations and secondary operations for
 ##  general mappings may be a little bit complicated.
@@ -49,23 +66,53 @@
 ##  In order to avoid infinite recursions,
 ##  we must distinguish between the two different types of mappings.
 ##
-##  (Note that the basic domain operation 'AsList' may use 'ImagesElm'
-##  resp. 'ImagesRepresentative' and the appropriate cokernel.)
-##
-##  Besides this, of course 'Source' and 'Range' are basic operations for
-##  general mappings.
+##  (Note that the basic domain operations such as 'AsList' for the
+##  underlying relation of a general mapping may use 'ImagesElm'
+##  resp. 'ImagesRepresentative' and the appropriate cokernel.
+##  Conversely, if 'AsList' for the underlying relation is known then
+##  'ImagesElm' resp. 'ImagesRepresentative' may delegate to it, the general
+##  mapping gets the property 'IsConstantTimeAccesseneralMapping' for this;
+##  note that this is not allowed if only an enumerator of the underlying
+##  relation is known.)
 ##
 ##  Secondary operations are
 ##  'IsInjective', 'IsSingleValued', 'IsSurjective', 'IsTotal';
 ##  they may use the basic operations, and must not be used by them.
 ##
+##  The ordering of general mappings is defined by the ordering of source,
+##  range, underlying relation.
+#T would it be allowed to use also preimage and image?
+##
 ##  General mappings can be composed via '\*' and --in reversed order--
 ##  'CompositionMapping'.
 ##  So general mappings are multiplicative elements.
 ##  If source and range coincide, the 'One' of a general mapping is defined
-##  as the identity mapping of the source.
-##  (It is not guaranteed that such mappings are in the category
-##  'IsMultiplicativeElementWithOne'.)
+##  as the identity mapping of the source (which may differ from the
+##  preimage).
+##
+##  (It is not guaranteed that a general mapping whose source is equal to
+##  its range is in the category 'IsMultiplicativeElementWithOne'.)
+##
+##  For two general mappings with same source, range, preimage, and image,
+##  the sum is defined pointwise, i.e., the images of a point under the sum
+##  is the set of all sums with first summand in the images of the first
+##  general mapping and second summand in the images of the second general
+##  mapping.
+##
+##  Scalar multiplication of general mappings is defined likewise.
+##
+##  Besides the usual inverse of multiplicative elements, which means that
+##  'Inverse( <g> ) \* <g> = <g> \* Inverse( <g> ) = One( <g> )',
+##  for general mappings we have the attribute 'InverseGeneralMapping'.
+##  If <F> is a general mapping with source $S$, range $R$, and underlying
+##  relation $Rel$ then 'InverseGeneralMapping( <F> )' has source $R$,
+##  range $S$, and underlying relation $\{ (r,s); (s,r) \in Rel \}$.
+##  For a general mapping that has an inverse in the usual sense,
+##  i.e., for a bijection of the source, of course both concepts coincide.
+##
+##  (Note that in many respects, general mappings behave similar to matrices,
+##  for example one can define left and right identities and inverses, which
+##  do not fit into the current concepts of {\GAP}.)
 ##
 Revision.mapping_gd :=
     "@(#)$Id$";
@@ -81,13 +128,10 @@ Revision.mapping_gd :=
 ##  of 'IsSPGeneralMapping' and 'IsNonSPGeneralMapping'.
 ##
 IsGeneralMapping := NewCategory( "IsGeneralMapping",
-    IsDomain and IsTuplesCollection and IsMultiplicativeElement );
+    IsMultiplicativeElement and IsAssociativeElement );
 
-IsSPGeneralMapping := NewCategory( "IsSPGeneralMapping",
-    IsDomain and IsTuplesCollection and IsMultiplicativeElement );
-
-IsNonSPGeneralMapping := NewCategory( "IsNonSPGeneralMapping",
-    IsDomain and IsTuplesCollection and IsMultiplicativeElement );
+IsSPGeneralMapping := NewCategory( "IsSPGeneralMapping", IsObject );
+IsNonSPGeneralMapping := NewCategory( "IsNonSPGeneralMapping", IsObject );
 
 InstallTrueMethod( IsGeneralMapping, IsSPGeneralMapping );
 InstallTrueMethod( IsGeneralMapping, IsNonSPGeneralMapping );
@@ -99,6 +143,77 @@ InstallTrueMethod( IsGeneralMapping, IsNonSPGeneralMapping );
 ##
 IsGeneralMappingCollection := CategoryCollections(
     "IsGeneralMappingCollection", IsGeneralMapping );
+
+
+#############################################################################
+##
+#C  IsGeneralMappingsFamily( <obj> )
+##
+IsGeneralMappingsFamily := CategoryFamily(
+    "IsGeneralMappingsFamily", IsGeneralMapping );
+
+
+#############################################################################
+##
+#C  IsEndoGeneralMapping( <obj> )
+##
+##  If a general mapping has this category then its source and range are
+##  equal.
+##  It is not guaranteed that a general mapping with equal source and range
+##  has this category.
+##
+IsEndoGeneralMapping := NewCategory( "IsEndoGeneralMapping",
+    IsGeneralMapping );
+
+
+#############################################################################
+##
+#M  IsEndoGeneralMapping( <map> ) . . . . . . . . for mult. elm. with inverse
+##
+InstallTrueMethod( IsEndoGeneralMapping,
+    IsGeneralMapping and IsMultiplicativeElementWithInverse );
+
+
+#############################################################################
+##
+#A  FamilyRange( <Fam> )
+##
+##  is the elements family of the family of the range of each general
+##  mapping in the family <Fam>.
+##
+FamilyRange := NewAttribute( "FamilyRange", IsGeneralMappingsFamily );
+SetFamilyRange := Setter( FamilyRange );
+HasFamilyRange := Tester( FamilyRange );
+
+
+#############################################################################
+##
+#A  FamilySource( <Fam> )
+##
+##  is the elements family of the family of the source of each general
+##  mapping in the family <Fam>.
+##
+FamilySource := NewAttribute( "FamilySource", IsGeneralMappingsFamily );
+SetFamilySource := Setter( FamilySource );
+HasFamilySource := Tester( FamilySource );
+
+
+#############################################################################
+##
+#P  IsConstantTimeAccessGeneralMapping( <map> )
+##
+##  is 'true' if the underlying relation of the general mapping <map>
+##  knows its 'AsList' value, and 'false' otherwise.
+##
+##  In the former case, <map> is allowed to use this list for calls to
+##  'ImagesElm' etc.
+##
+IsConstantTimeAccessGeneralMapping := NewProperty(
+    "IsConstantTimeAccessGeneralMapping", IsGeneralMapping );
+SetIsConstantTimeAccessGeneralMapping := Setter(
+    IsConstantTimeAccessGeneralMapping );
+HasIsConstantTimeAccessGeneralMapping := Tester(
+    IsConstantTimeAccessGeneralMapping );
 
 
 #############################################################################
@@ -184,6 +299,22 @@ HasIsBijective := Tester( IsBijective );
 
 #############################################################################
 ##
+#M  IsBijective( <map> )  . . for gen. mapping that is a mult. elm. with inv.
+##
+InstallTrueMethod( IsBijective,
+    IsGeneralMapping and IsMultiplicativeElementWithInverse );
+
+
+#############################################################################
+##
+#M  IsMultiplicativeElementWithInverse( <map> )  . for bijective gen. mapping
+##
+InstallTrueMethod( IsMultiplicativeElementWithInverse,
+    IsEndoGeneralMapping and IsBijective );
+
+
+#############################################################################
+##
 #A  Range( <map> )  . . . . . . . . . . . . . . .  range of a general mapping
 ##
 Range := NewAttribute( "Range", IsGeneralMapping );
@@ -202,12 +333,31 @@ HasSource := Tester( Source );
 
 #############################################################################
 ##
+#A  UnderlyingRelation( <map> ) . .  underlying relation of a general mapping
+##
+UnderlyingRelation := NewAttribute( "UnderlyingRelation", IsGeneralMapping );
+SetUnderlyingRelation := Setter( UnderlyingRelation );
+HasUnderlyingRelation := Tester( UnderlyingRelation );
+
+
+#############################################################################
+##
+#A  UnderlyingGeneralMapping( <map> )
+##
+##  attribute for underlying relations of general mappings
+##
+UnderlyingGeneralMapping := NewAttribute( "UnderlyingGeneralMapping",
+    IsCollection );
+SetUnderlyingGeneralMapping := Setter( UnderlyingGeneralMapping );
+HasUnderlyingGeneralMapping := Tester( UnderlyingGeneralMapping );
+
+
+#############################################################################
+##
 #F  GeneralMappingsFamily( <sourcefam>, <rangefam> )
 ##
 ##  All general mappings with same source family <FS> and same range family
 ##  <FR> lie in the family 'GeneralMappingsFamily( <FS>, <FR> )'.
-##
-##  'GeneralMappingsFamily' is just a shorthand for a call to 'TuplesFamily'.
 ##
 GeneralMappingsFamily := NewOperationArgs( "GeneralMappingsFamily" );
 
@@ -236,9 +386,10 @@ HasIdentityMapping := Tester( IdentityMapping );
 ##
 #A  InverseGeneralMapping( <map> )
 ##
-##  Note that the inverse of a mapping <map> is in general only a general
-##  mapping.
-##  Only if <map> is bijective its inverse will be a mapping.
+##  Note that the inverse general mapping of a mapping <map> is in general
+##  only a general mapping.
+##  If <map> knows to be bijective its inverse general mapping will know to
+##  be a mapping.  In this case also 'Inverse( <map> )' works.
 ##
 InverseGeneralMapping := NewAttribute( "InverseGeneralMapping",
     IsGeneralMapping );
@@ -272,7 +423,9 @@ HasPreImagesRange := Tester( PreImagesRange );
 ##
 #O  ImagesElm( <map>, <elm> ) . . . all images of an elm under a gen. mapping
 ##
-##  If <elm> is not in the soucre of <map>, 'fail' is returned.
+##  is the collection of all images of the element <elm> under the general
+##  mapping <map> if <elm> is in the source of <map>.
+##  Otherwise 'fail' is returned.
 ##
 ImagesElm := NewOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 
@@ -280,6 +433,10 @@ ImagesElm := NewOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 #############################################################################
 ##
 #O  ImagesRepresentative(<map>,<elm>) . one image of elm under a gen. mapping
+##
+##  'ImagesRepresentative' returns a representative of the set of images of
+##  <elm> under the general mapping <map>, i.e., a single element <img>,
+##  such that '<img> in ImagesElm( <map>, <elm> )' (see "ImagesElm").
 ##
 ##  If <elm> is not in the soucre of <map>, or if <elm> has no images under
 ##  <map>, 'fail' is returned.
@@ -304,24 +461,66 @@ ImagesSet := NewOperation( "ImagesSet", [ IsGeneralMapping, IsCollection ] );
 ##
 #O  ImageElm( <map>, <elm> )  . . . .  unique image of an elm under a mapping
 ##
-##  'ImageElm' expects <map> to be total and single-valued.
+##  is the unique image of the element <elm> under the mapping <map>.
+##  Note that <map> must be total and single-valued.
 ##
 ImageElm := NewOperation( "ImageElm", [ IsMapping, IsObject ] );
 
 
 #############################################################################
 ##
-#F  Image( <map>, <elm> ) . . . . . . . . image of an element under a mapping
-#F  Image( <map> )  . . . . . . . . . . . . . . images of the source of <map>
+#F  Image( <map> )  . . . .  set of images of the source of a general mapping
+#F  Image( <map>, <elm> ) . . . .  unique image of an element under a mapping
+#F  Image( <map>, <coll> )  . . set of images of a collection under a mapping
 ##
-#T  allow Image( <map>, <coll> ) ?
+##  'Image( <map> )' is the image of the general mapping <map>, i.e.,
+##  the subset of elements of the range of <map> that are actually values of
+##  <map>.
+##  Note that in this case the argument may also be multi valued.
+##
+##  'Image( <map>, <elm> )' is the image of the element <elm> of the source
+##  of the mapping <map> under <map>, i.e., the unique element of the range
+##  to which <map> maps <elm>.
+##  This can also be expressed as '<elm> \^\ <map>'.
+##  Note that <map> must be single valued, a multi valued general mapping is
+##  not allowed (see "Images").
+##
+##  'Image( <map>, <coll> )' is the image of the subset <coll> of the source
+##  of the mapping <map> under <map>, i.e., the subset of the range
+##  to which <map> maps elements of <coll>.
+##  <coll> may be a proper set or a domain.
+##  The result will be either a proper set or a domain.
+##  Again <map> must be single valued, a multi valued general mapping is not
+##  allowed (see "Images").
+##
+##  'Image' delegates to 'ImagesSource' when called with one argument,
+##  and to 'ImageElm' resp. 'ImagesSet' when called with two arguments.
 ##
 Image := NewOperationArgs( "Image" );
 
 
 #############################################################################
 ##
-#F  Images( <map>, <elm> )  . .  images of an element under a general mapping
+#F  Images( <map> ) . . . .  set of images of the source of a general mapping
+#F  Images( <map>, <elm> )  . . . set of images of an element under a mapping
+#F  Images( <map>, <coll> ) . . set of images of a collection under a mapping
+##
+##  'Images( <map> )' is the image of the general mapping <map>, i.e.,
+##  the subset of elements of the range of <map> that are actually values of
+##  <map>.
+##
+##  'Images( <map>, <elm> )' is the set of images of the element <elm> of
+##  the source of the general mapping <map> under <map>, i.e., the set of
+##  elements of the range to which <map> maps <elm>.
+##
+##  'Images( <map>, <coll> )' is the set of images of the subset <coll> of
+##  the source of the general mapping <map> under <map>, i.e., the subset
+##  of the range to which <map> maps elements of <coll>.
+##  <coll> may be a proper set or a domain.
+##  The result will be either a proper set or a domain.
+##
+##  'Images' delegates to 'ImagesSource' when called with one argument,
+##  and to 'ImagesElm' resp. 'ImagesSet' when called with two arguments.
 ##
 Images := NewOperationArgs( "Images" );
 
@@ -330,7 +529,9 @@ Images := NewOperationArgs( "Images" );
 ##
 #O  PreImagesElm( <map>, <elm> )  . all preimages of elm under a gen. mapping
 ##
-##  If <elm> is not in the range of <map>, 'fail' is returned.
+##  is the collection of all preimages of the element <elm> under the general
+##  mapping <map> if <elm> is in the range of <map>.
+##  Otherwise 'fail' is returned.
 ##
 PreImagesElm := NewOperation( "PreImagesElm",
     [ IsGeneralMapping, IsObject ] );
@@ -340,6 +541,10 @@ PreImagesElm := NewOperation( "PreImagesElm",
 ##
 #O  PreImageElm( <map>, <elm> )
 ##
+##  is the unique preimage of the element <elm> under the general mapping
+##  <map>.
+##  'PreImageElm' expects <map> to be surjective and injective.
+##
 PreImageElm := NewOperation( "PreImageElm",
     [ IsGeneralMapping and IsInjective and IsSurjective, IsObject ] );
 
@@ -348,6 +553,10 @@ PreImageElm := NewOperation( "PreImageElm",
 ##
 #O  PreImagesRepresentative( <map>, <img> ) . . .  one preimage of an element
 #O                                                       under a gen. mapping
+##
+##  'PreImagesRepresentative' returns a representative of the set of
+##  preimages of <img> under <map>, i.e., a single element <elm>, such that
+##  '<img> in PreImagesElm( <map>, <elm> )' (see "PreImagesElm").
 ##
 ##  If <elm> is not in the range of <map>, or if <elm> has no preimages under
 ##  <map>, 'fail' is returned.
@@ -371,14 +580,57 @@ PreImagesSet := NewOperation( "PreImagesSet",
 
 #############################################################################
 ##
-#F  PreImage(<bij>[,<img>]) . . . .  preimage of an element under a bijection
+#F  PreImage( <map> ) . .  set of preimages of the range of a general mapping
+#F  PreImage( <map>, <elm> )  . unique preimage of an elm under a gen.mapping
+#F  PreImage(<map>,<coll>)   set of preimages of a coll. under a gen. mapping
+##
+##  'PreImage( <map> )' is the preimage of the general mapping <map>, i.e.,
+##  the subset of elements of the source of <map> that actually have values
+##  under <map>.
+##  Note that in this case the argument may also be non-injective or
+##  non-surjective.
+##
+##  'PreImage( <map>, <elm> )' is the preimage of the element <elm> of the
+##  range of the injective and surjective mapping <map> under <map>, i.e.,
+##  the unique element of the source which is mapped under <map> to <elm>.
+##  Note that <map> must be injective and surjective (see "PreImages").
+##
+##  'PreImage( <map>, <coll> )' is the preimage of the subset <coll> of the
+##  range of the general mapping <map> under <map>, i.e., the subset of the
+##  source which is mapped under <map> to elements of <coll>.
+##  <coll> may be a proper set or a domain.
+##  The result will be either a proper set or a domain.
+##  Again <map> must be injective and surjective (see "PreImages").
+##
+##  'PreImage' delegates to 'PreImagesRange' when called with one argument,
+##  and to 'PreImageElm' resp. 'PreImagesSet' when called with two arguments.
 ##
 PreImage := NewOperationArgs( "PreImage" );
 
 
 #############################################################################
 ##
-#F  PreImages(<map>,<img>)  . . . . . preimages of an element under a mapping
+#F  PreImages( <map> )  . . . set of preimages of the range of a gen. mapping
+#F  PreImages(<map>,<elm>)  . set of preimages of an elm under a gen. mapping
+#F  PreImages(<map>,<coll>)  set of preimages of a coll. under a gen. mapping
+##
+##  'PreImages( <map> )' is the preimage of the general mapping <map>, i.e.,
+##  the subset of elements of the source of <map> that have actually values
+##  under <map>.
+##
+##  'PreImages( <map>, <elm> )' is the set of preimages of the element <elm>
+##  of the range of the general mapping <map> under <map>, i.e., the set of
+##  elements of the source which <map> maps to <elm>.
+##
+##  'PreImages( <map>, <coll> )' is the set of images of the subset <coll> of
+##  the range of the general mapping <map> under <map>, i.e., the subset
+##  of the source which <map> maps to elements of <coll>.
+##  <coll> may be a proper set or a domain.
+##  The result will be either a proper set or a domain.
+##
+##  'PreImages' delegates to 'PreImagesRange' when called with one argument,
+##  and to 'PreImagesElm' resp. 'PreImagesSet' when called with two
+##  arguments.
 ##
 PreImages := NewOperationArgs( "PreImages" );
 
@@ -399,10 +651,17 @@ CompositionMapping2 := NewOperation( "CompositionMapping2",
 
 #############################################################################
 ##
-#F  CompositionMapping(<map1>,<map2>, ... ) . . . . . composition of mappings
+#F  CompositionMapping( <map1>, <map2>, ... ) . . . . composition of mappings
 ##
-##  'CompositionMapping' allows to compose arbitrarily many mappings,
+##  'CompositionMapping' allows to compose arbitrarily many general mappings,
 ##  and delegates each step to 'CompositionMapping2'.
+##
+##  Additionally, the properties 'IsInjective' and 'IsSingleValued' are
+##  maintained; if the source of the $i+1$-th general mapping is identical to
+##  the range of the $i$-th general mapping, also 'IsTotal' and
+##  'IsSurjective' are maintained.
+##  (So one should not call 'CompositionMapping2' directly if one wants to
+##  maintain these properties.)
 ##
 CompositionMapping := NewOperationArgs( "CompositionMapping" );
 
@@ -440,7 +699,7 @@ Projection := NewOperation( "Projection", [ IsDomain, IsDomain ] );
 #F  GeneralMappingByElements( <S>, <R>, <elms> )
 ##
 ##  is the general mapping with source <S> and range <R>,
-##  and with elements in the list <elms> of tuples.
+##  and with underlying relation consisting of the tuples collection <elms>.
 ##
 GeneralMappingByElements := NewOperationArgs( "GeneralMappingByElements" );
 

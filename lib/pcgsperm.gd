@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.8  1997/02/26 13:57:16  htheisse
+#H  changed naming of some pcgs components in perm groups
+#H
 #H  Revision 4.7  1997/01/20 16:19:59  htheisse
 #H  added methods for induced and modulo perm pcgs
 #H  used them in conjugacy class routines for soluble groups
@@ -37,15 +40,7 @@ Revision.pcgsperm_gd :=
 #R  IsPcgsPermGroupRep  . . . . . . . . . . . . . . . . .  pcgs of perm group
 ##
 IsPcgsPermGroupRep := NewRepresentation( "IsPcgsPermGroupRep",
-    IsPcgsDefaultRep, [ "group", "stabChain" ] );
-
-#############################################################################
-##
-#R  IsPcgsFactorGroupPermGroupRep . . . . pcgs for factor group of perm group
-##
-IsPcgsFactorGroupPermGroupRep := NewRepresentation
-    ( "IsPcgsFactorGroupPermGroupRep", IsPcgsPermGroupRep,
-      [ "group", "stabChain", "denominator", "nrGensSeries" ] );
+    IsPcgsDefaultRep, [ "group", "stabChain", "series", "nrGensSeries" ] );
 
 WordVector := NewOperationArgs( "WordVector" );
 WordNumber := NewOperationArgs( "WordNumber" );

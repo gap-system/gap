@@ -86,7 +86,7 @@ InstallMethod( AsSubspace, IsIdentical, [ IsVectorSpace, IsVectorSpace ], 0,
       Error( "<W> must be contained in <V>" );
     fi;
 
-    newW:= FreeLeftModuleByGenerators( LeftActingDomain( W ),
+    newW:= LeftModuleByGenerators( LeftActingDomain( W ),
                             GeneratorsOfLeftModule( W ),
                             Zero( W ) );
     SetParent( newW, V );
@@ -216,6 +216,32 @@ InstallMethod( PrintObj, true, [ IsVectorSpace ], 0,
 
 #############################################################################
 ##
+#M  \/( <V>, <W> )  . . . . . . . . .  factor of a vector space by a subspace
+#M  \/( <V>, <vectors> )  . . . . . .  factor of a vector space by a subspace
+##
+InstallOtherMethod( \/,
+    "method for vector space and collection",
+    IsIdentical,
+    [ IsVectorSpace, IsCollection ], 0,
+    function( V, vectors )
+    if IsVectorSpace( vectors ) then
+      TryNextMethod();
+    else
+      return V / Subspace( V, vectors );
+    fi;
+    end );
+
+InstallOtherMethod( \/,
+    "generic method for two vector spaces",
+    IsIdentical,
+    [ IsVectorSpace, IsVectorSpace ], 0,
+    function( V, W )
+    return ImagesSource( NaturalHomomorphismBySubspace( V, W ) );
+    end );
+
+
+#############################################################################
+##
 #M  Intersection2Spaces( <AsStruct>, <Substruct>, <Struct> )
 ##
 Intersection2Spaces := function( AsStructure, Substructure, Structure )
@@ -240,7 +266,7 @@ Intersection2Spaces := function( AsStructure, Substructure, Structure )
 
       # Compute the intersection of two spaces over the same field.
       # First compute a common coefficient space.
-      VW:= FreeLeftModuleByGenerators( LeftActingDomain( V ),
+      VW:= LeftModuleByGenerators( LeftActingDomain( V ),
                             Concatenation( GeneratorsOfLeftModule( V ),
                                            GeneratorsOfLeftModule( W ) ) );
       B:= BasisOfDomain( VW );
@@ -301,12 +327,12 @@ InstallMethod( ClosureLeftModule, IsCollsElms,
     if Coefficients( B, w ) = fail then
 
       # In the case of a vector space, we know a basis of the closure.
-      return FreeLeftModuleByGenerators( LeftActingDomain( V ),
-                        Concatenation( BasisVectors( B ), [ w ] ), "basis" );
+      B:= Concatenation( BasisVectors( B ), [ w ] );
+      V:= LeftModuleByGenerators( LeftActingDomain( V ), B );
+      UseBasis( V, B );
 
-    else
-      return V;
     fi;
+    return V;
     end );
 
 

@@ -36,25 +36,28 @@ InstallMethod( RespectsMultiplication,
     [ IsGeneralMapping ], 0,
     function( map )
     local S, R, enum, pair1, pair2;
+
     S:= Source( map );
     R:= Range(  map );
     if not ( IsMagma( S ) and IsMagma( R ) ) then
       return false;
-    elif not IsFinite( map ) then
-      Error( "cannot determine whether infinite mapping <map> ",
-             "respects multiplication" );
-    else
-      enum:= Enumerator( map );
-      for pair1 in enum do
-        for pair2 in enum do
-          if not Tuple( [ pair1[1] * pair2[1], pair1[2] * pair2[2] ] )
-             in map then
-            return false;
-          fi;
-        od;
-      od;
-      return true;
     fi;
+
+    map:= UnderlyingRelation( map );
+
+    if not IsFinite( map ) then
+      TryNextMethod();
+    fi;
+    enum:= Enumerator( map );
+    for pair1 in enum do
+      for pair2 in enum do
+        if not Tuple( [ pair1[1] * pair2[1], pair1[2] * pair2[2] ] )
+           in map then
+          return false;
+        fi;
+      od;
+    od;
+    return true;
     end );
 
 
@@ -72,7 +75,7 @@ InstallMethod( RespectsOne,
     R:= Range(  map );
     return     IsMagmaWithOne( S )
            and IsMagmaWithOne( R )
-           and Tuple( [ One( S ), One( R ) ] ) in map;
+           and One( R ) in ImagesElm( One( R ) );
     end );
 
 
@@ -90,19 +93,21 @@ InstallMethod( RespectsInverses,
     R:= Range(  map );
     if not ( IsMagmaWithInverses( S ) and IsMagmaWithInverses( R ) ) then
       return false;
-    elif not IsFinite( map ) then
-      Error( "cannot determine whether infinite mapping <map> ",
-             "respects inverses" );
-    else
-      enum:= Enumerator( map );
-      for pair in enum do
-        if not Tuple( [ Inverse( pair[1] ), Inverse( pair[2] ) ] )
-               in map then
-          return false;
-        fi;
-      od;
-      return true;
     fi;
+
+    map:= UnderlyingRelation( map );
+    if not IsFinite( map ) then
+      TryNextMethod();
+    fi;
+
+    enum:= Enumerator( map );
+    for pair in enum do
+      if not Tuple( [ Inverse( pair[1] ), Inverse( pair[2] ) ] )
+             in map then
+        return false;
+      fi;
+    od;
+    return true;
     end );
 
 
@@ -118,24 +123,24 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
 
     local oneR, kernel, pair;
 
-    if IsFinite( mapp ) then
+    if IsFinite( Source( mapp ) ) then
+
+      oneR:= One( Range( mapp ) );
+      kernel:= Filtered( Enumerator( Source( mapp ) ),
+                         s -> oneR in ImagesElm( mapp, s ) );
+
+    elif IsFinite( UnderlyingRelation( mapp ) ) then
 
       oneR:= One( Range( mapp ) );
       kernel:= [];
-      for pair in Enumerator( mapp ) do
+      for pair in Enumerator( UnderlyingRelation( mapp ) ) do
         if pair[2] = oneR then
           Add( kernel, pair[1] );
         fi;
       od;
 
-    elif IsFinite( Source( mapp ) ) then
-
-      oneR:= One( Range( mapp ) );
-      kernel:= Filtered( Enumerator( Source( mapp ) ),
-                         s -> Tuple( [ s, oneR ] ) in mapp );
-
     else
-      Error( "cannot compute kernel of infinite mapping" );
+      TryNextMethod();
     fi;
 
     if     HasIsAssociative( Source( mapp ) )
@@ -170,29 +175,39 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
     [ IsGeneralMapping and RespectsMultiplication and RespectsOne ], 0,
     function( mapp )
 
-    local oneS, cokernel, pair;
+    local oneS, cokernel, rel, pair;
 
-    if IsFinite( mapp ) then
+    if IsFinite( Range( mapp ) ) then
 
       oneS:= One( Source( mapp ) );
+      rel:= UnderlyingRelation( mapp );
+      cokernel:= Filtered( Enumerator( Range( mapp ) ),
+                           r -> Tuple( [ oneS, r ] ) in rel );
+
+    elif   IsFinite( UnderlyingRelation( mapp ) )
+       and HasAsList( UnderlyingRelation( mapp ) ) then
+
+      # Note that we must not call 'Enumerator' for the underlying
+      # relation since this is allowed to call (functions that may call)
+      # 'CoKernelOfMultiplicativeGeneralMapping'.
+      oneS:= One( Source( mapp ) );
       cokernel:= [];
-      for pair in Enumerator( mapp ) do
+      for pair in AsList( UnderlyingRelation( mapp ) ) do
         if pair[1] = oneS then
           Add( cokernel, pair[2] );
         fi;
       od;
 
-    elif IsFinite( Range( mapp ) ) then
-
-      oneS:= One( Source( mapp ) );
-      cokernel:= Filtered( Enumerator( Range( mapp ) ),
-                           r -> Tuple( [ oneS, r ] ) in mapp );
-
     else
-      Error( "cannot compute cokernel of infinite mapping" );
+      TryNextMethod();
     fi;
 
-    return MagmaWithOneByGenerators( cokernel );
+    if     HasIsAssociative( Range( mapp ) )
+       and IsAssociative( Range( mapp ) ) then
+      return MonoidByGenerators( cokernel );
+    else
+      return MagmaWithOneByGenerators( cokernel );
+    fi;
     end );
 
 
@@ -265,8 +280,10 @@ InstallMethod( ImagesSet,
       IsGroup ], 0,
     function( map, elms )
 
-    if not IsTotal( map ) then
-      elms:= Intersection2( elms, PreImagesRange( map ) );
+    if   not IsSubset( Source( map ), elms ) then
+      return fail;
+    elif not IsTotal( map ) then
+      elms:= Intersection2( PreImagesRange( map ), elms );
     fi;
 
     return ClosureGroup( CoKernelOfMultiplicativeGeneralMapping( map ),
@@ -307,8 +324,10 @@ InstallMethod( PreImagesSet,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ], 0,
     function( map, elms )
-    if not IsSurjective( map ) then
-      elms:= Intersection( elms, ImagesSource( map ) );
+    if   not IsSubset( Range( map ), elms ) then
+      return fail;
+    elif not IsSurjective( map ) then
+      elms:= Intersection2( ImagesSource( map ), elms );
     fi;
     return ClosureGroup( KernelOfMultiplicativeGeneralMapping( map ),
                    SubgroupNC( Source( map ),
@@ -332,25 +351,28 @@ InstallMethod( RespectsAddition,
     [ IsGeneralMapping ], 0,
     function( map )
     local S, R, enum, pair1, pair2;
+
     S:= Source( map );
     R:= Range(  map );
     if not ( IsAdditiveMagma( S ) and IsAdditiveMagma( R ) ) then
       return false;
-    elif not IsFinite( map ) then
-      Error( "cannot determine whether infinite mapping <map> ",
-             "respects addition" );
-    else
-      enum:= Enumerator( map );
-      for pair1 in enum do
-        for pair2 in enum do
-          if not Tuple( [ pair1[1] + pair2[1], pair1[2] + pair2[2] ] )
-             in map then
-            return false;
-          fi;
-        od;
-      od;
-      return true;
     fi;
+
+    map:= UnderlyingRelation( map );
+    if not IsFinite( map ) then
+      TryNextMethod();
+    fi;
+
+    enum:= Enumerator( map );
+    for pair1 in enum do
+      for pair2 in enum do
+        if not Tuple( [ pair1[1] + pair2[1], pair1[2] + pair2[2] ] )
+           in map then
+          return false;
+        fi;
+      od;
+    od;
+    return true;
     end );
 
 
@@ -368,7 +390,7 @@ InstallMethod( RespectsZero,
     R:= Range(  map );
     return     IsAdditiveMagmaWithZero( S )
            and IsAdditiveMagmaWithZero( R )
-           and Tuple( [ Zero( S ), Zero( R ) ] ) in map;
+           and Zero( R ) in ImagesElm( Zero( S ) );
     end );
 
 
@@ -387,20 +409,22 @@ InstallMethod( RespectsAdditiveInverses,
     if not (     IsAdditiveMagmaWithInverses( S )
              and IsAdditiveMagmaWithInverses( R ) ) then
       return false;
-    elif not IsFinite( map ) then
-      Error( "cannot determine whether infinite mapping <map> ",
-             "respects inverses" );
-    else
-      enum:= Enumerator( map );
-      for pair in enum do
-        if not Tuple( [ AdditiveInverse( pair[1] ),
-                        AdditiveInverse( pair[2] ) ] )
-               in map then
-          return false;
-        fi;
-      od;
-      return true;
     fi;
+
+    map:= UnderlyingRelation( map );
+    if not IsFinite( map ) then
+      TryNextMethod();
+    fi;
+
+    enum:= Enumerator( map );
+    for pair in enum do
+      if not Tuple( [ AdditiveInverse( pair[1] ),
+                      AdditiveInverse( pair[2] ) ] )
+             in map then
+        return false;
+      fi;
+    od;
+    return true;
     end );
 
 
@@ -414,26 +438,27 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
     [ IsGeneralMapping and RespectsAddition and RespectsZero ], 0,
     function( mapp )
 
-    local zeroR, kernel, pair;
+    local zeroR, rel, kernel, pair;
 
-    if IsFinite( mapp ) then
+    if IsFinite( Source( mapp ) ) then
+
+      zeroR:= Zero( Range( mapp ) );
+      rel:= UnderlyingRelation( mapp );
+      kernel:= Filtered( Enumerator( Source( mapp ) ),
+                         s -> Tuple( [ s, zeroR ] ) in rel );
+
+    elif IsFinite( UnderlyingRelation( mapp ) ) then
 
       zeroR:= Zero( Range( mapp ) );
       kernel:= [];
-      for pair in Enumerator( mapp ) do
+      for pair in Enumerator( UnderlyingRelation( mapp ) ) do
         if pair[2] = zeroR then
           Add( kernel, pair[1] );
         fi;
       od;
 
-    elif IsFinite( Source( mapp ) ) then
-
-      zeroR:= Zero( Range( mapp ) );
-      kernel:= Filtered( Enumerator( Source( mapp ) ),
-                         s -> Tuple( [ s, zeroR ] ) in mapp );
-
     else
-      Error( "cannot compute kernel of infinite mapping" );
+      TryNextMethod();
     fi;
 
     return AdditiveMagmaWithZeroByGenerators( kernel );
@@ -475,26 +500,31 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
     [ IsGeneralMapping and RespectsAddition and RespectsZero ], 0,
     function( mapp )
 
-    local zeroS, cokernel, pair;
+    local zeroS, rel, cokernel, pair;
 
-    if IsFinite( mapp ) then
+    if IsFinite( Range( mapp ) ) then
 
       zeroS:= Zero( Source( mapp ) );
+      rel:= UnderlyingRelation( mapp );
+      cokernel:= Filtered( Enumerator( Range( mapp ) ),
+                           r -> Tuple( [ zeroS, r ] ) in rel );
+
+    elif   IsFinite( UnderlyingRelation( mapp ) )
+       and HasAsList( UnderlyingRelation( mapp ) ) then
+
+      # Note that we must not call 'Enumerator' for the underlying
+      # relation since this is allowed to call (functions that may call)
+      # 'CoKernelOfAdditiveGeneralMapping'.
+      zeroS:= Zero( Source( mapp ) );
       cokernel:= [];
-      for pair in Enumerator( mapp ) do
+      for pair in AsList( UnderlyingRelation( mapp ) ) do
         if pair[1] = zeroS then
           Add( cokernel, pair[2] );
         fi;
       od;
 
-    elif IsFinite( Range( mapp ) ) then
-
-      zeroS:= Zero( Source( mapp ) );
-      cokernel:= Filtered( Enumerator( Range( mapp ) ),
-                           r -> Tuple( [ zeroS, r ] ) in mapp );
-
     else
-      Error( "cannot compute cokernel of infinite mapping" );
+      TryNextMethod();
     fi;
 
     return AdditiveMagmaWithZeroByGenerators( cokernel );
@@ -570,8 +600,10 @@ InstallMethod( ImagesSet,
       IsAdditiveGroup ], 0,
     function( map, elms )
 
-    if not IsTotal( map ) then
-      elms:= Intersection2( elms, PreImagesRange( map ) );
+    if   not IsSubset( Source( map ), elms ) then
+      return fail;
+    elif not IsTotal( map ) then
+      elms:= Intersection2( PreImagesRange( map ), elms );
     fi;
 
     return ClosureAdditiveGroup( CoKernelOfAdditiveGeneralMapping( map ),
@@ -613,8 +645,10 @@ InstallMethod( PreImagesSet,
       IsAdditiveGroup ], 0,
     function( map, elms )
 
-    if not IsSurjective( map ) then
-      elms:= Intersection( elms, ImagesSource( map ) );
+    if   not IsSubset( Range( map ), elms ) then
+      return fail;
+    elif not IsSurjective( map ) then
+      elms:= Intersection2( ImagesSource( map ), elms );
     fi;
 
     return ClosureAdditiveGroup( KernelOfAdditiveGeneralMapping( map ),
@@ -650,12 +684,14 @@ InstallMethod( RespectsScalarMultiplication,
 
     D:= LeftActingDomain( S );
     if not IsSubset( LeftActingDomain( R ), D ) then
+#T subset is allowed?
       return false;
     elif not IsFinite( D ) or not IsFinite( map ) then
       Error( "cannot determine whether infinite mapping <map> ",
              "respects scalar multiplication" );
     else
       D:= Enumerator( D );
+      map:= UnderlyingRelation( map );
       for pair in Enumerator( map ) do
         for c in D do
           if not Tuple( [ c * pair[1], c * pair[2] ] ) in map then
@@ -672,6 +708,8 @@ InstallMethod( RespectsScalarMultiplication,
 ##
 #M  KernelOfAdditiveGeneralMapping( <mapp> )  . . for a finite linear mapping
 ##
+##  We need a special method for being able to return a left module.
+##
 InstallMethod( KernelOfAdditiveGeneralMapping,
     "method for a finite linear mapping",
     true,
@@ -679,30 +717,31 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
                        and RespectsScalarMultiplication ], 0,
     function( mapp )
 
-    local zeroR, kernel, pair;
+    local zeroR, rel, kernel, pair;
 
     if not IsExtLSet( Source( mapp ) ) then
       TryNextMethod();
     fi;
 
-    if IsFinite( mapp ) then
+    if IsFinite( Source( mapp ) ) then
+
+      zeroR:= Zero( Range( mapp ) );
+      rel:= UnderlyingRelation( mapp );
+      kernel:= Filtered( Enumerator( Source( mapp ) ),
+                         s -> Tuple( [ s, zeroR ] ) in rel );
+
+    elif IsFinite( UnderlyingRelation( mapp ) ) then
 
       zeroR:= Zero( Range( mapp ) );
       kernel:= [];
-      for pair in Enumerator( mapp ) do
+      for pair in Enumerator( UnderlyingRelation( mapp ) ) do
         if pair[2] = zeroR then
           Add( kernel, pair[1] );
         fi;
       od;
 
-    elif IsFinite( Source( mapp ) ) then
-
-      zeroR:= Zero( Range( mapp ) );
-      kernel:= Filtered( Enumerator( Source( mapp ) ),
-                         s -> Tuple( [ s, zeroR ] ) in mapp );
-
     else
-      Error( "cannot compute kernel of infinite mapping" );
+      TryNextMethod();
     fi;
 
     return LeftModuleByGenerators( LeftActingDomain( Source( mapp ) ),
@@ -714,6 +753,8 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
 ##
 #M  CoKernelOfAdditiveGeneralMapping( <mapp> )  . . for finite linear mapping
 ##
+##  We need a special method for being able to return a left module.
+##
 InstallMethod( CoKernelOfAdditiveGeneralMapping,
     "method for a finite linear mapping",
     true,
@@ -721,30 +762,31 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
                        and RespectsScalarMultiplication ], 0,
     function( mapp )
 
-    local zeroS, cokernel, pair;
+    local zeroS, rel, cokernel, pair;
 
     if not IsExtLSet( Range( mapp ) ) then
       TryNextMethod();
     fi;
 
-    if IsFinite( mapp ) then
+    if IsFinite( Range( mapp ) ) then
+
+      zeroS:= Zero( Source( mapp ) );
+      rel:= UnderlyingRelation( mapp );
+      cokernel:= Filtered( Enumerator( Range( mapp ) ),
+                           r -> Tuple( [ zeroS, r ] ) in rel );
+
+    elif IsFinite( UnderlyingRelation( mapp ) ) then
 
       zeroS:= Zero( Source( mapp ) );
       cokernel:= [];
-      for pair in Enumerator( mapp ) do
+      for pair in Enumerator( UnderlyingRelation( mapp ) ) do
         if pair[1] = zeroS then
           Add( cokernel, pair[2] );
         fi;
       od;
 
-    elif IsFinite( Range( mapp ) ) then
-
-      zeroS:= Zero( Source( mapp ) );
-      cokernel:= Filtered( Enumerator( Range( mapp ) ),
-                           r -> Tuple( [ zeroS, r ] ) in mapp );
-
     else
-      Error( "cannot compute cokernel of infinite mapping" );
+      TryNextMethod();
     fi;
 
     return LeftModuleByGenerators( LeftActingDomain( Range( mapp ) ),
@@ -759,11 +801,14 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
 InstallMethod( ImagesSet,
     "method for linear mapping and left module",
     CollFamSourceEqFamElms,
-    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication,
       IsLeftModule ], 0,
     function( map, elms )
 
-    if not IsTotal( map ) then
+    if   not IsSubset( Source( map ), elms ) then
+      return fail;
+    elif not IsTotal( map ) then
       elms:= Intersection2( elms, PreImagesRange( map ) );
     fi;
 
@@ -781,11 +826,14 @@ InstallMethod( ImagesSet,
 InstallMethod( PreImagesSet,
     "method for linear mapping and left module",
     CollFamRangeEqFamElms,
-    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
-      IsAdditiveGroup ], 0,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication,
+      IsLeftModule ], 0,
     function( map, elms )
 
-    if not IsSurjective( map ) then
+    if   not IsSubset( Range( map ), elms ) then
+      return fail;
+    elif not IsSurjective( map ) then
       elms:= Intersection( elms, ImagesSource( map ) );
     fi;
 
@@ -1001,6 +1049,8 @@ InstallEqMethodForMappingsFromGenerators( IsLeftOperatorRingWithOne,
     RespectsAddition and RespectsAdditiveInverses and
     RespectsMultiplication and RespectsOne and RespectsScalarMultiplication,
     " that respect add.,add.inv.,mult.,one,scal. mult." );
+
+#T no methods that use 'GeneratorsOfDivisionRing' ?
 
 
 #############################################################################

@@ -674,7 +674,8 @@ InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
     N := AsSubgroup( G, U );
     SetStabChain( N, StabChainAttr( U ) );
     options := ShallowCopy( StabChainOptions( U ) );
-    random := options.random;
+    if IsBound( options.random )  then  random := options.random;
+                                  else  random := 1000;            fi;
     options.random := 0;
     options.temp   := true;
 
@@ -943,7 +944,8 @@ InstallMethod( IsSimpleGroup, true, [ IsPermGroup ], 0,
     od;
 
     # compute the degree $d$ and express it as $d = n^m$
-    d := NrMovedPoints( G );
+    D := MovedPoints( G );
+    d := Length( D );
     n := SmallestRootInt( d );
     m := LogInt( d, n );
     if 10^6 < d  then

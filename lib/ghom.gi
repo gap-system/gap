@@ -142,11 +142,11 @@ InstallMethod( GroupGeneralMappingByImages, true,
     if IsPcgs( gens )  then
         filter := filter and IsGroupGeneralMappingByPcgs;
         hom.pcgs := gens;
-        if IsBound( gens!.denominator )  then
+        if IsModuloPcgs( gens )  then
             hom.generators := Concatenation( gens,
-                              GeneratorsOfGroup( gens!.denominator ) );
-            hom.genimages := Concatenation( imgs, List( GeneratorsOfGroup
-                             ( gens!.denominator ), x -> One( H ) ) );
+                  DenominatorOfModuloPcgs( gens ) );
+            hom.genimages := Concatenation( imgs, List
+                ( DenominatorOfModuloPcgs( gens ), x -> One( H ) ) );
         fi;
     fi;
     if IsPermGroup( G )  then

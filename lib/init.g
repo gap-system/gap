@@ -228,6 +228,32 @@ if TRANSNAME = "./"  then TRANSNAME := "../trans/";  fi;
 
 #############################################################################
 ##
+#V  PRIMNAME
+##
+PRIMNAME := ReplacedString( LIBNAME, "lib", "prim" );
+if PRIMNAME = "./"  then PRIMNAME := "../prim/";  fi;
+
+
+#############################################################################
+##
+#F  ReadPrim( <name> )
+##
+ReadPrim := function ( name )
+    local   ext;
+
+    if not ReadPath( PRIMNAME, name, "", "ReadPrim" )  then
+        Error("the primitive group file `",name,
+              "' must exist and be readable");
+    fi;
+    ext := ReplacedString( name, ".", "_" );
+    if not IsBound(Revision.(ext))  then
+        Print( "#W  revision entry missing in \"", name, "\"\n" );
+    fi;
+end;
+
+
+#############################################################################
+##
 
 #V  Banner
 ##
@@ -333,6 +359,7 @@ ReadLib( "module.gd"   );
 ReadLib( "basis.gd"    );
 ReadLib( "basismut.gd" );
 ReadLib( "vspc.gd"     );
+ReadLib( "vspchom.gd"  );
 ReadLib( "algebra.gd"  );
 ReadLib( "alglie.gd"   );
 ReadLib( "algsc.gd"    );
@@ -377,6 +404,7 @@ ReadLib( "mgmring.gd"  );
 ReadLib( "grptbl.gd"   );
 
 ReadLib( "grpperm.gd"  );
+ReadLib( "grpprmcs.gd" );
 ReadLib( "stbcbckt.gd" );
 ReadLib( "ghom.gd"     );
 ReadLib( "ghompcgs.gd" );
@@ -475,7 +503,7 @@ ReadLib( "basismut.gi" );
 ReadLib( "vspc.gi"     );
 ReadLib( "vspcrow.gi"  );
 ReadLib( "vspcmat.gi"  );
-# ReadLib( "vspchom.gi"  );
+ReadLib( "vspchom.gi"  );
 
 ReadLib( "algebra.gi"  );
 ReadLib( "alglie.gi"   );
@@ -593,6 +621,9 @@ ReadLib( "hash.gi"     );
 # files dealing with overloaded operations
 ReadLib( "overload.g"  );
 
+# semi-automatically translated code uses overloaded functions
+ReadLib( "grpprmcs.gi" );
+
 
 #############################################################################
 ##
@@ -602,6 +633,7 @@ ReadGrp( "basicpcg.gi" );
 ReadGrp( "basicprm.gi" );
 ReadGrp( "basicmat.gi" );
 ReadGrp( "perf.grp"    );
+ReadGrp( "classic.gi" );
 
 
 #############################################################################

@@ -647,20 +647,29 @@ InstallMethod( PrepareNiceFreeLeftModule,
     else
 
       # Compute the default field of the space generators,
-      # a basis of this field,
+      # a basis of this field (over the left acting domain of 'V'),
       # and the coefficients of the space generators w.r. to this basis.
-      V!.fieldbasis:= BasisOfDomain( DefaultField( gens ) );
+      V!.fieldbasis:= BasisOfDomain( AsField( LeftActingDomain( V ),
+                                              DefaultField( gens ) ) );
       coeffs:= List( gens, x -> Coefficients( V!.fieldbasis, x ) );
 
       # Choose a subset of linear independent positions,
       # and store field elements corresponding to the rows of the basis.
       # These are the vectors of the canonical basis of 'V'.
       sem:= SemiEchelonMatTransformation( coeffs );
-      V!.canonicalvectors:= sem.coeffs * gens;
+      if IsEmpty( sem.coeffs ) then
 
-      coeffs:= sem.heads;
-      V!.coeffschoice:= Filtered( [ 1 .. Length( coeffs ) ],
-                                  x -> coeffs[x] <> 0 );
+        V!.canonicalvectors := [];
+        V!.coeffschoice:= [];
+
+      else
+
+        V!.canonicalvectors:= sem.coeffs * gens;
+        coeffs:= sem.heads;
+        V!.coeffschoice:= Filtered( [ 1 .. Length( coeffs ) ],
+                                    x -> coeffs[x] <> 0 );
+
+      fi;
 
     fi;
     end );
@@ -768,7 +777,7 @@ InstallMethod( LeftModuleByGenerators,
 
 #############################################################################
 ##
-#F  LeftModuleByGenerators( <F>, <gens>, <zero> )
+#M  LeftModuleByGenerators( <F>, <gens>, <zero> )
 ##
 InstallOtherMethod( LeftModuleByGenerators,
     "method for division ring and collection of scalars in same family",
@@ -784,6 +793,30 @@ InstallOtherMethod( LeftModuleByGenerators,
                    rec() );
     SetLeftActingDomain( V, F );
     SetGeneratorsOfLeftModule( V, AsList( gens ) );
+    SetZero( V, zero );
+    return V;
+    end );
+
+
+#############################################################################
+##
+#M  LeftModuleByGenerators( <F>, <empty>, <zero> )
+##
+InstallOtherMethod( LeftModuleByGenerators,
+    "method for division ring, empty list, and scalar",
+    IsCollsXElms,
+    [ IsDivisionRing, IsList and IsEmpty, IsScalar ], 0,
+    function( F, empty, zero )
+    local V;
+    V:= Objectify( NewKind( FamilyObj( F ),
+                                IsFreeLeftModule
+                            and IsLeftActedOnByDivisionRing
+                            and IsTrivial
+                            and IsFieldElementsSpaceRep
+                            and IsAttributeStoringRep ),
+                   rec() );
+    SetLeftActingDomain( V, F );
+    SetGeneratorsOfLeftModule( V, AsList( empty ) );
     SetZero( V, zero );
     return V;
     end );
@@ -885,12 +918,14 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
     "method for a field homomorphism",
     true,
     [ IsFieldHomomorphism ], 0,
+#T higher rank?
+#T (is this method ever used?)
     function ( hom )
-    if ForAll( GeneratorsOfField( Source( hom ) ),
-               x -> IsZero( ImageElm( hom, x ) ) ) then
+    if ForAll( GeneratorsOfDivisionRing( Source( hom ) ),
+               x -> IsZero( ImagesRepresentative( hom, x ) ) ) then
       return Source( hom );
     else
-      return [ Zero( Source( hom ) ) ];
+      return TrivialSubadditiveMagmaWithZero( Source( hom ) );
     fi;
     end );
 

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.22  1997/02/26 14:00:33  htheisse
+#H  changed algorithm for stab chain with base in solvable groups
+#H
 #H  Revision 4.21  1997/01/16 10:46:51  fceller
 #H  renamed 'NewConstructor' to 'NewOperation',
 #H  renamed 'NewOperationFlags1' to 'NewConstructor'
@@ -87,13 +90,10 @@ MembershipTestKnownBase := NewOperation( "MembershipTestKnownBase",
                                    [ IsRecord, IsList, IsList ] );
 
 IsPermOnEnumerator := NewCategory( "IsPermOnEnumerator",
-    IsMultiplicativeElementWithInverse and IsPerm and
-    IsGroupHomomorphism and IsBijective );
+    IsMultiplicativeElementWithInverse and IsPerm );
 
 PermOnEnumerator := NewOperation( "PermOnEnumerator",
-                                    [ IsObject, IsObject ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
-
+    [ IsEnumerator, IsObject ] );
 
 DefaultStabChainOptions := NewOperationArgs( "DefaultStabChainOptions" );
 CopyOptionsDefaults := NewOperationArgs( "CopyOptionsDefaults" );

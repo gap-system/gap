@@ -41,7 +41,7 @@ InstallTrueMethod( IsFiniteDimensional,
 InstallMethod( LeftModuleByGenerators,
     "method for ring and list of matrices (elements in the same family)",
     IsElmsCollColls,
-    [ IsRing, IsHomogeneousList ], 0,
+    [ IsRing, IsCollection ], 0,
     function( R, mats )
     local V;
 
@@ -67,7 +67,7 @@ InstallMethod( LeftModuleByGenerators,
 InstallMethod( LeftModuleByGenerators,
     "method for ring and list of matrices (elements in the same family)",
     IsElmsCollLieColls,
-    [ IsRing, IsHomogeneousList ], 0,
+    [ IsRing, IsCollection ], 0,
     function( R, mats )
     local V;
 

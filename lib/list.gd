@@ -162,26 +162,29 @@ IsDenseList :=
 ##
 #C  IsHomogeneousList(<obj>)
 ##
-##  A homogeneous list is a collection that is also a list.
-##  In other words, a homogeneous list is a dense list whose elements lie in
-##  the same family.
-##
-#T (Is it really necessary to define 'IS_HOMOG_LIST' in the kernel,
-#T and 'IsCollection' in the library?
-#T Otherwise we could define 'IsHomogeneousList'
-#T as 'IsCollection and IsList'.)
+##  A homogeneous list is a dense list whose elements lie in the same family.
+##  The empty list is homogeneous but not a collection.
+##  A nonempty homogeneous list is also a collection.
+#T can we guarantee this?
 ##
 IsHomogeneousList :=
     NewCategoryKernel( "IsHomogeneousList",
-        IsCollection and IsDenseList,
+        IsDenseList,
         IS_HOMOG_LIST );
 
 
 #############################################################################
 ##
-#M  IsHomogeneousList
+#M  IsHomogeneousList( <coll_and_list> )
 ##
 InstallTrueMethod( IsHomogeneousList, IsList and IsCollection );
+
+
+#############################################################################
+##
+#M  IsFinite( <homoglist> )
+##
+InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 
 
 #############################################################################

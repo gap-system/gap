@@ -1111,7 +1111,7 @@ IsMutableBasisOfGaussianMatrixSpaceRep := NewRepresentation(
 InstallMethod( MutableBasisByGenerators,
     "method to construct mutable bases of Gaussian matrix spaces",
     IsElmsCollColls,
-    [ IsRing, IsHomogeneousList ], 0,
+    [ IsRing, IsCollection ], 0,
     function( R, mats )
     local newmats, B;
 
@@ -1149,7 +1149,7 @@ InstallMethod( MutableBasisByGenerators,
 InstallMethod( MutableBasisByGenerators,
     "method to construct mutable bases of a Lie matrix spaces",
     IsElmsCollLieColls,
-    [ IsRing, IsHomogeneousList ], 0,
+    [ IsRing, IsCollection ], 0,
     function( R, mats )
     local B, newmats;
 

@@ -41,9 +41,8 @@ IsDefaultGeneralMappingRep := NewRepresentation(
     "IsDefaultGeneralMappingRep",
     IsGeneralMapping and HasSource and HasRange,
     [] );
-#T methods to handle attributes 'One' and 'Inverse', 
+#T methods to handle attributes 'One' and 'InverseGeneralMapping', 
 #T 'ImagesSource', 'PreImagesRange'?
-#T and what about domain attributes, such as 'AsList' ??
 
 
 #############################################################################
@@ -52,11 +51,22 @@ IsDefaultGeneralMappingRep := NewRepresentation(
 ##
 KindOfDefaultGeneralMapping := function( source, range, filter )
     local Kind;
-    Kind:= NewKind( CollectionsFamily( TuplesFamily(
-                        [ ElementsFamily( FamilyObj( source ) ),
-                          ElementsFamily( FamilyObj( range  ) ) ] ) ),
+
+    # Do a cheap test whether the general mapping has equal source and range.
+    if IsIdentical( source, range ) then
+      filter:= filter and IsEndoGeneralMapping;
+    fi;
+
+    # Construct the kind.
+    Kind:= NewKind( GeneralMappingsFamily(
+                          ElementsFamily( FamilyObj( source ) ),
+                          ElementsFamily( FamilyObj( range  ) ) ),
                     IsDefaultGeneralMappingRep and filter );
+
+    # Store source and range.
     Kind![3]:= [ source, range ];
+
+    # Return the kind.
     return Kind;
 end;
 
@@ -66,10 +76,9 @@ end;
 #M  Range( <map> )
 ##
 InstallMethod( Range, true,
-    [ IsGeneralMapping and IsDefaultGeneralMappingRep ], 2*SUM_FLAGS + 1,
-    function ( map )
-    return DataKind( KindObj( map ) )[2];
-    end );
+    [ IsGeneralMapping and IsDefaultGeneralMappingRep ],
+    2*SUM_FLAGS + 1,  # higher than the system getter!
+    map -> DataKind( KindObj( map ) )[2] );
 
 
 #############################################################################
@@ -77,10 +86,9 @@ InstallMethod( Range, true,
 #M  Source( <map> )
 ##
 InstallMethod( Source, true,
-    [ IsGeneralMapping and IsDefaultGeneralMappingRep ], 2*SUM_FLAGS + 1,
-    function ( map )
-    return DataKind( KindObj( map ) )[1];
-    end );
+    [ IsGeneralMapping and IsDefaultGeneralMappingRep ],
+    2*SUM_FLAGS + 1,  # higher than the system getter!
+    map -> DataKind( KindObj( map ) )[1] );
 
 
 #############################################################################
@@ -351,6 +359,82 @@ InstallMethod( PreImagesRepresentative,
 
 #############################################################################
 ##
+#M  KernelOfAdditiveGeneralMapping( <map> ) . . . . . for composition mapping
+##
+InstallMethod( KernelOfAdditiveGeneralMapping,
+    "method for a composition mapping that resp. add. and add.inv.",
+    true,
+    [ IsGeneralMapping and IsCompositionMappingRep
+      and RespectsAddition and RespectsAdditiveInverses ], 0,
+    function( com )
+    if IsInjective( com!.map2 ) then
+      return KernelOfAdditiveGeneralMapping( com!.map1 );
+    else
+      return PreImagesSet( com!.map1,
+                 KernelOfAdditiveGeneralMapping( com!.map2 ) );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  CoKernelOfAdditiveGeneralMapping( <map> ) . . . . for composition mapping
+##
+InstallMethod( CoKernelOfAdditiveGeneralMapping,
+    "method for a composition mapping that resp. add. and add.inv.",
+    true,
+    [ IsGeneralMapping and IsCompositionMappingRep
+      and RespectsAddition and RespectsAdditiveInverses ], 0,
+    function( com )
+    if IsSingleValued( com!.map1 ) then
+      return CoKernelOfAdditiveGeneralMapping( com!.map2 );
+    else
+      return ImagesSet( com!.map2,
+                 CoKernelOfAdditiveGeneralMapping( com!.map1 ) );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  KernelOfMultiplicativeGeneralMapping( <map> ) . . for composition mapping
+##
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
+    "method for a composition mapping that resp. mult. and inv.",
+    true,
+    [ IsGeneralMapping and IsCompositionMappingRep
+      and RespectsMultiplication and RespectsInverses ], 0,
+    function( com )
+    if IsInjective( com!.map2 ) then
+      return KernelOfMultiplicativeGeneralMapping( com!.map1 );
+    else
+      return PreImagesSet( com!.map1,
+                 KernelOfMultiplicativeGeneralMapping( com!.map2 ) );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  CoKernelOfMultiplicativeGeneralMapping( <map> ) . for composition mapping
+##
+InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
+    "method for a composition mapping that resp. mult. and inv.",
+    true,
+    [ IsGeneralMapping and IsCompositionMappingRep
+      and RespectsMultiplication and RespectsInverses ], 0,
+    function( com )
+    if IsSingleValued( com!.map1 ) then
+      return CoKernelOfMultiplicativeGeneralMapping( com!.map2 );
+    else
+      return ImagesSet( com!.map2,
+                 CoKernelOfMultiplicativeGeneralMapping( com!.map1 ) );
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . . . for composition mapping
 ##
 InstallMethod( PrintObj,
@@ -561,14 +645,15 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#R  IsInverseMappingRep( <map> )
+#R  IsInverseGeneralMappingRep( <map> )
 ##
 ##  Note that if a mapping knows its inverse mapping then also the inverse
 ##  mapping knows its inverse mapping.
 ##  So we need this flag to avoid infinite recursion when a question is
 ##  delegated to the inverse of a mapping.
 ##
-IsInverseMappingRep := NewRepresentation( "IsInverseMappingRep",
+IsInverseGeneralMappingRep := NewRepresentation(
+    "IsInverseGeneralMappingRep",
     IsNonSPGeneralMapping,
     [] );
 
@@ -601,7 +686,8 @@ InstallMethod( InverseGeneralMapping,
     # make the mapping
     inv:= Objectify( KindOfDefaultGeneralMapping( Range( map ),
                                                   Source( map ),
-                         IsInverseMappingRep and IsAttributeStoringRep ),
+                             IsInverseGeneralMappingRep
+                         and IsAttributeStoringRep ),
                      rec() );
 
     # if possible, enter preimage and image
@@ -626,7 +712,27 @@ InstallMethod( InverseGeneralMapping,
       SetIsInjective( inv, IsSingleValued( map ) );
     fi;
 
-    # we know the inverse mapping of the inverse mapping ;-)
+    if HasRespectsMultiplication( map ) then
+      SetRespectsMultiplication( inv, RespectsMultiplication( map ) );
+    fi;
+    if HasRespectsInverses( map ) then
+      SetRespectsInverses( inv, RespectsInverses( map ) );
+    elif HasRespectsOne( map ) then
+      SetRespectsOne( inv, RespectsOne( map ) );
+    fi;
+
+    if HasRespectsAddition( map ) then
+      SetRespectsAddition( inv, RespectsAddition( map ) );
+    fi;
+    if HasRespectsAdditiveInverses( map ) then
+      SetRespectsAdditiveInverses( inv, RespectsAdditiveInverses( map ) );
+    elif HasRespectsZero( map ) then
+      SetRespectsZero( inv, RespectsZero( map ) );
+    fi;
+
+#T there is an asymmetry of resp. sc. mult.?
+
+    # we know the inverse general mapping of the inverse general mapping ;-)
     SetInverseGeneralMapping( inv, map );
 
     # return the inverse general mapping
@@ -654,7 +760,7 @@ InstallOtherMethod( Inverse,
     if IsBijective( map ) then
       inv:= Objectify( KindOfDefaultGeneralMapping( Range( map ),
                                                     Source( map ),
-                                    IsInverseMappingRep
+                                    IsInverseGeneralMappingRep
                                 and IsMapping
                                 and IsInjective
                                 and IsSurjective
@@ -664,7 +770,7 @@ InstallOtherMethod( Inverse,
 #T allowed ??
       inv:= Objectify( KindOfDefaultGeneralMapping( Range( map ),
                                                     Source( map ),
-                                    IsInverseMappingRep
+                                    IsInverseGeneralMappingRep
                                 and IsAttributeStoringRep ),
                        rec() );
     fi;
@@ -687,24 +793,12 @@ InstallOtherMethod( Inverse,
 
 #############################################################################
 ##
-#M  Enumerator( <map> ) . . . . . . . . . . . . . . .  for an inverse mapping
-##
-InstallMethod( Enumerator,
-    "for an inverse mapping",
-    true,
-    [ IsGeneralMapping and IsInverseMappingRep ], 0,
-    inv -> List( Enumerator( InverseGeneralMapping( inv ) ),
-                 tuple -> Tuple( [ tuple[2], tuple[1] ] ) ) );
-
-
-#############################################################################
-##
 #M  IsSingleValued( <map> ) . . . . . . . . . . . . .  for an inverse mapping
 ##
 InstallMethod( IsSingleValued,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseMappingRep ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
     inv -> IsInjective( InverseGeneralMapping( inv ) ) );
 
 
@@ -715,7 +809,7 @@ InstallMethod( IsSingleValued,
 InstallMethod( IsInjective,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseMappingRep ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
     inv -> IsSingleValued( InverseGeneralMapping( inv ) ) );
 
 
@@ -726,7 +820,7 @@ InstallMethod( IsInjective,
 InstallMethod( IsSurjective,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseMappingRep ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
     inv -> IsTotal( InverseGeneralMapping( inv ) ) );
 
 
@@ -737,8 +831,56 @@ InstallMethod( IsSurjective,
 InstallMethod( IsTotal,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseMappingRep ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
     inv -> IsSurjective( InverseGeneralMapping( inv ) ) );
+
+
+#############################################################################
+##
+#M  CoKernelOfAdditiveGeneralMapping( <invmap> )  . . . . for inverse mapping
+##
+InstallMethod( CoKernelOfAdditiveGeneralMapping,
+    "for an inverse mapping",
+    true,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
+    inv -> KernelOfAdditiveGeneralMapping(
+               InverseGeneralMapping( inv ) ) );
+
+
+#############################################################################
+##
+#M  KernelOfAdditiveGeneralMapping( <invmap> )  . . . . . for inverse mapping
+##
+InstallMethod( KernelOfAdditiveGeneralMapping,
+    "for an inverse mapping",
+    true,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
+    inv -> CoKernelOfAdditiveGeneralMapping(
+               InverseGeneralMapping( inv ) ) );
+
+
+#############################################################################
+##
+#M  CoKernelOfMultiplicativeGeneralMapping( <invmap> )  . for inverse mapping
+##
+InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
+    "for an inverse mapping",
+    true,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
+    inv -> KernelOfMultiplicativeGeneralMapping(
+               InverseGeneralMapping( inv ) ) );
+
+
+#############################################################################
+##
+#M  KernelOfMultiplicativeGeneralMapping( <invmap> )  . . for inverse mapping
+##
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
+    "for an inverse mapping",
+    true,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
+    inv -> CoKernelOfMultiplicativeGeneralMapping(
+               InverseGeneralMapping( inv ) ) );
 
 
 #############################################################################
@@ -748,7 +890,7 @@ InstallMethod( IsTotal,
 InstallMethod( ImageElm,
     "for an inverse mapping and an element",
     FamSourceEqFamElm,
-    [ IsMapping and IsInverseMappingRep, IsObject ], 0,
+    [ IsMapping and IsInverseGeneralMappingRep, IsObject ], 0,
     function ( inv, elm )
     return PreImageElm( InverseGeneralMapping( inv ), elm );
     end );
@@ -761,7 +903,7 @@ InstallMethod( ImageElm,
 InstallMethod( ImagesElm,
     "for an inverse mapping and an element",
     FamSourceEqFamElm,
-    [ IsGeneralMapping and IsInverseMappingRep, IsObject ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep, IsObject ], 0,
     function ( inv, elm )
     return PreImagesElm( InverseGeneralMapping( inv ), elm );
     end );
@@ -774,7 +916,7 @@ InstallMethod( ImagesElm,
 InstallMethod( ImagesSet,
     "for an inverse mapping and a collection",
     CollFamSourceEqFamElms,
-    [ IsGeneralMapping and IsInverseMappingRep, IsCollection ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep, IsCollection ], 0,
     function ( inv, elms )
     return PreImagesSet( InverseGeneralMapping( inv ), elms );
     end );
@@ -787,7 +929,7 @@ InstallMethod( ImagesSet,
 InstallMethod( ImagesRepresentative,
     "for an inverse mapping and an element",
     FamSourceEqFamElm,
-    [ IsGeneralMapping and IsInverseMappingRep, IsObject ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep, IsObject ], 0,
     function ( inv, elm )
     return PreImagesRepresentative( InverseGeneralMapping( inv ), elm );
     end );
@@ -800,7 +942,7 @@ InstallMethod( ImagesRepresentative,
 InstallMethod( PreImageElm,
     "for an inj. & surj. inverse mapping, and an element",
     FamRangeEqFamElm,
-    [ IsGeneralMapping and IsInverseMappingRep
+    [ IsGeneralMapping and IsInverseGeneralMappingRep
                        and IsInjective and IsSurjective, IsObject ], 0,
     function ( inv, elm )
     return ImageElm( InverseGeneralMapping( inv ), elm );
@@ -814,7 +956,7 @@ InstallMethod( PreImageElm,
 InstallMethod( PreImagesElm,
     "for an inverse mapping and an element",
     FamRangeEqFamElm,
-    [ IsGeneralMapping and IsInverseMappingRep, IsObject ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep, IsObject ], 0,
     function ( inv, elm )
     return ImagesElm( InverseGeneralMapping( inv ), elm );
     end );
@@ -827,7 +969,7 @@ InstallMethod( PreImagesElm,
 InstallMethod( PreImagesSet,
     "for an inverse mapping and a collection",
     CollFamRangeEqFamElms,
-    [ IsGeneralMapping and IsInverseMappingRep, IsCollection ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep, IsCollection ], 0,
     function ( inv, elms )
     return ImagesSet( InverseGeneralMapping( inv ), elms );
     end );
@@ -840,7 +982,7 @@ InstallMethod( PreImagesSet,
 InstallMethod( PreImagesRepresentative,
     "for an inverse mapping and an element",
     FamRangeEqFamElm,
-    [ IsInverseMappingRep, IsObject ], 0,
+    [ IsInverseGeneralMappingRep, IsObject ], 0,
     function ( inv, elm )
     return ImagesRepresentative( InverseGeneralMapping( inv ), elm );
     end );
@@ -853,7 +995,7 @@ InstallMethod( PreImagesRepresentative,
 InstallMethod( PrintObj,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseMappingRep ], 100,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 100,
     function ( inv )
     Print( "InverseGeneralMapping( ", InverseGeneralMapping( inv )," )" );
     end );
@@ -861,7 +1003,7 @@ InstallMethod( PrintObj,
 InstallMethod( PrintObj,
     "for an inverse mapping",
     true,
-    [ IsMapping and IsBijective and IsInverseMappingRep ], 100,
+    [ IsMapping and IsBijective and IsInverseGeneralMappingRep ], 100,
     function ( inv )
     Print( "Inverse( ", InverseGeneralMapping( inv )," )" );
     end );

@@ -27,9 +27,9 @@ IsDomain :=
 ##
 #A  GeneratorsOfDomain(<D>)
 ##
-GeneratorsOfDomain := AsListSorted;
-SetGeneratorsOfDomain := SetAsListSorted;
-HasGeneratorsOfDomain := HasAsListSorted;
+GeneratorsOfDomain := AsList;
+SetGeneratorsOfDomain := SetAsList;
+HasGeneratorsOfDomain := HasAsList;
 
 
 #############################################################################

@@ -28,8 +28,6 @@ gap> IsSurjective( map );
 false
 gap> IsTotal( map );
 false
-gap> IsEmpty( map );
-true
 
 gap> map:= GeneralMappingByElements( M, M, tuples{ [ 1, 2, 4, 7 ] } );
 <general mapping: GF(3) -> GF(3) >
@@ -44,9 +42,9 @@ true
 
 gap> inv:= InverseGeneralMapping( map );
 InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > )
-gap> AsList( inv );
-[ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
-  Tuple( [ 0*Z(3), Z(3)^0 ] ), Tuple( [ 0*Z(3), Z(3) ] ) ]
+gap> AsList( UnderlyingRelation( inv ) );
+[ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
+  Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ) ]
 gap> IsInjective( inv );
 false
 gap> IsSingleValued( inv );
@@ -59,7 +57,7 @@ false
 gap> comp:= CompositionMapping( inv, map );
 CompositionMapping( <general mapping: GF(3) -> GF(
 3) >, InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
-gap> AsList( comp );
+gap> AsList( UnderlyingRelation( comp ) );
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
   Tuple( [ Z(3)^0, Z(3)^0 ] ), Tuple( [ Z(3)^0, Z(3) ] ), 
@@ -77,7 +75,7 @@ true
 gap> anticomp:= CompositionMapping( map, inv );
 CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
 3) > ), <general mapping: GF(3) -> GF(3) > )
-gap> AsList( anticomp );
+gap> AsList( UnderlyingRelation( anticomp ) );
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ Z(3)^0, 0*Z(3) ] ), Tuple( [ Z(3)^0, Z(3)^0 ] ) ]
 gap> IsInjective( anticomp );
@@ -102,7 +100,7 @@ false
 
 gap> inv:= InverseGeneralMapping( map );
 InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > )
-gap> AsList( inv );
+gap> AsList( UnderlyingRelation( inv ) );
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ) ]
 gap> IsInjective( inv );
 true
@@ -152,9 +150,9 @@ gap> conj:= map ^ inv;
 CompositionMapping( CompositionMapping( <general mapping: GF(3) -> GF(
 3) >, <general mapping: GF(3) -> GF(
 3) > ), InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
-gap> IsSubset( conj, map );
+gap> IsSubset( UnderlyingRelation( conj ), UnderlyingRelation( map ) );
 true
-gap> IsSubset( map, conj );
+gap> IsSubset( UnderlyingRelation( map ), UnderlyingRelation( conj ) );
 false
 
 gap> One( map );
@@ -188,8 +186,8 @@ gap> (0*Z(3)) ^ map;
 0*Z(3)
 
 gap> map:= InverseGeneralMapping( map );
-InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > )
-gap> AsList( map );
+InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
+gap> AsList( UnderlyingRelation( map ) );
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ Z(3)^0, Z(3) ] ) ]
 
@@ -236,10 +234,10 @@ gap> ImagesRepresentative( map, Z(3) );
 0*Z(3)
 
 gap> map:= InverseGeneralMapping( map );
-Inverse( <general mapping: GF(3) -> GF(3) > )
-gap> AsList( map );
-[ Tuple( [ Z(3)^0, 0*Z(3) ] ), Tuple( [ Z(3), Z(3)^0 ] ), 
-  Tuple( [ 0*Z(3), Z(3) ] ) ]
+Inverse( <mapping: GF(3) -> GF(3) > )
+gap> AsList( UnderlyingRelation( map ) );
+[ Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
+  Tuple( [ Z(3), Z(3)^0 ] ) ]
 gap> IsInjective( map );
 true
 gap> IsSingleValued( map );

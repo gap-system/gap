@@ -71,7 +71,17 @@ AddNormalizingElementPcgs := function( G, z )
 
 	# If necessary, extend the stabilizer chain.
 	if not IsBound( S.stabilizer )  then
-            InsertTrivialStabilizer( S, SmallestMovedPointPerm( z ) );
+            if IsBound( G.base )  then
+                pnt := PositionProperty( G.base, p -> p ^ z <> p );
+                if pnt = fail  then
+                    pnt := SmallestMovedPointPerm( z );
+                else
+                    pnt := G.base[ pnt ];
+                fi;
+            else
+                pnt := SmallestMovedPointPerm( z );
+            fi;
+            InsertTrivialStabilizer( S, pnt );
             Unbind( S.stabilizer.relativeOrders );
         fi;
         
@@ -342,8 +352,13 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
             U := EmptyStabChain( [  ], One( U ) );
         else
             U := StabChainAttr( U );
+            if IsBound( U.base )  then  i := U.base;
+                                  else  i := fail;   fi;
             U := StabChainBaseStrongGenerators( BaseStabChain( U ),
                          StrongGeneratorsStabChain( U ) );
+            if i <> fail  then
+                U.base := i;
+            fi;
         fi;
     fi;
     
@@ -412,8 +427,10 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
     fi;
     
     # Construct the pcgs object.
-    if whole  then  filter := IsPcgsPermGroupRep;
-              else  filter := IsPcgsFactorGroupPermGroupRep;  fi;
+    filter := IsPcgsPermGroupRep;
+    if not whole  then
+        filter := filter and IsModuloPcgs;
+    fi;
     if desc  and  elab = false  then
         if cent         then  seriesAttr := LowerCentralSeriesOfGroup;
                         else  seriesAttr := DerivedSeriesOfGroup;     fi;
@@ -432,9 +449,8 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
             Setter( seriesAttr )( grp, series );
         fi;
     else
-        pcgs!.denominator := G[ Length( G ) ];
-        if     HasIsSolvableGroup( pcgs!.denominator )
-           and IsSolvableGroup( pcgs!.denominator )  then
+        if     HasIsSolvableGroup( G[ Length( G ) ] )
+           and IsSolvableGroup( G[ Length( G ) ] )  then
             SetIsSolvableGroup( grp, true );
         fi;
     fi;
@@ -469,9 +485,9 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
         SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
         series[ i ]!.noInSeries := i;
     od;
+    pcgs!.series := series;
     pcgs!.nrGensSeries := pcgs!.nrGensSeries -
                           pcgs!.nrGensSeries[ Length( series ) ];
-    SetPcSeries( pcgs, series );
     if seriesAttr <> false  then
         Setter( seriesAttr )( pcgs, series );
     fi;
@@ -496,10 +512,10 @@ TailOfPcgsPermGroup := function( pcgs, from )
                     IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
                     FamilyObj( OneOfPcgs( pcgs ) ),
                     pcgs{ [ ffrom .. Length( pcgs ) ] } );
-    tail!.stabChain := StabChainAttr( PcSeries( pcgs )[ i ] );
+    tail!.stabChain := StabChainAttr( pcgs!.series[ i ] );
     SetRelativeOrders( tail, RelativeOrders( pcgs )
             { [ from .. Length( pcgs ) ] } );
-    SetPcSeries( tail, PcSeries( pcgs ){[i..Length(pcgs!.nrGensSeries)]} );
+    tail!.series := pcgs!.series{[i..Length(pcgs!.nrGensSeries)]};
     tail!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
     if from < ffrom  then
         tail := ExtendedPcgs( tail, pcgs{ [ from .. ffrom - 1 ] } );
@@ -712,7 +728,7 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
     if G{ [ Length( G ) - Length( N ) + 1 .. Length( G ) ] } = N  then
         pcgs := PcgsByPcSequenceCons(
                 IsPcgsDefaultRep,
-                IsPcgs and IsModuloPcgs and IsPcgsFactorGroupPermGroupRep
+                IsPcgs and IsModuloPcgs and IsPcgsPermGroupRep
                                         and IsPrimeOrdersPcgs,
                 FamilyObj( OneOfPcgs( G ) ),
                 G{ [ 1 .. Length( G ) - Length( N ) ] } );
@@ -722,26 +738,25 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
         while G!.nrGensSeries[ i ] > Length( N )  do
             i := i + 1;
         od;
+        pcgs!.series := Concatenation
+            ( G!.series{ [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] );
         pcgs!.nrGensSeries := Concatenation
             ( G!.nrGensSeries{ [ 1 .. i - 1 ] }, [ Length( N ) ] );
-        SetPcSeries( pcgs, Concatenation
-            ( PcSeries( G ){ [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] ) );
     else
         pcgs := PcgsByPcSequenceCons(
                 IsPcgsDefaultRep,
-                IsPcgs and IsModuloPcgs and IsPcgsFactorGroupPermGroupRep
+                IsPcgs and IsModuloPcgs and IsPcgsPermGroupRep
                                         and IsPrimeOrdersPcgs,
                 FamilyObj( OneOfPcgs( G ) ),
                 [  ] );
         pcgs!.stabChain := N!.stabChain;
+        pcgs!.series := [ GroupOfPcgs( N ) ];
         pcgs!.nrGensSeries := [ Length( N ) ];
-        SetPcSeries( pcgs, [ GroupOfPcgs( N ) ] );
         pcgs := ExtendedPcgs( pcgs, G );
     fi;
     SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
     SetNumeratorOfModuloPcgs  ( pcgs, G );
     SetDenominatorOfModuloPcgs( pcgs, N );
-    pcgs!.denominator := GroupOfPcgs( N );
     pcgs!.nrGensSeries := pcgs!.nrGensSeries - Length( N );
     return pcgs;
 end );
@@ -827,8 +842,6 @@ InstallMethod( PcSeries, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
         series[ i ] := GroupStabChain( GroupOfPcgs( pcgs ), series[ i ],
                                true );
         N := series[ i - 1 ];
-#        N.cspgNormal := series[ i ];
-#        N.cspgFactor := CyclicGroup( RelativeOrders( pcgs )[ i - 1 ] );
     od;
     return series;
 end );        
@@ -862,10 +875,10 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
                    IsTailInducedPcgsRep and IsPcgsPermGroupRep,
         FamilyObj( OneOfPcgs( pcgs ) ),
         pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    igs!.stabChain := StabChainAttr( PcSeries( pcgs )[ i ] );
+    igs!.stabChain := StabChainAttr( pcgs!.series[ i ] );
     SetRelativeOrders( igs, RelativeOrders( pcgs )
             { [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    SetPcSeries( igs, PcSeries( pcgs ){[i..Length(pcgs!.nrGensSeries)]} );
+    igs!.series := pcgs!.series{[i..Length(pcgs!.nrGensSeries)]};
     igs!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
     SetParentPcgs( igs, pcgs );
     igs!.tailStart := Length( pcgs ) - Length( pcs ) + 1;
@@ -886,10 +899,10 @@ end );
 #    igs := PcgsByPcSequenceNC( FamilyObj( OneOfPcgs( pcgs ) ),
 #                    IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
 #                    pcgs{ [ Length( pcgs ) - l + 1 .. Length( pcgs ) ] } );
-#    igs!.stabChain := StabChainAttr( PcSeries( pcgs )[ i ] );
+#    igs!.stabChain := StabChainAttr( pcgs!.series[ i ] );
 #    SetRelativeOrders( igs, RelativeOrders( pcgs )
 #            { [ Length( pcgs ) - l + 1 .. Length( pcgs ) ] } );
-#    SetPcSeries( igs, PcSeries( pcgs ){[i..Length(pcgs!.nrGensSeries)]} );
+#    igs!.series := pcgs!.series{[i..Length(pcgs!.nrGensSeries)]};
 #    igs!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
 #    igs := ExtendedPcgs( igs, pcs{ [ 1 .. Length( pcs ) - l ] } );
 #    SetFilterObj( igs, IsInducedPcgs );
@@ -950,8 +963,7 @@ InstallMethod( ExtendedPcgs, "perm group", true,
     SetRelativeOrders( pcgs, S.relativeOrders );
     Unbind( S.relativeOrders );
     SetGroupOfPcgs( pcgs, GroupStabChain( S ) );
-    SetPcSeries( pcgs, Concatenation( [ GroupOfPcgs( pcgs ) ],
-            PcSeries( N ) ) );
+    pcgs!.series := Concatenation( [ GroupOfPcgs( pcgs ) ], N!.series );
     pcgs!.nrGensSeries := Concatenation( [ Length( pcgs ) ],
             N!.nrGensSeries );
     return pcgs;

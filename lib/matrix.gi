@@ -25,6 +25,14 @@ IsNullMapMatrix := NewRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
 
 NullMapMatrix := Objectify( NewKind( ListsFamily, IsNullMapMatrix ), [  ] );
 
+InstallMethod( Length,
+    "method for null map matrix",
+    true,
+    [ IsNullMapMatrix ], 0,
+    function( null )
+    return 0;
+    end );
+
 InstallMethod( \*, true, [ IsVector, IsNullMapMatrix ], 0,
     function( v, null )
     return [  ];

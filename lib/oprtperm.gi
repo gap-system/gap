@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.21  1997/02/26 13:59:28  htheisse
+#H  reorganised methods for `MaximalBlocks'
+#H
 #H  Revision 4.20  1997/02/12 14:58:52  htheisse
 #H  renamed `IsomorphismPermGroup' to `IsomorphismPermGroups'
 #H
@@ -494,44 +497,6 @@ InstallMethod( BlocksOp,
 
     # return the set of blocks <blks>
     return Immutable( Set( blks ) );
-end );
-
-#############################################################################
-##
-#M  MaximalBlocks( <G>, <D>, <seed>, <gens>, <oprs>, <OnPoints> ) max. blocks
-##
-InstallMethod( MaximalBlocksOp,
-        "G, ints, seed, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
-          IsList and IsCyclotomicsCollection,
-          IsList,
-          IsList and IsPermCollection,
-          IsFunction ], 0,
-    function ( G, D, seed, gens, oprs, opr )
-    local   blks,       # blocks, result
-            H,          # image of <G>
-            blksH,      # blocks of <H>
-            i;          # loop variable
-
-    if opr <> OnPoints  then
-        TryNextMethod();
-    fi;
-    
-    blks := BlocksOp( G, D, seed, gens, oprs, opr );
-
-    # iterate until the operation becomes primitive
-    H := G;
-    blksH := blks;
-    while Length( blksH ) <> 1  do
-        H     := Operation( H, blksH, OnSets );
-        blksH := Blocks( H, [1..Length(blksH)] );
-        if Length( blksH ) <> 1  then
-            blks := List( blksH, bl -> Union( blks{ bl } ) );
-        fi;
-    od;
-
-    # return the blocks <blks>
-    return Immutable( blks );
 end );
 
 #############################################################################
