@@ -701,7 +701,7 @@ ClassesSolvableGroup := function( arg )
                           else  candidates := false;     fi;
     
     # Treat the trivial case.
-    if IsTrivial( G )  then
+    if IsTrivial( U )  then
         if mode = 4  then  # test conjugacy of two elements
             return One( U );
         elif mode mod 2 = 1  then  # rational classes
@@ -710,6 +710,7 @@ ClassesSolvableGroup := function( arg )
             SetGaloisGroup( cl, GroupByPrimeResidues( [  ], 1 ) );
             GaloisGroup( cl )!.type := 3;
             GaloisGroup( cl )!.operators := [  ];
+            cl!.isCentral := true;
             if mode mod 4 = 3  then  # construct the power tree
                 cl!.power           := RationalClass( G, One( G ) );
                 cl!.power!.operator := One( G );
@@ -719,9 +720,10 @@ ClassesSolvableGroup := function( arg )
             cl := ConjugacyClass( H, One( H ) );
             SetStabilizerOfExternalSet( cl, H );
         fi;
-        cl!.isCentral := true;
         if IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
             cls := List( candidates, c -> cl );
+        elif candidates <> false  then
+            return StabilizerOfExternalSet( cl );
         else
             cls := [ cl ];
         fi;
@@ -944,8 +946,8 @@ ClassesSolvableGroup := function( arg )
         else
             return tra[ 1 ] / tra[ 2 ];
         fi;
-    elif candidates <> false  # identification of classes
-     and IsIdentical( FamilyObj( U ), FamilyObj( candidates ) )  then
+    elif IsIdentical( FamilyObj( U ), FamilyObj( candidates ) )  then
+        # identification of classes
         for q  in [ 1 .. Length( cls ) ]  do
             cls[ q ]!.operator := tra[ q ];
             if mode mod 2 = 1  then  # rational classes

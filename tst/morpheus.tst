@@ -11,8 +11,9 @@
 
 gap> START_TEST("$Id$");
 
-gap> g:=SmallGroup(8,4);;
+gap> g:=SmallGroup(8,3);;
 gap> a:=AutomorphismGroup(g);;
+gap> inn:=InnerAutomorphismsAutomorphismGroup(a);;
 gap> iso1:=IsomorphismGroups(a,g);;
 gap> iso1=fail;
 false
@@ -20,8 +21,8 @@ gap> iso2:=IsomorphismGroups(g,a);;
 gap> iso2=fail;
 false
 gap> iso3:=iso2*iso1;;
-gap> r:=RepresentativeOperation(g,GeneratorsOfGroup(g),
-> List(GeneratorsOfGroup(g),i->Image(iso3,i)),OnTuples);;
+gap> if not iso3 in inn then iso3:=iso3*iso3;fi;
+gap> r:=RepresentativeOperation(g,GeneratorsOfGroup(g),List(GeneratorsOfGroup(g),i->Image(iso3,i)),OnTuples);;
 gap> r=fail;
 false
 gap> iso4:=iso3*InnerAutomorphism(g,r^-1);;

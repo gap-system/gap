@@ -180,6 +180,8 @@ ConjugacyClassesTry := function ( G, classes, elm, length, fixes )
     if ForAll( classes, D -> length mod Size(D) <> 0 or not elm in D )  then
         C := ConjugacyClass( G, elm );
         Add( classes, C );
+	Info(InfoClasses,2,"found new class ",Length(classes),
+	     " of size ",Size(C));
         new := [ C ];
 
         # try powers that keep the order, compare only with new classes
@@ -190,6 +192,7 @@ ConjugacyClassesTry := function ( G, classes, elm, length, fixes )
                         D := ConjugacyClass( G, elm^i );
                         Add( classes, D );
                         Add( new, D );
+			Info(InfoClasses,2,"found new power");
                     fi;
                 elif IsPrimeInt(i)  then
                     fixes := fixes * i;

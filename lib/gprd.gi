@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.6  1997/03/25 10:14:51  ahulpke
+#H  'DirectProduct' may take a list of groups as agrument
+#H
 #H  Revision 4.5  1997/03/10 15:43:14  beick
 #H  removed new catagory for products of groups, added products of pc groups
 #H
@@ -25,11 +28,16 @@ Revision.gprd_gi :=
     "@(#)$Id$";
 
 DirectProduct := function( arg )
-    local   D,  i;
+local D,grps,i;
     
-    D := arg[ 1 ];
-    for i  in [ 2 .. Length( arg ) ]  do
-        D := DirectProduct2( D, arg[ i ] );
+    if IsList(arg[1]) then
+      grps:=arg[1];
+    else
+      grps:=arg;
+    fi;
+    D := grps[ 1 ];
+    for i  in [ 2 .. Length( grps ) ]  do
+        D := DirectProduct2( D, grps[ i ] );
     od;
     return D;
 end;

@@ -198,7 +198,18 @@ InstallMethod( AsGroupGeneralMappingByImages,
                gens, List( gens, g -> ImagesRepresentative( map, g ) ) );
     end );
 
-
+InstallMethod( AsGroupGeneralMappingByImages, true,
+    [ IsGroupGeneralMapping ], 0,
+    function( map )
+    local gens, cok;
+    gens:= GeneratorsOfGroup( PreImagesRange( map ) );
+    cok := GeneratorsOfGroup( CoKernelOfMultiplicativeGeneralMapping( map ) );
+    return GroupGeneralMappingByImages( Source( map ), Range( map ),
+           Concatenation( gens, List( cok, g -> One( Source( map ) ) ) ),
+           Concatenation( List( gens, g -> ImagesRepresentative( map, g ) ),
+                   cok ) );
+    end );
+    
 #############################################################################
 ##
 #M  AsGroupGeneralMappingByImages( <hom> )  . . . . . . . . . . . .  for GHBI

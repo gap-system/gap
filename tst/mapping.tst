@@ -234,7 +234,7 @@ gap> ImagesRepresentative( map, Z(3) );
 0*Z(3)
 
 gap> map:= InverseGeneralMapping( map );
-Inverse( <mapping: GF(3) -> GF(3) > )
+InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
 gap> AsList( UnderlyingRelation( map ) );
 [ Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
   Tuple( [ Z(3), Z(3)^0 ] ) ]

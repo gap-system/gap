@@ -15,7 +15,6 @@ Revision.grpnice_gi :=
 
 #############################################################################
 ##
-
 #M  GeneratorsOfMagmaWithInverses( <nice> )
 ##
 InstallMethod( GeneratorsOfMagmaWithInverses,
@@ -30,6 +29,16 @@ function( G )
                  x -> PreImagesRepresentative(nice,x) );
 end );
 
+
+#############################################################################
+##
+#M  One( <nice> )
+##
+InstallOtherMethod( One,"via niceomorphism",true,
+    [ IsGroup and IsHandledByNiceMonomorphism ],0,
+function( G )
+    return PreImagesRepresentative(NiceMonomorphism(G),One(NiceObject(G)));
+end );
 
 #############################################################################
 ##
@@ -585,6 +594,21 @@ local mon,cl,clg,c,i;
      Add(clg,c);
    od;
    return clg;
+end);
+
+
+#############################################################################
+##
+#M  RightTransversal
+##
+InstallMethod(RightTransversal,"via niceomorphism",true,
+  [IsGroup and IsHandledByNiceMonomorphism,IsGroup],0,
+function(g,u)
+local mon,rt;
+   mon:=NiceMonomorphism(g);
+   rt:=RightTransversal(Image(mon,g),Image(mon,u));
+   rt:=List(rt,i->PreImagesRepresentative(mon,i));
+   return rt;
 end);
 
 
