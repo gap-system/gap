@@ -311,7 +311,7 @@ BindGlobal( "FpGroup",
 ##
 ##  4) Simulate the presence of a {\GAP}~3 `operations' record in an object.
 ##
-##  The compatibility mode of {GAP}~4 supports the use of such `operations'
+##  The compatibility mode of {\GAP}~4 supports the use of such `operations'
 ##  records for domains and as components of plain records.
 ##
 #F  OperationsRecord( <name>, <parent> )

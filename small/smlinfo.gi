@@ -58,9 +58,9 @@ InstallGlobalFunction( SmallGroupsInformation, function( size )
           " of the SmallGroups library. \n");
 
     if idav <> fail then 
-        Print("  IdGroup is available for this size. \n \n");
+        Print("  IdSmallGroup is available for this size. \n \n");
     else        
-        Print("  IdGroup is not available for this size. \n \n");
+        Print("  IdSmallGroup is not available for this size. \n \n");
     fi;
 end );
 
@@ -111,7 +111,7 @@ SMALL_GROUPS_INFORMATION[ 8 ] := function( size, smav, num )
     prop := PROPERTIES_SMALL_GROUPS[ size ].frattFacs;
 
     if not IsPrimePowerInt( size ) then
-        Print("  There are sorted by their Frattini factors. \n");
+        Print("  They are sorted by their Frattini factors. \n");
         i := 1;
         if ffid[ 2 ] > 1 then
             repeat 
@@ -129,7 +129,7 @@ SMALL_GROUPS_INFORMATION[ 8 ] := function( size, smav, num )
         Print("     ", ffid[2], " - ", num, 
               " have trivial Frattini subgroup.\n");
     else
-        Print("  There are sorted by their ranks. \n");
+        Print("  They are sorted by their ranks. \n");
         Print("     ", 1, " is cyclic. \n");
         i := 2;
         repeat 
@@ -169,7 +169,7 @@ SMALL_GROUPS_INFORMATION[ 11 ] := function( size, smav, num )
     q := 2;
     if IsBound( smav.q ) then q := smav.q; fi;
 
-    Print("  There are sorted by normal Sylow subgroups. \n");
+    Print("  They are sorted by normal Sylow subgroups. \n");
     Print( "     1 - ", smav.pos[ 2 ], " are the nilpotent groups.\n" );
     for i in [ 2 .. Length( smav.types ) ] do
         Print( "     ", smav.pos[i] + 1, " - ", smav.pos[i+1] );

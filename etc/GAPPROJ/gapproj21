@@ -1,0 +1,35 @@
+@Name
+Matrix arithmetic over arbitrary rings
+@Contact
+GAP
+@Date
+2001/9/25
+@Time
+3
+@Need
+1
+@NeedA
+0
+@Math
+4
+@Prog
+3
+@Component
+Liner algebra
+@Descr
+<P>
+The existing matrix routines (Determinant, Inverse) often use implicitly,
+that the underlying ring is commutative and an integral domain or even that
+every nonzero element is invertible.
+</P>
+<P>
+As some people want to work with matrices over other rings, it would be nice
+to have more general (albeit slower) routines that do not require quotients.
+</P>
+
+<P>
+This change should be a pure add-on with interfering as little as possible
+with the existing methods which need to be fast.
+@Manual
+@Ref
+@Rem

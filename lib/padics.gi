@@ -61,7 +61,7 @@ PrintPadicExpansion := function( ppower, int, prime, precision )
             if pos = 1 then
                 Print( "." );
             fi;
-            if r >= 10 then
+            if prime >= 10 then
                 if flag then
                     Print( r, "'" );
                 else

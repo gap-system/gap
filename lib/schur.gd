@@ -46,7 +46,7 @@ DeclareOperation( "EpimorphismSchurCover", [IsGroup] );
 ##
 #O  AbelianInvariantsMultiplier(<G>)
 ##
-##  \index{Multiplier}\index{Schur Multiplier}
+##  \index{Multiplier}\atindex{Schur multiplier}{@Schur multiplier}
 ##  returns a list of the abelian invariants of the Schur multiplier of <G>.
 DeclareOperation( "AbelianInvariantsMultiplier", [IsGroup] );
 
@@ -84,6 +84,7 @@ DeclareGlobalFunction("CorestEval");
 ##  Let <hom> an epimorphism from an fp group onto a finite group <G>. This
 ##  function returns an epimorphism onto the <p>-Sylow subgroup of <G>,
 ##  whose kernel is the largest quotient of the multiplier, that can lift
-##  <hom> to a larger quotient.
+##  <hom> to a larger quotient. (The source of this map thus is $M_R(B)$
+##  of~\cite{HulpkeQuot}.)
 DeclareGlobalFunction("RelatorFixedMultiplier");
 

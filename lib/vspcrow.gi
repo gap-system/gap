@@ -258,7 +258,10 @@ InstallTrueMethod( IsSmallList,
 ##
 InstallMethod( LinearCombination, IsCollsElms,
     [ IsBasis and IsSemiEchelonBasisOfGaussianRowSpaceRep, IsRowVector ],
-    function( B, coeff )
+        function( B, coeff )
+    if Length(coeff) = 0 then
+        TryNextMethod();
+    fi;
     return coeff * BasisVectors( B );
     end );
 
@@ -525,7 +528,7 @@ InstallMethod( Basis,
 
     # Construct the basis.
     B:= Objectify( NewType( FamilyObj( gens ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
                    rec() );
@@ -569,7 +572,7 @@ InstallMethod( BasisNC,
 
     # Construct the basis.
     B:= Objectify( NewType( FamilyObj( gens ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
                    rec() );
@@ -604,7 +607,7 @@ InstallMethod( SemiEchelonBasis,
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
                    rec() );
@@ -631,7 +634,7 @@ InstallMethod( SemiEchelonBasis,
 
     # Construct the basis.
     B:= Objectify( NewType( FamilyObj( gens ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
                    rec() );
@@ -668,7 +671,7 @@ InstallMethod( SemiEchelonBasisNC,
     local B,  # the basis, result
           gensi; # immutable copy
     B:= Objectify( NewType( FamilyObj( gens ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
                    rec() );
@@ -996,7 +999,7 @@ InstallMethod( CanonicalBasis,
     od;
 
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep
                             and IsCanonicalBasis ),
@@ -1057,7 +1060,7 @@ InstallMethod( CanonicalBasis,
     fi;
 
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep
                             and IsCanonicalBasis ),
@@ -1131,7 +1134,7 @@ InstallMethod( CanonicalBasis,
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep

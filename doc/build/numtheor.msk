@@ -18,7 +18,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Prime Residues}
 
-\Declaration{PrimeResidues}
+\Declaration{PrimeResidues}!{function}
 \index{prime residue group}
 
 \beginexample

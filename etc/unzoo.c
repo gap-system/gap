@@ -155,6 +155,9 @@
 **      gcc  -o unzoo.out  -DSYS_IS_DOS_DJGPP  -O2  unzoo.c
 **      copy /b \djgpp\bin\go32.exe+unzoo.out unzoo.exe
 **
+**  Under  Windows with the cygwin GNU C compiler,  compile  'unzoo' as follows
+**      gcc -mno-cygwin -DSYS_IS_WINDOWS -O3 unzoo.c -o unzoo.exe
+**
 **  Under TOS with the GNU compiler and unixmode, compile  'unzoo' as follows
 **      gcc  -o unzoo.ttp  -DSYS_IS_TOS_GCC  -O2  unzoo.c
 **
@@ -218,6 +221,9 @@
 **
 **  HISTORY
 *H  $Log$
+*H  Revision 4.5  2001/11/09 01:30:53  gap
+*H  Added `SYS_IS_WINDOWS' target for cygwin/naive windows compilation.
+*H
 *H  Revision 4.4  2000/05/29 08:56:57  sal
 *H  Remove all the \ continuation lines -- who needs the hassle.	SL
 *H
@@ -279,6 +285,13 @@ FILE *          ReadArch;
 #define SEEK_READ_ARCH(pos)		(fseek( ReadArch, pos, SEEK_SET) == 0)
 #endif
 #ifdef  SYS_IS_DOS_DJGPP
+FILE *          ReadArch;
+#define OPEN_READ_ARCH(patl)    ((ReadArch = fopen( (patl), "rb" )) != 0)
+#define CLOS_READ_ARCH()        (fclose( ReadArch ) == 0)
+#define BLCK_READ_ARCH(blk,len) fread( (blk), 1L, (len), ReadArch )
+#define RWND_READ_ARCH()        (fseek( ReadArch, 0, 0 ) == 0)
+#endif
+#ifdef  SYS_IS_WINDOWS
 FILE *          ReadArch;
 #define OPEN_READ_ARCH(patl)    ((ReadArch = fopen( (patl), "rb" )) != 0)
 #define CLOS_READ_ARCH()        (fclose( ReadArch ) == 0)
@@ -507,6 +520,9 @@ FILE *          WritBinr;
 #ifdef  SYS_IS_UNIX
 #define CONV_NAME(naml,namu)    strcpy( (naml), (namu) )
 #endif
+#ifdef  SYS_IS_WINDOWS
+#define CONV_NAME(naml,namu)    strcpy( (naml), (namu) )
+#endif
 #ifdef  SYS_IS_DOS_DJGPP
 #define CONV_NAME(naml,namu)    ConvName( (naml), (namu), 8L, 3L, '_' )
 #endif
@@ -548,6 +564,9 @@ FILE *          WritBinr;
 #ifdef  SYS_IS_DOS_DJGPP
 #define CONV_DIRE(dirl,diru)    ConvDire((dirl),(diru),"\\","\\","","\\","\\")
 #endif
+#ifdef  SYS_IS_WINDOWS
+#define CONV_DIRE(dirl,diru)    ConvDire((dirl),(diru),"\\","\\","","\\","\\")
+#endif
 #ifdef  SYS_IS_OS2_EMX
 #define CONV_DIRE(dirl,diru)    ConvDire((dirl),(diru),"/","/","","/","/")
 #endif
@@ -586,6 +605,9 @@ char            Cmd [256];
 #ifdef  SYS_IS_DOS_DJGPP
 #define MAKE_DIRE(patl)         mkdir( (patl), 0777L )
 #endif
+#ifdef  SYS_IS_WINDOWS
+#define MAKE_DIRE(patl)         mkdir( (patl), 0777L )
+#endif
 #ifdef  SYS_IS_OS2_EMX
 #include        <stdlib.h>
 #define MAKE_DIRE(patl)         mkdir( (patl), 0777L )
@@ -620,6 +642,10 @@ unsigned int   Secs [2];
 unsigned long   Secs [2];
 #define SETF_TIME(patl,secs)    (Secs[0]=Secs[1]=(secs),!utime((patl),Secs))
 #endif
+#ifdef  SYS_IS_WINDOWS
+unsigned long   Secs [2];
+#define SETF_TIME(patl,secs)    (Secs[0]=Secs[1]=(secs),!utime((patl),Secs))
+#endif
 #ifdef  SYS_IS_OS2_EMX
 #include        <sys/utime.h>
 struct  utimbuf Secs;
@@ -649,6 +675,9 @@ unsigned long   Secs [2];
 #define SETF_PERM(patl,mode)    (!chmod((patl),(int)(mode)))
 #endif
 #ifdef  SYS_IS_DOS_DJGPP
+#define SETF_PERM(patl,mode)    (!chmod((patl),(int)(mode)))
+#endif
+#ifdef  SYS_IS_WINDOWS
 #define SETF_PERM(patl,mode)    (!chmod((patl),(int)(mode)))
 #endif
 #ifdef  SYS_IS_OS2_EMX

@@ -3,6 +3,7 @@
 %W  run.msk                 GAP documentation                Frank Celler
 %W                                                     & Martin Schoenert
 %W                                                     & Alexander Hulpke
+%W                                                    & Burkhard Hoefling
 %%
 %H  @(#)$Id$
 %%
@@ -19,6 +20,8 @@
 
 This chapter informs about command line options for {\GAP} under UNIX
 (see~"Command Line Options", "Advanced Features of GAP"),
+options and features of {\GAP} on the Macintosh (see 
+"Running GAP under MacOS"),
 the `.gaprc' file (see~"The .gaprc file"),
 completion files (see~"Completion Files"),
 the {\GAP} compiler (see~"The Compiler", "Suitability for Compilation",
@@ -55,7 +58,7 @@ may not be what you experience when you execute {\GAP} on your system.
 
 \indextt{-h}
 `-h' &
-tells {\GAP} to print a summary of all available options (`-h' is menomic
+tells {\GAP} to print a summary of all available options (`-h' is mnemonic
 for ``help''). {\GAP} exits after printing the summary, all other options
 are ignored.
 
@@ -189,35 +192,36 @@ just exits with an appropriate message. The default is that this feature is
 switched off. You have to set it explicitly when you want to enable it.
 
 \indextt{-l}
-`-l <path list>' &
+`-l <path_list>' &
 can be used to modify {\GAP}'s list of root directories  (see  "GAP  Root
 Directory"). Before the option `-l' is used for the first time, the  only
 root directory is `./', i.e., {\GAP} has only one root directory which is
 the current directory. Usually this  option  is  used  inside  a  startup
 script to specify where {\GAP} is  installed  on  the  system.  The  `-l'
 option can also  be  used  by  individual  users  to  tell  {\GAP}  about
-privately  installed  modifications  of  the  library,  additional  share
+privately  installed  modifications  of  the  library,  additional {\GAP}
 packages and so on. Section "GAP Root  Directory"  explains  how  several
 root paths can be used to do this.
 
+\indextt{GAP_ROOT_PATHS}
 &
-<path list> should be a list of  directories separated by semicolons.  No
-whitespace is permitted before or after a semicolon.  Each directory name
+<path_list> should be a list of directories separated by  semicolons.  No
+whitespace is permitted before or after a semicolon. Each directory  name
 should end with a pathname separator, i.e., `/', but {\GAP} will silently
-add one if it  is missing.  If <path  list> does not start  or end with a
-semicolon,    then <path list>     replaces the  existing   list of  root
-directories.  If <path list> starts with a semicolon, then <path list> is
-appended to the existing list  of root directories.   If <path list> ends
+add one if it is missing. If <path_list> does not start  or  end  with  a
+semicolon,  then  <path_list>  replaces  the  existing   list   of   root
+directories. If <path_list> starts with a semicolon, then <path_list>  is
+appended to the existing list of root directories.  If  <path_list>  ends
 with a semicolon (and does not start with one), then the new list of root
-directories is the concatenation of <path  list> and the existing list of
-root directories.  After  {\GAP} has completed  its startup procedure and
-has displays  the prompt, the list of  root directories can  be viewed in
-the variable `GAP_ROOT_PATHS'.
+directories is the concatenation of <path_list> and the existing list  of
+root directories. After {\GAP} has completed its  startup  procedure  and
+displays the prompt, the list of root directories can be  viewed  in  the
+variable `GAP_ROOT_PATHS'.
 
 &
-{\GAP} will attempt  to   read the file  `<root  dir>/lib/init.g'  during
-startup where  <root dir> is one  of the directories  in its list of root
-directories.  If {\GAP} cannot find `init.g' it  will print the following
+{\GAP} will attempt  to  read  the  file  `<root_dir>/lib/init.g'  during
+startup where <root_dir> is one of the directories in its  list  of  root
+directories. If {\GAP} cannot find `init.g' it will print  the  following
 warning
 
 \begintt
@@ -238,6 +242,11 @@ files.
 `-L <filename>' &
 The option `-L' tells {\GAP} to load a saved workspace. See
 section~"Saving and Loading a Workspace".
+
+\indextt{-R}
+`-R' &
+The option `-R' tells {\GAP} not to load a saved workspace previously 
+specified via the `-L' option. 
 
 \index{options!command line, filenames}
 `<filename> ...' &
@@ -265,13 +274,13 @@ from (certain) operating systems and it is required that subsequent calls
 to `sbrk' produce adjacent blocks of memory in this case  because  {\GAP}
 only wants to deal with one large block of  memory.  If  the  C  function
 `malloc' is called for whatever reason, it is likely that `sbrk' will  no
-longer produce adjacent blocks,  therefore  GAP  does  not  use  `malloc'
+longer produce adjacent blocks, therefore {\GAP} does  not  use  `malloc'
 itself.
 
 &
 However some operating systems insist on calling  `malloc'  to  create  a
 buffer when a file is opened, or for some other reason. In order to catch
-these cases GAP preallocates a block of memory  with  `malloc'  which  is
+these cases {\GAP} preallocates a block of memory with `malloc' which  is
 immediately freed. The amount preallocated can  be  controlled  with  the
 `-a' option. If the last character of <memory> is `k' or `K' it is  taken
 as KBytes and if the last character is `m' or `M' <memory>  is  taken  as
@@ -279,15 +288,15 @@ MBytes.
 
 \indextt{-A}
 `-A' &
-By default, some share packages (see "Share  Packages")  are  loaded,  if
+By default, some {\GAP} packages (see "GAP  Packages")  are  loaded,  if
 present, into the {\GAP} session when it  starts.  This  option  disables
 (actually toggles) this behaviour, which can be useful for  debugging  or
 testing.
 
 \indextt{-B}
 `-B <architecture>' &
-Executable binary files that form part of {\GAP} or of  a  share  package
-are kept in a subdirectory of the `bin' dirctory with in  the  {\GAP}  or
+Executable binary files that form part of {\GAP} or of  a {\GAP}  package
+are kept in a subdirectory of the `bin' directory with in  the  {\GAP} or
 package root directory. The subdirectory  name  is  determined  from  the
 operating system, processor and compiler details when {\GAP}  (resp.  the
 package) is installed. Under rare circumstances, it may be  necessary  to
@@ -344,10 +353,10 @@ tells {\GAP} not  to  check  for,  nor  to  use,  completion  files,  see
 
 \indextt{-O}
 `-O' &
-enables a {\GAP 3} compatibility mode, in which (for instance) the values
+enables a {\GAP}~3 compatibility mode, in which (for instance) the values
 `false' and `fail' are identified. Use of this mode  is  not  recommended
-other than as a transitional step in porting {\GAP 3} code to  {\GAP  4},
-because the {\GAP 4} library may not work reliably in this mode.
+other than as a transitional step in porting {\GAP}~3 code  to  {\GAP}~4,
+because the {\GAP}~4 library may not work reliably in this mode.
 
 \indextt{-T}
 `-T' &
@@ -378,6 +387,216 @@ Additional options, `-C', `-U', `-P', `-W' and `-z' are  used  internally
 in the {\GAP} compiler and/or on specific operating systems.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Running GAP under MacOS}
+
+This sections describes the features of {\GAP} for MacOS that differ 
+from those described earlier in this chapter. 
+
+
+Since you cannot enter command line options directly when you launch the
+{\GAP} application on a Macintosh, another mechanism is being used: Hold
+down any of the command (apple), option, control or shift keys or space bar
+when launching the {\GAP} application, e.g., by double-clicking on its icon.
+Please note that some keys have side effects (e.g., pressing the option key usually
+closes Findeer windows), and that System X behaves slightly differently from other
+systems.
+
+ A dialog
+box will open, into which you can enter the desired {\GAP} command line
+options.  as described in "Command Line Options". For example, 
+if you want {\GAP} to start with a workspace of 32 megabytes,
+the dialog box should contain the following text:
+
+\begintt
+-m 32m
+\endtt
+
+Note that the dialog box may already contain settings which you have 
+previously saved. The `OK' button accepts the command line for 
+the current {\GAP} session, and the `Save' button can be used to save these options 
+for subsequent {\GAP} sessions. The
+command line options will be saved in a text file called `GAP options' in the 
+`Preferences' folder in the system folder. You may also modify the file `GAP
+options' directly; note that changes only take effect the next time you launch
+{\GAP}.
+
+There are three additional command line option on the Mac.
+
+\beginitems
+
+\indextt{-z!on Macintosh}
+`-z <n>' &
+sets the time between checks for events (keystrokes, mouse  clicks  etc.)
+to $n/60$ second. Lower values make {\GAP} more responsive but  computations
+are somewhat slower. A value greater than  60  is  not  recommended,  the
+default value for $n$ is $6$.
+
+\indextt{-P!on Macintosh}
+`-P <m>' &
+sets the amount of memory required  for  printing.  The  reason  is  that
+printer drivers may require quite a bit of memory, and may even crash  if
+not enough is found. To prevent this, {\GAP} will  not  print  unless  at
+least the specified amount of memory is available. The default  value  is
+64 Kilobytes, which is enough for the Apple LaserWriter  printer  driver.
+Setting the printing memory to 0 disables printing altogether.
+
+\indextt{-W!on Macintosh}
+`-W <m>' &
+sets the size of the log window to <m> bytes. This means that if the text
+in the log window exceeds this amount, then lines at the beginning of the
+log are deleted. The default value is 32 Kilobytes.
+
+\enditems
+
+The following command line options work differently on the Mac.
+
+\beginitems
+
+\indextt{-a!on Macintosh}
+`-a' &
+On the Mac, the  `-a'  option  has  a  different  meaning  from  the  one
+described in "Advanced Features of GAP". On the Mac, it must be  used  to
+reserve memory for  loading  dynamic  libraries  into  {\GAP}.  See  "The
+Compiler" for details about dynamic libraries  (and  note  that  the  PPC
+version of {\GAP} for MacOS *can* use dynamic libraries).
+
+\indextt{-f!on Macintosh}\indextt{-n!on Macintosh}
+`-f', `-n' &
+The `-f' and `-n' command line options do not have any effect on the Mac.
+
+\indextt{-e!on Macintosh}
+`-e' &
+The `-e' command line option enables `<ctr>-D'.
+
+\indextt{-o!on Macintosh}
+`-o' &
+The `-o' command line option should not normally be used on the Mac.  The
+value set by the `-o' option is only used if it is lower than the size of
+the workspace that would normally be available for {\GAP}.
+
+\enditems
+
+\indextt{gap.rc}
+The file called `.gaprc' on UNIX systems (see "The .gaprc file") is called 
+`gap.rc' on the Mac; it must be in the same folder as the {\GAP} application.
+
+
+All interaction between {\GAP} and you takes place via the `GAP log' 
+window: this is where {\GAP} prints its messages and waits for your input.
+The amount of text in this window is limited (see the `-W' command line option
+above), so don't be surprised if old {\GAP} messages are deleted from the 
+beginning of the text when this limit is reached. The reason for deleting 
+old lines is that otherwise {\GAP} may run out of memory just because of 
+the messages it has printed.
+
+{\GAP} for the Mac now remembers the font and
+text size (which can be set choosing `Format...' in the `Edit' menu)
+as well as the window position of the {\GAP} log window from one
+session to the next.
+
+Almost all of the {\GAP} editing keys described in Section~"Line Editing" work
+on the Mac. In addition, {\GAP} for MacOS also supports the usual 
+editing keys on the Mac, such as Copy and Paste, Undo, arrow keys (also
+with `<shift>', `<option>' and `<command>'. Note that you can also move 
+forward and backward in the command line history by pressing 
+`<ctrl>-<arrow down>' and `<ctrl>-<arrow up>'.
+
+Note that `Quit' in {\GAP}'s file menu works differently from the `quit'
+{\GAP} command (see~"quit"):
+`Quit' in the file menu always quits the {\GAP} application, it
+cannot be used to quit from a break loop. 
+
+{\GAP} for MacOS also contains a simple built-in text editor, which is mainly
+intended to create {\GAP} files. `New', `Open...', `Save' and~`Close' from the
+`File' menu work in the usual way.
+
+The `Read...' and `LogTo' commands in the `File' menu work basically like the 
+corresponding {\GAP} commands (see "File Operations"). The only difference
+is that {\GAP} will prompt you for the file with a standard Mac file opening
+dialog, so you do not have to enter the path name yourself. (You will see the
+file's path name in the log window afterwards). Note that if a file you want 
+to
+read is open in {\GAP}'s built-in editor, then {\GAP} will read the file from
+the edit window, not from the disk.
+
+If you press the shift key while choosing `Read...' from the `File' menu, the
+menu item will change to `Reread...' which will then use the GAP command `Reread' 
+(see "Reread") to read the chosen file.
+
+The `Read...' command in the `File' menu changes to `Read' if the front window
+belongs to a file in {\GAP}'s built-in editor -- choosing `Read' then makes
+{\GAP} read that file -- and while the file is being read, the `File' menu 
+item
+changes to `Abort Read'. You cannot close the file's window while it is being
+read by {\GAP} -- choose `Abort Read' first.
+
+Garbage collection messages, which are switched on and off by the `-g'
+command line option (see "Command Line Options") can also be switched
+on and off by choosing `Show garbage collections' and 
+`Show partial collections' from the `Window' menu.
+
+If `Always scroll to printout' is selected in the `Window' menu, {\GAP} will
+always scroll the `GAP log' window so that you can see what {\GAP} is 
+currently printing. Otherwise, the {\GAP} log window is only scrolled to
+the current print position when {\GAP} prints its prompt and
+waits for you to enter a command. Note that you may see text lines disappear
+even if `Always scroll to printout' is off -- this happens if you are
+viewing the text at the beginning of the log window and some lines are just
+being deleted from the log because it has exceeded its 32000 character limit.
+
+The contents of the `Help' menu should be quite self-explanatory. Note that, 
+unlike in {\GAP}~3 for the Mac, the online help is not displayed in a separate 
+window,
+nor is the online help available while {\GAP} is computing.
+
+Holding down the Command (Apple) key while selecting text does the same as
+selecting the text and choosing `Find selection in table of contents' from
+the `Help' menu, holding down both Command and Option keys while selecting
+tries to find the selection in the index.
+
+When you want to refer to files or folders in {\GAP} (for example in the
+`Read', `PrintTo', `AppendTo', `LogTo' commands), or have to specify files
+or folders for a command line option, these files must be identified by UNIX
+style path names.  (Presently, {\GAP} for MacOS also supports Mac path
+names, but this may change in the future.) 
+
+Users who are familiar with UNIX path names may skip the rest of this
+section, noting that the working directory (i.e., folder) is the one in 
+which the {\GAP} application resides, and that file names on the Mac are 
+*not* case sensitive. 
+
+Paths are strings used to describe where a file 
+is stored on a hard 
+disk. There are two ways for specifying UNIX path names: absolute and 
+relative paths. An absolute path starts with a `/', then the name of the 
+disk where the file is located, another `/', then a list of folders, 
+each containing the next one, separated by `/', and finally the name of 
+the file, which resides in the last folder in the list. For instance, if 
+your hard disk is called `My HD', and your file `program.g' resides (or 
+should be created) in the folder `programs' in the folder `documents' on 
+`My HD', the absolute path name to that file is
+
+\begintt
+/My HD/documents/programs/program.g
+\endtt
+
+Relative path names work similarly, except that the starting point is 
+not a disk but the folder in which the {\GAP} application program resides.
+Relative path names are formed like absolute ones, except that they do 
+not start with a `/'. Thus, if you want to access the file `temp.g' in 
+the folder `tmp' in the {\GAP} folder, you may use the following path name:
+`tmp/temp.g'.
+It is also possible to move upward to a parent folder: suppose that the 
+folder containing {\GAP} is called `applications', which contains a folder 
+`editor' which in turn contains the file 'program.g', then you could 
+access this file by the path `../editor/program.g'. The path `./' refers
+to the {\GAP} folder itself, and `../' refers to ``the folder above''.
+
+Note also that {\GAP} for the Mac follows (resolves) aliases to folders and 
+files.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The .gaprc file}
 
@@ -385,8 +604,7 @@ in the {\GAP} compiler and/or on specific operating systems.
 When you start {\GAP}, it looks for the file with the name `.gaprc' in
 your home directory (on UNIX systems). On a Macintosh the equivalent
 to the `.gaprc' file is `gap.rc', and for it to be read it must be in
-the same folder as the {\GAP} application; see Section~"Features of GAP for
-MacOS" for more details.
+the same folder as the {\GAP} application.
 If such a file is found it is read after
 `<libname>/init.g', but before any of the files mentioned on the command
 line are read. You can use this file for your private customizations.
@@ -403,8 +621,8 @@ RepAc := RepresentativeAction;
 \endtt
 
 \atindex{GAP3}{@GAP3}
-If you have already a `.gaprc' file for \GAP~3, its settings might not be
-compatible with \GAP~4. In this case it has to be removed.  On UNIX Systems
+If you have already a `.gaprc' file for {\GAP}~3, its settings might not be
+compatible with {\GAP}~4. In this case it has to be removed.  On UNIX Systems
 the following `.gaprc' file can be used to load alternatively a `.gap3rc' or
 a `.gap4rc' file from your home directory.
 
@@ -449,7 +667,7 @@ you have finished modifying  the  library  files  you  can  recreate  the
 completion files using:
 
 \>CreateCompletionFiles() F
-\)CreateCompletionFiles( <path> ) F
+\>CreateCompletionFiles( <path> ) F
 
 To create  completion files you must  have write permissions to `<path>',
 which defaults to the  first root directory.   Start {\GAP} with the `-N'
@@ -462,19 +680,19 @@ This produces, in addition to lots of informational output,
 the completion files.
 
 \begintt
-    $ gap4 -N
-    gap> CreateCompletionFiles();
-    #I  converting "gap4/lib/read2.g" to "gap4/lib/read2.co"
-    #I    parsing "gap4/lib/process.gd"
-    #I    parsing "gap4/lib/listcoef.gi"
-    ...
+$ gap4 -N
+gap> CreateCompletionFiles();
+#I  converting "gap4/lib/read2.g" to "gap4/lib/read2.co"
+#I    parsing "gap4/lib/process.gd"
+#I    parsing "gap4/lib/listcoef.gi"
+...
 \endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Compiler}
 
 \indextt{gac}
-The {\GAP} compiler {\sf GAC} creates C code from {\GAP} code and
+The {\GAP} compiler \package{GAC} creates C code from {\GAP} code and
 then calls the system's C compiler to produce machine code from it. This can
 result in a speedup (see section~"Suitability for Compilation" for more
 details).
@@ -496,7 +714,7 @@ rm -f /tmp/5827_test.c
 This produces a file `<file>.so'.
 
 \>LoadDynamicModule( <filename> ) F
-\)LoadDynamicModule( <filename>, <crc> )
+\>LoadDynamicModule( <filename>, <crc> ) F
 
 To load a compiled file, the command `LoadDynamicModule' is used. This
 command loads <filename> as module. If given, the CRC checksum <crc> must
@@ -547,7 +765,7 @@ The most tempting code to compile is probably the library. This  section
 describes the mechanism used to make {\GAP} recognize compiled versions of 
 library files. Note however that there is no point in compiling the whole
 library as typically only few functions benefit from compilation as
-described in section~"Suitability for Compilation".
+described in Section~"Suitability for Compilation".
 
 All files that come with {\GAP} are read using the internal function
 `READ_GAP_ROOT'. This function then checks whether a compiled version of the
@@ -606,7 +824,8 @@ CRC (cyclic redundancy check) numbers provide a certain method of doing
 checksums. They are used by {\GAP} to check whether
 files have changed.
 Whenever files are ``condensed'' -- for example for completion files
-("Completion Files") or when compiling files ("The compiler") -- such a
+(see Section~"Completion Files") or when compiling files 
+(see Section~"The compiler") -- such a
 checksum is computed implicitly and stored within the condensed file.
 
 When reading a condensed version of the file instead of the original one,
@@ -622,7 +841,6 @@ gap> CrcFile("lib/morpheus.gi");
 \Section{Saving and Loading a Workspace}
 
 \index{save}
-\index{load}
 
 \>SaveWorkspace( <filename> ) F
 
@@ -640,7 +858,7 @@ gap> quit;
 `SaveWorkspace' can only be used at the main `gap>' prompt. It cannot
 be included in the body of a loop or function, or called from a break loop.
 
-\>`-L <filename>'{load}
+\>`-L <filename>'{loading a saved workspace}
 
 A saved workspace can be loaded by starting {\GAP} with the option `-L'
 (see~"Command Line Options").
@@ -665,7 +883,7 @@ gap> a;
 \endtt
 
 We cannot guarantee that saved workspaces are portable between different
-system architectures or over different versions of GAP or its library.
+system architectures or over different versions of {\GAP} or its library.
 
 If compiled modules had been loaded into {\GAP} before the workspace
 was saved, they will be loaded into the new {\GAP} session during the

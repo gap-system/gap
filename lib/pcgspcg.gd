@@ -26,5 +26,14 @@ InstallTrueMethod(IsParentPcgsFamilyPcgs,IsFamilyPcgs);
 
 #############################################################################
 ##
+#F  DoExponentsConjLayerFampcgs( <p>,<m>,<e>,<c> )
+##
+##  this algorithm does not compute any conjugates but only looks them up and
+##  adds vectors mod <p>.
+##
+DeclareGlobalFunction("DoExponentsConjLayerFampcgs");
+
+#############################################################################
+##
 #E  pcgspcg.gd	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

@@ -1146,8 +1146,9 @@ InstallGlobalFunction( Gcd, function ( arg )
 #T        Error("<R> must be a Euclidean ring");
 #T    fi;
 
+    
     # compute the gcd by iterating
-    gcd := ns[1];
+    gcd := StandardAssociate(R,ns[1]);
     for i  in [2..Length(ns)]  do
         gcd := GcdOp( R, gcd, ns[i] );
     od;
@@ -1333,7 +1334,7 @@ InstallGlobalFunction( Lcm, function ( arg )
 #T    fi;
 
     # compute the least common multiple
-    lcm := ns[1];
+    lcm := StandardAssociate(R,ns[1]);
     for i  in [2..Length(ns)]  do
         lcm := LcmOp( R, lcm, ns[i] );
     od;

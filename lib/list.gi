@@ -12,6 +12,53 @@
 Revision.list_gi :=
     "@(#)$Id$";
 
+#############################################################################
+##
+#M  methods for nesting depths for some quick cases 
+##
+
+InstallMethod(NestingDepthA, [IsCyclotomicCollection and IsGeneralizedRowVector],
+        v->1);
+InstallMethod(NestingDepthM, [IsCyclotomicCollection and IsMultiplicativeGeneralizedRowVector],
+        v->1);
+InstallMethod(NestingDepthA, [IsFFECollection and IsGeneralizedRowVector],
+        v->1);
+InstallMethod(NestingDepthM, [IsFFECollection and IsMultiplicativeGeneralizedRowVector],
+        v->1);
+
+InstallMethod(NestingDepthA, [IsCyclotomicCollColl and
+        IsGeneralizedRowVector],
+        m->2);
+
+InstallMethod(NestingDepthM, [IsCyclotomicCollColl and 
+        IsOrdinaryMatrix and IsMultiplicativeGeneralizedRowVector],
+        function( m )
+    local t;
+    t := TNUM_OBJ_INT(m[1]);
+    if FIRST_LIST_TNUM > t or LAST_LIST_TNUM < t then
+        TryNextMethod();
+    else
+        return 2;
+    fi;    
+end );
+
+#T just a temporary (?) hack in order to exclude lists of class functions
+
+InstallMethod(NestingDepthA, [IsFFECollColl and IsGeneralizedRowVector],
+        
+        m->2);
+
+InstallMethod(NestingDepthM, [IsFFECollColl and IsOrdinaryMatrix and IsMultiplicativeGeneralizedRowVector],
+           function(m)
+    local t,row;
+    t := TNUM_OBJ_INT(m[1]);
+    if FIRST_LIST_TNUM > t or LAST_LIST_TNUM < t then
+        TryNextMethod();
+    else
+        return 2;
+    fi;
+end);
+
 
 #############################################################################
 ##
@@ -25,15 +72,14 @@ Revision.list_gi :=
 InstallMethod( EQ,
     "for two small lists",
     IsIdenticalObj,
-    [ IsList and IsSmallList, IsList and IsSmallList ], 0,
+    [ IsList and IsSmallList, IsList and IsSmallList ],
     EQ_LIST_LIST_DEFAULT );
 
 InstallMethod( EQ,
     "for two finite lists (not necessarily small)",
     IsIdenticalObj,
-    [ IsList and IsFinite, IsList and IsFinite ], 0,
+    [ IsList and IsFinite, IsList and IsFinite ],
     function( list1, list2 )
-
     local len, i;
 
     # We ask for being small in order to catch the default methods
@@ -77,8 +123,7 @@ InstallMethod( EQ,
 
 InstallMethod( EQ,
     "for two lists, the first being empty",
-    true,
-    [ IsList and IsEmpty, IsList ], 
+    [ IsList and IsEmpty, IsList ],
     SUM_FLAGS, #can't do better
     function( empty, list )
     return IsEmpty( list );
@@ -87,12 +132,12 @@ InstallMethod( EQ,
 
 InstallMethod( EQ,
     "for two lists, the second being empty",
-    true,
     [ IsList, IsList and IsEmpty ],
     SUM_FLAGS, #can't do better
     function( list, empty )
     return IsEmpty( list );
     end );
+
 
 #############################################################################
 ##
@@ -101,7 +146,7 @@ InstallMethod( EQ,
 InstallMethod( EQ,
     "for two lists with length - last resort",
     IsIdenticalObj,
-    [ IsList and HasLength, IsList and HasLength ], 0,
+    [ IsList and HasLength, IsList and HasLength ],
 function(list1, list2)
   if Length(list1) <> Length(list2) then
     return false;
@@ -123,7 +168,7 @@ end);
 InstallMethod( EQ,
     "for two lists - last resort",
     IsIdenticalObj,
-    [ IsList, IsList], 0,
+    [ IsList, IsList],
 function(list1, list2)
   local i;
 
@@ -136,38 +181,38 @@ function(list1, list2)
           fi;
           i := i + 1;
       od;
-      
+
       if IsBound(list1[i]) or IsBound(list2[i]) then
           return false;
       fi;
-      
-        #
-        # Now we've found an unbound spot on both lists
-        # maybe we know enough to stop now
+
+      # Now we've found an unbound spot on both lists
+      # maybe we know enough to stop now
       # anyway at this stage we really must check the Lengths and hope
       # that they are computable now.
-      
+
       if Length(list1) <= i then
           return Length(list2) <= i;
       elif Length(list2) <= i then
           return false;
       fi;
+
+      i := i + 1;
   od;
 end);
-
 
 
 InstallMethod( LT,
     "for two small homogeneous lists",
     IsIdenticalObj,
     [ IsHomogeneousList and IsSmallList,
-      IsHomogeneousList and IsSmallList ], 0,
+      IsHomogeneousList and IsSmallList ],
     LT_LIST_LIST_DEFAULT );
 
 InstallMethod( LT,
     "for two finite homogeneous lists (not necessarily small)",
     IsIdenticalObj,
-    [ IsHomogeneousList and IsFinite, IsHomogeneousList and IsFinite ], 0,
+    [ IsHomogeneousList and IsFinite, IsHomogeneousList and IsFinite ],
     LT_LIST_LIST_FINITE );
 
 
@@ -177,27 +222,24 @@ InstallMethod( LT,
 ##
 InstallMethod( IN,
     "for an object, and an empty list",
-    true,
-    [ IsObject, IsList and IsEmpty ], 0,
+    [ IsObject, IsList and IsEmpty ],
     ReturnFalse );
 
 InstallMethod( IN,
     "for wrong family relation",
     IsNotElmsColls,
-    [ IsObject, IsCollection ], 
+    [ IsObject, IsCollection ],
     SUM_FLAGS, # can't do better
     ReturnFalse );
 
 InstallMethod( IN,
     "for an object, and a small list",
-    true,
-    [ IsObject, IsList and IsSmallList ], 0,
+    [ IsObject, IsList and IsSmallList ],
     IN_LIST_DEFAULT );
 
 InstallMethod( IN,
     "for an object, and a list",
-    true,
-    [ IsObject, IsList ], 0,
+    [ IsObject, IsList ],
     function( elm, list )
     local len, i;
     if IsSmallList( list ) then
@@ -229,14 +271,18 @@ InstallMethod( IN,
     SUM_FLAGS, # can't do better
     RETURN_TRUE );
 
+
 #############################################################################
 ##
 #M  Display( <list> )
 ##
-InstallMethod( Display, "for a (finite) list", true, [ IsList ], 0,
-function ( list )
-  Print(list,"\n");
-end);
+InstallMethod( Display,
+    "for a (finite) list",
+    [ IsList ],
+    function( list )
+    Print( list, "\n" );
+    end );
+
 
 #############################################################################
 ##
@@ -245,8 +291,7 @@ end);
 ##
 InstallMethod( String,
     "for a (finite) list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     function ( list )
     local   str, i;
 
@@ -278,8 +323,7 @@ InstallMethod( String,
 
 InstallMethod( String,
     "for a range",
-    true,
-    [ IsRange ], 0,
+    [ IsRange ],
     function( list )
     local   str;
     str := Concatenation( "[ ", String( list[ 1 ] ) );
@@ -303,16 +347,12 @@ InstallMethod( String,
 ##
 InstallOtherMethod( Size,
     "for a list",
-    true,
     [ IsList ],
-    0,
     Length );
 
 InstallOtherMethod( Size,
     "for a list that is a collection",
-    true,
     [ IsList and IsCollection ],
-    0,
     Length );
 
 
@@ -322,9 +362,7 @@ InstallOtherMethod( Size,
 ##
 InstallOtherMethod( Representative,
     "for a list",
-    true,
     [ IsList ],
-    0,
     function( list )
     local elm;
     for elm in list do
@@ -340,19 +378,22 @@ InstallOtherMethod( Representative,
 ##
 InstallOtherMethod( RepresentativeSmallest,
     "for an empty list",
-    true, [ IsList and IsEmpty ], 0,
-    function ( list )
+    [ IsList and IsEmpty ],
+    function( list )
     Error( "<C> must be nonempty to have a representative" );
     end );
 
 InstallOtherMethod( RepresentativeSmallest,
     "for a strictly sorted list",
-    true, [ IsSSortedList ], 0,
-    function ( list )
+    [ IsSSortedList ],
+    function( list )
     return list[1];
     end );
 
-InstallOtherMethod(RepresentativeSmallest,"for a list",true,[IsList],0,
+InstallOtherMethod(
+    RepresentativeSmallest,
+    "for a list",
+    [ IsList ],
     MinimumList );
 
 
@@ -362,14 +403,12 @@ InstallOtherMethod(RepresentativeSmallest,"for a list",true,[IsList],0,
 ##
 InstallOtherMethod( Random,
     "for a dense small list",
-    true,
-    [ IsList and IsDenseList and IsSmallList ], 0,
+    [ IsList and IsDenseList and IsSmallList ],
     RANDOM_LIST );
 
 InstallOtherMethod( Random,
     "for a dense (small) list",
-    true,
-    [ IsList and IsDenseList ], 0,
+    [ IsList and IsDenseList ],
     function( list )
     if IsSmallList( list ) then
       return RANDOM_LIST( list );
@@ -385,8 +424,7 @@ InstallOtherMethod( Random,
 ##
 InstallMethod( IsSmallList,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     list -> Length( list ) <= MAX_SIZE_LIST_INTERNAL );
 
 
@@ -396,8 +434,7 @@ InstallMethod( IsSmallList,
 ##
 InstallOtherMethod( IsSmallList,
     "for a non-list",
-    true,
-    [ IsObject ], 0,
+    [ IsObject ],
     function( nonlist )
     if IsList( nonlist ) then
       TryNextMethod();
@@ -425,8 +462,7 @@ for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
 
     InstallMethod( op,
         "for a list",
-        true,
-        [ IsList ], 0,
+        [ IsList ],
         function( list )
         local   new,  i;
 
@@ -441,8 +477,7 @@ for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
 
     InstallMethod( op,
         "for a strictly sorted list",
-        true,
-        [ IsList and IsSSortedList ], 0,
+        [ IsList and IsSSortedList ],
         function( list )
         local   new,  i;
 
@@ -458,8 +493,7 @@ for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
 
     InstallMethod( op,
         "for a dense list",
-        true,
-        [ IsList and IsDenseList ], 0,
+        [ IsList and IsDenseList ],
         function( list )
         if IsSmallList( list ) then
             return list{ [ 1 .. Length( list ) ] };
@@ -471,8 +505,7 @@ for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
 
     InstallMethod( op,
         "for a strictly sorted dense list",
-        true,
-        [ IsList and IsDenseList and IsSSortedList ], 0,
+        [ IsList and IsDenseList and IsSSortedList ],
         function( list )
         if IsSmallList( list ) then
             list:= list{ [ 1 .. Length( list ) ] };
@@ -488,8 +521,7 @@ od;
 
 InstallMethod( ConstantTimeAccessList,
     "for a constant time access list",
-    true,
-    [ IsList and IsConstantTimeAccessList ], 
+    [ IsList and IsConstantTimeAccessList ],
     SUM_FLAGS, # cant't do better
     Immutable );
 
@@ -500,34 +532,36 @@ InstallMethod( ConstantTimeAccessList,
 ##
 InstallOtherMethod( AsList,
     "for a list",
-    true,
     [ IsList ],
-    0,
     list -> ConstantTimeAccessList( Enumerator( list ) ) );
 
 InstallOtherMethod( AsList,
     "for a constant time access list",
-    true,
     [ IsList and IsConstantTimeAccessList ],
-    0,
     Immutable );
+
 
 #############################################################################
 ##
 #M  AsPlist( <list> )
 ##
-InstallOtherMethod( AsPlist, "for a plist", true, [IsList and IsPlistRep], 0,
-  x->x);
+InstallOtherMethod( AsPlist,
+    "for a plist",
+    [IsList and IsPlistRep],
+    x -> x );
 
-InstallOtherMethod( AsPlist, "for a list", true, [ IsList ], 0,
-function(l)
-  l:=AsList(l);
-  if not IsPlistRep(l) then
-    l:=List([1..Length(l)],i->l[i]); # explicit copy for objects that claim to
-    # be constant time access but not plists.
-  fi;
-  return l;
-end);
+InstallOtherMethod( AsPlist,
+    "for a list",
+    [ IsList ],
+    function(l)
+    l:=AsList(l);
+    if not IsPlistRep(l) then
+      l:=List([1..Length(l)],i->l[i]); # explicit copy for objects that claim to
+                                       # be constant time access but not plists.
+    fi;
+    return l;
+    end );
+
 
 #############################################################################
 ##
@@ -538,16 +572,19 @@ end);
 ##
 InstallOtherMethod( AsSSortedList,
     "for a list",
-    true,
     [ IsList ],
-    0,
     list -> ConstantTimeAccessList( EnumeratorSorted( list ) ) );
 
-InstallOtherMethod(AsSSortedList,"for a plist",true,[IsList and IsPlistRep],0,
+InstallOtherMethod(AsSSortedList,
+    "for a plist",
+    [IsList and IsPlistRep],
     AsSSortedListList );
 
-InstallOtherMethod(AsSSortedList, "for a list", true, [ IsList ], 0,
-  l->AsSSortedListList(AsPlist(l)));
+InstallOtherMethod(AsSSortedList,
+     "for a list",
+     [ IsList ],
+     l -> AsSSortedListList( AsPlist( l ) ) );
+
 
 #############################################################################
 ##
@@ -555,7 +592,7 @@ InstallOtherMethod(AsSSortedList, "for a list", true, [ IsList ], 0,
 ##
 InstallOtherMethod( Enumerator,
     "for a list",
-    true, [ IsList ], 0,
+    [ IsList ],
     Immutable );
 
 
@@ -563,16 +600,17 @@ InstallOtherMethod( Enumerator,
 ##
 #M  EnumeratorSorted( <list> )
 ##
-InstallOtherMethod(EnumeratorSorted,"for a plist",true,
-  [IsList and IsPlistRep],0, 
-function(l)
-	if IsSSortedList(l) then
-		return l;
-	fi;
-	return AsSSortedListList(l);
-end);
+InstallOtherMethod( EnumeratorSorted,
+    "for a plist",
+    [IsList and IsPlistRep],
+    function( l )
+    if IsSSortedList( l ) then
+      return l;
+    fi;
+    return AsSSortedListList( l );
+    end );
 
-InstallOtherMethod( EnumeratorSorted, "for a list", true, [ IsList ], 0,
+InstallOtherMethod( EnumeratorSorted, "for a list", [ IsList ],
 function(l)
 	if IsSSortedList(l) then
 		return l;
@@ -588,19 +626,17 @@ end);
 ##
 InstallMethod( ListOp,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     ShallowCopy );
 
 InstallMethod( ListOp,
     "for a dense list",
-    true,
-    [ IsList and IsDenseList ], 0,
+    [ IsList and IsDenseList ],
     list -> list{ [ 1 .. Length( list ) ] } );
 
 InstallMethod( ListOp,
     "for a dense list, and a function",
-    true, [ IsDenseList, IsFunction ], 0,
+    [ IsDenseList, IsFunction ],
     function ( list, func )
     local   res, i;
     res := [];
@@ -609,10 +645,10 @@ InstallMethod( ListOp,
     od;
     return res;
     end );
-    
+
 InstallMethod( ListOp,
     "for any list, and a function",
-    true, [ IsList, IsFunction ], 0,
+    [ IsList, IsFunction ],
     function ( list, func )
     local   res, i;
     res := [];
@@ -630,11 +666,11 @@ end );
 #M  SSortedList( <list> )  . . . . . . . . . . . set of the elements of a list
 ##
 InstallOtherMethod( SSortedList, "for a plist",
-    true, [ IsList and IsPlistRep ], 0,
+    [ IsList and IsPlistRep ],
     SSortedListList );
 
 InstallOtherMethod( SSortedList, "for a list",
-    true, [ IsList ], 0,
+    [ IsList ],
     l->SSortedListList(AsPlist(l)) );
 
 
@@ -644,7 +680,7 @@ InstallOtherMethod( SSortedList, "for a list",
 ##
 InstallOtherMethod( SSortedList,
     "for a list, and a function",
-    true, [ IsList, IsFunction ], 0,
+    [ IsList, IsFunction ],
     function ( list, func )
     local   res, i;
     res := [];
@@ -681,14 +717,12 @@ DeclareRepresentation( "IsDenseListIteratorRep", IsListIteratorRep, [] );
 
 InstallMethod( IsDoneIterator,
     "for a list iterator",
-    true,
-    [ IsIterator and IsListIteratorRep ], 0,
+    [ IsIterator and IsListIteratorRep ],
     iter -> (iter!.pos = Length( iter!.list )) );
 
 InstallMethod( NextIterator,
     "for a list iterator",
-    true,
-    [ IsIterator and IsMutable and IsListIteratorRep ], 0,
+    [ IsIterator and IsMutable and IsListIteratorRep ],
     function ( iter )
     if iter!.pos = Length( iter!.list ) then
         Error("<iter> is exhausted");
@@ -703,14 +737,12 @@ InstallMethod( NextIterator,
 
 InstallMethod( IsDoneIterator,
     "for a dense list iterator",
-    true,
-    [ IsIterator and IsDenseListIteratorRep ], 0,
+    [ IsIterator and IsDenseListIteratorRep ],
     iter -> not IsBound( iter!.list[ iter!.pos + 1 ] ) );
 
 InstallMethod( NextIterator,
     "for a dense list iterator",
-    true,
-    [ IsIterator and IsMutable and IsDenseListIteratorRep ], 0,
+    [ IsIterator and IsMutable and IsDenseListIteratorRep ],
     function ( iter )
     iter!.pos := iter!.pos + 1;
     if not IsBound( iter!.list[ iter!.pos ] ) then
@@ -722,8 +754,7 @@ InstallMethod( NextIterator,
 
 InstallMethod( ShallowCopy,
     "for a list iterator",
-    true,
-    [ IsIterator and IsListIteratorRep ], 0,
+    [ IsIterator and IsListIteratorRep ],
     iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
                 rec( list := iter!.list,
                      pos  := iter!.pos ) ) );
@@ -736,7 +767,7 @@ InstallGlobalFunction( IteratorList, function ( list )
     );
 
     if IsDenseList( list ) and not IsMutable( list ) then
-        
+
         return Objectify( NewType( IteratorsFamily,
                                  IsMutable and IsDenseListIteratorRep ),
                         iter );
@@ -747,14 +778,14 @@ InstallGlobalFunction( IteratorList, function ( list )
     fi;
 end );
 
+
 #############################################################################
 ##
 #M  Iterator( <list> )
 ##
 InstallOtherMethod( Iterator,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     IteratorList );
 
 
@@ -764,8 +795,7 @@ InstallOtherMethod( Iterator,
 ##
 InstallOtherMethod( IteratorSorted,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     function( list )
     if IsSSortedList( list ) then
       return IteratorList( list );
@@ -782,7 +812,6 @@ InstallOtherMethod( IteratorSorted,
 ##
 InstallOtherMethod( SumOp,
     "for a dense list",
-    true,
     [ IsDenseList ], 1,
     function ( list )
     local   sum, i;
@@ -804,7 +833,6 @@ InstallOtherMethod( SumOp,
 ##
 InstallOtherMethod( SumOp,
     "for a list, and initial value",
-    true,
     [ IsList, IsAdditiveElement ], 1,
     function ( list, init )
     local elm;
@@ -821,7 +849,6 @@ InstallOtherMethod( SumOp,
 ##
 InstallOtherMethod( SumOp,
     "for a dense list, and a function",
-    true,
     [ IsDenseList, IsFunction ], 1,
     function( list, func )
     local   sum, i;
@@ -843,7 +870,6 @@ InstallOtherMethod( SumOp,
 ##
 InstallOtherMethod( SumOp,
     "for a list, a function, and initial value",
-    true,
     [ IsList, IsFunction, IsAdditiveElement ], 1,
     function ( list, func, init )
     local elm;
@@ -860,7 +886,6 @@ InstallOtherMethod( SumOp,
 ##
 InstallOtherMethod( ProductOp,
     "for a dense list",
-    true,
     [ IsDenseList ], 1,
     function ( list )
     local   prod, i;
@@ -882,7 +907,6 @@ InstallOtherMethod( ProductOp,
 ##
 InstallOtherMethod( ProductOp,
     "for a list, and initial value",
-    true,
     [ IsList, IsMultiplicativeElement ], 1,
     function ( list, init )
     local elm;
@@ -899,7 +923,6 @@ InstallOtherMethod( ProductOp,
 ##
 InstallOtherMethod( ProductOp,
     "for a dense list and a function",
-    true,
     [ IsDenseList, IsFunction ], 1,
     function( list, func )
     local prod, i;
@@ -921,7 +944,6 @@ InstallOtherMethod( ProductOp,
 ##
 InstallOtherMethod( ProductOp,
     "for a list, a function, and initial value",
-    true,
     [ IsList, IsFunction, IsMultiplicativeElement ], 1,
     function ( list, func, init )
     local elm;
@@ -937,7 +959,7 @@ InstallOtherMethod( ProductOp,
 #M  Elm0List
 ##
 InstallMethod( Elm0List,
-    true, [ IsList, IsInt ], 0,
+    [ IsList, IsInt ],
     function ( list, pos )
     if IsBound( list[pos] ) then
         return list[pos];
@@ -961,14 +983,12 @@ InstallMethod( Elm0List,
 ##
 InstallMethod( ELMS_LIST,
     "for a small list and a small dense list",
-    true,
-    [ IsList and IsSmallList, IsDenseList and IsSmallList ], 0,
+    [ IsList and IsSmallList, IsDenseList and IsSmallList ],
     ELMS_LIST_DEFAULT );
 
 InstallMethod( ELMS_LIST,
     "for a list and a dense list",
-    true,
-    [ IsList, IsDenseList ], 0,
+    [ IsList, IsDenseList ],
     function( list, poslist )
     local choice, i;
     if IsSmallList( poslist ) then
@@ -988,15 +1008,13 @@ InstallMethod( ELMS_LIST,
 
 InstallMethod( ASSS_LIST,
     "for a small mutable list, a small dense list, and a small list",
-    true,
     [ IsList and IsSmallList and IsMutable, IsDenseList and IsSmallList,
-      IsList and IsSmallList ], 0,
+      IsList and IsSmallList ],
     ASSS_LIST_DEFAULT );
 
 InstallMethod( ASSS_LIST,
     "for a mutable list, a dense list, and a list",
-    true,
-    [ IsList and IsMutable, IsDenseList, IsList ], 0,
+    [ IsList and IsMutable, IsDenseList, IsList ],
     function( list, poslist, vallist )
     local i;
     if IsSmallList( poslist ) and IsSmallList( vallist ) then
@@ -1012,27 +1030,25 @@ InstallMethod( ASSS_LIST,
     fi;
 end );
 
-InstallOtherMethod( ASS_LIST, 
-        "error message for immutable list",
-        true,
-        [IsList, IsPosInt, IsObject], -100,
-        function(list, pos, v)
+InstallOtherMethod( ASS_LIST,
+    "error message for immutable list",
+    [IsList, IsPosInt, IsObject], -100,
+    function(list, pos, v)
     if not IsMutable( list ) then
         Error("The list you are trying to assign to is immutable");
     else
         TryNextMethod();
     fi;
-end );
-    
-    
+    end );
+
+
 #############################################################################
 ##
 #M  IsSSortedList( <non-list> )
 ##
 InstallOtherMethod( IsSSortedList,
    "for non-lists",
-   true,
-   [ IsObject ], 0,
+   [ IsObject ],
    function( nonlist )
    if IsList( nonlist ) then
      TryNextMethod();
@@ -1048,14 +1064,12 @@ InstallOtherMethod( IsSSortedList,
 ##
 InstallMethod( IsSSortedList,
     "for a small homogeneous list",
-    true,
-    [ IsHomogeneousList and IsSmallList ], 0,
+    [ IsHomogeneousList and IsSmallList ],
     IS_SSORT_LIST_DEFAULT );
 
 InstallMethod( IsSSortedList,
     "for a homogeneous list (not nec. finite)",
-    true,
-    [ IsHomogeneousList ], 0,
+    [ IsHomogeneousList ],
     function( list )
     local i;
     if IsSmallList( list ) then
@@ -1076,15 +1090,16 @@ InstallMethod( IsSSortedList,
 ##
 #M  IsSortedList(<list>)
 ##
-InstallMethod( IsSortedList, "for a finite list", true,
-    [ IsList and IsFinite ], 0,
+InstallMethod( IsSortedList,
+    "for a finite list",
+    [ IsList and IsFinite ],
     function(l)
     local i;
     # shortcut: strictly sorted is stored for internally represented lists
     if IsInternalRep( l ) and IsSSortedList( l ) then
       return true;
     fi;
-    
+
     if not IsBound(l[1]) then
         return false;
     fi;
@@ -1096,8 +1111,9 @@ InstallMethod( IsSortedList, "for a finite list", true,
     return true;
 end);
 
-InstallMethod( IsSortedList, "for a list (not nec. finite)", true,
-    [ IsList ], 0,
+InstallMethod( IsSortedList,
+    "for a list (not nec. finite)",
+    [ IsList ],
     function( list )
     local i;
     i:= 1;
@@ -1120,8 +1136,7 @@ end );
 ##
 InstallOtherMethod( IsSortedList,
    "for non-lists",
-   true,
-   [ IsObject ], 0,
+   [ IsObject ],
    function( nonlist )
    if IsList( nonlist ) then
      TryNextMethod();
@@ -1137,8 +1152,7 @@ InstallOtherMethod( IsSortedList,
 ##
 InstallMethod( IsDuplicateFree,
     "for a finite list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     function( list )
     local i;
     if not IsDenseList( list ) then
@@ -1160,10 +1174,9 @@ InstallMethod( IsDuplicateFree,
 #M  DifferenceLists . . . . . . . . list without the elements in another list
 ##
 InstallMethod( DifferenceLists,
-        "homogeneous lists",
-        true,
-        [IsHomogeneousList, IsHomogeneousList], 0,
-function( list1, list2 )
+    "homogeneous lists",
+    [IsHomogeneousList, IsHomogeneousList],
+    function( list1, list2 )
     local   diff,  e;
 
     list2 := Set( list2 );
@@ -1174,7 +1187,8 @@ function( list1, list2 )
         fi;
     od;
     return diff;
-end );
+    end );
+
 
 #############################################################################
 ##
@@ -1182,14 +1196,12 @@ end );
 ##
 InstallMethod( IsPositionsList,
     "for a small homogeneous list",
-    true,
-    [ IsHomogeneousList and IsSmallList ], 0,
+    [ IsHomogeneousList and IsSmallList ],
     IS_POSS_LIST_DEFAULT );
 
 InstallMethod( IsPositionsList,
     "for a homogeneous list",
-    true,
-    [ IsHomogeneousList ], 0,
+    [ IsHomogeneousList ],
     function( list )
     if IsSmallList( list ) then
       return IS_POSS_LIST_DEFAULT( list );
@@ -1205,8 +1217,7 @@ InstallMethod( IsPositionsList,
 ##
 InstallOtherMethod( IsPositionsList,
    "for non-lists",
-   true,
-   [ IsObject ], 0,
+   [ IsObject ],
    function( nonlist )
    if IsList( nonlist ) then
      TryNextMethod();
@@ -1222,8 +1233,7 @@ InstallOtherMethod( IsPositionsList,
 ##
 InstallMethod( Position,
     "for a small list, an object, and an integer",
-    true,
-    [ IsList and IsSmallList, IsObject, IsInt ], 0,
+    [ IsList and IsSmallList, IsObject, IsInt ],
     function( list, obj, start )
     local   pos;
     pos := POS_LIST_DEFAULT( list, obj, start );
@@ -1233,8 +1243,7 @@ InstallMethod( Position,
 
 InstallMethod( Position,
     "for a (small) list, an object, and an integer",
-    true,
-    [ IsList, IsObject, IsInt ], 0,
+    [ IsList, IsObject, IsInt ],
     function( list, obj, start )
     local pos;
     if IsSmallList( list ) then
@@ -1255,13 +1264,11 @@ InstallMethod( Position,
     [ IsHomogeneousList,
       IsObject,
       IsInt ],
-    0,
     RETURN_FAIL );
 
 InstallMethod( Position,
     "for a small sorted list, an object, and an integer",
-    true,
-    [ IsSSortedList and IsSmallList, IsObject, IsInt ], 0,
+    [ IsSSortedList and IsSmallList, IsObject, IsInt ],
     function ( list, obj, start )
     local   pos;
 
@@ -1277,8 +1284,7 @@ end );
 
 InstallMethod( Position,
     "for a sorted list, an object, and an integer",
-    true,
-    [ IsSSortedList, IsObject, IsInt ], 0,
+    [ IsSSortedList, IsObject, IsInt ],
     function ( list, obj, start )
     local   pos;
     if IsSmallList( list ) then
@@ -1308,8 +1314,7 @@ end );
 ##
 InstallMethod( Position,
     "for duplicate free list, object, and positive integer",
-    true,
-    [ IsDuplicateFreeList, IsObject, IsPosInt ], 0,
+    [ IsDuplicateFreeList, IsObject, IsPosInt ],
     function( list, obj, start )
     local pos;
     pos:= Position( list, obj, 0 );
@@ -1327,17 +1332,24 @@ InstallMethod( Position,
 ##
 InstallMethod( PositionCanonical,
     "for internally represented lists, fall back on `Position'",
-    true, # the list may be non-homogeneous.
-    [ IsList and IsInternalRep, IsObject ], 0,
+    [ IsList and IsInternalRep, IsObject ],
     function( list, obj )
     return Position( list, obj, 0 );
 end );
 
 InstallMethod( PositionCanonical,
-    "for internally represented small sorted lists, fall back on `Position'",
-    true, # the list may be non-homogeneous.
-    [ IsList and IsInternalRep and IsSSortedList and IsSmallList, IsObject ], 0,
-    POSITION_SORTED_LIST);
+    "internal small sorted lists, use `POSITION_SORTED_LIST'",
+    [ IsList and IsInternalRep and IsSSortedList and IsSmallList, IsObject ],
+function(l,o)
+local p;
+  p:=POSITION_SORTED_LIST(l,o);
+  if p=0 or p>Length(l) or l[p]<>o then
+    return fail;
+  else
+    return p;
+  fi;
+end);
+
 
 #############################################################################
 ##
@@ -1345,8 +1357,7 @@ InstallMethod( PositionCanonical,
 ##
 InstallMethod( PositionNthOccurrence,
     "for list, object, integer",
-    true,
-    [ IsList, IsObject, IsInt ], 0,
+    [ IsList, IsObject, IsInt ],
     function( list, obj, n )
     local   pos,  i;
 
@@ -1367,8 +1378,7 @@ InstallMethod( PositionNthOccurrence,
 ##
 InstallMethod( PositionNthOccurrence,
     "for boolean list, boolean, integer",
-    true,
-    [ IsBlist, IsBool, IsInt ], 0,
+    [ IsBlist, IsBool, IsInt ],
     function( blist, bool, n )
     if bool then  return PositionNthTrueBlist( blist, n );
             else  TryNextMethod();                          fi;
@@ -1382,14 +1392,11 @@ InstallMethod( PositionNthOccurrence,
 ##
 InstallMethod( PositionSorted,
     "for small list, and object",
-    true,
-    [ IsList and IsSmallList, IsObject ], 0,
+    [ IsList and IsSmallList, IsObject ],
     POSITION_SORTED_LIST );
 
 InstallMethod( PositionSorted,
-    "for list, and object",
-    true,
-    [ IsList, IsObject ], 0,
+    [ IsList, IsObject ],
     function( list, elm )
     if IsSmallList( list ) then
       return POSITION_SORTED_LIST( list, elm );
@@ -1400,14 +1407,12 @@ InstallMethod( PositionSorted,
 
 InstallOtherMethod( PositionSorted,
     "for small list, object, and function",
-    true,
-    [ IsList and IsSmallList, IsObject, IsFunction ], 0,
+    [ IsList and IsSmallList, IsObject, IsFunction ],
     POSITION_SORTED_LIST_COMP );
 
 InstallOtherMethod( PositionSorted,
     "for list, object, and function",
-    true,
-    [ IsList, IsObject, IsFunction ], 0,
+    [ IsList, IsObject, IsFunction ],
     function( list, elm, func )
     if IsSmallList( list ) then
       return POSITION_SORTED_LIST_COMP( list, elm, func );
@@ -1449,8 +1454,7 @@ InstallGlobalFunction( PositionSet, function( arg )
 ##
 InstallMethod( PositionProperty,
     "for dense list and function",
-    true,
-    [ IsDenseList, IsFunction ], 0,
+    [ IsDenseList, IsFunction ],
     function ( list, func )
     local i;
     for i in [ 1 .. Length( list ) ] do
@@ -1467,9 +1471,8 @@ InstallMethod( PositionProperty,
 #M  PositionBound( <list> ) . . . . . . . . . . position of first bound entry
 ##
 InstallMethod( PositionBound,
-    "for a dense list",
-    true,
-    [ IsList ], 0,
+    "for a list",
+    [ IsList ],
     function( list )
     local i;
     for i in [ 1 .. Length( list ) ] do
@@ -1485,10 +1488,12 @@ InstallMethod( PositionBound,
 ##
 #M  PositionSublist( <list>,<sub>[,<ind>] )
 ##
-InstallMethod( PositionSublist,"list,sub,pos",IsFamFamX,
-  [IsList,IsList,IS_INT], 0,
-function( list,sub,start )
-local m,n,i,j,next;
+InstallMethod( PositionSublist,
+    "list,sub,pos",
+    IsFamFamX,
+    [IsList,IsList,IS_INT],
+    function( list,sub,start )
+    local m,n,i,j,next;
 
   # string-match algorithm, cf. Manber, section 6.7
 
@@ -1517,7 +1522,7 @@ local m,n,i,j,next;
 	i:=i+1;
       fi;
     fi;
-    if j=m+1 then 
+    if j=m+1 then
       return i-m;
     fi;
   od;
@@ -1525,50 +1530,60 @@ local m,n,i,j,next;
 end);
 
 # no installation restrictions to avoid extra installations for empty list
-InstallOtherMethod( PositionSublist,"list, sub",true,
-  [IsObject,IsObject], 0,
-function( list,sub )
-  return PositionSublist(list,sub,0);
-end);
+InstallOtherMethod( PositionSublist,
+    "list, sub",
+    [IsObject,IsObject],
+    function( list,sub )
+    return PositionSublist(list,sub,0);
+    end);
 
-InstallOtherMethod( PositionSublist,"empty list,sub,pos",true,
-  [IsEmpty,IsList,IS_INT], 0, ReturnFail);
+InstallOtherMethod( PositionSublist,
+    "empty list,sub,pos",
+    [IsEmpty,IsList,IS_INT],
+    ReturnFail);
 
-InstallOtherMethod( PositionSublist,"list,empty,pos",true,
-  [IsList,IsEmpty,IS_INT], 0,
-function(a,b,c)
-  return Maximum(c+1,1);
-end);
+InstallOtherMethod( PositionSublist,
+    "list,empty,pos",
+    [IsList,IsEmpty,IS_INT],
+    function(a,b,c)
+    return Maximum(c+1,1);
+    end);
 
 
 #############################################################################
 ##
 #M  IsMatchingSublist( <list>,<sub>[,<ind>] )
 ##
-InstallMethod( IsMatchingSublist,"list,sub,pos",IsFamFamX,
-  [IsList,IsList,IS_INT], 0,
-function( list,sub,first )
-local last;
+InstallMethod( IsMatchingSublist,
+    "list,sub,pos",
+    IsFamFamX,
+    [IsList,IsList,IS_INT],
+    function( list,sub,first )
+    local last;
 
-  last:=first+Length(sub)-1;
-  return Length(list) >= last and list{[first..last]} = sub;
-end);
+    last:=first+Length(sub)-1;
+    return Length(list) >= last and list{[first..last]} = sub;
+    end);
 
 # no installation restrictions to avoid extra installations for empty list
-InstallOtherMethod( IsMatchingSublist,"list, sub",true,
-  [IsObject,IsObject], 0,
-function( list,sub )
-  return IsMatchingSublist(list,sub,1);
-end);
+InstallOtherMethod( IsMatchingSublist,
+    "list, sub",
+    [IsObject,IsObject],
+    function( list,sub )
+    return IsMatchingSublist(list,sub,1);
+    end);
 
-InstallOtherMethod( IsMatchingSublist,"empty list,sub,pos",true,
-  [IsEmpty,IsList,IS_INT], 0, 
-function(list,sub,first )
-  return not IsEmpty(sub);
-end);
+InstallOtherMethod( IsMatchingSublist,
+    "empty list,sub,pos",
+    [IsEmpty,IsList,IS_INT],
+    function(list,sub,first )
+    return not IsEmpty(sub);
+    end);
 
-InstallOtherMethod( IsMatchingSublist,"list,empty,pos",true,
-  [IsList,IsEmpty,IS_INT], 0, ReturnTrue);
+InstallOtherMethod( IsMatchingSublist,
+    "list,empty,pos",
+    [IsList,IsEmpty,IS_INT],
+    ReturnTrue);
 
 
 #############################################################################
@@ -1577,8 +1592,7 @@ InstallOtherMethod( IsMatchingSublist,"list,empty,pos",true,
 ##
 InstallMethod( Add,
     "for mutable list and list",
-    true,
-    [ IsList and IsMutable, IsObject ], 0,
+    [ IsList and IsMutable, IsObject ],
     ADD_LIST_DEFAULT );
 
 
@@ -1605,17 +1619,13 @@ end;
 
 InstallMethod( Append,
     "for mutable list and list",
-    true,
     [ IsList and IsMutable , IsList ],
-    0,
     APPEND_LIST_DEFAULT );
 
 
 InstallMethod( Append,
     "for mutable list in plist representation and list",
-    true,
     [ IsList and IsPlistRep and IsMutable, IsList  ],
-    0,
     APPEND_LIST_INTR );
 
 
@@ -1660,8 +1670,7 @@ end );
 ##
 InstallMethod( Compacted,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     function ( list )
     local   res,        # compacted of <list>, result
             elm;        # element of <list>
@@ -1679,8 +1688,7 @@ InstallMethod( Compacted,
 ##
 InstallMethod( Collected,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     function ( list )
     local   res,        # collected, result
             col,        # one element of collected list
@@ -1719,8 +1727,7 @@ InstallMethod( Collected,
 ##
 InstallMethod( DuplicateFreeList,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     function ( list )
     local l,i;
     l:= [];
@@ -1739,8 +1746,7 @@ InstallMethod( DuplicateFreeList,
 ##
 InstallMethod( AsDuplicateFreeList,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     DuplicateFreeList );
 
 
@@ -1750,8 +1756,7 @@ InstallMethod( AsDuplicateFreeList,
 ##
 InstallMethod( Flat,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     function ( list )
     local   res,        # list <list> flattened, result
             elm;        # one element of <list>
@@ -1828,14 +1833,12 @@ InstallMethod( ReversedOp,
 ##
 InstallMethod( Sort,
     "for a mutable small list",
-    true,
-    [ IsList and IsMutable and IsSmallList ], 0,
+    [ IsList and IsMutable and IsSmallList ],
     SORT_LIST );
 
 InstallMethod( Sort,
     "for a mutable list",
-    true,
-    [ IsList and IsMutable ], 0,
+    [ IsList and IsMutable ],
     function( list )
     if IsSmallList( list ) then
       SORT_LIST( list );
@@ -1846,16 +1849,12 @@ InstallMethod( Sort,
 
 InstallOtherMethod( Sort,
     "for a mutable small list and a function",
-    true,
     [ IsList and IsMutable and IsSmallList, IsFunction ],
-    0,
     SORT_LIST_COMP );
 
 InstallOtherMethod( Sort,
     "for a mutable list and a function",
-    true,
     [ IsList and IsMutable, IsFunction ],
-    0,
     function( list, func )
     if IsSmallList( list ) then
       SORT_LIST_COMP( list, func );
@@ -1885,14 +1884,12 @@ end );
 
 InstallOtherMethod( Sort,
     "for an immutable list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     SORT_MUTABILITY_ERROR_HANDLER );
 
 InstallOtherMethod( Sort,
     "for an immutable list and a function",
-    true,
-    [ IsList, IsFunction ], 0,
+    [ IsList, IsFunction ],
     SORT_MUTABILITY_ERROR_HANDLER );
 
 
@@ -1918,8 +1915,9 @@ end );
 ##
 #M  Sortex( <list> ) . . sort a list (stable), return the applied permutation
 ##
-InstallMethod( Sortex, "for a mutable list", true,
-    [ IsList and IsMutable ], 0,
+InstallMethod( Sortex,
+    "for a mutable list",
+    [ IsList and IsMutable ],
     function ( list )
     local   both, perm, i;
 
@@ -1956,14 +1954,12 @@ InstallMethod( Sortex, "for a mutable list", true,
 
 InstallOtherMethod( Sortex,
     "for an immutable list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     SORT_MUTABILITY_ERROR_HANDLER );
 
 InstallOtherMethod( Sortex,
     "for an immutable list and a function",
-    true,
-    [ IsList, IsFunction ], 0,
+    [ IsList, IsFunction ],
     SORT_MUTABILITY_ERROR_HANDLER );
 
 
@@ -1979,7 +1975,7 @@ InstallGlobalFunction( PermListList, function( list1, list2 )
     list2:= ShallowCopy(list2);
 
     perm:= Sortex( list2 ) / Sortex( list1 );
-    if list1 <> list2 then 
+    if list1 <> list2 then
       return fail;
     else
       return perm;
@@ -1991,7 +1987,7 @@ end );
 ##
 #M  SortingPerm( <list> )
 ##
-InstallGlobalFunction( SortingPerm, function( list )                                         
+InstallGlobalFunction( SortingPerm, function( list )
     local  both, perm, i, l;
 
     # {\GAP} supports permutations only up to `MAX_SIZE_LIST_INTERNAL'.
@@ -2027,10 +2023,8 @@ InstallGlobalFunction( SortingPerm, function( list )
 UseKernelSort := true;
 InstallMethod( SortParallel,
     "for two dense and mutable lists",
-    true,
     [ IsDenseList and IsMutable,
       IsDenseList and IsMutable ],
-    0,
     function ( list, para )
     local l, both, i;
 
@@ -2043,10 +2037,10 @@ InstallMethod( SortParallel,
     fi;
 
     l:= Length( list );
-    both:= [];                          
-    for i in [ 1 .. l ] do                                         
+    both:= [];
+    for i in [ 1 .. l ] do
       both[i]:= [ list[i], i, para[i] ];
-    od;                                    
+    od;
     both:= Set( both );
     for i in [ 1 .. l ] do
       list[i]:= both[i][1];
@@ -2064,10 +2058,8 @@ InstallMethod( SortParallel,
 ##
 InstallOtherMethod( SortParallel,
     "for two empty lists",
-    true,
     [ IsList and IsEmpty and IsMutable,
       IsList and IsEmpty and IsMutable ],
-    0,
     Ignore );
 
 
@@ -2077,11 +2069,9 @@ InstallOtherMethod( SortParallel,
 ##
 InstallOtherMethod( SortParallel,
     "for two dense and mutable lists, and function",
-    true,
     [ IsDenseList and IsMutable,
       IsDenseList and IsMutable,
       IsFunction ],
-    0,
     function ( list, para, isLess )
     local   gap,        # gap width
             l, p,       # elements from <list> and <para>
@@ -2120,20 +2110,21 @@ InstallOtherMethod( SortParallel,
 ##
 InstallOtherMethod( SortParallel,
     "for two empty lists, and function",
-    true,
     [ IsList and IsEmpty and IsMutable,
       IsList and IsEmpty and IsMutable,
       IsFunction ],
-    0,
     Ignore );
 
+InstallOtherMethod( SortParallel,
+    "for two immutable lists",
+    [IsList,IsList],
+    SORT_MUTABILITY_ERROR_HANDLER);
 
-InstallOtherMethod( SortParallel,"for two immutable lists",
-  true,[IsList,IsList],0,
-  SORT_MUTABILITY_ERROR_HANDLER);
-InstallOtherMethod( SortParallel,"for two immutable lists and function",
-  true, [IsList,IsList,IsFunction],0,
-  SORT_MUTABILITY_ERROR_HANDLER);
+InstallOtherMethod( SortParallel,
+    "for two immutable lists and function",
+    [IsList,IsList,IsFunction],
+    SORT_MUTABILITY_ERROR_HANDLER);
+
 
 #############################################################################
 ##
@@ -2160,8 +2151,9 @@ end );
 ##
 #M  MaximumList( <list> )
 ##
-InstallMethod( MaximumList, "for a list", true,
-    [ IsList ], 0,
+InstallMethod( MaximumList,
+    "for a list",
+    [ IsList ],
     function ( list )
     local max, elm;
     if Length( list ) = 0 then
@@ -2178,8 +2170,7 @@ InstallMethod( MaximumList, "for a list", true,
 
 InstallMethod( MaximumList,
     "for a range",
-    true,
-    [ IsRange ], 0,
+    [ IsRange ],
     function ( range )
     local max;
     if Length( range ) = 0 then
@@ -2192,14 +2183,16 @@ InstallMethod( MaximumList,
     return max;
     end );
 
-InstallMethod( MaximumList,"for a sorted list",true, [ IsSSortedList ], 0,
-function ( l )
-local min;
-  if Length( l ) = 0 then
+InstallMethod( MaximumList,
+    "for a sorted list",
+    [ IsSSortedList ],
+    function ( l )
+    local min;
+    if Length( l ) = 0 then
       Error( "MaximumList: <list> must contain at least one element" );
-  fi;
-  return l[Length(l)];
-end );
+    fi;
+    return l[Length(l)];
+    end );
 
 
 #############################################################################
@@ -2227,8 +2220,9 @@ end );
 ##
 #M  MinimumList( <list> )
 ##
-InstallMethod( MinimumList, "for a list", true,
-    [ IsList ], 0,
+InstallMethod( MinimumList,
+    "for a list",
+    [ IsList ],
     function ( list )
     local min, elm;
     if Length( list ) = 0 then
@@ -2245,8 +2239,7 @@ InstallMethod( MinimumList, "for a list", true,
 
 InstallMethod( MinimumList,
     "for a range",
-    true,
-    [ IsRange ], 0,
+    [ IsRange ],
     function ( range )
     local min;
     if Length( range ) = 0 then
@@ -2259,14 +2252,16 @@ InstallMethod( MinimumList,
     return min;
     end );
 
-InstallMethod( MinimumList,"for a sorted list",true, [ IsSSortedList ], 0,
-function ( l )
-local min;
-  if Length( l ) = 0 then
+InstallMethod( MinimumList,
+    "for a sorted list",
+    [ IsSSortedList ],
+    function ( l )
+    local min;
+    if Length( l ) = 0 then
       Error( "MinimumList: <list> must contain at least one element" );
-  fi;
-  return l[1];
-end );
+    fi;
+    return l[1];
+    end );
 
 
 #############################################################################
@@ -2305,9 +2300,8 @@ end );
 ##
 InstallMethod( Permuted,
     "for a list and a permutation",
-    true,
-    [ IsList, IS_PERM ], 0,
-    function ( list, perm )
+    [ IsList, IS_PERM ],
+    function( list, perm )
     # this was proposed by Jean Michel
     return list{ OnTuples( [ 1 .. Length( list ) ], perm^-1 ) };
     end );
@@ -2340,8 +2334,7 @@ end );
 ##
 InstallMethod( FirstOp,
     "for a list or collection and a function",
-    true,
-    [ IsListOrCollection, IsFunction ], 0,
+    [ IsListOrCollection, IsFunction ],
     function ( C, func )
     local elm;
     for elm in C do
@@ -2359,8 +2352,7 @@ InstallMethod( FirstOp,
 ##
 InstallMethod( Iterated,
     "for a list and a function",
-    true,
-    [ IsList, IsFunction ], 0,
+    [ IsList, IsFunction ],
     function ( list, func )
     local   res, i;
     if IsEmpty( list ) then
@@ -2372,6 +2364,7 @@ InstallMethod( Iterated,
     od;
     return res;
     end );
+
 
 #############################################################################
 ##
@@ -2385,14 +2378,14 @@ InstallGlobalFunction( ListN, function ( arg )
     Unbind( arg[num+1] );
     len := Length(arg[1]);
 
-    if not IsFunction(func) then 
+    if not IsFunction(func) then
 	Error("Last argument must be a function");
     elif ForAny( arg, a -> not IsList(a) or Length(a) <> len ) then
 	Error("<arg1>, ..., <argn> must be lists of the same length");
     fi;
 
     return List( [1..len],
-                 i -> CallFuncList( func,  List( [1..num], 
+                 i -> CallFuncList( func,  List( [1..num],
                                                   j -> arg[j][i] ) ) );
 end );
 
@@ -2402,8 +2395,7 @@ end );
 ##
 InstallMethod( IsBound\[\],
     "for a dense list and positive integer",
-    true,
-    [ IsDenseList, IsPosInt ], 0,
+    [ IsDenseList, IsPosInt ],
     function( list, index )
     return index <= Length( list );
     end );
@@ -2411,337 +2403,377 @@ InstallMethod( IsBound\[\],
 
 #############################################################################
 ##
-#M  ZeroOp( <list> ) . . . . . . . . . for internal list of add-elm-with-zero
-#M  ZeroOp( <list> ) . . . . . . . . . . . . . . . . . . . . . for dense list
+##  Arithmetic behaviour of lists
 ##
-##  For any dense list, `Zero' is defined pointwise.
+
+
+#############################################################################
+##
+#M  ZeroOp( <list> ) . . . . . . . . . . .  for small list in `IsListDefault'
+#M  ZeroSM( <list> ) . . . . . . . . . . .  for small list in `IsListDefault'
+##
+##  Default methods are installed only for small lists in `IsListDefault'.
+##  For those lists, `Zero' is defined pointwise.
 ##  (If the lists are inhomogeneous then strange things may happen,
 ##  for example `Zero( <l1> + <l2> )' is in general different from
 ##  `Zero( <l1> ) + Zero( <l2> )'.)
 ##
-##  Note that for non-internal lists, it may be unwanted that the zero is
-##  allowed to be an internal list.
-##
-InstallMethod( ZeroOp,
-    "for internal additive-element-with-zero list",
-    true,
-    [ IsAdditiveElementWithZeroList and IsListDefault ], 0,
+InstallOtherMethod( ZeroMutable,
+    [ IsListDefault and IsSmallList ],
+    ZERO_MUT_LIST_DEFAULT );
+
+InstallOtherMethod( ZeroSameMutability,
+    [ IsListDefault and IsSmallList ],
     ZERO_LIST_DEFAULT );
 
-InstallOtherMethod( ZeroOp,
-    "for any dense and small list",   
-    true,
-    [ IsDenseList and IsSmallList ], 0,
-    list -> List( list, ZeroOp ) );
 
-InstallOtherMethod( ZeroOp,
-    "for any dense list (see if it's small)",   
-    true,
-    [ IsDenseList ], 0,
-    function(l)
-      if IsSmallList(l) then
-    return List(l, ZeroOp);
-    else
-      TryNextMethod();
-     fi; end	);
-
-     
-     
 #############################################################################
 ##
-#M  AdditiveInverseOp( <list> )  . . . for internal list of add-elm-with-inv.
+#M  AdditiveInverseOp( <list> )  . . . . .  for small list in `IsListDefault'
+#M  AdditiveInverseSM( <list> )  . . . . .  for small list in `IsListDefault'
 ##
-##  For any dense list, `AdditiveInverse' is defined pointwise.
+##  Default methods are installed only for small lists in `IsListDefault'.
+##  For those lists, `AdditiveInverse' is defined pointwise.
 ##
-##  Note that for non-internal lists, it may be unwanted that the inverse is
-##  allowed to be an internal list.
-##
-InstallMethod( AdditiveInverseOp,
-    "for internal additive-element-with-inverse list",
-    true,
-    [ IsAdditiveElementWithInverseList and IsListDefault ], 0,
+InstallOtherMethod( AdditiveInverseMutable,
+    [ IsListDefault and IsSmallList ],
+    AINV_MUT_LIST_DEFAULT );
+
+InstallOtherMethod( AdditiveInverseSameMutability,
+    [ IsListDefault and IsSmallList ],
     AINV_LIST_DEFAULT );
 
-InstallOtherMethod( AdditiveInverseOp,
-    "for any dense and small list",   
-    true,
-    [ IsDenseList and IsSmallList ], 0,
-    AINV_LIST_DEFAULT);
 
-InstallOtherMethod( AdditiveInverseOp,
-    "for any dense list (see if it's small)",   
-    true,
-    [ IsDenseList ], 0,
-    function(l)
-      if IsSmallList(l) then
-    return AINV_LIST_DEFAULT(l);
-    else
+#############################################################################
+##
+#M  <grv> + <nonlist>  . . . . . . . . . .  for small list in `IsListDefault'
+#M  <nonlist> + <grv>  . . . . . . . . . .  for small list in `IsListDefault'
+##
+##  Default methods are installed only for small lists in `IsListDefault'.
+##  For those lists, the sum with a non-list is defined pointwise.
+##
+InstallOtherMethod( \+,
+    [ IsListDefault and IsSmallList, IsObject ],
+    function( list, nonlist )
+    if IsList( nonlist ) then
       TryNextMethod();
-     fi; end	);
+    else
+      return SUM_LIST_SCL_DEFAULT( list, nonlist );
+    fi;
+    end );
+
+InstallOtherMethod( \+,
+    [ IsObject, IsListDefault and IsSmallList ],
+    function( nonlist, list )
+    if IsList( nonlist ) then
+      TryNextMethod();
+    else
+      return SUM_SCL_LIST_DEFAULT( nonlist, list );
+    fi;
+    end );
 
 
 #############################################################################
 ##
-#M  <elm> - <list>
-#M  <list> - <elm>
-#M  <elm> - <table>
-#M  <table> - <elm>
+#F  LIST_WITH_HOMOGENEOUS_MUTABILITY_LEVEL( <list>, <level> )
 ##
-##  If <list> is a list and <elm> is an object that is *not* a list then
-##  the difference `<elm> - <list>' and the difference `<list> - <elm>' are
-##  defined as lists with entry `<elm> - <list>[$i$]' resp.
-##  `<list>[$i$] - <elm>' at $i$-th position.
-##  The result is mutable if and only if <list> is mutable.
-##
-##  Special methods are installed for certain family relations of <elm>
-##  and <list>.
-##
-InstallOtherMethod( \-,                                                      
-    "for list and non-list",                                                
-    true,                                                                       
-    [ IsList, IsObject ], 0,                 
-    function( list, nonlist )
-    local diff, i;                                                      
-    if IsList( nonlist ) then
-      TryNextMethod();
-    fi;
-    diff:= [];
-    for i in [ 1 .. Length( list ) ] do   
-      if IsBound( list[i] ) then
-        diff[i]:= list[i] - nonlist;
-      fi;
-    od;
-    if not IsMutable( list ) then
-      MakeImmutable( diff );
-    fi;
-    return diff;
-    end );
+DeclareGlobalFunction( "LIST_WITH_HOMOGENEOUS_MUTABILITY_LEVEL" );
 
-InstallOtherMethod( \-,                        
-    "for non-list and list",   
-    true,                                       
-    [ IsObject, IsList ], 0,
-    function( nonlist, list )
-    local diff, i;
-    if IsList( nonlist ) then
-      TryNextMethod();
+InstallGlobalFunction( LIST_WITH_HOMOGENEOUS_MUTABILITY_LEVEL,
+    function( list, level )
+    local i;
+
+    if not IsCopyable( list ) then
+      return list;
+    elif level <= 0 then
+      return Immutable( list );
     fi;
-    diff:= [];
+    list:= ShallowCopy( list );
     for i in [ 1 .. Length( list ) ] do
       if IsBound( list[i] ) then
-        diff[i]:= nonlist - list[i];
+        list[i]:= LIST_WITH_HOMOGENEOUS_MUTABILITY_LEVEL( list[i], level - 1 );
       fi;
     od;
-    if not IsMutable( list ) then
-      MakeImmutable( diff );
-    fi;
-    return diff;
+    return list;
     end );
-
-
-DIFF_SCL_LIST_TRY := function( elm, list )
-    if IsSmallList( list ) then
-      return DIFF_SCL_LIST_DEFAULT( elm, list );
-    else
-      TryNextMethod();
-    fi;
-end;
-
-DIFF_LIST_SCL_TRY := function( list, elm )
-    if IsSmallList( list ) then
-      return DIFF_LIST_SCL_DEFAULT( list, elm );
-    else
-      TryNextMethod();
-    fi;
-end;
-
-InstallOtherMethod( \-,
-    "for additive-element-with-inverse and small ext-a-element list",
-    IsElmsColls,
-    [ IsAdditiveElementWithInverse, IsExtAElementList and IsSmallList ], 0,
-    DIFF_SCL_LIST_DEFAULT );
-
-InstallOtherMethod( \-,
-    "for additive-element-with-inverse and ext-a-element list",
-    IsElmsColls,
-    [ IsAdditiveElementWithInverse, IsExtAElementList ], 0,
-    DIFF_SCL_LIST_TRY );
-
-
-InstallOtherMethod( \-,
-    "for additive-element-with-inverse and empty list",
-    true,
-    [ IsAdditiveElementWithInverse, IsList and IsEmpty ], 0,
-    DIFF_SCL_LIST_DEFAULT );
-
-
-InstallMethod( \-,
-    "for small ext-a-element list and additive-element-with-inverse",
-    IsCollsElms,
-    [ IsExtAElementList and IsSmallList, IsAdditiveElementWithInverse ], 0,
-    DIFF_LIST_SCL_DEFAULT );
-
-InstallMethod( \-,
-    "for ext-a-element list and additive-element-with-inverse",
-    IsCollsElms,
-    [ IsExtAElementList, IsAdditiveElementWithInverse ], 0,
-    DIFF_LIST_SCL_TRY );
-
-
-InstallOtherMethod( \-,
-    "for empty list and additive-element-with-inverse",
-    true,
-    [ IsList and IsEmpty, IsAdditiveElementWithInverse ], 0,
-    DIFF_LIST_SCL_DEFAULT );
-
-
-InstallOtherMethod( \-,
-    "for additive-element-with-inverse and small ext-a-element table",
-    IsElmsCollColls,
-    [ IsAdditiveElementWithInverse, IsExtAElementTable and IsSmallList ], 0,
-    DIFF_SCL_LIST_DEFAULT );
-
-InstallOtherMethod( \-,
-    "for additive-element-with-inverse and ext-a-element table",
-    IsElmsCollColls,
-    [ IsAdditiveElementWithInverse, IsExtAElementTable ], 0,
-    DIFF_SCL_LIST_TRY );
-
-
-InstallOtherMethod( \-,
-    "for small ext-a-element table and additive-element-with-inverse",
-    IsCollCollsElms,
-    [ IsExtAElementTable and IsSmallList, IsAdditiveElementWithInverse ], 0,
-    DIFF_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( \-,
-    "for ext-a-element table and additive-element-with-inverse",
-    IsCollCollsElms,
-    [ IsExtAElementTable, IsAdditiveElementWithInverse ], 0,
-    DIFF_LIST_SCL_TRY );
 
 
 #############################################################################
 ##
-#M  <list1> - <list2>
+#F  IMMUTABILITY_LEVEL( <list> )
 ##
-##  The difference of two internal lists <list1>, <list2> of equal length is
-##  defined pointwise, i.e., the result is an immutable internal list of the
-##  same length, with entry `<list1>[$i$] - <list2>[$i$]' at $i$-th position.
-##
-##  Note that we must require the lists to be internal since it may be
-##  unwanted that the difference of two non-internal lists is allowed to be
-##  internal; for example think of Lie matrices.
-##
-##  Special methods are installed for the case of dense lists in the same
-##  family.
-##
-InstallOtherMethod( \-,
-    "for two internal lists",
-    true,
-    [ IsList and IsListDefault, IsList and IsListDefault ], 0,
-    function( list1, list2 )
-    local diff, len, i;
-    diff:= [];
-    len:= Length( list1 );
-    if len <> Length( list2 ) then
-      Error( "<list1> and <list2> must have equal length" );
+DeclareGlobalFunction( "IMMUTABILITY_LEVEL2" );
+
+InstallGlobalFunction( IMMUTABILITY_LEVEL2, function( list )
+    if not IsGeneralizedRowVector( list ) or IsEmpty( list ) then
+      return 0;
+    elif IsMutable( list ) then
+      return IMMUTABILITY_LEVEL2( list[ PositionBound( list ) ] );
+    else
+      return 1 + IMMUTABILITY_LEVEL2( list[ PositionBound( list ) ] );
     fi;
-    for i in [ 1 .. len ] do
-      if IsBound( list1[i] ) then
-        if IsBound( list2[i] ) then
-          diff[i]:= list1[i] - list2[i];
-        else
-          diff[i]:= list1[i];
-        fi;
-      elif IsBound( list2[i] ) then
-        diff[i]:= - list2[i];
-      fi;
-    od;
-    return Immutable( diff );
     end );
 
-
-InstallMethod( \-,
-    "for two internal additive-element-with-inverse lists",
-    IsIdenticalObj,
-    [ IsAdditiveElementWithInverseList and IsListDefault,
-      IsAdditiveElementWithInverseList and IsListDefault ], 0,
-    DIFF_LIST_LIST_DEFAULT );
-
-
-#############################################################################
-##
-#M  OneOp( <matrix> ) . . . . . . . . . . . . . . . .  for an ordinary matrix
-##
-##  Note that the standard method applies only to ordinary matrices.
-##  (All internally represented matrices are ordinary.)
-##
-InstallOtherMethod( OneOp,
-    "default for small ordinary matrix",
-    true,
-    [ IsOrdinaryMatrix and IsSmallList ], 0,
-    ONE_MATRIX );
-
-InstallOtherMethod( OneOp,
-    "default for ordinary matrix",
-    true,
-    [ IsOrdinaryMatrix ], 0,
-    function( mat )
-    if IsSmallList( mat ) then
-      return ONE_MATRIX( mat );
+BindGlobal( "IMMUTABILITY_LEVEL", function( list )
+    if IsMutable( list ) then
+      return IMMUTABILITY_LEVEL2( list );
     else
-      TryNextMethod();
+      return infinity;
     fi;
 end );
 
 
 #############################################################################
 ##
-#M  InverseOp( <matrix> ) . . . . . . . . . . . . . .  for an ordinary matrix
+#F  SUM_LISTS_SPECIAL( <left>, <right>, <depthleft>, <depthright> )
 ##
-##  Note that the standard method applies only to ordinary matrices.
-##  (All internally represented matrices are ordinary.)
+##  This is a generic addition function for two small lists <left>, <right>
+##  in `IsListDefault' which have additive nesting depths <depthleft> and
+##  <depthright>, respectively.
 ##
-##  The INV_MAT_DEFAULT methods are faster for lists of FFEs because they
-##  use AddRowVector, etc.
+##  If at least one of <left>, <right> is non-dense or has additive nesting
+##  depth at least $3$, `SUM_LISTS_SPECIAL' is called by the generic `\+'
+##  method for two small lists in `IsListDefault'.
 ##
-    
-InstallOtherMethod( InverseOp,
-    "default for small matrix whose rows are vectors of FFEs",
-    true,
-    [ IsOrdinaryMatrix and IsSmallList and
-      IsCommutativeElementCollColl and IsRingElementTable and
-      IsFFECollColl ], 0,
-    INV_MAT_DEFAULT );
 
-InstallOtherMethod( InverseOp,
-    "default for ordinary matrix whose rows are vectors of FFEs",
-    true,
-    [ IsOrdinaryMatrix and IsCommutativeElementCollColl and IsRingElementTable 
-          and IsFFECollColl], 0,
+
+
+                      
+    
+    
+BindGlobal( "SUM_LISTS_SPECIAL",
+    function( left, right, depthleft, depthright )
+    local result, len1, len2, i, depth, depth2, x;
+
+    result:= [];
+    len1:= Length( left );
+    len2:= Length( right );
+    
+
+    # Compute the sum.
+    if depthleft = depthright then
+      if len1 < len2 then
+        len1:= len2;
+      fi;
+      for i in [ 1 .. len1 ] do
+        if IsBound( left[i] ) then
+          if IsBound( right[i] ) then
+            result[i]:= left[i] + right[i];
+          else
+            result[i]:= ShallowCopy( left[i]);
+          fi;
+        elif IsBound( right[i] ) then
+          result[i]:= ShallowCopy(right[i]);
+        fi;
+      od;
+    elif depthleft < depthright then
+      for i in [ 1 .. len2 ] do
+        if IsBound( right[i] ) then
+          result[i]:= left + right[i];
+        fi;
+      od;
+    else
+      for i in [ 1 .. len1 ] do
+        if IsBound( left[i] ) then
+          result[i]:= left[i] + right;
+        fi;
+      od;
+    fi;
+
+    # Adjust the mutability status.
+    depth:= IMMUTABILITY_LEVEL( left );
+    depth2:= IMMUTABILITY_LEVEL( right );
+    if depth2 < depth then
+      depth:= depth2;
+    fi;
+    if depth = infinity then
+      result:= Immutable( result );
+    else
+      result:= LIST_WITH_HOMOGENEOUS_MUTABILITY_LEVEL( result,
+                   NestingDepthA( result ) - depth );
+    fi;
+
+    # Return the result.
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  <list1> + <list2>  . . . . . . . . for two small lists in `IsListDefault'
+##
+##  A default method is installed only for two small lists in
+##  `IsListDefault'.
+##  For those lists, the sum is computed depending on the additive nesting
+##  depth.
+##
+InstallOtherMethod( \+,
+    [ IsListDefault and IsSmallList, IsListDefault and IsSmallList ],
+    function( left, right )
+    local depth1, depth2;
+
+    depth1:= NestingDepthA( left );
+    depth2:= NestingDepthA( right );
+    if    (2 < depth1 and not IsDenseList( left ))
+          or (2 < depth2 and not IsDenseList( right )) then
+        return SUM_LISTS_SPECIAL( left, right, depth1, depth2 );
+    elif depth1 = depth2 then
+      return SUM_LIST_LIST_DEFAULT( left, right );
+    elif depth1 < depth2 then
+      return SUM_SCL_LIST_DEFAULT( left, right );
+    else
+      return SUM_LIST_SCL_DEFAULT( left, right );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  <obj1> - <obj2>
+##
+##  For two {\GAP} objects $x$ and $y$ of which one is in
+##  `IsGeneralizedRowVector' and the other is either not a list or is
+##  also in `IsGeneralizedRowVector',
+##  $x - y$ is defined as $x + (-y)$.
+##  For this case, we install a default method that relies on `\+'.
+##
+##  A (better?) default method is installed only for two small lists in
+##  `IsListDefault'.
+##
+InstallOtherMethod( \-,
+    [ IsGeneralizedRowVector, IsGeneralizedRowVector ],
+    function( grv1, grv2 )
+    return grv1 + (-grv2);
+    end );
+
+InstallOtherMethod( \-,
+    [ IsGeneralizedRowVector, IsObject ],
+    function( grv, nonlist )
+    if IsList( nonlist ) then
+      TryNextMethod();
+    fi;
+    return grv + (-nonlist);
+    end );
+
+InstallOtherMethod( \-,
+    [ IsObject, IsGeneralizedRowVector ],
+    function( nonlist, grv )
+    if IsList( nonlist ) then
+      TryNextMethod();
+    fi;
+    return nonlist + (-grv);
+    end );
+
+InstallOtherMethod( \-,
+    [ IsListDefault and IsSmallList, IsListDefault and IsSmallList ],
+    function( left, right )
+    local depth1, depth2;
+
+    depth1:= NestingDepthA( left );
+    depth2:= NestingDepthA( right );
+    if    (2 < depth1 and not IsDenseList( left ))
+       or (2 < depth2 and not IsDenseList( right )) then
+      return SUM_LISTS_SPECIAL( left, - right, depth1, depth2 );
+    elif depth1 = depth2 then
+      return DIFF_LIST_LIST_DEFAULT( left, right );
+    elif depth1 < depth2 then
+      return DIFF_SCL_LIST_DEFAULT( left, right );
+    else
+      return DIFF_LIST_SCL_DEFAULT( left, right );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  OneOp( <matrix> ) . . . . . . . . . . . . . for matrix in `IsListDefault'
+#M  OneSM( <matrix> ) . . . . . . . . . . . . . for matrix in `IsListDefault'
+##
+InstallOtherMethod( OneOp,
+    [ IsListDefault ],
     function( mat )
-    if IsSmallList( mat ) then
-      return INV_MAT_DEFAULT( mat );
+    if IsSmallList( mat ) and NestingDepthM( mat ) mod 2 = 0 then
+      return ONE_MATRIX_MUTABLE( mat );
+    else
+      TryNextMethod();
+    fi;
+    end );
+    
+InstallOtherMethod( OneSameMutability,
+    [ IsListDefault ],
+    function( mat )
+    if IsSmallList( mat ) and NestingDepthM( mat ) mod 2 = 0 then
+      return ONE_MATRIX_SAME_MUTABILITY( mat );
     else
       TryNextMethod();
     fi;
     end );
 
+
+#############################################################################
+##
+#M  InverseOp( <matrix> ) . . . . . . . . . . . for matrix in `IsListDefault'
+#M  InverseSM( <matrix> ) . . . . . . . . . . . for matrix in `IsListDefault'
+##
+##  The `INV_MAT_DEFAULT' methods are faster for lists of FFEs because they
+##  use `AddRowVector', etc.
+##
     
 InstallOtherMethod( InverseOp,
-    "default for small ordinary matrix",
-    true,
-    [ IsOrdinaryMatrix and IsSmallList and IsZDFRECollColl], 0,
-    INV_MATRIX );
+    "for default list whose rows are vectors of FFEs",
+    [ IsListDefault and IsRingElementTable and IsFFECollColl ],
+    function( mat )
+    if NestingDepthM( mat ) mod 2 = 0 and IsSmallList( mat ) then
+        if IsRectangularTable( mat ) then
+            return INV_MAT_DEFAULT_MUTABLE( mat );
+        else
+            return fail;
+        fi;
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 InstallOtherMethod( InverseOp,
-    "default for ordinary matrix",
-    true,
-    [ IsOrdinaryMatrix and IsZDFRECollColl ], 0,
+    "for default list over a ring without zero divisors",
+    [ IsListDefault and IsZDFRECollColl ],
     function( mat )
-    if IsSmallList( mat ) then
-      return INV_MATRIX( mat );
+    if NestingDepthM( mat ) mod 2 = 0 and IsSmallList( mat ) then
+        if IsRectangularTable( mat ) then
+            return INV_MATRIX_MUTABLE( mat );
+        else
+            return fail;
+        fi;
+    else
+      TryNextMethod();
+    fi;
+    end );
+    
+InstallOtherMethod( InverseSameMutability,
+    "for default list whose rows are vectors of FFEs",
+    [ IsListDefault and IsRingElementTable and IsFFECollColl ],
+    function( mat )
+    if NestingDepthM( mat ) mod 2 = 0 and IsSmallList( mat ) then
+        if IsRectangularTable( mat ) then
+            return INV_MAT_DEFAULT_SAME_MUTABILITY( mat );
+        else
+            return fail;
+        fi;
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+InstallOtherMethod( InverseSameMutability,
+    "for default list over a ring without zero divisors",
+    [ IsListDefault and IsZDFRECollColl ],
+    function( mat )
+    if NestingDepthM( mat ) mod 2 = 0 and IsSmallList( mat ) then
+        if IsRectangularTable( mat ) then
+            return INV_MATRIX_SAME_MUTABILITY( mat );
+        else
+            return fail;
+        fi;
     else
       TryNextMethod();
     fi;
@@ -2756,552 +2788,361 @@ InstallOtherMethod( \^,
     "using `PROD' for ring element list and ring element table",
     IsElmsColls,
     [ IsRingElementList, IsRingElementTable ],
-    0,
     PROD );
 
 
+
 #############################################################################
 ##
-#M  <elm> + <list>
-#M  <list> + <elm>
-#M  <elm> + <table>
-#M  <table> + <elm>
+#M  <mgrv> * <nonlist> . . . . . . . . . .  for small list in `IsListDefault'
+#M  <nonlist> * <mgrv> . . . . . . . . . .  for small list in `IsListDefault'
 ##
-##  If <list> is a list and <elm> is an object that is *not* a list then
-##  the sum `<elm> + <list>' and the sum `<list> + <elm>' are defined as
-##  list with entry `<elm> + <list>[$i$]' at $i$-th position.
-##  The result is mutable if and only if <list> is mutable.
+##  Default methods are installed only for small lists in `IsListDefault'.
+##  For those lists, the product with a non-list is defined pointwise.
 ##
-##  Special methods are installed for certain family relations of <elm> and
-##  <list>.
-##
-InstallOtherMethod( \+,
-    "for list and non-list",
-    true,
-    [ IsList, IsObject ], 0,
+InstallOtherMethod( \*,
+    [ IsListDefault and IsSmallList, IsObject ],
     function( list, nonlist )
-    local sum, i;
     if IsList( nonlist ) then
       TryNextMethod();
+    else
+      return PROD_LIST_SCL_DEFAULT( list, nonlist );
     fi;
-    sum:= [];
-    for i in [ 1 .. Length( list ) ] do
-      if IsBound( list[i] ) then
-        sum[i]:= list[i] + nonlist;
-      fi;
-    od;
-    if not IsMutable( list ) then
-      sum:= Immutable( sum );
-    fi;
-    return sum;
     end );
 
-InstallOtherMethod( \+,
-    "for non-list and list",
-    true,
-    [ IsObject, IsList ], 0,
+InstallOtherMethod( \*,
+    [ IsObject, IsListDefault and IsSmallList ],
     function( nonlist, list )
-    local sum, i;
     if IsList( nonlist ) then
       TryNextMethod();
+    else
+      return PROD_SCL_LIST_DEFAULT( nonlist, list );
     fi;
-    sum:= [];
-    for i in [ 1 .. Length( list ) ] do
-      if IsBound( list[i] ) then
-        sum[i]:= nonlist + list[i];
-      fi;
-    od;
-    if not IsMutable( list ) then
-      sum:= Immutable( sum );
-    fi;
-    return sum;
     end );
-
-
-SUM_SCL_LIST_TRY := function( elm, list )
-    if IsSmallList( list ) then
-      return SUM_SCL_LIST_DEFAULT( elm, list );
-    else
-      TryNextMethod();
-    fi;
-end;
-
-SUM_LIST_SCL_TRY := function( list, elm )
-    if IsSmallList( list ) then
-      return SUM_LIST_SCL_DEFAULT( list, elm );
-    else
-      TryNextMethod();
-    fi;
-end;
-
-InstallMethod( \+,
-    "additive element + small ext-a-element list",
-    IsElmsColls,
-    [ IsAdditiveElement, IsExtAElementList and IsSmallList ], 0,
-    SUM_SCL_LIST_DEFAULT );
-
-InstallMethod( \+,
-    "additive element + ext-a-element list",
-    IsElmsColls,
-    [ IsAdditiveElement, IsExtAElementList ], 0,
-    SUM_SCL_LIST_TRY );
-
-
-InstallOtherMethod( \+,
-    "additive element + empty list",
-    true,
-    [ IsAdditiveElement, IsList and IsEmpty ], 0,
-    SUM_SCL_LIST_DEFAULT );
-
-
-InstallMethod( \+,
-    "small ext-a-element list + additive element",
-    IsCollsElms,
-    [ IsExtAElementList and IsSmallList, IsAdditiveElement ], 0,
-    SUM_LIST_SCL_DEFAULT );
-
-InstallMethod( \+,
-    "ext-a-element list + additive element",
-    IsCollsElms,
-    [ IsExtAElementList, IsAdditiveElement ], 0,
-    SUM_LIST_SCL_TRY );
-
-
-InstallOtherMethod( \+,
-    "empty list + additive element",
-    true,
-    [ IsList and IsEmpty, IsAdditiveElement ], 0,
-    SUM_LIST_SCL_DEFAULT );
-
-
-InstallOtherMethod( \+,
-    "additive element + small ext-a-element table",
-    IsElmsCollColls,
-    [ IsAdditiveElement, IsExtAElementTable and IsSmallList ], 0,
-    SUM_SCL_LIST_DEFAULT );
-
-InstallOtherMethod( \+,
-    "additive element + ext-a-element table",
-    IsElmsCollColls,
-    [ IsAdditiveElement, IsExtAElementTable ], 0,
-    SUM_SCL_LIST_TRY );
-
-
-InstallOtherMethod( \+,
-    "small ext-a-element table + additive element",
-    IsCollCollsElms,
-    [ IsExtAElementTable and IsSmallList, IsAdditiveElement ], 0,
-    SUM_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( \+,
-    "ext-a-element table + additive element",
-    IsCollCollsElms,
-    [ IsExtAElementTable, IsAdditiveElement ], 0,
-    SUM_LIST_SCL_TRY );
 
 
 #############################################################################
 ##
-#M  <list1> + <list2>
+#F  LIST_WITH_HOLES( <list>, <func> )
 ##
-##  The sum of two internal lists <list1>, <list2> of equal length is defined
-##  pointwise, i.e., the result is an immutable internal list of the same
-##  length, with entry `<list1>[$i$] + <list2>[$i$]' at $i$-th position.
+BindGlobal( "LIST_WITH_HOLES", function( list, func )
+    local result, i;
+ 
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= func( list[i] );
+      fi;
+    od;
+    return result;
+    end );
+#T Note that the two-argument version of `List' is defined only for dense
+#T lists -- I think this restriction could be removed now!
+
+
+#############################################################################
 ##
-##  Note that we must require the lists to be internal since it may be
-##  unwanted that the sum of two non-internal lists is allowed to be
-##  internal; for example think of Lie matrices.
+#F  PROD_LISTS_SPECIAL( <left>, <right>, <depthleft>, <depthright> )
 ##
-##  Special methods are installed for the case of dense lists in the same
-##  family.
+##  This is a generic multiplication function for two small lists <left>,
+##  <right> in `IsListDefault' which have multiplicative nesting depths
+##  <depthleft> and <depthright>, respectively.
 ##
-InstallOtherMethod( \+,
-    "for two internal lists",
-    true,
-    [ IsList and IsListDefault, IsList and IsListDefault ], 0,
-    function( list1, list2 )
-    local sum, len, i;
-    sum:= [];
-    len:= Length( list1 );
-    if len <> Length( list2 ) then
-      Error( "<list1> and <list2> must have equal length" );
-    fi;
-    for i in [ 1 .. len ] do
-      if IsBound( list1[i] ) then
-        if IsBound( list2[i] ) then
-          sum[i]:= list1[i] + list2[i];
-        else
-          sum[i]:= list1[i];
+##  If at least one of <left>, <right> is non-dense or has multiplicative
+##  nesting depth at least $3$, `PROD_LISTS_SPECIAL' is called by the generic
+##  `\*' method for two small lists in `IsListDefault'.
+##
+BindGlobal( "PROD_LISTS_SPECIAL",
+    function( left, right, depthleft, depthright )
+    local len1, len2, prods, i, result, depth, depth2;
+
+    # Compute the product.
+    if IsOddInt( depthleft ) then
+      if IsOddInt( depthright ) or depthleft < depthright then
+        # vector product
+        len1:= Length( left );
+        len2:= Length( right );
+        if len2 < len1 then
+          len1:= len2;
         fi;
-      elif IsBound( list2[i] ) then
-        sum[i]:= list2[i];
+        prods:= [];
+        for i in [ 1 .. len1 ] do
+          if IsBound( left[i] ) and IsBound( right[i] ) then
+            Add( prods, left[i] * right[i] );
+          fi;
+        od;
+        if IsEmpty( prods ) then
+          Error( "no summands to add up in mult. of <left> and <right>" );
+        fi;
+        result:= prods[1];
+        for i in [ 2 .. Length( prods ) ] do
+          result:= result + prods[i];
+        od;
+      else
+        # <vec> * <scl>
+        result:= LIST_WITH_HOLES( left, x -> x * right );
       fi;
-    od;
-    return Immutable( sum );
-    end );
+    elif IsOddInt( depthright ) then
+      if depthleft < depthright then
+        # <scl> * <vec>
+        result:= LIST_WITH_HOLES( right, x -> left * x );
+      else
+        # <mat> * <vec>
+        result:= LIST_WITH_HOLES( left, x -> x * right );
+      fi;
+    elif depthleft = depthright then
+      # <mat> * <mat>
+      result:= LIST_WITH_HOLES( left, x -> x * right );
+    elif depthleft < depthright then
+      # <scl> * <mat>
+      result:= LIST_WITH_HOLES( right, x -> left * x );
+    else
+      # <mat> * <scl>
+      result:= LIST_WITH_HOLES( left, x -> x * right );
+    fi;
 
-InstallOtherMethod( \+,
-    "dense internal list + dense internal list",
-    IsIdenticalObj,
-    [ IsDenseList and IsListDefault,
-      IsDenseList and IsListDefault ], 0,
-    SUM_LIST_LIST_DEFAULT );
+    # Adjust the mutability status.
+    depth:= IMMUTABILITY_LEVEL( left );
+    depth2:= IMMUTABILITY_LEVEL( right );
+    if depth2 < depth then
+      depth:= depth2;
+    fi;
+    if depth = infinity then
+      result:= Immutable( result );
+    else
+      result:= LIST_WITH_HOMOGENEOUS_MUTABILITY_LEVEL( result,
+                   NestingDepthA( result ) - depth );
+    fi;
+
+    # Return the result.
+    return result;
+    end );
 
 
 #############################################################################
 ##
-#M  <elm> * <list>
-#M  <list> * <elm>
-#M  <elm> * <table>
-#M  <table> * <elm>
+#M  <list1> * <list2>  . . . . . . . . for two small lists in `IsListDefault'
 ##
-##  If <list> is a list and <elm> is an object that is *not* a list then
-##  the product `<elm> * <list>' and the product `<list> * <elm>' are defined
-##  as list with entry `<elm> * <list>[$i$]' resp.
-##  `<list>[$i$] * <elm>' at $i$-th position.
-##  The result is mutable if and only if <list> is mutable.
-##
-##  Special methods are installed for certain family relations of <elm> and
-##  <list>.
+##  A default method is installed only for two small lists in
+##  `IsListDefault'.
+##  For those lists, the product is defined depending on the multiplicative
+##  nesting depths of the arguments.
 ##
 InstallOtherMethod( \*,
-    "for list and non-list",
-    true,
-    [ IsList, IsObject ], 0,
+    [ IsListDefault and IsSmallList, IsListDefault and IsSmallList ],
+    function( left, right )
+    local depth1, depth2;
+
+    depth1:= NestingDepthM( left );
+    depth2:= NestingDepthM( right );
+    if    (2 < depth1 and not IsDenseList( left ))
+       or (2 < depth2 and not IsDenseList( right )) then
+      return PROD_LISTS_SPECIAL( left, right, depth1, depth2 );
+    elif IsOddInt( depth1 ) then
+      if IsOddInt( depth2 ) or depth1 < depth2 then
+        # <vec> * <vec> or <vec> * <mat>
+        return PROD_LIST_LIST_DEFAULT( left, right );
+      else
+        # <vec> * <scl>
+        return PROD_LIST_SCL_DEFAULT( left, right );
+      fi;
+    elif depth1 < depth2 then
+      # <scl> * <vec> or <scl> * <mat>
+      return PROD_SCL_LIST_DEFAULT( left, right );
+    else
+      # <mat> * <scl> or <mat> * <vec> or <mat> * <mat>
+      return PROD_LIST_SCL_DEFAULT( left, right );
+    fi;
+end );
+
+
+InstallMethod( \*,
+        "More efficient non-recursive kernel method for vector*matrix of cyclotomics",
+        [ IsListDefault and IsSmallList and IsCyclotomicCollection and
+          IsPlistRep,
+          IsListDefault and IsSmallList and IsCyclotomicCollColl and
+          IsPlistRep and IsRectangularTable],
+        PROD_VECTOR_MATRIX);
+    
+InstallMethod( \*,
+        "More efficient non-recursive method for matrix*matrix of cyclotomics",
+        [ IsListDefault and IsSmallList and IsCyclotomicCollColl,
+          IsListDefault and IsSmallList and IsCyclotomicCollColl and
+          IsPlistRep and IsRectangularTable],
+        function(m1,m2)
+    local prod, row;
+    prod := [];
+    for row in m1 do
+        Add(prod, PROD_VECTOR_MATRIX(row, m2));
+    od;
+    if not IsMutable(m1) and not IsMutable(m2) then
+        MakeImmutable(prod);
+    fi;
+    return prod;
+end);
+    
+    
+#############################################################################
+##
+#F  MOD_LIST_SCL_DEFAULT( <list>, <scalar> )
+#F  MOD_SCL_LIST_DEFAULT( <scalar>, <list> )
+#F  MOD_LIST_LIST_DEFAULT( <left>, <right> )
+##
+BindGlobal( "MOD_LIST_SCL_DEFAULT", function( list, scalar )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= list[i] mod scalar;
+      fi;
+    od;
+    if not IsMutable( list ) and not IsMutable( scalar ) then
+      result:= Immutable( result );
+    fi;
+    return result;
+    end );
+
+BindGlobal( "MOD_SCL_LIST_DEFAULT", function( scalar, list )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= scalar mod list[i];
+      fi;
+    od;
+    if not IsMutable( list ) and not IsMutable( scalar ) then
+      result:= Immutable( result );
+    fi;
+    return result;
+    end );
+
+BindGlobal( "MOD_LIST_LIST_DEFAULT", function( left, right )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Maximum( Length( left ), Length( right ) ) ] do
+      if IsBound( left[i] ) then
+        if IsBound( right[i] ) then
+          result[i]:= left[i] mod right[i];
+        elif IsCopyable( left[i] ) then
+          result[i]:= ShallowCopy( left[i] );
+        else
+          result[i]:= left[i];
+        fi;
+      elif IsBound( right[i] ) then
+        if IsCopyable( right[i] ) then
+          result[i]:= ShallowCopy( right[i] );
+        else
+          result[i]:= right[i];
+        fi;
+      fi;
+    od;
+    if not IsMutable( left ) and not IsMutable( right ) then
+      result:= Immutable( result );
+    fi;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  <grv> mod <nonlist>  . . . . . . . . .  for small list in `IsListDefault'
+#M  <nonlist> mod <grv>  . . . . . . . . .  for small list in `IsListDefault'
+##
+##  Default methods are installed only for small lists in `IsListDefault'.
+##  For those lists,
+##  the result of `mod' with a non-list is defined pointwise.
+##
+InstallOtherMethod( \mod,
+    [ IsListDefault and IsSmallList, IsObject ],
     function( list, nonlist )
-    local prod, i;
     if IsList( nonlist ) then
       TryNextMethod();
+    else
+      return MOD_LIST_SCL_DEFAULT( list, nonlist );
     fi;
-    prod:= [];
-    for i in [ 1 .. Length( list ) ] do
-      if IsBound( list[i] ) then
-        prod[i]:= list[i] * nonlist;
-      fi;
-    od;
-    if not IsMutable( list ) then
-      prod:= Immutable( prod );
-    fi;
-    return prod;
     end );
 
-InstallOtherMethod( \*,
-    "for non-list and list",
-    true,
-    [ IsObject, IsList ], 0,
+InstallOtherMethod( \mod,
+    [ IsObject, IsListDefault and IsSmallList ],
     function( nonlist, list )
-    local prod, i;
+    if IsList( nonlist ) then
+      TryNextMethod();
+    else
+      return MOD_SCL_LIST_DEFAULT( nonlist, list );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  <list1> mod <list2>  . . . . . . . for two small lists in `IsListDefault'
+##
+##  A default method is installed only for two small lists in
+##  `IsListDefault'.
+##  For those lists, `mod' is defined depending on the multiplicative nesting
+##  depth.
+##
+InstallOtherMethod( \mod,
+    [ IsListDefault and IsSmallList, IsListDefault and IsSmallList ],
+    function( left, right )
+    local depth1, depth2;
+
+    depth1:= NestingDepthM( left );
+    depth2:= NestingDepthM( right );
+    if depth1 = depth2 then
+      return MOD_LIST_LIST_DEFAULT( left, right );
+    elif depth1 < depth2 then
+      return MOD_SCL_LIST_DEFAULT( left, right );
+    else
+      return MOD_LIST_SCL_DEFAULT( left, right );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  LeftQuotient( <obj1>, <obj2> )
+##
+##  For two {\GAP} objects $x$ and $y$ of which one is in
+##  `IsMultiplicativeGeneralizedRowVector' and the other is either not a list
+##  or is also in `IsMultiplicativeGeneralizedRowVector',
+##  $`LeftQuotient'( x, y )$ is defined as $x^{-1} y$.
+##  For this case, we install a default method that relies on `Inverse' and
+##  `\*'.
+##
+InstallOtherMethod( LeftQuotient,
+    [ IsMultiplicativeGeneralizedRowVector,
+      IsMultiplicativeGeneralizedRowVector ],
+    function( grv1, grv2 )
+    return grv1^(-1) * grv2;
+    end );
+
+InstallOtherMethod( LeftQuotient,
+    [ IsMultiplicativeGeneralizedRowVector, IsObject ],
+    function( grv, nonlist )
     if IsList( nonlist ) then
       TryNextMethod();
     fi;
-    prod:= [];
-    for i in [ 1 .. Length( list ) ] do
-      if IsBound( list[i] ) then
-        prod[i]:= nonlist * list[i];
-      fi;
-    od;
-    if not IsMutable( list ) then
-      prod:= Immutable( prod );
-    fi;
-    return prod;
+    return grv^(-1) * nonlist;
     end );
 
-
-PROD_SCL_LIST_TRY := function( elm, list )
-    if IsSmallList( list ) then
-      return PROD_SCL_LIST_DEFAULT( elm, list );
-    else
+InstallOtherMethod( LeftQuotient,
+    [ IsObject, IsMultiplicativeGeneralizedRowVector ],
+    function( nonlist, grv )
+    if IsList( nonlist ) then
       TryNextMethod();
     fi;
-end;
-
-PROD_LIST_SCL_TRY := function( list, elm )
-    if IsSmallList( list ) then
-      return PROD_LIST_SCL_DEFAULT( list, elm );
-    else
-      TryNextMethod();
-    fi;
-end;
-
-
-InstallMethod( \*,
-    "multiplicative element * small ext-l-element list",
-    IsElmsColls,
-    [ IsMultiplicativeElement, IsExtLElementList and IsSmallList ], 0,
-    PROD_SCL_LIST_DEFAULT );
-
-InstallMethod( \*,
-    "multiplicative element * ext-l-element list",
-    IsElmsColls,
-    [ IsMultiplicativeElement, IsExtLElementList ], 0,
-    PROD_SCL_LIST_TRY );
-
-
-InstallOtherMethod( \*,
-    "multiplicative element * empty list",
-    true,
-    [ IsMultiplicativeElement, IsList and IsEmpty ], 0,
-    PROD_SCL_LIST_DEFAULT );
-
-
-InstallMethod( \*,
-    "small ext-r-element list * multiplicative element",
-    IsCollsElms,
-    [ IsExtRElementList and IsSmallList, IsMultiplicativeElement ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallMethod( \*,
-    "ext-r-element list * multiplicative element",
-    IsCollsElms,
-    [ IsExtRElementList, IsMultiplicativeElement ], 0,
-    PROD_LIST_SCL_TRY );
-
-
-InstallOtherMethod( \*,
-    "empty list * multiplicative element",
-    true,
-    [ IsList and IsEmpty, IsMultiplicativeElement ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-
-InstallOtherMethod( \*,
-    "multiplicative element * small ext-l-element table",
-    IsElmsCollColls,
-    [ IsMultiplicativeElement, IsExtLElementTable and IsSmallList ], 0,
-    PROD_SCL_LIST_DEFAULT );
-
-InstallOtherMethod( \*,
-    "multiplicative element * ext-l-element table",
-    IsElmsCollColls,
-    [ IsMultiplicativeElement, IsExtLElementTable ], 0,
-    PROD_SCL_LIST_TRY );
-
-
-InstallOtherMethod( \*,
-    "small ext-r-element * multiplicative element",
-    IsCollCollsElms,
-    [ IsExtRElementTable and IsSmallList, IsMultiplicativeElement ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( \*,
-    "ext-r-element * multiplicative element",
-    IsCollCollsElms,
-    [ IsExtRElementTable, IsMultiplicativeElement ], 0,
-    PROD_LIST_SCL_TRY );
+    return nonlist^(-1) * grv;
+    end );
 
 
 #############################################################################
 ##
-#M  <list1> * <list2>
+##  (end of the list arithmetic stuff)
 ##
-##  If <list1> is a dense list whose entries are *not* lists then the product
-##  of <list1> with the dense list <list2> of same length $n$ is defined as
-##  $\sum_{i=1}^n <list1>[i] * <list2>[i]$.
-##  This covers the standard scalar product of two vectors and the
-##  product of a vector and a matrix.
-##
-##  If <list1> is a nonempty dense internal list of lists of same length $m$
-##  then the product of <list1> with the dense list <list2> of length $m$
-##  is defined as the list with entry `<list1>[$i$] * <list2>' at $i$-th
-##  position.
-##  This covers the product of an internal ordinary matrix with an internal
-##  row vector and the product of two ordinary matrices.
-##
-##  Special methods are installed for the case of certain family relations
-##  between <list1> and <list2>.
-##
-##  Note that the above definition does *not* automatically imply the
-##  mutability rule that the product of two lists is mutable (if applicable)
-##  except if the two operands are immutable.
-##  Namely, if <list1> is a list of immutable objects and <list2> is a
-##  mutable matrix whose rows are immutable then the sum
-##  $\sum_{i=1}^n <list1>[i] * <list2>[i]$ is immutable but the result vector
-##  is expected to be mutable.
-##
-InstallOtherMethod( \*,
-    "for dense list of non-lists and dense list",
-    true,
-    [ IsDenseList, IsDenseList ], 0,
-    function( list1, list2 )
-    if ForAny( list1, IsList ) then
-      TryNextMethod();
-    else
-      return PROD_LIST_LIST_DEFAULT( list1, list2 );
-    fi;
-    end );
-
-InstallOtherMethod( \*,
-    "for dense internal list of lists and dense list",
-    true,
-    [ IsDenseList and IsListDefault, IsDenseList ], 0,
-    function( list1, list2 )
-    if IsEmpty( list1 ) or ForAny( list1, row -> not IsList( row ) ) then
-      TryNextMethod();
-    else
-      return PROD_LIST_SCL_DEFAULT( list1, list2 );
-    fi;
-    end );
-
-
-PROD_LIST_LIST_TRY := function( list1, list2 )
-    if IsSmallList( list1 ) and IsSmallList( list2 ) then
-      return PROD_LIST_LIST_DEFAULT( list1, list2 );
-    else
-      TryNextMethod();
-    fi;
-end;
-
-InstallMethod( \*,
-    "small ring element list * small ring element list",
-    IsIdenticalObj,
-    [ IsRingElementList and IsSmallList and IsListDefault,
-      IsRingElementList and IsSmallList and IsListDefault], 0,
-    PROD_LIST_LIST_DEFAULT );
-
-InstallMethod( \*,
-    "ring element list * ring element list",
-    IsIdenticalObj,
-    [ IsRingElementList, IsRingElementList ], 0,
-    PROD_LIST_LIST_TRY );
-
-
-InstallOtherMethod( \*,
-    "small ring element list * small ring element table",
-    IsElmsColls,
-    [ IsRingElementList and IsSmallList,
-      IsRingElementTable and IsSmallList ], 0,
-    PROD_LIST_LIST_DEFAULT );
-
-InstallOtherMethod( \*,
-    "ring element list * ring element table",
-    IsElmsColls,
-    [ IsRingElementList, IsRingElementTable ], 0,
-    PROD_LIST_LIST_TRY );
-
-InstallOtherMethod( \*, "row vector * matrix",
-        IsElmsColls,
-        [ IsRowVector and IsSmallList and IsCommutativeElementCollection
-          and IsRingElementList, IsMatrix and IsRingElementTable
-          and IsSmallList], 0,
-        PROD_VEC_MAT_DEFAULT);
-
-InstallOtherMethod( \*, "row vector * matrix",
-        IsElmsColls,
-        [ IsRowVector and IsCommutativeElementCollection and
-          IsRingElementList, IsMatrix and IsSmallList ], 0,
-       function(v,m)
-    if IsSmallList(v) then
-        return PROD_VEC_MAT_DEFAULT(v,m);
-    else
-       TryNextMethod();
-   fi;
-end);
-
-InstallOtherMethod( \*,
-    "small cyclotomics list * small ffe table",
-    true,
-    [ IsRingElementList and IsCyclotomicCollection and IsSmallList,
-      IsRingElementTable and IsFFECollColl and IsSmallList ], 0,
-    PROD_LIST_LIST_DEFAULT );
-
-InstallOtherMethod( \*,
-    "cyclotomics list * ffe table",
-    true,
-    [ IsRingElementList and IsCyclotomicCollection,
-      IsRingElementTable and IsFFECollColl ], 0,
-    PROD_LIST_LIST_TRY );
-
-
-InstallOtherMethod( \*,
-    "small ffe list * small cyclotomics table",
-    true,
-    [ IsRingElementList and IsFFECollection and IsSmallList,
-      IsRingElementTable and IsCyclotomicCollColl and IsSmallList ], 0,
-    PROD_LIST_LIST_DEFAULT );
-
-InstallOtherMethod( \*,
-    "ffe list * cyclotomics table",
-    true,
-    [ IsRingElementList and IsFFECollection,
-      IsRingElementTable and IsCyclotomicCollColl ], 0,
-    PROD_LIST_LIST_TRY );
-
-
-InstallOtherMethod( \*,
-    "small ring element table * small ring element list",
-    IsCollsElms,
-    [ IsRingElementTable and IsSmallList,
-      IsRingElementList and IsSmallList ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( \*,
-    "ring element table * ring element list",
-    IsCollsElms,
-    [ IsRingElementTable, IsRingElementList ], 0,
-    PROD_LIST_SCL_TRY );
-
-
-InstallOtherMethod( \*,
-    "internal ring element table * internal ring element table",
-    IsIdenticalObj,
-    [ IsRingElementTable and IsListDefault,
-      IsRingElementTable and IsListDefault ],
-    1, # higher than the method immediately below!
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( \*,
-    "ord. matrix & ring element table * ord. matrix & ring element table",
-    IsIdenticalObj,
-    [ IsRingElementTable and IsOrdinaryMatrix,
-      IsRingElementTable and IsOrdinaryMatrix ], 0,
-    PROD_LIST_SCL_TRY );
-
-
-InstallOtherMethod( \*,
-    "small cyclotomics table * small ffe table",
-    true,
-    [ IsRingElementTable and IsCyclotomicCollColl and IsSmallList,
-      IsRingElementTable and IsFFECollColl and IsSmallList], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( \*,
-    "cyclotomics table * ffe table",
-    true,
-    [ IsRingElementTable and IsCyclotomicCollColl,
-      IsRingElementTable and IsFFECollColl ], 0,
-    PROD_LIST_SCL_TRY );
-
-
-InstallOtherMethod( \*,
-    "small ffe table * small cyclotomics table",
-    true,
-    [ IsRingElementTable and IsFFECollColl and IsSmallList,
-      IsRingElementTable and IsCyclotomicCollColl and IsSmallList ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( \*,
-    "ffe table * cyclotomics table",
-    true,
-    [ IsRingElementTable and IsFFECollColl,
-      IsRingElementTable and IsCyclotomicCollColl ], 0,
-    PROD_LIST_SCL_TRY );
-
-
-#############################################################################
-##
-#M  <list> mod <elm>
-##
-##  If <list> is a homogenous list and <elm> is an object of teh same
-##  family as the elements of the list then
-##  the remainder  '<list> mod <elm>'  is defined
-##  as list with entry `<list>[$i$] mod <elm>'  at $i$-th position.
-##  The result is mutable if and only if <list> is mutable.
-##
-InstallMethod( \mod, "for a homog list and a compatible element",
-        IsCollsElms, [IsHomogeneousList, IsObject], 0,
-        function(l,x)
-    return List(l, y-> y mod x);
-end);
 
 
 #############################################################################
@@ -3322,12 +3163,11 @@ end );
 InstallGlobalFunction( UnionBlist, function( arg )
 local   union,  blist,blists;
 if Length(arg)=1 and not IsBlist(arg[1]) then
-    
       blists:=arg[1];
     else
       blists:=arg;
     fi;
-    
+
     union := BlistList( [ 1 .. Length( blists[ 1 ] ) ], [  ] );
     for blist  in blists  do
         UniteBlist( union, blist );
@@ -3347,7 +3187,7 @@ local   intersection,  blist,blists;
     else
       blists:=arg;
     fi;
-    
+
     # make a list with all bits set.
     intersection:=BlistList([1..Length(blists[1])],[1..Length(blists[1])]);
     for blist  in blists  do
@@ -3365,7 +3205,7 @@ InstallGlobalFunction( ListWithIdenticalEntries, function( n, obj )
     local list, i, c;
     if IsChar(obj) then
       list := "";
-    else  
+    else
       list:= [];
     fi;
     for i in [ 1 .. n ] do
@@ -3385,10 +3225,7 @@ end );
 ##
 InstallMethod( ViewObj,
     "for finite lists",
-    true,
     [ IsList and IsFinite ],
-    0,
-
 function( list )
     local   i;
 
@@ -3401,10 +3238,10 @@ function( list )
         for i  in [ 1 .. Length(list) ]  do
             if IsBound(list[i])  then
                 if 1 < i then Print( "\<,\< \>\>" ); fi;
-                
+
                 # This is needed to handle recursive objects nicely
                 SET_PRINT_OBJ_INDEX(i);
-                
+
                 ViewObj(list[i]);
             elif 1 < i then Print( "\<,\<\>\>" );
         fi;
@@ -3415,19 +3252,17 @@ end );
 
 InstallMethod( ViewObj,
     "for ranges",
-    true,
     [ IsList and IsFinite and IsRange ],
-    0,
-    function( list )      
-    Print( "[ ", list[1] );    
-    if 1 < Length( list ) then                   
+    function( list )
+    Print( "[ ", list[1] );
+    if 1 < Length( list ) then
       if list[2] - list[1] <> 1  then
-        Print( ", ", list[2] );    
-      fi;                                
+        Print( ", ", list[2] );
+      fi;
       Print( " .. ", list[ Length( list ) ] );
-    fi;         
+    fi;
     Print( " ]" );
-    end );                                  
+    end );
 
 
 #############################################################################
@@ -3454,21 +3289,17 @@ end;
 ##
 #M  SetIsSSortedList( <list>, <val> ) . . . . . . . . method for kernel lists
 ##
-
-
-InstallMethod( SetIsSSortedList, 
-        "method for an internal list and a Boolean", 
-        true, 
+InstallMethod( SetIsSSortedList,
+        "method for an internal list and a Boolean",
         [IsList and IsInternalRep, IsBool],
-        0,
-        function(l,val)        
-    if val then   
+        function(l,val)
+    if val then
         SET_FILTER_LIST(l, IS_SSORT_LIST);
     else
         SET_FILTER_LIST(l, IS_NSORT_LIST);
     fi;
 end);
-        
+
 #############################################################################
 ##
 #F  PlainListCopy( <list> ) . . . . . . . . . . make a plain list copy of
@@ -3480,17 +3311,16 @@ end);
 ##  This function guarantees that the reult will be a plain list, distinct
 ##  from the input object.
 ##
-
 InstallGlobalFunction(PlainListCopy, function( list )
     local tnum, copy;
-    
+
     if not IsSmallList( list ) then
         Error("PlainListCopy: argument must be a small list");
     fi;
-    
+
     # This is enough much of the time
     copy := ShallowCopy(list);
-    
+
     # now do a cheap check on copy
     tnum := TNUM_OBJ_INT(copy);
     if FIRST_LIST_TNUM > tnum or LAST_LIST_TNUM < tnum then
@@ -3508,12 +3338,11 @@ end);
 #M  PositionNot( <list>, <obj> ) . . . . . . default method, defers to above
 ##
 ##
-
-InstallMethod( PositionNot, "default method ", true, [IsList, IsObject, IsInt ], 0,
+InstallMethod( PositionNot, "default method ", [IsList, IsObject, IsInt ],
         POSITION_NOT);
 
-InstallOtherMethod( PositionNot, "default value of third argument ", 
-        true, [IsList, IsObject], 0,
+InstallOtherMethod( PositionNot, "default value of third argument ",
+        [IsList, IsObject],
         function(l,x) return PositionNot(l,x,0); end);
 
 #############################################################################
@@ -3521,13 +3350,13 @@ InstallOtherMethod( PositionNot, "default value of third argument ",
 #M  CanEasilyCompareElements( <obj> )
 ##
 InstallMethod(CanEasilyCompareElements,"homogeneous list",
-  true, [IsHomogeneousList],0,
+  [IsHomogeneousList],
 function(l)
   return Length(l)=0 or CanEasilyCompareElements(l[1]);
 end);
 
 InstallMethod(CanEasilyCompareElements,"empty homogeneous list",
-  true, [IsHomogeneousList and IsEmpty],0,
+  [IsHomogeneousList and IsEmpty],
 function(l)
   return true;
 end);
@@ -3537,13 +3366,13 @@ end);
 #M  CanEasilySortElements( <obj> )
 ##
 InstallMethod(CanEasilySortElements,"homogeneous list",
-  true, [IsHomogeneousList],0,
+  [IsHomogeneousList],
 function(l)
   return Length(l)=0 or CanEasilySortElements(l[1]);
 end);
 
 InstallMethod(CanEasilySortElements,"empty homogeneous list",
-  true, [IsHomogeneousList and IsEmpty],0,
+  [IsHomogeneousList and IsEmpty],
 function(l)
   return true;
 end);
@@ -3563,25 +3392,25 @@ InstallGlobalFunction(Elements,function(coll)
     "If sortedness is not required, `AsList' might be much faster!");
   return AsSSortedList(coll);
 end);
-        
-        
-        
+
+
+
 #############################################################################
 ##
 #M  IsRectangularTable( <obj> )
 ##
-InstallMethod( IsRectangularTable, "kernel method for a plain list", true,
-        [IsTable and IsPlistRep], 0,
+InstallMethod( IsRectangularTable, "kernel method for a plain list",
+        [IsTable and IsPlistRep],
         IsRectangularTablePlist);
 
-InstallMethod( IsRectangularTable, "generic", true,
-    [ IsList ], 0, 
+InstallMethod( IsRectangularTable, "generic",
+    [ IsList ],
         function(l)
     local len, i, lenl;
     if not IsTable( l ) then
       return false;
     fi;
-    lenl := Length(l); 
+    lenl := Length(l);
     if lenl = 1 then
         return true;
     fi;
@@ -3720,12 +3549,28 @@ local s,b,i,j,zero,l;
   return b;
 end);
 
+InstallGlobalFunction(StateRandom,function()
+  return [R_N,SHALLOW_COPY_OBJ(R_X)];
+end);
+
+InstallGlobalFunction(RestoreStateRandom,function(l)
+  R_N:=l[1];
+  R_X:=ShallowCopy(l[2]);
+end);
+
+InstallMethod(IntersectSet,
+        "for two ranges",
+        [IsRange and IsRangeRep and IsMutable, 
+         IsRange and IsRangeRep ],
+        INTER_RANGE);
 
 
+            
+    
+    
 
 
 #############################################################################
 ##
 #E
-##
 

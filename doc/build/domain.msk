@@ -302,7 +302,7 @@ Implications between domain categories describe the hierarchy of
 operational structures available in {\GAP}.
 Here are some typical examples.
 
-\beginlist
+\beginlist%unordered
 \item{--}
     `IsDomain' is implied by each domain category,
 \item{--}
@@ -332,16 +332,16 @@ Here are some typical examples.
     a *field* is a commutative division ring.
 \endlist
 
-For each operational structure <struct>,
-there are the domain category `Is<Struct>',
-the operations `<Struct>ByGenerators' for constructing a domain from
+Each operational structure <Struct> has associated with it 
+a domain category `Is<Struct>',
+and operations `<Struct>ByGenerators' for constructing a domain from
 generators,
 `GeneratorsOf<Struct>' for storing and accessing generators w.r.t.~this
 structure,
 `Closure<Struct>' for forming the closure,
 and `As<Struct>' for getting a domain with the desired structure from one
 with weaker operational structure and for testing whether a given domain
-can be regarded as a domain with <struct>.
+can be regarded as a domain with <Struct>.
 
 The functions applicable to domains with the various structures
 are described in the corresponding chapters of the Reference Manual.
@@ -442,18 +442,19 @@ correspond to the operational structure.
 
 \Declaration{Characteristic}
 
-\Declaration{One}
-\Declaration{Zero}
+\Declaration{OneImmutable}
+\Declaration{ZeroImmutable}
 \Declaration{MultiplicativeZeroOp}
 
 \Declaration{IsOne}
 \Declaration{IsZero}
 \Declaration{IsIdempotent}
 
-\Declaration{Inverse}
-\Declaration{AdditiveInverse}
+\Declaration{InverseImmutable}
+\Declaration{AdditiveInverseImmutable}
 
 \Declaration{Order}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Comparison Operations for Elements}
@@ -493,6 +494,9 @@ following.
 \>`\\^( <left-expr>, <right-expr> )'{exponentiation!operation} O
 \>`\\mod( <left-expr>, <right-expr> )'{remainder!operation} O
 
+For details about special methods for `\\mod', consult the index entries
+for ``mod''.
+
 % (no Declaration available for them?)
 
 \Declaration{LeftQuotient}
@@ -501,7 +505,7 @@ following.
 gap> a:= (1,3)(4,6);; b:= (1,6,5,4,3,2);;
 gap> Comm( a, b );
 (1,5,3)(2,6,4)
-gap> LeftQuotient( a, b ); 
+gap> LeftQuotient( a, b );
 (1,2)(3,6)(4,5)
 \endexample
 

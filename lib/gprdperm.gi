@@ -334,6 +334,15 @@ InstallMethod( PrintObj,
 end );
 
 
+InstallGlobalFunction(SubdirectDiagonalPerms,function(l,m)
+local n,o,p;
+  n:=LargestMovedPoint(l);
+  o:=LargestMovedPoint(m);
+  p:=MappingPermListList([1..o],[n+1..n+o]);
+  return List([1..Length(l)],i->l[i]*m[i]^p);
+end);
+
+
 #############################################################################
 ##
 #M  SubdirectProduct( <G1>, <G2>, <phi1>, <phi2> )  . . . . . . . constructor

@@ -96,7 +96,7 @@ If the finitely presented semigroup is (by theory) known to be
 finite the algorithms are guaranteed to terminate (if there is sufficient 
 memory available), but the time needed for the calculation cannot be 
 bounded a priori. The same can be said for monoids.
-(See "Rewriting Systems and the Knuth Bendix Procedure".)
+(See "Rewriting Systems and the Knuth-Bendix Procedure".)
 
 \beginexample
 gap> a*b=a^5;
@@ -190,7 +190,7 @@ Two elements of a finitely presented semigroup are equal if they are equal in
 the semigroup. Nevertheless they may be represented as different words in the
 generators. Because of the fundamental problems mentioned in the
 introduction to this chapter such a test may take a very long time and cannot be
-guaranteed to finish (see "Rewriting Systems and the Knuth Bendix Procedure").
+guaranteed to finish (see "Rewriting Systems and the Knuth-Bendix Procedure").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Preimages in the Free Semigroup}
@@ -203,7 +203,7 @@ guaranteed to finish (see "Rewriting Systems and the Knuth Bendix Procedure").
 gap> f := FreeSemigroup( "a" , "b" );;
 gap> a := GeneratorsOfSemigroup( f )[ 1 ];;
 gap> b := GeneratorsOfSemigroup( f )[ 2 ];;
-gap> s := f / [ [ a^3 , a ] , [ b^3 , b ] , [ a*b , b*a ] ];             
+gap> s := f / [ [ a^3 , a ] , [ b^3 , b ] , [ a*b , b*a ] ];
 <fp semigroup on the generators [ a, b ]>
 gap> Size( s );
 8
@@ -230,7 +230,7 @@ gap> w := GeneratorsOfSemigroup(s)[1] * GeneratorsOfSemigroup(s)[2];
 a*b
 gap> IsWord (w );
 false
-gap> ue := UnderlyingElement( w ); 
+gap> ue := UnderlyingElement( w );
 a*b
 gap> IsWord( ue );
 true
@@ -239,7 +239,7 @@ true
 \Declaration{ElementOfFpSemigroup}
 \beginexample
 gap> fam := FamilyObj( GeneratorsOfSemigroup(s)[1] );;
-gap> ge := ElementOfFpSemigroup( fam, a*b ); 
+gap> ge := ElementOfFpSemigroup( fam, a*b );
 a*b
 gap> ge in f;
 false
@@ -274,7 +274,7 @@ and thus the previous sections apply (with the obvious changes)
 to finitely presented monoids.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Rewriting Systems and the Knuth Bendix Procedure}
+\Section{Rewriting Systems and the Knuth-Bendix Procedure}
 
 If a finitely presented semigroup has a confluent rewriting system then 
 it has a solvable word problem, that is, there is an algorithm to decide 
@@ -306,16 +306,16 @@ to make it confluent (See "Rewriting Systems". See also Sims \cite{Sims94}).
 Knuth-Bendix procedure cannot always terminate). 
 
 In order to apply this procedure we will build a rewriting system
-for the semigroup or monoid, which we will call a  *Knuth Bendix Rewriting 
+for the semigroup or monoid, which we will call a  *Knuth-Bendix Rewriting 
 System* (we need to define this because we need the rewriting system
 to store some information needed for the implementation of the
-Knuth Bendix procedure). 
+Knuth-Bendix procedure). 
 
-Actually, Knuth Bendix Rewriting Systems do not only serve this purpose.
+Actually, Knuth-Bendix Rewriting Systems do not only serve this purpose.
 Indeed these  are objects which are mutable and which can be manipulated 
 (see "rewriting systems").
 
-Note that the implemented version of the Knuth Bendix procedure, in {\GAP}
+Note that the implemented version of the Knuth-Bendix procedure, in {\GAP}
 returns, if it terminates, a confluent rewriting system which is reduced.
 Also, a reduction ordering has to be specified when building a rewriting
 system. If none is specified, the shortlex ordering is assumed
@@ -326,11 +326,11 @@ not with another one).
 \>KnuthBendixRewritingSystem(<m>,<wordord>)
 
 in the first form, for a semigroup $s$ and a reduction ordering
-for the underlying free semigroup, it returns the Knuth Bendix 
+for the underlying free semigroup, it returns the Knuth-Bendix 
 rewriting system of the finitely presented semigroup <s> using the 
 reduction ordering <wordord>.
 In the second form, for a monoid $m$ and a reduction ordering
-for the underlying free semigroup, it returns the Knuth Bendix 
+for the underlying free semigroup, it returns the Knuth-Bendix 
 rewriting system of the finitely presented semigroup <s> using the 
 reduction ordering <wordord>.
 
@@ -360,11 +360,11 @@ gap> a := GeneratorsOfSemigroup( g )[ 1 ];
 a
 gap> b := GeneratorsOfSemigroup( g )[ 2 ];
 b
-gap> a*b*a=a^3;                           
+gap> a*b*a=a^3;
 true
 gap> ReducedForm(rws,UnderlyingElement(a*b*a));
 a^3
-gap> ReducedForm(rws,UnderlyingElement(a^3));  
+gap> ReducedForm(rws,UnderlyingElement(a^3));
 a^3
 \endexample
 

@@ -130,6 +130,7 @@
 #define HAVE_MATH_H             0
 #define HAVE_GETPT              0
 #define HAVE_PTSNAME_R         0
+#define HAVE_SETPGID           0
 /****************************************************************************
 **
 *D  define if and how dynamic loading is supported

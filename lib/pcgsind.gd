@@ -25,9 +25,13 @@ DeclareCategory( "IsInducedPcgs", IsPcgs );
 ##
 #O  InducedPcgsByPcSequence( <pcgs>, <pcs> )
 #O  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
+#O  InducedPcgsByPcSequenceNC( <pcgs>, <pcs>,<depths> )
 ##
 ##  If <pcs> is a list of elements that form an induced pcgs with respect to
 ##  <pcgs> this operation returns an induced pcgs with these elements.
+##
+##  In the third version, the depths of <pcs> with respect to <pcgs> can be
+##  given (they are computed anew otherwise).
 DeclareOperation( "InducedPcgsByPcSequence", [ IsPcgs, IsList ] );
 DeclareOperation( "InducedPcgsByPcSequenceNC", [ IsPcgs, IsList ] );
 
@@ -51,7 +55,7 @@ DeclareAttribute( "LeadCoeffsIGS", IsInducedPcgs );
 ##  returns an induced pcgs with respect to <pcgs> of the subgroup generated
 ##  by <ind> and <gens>. Here <ind> must be an induced pcgs with respect to
 ##  <pcgs> (or a list of group elements that form such an igs) and it will
-##  be used as initial sequence for the compuation.
+##  be used as initial sequence for the computation.
 DeclareOperation(
     "InducedPcgsByPcSequenceAndGenerators",
     [ IsPcgs, IsList, IsList ] );

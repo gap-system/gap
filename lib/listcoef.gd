@@ -16,9 +16,9 @@ Revision.listcoef_gd :=
 ##
 ##  There are two reasons for using  `AddRowVector'
 ##  in preference to arithmetic operators. Firstly, the three argument 
-##  form has no single-step equaivalent. Secondly
+##  form has no single-step equivalent. Secondly
 ##  `AddRowVector' changes its first argument in-place, rather than allocating
-##  a new vector to hold the result, and may thus produce less garbage
+##  a new vector to hold the result, and may thus produce less garbage.
 ##
 
 #############################################################################
@@ -29,9 +29,9 @@ Revision.listcoef_gd :=
 ##  If <from> and <to> are given then only the index range `[<from>..<to>]' is
 ##  guaranteed to be affected. Other indices MAY be affected, if it is 
 ##  more convenient to do so. Even when <from> and <to> are given,
-##  <dst> and <src> must be row vectors of the *same* length
+##  <dst> and <src> must be row vectors of the *same* length.
 ##
-##  If <mul> is not given either then this Operation simply adds <src> to <dst>
+##  If <mul> is not given either then this Operation simply adds <src> to <dst>.
 ##
 DeclareOperation(
     "AddRowVector",
@@ -72,10 +72,10 @@ DeclareOperation(
 ##
 ##  The five-argument version of this Operation replaces
 ##  `<list1>[<poss1>[<i>]]' by `<mul>*<list2>[<poss2>[<i>]]' for <i>
-##  between 1 and `Length(<poss1>)'
+##  between 1 and `Length(<poss1>)'.
 ##
 ##  The two-argument version simply multiplies each element of <list>, 
-##  in-place, by <mul>
+##  in-place, by <mul>.
 
 DeclareOperation(
     "MultRowVector",
@@ -256,8 +256,8 @@ DeclareOperation(
 #O  RightShiftRowVector( <list>, <shift>, <fill> )
 ##
 ##  changes <list> by assigning
-##  `<list>[i+<shift>]:=<list>[i]' and filling the <shift> training entries
-##  with <fill>.
+##  `<list>[i+<shift>]:=<list>[i]' and filling each of the <shift> first
+##  entries with <fill>.
 DeclareOperation(
     "RightShiftRowVector",
     [ IsMutable and IsList, IsPosInt, IsObject ] );
@@ -278,6 +278,8 @@ DeclareOperation(
 ##
 #O  ShrinkRowVector( <list> )
 ##
+##  removes trailing zeroes from the list <list>.
+##
 DeclareOperation(
     "ShrinkRowVector",
     [ IsMutable and IsList ] );
@@ -286,6 +288,7 @@ DeclareOperation(
 #4
 ##  The following functions perform operations on Finite fields vectors
 ##  considered as code words in a linear code.
+
 
 #############################################################################
 ##

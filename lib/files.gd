@@ -17,16 +17,15 @@ Revision.files_gd :=
 ##
 #C  IsDirectory	. . . . . . . . . . . . . . . . . . . category of directories
 ##
-DeclareCategory(
-    "IsDirectory",
-    IsObject );
+DeclareCategory( "IsDirectory", IsObject );
 
 
 #############################################################################
 ##
 #V  DirectoriesFamily . . . . . . . . . . . . . . . . . family of directories
 ##
-DirectoriesFamily := NewFamily( "DirectoriesFamily" );
+BIND_GLOBAL( "DirectoriesFamily", NewFamily( "DirectoriesFamily" ) );
+
 
 #############################################################################
 ##
@@ -37,57 +36,124 @@ DeclareGlobalFunction("USER_HOME_EXPAND");
 
 #############################################################################
 ##
-
 #O  Directory( <string> ) . . . . . . . . . . . . . . .  new directory object
 ##
-DeclareOperation(
-    "Directory",
-    [ IsString ] );
+##  returns a directory object for the string <string>.
+##  `Directory' understands `.' for ``current directory'', that is, the
+##  directory in which {\GAP} was started.
+##  It also understands absolute paths.
+##
+##  If the variable `USER_HOME' is defined (this may depend on the operating
+##  system) then `Directory' understands a string with a leading `~'
+##  character for a path relative to the user's home directory.
+##
+##  Paths are otherwise taken relative to the current directory.
+##
+DeclareOperation( "Directory", [ IsString ] );
 
 
 #############################################################################
 ##
-#O  Filename( <list>, <string> )  . . . . . . . . . . . . . . . . find a file
+#O  Filename( <dir>, <name> ) . . . . . . . . . . . . . . . . . . find a file
+#O  Filename( <list-of-dirs>, <name> )  . . . . . . . . . . . . . find a file
 ##
-DeclareOperation(
-    "Filename",
-    [ IsList, IsString ] );
+##  If the first argument is a directory object <dir>, `Filename' returns the
+##  (system dependent) filename as a string for the file with name <name>  in
+##  the directory <dir>.
+##  `Filename' returns the filename regardless of whether the directory
+##  contains a file with name <name> or not.
+##
+##  If the first argument is a list <list-of-dirs> (possibly of length 1) of
+##  directory objects, then `Filename' searches the directories in order, and
+##  returns the filename for the file <name> in the first directory which
+##  contains a file <name> or `fail' if no directory contains a file <name>.
+##
+DeclareOperation( "Filename", [ IsList, IsString ] );
 
 
 #############################################################################
 ##
-#O  Read( <string> )  . . . . . . . . . . . . . . . . . . . . . . read a file
+#O  Read( <name-file> ) . . . . . . . . . . . . . . . . . . . . . read a file
 ##
-DeclareOperation(
-    "Read",
-    [ IsString ] );
+##  reads the input from the file with the filename <name-file>, which must
+##  be given as a string.
+##
+##  `Read' first opens the file <name-file>.  If the file does not exist, or
+##  if {\GAP} cannot open it, e.g., because of access restrictions,
+##  an error is signalled.
+##
+##  Then the contents of the file are read and evaluated, but the results are
+##  not printed.  The reading and evaluations happens exactly as described
+##  for the main loop (see "Main Loop").
+##
+##  If a statement in the file causes an error a break loop is entered
+##  (see~"Break Loops").
+##  The input for this break loop is not taken from the file, but from the
+##  input connected to the `stderr' output of {\GAP}.
+##  If `stderr' is not connected to a terminal, no break loop is entered.
+##  If this break loop is left with `quit' (or `<ctr>-D'), {\GAP} exits from
+##  the `Read' command, and from all enclosing `Read' commands,
+##  so that control is normally returned to an interactive prompt.
+##  The `QUIT' statement (see~"Leaving GAP") can also be used in the break
+##  loop to exit {\GAP} immediately.
+##
+##  Note that a statement must not begin in one file and end in another.
+##  I.e., <eof> (`end-of-file') is not treated as whitespace,
+##  but as a special symbol that must not appear inside any statement.
+##
+##  Note that one file may very well contain a read statement causing another
+##  file to be read, before input is again taken from the first file.
+##  There is an operating system dependent maximum on the number of files
+##  that may be open simultaneously.  Usually it is 15.
+##
+DeclareOperation( "Read", [ IsString ] );
 
 
 #############################################################################
 ##
 #O  ReadTest( <string> )  . . . . . . . . . . . . . . . . .  read a test file
 ##
-DeclareOperation(
-    "ReadTest",
-    [ IsString ] );
+DeclareOperation( "ReadTest", [ IsString ] );
 
 
 #############################################################################
 ##
-#O  ReadAsFunction( <string> )  . . . . . . . . . . . read a file as function
+#O  ReadAsFunction( <name-file> ) . . . . . . . . . . read a file as function
 ##
-DeclareOperation(
-    "ReadAsFunction",
-    [ IsString ] );
+##  reads the file with filename <name-file> as a function and returns this
+##  function.
+##
+DeclareOperation( "ReadAsFunction", [ IsString ] );
 
 
-#############################################################################
-##
-
-#F  DirectoriesLibrary( <name> )  . . . . . . . .  directories of the library
-##
 BIND_GLOBAL( "DIRECTORIES_LIBRARY", rec() );
 
+
+#############################################################################
+##
+#F  DirectoriesLibrary(  )  . . . . . . . . . . .  directories of the library
+#F  DirectoriesLibrary( <name> )  . . . . . . . .  directories of the library
+##
+##  returns the directory objects for the {\GAP} library <lib> as a list.
+##  <lib> must be one of `"lib"' (the default), `"grp"', `"prim"', and so on.
+##  The string `""' is also legal and with this argument `DirectoriesLibrary'
+##  returns the list of {\GAP} root directories; the return value of
+##  `DirectoriesLibrary("");' differs from `GAP_ROOT_PATHS' in that the
+##  former is a list of directory objects and the latter a list of strings.
+##
+##  The directory <lib> must exist in at least one of the root directories,
+##  otherwise `fail' is returned.
+##
+##  As the files in the {\GAP} root directory (see~"GAP Root Directory") can
+##  be distributed into different directories in the filespace a list of
+##  directories is returned.  In order to find an existing file in the {\GAP}
+##  root directory you should pass that list to `Filename' (see~"Filename")
+##  as the first argument.
+##  In order to create a filename for a new file inside the {\GAP} root
+##  directory you should pass the first entry of that list.
+##  However, creating files inside the {\GAP} root directory is not
+##  recommended, you should use `DirectoryTemporary' instead.
+##
 BIND_GLOBAL( "DirectoriesLibrary", function( arg )
     local   name,  dirs,  dir,  path;
 
@@ -129,7 +195,8 @@ end );
 ##  packages <name> where <architecture> is the architecture on which {\GAP}
 ##  has been compiled. The directories returned by
 ##  `DirectoriesPackagePrograms' is the place where external binaries for
-##  the share package <name> and the current architecture should be located.
+##  the {\GAP} package <name> and the current architecture should be located.
+##
 BIND_GLOBAL( "DirectoriesPackagePrograms", function( name )
     local   arch,  dirs,  dir,  path;
 
@@ -147,14 +214,15 @@ end );
 ##
 #F  DirectoriesPackageLibrary( <name> [,<path>] )
 ##
-##  takes the string <name>, a name of a share package and returns a list  of
+##  takes the string <name>, a name of a {\GAP} package and returns a list of
 ##  directory  objects  for  the  sub-directory/ies  containing  the  library
-##  functions of the share package, up to one for each `pkg' sub-directory of
+##  functions of the {\GAP} package, up to one for each `pkg' sub-directory of
 ##  a path in `GAP_ROOT_PATHS'. The default is that the library functions are
-##  in the subdirectory `lib' of the share package's home directory. If  this
+##  in the subdirectory `lib' of the {\GAP} package's home directory. If this
 ##  is not the case, then the second argument <path> needs to be present  and
 ##  must be a string that is a path name relative to the  home  directory  of
-##  the share package with name <name>.
+##  the {\GAP} package with name <name>.
+##
 BIND_GLOBAL( "DirectoriesPackageLibrary", function( arg )
     local   name,  path,  dirs,  dir,  tmp;
 
@@ -189,12 +257,17 @@ BIND_GLOBAL( "DirectoriesPackageLibrary", function( arg )
 end );
 
 
+DIRECTORIES_PROGRAMS := false;
+
+
 #############################################################################
 ##
 #F  DirectoriesSystemPrograms() . . . . .  directories of the system programs
 ##
-DIRECTORIES_PROGRAMS := false;
-
+##  `DirectoriesSystemPrograms' returns the directory objects for the list of
+##  directories where the system programs reside as a list.  Under UNIX this
+##  would usually represent `\$PATH'.
+##
 BIND_GLOBAL( "DirectoriesSystemPrograms", function()
     if DIRECTORIES_PROGRAMS = false  then
         DIRECTORIES_PROGRAMS := List( DIRECTORIES_SYSTEM_PROGRAMS,
@@ -204,12 +277,28 @@ BIND_GLOBAL( "DirectoriesSystemPrograms", function()
 end );
 
 
+BIND_GLOBAL( "DIRECTORIES_TEMPORARY", [] );
+
+
 #############################################################################
 ##
 #F  DirectoryTemporary( <hint> )  . . . . . . .  create a temporary directory
+#F  DirectoryTemporary()  . . . . . . . . . . .  create a temporary directory
 ##
-BIND_GLOBAL( "DIRECTORIES_TEMPORARY", [] );
-
+##  returns  a directory  object in the   category `IsDirectory' for a  *new*
+##  temporary directory.   This is guaranteed to  be  newly created and empty
+##  immediately  after the call to `DirectoryTemporary'.   {\GAP} will make a
+##  reasonable effort   to *remove* this   directory  either  when a  garbage
+##  collection  collects the directory   object  or upon termination  of  the
+##  {\GAP}   job that   created  the  directory.     <hint> can  be  used  by
+##  `DirectoryTemporary' to construct    the  name  of the    directory   but
+##  `DirectoryTemporary' is free to use only a  part of <hint> or even ignore
+##  it completely.
+##  
+##  If `DirectoryTemporary' is  unable to create a  new  directory, `fail' is
+##  returned.  In this case `LastSystemError' can be  used to get information
+##  about the error.
+##
 BIND_GLOBAL( "DirectoryTemporary", function( arg )
     local   dir;
 
@@ -256,13 +345,17 @@ if ARCH_IS_UNIX() then
   end );
 fi;
 
+
+DIRECTORY_CURRENT := false;
+
+
 #############################################################################
 ##
 #F  DirectoryCurrent()  . . . . . . . . . . . . . . . . . . current directory
 ##
+##  returns the directory object for the current directory.
 #T  THIS IS A HACK (will not work if SetDirectoryCurrent is implemented)
-DIRECTORY_CURRENT := false;
-
+##
 BIND_GLOBAL( "DirectoryCurrent", function()
     if IsBool(DIRECTORY_CURRENT)  then
         DIRECTORY_CURRENT := Directory("./");
@@ -273,8 +366,15 @@ end );
 
 #############################################################################
 ##
-
-#F  CrcFile( <filename> ) . . . . . . . . . . . . . . . . .  create crc value
+#F  CrcFile( <name-file> )  . . . . . . . . . . . . . . . .  create crc value
+##
+##  computes a checksum value for the file with filename <name-file> and
+##  returns this value as an integer.
+##  See Section~"CRC Numbers" for an example.
+##  The function returns `fail' if a system error occurred, say, for example,
+##  if <name-file> does not exist.
+##  In this case the function `LastSystemError' (see~"LastSystemError")
+##  can be used to get information about the error.
 ##
 BIND_GLOBAL( "CrcFile", function( name )
     if IsReadableFile(name) <> true  then

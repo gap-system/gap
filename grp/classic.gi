@@ -2,6 +2,7 @@
 ##
 #W  classic.gi                  GAP group library                Frank Celler
 #W                                                           & Heiko Thei"sen
+#W                                                            & Thomas Breuer
 ##
 #H  @(#)$Id$
 ##
@@ -22,7 +23,6 @@ InstallMethod( SymplecticGroupCons,
       IsPosInt,
       IsPosInt ],
     function( filter, d, q )
-
     local   g,  f,  z,  o,  mat1,  mat2,  i,  size,  qi,  c;
 
     # the dimension must be even
@@ -123,7 +123,6 @@ InstallMethod( GeneralUnitaryGroupCons,
       IsPosInt,
       IsPosInt ],
     function( filter, n, q )
-
      local g, i, e, f, z, o, mat1, mat2, size, qi, eps, c;
 
      f:= GF( q^2 );
@@ -222,7 +221,6 @@ InstallMethod( SpecialUnitaryGroupCons,
       IsPosInt,
       IsPosInt ],
     function( filter, n, q )
-
      local g, i, e, f, z, o, mat1, mat2, size, qi, eps, c;
 
      f:= GF( q^2 );
@@ -1386,7 +1384,6 @@ InstallMethod( GeneralOrthogonalGroupCons,
       IsPosInt,
       IsPosInt ],
     function( filter, e, d, q )
-
     local   g,  i;
 
     # <e> must be -1, 0, +1
@@ -1465,12 +1462,20 @@ end );
 ##  SO has index $1$ in GO if the characteristic is even
 ##  and index $2$ if the characteristic is odd.
 ##
-##  In the latter case, the generators of GO are $a$ and $b$, by construction
-##  $a$ has determinant $1$, and $b$ has determinant $2$.
+##  In the latter case, the generators of GO are $a$ and $b$.
+##  When GO is constructed with `OzeroOdd', `Oplus2', and `Ominus2' then by
+##  construction $a$ has determinant $1$, and $b$ has determinant $-1$.
 ##  The group $\langle a, b^{-1} a b, b^2 \rangle$ is therefore equal to SO.
 ##  (Note that it is clearly contained in SO, and each word in terms of $a$
 ##  and $b$ can be written as a word in terms of the three generators above
-##  or $b$ times such a word.
+##  or $b$ times such a word.)
+##  So the case `OpmOdd' is left, which deals with three exceptions
+##  $(s,d,q) \in \{ (1,4,3), (-1,4,3), (1,4,5) \}$, two series for small $q$
+##  (via `OpmSmall' and `Opm3'), and the generic remainder;
+##  exactly in the two of the three exceptional cases where $s = 1$ holds,
+##  the determinant of the first generator is $-1$; in these cases, the
+##  determinant of the second generator is $1$, so we get the generating set
+##  $\{ a^2, a^{-1} b a, b \}$.
 ##
 InstallMethod( SpecialOrthogonalGroupCons,
     "matrix group for <e>, dimension, and finite field size",
@@ -1480,11 +1485,19 @@ InstallMethod( SpecialOrthogonalGroupCons,
       IsPosInt ],
     function( filter, e, d, q )
     local G, gens, U, i;
+
     G:= GeneralOrthogonalGroupCons( filter, e, d, q );
     if q mod 2 = 1 then
 
-      # Construct the group.
+      # Deal with the special cases.
       gens:= GeneratorsOfGroup( G );
+      if e = 1 and d = 4 and q in [ 3, 5 ] then
+        gens:= Reversed( gens );
+      fi;
+
+      Assert( 1, Length( gens ) = 2 and IsOne( DeterminantMat( gens[1] ) ) );
+
+      # Construct the group.
       U:= GroupWithGenerators( [ gens[1], gens[1]^gens[2], gens[2]^2 ] );
 
       # Set the group order.

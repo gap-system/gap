@@ -360,7 +360,9 @@ end;
 SELECT_SMALL_GROUPS_FUNCS[ 11 ] := function( size, funcs,vals,inforec,all,id)
     local result, i, g, ok, j;
 
-    inforec := NUMBER_SMALL_GROUPS_FUNCS[ inforec.func ]( size, inforec);
+    if not IsBound( inforec.number ) then
+        inforec := NUMBER_SMALL_GROUPS_FUNCS[ inforec.func ]( size, inforec);
+    fi;
     Info( InfoWarning, 1, "`SelectSmallGroups' checks ", inforec.number,
                           " grps of size ", size, " with trivial methods");
 

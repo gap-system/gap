@@ -15,6 +15,8 @@ This chapter describes functions for transformations.
 \Declaration{IsTransformation}
 \Declaration{TransformationFamily}
 \Declaration{Transformation}
+\Declaration{IdentityTransformation}
+\Declaration{RandomTransformation}
 \Declaration{DegreeOfTransformation}
 \beginexample
 gap> t:= Transformation([2, 3, 4, 2, 4]);
@@ -29,7 +31,7 @@ gap> ImageListOfTransformation(t);
 \endexample
 \Declaration{ImageSetOfTransformation}
 \beginexample
-gap> ImageSetOfTransformation(t); 
+gap> ImageSetOfTransformation(t);
 [ 2, 3, 4 ]
 \endexample
 \Declaration{RankOfTransformation}
@@ -40,7 +42,7 @@ gap> RankOfTransformation(t);
 \Declaration{KernelOfTransformation}
 \beginexample
 gap> KernelOfTransformation(t);
-<equivalence relation on [ 1 .. 5 ] >
+<equivalence relation on <object> >
 gap> EquivalenceRelationPartition(last);
 [ [ 1, 4 ], [ 3, 5 ] ]
 \endexample
@@ -49,17 +51,25 @@ gap> EquivalenceRelationPartition(last);
 gap> PreimagesOfTransformation(t, 2);
 [ 1, 4 ]
 \endexample
+\Declaration{RestrictedTransformation}
 \Declaration{AsTransformation}
-\begintt
-gap> AsTransformation((1, 3)(2, 4));   
+\beginexample
+gap> AsTransformation((1, 3)(2, 4));
 Transformation( [ 3, 4, 1, 2 ] )
 gap> AsTransformation((1, 3)(2, 4), 10);
 Transformation( [ 3, 4, 1, 2, 5, 6, 7, 8, 9, 10 ] )
-gap> AsTransformation((1, 3)(2, 4), 3); 
+\endexample
+\begintt
+gap> AsTransformation((1, 3)(2, 4), 3);
 Error, Permutation moves points over the degree specified called from
-... lines omitted here ...
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> quit;
 \endtt
 
+\Declaration{PermLeftQuoTransformation}
 \Declaration{BinaryRelationTransformation}
 \Declaration{TransformationRelation}
 

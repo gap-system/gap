@@ -125,10 +125,10 @@ Note, however, that the function `IsomorphismFpGroup' (see
 "IsomorphismFpGroup") is recommended for this purpose.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{SimplifiedFpGroup}
+\Section{SimplifiedFpGroup}\nolabel
 
 \Declaration{SimplifiedFpGroup}
-If the connection to the original group is important, the operation
+If the connection to the original group is important, then the operation
 `IsomorphismSimplifiedFpGroup' (see~"IsomorphismSimplifiedFpGroup") should
 be used instead.
 \beginexample
@@ -164,7 +164,8 @@ available Tietze transformation commands (see "Tietze Transformations").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Subgroup Presentations}
-\index{Schreier}
+
+\atindex{Schreier}{@Schreier}
 
 \Declaration{PresentationSubgroup}
 \Declaration{PresentationSubgroupRrs}
@@ -940,7 +941,7 @@ v = a*t*a
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{DecodeTree}
+\Section{DecodeTree}\nolabel
 
 \Declaration{DecodeTree}
 \index{secondary subgroup generators}
@@ -1100,9 +1101,10 @@ gap> TzGoGo( P );
 
 This time we end up with a shorter presentation.
 
-As an example of an implicit call of the command via the
+As an example of an implicit call of the function `DecodeTree' via the
 command `PresentationSubgroupMtc' we handle a subgroup of index 240 in a
-group of order 40320 given by a presentation due to B.~H.~Neumann.
+group of order 40320 given by a presentation due to B.~H.~Neumann. Note
+that we increase the FpGroup info level to get some additional output.
 
 \beginexample
 gap> F3 := FreeGroup( "a", "b", "c" );;
@@ -1162,8 +1164,8 @@ gap> TzPrint( P );
   1 ]
 gap> K :=  FpGroupPresentation( P );
 <fp group on the generators [ _x1, _x2 ]>
+gap> SetInfoLevel( InfoFpGroup, 0 );
 gap> Size( K );
-#I  index = 56  total = 57  max = 57
 168
 \endexample
 

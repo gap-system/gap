@@ -18,13 +18,13 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Process}\null
+\Section{Process}\nolabel
 
 \Declaration{Process}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Exec}\null
+\Section{Exec}\nolabel
 
 \Declaration{Exec}
 

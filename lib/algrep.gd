@@ -308,7 +308,7 @@ DeclareAttribute( "FaithfulModule", IsAlgebra );
 #O  ModuleByRestriction( <V>, <sub> )
 #O  ModuleByRestriction( <V>, <subl>, <subr> )
 ##
-##  Here <V> is an algebar module and <sub> is a subalgebra
+##  Here <V> is an algebra module and <sub> is a subalgebra
 ##  of the acting algebra of <V>. This function returns the
 ##  module that is the restriction of <V> to <sub>. So it has the
 ##  same underlying vector space as <V>, but the acting algebra is

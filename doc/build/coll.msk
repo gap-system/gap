@@ -86,7 +86,7 @@ together with the probably more frequently used version
 which takes a function as second argument and returns the list of function
 values of the list elements.
 \beginexample
-gap> l:= List( Group( (1,2,3) ) );      
+gap> l:= List( Group( (1,2,3) ) );
 [ (), (1,3,2), (1,2,3) ]
 gap> IsMutable( l );  IsSortedList( l );  IsConstantTimeAccessList( l );
 true
@@ -96,7 +96,7 @@ true
 
 \Declaration{SortedList}
 \beginexample
-gap> l:= SortedList( Group( (1,2,3) ) );      
+gap> l:= SortedList( Group( (1,2,3) ) );
 [ (), (1,2,3), (1,3,2) ]
 gap> IsMutable( l );  IsSortedList( l );  IsConstantTimeAccessList( l );
 true
@@ -108,7 +108,7 @@ gap> SortedList( [ 1, 2, 1,, 3, 2 ] );
 
 \Declaration{SSortedList}
 \beginexample
-gap> l:= SSortedList( Group( (1,2,3) ) );                               
+gap> l:= SSortedList( Group( (1,2,3) ) );
 [ (), (1,2,3), (1,3,2) ]
 gap> IsMutable( l );  IsSSortedList( l );  IsConstantTimeAccessList( l );
 true
@@ -196,7 +196,7 @@ true
 
 \Declaration{Size}
 \index{size!of a list or collection}
-\index{order!of a list,collection or domain}
+\index{order!of a list, collection or domain}
 \beginexample
 gap> Size( [1,2,3] );  Size( Group( () ) );  Size( Integers );
 3
@@ -248,7 +248,7 @@ gap> Intersection( D12, [ (), (1,2)(3,4), (1,3)(4,6), (1,4)(5,6) ] );
                       # group it is returned as a proper set
                       # because the second argument was not
                       # regarded as a group
-gap> Intersection( Group( () ), [1,2,3] );                               
+gap> Intersection( Group( () ), [1,2,3] );
 [  ]
 gap> Intersection( [2,4,6,8,10], [3,6,9,12,15], [5,10,15,20,25] );
 [  ]     # two or more lists or collections as arguments are legal
@@ -281,13 +281,14 @@ gap> Difference( [ (1,2,3), (1,2,3,4) ], Group( (1,2,3), (1,2) ) );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Membership Test for Collections}
 
-\>`<obj> in <C>'{in!for collections}
-\>`\\{in}( <obj>, <C> )'{in!operation for} O
+\indextt{\\in!operation for testing membership}
+\>`<obj> in <C>'{in!for collections}@{`in'!for collections}
+\>`\\in( <obj>, <C> )'{in!operation for}@{`in'!operation for} O
 
 returns `true' if the object <obj> lies in the collection <C>,
 and `false' otherwise.
 
-The infix version of the command calls the operation `\\{in}',
+The infix version of the command calls the operation `\\in',
 for which methods can be installed.
 
 \beginexample
@@ -302,14 +303,26 @@ false
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Random Elements}
 
-\Declaration{Random}
 \index{random element!of a list or collection}
+\Declaration{Random}
 \begintt
 gap> Random(Rationals);
 -4
 gap> g:= Group( (1,2,3) );;  Random( g );  Random( g );
 ()
 (1,2,3)
+\endtt
+
+\Declaration{StateRandom}
+\begintt
+gap> seed:=StateRandom();;
+gap> List([1..10],i->Random(Integers));
+[ -1, -3, -1, 1, 2, 0, 1, 1, -1, 1 ]
+gap> List([1..10],i->Random(Integers));
+[ 2, -2, -1, -4, -2, 1, -1, 1, -2, -3 ]
+gap> RestoreStateRandom(seed);
+gap> List([1..10],i->Random(Integers));
+[ -1, -3, -1, 1, 2, 0, 1, 1, -1, 1 ]
 \endtt
 
 \Declaration{PseudoRandom}

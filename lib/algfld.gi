@@ -284,6 +284,47 @@ end);
 
 #############################################################################
 ##
+#M  String
+##
+InstallMethod(String,"BFElm",true,[IsAlgBFRep],0,
+function(a)
+  return Concatenation("!",String(a![1]));
+end);
+
+InstallMethod(String,"AlgElm",true,[IsAlgExtRep],0,
+function(a)
+local fam,i,p,str;
+  fam:=FamilyObj(a);
+  str:="(";
+  p:=false;
+  for i in [1..fam!.deg] do
+    if a![1][i]<>fam!.baseZero then
+      if p and (not IsRationals(fam!.baseField) or a![1][i]>0) then
+	Add(str,'+');
+      fi;
+      p:=true;
+      if i=1 or a![1][i]<>fam!.baseOne then
+	Append(str,String(a![1][i]));
+	if i>1 then
+	  Print("*");
+	  Add(str,'*');
+	fi;
+      fi;
+      if i>1 then
+        Add(str,'a');
+	if i>2 then
+	  Add(str,'^');
+	  Append(str,String(i-1));
+        fi;
+      fi;
+    fi;
+  od;
+  Add(str,')');
+  return str;
+end);
+
+#############################################################################
+##
 #M  \+  for all combinations of A.E.Elms and base field elms.
 ##
 InstallMethod(\+,"AlgElm+AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,

@@ -88,6 +88,8 @@ extern UInt ReadEvalFile ( void );
 */
 extern void ReadEvalError ( void );
 
+extern ExecStatus ReadEvalDebug ( void );
+
 /****************************************************************************
 **
 *V  StackNams, CountNames . . . . . .stack of lists of local variable names

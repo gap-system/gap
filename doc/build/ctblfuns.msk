@@ -215,12 +215,17 @@ true
 \Declaration{DegreeOfCharacter}
 \beginexample
 gap> List( Irr( S4 ), DegreeOfCharacter );
-[ 1, 1, 2, 3, 3 ]
+[ 1, 3, 2, 3, 1 ]
 gap> nat:= NaturalCharacter( S4 );
 Character( CharacterTable( S4 ), [ 4, 2, 0, 1, 0 ] )
 gap> nat[1];
 4
 \endexample
+
+\index{constituent!of a group character}
+\index{decompose!a group character}
+\index{multiplicity!of constituents of a group character}
+\index{inner product!of group characters}
 
 \Declaration{ScalarProduct}[ctblfuns]!{for characters}
 \Declaration{MatScalarProducts}
@@ -256,22 +261,22 @@ gap> ConstituentsOfCharacter( nat );
 \Declaration{ClassPositionsOfKernel}
 \beginexample
 gap> List( Irr( S4 ), KernelOfCharacter );
-[ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), 
-  Group([ (), (1,2)(3,4), (1,2,3) ]), Group([ (1,2)(3,4), (1,4)(2,3) ]), 
-  Group(()), Group(()) ]
+[ Group([ (), (1,2)(3,4), (1,2,3) ]), Group(()), 
+  Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), 
+  Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
 gap> List( Irr( S4 ), ClassPositionsOfKernel );
-[ [ 1, 2, 3, 4, 5 ], [ 1, 3, 4 ], [ 1, 3 ], [ 1 ], [ 1 ] ]
+[ [ 1, 3, 4 ], [ 1 ], [ 1, 3 ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]
 \endexample
 
 \Declaration{CentreOfCharacter}
 \Declaration{ClassPositionsOfCentre}[ctblfuns]!{for characters}
 \beginexample
 gap> List( Irr( S4 ), CentreOfCharacter );
-[ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), 
-  Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), 
-  Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), Group(()) ]
+[ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), Group(()), 
+  Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), 
+  Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
 gap> List( Irr( S4 ), ClassPositionsOfCentre );
-[ [ 1, 2, 3, 4, 5 ], [ 1, 2, 3, 4, 5 ], [ 1, 3 ], [ 1 ], [ 1 ] ]
+[ [ 1, 2, 3, 4, 5 ], [ 1 ], [ 1, 3 ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]
 \endexample
 
 \Declaration{InertiaSubgroup}
@@ -447,15 +452,17 @@ rec(
   solution := [ [ [ 1, 1, 0, 0, 2 ], [ 1, 0, 1, 0, 1 ], [ 0, 1, 0, 1, 0 ], [ 
               0, 0, 1, 0, 1 ], [ 0, 0, 0, 1, 0 ] ] ], 
   choice := [ [ 2, 5, 3, 4, 1 ] ] )
-gap> Decreased( s4, red, ext.solution[1], ext.choice[1] );
-rec( 
-  irreducibles := [ 
-      Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
+gap> dec:= Decreased( s4, red, ext.solution[1], ext.choice[1] );;
+gap> Display( dec );
+rec(
+  irreducibles := 
+   [ Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
-      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ) ], 
-  remainders := [  ], matrix := [  ] )
+      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ) ],
+  remainders := [  ],
+  matrix := [  ] )
 \endexample
 
 \Declaration{OrthogonalEmbeddingsSpecialDimension}
@@ -489,10 +496,16 @@ rec( vectors := [ [ -1, 0, 1, 0, 1, 0, 1, 0 ], [ 1, 0, 0, 1, 0, 1, 0, 0 ],
   norms := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
   solutions := [ [ 1, 2, 3, 7, 11, 12, 13, 15 ], 
       [ 1, 2, 4, 8, 10, 12, 13, 14 ], [ 1, 2, 5, 6, 9, 12, 13, 16 ] ] )
+\endexample
+
+In the following example we temporarily decrease the line length limit from
+its default value 80 to 62 in order to get a nicer output format.
+
+\beginexample
+gap> SizeScreen([ 62, ]);;
 gap> emb2:= OrthogonalEmbeddingsSpecialDimension( s6, rem, gram, 8 );
 rec( 
-  irreducibles := [ 
-      Character( CharacterTable( "A6.2_1" ), 
+  irreducibles := [ Character( CharacterTable( "A6.2_1" ), 
         [ 5, 1, -1, 2, -1, 0, 1, -3, -1, 1, 0 ] ), 
       Character( CharacterTable( "A6.2_1" ), 
         [ 5, 1, 2, -1, -1, 0, -3, 1, -1, 0, 1 ] ), 
@@ -500,8 +513,8 @@ rec(
         [ 10, -2, 1, 1, 0, 0, -2, 2, 0, 1, -1 ] ), 
       Character( CharacterTable( "A6.2_1" ), 
         [ 10, -2, 1, 1, 0, 0, 2, -2, 0, -1, 1 ] ) ], 
-  remainders := [ 
-      VirtualCharacter( CharacterTable( "A6.2_1" ), 
+  remainders := 
+    [ VirtualCharacter( CharacterTable( "A6.2_1" ), 
         [ 0, 0, 3, -3, 0, 0, 4, -4, 0, 1, -1 ] ), 
       VirtualCharacter( CharacterTable( "A6.2_1" ), 
         [ 6, 2, 3, 0, 0, 1, 2, -2, 0, -1, -2 ] ), 
@@ -509,6 +522,7 @@ rec(
         [ 10, 2, 1, 1, 2, 0, 2, 2, -2, -1, -1 ] ), 
       VirtualCharacter( CharacterTable( "A6.2_1" ), 
         [ 14, 2, 2, -1, 0, -1, 6, 2, 0, 0, -1 ] ) ] )
+gap> SizeScreen([ 80, ]);;
 \endexample
 
 \Declaration{Decreased}
@@ -524,14 +538,16 @@ rec( vectors := [ [ -1, 1, 1, 0 ], [ -1, 1, 0, 1 ], [ 1, -1, 0, 0 ],
       [ 0, -1, 0, 1 ], [ 0, 1, 0, 0 ], [ 0, 0, -1, 1 ], [ 0, 0, 1, 0 ], 
       [ 0, 0, 0, 1 ] ], norms := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
   solutions := [ [ 1, 6, 7, 12 ], [ 2, 5, 8, 11 ], [ 3, 4, 9, 10 ] ] )
-gap> Decreased( s4, red, emb.vectors{ emb.solutions[1] } );
-rec( 
-  irreducibles := [ 
-      Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
+gap> dec:= Decreased( s4, red, emb.vectors{ emb.solutions[1] } );;
+gap> Display( dec );
+rec(
+  irreducibles := 
+   [ Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
-      Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ) ], 
-  remainders := [  ], matrix := [  ] )
+      Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ) ],
+  remainders := [  ],
+  matrix := [  ] )
 gap> Decreased( s4, red, emb.vectors{ emb.solutions[2] } );
 fail
 gap> Decreased( s4, red, emb.vectors{ emb.solutions[3] } );
@@ -545,10 +561,12 @@ gap> red:= [ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ],
 >            [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ] ];;
 gap> gram:= MatScalarProducts( s4, red, red );
 [ [ 2, 1, 0, 0 ], [ 1, 2, 1, -1 ], [ 0, 1, 2, 0 ], [ 0, -1, 0, 2 ] ]
-gap> dn:= DnLattice( s4, gram, red );
-rec( gram := [  ], remainders := [  ], 
-  irreducibles := [ 
-      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
+gap> dn:= DnLattice( s4, gram, red );; Display( dn );
+rec(
+  gram := [  ],
+  remainders := [  ],
+  irreducibles := 
+   [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ] )
@@ -559,14 +577,15 @@ rec( gram := [  ], remainders := [  ],
 gap> s4:= CharacterTable( "Symmetric", 4 );;
 gap> red:= [ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ],
 >            [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ] ];;
-gap> dn:= DnLatticeIterative( s4, red );
-rec( 
-  irreducibles := [ 
-      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
+gap> dn:= DnLatticeIterative( s4, red );; Display( dn );
+rec(
+  irreducibles := 
+   [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
-      Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ], 
-  remainders := [  ], norms := [  ] )
+      Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ],
+  remainders := [  ],
+  norms := [  ] )
 \endexample
 
 
@@ -649,7 +668,7 @@ gap> SymplecticComponents( tbl, [ chi ], 3 );
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Molien Series}
+\Section{Molien Series}\nolabel
 
 \Declaration{MolienSeries}
 \beginexample
@@ -801,6 +820,18 @@ gap> TestPerm5( tbl, perms, tbl mod 5 );
 \Declaration{PermBounds}
 \Declaration{PermComb}
 \Declaration{Inequalities}
+
+\beginexample
+gap> tbl:= CharacterTable( "M11" );;
+gap> PermComb( tbl, rec( degree:= 110 ) );
+[ Character( CharacterTable( "M11" ), [ 110, 6, 2, 2, 0, 0, 2, 2, 0, 0 ] ), 
+  Character( CharacterTable( "M11" ), [ 110, 6, 2, 6, 0, 0, 0, 0, 0, 0 ] ), 
+  Character( CharacterTable( "M11" ), [ 110, 14, 2, 2, 0, 2, 0, 0, 0, 0 ] ) ]
+gap> # Now compute only multiplicity free permutation characters.
+gap> bounds:= List( RationalizedMat( Irr( tbl ) ), x -> 1 );;
+gap> PermComb( tbl, rec( degree:= 110, maxmult:= bounds ) );
+[ Character( CharacterTable( "M11" ), [ 110, 6, 2, 2, 0, 0, 2, 2, 0, 0 ] ) ]
+\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -100,8 +100,8 @@ ah+ah^5
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations for Rational Functions}
 
-Rational the rational functions form a field, therefore all arithmetic
-operations are applicable to rational functions.
+The rational functions form a field,
+therefore all arithmetic operations are applicable to rational functions.
 
 \>`<f> + <g>'{addition!rational functions}
 \>`<f> - <g>'{subtraction!rational functions}
@@ -118,6 +118,19 @@ gap> a:=g/f;
 Note that the quotient `<f>/<g>' of two polynomials might be represented as
 a rational function again. If <g> is known to divide <f> the call
 `Quotient(<f>,<g>)' (see~"Quotient") should be used instead.
+
+\>`<f> mod <g>'{mod!Laurent polynomials}
+%\>`<f> mod <int>'{mod!integer polynomial}
+
+For two Laurent polynomials <f> and <g>, `<f> mod <g>' is the Euclidean
+remainder (see~"EuclideanRemainder") of <f> modulo <g>.
+% For a polynomial <f> over the integers and an integer <int>, `<f> mod <int>'
+% is the polynomial over the integers obtained by reducing the coefficients
+% of <f> modulo <int>.
+% Just a remark:
+% These two methods would not be compatible if integers would be regarded
+% as constant polynomials.
+% Therefore, I leave the second method undocumented.
 
 At the moment {\GAP} does not contain a proper multivariate Gcd algorithm.
 Therefore it cannot be guaranteed that rational functions will always be
@@ -230,13 +243,13 @@ x+x^2*y^2
 \Declaration{IsLaurentPolynomial}
 The attribute `CoefficientsOfLaurentPolynomial'
 (see~"CoefficientsOfLaurentPolynomial") gives a compact representation as
-laurent polynomial.
+Laurent polynomial.
 
 \Declaration{IsConstantRationalFunction}
 
 All these tests are applicable to *every* rational function. Depending on the
 internal representation of the rational function, however some of these
-tests (in particular univariatness) might be expensive in some cases.
+tests (in particular, univariateness) might be expensive in some cases.
 
 For reasons of performance within algorithms it can be useful to use other
 attributes, which give a slightly more technical representation. See
@@ -383,19 +396,17 @@ gap> MinimalPolynomial(Rationals,[[2,0],[0,2]]);
 \Section{Cyclotomic Polynomials}
 
 \Declaration{CyclotomicPolynomial}
-\Declaration{CyclotomicPol}
 \beginexample
 gap> CyclotomicPolynomial(Rationals,5);
 1+x+x^2+x^3+x^4
-gap> CyclotomicPol(5);
-[ 1, 1, 1, 1, 1 ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Polynomial Factorization}
 
 At the moment {\GAP} provides only methods to factorize univariate
-polynomials over finite fields and over the field of rational numbers.
+polynomials over finite fields (see Chapter~"Finite Fields") and
+over subfields of cyclotomic fields (see Chapter~"Abelian Number Fields").
 
 \>Factors([<R>,]<upoly>[,<opt>])!{of univariate polynomial}
 
@@ -413,6 +424,24 @@ that all irreducible factors have a degree in this set.
 factor of degree in `stopdegs' has been found and will return the
 factorization found so far.
 \enditems
+
+\beginexample
+gap> f:= CyclotomicPolynomial( GF(2), 7 );
+Z(2)^0+x_1+x_1^2+x_1^3+x_1^4+x_1^5+x_1^6
+gap> Factors( f );
+[ Z(2)^0+x_1+x_1^3, Z(2)^0+x_1^2+x_1^3 ]
+gap> Factors( PolynomialRing( GF(8) ), f );
+[ Z(2^3)+x_1, Z(2^3)^2+x_1, Z(2^3)^3+x_1, Z(2^3)^4+x_1, Z(2^3)^5+x_1, 
+  Z(2^3)^6+x_1 ]
+gap> f:= MinimalPolynomial( Rationals, E(4) );
+1+x^2
+gap> Factors( f );
+[ 1+x^2 ]
+gap> Factors( PolynomialRing( Rationals ), f );
+[ 1+x^2 ]
+gap> Factors( PolynomialRing( CF(4) ), f );
+[ -E(4)+x, E(4)+x ]
+\endexample
 
 \Declaration{FactorsSquarefree}
 
@@ -442,8 +471,8 @@ Laurent polynomials also can be considered as quotients of a univariate
 polynomial by a power of the indeterminate.  The addition and multiplication
 of univariate polynomials extends to Laurent polynomials (though it might be
 impossible to interpret a Laurent polynomial as a function) and many
-functions for univariate polynomials extend to laurent polynomials (or
-extended versions for laurent polynomials exist).
+functions for univariate polynomials extend to Laurent polynomials (or
+extended versions for Laurent polynomials exist).
 
 \Declaration{LaurentPolynomialByCoefficients}
 \Declaration{CoefficientsOfLaurentPolynomial}
@@ -472,7 +501,7 @@ gap> CoefficientsOfLaurentPolynomial(p*p);
 
 While polynomials depend only on the family of the coefficients, polynomial
 rings $A$ are defined over a base ring $R$. A polynomial is an element of
-$A$ if and only if all its coefficents are contained in $R$. Besides
+$A$ if and only if all its coefficients are contained in $R$. Besides
 providing domains and an easy way to create polynomials, polynomial rings
 can affect the behavior of operations like factorization into irreducibles.
 
@@ -481,7 +510,7 @@ can affect the behavior of operations like factorization into irreducibles.
 \Declaration{CoefficientsRing}
 \beginexample
 gap> r:=PolynomialRing(GF(7));
-<algebra-with-one over GF(7), with 1 generators>
+PolynomialRing(..., [ x_1 ])
 gap>  r:=PolynomialRing(GF(7),3);
 PolynomialRing(..., [ x_1, x_2, x_3 ])
 gap> IndeterminatesOfPolynomialRing(r);
@@ -498,11 +527,11 @@ gap> r:=PolynomialRing(GF(7),["x","y","z","z2"]);
 PolynomialRing(..., [ x, y, z, z2 ])
 \endexample
 
-As {\GAP} objects polynomials can exist without a polynomial being defined
-and polynomials cannot be associated to a particular polynomial ring.
-(Dividing a polynomial which is in a polynomial ring over the integers by
-another integer will result in a polynomial over the rationals, not in a
-rational function over the integers.)
+As {\GAP} objects polynomials can exist without a polynomial ring being
+defined and polynomials cannot be associated to a particular polynomial
+ring. (For example dividing a polynomial which is in a polynomial ring over
+the integers by another integer will result in a polynomial over the
+rationals, not in a rational function over the integers.)
 
 \Declaration{IsPolynomialRing}
 \Declaration{IsFiniteFieldPolynomialRing}
@@ -525,9 +554,9 @@ false
 \Declaration{IsUnivariatePolynomialRing}
 \beginexample
 gap> r:=UnivariatePolynomialRing(Rationals,"x");
-<algebra-with-one over Rationals, with 1 generators>
+PolynomialRing(..., [ x ])
 gap> r2:=PolynomialRing(Rationals,["q"]);
-<algebra-with-one over Rationals, with 1 generators>
+PolynomialRing(..., [ q ])
 gap> IsUnivariatePolynomialRing(r);
 true
 gap> IsUnivariatePolynomialRing(r2);
@@ -537,12 +566,15 @@ true
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Polynomial Reduction}
 
-\Declaration{PolynomialReduction}
+The functions described in this section and their syntax might be subject to
+change in future releases.
+
+\Declaration{PolynomialReduction}!{function}
 
 The polynomial reduction requires an ordering on monomials. This must be a
-function that takes two monomials (in the form of lists as described in "The
-Defining Attributes of Rational Functions") and returns whether one is
-smaller than the other.
+function that takes two monomials without coefficients (in the form of lists
+as described in "The Defining Attributes of Rational Functions", for example
+`[3,1,4,1,5,9]') and returns whether one is smaller than the other.
 
 Normally the ordering chosen should be *admissible*, i.e. it
 must be compatible with products: If $a\<b$ then $ca\<cb$ for all monomials
@@ -569,7 +601,7 @@ Gr{\accent127 o}bner bases.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Rational Function Families}
 
-All rational functions definend over a ring lie in the same family, the
+All rational functions defined over a ring lie in the same family, the
 rational functions family over this ring.
 
 In {\GAP} therefore the family of a polynomial depends only on the family of
@@ -605,9 +637,9 @@ and valuation) and
 Laurent polynomials (given by coefficient list and valuation).
 
 These representations do not necessarily reflect mathematical properties:
-While an object in the laurent polynomials reprepresentation must be a
-laurent polynomial it might turn out that a rational function given by
-numerator and denominator is actually a laurent polynomial and the property
+While an object in the Laurent polynomials representation must be a
+Laurent polynomial it might turn out that a rational function given by
+numerator and denominator is actually a Laurent polynomial and the property
 tests in section~"Properties and Attributes of Rational Functions" will find
 this out.
 
@@ -627,7 +659,7 @@ polynomial.)
 
 Therefore these attributes can be thought of as ``conceptual''
 representations that allow us -- as far as possible --
-to consider an object as a rational function, a polynomial or a laurent
+to consider an object as a rational function, a polynomial or a Laurent
 polynomial, regardless of the way it is represented in the computer.
 
 Functions thus usually do not need to care about the representation of
@@ -667,7 +699,7 @@ indeterminates.
 \Declaration{ExtRepPolynomialRatFun}
 
 \Declaration{IsLaurentPolynomialDefaultRep}
-The attributes that give a representation of a a rational function as a laurent polynomial are
+The attributes that give a representation of a a rational function as a Laurent polynomial are
 `CoefficientsOfLaurentPolynomial' (see~"CoefficientsOfLaurentPolynomial")
 and `IndeterminateNumberOfUnivariateRationalFunction'
 (see~"IndeterminateNumberOfUnivariateRationalFunction").

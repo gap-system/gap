@@ -1973,6 +1973,26 @@ end);
 
 #############################################################################
 ##
+#M  Length
+##
+InstallMethod(Length,"for a straight line program word",true,
+  [IsAssocWord and IsStraightLineProgElm],0,
+function(slp)
+  return Length(EvalStraightLineProgElm(slp));
+end);
+
+#############################################################################
+##
+#M  Subword
+##
+InstallOtherMethod(Subword,"for a straight line program word",true,
+  [IsAssocWord and IsStraightLineProgElm,IsInt,IsInt],0,
+function(slp,a,b)
+  return Subword(EvalStraightLineProgElm(slp),a,b);
+end);
+
+#############################################################################
+##
 #M  MappedWord
 ##
 InstallMethod(MappedWord,"for a straight line program word, and two lists",

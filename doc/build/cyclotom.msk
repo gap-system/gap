@@ -1,11 +1,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%A  cyclotom.msk                GAP documentation               Thomas Breuer   
+%A  cyclotom.msk                GAP documentation               Thomas Breuer
 %A                                                           Alexander Hulpke
 %%
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+%%  This file is being maintained by Thomas Breuer.
+%%  Please do not make any changes without consulting him.
+%%  (This holds also for minor changes such as the removal of whitespace or
+%%  the correction of typos.)
 %%
 \Chapter{Cyclotomic Numbers}
 
@@ -15,12 +20,12 @@
 {\GAP} admits computations in abelian extension fields of the rational
 number field $\Q$, that is fields with abelian Galois group over $\Q$.
 These fields are subfields of *cyclotomic fields* $\Q(e_n)$
-where $e_n = e^{2\pi i/n}$ is a primitive complex $n$--th root of unity.
+where $e_n = e^{2\pi i/n}$ is a primitive complex $n$-th root of unity.
 The elements of these fields are called *cyclotomics*.
 
 Information concerning operations for fields of cyclotomics,
 for example certain integral bases,
-can be found in chapter~"Abelian Number Fields".
+can be found in Chapter~"Abelian Number Fields".
 For more general operations that take a field extension as a
 ---possibly optional--- argument, e.g., `Trace' or `Coefficients',
 see Chapter~"Fields and Division Rings".
@@ -86,15 +91,15 @@ false
 
 \Declaration{IsIntegralCyclotomic}
 \beginexample
-gap> r:= ER( 5 );            # The square root of 5 is a cyclotomic
-E(5)-E(5)^2-E(5)^3+E(5)^4    # integer, it has integral coefficients.
-gap> IsIntegralCyclotomic( r );
+gap> r:= ER( 5 );                # The square root of 5 is a cyclotomic integer.
+E(5)-E(5)^2-E(5)^3+E(5)^4
+gap> IsIntegralCyclotomic( r );  # It has integral coefficients.
 true
-gap> r2:= 1/2 * r;           # This is not a cyclotomic integer, ...
+gap> r2:= 1/2 * r;               # This is not a cyclotomic integer, ...
 1/2*E(5)-1/2*E(5)^2-1/2*E(5)^3+1/2*E(5)^4
 gap> IsIntegralCyclotomic( r2 );
 false
-gap> r3:= 1/2 * r - 1/2;     # ... but this is one.
+gap> r3:= 1/2 * r - 1/2;         # ... but this is one.
 E(5)+E(5)^4
 gap> IsIntegralCyclotomic( r3 );
 true
@@ -129,6 +134,12 @@ gap> Conductor( 0 ); Conductor( E(10) ); Conductor( E(12) );
 12
 \endexample
 
+\Declaration{AbsoluteValue}
+\beginexample
+gap> AbsoluteValue(-3);
+3
+\endexample
+
 \Declaration{RoundCyc}
 \beginexample
 gap> RoundCyc( E(5)+1/2*E(5)^2 ); RoundCyc( 2/3*E(7)+3/2*E(4) );
@@ -139,9 +150,9 @@ E(5)+E(5)^2
 \Declaration{CoeffsCyc}
 \index{coefficients!for cyclotomics}
 \beginexample
-gap> cyc:= E(5)+E(5)^2;  
+gap> cyc:= E(5)+E(5)^2;
 E(5)+E(5)^2
-gap> CoeffsCyc( cyc, 5 );  CoeffsCyc( cyc, 15 );  CoeffsCyc( cyc, 7 ); 
+gap> CoeffsCyc( cyc, 5 );  CoeffsCyc( cyc, 15 );  CoeffsCyc( cyc, 7 );
 [ 0, 1, 1, 0, 0 ]
 [ 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -1, 0 ]
 fail
@@ -182,7 +193,7 @@ CF(5)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Infinity}\null
+\Section{Infinity}\nolabel
 
 \Declaration{IsInfinity}
 \beginexample
@@ -208,7 +219,7 @@ gap> Set( [ s, 2, s, E(17), s, 19 ] );
 
 To compare  cyclotomics, the operators `\<', `\<=', `=', `>=', `>' and
 `\<>' can  be used, the result will be  `true' if the first operand is
-smaller, smaller or equal, equal, larger or equal, larger, or inequal,
+smaller, smaller or equal, equal, larger or equal, larger, or unequal,
 respectively, and `false' otherwise.
 
 Cyclotomics are ordered as follows:
@@ -239,23 +250,24 @@ true
 
 \index{atomic irrationalities}
 
-\atindex{bN}{@$b\noexpand_N$}\atindex{cN}{@$c\noexpand_N$}
-\atindex{dN}{@$d\noexpand_N$}\atindex{eN}{@$e\noexpand_N$}
-\atindex{fN}{@$f\noexpand_N$}\atindex{gN}{@$g\noexpand_N$}
-\atindex{hN}{@$h\noexpand_N$}
+\atindex{b_N}{@$b\noexpand_N$}\atindex{c_N}{@$c\noexpand_N$}
+\atindex{d_N}{@$d\noexpand_N$}\atindex{e_N}{@$e\noexpand_N$}
+\atindex{f_N}{@$f\noexpand_N$}\atindex{g_N}{@$g\noexpand_N$}
+\atindex{h_N}{@$h\noexpand_N$}
 \Declaration{EB}
-\atindex{iN}{@$i\noexpand_N$}\atindex{rN}{@$r\noexpand_N$}
+\atindex{i_N}{@$i\noexpand_N$}\atindex{r_N}{@$r\noexpand_N$}
 \Declaration{EI}
-\atindex{sN}{@$s\noexpand_N$}\atindex{tN}{@$t\noexpand_N$}
-\atindex{uN}{@$u\noexpand_N$}\atindex{vN}{@$v\noexpand_N$}
-\atindex{wN}{@$w\noexpand_N$}\atindex{xN}{@$x\noexpand_N$}
-\atindex{yN}{@$y\noexpand_N$}
+\atindex{s_N}{@$s\noexpand_N$}\atindex{t_N}{@$t\noexpand_N$}
+\atindex{u_N}{@$u\noexpand_N$}\atindex{v_N}{@$v\noexpand_N$}
+\atindex{w_N}{@$w\noexpand_N$}\atindex{x_N}{@$x\noexpand_N$}
+\atindex{y_N}{@$y\noexpand_N$}
 \Declaration{EY}
-\atindex{jN}{@$j\noexpand_N$}\atindex{kN}{@$k\noexpand_N$}
-\atindex{lN}{@$l\noexpand_N$}\atindex{mN}{@$m\noexpand_N$}
+\atindex{j_N}{@$j\noexpand_N$}\atindex{k_N}{@$k\noexpand_N$}
+\atindex{l_N}{@$l\noexpand_N$}\atindex{m_N}{@$m\noexpand_N$}
 \Declaration{EM}
-\atindex{nk}{@$n\noexpand_k$}
+\atindex{n_k}{@$n\noexpand_k$}
 \Declaration{NK}
+\Declaration{AtlasIrrationality}
 
 \beginexample
 gap> EW(16,3); EW(17,2); ER(3); EI(3); EY(5); EB(9);
@@ -265,6 +277,20 @@ E(17)+E(17)^4+E(17)^13+E(17)^16
 E(3)-E(3)^2
 E(5)+E(5)^4
 1
+gap> AtlasIrrationality( "b7*3" );
+E(7)^3+E(7)^5+E(7)^6
+gap> AtlasIrrationality( "y'''24" );
+E(24)-E(24)^19
+gap> AtlasIrrationality( "-3y'''24*13&5" );
+3*E(8)-3*E(8)^3
+gap> AtlasIrrationality( "3y'''24*13-2&5" );
+-3*E(24)-2*E(24)^11+2*E(24)^17+3*E(24)^19
+gap> AtlasIrrationality( "3y'''24*13-&5" );
+-3*E(24)-E(24)^11+E(24)^17+3*E(24)^19
+gap> AtlasIrrationality( "3y'''24*13-4&5&7" );
+-7*E(24)-4*E(24)^11+4*E(24)^17+7*E(24)^19
+gap> AtlasIrrationality( "3y'''24&7" );
+6*E(24)-6*E(24)^19
 \endexample
 
 

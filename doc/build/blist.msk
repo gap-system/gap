@@ -19,12 +19,12 @@ gap> IsBlist( [ true, true, false, false ] );
 true
 gap> IsBlist( [] );
 true
-gap> IsBlist( [false,,true] );
-false    # has holes
-gap> IsBlist( [1,1,0,0] );
-false    # contains not only boolean values
-gap> IsBlist( 17 );
-false    # is not even a list
+gap> IsBlist( [false,,true] );  # has holes
+false
+gap> IsBlist( [1,1,0,0] );      # contains not only boolean values
+false
+gap> IsBlist( 17 );             # is not even a list
+false
 \endexample
 
 Boolean lists are lists and all operations for lists are therefore
@@ -149,7 +149,7 @@ representation of lists, which needs (at least) 32 bits per entry.
 %T the chapter ``Lists''),
 %T in order to allow a user to estimate the space needed for
 %T computations with lists;
-%T then add crossreferences from and to the other available list
+%T then add cross-references from and to the other available list
 %T representations!
 
 Not every boolean list is represented in this compact representation. It

@@ -40,7 +40,7 @@ gap> bar := function( arg )
 >     fi;
 >     return size;
 > end;
-function(  ) ... end
+function( arg ) ... end
 gap> foo := function(ints)
 >     local G, size;
 >     Print("Abelian invariants of new group: ",ints,"\n");

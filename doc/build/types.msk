@@ -446,7 +446,7 @@ and `DerivedSubgroup' is an attribute for groups.
 \beginexample
 gap> g:=Group((1,2),(1,2,3));;Size(g);;
 gap> KnownAttributesOfObject(g);
-[ "Size", "One", "NrMovedPoints", "MovedPoints", 
+[ "Size", "OneImmutable", "NrMovedPoints", "MovedPoints", 
   "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", "Pcgs", 
   "StabChainMutable", "StabChainOptions" ]
 \endexample
@@ -575,7 +575,7 @@ gap> DisableAttributeValueStoring(Size);
 gap> Size(g);
 60
 gap> KnownAttributesOfObject(g);
-[ "One", "LargestMovedPoint", "NrMovedPoints", "MovedPoints", 
+[ "OneImmutable", "LargestMovedPoint", "NrMovedPoints", "MovedPoints", 
   "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
   "StabChainMutable", "StabChainOptions" ]
 gap> Size(g);
@@ -585,9 +585,9 @@ gap> EnableAttributeValueStoring(Size);
 gap> Size(g);
 60
 gap> KnownAttributesOfObject(g);
-[ "Size", "One", "LargestMovedPoint", "NrMovedPoints", "MovedPoints", 
-  "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
-  "StabChainMutable", "StabChainOptions" ]
+[ "Size", "OneImmutable", "LargestMovedPoint", "NrMovedPoints", 
+  "MovedPoints", "GeneratorsOfMagmaWithInverses", 
+  "MultiplicativeNeutralElement", "StabChainMutable", "StabChainOptions" ]
 \endexample
 
 

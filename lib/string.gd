@@ -70,7 +70,8 @@ DeclareGlobalFunction( "DaysInYear" );
 ##
 #F  DaysInMonth( <month>, <year> )  . . . . days in a month, knows leap-years
 ##
-##  returns the number of days in month number <month> of <year>.
+##  returns the number of days in month number <month> of <year> (and `fail'
+##  if `month' is integer not in valid range.
 ##
 DeclareGlobalFunction( "DaysInMonth" );
 
@@ -80,7 +81,7 @@ DeclareGlobalFunction( "DaysInMonth" );
 #F  DMYDay( <day> ) . . .  convert days since 01-Jan-1970 into day-month-year
 ##
 ##  converts a number of days, starting 1-Jan-1970 to a list
-##  `[<day>,<month>,<year>]'
+##  `[<day>,<month>,<year>]' in Gregorian calendar counting.
 ##
 DeclareGlobalFunction( "DMYDay" );
 
@@ -90,10 +91,35 @@ DeclareGlobalFunction( "DMYDay" );
 #F  DayDMY( <dmy> ) . . .  convert day-month-year into days since 01-Jan-1970
 ##
 ##  returns the number of days from 01-Jan-1970 to the day given by <dmy>.
-##  <dmy> must be a list of the form `[<day>,<month>,<year>]'.
-##
+##  <dmy> must be a list of the form `[<day>,<month>,<year>]' in Gregorian
+##  calendar counting. The result is `fail' on input outside valid ranges.
+##  
+##  Note that this makes not much sense for early dates like: before 1582
+##  (no Gregorian calendar at all), or before 1753 in many English countries
+##  or before 1917 in Russia.
+##  
 DeclareGlobalFunction( "DayDMY" );
 
+#############################################################################
+##
+#F  SecondsDMYhms( <DMYhms> ) . . . . . convert day-month-year-hms into seconds
+##
+##  returns the number of seconds from 01-Jan-1970, 00:00:00,  to the time 
+##  given by <DMYhms>.
+##  <DMYhms> must be a list of the form
+##  `[<day>,<month>,<year>,<hour>,<minute>,<second>]'. The remarks on the
+##  Gregorian calendar in the section on "DayDMY" apply here as well. The
+##  last three arguments must lie in the appropriate ranges. 
+## 
+DeclareGlobalFunction( "SecondsDMYhms" );
+
+#############################################################################
+##
+#F  DMYhmsSeconds( <secs> ) . . . . . . . . . . . . . inverse of SecondsDMYhms
+##
+##  This is the inverse function to "SecondsDMYhms".
+##  
+DeclareGlobalFunction( "DMYhmsSeconds" );
 
 #############################################################################
 ##
@@ -157,8 +183,8 @@ DeclareGlobalFunction( "SecHMSM" );
 ##
 #F  StringTime( <time> )  . convert hour-min-sec-milli into a readable string
 ##
-##  converts <time> (given as a sumber of milliseconds or a list
-##  `[<hour>,<min>,<sec>,<milli>]') to a readable string.
+##  converts <time> (given as a number of milliseconds or a list
+##  `[<hour>, <min>, <sec>, <milli>]') to a readable string.
 ##
 DeclareGlobalFunction( "StringTime" );
 
@@ -294,17 +320,20 @@ DeclareGlobalFunction( "JoinStringsWithSeparator" );
 
 #############################################################################
 ##
-#F  Chomp( <str> )  . . .  remove a trailing '\n' from a string if it has one
+#F  Chomp( <str> ) . .  remove trailing '\n' or "\r\n" from string if present
 ##
 ##  Like the similarly  named  Perl  function,  `Chomp'  removes  a  trailing
-##  newline character from a string  argument  <str>  if  there  is  one  and
-##  returns the result. If <str> is not a string or does not end in a newline
-##  character it is returned  unchanged.  This  latter  property  means  that
-##  `Chomp' is safe to use in cases where one is manipulating the  result  of
-##  another function which might sometimes return `fail', for example.
+##  newline character (or carriage-return line-feed couplet)  from  a  string
+##  argument <str> if present and returns the  result.  If  <str>  is  not  a
+##  string or does  not  have  such  trailing  character(s)  it  is  returned
+##  unchanged. This latter property means that `Chomp'  is  safe  to  use  in
+##  cases where one is manipulating the  result  of  another  function  which
+##  might sometimes return `fail', for example.
 ##
 ##  \beginexample
 ##  gap> Chomp("The quick brown fox jumps over the lazy dog.\n");
+##  "The quick brown fox jumps over the lazy dog."
+##  gap> Chomp("The quick brown fox jumps over the lazy dog.\r\n");
 ##  "The quick brown fox jumps over the lazy dog."
 ##  gap> Chomp("The quick brown fox jumps over the lazy dog.");
 ##  "The quick brown fox jumps over the lazy dog."

@@ -61,7 +61,7 @@ end );
 ##
 #M  <cl1> = <cl2> . . . . . . . . . . . . . . . . . . . for conjugacy classes
 ##
-InstallMethod( \=, IsIdenticalObj, [ IsConjugacyClassPermGroupRep,
+InstallMethod( \=,"classes for perm group", IsIdenticalObj, [ IsConjugacyClassPermGroupRep,
                                   IsConjugacyClassPermGroupRep ], 0,
     function( cl1, cl2 )
     if not IsIdenticalObj( ActingDomain( cl1 ), ActingDomain( cl2 ) )  then

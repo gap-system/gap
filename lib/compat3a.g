@@ -154,7 +154,7 @@ DeclareSynonym( "CharTableQuaternionic", CharacterTableQuaternionic );
 ##  make sense anymore.
 ##  One can use `IrrBaumClausen' to compute the irreducible characters via
 ##  the algorithm of Baum and Clausen, which is a non-recursive form of the
-##  algorithm used by `CharTablePGroup' in {GAP}~3.
+##  algorithm used by `CharTablePGroup' in {\GAP}~3.
 ##  The calculation of irreducible characters via the algorithm that was
 ##  used by `CharTableSSGroup' is available in {\GAP}~4 as `IrrConlon'.
 ##

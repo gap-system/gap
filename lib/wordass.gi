@@ -1044,9 +1044,9 @@ function(a,b)
      or SignInt(ea)<>SignInt(eb) then
       return l;
     elif ea<>eb then
-      # the difference of the exponents (both have the same sign) is the
+      # the minimum of the exponents (both have the same sign) is the
       # largest common prefix.
-      return l+AbsInt(ea-eb);
+      return l+Minimum(ea,eb);
     fi;
     # now generators and exponents are the same
     l:=l+ea;

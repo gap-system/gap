@@ -111,7 +111,7 @@ InstallMethod( CanonicalBasis,
     function( Rationals )
     local B;
     B:= Objectify( NewType( FamilyObj( Rationals ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisRationals ),
                    rec() );

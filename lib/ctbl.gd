@@ -76,7 +76,7 @@ Revision.ctbl_gd :=
 ##  the set of all characters of $G$ forms a semiring, with both addition
 ##  and multiplication defined pointwise, which is naturally embedded into
 ##  the ring of *generalized* (or *virtual*) *characters* in the natural way.
-##  A ${\Z}$--basis of this ring, and also a vector space basis of the
+##  A ${\Z}$-basis of this ring, and also a vector space basis of the
 ##  complex vector space of class functions of $G$,
 ##  is given by the irreducible characters of $G$.
 ##
@@ -90,15 +90,15 @@ Revision.ctbl_gd :=
 ##  classes, say, we fix an ordering of the classes, and then identify each
 ##  class with its position according to this ordering.
 ##  Each character of $G$ can be represented by a list of length $n$ in which
-##  the character value for elements of the $i$--th class is stored at
-##  the $i$--th position.
+##  the character value for elements of the $i$-th class is stored at
+##  the $i$-th position.
 ##  Note that we need not know the conjugacy classes of $G$ physically,
 ##  even our knowledge of $G$ may be implicit in the sense that, e.g.,
 ##  we know how many classes of involutions $G$ has, and which length these
 ##  classes have, but we never have seen an element of $G$, or a presentation
 ##  or representation of $G$.
 ##  This allows us to work with the character tables of very large groups,
-##  e.g., of the so--called monster, where {\GAP} has (currently) no chance
+##  e.g., of the so-called monster, where {\GAP} has (currently) no chance
 ##  to deal with the group.
 ##
 ##  As a consequence, also other information involving characters is given
@@ -154,7 +154,7 @@ Revision.ctbl_gd :=
 ##  Two further important instances of information that depends on the
 ##  ordering of conjugacy classes are *power maps* and *fusion maps*.
 ##  Both are represented as lists of integers in {\GAP}.
-##  The $k$--th power map maps each class to the class of $k$--th powers
+##  The $k$-th power map maps each class to the class of $k$-th powers
 ##  of its elements, the corresponding list contains at each position the
 ##  position of the image.
 ##  A class fusion map between the classes of a subgroup $H$ of $G$ and
@@ -409,7 +409,7 @@ DeclareAttributeSuppCT( "UnderlyingGroup", IsOrdinaryTable, [] );
 ##  For a character table <tbl> with known underlying group $G$,
 ##  the `ConjugacyClasses' value of <tbl> is a list of conjugacy classes of
 ##  $G$.
-##  All those lists stored in the table that are related to the orderering
+##  All those lists stored in the table that are related to the ordering
 ##  of conjugacy classes (such as sizes of centralizers and conjugacy
 ##  classes, orders of representatives, power maps, and all class functions)
 ##  refer to the ordering of this list.
@@ -519,7 +519,7 @@ DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 ##  calculations with both group and character table are done.
 ##
 ##  The following invariants are used.
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{1.} element orders (see~"OrdersClassRepresentatives"),
 ##  \item{2.} class lengths (see~"SizesConjugacyClasses"),
 ##  \item{3.} power maps (see~"PowerMap", "ComputedPowerMaps"),
@@ -739,50 +739,36 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  The following operations for groups are applicable to character tables
 ##  and mean the same for a character table as for the group;
 ##  see the chapter about groups for the definition.
-##  \beginlist
+##  \beginitems
 ##  \indextt{AbelianInvariants!for character tables}
-##  \item{}
-##      `AbelianInvariants'
+##  `AbelianInvariants'&
 ##  \indextt{CommutatorLength!for character tables}
-##  \item{}
-##      `CommutatorLength'
+##  `CommutatorLength'&
 ##  \indextt{Exponent!for character tables}
-##  \item{}
-##      `Exponent'
+##  `Exponent'&
 ##  \indextt{IsAbelian!for character tables}
-##  \item{}
-##      `IsAbelian'
+##  `IsAbelian'&
 ##  \indextt{IsCyclic!for character tables}
-##  \item{}
-##      `IsCyclic'
+##  `IsCyclic'&
 ##  \indextt{IsFinite!for character tables}
-##  \item{}
-##      `IsFinite'
+##  `IsFinite'&
 ##  \indextt{IsMonomial!for character tables}
-##  \item{}
-##      `IsMonomial'
+##  `IsMonomial'&
 ##  \indextt{IsNilpotent!for character tables}
-##  \item{}
-##      `IsNilpotent'
+##  `IsNilpotent'&
 ##  \indextt{IsPerfect!for character tables}
-##  \item{}
-##      `IsPerfect'
+##  `IsPerfect'&
 ##  \indextt{IsSimple!for character tables}
-##  \item{}
-##      `IsSimple'
+##  `IsSimple'&
 ##  \indextt{IsSolvable!for character tables}
-##  \item{}
-##      `IsSolvable'
+##  `IsSolvable'&
 ##  \indextt{IsSupersolvable!for character tables}
-##  \item{}
-##      `IsSupersolvable'
+##  `IsSupersolvable'&
 ##  \indextt{NrConjugacyClasses!for character tables}
-##  \item{}
-##      `NrConjugacyClasses'
+##  `NrConjugacyClasses'&
 ##  \indextt{Size!for character tables}
-##  \item{}
-##      `Size'
-##  \endlist
+##  `Size'&
+##  \enditems
 ##  These operations are mainly useful for selecting character tables with
 ##  certain properties, also for character tables without access to a group.
 ##
@@ -971,8 +957,9 @@ DeclareAttributeSuppCT( "UnderlyingCharacteristic",
 ##  The default method for `ClassNames' computes class names consisting of
 ##  the order of an element in the class and at least one distinguishing
 ##  letter.
+##
 ##  The default method for `CharacterNames' returns the list
-##  $[ `\"X.1\"', `\"X.2\"', \ldots ]$, whose length is the number of
+##  `[ "X.1", "X.2", ... ]', whose length is the number of
 ##  irreducible characters of <tbl>.
 ##
 ##  The position of the class with name <name> in <tbl> can be accessed as
@@ -1353,8 +1340,8 @@ DeclareOperation( "ClassPositionsOfNormalClosure",
 ##  `PrimeBlocks' returns a record with the following components.
 ##  \beginitems
 ##  `block' &
-##      a list, the value $j$ at position $i$ means that the $i$--th
-##      irreducible character of <ordtbl> lies in the $j$--th <p>-block
+##      a list, the value $j$ at position $i$ means that the $i$-th
+##      irreducible character of <ordtbl> lies in the $j$-th <p>-block
 ##      of <ordtbl>,
 ##
 ##  `defect' &
@@ -1562,29 +1549,29 @@ DeclareGlobalFunction( "LaTeXStringDecompositionMatrix" );
 ##
 ##  For an *ordinary* character table <tbl>, `IsInternallyConsistent'
 ##  checks the consistency of the following attribute values (if stored).
-##  \beginlist
-##  \item{-}
+##  \beginlist%unordered
+##  \item{--}
 ##      `Size', `SizesCentralizers', and `SizesConjugacyClasses'.
-##  \item{-}
+##  \item{--}
 ##      `SizesCentralizers' and `OrdersClassRepresentatives'.
-##  \item{-}
+##  \item{--}
 ##      `ComputedPowerMaps' and `OrdersClassRepresentatives'.
-##  \item{-}
+##  \item{--}
 ##      `SizesCentralizers' and `Irr'.
-##  \item{-}
+##  \item{--}
 ##      `Irr' (first orthogonality relation).
 ##  \endlist
 ##
 ##  For a *Brauer* table <tbl>, `IsInternallyConsistent'
 ##  checks the consistency of the following attribute values (if stored).
-##  \beginlist
-##  \item{-}
+##  \beginlist%unordered
+##  \item{--}
 ##      `Size', `SizesCentralizers', and `SizesConjugacyClasses'.
-##  \item{-}
+##  \item{--}
 ##      `SizesCentralizers' and `OrdersClassRepresentatives'.
-##  \item{-}
+##  \item{--}
 ##      `ComputedPowerMaps' and `OrdersClassRepresentatives'.
-##  \item{-}
+##  \item{--}
 ##      `Irr' (closure under complex conjugation and Frobenius map).
 ##  \endlist
 ##
@@ -1754,10 +1741,10 @@ DeclareGlobalFunction( "MatClassMultCoeffsCharTable" );
 ##  <classes>, for the character table <tbl> of the group $G$.
 ##  The length of <classes> must be at least 2.
 ##
-##  Let $C = (C_1, C_2, \dots, C_n)$ denote the $n$--tuple of conjugacy
+##  Let $C = (C_1, C_2, \dots, C_n)$ denote the $n$-tuple of conjugacy
 ##  classes of $G$ that are indexed by <classes>.
 ##  The class structure $n(C)$ equals
-##  the number of $n$--tuples $(g_1, g_2, \ldots, g_n)$ of elements
+##  the number of $n$-tuples $(g_1, g_2, \ldots, g_n)$ of elements
 ##  $g_i\in C_i$ with $g_1 g_2 \cdots g_n = 1$.
 ##  Note the difference to the definition of the class multiplication
 ##  coefficients in `ClassMultiplicationCoefficient'
@@ -1781,7 +1768,7 @@ DeclareGlobalFunction( "ClassStructureCharTable" );
 ##  There are in general five different ways to get a character table in
 ##  {\GAP}.
 ##  You can
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{1.}
 ##      compute the table from a group,
 ##  \item{2.}
@@ -1804,7 +1791,7 @@ DeclareGlobalFunction( "ClassStructureCharTable" );
 ##  Generic character tables --as addressed by 3.-- are described
 ##  in~"ctbllib:Generic Character Tables" in the manual of the {\GAP}
 ##  Character Table Library.
-##  Several occurrencies of 4.~are described
+##  Several occurrences of 4.~are described
 ##  in~"Constructing Character Tables from Others".
 ##  The last of the above possibilities
 ##  *@is currently not supported and will be described in a chapter of its
@@ -2039,7 +2026,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  a list identifying the occurring symbols with their actual values.
 ##  Occasionally this identification is supplemented by a quadratic
 ##  representation of the irrationality together with the corresponding
-##  {\ATLAS}--notation (see~\cite{CCN85}).
+##  {\ATLAS}-notation (see~\cite{CCN85}).
 ##
 ##  The optional second argument <arec> of `Display' can be used to change
 ##  the default style (mentioned above) for displaying a character.
@@ -2203,7 +2190,7 @@ DeclareGlobalFunction( "PrintCharacterTable" );
 ##
 ##  Analogously, the projections from the direct product onto <tbl1> and
 ##  <tbl2> are stored, and can be distinguished by the `specification'
-##  compoenents.
+##  components.
 ##
 #T generalize this to arbitrarily many arguments!
 ##
@@ -2646,11 +2633,10 @@ DeclareAttributeSuppCT( "ClassPermutation", IsNearlyCharacterTable,
 ##      modulo the $i$-th entry of the `nsg' component.
 ##  \enditems
 ##
-##  The functions
 ##  `NormalSubgroupClasses',
 ##  `FactorGroupNormalSubgroupClasses', and
 ##  `ClassPositionsOfNormalSubgroup'
-##  use these components, and they are the only functions that do this.
+##  each use these components, and they are the only functions to do so.
 ##
 ##  So if you need information about a normal subgroup for that you know the
 ##  conjugacy classes, you should get it using `NormalSubgroupClasses'.  If

@@ -356,6 +356,10 @@ InstallOtherMethod( RightShiftRowVector,"error if immutable",true,
     [ IsList,IsObject],0,
     L1_IMMUTABLE_ERROR);
 
+InstallOtherMethod( RightShiftRowVector,"error if immutable",true,
+    [ IsList,IsObject, IsObject],0,
+    L1_IMMUTABLE_ERROR);
+
 
 #############################################################################
 ##
@@ -1062,7 +1066,7 @@ local i,di,vp;
 end;
 
 InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
-        [IsMatrix,IsFFECollection, IsList],0,
+        [IsMatrix,IsFFECollection and IsField, IsList],0,
         function(mat,f,vec)
     local d,fdi,i,j,veclis,mult,mults,fdip,q, ok8;
     ConvertToMatrixRep(mat,f);
@@ -1208,9 +1212,18 @@ InstallMethod(AClosestVectorCombinationsMatFFEVecFFE,"generic",
     return HasElementsFamily(a) and IsIdenticalObj(b,c)
            and IsIdenticalObj(ElementsFamily(a),b);
 end,
-  [IsMatrix,IsFFECollection, IsList, IsInt,IsInt],0,
+  [IsMatrix,IsFFECollection and IsField, IsList, IsInt,IsInt],0,
   function(mat,f,vec,cnt,stop)
     local b,fdi,i,j,veclis,mult,mults,fdip, q, ok8;
+
+    # special case: combination of 0 vectors
+    if cnt=0 then
+      return Zero(vec);
+    fi;
+   
+    if cnt > Length(mat) then
+      Error("First list needs at least ", cnt, " vectors . . .\n");
+    fi;
     
     ConvertToMatrixRep(mat);
     ConvertToVectorRep(vec,f);
@@ -1363,7 +1376,7 @@ end;
 MakeReadOnlyGlobal("CosetLeadersInner");
 
 InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
-        [IsMatrix,IsFFECollection],0,
+        [IsMatrix,IsFFECollection and IsField],0,
         function(mat,f)
     local q, leaders, tofind, n,m, t, vl, i, felts, fds, 
           fdps, v,j,x, w, record, nzfelts, weight, ok8;

@@ -289,7 +289,7 @@ DeclareSynonym( "IsMultiplicativeElementWithOneTable",
 ##  A *multiplicative element-with-inverse* is an object that can be
 ##  multiplied via `\*' with elements in its family (see~"Families"),
 ##  and that is an admissible argument for the operations `One' (see~"One")
-##  and `Inverse' (see~"Inverse"). (Note the wording ``admissable'': an
+##  and `Inverse' (see~"Inverse"). (Note the word ``admissible'': an
 ##  object in this category does not necessarily have an inverse, `Inverse'
 ##  may return `fail'.)
 ##
@@ -372,30 +372,79 @@ DeclareSynonym( "IsVectorTable",
 ##
 DeclareSynonym( "IsRowVector", IsVector and IsHomogeneousList );
 
+
 #############################################################################
 ##
-#C  IsGeneralizedRowVector( <obj> ) . . . . objects that comply with new list
+##  Filters Controlling the Arithmetic Behaviour of Lists
+#1
+##  The arithmetic behaviour of lists is controlled by their types.
+##  The following categories and attributes are used for that.
+##  
+##  Note that we distinguish additive and multiplicative behaviour.
+##  For example, Lie matrices have the usual additive behaviour but not the
+##  usual multiplicative behaviour.
+##
+
+
+#############################################################################
+##
+#C  IsGeneralizedRowVector( <list> )  . . . objects that comply with new list
 ##                                            addition rules
 ##
-##  This Category is a descriptive one, objects lying in it, must be lists,
-##  and must have methods for addition, subtraction, unary negation, 
-##  multiplication by integers, Zero, TransposedMat and mod complying
-##  with the specification in dev/listmat.tex
-
+##  For a list <list>, the value `true' for `IsGeneralizedRowVector'
+##  indicates that the additive arithmetic behaviour of <list> is
+##  as defined in~"Additive Arithmetic for Lists",
+##  and that the attribute `NestingDepthA' (see~"NestingDepthA")
+##  will return a nonzero value when called with <list>.
+##
 DeclareCategory( "IsGeneralizedRowVector", IsList );
+
 
 #############################################################################
 ##
-#C  IsMultiplicativeGeneralizedRowVector( <obj> ) . . . . 
+#C  IsMultiplicativeGeneralizedRowVector( <list> )  . . . . 
 ##          objects that comply with new list multiplication rules
 ##
-##  This Category is a descriptive one, objects lying in it, must be
-##  also lie in IsGeneralizedRowVector and comply with all the requirements
-##  of that Category. In addition, such objects must have methods for 
-##  multiplication, Inverse, One and division complying with
-##  the specification in dev/listmat.tex
+##  For a list <list>, the value `true' for
+##  `IsMultiplicativeGeneralizedRowVector' indicates that the multiplicative
+##  arithmetic behaviour of <list> is as defined
+##  in~"Multiplicative Arithmetic for Lists",
+##  and that the attribute `NestingDepthM' (see~"NestingDepthM")
+##  will return a nonzero value when called with <list>.
+##
+DeclareCategory( "IsMultiplicativeGeneralizedRowVector",
+    IsGeneralizedRowVector );
 
-DeclareCategory( "IsMultiplicativeGeneralizedRowVector", IsGeneralizedRowVector );
+
+#############################################################################
+##
+#A  NestingDepthA( <obj> )
+##
+##  For a {\GAP} object <obj>,
+##  `NestingDepthA' returns the *additive nesting depth* of <obj>.
+##  This is defined recursively
+##  as the integer $0$ if <obj> is not in `IsGeneralizedRowVector',
+##  as the integer $1$ if <obj> is an empty list in `IsGeneralizedRowVector',
+##  and as $1$ plus the additive nesting depth of the first bound entry in
+##  <obj> otherwise.
+##
+DeclareAttribute( "NestingDepthA", IsObject );
+
+
+#############################################################################
+##
+#A  NestingDepthM( <obj> )
+##
+##  For a {\GAP} object <obj>,
+##  `NestingDepthM' returns the *multiplicative nesting depth* of <obj>.
+##  This is defined recursively as the
+##  integer $0$ if <obj> is not in `IsMultiplicativeGeneralizedRowVector',
+##  as the integer $1$ if <obj> is an empty list in
+##  `IsMultiplicativeGeneralizedRowVector',
+##  and as $1$ plus the multiplicative nesting depth of the first bound entry
+##  in <obj> otherwise.
+##
+DeclareAttribute( "NestingDepthM", IsObject );
 
 
 #############################################################################
@@ -643,9 +692,11 @@ DeclareCategoryCollections( "IsMatrix" );
 ##
 DeclareCategory( "IsOrdinaryMatrix", IsMatrix );
 DeclareCategoryCollections( "IsOrdinaryMatrix" );
+#T get rid of this filter!!
 
 InstallTrueMethod( IsOrdinaryMatrix, IsMatrix and IsInternalRep );
 InstallTrueMethod( IsGeneralizedRowVector, IsMatrix );
+#T get rid of that hack!
 InstallTrueMethod( IsMultiplicativeGeneralizedRowVector,
         IsOrdinaryMatrix );
 
@@ -668,7 +719,7 @@ InstallTrueMethod( IsMultiplicativeGeneralizedRowVector,
 #T  family and the latter describes a certain matrix multiplication;
 #T  probably this distinction is unnecessary.)
 ##
-DeclareCategory( "IsLieMatrix", IsMatrix );
+DeclareCategory( "IsLieMatrix", IsGeneralizedRowVector and IsMatrix );
 
 
 #############################################################################
@@ -841,16 +892,31 @@ DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 
 #############################################################################
 ##
-#A  Zero( <obj> ) . . . . . . .  additive neutral of an element/domain/family
-#O  ZeroOp( <obj> ) . . . . . . . . . . . . .  additive neutral of an element
+#A  ZeroImmutable( <obj> )  . .  additive neutral of an element/domain/family
+#A  ZeroAttr( <obj> )            synonym of ZeroImmutable
+#A  Zero( <obj> )                synonym of ZeroImmutable
+#O  ZeroMutable( <obj> )  . . . . . .  mutable additive neutral of an element
+#O  ZeroOp( <obj> )              synonym of ZeroMutable
+#O  ZeroSameMutability( <obj> )  mutability preserving zero (0*<obj>)
+#O  ZeroSM( <obj> )              synonym of ZeroSameMutability
 ##
-##  `Zero' and `ZeroOp' return the additive neutral element of the additive
-##  element <obj>.
+##  `ZeroImmutable', `ZeroMutable', and `ZeroSameMutability' all
+##  return the additive neutral element of the additive element <obj>.
 ##
-##  The only difference between `Zero' and `ZeroOp' is that the former is an
-##  attribute and hence returns an immutable result,
-##  and the latter is guaranteed to return a new *mutable* object whenever
-##  a mutable version of the required element exists in {\GAP}.
+##  They differ only w.r.t. the mutability of the result.
+##  `ZeroImmutable' is an attribute and hence returns an immutable result.
+##  `ZeroMutable' is guaranteed to return a new *mutable* object whenever
+##  a mutable version of the required element exists in {\GAP}
+##  (see~"IsCopyable").
+##  `ZeroSameMutability' returns a result that is mutable if <obj> is mutable
+##  and if a mutable version of the required element exists in {\GAP};
+##  for lists, it returns a result of the same immutability level as
+##  the argument. For instance, if the argument is a mutable matrix
+##  with immutable rows, it returns a similar object.
+##
+##  `ZeroSameMutability( <obj> )' is equivalent to `0 \* <obj>'.
+##
+##  `ZeroAttr', `Zero', `ZeroOp' and `ZeroSM' are synonyms as listed above.
 ##
 ##  If <obj> is a domain or a family then `Zero' is defined as the zero
 ##  element of all elements in <obj>,
@@ -862,22 +928,28 @@ DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 ##  additive magma-with-zero (see~"IsAdditiveMagmaWithZero");
 ##  use `AdditiveNeutralElement' (see~"AdditiveNeutralElement") otherwise.
 ##
-##  If <obj> is an additive element then `ZeroOp( <obj> )' is equivalent to
-##  `0 \* <obj>'.
-##  The default method of `Zero' for additive elements is to call `ZeroOp'
-##  (note that `ZeroOp' must *not* delegate to `Zero');
-##  other methods to compute zero elements need to be installed only for
-##  `ZeroOp';
+##  The default method of `Zero' for additive elements calls `ZeroMutable'
+##  (note that methods for `ZeroMutable' must *not* delegate to `Zero');
+##  so other methods to compute zero elements need to be installed only for
+##  `ZeroMutable' and (in the case of copyable objects) `ZeroSameMutability'.
+##
 ##  For domains, `Zero' may call `Representative' (see~"Representative"),
 ##  but `Representative' is allowed to fetch the zero of a domain <D>
 ##  only if `HasZero( <D> )' is `true'.
 ##
-DeclareAttribute( "Zero", IsAdditiveElementWithZero );
-DeclareAttribute( "Zero", IsFamily );
+DeclareAttribute( "ZeroImmutable", IsAdditiveElementWithZero );
+DeclareAttribute( "ZeroImmutable", IsFamily );
 
-DeclareSynonymAttr( "ZeroAttr", Zero );
+DeclareSynonymAttr( "ZeroAttr", ZeroImmutable );
+DeclareSynonymAttr( "Zero", ZeroImmutable );
 
-DeclareOperationKernel( "ZeroOp", [ IsAdditiveElementWithZero ], ZERO );
+DeclareOperationKernel( "ZeroMutable", [ IsAdditiveElementWithZero ],
+    ZERO_MUT );
+DeclareSynonym( "ZeroOp", ZeroMutable );
+
+DeclareOperationKernel( "ZeroSameMutability", [ IsAdditiveElementWithZero ],
+    ZERO );
+DeclareSynonym( "ZeroSM", ZeroSameMutability );
 
 
 #############################################################################
@@ -891,30 +963,53 @@ DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 
 #############################################################################
 ##
-#A  AdditiveInverse( <elm> )  . . . . . . . .  additive inverse of an element
-#O  AdditiveInverseOp( <elm> )  . . . . . . .  additive inverse of an element
+#A  AdditiveInverseImmutable( <elm> )  . . . . additive inverse of an element
+#A  AdditiveInverseAttr( <elm> )  . . . .      additive inverse of an element
+#A  AdditiveInverse( <elm> )  . . . .          additive inverse of an element
+#O  AdditiveInverseMutable( <elm> )  . mutable additive inverse of an element
+#O  AdditiveInverseOp( <elm> )       . mutable additive inverse of an element
+#O  AdditiveInverseSameMutability( <elm> )  .  additive inverse of an element
+#O  AdditiveInverseSM( <elm> )              .  additive inverse of an element
 ##
-##  `AdditiveInverse' and `AdditiveInverseOp' return the additive inverse
-##  of <elm>.
+##  `AdditiveInverseImmutable', `AdditiveInverseMutable', and 
+##  `AdditiveInverseSameMutability' all return the
+##  additive inverse of <elm>.
 ##
-##  The only difference between `AdditiveInverse' and `AdditiveInverseOp'
-##  is that the former is an attribute and hence returns an immutable result,
-##  and the latter is guaranteed to return a new *mutable* object whenever
-##  a mutable version of the required element exists in {\GAP}.
+##  They differ only w.r.t. the mutability of the result.
+##  `AdditiveInverseImmutable' is an attribute and hence returns an
+##  immutable result.  `AdditiveInverseMutable' is guaranteed to
+##  return a new *mutable* object whenever a mutable version of the
+##  required element exists in {\GAP} (see~"IsCopyable").
+##  `AdditiveInverseSameMutability' returns a result that is mutable
+##  if <elm> is mutable and if a mutable version of the required
+##  element exists in {\GAP};
+##  for lists, it returns a result of the same immutability level as
+##  the argument. For instance, if the argument is a mutable matrix
+##  with immutable rows, it returns a similar object.
 ##
-##  `AdditiveInverseOp( <elm> )' is equivalent to `-<obj>'.
+##  `AdditiveInverseSameMutability( <elm> )' is equivalent to `-<elm>'.
 ##
-##  The default method of `AdditiveInverse' is to call `AdditiveInverseOp'
-##  (note that `AdditiveInverseOp' must *not* delegate to `AdditiveInverse');
-##  other methods to compute additive inverses need to be installed only for
-##  `AdditiveInverseOp'.
+##  `AdditiveInverseAttr', `AdditiveInverse', `AdditiveInverseOp'
+##  and `AdditiveInverseSM' are synonyms as listed above.
 ##
-DeclareAttribute( "AdditiveInverse", IsAdditiveElementWithInverse );
+##  The default method of `AdditiveInverse' calls `AdditiveInverseMutable'
+##  (note that methods for `AdditiveInverseMutable' must *not* delegate to
+##  `AdditiveInverse');
+##  so other methods to compute additive inverses need to be installed only
+##  for `AdditiveInverseMutable' and (in the case of copyable objects)
+##  `AdditiveInverseSameMutability'.
+##
+DeclareAttribute( "AdditiveInverseImmutable", IsAdditiveElementWithInverse );
+DeclareSynonymAttr( "AdditiveInverseAttr", AdditiveInverseImmutable );
+DeclareSynonymAttr( "AdditiveInverse", AdditiveInverseImmutable );
 
-DeclareSynonymAttr( "AdditiveInverseAttr", AdditiveInverse );
+DeclareOperationKernel( "AdditiveInverseMutable",
+    [ IsAdditiveElementWithInverse ], AINV_MUT);
+DeclareSynonym( "AdditiveInverseOp", AdditiveInverseMutable);
 
-DeclareOperationKernel( "AdditiveInverseOp",
+DeclareOperationKernel( "AdditiveInverseSameMutability", 
     [ IsAdditiveElementWithInverse ], AINV );
+DeclareSynonym( "AdditiveInverseSM", AdditiveInverseSameMutability);
 
 
 #############################################################################
@@ -938,18 +1033,34 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 
 #############################################################################
 ##
-#A  One( <obj> )  . . . .  multiplicative neutral of an element/domain/family
+#A  OneImmutable( <obj> )  multiplicative neutral of an element/domain/family
+#A  OneAttr( <obj> )
+#A  One( <obj> )
 #A  Identity( <obj> )
-#O  OneOp( <obj> )  . . . . . . . . . .  multiplicative neutral of an element
+#O  OneMutable( <obj> )  . . . . . . . .  multiplicative neutral of an element
+#O  OneOp( <obj> )  
+#O  OneSameMutability( <obj> )
+#O  OneSM( <obj> )
 ##
-##  `One' and `OneOp' return the multiplicative neutral element of the
-##  multiplicative element <obj>.
-##  `Identity' is a synonym for `One'.
+##  `OneImmutable', `OneMutable', and `OneSameMutability' return the
+##  multiplicative neutral element of the multiplicative element <obj>.
 ##
-##  The only difference between `One' and `OneOp' is that the former is an
-##  attribute and hence returns an immutable result,
-##  and the latter is guaranteed to return a new *mutable* object whenever
-##  a mutable version of the required element exists in {\GAP}.
+##  They differ only w.r.t. the mutability of the result.
+##  `OneImmutable' is an attribute and hence returns an immutable result.
+##  `OneMutable' is guaranteed to return a new *mutable* object whenever
+##  a mutable version of the required element exists in {\GAP}
+##  (see~"IsCopyable").
+##  `OneSameMutability' returns a result that is mutable if <obj> is mutable
+##  and if a mutable version of the required element exists in {\GAP};
+##  for lists, it returns a result of the same immutability level as
+##  the argument. For instance, if the argument is a mutable matrix
+##  with immutable rows, it returns a similar object.
+##
+##  If <obj> is a multiplicative element then `OneSameMutability( <obj> )'
+##  is equivalent to `<obj>^0'.
+##
+##  `OneAttr', `One', `Identity', `OneOp', and `OneSM' are synonyms as listed
+##  above.
 ##
 ##  If <obj> is a domain or a family then `One' is defined as the identity
 ##  element of all elements in <obj>, 
@@ -963,9 +1074,6 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 ##  use `MultiplicativeNeutralElement' (see~"MultiplicativeNeutralElement")
 ##  otherwise.
 ##
-##  If <obj> is a multiplicative element then `OneOp( <obj> )' is equivalent
-##  to `<obj>^0'.
-##
 ##  The identity of an object need not be distinct from its zero,
 ##  so for example a ring consisting of a single element can be regarded as a
 ##  ring-with-one (see~"Rings").
@@ -973,30 +1081,45 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 ##  where any factor of a free algebra-with-one is again an algebra-with-one,
 ##  no matter whether or not it is a zero algebra.
 ##
-##  The default method of `One' for multiplicative elements is to call
-##  `OneOp' (note that `OneOp' must *not* delegate to `One');
-##  other methods to compute identity elements need to be installed only for
-##  `OneOp'.
+##  The default method of `One' for multiplicative elements calls
+##  `OneMutable' (note that methods for `OneMutable' must *not* delegate to
+##  `One');
+##  so other methods to compute identity elements need to be installed only
+##  for `OneOp' and (in the case of copyable objects) `OneSameMutability'.
+##
 ##  For domains, `One' may call `Representative' (see~"Representative"),
 ##  but `Representative' is allowed to fetch the identity of a domain <D>
 ##  only if `HasOne( <D> )' is `true'.
 ##
-DeclareAttribute( "One", IsMultiplicativeElementWithOne );
-DeclareAttribute( "One", IsFamily );
+DeclareAttribute( "OneImmutable", IsMultiplicativeElementWithOne );
+DeclareAttribute( "OneImmutable", IsFamily );
 
-DeclareSynonymAttr( "Identity", One );
-DeclareSynonymAttr( "OneAttr", One );
+DeclareSynonymAttr( "OneAttr", OneImmutable );
+DeclareSynonymAttr( "One", OneImmutable );
+DeclareSynonymAttr( "Identity", OneImmutable );
 
-DeclareOperationKernel( "OneOp", [ IsMultiplicativeElementWithOne ], ONE );
+DeclareOperationKernel( "OneMutable", [ IsMultiplicativeElementWithOne ],
+    ONE );
+DeclareSynonym( "OneOp", OneMutable);
+
+DeclareOperationKernel( "OneSameMutability",
+    [ IsMultiplicativeElementWithOne ], ONE_MUT );
+DeclareSynonym( "OneSM", OneSameMutability);
 
 
 #############################################################################
 ##
-#A  Inverse( <elm> )  . . . . . . . . .  multiplicative inverse of an element
-#O  InverseOp( <elm> )  . . . . . . . .  multiplicative inverse of an element
+#A  InverseImmutable( <elm> )   . . . .  multiplicative inverse of an element
+#A  InverseAttr( <elm> )
+#A  Inverse( <elm> )
+#O  InverseMutable( <elm> )
+#O  InverseOp( <elm> )
+#O  InverseSameMutability( <elm> )  . .  multiplicative inverse of an element
+#O  InverseSM( <elm> )
 ##
-##  `Inverse' and `InverseOp' return the multiplicative inverse
-##  of an element <elm>, that is, an element <inv> such that
+##  `InverseImmutable', `InverseMutable', and `InverseSameMutability'
+##  all return the multiplicative inverse of an element <elm>,
+##  that is, an element <inv> such that
 ##  `<elm> * <inv> = <inv> * <elm> = One( <elm> )' holds;
 ##  if <elm> is not invertible then `fail' (see~"Fail") is returned.
 ##
@@ -1009,24 +1132,38 @@ DeclareOperationKernel( "OneOp", [ IsMultiplicativeElementWithOne ], ONE );
 ##  that $f `*' g$ is the identity mapping on the source of $f$
 ##  and $g `*' f$ is the identity mapping on the range of $f$.
 ##
-##  The only difference between `Inverse' and `InverseOp'
-##  is that the former is an attribute and hence returns an immutable result,
-##  and the latter is guaranteed to return a new *mutable* object whenever
+##  The operations differ only w.r.t. the mutability of the result.
+##  `InverseImmutable' is an attribute and hence returns an immutable result.
+##  `InverseMutable' is guaranteed to return a new *mutable* object whenever
 ##  a mutable version of the required element exists in {\GAP}.
+##  `InverseSameMutability' returns a result that is mutable if <elm> is
+##  mutable and if a mutable version of the required element exists in
+##  {\GAP}; for lists, it returns a result of the same immutability level as
+##  the argument. For instance, if the argument is a mutable matrix
+##  with immutable rows, it returns a similar object.
 ##
-##  `InverseOp( <elm> )' is equivalent to `<elm>^-1'.
+##  `InverseSameMutability( <elm> )' is equivalent to `<elm>^-1'.
 ##
-##  The default method of `Inverse' is to call `InverseOp'
-##  (note that `InverseOp' must *not* delegate to `Inverse');
-##  other methods to compute additive inverses need to be installed only for
-##  `InverseOp'.
+##  `InverseAttr', `Inverse', `InverseOp' and `InverseSM' are synonyms as
+##  listed above.
 ##
-DeclareAttribute( "Inverse", IsMultiplicativeElementWithInverse );
+##  The default method of `Inverse' calls `InverseMutable' (note that methods
+##  for `InverseMutable' must *not* delegate to `Inverse');
+##  other methods to compute inverses need to be installed only for
+##  `InverseMutable' and (in the case of copyable objects)
+##  `InverseSameMutability'.
+##
+DeclareAttribute( "InverseImmutable", IsMultiplicativeElementWithInverse );
+DeclareSynonymAttr( "InverseAttr", InverseImmutable );
+DeclareSynonymAttr( "Inverse", InverseImmutable );
 
-DeclareSynonymAttr( "InverseAttr", Inverse );
+DeclareOperationKernel( "InverseMutable",
+    [ IsMultiplicativeElementWithInverse ], INV );
+DeclareSynonym( "InverseOp", InverseMutable );
 
-DeclareOperationKernel( "InverseOp", [ IsMultiplicativeElementWithInverse ],
-    INV );
+DeclareOperationKernel( "InverseSameMutability",
+    [ IsMultiplicativeElementWithInverse ], INV_MUT );
+DeclareSynonym( "InverseSM", InverseSameMutability );
 
 
 #############################################################################
@@ -1269,6 +1406,7 @@ DeclareProperty( "IsSkewFieldFamily", IsFamily );
 ##
 DeclareProperty( "IsUFDFamily", IsFamily );
 
+
 #############################################################################
 ##
 #R  IsAdditiveElementAsMultiplicativeElementRep( <obj> )
@@ -1276,11 +1414,13 @@ DeclareProperty( "IsUFDFamily", IsFamily );
 DeclareRepresentation("IsAdditiveElementAsMultiplicativeElementRep",
   IsPositionalObjectRep and IsMultiplicativeElement,[]);
 
+
 #############################################################################
 ##
 #A  AdditiveElementsAsMultiplicativeElementsFamily( <fam> )
 ##
 DeclareAttribute("AdditiveElementsAsMultiplicativeElementsFamily", IsFamily);
+
 
 #############################################################################
 ##
@@ -1290,6 +1430,7 @@ DeclareAttribute("AdditiveElementsAsMultiplicativeElementsFamily", IsFamily);
 ##  element, for which multiplication is done via addition of the original
 ##  element. The original element of such a ``wrapped'' multiplicative
 ##  element can be obtained as the `UnderlyingElement'.
+##
 DeclareAttribute("AdditiveElementAsMultiplicativeElement",
   IsAdditiveElement );
 
@@ -1300,8 +1441,8 @@ DeclareAttribute("AdditiveElementAsMultiplicativeElement",
 ##
 ##  Let <elm> be an object which builds on elements of another domain and
 ##  just wraps these up to provide another arithmetic.
+##
 DeclareOperation( "UnderlyingElement", [ IsObject ] );
-
 
 
 #############################################################################
@@ -1312,7 +1453,6 @@ DeclareOperation( "UnderlyingElement", [ IsObject ] );
 ##  (Even if IsZero(<elt>) is also true.)
 ##
 DeclareProperty("IsIdempotent", IsMultiplicativeElement);
-
 
 
 #############################################################################

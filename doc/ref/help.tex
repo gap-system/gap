@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%A  help.tex               GAP documentation                    Frank Lübeck
+%A  help.tex               GAP documentation                    Frank LŸbeck
 %%
 %A  @(#)$Id$
 %%
@@ -21,7 +21,7 @@ session is as follows.
 
 \>`?[<book>:][?]<topic>'{getting help}
 
-For an explanation and some examples see~"Tut: Help".
+For an explanation and some examples see~"tut:Help".
 
 Note that the first question mark  must appear in the *first position* after
 the `gap> ' prompt. The search  strings <book> and <topic> are normalized in
@@ -239,7 +239,7 @@ system. For each  book there is a  short name which is used  with the <book>
 part of the basic help query and  there is a long name which hopefully tells
 you what this book is about.
 
-A  short name  which ends  in  `(not loaded)'  refers to  a (share)  package
+A  short  name  which ends  in  `(not loaded)'  refers to  a {\GAP}  package
 whose documentation  is loaded  but which needs  a call  of `RequirePackage'
 (see "RequirePackage") before you can use the described functions.
 
@@ -342,8 +342,13 @@ If you want  to change the default  setting you will probably put  a call of
 
 `\"internet config\"' &
   (for Apple  Macintosh with MacOS)  If a  book is available  in HTML-format
-  this is  shown in a Web-browser.  See section~"Features of GAP  for MacOS"
-  for details about this.
+  this is  shown in a Web browser. The web browser used is the program
+  set to handle the `file' protocol in the program `Internet Config' (System 
+  7 and 8) resp. the "Internet" control panel (System 9 and System X). 
+  For some browsers (e.g., Internet Explorer), you may have to set the GAP 
+  variable `HELP_MAC_PROTOCOL' to `file:/' for this to work correctly; in 
+  this case, you may wish to do this in the `gap.rc' file (see 
+  "The .gaprc file").
   
 `\"xdvi\"' &
   (on X-windows  systems) If a book  is available in dvi-format  it is shown

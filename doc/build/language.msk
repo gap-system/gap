@@ -45,7 +45,7 @@ in which case the reading would only need to check for errors.
 It could be a series of machine instructions for the processor on which
 {\GAP} is running, in which case the reading would more appropriately
 be called compilation.
-It is in fact a tree--like structure.
+It is in fact a tree-like structure.
 
 After the input has been read it is again transformed in a process called
 *evaluation* or *execution*. Later we will distinguish between those two
@@ -62,7 +62,7 @@ The result of the evaluation is, not surprisingly, called a *value*.
 % expressions; for every value there may be several expressions that will
 % evaluate to  this value.
 Again the form in which such a  value is
-represented internally does not  matter. It is  in fact a tree--like
+represented internally does not  matter. It is  in fact a tree-like
 structure again.
 
 The last process is called *printing*. It takes the value produced by
@@ -78,7 +78,7 @@ following string of 8 characters
 1 + 2 * 3;
 \endtt
 
-{\GAP} takes  this external representation  and creates  a tree--like
+{\GAP} takes  this external representation  and creates  a tree-like
 internal representation, which we can picture as follows
 
 \begintt
@@ -92,11 +92,11 @@ internal representation, which we can picture as follows
 This expression is then evaluated. To do this {\GAP} first evaluates the
 right subexpression `2*3'.  Again, to do this {\GAP} first evaluates its
 subexpressions 2 and 3. However they are so simple that they are their
-own value, we say that they are self--evaluating. After this has been
+own value, we say that they are self-evaluating. After this has been
 done, the rule for `*' tells us that the value is the product of the
 values of the two subexpressions, which in this case is clearly 6.
 Combining this with the value of the left operand of the `+', which is
-self--evaluating, too, gives us the value of the whole expression 7. This
+self-evaluating, too, gives us the value of the whole expression 7. This
 is then printed, i.e., converted into the external representation
 consisting of the single character `7'.
 
@@ -509,7 +509,7 @@ variables can be very confusing for the user.
 \beginexample
 gap> xx := 16;
 16
-gap> IsReadOnlyGlobal("xx");   
+gap> IsReadOnlyGlobal("xx");
 false
 gap> ValueGlobal("xx");
 16
@@ -548,16 +548,16 @@ currently bound.
 
 \>TemporaryGlobalVarName( [<prefix>] ) F
 
-`TemporaryGlobalVarName ( [<prefix>]  )' returns a string  that can be used
+returns a string  that can be used
 as the  name  of a global  variable  that is not bound   at the time when
-`TemporaryGlobalVarName()'  is called.    The optional  argument prefix can
+`TemporaryGlobalVarName()'  is called.    The optional  argument <prefix> can
 specify a string with which the name of the global variable starts.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Function Calls}
 
 \>`<function-var>()'{function call}
-\>`<function-var>( <arg-expr>[, <arg-expr>, ...] )'{function call with arguments}
+\>`<function-var>( <arg-expr>[, <arg-expr>, ...] )'{function call!with arguments}
 
 The function call has the effect of calling the function <function-var>.
 The precise semantics are as follows.
@@ -572,11 +572,14 @@ or to a component of a record (see Chapter~"Records") `<record-var>.<ident>'.
 In any case {\GAP} tests whether the value is a function.
 If it is not, {\GAP} signals an error.
 
+\index{functions!with a variable number of arguments}
+\indextt{arg!special function argument}
 Next {\GAP} checks that the number of actual arguments <arg-expr>s agrees
 with the number of *formal arguments* as given in the function definition.
 If they do not agree {\GAP} signals an error. An exception is the case
 when there is exactly one formal argument with the name `arg', in which
-case any number of actual arguments is allowed.
+case any number of actual arguments is allowed (see~"function" for
+examples).
 
 Now {\GAP} allocates for each formal argument and for each *formal local*
 (that is, the identifiers in the `local' declaration) a new variable.
@@ -630,7 +633,7 @@ gap> RightCosets( G, Intersection( U, V ) );;
   # where the second actual argument is another function call
 \endtt
 
-\>`<function-var>( <arg-expr>[, <arg-expr>, ...][ : [ <option-expr> [,<option-expr>, ....]]])'{function call with options}
+\>`<function-var>( <arg-expr>[, <arg-expr>, ...][ : [ <option-expr> [,<option-expr>, ....]]])'{function call!with options}
 
 As well as passing arguments to a function, providing the mathematical 
 input to its calculation, it is sometimes useful to supply ``hints''
@@ -744,12 +747,13 @@ as follows.
 `<a> / <b>' denotes the multiplication of <a> with the multiplicative
 inverse of <b>.
 
-`<a> mod <b>' is defined only for integer or rational  left  operand  <a>
-and for non-zero integer right operand <b>.  If  <a>  and  <b>  are  both
-integers, `<a> mod <b>' is the integer <r> in the  integer  range  `0  ..
-|<b>| - 1' satisfying `<a> = <r> + <b><q>',  for some integer <q>  (where
-the operations occurring have their usual meaning over the  integers,  of
-course).
+\index{mod!rationals}
+`<a> mod <b>', for integer or rational left operand <a> and for non-zero
+integer right operand <b>, is defined as follows.
+If <a> and <b> are both integers, `<a> mod <b>' is the integer <r> in the
+integer range `0 .. |<b>| - 1' satisfying `<a> = <r> + <b><q>',
+for some integer <q> (where the operations occurring have their usual meaning
+over the integers, of course).
 
 \index{modular remainder}\index{modular inverse}
 \index{coprime}\index{relatively prime}
@@ -837,7 +841,7 @@ gap> if i <> 0 then k = 16/i; fi;
 Syntax error: := expected
 if i <> 0 then k = 16/i; fi;
                  ^
-gap>
+gap> 
 \endtt
 
 As you can see from the example this warning does in particular address
@@ -945,7 +949,7 @@ An example is `Sortex' which sorts a list and returns the corresponding
 permutation of the entries (see~"Sortex").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{If}\null
+\Section{If}
 
 \indextt{fi}\indextt{then}\indextt{else}\indextt{elif}
 \>`if <bool-expr1> then <statements1> \{ elif <bool-expr2> then <statements2> \}[ else <statements3> ] fi;'{if statement}@{`if' statement}
@@ -974,15 +978,15 @@ question where an `else' part belongs,
 i.e., {\GAP} has no ``dangling else''.
 In
 
-`if <expr1> then if <expr2> then <stats1> else <stats2> fi; fi;'
+\){\kernttindent}if <expr1> then if <expr2> then <stats1> else <stats2> fi; fi;
 
 the `else' part belongs to the second  `if' statement, whereas in
 
-`if <expr1> then if <expr2> then <stats1> fi; else <stats2> fi;'
+\){\kernttindent}if <expr1> then if <expr2> then <stats1> fi; else <stats2> fi;
 
 the `else' part belongs to the first `if' statement.
 
-Since an if statement is not an expression it is not possible to write
+Since an `if' statement is not an expression it is not possible to write
 
 \begintt
 abs := if x > 0 then x; else -x; fi;
@@ -1014,7 +1018,7 @@ gap> s;
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{While}\null
+\Section{While}
 
 \atindex{loop!while}{@loop!\noexpand`while'}
 
@@ -1053,7 +1057,7 @@ gap> s;
 A `while' loop may be left prematurely using `break', see "Break".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Repeat}\null
+\Section{Repeat}
 
 \atindex{loop!repeat}{@loop!\noexpand`repeat'}\indextt{until}
 
@@ -1094,7 +1098,7 @@ A `repeat' loop may be left prematurely using `break', see "Break".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{For}\null
+\Section{For}
 
 \atindex{loop!for}{@loop!\noexpand`for'}\indextt{do}\indextt{od}
 
@@ -1104,8 +1108,8 @@ The `for' loop executes  the statement sequence <statements> for every
 element of the list <list-expr>.
 
 The statement sequence <statements> is first executed with <simple-var>
-bound to the first element of the list <list>, then with <simple-var>
-bound to the second element of <list> and so on. <simple-var> must be a
+bound to the first element of the list <list-expr>, then with <simple-var>
+bound to the second element of <list-expr> and so on. <simple-var> must be a
 simple variable,  it  must not   be  a list   element  selection
 `<list-var>[<int-expr>]'   or    a  record  component selection
 `<record-var>.<ident>'.
@@ -1113,26 +1117,26 @@ simple variable,  it  must not   be  a list   element  selection
 The execution of the `for' loop over a list is exactly equivalent to
 the following `while' loop.
 
-\){<loop-list> := <list>;}
-\){<loop-index> := 1;}
-\){while <loop-index> \<= Length(<loop-list>) do}
-\){  <variable> := <loop-list>[<loop-index>];}
-\){  <statements>}
-\){  <loop-index> := <loop-index> + 1;}
-\){od;}
+\)\kernttindent{<loop-list> := <list>;}
+\)\kernttindent{<loop-index> := 1;}
+\)\kernttindent{while <loop-index> \<= Length(<loop-list>) do}
+\)\kernttindent{  <variable> := <loop-list>[<loop-index>];}
+\)\kernttindent{  <statements>}
+\)\kernttindent{  <loop-index> := <loop-index> + 1;}
+\)\kernttindent{od;}
 
 with the  exception  that <loop-list> and <loop-index> are different
 variables for each `for' loop,
 i.e., these variables of different `for' loops do not interfere with
 each other.
 
-The list <list> is very often a range (see~"Ranges").
+The list <list-expr> is very often a range (see~"Ranges").
 
 \>`for <variable> in [<from>..<to>] do <statements> od;'{loop over range}
 
 corresponds to the more common
 
-\){`for <variable> from <from> to <to> do <statements> od;'}
+\)\kernttindent{for <variable> from <from> to <to> do <statements> od;}
 
 in other programming languages.
 
@@ -1176,13 +1180,13 @@ gap> l;
 \>`for <variable> in <iterator> do <statements> od;'{loop over iterator}
 
 It is also possible to have a `for'-loop run over an iterator
-(see~"Iterators") . In this case
-the for loop is equivalent to
+(see~"Iterators"). In this case
+the `for'-loop is equivalent to
 
-\){while not IsDoneIterator(<iterator>) do}
-\){  <variable> := NextIterator(<iterator>)}
-\){  <statements>}
-\){od;}
+\)\kernttindent{while not IsDoneIterator(<iterator>) do}
+\)\kernttindent{  <variable> := NextIterator(<iterator>)}
+\)\kernttindent{  <statements>}
+\)\kernttindent{od;}
 
 \>`for <variable> in <object> do <statements> od;'{loop over object}
 
@@ -1192,21 +1196,27 @@ Finally, if an object <object> which is not a list or an iterator appears in a
 run over the iterator returned.
 
 \beginexample
-gap> g := Group((1,2,3,4,5),(1,2)(3,4)(5,6));       
+gap> g := Group((1,2,3,4,5),(1,2)(3,4)(5,6));
 Group([ (1,2,3,4,5), (1,2)(3,4)(5,6) ])
 gap> count := 0;; sumord := 0;;
 gap> for x in g do
-> count := count +1; sumord := sumord + Order(x); od; 
+> count := count + 1; sumord := sumord + Order(x); od;
 gap> count;
 120
 gap> sumord;
 471
 \endexample
 
-`for <variable> in <domain> do' should thus normally have the same
-effect as `for <variable> in AsList(<domain>) do' but may use much
-less storage, as the iterator may be more compact than a list of all
-the elements.
+The effect of
+
+\){\kernttindent}for <variable> in <domain> do
+
+should thus normally be the same as 
+
+\){\kernttindent}for <variable> in AsList(<domain>) do
+
+but may use much less storage, as the iterator may be more compact than
+a list of all the elements.
 
 See "Iterators" for details about iterators.
 
@@ -1216,7 +1226,7 @@ searching through a domain for an element with some useful property.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Break}\null
+\Section{Break}
 
 \index{loops!leaving}
 \>`break;'{break statement}@{`break' statement}
@@ -1226,11 +1236,11 @@ loop enclosing it. It is an error to use this statement other than
 inside a loop.
 
 \beginexample
-gap> g := Group((1,2,3,4,5),(1,2)(3,4)(5,6));           
+gap> g := Group((1,2,3,4,5),(1,2)(3,4)(5,6));
 Group([ (1,2,3,4,5), (1,2)(3,4)(5,6) ])
 gap> for x in g do
 > if Order(x) = 3 then
-> break; 
+> break;
 > fi; od;
 gap> x;
 (1,4,3)(2,6,5)
@@ -1252,11 +1262,11 @@ begins immediately. It is an error to use this statement other than
 inside a loop.
 
 \beginexample
-gap> g := Group((1,2,3),(1,2));           
+gap> g := Group((1,2,3),(1,2));
 Group([ (1,2,3), (1,2) ])
 gap> for x in g do
 > if Order(x) = 3 then
-> continue; 
+> continue;
 > fi; Print(x,"\n"); od;
 ()
 (2,3)
@@ -1269,7 +1279,7 @@ A continue statement can only appear inside a loop
 \endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Function}\null
+\Section{Function}\nolabel
 
 \index{functions!definition of}\indextt{end}\indextt{local}
 \index{recursion}\index{functions!recursive}
@@ -1285,7 +1295,7 @@ component. Later this function can be called as described in "Function
 Calls".
 
 The following is an example of a function definition.  It is a function
-to compute values of the Fibonacci sequence (see "Fibonacci")
+to compute values of the Fibonacci sequence (see "Fibonacci").
 
 \beginexample
 gap> fib := function ( n )
@@ -1325,12 +1335,92 @@ Note that the recursive version needs `2 * fib(<n>)-1' steps to compute
 steps.  Both are not optimal however, the library function `Fibonacci'
 only needs about `Log(<n>)' steps.
 
+\index{functions!with a variable number of arguments}
+\indextt{arg!special function argument}
+As noted in Section~"Function  Calls",  the  case  where  a  function  is
+defined with exactly one formal argument with the name `arg', is special.
+It provides a way of defining  a  function  with  a  variable  number  of
+arguments; the values of all the actual arguments are stored  in  a  list
+and this list is assigned to the new variable corresponding to the formal
+argument `arg'. There are  two  typical  scenarios  for  wanting  such  a
+possibility:  having  optional  arguments  and  having  any   number   of
+arguments.
+
+The  following  example  shows  one  way  that  the  function  `Position'
+(see~"ref:Position") might be encoded  and  demonstrates  the  ``optional
+argument'' scenario.
+
+\beginexample
+gap> position := function ( arg )    
+>     local list, obj, pos;
+>     list := arg[1];
+>     obj  := arg[2];
+>     if 2 = Length(arg) then
+>       pos := 0;
+>     else
+>       pos := arg[3];
+>     fi;
+>     repeat
+>       pos := pos + 1;
+>       if pos > Length(list) then
+>         return fail;
+>       fi;
+>     until list[pos] = obj;
+>     return pos;
+>    end;
+function( arg ) ... end
+gap> position([1, 4, 2], 4);
+2
+gap> position([1, 4, 2], 3);
+fail
+gap> position([1, 4, 2], 4, 2);
+fail
+\endexample
+
+The following  example  demonstrates  the  ``any  number  of  arguments''
+scenario.
+
+\beginexample
+gap> sum := function ( arg )
+>     local total, x;
+>     total := 0;
+>     for x in arg do
+>       total := total + x;
+>     od;
+>     return total;
+>    end;
+function( arg ) ... end
+gap> sum(1, 2, 3);
+6
+gap> sum(1, 2, 3, 4);
+10
+gap> sum();
+0
+\endexample
+
+The user  should  compare  the  above  with  the  {\GAP}  function  `Sum'
+(see~"Sum") which, for example, may take a list argument  and  optionally
+an initial element (which zero should the sum of an empty list return?).
+
+Note that if a function <f> is defined as above with  the  single  formal
+argument   `arg'   then   `NumberArgumentsFunction(<f>)'   returns   $-1$
+(see~"NumberArgumentsFunction").
+
+The argument `arg' when used as the single argument name of some function
+<f> tells {\GAP} that when it encounters <f> that it should form  a  list
+out of the arguments of <f>. What if one wishes to do  the  ``opposite'':
+tell {\GAP} that a list should be ``unwrapped''  and  passed  as  several
+arguments to a function. The function `CallFuncList' (see~"CallFuncList")
+is provided for this purpose.
+
+Also see Chapter~"Functions".
+
 \index{functions!definition by arrow notation}
 \>`<arg-ident> -> <expr>'{arrow notation for functions}
 
 This is a shorthand for
 
-\){function ( <arg-ident> ) return <expr>; end.}
+\)\kernttindent{function ( <arg-ident> ) return <expr>; end.}
 
 <arg-ident> must be a single identifier, i.e., it is not possible to
 write functions of several arguments this way. Also `arg' is not treated
@@ -1395,17 +1485,16 @@ This feature should be used rarely, since its implementation in {\GAP} is
 not very efficient.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Return}\null
+\Section{Return}
 
-\indextt{return}
-\>`return;'{return from functions}
+\>`return;'{return!no value}@{`return'!no value}
 
 In this form `return' terminates the call of the innermost function that
 is currently executing, and control returns to the calling function. An
 error is signalled if no function is currently executing. No value is
 returned by the function.
 
-\>`return <expr>;'{return a value}
+\>`return <expr>;'{return!with value}@{`return'!with value}
 
 In this form `return' terminates the call of the innermost function that
 is currently executing, and returns the value of the expression <expr>.
@@ -1419,7 +1508,7 @@ can be used to continue execution after an error. What happens with the
 value <expr> depends on the particular error.
 
 For examples of `return' statements, see the functions `fib' and `Stack'
-in~"Functions".
+in Chapter~"Functions".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Syntax in BNF}

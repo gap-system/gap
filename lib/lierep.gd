@@ -196,7 +196,7 @@ DeclareAttribute( "LongestWeylWordPerm", IsWeylGroup );
 #O  ConjugateDominantWeightWithWord( <W>, <wt> )
 ##
 ##  Here <W> is a Weyl group and <wt> a weight (i.e., a list of integers).
-##  This function returns the usnique dominant weight conjugate to <wt>
+##  This function returns the unique dominant weight conjugate to <wt>
 ##  under <W>.
 ##
 ##  `ConjugateDominantWegihtWithWord( <W>, <wt> )' returns a list of two
@@ -274,7 +274,8 @@ DeclareOperation( "DominantCharacter", [ IsRootSystem, IsList ] );
 ##  $W$ as a direct sum of irreducible modules. The second list contains
 ##  the multiplicities of these weights (i.e., the number of copies of
 ##  the irreducible module with the corresponding highest weight that occur
-##  in $W$). The algorithm uses Klymik's formula.
+##  in $W$). The algorithm uses Klimyk's formula (see~\cite{Klimyk68} or
+##  \cite{Klimyk66} for the original Russian version).
 ##
 DeclareOperation( "DecomposeTensorProduct", [ IsLieAlgebra, IsList, IsList ] );
 
@@ -312,13 +313,13 @@ DeclareOperation( "DimensionOfHighestWeightModule", [ IsLieAlgebra, IsList ] );
 ##  }
 ##  $$
 ##  Then by a theorem of Kostant, the $x_{\alpha}^{(n)}$ and
-##  $y_{\alpha}^{(n)}$ generale a subring of the universal enveloping algebra
+##  $y_{\alpha}^{(n)}$ generate a subring of the universal enveloping algebra
 ##  $U(L)$ spanned (as a free $Z$-module) by the elements
 ##  $$
 ##  y^Mh^Kx^N
 ##  $$
-##  (see, e.g., J. E. Humphreys, Introduction to Lie Algebras and
-##  Representation Theory, \S 26). So by the Poincare-Birkhoff-Witt theorem
+##  (see, e.g., \cite{Hum72} or \cite{Hum78}, Section 26)
+##  So by the Poincare-Birkhoff-Witt theorem
 ##  this subring is a lattice in $U(L)$. Furthermore, this lattice is
 ##  invariant under the $x_{\alpha}^{(n)}$ and $y_{\alpha}^{(n)}$.
 ##  Therefore, it is called an admissible lattice in $U(L)$.
@@ -386,12 +387,12 @@ DeclareGlobalFunction( "CollectUEALatticeElement" );
 #C  IsWeightRepElementCollection( <obj> )
 #C  IsWeightRepElementFamily( <fam> )
 ##
-##  Is a category of vectors, that is used to conctruct elements of
+##  Is a category of vectors, that is used to construct elements of
 ##  highest-weight modules (by `HighestWeightModule').
 ##
 ##  WeightRepElements are represented by a list of the form
-##  `[ v1, c1, v2, c2, ....]', where the `vi' are basis vectors, and
-##  the `ci' coefficients. Furthermore a basis vector `v' is a weight vector.
+##  `[ v1, c1, v2, c2, ....]', where the `v<i>' are basis vectors, and
+##  the `c<i>' coefficients. Furthermore a basis vector `v' is a weight vector.
 ##  It is represented by a list of
 ##  form `[ <k>, <mon>, <wt> ]', where <k> is an integer (the basis vectors
 ##  are numbered from $1$ to $\dim V$, where $V$ is the highest weight
@@ -400,7 +401,7 @@ DeclareGlobalFunction( "CollectUEALatticeElement" );
 ##  of <v>. A WeightRepElement is printed as `<mon>*v0', where `v0'
 ##  denotes a fixed highest weight vector.
 ##
-##  If `v' is a WeightRepElement, then `ExtRepOfObj( v )' returns
+##  If <v> is a WeightRepElement, then `ExtRepOfObj( <v> )' returns
 ##  the corresponding list, and if <list> is such a list and <fam> a
 ##  WeightRepElementFamily, then `ObjByExtRep( <list>, <fam> )' returns
 ##  the corresponding WeightRepElement.

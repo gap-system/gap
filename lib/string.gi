@@ -72,10 +72,13 @@ InstallGlobalFunction(DaysInMonth , function ( month, year )
         return 31;
     elif month in [ 4, 6, 9, 11 ]  then
         return 30;
-    elif year mod 4 in [1,2,3]  or year mod 400 in [100,200,300]  then
+    elif month = 2 and 
+            (year mod 4 in [1,2,3]  or year mod 400 in [100,200,300])  then
         return 28;
-    else
+    elif month = 2 then
         return 29;
+    else
+        return  fail;
     fi;
 end);
 
@@ -90,6 +93,10 @@ InstallGlobalFunction(DMYDay , function ( day )
     while DaysInYear(year) <= day  do
         day   := day - DaysInYear(year);
         year  := year + 1;
+    od;
+    while day < 0 do
+      year := year - 1;
+      day := day + DaysInYear(year);
     od;
     month := 1;
     while DaysInMonth(month,year) <= day  do
@@ -109,6 +116,10 @@ InstallGlobalFunction(DayDMY , function ( dmy )
     day   := dmy[1]-1;
     month := dmy[2];
     year  := dmy[3];
+    if DaysInMonth(month, year) = fail or day < 0 or 
+            day > DaysInMonth(month, year) - 1 then
+        return fail;
+    fi;
     while 1 < month  do
         month := month - 1;
         day   := day + DaysInMonth( month, year );
@@ -116,6 +127,10 @@ InstallGlobalFunction(DayDMY , function ( dmy )
     while 1970 < year  do
         year  := year - 1;
         day   := day + DaysInYear( year );
+    od;
+    while year < 1970 do
+        day := day - DaysInYear( year );
+        year := year + 1;
     od;
     return day;
 end);
@@ -130,7 +145,36 @@ InstallGlobalFunction(WeekDay , function ( date )
     return NameWeekDay[ (date + 3) mod 7 + 1 ];
 end);
 
+#############################################################################
+##  
+#F  SecondsDMYhms( <DMYhms> ) . . . . . . . . . seconds since 1/1/1970/0/0/0
+##  
+InstallGlobalFunction(SecondsDMYhms, function(DMYhms)
+  local d, res, s;
+  d := DayDMY(DMYhms{[1..3]});
+  if d = fail then
+    return fail;
+  fi;
+  res := d * 24 * 60^2;
+  s := DMYhms{[4..6]};
+  if not (s[1] in [0..23] and s[2] in [0..59] and s[3] in [0..59]) then
+    return fail;
+  fi;
+  Add(s, 0);
+  return res + SecHMSM(s) / 1000;
+end);
 
+#############################################################################
+##  
+#F  DMYhmsSeconds( <DMYhms> ) . . . . . . . . . inverse of SecondsDMYhms
+##  
+InstallGlobalFunction(DMYhmsSeconds, function(sec)
+  local d, DMY;
+  d := sec mod (24 * 60^2);
+  DMY := DMYDay((sec - d) / (24 * 60^2));
+  return Concatenation(DMY, HMSMSec(d * 1000){[1..3]});
+end);
+  
 #############################################################################
 ##
 #F  StringDate( <date> )  . . . . . . . . convert date into a readable string
@@ -147,7 +191,7 @@ end);
 #############################################################################
 ##
 
-#F  HMSMSec( <sec> )  . . . . . . . .  convert seconds into hour-min-sec-mill
+#F  HMSMSec( <sec> )  . . . . . . convert milliseconds into hour-min-sec-mill
 ##
 InstallGlobalFunction(HMSMSec , function ( sec )
     local  hour, minute, second, milli;
@@ -161,10 +205,10 @@ end);
 
 #############################################################################
 ##
-#F  SecHMSM( <hmsm> ) . . . . . . . . convert hour-min-sec-milli into seconds
+#F  SecHMSM( <hmsm> ) . . . . . . convert hour-min-sec-milli into milliseconds
 ##
 InstallGlobalFunction(SecHMSM , function ( hmsm )
-    return 3600000*hmsm[1] + 60000*hmsm[2] + 1000*hmsm[3] + hmsm[4];
+    return [3600000, 60000, 1000, 1] * hmsm;
 end);
 
 
@@ -568,11 +612,14 @@ end );
 
 #############################################################################
 ##
-#F  Chomp( <str> )  . . .  remove a trailing '\n' from a string if it has one
+#F  Chomp( <str> ) . .  remove trailing '\n' or "\r\n" from string if present
 ##
 InstallGlobalFunction(Chomp, function(str)
 
   if IsString(str) and str <> "" and str[Length(str)] = '\n' then
+    if 1 < Length(str) and str[Length(str) - 1] = '\r' then
+      return str{[1 .. Length(str) - 2]};
+    fi;
     return str{[1 .. Length(str) - 1]};
   else
     return str;

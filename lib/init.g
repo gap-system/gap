@@ -24,15 +24,29 @@ OnBreak := Where;
 #############################################################################
 ##
 #F  OnBreakMessage( ) . . . . . . function to call at entry to the break loop
-##  . . . . . . . . . . . . . . . after  execution  of  OnBreak  when   error
-##  . . . . . . . . . . . . . . . condition is  caused  by  an  execution  of
-##  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Error
 ##
+##  called after execution of `OnBreak' when an error condition is caused  by
+##  an execution of `Error', to print what a user can do in order to exit the
+##  break loop.
 ##
 OnBreakMessage := function()
   Print("you can 'quit;' to quit to outer loop, or\n",
         "you can 'return;' to continue\n");
 end;
+
+#############################################################################
+##
+#F  OnQuit( ) . . . . . . . . . . function to call on quitting the break loop
+##
+##  called when a user elects to `quit;' a break loop entered  via  execution
+##  of `Error'. Here we define it to do nothing, in  case,  we  encounter  an
+##  `Error' when {\GAP} is starting up (i.e. reading this file). `OnQuit'  is
+##  later  redefined  to  do  a  variant  of  `ResetOptionsStack'  to  ensure
+##  `OptionsStack' is empty after a user quits an `Error'-induced break loop.
+##  Currently, `OnQuit( )' is not advertised, since  exception  handling  may
+##  make it obsolete.
+##
+OnQuit := function() end;
 
 #############################################################################
 ##
@@ -58,30 +72,37 @@ infinity := "2b defined";
 ##
 ##  This cannot be inside "kernel.g" because it is needed to read "kernel.g".
 ##
-ReplacedString := function ( string, old, new )
-local  res,  i, lo,r;
-  lo:=LEN_LIST(old)-1;
-  i:=1;
-  r:=true;
-  while i+lo<=LEN_LIST(string) do
-    if string{[i..i+lo]}=old  then
-      res := [];
-      APPEND_LIST_INTR( res, string{[1..i-1]} );
-      APPEND_LIST_INTR( res, new );
-      APPEND_LIST_INTR( res, string{[i+lo+1..LEN_LIST(string)]} );
-      string:=res;
-      i:=i+LEN_LIST(new); # do not replace the same letters again
-      r:=false;
+ReplacedString := function ( arg )
+    local str, substr, lss, subs, all, p, s, pp;
+    str := arg[1];
+    substr := arg[2];
+    lss := LEN_LIST( substr );
+    subs := arg[3];
+    if LEN_LIST( arg ) > 3  then
+        all := arg[4] = "all";
     else
-      i:=i+1;
+        all := true;
     fi;
-  od;
-  if r then 
-    # ensure the result is always a new string -- even if no replacement
-    # took place.
-    string:= SHALLOW_COPY_OBJ( string );
-  fi;
-  return string;
+    p := POSITION_SUBSTRING( str, substr, 0 );
+    if p = fail  then
+        return str;
+    fi;
+    s := str{[  ]};
+    pp := 0;
+    while p <> fail  do
+        APPEND_LIST_INTR( s, str{[ pp+1 .. p - 1 ]} );
+        APPEND_LIST_INTR( s, subs );
+        pp := p + lss - 1;
+        if all  then
+            p := POSITION_SUBSTRING( str, substr, pp );
+        else
+            p := fail;
+        fi;
+        if p = fail  then
+            APPEND_LIST_INTR( s, str{[pp+1..LEN_LIST(str)]} );
+        fi;
+    od;
+    return s;
 end;
 
 
@@ -459,7 +480,7 @@ ReadOrComplete( "lib/read6.g" );
 # character theory stuff
 ReadOrComplete( "lib/read7.g" );
 
-# overloaded operations
+# overloaded operations and compiler interface
 ReadOrComplete( "lib/read8.g" );
 
 
@@ -491,12 +512,15 @@ TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
 #X  Read primitive groups library
 ##
 PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
+PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gd","irreducible solvable groups" );
 PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.grp",
                                      "primitive groups" );
 PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
                                      "primitive groups" );
-ReadPrim( "irredsol.grp","irreducible solvable groups" );
-ReadPrim( "cohorts.grp","irreducible solvable groups" );
+
+PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.grp","irreducible solvable groups" );
+PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gi","irreducible solvable groups" );
+PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "cohorts.grp","irreducible solvable groups" );
 
 
 #############################################################################
@@ -504,7 +528,7 @@ ReadPrim( "cohorts.grp","irreducible solvable groups" );
 ##  Display version, loaded components and packages
 ##
 INITIAL_SYSTEM_INFORMATION:=function()
-local PL,P,COMPONENTNAME;
+local PL,P,COMPONENTNAME,N;
   if not QUIET then
     Print("GAP4, Version: ",VERSION," of ",DATE,", ", GAP_ARCHITECTURE, "\n" );
     if BANNER then
@@ -531,15 +555,20 @@ local PL,P,COMPONENTNAME;
 	PL:=11;
 	P:=false;
 	for COMPONENTNAME in RecNames(LOADED_PACKAGES) do
-	  if P<>false then
+	  if IsBound(PACKAGES_NAMES.(COMPONENTNAME)) then
+            N:=PACKAGES_NAMES.(COMPONENTNAME);
+          else
+            N:=COMPONENTNAME;
+          fi;
+          if P<>false then
 	    Print(", ");
 	  fi;
 	  if PL>60 then
 	    Print("\n             ");
 	    PL:=11;
 	  fi;
-	  Print(COMPONENTNAME,"\c");
-	  PL:=PL+Length(COMPONENTNAME)+2;
+	  Print(N,"\c");
+	  PL:=PL+Length(N)+2;
 	  P:=true;
 	od;
 	Print("  installed.\n");
@@ -562,7 +591,7 @@ AUTOLOAD_PACKAGES:= AutoloadablePackagesList();
 ##
 ##  ParGAP/MPI slave hook
 ##
-##  A ParGAP slave redefines this as a function if the ParGAP share  paackage
+##  A ParGAP slave redefines this as a function if the {\GAP} package ParGAP
 ##  is loaded. It is called just once at  the  end  of  GAP's  initialisation
 ##  process i.e. at the end of this file.
 ##
@@ -576,13 +605,24 @@ READ(GAP_RC_FILE);
 
 #############################################################################
 ##
+#X  files installing compatibility with deprecated, obsolescent or
+##  obsolete GAP4 behaviour;
+##  *not* to be read if `GAP_OBSOLESCENT' has the value `false'
+##  (this value can be set in the `.gaprc' file)
+##
+if not ISB_GVAR( "GAP_OBSOLESCENT" ) or GAP_OBSOLESCENT <> false then
+  ReadLib( "obsolete.g" );
+fi;
+
+#############################################################################
+##
 ##  Autoload packages (suppressing banners)
 ##
 BANNER_ORIG := BANNER;
 MakeReadWriteGVar("BANNER"); BANNER := false;
 IS_IN_AUTOLOAD:=true;
 for COMPONENTNAME in AUTOLOAD_PACKAGES do
-  Info(InfoWarning,2,"autoloading:",COMPONENTNAME,"\n");
+  Info(InfoWarning,2,"autoloading:",COMPONENTNAME);
   RequirePackage(COMPONENTNAME);
 od;
 IS_IN_AUTOLOAD:=false;

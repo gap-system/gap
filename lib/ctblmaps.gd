@@ -157,7 +157,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##  properties of the $p$-th power map of <tbl>.
 ##  (Representative orders are used only if the `OrdersClassRepresentatives'
 ##  value of <tbl> is known, see~"OrdersClassRepresentatives".)
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{1.}
 ##       For class $i$, the centralizer order of the image is a multiple of
 ##       the $i$-th centralizer order;
@@ -560,7 +560,7 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##  and $G$, say,
 ##  `PossibleClassFusions' returns the list of all maps that have the
 ##  following properties of class fusions from <subtbl> to <tbl>.
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{1.}
 ##      For class $i$, the centralizer order of the image in $G$ is a
 ##      multiple of the $i$-th centralizer order in $H$,
@@ -734,13 +734,13 @@ DeclareGlobalFunction( "RepresentativesFusions" );
 ##  parametrized map that contains all restrictions of $\chi$ by elements of
 ##  the parametrized fusion map.
 ##
-##  `CompositionMaps( <paramap2>, <paramap1> )' is a parametrized map with
-##  entry `CompositionMaps( <paramap2>, <paramap1>, <class> )' at position
+##  `CompositionMaps(<paramap2>, <paramap1>)' is a parametrized map with
+##  entry `CompositionMaps(<paramap2>, <paramap1>, <class>)' at position
 ##  <class>.
 ##  If `<paramap1>[<class>]' is an integer then
-##  `CompositionMaps( <paramap2>, <paramap1>, <class> )' is equal to
+##  `CompositionMaps(<paramap2>, <paramap1>, <class>)' is equal to
 ##  `<paramap2>[ <paramap1>[ <class> ] ]'.
-##  Otherwise it is the union of `<paramap2>[i]' for `i' in
+##  Otherwise it is the union of `<paramap2>[<i>]' for <i> in
 ##  `<paramap1>[ <class> ]'.
 ##
 DeclareGlobalFunction( "CompositionMaps" );
@@ -905,7 +905,7 @@ DeclareGlobalFunction( "ImproveMaps" );
 ##  entries of the $i$-th component occur as preimages of the $i$-th
 ##  parametrized map.
 ##
-##  When an inconsistency is deteted,
+##  When an inconsistency is detected,
 ##  `CommutativeDiagram' immediately returns `fail'.
 ##  Otherwise a record is returned that contains four lists `imp1', $\ldots$,
 ##  `imp4':
@@ -1070,11 +1070,13 @@ DeclareGlobalFunction( "ContainedPossibleCharacters" );
 #F  ContainedDecomposables( <constituents>, <moduls>, <parachar>, <func> )
 #F  ContainedCharacters( <tbl>, <constituents>, <parachar> )
 ##
-##  Let <constituents> be a list of *rational* class functions,
+##  For these functions, 
+##  let <constituents> be a list of *rational* class functions,
 ##  <moduls> a list of positive integers,
 ##  <parachar> a parametrized rational class function,
-##  and <func> a function that returns either `true' or `false' when called
-##  with (a values list of) a class function.
+##  <func> a function that returns either `true' or `false' when called
+##  with (a values list of) a class function,
+##  and <tbl> a character table.
 ##
 ##  `ContainedDecomposables' returns the set of all elements $\chi$ of
 ##  <parachar> that satisfy $<func>( \chi ) = `true'$
@@ -1235,24 +1237,24 @@ DeclareGlobalFunction( "MinusCharacter" );
 ##  More precisely, the strategy used is as follows.
 ##
 ##  First, for each $\chi \in <chars>$,
-##  let `minus:= MinusCharacter( $\chi$, <approxmap>, <prime> )'.
-##  \beginlist
-##  \item{-}
+##  let `minus:= MinusCharacter($\chi$, <approxmap>, <prime>)'.
+##  \beginlist%unordered
+##  \item{--}
 ##      If $`Indeterminateness( minus )' = 1$ and
 ##      `<parameters>.quick = false' then the scalar products of `minus' with
 ##      <subchars> are checked;
 ##      if not all scalar products are nonnegative integers then
 ##      an empty list is returned,
 ##      otherwise $\chi$ is deleted from the list of characters to inspect.
-##  \item{-}
+##  \item{--}
 ##      Otherwise if `Indeterminateness( minus )' is smaller than
 ##      `<parameters>.minamb' then $\chi$ is deleted from the list of
 ##      characters.
-##  \item{-}
+##  \item{--}
 ##      If `<parameters>.minamb' $\leq$ `Indeterminateness( minus )' $\leq$
 ##      `<parameters>.maxamb' then
 ##      construct the list of contained class functions
-##      `poss:= <parameters>.contained( <tbl>, <subchars>, minus )'
+##      `poss:= <parameters>.contained(<tbl>, <subchars>, minus)'
 ##      and `Parametrized( poss )',
 ##      and improve the approximation of the power map using `UpdateMap'.
 ##  \endlist
@@ -1353,19 +1355,19 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##
 ##  First, for each $\chi \in <chars>$,
 ##  let `restricted:= CompositionMaps( $\chi$, <approxmap> )'.
-##  \beginlist
-##  \item{-}
+##  \beginlist%unordered
+##  \item{--}
 ##      If $`Indeterminateness( restricted )' = 1$ and
 ##      `<parameters>.quick = false' then the scalar products of `restricted'
 ##      with <subchars> are checked;
 ##      if not all scalar products are nonnegative integers then
 ##      an empty list is returned,
 ##      otherwise $\chi$ is deleted from the list of characters to inspect.
-##  \item{-}
+##  \item{--}
 ##      Otherwise if `Indeterminateness( minus )' is smaller than
 ##      `<parameters>.minamb' then $\chi$ is deleted from the list of
 ##      characters.
-##  \item{-}
+##  \item{--}
 ##      If `<parameters>.minamb' $\leq$ `Indeterminateness( restricted )'
 ##      $\leq$ `<parameters>.maxamb' then construct
 ##      `poss:= <parameters>.contained( <subtbl>, <subchars>, restricted )'

@@ -11,7 +11,7 @@
 
 Matrices are represented in {\GAP} by lists of row vectors (see "Row Vectors").
 The vectors must all have the same length, and their elements must lie in
-a common ring. 
+a common ring.
 
 Because matrices are just a special case of lists, all operations and
 functions for lists are applicable to matrices also (see chapter
@@ -56,154 +56,205 @@ false
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operators for Matrices}
 
-\>`<mat> + <scalar>'{scalar to matrix!addition} O
-\>`<scalar> + <mat>'{scalar to matrix!addition} O
+The rules for arithmetic operations involving matrices are in fact
+special cases of those for the arithmetic of lists,
+given in Section~"Arithmetic for Lists" and the following sections,
+here we reiterate that definition, in the language of vectors and matrices.
 
-returns the sum of the matrix <mat> and the scalar <scalar>. The
-elements of <mat> and <scalar> must lie in a common field.  The sum is
-a new matrix where each entry is the sum of the corresponding entry of
-<mat> and <scalar>.
+Note that the additive behaviour sketched below is defined only for lists in
+the category `IsGeneralizedRowVector',
+and the multiplicative behaviour is defined only for lists in the category
+`IsMultiplicativeGeneralizedRowVector'
+(see~"Filters Controlling the Arithmetic Behaviour of Lists").
 
-\>`<mat1> + <mat2>'{matrix!addition} O
+
+\>`<mat1> + <mat2>'{addition!matrices} O
 
 returns the sum of the two matrices <mat1> and <mat2>,
-which must have the same dimensions and whose elements must lie in a
-common field. The sum is a new matrix where each entry is the sum of the
-corresponding entries of <mat1> and <mat2>.
+Probably the most usual situation is that <mat1> and <mat2> have the same
+dimensions and are defined over a common field;
+in this case the sum is a new matrix over the same field where each entry
+is the sum of the corresponding entries of the matrices.
 
-\>`<mat> - <scalar>'{scalar from matrix!subtraction} O
-\>`<scalar> - <mat>'{matrix from scalar!subtraction} O
-\>`<mat1> - <mat2>'{matrix!subtraction}
+In more general situations, the sum of two matrices need not be a matrix,
+for example adding an integer matrix <mat1> and a matrix <mat2> over
+a finite field yields the table of pointwise sums,
+which will be a mixture of finite field elements and integers if <mat1> has
+bigger dimensions than <mat2>.
 
-The definition for the `-' operator are similar to the above definitions
-for the `+' operator, except that `-' subtracts of course.
 
-\>`<mat> * <scalar>'{scalar product!matrix} O
-\>`<scalar> * <mat>'{scalar product!matrix} O
+\>`<scalar> + <mat>'{addition!scalar and matrix} O
+\>`<mat> + <scalar>'{addition!matrix and scalar} O
 
-returns the product of the matrix <mat> and the scalar
-<scalar>. The elements of <mat> and <scalar> must lie in a common field.
-The product is a new matrix where each entry is the product of the
-corresponding entries of <mat> and <scalar>.
+returns the sum of the scalar <scalar> and the matrix <mat>.
+Probably the most usual situation is that the entries of <mat> lie in a
+common field with <scalar>;
+in this case the sum is a new matrix over the same field where each entry
+is the sum of the scalar and the corresponding entry of the matrix.
 
-\>`<vec> * <mat>'{product!matrix with vector} O
+More general situations are for example the sum of an integer scalar and a
+matrix over a finite field, or the sum of a finite field element and an
+integer matrix.
 
-returns the product of the vector <vec> and the matrix
-<mat>. (This is the standard product of a row vector with a matrix.)
-The length of <vec> and the number of rows of <mat> must be
-equal. The elements of <vec> and <mat> must lie in a common field. If
-<vec> is a vector of length <n> and <mat> is a matrix with <n> rows and
-<m> columns, the product is a new vector of length <m>. The element at
-position <i> is the sum of `<vec>[<l>] * <mat>[<l>][<i>]' with <l>
-running from 1 to <n>.
 
-\>`<mat> * <vec>'{product!vector with matrix} O
+\>`<mat1> - <mat2>'{subtraction!matrices}
+\>`<scalar> - <mat>'{subtraction!scalar and matrix} O
+\>`<mat> - <scalar>'{subtraction!matrix and scalar} O
 
-returns the product of the matrix <mat> and the vector
-<vec>. (This is the standard product of a matrix with a column vector.)
-The number of columns of <mat> and the length of <vec> must be
-equal. The elements of <mat> and <vec> must lie in a common field. If
-<mat> is a matrix with <m> rows and <n> columns and <vec> is a vector of
-length <n>, the product is a new vector of length <m>. The element at
-position <i> is the sum of `<mat>[<i>][<l>] * <vec>[<l>]' with <l>
-running from 1 to <n>.
+Subtracting a matrix or scalar is defined as adding its additive inverse,
+so the statements for the addition hold likewise.
 
-\>`<mat1> * <mat2>'{product!matrices} O
 
-This form evaluates to the product of the two matrices <mat1> and <mat2>.
-The number of columns of <mat1> and the number of rows of <mat2> must be
-equal. The elements of <mat1> and <mat2> must lie in a common field. If
-<mat1> is a matrix with <m> rows and <n> columns and <mat2> is a matrix
-with <n> rows and <o> columns, the result is a new matrix with <m> rows
-and <o> columns. The element in row <i> at position <k> of the product
-is the sum of `<mat1>[<i>][<l>] * <mat2>[<l>][<k>]' with <l> running
-from 1 to <n>.
+\>`<scalar> * <mat>'{multiplication!scalar and matrix} O
+\>`<mat> * <scalar>'{multiplication!matrix and scalar} O
 
-\>`Inverse(<mat>)'{inverse!matrix} O
+returns the product of the scalar <scalar> and the matrix <mat>.
+Probably the most usual situation is that the elements of <mat> lie in a
+common field with <scalar>;
+in this case the product is a new matrix over the same field where each
+entry is the product of the scalar and the corresponding entry of the matrix.
 
-returns the inverse matrix of <mat>, which must be an invertible square
-matrix. If the matrix is not invertible, `fail' is returned.
+More general situations are for example the product of an integer scalar and
+a matrix over a finite field,
+or the product of a finite field element and an integer matrix.
+
+
+\>`<vec> * <mat>'{multiplication!vector and matrix} O
+
+returns the product of the row vector <vec> and the matrix <mat>.
+Probably the most usual situation is that <vec> and <mat> have the same
+lengths and are defined over a common field, and that all rows have the
+same length $m$, say;
+in this case the product is a new row vector of length $m$ over the same
+field which is the sum of the scalar multiples of the rows of <mat> with the
+corresponding entries of <vec>.
+
+More general situations are for example the product of an integer vector and
+a matrix over a finite field,
+or the product of a vector over a finite field and an integer matrix.
+
+
+\>`<mat> * <vec>'{multiplication!matrix and vector} O
+
+returns the product of the matrix <mat> and the row vector <vec>.
+(This is the standard product of a matrix with a *column* vector.)
+Probably the most usual situation is that the length of <vec> and of all rows
+of <mat> are equal, and that the elements of <mat> and <vec> lie in a common
+field;
+in this case the product is a new row vector of the same length as <mat> and
+over the same field which is the sum of the scalar multiples of the columns
+of <mat> with the corresponding entries of <vec>.
+
+More general situations are for example the product of an integer matrix and
+a vector over a finite field,
+or the product of a matrix over a finite field and an integer vector.
+
+
+\>`<mat1> * <mat2>'{multiplication!matrices} O
+
+This form evaluates to the (Cauchy) product of the two matrices <mat1> and
+<mat2>.
+Probably the most usual situation is that the number of columns of <mat1>
+equals the number of rows of <mat2>,
+and that the elements of <mat> and <vec> lie in a common field;
+if <mat1> is a matrix with $m$ rows and $n$ columns, say, and <mat2> is a
+matrix with $n$ rows and $o$ columns, the result is a new matrix with $m$
+rows and $o$ columns.
+The element in row $i$ at position $j$ of the product is the sum of
+$<mat1>[i][l] \* <mat2>[l][j]$, with $l$ running from $1$ to $n$.
+
+
+\>`Inverse( <mat> )'{inverse!matrix} O
+
+returns the inverse of the matrix <mat>,
+which must be an invertible square matrix.
+If <mat> is not invertible then `fail' is returned.
+
 
 \>`<mat1> / <mat2>'{quotient!matrices} O
-\>`<scalar> / <mat>'{quotient!scalar by matrix} O
-\>`<mat> / <scalar>'{quotient!matrix by scalar} O
-\>`<vec> / <mat>'{quotient!vector by matrix} O
+\>`<scalar> / <mat>'{quotient!scalar and matrix} O
+\>`<mat> / <scalar>'{quotient!matrix and scalar} O
+\>`<vec> / <mat>'{quotient!vector and matrix} O
 
-In general `<left> / <right>' is defined as `<left> * <right>^-1'.
-Thus in the above forms the right operand must always be invertable.
+In general, `<left> / <right>' is defined as `<left> * <right>^-1'.
+Thus in the above forms the right operand must always be invertible.
+
 
 \>`<mat> ^ <int>'{power!matrix} O
-
-returns the <int>-th power of the matrix <mat>. <mat>
-must be a square matrix, <int> must be an integer. If <int> is negative,
-<mat> must be invertible. If <int> is 0, the result is the identity
-matrix `One(<mat>)', even if <mat> is not invertible.
-
 \>`<mat1> ^ <mat2>'{conjugate!matrix} O
+\>`<vec> ^ <mat>'{image!vector under matrix} O
 
-returns the conjugate of the matrix <mat1> by the matrix
-<mat2>, i.e. `<mat2>^-1 * <mat1> * <mat2>'. <mat2> must be
-invertible and <mat1> must be a square matrix of the same dimension.
+Powering a square matrix <mat> by an integer <int> yields the <int>-th power
+of <mat>; if <int> is negative then <mat> must be invertible,
+if <int> is `0' then the result is the identity matrix `One( <mat> )',
+even if <mat> is not invertible.
 
-\>`<vec> ^<mat>'{image!vector under matrix} O
+Powering a square matrix <mat1> by an invertible square matrix <mat2> of the
+same dimensions yields the conjugate of <mat1> by <mat2>, i.e.,
+the matrix `<mat2>^-1 * <mat1> * <mat2>'.
 
-This is in every respect equivalent to `<vec> * <mat>'. This
-operations reflects the fact that matrices operate naturally on the
-vector space by multiplication from the right.
+Powering a row vector <vec> by a matrix <mat> is in every respect equivalent
+to `<vec> * <mat>'.
+This operations reflects the fact that matrices act naturally on row vectors
+by multiplication from the right, and that the powering operator is {\GAP}'s
+standard for group actions.
 
-\>`<scalar> + <matlist>'{sum!scalar and matrix list} O
-\>`<matlist> + <scalar>'{sum!scalar and matrix list} O
-\>`<scalar> - <matlist>'{difference!scalar and matrix list} O
-\>`<matlist> - <scalar>'{difference!scalar and matrix list} O
-\>`<scalar> * <matlist>'{product!scalar and matrix list} O
-\>`<matlist> * <scalar>'{product!scalar and matrix list} O
+
+\>`Comm( <mat1>, <mat2> )'{matrices!commutator} O
+
+returns the commutator of the square invertible matrices <mat1> and <mat2>
+of the same dimensions and over a common field,
+which is the matrix `<mat1>^-1 * <mat2>^-1 * <mat1> * <mat2>'.
+
+
+The following cases are still special cases of the general list arithmetic
+defined in~"Arithmetic for Lists".
+
+
+\>`<scalar> + <matlist>'{addition!scalar and matrix list} O
+\>`<matlist> + <scalar>'{addition!scalar and matrix list} O
+\>`<scalar> - <matlist>'{subtraction!scalar and matrix list} O
+\>`<matlist> - <scalar>'{subtraction!scalar and matrix list} O
+\>`<scalar> * <matlist>'{multiplication!scalar and matrix list} O
+\>`<matlist> * <scalar>'{multiplication!scalar and matrix list} O
 \>`<matlist> / <scalar>'{quotient!scalar and matrix list} O
 
 A scalar <scalar> may also be added, subtracted, multiplied with, or
-divide into a whole list of matrices <matlist>. The result is a new list
+divided into a list <matlist> of matrices. The result is a new list
 of matrices where each matrix is the result of performing the operation
 with the corresponding matrix in <matlist>.
 
-\>`<mat> * <matlist>'{product!matrix with matrixlist} O
-\>`<matlist> * <mat>'{product!matrix with matrixlist} O
 
-A matrix <mat> may also be multiplied with a whole list of matrices
-<matlist>. The result is a new list of matrices, where each matrix is
-the product of <mat> and the corresponding matrix in <matlist>.
+\>`<mat> * <matlist>'{multiplication!matrix and matrix list} O
+\>`<matlist> * <mat>'{multiplication!matrix and matrix list} O
 
-\>`<matlist> / <mat>'{quotient!matrix with matrixlist} O
+A matrix <mat> may also be multiplied with a list <matlist> of matrices.
+The result is a new list of matrices, where each entry is the product of
+<mat> and the corresponding entry in <matlist>.
 
-This form evaluates to `<matlist> * <mat>^-1'. <mat> must of course
-be invertable.
 
-\>`<vec> * <matlist>'{product!vector with matrixlist} O
+\>`<matlist> / <mat>'{quotient!matrix and matrix list} O
 
-returns the product of the vector <vec> and the list of
-matrices <mat>. The lengths <l> of <vec> and <matlist> must be equal.
+Dividing a list <matlist> of matrices by an invertible matrix <mat>
+evaluates to `<matlist> * <mat>^-1'.
+
+
+\>`<vec> * <matlist>'{multiplication!vector and matrix list} O
+
+returns the product of the vector <vec> and the list of matrices <mat>.
+The lengths <l> of <vec> and <matlist> must be equal.
 All matrices in <matlist> must have the same dimensions. The elements of
 <vec> and the elements of the matrices in <matlist> must lie in a common
 ring. The product is the sum over `<vec>[<i>] * <matlist>[<i>]' with
 <i> running from 1 to <l>.
 
-\>`Comm( <mat1>, <mat2> )'{commutator!matrices} O
 
-`Comm' returns the commutator of the matrices <mat1> and <mat2>, i.e.,
-`<mat1>^-1 * <mat2>^-1 * <mat1> * <mat2>'. <mat1> and <mat2>
-must be invertable and such that these product can be computed.
+For the mutability of results of arithmetic operations,
+see~"Mutability and Copyability".
 
-There is one exception to the rule that the operands or their elements
-must lie in common field. It is allowed that one operand is a finite
-field element, a finite field vector, a finite field matrix, or a list of
-finite field matrices, and the other operand is an integer, an integer
-vector, an integer matrix, or a list of integer matrices. In this case
-the integers are interpreted as `<int> * One(<GF>)', where <GF> is the
-finite field (see "Operations for Finite Field Elements").
-
-For all the above operations the result is a new mutable list, unless
-both operands are immutable, in which case the result is immutable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Properties and Attibutes of Matrices}
+\Section{Properties and Attributes of Matrices}
 
 \Declaration{DimensionsMat}
 \beginexample
@@ -212,7 +263,7 @@ gap> DimensionsMat([[1,2,3],[4,5,6]]);
 \endexample
 \Declaration{DefaultFieldOfMatrix}
 \beginexample
-gap> DefaultFieldOfMatrix([[Z(4),Z(8)]]); 
+gap> DefaultFieldOfMatrix([[Z(4),Z(8)]]);
 GF(2^6)
 \endexample
 
@@ -233,6 +284,8 @@ gap> DeterminantMatDestructive( mm );
 gap> mm;
 [ [ 1, 2 ], [ 0, -3 ] ]
 \endexample
+
+\Declaration{DeterminantMatDivFree}
 
 \Declaration{IsMonomialMatrix}
 \beginexample
@@ -265,7 +318,7 @@ gap> AsList(last);
 
 \Declaration{DiagonalMat}
 \beginexample
-gap> DiagonalMat([1,2,3]); 
+gap> DiagonalMat([1,2,3]);
 [ [ 1, 0, 0 ], [ 0, 2, 0 ], [ 0, 0, 3 ] ]
 \endexample
 \Declaration{PermutationMat}
@@ -274,8 +327,7 @@ gap> PermutationMat((1,2,3),4,1);
 [ [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 1 ] ]
 \endexample
 
-\Declaration{TransposedMat}
-\Declaration{MutableTransposedMat}
+\Declaration{TransposedMatImmutable}
 \Declaration{TransposedMatDestructive}
 \beginexample
 gap> TransposedMat([[1,2,3],[4,5,6],[7,8,9]]);
@@ -319,16 +371,16 @@ gap> RandomInvertibleMat(4);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Matrices Representing Linear Equations and the Gaussian Algorithm}
 
-\index{Gaussian algorithm}
+\atindex{Gaussian algorithm}{@Gaussian algorithm}
 \Declaration{RankMat}
 \beginexample
 gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
-gap> RankMat(mat); 
+gap> RankMat(mat);
 2
 \endexample
 \Declaration{TriangulizeMat}
 \beginexample
-gap> m:=MutableTransposedMat(mat);
+gap> m:=TransposedMatMutable(mat);
 [ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
 gap> TriangulizeMat(m);m;
 [ [ 1, 0, -1 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
@@ -339,8 +391,8 @@ gap> TriangulizeMat(m);m;
 gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 gap> NullspaceMat(mat);
 [ [ 1, -2, 1 ] ]
-gap> mm:=[[1,2,3],[4,5,6],[7,8,9]];; 
-gap> NullspaceMatDestructive( mm ); 
+gap> mm:=[[1,2,3],[4,5,6],[7,8,9]];;
+gap> NullspaceMatDestructive( mm );
 [ [ 1, -2, 1 ] ]
 gap> mm;
 [ [ 1, 2, 3 ], [ 0, -3, -6 ], [ 0, 0, 0 ] ]
@@ -349,17 +401,17 @@ gap> mm;
 \Declaration{SolutionMatDestructive}
 \beginexample
 gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
-gap> SolutionMat(mat,[3,5,7]); 
+gap> SolutionMat(mat,[3,5,7]);
 [ 5/3, 1/3, 0 ]
-gap> mm:=[[1,2,3],[4,5,6],[7,8,9]];; 
+gap> mm:=[[1,2,3],[4,5,6],[7,8,9]];;
 gap> SolutionMatDestructive( mm, [3,5,7] );
 [ 5/3, 1/3, 0 ]
 gap> mm;
-[ [ 1, 0, -1 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
+[ [ 1, 2, 3 ], [ 0, -3, -6 ], [ 0, 0, 0 ] ]
 \endexample
 \Declaration{BaseFixedSpace}
 \beginexample
-gap> BaseFixedSpace([[[1,2],[0,1]]]);  
+gap> BaseFixedSpace([[[1,2],[0,1]]]);
 [ [ 0, 1 ] ]
 \endexample
 
@@ -419,12 +471,12 @@ rec( heads := [ 1, 0, 2 ], vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ],
 \Declaration{BaseMatDestructive}
 \beginexample
 gap> BaseMat(mat);
-[ [ 1, 0, -1 ], [ 0, 1, 2 ] ]
-gap> mm:= [[1,2,3],[4,5,6],[5,7,9]];; 
+[ [ 1, 2, 3 ], [ 0, 1, 2 ] ]
+gap> mm:= [[1,2,3],[4,5,6],[5,7,9]];;
 gap> BaseMatDestructive( mm );
-[ [ 1, 0, -1 ], [ 0, 1, 2 ] ]
+[ [ 1, 2, 3 ], [ 0, 1, 2 ] ]
 gap> mm;
-[ [ 1, 0, -1 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
+[ [ 1, 2, 3 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
 \endexample
 \Declaration{BaseOrthogonalSpaceMat}
 
@@ -462,7 +514,7 @@ gap> UpperSubdiagonal(mat,1);
 \beginexample
 gap> DepthOfUpperTriangularMatrix([[0,1,2],[0,0,1],[0,0,0]]);
 1
-gap> DepthOfUpperTriangularMatrix([[0,0,2],[0,0,0],[0,0,0]]);  
+gap> DepthOfUpperTriangularMatrix([[0,0,2],[0,0,0],[0,0,0]]);
 2
 \endexample
 
@@ -517,11 +569,11 @@ true
 
 Just as for row vectors, (see section "Row Vectors over Finite
 Fields"), {\GAP} has a special representation for matrices over small
-finite fields. 
+finite fields.
 
 To be eligible to be represented in this way, each row of a matrix
-must be immutable, and able to be represented as a compact row vector
-over *the same* finite field.
+must be able to be represented as a compact row vector of the same
+length  over *the same* finite field.
 
 \beginexample
 gap> v := Z(2)*[1,0,0,1,1];
@@ -530,18 +582,16 @@ gap> ConvertToVectorRep(v,2);
 2
 gap> v;
 <a GF2 vector of length 5>
-gap> MakeImmutable(v);
 gap> m := [v];; ConvertToMatrixRep(m,GF(2));; m;
 <a 1x5 matrix over GF2>
 gap> m := [v,v];; ConvertToMatrixRep(m,GF(2));; m;
 <a 2x5 matrix over GF2>
 gap> m := [v,v,v];; ConvertToMatrixRep(m,GF(2));; m;
 <a 3x5 matrix over GF2>
-gap> v := Z(3)*[1..8];       
+gap> v := Z(3)*[1..8];
 [ Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0 ]
 gap> ConvertToVectorRep(v);
 3
-gap> MakeImmutable(v);          
 gap> m := [v];; ConvertToMatrixRep(m,GF(3));; m;
 [ [ Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0 ] ]
 gap> RepresentationsOfObject(m);
@@ -551,13 +601,14 @@ gap> m := [v,v,v,v];; ConvertToMatrixRep(m,GF(3));; m;
 \endexample
 
 All compressed matrices over GF(2) are viewed as `\<a <n>x<m> matrix
-over GF2>', while over fields GF(q) for q between 3 and 256, matrices 
+over GF2>', while over fields GF(q) for q between 3 and 256, matrices
 with 25 or more entries are views in this way, and smaller ones as
 lists of lists.
 
-Under some circumstances, as we saw above, {\GAP} can detect that a
-matrix is eligible to be represented in this way, and automatically
-does so. For other cases there is a function:
+Matrices can be converted to this special representation via
+the following functions.
+
+\Declaration{ImmutableMatrix}
 
 \Declaration{ConvertToMatrixRep}
 
@@ -567,43 +618,46 @@ reduced. In higher dimensions, a list of compressed vectors will be
 almost as fast. Note also that list access and assignment will be
 somewhat slower for compressed matrices than for plain lists.
 
-Finally note that a vector cannot be shared between two compressed
-matrices over different fields. To avoid risk of this, when a vector
-becomes part of a compressed matrix, the filter
-`IsLockedRepresentationVector' is set for it, and neither
-`ConvertToVectorRep' nor `ConvertToMatrixRep' will ever alter a vector
-with this filter.
+In order to form a row of a compressed matrix a vector must accept
+certain restrictions. Specifically, it cannot change its length or
+change the field over which it is compressed. The main consequences of
+this are: that only elements of the appropriate field can be assigned
+to entries of the vector, and only to positions between 1 and the
+original length; that the vector cannot be shared between two matrices
+compressed over different fields.
+
+This is enforced by the filter `IsLockedRepresentationVector'.  When a
+vector becomes part of a compressed matrix, this filter is set for it.
+Assignment, `Unbind',  `ConvertToVectorRep' and `ConvertToMatrixRep'
+are all prevented from altering a vector with this filter.
 
 \beginexample
 gap> v := [Z(2),Z(2)];; ConvertToVectorRep(v,GF(2));; v;
 <a GF2 vector of length 2>
-gap> m := [v,v]; # v is mutable, so m cannot be compressed
+gap> m := [v,v]; 
 [ <a GF2 vector of length 2>, <a GF2 vector of length 2> ]
-gap> ConvertToMatrixRep(m,GF(2)); # even if we ask for it
-fail
-gap> m;
-[ <a GF2 vector of length 2>, <a GF2 vector of length 2> ]
-gap> mi := List(m, Immutable);; # but if we make the rows immutable
-gap> ConvertToMatrixRep(mi,GF(2));; mi;
-<a 2x2 matrix over GF2>
-gap> m2 := [mi[1], [Z(4),Z(4)]]; # now try and mix in some GF(4)
-[ <an immutable GF2 vector of length 2>, [ Z(2^2), Z(2^2) ] ]
-gap> ConvertToMatrixRep(m2); # bur m2[1] is locked
-fail
-gap> m2 := [ShallowCopy(mi[1]), [Z(4),Z(4)]]; # a fresh copy f row 1
+gap> ConvertToMatrixRep(m,GF(2)); 
+2
+gap> m2 := [m[1], [Z(4),Z(4)]]; # now try and mix in some GF(4)
 [ <a GF2 vector of length 2>, [ Z(2^2), Z(2^2) ] ]
-gap> MakeImmutable(m2[1]);
-gap> MakeImmutable(m2[2]);  
+gap> ConvertToMatrixRep(m2); # but m2[1] is locked
+#I  ConvertToVectorRep: locked vector not converted to different field
+fail
+gap> m2 := [ShallowCopy(m[1]), [Z(4),Z(4)]]; # a fresh copy of row 1
+[ <a GF2 vector of length 2>, [ Z(2^2), Z(2^2) ] ]
 gap> ConvertToMatrixRep(m2); # now it works
 4
 gap> m2;
 [ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ] ]
 gap> RepresentationsOfObject(m2);
 [ "IsPositionalObjectRep", "Is8BitMatrixRep" ]
-gap> 
 \endexample
 
-
+Arithmetic operations (see~"Arithmetic for Lists" and the following
+sections) preserve the compression status of matrices in the sense that
+if all arguments are compressed matrices written over the same field and
+the result is a matrix then also the result is a compressed matrix
+written over this field.
 
 There are also two operations that are only available for matrices
 written over finite fields.
@@ -617,7 +671,7 @@ gap> ProjectiveOrder([[1,4],[5,2]]*Z(11)^0);
 \Declaration{SimultaneousEigenvalues}
 
 
-Finally, there are two operations that deal with matrices over a ring, 
+Finally, there are two operations that deal with matrices over a ring,
 but only care about the residues of their entries modulo some ring
 element. In the case of the integers and a prime number, this is
 effectively computation in a matrix over a finite field.

@@ -269,19 +269,25 @@ end );
 
 #############################################################################
 ##
-#F  InstallImmediateMethod( <opr>, <filter>, <rank>, <method> )
+#F  InstallImmediateMethod( <opr>[, <name>], <filter>, <rank>, <method> )
 ##
 ##  installs  <method>  as  immediate  method for <opr>,   which  must  be an
 ##  operation of one argument, with requirement <filter> and rank <rank>.
 ##
+##  Since the whole system shall work also after completely disabling the
+##  immediate methods stuff, we also install <method> as an ordinary method
+##  for <opr>, with requirement <filter>.
+##
 BIND_GLOBAL( "InstallImmediateMethod", function( arg )
-    local   name;
+    local name;
 
     if LEN_LIST(arg) = 4  then
         name := NAME_FUNC(arg[1]);
         INSTALL_IMMEDIATE_METHOD( arg[1], name, arg[2], arg[3], arg[4] );
+        INSTALL_METHOD( [ arg[1], [ arg[2] ], arg[4] ], false );
     elif LEN_LIST(arg) = 5  then
         INSTALL_IMMEDIATE_METHOD( arg[1], arg[2], arg[3], arg[4], arg[5] );
+        INSTALL_METHOD( [ arg[1], [ arg[3] ], arg[5] ], false );
     fi;
 end );
 

@@ -55,6 +55,57 @@ InstallGlobalFunction(MATCH_BEGIN, function( a, b ) local p,q;
 
 end);
 
+# Slight variant: returns -1 on false and number of exact matching
+# words on true (>=0). Can be used to rank some matches higher.
+InstallGlobalFunction(MATCH_BEGIN_COUNT, function( a, b )
+  local p, q, r;
+
+  if Length(a)=0 and Length(b)=0 then
+    return 0;
+  fi;
+
+  if Length(a) < Length(b)  then
+      return -1;
+  fi;
+
+  p:=Position(b,' ');
+  if p=fail then
+    p:=Position(a,' ');
+    if p<>fail then
+      a:=a{[1..p-1]};
+    fi;
+    if Length(b)<=Length(a) and a{[1..Length(b)]} = b then
+      if Length(a)= Length(b) then
+        return 1;
+      else
+        return 0;
+      fi;
+    else
+      return -1;
+    fi;
+  else
+    q:=Position(a,' ');
+    if q=fail then
+      q:=Length(a)+1;
+    fi;
+    # cope with blanks
+    if MATCH_BEGIN(a{[1..q-1]},b{[1..p-1]}) then
+      r := MATCH_BEGIN_COUNT(a{[q+1..Length(a)]},b{[p+1..Length(b)]}); 
+      if r >= 0 then
+        if p = q then
+          return 1+r;
+        else
+          return 0;
+        fi;
+      else
+        return -1;
+      fi;
+    else
+      return -1;
+    fi; 
+  fi;
+end);
+
 
 #############################################################################
 ##  
@@ -148,7 +199,29 @@ InstallValue(HELP_KNOWN_BOOKS, [[],[]]);
 # is the same (so short and long can be changed), else we raise an error
 # dir can be given as string relative to GAP's home or as directory object
 InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
-  local str, hnb, pos;
+  local sortfun, str, hnb, pos;
+  # we sort books with main books first and packages alphabetically,
+  # (looks a bit lengthy)
+  sortfun := function(a, b)
+    local main, pa, pb;
+    main := ["tutorial", "reference", "extending", "prg tutorial", 
+             "new features"];
+    pa := Position(main, a);
+    pb := Position(main, b);
+    if pa <> fail then
+      if pb = fail then
+        return true;
+      else
+        return pa <= pb;
+      fi;
+    else
+      if pb <> fail then
+        return false;
+      else
+        return a < b;
+      fi;
+    fi;
+  end;
   str := SIMPLE_STRING(short);
   hnb := HELP_KNOWN_BOOKS;
   # check if we reinstall a known book (with possibly other names)
@@ -161,9 +234,13 @@ InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
   elif IsBound(HELP_BOOKS_INFO.(hnb[1][pos])) then
     # rename help book info if already loaded
     HELP_BOOKS_INFO.(str) := HELP_BOOKS_INFO.(hnb[1][pos]);
+    # adjust .bookname
+    HELP_BOOKS_INFO.(str).bookname := short;
+    Unbind(HELP_BOOKS_INFO.(hnb[1][pos]));
   fi;
   hnb[1][pos] := str;
   hnb[2][pos] := [short, long, dir];
+  SortParallel(hnb[1], hnb[2], sortfun);
 end);
 
 #############################################################################
@@ -282,7 +359,12 @@ InstallGlobalFunction(HELP_BOOK_INFO, function( book )
   stream := InputTextFile(six);
   line := "";
   while Length(line) = 0 do
-    line := NormalizedWhitespace(ReadLine(stream));
+    line := ReadLine(stream);
+    if line=fail then
+      CloseStream(stream);
+      return fail;
+    fi;
+    line := NormalizedWhitespace(line);
   od;
   if Length(line)>10 and line{[1..10]}="#SIXFORMAT" then
     handler := line{[12..Length(line)]};
@@ -290,6 +372,18 @@ InstallGlobalFunction(HELP_BOOK_INFO, function( book )
   else
     handler := "default";
     RewindStream(stream);
+  fi;
+  # give up if handler functions are not (yet) loaded
+  if not IsBound(HELP_BOOK_HANDLER.(handler)) then
+    Print("\n#W WARNING: No handler for help book `", bnam,
+          "' available,\n#W removing this book.\n");
+    if handler = "GapDocGAP" then
+      Print("#W HINT: Install the GAPDoc package, see\n",
+            "#W http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc\n");
+    fi;
+    HELP_KNOWN_BOOKS[1][pos] := Concatenation("XXXX ", bnam, ": THROWN OUT");
+    HELP_KNOWN_BOOKS[2][pos][2] := "NOT AVAILABLE (no handler)";
+    return fail;
   fi;
   HELP_BOOKS_INFO.(bnam) := HELP_BOOK_HANDLER.(handler).ReadSix(stream);
   
@@ -340,8 +434,11 @@ InstallGlobalFunction(HELP_SHOW_CHAPTERS, function(book)
   local   info;
   # delegate to handler 
   info := HELP_BOOK_INFO(book);
-  
-  Pager(HELP_BOOK_HANDLER.(info.handler).ShowChapters(info));
+  if info = fail then
+    Print("#W Help: Book ", book, " not found.\n");
+  else
+    Pager(HELP_BOOK_HANDLER.(info.handler).ShowChapters(info));
+  fi;
   return true;  
 end);
 
@@ -353,7 +450,11 @@ InstallGlobalFunction(HELP_SHOW_SECTIONS, function(book)
   local   info;
   # delegate to handler 
   info := HELP_BOOK_INFO(book);
-  Pager(HELP_BOOK_HANDLER.(info.handler).ShowSections(info));
+  if info = fail then
+    Print("#W Help: Book ", book, " not found.\n");
+  else
+    Pager(HELP_BOOK_HANDLER.(info.handler).ShowSections(info));
+  fi;
   return true;  
 end);
 
@@ -480,7 +581,7 @@ InstallGlobalFunction(HELP_SHOW_WELCOME, function( book )
 "    Welcome to GAP 4\n",
 " Try '?tutorial: The Help system' (without quotes) for an introduction to",
 " the help system.\n",
-" `?chapters' and `?sections' will display tables of contents."
+" '?chapters' and '?sections' will display tables of contents."
     ];
     Pager(lines);
     return true;
@@ -512,13 +613,15 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
   books := List(books, HELP_BOOK_INFO);
   for b in books do
     # now delegate the work to the handler functions
-    em := HELP_BOOK_HANDLER.(b.handler).SearchMatches(b, topic, frombegin);
-    for x in em[1] do 
-      Add(exact, [b, x]);
-    od;
-    for x in em[2] do
-      Add(match, [b, x]);
-    od;
+    if b<>fail then
+      em := HELP_BOOK_HANDLER.(b.handler).SearchMatches(b, topic, frombegin);
+      for x in em[1] do 
+	Add(exact, [b, x]);
+      od;
+      for x in em[2] do
+	Add(match, [b, x]);
+      od;
+    fi;
   od;
   
   # in case of substring search the only special handling of exact matches
@@ -710,7 +813,7 @@ InstallGlobalFunction(HELP, function( str )
   # we check if `book' MATCH_BEGINs some of the available books
   books := Filtered(HELP_KNOWN_BOOKS[1], bn-> MATCH_BEGIN(bn, book));
   if Length(book) > 0 and Length(books) = 0 then
-    Print("Help: None of the available books matches (try: `?books').\n");
+    Print("Help: None of the available books matches (try: '?books').\n");
     return;
   fi;
   
@@ -816,13 +919,17 @@ InstallGlobalFunction(HELP, function( str )
   elif HELP_SHOW_MATCHES( books, str, true )  then
       add( books, str );
   elif origstr in NAMES_SYSTEM_GVARS then
-      Print( "Help: `", origstr, "' is currently undocumented.\n",
+      Print( "Help: '", origstr, "' is currently undocumented.\n",
              "      For details, try ?Undocumented Variables\n" );
-  elif ForAny(HELP_KNOWN_BOOKS[1], bk -> MATCH_BEGIN(bk, str)) then
-      Print( "Help: Presumably you meant to type `?", origstr, ":' ...\n");
+  elif book = "" and 
+                 ForAny(HELP_KNOWN_BOOKS[1], bk -> MATCH_BEGIN(bk, str)) then
+      Print( "Help: Are you looking for a certain book? (Trying '?", origstr, 
+             ":' ...\n");
       HELP( Concatenation(origstr, ":") );
   else
-      Print( "Help: Sorry, could not find a match for `", origstr, "'.\n");
+     # seems unnecessary, since some message is already printed in all
+     # cases above (?):
+     # Print( "Help: Sorry, could not find a match for '", origstr, "'.\n");
   fi;
 end);
 

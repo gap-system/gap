@@ -400,6 +400,86 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
     else
       d := book;
     fi;
+    if d[Length(d)] = '/' then
+      d := d{[1..Length(d)-1]};
+    fi;
+    
+    # find `doc'
+    pos:=Length(d)-2;
+    while pos>0 and (d[pos]<>'d' or d[pos+1]<>'o' or d[pos+2]<>'c') do
+      pos:=pos-1;
+    od;
+    #see if it is only `doc', if yes skip
+    if pos+2=Length(d) then
+      # it ends in doc, replace `doc' by `htm'
+      d:=Concatenation(d{[1..pos-1]},"htm");
+    else
+      # insert htm after doc
+      d:=Concatenation(d{[1..pos+2]},"/htm",d{[pos+3..Length(d)]});
+    fi;
+
+    chapter:=String(arg[2]);
+    while Length(chapter)<3 do
+      chapter:=Concatenation("0",chapter);
+    od;
+    section:=arg[3];
+
+    # first try to find a file-per-chapter .htm file
+    fn := Concatenation("CHAP", chapter, ".htm");
+    if IsDirectory(book) then
+      path := Filename([Directory(d)], fn);
+    else
+      path := Filename(List(GAP_ROOT_PATHS, Directory), 
+                     Concatenation(d, "/", fn));
+    fi;
+    if path = fail then
+      # now try to find a file-per-section .htm file
+      section:=String(section);
+      while Length(section)<3 do
+        section:=Concatenation("0",section);
+      od;
+      fn := Concatenation("C", chapter, "S", section, ".htm");
+      if IsDirectory(book) then
+        path := Filename([Directory(d)], fn);
+      else
+        path := Filename(List(GAP_ROOT_PATHS, Directory), 
+                       Concatenation(d, "/", fn));
+      fi;
+    fi;
+    if path <> fail and not IsString(section) and section>0 then
+      # we must have found a file-per-chapter .htm file above
+      section:=String(section);
+      while Length(section)<3 do
+	section:=Concatenation("0",section);
+      od;
+      path:=Concatenation(path,"#SECT",section);
+    fi;
+    return path;    
+end);
+
+HELP_EXTERNAL_URL := "";
+HELP_MAC_PROTOCOL := "file://";
+
+InstallGlobalFunction(HELP_PRINT_SECTION_MAC_IC_URL, function(arg)
+    local data, book, hnb, d, pos, chapter, section, fn;
+
+	data := rec (protocol := HELP_MAC_PROTOCOL);
+	
+    book := HELP_BOOK_INFO(arg[1]);
+    if book=fail then
+      Error("this book does not exist");
+    fi;
+    hnb := HELP_KNOWN_BOOKS;
+    # the path as string
+    book := hnb[2][Position(hnb[1], SIMPLE_STRING(book.bookname))][3];
+    if IsDirectory(book) then
+      d := book![1];
+    else
+      d := book;
+    fi;
+    if d[Length(d)] = '/' then
+      d := d{[1..Length(d)-1]};
+    fi;
     
     # find `doc'
     pos:=Length(d)-2;
@@ -422,87 +502,58 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
     section:=arg[3];
 
     fn := Concatenation("CHAP", chapter, ".htm");
+    
+    # use external URL if one is specified
+    if Length (HELP_EXTERNAL_URL) > 0 then
+    	 section:=String(section);
+         while Length(section)<3 do
+            section:=Concatenation("0",section);
+         od;
+         data.section := Concatenation ("#SECT",section);
+         data.url := Concatenation (HELP_EXTERNAL_URL, d, "/", fn);
+         return data;
+    fi;
+    
+    # try to find a file-per-chapter .htm file
     if IsDirectory(book) then
-      path := Filename(Directory(d), fn);
+      data.path := Filename([Directory(d)], fn);
     else
-      path := Filename(List(GAP_ROOT_PATHS, Directory), 
+      data.path := Filename(List(GAP_ROOT_PATHS, Directory), 
                      Concatenation(d, "/", fn));
     fi;
-    if path = fail then
-      return fail;
+    if data.path <> fail then
+      if section>0 then
+         # we must have found a file-per-chapter .htm file above
+         section:=String(section);
+         while Length(section)<3 do
+            section:=Concatenation("0",section);
+         od;
+         data.section := Concatenation ("#SECT",section);
+      else
+         data.section := "";
+      fi;
+      return data;
     fi;
-    if section>0 then
-      section:=String(section);
-      while Length(section)<3 do
-	section:=Concatenation("0",section);
-      od;
-      path:=Concatenation(path,"#SECT",section);
-    fi;
-    return path;    
-end);
 
-HELP_EXTERNAL_URL := "";
-
-InstallGlobalFunction(HELP_PRINT_SECTION_MAC_IC_URL, function(arg)
-    local book, hnb, d, pos, chapter, path, section;
-
-    book := HELP_BOOK_INFO(arg[1]);
-    if book=fail then
-      Error("this book does not exist");
-    fi;
-    hnb := HELP_KNOWN_BOOKS;
-    # the path as string
-    book := hnb[2][Position(hnb[1], SIMPLE_STRING(book.bookname))][3];
-    if IsDirectory(book[3]) then
-      d := book![1];
-    else
-      d := book;
-    fi;
-    
-    # find `doc'
-    pos:=Length(d)-2;
-    while pos>0 and (d[pos]<>'d' or d[pos+1]<>'o' or d[pos+2]<>'c') do
-      pos:=pos-1;
+    # now try to find a file-per-section .htm file
+    section:=String(section);
+    while Length(section)<3 do
+       section:=Concatenation("0",section);
     od;
-    #see if it is only `doc', if yes skip
-    if pos+2=Length(d) then
-      # it ends in doc, replace `doc' by `htm'
-      d:=Concatenation(d{[1..pos-1]},"htm");
+    fn := Concatenation("C", chapter, "S", section, ".htm");
+    if IsDirectory(book) then
+       data.path := Filename([Directory(d)], fn);
     else
-      # insert htm after doc
-      d:=Concatenation(d{[1..pos+2]},"/htm",d{[pos+3..Length(d)]});
+       data.path := Filename(List(GAP_ROOT_PATHS, Directory), 
+                       Concatenation(d, "/", fn));
     fi;
-
-    chapter:=String(arg[2]);
-    while Length(chapter)<3 do
-      chapter:=Concatenation("0",chapter);
-    od;
-    
-    if IsBound (HELP_EXTERNAL_URL) then
-        path:=Concatenation(HELP_EXTERNAL_URL, d,"/C",chapter);
-    else
-        path:=Concatenation(book,"/CHAP",chapter,".htm");
+    if data.path <> fail then
+       data.section := "";
+       return data;
     fi;
-
-    section:=arg[3];
-    if section > 0 then
-    	section:=String(section);
-	    while Length(section)<3 do
- 	       section:=Concatenation("0",section);
- 	    od;
-    	if IsBound (HELP_EXTERNAL_URL) then
-            path:=Concatenation(path,"S",section,".htm");
-        else
-            path:=Concatenation(path,"#SECT",section);
-        fi;
-    elif IsBound (HELP_EXTERNAL_URL) then
-        path:=Concatenation(path,"S000.htm");
-    fi;
-
-    return path;
+    # we might try to load the html docs from the web
+    return fail;    
 end);
-
-Unbind (HELP_EXTERNAL_URL);
 
 # now the handlers
 
@@ -613,16 +664,19 @@ end;
 ##  .entries. The topic is assumed to be normalized already.
 ##  
 HELP_BOOK_HANDLER.default.SearchMatches := function (book, topic, frombegin)
-  local   info,  exact,  match,  i;
+  local info, exact, match, rank, m, i;
   info := HELP_BOOK_INFO(book);
   exact := [];
   match := [];
+  rank := [];
   for i in [1..Length(info.entries)] do
     if topic=info.entries[i][2] then
       Add(exact, i);
     elif frombegin = true then
-      if MATCH_BEGIN(info.entries[i][2], topic) then
+      m := MATCH_BEGIN_COUNT(info.entries[i][2], topic);
+      if m >= 0 then
         Add(match, i);
+        Add(rank, -m);
       fi;
     else
       if IS_SUBSTRING(info.entries[i][2], topic) then
@@ -631,6 +685,11 @@ HELP_BOOK_HANDLER.default.SearchMatches := function (book, topic, frombegin)
     fi;
   od;
   
+  # sort by rank if applicable
+  if frombegin = true then
+    SortParallel(rank, match);
+  fi;
+
   return [exact, match];
 end;
 

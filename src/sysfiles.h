@@ -1,7 +1,8 @@
 /****************************************************************************
 **
-*W  sysfiles.c                  GAP source                       Frank Celler
+*W  sysfiles.h                  GAP source                       Frank Celler
 *W                                                         & Martin Schoenert
+*W                                                  & Burkhard Hoefling (MAC)
 **
 *H  @(#)$Id$
 **
@@ -142,39 +143,61 @@ extern Char * SyWinCmd (
 
 #define MIN_BUFSIZ 16
 typedef struct {
-    FILE *	     	fp;                     /* file pointer for this file      */
+    short	     	fp;                     /* reference number for this file      */
 #if 0 
     FILE *      	echo;                   /* file pointer for the echo       */
 #endif
     void *		 	fromDoc;				/* the document window from which it reads, if any */
-#if DYNAMIC_BUFFER
-    Handle        	bufH;           		/* the buffer for this file        */    
-#else
-	char			buf[BUFSIZ];
-#endif
-	long			bufPos, bufLen;
+    Int              bufno;                 /* if non-negative then this file has a buffer in
+					                           syBuffers[bufno]; If negative, this file may not
+					                           be buffered */
 	FSSpec 			fsspec;					/* the file specs for this file */
 	SignedByte		permission;
 	Boolean			binary;                 /* binary file? */
+    UInt       		isTTY;		      /* set in Fopen when this fid is a *stdin* or *errin*
+				       and really is a tty*/
 } SYS_SY_BUF;
 
 #else
 typedef struct {
-    FILE *      fp;                     /* file pointer for this file      */
-    FILE *      echo;                   /* file pointer for the echo       */
-    UInt        pipe;                   /* file is really a pipe           */
-    Char        buf [BUFSIZ];           /* the buffer for this file        */
+  int         fp;                     /* file descriptor for this file      */
+  int         echo;                   /* file descriptor for the echo       */
+  UInt        pipe;                   /* file is really a pipe           */
+  FILE       *pipehandle;             /* for pipes we need to remember the file handle */
+  UInt       ateof;                   /* set to 1 by any read operation that hits eof
+					 reset to 0 by a subsequent successful read */
+  UInt        crlast;                 /* records that last character read was \r for
+					 cygwin and othger systems that need end-of-line
+					 hackery */
+  Int        bufno;                   /* if non-negative then this file has a buffer in
+					 syBuffers[bufno]; If negative, this file may not
+					 be buffered */
+  UInt       isTTY;		      /* set in Fopen when this fid is a *stdin* or *errin*
+				       and really is a tty*/
 } SYS_SY_BUF;
+
 #endif
+
+#define SYS_FILE_BUF_SIZE 20000
+
+typedef struct {
+  Char buf[SYS_FILE_BUF_SIZE];
+  UInt inuse;
+  UInt bufstart;
+  UInt buflen;
+} SYS_SY_BUFFER;
 
 extern SYS_SY_BUF syBuf [256];
 
+extern SYS_SY_BUFFER syBuffers[32];
+
+extern UInt SySetBuffering( UInt fid );
 
 /****************************************************************************
 **
 *F  SyFileno( <fid> ) . . . . . . . . . . . . . . get operating system fileno
 */
-#define SyFileno(fid)   (fid==-1?-1:fileno(syBuf[fid].fp))
+#define SyFileno(fid)   (fid==-1?-1:syBuf[fid].fp)
 
 
 /****************************************************************************
@@ -422,7 +445,15 @@ extern Int SyPutc
 
 /****************************************************************************
 **
+*V  SyLastMacErrorNo . . . . . . . . . . . . . .last error number, Macintosh
+*/
+#ifdef SYS_IS_MAC_MWC
+extern OSErr SyLastMacErrorCode;
+#endif
 
+
+/****************************************************************************
+**
 *V  SyLastErrorNo . . . . . . . . . . . . . . . . . . . . . last error number
 */
 extern Int SyLastErrorNo;
@@ -633,6 +664,18 @@ OSErr SyFSMakeNewFSSpec (short vol, long dir, Str31 name, FSSpecPtr newFSSpec);
 extern void getwindowsize( void );
 
 extern void     InterruptExecStat ( void );
+
+/***************************************************************************
+**
+*F HasAvailableBytes( <fid> ) returns positive if  a subsequent read to <fid>
+**                            will read at least one byte without blocking
+*/
+extern Int HasAvailableBytes( UInt fid );
+
+extern Char *SyFgetsSemiBlock ( 
+    Char *              line,
+    UInt                length,
+    Int                 fid);
      
 /****************************************************************************
 **

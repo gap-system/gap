@@ -92,7 +92,7 @@ gap> a:= [ [ 1, 2 ], [ 2, 2 ] ];
 [ [ 1, 2 ], [ 2, 2 ] ]
 gap> m:= MagmaByMultiplicationTable( a );
 <magma with 2 generators>
-gap> One( m );  Inverse( MagmaElement( m, 2 ) );     
+gap> One( m );  Inverse( MagmaElement( m, 2 ) );
 m1
 fail
 \endexample

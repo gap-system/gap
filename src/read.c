@@ -211,9 +211,6 @@ void ReadFuncCallOptions( TypSymbolSet follow )
   return;
 }
 
-extern UInt IntrCoding;		/* needed for error recovery in some
-				 places */
-
 void ReadCallVarAss (
     TypSymbolSet        follow,
     Char                mode )
@@ -229,7 +226,6 @@ void ReadCallVarAss (
     volatile UInt       level = 0;      /* number of '{}' selectors        */
     volatile UInt       rnam  = 0;      /* record component name           */
     volatile UInt       narg  = 0;      /* number of arguments             */
-    extern   UInt       IntrIgnoring;
     
 
     /* all variables must begin with an identifier                         */
@@ -2323,7 +2319,6 @@ UInt ReadEvalFile ( void )
         IntrFuncExprEnd( nr, 0UL );
     }
     else {
-        extern UInt IntrCoding;
         Obj fexp;
         CodeEnd(1);
         IntrCoding--;
@@ -2378,7 +2373,7 @@ void Call0ArgsInNewReader(Obj f)
 
 {
   /* for the new interpreter context: */
-  ExecStatus          type;
+/*  ExecStatus          type; */
   Obj                 stackNams;
   UInt                countNams;
   UInt                readTop;
@@ -2431,7 +2426,7 @@ void Call1ArgsInNewReader(Obj f,Obj a)
 
 {
   /* for the new interpreter context: */
-  ExecStatus          type;
+/*ExecStatus          type; */
   Obj                 stackNams;
   UInt                countNams;
   UInt                readTop;

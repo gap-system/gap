@@ -136,8 +136,11 @@ DeclareAttribute( "PcSeries", IsPcgs );
 ##  set of indices not necessarily exists, and `IndicesNormalSteps' is not
 ##  guaranteed to work in this situation.
 ##
-##  Typically, `IndicesNormalSteps' is set by calls to opreations that
-##  compute a particular pcgs such as `PcgsElementaryAbelianSeries'.
+##  Typically, `IndicesNormalSteps' is set by calls to operations that
+##  compute a particular pcgs such as `PcgsElementaryAbelianSeries'. (Note,
+##  however, that in an existing pcgs this attribute might have been set
+##  already differently by a previous calculation. In this case the pcgs is
+##  never `IsPcgsElementaryAbelianSeries', even though it could be.)
 DeclareAttribute( "IndicesNormalSteps", IsPcgs );
 
 #############################################################################
@@ -234,7 +237,7 @@ DeclareOperation( "ExponentsOfConjugate",
 #O  ExponentsOfRelativePower( <pcgs>, <i> )
 ##
 ##  For $<p>=<pcgs>[<i>]$ this function returns the exponent vector with
-##  respect to <pcgs> of the elment $p^e$ where <e> is the relative order of
+##  respect to <pcgs> of the element $p^e$ where <e> is the relative order of
 ##  <p> in <pcgs>.  For the family pcgs or pcgs induced by it, this might be
 ##  faster than computing the element and computing its exponent vector.
 DeclareOperation( "ExponentsOfRelativePower",
@@ -323,7 +326,7 @@ DeclareOperation(
 #O  ReducedPcElement( <pcgs>, <x>, <y> )
 ##
 ##  reduces the element <x> by dividing off (from the left) a power of <y>
-##  such that the leading coefficient of the result with repect to <pcgs>
+##  such that the leading coefficient of the result with respect to <pcgs>
 ##  becomes zero. The elements <x> and <y> therefore have to have the same
 ##  depth.
 DeclareOperation( "ReducedPcElement", [ IsModuloPcgs, IsObject, IsObject ] );
@@ -430,7 +433,7 @@ DeclareOperation( "SumPcgs", [ IsModuloPcgs, IsList, IsList ] );
 ##  `intersection'&Elements that form a modulo pcgs for the intersection of
 ##  both subgroups.
 ##
-##  `factorization'&A function that retruns for an element <x> in the span
+##  `factorization'&A function that returns for an element <x> in the span
 ##  of `sum' a record with components `u' and `n' that give its
 ##  decomposition.
 ##  \enditems

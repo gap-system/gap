@@ -27,6 +27,8 @@ const char * Revision_vecffe_c =
 #include        "integer.h"             /* integers                        */
 #include        "finfield.h"            /* finite fields                   */
 
+#include        "gvars.h"               /* global variables                */
+
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
 
@@ -72,8 +74,6 @@ Obj             SumFFEVecFFE (
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
     FFV                 valL;           /* the value of elmL               */
-
-    extern Obj          SumSclList( Obj, Obj );  /* generic method         */
 
     /* get the field and check that elmL and vecR have the same field      */
     fld = FLD_FFE( ELM_PLIST( vecR, 1 ) );
@@ -138,8 +138,6 @@ Obj             SumVecFFEFFE (
     FFV                 valL;           /* the value of an element in vecL */
     FFV                 valS;           /* the value of a sum              */
 
-    extern Obj          SumListScl( Obj, Obj );  /* generic method         */
-
     /* get the field and check that vecL and elmR have the same field      */
     fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
     if( FLD_FFE( elmR ) != fld ) {
@@ -203,8 +201,6 @@ Obj             SumVecFFEVecFFE (
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
-
-    extern Obj          SumListList( Obj, Obj );  /* generic method        */
 
     /* check the lengths                                                   */
     lenL = LEN_PLIST( vecL );
@@ -280,9 +276,7 @@ Obj             DiffFFEVecFFE (
 {
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
-    Obj                 elmD;           /* one element of difference list  */
     Obj *               ptrR;           /* pointer into the right operand  */
-    Obj                 elmR;           /* one element of right operand    */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
@@ -290,8 +284,6 @@ Obj             DiffFFEVecFFE (
     FFV                 valR;           /* the value of elmL               */
     FFV                 valL;           /* the value of an element in vecR */
     FFV                 valD;           /* the value of a difference       */
-
-    extern Obj          DiffSclList( Obj, Obj );  /* generic method        */
 
     /* check the fields                                                    */
     fld = FLD_FFE( ELM_PLIST( vecR, 1 ) );
@@ -356,8 +348,6 @@ Obj             DiffVecFFEFFE (
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
     FFV                 valR;           /* the value of elmR               */
-
-    extern Obj          DiffListScl( Obj, Obj );  /* generic method        */
 
     /* get the field and check that vecL and elmR have the same field      */
     fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
@@ -424,8 +414,6 @@ Obj             DiffVecFFEVecFFE (
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
-
-    extern Obj          DiffListList( Obj, Obj );  /* generic method       */
 
     /* check the lengths                                                   */
     lenL = LEN_PLIST( vecL );
@@ -516,8 +504,6 @@ Obj             ProdFFEVecFFE (
     FF *                succ;           /* successor table                 */
     FFV                 valL;           /* the value of elmL               */
 
-    extern Obj          ProdSclList( Obj, Obj );  /* generic method        */
-
     /* get the field and check that elmL and vecR have the same field      */
     fld = FLD_FFE( ELM_PLIST( vecR, 1 ) );
     if( FLD_FFE( elmL ) != fld ) {
@@ -579,8 +565,6 @@ Obj             ProdVecFFEFFE (
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
     FFV                 valR;           /* the value of elmR               */
-
-    extern Obj          ProdListScl( Obj, Obj );  /* generic method        */
 
     /* get the field and check that vecL and elmR have the same field      */
     fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
@@ -644,8 +628,6 @@ Obj             ProdVecFFEVecFFE (
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
-
-    extern Obj          ProdListList( Obj, Obj );  /* generic method       */
 
     /* check the lengths                                                   */
     lenL = LEN_PLIST( vecL );
@@ -959,7 +941,6 @@ Obj             ProdVecFFEMatFFE (
   Obj *               ptrP;           /* pointer into the product        */
   FFV *               ptrV;           /* value pointer into the product  */
   FFV                 valP;           /* one value of the product        */
-  FFV                 valS;           /* value of a sum                  */
   FFV                 valL;           /* one value of the left operand   */
   Obj                 vecR;           /* one vector of the right operand */
   Obj *               ptrR;           /* pointer into the right vector   */
@@ -969,8 +950,6 @@ Obj             ProdVecFFEMatFFE (
   UInt                i, k;           /* loop variables                  */
   FF                  fld;            /* the common finite field         */
   FF *                succ;           /* the successor table             */
-
-  extern Obj          ProdListList( Obj, Obj );  /* generic method       */
 
   /* check the lengths                                                   */
   len = LEN_PLIST( vecL );
@@ -1055,7 +1034,7 @@ Obj             ProdVecFFEMatFFE (
 **  becuase it knows tha the zero is common and the result a vecffe
 */
 
-Obj ZeroVecFFE( Obj vec )
+Obj ZeroMutVecFFE( Obj vec )
 {
   UInt i, len;
   Obj res;
@@ -1065,6 +1044,23 @@ Obj ZeroVecFFE( Obj vec )
   len = LEN_PLIST(vec);
   assert(len);
   res  = NEW_PLIST( T_PLIST_FFE, len);
+  SET_LEN_PLIST(res, len);
+  z = ZERO(ELM_PLIST(vec,1));
+    for (i = 1; i <= len; i++)
+      SET_ELM_PLIST(res, i, z);
+  return res;
+}
+
+Obj ZeroVecFFE( Obj vec )
+{
+  UInt i, len;
+  Obj res;
+  Obj z;
+  assert(TNUM_OBJ(vec) >= T_PLIST_FFE && \
+	 TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
+  len = LEN_PLIST(vec);
+  assert(len);
+  res  = NEW_PLIST( TNUM_OBJ(vec), len);
   SET_LEN_PLIST(res, len);
   z = ZERO(ELM_PLIST(vec,1));
     for (i = 1; i <= len; i++)
@@ -1109,10 +1105,6 @@ static Int InitKernel (
     Int                 t1;
     Int                 t2;
 
-#ifdef XTNUMS
-    IsXTNumListFuncs[ T_PLIST_FFE    ] = IsXTNumPlistFFE;
-    IsXTNumListFuncs[ T_MAT_FFE      ] = IsXTNumMatFFE;
-#endif
 
     /* install the arithmetic operation methods                            */
     for ( t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++ ) {
@@ -1123,6 +1115,7 @@ static Int InitKernel (
         ProdFuncs[ T_FFE ][  t1   ] = ProdFFEVecFFE;
         ProdFuncs[  t1   ][ T_FFE ] = ProdVecFFEFFE;
 	ZeroFuncs[  t1   ] = ZeroVecFFE;
+	ZeroMutFuncs[  t1   ] = ZeroMutVecFFE;
     }
 
     for ( t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++ ) {
@@ -1133,11 +1126,6 @@ static Int InitKernel (
         }
     }
 
-#ifdef XTNUMS
-    for ( t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++ ) {
-        ProdFuncs[ t1        ][ T_MAT_FFE ] = ProdVecFFEMatFFE;
-    }
-#endif
     
     InitHdlrFuncsFromTable( GVarFuncs );
 

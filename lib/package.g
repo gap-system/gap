@@ -8,7 +8,7 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains support for share packages.
+##  This file contains support for {\GAP} packages.
 ##
 Revision.package_g :=
     "@(#)$Id$";
@@ -73,20 +73,22 @@ end);
 
 BindGlobal( "LOADED_PACKAGES", rec() );
 BindGlobal( "PACKAGES_VERSIONS", rec() );
+BindGlobal( "PACKAGES_NAMES", rec() );
 
 # CURRENTLY_TESTED_PACKAGES contains the version numbers of packages
 # which are currently tested for availability
 CURRENTLY_TESTED_PACKAGES := rec();
 
 #############################################################################
-##
+##  
 #V  AUTOLOAD_PACKAGES
-##
+##  
 ##  This list contains the names of packages which may not be autoloaded
 ##  automatically. This permits the user
 ##  to disable the automatic loading of certain packages which are properly
 ##  installed by simply removing package names from `AUTOLOAD_PACKAGES'
 ##  via a line in their `.gaprc' file.
+##  
 AUTOLOAD_PACKAGES := [];
 
 IS_IN_AUTOLOAD := false;     # indicates whether we are
@@ -101,17 +103,20 @@ AUTOLOAD_LOAD_DOCU := false; # used to permit documentation
 
 #############################################################################
 ##
-#F  TestPackageAvailability( <name>,<version> )
-##
-##  tests, whether the share package <name> is available for loading in
-##  a version that is at least <version>. It returns `true' if the package
-##  is already loaded, `fail' if it is not available, and the directory path
-##  to the package if it is available, but not yet loaded.  A test function
-##  (the third parameter to `DeclarePackage') should therefore test for the
-##  result of `TestPackageAvailability' being not equal to `fail'.
+#F  TestPackageAvailability( <name>, <version> )
+##  
+##  tests, whether the  {\GAP} package <name> is available for  loading in a
+##  version that is at least <version>.  It returns `true' if the package is
+##  already loaded, `fail' if it is not available, and the directory path to
+##  the package if it is available, but not yet loaded. A test function (the
+##  third  parameter  to `DeclarePackage')  should  therefore  test for  the
+##  result  of  `TestPackageAvailability' being  not  equal  to `fail'.  The
+##  argument <name> is case insensitive.
+##  
 BindGlobal( "TestPackageAvailability", function(name,ver)
 local init,path,isin;
-  
+ 
+  name := LowercaseString(name);
   # Is the package already installed?
   if IsBound(PACKAGES_VERSIONS.(name)) and 
     CompareVersionNumbers(PACKAGES_VERSIONS.(name),ver) 
@@ -157,7 +162,7 @@ local init,path,isin;
       return fail;
     fi;
     # the package requirements were not fulfilled
-    Info(InfoWarning,1,"Package ``",name,"'' has unfulfilled requirements");
+    Info(InfoWarning,3,"Package ``",name,"'' has unfulfilled requirements");
     return fail;
   fi;
 
@@ -175,11 +180,12 @@ end );
 #F  ReadOrCompletePkg( <name> ) 
 ##
 ##  Go to package directory <name> and read read.g or read.co - whichever
-##  is appropriate. AS 17/10/98
+##  is appropriate. The argument <name> is case insensitive. AS 17/10/98
 ##
 BindGlobal("ReadOrCompletePkg",function( package )
     local   comp,  check, name;
 
+    package := LowercaseString(package);
     name := Concatenation("pkg/",package,"/read.g");
     comp := Concatenation("pkg/",package,"/read.co");
     READED_FILES := [];
@@ -208,9 +214,9 @@ BindGlobal("ReadOrCompletePkg",function( package )
             fi;
             ADD_LIST( LOADED_PACKAGES.(package), 
                       [name, READED_FILES, RANK_FILTER_LIST ] );
-						#name is redundant, but we keep it for consistancy 
-						#with the lib case. Also admits the possibility 
-						#of more than 1 read file per package.
+                      # name is redundant, but we keep it for consistency 
+                      # with the lib case. Also admits the possibility 
+                      # of more than 1 read file per package.
 
         # file completed
         else
@@ -246,10 +252,12 @@ end);
 #F  InstalledPackageVersion( <name> )
 ##
 ##  returns the version number string of the package <name> if it is installed
-##  and `false' otherwise.
+##  and `fail' otherwise. The <name> argument is case insensitive.
+##  
 BindGlobal( "InstalledPackageVersion", function(name)
 local init;
-  
+ 
+  name := LowercaseString(name);
   # Is the package already installed?
   if IsBound(PACKAGES_VERSIONS.(name)) then
     return PACKAGES_VERSIONS.(name);
@@ -261,22 +269,24 @@ end);
 #############################################################################
 ##
 #F  RequirePackage( <name>, [<version>] )
-##
-##  loads the share package <name>. If the optional version string <version>
-##  is given, the package will only be loaded in a version number at least
-##  as large as <version>
-##  (see~"ext:Version Numbers" in ``Extending GAP'').
+##  
+##  loads  the  {\GAP}  package  <name>.  If  the  optional  version  string
+##  <version> is given, the package will  only be loaded in a version number
+##  at least as large as <version> (see~"ext:Version Numbers" in ``Extending
+##  GAP''). The argument <name> is case insensitive.
+##  
 ##  `RequirePackage' will return `true' if the package has been successfully
-##  loaded and will return `fail' if the package could not be loaded. The
-##  latter may be the case if the package is not installed, if necessary
-##  binaries have not been compiled or if the available version is too small. 
-##  If the package <name> has already been loaded in a version number 
-##  at least <version>, `RequirePackage' returns `true' without doing
+##  loaded and  will return `fail' if  the package could not  be loaded. The
+##  latter may  be the case  if the package  is not installed,  if necessary
+##  binaries  have not  been compiled  or if  the available  version is  too
+##  small. If the package <name> has already been loaded in a version number
+##  at  least  <version>,  `RequirePackage'  returns  `true'  without  doing
 ##  anything.
+##  
 DELAYED_PACKAGE_LOAD := [];
 # if package is not autoloading.
 BindGlobal( "RequirePackage", function(arg)
-local name,ver,init,path,isin, package;
+local name,ver,init,path,isin, package, isauto;
 
   if IS_IN_PACKAGE_TEST=true then
     # if we are testing the availability of another package, a
@@ -307,6 +317,11 @@ local name,ver,init,path,isin, package;
 
   LOADED_PACKAGES.(name) := path;
 
+  # in case of autoloading we switch off the IS_IN_AUTOLOAD flag here
+  # to handle explicit RequirePackage calls in init.g
+  isauto := IS_IN_AUTOLOAD;
+  IS_IN_AUTOLOAD := false;
+  
   # and finally read it
   Read(init);
 
@@ -316,8 +331,10 @@ local name,ver,init,path,isin, package;
     Add(DELAYED_PACKAGE_LOAD,name);#changed init to name of package
   fi;
 
+  # reset original values
   IS_IN_PACKAGE_LOAD:=isin;
-
+  IS_IN_AUTOLOAD:=isauto;
+  
   # if this is the ``outermost'' `Require', we finally load all the
   # potentially delayed `read.g' files that contain the actual
   # implementation.
@@ -337,25 +354,37 @@ end );
 ##
 #F  DeclarePackage( <name>, <version>, <tester> )
 #F  DeclareAutoPackage( <name>, <version>, <tester> )
-##
-##  This function may only occur within the `init.g' file of the share
-##  package <name>. It prepares the installation of the package <name>,
-##  which will be installed in version <version>. The third argument
-##  <tester> is a function which tests for necessary conditions for the
-##  package to be loadable, like the availability of other
-##  packages (using `TestPackageAvailability', see
-##  "TestPackageAvailability") or -- if necessary -- the existence of
-##  compiled binaries. It should return `true' only if all conditions
-##  are fulfilled (and `false' or `fail' otherwise). If it does not return
-##  `true', the package will not be loaded,
-##  and the documentation will not be available.
-##  The second version `DeclareAutoPackage' declares the package and enables
-##  automatic loading
-##  when {\GAP} is started. (Because potentially all installed packages are
+##  
+##  This function  may only  occur within  the `init.g'  file of  the {\GAP}
+##  package  <name>. It  prepares the  installation of  the package  <name>,
+##  which  will  be  installed  in version  <version>.  The  third  argument
+##  <tester>  is a  function which  tests for  necessary conditions  for the
+##  package  to  be  loadable,  like  the  availability  of  other  packages
+##  (using `TestPackageAvailability',  see "TestPackageAvailability")  or --
+##  if necessary  -- the  existence of compiled  binaries. It  should return
+##  `true'  only if  all conditions  are  fulfilled (and  `false' or  `fail'
+##  otherwise).  If it  does  not return  `true', the  package  will not  be
+##  loaded, and the documentation will  not be available. The second version
+##  `DeclareAutoPackage' declares the package  and enables automatic loading
+##  when {\GAP} is started. (Because  potentially all installed packages are
 ##  automatically loaded, the <tester> function should take little time.)
-BindGlobal( "DeclareAutoPackage", function( name, version,tester )
+##  
+##  The argument <name> is case   sensitive.  But note that the package name
+##  is internally  converted to  a lower  case string;  so, there  cannot be
+##  different packages with names which are only distinguished by case.
+##  
+# 
+# The difference between the `Auto' and the other version is that in case of
+# IS_IN_AUTOLOAD the component PACKAGES_VERSIONS.(lname) is bound only with
+# the `Auto' version. This leads to different behaviour in `RequirePackage'
+# when it asks for package availability.
+# 
+BindGlobal( "DeclareAutoPackage", function( name, version, tester )
+  local lname;
 
-  CURRENTLY_TESTED_PACKAGES.(name):=version;
+  # normalize name to lowercase
+  lname := LowercaseString(name);
+  CURRENTLY_TESTED_PACKAGES.(lname):=version;
   # test availability
   if IS_IN_PACKAGE_TEST=false then
     # we have tested the availability already before
@@ -365,7 +394,8 @@ BindGlobal( "DeclareAutoPackage", function( name, version,tester )
     tester:=tester();
   fi;
   if tester=true then
-    PACKAGES_VERSIONS.(name):=Immutable(version);
+    PACKAGES_VERSIONS.(lname):=Immutable(version);
+    PACKAGES_NAMES.(lname):=Immutable(name);
   fi;
 end );
 
@@ -382,18 +412,18 @@ end );
 
 #############################################################################
 ##
-#F  DeclarePackageDocumentation( <pkg>, <doc>[, <short>[, <long> ] ] )
-#F  DeclarePackageAutoDocumentation( <pkg>, <doc>[, <short>[, <long> ] ] )
+#F  DeclarePackageDocumentation( <name>, <doc>[, <short>[, <long> ] ] )
+#F  DeclarePackageAutoDocumentation( <name>, <doc>[, <short>[, <long> ] ] )
 ##
-##  This  function indicates  that the  documentation of  the share  package
-##  <pkg> can  be found in its  <doc> subdirectory. The second  version will
+##  This  function indicates  that the  documentation of  the {\GAP} package
+##  <name> can  be found in its  <doc> subdirectory. The second  version will
 ##  enable  that  the  documentation  is loaded  automatically  when  {\GAP}
 ##  starts, even if the package itself will not be loaded.
 ##  
-##  Both  functions may  only  occur within  the `init.g'  file  of a  share
+##  Both  functions may  only  occur within  the `init.g'  file  of a {\GAP}
 ##  package.
 ##  
-##  The string <pkg> is case insensitive (but internally  converted to lower
+##  The string <name> is case insensitive (but internally  converted to lower
 ##  case, e.g., for the directory name of the package). 
 ##  
 ##  There are  two optional arguments:  <short> is  a short string  which is
@@ -401,8 +431,8 @@ end );
 ##  is a  short description  of the  book. This is  shown with  the `?books'
 ##  query, so <short> and <long> together should easily fit on a line.
 ##  
-##  If <short> and <long> are not given, the default values <pkg> for
-##  <short> and `Share Package `<pkg>'' for <long> are used.
+##  If <short> and <long> are not given, the default values <name> for
+##  <short> and `GAP Package `<name>'' for <long> are used.
 ##  
 BindGlobal( "DeclarePackageAutoDocumentation", function( arg )
   local pkg, doc, short, long, file;
@@ -417,7 +447,7 @@ BindGlobal( "DeclarePackageAutoDocumentation", function( arg )
   if Length(arg) > 3 then
     long := arg[4];
   else
-    long := Concatenation("Share Package `", pkg, "'" );
+    long := Concatenation("GAP Package `", pkg, "'" );
   fi;
   
   # on the second (true) read 
@@ -426,7 +456,7 @@ BindGlobal( "DeclarePackageAutoDocumentation", function( arg )
   #install the documentation
    then
     # test for the existence of a `manual.six' file
-    file := Filename(DirectoriesPackageLibrary(SIMPLE_STRING(pkg),doc),
+    file := Filename(DirectoriesPackageLibrary(LowercaseString(pkg),doc),
                      "manual.six");
     if file = fail then
       # if we are not autoloading print a warning that the documentation
@@ -455,6 +485,28 @@ end );
 
 # now come some technical functions to support autoloading
 
+##  a helper, get records from a file
+##  First removes everything in each line which starts with a `#', then
+##  splits remaining content at whitespace.
+BindGlobal("RECORDS_FILE", function(name)
+  local str, rows, recs, pos, r;
+  str := StringFile(name);
+  if str = fail then
+    return [];
+  fi;
+  rows := SplitString(str,"","\n");
+  recs := [];
+  for r in rows do
+    # remove comments starting with `#'
+    pos := Position(r, '#');
+    if pos <> fail then
+      r := r{[1..pos-1]};
+    fi;
+    Append(recs, SplitString(r, "", " \n\t\r"));
+  od;
+  return recs;
+end);
+
 #############################################################################
 ##
 #F  AutoloadablePackagesList()
@@ -464,68 +516,51 @@ end );
 ##  As there is no kernel functionality yet for getting a list of
 ##  subdirectories, we use the file `pkg/ALLPKG'.
 BindGlobal("AutoloadablePackagesList",function()
-    local pkgdir,f,pkg,name,paks,nopaks;
+    local paks, pkgdirs, nopaks, f, test, pkgdir;
     paks:=[];
     
     if DO_AUTOLOAD_PACKAGES = false then
         return paks;
     fi;
     
-    pkgdir:=DirectoriesLibrary("pkg");
-    if pkgdir=fail then
+    pkgdirs:=DirectoriesLibrary("pkg");
+    if pkgdirs=fail then
         return paks;
     fi;
 
-    nopaks:=[];
-    # note the names of packages which are deliberately set in `pkg/NOAUTO'
-    f:=Filename(pkgdir,"NOAUTO");
-    if f<>fail then
-        f:=InputTextFile(f);
-        while not IsEndOfStream(f) do
-            name:=ReadLine(f);
-            if name<>fail then
-                #remove a trailing \n
-                name:=Filtered(name,i->i<>'\n');
-                AddSet(nopaks,name);
-            fi;
-        od;
-        CloseStream(f);
-    fi;
+    for pkgdir in pkgdirs do 
+      nopaks:=[];
+      # note the names of packages which are deliberately set in `pkg/NOAUTO'
+      f:=Filename([pkgdir],"NOAUTO");
+      if f<>fail then
+          nopaks := List(RECORDS_FILE(f), LowercaseString);
+      fi;
 
-    # get the lines from `ALLPKG' and test whether they are subdirectories
-    # which contain an `init' file.
-    f:=Filename(pkgdir,"ALLPKG");
-    if f<>fail then
-        f:=InputTextFile(f);
-        while not IsEndOfStream(f) do
-            name:=ReadLine(f);
-            if name<>fail then
-	        #remove a trailing \n
-                name:=Filtered(name,i->i<>'\n');
-                if not name in nopaks then
-                    pkg := DirectoriesPackageLibrary(name,"");
-                    if pkg<>fail then
-                        # test for existence if `init.g' file
-                        pkg:=Filename(pkg,"init.g");
-                        if pkg<>fail then
-                            AddSet(paks,name);
-                        fi;
-                    fi;
-                fi;
-            fi;
-        od;
-        CloseStream(f);
-    fi;
+      # get the lines from `ALLPKG' and test whether they are subdirectories
+      # which contain an `init' file.
+      f:=Filename([pkgdir],"ALLPKG");
+      if f<>fail then
+          test := function(name)
+            local pkg;
+            pkg := Filename([pkgdir], name);
+            return (not name in nopaks) and
+                   pkg <> fail and
+                   Filename([Directory(pkg)],"init.g") <> fail;
+          end;
+          Append(paks, Filtered(List(RECORDS_FILE(f), LowercaseString), test));
+      fi;
+    od;
     return paks;
 
 end);
 
 #############################################################################
 ##
-#F  ReadPkg(<pkg>,<file>)
+#F  ReadPkg(<name>,<file>)
 ##
-##  reads the file <file> of the share package <pkg>, where <file> is given
-##  as a relative path to the directory of <pkg>.
+##  reads the file <file> of the {\GAP} package <name>, where <file> is given
+##  as a relative path to the directory of <name>. The <name> argument is
+##  case insensitive.
 ##
 BindGlobal( "ReadPkg", function( arg )
 # This must be a wrapper to be skipped when `init.g' is read the first
@@ -533,6 +568,8 @@ BindGlobal( "ReadPkg", function( arg )
 local path;
   if IS_IN_PACKAGE_TEST=false and
     AUTOLOAD_LOAD_DOCU=false then
+    # normalize package name to lower case
+    arg[1] := LowercaseString(arg[1]);
     if Length(arg)=1 then
       path:=arg[1];
     else
@@ -545,19 +582,21 @@ end);
 
 #############################################################################
 ##
-#F  RereadPkg( <pkg>, <file> )
+#F  RereadPkg( <name>, <file> )
 #F  RereadPkg( <pkg-file> )
 ##
-##  In the first form, `RereadPkg' rereads  the  file  <file>  of  the  share
-##  package <pkg>, where <file> is given as a relative path to the  directory
-##  of <pkg>. In the second form where only one argument <pkg-file> is given,
+##  In the first form, `RereadPkg' rereads  the  file  <file>  of  the {\GAP}
+##  package <name>, where <file> is given as a relative path to the  directory
+##  of <name>. In the second form where only one argument <pkg-file> is given,
 ##  <pkg-file> should be the complete path of a  file  relative  to  a  `pkg'
 ##  subdirectory of a {\GAP} root path (see~"ref:GAP root directory"  in  the
-##  Reference Manual). Each of <pkg>,  <file>  and  <pkg-file>  should  be  a
-##  string.
+##  Reference Manual). Each of <name>,  <file>  and  <pkg-file>  should  be  a
+##  string. The <name> is case insensitive.
 ##
 BindGlobal( "RereadPkg", function( arg )
     if IS_IN_PACKAGE_TEST = false and AUTOLOAD_LOAD_DOCU = false then
+      # normalize package name to lower case
+      arg[1] := LowercaseString(arg[1]);
       if Length( arg ) = 1 then
         DoRereadPkg( arg[1] );
       elif Length( arg ) = 2 then
@@ -577,6 +616,8 @@ end );
 
 BindGlobal( "CreateCompletionFilesPkg", function( name )
 local   path,  input,   com,  read,  j,  crc, filesandfilts;
+  # normalize name to lower case
+  name := LowercaseString(name);
   if not IsBound(LOADED_PACKAGES.(name))  then
     Error("Can't create read.co for package ", name, " - package not loaded.");
     return false;
@@ -657,6 +698,56 @@ local   path,  input,   com,  read,  j,  crc, filesandfilts;
 
 end );
 
+#############################################################################
+##  
+#F  GapDocManualLab(<pkgname>) . create manual.lab for package w/ GapDoc docs
+##  
+##  For a package <pkgname> with {\GapDoc}  documentation,  `GapDocManualLab'
+##  builds a `manual.lab' file from the {\GapDoc}-produced `manual.six'  file
+##  so that the currently-default `gapmacro.tex'-compiled manuals can  access
+##  the labels of package <pkgname>.
+##
+BindGlobal( "GapDocManualLab", function(pkgname)
+local dirs, file, stream, entries, SecNumber;
+  if not IsString(pkgname) then
+    Error("argument <pkgname> should be a string\n");
+  fi;
+  pkgname := LowercaseString(pkgname);
+  if RequirePackage("gapdoc") <> true then
+    Error("package `GapDoc' not installed. Please install `GapDoc'\n" );
+  fi;
+  dirs := DirectoriesPackageLibrary(pkgname, "doc");
+  if dirs = fail then
+    Error("could not open `doc' directory of package `", pkgname, "'.\n",
+          "Perhaps the package is not installed\n");
+  fi;
+  file := Filename(dirs, "manual.six");
+  if file = fail or not IsReadableFile(file) then
+    Error("could not open `manual.six' file of package `", pkgname, "'.\n",
+          "Please compile its documentation\n");
+  fi;
+  stream := InputTextFile(file);
+  entries := HELP_BOOK_HANDLER.GapDocGAP.ReadSix(stream).entries;
+
+  SecNumber := function(list)
+    if IsEmpty(list) or list[1] = 0 then
+      return "";
+    fi;
+    while list[ Length(list) ] = 0 do
+      Unbind( list[ Length(list) ] );
+    od;
+    return JoinStringsWithSeparator( List(list, String), "." );
+  end;
+
+  entries := List( entries, 
+                   entry -> Concatenation( "\\makelabel{", pkgname, ":",
+                                           entry[1], "}{",
+                                           SecNumber( entry[3] ), "}\n" ) );
+  file := Filename(dirs[1], "manual.lab");
+  FileString( file, Concatenation(entries) );
+  Info(InfoWarning, 1, "File: ", file, " written.");
+end );
+        
 #############################################################################
 ##
 #E  package.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

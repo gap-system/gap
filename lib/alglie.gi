@@ -3821,8 +3821,126 @@ InstallMethod( ImagesRepresentative,
     "for Fp to SCA mapping, and element",
     FamSourceEqFamElm,
     [ IsFptoSCAMorphism, IsElementOfFpAlgebra ], 0, 
-    FptoSCAMorphismImageElm );
+        FptoSCAMorphismImageElm );
 
+###########################################################################
+##
+#M   PreImagesRepresentative( f, x )
+##
+InstallMethod( PreImagesRepresentative,
+    "for Fp to SCA mapping, and element",
+    FamRangeEqFamElm,
+    [ IsFptoSCAMorphism, IsSCAlgebraObj ], 0, 
+        
+    function( f, x )        
+        
+    local   IsLyndonT,  dim,  e,  gens,  imgs,  b1,  b2,  levs,  
+            brackets,  sp,  deg,  newlev,  newbracks,  d,  br1,  br2,  
+            i,  j,  a,  b,  c,  z,  imz,  cf;
+    
+    IsLyndonT:= function( t )
+
+        # This function tests whether the bracketed expression `t' is
+        # a Lyndon tree.
+        
+        local w,w1,w2,b,y;
+
+        if not IsList( t ) then return true; fi;
+        
+        w:= Flat( t );
+        if IsList( t[1] ) then
+            w1:= Flat( t[1] );
+            b:= false;
+        else
+            w1:= [ t[1] ];
+            b:=true;
+        fi;
+        if IsList( t[2] ) then
+            w2:= Flat( t[2] );
+        else
+            w2:= [ t[2] ];
+        fi;
+        
+        if w<w2 and w1<w2 then
+            if not b then
+                y:= Flat( [ t[1][2] ] );
+                if y  < w2 then return false; fi;
+            fi;
+        else
+            return false;
+        fi;
+        
+        if not IsLyndonT( t[1] ) then return false; fi;
+        if not IsLyndonT( t[2] ) then return false; fi;
+        return true;
+        
+    end;
+        
+    if not IsBound( f!.bases ) then
+        
+        # We find bases of the source and the range that are mapped to 
+        # each other.
+
+        dim:= Dimension( Range(f) );
+        e:=MappingGeneratorsImages(f);
+        gens:= e[1];
+        imgs:= e[2];
+        b1:= ShallowCopy( gens ); 
+        b2:= ShallowCopy( imgs );
+        levs:= [ gens ];
+        brackets:= [ [1..Length(gens)] ];
+        sp:= MutableBasis( LeftActingDomain(Range(f)), b2 );
+        deg:= 1;
+        while Length( b1 ) <> dim do
+            deg:= deg+1;
+            newlev:= [ ];
+            newbracks:= [ ];
+            # get all Lyndon elements of degree deg:
+            for d in [1..Length(brackets)] do
+                if Length( b1 ) = dim then break; fi;
+                br1:= brackets[d];
+                br2:= brackets[deg-d];
+                for i in [1..Length(br1)] do
+                    if Length( b1 ) = dim then break; fi;
+                    for j in [1..Length(br2)] do
+                        if Length( b1 ) = dim then break; fi;
+                        a:= br1[i]; b:= br2[j];
+                        if IsLyndonT( [a,b] ) then
+                            c:= [a,b];
+                            z:= levs[d][i]*levs[deg-d][j];
+                        elif IsLyndonT( [b,a] ) then
+                            c:= [b,a];
+                            z:= levs[deg-d][j]*levs[d][i];
+                        else
+                            c:= [ ];
+                        fi;
+                        
+                        if c <> [] then
+
+                            imz:= Image( f, z );
+                            if not IsContainedInSpan( sp, imz ) then
+                                CloseMutableBasis( sp, imz );
+                                Add( b1, z );
+                                Add( newlev, z );
+                                Add( newbracks, c );
+                                Add( b2, imz );
+                            fi;
+                        fi;
+                        
+                    od;
+                od;
+            od;
+            Add( levs, newlev );
+            Add( brackets, newbracks );
+        od;
+
+        f!.bases:= [ b1, Basis( Range(f), b2 ) ];
+    fi;
+    
+    cf:= Coefficients( f!.bases[2], x );
+    return cf*f!.bases[1];
+        
+end);
 
 #############################################################################
 ##
@@ -5294,7 +5412,7 @@ InstallMethod( JenningsLieAlgebra,
     Homs:= List ( [1..Length(J)-1] , x -> 
                   NaturalHomomorphismByNormalSubgroup ( J[x], J[x+1] ));
     grades := List ( Homs , Range );
-    hom_pcg:= List( grades, IsomorphismPcGroup );
+    hom_pcg:= List( grades, IsomorphismSpecialPcGroup );
     pcgps:= List( hom_pcg, Range );
     gens := [];
     enum_gens:= [ ];
@@ -5358,17 +5476,15 @@ InstallMethod( JenningsLieAlgebra,
     B:= Basis( L );
 
     # Now we compute the natural grading of `L'.
-
     grading:= [ ];
     k:= 1;
-    while k <= Length( pos ) do
-      x:= pos[k];
-      comp:= [ ];
-      while k <= Length( pos ) and pos[k] = x do
-        Add( comp, B[k] );
-        k:= k+1;
-      od;
-      Add( grading, VectorSpace( F, comp ) );
+    for i in [1..Length(enum_gens)] do
+        comp:= [ ];
+        for j in [1..Length(enum_gens[i])] do
+            Add( comp, B[k] );
+            k:= k+1;
+        od;
+        Add( grading, Subspace( L, comp ) );
     od;
 
     Add( grading, Subspace( L, [ ] ) );
@@ -5467,7 +5583,7 @@ InstallMethod( PCentralLieAlgebra,
     Homs:= List ( [1..Length(J)-1] , x -> 
                   NaturalHomomorphismByNormalSubgroup ( J[x], J[x+1] ));
     grades := List ( Homs , Range );
-    hom_pcg:= List( grades, IsomorphismPcGroup );
+    hom_pcg:= List( grades, IsomorphismSpecialPcGroup );
     pcgps:= List( hom_pcg, Range );
     gens := [];
     enum_gens:= [ ];
@@ -5525,14 +5641,14 @@ InstallMethod( PCentralLieAlgebra,
 
     grading:= [ ];
     k:= 1;
-    while k <= Length( pos ) do
-      x:= pos[k];
-      comp:= [ ];
-      while k <= Length( pos ) and pos[k] = x do
-        Add( comp, B[k] );
-        k:= k+1;
-      od;
-      Add( grading, VectorSpace( F, comp ) );
+
+    for i in [1..Length(enum_gens)] do
+        comp:= [ ];
+        for j in [1..Length(enum_gens[i])] do
+            Add( comp, B[k] );
+            k:= k+1;
+        od;
+        Add( grading, Subspace( L, comp ) );
     od;
 
     Add( grading, Subspace( L, [ ] ) );

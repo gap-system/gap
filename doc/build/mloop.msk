@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %A  mloop.msk                  GAP documentation             Martin Schoenert
 %%
@@ -165,7 +165,7 @@ Z(2)^0
 gap> v:= [ z, z, z, z, z, z, z ];
 <a GF2 vector of length 7>
 gap> Print( v );
-[ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ]gap>
+[ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ]gap> 
 \endtt
 
 Another difference is that `Print' shows strings without the enclosing
@@ -341,7 +341,7 @@ variable should have to continue the computation.
 \begintt
 brk> return 9;  # we had tried to enter the divisor 9 but typed 0 ...
 1/9
-gap>
+gap> 
 \endtt
 
 \>`OnBreak' V
@@ -358,7 +358,7 @@ gap> OnBreak := function() Print("Hello\n"); end;
 function(  ) ... end
 \endexample
 \begintt
-gap> Error("!\n");                               
+gap> Error("!\n");
 Error, !
 Hello
 Entering break read-eval-print loop ...
@@ -366,6 +366,22 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
 \endtt
+
+In cases where a break loop is entered during a function that was  called
+with options (see Chapter~"Options Stack"), a `quit;' will also cause the
+options stack to be reset  and  an  `Info'-ed  warning  stating  this  is
+emitted at `InfoWarning' level 1 (see Chapter~"Info functions").
+%This is actually controlled by
+%
+%\>OnQuit() F
+%
+%which, like `OnBreak', is a no-argument function. It is executed
+%when a user elects to `quit;' a non-kernel-induced break loop.
+%`OnQuit' is set read-only to a variant of `ResetOptionsStack'
+%that warns when it does something rather than the other way round.
+%It can be redefined after executing `MakeReadWriteGlobal("OnQuit");'.
+%Currently, `OnQuit' is not  advertised, since exception handling 
+%may make it obsolete.
 
 Note that for break loops entered by a call to `Error',
 the lines after ``{`Entering break read-eval-print loop ...'}'' and before
@@ -399,7 +415,7 @@ gap> ErrorNoTraceBack := function(arg) # arg is a special variable that GAP
 >      OnBreak := ENTBOnBreak;
 >      Error();
 >    end;
-function(  ) ... end
+function( arg ) ... end
 \endexample
 
 Here is a somewhat trivial demonstration of the use of `ErrorNoTraceBack'.
@@ -463,7 +479,7 @@ With `OnBreak' still set away from its default value, calling `Error'
 as we did above, now produces:
 
 \begintt
-gap> Error("!\n"); 
+gap> Error("!\n");
 Error, !
 Hello
 Entering break read-eval-print loop ...
@@ -478,7 +494,8 @@ to be specific to that function. The same idea used to define
 this. The function `CosetTableFromGensAndRels' (see~"CosetTableFromGensAndRels")
 is an example in the {\GAP} code where the idea is actually used.
 
-\index{Backtrace}
+\atindex{Backtrace!GAP3 name for Where}%
+{@\noexpand`Backtrace'!GAP3 name for \noexpand`Where'}
 \>Where( [<nr>] ) F
 
 shows the last <nr> commands on the execution stack during whose execution
@@ -566,7 +583,7 @@ brk> n;
 brk> DownEnv();
 brk> n;
 3
-brk> Where();  
+brk> Where();
  called from
 test( n + 1 ); called from
 test( n + 1 ); called from
@@ -574,7 +591,7 @@ test( n + 1 ); called from
 brk> DownEnv( 2 );
 brk> n;
 1
-brk> Where();     
+brk> Where();
  called from
 <function>( <arguments> ) called from read-eval-loop
 brk> DownEnv( -2 );
@@ -598,7 +615,7 @@ to the current invocation of the function.
 gap> foo := function()
 > local x; x := 1;
 > return function() local y; y := x*x; Error("!!\n"); end;
-> end; 
+> end;
 function(  ) ... end
 gap> bar := foo();
 function(  ) ... end
@@ -624,7 +641,7 @@ before that of `fun' which caused its execution. Using `DownEnv' we
 can access the `x' from `fun'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Error}\null
+\Section{Error}\nolabel
 
 \>Error( <messages>... ) F
 
@@ -637,7 +654,7 @@ You can leave this break loop with `return;' to continue execution with the
 statement following the call to `Error'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{ErrorCount}\null
+\Section{ErrorCount}\nolabel
 
 \>ErrorCount() F
 
@@ -795,27 +812,83 @@ The four arrow keys (cursor keys) can be used instead of <ctrl>-`B',
 <ctrl>-`F', <ctrl>-`P', and <ctrl>-`N', respectively.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Edit}
+\Section{Editing Files}\nolabel
 
+In most cases, it is preferable to create longer input (in particular {\GAP}
+programs) separately in an editor, and to read in the result via `Read'.
+Note that `Read' by default reads from the directory in which {\GAP} was
+started (respectively under Windows the directory containing the {\GAP}
+binary), so you might hav eto give an absolute path to the file.
+
+If you cannot create several windows, the `Edit' command may be used to
+leave {\GAP}, start an editor, and read in the edited file automatically.
 \Declaration{Edit}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Editor Support}\nolabel
+
+\atindex{utilities for editing GAP files}{@utilities for editing GAP files}
+\indextt{vi}
+\indextt{vim}
+\indextt{emacs}
+In the `etc' subdirectory of the {\GAP} installation
+we provide some setup files for the editors  `vim' and `emacs'/`xemacs'.
+
+`vim' is a powerful editor that understands the basic `vi' commands but
+provides much more functionality. You can find more information about it
+(and download it) from \URL{http://www.vim.org}.
+
+To get support for {\GAP} syntax in vim, create in your home directory a
+directory `.vim' and a subdirectory `.vim/indent' (If you are not using
+Unix, refer to the `vim' documentation on where to place syntax files).
+Then copy the file `etc/gap.vim' in this`.vim' directory and copy the file
+`etc/gap_indent.vim' to `.vim/indent/gap.vim'.
+
+Then edit the `.vimrc' file in your home directory. Add lines as in  the
+following example:
+
+\begintt
+if has("syntax")
+  syntax on             " Default to no syntax highlightning 
+endif
+
+" For GAP files
+augroup gap
+  " Remove all gap autocommands
+  au!
+  autocmd BufRead,BufNewFile *.g,*.gi,*.gd source ~/.vim/gap.vim
+autocmd BufRead,BufNewFile *.g,*.gi,*.gd set filetype=gap comments=s:##\ \ ,m:##\ \ ,e:##\ \ b:#
+
+" I'm using the external program `par' for formating comment lines starting
+" with `##  '. Include these lines only when you have par installed.
+  autocmd BufRead,BufNewFile *.g,*.gi,*.gd set formatprg="par w76p4s0j"
+  autocmd BufWritePost,FileWritePost *.g,*.gi,*.gd set formatprg="par w76p0s0j"
+augroup END
+\endtt
+
+See the headers  of the two mentioned files for  additional comments.
+Adjust details according to  your personal taste.
+%Send comments  and suggestions to Frank.Luebeck@Math.RWTH-Aachen.De
+
+
+Setup files for `(x)emacs' are contained in the `etc/emacs' subdirectory.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{SizeScreen}
+\Section{SizeScreen}\nolabel
 
 \>SizeScreen() F
-
-In this form `SizeScreen' returns the size of the screen as a list with
-two entries. The first is the length of each line, the second is the
-number of lines.
-
 \>SizeScreen( [ <x>, <y> ] ) F
 
-In this form `SizeScreen' sets the size of the screen. <x> is the
-length of each line, <y> is the number of lines. Either value may be
-missing, to leave this value unaffected. It returns the new
-values. Note that those parameters can also be set with the command
-line options `-x <x>' and `-y <y>' (see Section~"Command line options").
+With no arguments, `SizeScreen' returns the size of the screen as a  list
+with two entries. The first is the length of each line, the second is the
+number of lines.
+
+With one argument that is a list,  `SizeScreen'  sets  the  size  of  the
+screen; <x> is the length of each line,  <y>  is  the  number  of  lines.
+Either value <x> or <y> may be missing (i.e.~left unbound), to leave this
+value unaffected. It returns the new values. Note that  those  parameters
+can also be set with the command line options `-x <x>' and `-y <y>'  (see
+Section~"Command line options").
 
 To check/change whether line breaking occurs for files and streams 
 see~"PrintFormattingStatus" and~"SetPrintFormattingStatus".

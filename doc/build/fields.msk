@@ -30,8 +30,8 @@ gap> IsField( q );  IsDivisionRing( q );
 false
 true
 gap> mat:= [ [ 1 ] ];;  a:= Algebra( Rationals, [ mat ] );;
-gap> IsDivisionRing( a );                  # an algebra not constructed
-false                                      # as a division ring
+gap> IsDivisionRing( a );   # an algebra not constructed as a division ring
+false
 \endexample
 
 \Declaration{Field}
@@ -104,7 +104,7 @@ which vanish on <z>.
 \beginexample
 gap> MinimalPolynomial( Rationals, E(8) );
 1+x_1^4
-gap> MinimalPolynomial( CF(4), E(8) );    
+gap> MinimalPolynomial( CF(4), E(8) );
 -E(4)+x_1^2
 gap> MinimalPolynomial( CF(8), E(8) );
 -E(8)+x_1
@@ -140,7 +140,7 @@ gap> Conjugates( CF(8), E(8) );
 [ E(8), E(8)^3, -E(8), -E(8)^3 ]
 gap> Conjugates( CF(8), CF(4), E(8) );
 [ E(8), -E(8) ]
-gap> Conjugates( CF(16), E(8) );       
+gap> Conjugates( CF(16), E(8) );
 [ E(8), E(8)^3, -E(8), -E(8)^3, E(8), E(8)^3, -E(8), -E(8)^3 ]
 \endexample
 

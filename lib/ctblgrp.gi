@@ -1328,7 +1328,7 @@ end;
 ##
 InstallGlobalFunction( BestSplittingMatrix, function(D)
 local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
-      orb,os,lim;
+      orb,os,lim,ksl;
 
   nu:=Zero(D.field);
   requiredCols:=[];
@@ -1345,104 +1345,110 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
     lim:=infinity;
   fi;
 
-  for n in D.matrices do
-    requiredCols[n]:=[];
-    splitBases[n]:=[];
-    wert[n]:=0;
+  ksl:=1;
+  repeat
+    for n in D.matrices do
+      requiredCols[n]:=[];
+      splitBases[n]:=[];
+      wert[n]:=0;
 
-    # only take classes small enough
-    if D.classiz[n]<=lim and
-    # dont start with central classes in small groups!
-     (D.classiz[n]>1 or IsBound(D.maycent)) then
-      for i in [1..Length(D.raeume)] do
-        r:=D.raeume[i];
-        if IsBound(r.splits) then
-          rs:=r.splits;
-        else
-          rs:=[];
-          r.splits:=rs;
-        fi;
+      # only take classes small enough
+      if D.classiz[n]<=lim and
+      # dont start with central classes in small groups!
+      (D.classiz[n]>ksl or IsBound(D.maycent)) then
+	for i in [1..Length(D.raeume)] do
+	  r:=D.raeume[i];
+	  if IsBound(r.splits) then
+	    rs:=r.splits;
+	  else
+	    rs:=[];
+	    r.splits:=rs;
+	  fi;
 
-        if r.dim>1 then
+	  if r.dim>1 then
 
-          if IsBound(rs[n]) then
-            split:=rs[n].split;
-            val:=rs[n].val;
-          else
-	    b:=DxNiceBasis(D,r);
-            split:=ForAny(b{[2..r.dim]},i->i[n]<>nu);
-	    if split then
-	      if r.dim<4 then
-		# very small spaces will split nearly perfect
-		val:=8;
-	      else
-		bn:=DxSplitDegree(D,r,n);
-		if os then
-		  if IsPerfectGroup(D.group) then
-		    # G is perfect,no linear characters
-		    # we can't predict much about the splitting
-		    val:=Maximum(1,9-r.dim/bn);
-		  else
-		    val:=bn*Maximum(1,9-r.dim/bn);
-		  fi;
+	    if IsBound(rs[n]) then
+	      split:=rs[n].split;
+	      val:=rs[n].val;
+	    else
+	      b:=DxNiceBasis(D,r);
+	      split:=ForAny(b{[2..r.dim]},i->i[n]<>nu);
+	      if split then
+		if r.dim<4 then
+		  # very small spaces will split nearly perfect
+		  val:=8;
 		else
-		  val:=bn;
+		  bn:=DxSplitDegree(D,r,n);
+		  if os then
+		    if IsPerfectGroup(D.group) then
+		      # G is perfect,no linear characters
+		      # we can't predict much about the splitting
+		      val:=Maximum(1,9-r.dim/bn);
+		    else
+		      val:=bn*Maximum(1,9-r.dim/bn);
+		    fi;
+		  else
+		    val:=bn;
+		  fi;
 		fi;
+		# note the images,which split as well
+		val:=val*Index(D.characterMorphisms,
+			      CharacterMorphismOrbits(D,r).stabilizer);
+	      else
+		val:=0;
 	      fi;
-	      # note the images,which split as well
-	      val:=val*Index(D.characterMorphisms,
-			     CharacterMorphismOrbits(D,r).stabilizer);
-            else
-	      val:=0;
+	      rs[n]:=rec(split:=split,val:=val);
 	    fi;
-            rs[n]:=rec(split:=split,val:=val);
-          fi;
-          if split then
-            wert[n]:=wert[n]+val;
-            Add(splitBases[n],i);
-            requiredCols[n]:=Union(requiredCols[n],
-                                    D.raeume[i].activeCols);
-          fi;
-        fi;
-      od;
-      if Length(splitBases[n])>0 then
-        # can we use Galois-Conjugation
-        orb:=DxGaloisOrbits(D,n);
-        rc:=[];
-        for i in requiredCols[n] do
-          rc:=Union(rc,[orb.orbits[i][1]]);
-        od;
+	    if split then
+	      wert[n]:=wert[n]+val;
+	      Add(splitBases[n],i);
+	      requiredCols[n]:=Union(requiredCols[n],
+				      D.raeume[i].activeCols);
+	    fi;
+	  fi;
+	od;
+	if Length(splitBases[n])>0 then
+	  # can we use Galois-Conjugation
+	  orb:=DxGaloisOrbits(D,n);
+	  rc:=[];
+	  for i in requiredCols[n] do
+	    rc:=Union(rc,[orb.orbits[i][1]]);
+	  od;
 
-        wert[n]:=wert[n]*D.centralizers[n] # *G/|K|
-                 /(Length(rc)); # We count -mistakening - also the first
-	   # column,that is availiable for free. Its "costs" are ment to
-	   # compensate for the splitting process.
+	  wert[n]:=wert[n]*D.centralizers[n] # *G/|K|
+		  /(Length(rc)); # We count -mistakening - also the first
+	    # column,that is availiable for free. Its "costs" are ment to
+	    # compensate for the splitting process.
+	fi;
       fi;
-    fi;
-  od;
+    od;
 
-  for r in D.raeume do
-    if IsBound(r.splits) and Number(r.splits)=1 then
-      # is room split by only ONE matrix?(then we need this sooner or later)
-      # simulate: n:=PositionProperty(r.splits,IsBound);
-      n:=1;
-      while not IsBound(r.splits[n]) do
-        n:=n+1;
-      od;
-      wert[n]:=wert[n]*10; #arbitrary increase of value
-    fi;
-  od;
+    for r in D.raeume do
+      if IsBound(r.splits) and Number(r.splits)=1 then
+	# is room split by only ONE matrix?(then we need this sooner or later)
+	# simulate: n:=PositionProperty(r.splits,IsBound);
+	n:=1;
+	while not IsBound(r.splits[n]) do
+	  n:=n+1;
+	od;
+	wert[n]:=wert[n]*10; #arbitrary increase of value
+      fi;
+    od;
 
-  bn:=fail;
-  bw:=0;
-  # run through them in pl sequence
-  for n in Filtered(D.permlist,i->i in D.matrices) do
-    Info(InfoCharacterTable,3,n,":",Int(wert[n]));
-    if wert[n]>bw then
-      bn:=n;
-      bw:=wert[n];
-    fi;
-  od;
+    bn:=fail;
+    bw:=0;
+    # run through them in pl sequence
+    for n in Filtered(D.permlist,i->i in D.matrices) do
+      Info(InfoCharacterTable,3,n,":",Int(wert[n]));
+      if wert[n]>bw then
+	bn:=n;
+	bw:=wert[n];
+      fi;
+    od;
+
+    ksl:=ksl-1;
+  until bn<>fail or ksl<0;
+
   if bn<>fail then
     D.requiredCols:=requiredCols;
     D.splitBases:=splitBases;

@@ -36,7 +36,7 @@ existing operation for the existing structures.
 
 For example, assume we wanted to implement a better method for computing the
 exponent of a nilpotent group (it is the product of the exponents of the
-sylow subgroups).
+Sylow subgroups).
 
 The first task is to find which operation is used by {\GAP} (it is `Exponent')
 and how it is declared.  We can find this in the reference manual (in our
@@ -158,7 +158,7 @@ using `InstallOtherMethod' instead of `InstallMethod'.
 
 As mentioned above, {\GAP} does not check unknown properties to test whether
 a method might be applicable. In some cases one wants to enforce this,
-however, because the gain from knowing the property outweights the cost of
+however, because the gain from knowing the property outweighs the cost of
 its determination.
 
 In this situation one has to install a method *without* the additional
@@ -279,7 +279,7 @@ DeclareAttribute("PrimesDividingSize",IsGroup);
 
 Next we have to install method(s) for the attribute that compute its value.
 (This is not strictly necessary. We could use the attribute also without
-methods only for storing and retreiving information, but calling it for objects
+methods only for storing and retrieving information, but calling it for objects
 for which the value is not known would produce a ``No method found'' error.)
 For this purpose we can imagine the attribute simply as an one-argument
 operation:
@@ -337,7 +337,7 @@ IsPermutationGroupByRelations:=NewRepresentation(
 settle for a positional object in which we store a list of the nonzero
 entries.)
 
-We can make the new representation a subrepresentation of an existion one.
+We can make the new representation a subrepresentation of an existing one.
 In such a case of course we have to provide all structure of this ``parent''
 representation as well.
 
@@ -368,7 +368,7 @@ InstallMethod(PrintObj,"for perm grps. given by relations",
   [IsPermutationGroupByRelations],
 function(G)
   Print("PermutationGroupByRelations(", G!.degree,",",G!.relations,")");
-end);  
+end);
 \endtt
 
 Next we have to write enough methods for the new representation so that the
@@ -410,7 +410,7 @@ could be computed later and probably even for a wider class of objects), a
 component is just part of the internal definition of an object.
 
 So if the data is ``of general interest'', if we want the user to have
-access to it, attributes are preferrable. They provide a clean interface and
+access to it, attributes are preferable. They provide a clean interface and
 their immutability makes it safe to hand the data to a user who potentially
 could corrupt a components entries.
 
@@ -418,7 +418,7 @@ On the other hand more ``technical'' data (say the encoding of a sparse
 matrix) is better hidden from the user in a component, as declaring it as an
 attribute would not give any advantage.
 
-Ressource-wise, attributes need more memory (the attribute setter and
+Resource-wise, attributes need more memory (the attribute setter and
 tester are implicitly declared, and two filter bits are required), the
 attribute access is one further function call in the kernel, thus components
 might be an immeasurable bit faster.
@@ -472,7 +472,7 @@ mathematical category is declared as a (\GAP) category.)
 Eventually the choice between category and property often  becomes a matter of
 taste or style.
 
-Sometimes there is even a third possiblity (if you have {\GAP} 3 experience
+Sometimes there is even a third possibility (if you have {\GAP} 3 experience
 this might reflect most closely ``an object whose operations record is
 {`XYOps'}''): We might want to indicate this new concept simply by the fact
 that certain attributes are set. In this case we could simply use the
@@ -502,7 +502,7 @@ The filter `IsSolvableGroup' in this declaration *only* means that methods
 for `IsMGroup' by default can only be installed for groups that are (and
 know to be) solvable (though they could be installed for more general
 situations using `InstallOtherMethod'). It does not yet imply that M-groups
-are solvable. We must do this deliberatly via an implication and we use the
+are solvable. We must do this deliberately via an implication and we use the
 same technique to imply that every supersolvable group is an M-group.
 \begintt
 InstallTrueMethod(IsSolvableGroup,IsMGroup);
@@ -594,7 +594,7 @@ permit you to exploit all potential features.
 The basic design is that the user designs some way to represent her objects
 in terms of {\GAP}s built-in types, for example as a list or a record. 
 We call this the ``defining data'' of the new objects.
-Also provided are functions that perform arithmetic on thid ``defining
+Also provided are functions that perform arithmetic on this ``defining
 data'', that is they take objects of this form and return objects that
 represent the result of the operation. The function
 `ArithmeticElementCreator' then is called to provide a wrapping such that
@@ -642,7 +642,7 @@ gap> a=[1,2,3];
 false
 gap> UnderlyingElement(a)=[1,2,3];
 true
-gap> b:=mkposet([2,3,4]); 
+gap> b:=mkposet([2,3,4]);
 [ 2, 3, 4 ]
 gap> a+b;
 [ 1, 2, 3, 4 ]

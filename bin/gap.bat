@@ -1,8 +1,2 @@
-@echo off
-echo You have not yet run the `instwin.bat' script in the main directory of
-echo GAP. Go to this directory and call the file there to install the proper
-echo paths for GAP!
-
-
-
-
+rem sample batch file for GAP
+C:\GAP4R3\bin\gapw95.exe -m 14m -l C:\GAP4R3\ %1 %2 %3 %4 %5 %6 %7 %8

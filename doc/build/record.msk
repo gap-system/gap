@@ -25,21 +25,22 @@ component consists of the name, the assignment operator `:=', and the value.
 The *empty record*, i.e., the record with no components, is written as
 `rec()'.
 
-Note that the examples in the first sections of this chapter have been
-edited with respect to white spaces and line breaks in order to illustrate
-the hierarchy of the record components. Normally, when displaying records
-{\GAP} saves lines by printing in each line as many components as possible.
-
 \beginexample
 gap> rec( a := 1, b := "2" ); # a record with two components
-rec(
-  a := 1,
-  b := "2" )
+rec( a := 1, b := "2" )
 gap> rec( a := 1, b := rec( c := 2 ) ); # record may contain records
+rec( a := 1, b := rec( c := 2 ) )
+\endexample
+
+We may use the `Display' function to illustrate the hierarchy of the record
+components.
+
+\beginexample
+gap> Display( last );
 rec(
   a := 1,
   b := rec(
-         c := 2 ) )
+      c := 2 ) )
 \endexample
 
 Records usually contain elements of various types, i.e., they are usually
@@ -99,7 +100,7 @@ rec(  )
 gap> for i in RecNames( old ) do
 >  new.(i) := old.(i);
 > od;
-gap> new;
+gap> Display( new );
 rec(
   a := 1,
   b := 2 )
@@ -121,11 +122,13 @@ the record is automatically extended to make room for the new component.
 
 \beginexample
 gap> r := rec( a := 1, b := 2 );;
-gap> r.a := 10;; r;
+gap> r.a := 10;;
+gap> Display( r );
 rec(
   a := 10,
   b := 2 )
-gap> r.c := 3;; r;
+gap> r.c := 3;;
+gap> Display( r );
 rec(
   a := 10,
   b := 2,
@@ -143,7 +146,8 @@ gap> IsBound(r.a);
 true
 gap> IsBound(r.d);
 false
-gap> Unbind(r.b); r;
+gap> Unbind(r.b);
+gap> Display( r );
 rec(
   a := 10,
   c := 3 )
@@ -390,7 +394,7 @@ possible to pass a positive integer <int> in which case the decimal expansion of
 <int> is used as a string.
 
 \begintt
-gap> NameRNam(798); 
+gap> NameRNam(798);
 "BravaisSupergroups"
 gap> RNamObj("blubberflutsch");
 2075

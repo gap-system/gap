@@ -584,7 +584,7 @@ InstallOtherMethod( GeneratorOfCyclicGroup,"pc groups",true,
     [ IsPcGroup and IsFinite ],0,
 function ( G )
 local g;
-  g:=SmallGeneratingSet(G);
+  g:=MinimalGeneratingSet(G);
   if Length(g)>1 then
     Error("not cyclic");
   fi;
@@ -711,17 +711,13 @@ end );
 
 #############################################################################
 ##
-#M  Centre( <G> )
+#F  CentrePcGroup( <G> )
 ##
-InstallMethod( Centre,
-    "pcgs computable groups using special pcgs",
-    [ IsGroup and CanEasilyComputePcgs and IsFinite ],
-
-function( G )
+InstallGlobalFunction (CentrePcGroup, function( G )
     local   spec,  first,  weights,  m,  primes,  cent,  i,  gens,  
             start,  next,  p,  j,  field,  pcgsS,  pcgsN,  pcgsF,  q,  
-            N,  hom,  F,  centF,  gensF,  U,  newgens,  matlist,  g,  
-            conj,  expo,  order,  eigen,  null,  n,  elm, r, ksi, large;
+            U,  newgens,  matlist,  g,  conj,  expo,  order,  eigen,  
+            null,  n,  elm, r, ksi, large, pcgsH, H, oper;
 
     # get special pcgs
     spec    := SpecialPcgs( G );
@@ -761,7 +757,6 @@ function( G )
         next  := first[i+1];
         q     := weights[start][3];
         field := GF(q); 
-        gens  := spec{[start..m]};
         pcgsS := InducedPcgsByPcSequenceNC( spec, spec{[start..m]} );
         pcgsN := InducedPcgsByPcSequenceNC( spec, spec{[next..m]} );
         pcgsF := pcgsS mod pcgsN;
@@ -770,22 +765,19 @@ function( G )
             p := primes[j]; 
             if p = q and (weights[start][2] > 1 or Length( cent[j] ) > 0) then
                 
-                N   := Subgroup( G, pcgsN );
-                hom := NaturalHomomorphismByNormalSubgroup( G, N );
-                F   := Range( hom );
-                centF := List( cent[j], x -> Image( hom, x ) );
-                gensF := List( pcgsF, x -> Image( hom, x ) );
-                Append( centF, gensF );
-               
+                pcgsH := spec mod pcgsN;
+                H := GroupByPcgs( pcgsH );
+                gens := List(cent[j], x->MappedPcElement(x, pcgsH, Pcgs(H)));
+                Append( gens, Pcgs(H){[start..next-1]} );
+
                 # calculate centre of centF 
-                U     := Subgroup( F, centF );
-                centF := GeneratorsCentrePGroup( U );
-                cent[j] := List( centF, 
-                                 x -> PreImagesRepresentative( hom, x ) );
+                U    := Subgroup( H, gens );
+                gens := GeneratorsCentrePGroup( U );
+                gens := List( gens, x -> MappedPcElement(x,Pcgs(H),pcgsH));
 
                 # get centralizer
-                gens := spec{Filtered([1..start-1], x -> weights[x][2] = 1)};
-                cent[j] := NextStepCentralizer( gens, cent[j], pcgsF, field ); 
+                oper := spec{Filtered([1..start-1], x -> weights[x][2] = 1)};
+                cent[j] := NextStepCentralizer( oper, gens, pcgsF, field ); 
 
             # case p <> q
             elif Length( cent[j] ) > 0 then
@@ -832,7 +824,7 @@ function( G )
                     eigen := SimultaneousEigenvalues( matlist, expo, ksi );
     
                     # solve system
-                    null := NullspaceModQ( eigen, expo );
+                    null := BasisNullspaceModN( eigen, expo );
 
                     # calculate elements corresponding to null
                     for n in null do
@@ -848,13 +840,24 @@ function( G )
         i := i + 1;
     od;
 
-    # return centre as direct product of p-parts
+   # return centre as direct product of p-parts
     G:= SubgroupNC( G, Concatenation( cent ) );
     Assert( 1, IsAbelian( G ) );
     SetIsAbelian( G, true );
     return G;
-end );
+end);
 
+#############################################################################
+##
+#M  Centre( <G> )
+##
+
+InstallMethod( Centre,
+   "pcgs computable groups using special pcgs",
+   [ IsGroup and CanEasilyComputePcgs and IsFinite ],
+   CentrePcGroup);
+	
+	
 #############################################################################
 ##
 #M  OmegaSeries( G )

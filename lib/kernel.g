@@ -48,6 +48,8 @@ end;
 ##  large that the kernel buffer normally used is not big enough. Most
 ##  integers are printed by the faster kernel code.
 ##
+# XXX This function should be obsolete because of the method installed in
+# XXX cyclotom.g (FL)
 STRING_INT_DEFAULT := function ( n )
     local  str,  num,  digits;
 
@@ -80,6 +82,7 @@ Ordinal := function ( n )
     local   str;
 
     str := SHALLOW_COPY_OBJ(STRING_INT(n));
+    if n < 0 then n := -n; fi;
     if   n mod 10 = 1  and n mod 100 <> 11  then
         APPEND_LIST_INTR( str, "st" );
     elif n mod 10 = 2  and n mod 100 <> 12  then
@@ -95,17 +98,17 @@ end;
 
 ############################################################################
 ##
-#F  REPLACE_SUBSTRING( <string>, <old>, <new> ) . . .  replace <old> by <new>
-##
-REPLACE_SUBSTRING := function( string, old, new )
-    local   i;
-    
-    for i  in [ 0 .. LEN_LIST( string ) - LEN_LIST( old ) ]  do
-        if string{ i + [ 1 .. LEN_LIST( old ) ] } = old  then
-            string{ i + [ 1 .. LEN_LIST( old ) ] } := new;
-        fi;
-    od;
-end;
+# XXX F  REPLACE_SUBSTRING( <string>, <old>, <new> ) . . .  replace <old> by <new>
+# XXX    (should be thrown away) FL
+##  REPLACE_SUBSTRING := function( string, old, new )
+##      local   i;
+##      
+##      for i  in [ 0 .. LEN_LIST( string ) - LEN_LIST( old ) ]  do
+##          if string{ i + [ 1 .. LEN_LIST( old ) ] } = old  then
+##              string{ i + [ 1 .. LEN_LIST( old ) ] } := new;
+##          fi;
+##      od;
+##  end;
 
 #############################################################################
 ##

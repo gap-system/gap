@@ -31,7 +31,7 @@ DeclareGlobalVariable( "BaumClausenInfoDebug" );
 ##
 ##  Called with a group <G>, `BaumClausenInfo' returns a record with the
 ##  following components.
-##  \beginlist
+##  \beginitems
 ##  `pcgs' &
 ##       each representation is encoded as a list, the entries encode images
 ##       of the elements in `pcgs',
@@ -53,7 +53,7 @@ DeclareGlobalVariable( "BaumClausenInfoDebug" );
 ##  `nonlin' &
 ##       a list of nonlinear irreducible representations,
 ##       each a list of monomial matrices.
-##  \endlist
+##  \enditems
 ##
 ##  Monomial matrices are encoded as records with components
 ##  `perm' (the permutation part) and `diag' (the nonzero entries).
@@ -179,6 +179,9 @@ DeclareGlobalFunction( "InducedRepresentationImagesRepresentative" );
 ##  of <rep> to <H> is computed.
 ##
 DeclareGlobalFunction( "InducedRepresentation" );
+#T Currently the returned homomorphism has `Image' etc. methods which
+#T return plain lists not block matrices.
+#T Before the function can be documented, this behaviour should be changed.
 
 
 #############################################################################

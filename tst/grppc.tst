@@ -25,7 +25,8 @@ gap> IsSubgroup(u,v);
 true
 gap> G:=function()
 gap> local g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,g14,r,f,g,rws,x;
-gap> f:=FreeGroup(14); g:=GeneratorsOfGroup(f); g1:=g[1]; g2:=g[2];
+gap> f:=FreeGroup(IsSyllableWordsFamily,14); g:=GeneratorsOfGroup(f);
+gap> g1:=g[1]; g2:=g[2];
 gap> g3:=g[3]; g4:=g[4]; g5:=g[5]; g6:=g[6]; g7:=g[7]; g8:=g[8]; g9:=g[9];
 gap> g10:=g[10]; g11:=g[11]; g12:=g[12]; g13:=g[13]; g14:=g[14];
 gap> rws:=SingleCollector(f,[ 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2 ]);

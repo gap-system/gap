@@ -210,10 +210,10 @@ DeclareSynonym( "NumberField", AbelianNumberField );
 ##  The  base,  the  base conversion  and the  reduction  to  the  minimal
 ##  cyclotomic field  are  described in~\cite{Zum89}.
 ##
-##  *Note* that for $<n> \equiv 2 \bmod 4$ we have
-##  `ZumbroichBase( <n>, 1 ) = 2 * ZumbroichBase( <n>/2, 1 )' but
-##  `List( ZumbroichBase(  <n>, 1  ), x -> E(  <n>  )^x ) =
-##   List( ZumbroichBase( <n>/2, 1 ), x -> E( <n>/2 )^x )'.
+##  *Note:* For $<n> \equiv 2 \pmod4$ we have
+##  `ZumbroichBase(<n>, 1) = 2 * ZumbroichBase(<n>/2, 1)'. However,
+##  `List( ZumbroichBase(<n>, 1), x -> E(<n>)^x ) =
+##   List( ZumbroichBase(<n>/2, 1), x -> E(<n>/2)^x )'.
 ##
 DeclareGlobalFunction( "ZumbroichBase" );
 
@@ -232,11 +232,11 @@ DeclareGlobalFunction( "ZumbroichBase" );
 ##  <m> is a positive integer.  The basis described by the returned list is
 ##  an integral basis over the cyclotomic field $\Q_m$.
 ##
-##  *Note* that the elements are in general not sets, since the first element
+##  *Note:* The elements are in general not sets, since the first element
 ##  is always an element of `ZumbroichBase( <n>, <m> )';
 ##  this property is used by `NF' and `Coefficients'.
 ##
-##  *Note* that <stabilizer> must not contain the stabilizer of a proper
+##  *Note:* <stabilizer> must not contain the stabilizer of a proper
 ##  cyclotomic subfield of the <n>-th cyclotomic field.
 ##
 DeclareGlobalFunction( "LenstraBase" );

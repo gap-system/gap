@@ -1,16 +1,16 @@
 @msfiles = ("addmagma","algebra","algfld","alglie","blist","boolean","coll",
-  "combinat","ctbl","ctblfuns",ctbllibr","ctblmono","cyclotom","debug",
-  "domain","fieldfin","fields","fldabnum","fpsemi","function","groups","grpfp",
+  "combinat","ctbl","ctblfuns","ctblmono","cyclotom","debug","domain",
+  "fieldfin","fields","files","fldabnum","fpsemi","function","groups","grpfp",
   "grphomom","grplib","grpmat","grpoper","grppc","grpperm","grpprod",
   "install","integers","language","lists","magma","mapping","matint",
   "matrix","mgmring","mloop","module","monoid","numtheor","objects", "orders",
   "options","padics","pcgs","permutat","pres","ratfun","rational","record",
-  "relation","rings","run","rws","semigrp","sharepkg","streams","string",
+  "relation","rings","run","rws","semigrp","gappkg","streams","string",
   "trans","types","unknown","vector","vspc","wordass");
 
 @gdfiles = ("addcoset","addmagma","algebra","algfld","algfp","alghom",
   "alglie","algsc","arith","assert","basis","basismut","clas",
-  "coll","combinat","csetgrp","ctbl","ctblauto","ctblchar","ctblfuns",
+  "coll","combinat","csetgrp","ctbl","ctblauto","ctblfuns",
   "ctblgrp","ctbllatt","ctblmaps","ctblmoli","ctblmono","ctblpope",
   "ctblsolv","ctblsymm","cyclotom","domain","extaset","extlset","extrset",
   "extuset","factgrp","ffe","field","files","fldabnum","fpsemi","ghom",
@@ -39,9 +39,9 @@
 
 $DIR = "../ref";
 $LIB = "../../lib"; 
-versionnumber=4.3pre1
-versionsuffix=4.3pre1
-gapdirname=gap4r3pre1
-ucgapdirname=GAP4R3PRE1
+versionnumber=4.3pre2
+versionsuffix=4.3pre2
+gapdirname=gap4r3pre2
+ucgapdirname=GAP4R3PRE2
 check
 

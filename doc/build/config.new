@@ -1,8 +1,8 @@
-@msfiles = ("newcover","iostream");
-@gdfiles = ("streams");
+@msfiles = ("newcover");
+@gdfiles = ();
 $DIR = "../new";
 $LIB = "../../lib"; 
-versionnumber=4.3pre1
-versionsuffix=4.3pre1
-gapdirname=gap4r3pre1
-ucgapdirname=GAP4R3PRE1
+versionnumber=4.3pre2
+versionsuffix=4.3pre2
+gapdirname=gap4r3pre2
+ucgapdirname=GAP4R3PRE2

@@ -34,6 +34,31 @@ extern  Obj             IntrResult;
 
 /****************************************************************************
 **
+*V  IntrIgnoring  . . . . . . . . . interpreter is currently ignoring actions
+**
+**  If 'IntrIgnoring'  is  non-zero,  the interpreter  is  currently ignoring
+**  actions.  The interpreter switches to this mode for  the right operand of
+**  'or' and 'and'  constructs where the  left operand already determines the
+**  outcome.
+**
+**  This mode is also used in Info and Assert, when arguments are not printed. 
+*/
+extern UInt IntrIgnoring;
+
+
+/****************************************************************************
+**
+*V  IntrCoding  . . . . . . . . . . . interpreter is currently coding actions
+**
+**  If 'IntrCoding' is non-zero, the interpreter is currently coding actions.
+**  The interpreter  switches  to this  mode for  constructs  that it  cannot
+**  directly interpret, such as loops or function bodies.
+*/
+extern UInt IntrCoding;
+
+
+/****************************************************************************
+**
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
 *F  IntrEnd(<error>)  . . . . . . . . . . . . . . . . . . stop an interpreter
 **
@@ -863,6 +888,15 @@ extern void              IntrSaveWSBegin ( void );
 
 extern void              IntrSaveWSEnd ( void );     
 
+/****************************************************************************
+*F  IntrContinue() . . . . . . . . . . . . . . . interpret continue-statement
+*/
+extern void            IntrContinue ( void );
+
+/****************************************************************************
+*F  PushVoidObj() . . . . . . . . . . . . . .  push void value onto the stack
+*/
+extern void            PushVoidObj ( void );
 
 /****************************************************************************
 **

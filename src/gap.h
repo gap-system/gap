@@ -86,6 +86,16 @@ extern void ErrorQuit (
             Int                 arg1,
             Int                 arg2 );
 
+/****************************************************************************
+**
+*F  ErrorMayQuit( <msg>, <arg1>, <arg2> )  . print, enter break loop and quit
+**                                           no option to return anything.
+*/
+extern void ErrorMayQuit (
+            const Char *        msg,
+            Int                 arg1,
+            Int                 arg2 );
+
 
 /****************************************************************************
 **

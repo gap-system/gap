@@ -1,0 +1,25 @@
+@Name
+Gr&ouml;bner Bases
+@Contact
+WDJ
+@Date
+2001/9/28
+@Time
+4
+@Need
+2
+@NeedA
+2
+@Math
+3
+@Prog
+4
+@Component
+Rational functions, rings
+@Descr
+Implement (commutative/noncommutative) G&ouml;bner Bases.
+@Manual
+@Ref
+@Rem
+There is some work on interfacing to Singular (de Graaf) and on
+noncommutative Gr"obner Bases (Green, Struble, Cohen). AH

@@ -50,9 +50,9 @@ gap> Print(List(li,i->i),"\n");
 
 gap> LatticeSubgroups(Group((1,2,3,4,5,6)));;
 gap> g := Group( (1,2,3,4)(5,6,7,8), (1,5,3,7)(2,8,4,6) );;
-gap> List(ConjugacyClassesSubgroups(g),i->Size(Representative(i)));
+gap> AsSortedList(List(ConjugacyClassesSubgroups(g),i->Size(Representative(i))));
 [ 1, 2, 4, 4, 4, 8 ]
-gap> List(NormalSubgroups(g),Size);
+gap> AsSortedList(List(NormalSubgroups(g),Size));
 [ 1, 2, 4, 4, 4, 8 ]
 
 # thats all, folks

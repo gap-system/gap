@@ -116,7 +116,7 @@ DeclareGlobalFunction( "SchreierTransversal", [ IsObject, IsFunction, IsList ] )
 #O  OrbitGenerators( <ss> )
 ##
 ##  The elements used to compute the orbit <ss>.  These will be generators for 
-##  the larger group, homever there will often be redundancies to keep the 
+##  the larger group, however there will often be redundancies to keep the 
 ##  Schreier tree shallow.
 ##
 DeclareOperation( "OrbitGenerators", [ IsTransvBySchreierTree ] );
@@ -152,7 +152,7 @@ DeclareAttribute( "One", IsTransvBySchreierTree );
 #F  ExtendSchreierTransversal( <st>, <newGens> )
 #F  ExtendSchreierTransversal( <st>, <newGens>, <newGensInv> )
 ##
-##  Extend a tranversal by Schreier tree <st> with new generators <newGens>.
+##  Extend a transversal by Schreier tree <st> with new generators <newGens>.
 ##
 DeclareGlobalFunction( "ExtendSchreierTransversal", 
 	[ IsTransvBySchreierTree, IsList ] );

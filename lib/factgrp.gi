@@ -633,26 +633,42 @@ end);
 #F  SmallerDegreePermutationRepresentation( <G> )
 ##
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
-local H,o,i,s;
+local H,o,i,s,gut,erg,k,loop;
   if not IsTransitive(G,MovedPoints(G)) then
     o:=ShallowCopy(OrbitsDomain(G,MovedPoints(G)));
     Sort(o,function(a,b)return Length(a)<Length(b);end);
-    s:=[];
-    for i in [1..Length(o)] do
-      if HasSize(G) and not HasStabChainMutable(G) then
-	s:=ActionHomomorphism(G,o[i],OnPoints,"surjective");
-	if Size(Range(s))=Size(G) then
-	  return s*SmallerDegreePermutationRepresentation(Image(s));
+
+    for loop in [1..2] do
+      s:=[];
+      # Try subdirect product
+      k:=G;
+      gut:=[];
+      for i in [1..Length(o)] do
+	s:=Stabilizer(k,o[i],OnTuples);
+	if Size(s)<Size(k) then
+	  k:=s;
+	  Add(gut,i);
 	fi;
-      else
-	s[i]:=Stabilizer(G,o[i],OnTuples);
-	if Size(s[i])=1 then
-	  s:=ActionHomomorphism(G,o[i],OnPoints,"surjective");
-	  return s*SmallerDegreePermutationRepresentation(Image(s));
-	fi;
-      fi;
+      od;
+      # reduce each orbit separately
+      o:=o{gut};
+      # second run: now take the big orbits first
+      Sort(o,function(a,b)return Length(a)>Length(b);end);
     od;
-    #T: Try subdirect product
+
+    erg:=List(GeneratorsOfGroup(G),i->());
+    for i in [1..Length(o)] do
+      s:=ActionHomomorphism(G,o[i],OnPoints,"surjective");
+      s:=s*SmallerDegreePermutationRepresentation(Image(s));
+      erg:=SubdirectDiagonalPerms(erg,List(GeneratorsOfGroup(G),i->Image(s,i)));
+    od;
+    if NrMovedPoints(erg)<NrMovedPoints(G) then
+      s:=Group(erg,());
+      SetSize(s,Size(G));
+      s:=GroupHomomorphismByImagesNC(G,s,GeneratorsOfGroup(G),erg);
+      SetIsBijective(s,true);
+      return s;
+    fi;
     return IdentityMapping(G);
   fi;
   # if the original group has no stabchain we probably do not want to keep
@@ -995,6 +1011,44 @@ local h;
   # return the map
   return h;
 end);
+
+#############################################################################
+##
+#M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . .  for solvable factors
+##
+NH_TRYPCGS_LIMIT:=30000;
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
+  "test if known/try solvable factor for permutation groups",
+  IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
+function( G, N )
+local   map,  pcgs,  A,h;
+    
+  h:=GetNaturalHomomorphismsPool(G,N);
+  if h<>fail then
+    return h;
+  fi;
+
+    if Minimum(Index(G,N),NrMovedPoints(G))>NH_TRYPCGS_LIMIT then
+      TryNextMethod();
+    fi;
+
+    # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
+    # routines).
+    pcgs := TryPcgsPermGroup( [ G, N ], false, false, true );
+    if not IsModuloPcgs( pcgs )  then
+	TryNextMethod();
+    fi;
+
+    # Construct the pcp group <A> and the bijection between <A> and <G>.
+    A := PermpcgsPcGroupPcgs( pcgs, pcgs!.permpcgsNormalSteps, false );
+    UseFactorRelation( G, N, A );
+    map := EpiPcByModpcgs( G, A, pcgs, GeneratorsOfGroup( A ) );
+
+    SetIsSurjective( map, true );
+    SetKernelOfMultiplicativeGeneralMapping( map, N );
+    
+    return map;
+end );
 
 #############################################################################
 ##

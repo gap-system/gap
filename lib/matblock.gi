@@ -54,7 +54,6 @@ DeclareRepresentation( "IsBlockMatrixRep",
 #F  BlockMatrix( <blocks>, <nrb>, <ncb>, <rpb>, <cpb>, <zero> )
 ##
 InstallGlobalFunction( BlockMatrix, function( arg )
-
     local blocks, nrb, ncb, rpb, cpb, zero, newblocks, block, i;
 
     # Check and get the arguments.
@@ -106,8 +105,9 @@ InstallGlobalFunction( BlockMatrix, function( arg )
     return Objectify( NewType( CollectionsFamily( CollectionsFamily(
                                    FamilyObj( zero ) ) ),
                                    IsOrdinaryMatrix
-                               and IsListDefault
+                               and IsMultiplicativeGeneralizedRowVector
                                and IsBlockMatrixRep
+                               and IsCopyable
                                and IsFinite ),
                       rec( blocks := Immutable( newblocks ),
                            zero   := zero,
@@ -124,8 +124,7 @@ end );
 ##
 InstallMethod( Length,
     "for an ordinary block matrix",
-    true,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     blockmat -> blockmat!.nrb * blockmat!.rpb );
 
 
@@ -135,10 +134,8 @@ InstallMethod( Length,
 ##
 InstallMethod( \[\],
     "for an ordinary block matrix and a positive integer",
-    true,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsPosInt ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsPosInt ],
     function( blockmat, n )
-
     local qr, i, ii, row, block, j;
 
     # `n-1 = qr[1] * blockmat!.rpb + qr[2]'.
@@ -167,8 +164,7 @@ InstallMethod( \[\],
 ##
 InstallMethod( TransposedMat,
     "for an ordinary block matrix",
-    true,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     m -> BlockMatrix( List( m!.blocks, i -> [ i[2], i[1],
                                               TransposedMat( i[3] ) ] ),
                       m!.ncb,
@@ -180,10 +176,11 @@ InstallMethod( TransposedMat,
 
 #############################################################################
 ##
-#F  MatrixByBlockMatrix( <blockmat> ) . . . create matrix from (block) matrix
+#M  MatrixByBlockMatrix( <blockmat> ) . . . create matrix from (block) matrix
 ##
-InstallGlobalFunction( MatrixByBlockMatrix, function( blockmat )
-
+InstallMethod( MatrixByBlockMatrix,
+    [ IsMatrix ],
+    function( blockmat )
     local mat, block, i, j;
 
     if not IsOrdinaryMatrix( blockmat ) then
@@ -214,7 +211,6 @@ end );
 #F  AsBlockMatrix( <m>, <nrb>, <ncb> )  . . . create block matrix from matrix
 ##
 InstallGlobalFunction( AsBlockMatrix, function( mat, nrb, ncb )
-
     local rpb, cpb, blocks, i, ii, j, jj, block;
 
     if not IsOrdinaryMatrix( mat ) or IsEmpty( mat ) then
@@ -256,7 +252,7 @@ InstallMethod( \=,
     "for two ordinary block matrices",
     IsIdenticalObj,
     [ IsOrdinaryMatrix and IsBlockMatrixRep,
-      IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+      IsOrdinaryMatrix and IsBlockMatrixRep ],
     function( bm1, bm2 )
     if     bm1!.nrb = bm2!.nrb
        and bm1!.ncb = bm2!.ncb
@@ -277,9 +273,8 @@ InstallMethod( \+,
     "for two ordinary block matrices",
     IsIdenticalObj,
     [ IsOrdinaryMatrix and IsBlockMatrixRep,
-      IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+      IsOrdinaryMatrix and IsBlockMatrixRep ],
     function( bm1, bm2 )
-
     local blocks, pos, i;
 
     if     bm1!.nrb = bm2!.nrb
@@ -320,12 +315,36 @@ InstallMethod( \+,
 
 #############################################################################
 ##
+#M  \+( <bm>, <grv> ) . . . . . . . . . . . . . . .  for block matrix and grv
+#M  \+( <grv>, <bm> ) . . . . . . . . . . . . . . .  for grv and block matrix
+##
+InstallOtherMethod( \+,
+    "for an ordinary block matrix, and a grv",
+    IsIdenticalObj,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsGeneralizedRowVector ],
+    function( bm, grv )
+    return MatrixByBlockMatrix( bm ) + grv;
+    end );
+
+InstallOtherMethod( \+,
+    "for a grv, and an ordinary block matrix",
+    IsIdenticalObj,
+    [ IsGeneralizedRowVector, IsOrdinaryMatrix and IsBlockMatrixRep ],
+    function( grv, bm )
+    return grv + MatrixByBlockMatrix( bm );
+    end );
+
+
+#############################################################################
+##
 #M  AdditiveInverseOp( <blockmat> ) . . . . . . . . . . .  for a block matrix
+##
+##  We can't do better than the default method for AdditiveInverseOp,
+##  since that has to produce a mutable result
 ##
 InstallMethod( AdditiveInverseOp,
     "for an ordinary block matrix",
-    true,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     bm -> BlockMatrix( List( bm!.blocks,
                              b -> [ b[1], b[2], AdditiveInverse( b[3] ) ] ),
                        bm!.nrb, bm!.ncb, bm!.rpb, bm!.cpb, bm!.zero ) );
@@ -346,7 +365,6 @@ InstallMethod( \*,
       IsOrdinaryMatrix and IsBlockMatrixRep ], 6,
     # being a block matrix is better than being a small list
     function( bm1, bm2 )
-
     local blocks, b1, b2, pos, i;
 
     if     bm1!.ncb = bm2!.nrb and bm1!.cpb = bm2!.rpb then
@@ -395,22 +413,26 @@ InstallMethod( \*,
 InstallMethod( \*,
     "for ordinary block matrix and vector",
     IsCollsElms,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsRowVector ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsRowVector ],
     function( bm, vec )
-
-    local cpb, rpb, vector, block, i, j;
-
-    if Length( vector ) <> bm!.ncb * bm!.cpb then
-      Error( "incompatible lengths of <vec> and <bm>[1]" );
-    fi;
+    local cpb, rpb, ncols, nrows, vector, block, i, j;
 
     cpb:= bm!.cpb;
     rpb:= bm!.rpb;
-    vector:= ListWithIdenticalEntries( bm!.nrb * rpb, bm!.zero );
+    ncols:= bm!.ncb * cpb;
+    nrows:= bm!.nrb * rpb;
+    if Length( vec ) < ncols then
+      vec:= Concatenation( vec,
+              ListWithIdenticalEntries( ncols - Length( vec ), bm!.zero ) );
+#T yes, this can be optimized ...
+    fi;
+
+    vector:= ListWithIdenticalEntries( nrows, bm!.zero );
     for block in bm!.blocks do
       i:= block[1];
       j:= block[2];
       vector{ [ (i-1)*rpb+1 .. i*rpb ] }:=
+                        vector{ [ (i-1)*rpb+1 .. i*rpb ] } +
                         block[3] * vec{ [ (j-1)*cpb+1 .. j*cpb ] };
     od;
 
@@ -420,22 +442,26 @@ InstallMethod( \*,
 InstallMethod( \*,
     "for vector and ordinary block matrix",
     IsElmsColls,
-    [ IsRowVector, IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsRowVector, IsOrdinaryMatrix and IsBlockMatrixRep ],
     function( vec, bm )
-
-    local cpb, rpb, vector, block, i, j;
-
-    if Length( vec ) <> bm!.nrb * bm!.rpb then
-      Error( "incompatible lengths of <vec> and <bm>" );
-    fi;
+    local cpb, rpb, ncols, nrows, vector, block, i, j;
 
     cpb:= bm!.cpb;
     rpb:= bm!.rpb;
-    vector:= ListWithIdenticalEntries( bm!.ncb * cpb, bm!.zero );
+    ncols:= bm!.ncb * cpb;
+    nrows:= bm!.nrb * rpb;
+    if Length( vec ) < nrows then
+      vec:= Concatenation( vec,
+              ListWithIdenticalEntries( nrows - Length( vec ), bm!.zero ) );
+#T yes, this can be optimized ...
+    fi;
+
+    vector:= ListWithIdenticalEntries( ncols, bm!.zero );
     for block in bm!.blocks do
       i:= block[1];
       j:= block[2];
       vector{ [ (j-1)*cpb+1 .. j*cpb ] }:=
+                        vector{ [ (j-1)*cpb+1 .. j*cpb ] } +
                         vec{ [ (i-1)*rpb+1 .. i*rpb ] } * block[3];
     od;
 
@@ -445,7 +471,7 @@ InstallMethod( \*,
 InstallMethod( \*,
     "for ordinary block matrix and ring element",
     IsCollCollsElms,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsRingElement ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsRingElement ],
     function( bm, c )
     return BlockMatrix( List( bm!.blocks,
                               b -> [ b[1], b[2], b[3] * c ] ),
@@ -455,7 +481,7 @@ InstallMethod( \*,
 InstallMethod( \*,
     "for ring element and ordinary block matrix",
     IsElmsCollColls,
-    [ IsRingElement, IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsRingElement, IsOrdinaryMatrix and IsBlockMatrixRep ],
     function( c, bm )
     return BlockMatrix( List( bm!.blocks,
                               b -> [ b[1], b[2], c * b[3] ] ),
@@ -470,8 +496,7 @@ InstallMethod( \*,
 ##
 InstallMethod( \*,
     "for ordinary block matrix and integer",
-    true,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsInt ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsInt ],
     function( bm, n )
     return BlockMatrix( List( bm!.blocks,
                               b -> [ b[1], b[2], b[3] * n ] ),
@@ -480,8 +505,7 @@ InstallMethod( \*,
 
 InstallMethod( \*,
     "for integer and ordinary block matrix",
-    true,
-    [ IsInt, IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsInt, IsOrdinaryMatrix and IsBlockMatrixRep ],
     function( n, bm )
     return BlockMatrix( List( bm!.blocks,
                               b -> [ b[1], b[2], n * b[3] ] ),
@@ -491,14 +515,13 @@ InstallMethod( \*,
 
 #############################################################################
 ##
-#M  \*( <bm>, <z> ) . . . . . . . . . . . .  for integer block matrix and ffe 
+#M  \*( <bm>, <z> ) . . . . . . . . . . . .  for integer block matrix and ffe
 #M  \*( <z>, <bm> ) . . . . . . . . . . . .  for ffe and integer block matrix
 ##
 InstallMethod( \*,
     "for ordinary block matrix of integers and ffe",
-    true,
     [ IsOrdinaryMatrix and IsBlockMatrixRep and IsCyclotomicCollColl,
-      IsFFE ], 0,
+      IsFFE ],
     function( bm, z )
     return BlockMatrix( List( bm!.blocks,
                               b -> [ b[1], b[2], b[3] * z ] ),
@@ -507,9 +530,8 @@ InstallMethod( \*,
 
 InstallMethod( \*,
     "for ffe and ordinary block matrix of integers",
-    true,
     [ IsFFE,
-      IsOrdinaryMatrix and IsBlockMatrixRep and IsCyclotomicCollColl ], 0,
+      IsOrdinaryMatrix and IsBlockMatrixRep and IsCyclotomicCollColl ],
     function( z, bm )
     return BlockMatrix( List( bm!.blocks,
                               b -> [ b[1], b[2], z * b[3] ] ),
@@ -519,11 +541,34 @@ InstallMethod( \*,
 
 #############################################################################
 ##
+#M  \*( <bm>, <mgrv> )  . . . . . . . . . . . . . . for block matrix and mgrv
+#M  \*( <mgrv>, <bm> )  . . . . . . . . . . . . . . for mgrv and block matrix
+##
+InstallOtherMethod( \*,
+    "for an ordinary block matrix, and a mgrv",
+    IsIdenticalObj,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep,
+      IsMultiplicativeGeneralizedRowVector ],
+    function( bm, grv )
+    return MatrixByBlockMatrix( bm ) * grv;
+    end );
+
+InstallOtherMethod( \*,
+    "for a mgrv, and an ordinary block matrix",
+    IsIdenticalObj,
+    [ IsMultiplicativeGeneralizedRowVector,
+      IsOrdinaryMatrix and IsBlockMatrixRep ],
+    function( grv, bm )
+    return grv * MatrixByBlockMatrix( bm );
+    end );
+
+
+#############################################################################
+##
 #M  OneOp( <bm> )  . . . . . . . . . . . . . . . . . . . . for a block matrix
 ##
 InstallOtherMethod( OneOp,
     "for an ordinary block matrix",
-    true,
     [ IsOrdinaryMatrix and IsBlockMatrixRep ], 3,
     # being a block matrix is better than being a small list
     function( bm )
@@ -544,12 +589,23 @@ InstallOtherMethod( OneOp,
 
 #############################################################################
 ##
+#M  InverseOp( <bm> )  . . . . . . . . . . . . . . . . . . for a block matrix
+##
+InstallOtherMethod( InverseOp,
+    "for an ordinary block matrix",
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
+    function( bm )
+    return InverseOp( MatrixByBlockMatrix( bm ) );
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <blockmat> ) . . . . . . . . . . . . . . . .  for a block matrix
 ##
 InstallMethod( ViewObj,
     "for an ordinary block matrix",
-    true,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     function( m )
     Print( "<block matrix of dimensions (", m!.nrb, "*", m!.rpb,
            ")x(", m!.ncb, "*", m!.cpb, ")>" );
@@ -562,8 +618,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for an ordinary block matrix",
-    true,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     function( m )
     Print( "BlockMatrix( ", m!.blocks, ",", m!.nrb, ",", m!.ncb,
            ",", m!.rpb, ",", m!.cpb, ",", m!.zero, " )" );
@@ -576,8 +631,7 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( DimensionsMat,
     "for an ordinary block matrix",
-    true,
-    [ IsOrdinaryMatrix and IsBlockMatrixRep ], 0,
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     m -> [ m!.nrb * m!.rpb, m!.ncb * m!.cpb ] );
 
 

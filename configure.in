@@ -1,4 +1,9 @@
+
 AC_INIT(configure)
+
+if test "x$CFLAGS" = "x" ;  then
+  CFLAGS=${COPTS}
+fi
 gp_configure_options=$*
 AC_SUBST(gp_configure_options)
 AC_CONFIG_AUX_DIR(cnf)

@@ -22,8 +22,7 @@ Revision.monofree_gi:=
 ##
 InstallMethod( IsWholeFamily,
     "for a free monoid",
-    true,
-    [ IsAssocWordWithOneCollection and IsMonoid ], 0,
+    [ IsAssocWordWithOneCollection and IsMonoid ],
     M -> IsSubset( MagmaGeneratorsOfFamily( FamilyObj( M ) ),
                    GeneratorsOfMagmaWithOne( M ) ) );
 
@@ -38,8 +37,7 @@ InstallMethod( IsWholeFamily,
 ##
 InstallMethod( Iterator,
     "for a free monoid",
-    true,
-    [ IsAssocWordWithOneCollection and IsWholeFamily ], 0,
+    [ IsAssocWordWithOneCollection and IsWholeFamily ],
     function( M )
 
     # A free free group needs another method.
@@ -71,20 +69,18 @@ DeclareRepresentation( "IsFreeMonoidEnumeratorRep",
 
 InstallMethod( \[\],
     "for enumerator of a free monoid",
-    true,
-    [ IsFreeMonoidEnumeratorRep, IsPosInt ], 0,
+    [ IsFreeMonoidEnumeratorRep, IsPosInt ],
     FreeMonoid_ElementNumber );
 
 InstallMethod( Position,
     "for enumerator of a free monoid",
     IsCollsElmsX,
-    [ IsFreeMonoidEnumeratorRep, IsObject, IsZeroCyc ], 0,
+    [ IsFreeMonoidEnumeratorRep, IsObject, IsZeroCyc ],
     FreeMonoid_NumberElement );
 
 InstallMethod( Enumerator,
     "for a free monoid",
-    true,
-    [ IsAssocWordWithOneCollection and IsWholeFamily and IsMonoid ], 0,
+    [ IsAssocWordWithOneCollection and IsWholeFamily and IsMonoid ],
     function( M )
     local enum;
 
@@ -109,15 +105,10 @@ InstallMethod( Enumerator,
 #T use better method for the whole family, and for abelian monoids
 ##
 InstallMethod( Random,
-    "method for a free monoid",
-    true,
-    [ IsMonoid and IsAssocWordWithOneCollection ], 0,
+    "for a free monoid",
+    [ IsMonoid and IsAssocWordWithOneCollection ],
     function( M )
-
-    local len,
-          result,
-          gens,
-          i;
+    local len, result, gens, i;
 
     # Get a random length for the word.
     len:= Random( Integers );
@@ -146,9 +137,8 @@ InstallMethod( Random,
 #M  Size( <M> ) . . . . . . . . . . . . . . . . . . . . size of a free monoid
 ##
 InstallMethod( Size,
-    "method for a free monoid",
-    true,
-    [ IsMonoid and IsAssocWordWithOneCollection ], 0,
+    "for a free monoid",
+    [ IsMonoid and IsAssocWordWithOneCollection ],
     function( M )
     if IsTrivial( M ) then
       return 1;
@@ -163,9 +153,8 @@ InstallMethod( Size,
 #A  One( <Fam> )
 ##
 InstallOtherMethod( One,
-    "method for a family of free monoid elements",
-    true,
-    [ IsAssocWordWithOneFamily ], 0,
+    "for a family of free monoid elements",
+    [ IsAssocWordWithOneFamily ],
     F -> ObjByExtRep( F, 1, 1, [] ) );
 
 
@@ -174,11 +163,9 @@ InstallOtherMethod( One,
 #A  MagmaGeneratorsOfFamily( <F> )
 ##
 InstallMethod( MagmaGeneratorsOfFamily,
-    "method for a family of free monoid elements",
-    true,
-    [ IsAssocWordWithOneFamily ], 0,
+    "for a family of free monoid elements",
+    [ IsAssocWordWithOneFamily ],
     function( F )
-
     local gens;
 
     # Make the generators.
@@ -200,11 +187,11 @@ InstallMethod( MagmaGeneratorsOfFamily,
 #F  FreeMonoid( infinity, <name>, <init> )
 ##
 InstallGlobalFunction( FreeMonoid, function( arg )
-local   names,      # list of generators names
-	F,          # family of free monoid element objects
-	zarg,
-	lesy,	    # filter for letter or syllable words family
-	M;          # free monoid, result
+    local names,      # list of generators names
+          F,          # family of free monoid element objects
+          zarg,
+          lesy,       # filter for letter or syllable words family
+          M;          # free monoid, result
 
   lesy:=IsLetterWordsFamily; # default
   if IsFilter(arg[1]) then
@@ -233,7 +220,8 @@ local   names,      # list of generators names
       names:= zarg[1];
     elif 1 <= Length( zarg ) and ForAll( zarg, IsString ) then
       names:= zarg;
-    elif Length( zarg ) = 1 and IsList( zarg[1] ) then
+    elif Length( zarg ) = 1 and IsList( zarg[1] )
+                            and ForAll( zarg[1], IsString ) then
       names:= zarg[1];
     else
       Error("usage: FreeMonoid(<name1>,<name2>..) or FreeMonoid(<rank>)");
@@ -299,8 +287,7 @@ end );
 ##
 InstallMethod( ViewObj,
     "for a free monoid containing the whole family",
-    true,
-    [ IsMonoid and IsAssocWordCollection and IsWholeFamily ], 0,
+    [ IsMonoid and IsAssocWordCollection and IsWholeFamily ],
     function( M )
     if VIEWLEN * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
       Print( "<free monoid with ", Length( GeneratorsOfMagmaWithOne( M ) ),
@@ -309,7 +296,7 @@ InstallMethod( ViewObj,
       Print( "<free monoid on the generators ",
              GeneratorsOfMagmaWithOne( M ), ">" );
     fi;
-end );
+    end );
 
 
 #############################################################################

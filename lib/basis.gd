@@ -94,6 +94,18 @@ DeclareCategory( "IsBasis", IsHomogeneousList and IsDuplicateFreeList );
 
 #############################################################################
 ##
+#C  IsFiniteBasisDefault( <obj> )
+##
+##  Objects in this category are in `IsListDefault', that is, addition and
+##  multiplication for them is defined as for internally represented lists,
+##  the result presumably being an internally represented list.
+##
+DeclareSynonym( "IsFiniteBasisDefault",
+    IsBasis and IsCopyable and IsListDefault );
+
+
+#############################################################################
+##
 #P  IsCanonicalBasis( <B> )
 ##
 ##  If the underlying free left module $V$ of the basis <B> supports a
@@ -287,8 +299,10 @@ DeclareOperation( "Coefficients", [ IsBasis, IsVector ] );
 ##  $\sum_{i=1}^n <coeff>[i] \* <B>[i]$.
 ##
 ##  If <vectors> and <coeff> are homogeneous lists of the same length <n>,
-##  say, `LinearCombination' returns $\sum_{i=1}^n <coeff>[i]\*<vectors>[i]$.
-##  Perhaps the most important case is that <vectors> is a basis <B>.
+##  say, `LinearCombination' returns the vector
+##  $\sum_{i=1}^n <coeff>[i]\*<vectors>[i]$.
+##  Perhaps the most important usage is the case where <vectors> forms a 
+##  basis.
 ##
 DeclareOperation( "LinearCombination",
     [ IsHomogeneousList, IsHomogeneousList ] );

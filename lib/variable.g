@@ -179,6 +179,28 @@ BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
         end );
 end );
 
+##  Bind some keywords as global variables such that <Tab> completion works
+##  for them. These variables are not accecible.
+BIND_GLOBAL( "Unbind", 0 );
+BIND_GLOBAL( "true", 0 );
+BIND_GLOBAL( "false", 0 );
+BIND_GLOBAL( "while", 0 );
+BIND_GLOBAL( "repeat", 0 );
+BIND_GLOBAL( "until", 0 );
+BIND_GLOBAL( "SaveWorkspace", 0 );
+BIND_GLOBAL( "else", 0 );
+BIND_GLOBAL( "elif", 0 );
+BIND_GLOBAL( "function", 0 );
+BIND_GLOBAL( "local", 0 );
+BIND_GLOBAL( "return", 0 );
+BIND_GLOBAL( "then", 0 );
+BIND_GLOBAL( "quit", 0 );
+BIND_GLOBAL( "break", 0 );
+BIND_GLOBAL( "continue", 0 );
+BIND_GLOBAL( "IsBound", 0 );
+BIND_GLOBAL( "TryNextMethod", 0 );
+BIND_GLOBAL( "Info", 0 );
+BIND_GLOBAL( "Assert", 0 );
 
 #############################################################################
 ##

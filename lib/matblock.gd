@@ -42,12 +42,12 @@ DeclareGlobalFunction( "BlockMatrix" );
 
 #############################################################################
 ##
-#F  MatrixByBlockMatrix( <blockmat> ) . . . create matrix from (block) matrix
+#A  MatrixByBlockMatrix( <blockmat> ) . . . create matrix from (block) matrix
 ##
-##  returns an ordinary matrix that is equal to the block matrix
+##  returns a plain ordinary matrix that is equal to the block matrix
 ##  <blockmat>.
 ##
-DeclareGlobalFunction( "MatrixByBlockMatrix" );
+DeclareAttribute( "MatrixByBlockMatrix", IsMatrix );
 #T ConvertToPlistRep?
 
 

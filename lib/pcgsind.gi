@@ -45,13 +45,8 @@ DeclareRepresentation(
 ##
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <empty-list> )
 ##
-InstallMethod( InducedPcgsByPcSequenceNC,
-    "pcgs, empty list",
-    true,
-    [ IsPcgs,
-      IsList and IsEmpty ],
-    0,
-
+InstallMethod( InducedPcgsByPcSequenceNC, "pcgs, empty list",
+    true, [ IsPcgs, IsList and IsEmpty ], 0,
 function( pcgs, pcs )
     local  efam, filter,  igs;
     
@@ -93,17 +88,29 @@ function( pcgs, pcs )
     
 end );
 
+InstallOtherMethod( InducedPcgsByPcSequenceNC, "pcgs, empty list,depths",
+    true, [ IsPcgs, IsList and IsEmpty,IsList ], 0,
+function( pcgs, pcs,dep )
+  return InducedPcgsByPcSequenceNC(pcgs,pcs);
+end);
+
 
 #############################################################################
 ##
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
 ##
-InstallMethod( InducedPcgsByPcSequenceNC, "pcgs, homogeneous list",
-    IsIdenticalObj, [ IsPcgs, IsCollection and IsHomogeneousList ], 0,
-function( pcgs, pcs )
-    local   efam,  filter,  j,  l,  i,  m,  d,  igs,  tmp,susef,attl,
-    igsdepthMapFromParent,igsdepthsInParent;
+BindGlobal("DoInducedPcgsByPcSequenceNC",
+function(arg)
+local   pcgs,pcs,depths,efam,  filter,  j,  l,  i,  m,  d,  igs,  tmp,
+        susef,attl, igsdepthMapFromParent,igsdepthsInParent;
 
+    pcgs:=arg[1];
+    pcs:=arg[2];
+    if Length(arg)>2 then
+      depths:=arg[3];
+    else
+      depths:=fail;
+    fi;
     # get the elements family
     efam := FamilyObj( OneOfPcgs( pcgs ) );
 
@@ -168,11 +175,15 @@ function( pcgs, pcs )
             igsdepthMapFromParent[d[i]] := i;
         od;
     else
-        for i  in [ 1 .. Length(pcs) ]  do
-            tmp := DepthOfPcElement( pcgs, pcs[i] );
-            igsdepthsInParent[i] := tmp;
-            igsdepthMapFromParent[tmp] := i;
-        od;
+      for i  in [ 1 .. Length(pcs) ]  do
+	if depths=fail then
+	  tmp := DepthOfPcElement( pcgs, pcs[i] );
+	else
+	  tmp:=depths[i];
+	fi;
+	igsdepthsInParent[i] := tmp;
+	igsdepthMapFromParent[tmp] := i;
+      od;
     fi;
     igsdepthMapFromParent[Length(pcgs)+1] := Length(pcs)+1;
 
@@ -216,6 +227,15 @@ function( pcgs, pcs )
     return igs;
     
 end );
+
+InstallMethod( InducedPcgsByPcSequenceNC, "pcgs, homogeneous list",
+    IsIdenticalObj, [ IsPcgs, IsCollection and IsHomogeneousList ], 0,
+    DoInducedPcgsByPcSequenceNC);
+
+InstallOtherMethod(InducedPcgsByPcSequenceNC,"pcgs, homogeneous list, depths",
+    IsFamFamX, [ IsPcgs, IsCollection and IsHomogeneousList,
+      IsList ], 0,
+    DoInducedPcgsByPcSequenceNC);
 
 #############################################################################
 ##
@@ -642,11 +662,7 @@ end );
 
 #############################################################################
 InstallOtherMethod( InducedPcgsByGeneratorsNC,"pcgs, empty list",
-    true,
-    [ IsPcgs,
-      IsList and IsEmpty ],
-    0,
-
+    true, [ IsPcgs, IsList and IsEmpty ], 0,
 function( pcgs, gens )
     return InducedPcgsByPcSequenceNC( pcgs, [] );
 end );
@@ -685,11 +701,8 @@ RedispatchOnCondition( InducedPcgsByGeneratorsNC, true,
 
 
 #############################################################################
-InstallOtherMethod( InducedPcgsByGenerators,
-    true,
-    [ IsPcgs,
-      IsList and IsEmpty ],
-    0,
+InstallOtherMethod( InducedPcgsByGenerators, true,
+    [ IsPcgs, IsList and IsEmpty ], 0,
 
 function( pcgs, gens )
     return InducedPcgsByPcSequenceNC( pcgs, [] );

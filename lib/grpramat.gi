@@ -49,15 +49,55 @@ local gens,mat,G;
   mat[1][1]:=-1;
   Add(gens,mat);
   # elementary addition
-  mat:= IdentityMat(n,1);
-  mat[1][2]:=1;
-  Add(gens,mat);
+  if n>1 then
+    mat:= IdentityMat(n,1);
+    mat[1][2]:=1;
+    Add(gens,mat);
+  fi;
   gens:=List(gens,Immutable);
   G:= GroupByGenerators( gens, IdentityMat( n, 1 ) );
   Setter(IsNaturalGLnZ)(G,true);
   SetName(G,Concatenation("GL(",String(n),",Integers)"));
-  SetSize(G,infinity);
-  SetIsFinite(G,false);
+  if n>1 then
+    SetSize(G,infinity);
+    SetIsFinite(G,false);
+  else
+    SetIsFinite(G,true);
+    SetSize(G,2);
+  fi;    
+  return G;
+end);
+
+#############################################################################
+##
+#M  SpecialLinearGroupCons(IsMatrixGroup,n,Integers)
+##
+InstallOtherMethod(SpecialLinearGroupCons,"some generators for SL_n(Z)",
+  [IsMatrixGroup,IsPosInt,IsIntegers],
+function(fil,n,ints)
+local gens,mat,G;
+  # permutations
+  gens:=List(GeneratorsOfGroup(AlternatingGroup(n)),i->PermutationMat(i,n));
+  if n>1 then
+    mat:= IdentityMat(n,1);
+    mat{[1..2]}{[1..2]}:=[[0,1],[-1,0]];
+    Add(gens,mat);
+    # elementary addition
+    mat:= IdentityMat(n,1);
+    mat[1][2]:=1;
+    Add(gens,mat);
+  fi;
+  gens:=List(gens,Immutable);
+  G:= GroupByGenerators( gens, IdentityMat( n, 1 ) );
+  Setter(IsNaturalSLnZ)(G,true);
+  SetName(G,Concatenation("SL(",String(n),",Integers)"));
+  if n>1 then
+    SetSize(G,infinity);
+    SetIsFinite(G,false);
+  else
+    SetIsFinite(G,true);
+    SetSize(G,1);
+  fi;
   return G;
 end);
 
@@ -187,8 +227,9 @@ InstallMethod( IsFinite,
     "via Minkowski kernel (short but not too efficient)",
     [ IsCyclotomicMatrixGroup ],
     function( G )
+local size, lat, grp, dim, basis, gens, gensp, orb, rep, stb, img, sch, i,
+      pnt, gen, tmp;
 
-    local lat, grp, stb, orb, rep, gen, pnt, img, sch, size, dim, basis, i;
 
     # if not rational, use the nice monomorphism into a rational matrix group
     if not IsRationalMatrixGroup( G ) then
@@ -214,17 +255,25 @@ InstallMethod( IsFinite,
     dim   := DimensionOfMatrixGroup( grp );
     basis := Immutable( IdentityMat( dim, GF( 2 ) ) );
     for i in [1..dim] do
-        orb := [ basis[i] ];
-        rep := [ One( grp ) ];
-        stb := [];       
+        orb   := [ basis[i] ];
+        gens  := GeneratorsOfGroup( grp );
+        gensp := List(gens,i->ImmutableMatrix(2,i*Z(2),true));
+        rep   := [ One( grp ) ];
+        stb   := [];
         for pnt in orb do
-            for gen in GeneratorsOfGroup( grp ) do
-                img := pnt * gen;
+            for gen in [1..Length(gens)] do
+                img := pnt * gensp[gen];
                 if not img in orb  then
                     Add( orb, img );
-                    Add( rep, rep[ Position( orb, pnt ) ] * gen );
+                    tmp := rep[ Position( orb, pnt ) ] * gens[gen];
+                    # simple test for infinite order
+                    # Order() would be too expensive to do on all elements
+                    if AbsInt( TraceMat( tmp ) ) > dim then
+                        return false;
+                    fi;
+                    Add( rep, tmp );
                 else
-                    sch := rep[ Position( orb, pnt ) ] * gen
+                    sch := rep[ Position( orb, pnt ) ] * gens[gen]
                            / rep[ Position( orb, img ) ];
                     if i = dim then
                         if sch <> One( grp ) then
@@ -234,6 +283,12 @@ InstallMethod( IsFinite,
                             if ForAny( stb, x -> x * sch <> sch * x ) then
                                 return false;
                             fi;
+                        fi;
+                    else
+                        # simple test for infinite order
+                        # Order() would be too expensive to do on all elements
+                        if AbsInt( TraceMat( sch ) ) > dim then
+                            return false;
                         fi;
                     fi;
                     AddSet( stb, sch );

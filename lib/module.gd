@@ -278,11 +278,11 @@ DeclareOperation( "LeftModuleByGenerators",
 ##  free left module <V>.
 ##  `UseBasis' stores information in <V> that can be derived form this fact,
 ##  namely
-##  \beginlist
-##  \item{-}
+##  \beginlist%unordered
+##  \item{--}
 ##    <gens> are stored as left module generators if no such generators were
 ##    bound (this is useful especially if <V> is an algebra),
-##  \item{-}
+##  \item{--}
 ##    the dimension of <V> is stored.
 ##  \endlist
 ##

@@ -79,15 +79,16 @@ InstallMethod( TableOfMarks,
     classNames:=[];
 
     # Compute generators for each subgroup.
-    gens:= GeneratorsOfGroup( G );
-    if 1 < Length( gens ) then
-      gens:= MinimalGeneratingSet( G );
-    fi;
-    if Length(gens)>0 then
-      gen:= gens[1];
-    else
-      gen:=One(G);
-    fi;
+    #gens:= GeneratorsOfGroup( G );
+    #if 1 < Length( gens ) then
+    #  gens:= MinimalGeneratingSet( G );
+    #fi;
+    #if Length(gens)>0 then
+    #  gen:= gens[1];
+    #else
+    #  gen:=One(G);
+    #fi;
+    gen:=GeneratorOfCyclicGroup(G);
 
     gens:= [ List( divs, d -> gen^(n/d) ),
              List( [ 1 .. Length( divs ) ], i -> [ i ] ) ];
@@ -1150,11 +1151,12 @@ InstallMethod( SortedTom,
 
     components:= rec();
 
-    if HasIdentifier(tom) then
+    if HasIdentifier( tom ) then
       components.Identifier:= Identifier( tom );
     fi;
     components.SubsTom:= Permuted( List( SubsTom( tom ),
-                                         x -> OnTuples( x, perm ) ), perm);
+                                   x -> ShallowCopy( OnTuples( x, perm ) ) ),
+                                   perm);
     components.MarksTom:= Permuted( List( MarksTom( tom ), ShallowCopy ),
                                     perm );
     for i in [ 1 .. Length( components.SubsTom ) ] do
@@ -1171,9 +1173,6 @@ InstallMethod( SortedTom,
     fi;
     if HasUnderlyingGroup( tom ) then
       components.UnderlyingGroup:= UnderlyingGroup( tom );
-    fi;
-    if HasWordsTom( tom ) then
-      components.WordsTom:= Permuted( WordsTom( tom ), perm );
     fi;
     if HasStraightLineProgramsTom( tom ) then
       components.StraightLineProgramsTom:=
@@ -3036,73 +3035,6 @@ InstallMethod( RepresentativeTomByGeneratorsNC,
     fi;
     SetSize( gens, OrdersTom( tom )[ sub ] );
     return gens;
-    end );
-
-
-#############################################################################
-##
-#M  WordsTom( <tom> )
-##
-InstallMethod( WordsTom,
-    "for a table of marks with known straight line programs",
-    [ IsTableOfMarks and HasStraightLineProgramsTom ],
-    function( tom )
-
-    local progs,
-          numgens,
-          wordsfam,
-          flat,
-          proglist,
-          prog,
-          line,
-          j,
-          names,
-          result,
-          i;
-
-    progs:= List( StraightLineProgramsTom( tom ),
-                  list -> List( list, LinesOfStraightLineProgram ) );
-    numgens:= Length( GeneratorsOfGroup( UnderlyingGroup( tom ) ) );
-
-    # Make a new family.
-    wordsfam:= NewFamily( "TomWordsFamily", IsAssocWordWithInverse );
-
-    # Compute the concatenation of occurring words.
-    flat:= [];
-    for proglist in progs do
-      for prog in proglist do
-        for line in prog do
-          if ForAll( line, IsInt ) then
-            UniteSet( flat, line{ [ 1, 3 .. Length( line ) - 1 ] } );
-          else 
-            Error( "only lines of type 1. for WordsTom" );
-          fi;
-        od;
-      od;
-    od;
-
-    if IsEmpty( flat ) then
-      j:= 0;
-    else
-      j:= MaximumList( flat ) - numgens;
-    fi;
-    names:= Concatenation( List( [ 1 .. numgens ],
-                                 x -> Concatenation( "g", String( x ) ) ),
-                           List( [ 1 .. j ],
-                                 x -> Concatenation( "w", String( x ) ) ) );
-    StoreInfoFreeMagma( wordsfam, names, IsAssocWordWithInverse );
-
-    # Convert the words into internal representation.
-    result:= [];
-    for i in [ 1 .. Length( progs ) ] do
-      if IsBound( progs[i] ) then
-        result[i]:= List( progs[i],
-                          x -> List( x, y -> ObjByExtRep( wordsfam, y ) ) );
-      fi;
-    od;
-
-    # Return the result.
-    return result;
     end );
 
 

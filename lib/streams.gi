@@ -94,6 +94,9 @@ function( stream )
     str := "";
     str1 := [];
     while not IsEndOfStream(stream)  do
+        # really this has the wrong blocking behaviour
+        # but this method should never apply to anything where blocking
+        # is a hazard
         new := ReadLine(stream);
         if new <> fail  then
             Append( str1, new );
@@ -108,9 +111,35 @@ function( stream )
     ConvertToStringRep(str1);
     Append(str, str1);
     return Immutable(str);
-#T why immutable???
-    
+#T why immutable???    
 end );
+
+InstallMethod( ReadAll,
+        "input stream, length limit",
+        true,
+        [ IsInputStream, IsInt ],
+        0,
+        function(stream, limit)
+    local s, n, c;
+    if limit < 0 then
+        Error("ReadAll: negative limit is not allowed");
+    fi;
+    n := 0;
+    s := "";
+    while n < limit and not IsEndOfStream( stream ) do
+        # really this has the wrong blocking behaviour
+        # but this method should never apply to anything where blocking
+        # is a hazard
+        c := ReadByte(stream);
+        if c <> fail then
+            Add(s,c);
+        fi;
+        n := n + 1;
+    od;
+    MakeImmutable(s);
+    return s;
+end);
+            
 
 #############################################################################
 ##
@@ -147,7 +176,7 @@ InstallMethod( ReadAllLine, "iostream,boolean,function",
         [ IsInputOutputStream, IsBool, IsFunction ],
     function(iostream, nofail, IsAllLine)
     local line, fd, moreOfline;
-    line := ReadLine(iostream);
+    line := READ_IOSTREAM_NOWAIT(iostream![1], 1);
     if nofail or line <> fail then
         fd := FileDescriptorOfStream(iostream);
         if line = fail then
@@ -156,6 +185,9 @@ InstallMethod( ReadAllLine, "iostream,boolean,function",
         while not IsAllLine(line) do
             UNIXSelect([fd], [], [], fail, fail);
             moreOfline := ReadLine(iostream);
+            if moreOfline = fail then
+              Error("failed to find any more of line (iostream dead?)\n");
+            fi;
             Append(line, moreOfline);
         od;
     fi;
@@ -269,45 +301,55 @@ end );
 #F  # # # # # # # # # # # # # # output stream # # # # # # # # # # # # # # # #
 ##
 
+IN_LOGGING_MODE:=false;
+
+Add(POST_RESTORE_FUNCS, function() IN_LOGGING_MODE := false; end);
 
 #############################################################################
 ##
-
 #M  LogTo( <output-text-stream> ) . . . . . . . .  log input/output to stream
 ##
-InstallMethod( LogTo,
-    "for output stream",
-    true,
-    [ IsOutputTextStream ],
-    0,
-    function(stream) LOG_TO_STREAM(stream); end ); # ignore return value
+InstallMethod( LogTo, "for output stream", true, [ IsOutputTextStream ], 0,
+function(stream) 
+  if IN_LOGGING_MODE<>false then
+    Print("#I  Already logging to ",IN_LOGGING_MODE,"\n");
+    return;
+  fi;
+  # ignore return value
+  LOG_TO_STREAM(stream); 
+  IN_LOGGING_MODE:="stream";
+end );
 
 
 #############################################################################
 ##
 #M  LogTo( <filename> ) . . . . . . . . . . . . . .  log input/output to file
 ##
-InstallOtherMethod( LogTo,
-    "for output file",
-    true,
-    [ IsString ],
-    0,
-    function(name) 
-      name := USER_HOME_EXPAND(name);
-      LOG_TO(name); 
-    end ); # ignore return value
+InstallOtherMethod( LogTo, "for output file", true, [ IsString ], 0,
+function(name) 
+  if IN_LOGGING_MODE<>false then
+    Print("#I  Already logging to ",IN_LOGGING_MODE,"\n");
+    return;
+  fi;
+  IN_LOGGING_MODE:=name;
+  name := USER_HOME_EXPAND(name);
+  LOG_TO(name); 
+end ); # ignore return value
 
 
 #############################################################################
 ##
 #M  LogTo() . . . . . . . . . . . . . . . . . . . . . . . . . . . . close log
 ##
-InstallOtherMethod( LogTo,
-    "close log",
-    true,
-    [],
-    0,
-    function() CLOSE_LOG_TO(); end );
+InstallOtherMethod( LogTo, "close log", true, [], 0,
+function()
+  if IN_LOGGING_MODE=false then
+    Print("#I  not logging\n");
+    return;
+  fi;
+  CLOSE_LOG_TO();
+  IN_LOGGING_MODE:=false;
+end );
 
 
 #############################################################################
@@ -527,6 +569,28 @@ function( stream )
     fi;
     start := stream![1]+1;
     stream![1] := Length(stream![2]);
+    return Immutable( stream![2]{[start..stream![1]]} );
+    
+end );
+
+InstallMethod( ReadAll,
+    "input text string and limit",
+    true,
+    [ IsInputTextStream and IsInputTextStringRep, IsInt ],
+    0,
+        
+function( stream, limit )
+    local   start;;
+    
+    if limit < 0 then
+        Error("ReadAll: negative limit is not allowed");
+    fi;
+
+    if Length(stream![2]) <= stream![1]  then
+        return Immutable("");
+    fi;
+    start := stream![1]+1;
+    stream![1] := Minimum(stream![1]+limit, Length(stream![2]));
     return Immutable( stream![2]{[start..stream![1]]} );
     
 end );
@@ -776,6 +840,34 @@ function( stream )
     return READ_LINE_FILE(stream![1]);
 end );
 
+#############################################################################
+##
+#M  ReadAll( <input-text-file>> )  . . . . . . . . . . . . . . get next line
+##
+InstallMethod( ReadAll,
+    "input text file",
+    true,
+    [ IsInputTextStream and IsInputTextFileRep ],
+    0,
+
+function( stream )
+    return READ_ALL_FILE(stream![1],-1);
+end );
+
+InstallMethod( ReadAll,
+    "input text file and limit",
+    true,
+    [ IsInputTextStream and IsInputTextFileRep, IsInt ],
+    0,
+
+        function( stream, limit )
+    if limit < 0 then
+        Error("ReadAll: negative limit is not allowed");
+    fi;
+    
+    return READ_ALL_FILE(stream![1],limit);
+end );
+
 
 #############################################################################
 ##
@@ -881,12 +973,27 @@ end );
 #M  ReadAll( <input-text-none> )  . . . . . . . . . . always at end-of-stream
 ##
 InstallMethod( ReadAll,
-    "input text none",
-    true,
-    [ IsInputTextNone and IsInputTextNoneRep ],
-    0,
-    function(stream) return Immutable(""); end );
+        "input text none",
+        true,
+        [ IsInputTextNone and IsInputTextNoneRep ],
+        0,
+        function(stream) 
+    return Immutable(""); 
+end );
 
+InstallMethod( ReadAll,
+        "input text none and limit",
+        true,
+        [ IsInputTextNone and IsInputTextNoneRep, IsInt ],
+        0,
+        function(stream, limit) 
+    if limit < 0 then
+        Error("ReadAll: negative limit is not allowed");
+    fi;
+    
+    return Immutable(""); 
+end );
+        
 
 #############################################################################
 ##
@@ -1380,11 +1487,9 @@ end );
 #R  IsInputOutputStreamByPtyRep 
 ##
 ##  Position 1 is the pty number from the kernel
-##  Position 2 is the input buffer
-##  Position 3 is the left end of the active region in the buffer
-##  Position 4 is the right end of the region
-##  Position 5 is the executable name (kept for viewing and printing)
-##  Position 6 is the arguments (kept for printing)
+##  Position 2 is the executable name (kept for viewing and printing)
+##  Position 3 is the arguments (kept for printing)
+##  Position 4 if boolean -- true for end of file
 ##
 
 DeclareRepresentation("IsInputOutputStreamByPtyRep", IsPositionalObjectRep,
@@ -1401,7 +1506,7 @@ InputOutputStreamByPtyDefaultType :=
 
 InstallGlobalFunction( InputOutputLocalProcess, 
         function( cdir, exec, argts)
-    local dirname, ptynum, basename, i,buf;
+    local dirname, ptynum, basename, i;
     if not IsDirectory(cdir) or 
        not IsExecutableFile(exec) or 
        not IsList(argts)
@@ -1421,10 +1526,8 @@ InstallGlobalFunction( InputOutputLocalProcess,
         i := i-1;
     od;
     basename := exec{[i+1..Length(exec)]};
-    buf := ListWithIdenticalEntries(100,' ');
-    ConvertToStringRep(buf);
-    return Objectify(InputOutputStreamByPtyDefaultType, [ptynum, buf,
-                   1,0,basename,argts]);
+    return Objectify(InputOutputStreamByPtyDefaultType, 
+                   [ptynum, basename, argts, false]);
 end);
 
 #############################################################################
@@ -1439,7 +1542,7 @@ InstallMethod(ViewObj, [IsInputOutputStreamByPtyRep and IsInputOutputStream,],
     if IsClosedStream(stream) then
         Print("closed ");
     fi;
-    Print("input/output stream to ",stream![5]," >");
+    Print("input/output stream to ",stream![2]," >");
 end);
 
 InstallMethod(PrintObj, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
@@ -1449,9 +1552,9 @@ InstallMethod(PrintObj, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
     if IsClosedStream(stream) then
         Print("closed ");
     fi;
-    Print("input/output stream to ",stream![5]);
-    for i in [1..Length(stream![6])] do
-        Print(" ",stream![6][i]);
+    Print("input/output stream to ",stream![2]);
+    for i in [1..Length(stream![3])] do
+        Print(" ",stream![3][i]);
     od;
     Print(" >");
 end);
@@ -1463,22 +1566,14 @@ end);
 
 InstallMethod(ReadByte, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
-    local l,ret;
-    l := stream![3];
-    if l <= stream![4] then
-        stream![3] := l+1;
-        return INT_CHAR(stream![2][l]);
+    local buf, ret;
+    buf := READ_IOSTREAM(stream![1], 1);
+    if buf = fail or Length(buf) = 0 then
+        stream![4] := true;
+        return fail;
     else
-        ret := READ_IOSTREAM(stream![1],stream![2],-Length(stream![2]));
-        if ret < 1 then
-            stream![4] := 0;
-            stream![3] := 1;
-            return fail;
-        else
-            stream![4] := ret;
-            stream![3] := 2;
-            return INT_CHAR(stream![2][1]);
-        fi;
+        stream![4] := true;
+        return INT_CHAR(buf[1]);
     fi;
 end);   
 
@@ -1487,59 +1582,78 @@ end);
 #M  ReadLine( <iostream-by-pty> )
 ##
 
-InstallMethod(ReadLine, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
+InstallMethod( ReadLine, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
-    local line, buf, nl, ret;
-    buf := stream![2];
-    line := "";
-    nl := Position(buf, '\n', stream![3]-1);
-    while nl > stream![4] do
-        Append(line,buf{[stream![3]..stream![4]]});
-        ret := READ_IOSTREAM(stream![1],buf,-Length(buf));
-        if ret < 1 then
-            stream![4] := 0;
-            stream![3] := 1;
-            if line = "" then
-                return fail;
-            else
-                return line;
-            fi;
+    local sofar, chunk;
+    sofar := READ_IOSTREAM(stream![1], 1);
+    if sofar = fail or Length(sofar) = 0 then
+        stream![4] := true;
+        return fail;
+    fi;
+    while sofar[Length(sofar)] <> '\n' do
+        chunk := READ_IOSTREAM_NOWAIT( stream![1], 1);
+        if chunk = fail or Length(chunk) = 0 then
+            stream![4] := true;
+            return sofar;
         fi;
-        stream![4] := ret;
-        stream![3] := 1;
-        nl := Position(buf,'\n');
+        Append(sofar,chunk);
     od;
-    Append(line,buf{[stream![3]..nl]});
-    stream![3] := nl+1;
-    ConvertToStringRep(line);
-    return line;
+    return sofar;
 end);
-   
+          
+
+
 #############################################################################
 ##
 #M  ReadAll( <iostream-by-pty> )
 ##
 
-InstallMethod(ReadAll, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
-        function(stream)
-    local read, buf, nl, ret;
-    buf := stream![2];
-    read := "";
-    repeat
-        Append(read,buf{[stream![3]..stream![4]]});
-        stream![3] := 1;
-        ret := READ_IOSTREAM(stream![1],buf,-Length(buf));
-        if ret >= 0 then
-            stream![4] := ret;
+BindGlobal("ReadAllIoStreamByPty", 
+        function(stream, limit)
+    local sofar, chunk, csize;
+    if limit = -1 then
+        csize := 20000;
+    else
+        csize := Minimum(20000,limit);
+        limit := limit - csize;
+    fi;
+    sofar := READ_IOSTREAM(stream![1], csize);
+    if sofar = fail or Length(sofar) = 0 then
+        stream![4] := true;
+        return fail;
+    fi;
+    while limit <> 0  do
+        if limit = -1 then
+            csize := 20000;
         else
-            stream![4] := 0;
+            csize := Minimum(20000,limit);
+            limit := limit - csize;
         fi;
-    until ret <= 0;
-    return read;
+        chunk := READ_IOSTREAM_NOWAIT( stream![1], csize);
+        if chunk = fail or Length(chunk) = 0 then
+            stream![4] := true;
+            return sofar;
+        fi;
+        Append(sofar,chunk);
+    od;
+    return sofar;
 end);
-    
-   
-        
+            
+InstallMethod( ReadAll, [IsInputOutputStreamByPtyRep and
+        IsInputOutputStream],
+        stream ->  ReadAllIoStreamByPty(stream, -1));
+
+InstallMethod( ReadAll, [IsInputOutputStreamByPtyRep and
+        IsInputOutputStream, IsInt],
+        function( stream, limit )
+    if limit < 0 then
+        Error("ReadAll: negative limit not allowed");
+    fi;
+    return  ReadAllIoStreamByPty(stream, limit);
+end);
+
+
+             
 
 #############################################################################
 ##
@@ -1552,7 +1666,7 @@ InstallMethod(WriteByte, [IsInputOutputStreamByPtyRep and
     local ret,s;
     s := [CHAR_INT(byte)];
     ConvertToStringRep(s);
-    ret := WRITE_IOSTREAM( stream![1], s,-1);
+    ret := WRITE_IOSTREAM( stream![1], s,1);
     if ret <> 1 then
         return fail;
     else
@@ -1569,7 +1683,7 @@ InstallMethod(WriteAll, [IsInputOutputStreamByPtyRep and
        IsInputOutputStream, IsString],
         function(stream, text)
     local ret,s;
-    ret := WRITE_IOSTREAM( stream![1], text,-Length(text));
+    ret := WRITE_IOSTREAM( stream![1], text,Length(text));
     if ret < Length(text) then
         return fail;
     else
@@ -1585,7 +1699,8 @@ end);
 
 InstallMethod(IsEndOfStream, 
         [IsInputOutputStreamByPtyRep and IsInputOutputStream],
-        stream -> IS_BLOCKED_IOSTREAM(stream![1]));
+        stream -> # stream![4] or 
+        IS_BLOCKED_IOSTREAM(stream![1]) );
 
 
 #############################################################################

@@ -204,7 +204,8 @@ InstallGlobalFunction(FFPFactors,function (arg)
     v   := CoefficientsOfLaurentPolynomial(f);
     #fam := FamilyObj(v[1][1]);
 
-    if DegreeOfLaurentPolynomial(f) < 2  then
+    if DegreeOfLaurentPolynomial(f) < 2 
+      or DegreeOfLaurentPolynomial(f)=infinity  then
         Add( irf, [cr,[f]] );
         return [f];
 
@@ -308,7 +309,8 @@ InstallMethod( Factors, "polynomial over a finite field",
   FFPFactors);
 
 InstallOtherMethod( Factors, "polynomial over a finite field, option",
-    IsCollsElmsX, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial,IsRecord ],0,
+    IsCollsElmsX, 
+    [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial,IsRecord ],0,
   FFPFactors);
 
 

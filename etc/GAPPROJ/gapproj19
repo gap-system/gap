@@ -1,0 +1,48 @@
+@Name
+Vector Enumerator
+@Contact
+AH
+@Date
+2001/9/24
+@Time
+4
+@Need
+4
+@NeedA
+5
+@Math
+5
+@Prog
+4
+@Component
+Finitely presented algebras
+@Descr
+<P>
+The module enumerator is used as part of solvable- or hybrid quotient
+algorithms. It produces the matrix action of a finitely presented algebra on
+a finitely presented module.
+</P>
+
+<P>
+This is a time-critical task that requires a good implementation.
+</P>
+
+<P>
+It also would be useful to see, whether one can use if the algebra has in
+fact a normal form for elements (this is the case in the quotient
+algorithms).
+</P>
+@Ref
+<UL>
+<LI>
+S. A. Linton, in {\it Computational algebra and number theory (Sydney,
+1992)}, 29--51, Kluwer Acad. Publ., Dordrecht, 1995; MR 96m:08003 
+<LI>
+S. A. Linton, Linear Algebra Appl. {\bf 192} (1993), 235--248; MR
+94k:20022 
+<LI>
+S. A. Linton, J. Symbolic Comput. {\bf 12} (1991), no.~4-5, 427--438; MR
+93c:20032 
+</UL>
+@Rem
+There is a basic GAP implementation

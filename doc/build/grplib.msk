@@ -14,11 +14,11 @@
 
 When you start {\GAP}, it  already knows several groups. Currently {\GAP}
 initially knows the following groups:
-\beginlist
+\beginlist%unordered
   \item{$\bullet$} some basic groups, such  as cyclic groups or symmetric
     groups (see~"Basic Groups"),
   \item{$\bullet$} Classical matrix groups (see~"Classical Groups"),
-  \item{$\bullet$} the transitive permutation groups of degree at most 23
+  \item{$\bullet$} the transitive permutation groups of degree at most 30
     (see~"Transitive permutation groups"),
   \item{$\bullet$} a library of groups of small order (see~"Small Groups"),
   \item{$\bullet$}  the  finite perfect  groups of   size  at most $10^6$
@@ -27,7 +27,7 @@ initially knows the following groups:
     $\<1000$, complete  for degrees  $\<256$ (see~"Primitive  permutation
     groups"),
   \item{$\bullet$}  the  irreducible solvable subgroups of  $GL(n,p)$ for
-    $n>1$ and $p^n \< 256$ (also in "Primitive permutation groups"),
+    $n>1$ and $p^n \< 256$ (see "Irreducible Solvable Matrix Groups"),
   \item{$\bullet$} the irreducible maximal finite integral matrix groups
     of dimension at most  31  (see~"Irreducible Maximal Finite Integral
     Matrix Groups"),
@@ -127,6 +127,12 @@ gap> SuzukiGroup( 32 );
 Sz(32)
 \endexample
 
+\Declaration{ReeGroup}
+\beginexample
+gap> ReeGroup( 27 );
+Ree(27)
+\endexample
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Classical Groups}
@@ -137,12 +143,20 @@ Sz(32)
 \beginexample
 gap> GL(4,3);
 GL(4,3)
+gap> GL(2,Integers);
+GL(2,Integers)
+gap> GL(3,Integers mod 12);
+GL(3,Z/12Z)
 \endexample
 
 \Declaration{SpecialLinearGroup}
 \beginexample
 gap> SpecialLinearGroup(2,2);
 SL(2,2)
+gap> SL(3,Integers);
+SL(3,Integers)
+gap> SL(4,Integers mod 4);
+SL(4,Z/4Z)
 \endexample
 
 \indextt{OnLines!example}
@@ -204,17 +218,24 @@ linear algebra on normal forms of matrices. If you know how to do this
 for other types of classical groups, please, tell us.
 
 \beginexample
-gap> g := SL(4,9);                    
+gap> g := SL(4,9);
 SL(4,9)
 gap> NrConjugacyClasses(g);
 861
-gap> cl := ConjugacyClasses(g);;                   
+gap> cl := ConjugacyClasses(g);;
 gap> Length(cl);
 861
 \endexample
 
 \Declaration{NrConjugacyClassesGL}
-
+\beginexample
+gap> NrConjugacyClassesGL(24,27);
+22528399544939174406067288580609952
+gap> NrConjugacyClassesPSU(19,17);
+15052300411163848367708
+gap> NrConjugacyClasses(SL(16,16));
+1229782938228219920
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Constructors for Basic Groups}
@@ -257,7 +278,7 @@ given set of properties.
 The name of the selection  functions always begins  with `All' and always
 ends with `Groups'. In between is a  name that hints at the nature of the
 group library. For example, the selection function for the library of all
-primitive  groups (see~"Transitive permutation groups") is called
+transitive  groups (see~"Transitive permutation groups") is called
 `AllTransitiveGroups'.
 
 These  functions take an  arbitrary number of  pairs of  arguments.   The
@@ -275,7 +296,7 @@ returns a list of all transitive  groups with  degree between 10 and
 
 Thus  the `AllTransitiveGroups'  behaves  as if   it was implemented  by a
 function similar to the one defined below, where `TransitiveGroupsList' is a
-list of all primitive groups.  (Note that in  the definition below we assume
+list of all transitive groups.  (Note that in  the definition below we assume
 for simplicity that `AllTransitiveGroups' accepts exactly 4 arguments.  It is
 of course  obvious how to change this  definition so that the function would
 accept a variable number of arguments.)
@@ -324,7 +345,7 @@ It returns `fail' if no such group exists in the library.
 \Section{Transitive Permutation Groups}
 
 The transitive groups library currently contains representatives for all
-transitive permutation groups of degree at most  23.
+transitive permutation groups of degree at most  30.
 Two permutations groups of the same degree are considered to be
 equivalent, if there is a renumbering of points, which maps one group into
 the other one.
@@ -345,7 +366,8 @@ This library was computed by  Gregory Butler, John McKay, Gordon Royle
 and Alexander Hulpke.  The list of transitive  groups up  to degree 11
 was published in \cite{BM83},  the list of degree  12 was published in
 \cite{Roy87}, degree 14 and  15 were published in  \cite{Butler93} and
-degrees 16--22 in \cite{Hulpke96}. (Groups of prime degree of course are
+degrees 16--30 are dur to \cite{Hulpke96,HulpkeTG}.
+(Groups of prime degree of course are
 primitive and were known long before.)
 
 The arrangement and the names of the groups of degree up to 15 is the same
@@ -359,7 +381,7 @@ permutations to act on) is always replaced by the degree.
 gap> TransitiveGroup(10,22);
 S(5)[x]2
 gap> l:=AllTransitiveGroups(NrMovedPoints,12,Size,1440,IsSolvable,false);
-[ S(6)[x]2, M_10.2(12) = A_6.E_4(12) = [S_6[1/720]{M_10}S_6]2 ]
+[ S(6)[x]2, M_10.2(12)=A_6.E_4(12)=[S_6[1/720]{M_10}S_6]2 ]
 gap> List(l,IsSolvable);
 [ false, false ]
 \endexample
@@ -378,7 +400,7 @@ orders. The groups are sorted by their orders and they are listed up to
 isomorphism; that is, for each of the available orders a complete and
 irredundant list of isomorphism type representatives of groups is given.
 Currently, the library contains the following groups:
-\beginlist
+\beginlist%unordered
   \item{$\bullet$} those of order at most 2000 except 1024
                    \qquad ($423\;164\;062$ groups);
   \item{$\bullet$} those of order $5^5$ and $7^4$
@@ -405,7 +427,7 @@ first $m$ layers of the group identification for each $1 \leq m \leq n
 README file for the Small Groups library available in the `small' directory
 of the {\GAP} distribution containing detailed information on the layers.
 In summary, the layers are:
-\beginlist
+\beginlist%ordered
    \item{(1)} the groups whose order factorises into at most 3 primes.
    \item{(2)} the remaining groups of order at most 1000 except 512 and 768.
    \item{(3)} the remaining groups of order $2^n * p$ with $n \leq 8$ and
@@ -461,16 +483,20 @@ gap> G := SmallGroup( 768, 1000000 );
 <pc group of size 768 with 9 generators>
 gap> G := SmallGroup( [768, 1000000] );
 <pc group of size 768 with 9 generators>
+\endexample
 
+\beginexample
 gap> AllSmallGroups( 6 );
-[ <pc group of size 6 with 2 generators>,
+[ <pc group of size 6 with 2 generators>, 
   <pc group of size 6 with 2 generators> ]
 gap> AllSmallGroups( Size, 120, IsSolvableGroup, false );
 [ Group([ (1,2,4,8)(3,6,9,5)(7,12,13,17)(10,14,11,15)(16,20,21,24)(18,22,19,
         23), (1,3,7)(2,5,10)(4,9,13)(6,11,8)(12,16,20)(14,18,22)(15,19,23)(17,
-        21,24) ]), Group([ (1,2,3,4,5), (1,2) ]),
+        21,24) ]), Group([ (1,2,3,4,5), (1,2) ]), 
   Group([ (1,2,3,5,4), (1,3)(2,4)(6,7) ]) ]
+\endexample
 
+\beginexample
 gap> G := OneSmallGroup( 120, IsNilpotentGroup, false );
 <pc group of size 120 with 5 generators>
 gap> IdSmallGroup(G);
@@ -488,7 +514,7 @@ gap> IdSmallGroup( GL( 2,3 ) );
 gap> IdSmallGroup( Group( (1,2,3,4),(4,5) ) );
 [ 120, 34 ]
 gap> IdsOfAllSmallGroups( Size, 60, IsSupersolvableGroup, true );
-[ [ 60, 1 ], [ 60, 2 ], [ 60, 3 ], [ 60, 4 ], [ 60, 6 ], [ 60, 7 ],
+[ [ 60, 1 ], [ 60, 2 ], [ 60, 3 ], [ 60, 4 ], [ 60, 6 ], [ 60, 7 ], 
   [ 60, 8 ], [ 60, 10 ], [ 60, 11 ], [ 60, 12 ], [ 60, 13 ] ]
 \endexample
 
@@ -497,32 +523,37 @@ gap> NumberSmallGroups( 512 );
 10494213
 gap> NumberSmallGroups( 2^8 * 23 );
 1083472
-gap> NumberSmallGroups( 2^9 * 23 );
-Error, the library of groups of size 11776 is not available at
-<function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you can return to continue
-brk>
 \endexample
+\begintt
+gap> NumberSmallGroups( 2^9 * 23 );
+Error, the library of groups of size 11776 is not available called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> quit;
+gap> 
+\endtt
 
 \beginexample
 gap> SmallGroupsInformation( 32 );
 
   There are 51 groups of order 32.
-  There are sorted by their ranks.
-     1 is cyclic.
+  They are sorted by their ranks. 
+     1 is cyclic. 
      2 - 20 have rank 2.
      21 - 44 have rank 3.
      45 - 50 have rank 4.
-     51 is elementary abelian.
+     51 is elementary abelian. 
 
-  For the selection functions the values of the following attributes
+  For the selection functions the values of the following attributes 
   are precomputed and stored:
-     IsAbelian, PClassPGroup, RankPGroup, FrattinifactorSize and
-     FrattinifactorId.
+     IsAbelian, PClassPGroup, RankPGroup, FrattinifactorSize and 
+     FrattinifactorId. 
 
-  This size belongs to layer 2 of the SmallGroups library.
-  IdSmallGroup is available for this size.
+  This size belongs to layer 2 of the SmallGroups library. 
+  IdSmallGroup is available for this size. 
+ 
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -532,7 +563,7 @@ gap> SmallGroupsInformation( 32 );
 The {\GAP} library of finite  perfect groups provides, up to isomorphism,
 a list of all perfect groups whose sizes are less than  $10^6$  excluding
 the following sizes:
-\beginlist
+\beginlist%unordered
   \item{$\bullet$}
       For $n = 61440$, 122880, 172032, 245760, 344064, 491520, 688128, or
       983040,  the perfect groups  of size  $n$  have not completely been
@@ -712,7 +743,7 @@ Brackets have their obvious meaning. Summarizing, we have:
 
 Here are some examples.
 
-\beginlist
+\beginlist%ordered{i}
 \item{(i)}  $A_5 (2^4 {\sl E} 2^1 {\sl E} 2^4) {\sl A}$  means  that  the
       pairs  $2^4 {\sl E} 2^1$  and $2^1 {\sl E} 2^4$ are both elementary
       abelian of exponent 4.
@@ -811,13 +842,20 @@ gap> COHORTS_PRIMITIVE_GROUPS[49];
   [ rec( series := "A", parameter := 49, width := 1 ), [ 39, 40 ] ] ]
 \endtt
 
-\Declaration{IrreducibleSolvableGroup}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Irreducible Solvable Matrix Groups}
 
-The corresponding selection functions are `AllIrreducibleSolvableGroups' and
-`OneIrreducibleSolvableGroup'. They obtain the following properties from the
-database without having to compute them anew:
-`Dimension' for the linear  degree, `CharFFE' for the field characteristic,
-`Size', `IsLinearlyPrimitive' and `MinimalBlockDimension'.
+\Declaration{IrreducibleSolvableGroupMS}
+
+\Declaration{NumberIrreducibleSolvableGroups}
+
+\Declaration{AllIrreducibleSolvableGroups}
+
+\Declaration{OneIrreducibleSolvableGroup}
+
+\Declaration{PrimitiveIndexIrreducibleSolvableGroup}
+
+\Declaration{IrreducibleSolvableGroup}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -888,7 +926,7 @@ $Q_2(n)$ by $q_1(n)$ and $q_2(n)$, respectively.
 
 As an example, let us consider the case $n = 4$. There are 6 $\Z$-classes
 of i.m.f.~subgroups  of $GL_4(\Z)$   with representative subgroups  $G_1,
-\ldots,  G_6$ of isomorphsim types  $G_1 \cong W(F_4)$, $G_2 \cong D_{12}
+\ldots,  G_6$ of isomorphism types  $G_1 \cong W(F_4)$, $G_2 \cong D_{12}
 \wr C_2$, $G_3 \cong  G_4 \cong C_2 \times  S_5$, $G_5 \cong W(B_4)$, and
 $G_6  \cong (D_{12}  ` Y   '  D_{12})   \!:\! C_2$.  The    corresponding
 $\Q$-classes, $R_1, \ldots, R_6$, say, are pairwise different except that
@@ -979,7 +1017,7 @@ primes up to 23.
 the   groups in the  <z>$^{\rm   th}$  $\Z$-class  in the  <q>$^{\rm th}$
 $\Q$-class of i.m.f.~integral matrix groups of dimension <dim>:
 
-\beginlist
+\beginlist%unordered
 \item{--}
       its  $\Z$-class number  in the form  <dim>.<q>.<z>,  if <dim> is at
       most 11 or a prime at most 23, or its $\Q$-class number in the form
@@ -1073,7 +1111,7 @@ $A`.'B$ &
 \enditems
 
 The groups involved are
-\beginlist
+\beginlist%unordered
 \item{--} the cyclic groups $C_n$, dihedral groups $D_n$,  and generalized
       quaternion groups  $Q_n$ of order $n$,  denoted by `C'<n>,  `D'<n>,
       and `Q'<n>, respectively,
@@ -1306,10 +1344,10 @@ solvable residuum of the group <G>.
 gap> # Perform the computations in an isomorphic permutation group.
 gap> phi := IsomorphismPermGroup( G );;
 gap> P := Image( phi );
-Group([ (1,2)(5,7,9)(6,8,10), (1,3,5,7)(2,4,6,8) ])
+Group([ (1,7,6)(2,9)(4,5,10), (2,3,4,5)(6,9,8,7) ])
 gap> D := DerivedSubgroup( P );
-Group([ (1,9,2,10)(3,4)(5,7)(6,8), (1,9)(2,10)(3,8,4,7)(5,6), 
-  (1,6)(2,5)(3,10,4,9)(7,8) ])
+Group([ (1,2,10,9)(3,8)(4,5)(6,7), (1,3,10,8)(2,5)(4,7)(6,9), 
+  (1,2,8,7,5)(3,4,6,10,9) ])
 gap> Size( D );
 960
 gap> IsPerfectGroup( D );
@@ -1324,16 +1362,16 @@ gap> for m in GeneratorsOfGroup( R ) do PrintArray( m ); od;
   [   0,   0,   0,   1,   0 ],
   [   0,   0,   1,   0,   0 ],
   [  -1,  -1,   0,   0,   1 ] ]
-[ [  -1,  -1,  -1,  -1,   2 ],
-  [   0,   0,   0,  -1,   0 ],
+[ [   0,   0,   0,   1,   0 ],
+  [  -1,  -1,  -1,  -1,   2 ],
   [   0,   0,  -1,   0,   0 ],
-  [   0,   1,   0,   0,   0 ],
-  [   0,   0,  -1,  -1,   1 ] ]
-[ [   0,   0,  -1,   0,   0 ],
-  [   1,   1,   1,   1,  -2 ],
-  [  -1,   0,   0,   0,   0 ],
+  [   1,   0,   0,   0,   0 ],
+  [   0,  -1,  -1,   0,   1 ] ]
+[ [   0,  -1,   0,   0,   0 ],
+  [   0,   0,   1,   0,   0 ],
   [   0,   0,   0,  -1,   0 ],
-  [   0,   1,   0,   0,  -1 ] ]
+  [   1,   1,   1,   1,  -2 ],
+  [   0,   0,   1,   0,  -1 ] ]
 \endexample
 
 \>IsomorphismPermGroupImfGroup( <G>, <n> ) F

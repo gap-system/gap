@@ -1,0 +1,393 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  files.msk                 GAP documentation              Frank Celler
+%W                                                     & Martin Schoenert
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file    contains the  description of   the   file, filename  and
+%%  directory functions.
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Files and Filenames}
+
+Files are identified by filenames, which are represented in {\GAP} as
+strings.  Filenames can be created directly by the user or a program, but
+of course this is operating system dependent.
+
+Filenames for some files can  be constructed in  a system independent way
+using the following functions.  This is done by first getting a directory
+object for the directory the file shall  reside in, and then constructing
+the filename.  However, it is  sometimes necessary to construct filenames
+of files in subdirectories relative to a given directory object.  In this
+case the directory separator is *always* `{'/'}' even under DOS or MacOS.
+
+Section "Directories" describes how  to  construct directory objects
+for the common {\GAP} and system directories.
+Using the command `Filename' described in section~"Filename"
+it is possible to construct a filename pointing to a file in these
+directories.
+There are also functions to test for accessibility of files,
+see~"File Access".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Portability}
+
+For portability filenames and directory  names should be restricted to at
+most   8 alphanumerical characters  optionally followed  by a dot `{'.'}'
+and between 1 and 3 alphanumerical characters.  Upper case letters should
+be  avoided because some  operating systems  do  not make any distinction
+between case,  so that `NaMe', `Name'  and  `name' all  refer to the same
+file  whereas  some   operating  systems are case   sensitive.   To avoid
+problems only lower case characters should be used.
+
+Another function which is system-dependent is:
+\>LastSystemError() F
+
+`LastSystemError' returns a record describing the last system error  that
+has occurred.
+This record   contains  at least   the  component  `message' which   is a
+string. This message is, however,  highly operating system dependent  and
+should only be used as an informational message for the user.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GAP Root Directory}
+
+When   starting {\GAP} it is possible   to specify various directories as
+root directories.  In  {\GAP}'s view of  the world these  directories are
+merged  into one meta-directory.  This  directory is called *{\GAP}  root
+directory* in the following.
+
+For example, if `<root1>;<root2>;...' is passed as argument to `-l'  when
+{\GAP} is started and {\GAP} wants to locate a file `lib/group.gd' in the
+{\GAP} root  directory  it  will  first  check  if  the  file  exists  in
+`<root1>', if not, it checks `<root2>', and so on.
+
+This layout makes  it possible to  have one  system-wide  installation of
+{\GAP}  which is read-only  but still  allows users  to modify individual
+files.  Therefore instead of constructing an absolute path name to a file
+you should always use `DirectoriesLibrary' or `DirectoriesPackageLibrary'
+together with `Filename' to construct a filename for a file in the {\GAP}
+root directory.
+
+*Example*
+
+Suppose that the system-wide installation lives in  `/usr/local/lib/gap4'
+and you want to modify the file  `lib/files.gd'  without  disturbing  the
+system installation.
+
+In this case create  a  new  directory  `/home/myhome/gap'  containing  a
+subdirectory `lib' which contains the modified `lib/files.gd'.
+
+The directory/file structure now looks like
+
+\begintt
+/usr/local/lib/gap4/
+/usr/local/lib/gap4/lib/
+/usr/local/lib/gap4/lib/files.gd
+/home/myhome/gap/
+/home/myhome/gap/lib
+/home/myhome/gap/lib/files.gd
+\endtt
+
+
+If you start {\GAP} using (under UNIX)
+
+\begintt
+you@unix> gap -l '/home/myhome/gap;/usr/local/lib/gap4'
+\endtt
+
+then the  file  `/home/myhome/gap/lib/files.gd'  will  be  used  whenever
+{\GAP} references the file with filename  `lib/files.gd'  in  the  {\GAP}
+root directory.
+
+This setup also  allows one to easily install  new {\GAP} packages or
+bugfixes even if no access to the system {\GAP} installation  is possible.
+Simply unpack the files into ``/home/myhome/gap''.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Directories}
+
+\Declaration{Directory}
+\Declaration{DirectoryTemporary}
+\Declaration{DirectoryCurrent}
+
+\indextt{GAP_ROOT_PATHS}
+\Declaration{DirectoriesLibrary}
+\Declaration{DirectoriesSystemPrograms}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Filename}\nolabel
+
+\Declaration{Filename}
+
+*Examples*
+
+In    order    to    locate    the    system    program    `date'     use
+`DirectoriesSystemPrograms' together with the second form of `Filename'.
+
+\begintt
+gap> path := DirectoriesSystemPrograms();;
+gap> date := Filename( path, "date" );
+"/bin/date"
+\endtt
+
+In order to locate the library file `files.gd'  use  `DirectoriesLibrary'
+together with the second form of `Filename'.
+
+\begintt
+gap> path := DirectoriesLibrary();;
+gap> Filename( path, "files.gd" );
+"./lib/files.gd"
+\endtt
+
+In  order to construct filenames for  new  files in a temporary directory
+use `DirectoryTemporary' together with the first form of `Filename'.
+
+\begintt
+gap> tmpdir := DirectoryTemporary();;
+gap> Filename( [ tmpdir ], "file.new" );
+fail
+gap> Filename( tmpdir, "file.new" );    
+"/var/tmp/tmp.0.021738.0001/file.new"
+\endtt
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special Filenames}
+
+The special filename `"*stdin*"' denotes the standard  input,  i.e.,  the
+stream through which the  user  enters  commands  to  {\GAP}.  The  exact
+behaviour of reading from `"*stdin*"' is operating system dependent,  but
+usually the following happens.  If  {\GAP}  was  started  with  no  input
+redirection, statements are read from the terminal stream until the  user
+enters the end of file character, which is usually <ctr>-'D'.  Note  that
+terminal streams are special, in  that  they  may  yield  ordinary  input
+*after*  an  end  of  file.  Thus  when  control  returns  to  the   main
+read-eval-print loop the user can continue with  {\GAP}.  If  {\GAP}  was
+started with an input redirection, statements are read from  the  current
+position in the input file up to  the  end  of  the  file.  When  control
+returns to the main read eval view  loop  the  input  stream  will  still
+return end of file, and {\GAP} will terminate.
+
+The  special filename `"*errin*"' denotes   the stream connected  to  the
+UNIX `stderr' output. This stream is usually connected to  the  terminal,
+even if the standard input was  redirected,  unless  the  standard  error
+stream was also redirected, in which case opening of `"*errin*"' fails.
+
+The special filename `"*stdout*"'  can be used to  print to  the standard
+output.
+
+The special  filename `"*errout*"' can be  used to  print to the standard
+error output file, which is usually  connected  to  the terminal, even if
+the standard output was redirected.
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{File Access}
+
+When the following functions return `false' one can use `LastSystemError'
+(see~"LastSystemError") to find  out  the  reason  (as  provided  by  the
+operating system).
+
+\>IsExistingFile( <name-file> ) F
+
+returns `true' if a file with the filename <name-file> exists and can be
+seen by the {\GAP} process. Otherwise `false' is returned.
+
+\>IsReadableFile( <name-file> ) F
+
+returns `true' if a file with the filename <name-file> exists  *and*  the
+{\GAP} process has read permissions for the file, or `false' if 
+this is not the case.
+
+\>IsWritableFile( <name-file> ) F
+
+returns `true' if a file with the filename <name-file> exists  *and*  the
+{\GAP} process has write permissions for  the  file,  or  `false'  if  
+this is not the case.
+
+\>IsExecutableFile( <name-file> ) F
+
+returns `true'  if a  file with  the filename  <name-file> exists  *and* the
+{\GAP} process has  execute permissions for the file, or  `false' if this is
+not the case. Note that execute permissions do not imply that it is possible
+to execute the file, e.g., it may only be executable on a different machine.
+
+\>IsDirectoryPath( <name-file> ) F
+
+returns `true' if the file with the filename <name-file> exists *and*  is
+a directory and  `false' otherwise.
+Note that this function does not check if the {\GAP} process actually has
+write  or  execute  permissions  for   the   directory   (you   can   use
+`IsWritableFile'   (see~"IsWritableFile"),    resp.    `IsExecutableFile'
+(see~"IsExecutableFile") to check such permissions).
+
+*Examples*
+
+Note,   in   particular,    how    one    may    use    `LastSystemError'
+(see~"LastSystemError") to discover the reason  a  file  access  function
+returns `false'.
+
+\beginexample
+gap> IsExistingFile( "/bin/date" );     # the file `/bin/date' exists
+true
+gap> IsExistingFile( "/bin/date.new" ); # the file `/bin/date.new' does not exist
+false
+gap> IsExistingFile( "/bin/date/new" ); # `/bin/date' is not a directory
+false
+gap> LastSystemError().message;
+"Not a directory"
+gap> IsReadableFile( "/bin/date" );     # the file `/bin/date' is readable
+true
+gap> IsReadableFile( "/bin/date.new" ); # the file `/bin/date.new' does not exist
+false
+gap> LastSystemError().message;        
+"No such file or directory"
+gap> IsWritableFile( "/bin/date" );     # the file `/bin/date' is not writable ...
+false
+gap> IsExecutableFile( "/bin/date" );   # ... but executable
+true
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{File Operations}
+
+\Declaration{Read}
+\Declaration{ReadAsFunction}
+
+*Example*
+
+Suppose that the file `/tmp/example.g' contains the following
+
+\begintt
+local a;
+
+a := 10;
+return a*10;
+\endtt
+
+Reading the file as a function will not affect a global variable `a'.
+
+\begintt
+gap> a := 1;
+1
+gap> ReadAsFunction("/tmp/example.g")();
+100
+gap> a;
+1
+\endtt
+
+\>PrintTo( <name-file>[, <obj1>, ...] ) F
+
+works like `Print'  (see~"Print"),  except  that  the  arguments  <obj1>,
+{\dots} (if present) are printed to the file with  the  name  <name-file>
+instead of the standard output. This file must of course be  writable  by
+{\GAP}. Otherwise  an  error  is  signalled.  Note  that  `PrintTo'  will
+*overwrite* the previous contents of this file if it already existed;  in
+particular, `PrintTo' with just the  <name-file>  argument  empties  that
+file. `AppendTo' can be used to append to a file (see "AppendTo").  There
+is an operating system dependent maximum on the number  of  output  files
+that may be open simultaneously, usually this is 14.
+
+\>AppendTo( <name-file>[, <obj1>, ...] ) F
+
+works like `PrintTo' (see~"PrintTo"), except that  the  output  does  not
+overwrite the previous contents of the file, but is appended to the file.
+
+\>LogTo( <name-file> ) O
+
+causes the subsequent interaction to be logged  to the file with the name
+<name-file>, i.e., everything you  see on your  terminal will also appear
+in this file. `LogTo' may also be used to log to a stream (see~"LogTo!for
+streams").
+This file must of course be writable  by {\GAP}, otherwise an error is
+signalled.  Note  that   `LogTo'  will overwrite the   previous
+contents of this file if it already existed.
+
+\>LogTo()!{stop logging} M
+
+In this form `LogTo' stops logging to a file or stream.
+
+\>InputLogTo( <name-file> ) O
+
+causes the  subsequent  input to be   logged to the   file with  the name
+<name-file>, i.e., everything you type  on your terminal will also appear
+in this file.  Note that `InputLogTo'  and `LogTo' cannot  be used at the
+same time while `InputLogTo' and `OutputLogTo' can.
+Note  that   `InputLogTo'  will overwrite the   previous
+contents of this file if it already existed.
+
+\>InputLogTo()!{stop logging input} M
+
+In this form `InputLogTo' stops logging to a file or stream.
+
+\>OutputLogTo( <name-file> ) O
+
+causes   the subsequent output to   be logged to  the file  with the name
+<name-file>,  i.e., everything {\GAP} prints  on  your terminal will also
+appear in this file.  Note that  `OutputLogTo' and `LogTo' cannot be used
+at the same time while `InputLogTo' and `OutputLogTo' can.
+Note  that   `OutputLogTo'  will overwrite the   previous
+contents of this file if it already existed.
+
+\>OutputLogTo()!{stop logging output} M
+
+In this form `OutputLogTo' stops logging to a file or stream.
+
+*Note* that one should be careful not to write to a logfile with
+`PrintTo' or `AppendTo'.
+% The same holds of course for the redirection of output to a file.
+
+\Declaration{CrcFile}
+
+\>RemoveFile( <name-file> ) F
+
+will remove the file with filename <name-file> and returns `true' in case
+of  success.  The function returns `fail' if a system error occurred, for
+example, if your permissions do not allow the removal of <name-file>.
+In this case the function `LastSystemError' (see~"LastSystemError")
+can be used to get information about the error.
+
+\>Reread( <name-file> ) F
+\>`REREADING'{REREADING}@{`REREADING'}
+
+In general, it is not possible to read the same {\GAP} library file
+twice, or to read a compiled version after reading a {\GAP} version,
+because crucial global variables are made read-only (see "More about
+Global Variables") and filters and methods are added to global tables.
+
+A partial solution to this problem is provided by the function
+`Reread' (and related functions `RereadLib' etc.).  `Reread(
+<name-file> )' sets the global variable `REREADING' to `true', reads
+the file named by <name-file> and then resets `REREADING'. Various
+system functions behave differently when `REREADING' is set to
+true. In particular, assignment to read-only global variables is
+permitted, calls to `NewRepresentation' (see "prg:NewRepresentation"
+in ``Programming in {\GAP}'') and
+`NewInfoClass' (see "NewInfoClass") with parameters identical to those
+of an existing representation or info class will return the existing
+object, and methods installed with `InstallMethod' (see
+"prg:InstallMethod" in ``Programming in {\GAP}'') may sometimes displace
+existing methods.
+
+This function may not entirely produce the intended results,
+especially if what has changed is the super-representation of a
+representation or the requirements of a method. In these cases, it is
+necessary to restart {\GAP} to read the modified file.
+
+An additional use of `Reread' is to load the compiled version of a
+file for which the {\GAP} language version had previously been read
+(or perhaps was included in a saved workspace). See "The Compiler" and 
+"Saving and Loading a Workspace" for more information.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

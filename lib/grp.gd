@@ -601,13 +601,16 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 #############################################################################
 ##
 #A  RepresentativesPerfectSubgroups( <G> )
+#A  RepresentativesSimpleSubgroups( <G> )
 ##
-##  returns a list of conjugacy representatives of perfect subgroups of <G>.
+##  returns a list of conjugacy representatives of perfect (respectively
+##  simple) subgroups of <G>.
 ##  This uses the library of perfect groups (see "PerfectGroup"), thus it
 ##  will issue an error if the library is insufficient to determine all
 ##  perfect subgroups.
 ##
 DeclareAttribute( "RepresentativesPerfectSubgroups", IsGroup );
+DeclareAttribute( "RepresentativesSimpleSubgroups", IsGroup );
 
 
 #############################################################################
@@ -705,7 +708,7 @@ DeclareAttribute( "MaximalAbelianQuotient",IsGroup);
 ##
 #A  CommutatorLength( <G> )
 ##
-##  `CommutatorLength' returns the minimal number $n$ such that each element
+##  returns the minimal number $n$ such that each element
 ##  in the derived subgroup (see~"DerivedSubgroup") of the group <G> can be
 ##  written as a product of (at most) $n$ commutators of elements in <G>.
 ##
@@ -824,6 +827,17 @@ DeclareAttribute( "JenningsSeries", IsGroup );
 ##  step subgroup of any central series.
 ##
 DeclareAttribute( "LowerCentralSeriesOfGroup", IsGroup );
+
+#############################################################################
+##
+#A  NilpotencyClassOfGroup( <G> )
+##
+##  The nilpotency class of a nilpotent group <G> is the number of steps in
+##  the lower central series of <G> (see "LowerCentralSeriesOfGroup");
+##
+##  If <G> is not nilpotent an error is issued.
+##
+DeclareAttribute( "NilpotencyClassOfGroup", IsGroup );
 
 
 #############################################################################
@@ -1432,7 +1446,7 @@ KeyDependentOperation( "PCentralSeries", IsGroup, IsPosInt, "prime" );
 ##
 #F  PRump( <G>, <p> )
 ##
-##  The *p-rump* of a group $G$ is the subgroup $G' G^p$ for a prime $p$.
+##  The *$p$-rump* of a group $G$ is the subgroup $G' G^p$ for a prime $p$.
 ##
 KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 
@@ -1441,8 +1455,8 @@ KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 ##
 #F  PCore( <G>, <p> )
 ##
-##  \index{Op(G)}
-##  The $p$-core of <G> is the largest normal $p$-subgroup of <G>. It is the
+##  \atindex{O_p(G)!see PCore}{@$O_p(G)$!see \noexpand`PCore'}
+##  The *$p$-core* of <G> is the largest normal $p$-subgroup of <G>. It is the
 ##  core of a $p$-Sylow subgroup of <G>.
 ##
 KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
@@ -1711,17 +1725,6 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  different way.
 ##
 DeclareGlobalFunction( "IsomorphismTypeInfoFiniteSimpleGroup" );
-
-
-#############################################################################
-##
-#F  IsomorphismTypeFiniteSimpleGroup( <G> )
-##
-##  *IsomorphismTypeFiniteSimpleGroup is obsolete,
-##  use IsomorphismTypeInfoFiniteSimpleGroup instead!*
-##
-DeclareSynonym( "IsomorphismTypeFiniteSimpleGroup",
-    IsomorphismTypeInfoFiniteSimpleGroup );
 
 
 #############################################################################

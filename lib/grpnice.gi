@@ -139,8 +139,7 @@ end );
 #M  NiceMonomorphism( <group> )	. . construct a nice monomorphism from parent
 ##
 InstallMethod(NiceMonomorphism,
-    "for subgroups that get the nice monomorphism by their parent",
-    true,
+    "for subgroups that get the nice monomorphism by their parent", true,
     [ IsGroup and IsHandledByNiceMonomorphism and HasParent],
     # to rank higher than matrix group methods.
     RankFilter(IsFinite and IsMatrixGroup),
@@ -149,8 +148,8 @@ function(G)
     local P;
 
     P :=Parent(G);
-    if not IsHandledByNiceMonomorphism(P)  then
-        TryNextMethod();
+    if not (IsHandledByNiceMonomorphism(P) and HasNiceMonomorphism(P)) then
+      TryNextMethod();
     fi;
     return NiceMonomorphism(P);
 end );
@@ -159,19 +158,16 @@ end );
 ##
 #M  NiceMonomorphism( <G> ) . . . . . . . . . . . . . . . . regular operation
 ##
-InstallMethod( NiceMonomorphism, "regular operation", true,
+InstallMethod( NiceMonomorphism, "regular action", true,
         [ IsGroup and IsHandledByNiceMonomorphism ], 0,
     function( G )
     local   mon;
 
     if not HasGeneratorsOfGroup( G )  then
         TryNextMethod();
-    elif not HasOne( G )  then
-        if IsEmpty( GeneratorsOfGroup( G ) )  then
-            TryNextMethod();
-        else
-            SetOne( G, One( GeneratorsOfGroup( G )[ 1 ] ) );
-        fi;
+    elif not HasOne( G ) and HasGeneratorsOfGroup(G) and
+      Length(GeneratorsOfGroup(G))>0  then
+      SetOne( G, One( GeneratorsOfGroup( G )[ 1 ] ) );
     fi;
     mon := ActionHomomorphism( G, AsList( G ), OnRight,"surjective" );
     SetIsInjective( mon, true );

@@ -24,9 +24,9 @@ const char * Revision_intrprtr_c =
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
-#include        "read.h"                /* reader                          */
 
 #include        "gap.h"                 /* error handling, initialisation  */
+#include        "read.h"                /* reader                          */
 
 #include        "gvars.h"               /* global variables                */
 
@@ -424,6 +424,11 @@ void            IntrFuncCallEnd (
     else if ( 5 == nr ) { val = CALL_5ARGS( func, a1, a2, a3, a4, a5 ); }
     else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
     else                { val = CALL_XARGS( func, args ); }
+
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
 
     /* check the return value                                              */
     if ( funccall && val == 0 ) {
@@ -1681,7 +1686,7 @@ void            IntrInv ( void )
     opL = PopObj();
 
     /* compute the multiplicative inverse                                  */
-    val = INV( opL );
+    val = INV_MUT( opL );
 
     /* push the result                                                     */
     PushObj( val );

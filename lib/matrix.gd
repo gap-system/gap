@@ -150,7 +150,12 @@ DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrix );
 #A  DeterminantMat( <mat> ) . . . . . . . . . . . . . determinant of a matrix
 #F  Determinant( <mat> )
 ##
-##  returns the determinant of the square matrix <mat>
+##  returns the determinant of the square matrix <mat>.
+##
+##  These methods assume implicitly that <mat> is defined over an
+##  integral domain whose quotient field is implemented in {\GAP}. For
+##  matrices defined over an arbitrary commutative ring with one 
+##  see~"DeterminantMatDivFree".
 ##
 DeclareAttribute( "DeterminantMat", IsMatrix );
 
@@ -162,6 +167,16 @@ DeclareAttribute( "DeterminantMat", IsMatrix );
 ##  destroy its argument. The matrix <mat> must be mutable.
 ##
 DeclareOperation( "DeterminantMatDestructive", [ IsMatrix and IsMutable] );
+
+#############################################################################
+##
+#O  DeterminantMatDivFree( <mat> )
+##
+##  returns the determinant of a square matrix <mat> over an arbitrary 
+##  commutative ring with one using the division free method of 
+##  Mahajan and Vinay \cite{MV97}.
+##  
+DeclareOperation("DeterminantMatDivFree",[IsMatrix]);
 
 #############################################################################
 ##
@@ -425,7 +440,7 @@ DeclareOperation( "SemiEchelonMats", [ IsList ] );
 ##
 #O  SemiEchelonMatsDestructive( <mats> )
 ##
-##  Does the same as `SemiEchelonmats', except that it may estroy
+##  Does the same as `SemiEchelonmats', except that it may destroy
 ##  its argument. Therefore the argument must be a list of matrices
 ##  that re mutable.
 ##
@@ -434,17 +449,50 @@ DeclareOperation( "SemiEchelonMatsDestructive", [ IsList ] );
 
 #############################################################################
 ##
+#A  TransposedMatImmutable( <mat> ) . . . . . . . . .  transposed of a matrix
+#A  TransposedMatAttr( <mat> )  . . . . . . . . . . .  transposed of a matrix
 #A  TransposedMat( <mat> )  . . . . . . . . . . . . .  transposed of a matrix
+#O  TransposedMatMutable( <mat> ) . . . . . . . . . .  transposed of a matrix
+#O  TransposedMatOp( <mat> )  . . . . . . . . . . . .  transposed of a matrix
 ##
-##  `TransposedMat'  returns the transposed of the  matrix <mat>, i.e., a new
-##  matrix <trans> such that `<trans>[<i>][<k>] = <mat>[<k>][<i>]'. As it is
-##  an attribute it returns an immutable matrix.
+##  These functions all return the transposed of the matrix <mat>, i.e.,
+##  a matrix <trans> such that `<trans>[<i>][<k>] = <mat>[<k>][<i>]' holds.
 ##
-DeclareAttribute( "TransposedMat", IsMatrix );
+##  They differ only w.r.t. the mutability of the result.
+##
+##  `TransposedMat' is an attribute and hence returns an immutable result.
+##  `TransposedMatMutable' is guaranteed to return a new *mutable* matrix.
+##
+##  `TransposedMatImmutable' and `TransposedMatAttr' are synonyms of
+##  `TransposedMat',
+##  and `TransposedMatOp' is a synonym of `TransposedMatMutable',
+##  in analogy to operations such as `Zero' (see~"Zero").
+##
+DeclareAttribute( "TransposedMatImmutable", IsMatrix );
+
+DeclareSynonymAttr( "TransposedMatAttr", TransposedMatImmutable );
+DeclareSynonymAttr( "TransposedMat", TransposedMatImmutable );
+
+DeclareOperation( "TransposedMatMutable", [ IsMatrix ] );
+DeclareSynonym( "TransposedMatOp", TransposedMatMutable );
+DeclareSynonym( "MutableTransposedMat", TransposedMatMutable ); # needed?
+
 
 #############################################################################
 ##
-#A  TransposedMatDestructive( <mat> )
+#O  MutableTransposedMatDestructive( <mat> )
+##
+##  `MutableTransposedMatDestructive' returns the transpose of the mutable
+##  matrix <mat>. It may, but does not have to, destroy the contents
+##  of <mat> in the process. In particular, the returned matrix may be 
+##  identical to <mat>, having been transposed in place.
+##
+DeclareOperation( "MutableTransposedMatDestructive", [IsMatrix and IsMutable] );
+
+
+#############################################################################
+##
+#O  TransposedMatDestructive( <mat> )
 ##
 ##  If <mat> is a mutable matrix, then the transposed
 ##  is computed by swapping the entries in <mat>. In this way <mat> gets
@@ -663,12 +711,12 @@ DeclareGlobalFunction( "BlownUpVector" );
 ##
 ##  The original idea is explained in ~\cite{HM97}.
 ##
-## \beginexample
-##   gap> m:=[[14,20],[6,9]];;
-##   gap> DiagonalizeIntMatNormDriven(m);
-##   gap> m;
-## [ [ 2, 0 ], [ 0, 3 ] ]
-## \endexample
+##  \beginexample
+##  gap> m:=[[14,20],[6,9]];;
+##  gap> DiagonalizeIntMatNormDriven(m);
+##  gap> m;
+##  [ [ 2, 0 ], [ 0, 3 ] ]
+##  \endexample
 DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
 
 DeclareSynonym( "DiagonalizeIntMat", DiagonalizeIntMatNormDriven );
@@ -719,29 +767,6 @@ DeclareSynonym( "MutableIdentityMat", IdentityMat );
 
 #############################################################################
 ##
-#O  MutableTransposedMat( <mat> ) . . . . . . . . . .  transposed of a matrix
-##
-##  `MutableTransposedMat'  returns the transposed of  the  matrix <mat> as a
-##  mutable matrix, i.e., a new matrix <trans> such that `<trans>[<i>][<k>] =
-##  <mat>[<k>][<i>]'.
-##
-DeclareOperation( "MutableTransposedMat", [IsMatrix] );
-
-#############################################################################
-##
-#O  MutableTransposedMatDestructive( <mat> )
-##
-##  `MutableTransposedMatDestructive' returns the transpose of the mutable
-##  matrix <mat>. It may, but does not have to, destroy the contents
-##  of <mat> in the process. In particular, the returned matrix may be 
-##  identical to <mat>, having been transposed in place.
-##
-DeclareOperation( "MutableTransposedMatDestructive", [IsMatrix and IsMutable] );
-
-
-
-#############################################################################
-##
 #F  NullMat( <m>, <n> [, <F>] ) . . . . . . . . . null matrix of a given size
 ##
 ##  returns a (mutable) <m>$\times$<n> null matrix over the field given by
@@ -772,6 +797,18 @@ DeclareSynonym( "MutableNullMat", NullMat );
 ##  <q>, which solve the homogeneous equation system given by <E> modulo <q>.
 ##
 DeclareGlobalFunction( "NullspaceModQ" );
+
+
+#############################################################################
+##
+#F  BasisNullspaceModN( <M>, <n> ) . . . . . . .  .  nullspace of <E> mod <n>
+##
+##  <M> must be a matrix of integers modulo <n> and <n> a positive integer.  
+##  Then 'NullspaceModQ' returns a set <B> of vectors such that every <v> 
+##  such that <v> <M> = 0 modulo <n> can be expressed by a Z-linear combination
+##  of elements of <M>.
+##
+DeclareGlobalFunction ("BasisNullspaceModN");
 
 
 #############################################################################
@@ -958,7 +995,8 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 #O  CharacteristicPolynomial( [<F>, ]<mat>[, <ind>] )
 ##
 ##  For a square matrix <mat>, `CharacteristicPolynomial' returns the
-##  *characteristic polynomial* of <mat>, that is, the determinant of the
+##  *characteristic polynomial* of <mat>, that is, the `StandardAssociate'
+##  of the determinant of the
 ##  matrix $<mat> - X \cdot I$, where $X$ is an indeterminate and $I$ is the
 ##  appropriate identity matrix.
 ##
@@ -1013,8 +1051,6 @@ DeclareOperation("MinimalPolynomialMatrixNC",
 ##  can be hard.
 ##
 DeclareOperation("FieldOfMatrixList",[IsListOrCollection]);
-
-
 
 #############################################################################
 ##

@@ -198,27 +198,18 @@ end );
 InstallMethod( \+, "For two 8 bit matrices in same characteristic",
         IsIdenticalObj, [IsMatrix and Is8BitMatrixRep,
                 IsMatrix and Is8BitMatrixRep], 0,
-#        function(m1,m2)
-#    local len, row1, row2, sum, i, q;
-#    len := m1![1];
-#    row1 := m1![2];
-#    row2 := m2![2];
-#   if len <> m2![1] or LEN_VEC8BIT(row1) <> LEN_VEC8BIT(row2)  then
-#        Error("matrix addition: matrices must have the same shape");
-#    fi;
-#    q := Q_VEC8BIT(row1); 
-#    if  q <> Q_VEC8BIT(row2) then
-#        TryNextMethod();
-#    fi;
-#    sum := [len];
-#    for i in [2..len+1] do
-#        sum[i] := SUM_VEC8BIT_VEC8BIT(m1![i],m2![i]);
-#        SetFilterObj(sum[i], IsLockedRepresentationVector);
-#    od;
-#    return Objectify(TYPE_MAT8BIT(q, IsMutable(m1) or
-#                   IsMutable(m2)), sum);
-        #    end
         SUM_MAT8BIT_MAT8BIT
+);
+
+#############################################################################
+##
+#M  <mat1> - <mat2>
+##
+
+InstallMethod( \-, "For two 8 bit matrices in same characteristic",
+        IsIdenticalObj, [IsMatrix and Is8BitMatrixRep,
+                IsMatrix and Is8BitMatrixRep], 0,
+        DIFF_MAT8BIT_MAT8BIT
 );
 
 
@@ -261,7 +252,7 @@ end);
 
 InstallGlobalFunction(ConvertToMatrixRep,
         function( arg )
-    local m,qs, v, mut, q, givenq, q1, LeastCommonPower;
+    local m,qs, v,  q, givenq, q1, LeastCommonPower, lens;
     
     LeastCommonPower := function(qs)
         local p, d, x, i;
@@ -333,7 +324,8 @@ InstallGlobalFunction(ConvertToMatrixRep,
     # Pass 1, get all rows compressed, and find out what fields we have
     #
     
-    mut := false;
+    #    mut := false;
+    lens := [];
     for v in m do
         if IsGF2VectorRep(v) then
             AddSet(qs,2);
@@ -344,14 +336,18 @@ InstallGlobalFunction(ConvertToMatrixRep,
         else
             AddSet(qs,ConvertToVectorRep(v));
         fi;
-        mut := mut or IsMutable(v);
+        AddSet(lens, Length(v));
+#        mut := mut or IsMutable(v);
     od;
     
     #
     # We may know that there is no common field
     # or that we can't win for some other reason
     #
-    if mut or fail in qs  or true in qs then 
+    if 
+      #      mut or 
+      Length(lens) > 1 or lens[1] = 0 or
+      fail in qs  or true in qs then 
         return fail;
     fi;
     
@@ -431,7 +427,132 @@ InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj,
 
 #############################################################################
 ##
-#M <mat>^-1
+#M  Additive Inverse
+##
+
+InstallMethod(AdditiveInverseMutable, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
+         and IsSmallList ],
+        0,
+        function(mat)
+    local neg,i,negv;
+    neg := [mat![1]];
+    for i in [2..mat![1]+1] do
+        negv := AdditiveInverseMutable(mat![i]);
+        SetFilterObj(negv, IsLockedRepresentationVector);
+        neg[i] := negv;
+    od;
+    Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),true), neg);
+    return neg;
+end);
+
+InstallMethod(AdditiveInverseImmutable, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
+         and IsSmallList ],
+        0,
+        function(mat)
+    local neg,i,negv;
+    neg := [mat![1]];
+    for i in [2..mat![1]+1] do
+        negv := AdditiveInverseImmutable(mat![i]);
+        SetFilterObj(negv, IsLockedRepresentationVector);
+        neg[i] := negv;
+    od;
+    Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),false), neg);
+    return neg;
+end);
+
+InstallMethod(AdditiveInverseSameMutability, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
+         and IsSmallList ],
+        0,
+        function(mat)
+    local neg,i,negv;
+    neg := [mat![1]];
+    for i in [2..mat![1]+1] do
+        negv := AdditiveInverseSameMutability(mat![i]);
+        SetFilterObj(negv, IsLockedRepresentationVector);
+        neg[i] := negv;
+    od;
+    if IsMutable(mat) then
+        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),true), neg);
+    else
+        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),false), neg);
+    fi;
+    return neg;
+end);
+    
+
+
+#############################################################################
+##
+#M  Zero
+
+InstallMethod( ZeroMutable, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
+         and IsSmallList ],
+        0,
+        function(mat)
+    local z, i,zv;
+    z := [mat![1]];
+    for i in [2..mat![1]+1] do
+        zv := ZERO_VEC8BIT(mat![i]);
+        SetFilterObj(zv, IsLockedRepresentationVector);
+        z[i] := zv;
+    od;
+    Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),true), z);
+    return z;
+end);
+
+InstallMethod( ZeroImmutable, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
+         and IsSmallList ],
+        0,
+        function(mat)
+    local z, i,zv;
+    z := [mat![1]];
+    zv := ZERO_VEC8BIT(mat![2]);
+    SetFilterObj(zv, IsLockedRepresentationVector);
+    MakeImmutable(zv);
+    for i in [2..mat![1]+1] do
+        z[i] := zv;
+    od;
+    Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),false), z);
+    return z;
+end);
+
+InstallMethod( ZeroSameMutability, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
+         and IsSmallList ],
+        0,
+        function(mat)
+    local z, i,zv;
+    z := [mat![1]];
+    if not IsMutable(mat![2]) then
+        zv := ZERO_VEC8BIT(mat![2]);
+        SetFilterObj(zv, IsLockedRepresentationVector);
+        MakeImmutable(zv);
+        for i in [2..mat![1]+1] do
+            z[i] := zv;
+        od;
+    else
+        for i in [2..mat![1]+1] do
+            zv := ZERO_VEC8BIT(mat![i]);
+            SetFilterObj(zv,IsLockedRepresentationVector);
+            z[i] := zv;
+        od;
+    fi;
+    if IsMutable(mat) then
+       Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),true), z);
+    else
+        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),false), z);
+    fi;
+    return z;
+end);
+        
+#############################################################################
+##
+#M InverseOp(<mat>)
 ##
 
 InstallMethod( InverseOp, "8 bit matrix", true,
@@ -442,14 +563,31 @@ InstallMethod( InverseOp, "8 bit matrix", true,
 	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
 	],
         0,
-        INV_MAT8BIT);
+        INV_MAT8BIT_MUTABLE);
+
+
+
+#############################################################################
+##
+#M <mat>^-1
+##
+
+InstallMethod( InverseSameMutability, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+	# the following are banalities, but they are required to get the
+	# ranking right
+        and IsOrdinaryMatrix and IsSmallList and
+	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+	],
+        0,
+        INV_MAT8BIT_SAME_MUTABILITY);
 
 #############################################################################
 ##
 #M <mat>^0
 ##
 
-InstallMethod( OneOp, "8 bit matrix", true,
+InstallMethod( OneSameMutability, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
 	# the following are banalities, but they are required to get the
 	# ranking right
@@ -467,18 +605,42 @@ InstallMethod( OneOp, "8 bit matrix", true,
         w[i] := one;
         Add(o,w);
     od;
-    if not IsMutable(v) then
+    if not IsMutable(m![2]) then
         for i in [1..m![1]] do
             MakeImmutable(o[i]);
         od;
-        ConvertToMatrixRep(o, Q_VEC8BIT(v));
     fi;
     if not IsMutable(m) then
         MakeImmutable(o);
     fi;
+    ConvertToMatrixRep(o, Q_VEC8BIT(v));
+    return o;
+end);
+
+InstallMethod( OneMutable, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+	# the following are banalities, but they are required to get the
+	# ranking right
+        and IsOrdinaryMatrix and IsSmallList and
+	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+	],
+        0,
+        function(m)
+    local   v,  o,  one,  i,  w;
+    v := ZeroOp(m![2]);
+    o := [];
+    one := Z(Q_VEC8BIT(v))^0;
+    for i in [1..m![1]] do
+        w := ShallowCopy(v);
+        w[i] := one;
+        Add(o,w);
+    od;
+    ConvertToMatrixRep(o, Q_VEC8BIT(v));
     return o;
 end);
     
+
+
 
 #############################################################################
 ##
@@ -641,7 +803,149 @@ InstallMethod( \<, "for two compressed 8 bit matrices", IsIdenticalObj,
 InstallMethod( \=, "for two compressed 8 bit matrices", IsIdenticalObj,
         [ IsMatrix and IsFFECollColl and Is8BitMatrixRep, IsMatrix and IsFFECollColl and Is8BitMatrixRep ], 0,
         EQ_MAT8BIT_MAT8BIT);
+
+#############################################################################
+##
+#M  TransposedMat( <mat> )
+#M  MutableTransposedMat( <mat> )
+##
+
+InstallMethod( TransposedMat, "for a compressed 8 bit matrix",
+        true, [IsMatrix and IsFFECollColl and
+        Is8BitMatrixRep ], 0,
+        TRANSPOSED_MAT8BIT);
+
+InstallMethod( MutableTransposedMat, "for a compressed 8 bit matrix",
+        true, [IsMatrix and IsFFECollColl and
+        Is8BitMatrixRep ], 0,
+        TRANSPOSED_MAT8BIT);
     
+
+#############################################################################
+##
+#M  SemiEchelonMat
+##
+#
+# If mat is in the  special representation, then we do 
+# have to copy it, but we know that the rows of the result will
+# already be in special representation, so don't convert
+#
+
+InstallMethod(SemiEchelonMat, "shortcut method for 8bit matrices",
+        true,
+        [ IsMatrix and Is8BitMatrixRep and IsFFECollColl ],
+        0,
+        function( mat )
+    local copymat, res;
+
+    copymat := List(mat, ShallowCopy);
+    res := SemiEchelonMatDestructive( copymat );
+    ConvertToMatrixRep(res.vectors,Q_VEC8BIT(mat![2]));
+    return res;
+end);
+
+InstallMethod(SemiEchelonMatTransformation, "shortcut method for 8bit matrices",
+        true,
+        [ IsMatrix and Is8BitMatrixRep and IsFFECollColl ],
+        0,
+        function( mat )
+    local copymat,res,q;
+    copymat := List(mat, ShallowCopy);
+    res := SemiEchelonMatTransformationDestructive( copymat );
+    q := Q_VEC8BIT(mat![2]);
+    ConvertToMatrixRep(res.vectors,q);
+    ConvertToMatrixRep(res.coeffs,q);
+    ConvertToMatrixRep(res.relations,q);
+    return res;
+end);
+
+InstallMethod(SemiEchelonMatDestructive, "kernel method for plain lists of 8bit vectors",
+        true,
+        [ IsPlistRep and IsMatrix and IsMutable and IsFFECollColl ],
+        0,
+        SEMIECHELON_LIST_VEC8BITS
+        );
+        
+InstallMethod(SemiEchelonMatTransformationDestructive, 
+        " kernel method for plain lists of 8 bit vectors",
+        true,
+        [ IsMatrix and IsFFECollColl and IsPlistRep and IsMutable],
+        0, 
+        SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS);
+
+
+
+#############################################################################
+##
+#M  TriangulizeMat( <plain list of GF2 vectors> )
+##
+
+InstallMethod(TriangulizeMat,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        0, 
+        TRIANGULIZE_LIST_VEC8BITS);
+
+InstallMethod(TriangulizeMat,
+        "method for compressed matrices",
+        true,
+        [IsMutable and IsMatrix and Is8BitMatrixRep and IsFFECollColl],
+        0,
+        function(m)
+    local q,i,imms;
+    imms := [];
+    q := Q_VEC8BIT(m![2]);
+    PLAIN_MAT8BIT(m);
+    for i in [1..Length(m)] do
+        if not IsMutable(m[i]) then
+            m[i] := ShallowCopy(m[i]);
+            imms[i] := true;
+        else
+            imms[i] := false;
+        fi;
+    od;
+    TRIANGULIZE_LIST_VEC8BITS(m);
+    for i in [1..Length(m)] do
+        if imms[i] then
+            MakeImmutable(m[i]);
+        fi;
+    od;
+    CONV_MAT8BIT(m,q);
+end);
+
+#############################################################################
+##
+#M  DeterminantMatDestructive ( <plain list of GF2 vectors> )
+##
+
+InstallMethod(DeterminantMatDestructive,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        0, 
+        DETERMINANT_LIST_VEC8BITS);
+
+#############################################################################
+##
+#M  RankMatDestructive ( <plain list of GF2 vectors> )
+##
+
+
+InstallMethod(RankMatDestructive,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        0, 
+        RANK_LIST_VEC8BITS);
+  
+InstallMethod(NestingDepthM, [Is8BitMatrixRep], m->2);
+InstallMethod(NestingDepthA, [Is8BitMatrixRep], m->2);
+InstallMethod(NestingDepthM, [Is8BitVectorRep], m->1);
+InstallMethod(NestingDepthA, [Is8BitVectorRep], m->1);
+
+
+
 #############################################################################
 ##
 #E

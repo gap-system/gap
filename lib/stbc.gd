@@ -114,7 +114,7 @@ Revision.stbc_gd :=
 ##          i.e., if `HasSize( <G> )' is `true') &
 ##      If this component is present, its value is assumed to be the order
 ##      of the group <G>.
-##      This information can be used to prove that a non-deterministicly
+##      This information can be used to prove that a non-deterministically
 ##      constructed stabilizer chain is correct.
 ##      In this case, {\GAP} does a non-deterministic construction until the
 ##      size is correct.

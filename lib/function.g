@@ -89,8 +89,8 @@ BIND_GLOBAL( "NumberArgumentsFunction", NARG_FUNC );
 #F  CallFuncList( <func>, <args> )  . . . . . . . . . . . . . call a function
 ##
 ##  returns the result, when calling function <func> with the arguments
-##  given in the list <args>. This can be used to call a function with a
-##  variable number of arguments.
+##  given in the list <args>, i.e.~<args> is ``unwrapped'' so that <args> 
+##  appears as several arguments to <func>.
 
 #T  If objects simulate functions this must become an operation.
 ##
@@ -143,6 +143,8 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     narg := NARG_FUNC(func);
     if nams = fail then
         Print( "<",narg," unnamed arguments>" );
+    elif narg = -1 then
+        Print("arg");
     elif narg > 0 then
         Print(nams[1]);
         for i in [2..narg] do

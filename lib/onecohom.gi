@@ -245,8 +245,8 @@ local i,base;
     ocr.moduleMap := x -> ExponentsOfPcElement(ocr.modulePcgs,x)
                           * ocr.one;
     ocr.matrices := LinearOperationLayer(ocr.generators, ocr.modulePcgs);
-    ocr.identityMatrix := Immutable( IdentityMat( Length( ocr.modulePcgs ),
-         ocr.field ) );
+    ocr.identityMatrix := ImmutableMatrix(ocr.field,
+        IdentityMat( Length( ocr.modulePcgs ), ocr.field ) );
 #    List( ocr.matrices, IsMatrix );
 #    IsMatrix( ocr.identityMatrix );
 #T ??

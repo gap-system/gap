@@ -11,6 +11,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Preface}
 
+Welcome to {\GAP}. This preface serves not only to introduce this
+manual, ``the {\GAP} Tutorial'', but also as an introduction to the
+system as a whole, and in particular to version 4 release 3 (or {\GAP}
+4.3 for short).
+
 {\GAP} stands  for  *Groups, Algorithms  and Programming*.  The  name was
 chosen to reflect  the aim of  the  system, which  is introduced in  this
 tutorial manual.  Since  that  choice,  the  system has become   somewhat
@@ -18,12 +23,30 @@ broader,    and  you will  also   find information   about algorithms and
 programming  for other   algebraic structures,   such as semigroups   and
 algebras.
 
-There are three further manuals in addition to  this one: the ``Reference
+There are four further manuals in addition to  this one: the ``Reference
 Manual''    containing   detailed  documentation     of  the mathematical
 functionality   of {\GAP}; ``Extending   GAP''  containing  some tutorial
-material on various aspects  of {\GAP} programming; and  ``Programming in
-GAP 4''   containing detailed documentation   of various aspects   of the
-system of interest mainly to programmers.
+material on various aspects  of {\GAP} programming;  ``Programming in
+GAP 4'' containing detailed documentation   of various aspects   of the
+system of interest mainly to programmers; and ``New Features for
+Developers'' containing details of some newly introduced features
+which we may wish to change in a future release and so do not want to
+include in the main reference manual. Some of the functionality
+of the system and a number of contributed extensions are provided as
+``{\GAP} packages'' and each of these has its own manual. This
+preface, however, serves as an introduction to the whole system.
+
+Subsequent sections of this preface explain the structure of the
+system and the arrangements for the attribution of credit for
+authorship and maintenance of the system; acknowledge those who have
+made particular contributions to this and previous releases and
+outline the changes from earlier versions.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The GAP System}
+
 
 {\GAP}  is  a  *free*, *open*  and    *extensible*  software package  for
 computation  in  discrete abstract  algebra.    The terms ``free''  and
@@ -42,193 +65,227 @@ The system is ``extensible'' in that you can write your own  programs  in
 the {\GAP} language, and use them in just the same way  as  the  programs
 which form part of the system  (the  ``library'').  Indeed,  we  actively
 support the contribution, refereeing and distribution  of  extensions  to
-the system, in the form of ``share packages''. Further  details  of  this
-can be found in chapter "ref:Share Packages" in the reference manual, and
+the system, in the form of ``{\GAP} packages''.  Further details of  this
+can be found in chapter "ref:GAP Packages" in the Reference Manual, and
 on our World Wide Web site.
 
-Development of {\GAP} began at Lehrstuhl D f\accent127ur Mathematik, RWTH-Aachen,
-under the leadership of Prof.~Joachim Neub\accent127user in 1985. Version 2.4 was
-released in 1988 and   version 3.1 in 1992.  The  final full release   of
-{\GAP} 3, version 3.4, was  made in 1994. A more  detailed account of the
-motivation and development  of these versions  of {\GAP} is contained  in
-section "From the Preface for GAP 3.4, June 1994", below.
+Development of {\GAP} began at Lehrstuhl D f\accent127ur Mathematik,
+RWTH-Aachen, under the leadership of Prof.~Joachim Neub\accent127user
+in 1985. Version 2.4 was released in 1988 and version 3.1 in 1992.
+The final full release of {\GAP} 3, version 3.4, was made in 1994. In
+1997, Prof.~Neub\accent127user retired, and overall coordination of
+{\GAP} development, now very much an international effort, was
+transferred to St Andrews.  A complete internal redesign and almost
+complete rewrite of the system, which was already in progress in
+Aachen, was completed and following five, increasingly usable,
+beta-test releases, version 4.1, released July 1999, was the first
+version of the rewritten system to be released without qualification
+for general use. Version 4.2 followed in spring 2000 and, this
+version, {\GAP} 4.3 is being released in April 2002.
 
-Since then,  there  have  been  two  dramatic transitions in  the  {\GAP}
-project.  Firstly,    in  1997, Prof.~Neub\accent127user   retired,   and overall
-coordination of {\GAP}  development,   now  very much   an  international
-effort, was transferred  to  St Andrews.   Secondly  a complete  internal
-redesign and almost complete rewrite of the  system, which was already in
-progress in Aachen,  has  been completed.  Following  five, increasingly
-usable,   beta-test releases, version  4.1 is  the  first  version of the
-rewritten system to be released without qualification for general use. 
+More information on the motivation and development of {\GAP} to date,
+can be found on our Web pages in a section entitled ``Release history
+and Prefaces''.
 
-For those readers who have used an earlier version of {\GAP}, an overview
-of the changes from the beta-test releases and from {\GAP} 3 is given in
-section "Changes from Earlier Versions" below.
+For those readers who have used an earlier version of {\GAP}, an
+overview of the changes from {\GAP}~4.2, and a brief summary of
+changes from {\GAP 3} is given in section "Changes from Earlier
+Versions" below.
 
-The system that you are getting now consists of four parts.
-\beginlist
+The system that you are getting now consists of a ``core system'' and
+a number of packages. The core system consists of four main parts.
+\beginlist%ordered
   \item{1.}
     A  *kernel*, written in C, which provides the user with
-    \itemitem{-}
+    \itemitem{--}%unordered
       automatic dynamic storage management, which the user needn't bother
       about in his programming;
-    \itemitem{-}
+    \itemitem{--}
       a   set of  time-critical basic   functions, e.g.   ``arithmetic'',
       operations for integers, finite fields,  permutations and words, as
       well as natural operations for lists and records;
-    \itemitem{-} 
+    \itemitem{--} 
       an interpreter   for  the {\GAP} language,    an untyped
       imperative programming language with functions as first class objects
       and some extra built-in data types such as permutations and finite
-      field elements. 
-    \itemitem{-}
-      support for the time critical parts of the new {\GAP}4 method
-      selection system.
-    \itemitem{-}
+      field elements.  The language supports a form of object-oriented
+      programming, similar to that supported by languages like C++ and
+      Java but with some important differences.
+    \itemitem{--}
       a small set of system functions allowing the {\GAP} programmer to handle
       files and execute external programs in a uniform way, regardless of 
       the particular operating system in use. 
-    \itemitem{-}
-      a   set  of programming tools  for   testing, debugging, and timing
+    \itemitem{--}
+      a  set  of programming tools  for   testing, debugging, and timing
       algorithms.
+    \itemitem{--}
+      a ``read-eval-view'' style user interface.
 
-  \item{2.}
-    A   much larger *library of    {\GAP} functions* that implement algebraic
-    and other algorithms.  Since  this is written entirely in
-    the  {\GAP} language, the  {\GAP}    language   is both   the  main
-    implementation language   and  the  user  language of   the   system.
-    Therefore  the  user can    as easily  as  the  original  programmers
-    investigate  and vary algorithms of  the library and  add new ones to
-    it, first for own  use and eventually for  the benefit of  all {\GAP}
-    users.  
+  \item{2.}  
+	A much larger *library of {\GAP} functions* that
+  implement algebraic and other algorithms.  Since this is written
+  entirely in the {\GAP} language, the {\GAP} language is both the
+  main implementation language and the user language of the system.
+  Therefore the user can as easily as the original programmers
+  investigate and vary algorithms of the library and add new ones to
+  it, first for own use and eventually for the benefit of all {\GAP}
+  users.
 
   \item{3.}  
-    A *library of group theoretical data* which already contains
-    various libraries of groups, large libraries of ordinary and
-    Brauer  character tables,   including  all of the   Cambridge *Atlas of
-    Finite Groups*  and *Atlas of Brauer Characters*,  a *library of tables
-    of marks*, a *library of small groups* (containing  all groups of order
-    at most 2000, except those of order 1024) and others.
-
+	A *library of group theoretical data* which contains
+  various libraries of groups, including the *library of small groups*
+  (containing all groups of order at most 2000, except those of order
+  1024) and others. Large libraries of ordinary and Brauer character
+  tables and Tables of Marks are included as packages.
 
   \item{4.}
-    The *documentation*.  This is available as files that can either be
-    used for on-line  help or processed for printing with \TeX\ or into
-    HTML for viewing with a browser such as `netscape'.
+    The *documentation*.  This is available as on-line help, as
+    printable files in various formats and as HTML for viewing
+    with a Web browser.
+
 \endlist
 
-Together  with the system we distribute  *GAP  share packages*, which are
-separate packages which have been written by various groups of people and
-remain  under their responsibility.  Some  of  these packages are written
-completely in the {\GAP}  language, others totally   or in part in  C (or
-even  other languages).  However the functions   in these packages can be
-called directly from {\GAP} and results are returned to {\GAP}.
-
-We  operate a refereeing  system  for such packages,  both  to ensure the
-quality of the software we distribute, and to provide recognition for the
-authors.    A  number of  {\GAP}   4  share   packages  have already been
-accepted. Some others  that have been submitted  for review are available
-as  ``preprints''. More information  can be found on   our World Wide Web
-site, see section "Further Information about GAP".
+Also included with the core system are some test files and a few
+small utilities which we hope you will find useful.
 
 
-In the preface to the first beta release of {\GAP} 4, Joachim Neub\accent127user wrote:
+*{\GAP} packages* are self-contained extensions to the core system.  A
+package contains {\GAP} code and its own documentation and may also
+contain data files or external programs to which the {\GAP} code
+provides an interface.  These packages may be loaded into {\GAP} using
+the `RequirePackage' command, and both the package and its
+documentation are then available just as if they were parts of the
+core system. Some packages may be loaded automatically, when {\GAP} is
+started, if they are present. Some packages, because they depend on
+external programs, may only be available on the Operating Systems
+where those programs are available (usually UNIX). You should note
+that, while the packages included with this release are the most
+recent versions ready for release at this time, new packages and new
+versions may be released at any time and can be easily installed in
+your copy of {\GAP}.
 
-\begingroup\advance\leftskip 0.5in\advance\rightskip 0.5in%
+With {\GAP} 4.3, there are two packages (the library of ordinary and
+Brauer character tables, and the library of tables of marks) which
+contain functionality developed from parts of the {\GAP} 4.2 core
+system. These have been moved into packages for ease of maintenance
+and to allow new versions to be released independently of new releases
+of the core system. The library of small groups should also be
+regarded as a package, although it does not currently use the standard
+`RequirePackage' mechanism.  Other packages (included in separate
+archives for download) contain functionality which has never been part
+of the core system.
 
-   $\ldots$  It remains to me to  thank all those  who have done the huge
-   amount of work that  was needed to  bring  {\GAP}~4 on its  way.  Many
-   basic ideas for  the new concepts as  well  as most of the  new kernel
-   implementation are still due  to Martin Sch\accent127onert  before and
-   even  in parts  after  he left  Lehrstuhl D  f\accent127ur Mathematik.
-   However   together with  him  while   he  was still  working  here and
-   continuing after he left, Thomas Breuer and  Frank Celler have in long
-   discussions found  the way to  the concepts and  done crucial parts of
-   the  new  implementations.   Many  others  have  worked  adapting  and
-   rewriting the library, of whom I want to mention in particular Bettina
-   Eick, Alexander  Hulpke and Heiko  Theissen  from the Aachen  team but
-   also   acknowledge   the help  lent   already  for  some  time  from
-   St.~Andrews, in particular by Steve Linton.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Authorship and Maintenance}
 
-   To these and all others, whom I did not mention  explicitly, I want to
-   express    my thanks for   a  yearlong  cooperation    in a  spirit of
-   enthusiasm,   dedication  and perseverance.    I   wish  the team   at
-   St.~Andrews  a   successful   continuation   of  the   development and
-   maintenance   of {\GAP}  in  that same  spirit and  all  users fun and
-   success in using {\GAP}.
+Previous versions of {\GAP} have simply included the increasingly long
+list of all of the authors of the system with no indication as to who
+contributed what. In {\GAP} 4.3 we have introduced a new concept:
+*modules*, to allow us to report the authorship of the system in more
+detail. A module is a part of {\GAP} which provides identifiable
+functionality and has reasonably clean interfaces with the rest of the
+system (usually it consists of separate files). Each module has its
+own lists of authors and maintainers, which are not necessarily the
+same. A preliminary list of modules and their attributions appears in
+this manual. Note that we are still in the process of identifying
+modules within the system, so large parts of the system do not yet
+fall into any module. Since also we all collaborate closely in
+designing, developing and debugging the system, it should not be
+assumed that the list of modules in this manual represents all of
+everyone's contribution, or that it lists everyone who made any
+contribution at all to each module.
 
-   Aachen, July 18, 1997 \hfill Joachim Neub\accent127user
-\endgroup
+All {\GAP} packages are also considered to be modules and have their
+own authors and maintainers. It should however be noted that some
+packages provide interfaces between {\GAP} and an external program, a
+copy of which is included for convenience, and that, in these cases,
+we do not claim that the module authors or maintainers wrote, or
+maintain, this external program. Similarly, some modules and packages
+include large data libraries that may have been computed by many
+people. We try to make clear in each case what credit is attributable
+to whom.
 
-Before going  on to mention more  recent contributions, I must express my
-heartfelt thanks, and I am  sure, that of  the wider community of  {\GAP}
-developers and users for the immense work that Joachim Neub\accent127user
-himself has put into {\GAP} over many years.  The system would never have
-existed, let  alone  grown and prospered  as it   has, without his  clear
-vision of  what  he wanted  it  to  become, his ceaseless  vigilance  for
-opportunities    for development, his    championing  of   the  cause  of
-computation  in group theory,  his high standards   which would not admit
-``merely adequate'' solutions and  his constant encouragement of everyone
-working on and with the system. We are all the richer for his efforts.
+We have, for some time, operated a refereeing system for contributed
+packages, both to ensure the quality of the software we distribute,
+and to provide recognition for the authors. We now consider this to be
+a refereeing system for modules, and we would note, in particular
+that, although it does not use the standard package interface, the
+library of small groups has been refereed and accepted on exactly the
+same basis as the accepted  packages.
+
+We also include with this distribution, in a separate archive, a
+number of packages which have not been accepted through our refereeing
+process. Some may be accepted in the future, in other cases the
+authors have chosen not to submit them.  More information can be found
+on our World Wide Web site, see section "Further Information about
+GAP".
 
 
-Many people  have contributed  to {\GAP}  development over the  last  two
-years.  Alexander  Hulpke has been  a tower of strength, coordinating the
-work on  the library, finding subtle bugs  in code whose authors  were no
-longer  contactable,  supporting the  beta   testers and,  most  recently
-coordinating the process of   stabilization and debugging leading  up  to
-this release. Thomas Breuer   in Aachen has remained our  ``conscience'',
-pointing out to us when we were misusing {\GAP} 4 concepts and so storing
-up trouble for later. He has also done an  enormous amount of work on the
-support for  representation theory in   {\GAP}.  Others I  would like  to
-point out here  include Bettina Eick,  Volkmar  Felsch, Willem de  Graaf,
-Werner  Nickel and Andrew  Solomon.  I should like  to thank all of these
-people,  and   all the other   contributors  whom  I  have not  mentioned
-explicitly for their efforts, their  cheerfulness and their perseverance.
-I  should also   like  to  thank  all the   {\GAP}4 beta-testers, package
-developers,  manual proof readers and others  who have given us extremely
-valuable and positive feedback.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Acknowledgements}
 
-{\GAP} development in  St Andrews has  been financially supported  by the
-Engineering and Physical Sciences Research Council, the Leverhulme Trust,
-the European   Commission  (ESPRIT  programme),  the  Royal   Society  of
-Edinburgh and the  British Council, to all of  whom we are very grateful.
-Development  also takes  place at other  centres  with support from other
-funding bodies.
+Very many people have worked on, and contributed to, {\GAP} over the
+years since its inception. On our Web site you will find the prefaces
+to the previous releases, each of which acknowledges people who have
+made special contributions to that release. Even so, it is appropriate
+to mention here Joachim Neub\accent127user whose vision of a free,
+open and extensible system for computational algebra inspired {\GAP}
+in the first place, and Martin Sch\accent127onert, who was the
+technical architect of {\GAP} 3 and {\GAP} 4.
 
-It finally remains  for me to wish you  all pleasure and success in using
-{\GAP}, and to invite your constructive comment and criticism.
+In the two years since the release of version 4.2, {\GAP} development
+has become a more and more widely distributed operation, and
+increasingly dependent on hard voluntary work by developers not solely
+or mainly employed to work on {\GAP}, nevertheless, the development
+process has remained constructive and friendly, even when wrangling
+over difficult technical decisions, or sensitive questions of
+attribution and credit and I must express my huge gratitude to
+everyone involved for this.
 
-St Andrews 26 July 1999\hfill Steve Linton
+The list of modules which appears in this manual now gives a partial
+idea of the contributions of different people, but I should like to
+mention some people who have made important contributions to the
+development process over the last two years that do not show up there:
+Alexander Hulpke has remained a tower of strength, with unparalleled
+oversight of many parts of the library, despite now having a teaching
+post; Thomas Breuer continues to develop many areas of the system, and
+to play a vital role in clarifying our underlying concepts, despite
+now working in industry; Frank L\accent127ubeck and Max Neunh\accent127offer have
+brought much fresh insight to bear on the design of crucial parts of
+the kernel; Greg Gamble and Volkmar Felsch have both brought enormous
+persistence to correcting very many details of the documentation,
+improving error messages and generally polishing the system; and very
+many others have contributed ideas, insight and hard work to produce
+this release. Senior colleagues, especially Joachim Neub\accent127user, Edmund
+Robertson, and Charlie Wright continue to provide encouragement
+support and constructive criticism.
 
-slightly amended for version 4.2, 28 February  2000.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Changes from Earlier Versions}
 
-The main changes from the final beta-test release {\GAP}  4 beta 5 are in
-the documentation and in performance, both of which are much improved and
-in the   fixing of many  bugs. The  installation  process  has  also been
-improved a  little, and there are  some new algorithms, especially in the
-areas of semigroups and finitely-presented groups.  As far as we know any
-programs that worked with 4 beta 5 should still work in {\GAP} 4.1.
+The main changes between {\GAP} 4.2 and {\GAP} 4.3 are:
 
-The changes since the final release of  {\GAP} 3 (version 3.4.4) are much
-more wide-ranging.   The general philosophy  of  the changes in two-fold.
-Firstly, many assumptions in the design of {\GAP} 3 revealed its authors'
-primary  interest    in  group  theory,  and  indeed     in  finite group
-theory. Although much of the  {\GAP} 4 library  is concerned with groups,
-the basic  design now allows extension  to other algebraic structures, as
-witnessed  by   the inclusion of   substantial  bodies of  algorithms for
-computation with semigroups and Lie  algebras.  Secondly, as the scale of
-the  system, and the  number of people  using and contributing  to it has
-grown, some   aspects of  the   underlying   system have  proved   to  be
-restricting,  and   these have  been  improved as  part  of comprehensive
-re-engineering of the system. This has  included the new method selection
-system, which underpins the library, and a new, much more flexible, share
-package interface.
+
+The most important changes between {\GAP} 4.2 and {\GAP} 4.1 were:
+
+
+The changes between the final release of {\GAP} 3 (version 3.4.4) and
+{\GAP} 4 are  wide-ranging.  The general philosophy of the
+changes is two-fold.  Firstly, many assumptions in the design of
+{\GAP} 3 revealed its authors' primary interest in group theory, and
+indeed in finite group theory. Although much of the {\GAP} 4 library
+is concerned with groups, the basic design now allows extension to
+other algebraic structures, as witnessed by the inclusion of
+substantial bodies of algorithms for computation with semigroups and
+Lie algebras.  Secondly, as the scale of the system, and the number of
+people using and contributing to it has grown, some aspects of the
+underlying system have proved to be restricting, and these have been
+improved as part of comprehensive re-engineering of the system. This
+has included the new method selection system, which underpins the
+library, and a new, much more flexible, {\GAP} package interface.
 
 Details of these changes can be found in chapter "Migrating to GAP 4" of
 this manual. It is perhaps worth mentioning a few points here. 
@@ -236,379 +293,138 @@ this manual. It is perhaps worth mentioning a few points here.
 Firstly, much remains unchanged, from the perspective of the mathematical 
 user:
 
-\beginlist
-  \item{-}
+\beginlist%unordered
+  \item{--}
     The syntax of that part  of the {\GAP} language  that most users need
     for investigating mathematical problems.
 
-  \item{-}
+  \item{--}
     The great majority of function names.
 
-  \item{-}
+  \item{--}
     Data libraries and the access to them.
 \endlist
 
 A number of visible aspects have changed:
 
-\beginlist
-  \item{-}
+\beginlist%unordered
+  \item{--}
     Some function names that need finer specifications now that there are
     more structures available in {\GAP}.
 
-  \item{-}  
+  \item{--}  
     The    access to information   already  obtained about a mathematical
     structure. In {\GAP}~3 such information about a group could be looked
-    up  by  directly inspecting  the  group record,  whereas in  {\GAP} 4
+    up  by  directly inspecting  the  group record,  whereas in  {\GAP}~4
     functions must be used to access such information.
 \endlist
 
 Behind the scenes, much has changed: 
 
-\beginlist
-  \item{-} A new kernel,  with improvements in  memory management  and in
+\beginlist%unordered
+  \item{--} A new kernel,  with improvements in  memory management  and in
   the language interpreter, as well  as new  features  such as saving  of
   workspaces and the possibility of compilation of {\GAP} code into C.
 
-  \item{-} A new structure   to the library, based  upon  a new  type and
+  \item{--} A new structure   to the library, based  upon  a new  type and
   method  selection system, which  is able to  support a broader range of
   algebraic computation and to make the  structure of the library simpler
   and more modular.
 
-  \item{-}
+  \item{--}
     New and faster algorithms in many mathematical areas.
 
-  \item{-} 
+  \item{--} 
     Data structures and algorithms for new mathematical objects, such as
     algebras and semigroups.
 
-  \item{-} A new and more flexible structure  for the {\GAP} installation
-  and documentation, which  means, for example, that  a share package and
-  its documentation can be installed and be fully usable without any changes
-  to the {\GAP} system.
+  \item{--}
+    A new and more flexible structure  for the {\GAP} installation
+    and documentation, which  means, for example, that a {\GAP} package and
+    its documentation can be installed and be fully usable without any changes
+    to the {\GAP} system.
 \endlist
 
-A very few features of {\GAP} 3 are not yet available in  {\GAP} 4.
+A very few features of {\GAP}~3 are not yet available in  {\GAP}~4.
 
-\beginlist
-   \item{-}
-     Only a few of the {\GAP} 3 share packages have yet been converted
-     for use with  {\GAP} 4 (although several new packages are available
-     only in  {\GAP} 4). 
+\beginlist%unordered
+   \item{--}
+     Only a few of the {\GAP}~3 packages have yet been converted
+     for use with  {\GAP}~4 (although several new packages are available
+     only in  {\GAP}~4). 
 
-   \item{-} The Galois group determination algorithms which were
-      implemented in the {\GAP} 3 library are not present in {\GAP} 4.
+   \item{--} The Galois group determination algorithms which were
+      implemented in the {\GAP}~3 library are not present in {\GAP}~4.
     
-   \item{-} The algorithms for the factorization of polynomials over
-   algebraic number fields which were implemented in the {\GAP} 3 library
-   are not present in {\GAP} 4.
+   \item{--} The algorithms for the factorization of polynomials over
+   algebraic number fields which were implemented in the {\GAP}~3 library
+   are not present in {\GAP}~4.
 
-   \item{-} The library of crystallographic groups which was present in
-     {\GAP} 3 is now part of a share package `crystcat', which has been
-     submitted for refereeing and is distributed with this release as a
-     ``preprint''.
+   \item{--} The library of crystallographic groups which was present in
+     {\GAP}~3 is now part of a {\GAP}~4 package `crystcat'.
 
-   \item{-}  The library  of  irreducible maximal finite  integral matrix
-   groups is not yet available.
-
-   \item{-} The p-quotient and soluble quotient algorithms are
-   implemented in the {\GAP} 4 library, but those implementations are not
+   \item{--} The p-quotient and soluble quotient algorithms are
+   implemented in the {\GAP}~4 library, but those implementations are not
    yet described in the documentation. If you have a pressing need to use
    them, please contact `gap-trouble'.
 \endlist
-      
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{From the Preface for GAP 3.4, June 1994}
-
-{\GAP} stands for *Groups,  Algorithms  and  Programming*.  The name  was
-chosen to reflect the  aim of the  system,  which is  introduced in  this
-manual.
-
-Until  well into the  eighties  the  interest  of pure mathematicians  in
-computational  group theory  was  stirred  by,  but in  most  cases  also
-confined to  the  information  that  was  produced  by  group theoretical
-software  for  their special research  problems  --  and  hampered by the
-uneasy  feeling  that  one  was   using  black  boxes  of  uncontrollable
-reliability.  However the last years have seen a rapid spread of interest
-in the understanding, design and even implementation of group theoretical
-algorithms.  These are gradually becoming accepted both as standard tools
-for a working group theoretician,  like certain  methods of proof, and as
-worthwhile  objects of study, like  connections between notions expressed
-in theorems.
-
-{\GAP} was  started as  an attempt to meet  this  interest.   Therefore a
-primary design goal has  been to give its user full access  to algorithms
-and the data  structures used  by them, thus  allowing  critical study as
-well as  modification of existing methods.  We also intend to relieve the
-user from unwanted technical chores and to assist him in the programming,
-thus supporting invention and implementation of new algorithms as well as
-experimentation with them.
-
-We have tried  to achieve these goals by a design which in addition makes
-{\GAP} easily portable, even to computers such as Atari ST and Amiga, and
-at the same  time facilitates the maintenance of {\GAP} with  the limited
-resources of an academic environment.
-
-While I had felt for some time rather strongly  the wish for such a truly
-*open* system for computational group theory, the concrete idea of {\GAP}
-was born when, together with a larger group of  students, among whom were
-Johannes   Meier,    Werner   Nickel,   Alice     Niemeyer,   and  Martin
-Sch\accent127onert who eventually wrote the first  version of {\GAP}, I
-had my first contact   with the Maple system   at the EUROCAL  meeting in
-Linz/Austria  in  1985.  Maple demonstrated   to us the feasibility  of a
-strong  and efficient computer algebra system  built from a small kernel,
-with an  interpreted library of   routines written in  a  problem-adapted
-language.  The discussion of the plan of a system for computational group
-theory organized  in    a similar  way  started  in  the  fall  of  1985,
-programming only in the second half  of 1986.  A  first version of {\GAP}
-was operational by  the end of 1986.  The  system was first  presented at
-the Oberwolfach meeting    on computational group   theory  in May  1988.
-Version  2.4  was  the first  officially  to  be  given  away from Aachen
-starting in December 1988.  The strong interest in this version, in spite
-of its  still rather small  collection of group theoretical  routines, as
-well  as constructive criticism  by many colleagues, confirmed our belief
-in the general design principles of the  system.  Nevertheless over three
-years had passed until in April 1992  version 3.1 was released, which was
-followed in February 1993 by version 3.2, in November 1993 by version 3.3
-and is now in June 1994 followed by version 3.4.
-
-A main reason for the long time between versions 2.4 and 3.1 and the fact
-that there had not been  intermediate releases was that  we had found  it
-advisable to make a number of changes to basic data structures until with
-version 3.1 we  hoped  to have reached a   state where we could  maintain
-upward compatibility over further  releases, which were planned to follow
-much more frequently.  Both  goals have been  achieved over the last  two
-years. Of course the time has  also been used to extend  the scope of the
-methods implemented in {\GAP}.   A rough estimate   puts the size  of the
-program library of version 3.4 at about sixteen times the size of that of
-version 2.4, while for version 3.1 the factor  was about eight.  Compared
-to {\GAP}~3.2,  which  was the  last version  with  major  additions, new
-features of {\GAP}~3.4 include the following:
-
-$\ldots$
-
-{\GAP} was started as a joint Diplom project of four students whose names
-have    already been mentioned.  Since   then   many more finished Diplom
-projects  have   contributed to {\GAP}   as  well   as other  members  of
-Lehrstuhl~D and  colleagues   from other institutes.    Their  individual
-contributions  to the  programs and to  the manual  are documented in the
-respective  files.  To all  of  them as  well as to   all who have helped
-proofreading and  improving this manual  I want to  express my thanks for
-their engagement and  enthusiasm as well as  to many users of {\GAP}  who
-have helped us by pointing  out deficiencies and suggesting improvements.
-Very special thanks however go   to Martin Sch\accent127onert.  Not  only
-does   {\GAP}  owe many of its   basic  design  features  to his profound
-knowledge of     computer   languages  and   the   techniques   for their
-implementation, but in many long discussions he has in the name of future
-users always been the strongest defender of clarity of the design against
-my impatience and the temptation for ``quick and dirty'', solutions.
-
-Since  1992 the development of  {\GAP}  has been financially supported by
-the Deutsche     Forschungsgemeinschaft    in  the   context      of  the
-Forschungsschwerpunkt  ``Algorithmische Zahlentheorie   und  Algebra''.
-This very important help is gratefully acknowledged.
-
-As with the previous versions we send this version out hoping for further
-feedback of constructive   criticism.  Of course  we ask  to be  notified
-about bugs,  but moreover  we shall  appreciate   any suggestion  for the
-improvement of the  basic  system as  well  as of  the algorithms  in the
-library.  Most of all,  however, we hope that in  spite of such criticism
-you will enjoy working with {\GAP}.
-
-Aachen, June 1.,1994, \hfill Joachim Neub\accent127user.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\Section{Preface for the first beta release of GAP 4}
-
-%The transition from {\GAP}~3.4 which got its presumably last update 3.4.4
-%in April  this year to this  present first beta  release {\GAP}~4.B.1  of
-%{\GAP}~4  marks a  major step in the system  design of {\GAP}, similar in
-%importance to the  step from {\GAP}~2.4 to   {\GAP}~3.1 in April 1992  on
-%which I comment in my preface  to {\GAP}~3.4 of  June 1994, most of which
-%is preceding this  preface. However in  contrast to the situation in 1992
-%we hope that the  changes will be much less  bothering to the majority of
-%the  {\GAP} users this time.   Let me first talk   about some reasons and
-%background  for developing {\GAP}~4  and then briefly sketch what remains
-%and what changes.
-
-%The  planning of {\GAP}~4 started  already at the time  of the release of
-%{\GAP}~3.4 (Summer 1994) and its development has been  a major reason for
-%the fact that  since then  only updates  (up to {\GAP}~3.4.4)  but no new
-%releases of {\GAP}~3 have come out. Also a number  of new algorithms have
-%been implemented   in  Aachen anticipating {\GAP}~4   and  hence have not
-%become generally available yet.
-
-%There were three major reasons for the development of {\GAP}~4:
-
-%\beginlist
-%  \item{-}
-%    There has  been a  growing   demand  to implement  new   mathematical
-%    structures in  {\GAP} (Lie algebras are just  one  example).  However
-%    {\GAP}~3 was not really designed for such tasks.
-
-%  \item{-}
-%    The number and diversity of (sometimes competing) algorithmic methods
-%    is  growing rapidly.   We  definitely want  to maintain the principle
-%    that the  user  should  be  able to control   what  methods are used.
-%    However, the growing complexity  of  the interrelation of  algorithms
-%    makes it mandatory to have  also a `method selection' mechanism which
-%    controls the choice between different possibilities to proceed within
-%    a  {\GAP} function,  that  is  at least  partially  guided by already
-%    computed knowledge about the objects under investigation.
-
-%  \item{-}
-%    While the two  points mentioned above  have  caused `visible' changes
-%    from {\GAP}~3 to {\GAP}~4, in  this transition also important changes
-%    have taken place `behind the scene'.  There are e.g.  improvements of
-%    the  storage  management and function  calls,   and last  not least a
-%    compiler from {\GAP}~4 to C is part of this beta release.
-%\endlist
-
-%So regarding system aspects let's briefly sketch:
-
-%What is left unchanged?
-
-%\beginlist
-%  \item{-}
-%    The syntax of that part  of the {\GAP} language  that most users need
-%    investigating mathematical problems.
-
-%  \item{-}
-%    The great majority of function names.
-
-%  \item{-}
-%    Data libraries and the access to them.
-%\enditems
-
-%What has changed? 
-
-%\beginlist
-%  \item{-}
-%    Some function names that need finer specifications now that there are
-%    more structures available in {\GAP}.
-
-%  \item{-}
-%    The access to  information   already obtained about  a   mathematical
-%    structure.  E.g.  in {\GAP}~3 such information about a group could be
-%    looked up by directly inspecting the  group record, whereas in {\GAP}
-%    4 functions must be used to access such information.
-%\endlist
-
-%What is new?
-
-%\beginlist
-%  \item{-}
-%    A whole machinery for the definition of new structures. 
-
-%  \item{-}
-%    A  hopefully  clearer separation of  aspects  of knowledge  about the
-%    mathematical objects that {\GAP} handles  by the introduction of  the
-%    concepts of attributes, families, categories, and representations.
-
-%  \item{-}
-%    A number of new structures, such as  Lie algebras.
-%\enditems
-
-%Then to the mathematical functionality provided by {\GAP}~4 in comparison
-%to {\GAP}~3:
-
-%\beginlist
-%  \item{-}
-%    Almost all of the program library of {\GAP}~3 has been transferred to
-%    {\GAP}~4.   Some of this had  just to be adapted to  the new features
-%    (which in  itself has been  a huge  job in view   of the size  of the
-%    program library), but for quite a  few tasks the opportunity has been
-%    used to implement new and more efficient algorithms - notably so e.g.
-%    for permutation groups and polycyclic groups.
-
-%  \item{-}
-%    A number    of new algorithms  have  been  implemented for  which the
-%    features of {\GAP}~4 proved more adequate or even necessary and which
-%    are now made public in {\GAP} for the first time.
-
-%  \item{-}
-%    One main deficiency of the present beta release is that the meanwhile
-%    large   library of share  packages  of   {\GAP}~3  has not  yet  been
-%    transferred.
-%\endlist
-
-%The other main deficiency is that there is not yet  a complete manual for
-%{\GAP}~4.
-
-%It is intended to provide eventually at least four  books as parts of the
-%manual. The  first and second  are intended for  people  who want  to use
-%{\GAP} ``as is''.  Books 3 and 4  on the other hand  are meant for people
-%who want to extend {\GAP}~4 by introducing new structures.  Books 1 and 3
-%are  tutorials for the respective   purpose while Books  2 and  4 are the
-%corresponding reference manuals.
-
-%Of these four books a  good deal  of Books 1   and 3, i.e.  the  tutorial
-%parts, are provided with  this release, while  there are only rudimentary
-%parts  of books  2  and 4  available.   For people  already familiar with
-%{\GAP}~3 the chapter ``Migrating  to {\GAP}~4'' in the  first book may be
-%particularly helpful.
-
-%There have been (weekly  changing) alpha test versions  of {\GAP}~4 since
-%December  1996, and a number   of specially experienced  {\GAP} users  in
-%addition to  the {\GAP} teams at Aachen  and St.~Andrews  have used these
-%and   provided helpful criticism and  suggestions.   It is envisaged that
-%there will be new beta releases from now on about  every couple of months
-%until an  official version  {\GAP}~4.1 can be released  next year.  It is
-%hoped that these further beta releases will gradually provide the missing
-%parts mentioned above as well as further enhancements. However, since the
-%date of the official  handover of {\GAP} from  Aachen to  St.~Andrews has
-%now been fixed to be July 21, 1997, this  further development will happen
-%under the responsibility of St.~Andrews.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Further Information about GAP}
 
-
+\atindex{web sites!for GAP}{@web sites!for GAP}
 Information about {\GAP} is best obtained from the {\GAP} Web pages that
 you find on:
 
-\URL{http://www-gap.dcs.st-and.ac.uk/gap}
+\URL{http://www.gap-system.org}
 
 and its mirrors at:
 
-\URL{http://www.math.rwth-aachen.de/~GAP},
-\URL{http://www.ccs.neu.edu/mirrors/GAP} and
-\URL{http://wwwmaths.anu.edu.au/research.groups/algebra/GAP/www/}
+\URL{http://www.math.rwth-aachen.de/~GAP} and
 
-There you will find, amongst other things
-\beginlist
-\item{-} directions to the FTP sites from which you can download the
-current {\GAP} distribution, any bugfixes, all accepted share packages,
+\URL{http://www.ccs.neu.edu/mirrors/GAP} 
+
+
+Further mirrors may be announced from time to time. There you will
+find, amongst other things
+\beginlist%unordered
+\item{--} directions to the FTP sites from which you can download the
+current {\GAP} distribution, any bugfixes, all accepted {\GAP} packages,
 and a selection of other contributions.
-\item{-} the {\GAP} manual and an archive of the `gap-forum' mailing
+\item{--} the {\GAP} manual and an archive of the `gap-forum' mailing
 list, formatted for reading with a Web browser, and indexed for
 searching.
-\item{-} information about {\GAP} developers, and about the email
+\item{--} information about {\GAP} developers, and about the email
 addresses available for comment, discussion and support.
-\item{-} advance information about and copies of presentations from
-various {\GAP} workshops and events which take place from time to time
 \endlist
 
+\index{email addresses}\indextt{gap-trouble!email address}
+
 I would particularly ask you to note five things:
-\beginlist
-\item{-} Any bugfixes which may have been made since this release.
-\item{-} The  {\GAP} Forum -- an email discussion forum for comments,
+\beginlist%unordered
+\item{--} Any bugfixes which may have been made since this release.
+\item{--} The  {\GAP} Forum -- an email discussion forum for comments,
 discussions or questions about {\GAP}. You must subscribe to the list
 before you can post to it, see the Web page for details.
-\item{-} The email address `gap-trouble@dcs.st-and.ac.uk' to which you are asked to send
-any questions or bug reports which do not seem likely to be of interest
-to the whole {\GAP} Forum.
-\item{-} The email address `gap@dcs.st-and.ac.uk' to which we ask you send a brief message 
-when you install {\GAP}.
-\item{-} The correct form of citation of {\GAP}, which we ask you use
+\item{--} The email address \Mailto{gap-trouble@dcs.st-and.ac.uk} to which you
+are asked to send any questions or bug reports which do not seem likely
+to be of interest to the whole {\GAP} Forum. Section~"ref:If Things Go Wrong"
+in the Reference Manual tells you what to include in a bug report.
+\item{--} The email address \Mailto{gap@dcs.st-and.ac.uk} to which we ask you
+send a brief message when you install {\GAP}.
+\item{--} The correct form of citation of {\GAP}, which we ask you use
 whenever you publish scientific results obtained using {\GAP}.
 \endlist
+
+
+
+It finally remains  for me to wish you  all pleasure and success in using
+{\GAP}, and to invite your constructive comment and criticism.
+
+St Andrews April 2002\hfill Steve Linton
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

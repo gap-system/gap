@@ -121,7 +121,7 @@ BindGlobal( "BasisOfAlgebraModule",
     local B, delmod, vecs;
     
     B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasis and
+                            IsFiniteBasisDefault and
                             IsBasisOfAlgebraModuleElementSpace and
                             IsAttributeStoringRep ),
                    rec() );
@@ -420,7 +420,7 @@ InstallMethod( LeftAlgebraModule,
       
       if HasBasis( V ) then
           B:= Objectify( NewType( FamilyObj( V ),
-                      IsBasis and
+                      IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
                       rec() );
@@ -480,7 +480,7 @@ InstallMethod( RightAlgebraModule,
       
       if HasBasis( V ) then
           B:= Objectify( NewType( FamilyObj( V ),
-                      IsBasis and
+                      IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
                       rec() );
@@ -545,7 +545,7 @@ InstallMethod( BiAlgebraModule,
       
       if HasBasis( V ) then
           Ba:= Objectify( NewType( FamilyObj( V ),
-                      IsBasis and
+                      IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
                       rec() );
@@ -709,7 +709,7 @@ InstallMethod( PrintObj,
 #M  \=( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
 #M  \<( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
 #M  \+( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
-#M  AINV( <u> ) . .. . . . . . . . . . . . . . . for an algebra module element
+#M  AdditiveInverseOp( <u> ) . .. . . . . . . . . . . . . . . for an algebra module element
 #M  \*( <u>, <scal> ) . . . . . . for an algebra module element and a scalar
 #M  \*( <scal>, <u> ) . . . . . . for a scalar and an algebra module element
 #M  ZeroOp( <u> ) . . . . . . . . . . . . . . . .for an algebra module element
@@ -747,7 +747,7 @@ InstallMethod(\+,
             IsAlgebraModuleElement and IsPackedElementDefaultRep ], 0,
     function( u, v ) return Objectify( TypeObj( v ), [ u+v![1] ] ); end );
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseOp,
     "for an algebra module element in packed representation",
     true, [ IsAlgebraModuleElement and IsPackedElementDefaultRep ], 0,
     function( u ) return Objectify( TypeObj(u), [ -u![1] ] ); end );
@@ -1428,7 +1428,7 @@ end );
 ##
 #M  ZeroOp( <m> ) . . . . . . . . . . . . . . for a monomial element
 #M  \+( <m1>, <m2> )  . . . . . . . . . . . . for two monomial elements
-#M  AINV( <m> ) . . . . . . . . . . . . . . . for a monomial element
+#M  AdditiveInverseOp( <m> ) . . . . . . . . . . . . . . . for a monomial element
 #M  \*( <m>, <scal> ) . . . . . . . . . . for a monomial element and a scalar
 #M  \*( <scal>, <m> ) . . . . . . . . . . for scalar and a monomial element
 #M  \<( <m1>, <m2> ) . . . . . . . . . . . .  for two monomial elements
@@ -1469,7 +1469,7 @@ InstallMethod(\+,
 
 end );
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseOp,
         "for a monomial element",
         true,
         [ IsMonomialElement and IsMonomialElementRep ], 0,
@@ -1685,7 +1685,7 @@ BindGlobal( "BasisOfMonomialSpace",
     local B;
 
     B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasis and
+                            IsFiniteBasisDefault and
                             IsBasisOfMonomialSpaceRep and
                             IsAttributeStoringRep ),
                    rec() );
@@ -2901,7 +2901,7 @@ end );
 ##
 #M  ZeroOp( <v> ) . . . . . . . . . . . . . for a sparse rowspace element
 #M  \+( <u>, <v> ) . . . . . . . . . . . .  for sparse rowspace elements
-#M  AINV( <u> ) . . . . . . . . . . . . . . for a sparse rowspace element
+#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . . . . for a sparse rowspace element
 #M  \*( <scal>, <u> )  . . . . . for a sparse rowspace element and scalar
 #M  \*( <u>, <scal> ) . . . . . .for a sclalar and sparse rowspace element
 #M  \<( <u>, <v> )  . . . . . . . . . . . . for sparse rowspace elements
@@ -2933,7 +2933,7 @@ InstallMethod(\+,
 
 end );
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseOp,
         "for a sparse rowspace element",
         true,
         [ IsSparseRowSpaceElement and IsPackedElementDefaultRep ], 0,
@@ -3127,7 +3127,7 @@ BindGlobal( "BasisOfSparseRowSpace",
 
     B:= Objectify( NewType( FamilyObj( V ),
                 IsBasisOfSparseRowSpaceRep and
-                IsBasis and
+                IsFiniteBasisDefault and
                 IsAttributeStoringRep ),
                 rec() );
 
@@ -3256,7 +3256,7 @@ InstallMethod( FullSparseRowSpace,
     V:= VectorSpace( F, bV );
     B:= Objectify( NewType( FamilyObj( V ),
                 IsBasisOfSparseRowSpaceRep and
-                IsBasis and
+                IsFiniteBasisDefault and
                 IsAttributeStoringRep ),
                 rec() );
 
@@ -3334,7 +3334,7 @@ InstallMethod(\+,
     return ObjByExtRep( FamilyObj( u ), ExtRepOfObj( u )+ ExtRepOfObj( v ) );
 end );
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseOp,
         "for a direct sum element",
         true,
         [ IsDirectSumElement and IsPackedElementDefaultRep ], 0,
@@ -3570,7 +3570,7 @@ InstallMethod( DirectSumOfAlgebraModules,
     W:= VectorSpace( F, gens, "basis" );
     niceMod:= FullSparseRowSpace( F, Length(gens) );
     SetNiceFreeLeftModule( W, niceMod );
-    B:= Objectify( NewType( FamilyObj( V ), IsBasis and
+    B:= Objectify( NewType( FamilyObj( V ), IsFiniteBasisDefault and
                  IsBasisOfAlgebraModuleElementSpace and
                  IsAttributeStoringRep ), rec() );
     SetUnderlyingLeftModule( B, V );

@@ -1653,7 +1653,7 @@ void ClearError ( void )
     }
 
 #ifdef SYS_IS_MAC_MWC
-	ActivateIntr ();   /* re-enable Mac interrupt check */
+	ReactivateIntr ();   /* re-enable Mac interrupt check */
 #endif
 
     /* reset <NrError>                                                     */

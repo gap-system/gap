@@ -1,0 +1,40 @@
+@Name
+Automorphism Group/Isomorphism
+@Contact
+AH
+@Date
+2001/9/24
+@Time
+4
+@Need
+5
+@NeedA
+5
+@Math
+4
+@Prog
+4
+@Component
+Generic groups
+@Descr
+<P>
+The algorithm by M. Smith for the automorphism group of a solvable group can
+be (and has been by cannon and Holt) generalized to the nonsolvable case.
+</P>
+
+<P>
+Again one starts with the automorphism group of G/Rad(G) and then lifts via
+elementary abelian factors to the whole of G.
+</P>
+
+<P>
+The same approach also yields a better isomorphism test.
+</P>
+<HR>
+A further improvements would be to use pretabulated information for almost
+simple subgroups
+@Ref
+D. F. Holt, in {\it Groups and computation, III (Columbus, OH, 1999)},
+201--208, de Gruyter, Berlin, 2001; CNO CMP 1 829 481
+@Rem
+This project requires module automorphisms

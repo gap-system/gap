@@ -243,12 +243,31 @@ end );
 ##
 #M  AdditiveInverseOp( <gf2vec> ) .  mutable additive inverse of a GF2 vector
 ##
-InstallMethod( AdditiveInverseOp,
+InstallMethod( AdditiveInverseMutable,
     "for GF2 vector",
     true,
     [ IsRowVector and IsListDefault and IsGF2VectorRep ],
     0,
     ShallowCopy );
+
+InstallMethod( AdditiveInverseSameMutability,
+    "for GF2 vector, mutable",
+    true,
+    [ IsRowVector and IsListDefault and IsGF2VectorRep and IsMutable],
+    0,
+    ShallowCopy );
+
+InstallMethod( AdditiveInverseSameMutability,
+    "for GF2 vector, immutable",
+    true,
+    [ IsRowVector and IsListDefault and IsGF2VectorRep],
+    0,
+        function(v)
+    if IsMutable(v) then
+       TryNextMethod();
+    fi;
+    return v;
+    end );
 
 
 #############################################################################
@@ -273,6 +292,32 @@ InstallMethod( ZeroOp,
     [ IsRowVector and IsListDefault and IsGF2VectorRep ],
     0,
     ZERO_GF2VEC );
+
+#############################################################################
+##
+#M  ZEROOp( <gf2vec> )  . . . . . . . . . . . same mutability zero GF2 vector
+##
+InstallMethod( ZeroSameMutability,
+    "for GF2 vector, mutable",
+    true,
+    [ IsRowVector and IsListDefault and IsGF2VectorRep and IsMutable],
+    0,
+    ZERO_GF2VEC );
+
+InstallMethod( ZeroSameMutability,
+    "for GF2 vector, immutable",
+    true,
+    [ IsRowVector and IsListDefault and IsGF2VectorRep],
+        0,
+        function(v) 
+    local z;
+    if IsMutable(v) then
+        TryNextMethod();
+    fi;
+    z :=    ZERO_GF2VEC(v);
+    MakeImmutable(z);
+    return z;
+end);
 
 
 #############################################################################
@@ -349,7 +394,7 @@ InstallMethod( \*,
 
 function( a, b )
     if a = GF2Zero  then
-        return Zero(b);
+        return ZeroSameMutability(b);
     elif a = GF2One  then
         if IsMutable(b) then
             return ShallowCopy(b);
@@ -381,7 +426,7 @@ InstallMethod( \*,
 
 function( a, b )
     if b = GF2Zero  then
-        return Zero(a);
+        return ZeroSameMutability(a);
     elif b = GF2One  then
         if IsMutable(a) then
             return ShallowCopy(a); 
@@ -566,15 +611,21 @@ InstallMethod( UNB_LIST,
     [ IsList and IsGF2MatrixRep and IsMutable,
       IsPosInt ],
     0,
-    UNB_GF2VEC );
+    UNB_GF2MAT );
 
 InstallOtherMethod( UNB_LIST,
-    "for GF2 matrix",
-    true,
-    [ IsList and IsGF2MatrixRep,
-      IsPosInt ],
-    0,
-    UNB_GF2VEC );
+        "for GF2 matrix",
+        true,
+        [ IsList and IsGF2MatrixRep,
+          IsPosInt ],
+        0,
+        function(m, pos)
+    if IsMutable(m) then
+        TryNextMethod();
+    elif pos <= Length(m) then
+        Error("Unbind: can't unbind an entry of an immutable GF2 Matrix" );
+    fi;
+end);
 
 
 #############################################################################
@@ -589,18 +640,17 @@ InstallMethod( PrintObj,
 
 function( mat )
     local   i, j;
-
-    Print( "[ " );
+    Print( "\>\>[ \>\>" );
     for i  in [ 1 .. Length(mat) ]  do
-        if 1 < i  then Print( ", " );  fi;
-        Print( "[ " );
+        if 1 < i  then Print( "\<,\< \>\>" );  fi;
+        Print( "\>\>[ \>\>" );
         for j  in [ 1 .. Length(mat[i]) ]  do
-            if 1 < j  then Print( ", " );  fi;
+            if 1 < j  then Print( "\<,\< \>\>" );  fi;
             Print( mat[i][j] );
         od;
-        Print( " ]" );
+        Print( " \<\<\<\<]" );
     od;
-    Print( " ]" );
+    Print( " \<\<\<\<]" );
 end );
 
 
@@ -655,6 +705,12 @@ InstallMethod( ShallowCopy,
         0,
         SHALLOWCOPY_GF2MAT);
 
+InstallMethod(TransposedMat,"GF2 matrix",true,[IsMatrix and IsGF2MatrixRep],0,
+  TRANSPOSED_GF2MAT);
+
+InstallMethod(MutableTransposedMat,"GF2 matrix",true,[IsMatrix and IsGF2MatrixRep],0,
+  TRANSPOSED_GF2MAT);
+
 
 #############################################################################
 ##
@@ -665,7 +721,49 @@ InstallMethod( AdditiveInverseOp,
     true,
     [ IsMatrix and IsListDefault and IsGF2MatrixRep ],
         0,
-        SHALLOWCOPY_GF2MAT);
+        function(mat)
+    local   copy,  i, len;
+    
+    len := mat![1];
+    copy := [ len ];
+    for i  in [2..len+1] do
+        copy[i] := ShallowCopy(mat![i]);
+        SetFilterObj(copy[i],IsLockedRepresentationVector);
+    od;
+    Objectify( TYPE_LIST_GF2MAT, copy );
+    return copy;
+end); 
+
+#############################################################################
+##
+#M  AdditiveInverseSameMutability( <gf2mat> ) .  same mutability additive inverse
+##
+InstallMethod( AdditiveInverseSameMutability,
+    "for GF2 matrix",
+    true,
+    [ IsMatrix and IsListDefault and IsGF2MatrixRep ],
+        0,
+        function(mat)
+    local   copy,  i, len,r ;
+    
+    if not IsMutable(mat) then
+        return mat;
+    fi;
+    len := mat![1];
+    copy := [ len ];
+    for i  in [2..len+1] do
+        r := mat![i];
+        if IsMutable(r) then
+            copy[i] := ShallowCopy(mat![i]);
+            SetFilterObj(copy[i],IsLockedRepresentationVector);
+        else
+            copy[i] := r;
+        fi;
+    od;
+    Objectify( TYPE_LIST_GF2MAT, copy );
+    return copy;
+end); 
+
 
 
 #############################################################################
@@ -692,7 +790,21 @@ InstallMethod( InverseOp,
       IsSmallList and IsFFECollColl
       and IsGF2MatrixRep ],
     0,
-    INV_GF2MAT );
+    INV_GF2MAT_MUTABLE );
+
+#############################################################################
+##
+#M  InverseSameMutability( <gf2mat> ) same mutability inverse of a GF2 matrix
+##
+InstallMethod( InverseSameMutability,
+    "for GF2 matrix",
+    true,
+    [ IsMultiplicativeElementWithInverse and IsOrdinaryMatrix and
+      IsSmallList and IsFFECollColl
+      and IsGF2MatrixRep ],
+    0,
+        INV_GF2MAT_SAME_MUTABILITY );
+
 
 #############################################################################
 ##
@@ -706,6 +818,31 @@ InstallMethod( InverseOp,
     0,
     m->INV_PLIST_GF2VECS_DESTRUCTIVE(List(m, ShallowCopy)) );
 
+#############################################################################
+##
+#M  InverseSameMutability( <list of gf2 vectors> ) .  same mutability inverse of a GF2 matrix
+##
+
+InstallMethod( InverseSameMutability,
+    "for plain list of GF2 vectors",
+    true,
+    [ IsPlistRep and IsFFECollColl and IsMatrix],
+        0,
+        function(m)
+    local inv,i;
+    inv := INV_PLIST_GF2VECS_DESTRUCTIVE(List(m, ShallowCopy));
+    if IsMutable(m) then
+        if not IsMutable(m[1]) then
+            for i in [1..Length(m)] do
+                MakeImmutable(inv[i]);
+            od;
+        fi;
+    else
+        MakeImmutable(inv);
+    fi;
+    return inv;
+end );
+
 
 #############################################################################
 ##
@@ -714,28 +851,44 @@ InstallMethod( InverseOp,
 ##  A fully mutable GF2 matrix cannot be in the special compressed rep.
 ##  so return it as a plain list
 ##
+
+BindGlobal("GF2IdentityMatrix", function(n, imm)
+    local i,id,line,o;
+    o := Z(2);
+    id := [n];
+    for i in [1..n] do
+        line := ZERO_GF2VEC_2(n);
+        line[i] := o;
+        SetFilterObj(line,IsLockedRepresentationVector);
+        if imm > 0 then
+            MakeImmutable(line);
+        fi;
+        Add(id, line);
+    od;
+    if imm > 1 then
+        Objectify(TYPE_LIST_GF2MAT_IMM, id);
+    else
+        Objectify(TYPE_LIST_GF2MAT, id);
+    fi;
+    return id;
+end);
+        
+        
+        
+
 InstallMethod( OneOp,
     "for GF2 Matrix",
     true,
     [ IsOrdinaryMatrix and IsGF2MatrixRep and IsMultiplicativeElementWithOne],
-    0,
-
-function( mat )
-    local   new,  zero,  i,  line, o, len;
-    
-    new := [];
+        0,
+        function(mat)
+    local len;
     len := Length(mat);
-    if len > 0 then
-        o := Z(2);
-        zero := Zero(mat[1]);
-        for i in [ 1 .. len ]  do
-            line := ShallowCopy(zero);
-            line[i] := o;
-            Add( new, line );
-        od;
+    if len <> Length(mat[1]) then
+        return fail;
     fi;
-    return new;
-end );
+    return GF2IdentityMatrix(len, 0);
+end);
 
 
 #############################################################################
@@ -747,22 +900,39 @@ InstallMethod( One,
     true,
     [ IsOrdinaryMatrix and IsGF2MatrixRep and IsMultiplicativeElementWithOne],
     0,
+        function(mat)
+    local len;
+    len := Length(mat);
+    if len <> Length(mat[1]) then
+        return fail;
+    fi;
+    return GF2IdentityMatrix(len, 2);
+end );
 
-function( mat )
-    local   new,  zero,  i,  line, o;
 
-    new := [ Length(mat) ];
-    zero := Zero(mat[1]);
-    o := Z(2);
-    for i in [ 1 .. new[1] ]  do
-        line := ShallowCopy(zero);
-        line[i] := o;
-        MakeImmutable( line );
-        SetFilterObj(line, IsLockedRepresentationVector );
-        Add( new, line );
-    od;
-    Objectify( TYPE_LIST_GF2MAT_IMM, new );
-    return new;
+#############################################################################
+##
+#M  OneSM( <gf2mat> ) . . . . . . . . . . . . . . . . . . . identity GF2 matrix
+##
+InstallMethod( OneSameMutability,
+    "for GF2 Matrix",
+    true,
+    [ IsOrdinaryMatrix and IsGF2MatrixRep and IsMultiplicativeElementWithOne],
+    0,
+        function(mat)
+    local len,row1;
+    len := Length(mat);
+    row1 := mat[1];
+    if len <> Length(row1) then
+        return fail;
+    fi;
+    if not IsMutable(mat) then
+        return GF2IdentityMatrix(len, 2);
+    elif IsMutable(mat) and not IsMutable(row1) then
+        return GF2IdentityMatrix(len, 1);
+    else
+        return GF2IdentityMatrix(len, 0);
+    fi;
 end );
 
 
@@ -770,8 +940,8 @@ end );
 ##
 #M  ZeroOp( <gf2mat> )  . . . . . . . . . . . . . . . mutable zero GF2 matrix
 ##
-## Once again, this cannot be a compressed matrix
 ##
+
 InstallMethod( ZeroOp,
     "for GF2 Matrix",
     true,
@@ -779,18 +949,56 @@ InstallMethod( ZeroOp,
     0,
 
 function( mat )
-    local   new,  zero,  i, len;
+    local   new,  zero,  i;
 
-    new := [ ];
-    len := Length(mat);
-    if 0 < len   then
-        zero := ZeroOp( mat[1] );
-        for i in [ 1 .. len ]  do
-            Add( new, ShallowCopy( zero ) );
+    new := [ Length(mat) ];
+    if 0 < new[1]   then
+        zero := ZeroOp(mat[1]);
+        SetFilterObj(zero, IsLockedRepresentationVector);
+        for i in [ 1 .. new[1] ]  do
+            Add( new, zero );
         od;
     fi;
+    Objectify( TYPE_LIST_GF2MAT, new );
     return new;
 end );
+
+
+#############################################################################
+##
+#M  ZEROOp( <gf2mat> )  . . . . . . . . . . . . . . . matching mutabilitt
+##
+##
+
+InstallMethod( ZeroSameMutability,
+    "for GF2 Matrix",
+    true,
+    [ IsMatrix and IsListDefault and IsGF2MatrixRep ],
+    0,
+
+function( mat )
+    local   new,  zero,  i;
+
+    new := [ Length(mat) ];
+    if 0 < new[1]   then
+        if  IsMutable(mat![2]) then
+            for i in [ 1 .. new[1] ]  do
+                zero := ZERO(mat![2]);
+                SetFilterObj(zero, IsLockedRepresentationVector);
+                Add( new, zero );
+            od;
+        else
+            zero := ZERO(mat![2]);
+            SetFilterObj(zero, IsLockedRepresentationVector);
+            for i in [ 1 .. new[1] ]  do
+                Add( new, zero );
+            od;
+        fi;
+    fi;
+    Objectify( TypeObj(mat), new );
+    return new;
+end );
+
 
 
 #############################################################################
@@ -952,7 +1160,8 @@ InstallGlobalFunction(ConvertToVectorRep,function( arg )
     fi;
     
 	
-    if (not IsRowVector(v)) or Length(v)=0  then
+    if (Length(v) = 0 and Length(arg) = 1) or 
+      (Length(v) >0 and not IsRowVector(v))  then
         return fail;
     fi;
     
@@ -1062,7 +1271,7 @@ InstallGlobalFunction(ConvertToVectorRep,function( arg )
         return Q_VEC8BIT(v);
     else
         # force the kernel to note that this is a FFE vector
-        XTNUM_OBJ(v);
+        TypeObj(v);
     fi;
     return true;
 end);
@@ -1101,87 +1310,95 @@ end);
 
 #############################################################################
 ##
-#F  ConvertedMatrix( <field>, <matrix> [,<imm>] ) 
+#F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
-InstallGlobalFunction( ConvertedMatrix, function(arg)
-local field,matrix,i,sf,rep,ind,ind2,row;
+InstallGlobalFunction( ImmutableMatrix, function(arg)
+local field,matrix,nochange,sf, rep, ind, ind2, row, i,big,l;
   field:=arg[1];
   matrix:=arg[2];
+  nochange:=Length(arg)<3 or arg[3]<>true;
   if IsEmpty(matrix) then
     return matrix;
   fi;
   if IsInt(field) then
     sf:=field;
   else
+    if not IsField(field) then
+      # not a field
+      return matrix;
+    fi;
     sf:=Size(field);
   fi;
+
+  big:=sf>256 or sf=0;
 
   # the representation we want the rows to be in
   if sf=2 then
     rep:=IsGF2VectorRep;
-  elif sf<=256 then
+  elif not big then
     rep:=function(v) return Is8BitVectorRep(v) and Q_VEC8BIT(v) = sf; end;
   else
     rep:=IsPlistRep;
   fi;
 
   # get the indices of the rows that need changing the representation.
-  ind:=[];
-  ind2:=[];
+  ind:=[]; # rows to convert
+  ind2:=[]; # rows to rebuild 
   for i in [1..Length(matrix)] do
     if not rep(matrix[i]) then
-      Add(ind,i);
-      if IsLockedRepresentationVector(matrix[i]) then
+      if big or IsLockedRepresentationVector(matrix[i]) 
+	or (nochange and IsMutable(matrix[i])) then
         Add(ind2,i);
+      else
+	# wrong rep, but can be converted
+	Add(ind,i);
       fi;
+    elif (nochange and IsMutable(matrix[i])) then
+      # right rep but wrong mutability
+      Add(ind2,i);
     fi;
   od;
 
-  if Length(ind)>0 then
-    if Length(ind2)>0 then
-      # some rows don't want to change, rebuild the matrix
-      matrix:=ShallowCopy(matrix);
-      # in case matrix is in 8BitRep the rows are now locked, so
-      # we do a conversion to bigger field right now
-      if sf <= 256 then
-        for i in ind2 do
-          row := ShallowCopy(matrix[i]);
-          ConvertToVectorRep(row, sf);
-          # this assignment locks the row
-          matrix[i] := row;
-        od;
-      else
-        for i in ind2 do
-          matrix[i]:=ShallowCopy(matrix[i]);
-        od;
-      fi;
-    elif sf>256 then
-      matrix:=ShallowCopy(matrix); # we will substitute rows
-    fi;
-
-    # change the rows that need changing
-    for i in ind do
-      if sf<=256 then
-        ConvertToVectorRep(matrix[i],sf);
-      else
-        matrix[i]:=List(matrix[i],j->j); # plist conversion
-      fi;
+  # do we need to rebuild outer matrix layer?
+  if (nochange and IsMutable(matrix)) # matrix was mutable
+    or (Length(ind2)>0 and   # we want to change rows
+      not IsMutable(matrix)) #but cannot change entries
+    or (Is8BitMatrixRep(matrix) # matrix is be compact rep
+       and (Length(ind)>0 or Length(ind2)>0) ) # and we change rows
+       then
+    l:=matrix;
+    matrix:=[];
+    for i in l do
+      Add(matrix,i);
     od;
   fi;
-  if Length(arg)>2 and arg[3]=true then
-    MakeImmutable(matrix);
+
+  # rebuild some rows
+  if big then
+    for i in ind2 do
+      matrix[i]:=List(matrix[i],j->j); # plist conversion
+    od;
+  else
+    for i in ind2 do
+      row := ShallowCopy(matrix[i]);
+      ConvertToVectorRep(row, sf);
+      matrix[i] := row;
+    od;
   fi;
-  ConvertToMatrixRep(matrix,field);
+
+  # this can only happen if not big
+  for i in ind do
+    ConvertToVectorRep(matrix[i],sf);
+  od;
+
+  MakeImmutable(matrix);
+  if sf=2 and not IsGF2MatrixRep(matrix) then
+    CONV_GF2MAT(matrix);
+  elif sf>2 and sf<=256 and not Is8BitMatrixRep(matrix) then
+    CONV_MAT8BIT(matrix,sf);
+  fi;
   return matrix;
 end );
-
-#############################################################################
-##
-#F  ImmutableMatrix( <field>, <matrix> ) . convert into "best" representation
-##
-InstallGlobalFunction( ImmutableMatrix, function( field, matrix )
-  return ConvertedMatrix(field,matrix,true);
-end);
 
 #############################################################################
 ##
@@ -1546,16 +1763,26 @@ InstallMethod(SemiEchelonMat, "shortcut method for GF2 matrices",
         true,
         [ IsMatrix and IsGF2MatrixRep and IsFFECollColl ],
         0,
-        mat -> SemiEchelonMatDestructive( List(mat, ShallowCopy) ) 
-        );
+        function(mat)
+    local res;
+    res :=  SemiEchelonMatDestructive( List(mat, ShallowCopy) ) ;
+    ConvertToMatrixRep(res.vectors,2);
+    return res;
+    end );
 
 InstallMethod(SemiEchelonMatTransformation, 
         "kernel method for plain lists of GF2 vectors",
         true,
         [ IsMatrix and IsFFECollColl and IsGF2MatrixRep],
         0, 
-        mat-> SemiEchelonMatTransformationDestructive( List( mat, ShallowCopy) )
-        );
+        function(mat)
+    local res;
+    res := SemiEchelonMatTransformationDestructive( List( mat, ShallowCopy) );
+    ConvertToMatrixRep(res.vectors,2);
+    ConvertToMatrixRep(res.coeffs,2);
+    ConvertToMatrixRep(res.relations,2);
+    return res;
+    end );
 
 
 #
@@ -1595,6 +1822,41 @@ InstallMethod(TriangulizeMat,
         GF2_AHEAD_OF_8BIT_RANK, 
         TRIANGULIZE_LIST_GF2VECS);
 
+##
+#T Really should sort this one in the kernel
+## but this should fix the major inefficiency for now
+##
+
+
+InstallMethod(TriangulizeMat,
+        "for GF2 matrices",
+        true,
+        [IsMatrix and IsMutable and IsFFECollColl and IsGF2MatrixRep],
+        0,
+        function(m)
+    local i,imms;
+    PLAIN_GF2MAT(m);
+    imms := [];
+    for i in [1..Length(m)] do
+        if not IsMutable(m[i]) then
+            m[i] := ShallowCopy(m[i]);
+            imms[i] := true;
+        else
+            imms[i] := false;
+        fi;
+    od;
+    TRIANGULIZE_LIST_GF2VECS(m);
+    for i in [1..Length(m)] do
+        if not IsMutable(m[i]) then
+            m[i] := ShallowCopy(m[i]);
+            imms[i] := true;
+        else
+            imms[i] := false;
+        fi;
+    od;
+    CONV_GF2MAT(m);
+end);
+
 #############################################################################
 ##
 #M  DeterminantMatDestructive ( <plain list of GF2 vectors> )
@@ -1620,6 +1882,11 @@ InstallMethod(RankMatDestructive,
         GF2_AHEAD_OF_8BIT_RANK, 
         RANK_LIST_GF2VECS);
        
+
+InstallMethod(NestingDepthM, [IsGF2MatrixRep], m->2);
+InstallMethod(NestingDepthA, [IsGF2MatrixRep], m->2);
+InstallMethod(NestingDepthM, [IsGF2VectorRep], m->1);
+InstallMethod(NestingDepthA, [IsGF2VectorRep], m->1);
 
 #############################################################################
 ##

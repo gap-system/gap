@@ -16,31 +16,33 @@ Revision.list_g :=
 
 #############################################################################
 ##
-#C  IsListDefault( <obj> )  . . . . . . . . methods for arithmetic operations
+#C  IsListDefault( <list> ) . . . . . . . . methods for arithmetic operations
 ##
-##  Arithmetic operations with lists, such as the sum or product of
-##  *two lists*, cannot be defined for arbitrary lists,
-##  because this would cause problems for extensions of the range of objects
-##  to be treated in {\GAP}.
-##  For example, since we are interested in dealing with *Lie matrices*,
-##  the product of two arbitrary matrices cannot be defined as the
-##  ordinary matrix product.
-##  Also the default method of pointwise addition of lists shall *not* be
-##  applicable to Lie matrices, since then it would be legal that the result
-##  is any list, not necessarily one that is a Lie matrix.
+##  For a list <list>, `IsListDefault' indicates that the default methods for
+##  arithmetic operations of lists, such as pointwise addition and
+##  multiplication as inner product or matrix product,
+##  shall be applicable to <list>.
 ##
-##  The solution is to restrict the scope of the default methods for
-##  arithmetic operations to those lists in the category `IsListDefault'.
-##  All internally represented lists are in this category, and also all
-##  lists in the representations `IsGF2VectorRep' and `IsGF2MatrixRep'.
+##  `IsListDefault' implies `IsGeneralizedRowVector' and
+##  `IsMultiplicativeGeneralizedRowVector'.
 ##
-DeclareCategory( "IsListDefault", IsList );
-#T this is not really clean ...
+##  All internally represented lists are in this category,
+##  and also all lists in the representations `IsGF2VectorRep',
+##  `Is8BitVectorRep', `IsGF2MatrixRep', and `Is8BitMatrixRep'
+##  (see~"Row Vectors over Finite Fields" and "Matrices over Finite Fields").
+#T  strings and blists:
+#T  It does not really make sense to have them in `IsGeneralizedRowVector'.
+##  Note that the result of an arithmetic operation with lists in
+##  `IsListDefault' will in general be an internally represented list,
+##  so most ``wrapped list objects'' will not lie in `IsListDefault'.
+##
+DeclareCategory( "IsListDefault", IsMultiplicativeGeneralizedRowVector );
+#T IsListDefault should imply IsAdditiveElement and IsMultiplicativeElement,
+#T probably IsGeneralizedRowVector should imply IsAdditiveElement, and
+#T IsMultiplicativeGeneralizedRowVector should imply IsMultiplicativeElement.
 
 InstallTrueMethod( IsListDefault, IsInternalRep and IsList );
 
-
-InstallTrueMethod( IsMultiplicativeGeneralizedRowVector, IsListDefault );
 
 #############################################################################
 ##

@@ -7,54 +7,53 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file declares the operations for tuples
+##  This file declares the operations for tuples.
 ##
 Revision.tuples_gi :=
   "@(#)$Id$";
+
 
 #############################################################################
 ##
 #V  InfoTuples . . . . . . . . . . . . . . . . . . . . . . . . . . Info Class
 ##
-
-DeclareInfoClass("InfoTuples");
-
-
-#############################################################################
-##
-#R  IsDefaultTupleRep ( <obj> ) . . . . .  representation as component object
-##
-DeclareRepresentation( "IsDefaultTupleRep", 
-                             IsPositionalObjectRep and IsTuple, [] );
+DeclareInfoClass( "InfoTuples" );
 
 
 #############################################################################
 ##
-#V  TUPLES_FAMILIES . . . . . . . . . . . . . . . list of all tuples families
+#R  IsDefaultTupleRep( <obj> )  . . . . .  representation as component object
 ##
+DeclareRepresentation( "IsDefaultTupleRep",
+    IsPositionalObjectRep and IsTuple, [] );
 
-EmptyTuplesFamily := NewFamily( "TuplesFamily([])", IsTuple , IsTuple );
-EmptyTuplesFamily!.defaultTupleType:=NewType(EmptyTuplesFamily,
-                                             IsDefaultTupleRep );
 
-SetComponentsOfTuplesFamily(EmptyTuplesFamily, []);
+#############################################################################
+##
+#V  TUPLES_FAMILIES  . . . . . . . . . . . . . .  list of all tuples families
+##
+BindGlobal( "EmptyTuplesFamily",
+    NewFamily( "TuplesFamily([])", IsTuple, IsTuple ) );
+
+EmptyTuplesFamily!.defaultTupleType:= NewType( EmptyTuplesFamily,
+                                               IsDefaultTupleRep );
+
+SetComponentsOfTuplesFamily( EmptyTuplesFamily, [] );
 
 InstallValue( TUPLES_FAMILIES, [ [ EmptyTuplesFamily ] ] );
 
 
 #############################################################################
 ##
-#M  TuplesFamily ( <famlist> ) . . . . . . . . . family of tuples of elements
+#M  TuplesFamily( <famlist> )  . . . . . . . . . family of tuples of elements
 ##
-##
-
-InstallMethod( TuplesFamily, 
+InstallMethod( TuplesFamily,
     "for a collection (of families)",
-        fam -> fam = CollectionsFamily(FamilyOfFamilies), 
-        [ IsCollection ], 0,
-        function( famlist )
-local n, tupfams, freepos, len, i, fam, tuplespos,
-      tuplesfam,filter,filter2;
+    fam -> fam = CollectionsFamily(FamilyOfFamilies),
+    [ IsCollection ],
+    function( famlist )
+    local n, tupfams, freepos, len, i, fam, tuplespos,
+          tuplesfam,filter,filter2;
 
     n := Length(famlist);
     if not IsBound(TUPLES_FAMILIES[n+1]) then
@@ -85,17 +84,17 @@ local n, tupfams, freepos, len, i, fam, tuplespos,
       filter:=IsTuple;
       filter2:=IsTupleFamily;
       # inherit positive element comparison from the families but do not
-      # trigger the computation. 
-      if ForAll(famlist,i->HasCanEasilyCompareElements(i) and 
+      # trigger the computation.
+      if ForAll(famlist,i->HasCanEasilyCompareElements(i) and
        CanEasilySortElements(i)) then
         filter:=filter and CanEasilySortElements;
         filter2:=filter2 and CanEasilySortElements;
-      elif ForAll(famlist,i->HasCanEasilyCompareElements(i) and 
+      elif ForAll(famlist,i->HasCanEasilyCompareElements(i) and
         CanEasilyCompareElements(i)) then
         filter:=filter and CanEasilyCompareElements;
         filter2:=filter2 and CanEasilyCompareElements;
       fi;
-      tuplesfam:= NewFamily( "TuplesFamily( <<famlist>> )", 
+      tuplesfam:= NewFamily( "TuplesFamily( <<famlist>> )",
                              IsTuple , filter,filter2);
       SetComponentsOfTuplesFamily( tuplesfam, Immutable( famlist ) );
       SetElmWPObj( tupfams, freepos, tuplesfam );
@@ -103,260 +102,365 @@ local n, tupfams, freepos, len, i, fam, tuplespos,
     fi;
 
     return tuplesfam;
-end);
-                         
+    end );
+
+
 #############################################################################
 ##
-#M  TuplesFamily ( [] ) . . .  . . . . . . . . . . . . .family of empty tuple
+#M  TuplesFamily( [] ) . . . . . . . . . . . . . . . .  family of empty tuple
 ##
-
-InstallOtherMethod( TuplesFamily, 
+InstallOtherMethod( TuplesFamily,
     "for an empty list",
-        true, [ IsList and IsEmpty ], 0,
-        function( empty )
+    [ IsList and IsEmpty ],
+    function( empty )
     Info(InfoTuples, 2, "Reused tuples family, length 0");
     return TUPLES_FAMILIES[1][1];
-end);
+    end );
+
 
 #############################################################################
 ##
-#M  Tuple ( <objlist> ) . . . . . . . . . . . . . . . . . . . . .make a tuple
+#M  Tuple( <objlist> ) . . . . . . . . . . . . . . . . . . . . . make a tuple
 ##
-##
-
 InstallMethod( Tuple,
     "for a list",
-    true, [ IsList ], 0,
-        function( objlist )
+    [ IsList ],
+    function( objlist )
     local fam;
     fam := TuplesFamily( List(objlist, FamilyObj) );
     return TupleNC ( fam, objlist );
-end);
+    end );
+
 
 #############################################################################
 ##
-#M  Tuple ( <tuplesfam>, <objlist> ) . . . . . . . . . . . . . . make a tuple
+#M  Tuple( <tuplesfam>, <objlist> )  . . . . . . . . . . . . . . make a tuple
 ##
-
 InstallOtherMethod( Tuple,
     "for a tuples family, and a list",
-    true, [ IsTupleFamily, IsList ], 0,
-        function( fam, objlist )
+    [ IsTupleFamily, IsList ],
+    function( fam, objlist )
     while ComponentsOfTuplesFamily(fam) <>  List(objlist, FamilyObj) do
-        objlist := 
+      objlist :=
           Error( "objects not of proper families for tuples family supplied, you may supply replacements");
     od;
     return TupleNC ( fam, objlist );
-end);
-
-
-
-
-
-##############################################################################
-##
-#M  PrintObj( <tuple> ) . . . . . . . . . . . . . . . . . . . .  print a tuple
-##
-
-InstallMethod( PrintObj,
-    "for a tuple",
-    true, [ IsTuple ], 0,
-        function (tuple) 
-    local i;
-    Print("Tuple( [ ");
-    for i in [1.. Length(tuple)-1] do
-        Print(tuple[i],", ");
-    od;
-    if Length(tuple) <> 0 then
-        Print(tuple[Length(tuple)]);
-    fi;
-    Print(" ] )");
-end);
-
-
-##############################################################################
-##
-#M  <tuple1> <  <tuple2>. . . . . . . . . . . . . . . . . . . . . . comparison
-##
-##
-
-InstallMethod( \<, "for two tuples",
-    IsIdenticalObj, [ IsTuple, IsTuple ], 0,
-        function (tuple1, tuple2) 
-    local i;
-    for i in [1..Length(tuple1)] do
-        if tuple1[i] < tuple2[i] then
-            return true;
-        elif tuple1[i] > tuple2[i] then
-            return false;
-        fi;
-    od;
-    return false;
-end);
-
-##############################################################################
-##
-#M  <tuple1> =  <tuple2>. . . . . . . . . . . . . . . . . . . . . . comparison
-##
-##
-InstallMethod( \=,
-    "for two tuples",
-    IsIdenticalObj, [ IsTuple, IsTuple ], 0,
-        function (tuple1, tuple2) 
-    local i;
-    for i in [1..Length(tuple1)] do
-        if tuple1[i] <> tuple2[i] then
-            return false;
-        fi;
-    od;
-    return true;
-end);
-
-
-##############################################################################
-##
-#M  CanEasilyCompareElements(<tup>)
-##
-##
-InstallMethod( CanEasilyCompareElements, "for tuple", true, [IsTuple], 0,
-function(tup)
-local i;
-  for i in [1..Length(tup)] do
-    if not CanEasilyCompareElements(tup[i]) then
-      return false;
-    fi;
-  od;
-  return true;
-end);
+    end );
 
 
 #############################################################################
 ##
-#M  TupleNC ( <tuplesfam>, <objlist> ) . . . . . . . . . . . . . make a tuple
+#M  PrintObj( <tuple> )  . . . . . . . . . . . . . . . . . . .  print a tuple
+#M  ViewObj( <tuple> ) . . . . . . . . . . . . . . . . . . . . . view a tuple
+##
+##  We install a special `ViewObj' method because as soon as a tuple stores
+##  that it is finite (this happens for example in a call to `ShallowCopy'),
+##  the `ViewObj' method for finite lists would strike.
+##
+InstallMethod( PrintObj,
+    "for a tuple",
+    [ IsTuple ],
+    function( tuple )
+    local i;
+    Print("Tuple( [ ");
+    for i in [1.. Length(tuple)-1] do
+      Print(tuple[i],", ");
+    od;
+    if Length(tuple) <> 0 then
+      Print(tuple[Length(tuple)]);
+    fi;
+    Print(" ] )");
+    end );
+
+InstallMethod( ViewObj,
+    "for a tuple (call `PrintObj')",
+    [ IsTuple ],
+    PrintObj );
+
+
+#############################################################################
+##
+#M  <tuple1> <  <tuple2> . . . . . . . . . . . . . . . . . . . . . comparison
+##
+InstallMethod( \<,
+    "for two tuples",
+    IsIdenticalObj,
+    [ IsTuple, IsTuple ],
+    function (tuple1, tuple2)
+    local i;
+    for i in [1..Length(tuple1)] do
+      if tuple1[i] < tuple2[i] then
+        return true;
+      elif tuple1[i] > tuple2[i] then
+        return false;
+      fi;
+    od;
+    return false;
+    end );
+
+
+#############################################################################
+##
+#M  <tuple1> = <tuple2>  . . . . . . . . . . . . . . . . . . . . . comparison
+##
+InstallMethod( \=,
+    "for two tuples",
+    IsIdenticalObj,
+    [ IsTuple, IsTuple ],
+    function (tuple1, tuple2)
+    local i;
+    for i in [1..Length(tuple1)] do
+      if tuple1[i] <> tuple2[i] then
+        return false;
+      fi;
+    od;
+    return true;
+    end );
+
+
+#############################################################################
+##
+#M  CanEasilyCompareElements( <tup> )
+##
+InstallMethod( CanEasilyCompareElements,
+    "for tuple",
+    [ IsTuple ],
+    function(tup)
+    local i;
+    for i in [1..Length(tup)] do
+      if not CanEasilyCompareElements(tup[i]) then
+        return false;
+      fi;
+    od;
+    return true;
+    end );
+
+
+#############################################################################
+##
+#M  TupleNC( <tuplesfam>, <objlist> )  . . . . . . . . . . . . . make a tuple
 ##
 ##  Note that we really have to copy the list passed, even if it is Immutable
 ##  as we are going to Objectify it.
 ##
-
 InstallMethod( TupleNC,
     "for a tuples family, and a list",
-    true, [ IsTupleFamily, IsList ], 0,
-        function( fam, objlist )
+    [ IsTupleFamily, IsList ],
+    function( fam, objlist )
     local t;
     Assert(2, ComponentsOfTuplesFamily( fam ) = List(objlist, FamilyObj));
     t := Objectify( fam!.defaultTupleType,
          PlainListCopy(List(objlist, Immutable)) );
     Info(InfoTuples,3,"Created a new Tuple ",t);
     return t;
-end);
+    end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  <tuple> [ <index> ] .. . . . . . . . . . . . . . . . . . .component access
+#M  <tuple>[ <index> ] . . . . . . . . . . . . . . . . . . . component access
 ##
-##
-
 InstallMethod( \[\],
     "for a tuple in default representation, and a positive integer",
-    true, [ IsDefaultTupleRep, IsPosInt ], 0,
-        function (tuple, index) 
+    [ IsDefaultTupleRep, IsPosInt ],
+    function( tuple, index )
     while index > Length(tuple) do
-        index := Error("Index too large for tuple, you may return another index");
+      index:= Error( "<index> too large for <tuple>, you may return another index" );
     od;
     return tuple![index];
-end);
+    end );
 
-##############################################################################
-##
-#M  Length ( <tuple> ) . .  . . . . . . . . . . . . . . . number of components
-##
-##
 
+#############################################################################
+##
+#M  Length( <tuple> )  . . . . . . . . . . . . . . . . . number of components
+##
 InstallMethod( Length,
     "for a tuple in default representation",
-    true, [ IsDefaultTupleRep ], 0,
-        function (tuple) 
+    [ IsDefaultTupleRep ],
+    function( tuple )
     return Length(ComponentsOfTuplesFamily( FamilyObj (tuple)));
-end);
+    end );
 
-##############################################################################
+
+#############################################################################
 ##
-#M  Inverse( <tuple> )
+#M  InverseOp( <tuple> )
 ##
 InstallMethod( InverseOp,
     "for a tuple",
-    true, [ IsTuple ], 0,
-function( elm )
+    [ IsTuple ],
+    function( elm )
     return Tuple( List( elm, Inverse ) );
-end );
+    end );
 
-##############################################################################
+
+#############################################################################
 ##
-#M  One( <tuple> )
+#M  OneOp( <tuple> )
 ##
 InstallMethod( OneOp,
     "for a tuple",
-    true, [ IsTuple ], 0,
-function( elm )
+    [ IsTuple ],
+    function( elm )
     return Tuple( List( elm, One ) );
-end);
+    end );
 
-##############################################################################
+
+#############################################################################
 ##
 #M  \*( <tuple>, <tuple> )
 ##
 InstallMethod( \*,
     "for two tuples",
-    true, [ IsTuple, IsTuple ], 0,
-function( elm1, elm2 )
+    [ IsTuple, IsTuple ],
+    function( elm1, elm2 )
     local n;
     n := Length( elm1 );
     return Tuple( List( [1..n], x -> elm1[x]*elm2[x] ) );
-end );
-
-##############################################################################
-##
-#M  \^( <tuple>, <integer> ) 
-##
-InstallMethod( \^,
-    "for tuple, and integer",
-    true, [ IsTuple, IsInt ], 0,
-function( elm, x )
-    return Tuple( List( elm, y -> y^x ) );
-end);
-
-##############################################################################
-##
-#M  AdditiveInverse( <tuple> )
-##
-InstallMethod( AdditiveInverseOp, "for a tuple", true, [ IsTuple ], 0,
-function( elm )
-  return Tuple( List( elm, AdditiveInverse ) );
-end );
-
-##############################################################################
-##
-#M  Zero( <tuple> )
-##
-InstallMethod( ZeroOp, "for a tuple", true, [ IsTuple ], 0,
-function( elm )
-  return Tuple( List( elm, Zero ) );
-end);
-
-##############################################################################
-##
-#M  \+( <tuple>, <tuple> )
-##
-InstallMethod( \+, "for two tuples", true, [ IsTuple, IsTuple ], 0,
-function( elm1, elm2 )
-local n;
-  n := Length( elm1 );
-  return Tuple( List( [1..n], x -> elm1[x]+elm2[x] ) );
-end );
+    end );
 
 
 #############################################################################
 ##
-#E  tuples.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  \^( <tuple>, <integer> )
+##
+InstallMethod( \^,
+    "for tuple, and integer",
+    [ IsTuple, IsInt ],
+    function( elm, x )
+    return Tuple( List( elm, y -> y^x ) );
+    end );
+
+
+#############################################################################
+##
+#M  AdditiveInverseOp( <tuple> )
+##
+InstallMethod( AdditiveInverseOp,
+    "for a tuple",
+    [ IsTuple ],
+    function( elm )
+    return Tuple( List( elm, AdditiveInverse ) );
+    end );
+
+
+#############################################################################
+##
+#M  ZeroOp( <tuple> )
+##
+InstallMethod( ZeroOp,
+    "for a tuple",
+    [ IsTuple ],
+    function( elm )
+    return Tuple( List( elm, Zero ) );
+    end );
+
+
+#############################################################################
+##
+#M  \+( <tuple>, <tuple> )
+##
+InstallMethod( \+,
+    "for two tuples",
+    [ IsTuple, IsTuple ],
+    function( elm1, elm2 )
+    local n;
+    n := Length( elm1 );
+    return Tuple( List( [1..n], x -> elm1[x]+elm2[x] ) );
+    end );
+
+
+#############################################################################
+##
+#M  \+( <tuple>, <defaultlist> )
+#M  \+( <defaultlist>, <tuple> )
+#M  \*( <tuple>, <defaultlist> )
+#M  \*( <defaultlist>, <tuple> )
+#M  \+( <tuple>, <nonlist> )
+#M  \+( <nonlist>, <tuple> )
+#M  \*( <tuple>, <nonlist> )
+#M  \*( <nonlist>, <tuple> )
+##
+##  Tuples do *not* lie in `IsGeneralizedRowVector', since they shall behave
+##  as scalars; for example we want the sum of a tuple and a list of tuples
+##  to be the list of sums.
+##  (It would also be possible to make them generalized row vectors with
+##  additive and multiplicative nesting depth zero, but then the nesting
+##  depths would have to be calculated whenever they are needed.
+##  In fact I think this approach would be equivalent.)
+##
+##  Because tuples are lists, there are no default methods for adding or
+##  multiplying a tuple and a default list.
+##  So we install such methods where tuples act as scalars.
+##  Analogously, we define the sum and the product of a tuple with a non-list
+##  as the tuple of componentwise sums and products, respectively.
+##
+#T As soon as IsListDefault implies IsAdditiveElement and
+#T IsMultiplicativeElement, the InstallOtherMethod in the first four
+#T of the following methods can be replaced by InstallMethod!
+InstallOtherMethod( \+,
+    "for a tuple, and a default list",
+    [ IsTuple, IsListDefault ],
+    SUM_SCL_LIST_DEFAULT );
+
+InstallOtherMethod( \+,
+    "for a default list, and a tuple",
+    [ IsListDefault, IsTuple ],
+    SUM_LIST_SCL_DEFAULT );
+
+InstallOtherMethod( \*,
+    "for a tuple, and a default list",
+    [ IsTuple, IsListDefault ],
+    PROD_SCL_LIST_DEFAULT );
+
+InstallOtherMethod( \*,
+    "for a default list, and a tuple",
+    [ IsListDefault, IsTuple ],
+    PROD_LIST_SCL_DEFAULT );
+
+InstallOtherMethod( \+,
+    "for a tuple, and a non-list",
+    [ IsTuple, IsObject ],
+    function( tuple, nonlist )
+    if IsList( nonlist ) then
+      TryNextMethod();
+    fi;
+    return Tuple( List( tuple, entry -> entry + nonlist ) );
+    end );
+
+InstallOtherMethod( \+,
+    "for a non-list, and a tuple",
+    [ IsObject, IsTuple ],
+    function( nonlist, tuple )
+    if IsList( nonlist ) then
+      TryNextMethod();
+    fi;
+    return Tuple( List( tuple, entry -> nonlist + entry ) );
+    end );
+
+InstallOtherMethod( \*,
+    "for a tuple, and a non-list",
+    [ IsTuple, IsObject ],
+    function( tuple, nonlist )
+    if IsList( nonlist ) then
+      TryNextMethod();
+    fi;
+    return Tuple( List( tuple, entry -> entry * nonlist ) );
+    end );
+
+InstallOtherMethod( \*,
+    "for a non-list, and a tuple",
+    [ IsObject, IsTuple ],
+    function( nonlist, tuple )
+    if IsList( nonlist ) then
+      TryNextMethod();
+    fi;
+    return Tuple( List( tuple, entry -> nonlist * entry ) );
+    end );
+
+
+#############################################################################
+##
+#E
 

@@ -2432,7 +2432,10 @@ local dom,s,cs,t,ts,o;
   else
     # now get one simple factor of the socle
     cs:=CompositionSeries(s);
-    t:=cs[Length(cs)-1];
+    # if the group is diagonal, the diagonal together with a maximal socle
+    # normal subgroup generates the whole socle, so this normal subgroup
+    # acts transitively. For product type this is not the case.
+    t:=cs[2];
     if IsTransitive(t,dom) then
       # type 3
       if Length(cs)=3 and IsNormal(G,t) then

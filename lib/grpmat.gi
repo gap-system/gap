@@ -322,9 +322,19 @@ end);
 ##
 BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
   local   nice;
+  # don't be too clever if it is a matrix over a non-field domain
+  if not IsField(DefaultFieldOfMatrixGroup(grp)) then
+    #nice:=ActionHomomorphism( grp,AsSSortedList(grp),OnRight,"surjective");
+    nice:=SortedSparseActionHomomorphism( grp, One( grp ) );
+    if canon then
+      SetIsCanonicalNiceMonomorphism(nice,true);
+    else
+      nice:=nice*SmallerDegreePermutationRepresentation(Image(nice));
+    fi;
+    SetIsInjective( nice, true );
   # avoid a recursion due to the translation of homomorphisms for nice
   # groups
-  if canon then
+  elif canon then
     nice:=SortedSparseActionHomomorphism( grp, One( grp ) );
     SetIsInjective( nice, true ); # surjectivity is ensured by `SortedSparse..
     SetIsCanonicalNiceMonomorphism(nice,true);
@@ -335,8 +345,6 @@ BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
     if not ( (HasIsNaturalGL(grp) and IsNaturalGL(grp)) or
              (HasIsNaturalSL(grp) and IsNaturalSL(grp)) ) then
       # improve via blocks
-#      StabChainMutable(Image(nice)); # this stabilizer chain would be forced
-#				    # anyhow by the following command
       nice:=nice*SmallerDegreePermutationRepresentation(Image(nice));
     fi;
   fi;

@@ -19,6 +19,9 @@ Revision.meataxe_gi:=
 InstallGlobalFunction(GModuleByMats,function(arg)
 local l,f,dim,m;
   l:=arg[1];
+  if Length(arg)=1 then
+    Error("Usage: GModuleByMats(<mats>,[<id>,]<field>)");
+  fi;
   f:=arg[Length(arg)];
   if Size(f)=infinity or Length(l)>0 and
     (Characteristic(l[1])<>Characteristic(f) or not IsFFECollCollColl(l)) then
@@ -829,6 +832,96 @@ local module,sub,typ,ans,dim,subdim,F,one,erg;
 
 end;
 
+#############################################################################
+##
+#F  SMTX.InducedActionSubMatrixNB ( mat, sub ) . . . . construct submodule
+##
+##  as InducedActionSubmoduleNB but for a matrix.
+SMTX.InducedActionSubMatrixNB := function ( mat, sub )
+local subdim, dim, F, ans;
+
+   subdim := Length (sub);
+   if subdim = 0 then
+      return [];
+   fi;
+   dim := Length(mat);
+   F:=DefaultFieldOfMatrix(mat);
+
+   ans:=SMTX.SubQuotActions([mat],sub,dim,subdim,F,1);
+
+   if ans=fail then
+     return fail;
+   else
+     return ans.smatrices[1];
+   fi;
+
+end;
+
+# Ditto, but allowing also unnormed modules
+SMTX.InducedActionSubMatrix := function(mat,sub)
+local nb, subdim, dim, F, ans;
+  nb:=SMTX.NormedBasisAndBaseChange(sub);
+  sub:=nb[1];
+  nb:=nb[2];
+
+   subdim := Length (sub);
+   if subdim = 0 then
+      return [];
+   fi;
+   dim := Length(mat);
+   F:=DefaultFieldOfMatrix(mat);
+
+   ans:=SMTX.SubQuotActions([mat],sub,dim,subdim,F,1);
+
+   if ans=fail then
+     return fail;
+   else
+    # conjugate the matrices to correspond to given sub
+     return ans.smatrices[1]^nb;
+   fi;
+
+end;
+
+#############################################################################
+##
+#F  SMTX.InducedActionFactorMatrix( mat, sub [,compl] )
+##
+##  as InducedActionFactor, but for a matrix.
+## 
+SMTX.InducedActionFactorMatrix := function (arg)
+local mat, sub, subdim, dim, F, ans;
+
+   mat:=arg[1];
+   sub:=arg[2];
+
+   sub:=List(sub,ShallowCopy);
+   TriangulizeMat(sub);
+
+   subdim := Length (sub);
+   dim := Length(mat);
+   if subdim = dim then
+      return [];
+   fi;
+
+   F:=DefaultFieldOfMatrix(mat);
+
+   ans:=SMTX.SubQuotActions([mat],sub,dim,subdim,F,2);
+
+   if ans=fail then
+     return fail;
+   fi;
+
+   if Length(arg)=3 then
+     # compute basechange
+     sub:=Concatenation(sub,arg[3]);
+     sub:=sub*Inverse(ans.nbasis);
+     ans.qmatrices:=List(ans.qmatrices,i->i^sub);
+   fi;
+
+   return ans.qmatrices[1];
+
+end;
+
 SMTX_SMCoRaEl:=function(matrices,ngens,newgenlist,dim,F)
 local g1,g2,coefflist,M,pol;
   g1 := Random ([1..ngens]);
@@ -858,6 +951,11 @@ local g1,g2,coefflist,M,pol;
   return [M,coefflist,pol];
 end;
 SMTX.SMCoRaEl:=SMTX_SMCoRaEl;
+
+# how many random elements should we try before (temporarily ) giving up?
+# This number is set relatively high to minimize the chance of an unlucky
+# random run in functions such as composition series computation. 
+SMTX.RAND_ELM_LIMIT:=500; 
 
 #############################################################################
 ##
@@ -955,8 +1053,9 @@ SMTX_IrreducibilityTest := function ( module )
    #Main loop starts - choose a random element of group algebra on each pass
    while trying  do
       count := count + 1;
-      if count mod 300 = 0 then
-         Error ("Have generated 300 random elements and failed to prove\n",
+      if count mod SMTX.RAND_ELM_LIMIT = 0 then
+         Error ("Have generated ",SMTX.RAND_ELM_LIMIT,
+	        "random elements and failed to prove\n",
                 "or disprove irreducibility. Type return to keep trying.");
       fi;
       maxdeg := Minimum(maxdeg * 2,dim);
@@ -1332,8 +1431,9 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
    newgenlist := [];
    while trying do
       count := count + 1;
-      if count mod 300 = 0 then
-         Error ("Have generated 300 random elements and failed ",
+      if count mod SMTX.RAND_ELM_LIMIT = 0 then
+         Error ("Have generated ",SMTX.RAND_ELM_LIMIT,
+	        " random elements and failed ",
                 "to find a good one. Type return to keep trying.");
       fi;
       Info(InfoMeatAxe,2,"Choosing random element number ",count,".");
@@ -1673,7 +1773,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    one:= One (F);
    v0 := ListWithIdenticalEntries(Length(M0[1]),zero);
    v0[1] := one;
-   ConvertToVectorRep(F,v0);
+   ConvertToVectorRep(v0, F);
 
    # v0 is just the vector (1, 0, 0....0) of length ndim. It has nothing
    # in particular to do with M0[1], but multiplying a vector that happens to be 
@@ -2624,7 +2724,7 @@ SMTX_Homomorphisms:= function (m1, m2)
    fi;
    N := NullspaceMat (rels);
    for k in N do
-     ConvertToVectorRep(F,k);
+     ConvertToVectorRep(k,F);
    od;
    ans := [];
    for k in [1..Length (N)] do

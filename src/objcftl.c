@@ -102,13 +102,13 @@ Obj CollectPolycyc (
     Obj    sst  = ADDR_OBJ(pcp)[ PC_SYLLABLE_STACK ];
     Obj    est  = ADDR_OBJ(pcp)[ PC_EXPONENT_STACK ];
 
-    Obj    conj, iconj, powers;
+    Obj    conj=0, iconj=0;   /*QQ initialize to please compiler */
 
     Int    st, bottom = INT_INTOBJ( ADDR_OBJ(pcp)[ PC_STACK_POINTER ] );
 
-    Int    i, g, syl, h, hh;
+    Int    g, syl, h, hh;
 
-    Obj    e, ee, ge, mge, we, r, s, t, u;
+    Obj    e, ee, ge, mge, we, s, t;
     Obj    w, x = (Obj)0, y = (Obj)0;
 
 
@@ -150,13 +150,13 @@ Obj CollectPolycyc (
               if( !LtInt( s, e ) ) {
                   t = ModInt( s, e );
                   SET_ELM_PLIST( list, h, t ); CHANGED_BAG( list );
-                  if( y = GET_POWER( h ) ) e = QuoInt( s, e );
+                  if( (y = GET_POWER( h )) ) e = QuoInt( s, e );
               }
               else if( LtInt( s, INTOBJ_INT(0) ) ) {
                   t = ModInt( s, e );
                   SET_ELM_PLIST( list, h, t ); CHANGED_BAG( list );
               
-                  if( y = GET_IPOWER( h ) ) {
+                  if( (y = GET_IPOWER( h )) ) {
                       e = QuoInt( s, e );
                       if( !IS_INT_ZERO( t ) ) e = DiffInt( e, INTOBJ_INT(1) );
                       e = ProdInt( e, INTOBJ_INT(-1) );
@@ -205,18 +205,18 @@ Obj CollectPolycyc (
            stack until all the conjugates are on the stack.  The power is
            stored in  y, its exponent in ge.  */
         y = (Obj)0;
-        if( e = GET_EXPONENT( g ) ) {
+        if( (e = GET_EXPONENT( g )) ) {
             if( !LtInt( ge, e ) ) {
                 mge = ModInt( ge, e );
                 SET_ELM_PLIST( list, g, mge ); CHANGED_BAG( list );
             
-                if( y = GET_POWER( g ) ) ge = QuoInt( ge, e );
+                if( (y = GET_POWER( g )) ) ge = QuoInt( ge, e );
             }
             else if( LtInt( ge, INTOBJ_INT(0) ) ) {
                 mge = ModInt( ge, e );
                 SET_ELM_PLIST( list, g, mge ); CHANGED_BAG( list );
             
-                if( y = GET_IPOWER( g ) ) {
+                if( (y = GET_IPOWER( g )) ) {
                     ge = QuoInt( ge, e );
                     if( !IS_INT_ZERO( mge ) ) 
                         ge = DiffInt( ge, INTOBJ_INT(1) );
@@ -270,10 +270,11 @@ Obj CollectPolycyc (
             if( LtInt( INTOBJ_INT(0), e ) ) x = GET_CONJ( h, g );
             else                            x = GET_ICONJ( h, g );
             
-            if( x == (Obj)0 ) 
+            if( x == (Obj)0 )  {
               if( LtInt( INTOBJ_INT(0), e ) ) x = ELM_PLIST(  gens, h );
               else                            x = ELM_PLIST( igens, h );
             
+	    }
             if( LtInt( e, INTOBJ_INT(0) ) ) {
               C_PROD_FIA( ee, e, INTOBJ_INT(-1) );  e = ee;
             }

@@ -46,7 +46,6 @@ const char * Revision_ariths_c =
 
 /****************************************************************************
 **
-
 *V  ZeroFuncs[ <type> ] . . . . . . . . . . . . . . . . table of zero methods
 */
 ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
@@ -56,16 +55,16 @@ ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
 **
 *F  ZeroObject( <obj> ) . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj ZeroOp;
+Obj ZEROOp;
 
 Obj ZeroObject (
     Obj                 obj )
 
 {
   Obj val;
-  val = DoOperation1Args( ZeroOp, obj );
+  val = DoOperation1Args( ZEROOp, obj );
   while (val == 0)
-    val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
+    val = ErrorReturnObj("ZEROOp: method should have returned a value", 0L, 0L,
 			 "you can supply one by 'return <value>;'");
   return val;
 }
@@ -80,9 +79,9 @@ Obj VerboseZeroObject (
 
 {
   Obj val;
-  val = DoVerboseOperation1Args( ZeroOp, obj );
+  val = DoVerboseOperation1Args( ZEROOp, obj );
   while (val == 0)
-    val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
+    val = ErrorReturnObj("ZEROOp: method should have returned a value", 0L, 0L,
 			 "you can supply one by 'return <value>;'");
   return val;
 }
@@ -101,9 +100,6 @@ void InstallZeroObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         ZeroFuncs[t1] = func;
     }
-#ifdef XTNUMS
-    ZeroFuncs[ T_OBJECT          ] = func;
-#endif
     ZeroFuncs[ T_PREC            ] = func;
     ZeroFuncs[ T_PREC +IMMUTABLE ] = func;
 }
@@ -120,13 +116,87 @@ Obj FuncZERO (
     return ZERO(obj);
 }
 
+/****************************************************************************
+**
+*V  ZeroMutFuncs[ <type> ] . . . . . . . . . . . . . . . . table of zero methods
+*/
+ArithMethod1 ZeroMutFuncs [LAST_VIRTUAL_TNUM+1];
+
 
 /****************************************************************************
 **
+*F  ZeroMutObject( <obj> ) . . . . . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj ZeroOp;
 
+Obj ZeroMutObject (
+    Obj                 obj )
+
+{
+  Obj val;
+  val = DoOperation1Args( ZeroOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
+			 "you can supply one by 'return <value>;'");
+  return val;
+}
+
+
+/****************************************************************************
+**
+*F  VerboseZeroMutObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
+*/
+Obj VerboseZeroMutObject (
+    Obj                 obj )
+
+{
+  Obj val;
+  val = DoVerboseOperation1Args( ZeroOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
+			 "you can supply one by 'return <value>;'");
+  return val;
+}
+
+
+/****************************************************************************
+**
+*F  InstallZeroMutObject( <verb> ) . . . . . . . . . . . .  install zero methods
+*/
+void InstallZeroMutObject ( Int verb )
+{
+    UInt                t1;             /* type of left  operand           */
+    ArithMethod1        func;           /* zero function                   */
+
+    func = ( verb ? VerboseZeroMutObject : ZeroMutObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        ZeroMutFuncs[t1] = func;
+    }
+    ZeroMutFuncs[ T_PREC            ] = func;
+    ZeroMutFuncs[ T_PREC +IMMUTABLE ] = func;
+}
+
+
+/****************************************************************************
+**
+*F  FuncZERO_MUT( <self>, <obj> ) . . . . . . . . . . . . . . call 'ZERO_MUT'
+*/
+Obj FuncZERO_MUT (
+    Obj                 self,
+    Obj                 obj )
+{
+    return ZERO_MUT(obj);
+}
+
+
+/****************************************************************************
+**
 *V  AInvFuncs[ <type> ] . . . . . . . . . . table of additive inverse methods
+*V  AInvMutFuncs[ <type> ] . .  . . . . . . table of additive inverse methods
+**                                          which return mutable results
 */
 ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
+ArithMethod1 AInvMutFuncs[ LAST_VIRTUAL_TNUM + 1];
 
 
 /****************************************************************************
@@ -176,9 +246,6 @@ void InstallAinvObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         AInvFuncs[t1] = func;
     }
-#ifdef XTNUMS
-    AInvFuncs[ T_OBJECT          ] = func;
-#endif
     AInvFuncs[ T_PREC            ] = func;
     AInvFuncs[ T_PREC +IMMUTABLE ] = func;
 }
@@ -193,6 +260,69 @@ Obj FuncAINV (
     Obj                 obj )
 {
     return AINV(obj);
+}
+
+/****************************************************************************
+**
+*F  AInvMutObject( <obj> )  . .. . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj AdditiveInverseOp;
+
+Obj AInvMutObject (
+    Obj                 obj )
+{
+  Obj val;
+  val = DoOperation1Args( AdditiveInverseOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("AdditiveInverseOp: method should have returned a value", 0L, 0L,
+			 "you can supply one by 'return <value>;'");
+  return val;
+}
+
+
+/****************************************************************************
+**
+*F  VerboseAInvMutObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
+*/
+Obj VerboseAInvMutObject (
+    Obj                 obj )
+{
+  Obj val;
+  val = DoVerboseOperation1Args( AdditiveInverseOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("AdditiveInverseOp: method should have returned a value", 0L, 0L,
+			 "you can supply one by 'return <value>;'");
+  return val;
+}
+
+
+/****************************************************************************
+**
+*F  InstallAinvMutObject( <verb> ) . . . . . .  install additive inverse methods
+*/
+void InstallAinvMutObject ( Int verb )
+{
+    UInt                t1;             /* type of left  operand           */
+    ArithMethod1        func;           /* ainv function                   */
+
+    func = ( verb ? VerboseAInvMutObject : AInvMutObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        AInvMutFuncs[t1] = func;
+    }
+    AInvMutFuncs[ T_PREC            ] = func;
+    AInvMutFuncs[ T_PREC +IMMUTABLE ] = func;
+}
+
+
+/****************************************************************************
+**
+*F  FuncAINV_MUT( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'AINV'
+*/
+Obj FuncAINV_MUT (
+    Obj                 self,
+    Obj                 obj )
+{
+    return AINV_MUT(obj);
 }
 
 
@@ -251,9 +381,6 @@ void InstallOneObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         OneFuncs[t1] = func;
     }
-#ifdef XTNUMS
-    OneFuncs[ T_OBJECT          ] = func;
-#endif
     OneFuncs[ T_PREC            ] = func;
     OneFuncs[ T_PREC +IMMUTABLE ] = func;
 }
@@ -268,6 +395,77 @@ Obj FuncONE (
     Obj                 obj )
 {
     return ONE(obj);
+}
+
+/****************************************************************************
+**
+
+*V  OneMutFuncs[ <type> ]  . . . . .table of mutability retaining one methods
+*/
+ArithMethod1 OneMutFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  OneMutObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj OneMutOp;
+
+Obj OneMutObject (
+    Obj                 obj )
+{
+  Obj val;
+  val = DoOperation1Args( OneMutOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("ONEOp: method should have returned a value", 0L, 0L,
+			 "you can supply one by 'return <value>;'");
+  return val;
+}
+
+
+/****************************************************************************
+**
+*F  VerboseOneMutObject( <obj> ) . . .  . . . . . . . . . . . .  call methsel
+*/
+Obj VerboseOneMutObject (
+    Obj                 obj )
+{
+  Obj val;
+  val = DoVerboseOperation1Args( OneMutOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("ONEOp: method should have returned a value", 0L, 0L,
+			 "you can supply one by 'return <value>;'");
+  return val;
+}
+
+
+/****************************************************************************
+**
+*F  InstallOneMutObject( <verb> )  . . . . . . . . . . . . . install one methods
+*/
+void InstallOneMutObject ( Int verb )
+{
+    UInt                t1;             /* type of left  operand           */
+    ArithMethod1        func;           /* one function                    */
+
+    func = ( verb ? VerboseOneMutObject : OneMutObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        OneMutFuncs[t1] = func;
+    }
+    OneMutFuncs[ T_PREC            ] = func;
+    OneMutFuncs[ T_PREC +IMMUTABLE ] = func;
+}
+
+
+/****************************************************************************
+**
+*F  FuncONE_MUT( <self>, <obj> ) . . . . . . . . . . . . . . . .call 'ONE_MUT'
+*/
+Obj FuncONE_MUT (
+    Obj                 self,
+    Obj                 obj )
+{
+    return ONE_MUT(obj);
 }
 
 
@@ -326,9 +524,6 @@ void InstallInvObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         InvFuncs[t1] = func;
     }
-#ifdef XTNUMS
-    InvFuncs[ T_OBJECT          ] = func;
-#endif
     InvFuncs[ T_PREC            ] = func;
     InvFuncs[ T_PREC +IMMUTABLE ] = func;
 }
@@ -343,6 +538,77 @@ Obj FuncINV (
     Obj                 obj )
 {
     return INV( obj );
+}
+
+
+/****************************************************************************
+**
+*V  InvMutFuncs[ <type> ]  . table of mutability-preserving inverse functions
+*/
+ArithMethod1 InvMutFuncs [LAST_VIRTUAL_TNUM+1];
+
+    
+/****************************************************************************
+**
+*F  InvMutObject( <obj> )  . . . . . . . . . . . . . . .. . . . .  call methsel
+*/
+Obj InvMutOp;
+
+Obj InvMutObject (
+    Obj                 obj )
+{
+  Obj val;
+  val = DoOperation1Args( InvMutOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("INVOp: method should have returned a value", 0L, 0L,
+			 "you can supply one by 'return <value>;'");
+  return val;
+}
+
+
+/****************************************************************************
+**
+*F  VerboseInvMutObject( <obj> ) . . .  . . . . . . . . . . . .  call methsel
+*/
+Obj VerboseInvMutObject (
+    Obj                 obj )
+{
+  Obj val;
+  val = DoVerboseOperation1Args( InvMutOp, obj );
+  while (val == 0)
+    val = ErrorReturnObj("INVOp: method should have returned a value", 0L, 0L,
+			 "you can supply one by 'return <value>;'");
+  return val;
+}
+
+
+/****************************************************************************
+**
+*F  InstallInvMutObject( <verb> ) install mutability preserving inverse methods
+*/
+void InstallInvMutObject ( Int verb )
+{
+    UInt                t1;             /* type of left  operand           */
+    ArithMethod1        func;           /* inv function                    */
+
+    func = ( verb ? VerboseInvMutObject : InvMutObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        InvMutFuncs[t1] = func;
+    }
+    InvMutFuncs[ T_PREC            ] = func;
+    InvMutFuncs[ T_PREC +IMMUTABLE ] = func;
+}
+
+
+/****************************************************************************
+**
+*F  FuncINV_MUT( <self>, <obj> )  . . .  . . . . . . . . . .  call 'INV_MUT'
+*/
+Obj FuncINV_MUT (
+    Obj                 self,
+    Obj                 obj )
+{
+    return INV_MUT( obj );
 }
 
 
@@ -416,10 +682,6 @@ void InstallEqObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
-#ifdef XTNUMS
-        EqFuncs[ t2 ][ T_OBJECT ] = func;
-        EqFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         EqFuncs[ t2 ][ T_PREC            ] = func;
         EqFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -494,10 +756,6 @@ void InstallLtObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
-#ifdef XTNUMS
-        LtFuncs[ t2 ][ T_OBJECT ] = func;
-        LtFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         LtFuncs[ t2 ][ T_PREC            ] = func;
         LtFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -588,10 +846,6 @@ void InstallInObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
-#ifdef XTNUMS
-        InFuncs[ t2 ][ T_OBJECT ] = func;
-        InFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         InFuncs[ t2 ][ T_PREC            ] = func;
         InFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -680,10 +934,6 @@ void InstallSumObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
-#ifdef XTNUMS
-        SumFuncs[ t2 ][ T_OBJECT ] = func;
-        SumFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         SumFuncs[ t2 ][ T_PREC            ] = func;
         SumFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -783,10 +1033,6 @@ void InstallDiffObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
-#ifdef XTNUMS
-        DiffFuncs[ t2 ][ T_OBJECT ] = func;
-        DiffFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         DiffFuncs[ t2 ][ T_PREC            ] = func;
         DiffFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -886,10 +1132,6 @@ void InstallProdObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
-#ifdef XTNUMS
-        ProdFuncs[ t2 ][ T_OBJECT ] = func;
-        ProdFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         ProdFuncs[ t2 ][ T_PREC            ] = func;
         ProdFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -929,9 +1171,7 @@ Obj QuoDefault (
     Obj                 opR )
 {
     Obj                 tmp;
-    tmp = INV( opR );
-    if (!IS_MUTABLE_OBJ(opR) && IS_MUTABLE_OBJ(tmp))
-      MakeImmutable(tmp);
+    tmp = INV_MUT( opR );
     return PROD( opL, tmp );
 }
 
@@ -990,10 +1230,6 @@ void InstallQuoObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
-#ifdef XTNUMS
-        QuoFuncs[ t2 ][ T_OBJECT ] = func;
-        QuoFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         QuoFuncs[ t2 ][ T_PREC            ] = func;
         QuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -1048,9 +1284,7 @@ Obj LQuoDefault (
     Obj                 opR )
 {
     Obj                 tmp;
-    tmp = INV( opL );
-    if (!IS_MUTABLE_OBJ(opL) && IS_MUTABLE_OBJ(tmp))
-      MakeImmutable(tmp);
+    tmp = INV_MUT( opL );
     return PROD( tmp, opR );
 }
 
@@ -1109,10 +1343,6 @@ void InstallLQuoObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
-#ifdef XTNUMS
-        LQuoFuncs[ t2 ][ T_OBJECT ] = func;
-        LQuoFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 	
         LQuoFuncs[ t2 ][ T_PREC            ] = func;
         LQuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -1227,10 +1457,6 @@ void InstallPowObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
-#ifdef XTNUMS
-        PowFuncs[ t2 ][ T_OBJECT ] = func;
-        PowFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         PowFuncs[ t2 ][ T_PREC            ] = func;
         PowFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -1346,10 +1572,6 @@ void InstallCommObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
-#ifdef XTNUMS
-        CommFuncs[ t2 ][ T_OBJECT ] = func;
-        CommFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         CommFuncs[ t2 ][ T_PREC            ] = func;
         CommFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -1450,10 +1672,6 @@ void InstallModObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
-#ifdef XTNUMS
-        ModFuncs[ t2 ][ T_OBJECT ] = func;
-        ModFuncs[ T_OBJECT ][ t2 ] = func;
-#endif
 
         ModFuncs[ t2 ][ T_PREC            ] = func;
         ModFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -1534,17 +1752,30 @@ static StructGVarOper GVarOpers [] = {
     { "MOD", 2, "opL, opR", &ModOper,
       FuncMOD, "src/ariths.c:MOD" },
 
-    { "ZERO", 1, "op", &ZeroOp,
+    { "ZERO", 1, "op", &ZEROOp,
       FuncZERO, "src/ariths.c:ZERO" },
+
+    { "ZERO_MUT", 1, "op", &ZeroOp,
+      FuncZERO_MUT, "src/ariths.c:ZERO_MUT" },
 
     { "AINV", 1, "op", &AInvOp,
       FuncAINV, "src/ariths.c:AINV" },
 
+    { "AINV_MUT", 1, "op", &AdditiveInverseOp,
+      FuncAINV_MUT, "src/ariths.c:AINV_MUT" },
+
     { "ONE", 1, "op", &OneOp,
       FuncONE, "src/ariths.c:ONE" },
 
+    { "ONE_MUT", 1, "op", &OneMutOp,
+      FuncONE_MUT, "src/ariths.c:ONE_MUT" },
+
     { "INV", 1, "op", &InvOp,
       FuncINV, "src/ariths.c:INV" },
+
+    { "INV_MUT", 1, "op", &InvMutOp,
+      FuncINV_MUT, "src/ariths.c:INV_MUT" },
+
     { 0 }
 
 };
@@ -1570,6 +1801,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "DIFF_DEFAULT", 2, "opL, opR",
       FuncDIFF_DEFAULT, "src/ariths.c:DIFF_DEFAULT" },
+
 
     { 0 }
 
@@ -1598,9 +1830,21 @@ static Int InitKernel (
     }
     InstallZeroObject(0);
 
+    /* make and install the 'ZERO_MUT' arithmetic operation                */
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        ZeroMutFuncs[t1] = ZeroMutObject;
+    }
+    InstallZeroObject(0);
+
     /* make and install the 'AINV' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         AInvFuncs[t1] = AInvObject;
+    }
+
+    InstallAinvMutObject(0);
+    /* make and install the 'AINV_MUT' arithmetic operation                */
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        AInvMutFuncs[t1] = AInvMutObject;
     }
     InstallAinvObject(0);
 
@@ -1610,11 +1854,23 @@ static Int InitKernel (
     }
     InstallOneObject(0);
 
+    /* make and install the 'ONE' arithmetic operation                     */
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        OneMutFuncs[t1] = OneMutObject;
+    }
+    InstallOneMutObject(0);
+
     /* make and install the 'INV' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         InvFuncs[t1] = InvObject;
     }
     InstallInvObject(0);
+
+    /* make and install the 'INV' arithmetic operation                     */
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        InvMutFuncs[t1] = InvMutObject;
+    }
+    InstallInvMutObject(0);
 
     /* make and install the 'EQ' comparison operation                      */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
@@ -1704,6 +1960,7 @@ static Int InitKernel (
     }
     InstallModObject(0);
 
+    
     /* return success                                                      */
     return 0;
 }

@@ -727,7 +727,7 @@ Obj FuncUNITE_SET (
     if ( 0 == LEN_PLIST(set1) ) {
         RetypeBag( set1, MUTABLE_TNUM(TNUM_OBJ(set2)) );
     } else if ( 0 != LEN_PLIST(set2)) {
-      if (HAS_FILT_LIST(set1, FN_IS_HOMOG))
+      if (HAS_FILT_LIST(set1, FN_IS_HOMOG)) {
 	if( !HAS_FILT_LIST(set2, FN_IS_HOMOG))
 	  RESET_FILT_LIST(set1, FN_IS_HOMOG);
 	else if (!SyInitializing &&
@@ -735,6 +735,7 @@ Obj FuncUNITE_SET (
 	  {
 	    RetypeBag(set1, T_PLIST_DENSE_NHOM);
 	  }
+      }
     }
 
     SET_FILT_LIST(set1, FN_IS_SSORT);

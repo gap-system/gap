@@ -14,6 +14,7 @@ Revision.helpbase_gd :=
   "@(#)$Id$";
 
 DeclareGlobalFunction("MATCH_BEGIN");
+DeclareGlobalFunction("MATCH_BEGIN_COUNT");
 DeclareGlobalFunction("FILLED_LINE");
 DeclareGlobalFunction("SIMPLE_STRING");
 DeclareGlobalVariable("HELP_KNOWN_BOOKS");

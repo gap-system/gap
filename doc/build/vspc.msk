@@ -234,14 +234,20 @@ false
 % and inspects the basechange matrix
 
 \Declaration{StructureConstantsTable}
+
+In the following example we temporarily increase the line length limit from
+its default value 80 to 83 in order to get a nicer output format.
+
 \beginexample
 gap> A:= QuaternionAlgebra( Rationals );;
+gap> SizeScreen([ 83, ]);;
 gap> StructureConstantsTable( Basis( A ) );
 [ [ [ [ 1 ], [ 1 ] ], [ [ 2 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], [ [ 4 ], [ 1 ] ] ], 
   [ [ [ 2 ], [ 1 ] ], [ [ 1 ], [ -1 ] ], [ [ 4 ], [ 1 ] ], [ [ 3 ], [ -1 ] ] ], 
   [ [ [ 3 ], [ 1 ] ], [ [ 4 ], [ -1 ] ], [ [ 1 ], [ -1 ] ], [ [ 2 ], [ 1 ] ] ], 
   [ [ [ 4 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], [ [ 2 ], [ -1 ] ], [ [ 1 ], [ -1 ] ] ], 
   0, 0 ]
+gap> SizeScreen([ 80, ]);;
 \endexample
 
 
@@ -363,7 +369,7 @@ gap> Coefficients( B, [ 0, 1 ] * Z(2) );
 [ 0*Z(2), Z(2)^0 ]
 gap> Coefficients( B, [ 1, 0 ] * Z(2) );
 [ Z(2)^0, Z(2)^0 ]
-gap> SemiEchelonBasis( V, [ [ 0, 1 ], [ 1, 1 ] ] * Z(2) );    
+gap> SemiEchelonBasis( V, [ [ 0, 1 ], [ 1, 1 ] ] * Z(2) );
 fail
 \endexample
 

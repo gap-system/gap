@@ -106,6 +106,14 @@ InstallOtherMethod( DegreeFFE,
     [ IsRowVector and IsFFECollection ], 0,
     function( list )
     local deg, i;
+    
+    #
+    # Those length zero vectors for which this makes sense have
+    # representation-specific methods
+    #
+    if Length(list) = 0 then
+        TryNextMethod();
+    fi;
     deg:= DegreeFFE( list[1] );
     for i in [ 2 .. Length( list ) ] do
       deg:= LcmInt( deg, DegreeFFE( list[i] ) );
@@ -136,15 +144,19 @@ InstallOtherMethod( DegreeFFE,
 
 #############################################################################
 ##
-#M  LogFFE( <n>, <r> )  . . . . . . . . . . . . . . . . . . . . . for two FFE
+#M  LogFFE( <n>, <r> )  . . . . . . . . . . . .  for two FFE in a prime field
 ##
 InstallMethod( LogFFE,
-    "for two FFEs",
+    "for two FFEs (in a prime field)",
     IsIdenticalObj,
-    [ IsFFE, IsFFE ], 0,
-    function( n, r )
-    return LogMod( Int( n ), Int( r ), Characteristic( n ) );
-    end );
+    [ IsFFE, IsFFE ],
+        function( n, r )
+    if DegreeFFE( n ) = 1 and DegreeFFE( r ) = 1 then
+        return LogMod( Int( n ), Int( r ), Characteristic( n ) );
+    else
+        TryNextMethod();
+    fi;
+end );
 
 
 #############################################################################

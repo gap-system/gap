@@ -210,7 +210,7 @@ end );
 
 #############################################################################
 ##
-#F  DeclareFilter( <name> [,<rank>] )
+#F  DeclareFilter( <name>[, <implied>][, <rank>] )
 ##
 BIND_GLOBAL( "DeclareFilter", function( arg )
     BIND_GLOBAL( arg[1], CALL_FUNC_LIST( NewFilter, arg ) );

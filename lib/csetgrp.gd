@@ -28,9 +28,8 @@ DeclareInfoClass("InfoCoset");
 ##  This chain is given as a list whose first entry is <U> and the last entry
 ##  is <G>. The function tries to make the links in this chain small.
 ## 
-##  Since `AscendingChain' calls `RefinedChain' to get small steps, the
-##  option `refineIndex' can be used to avoid {\GAP} trying to enforce too small
-##  steps.
+##  The option `refineIndex' can be used to give a bound for refinements of
+##  steps to avoid {\GAP} trying to enforce too small steps.
 ##
 DeclareGlobalFunction("AscendingChain");
 

@@ -91,16 +91,20 @@ end);
 ##  mechanism. Therefore for these operations `ApplicableMethod' may return
 ##  a method which is not the kernel method actually used.
 ##
+##  `ApplicableMethod' does not work for constructors (for example
+##  `GeneralLinearGroupCons' is a constructor).
+##
 ##  The function `ApplicableMethodTypes' takes the *types* or *filters* of
 ##  the arguments as argument (if only filters are given of course family
 ##  predicates cannot be tested).
 BIND_GLOBAL("ApplicableMethodTypes",function(arg)
 local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
-      lent,nam,val,erg,has,need;
+      lent,nam,val,erg,has,need,isconstructor;
   if Length(arg)<2 or not IsList(arg[2]) or not IsFunction(arg[1]) then
     Error("usage: ApplicableMethodTypes(<opr>,<arglist>[,<verbosity>[,<nr>]])");
   fi;
   oper:=arg[1];
+  isconstructor:=oper in CONSTRUCTORS;
   obj:=arg[2];
   if Length(arg)>2 then
     verbos:=arg[3];
@@ -159,13 +163,22 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     flag:=true;
     j:=1;
     while j<=l and (flag or verbos>3) do
-      flag2:=IS_SUBSET_FLAGS(flags[j],methods[lent*(i-1)+1+j]);
+      if j=1 and isconstructor then
+	flag2:=IS_SUBSET_FLAGS(methods[lent*(i-1)+1+j],flags[j]);
+      else
+	flag2:=IS_SUBSET_FLAGS(flags[j],methods[lent*(i-1)+1+j]);
+      fi;
       flag:=flag and flag2;
       if flag2=false and verbos>2 then
 	need:=NamesFilter(methods[lent*(i-1)+1+j]);
-	has:=NamesFilter(flags[j]);
-        Print("#I   - ",Ordinal(j)," argument needs ",
-	      Filtered(need,i->not i in has),"\n");
+	if j=1 and isconstructor then
+	  Print("#I   - ",Ordinal(j)," argument must be ",
+		need,"\n");
+	else
+	  has:=NamesFilter(flags[j]);
+	  Print("#I   - ",Ordinal(j)," argument needs ",
+		Filtered(need,i->not i in has),"\n");
+	fi;
       fi;
       j:=j+1;
     od;
@@ -182,14 +195,6 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
 	  Print(oper);
 	fi;
 	if skip=0 then
-#	  nam:=NameFunction(oper);
-#if not IsString(nam) then
-#  Error("name!");
-#fi;
-#Print("\nname=",nam,"\n");
-#	  if Length(nam)>5 and nam{[1..6]}="Getter" then
-#	    Print("\n#W  Warning: System getter!\n");
-#	  fi;
 	  return oper;
 	else
 	  Add(erg,oper);
@@ -217,7 +222,11 @@ local i,l;
   fi;
   l:=ShallowCopy(arg[2]);
   for i in [1..Length(l)] do
-    l[i]:=TypeObj(l[i]);
+    if i=1 and arg[1] in CONSTRUCTORS then
+      l[i]:=l[i];
+    else
+      l[i]:=TypeObj(l[i]);
+  fi;
   od;
   arg[2]:=l;
   return CallFuncList(ApplicableMethodTypes,arg);

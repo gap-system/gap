@@ -579,6 +579,8 @@ sub make_tex {
                 $key = $1;
                 if ( $key =~ /date/ ) {
                     $replace=`date +"%d %B %Y"`;
+                } elsif ( $key =~ /year/ ) {
+                    $replace=`date +"%Y"`;
                 } elsif ( $defaults{$key} ) {
                     $replace=$defaults{$key};
                 } else {

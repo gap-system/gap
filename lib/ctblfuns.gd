@@ -79,7 +79,8 @@ Revision.ctblfuns_gd :=
 ##
 DeclareCategory( "IsClassFunction",
     IsScalar and IsCommutativeElement and IsAssociativeElement
-             and IsHomogeneousList and IsScalarCollection and IsFinite );
+             and IsHomogeneousList and IsScalarCollection and IsFinite
+             and IsGeneralizedRowVector );
 
 
 #############################################################################
@@ -133,7 +134,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##
 ##  The main idea behind class function objects is that a class function
 ##  object is equal to its values list in the sense of `\\=',
-##  so class function objects can be used whereever their values lists
+##  so class function objects can be used wherever their values lists
 ##  can be used,
 ##  but there are operations for class function objects that do not work
 ##  just with values lists.
@@ -168,7 +169,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  gap> ind:= chi ^ S4;
 ##  Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] )
 ##  gap> List( irrS4, x -> ScalarProduct( x, ind ) );
-##  [ 0, 0, 0, 0, 1 ]
+##  [ 0, 0, 0, 1, 0 ]
 ##  gap> det:= Determinant( ind );
 ##  Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
 ##  gap> cent:= CentralCharacter( ind );
@@ -190,7 +191,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  gap> ind:= InducedClassFunction( tD8, chi, tS4 );
 ##  ClassFunction( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] )
 ##  gap> List( Irr( tS4 ), x -> ScalarProduct( tS4, x, ind ) );
-##  [ 0, 0, 0, 0, 1 ]
+##  [ 0, 0, 0, 1, 0 ]
 ##  gap> det:= DeterminantOfCharacter( tS4, ind );
 ##  ClassFunction( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
 ##  gap> cent:= CentralCharacter( tS4, ind );
@@ -298,12 +299,28 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##
 ##  4. Arithmetic Operations for Class Functions
 #4
-##  Class functions are *row vectors* of cyclotomics,
-##  scalar multiplication of a class function with a cyclotomic yields
-##  a class function, and the sum and the difference of two class functions
-##  with the same underlying character table (see~"UnderlyingCharacterTable")
+##  Class functions are *row vectors* of cyclotomics.
+##  The *additive* behaviour of class functions is defined such that they are
+##  equal to the plain lists of class function values except that the results
+##  are represented again as class functions whenever this makes sense.
+##  The *multiplicative* behaviour, however, is different.
+##  This is motivated by the fact that the tensor product of class functions
+##  is a more interesting operation than the vector product of plain lists.
+##  (Another candidate for a multiplication of compatible class functions
+##  would have been the inner product, which is implemented via the function
+##  `ScalarProduct', see~"ScalarProduct".)
+##  In terms of filters, the arithmetic of class functions is based on the
+##  decision that they lie in `IsGeneralizedRowVector',
+##  with additive nesting depth $1$,
+##  but they do *not* lie in `IsMultiplicativeGeneralizedRowVector'
+##  (see~"Filters Controlling the Arithmetic Behaviour of Lists").
+##
+##  More specifically, the scalar multiple of a class function with a
+##  cyclotomic is a class function,
+##  and the sum and the difference of two class functions
+##  of the same underlying character table (see~"UnderlyingCharacterTable")
 ##  are again class functions of this table.
-##  The sum and the difference of a class function and a list that is not
+##  The sum and the difference of a class function and a list that is *not*
 ##  a class function are plain lists,
 ##  as well as the sum and the difference of two class functions of different
 ##  character tables.
@@ -311,49 +328,46 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  \beginexample
 ##  gap> g:= SymmetricGroup( 4 );;  tbl:= CharacterTable( g );;
 ##  gap> SetName( tbl, "S4" );  irr:= Irr( g );
-##  [ Character( S4, [ 1, 1, 1, 1, 1 ] ), Character( S4, [ 1, -1, 1, 1, -1 ] ),
-##    Character( S4, [ 2, 0, 2, -1, 0 ] ), Character( S4, [ 3, -1, -1, 0, 1 ] ),
-##    Character( S4, [ 3, 1, -1, 0, -1 ] ) ]
-##  gap> 2 * irr[1];
+##  [ Character( S4, [ 1, -1, 1, 1, -1 ] ), Character( S4, [ 3, -1, -1, 0, 1 ] ), 
+##    Character( S4, [ 2, 0, 2, -1, 0 ] ), Character( S4, [ 3, 1, -1, 0, -1 ] ), 
+##    Character( S4, [ 1, 1, 1, 1, 1 ] ) ]
+##  gap> 2 * irr[5];
 ##  Character( S4, [ 2, 2, 2, 2, 2 ] )
-##  gap> irr[2] / 7;
+##  gap> irr[1] / 7;
 ##  ClassFunction( S4, [ 1/7, -1/7, 1/7, 1/7, -1/7 ] )
-##  gap> lincomb:= irr[3] + irr[2] - irr[1];
+##  gap> lincomb:= irr[3] + irr[1] - irr[5];
 ##  VirtualCharacter( S4, [ 2, -2, 2, -1, -2 ] )
-##  gap> lincomb:= lincomb + 2 * irr[1];
+##  gap> lincomb:= lincomb + 2 * irr[5];
 ##  VirtualCharacter( S4, [ 4, 0, 4, 1, 0 ] )
 ##  gap> IsCharacter( lincomb );
 ##  true
 ##  gap> lincomb;
 ##  Character( S4, [ 4, 0, 4, 1, 0 ] )
-##  gap> irr[1] + 2;
+##  gap> irr[5] + 2;
 ##  [ 3, 3, 3, 3, 3 ]
-##  gap> irr[1] + [ 1, 2, 3, 4, 5 ];
+##  gap> irr[5] + [ 1, 2, 3, 4, 5 ];
 ##  [ 2, 3, 4, 5, 6 ]
 ##  gap> zero:= 0 * irr[1];
 ##  VirtualCharacter( S4, [ 0, 0, 0, 0, 0 ] )
 ##  gap> zero + Z(3);
 ##  [ Z(3), Z(3), Z(3), Z(3), Z(3) ]
-##  gap> irr[1] + TrivialCharacter( DihedralGroup( 8 ) );
+##  gap> irr[5] + TrivialCharacter( DihedralGroup( 8 ) );
 ##  [ 2, 2, 2, 2, 2 ]
 ##  \endexample
 ##
 ##  \index{class functions!as ring elements}
-##  Class functions are *ring elements*,
-##  the product of two class functions of the same character table is the
+##  The product of two class functions of the same character table is the
 ##  tensor product (pointwise product) of these class functions.
-##  Thus the set of all class functions of a group forms a ring,
+##  Thus the set of all class functions of a fixed group forms a ring,
 ##  and for any field $F$ of cyclotomics, the $F$-span of a given set of
 ##  class functions forms an algebra.
 ##
-##  The product of two class functions of different tables and the product
-##  of a class function and a list that is not a class function are not
+##  The product of two class functions of *different* tables and the product
+##  of a class function and a list that is *not* a class function are not
 ##  defined, an error is signalled in these cases.
 ##  Note that in this respect, class functions behave differently from their
 ##  values lists, for which the product is defined as the standard scalar
 ##  product.
-#T Introduce `IsOrdinaryRowVector' for plain lists,
-#T omit it for class functions!
 ##
 ##  \beginexample
 ##  gap> tens:= irr[3] * irr[4];
@@ -368,8 +382,40 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  As a consequence, for example groups of linear characters can be formed.
 ##
 ##  \beginexample
-##  gap> tens / irr[2];
+##  gap> tens / irr[1];
 ##  Character( S4, [ 6, 0, -2, 0, 0 ] )
+##  \endexample
+##
+##  Other (somewhat strange) implications of the definition of arithmetic
+##  operations for class functions, together with the general rules of list
+##  arithmetic (see~"Arithmetic for Lists"),
+##  apply to the case of products involving *lists* of class functions.
+##  No inverse of the list of irreducible characters as a matrix is defined;
+##  if one is interested in the inverse matrix then one can compute it from
+##  the matrix of class function values.
+##
+##  \beginexample
+##  gap> Inverse( List( irr, ValuesOfClassFunction ) );
+##  [ [ 1/24, 1/8, 1/12, 1/8, 1/24 ], [ -1/4, -1/4, 0, 1/4, 1/4 ], 
+##    [ 1/8, -1/8, 1/4, -1/8, 1/8 ], [ 1/3, 0, -1/3, 0, 1/3 ], 
+##    [ -1/4, 1/4, 0, -1/4, 1/4 ] ]
+##  \endexample
+##
+##  Also the product of a class function with a list of class functions is
+##  *not* a vector-matrix product but the list of pointwise products.
+##
+##  \beginexample
+##  gap> irr[1] * irr{ [ 1 .. 3 ] };
+##  [ Character( S4, [ 1, 1, 1, 1, 1 ] ), Character( S4, [ 3, 1, -1, 0, -1 ] ), 
+##    Character( S4, [ 2, 0, 2, -1, 0 ] ) ]
+##  \endexample
+##
+##  And the product of two lists of class functions is *not* the matrix
+##  product but the sum of the pointwise products.
+##
+##  \beginexample
+##  gap> irr * irr;
+##  Character( S4, [ 24, 4, 8, 3, 4 ] )
 ##  \endexample
 ##
 ##  \index{character value!of group element using powering operator}
@@ -394,15 +440,15 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  Character( S4, [ 8, 0, 8, -1, 0 ] )
 ##  gap> lin:= LinearCharacters( DerivedSubgroup( g ) );
 ##  [ Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] ),
-##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3)^2, E(3) ] ) ]
+##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3)^2, E(3) ] ), 
+##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] ) ]
 ##  gap> List( lin, chi -> chi ^ (1,2) );
 ##  [ Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3)^2, E(3) ] ),
-##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] ) ]
-##  gap> Orbit( GaloisGroup( CF(3) ), lin[2] );
-##  [ Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] ), 
+##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] ), 
 ##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3)^2, E(3) ] ) ]
+##  gap> Orbit( GaloisGroup( CF(3) ), lin[2] );
+##  [ Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3)^2, E(3) ] ), 
+##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] ) ]
 ##  gap> lin[1]^g;
 ##  Character( S4, [ 2, 0, 2, 2, 0 ] )
 ##  gap> (1,2,3)^lin[2];
@@ -413,7 +459,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  The *characteristic* of class functions is zero,
 ##  as for all list of cyclotomics.
 ##  For class functions of a $p$-modular character table, such as Brauer
-##  characters, the characteristic $p$ is given by the
+##  characters, the prime $p$ is given by the
 ##  `UnderlyingCharacteristic' (see~"UnderlyingCharacteristic") value of
 ##  the character table.
 ##
@@ -441,11 +487,11 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##
 ##  \beginexample
 ##  gap> ComplexConjugate( lin[2] );
-##  Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3)^2, E(3) ] )
+##  Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] )
 ##  gap> GaloisCyc( lin[2], 5 );
-##  Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3)^2, E(3) ] )
+##  Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] )
 ##  gap> Permuted( lin[2], (2,3,4) );
-##  ClassFunction( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, E(3)^2, 1, E(3) ] )
+##  ClassFunction( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, E(3), 1, E(3)^2 ] )
 ##  \endexample
 ##
 ##  \indextt{Order!of a class function}
@@ -1591,16 +1637,17 @@ DeclareGlobalFunction( "ZevDataValue" );
 ##
 #F  SizeOfFieldOfDefinition( <val>, <p> )
 ##
-##  For a cyclotomic or a list of cyclotomics <val> and a prime integer <p>,
-##  `SizeOfFieldOfDefinition' returns $<p>^m$
-##  where $m$ is the smallest positive integer such that <val> is fixed by
-##  the Galois automorphism that raises each root of unity to its $<p>^m$-th
-##  power.
+##  For a cyclotomic or a list of cyclotomics <val>, and a prime integer <p>,
+##  `SizeOfFieldOfDefinition' returns the size of the smallest finite field
+##  in characteristic <p> that contains the <p>-modular reduction of <val>.
 ##
-##  If <val> is an algebraic integer then $<p>^m$ is the size of the
-##  smallest finite field in characteristic <p> that contains the <p>-modular
-##  reduction of <val>.
-##  If <val> is a Brauer character then $<p>^m$ is the size of the
+##  The reduction map is defined as in~\cite{JLPW95},
+##  that is, the complex $(<p>^d-1)$-th root of unity `E'$(q^d-1)$ is mapped
+##  to the residue class of the indeterminate, modulo the ideal spanned by
+##  the Conway polynomial (see~"ConwayPolynomial") of degree $d$ over the
+##  field with $p$ elements.
+##
+##  If <val> is a Brauer character then the value returned is the size of the
 ##  smallest finite field in characteristic <p> over which the corresponding
 ##  representation lives.
 ##
@@ -1699,12 +1746,14 @@ DeclareGlobalFunction( "OrbitRepresentativesCharacters" );
 ##
 ##  is a record with components
 ##
-##  `fusion'
+##  \beginitems
+##  `fusion'&
 ##     fusion that collapses those columns of <mat> that are equal in <mat>
 ##     and also for all maps in the list <maps>,
 ##
-##  `mat'
+##  `mat'&
 ##     the image of <mat> under that fusion.
+##  \enditems
 ##
 DeclareGlobalFunction( "CollapsedMat" );
 

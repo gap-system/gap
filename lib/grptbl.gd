@@ -59,8 +59,8 @@ DeclareGlobalFunction( "MagmaWithOneByMultiplicationTable" );
 ##
 #F  MagmaWithInversesByMultiplicationTable( <A> )
 ##
-##  The only differences between `MagmaByMultiplicationTable' and
-##  `MagmaWithInversesByMultiplicationTable' are that the latter returns a
+##  `MagmaByMultiplicationTable' and `MagmaWithInversesByMultiplicationTable'
+##  differ only in that the latter returns
 ##  magma-with-inverses (see~"MagmaWithInverses") if each element in the
 ##  magma described by the matrix <A> has an inverse,
 ##  and returns `fail' if not.

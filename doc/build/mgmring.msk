@@ -8,13 +8,15 @@
 %%
 \Chapter{Magma Rings}
 
+\index{group algebra}
+\index{group ring}
 \FileHeader[1]{mgmring}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Free Magma Rings}
 
 \Declaration{FreeMagmaRing}
-\index{group algebra}
 \Declaration{GroupRing}
 
 \Declaration{IsFreeMagmaRing}

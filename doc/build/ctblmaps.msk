@@ -205,7 +205,7 @@ gap> rep:= RepresentativesFusions( AutomorphismsOfTable( subtbl ), orb,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Parametrized Maps}
 
-\index{map!parametrized}\index{paramap}\index{class functions}
+\index{map!parametrized}\index{class functions}
 
 \FileHeader[6]{ctblmaps}
 

@@ -516,7 +516,7 @@ local gens, pcgs, field, m,mat,i,j;
     for j in pcgs do
       Add(mat,ExponentsConjugateLayer(pcgs,j,i)*One(field));
     od;
-    mat:=ImmutableMatrix(field,mat);
+    mat:=ImmutableMatrix(field,mat,true);
     Add(m,mat);
   od;
   return m;
@@ -590,7 +590,7 @@ local mats, gens, zero,one, g, mat, i, vec;
         od;
         Add( vec, one );
         Add( mat, vec );
-	mat:=ImmutableMatrix(Characteristic(one),mat);
+	mat:=ImmutableMatrix(Characteristic(one),mat,true);
         Add( mats, mat );
     od;
     return mats;
@@ -1019,7 +1019,7 @@ local  i,mats;
     # compute matrices
     if Length(base)>0 then
       mats := List( gens, x -> ImmutableMatrix(Characteristic(base),
-				List( base, y -> linear( y, x ) ) ));
+				List( base, y -> linear( y, x ) ),true ));
     else
       mats:=List(gens,i->[]);
     fi;
@@ -1168,6 +1168,9 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
   fi;
 
   home:=HomePcgs(G);
+  if not HasIndicesNormalSteps(home) then
+    home:=PcgsElementaryAbelianSeries(G);
+  fi;
   # Calculate a (central)  elementary abelian series  with all pcgs induced
   # w.r.t. <home>.
 
@@ -1363,6 +1366,9 @@ local G,	   # common parent
     fi;
 
     home := HomePcgs( G );
+    if not HasIndicesNormalSteps(home) then
+      home:=PcgsElementaryAbelianSeries(G);
+    fi;
 
     # Calculate a (central) elementary abelian series.
 

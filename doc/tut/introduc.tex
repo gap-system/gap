@@ -60,7 +60,7 @@ the beginning,  and a section  with references to the reference manual
 at the end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Starting and Leaving GAP}\null
+\Section{Starting and Leaving GAP}
 
 \atindex{starting GAP}{@starting {\GAP}}
 \atindex{leaving GAP}{@leaving {\GAP}}
@@ -78,7 +78,7 @@ its own prompt `gap>' asking you for further input.
 more command line options are described in
 Section~"ref:Command Line Options" in the reference manual.)
 \begintt
-gap>
+gap> 
 \endtt
 The usual  way to end a  {\GAP} session is  to type `quit;' at the `gap>'
 prompt. Do not omit the semicolon!
@@ -115,7 +115,7 @@ You should be able to reproduce the results of the *examples* of {\GAP}
 sessions in this manual, in the following sense.
 If you start the {\GAP} session with the two commands
 \begintt
-gap> SizeScreen( [ 80, ] ); LogTo( "erg.log" );
+gap> SizeScreen( [ 80, ] ); LogTo( "logfile1" );
 \endtt
 (which are used to set the line length to 80 if this isn't already your
 default line length and to save a listing of
@@ -130,7 +130,7 @@ you extract single examples and run them separately.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Read Evaluate Print Loop}\null
 
-\atindex{read evaluate print loop}{|indexit}
+\atindex{read evaluate print loop}{@read evaluate print loop|indexit}
 {\GAP}  is  an   interactive   system.    It  continuously   executes   a
 read evaluate print loop.  Each  expression you type  at the  keyboard is
 read by {\GAP}, evaluated, and then the result is shown.
@@ -362,7 +362,7 @@ position to use {\GAP} as a simple desktop calculator.
 \Section{Variables versus Objects}\null
 
 \index{variables}\index{assignment}\index{identifier}\index{objects}
-\atindex{objects!vs.\ variables}{|indexit}
+\atindex{objects!vs.\ variables}{@objects!vs.\ variables|indexit}
 The  constants described  in the  last  section are  specified by certain
 combinations   of digits and  minus  signs (in  the case  of integers) or
 digits,  commas  and parentheses  (in   the case  of permutations). These
@@ -456,6 +456,7 @@ and trying to change their values will result in an error message.)
 There are some further interesting variables one of which will be
 introduced now.
 
+\indextt{last}\indextt{last2}\indextt{last3}
 Whenever {\GAP} returns an object by printing it  on  the next  line this
 object is assigned to the variable `last'.  So if you computed
 \beginexample
@@ -480,7 +481,7 @@ a double semicolon prevents the result of a statement from being printed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Objects vs.\ Elements}\null
 
-\atindex{objects!vs.\ elements}{|indexit}\index{elements}
+\atindex{objects!vs.\ elements}{@objects!vs.\ elements|indexit}\index{elements}
 In the last section  we mentioned that every object   is given a  certain
 place  in memory by the  {\GAP} storage manager  (although that place may
 change in the course  of  a {\GAP}  session). In  this sense, objects  at

@@ -65,9 +65,9 @@ CosetTableDefaultMaxLimit := 256000;
 ##  whenever coset tables or augmented coset tables are created. Its value
 ##  may be `"lenlex"' or `"semilenlex"'. If it is `"lenlex"' coset tables
 ##  will be standardized using all their columns as defined in Charles Sims'
-##  book (this is the new default standard of GAP). If it is `"semilenlex"'
+##  book (this is the new default standard of {\GAP}). If it is `"semilenlex"'
 ##  they will be standardized using only their generator columns (this was
-##  the original GAP standard). The default value of `CosetTableStandard' is
+##  the original {\GAP} standard). The default value of `CosetTableStandard' is
 ##  `"lenlex"'.
 ##
 CosetTableStandard := "lenlex";
@@ -84,16 +84,25 @@ DeclareInfoClass( "InfoFpGroup" );
 
 #############################################################################
 ##
+#C  IsSubgroupFgGroup( <H> )
+##
+##  This category (intended for future extensions) represents (subgroups of)
+##  a finitely generated group, whose elements are represented as words in
+##  the generators. However we do not necessarily have a set or relators.
+##
+DeclareCategory( "IsSubgroupFgGroup", IsGroup );
+
+#############################################################################
+##
 #C  IsSubgroupFpGroup( <H> )
 ##
 ##  returns `true' if <H> is a finitely presented group or a subgroup of a
 ##  finitely presented group.
 ##
-DeclareCategory( "IsSubgroupFpGroup", IsGroup );
+DeclareCategory( "IsSubgroupFpGroup", IsSubgroupFgGroup );
 
 # implications for the full family
-InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFpGroup and IsWholeFamily);
-
+InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFgGroup and IsWholeFamily);
 
 #############################################################################
 ##
@@ -235,6 +244,13 @@ TCENUM:=GAPTCENUM;
 ##  \enditems
 DeclareGlobalFunction("CosetTableFromGensAndRels");
 
+#############################################################################
+##
+#F  IndexCosetTab( <table> )
+##
+##  this function returns `Length(table[1])', but the table might be empty
+##  for a no-generator group, in which case 1 is returned.
+DeclareGlobalFunction("IndexCosetTab");
 
 #############################################################################
 ##
@@ -285,6 +301,9 @@ DeclareGlobalFunction("StandardizeTable2");
 ##
 DeclareAttribute( "CosetTableInWholeGroup", IsGroup );
 DeclareOperation( "TryCosetTableInWholeGroup", [IsGroup] );
+
+InstallTrueMethod(CanEasilyTestMembership, 
+  IsSubgroupFpGroup and HasCosetTableInWholeGroup);
 
 
 #############################################################################

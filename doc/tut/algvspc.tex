@@ -24,11 +24,12 @@ acting domain of scalars is not regarded as a vector space in {\GAP}.
 Probably the most common $F$-vector spaces in {\GAP} are so-called
 *row spaces*.
 They consist of row vectors, that is, lists whose elements lie in $F$.
+In the following example we compute the vector space spanned by the
+row vectors `[ 1, 1, 1 ]' and `[ 1, 0, 2 ]' over the rationals.
 
 \beginexample
 gap> F:= Rationals;;
 gap> V:= VectorSpace( F, [ [ 1, 1, 1 ], [ 1, 0, 2 ] ] );
-  # The vector space spanned by [ 1, 1, 1] and [ 1, 0, 2 ].
 <vector space over Rationals, with 2 generators>
 gap> [ 2, 1, 3 ] in V;
 true
@@ -433,6 +434,7 @@ gap> A:= Algebra( Rationals, [ m1, m2 ] );;
 gap> Dimension( A );
 6
 \endexample
+
 \beginexample
 gap> R:= RadicalOfAlgebra( A );
 <algebra of dimension 3 over Rationals>
@@ -440,6 +442,7 @@ gap> h:= NaturalHomomorphismByIdeal( A, R );
 <linear mapping by matrix, <algebra of dimension 
 6 over Rationals> -> <algebra of dimension 3 over Rationals>>
 \endexample
+
 \beginexample
 gap> AmodR:= ImagesSource( h );
 <algebra of dimension 3 over Rationals>

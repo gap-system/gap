@@ -14,7 +14,8 @@ gap> START_TEST("$Id$");
 gap> f := FreeSemigroup(2);;
 gap> a := GeneratorsOfSemigroup(f)[1];; b := GeneratorsOfSemigroup(f)[2];;
 gap> rels := [[a^2,a],[b^2,b],[(a*b)^10,a*b],[(b*a)^10,b*a]];;
-gap> s1 := f/rels;;
+gap> s1 := f/rels;; Size(s1);
+38
 gap> t1 := Range(IsomorphismTransformationSemigroup(s1));;
 gap> Size(t1);
 38

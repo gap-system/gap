@@ -234,28 +234,18 @@ BIND_GLOBAL( "ImmutableGF2MatrixRep", function(matrix)
 
 end );
 
-
 #############################################################################
 ##
-#F  ConvertedMatrix( <field>, <matrix> [, <imm>] )
+#F  ImmutableMatrix( <field>, <matrix>,[<change>] ) . convert into "best" representation
 ##
-##  returns a matrix equal to <matrix> which is in the most
-##  compact representation possible over <field>. If <imm> is true, the
-##  result is immutable. The input matrix <matrix> or
-##  its rows might change the representation or become immutable in this
-##  process, however the result of `ConvertedMatrix' is not necessarily
+##  returns an immutable matrix equal to <matrix> which is in the most
+##  compact representation possible over <field>.
+##  The input matrix <matrix> or
+##  its rows might change the representation,
+##  however the result of `ConvertedMatrix' is not necessarily
 ##  *identical* to <matrix> if a conversion is not possible.
-##  
-##  Note: Because the input can be of all possible forms, calling
-##  `ConvertToMatrixRep' on a matrix obtained as input might lead to
-##  problems.
-DeclareGlobalFunction( "ConvertedMatrix");
-
-#############################################################################
-##
-#F  ImmutableMatrix( <field>, <matrix> ) . convert into "best" representation
-##
-##  returns `ConvertedMatrix(<field>,<matrix>,<true>)'.
+##  If <change> is `true', the rows of `matrix' (or `matrix' itself) may be
+##  changed to become immutable (otherwise they are copied first).
 DeclareGlobalFunction( "ImmutableMatrix");
 
 

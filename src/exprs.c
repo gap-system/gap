@@ -729,7 +729,7 @@ Obj             EvalInv (
     opL = EVAL_EXPR( tmp );
 
     /* compute the multiplicative inverse                                  */
-    val = INV( opL );
+    val = INV_MUT( opL );
 
     /* return the value                                                    */
     return val;

@@ -12,7 +12,7 @@ BEGIN{
 /2 Getting GAP/{mode=1}
 /3 GAP for UNIX/{mode=2}
 /8 GAP for Windows/{mode=3}
-/11 GAP for MacOS/{mode=4}
+/12 GAP for MacOS/{mode=4}
 /15 Testing for the System Architecture/{mode=9}
 /16 Porting GAP/{mode=2}
 /17 The Documentation/{mode=1}

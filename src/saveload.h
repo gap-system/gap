@@ -42,7 +42,7 @@ extern void SaveUInt(UInt x);
 #ifdef SYS_IS_64_BIT
 extern void SaveUInt8(UInt8 x);
 #endif
-extern void SaveCStr(Char *s);
+extern void SaveCStr(const Char *s);
 extern void SaveString(Obj string);
 extern void LoadString(Obj string);
 extern void SaveSubObj(Obj o);

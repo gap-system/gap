@@ -16,8 +16,6 @@
 Revision.claspcgs_gi:=
     "@(#)$Id$";
 
-TIME:=rec(t:=Runtime(),a:=0,b:=0,c:=0,x:=0,y:=0,z:=0);
-
 #############################################################################
 ##
 #F  SubspaceVectorSpaceGroup( <N>, <p>, <gens>, <howmuch> )
@@ -103,7 +101,7 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
     else
         cg.inverse:=Q{ Length( gens ) + ran }
                        { [ 1 .. Length( cg.needed ) ] };
-	cg.inverse:=ImmutableMatrix(p,cg.inverse);
+	cg.inverse:=ImmutableMatrix(p,cg.inverse,true);
     fi;
     if IsEmpty( cg.baseComplement )  then
         cg.projection:=NullMapMatrix;
@@ -124,7 +122,7 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
         od;
         cg.projection:=cg.projection ^ Q;
         cg.projection:=cg.projection{ ran }{ cg.baseComplement };
-	cg.projection:=ImmutableMatrix(p,cg.projection);
+	cg.projection:=ImmutableMatrix(p,cg.projection,true);
         
     fi;
 
@@ -239,8 +237,8 @@ local   classes,    # classes to be constructed, the result
         gens:=N!.subspace.baseComplement;
         for w  in field ^ Length( gens )  do
             c:=rec( representative:=h * PcElementByExponentsNC( N,gens,w ),
-                         #centralizer:=C );
-                         #centralizerpcgs:=cengen );
+                         #centralizer:=C )
+                         #centralizerpcgs:=cengen )
                          cengen:=cengen );
             Add( classes, c );
         od;
@@ -262,7 +260,7 @@ local   cl,  comm,  s, ostab;
   #AH: take only those elements module N - the part in N is cNh
   stab:=Filtered(stab,i->DepthOfPcElement(home,i)<depthlev);
 
-  if Length(N!.subspace.inverse)>0 then
+  if Length(N!.subspace.inverse)>0 and Length(stab)>0 then
 
     comm:=[];
     for s  in [ 1 .. Length( stab ) ]  do
@@ -393,7 +391,7 @@ local  classes,    # classes to be constructed, the result
 				( N, i ) * N!.subspace.projection,
 				[ one ] );
 
-	M:=ImmutableMatrix(field,M);
+	M:=ImmutableMatrix(field,M,true);
         Add( imgs, M );
     od;
 
@@ -435,8 +433,8 @@ local  classes,    # classes to be constructed, the result
 		depthlev,cNh,off );
             else
                 c:=rec( representative:=h * rep,
-                             #centralizer:=classes[ pos ].centralizer );
-                             #centralizerpcgs:=classes[ pos ].centralizerpcgs );
+                             #centralizer:=classes[ pos ].centralizer )
+                             #centralizerpcgs:=classes[ pos ].centralizerpcgs )
                              cengen:=classes[ pos ].cengen );
             fi;
             n:=ShallowCopy( -n );
@@ -486,7 +484,7 @@ local  classes,    # classes to be constructed, the result
 	  rep:=PcElementByExponentsNC( N, N!.subspace.baseComplement,
 			  orb.orbit[1]{ ran } );
 	  c:=CorrectConjugacyClass( home, h, rep,
-			#orb.stabilizer, N, depthlev,cNh,off );
+			#orb.stabilizer, N, depthlev,cNh,off )
 			orb.stabpcs, N, depthlev,cNh,off );
 	  Add( classes, c );
       od;
@@ -789,7 +787,7 @@ local  G,  home,  # the group and the home pcgs
     fi;
     first:=false;
 
-#  allcent:=ForAll(N,i->ForAll(GeneratorsOfGroup(G),j->Comm(i,j) in L));
+#  allcent:=ForAll(N,i->ForAll(GeneratorsOfGroup(G),j->Comm(i,j) in L))
     allcent:=cent(fhome,fhome,N,Ldep);
     if allcent=false then
       nexpo:=LinearOperationLayer(fhome{[1..indstep[step-1]-1]},N);
@@ -1318,7 +1316,7 @@ local  G,  home,  # the group and the home pcgs
         fi;
         Append(newcls, new);
 
-# fi;
+# fi
       od;
       cls:=newcls;
       
@@ -1471,7 +1469,7 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
     else
         cg.inverse:=Q{ Length( gens ) + ran }
                        { [ 1 .. Length( cg.needed ) ] };
-	cg.inverse:=ImmutableMatrix(p,cg.inverse);
+	cg.inverse:=ImmutableMatrix(p,cg.inverse,true);
     fi;
     if IsEmpty( cg.baseComplement )  then
         cg.projection:=NullMapMatrix;
@@ -1492,7 +1490,7 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
         od;
         cg.projection:=cg.projection ^ Q;
         cg.projection:=cg.projection{ ran }{ cg.baseComplement };
-	cg.projection:=ImmutableMatrix(p,cg.projection);
+	cg.projection:=ImmutableMatrix(p,cg.projection,true);
         
     fi;
 
@@ -1621,7 +1619,9 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                         DenominatorOfModuloPcgs( N );
 	    kern:=DenominatorOfModuloPcgs( N );
 	    img:=OldKernelHcommaC( N, h, N!.CmodK ) ;
-	    N!.CmodL:=ExtendedPcgs(kern,img);
+	    #N!.CmodL:=ExtendedPcgs(kern,img);
+	    N!.CmodL:=InducedPcgsByPcSequenceAndGenerators(ParentPcgs( kern ),
+                    kern, img );
 
         fi;
         if IsBound( cl.candidates )  then

@@ -1,0 +1,33 @@
+Things to change from 4r3pre2 to the release
+============================================
+
+Remember to change the gap -h text as described in 
+mkdistrib/HOWTO
+
+FL:
+
+
+1) What is the status of implementation of the redefined list arithmetic?
+(definition, mutability and compressed-ness of result, ...)
+Should the file tst/arithlst.tst be reconsidered to provide a serious test?
+
+2) Recently we detected that there is a major problem with file/stream
+access. Some functions work with the C-interface of buffered streams and some
+with the non-buffered. I think Max has made the problems clear in a mail
+some time ago. Shouldn't this be resolved for GAP4.3? I think, adding new
+interfaces to external databases and programs is an important task during
+the lifetime of 4.3.
+
+3) I could not solve the compilation problem for a 64 bit version of GAP on
+an UltraSparc III machine. On the other hand it would be good to have such a
+GAP available. No idea, how to proceed.
+
+AH:
+
+The two missing irreducible solvable groups  (Burkhards mail) should be
+added. (They are already appended in the list of primitive groups.)
+
+Potentially the problems with loading the cryst package (greg reported
+problems which wree due to messing with the package loading mechanism. If
+this cannot be resolved, there is a small chance that we have to add another
+documented hook to the package loading mechanism.

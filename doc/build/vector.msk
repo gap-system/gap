@@ -11,7 +11,7 @@
 
 Just as in mathematics, a vector in {\GAP} is any object which
 supports appropriate addition and scalar multiplication operations
-(see "Vector Spaces"). As in mathematics, an especially important
+(see Chapter~"Vector Spaces"). As in mathematics, an especially important
 class of vectors are those represented by a list of coefficients with
 respect to some basis. These correspond roughly to the {\GAP} concept
 of *row vectors*.
@@ -24,14 +24,14 @@ true
 
 Because row vectors are just a special case of lists, all operations
 and functions for lists are applicable to row vectors as well (see
-chapter "Lists"). This especially includes accessing elements of a row
+Chapter~"Lists"). This especially includes accessing elements of a row
 vector (see "List Elements"), changing elements of a mutable row
 vector (see "List Assignment"), and comparing row vectors (see
 "Comparisons of Lists").
 
 Note that, unless your algorithms specifically require you to be able
 to change entries of your vectors, it is generally better and faster
-to work with immutable row vectors. See section "Mutability and
+to work with immutable row vectors. See Section~"Mutability and
 Copyability" for more details.
 
 %%  The basic design of the row vector support in {\GAP} 4 is due to
@@ -40,31 +40,49 @@ Copyability" for more details.
 %%  support for vectors over fields of sizes between 3 and 256; and Werner
 %%  Nickel added special methods for vectors over large finite fields.
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operators for Row Vectors}
 
-The rules for arithmetic operations between row vectors, are in fact
-the same as those for the arithmetic of lists, given in part in
-section "Arithmetic for Lists", here we reiterate and complete that definition,
- in the language of vectors.
+The rules for arithmetic operations involving row vectors are in fact
+special cases of those for the arithmetic of lists,
+as given in Section~"Arithmetic for Lists" and the following sections,
+here we reiterate that definition, in the language of vectors.
 
-\>`<vec1> + <vec2>'{vector!addition} O
+Note that the additive behaviour sketched below is defined only for lists in
+the category `IsGeneralizedRowVector',
+and the multiplicative behaviour is defined only for lists in the category
+`IsMultiplicativeGeneralizedRowVector'
+(see~"Filters Controlling the Arithmetic Behaviour of Lists").
 
-returns the sum of the two vectors <vec1> and <vec2>, which must have the
-same length and be defined over a common field. The sum is a new vector
-where each entry is the sum of the corresponding entries of the vectors. As
-an exception it is also possible to add an integer vector to a vector over
-the finite field <F>, in which case the integers are interpreted as
-`<scalar> \*\ One(<F>)'.
 
-\>`<scalar> + <vec>'{scalar!addition} O
-\>`<vec> + <scalar>'{scalar!addition} O
+\>`<vec1> + <vec2>'{addition!vectors} O
 
-returns a new vector where each entry is the sum of the scalar and the
-corresponding entry of the vector. The elements of <vec> must lie in a
-common field with <scalar>.  As an exception it is also possible to add an
-integer scalar to a vector over the finite field <F>, in which case the
-integer is interpreted as `<scalar> \* One(<F>)'.
+returns the sum of the two row vectors <vec1> and <vec2>.
+Probably the most usual situation is that <vec1> and <vec2> have the same
+length and are defined over a common field;
+in this case the sum is a new row vector over the same field where each entry
+is the sum of the corresponding entries of the vectors.
+
+In more general situations, the sum of two row vectors need not be a row
+vector, for example adding an integer vector <vec1> and a vector <vec2> over
+a finite field yields the list of pointwise sums,
+which will be a mixture of finite field elements and integers if <vec1> is
+longer than <vec2>.
+
+
+\>`<scalar> + <vec>'{addition!scalar and vector} O
+\>`<vec> + <scalar>'{addition!vector and scalar} O
+
+returns the sum of the scalar <scalar> and the row vector <vec>.
+Probably the most usual situation is that the elements of <vec> lie in a
+common field with <scalar>;
+in this case the sum is a new row vector over the same field where each entry
+is the sum of the scalar and the corresponding entry of the vector.
+
+More general situations are for example the sum of an integer scalar and a
+vector over a finite field, or the sum of a finite field element and an
+integer vector.
 
 \beginexample
 gap> [ 1, 2, 3 ] + [ 1/2, 1/3, 1/4 ];
@@ -73,12 +91,13 @@ gap>  [ 1/2, 3/2, 1/2 ] + 1/2;
 [ 1, 2, 1 ]
 \endexample
 
-\>`<vec1> - <vec2>'{vector!subtraction} O
-\>`<scalar> - <vec>'{scalar!subtraction} O
-\>`<vec> - <scalar>'{scalar!subtraction} O
 
-The difference operator `-' returns the componentwise difference of its
-two operands and is defined subject to the same restrictions as `+'.
+\>`<vec1> - <vec2>'{subtraction!vectors} O
+\>`<scalar> - <vec>'{subtraction!scalar and vector} O
+\>`<vec> - <scalar>'{subtraction!vector and scalar} O
+
+Subtracting a vector or scalar is defined as adding its additive inverse,
+so the statements for the addition hold likewise.
 
 \beginexample
 gap> [ 1, 2, 3 ] - [ 1/2, 1/3, 1/4 ];
@@ -87,27 +106,19 @@ gap> [ 1/2, 3/2, 1/2 ] - 1/2;
 [ 0, 1, 0 ]
 \endexample
 
-\>`<vec1> * <vec2>'{scalar product} O
 
-returns the standard scalar product of <vec1> and <vec2>, which must
-both have the same length and take their entries from the same
-field. As remarked above, the system only provides a general method
-for the case where the vectors lie in `IsRingElementList'.  The
-product is the sum of the products of the corresponding entries of the
-vectors. As an exception it is also possible to multiply an integer
-vector to a finite field vector, in which case the integers are
-interpreted as `<scalar> * One(<GF>)'.
+\>`<scalar> * <vec>'{multiplication!scalar and vector} O
+\>`<vec> * <scalar>'{multiplication!vector and scalar} O
 
-\>`<scalar> * <vec>'{scalar!multiplication} O
-\>`<vec> * <scalar>'{scalar!multiplication} O
+returns the product of the scalar <scalar> and the row vector <vec>.
+Probably the most usual situation is that the elements of <vec> lie in a
+common field with <scalar>;
+in this case the product is a new row vector over the same field where each
+entry is the product of the scalar and the corresponding entry of the vector.
 
-returns the product of <scalar> and <vector>. 
-The elements of <vec> must lie in a common field with <scalar>.
-The product is a new
-vector where each entry is the product of the scalar and the
-corresponding entry of the vector. As an exception it is also possible
-to multiply an integer scalar to a finite field vector, in which case the
-integer is interpreted as `<scalar> * One(<GF>)'.
+More general situations are for example the product of an integer scalar and
+a vector over a finite field,
+or the product of a finite field element and an integer vector.
 
 \beginexample
 gap> [ 1, 2, 3 ] * [ 1/2, 1/3, 1/4 ];
@@ -115,6 +126,19 @@ gap> [ 1, 2, 3 ] * [ 1/2, 1/3, 1/4 ];
 gap> [ 1/2, 3/2, 1/2 ] * 2;
 [ 1, 3, 1 ]
 \endexample
+
+
+\>`<vec1> * <vec2>'{multiplication!vectors} O
+
+returns the standard scalar product of <vec1> and <vec2>,
+i.e., the sum of the products of the corresponding entries of the vectors.
+Probably the most usual situation is that <vec1> and <vec2> have the same
+length and are defined over a common field;
+in this case the sum is an element of this field.
+
+More general situations are for example the inner product of an integer
+vector and a vector over a finite field,
+or the inner product of two row vectors of different lengths.
 
 For the mutability of results of arithmetic operations,
 see~"Mutability and Copyability".
@@ -139,7 +163,7 @@ arithmetic. On the other hand element access and assignment is
 significantly slower than for plain lists.
 
 The function `ConvertToVectorRep' is used to convert a list into a
-compressed vector, or to rewrite a compressed vector ove another
+compressed vector, or to rewrite a compressed vector over another
 field. Note that this function is *much* faster when it is given a
 field (or field size) as an argument, rather than having to scan the
 vector and try to decide the field. Supplying the field can also
@@ -149,7 +173,7 @@ than the \"natural\" field of the problem.
 
 \Declaration{ConvertToVectorRep}
 
-In this example, we first creat a row vector and then ask {\GAP} to
+In this example, we first create a row vector and then ask {\GAP} to
 rewrite it, first over GF(2) and then over GF(4).
 
 \beginexample
@@ -169,14 +193,19 @@ gap> RepresentationsOfObject(v);
 [ "IsDataObjectRep", "Is8BitVectorRep" ]
 \endexample
 
-
 A vector in the special representation over $GF(2)$ is always viewed
 as `\<a GF2 vector of length ...>'. Over fields of orders 3 to 256, a
-vector of length 10 or less is viewed as the list of its coefficients, 
+vector of length 10 or less is viewed as the list of its coefficients,
 but a longer one is abbreviated.
 
+Arithmetic operations (see~"Arithmetic for Lists" and the following
+sections) preserve the compression status of row vectors in the sense that
+if all arguments are compressed row vectors written over the same field and
+the result is a row vector then also the result is a compressed row vector
+written over this field.
 
 \Declaration{NumberFFVector}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Coefficient List Arithmetic}
@@ -263,13 +292,13 @@ gap> ValuePol([1,2,3],4);
 
 \Declaration{ProductCoeffs}
 \beginexample
-gap> l:=[1,2,3,4];;m:=[5,6,7];;ProductCoeffs(l,m);   
+gap> l:=[1,2,3,4];;m:=[5,6,7];;ProductCoeffs(l,m);
 [ 5, 16, 34, 52, 45, 28 ]
 \endexample
 
 \Declaration{ReduceCoeffs}
 \beginexample
-gap> l:=[1,2,3,4];;m:=[5,6,7];;ReduceCoeffs(l,m); 
+gap> l:=[1,2,3,4];;m:=[5,6,7];;ReduceCoeffs(l,m);
 2
 gap> l;
 [ 64/49, -24/49, 0, 0 ]
@@ -285,13 +314,13 @@ gap> l;
 
 \Declaration{PowerModCoeffs}
 \beginexample
-gap> l:=[1,2,3,4];;m:=[5,6,7];;PowerModCoeffs(l,5,m); 
+gap> l:=[1,2,3,4];;m:=[5,6,7];;PowerModCoeffs(l,5,m);
 [ -839462813696/678223072849, -7807439437824/678223072849, 0 ]
 \endexample
 
 \Declaration{ShiftedCoeffs}
 \beginexample
-gap> l:=[1,2,3];;ShiftedCoeffs(l,2);ShiftedCoeffs(l,-2);    
+gap> l:=[1,2,3];;ShiftedCoeffs(l,2);ShiftedCoeffs(l,-2);
 [ 0, 0, 1, 2, 3 ]
 [ 3 ]
 \endexample

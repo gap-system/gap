@@ -1,5 +1,5 @@
 @msfiles = ("ctbl","ctblfuns","ctblmaps","ctblmono");
-@gdfiles = ("ctbl","ctblauto","ctblchar","ctblfuns","ctblgrp","ctbllatt",
+@gdfiles = ("ctbl","ctblauto","ctblfuns","ctblgrp","ctbllatt",
             "ctblmaps","ctblmoli","ctblmono","ctblpope","ctblsolv",
             "ctblsymm","ctblothe");
 $DIR = "../ref";

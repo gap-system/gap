@@ -24,7 +24,6 @@ Revision.ctblauto_gi :=
 #F  FamiliesOfRows( <mat>, <maps> )
 ##
 InstallGlobalFunction( FamiliesOfRows, function( mat, maps )
-
     local j, k,          # loop variables
           famreps,       # (sorted) representatives for families
           permutations,  # list of perms for each family
@@ -130,7 +129,6 @@ end );
 ##
 BindGlobal( "MatAutomorphismsFamily",
     function( chainG, K, family, permutations )
-
     local famlength,             # number of rows in the family
           nonbase,               # points not in the base of `chainG'
           stabilizes,            # local function to check generators of $G$
@@ -396,16 +394,13 @@ end );
 ##
 InstallMethod( MatrixAutomorphisms,
     "for a matrix",
-    true,
-    [ IsMatrix ], 0,
+    [ IsMatrix ],
     mat -> MatrixAutomorphisms( mat, [], Group( () ) ) );
 
 InstallMethod( MatrixAutomorphisms,
     "for matrix, list of maps, and subgroup",
-    true,
-    [ IsMatrix, IsList, IsPermGroup ], 0,
+    [ IsMatrix, IsList, IsPermGroup ],
     function( mat, maps, subgroup )
-
     local fam,             # result of `FamiliesOfRows'
           nonfixedpoints,  # positions of not nec. fixed columns
           i, j, k,         # loop variables
@@ -564,8 +559,7 @@ InstallMethod( MatrixAutomorphisms,
 ##
 InstallMethod( TableAutomorphisms,
     "for a character table and a list of characters",
-    true,
-    [ IsCharacterTable, IsList ], 0,
+    [ IsCharacterTable, IsList ],
     function( tbl, characters )
     return TableAutomorphisms( tbl, characters, "" );
     end );
@@ -573,10 +567,8 @@ InstallMethod( TableAutomorphisms,
 
 InstallMethod( TableAutomorphisms,
     "for a character table, a list of characters, and a string",
-    true,
-    [ IsCharacterTable, IsList, IsString ], 0,
+    [ IsCharacterTable, IsList, IsString ],
     function( tbl, characters, closed )
-
     local subgroup,     # known subgroup,
                         # is trivial in the case of two arguments,
                         # otherwise is the group of Galois automorphisms
@@ -669,7 +661,6 @@ InstallMethod( TableAutomorphisms,
 ##
 BindGlobal( "TransformingPermutationFamily",
     function( chainG, K, fam1, fam2, bij_col, family )
-
     local permutations,           # translate `fam1' with `bij_col'
           allowed,                # list of lists of admissible points
           ElementPropertyCoset,   # local function to loop over a coset
@@ -761,10 +752,8 @@ BindGlobal( "TransformingPermutationFamily",
 ##
 InstallMethod( TransformingPermutations,
     "for two matrices",
-    true,
-    [ IsMatrix, IsMatrix ], 0,
+    [ IsMatrix, IsMatrix ],
     function( mat1, mat2 )
-
     local i, j, k,        # loop variables
           fam1,
           fam2,
@@ -1001,10 +990,8 @@ InstallMethod( TransformingPermutations,
 ##
 InstallMethod( TransformingPermutationsCharacterTables,
     "for two character tables",
-    true,
-    [ IsCharacterTable, IsCharacterTable ], 0,
+    [ IsCharacterTable, IsCharacterTable ],
     function( tbl1, tbl2 )
-
     local irr1, irr2,    # lists of irreducible characters of the tables
           trans,         # result record
           gens,          # generators of the matrix automorphisms of `tbl2'
@@ -1087,7 +1074,8 @@ InstallMethod( TransformingPermutationsCharacterTables,
                 powermap2[x][ (y^pi)^s ] = ( powermap1[x][y]^pi )^s ) )
              and Permuted( orders1, pi*s ) = orders2;
 
-      pi2:= ElementProperty( trans.group, prop, admissible );
+      pi2:= ElementProperty( trans.group, prop,
+                TrivialSubgroup( trans.group ), admissible );
       if pi2 = fail then
         return fail;
       else

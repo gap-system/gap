@@ -722,6 +722,7 @@ local aug,w,p,pres,f,fam;
   f:=FpGroupPresentation(pres);
   aug.homgens:=gens;
   aug.homgenims:=GeneratorsOfGroup(f);
+  aug.primaryImages:=GeneratorsOfGroup(f);
   SecondaryImagesAugmentedCosetTable(aug);
 
   f:=GroupHomomorphismByImagesNC(u,f,gens,GeneratorsOfGroup(f));
@@ -881,7 +882,7 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
   m:=List(RelatorsOfFpGroup(f),w->ExponentSums(w));
 
   gen:=GeneratorsOfGroup(f);
-  g:=FreeGroup(gen);
+  g:= FreeGroup( Length( gen ) );
   gen:=GeneratorsOfGroup(g);
 
   rel:=[];

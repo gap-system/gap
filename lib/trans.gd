@@ -70,17 +70,23 @@ DeclareRepresentation("IsTransformationRep", IsPositionalObjectRep ,[1]);
 ##  lie within the range $\{1,\dots,n\}$ where <n> is the length of <images>,
 ##  but for speed purposes, a non-checking version is also supplied.
 ## 
+DeclareGlobalFunction("Transformation");
+DeclareGlobalFunction("TransformationNC");
+
+#############################################################################
+##
 #F  IdentityTransformation(<n>)
 ## 
 ##  return the identity transformation of degree <n>  
+##
+DeclareGlobalFunction("IdentityTransformation");
+
+#############################################################################
 ##
 #F  RandomTransformation(<n>)
 ##
 ##  returns a random transformation of degree <n>
 ##
-DeclareGlobalFunction("Transformation");
-DeclareGlobalFunction("TransformationNC");
-DeclareGlobalFunction("IdentityTransformation");
 DeclareGlobalFunction("RandomTransformation");
 
 ############################################################################
@@ -144,11 +150,13 @@ DeclareOperation("RestrictedTransformation",
 ############################################################################
 ##
 #O  AsTransformation( <O> )
-#O  AsTransformation( <O> )
+#O  AsTransformation( <O>, <n> )
 #O  AsTransformationNC( <O>, <n> )
 ##
-##  returns the object <O> when considered as a transformation.   In the
-##  second form, it returns <O> as a transformation of degree <n>, signalling
+##  returns the object <O> as a transformation. Supported objects are
+##  permuations and binary relations on points. In the
+##  second form, the operation  returns a 
+##  transformation of degree <n>, signalling
 ##  an error if such a representation is not possible.  `AsTransformationNC'
 ##  does not perform this check.
 ##
@@ -177,6 +185,15 @@ DeclareOperation("BinaryRelationTransformation", [IsTransformation]);
 DeclareOperation("InverseOp", [IsTransformation]);
 
 
+#############################################################################
+##  
+#O  PermLeftQuoTransformation(<tr1>, <tr2>)
+##
+##  Given transformations <tr1> and <tr2> with equal kernel and image, 
+##  we compute the permutation induced by (<tr1>)$^{-1}*$<tr2> on the set of 
+##  images of <tr1>. If the kernels and images are not equal, an error 
+##  is signaled.
+##
 DeclareOperation("PermLeftQuoTransformation", 
     [IsTransformation, IsTransformation]);
 

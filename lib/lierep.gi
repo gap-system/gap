@@ -154,7 +154,7 @@ end );
 ##############################################################################
 ##
 #M  \+( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  AINV( <c> ) . . . . .  . . . . . . . . . . . . . . . . for a cochain
+#M  AdditiveInverseOp( <c> ) . . . . .  . . . . . . . . . . . . . . . . for a cochain
 #M  \*( <scal>, <c> ) . . . . . . . . . . . . . . for a scalar and a cochain
 #M  \*( <c>, <scal> ) . . . . . . . . . . . . . . for a chain and a scalar
 #M  \<( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
@@ -210,7 +210,7 @@ InstallMethod( \+,
       return Objectify( TypeObj( c1 ), [ c1![1] + c2![1] ] );
 end );
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseOp,
      "for a cochain",
      true, [ IsCochain and IsPackedElementDefaultRep ], 0,
      function( c )
@@ -228,7 +228,7 @@ InstallMethod( AINV,
        return Objectify( TypeObj( c ), [ Immutable( l ) ] );
 end );
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseOp,
      "for a 0-cochain",
      true, [ IsCochain and IsZeroCochainRep ], 0,
      function( c )
@@ -1445,7 +1445,7 @@ end );
 #M  \<( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
 #M  \=( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
 #M  \+( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \AINV( <m> )     . . . . . . . . . . . . . . for a UEALattice element
+#M  \AdditiveInverseOp( <m> )     . . . . . . . . . . . . . . for a UEALattice element
 ##
 ##
 InstallMethod( OneOp,
@@ -1522,7 +1522,7 @@ InstallMethod( \+,
 end );
 
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseOp,
         "for UEALattice element",
         true, [ IsUEALatticeElement and IsPackedElementDefaultRep ], 0,
         function( x )
@@ -2795,7 +2795,7 @@ end );
 #############################################################################
 ##
 #M  \+( <u>, <v> ) . . . . . . . . . . . . . . for two weight rep elements
-#M  AINV( <u> ) . . . . . . . . . . . .  . . . for a weight rep element
+#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . .  . . . for a weight rep element
 #M  \*( <scal>, <u> ) . . . . . . . . . . . .for a scalar and a weight rep elt
 #M  \*( <u>, <scal> ) . . . . . . . . . . . .for a wewight rep elt and a scalar
 #M  ZeroOp( <u> ) . . . . . . . . . . . . .  for a weight rep element
@@ -2844,7 +2844,7 @@ InstallMethod(\+,
 
 end );
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseOp,
         "for a weight rep element",
         true,
         [ IsWeightRepElement and IsPackedElementDefaultRep ], 0,
@@ -3070,7 +3070,7 @@ BindGlobal( "BasisOfWeightRepSpace",
     local B;
 
     B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasis and
+                            IsFiniteBasisDefault and
                             IsBasisOfWeightRepElementSpace and
                             IsAttributeStoringRep ),
                    rec() );
@@ -3815,7 +3815,7 @@ InstallMethod( HighestWeightModule,
     SetGeneratorsOfLeftModule( V, GeneratorsOfAlgebraModule( V ) );
 
     B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasis and
+                            IsFiniteBasisDefault and
                             IsBasisOfAlgebraModuleElementSpace and
                             IsAttributeStoringRep ),
                    rec() );

@@ -97,7 +97,7 @@ test:
 	$(BUILD) -f config.grplib
 	touch ._grplib
 
-._alg: config.alg algebra.msk alglie.msk mgmring.msk
+._alg: config.alg algebra.msk algfp.msk alglie.msk mgmring.msk
 	$(BUILD) -f config.alg
 	touch ._alg
 
@@ -105,8 +105,9 @@ test:
 	$(BUILD) -f config.environ
 	touch ._environ
 
-._install: config.install install.msk run.msk sharepkg.msk \
-	refcover.msk tutcover.msk prgcover.msk extcover.msk ficover.msk
+._install: config.install install.msk run.msk gappkg.msk \
+	refcover.msk tutcover.msk prgcover.msk extcover.msk ficover.msk\
+	copyrigh.msk
 	$(BUILD) -f config.install
 	touch ._install
 
@@ -144,7 +145,7 @@ test:
 	$(BUILD) -f config.prog
 	touch ._prog
 
-._new: config.new newcover.msk iostream.msk
+._new: config.new newcover.msk streams.msk
 	$(BUILD) -f config.new
 	touch ._new
 

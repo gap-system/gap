@@ -65,18 +65,16 @@ end
 );
 
 # html version on MAC
-HELP_EXTERNAL_URL := "";
 HELP_VIEWER_INFO.("internet config") := rec(
 type := "macurl",
-show := function(path)
-  if IsBound (HELP_EXTERNAL_URL) then
-    ExecuteProcess ("", "Internet Config", 1, 0, [path]);
+show := function(data)
+  if IsBound (data.path) then
+     ExecuteProcess ("./", "Internet Config", 1, 0, [data.protocol, data.path, data.section]);
   else
-    ExecuteProcess ("./", "Internet Config", 1, 0, [path]);
+     ExecuteProcess ("", "Internet Config", 1, 0, [data.url, "", data.section]);
   fi;
 end
 );
-Unbind(HELP_EXTERNAL_URL);
 
 # Function to find the X-windows window ID of a program accessing file
 # <bookf>. Used for a hack below: xdvi doesn't provide a -remote control.

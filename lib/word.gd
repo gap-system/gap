@@ -55,9 +55,9 @@ Revision.word_gd :=
 ##  and also the case of free magmas,
 ##  where the multiplication is nonassociative (see~"IsNonassocWord").
 ##
-##  Elements in free magmas (see~"FreeMagma") lie in the category `IsWord',
-##  elements in free magmas-with-one (see~"FreeMagmaWithOne") lie in the
-##  category `IsWordWithOne', and so on.
+##  Elements in free magmas (see~"FreeMagma") lie in the category `IsWord';
+##  similarly, elements in free magmas-with-one (see~"FreeMagmaWithOne") 
+##  lie in the category `IsWordWithOne', and so on.
 ##
 ##  `IsWord' is mainly a ``common roof'' for the two *disjoint* categories
 ##  `IsAssocWord' (see~"IsAssocWord") and `IsNonassocWord'

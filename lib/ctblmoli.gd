@@ -26,7 +26,7 @@ Revision.ctblmoli_gd :=
 ##  where $\psi^{[d]}$ denotes the symmetrization of $\psi$ with the trivial
 ##  character of the symmetric group $S_d$ (see~"SymmetricParts").
 ##
-##  `MolienSeries' returs the Molien series of <psi>, relative to <chi>,
+##  `MolienSeries' returns the Molien series of <psi>, relative to <chi>,
 ##  where <psi> and <chi> must be characters of the same character table,
 ##  which must be entered as <tbl> if <chi> and <psi> are only lists of
 ##  character values.

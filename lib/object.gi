@@ -431,7 +431,7 @@ InstallMethod( Display,
     "generic: use Print",
     true,
     [ IsObject ], 0,
-    Print );
+    function( obj ) Print(obj, "\n"); end );
 
 
 #############################################################################

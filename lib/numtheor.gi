@@ -992,20 +992,53 @@ end );
 ##
 #F  LogMod( <n>, <r>, <m> ) . . . . . .  discrete logarithm modulo an integer
 ##
-InstallGlobalFunction( LogMod, function ( n, r, m )
-    local   x, l;
-    n := n mod m;
-    x := 1;
-    l := 0;
-    while x <> n  do
-        x := (x * r) mod m;
-        l := l + 1;
-        if l = m  then
+InstallGlobalFunction( LogMod,function(b,a,n)
+local m,m2,am,ai,l,g,c,i,p;
+  b:=b mod n;
+  a:=a mod n;
+  ai:=Gcdex(a,n);
+  if ai.gcd=1 then
+    # coprime case -- use Shanks's method
+    # don't make the list longer than 5 million entries 
+    m:=Minimum(RootInt(n,2)+1,5*10^6);
+    m2:=QuoInt(n,m)+1; # remaining part
+    # calculate a^m mod n once
+    am:=PowerMod(a,m,n);
+    l:=[0..m-1];
+    g:=[];
+    c:=1;
+    # create powers of a^m
+    for i in l do
+      Add(g,c);
+      c:=c*am mod n;
+    od;
+    # dort the list (we'll potentially have to search often)
+    SortParallel(g,l);
+    c:=b;
+    ai:=ai.coeff1;
+    for i in [0..m2] do
+      p:=PositionSorted(g,c);
+      # positionsorted gives position to insert -- so we have to check
+      if p<=m and g[p]=c then
+	return l[p]*m+i;
+      fi;
+      c:=c*ai mod n;
+    od;
+    return fail;
+  else
+    # not coprime -- use old method
+    c := 1;
+    p := 0;
+    while c <> b  do
+        c := (c * a) mod n;
+        p := p + 1;
+        if p = n  then
             return fail;
         fi;
     od;
-    return l;
-end );
+    return p;
+  fi;
+end);
 
 
 #############################################################################

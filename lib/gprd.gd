@@ -42,6 +42,15 @@ DeclareOperation( "SubdirectProductOp",
 
 #############################################################################
 ##
+#F  SubdirectDiagonalPerms(<l>,<m>)
+##
+##  Let <l> and <m> be lists of permutations that are the images of the same
+##  generating set <gens>. This function returns permutations for the images
+##  of <gens> under the subdirect product of the homomorphisms.
+DeclareGlobalFunction("SubdirectDiagonalPerms");
+
+#############################################################################
+##
 #O  SemidirectProduct(<G>, <alpha>, <N> )
 #O  SemidirectProduct(<autgp>, <N> )
 ##
@@ -59,7 +68,10 @@ DeclareOperation( "SubdirectProductOp",
 ##
 ##  In the second variant, <autgp> must be a group of automorphism of <N>,
 ##  it is a shorthand for
-##  `SemidirectProduct(<autgp>,IdentityMapping(<autgp>),<N>)'.
+##  `SemidirectProduct(<autgp>,IdentityMapping(<autgp>),<N>)'. Note that
+##  (unless <autgrp> has been obtained by the operation `AutomorphismGroup')
+##  you have to test `IsGroupOfAutomorphisms(<autgrp>)' to ensure that {\GAP}
+##  knows that <autgrp> consists of group automorphisms.
 DeclareOperation( "SemidirectProduct",
     [ IsGroup, IsGroupHomomorphism, IsObject ] );
 

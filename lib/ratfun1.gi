@@ -726,7 +726,7 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
     # (assuming that f and g are proper)
     val:=l[2]+RemoveOuterCoeffs(sum,zero);
   elif l[2]<r[2] then
-    sum:=AdditiveInverseOp(r[1]);
+    sum:=ShallowCopy(AdditiveInverseOp(r[1]));
     RightShiftRowVector(sum,r[2]-l[2],zero);
     AddCoeffs(sum,l[1]);
     ShrinkCoeffs(sum);
@@ -800,22 +800,40 @@ local w;
     v:=u;
     u:=w;
   od;
-  return u*u[Length(u)]^-1;
+  if Length(u)>0 then
+    return u*u[Length(u)]^-1;
+  else
+    return u;
+  fi;
 end;
 
 # This function is destructive on the first argument!
 QUOTREM_LAURPOLS_LISTS:=function(fc,gc)
-local q,m,n,i,c,k;
+local q,m,n,i,c,k,f;
   # try to divide
   q:=[];
   n:=Length(gc);
   m:=Length(fc)-n;
+  # try to keep a compressed field
+  if IsGF2VectorRep(fc) and IsGF2VectorRep(gc) then
+    f:=2;
+  elif Is8BitVectorRep(fc) then
+    f:=Q_VEC8BIT(fc);
+    if (not Is8BitVectorRep(gc)) or Q_VEC8BIT(gc)<>f then
+      f:=0;
+    fi;
+  else
+    f:=0;
+  fi;
   for i in [0..m] do
     c:=fc[m-i+n]/gc[n];
     k:=[1..n]+m-i;
     fc{k}:=fc{k}-c*gc;
     q[m-i+1]:=c;
   od;
+  if f>0 then
+    ConvertToVectorRep(q,f);
+  fi;
   return [q,fc];
 end;
 

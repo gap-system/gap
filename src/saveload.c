@@ -16,12 +16,15 @@
 const char * Revision_saveload_c =
    "@(#)$Id$";
 
+#include        <unistd.h>              /* write, read                     */
+   
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "bool.h"                /* booleans                        */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "gap.h"                 /* error handling, initialisation  */
 #include        "gvars.h"               /* global variables                */
+#include        "streams.h"             /* streams                         */
 #include        "string.h"              /* strings                         */
 #include        "scanner.h"             /* scanner                         */
 #include        "sysfiles.h"            /* file input/output               */
@@ -40,6 +43,9 @@ const char * Revision_saveload_c =
 
 
 static Int SaveFile = -1;
+static UInt1 LoadBuffer[100000];
+static UInt1* LBPointer = LoadBuffer;
+static UInt1* LBEnd = LoadBuffer;
 
 static Int OpenForSave( Obj fname ) 
 {
@@ -55,9 +61,29 @@ static Int OpenForSave( Obj fname )
 	 (UInt)CSTR_STRING(fname),0L);
       return 1;
     }
+  LBPointer = LoadBuffer;
+  LBEnd = LBPointer+sizeof(LoadBuffer);
   return 0;
 }
 
+#ifdef SYS_IS_MAC_MWC
+
+static void CloseAfterSave( void )
+{
+  long count;
+  
+  if (SaveFile == -1)
+    {
+      Pr("Internal error -- this should never happen",0L,0L);
+      SyExit(2);
+    }
+  count = LBPointer-LoadBuffer;
+  FSWrite (syBuf[SaveFile].fp, &count, LoadBuffer);
+  SyFclose(SaveFile);
+  SaveFile = -1;
+}
+
+#else
 
 static void CloseAfterSave( void )
 {
@@ -66,11 +92,14 @@ static void CloseAfterSave( void )
       Pr("Internal error -- this should never happen",0L,0L);
       SyExit(2);
     }
+
+  write(syBuf[SaveFile].fp, LoadBuffer, LBPointer-LoadBuffer);
   SyFclose(SaveFile);
   SaveFile = -1;
 }
 
-static Int LoadFile = -1;
+#endif
+Int LoadFile = -1;
 
 
 static void OpenForLoad( Char *fname ) 
@@ -100,21 +129,70 @@ static void CloseAfterLoad( void )
   LoadFile = -1;
 }
 
-#define SAVE_BYTE( byte )  do {SyPutc(SaveFile, (byte));} while (0)
+#ifdef SYS_IS_MAC_MWC
 
-static Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
-			     
-inline UInt1 LOAD_BYTE ( void )
+void SAVE_BYTE_BUF( void )
 {
-  int c;
-  c = SyGetc(LoadFile);
-  if (c == EOF)
+  long count;
+  count = LBEnd-LoadBuffer;
+  FSWrite (syBuf[SaveFile].fp, &count, LoadBuffer);
+  LBPointer = LoadBuffer;
+  return;
+}
+
+#else
+
+void SAVE_BYTE_BUF( void )
+{
+  write(syBuf[SaveFile].fp, LoadBuffer, LBEnd-LoadBuffer);
+  LBPointer = LoadBuffer;
+  return;
+}
+
+#endif
+
+#define SAVE_BYTE(byte) {if (LBPointer >= LBEnd) {SAVE_BYTE_BUF();} \
+                          *LBPointer++ = (UInt1)(byte);}
+
+Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
+
+#ifdef SYS_IS_MAC_MWC
+
+UInt1 LOAD_BYTE_BUF( void )
+{
+  OSErr ret;
+  long count = sizeof(LoadBuffer);
+  ret = FSRead (syBuf[LoadFile].fp, &count, LoadBuffer);
+  if ((ret != noErr) && ((ret != eofErr || count == 0)))
     {
       Pr(LoadByteErrorMessage, 0L, 0L );
       SyExit(2);
     }
-  return c;
+  LBEnd = LoadBuffer + count;
+  LBPointer = LoadBuffer;
+  return *LBPointer++;   
 }
+
+#else
+
+UInt1 LOAD_BYTE_BUF( void )
+{
+  Int ret;
+  ret = read(syBuf[LoadFile].fp, LoadBuffer, 100000);
+  if (ret <= 0)
+    {
+      Pr(LoadByteErrorMessage, 0L, 0L );
+      SyExit(2);
+    }
+  LBEnd = LoadBuffer + ret;
+  LBPointer = LoadBuffer;
+  return *LBPointer++;   
+}
+
+#endif
+
+#define LOAD_BYTE()    (UInt1)((LBPointer >= LBEnd) ?\
+                                  (LOAD_BYTE_BUF()) : (*LBPointer++))
 
 /***************************************************************************
 **
@@ -243,7 +321,7 @@ UInt LoadUInt ( void )
 
 #endif
 
-void SaveCStr( Char * str)
+void SaveCStr( const Char * str)
 {
   do {
     SAVE_BYTE( (UInt1) *str);
@@ -340,7 +418,7 @@ void SaveHandler( ObjFunc hdlr )
   if (hdlr == (ObjFunc)0)
     SaveCStr("");
   else
-    SaveCStr((Char *)CookieOfHandler(hdlr));
+    SaveCStr((const Char *)CookieOfHandler(hdlr));
 }
 
 
@@ -499,7 +577,7 @@ static FILE *file;
 
 static void report( Bag bag)
 {
-  fprintf(file,"%i %i\n", TNUM_BAG(bag), SIZE_BAG(bag));
+  fprintf(file,"%li %li\n", (Int) TNUM_BAG(bag), (Int) SIZE_BAG(bag));
 }
 
 Obj BagStats(Obj self, Obj filename)
@@ -564,12 +642,14 @@ static void AddSaveIndex( Bag bag)
   PTR_BAG(bag)[-1] = (Obj)NextSaveIndex++;
 }
 
+/*  is this obsolete ???    
 static void CheckPlist( Bag bag)
 {
   if (TNUM_BAG(bag) == 14 && sizeof(UInt)*((UInt)(PTR_BAG(bag)[0])) > SIZE_BAG(bag))
     Pr("Panic %d %d\n",sizeof(UInt)*((UInt)(PTR_BAG(bag)[0])), SIZE_BAG(bag));
   return;
 }
+*/
 
 static void RemoveSaveIndex( Bag bag)
 {
@@ -608,7 +688,7 @@ static void WriteSaveHeader( void )
     {
       if (GlobalBags.cookie[i] != NULL)
 	{
-	  SaveCStr((Char *)GlobalBags.cookie[i]);
+	  SaveCStr((const Char *)GlobalBags.cookie[i]);
 	  SaveSubObj(*(GlobalBags.addr[i]));
 	}
     }
@@ -736,9 +816,24 @@ void LoadWorkspace( Char * fname )
       if (isGapRootRelative)
         READ_GAP_ROOT( buf);
       else
-        SyLoadModule(buf);
-                                /* does this work for user static modules
-                                  -- are they even possible?*/
+	{
+	  InitInfoFunc init;
+	  StructInitInfo *info = NULL;
+	  
+	  init = SyLoadModule(buf);
+	  if ((Int)init == 1 || (Int) init == 3 || (Int) init == 5 || (Int) init == 7 ||
+	      0 == (info = (*init)()) )
+	    {
+	      Pr("Failed to load needed dynamic module %s, error code %d\n",
+		 (Int)buf, (Int) init);
+	      SyExit(1);
+	    }
+	      /* link and init me                                                    */
+	  info->isGapRootRelative = 0;
+	  (info->initKernel)(info);
+	  RecordLoadedModule(info, buf);
+	}
+
     }
 
   /* Now the kernel variables that point into the workspace */

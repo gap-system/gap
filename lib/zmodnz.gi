@@ -598,20 +598,22 @@ InstallMethod( Int,
 #############################################################################
 ##
 #M  InverseOp( <mat> )  . . . . . . . . . . . . for ordinary matrix over Z/nZ
+#M  InverseSM( <mat> )  . . . . . . . . . . . . for ordinary matrix over Z/nZ
 ##
 ##  For a nonprime integer $n$, the residue class ring $\Z/n\Z$ has zero
 ##  divisors, so the standard algorithm to invert a matrix over $\Z/n\Z$
 ##  cannot be applied.
 ##
-##  The method below should of course be replaced by a method that uses
-##  inversion modulo the maximal prime powers dividing the modulus,
-##  the ``brute force method'' is only preliminary!
+#T  The method below should of course be replaced by a method that uses
+#T  inversion modulo the maximal prime powers dividing the modulus,
+#T  this ``brute force method'' is only preliminary!
 ##
 InstallMethod( InverseOp,
     "for an ordinary matrix over a ring Z/nZ",
     [ IsMatrix and IsOrdinaryMatrix and IsZmodnZObjNonprimeCollColl ],
     function( mat )
     local one;
+
     one:= One( mat[1][1] );
     mat:= InverseOp( List( mat, row -> List( row, Int ) ) );
     if mat <> fail then
@@ -621,6 +623,40 @@ InstallMethod( InverseOp,
       mat:= fail;
     fi;
     return mat;
+    end );
+
+InstallMethod( InverseSM,
+    "for an ordinary matrix over a ring Z/nZ",
+    [ IsMatrix and IsOrdinaryMatrix and IsZmodnZObjNonprimeCollColl ],
+    function( mat )
+    local inv, row;
+
+    inv:= InverseOp( mat );
+    if inv <> fail then
+      if   not IsMutable( mat ) then
+        MakeImmutable( inv );
+      elif not IsMutable( mat[1] ) then
+        for row in inv do
+          MakeImmutable( row );
+        od;
+      fi;
+    fi;
+    return inv;
+    end );
+
+
+InstallMethod( TriangulizeMat,
+    "for a mutable ordinary matrix over a ring Z/nZ",
+    [ IsMatrix and IsMutable and IsOrdinaryMatrix
+               and IsZmodnZObjNonprimeCollColl ],
+    function( mat )
+    local imat, i;
+    imat:= List( mat, row -> List( row, Int ) );
+    TriangulizeMat( imat );
+    imat:= imat * One( mat[1][1] );
+    for i in [ 1 .. Length( mat ) ] do
+      mat[i]:= imat[i];
+    od;
     end );
 
 
@@ -884,6 +920,8 @@ InstallGlobalFunction( ZmodnZ, function( n )
 
       # Install the data.
       F!.modulus:= n;
+
+      SetCharacteristic(F,n);
 
       # Store the objects type.
       F!.typeOfZmodnZObj:= NewType( F,     IsZmodnZObjNonprime

@@ -80,8 +80,8 @@ DeclareProperty( "IsNumeratorParentPcgsFamilyPcgs", IsModuloPcgs );
 ##
 #O  ExponentsConjugateLayer( <mpcgs>,<elm>,<e> )
 ##
-##  Computes the exponents of $<elm>^<e>$ with respect to <mpcgs>. <elm>
-##  must be in the span of <mpcgs>, <e> an pc element in the span of the
+##  Computes the exponents of $<elm>^<e>$ with respect to <mpcgs>; <elm>
+##  must be in the span of <mpcgs>, <e> a pc element in the span of the
 ##  parent pcgs of <mpcgs> and <mpcgs> must be the modulo pcgs for
 ##  an abelian layer. (This is the usual case when acting on a chief
 ##  factor). In this case if <mpcgs> is induced by the family pcgs, the

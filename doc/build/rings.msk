@@ -51,7 +51,7 @@ GaussianIntegers
 \Declaration{RingByGenerators}
 
 \beginexample
-gap> RingByGenerators([ 2, E(4) ]); 
+gap> RingByGenerators([ 2, E(4) ]);
 <ring with 2 generators>
 \endexample
 
@@ -66,7 +66,7 @@ GaussianIntegers
 \Declaration{GeneratorsOfRing}
 
 \beginexample
-gap> R:=Ring( 2, 1/2 );            
+gap> R:=Ring( 2, 1/2 );
 <ring with 2 generators>
 gap> GeneratorsOfRing( R );
 [ 2, 1/2 ]
@@ -81,7 +81,7 @@ gap> GeneratorsOfRing( R );
 \beginexample
 gap> R:= Integers;
 Integers
-gap> S:= Subring( R, [ 2, 3 ] );
+gap> S:= Subring( R, [ 4, 6 ] );
 <ring with 2 generators>
 gap> Parent( S );
 Integers
@@ -139,7 +139,7 @@ true
 
 \beginexample
 gap> A:= FullMatrixAlgebra( Rationals, 3 );;
-gap> I:= Ideal( A, [ One( A ) ] );;   
+gap> I:= Ideal( A, [ One( A ) ] );;
 gap> GeneratorsOfIdeal( I );
 [ [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] ]
 \endexample
@@ -171,7 +171,7 @@ gap> I:= AsTwoSidedIdeal( B, C );
 \Declaration{RingWithOne}
 
 \beginexample
-gap> RingWithOne( [ 4, 6 ] );  
+gap> RingWithOne( [ 4, 6 ] );
 <ring-with-one, with 2 generators>
 \endexample
 
@@ -179,7 +179,7 @@ gap> RingWithOne( [ 4, 6 ] );
 \Declaration{GeneratorsOfRingWithOne}
 
 \beginexample
-gap> R:= RingWithOne( [ 4, 6 ] ); 
+gap> R:= RingWithOne( [ 4, 6 ] );
 <ring-with-one, with 2 generators>
 gap> GeneratorsOfRingWithOne( R );
 [ 4, 6 ]
@@ -246,7 +246,7 @@ true
 \beginexample
 gap> Units( GaussianIntegers );
 [ -1, 1, -E(4), E(4) ]
-gap> Units( GF( 16 ) );        
+gap> Units( GF( 16 ) );
 <group with 1 generators>
 \endexample
 
@@ -271,7 +271,7 @@ gap> StandardAssociate( -x^2-x+1 );
 \Declaration{IsIrreducibleRingElement}
 
 \beginexample
-gap> IsIrreducibleRingElement( Integers, 2 ); 
+gap> IsIrreducibleRingElement( Integers, 2 );
 true
 \endexample
 
@@ -319,7 +319,7 @@ gap> EuclideanRemainder( 8, 3 );
 \Declaration{QuotientRemainder}
 
 \beginexample
-gap> QuotientRemainder( GaussianIntegers, 8, 3 ); 
+gap> QuotientRemainder( GaussianIntegers, 8, 3 );
 [ 3, -1 ]
 \endexample
 
@@ -337,8 +337,8 @@ gap> Gcd( Integers, [ 10, 15 ] );
 \Declaration{GcdRepresentation}
 
 \beginexample
-gap> x:= Indeterminate( Rationals, "x" );;      
-gap> GcdRepresentation( x^2+1, x^3+1 );   
+gap> x:= Indeterminate( Rationals, "x" );;
+gap> GcdRepresentation( x^2+1, x^3+1 );
 [ 1/2-1/2*x-1/2*x^2, 1/2+1/2*x ]
 \endexample
 

@@ -100,7 +100,7 @@ induced by the given equivalence.
 
 \Declaration{IsEquivalenceClass}
 \Declaration{EquivalenceClassRelation}
-\Declaration{EquivalenceClasses}
+\Declaration{EquivalenceClasses}!{attribute}
 \Declaration{EquivalenceClassOfElement}
 
 

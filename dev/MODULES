@@ -207,7 +207,7 @@ Proposer: Frank L., 22-June-01
 Seconder: Alexander, 22-June-01
 Files: lib/upolyirr lib/grpffmat grp/classical
 Author: Thomas Breuer, Frank Celler, Stefan Kohl, Frank L"ubeck, Heiko Thei"sen
-Maintainer: Thomas Breuer, Frank L"ubeck
+Maintainer: Thomas Breuer, Stefan Kohl, Frank L"ubeck
 Description: Classical groups as matrix groups and specialized functions for
              them.
 
@@ -338,5 +338,37 @@ Maintainer:  Robert F. Morse
 Description: This library code implements transformations, and methods 
              on semigroups represented by them.
 
+Name:        Cyclotomics
+Proposer:    Thomas Breuer, 19-June-01
+Seconder:    Alexander Hulpke, 19-June-01
+Files:       lib/cyclotom.g* lib/fldabnum.g?
+Authors:     Thomas Breuer
+Maintainer:  Thomas Breuer
+Description: Cyclotomics and subfields of cyclotomic fields
 
+Name:        Lie algebras
+Proposer:    Willem de Graaf, 25-Jan-02
+Seconder:    Steve, 25-Jan-02, Frank, 25-Jan-02, Joachim, 28-Jan-02
+Files:       alglie.gd, alglie.gi, algliess.gi, lierep.gd, lierep.gi
+Authors:     Thomas Breuer, Willem de Graaf, Craig Struble, Juergen Wisliceny
+Maintainer:  Willem de Graaf
+Description: functionality for dealing with Lie algebras and their
+             representations
 
+Name:        GAP for MacOS
+Proposer:    Burkhard Hšfling
+Seconder:    Steve Linton, 24 Jan 2002; Alexander Hulpke, 24 Jan 2002
+Files:       macsrc/maccon.c, macsrc/maccon.h, /macdefs.h, macsrc/macdocs.c,
+             macsrc/macdocs.h, macsrc/macedit.c, macsrc/macedit.h,
+             macsrc/macedit.r, macsrc/macheaders4.h, macsrc/macintr.c,
+             macsrc/macintr.h, macsrc/macpaths.c, macsrc/macpaths.h,
+             macsrc/macres4.rsrc, macsrc/macte.c, macsrc/macte.h
+             src/system.c (partly)
+             src/system.h (partly)
+             src/sysfiles.c (partly)
+             src/sysfiles.c (partly)
+             src/streams.c (partly)
+             src/streams.h (partly)
+Authors:     Burkhard Hšfling
+Description: This set of files provides the implementation of system dependent
+             GAP functions and a user interface to run GAP under MacOS

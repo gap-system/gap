@@ -19,13 +19,25 @@ Revision.ratfunul_gi :=
 ##
 #M  LaurentPolynomialByCoefficients( <fam>, <cofs>, <val>, <ind> )
 ##
-InstallMethod( LaurentPolynomialByCoefficients, "with indeterminate", true,
-    [ IsFamily, IsList, IsInt, IsInt ], 0,
+InstallMethod( LaurentPolynomialByCoefficients, "with indeterminate",
+  true, [ IsFamily, IsList, IsInt, IsInt ], 0,
 function( fam, cofs, val, ind )
+local lc;
   # construct a laurent polynomial
 
+  lc:=Length(cofs);
+  if lc>0 and not IsIdenticalObj(ElementsFamily(FamilyObj(cofs)),fam) then
+    # try to fix
+    Info(InfoWarning,1,
+      "Convert coefficient list to get compatibility with family");
+    cofs:=cofs*One(fam);
+    if not IsIdenticalObj(ElementsFamily(FamilyObj(cofs)),fam) then
+      # did not work
+      TryNextMethod();
+    fi;
+  fi;
   fam:=RationalFunctionsFamily(fam);
-  if Length(cofs)>0 and (IsZero(cofs[1]) or IsZero(cofs[Length(cofs)])) then
+  if lc>0 and (IsZero(cofs[1]) or IsZero(cofs[lc])) then
       if not IsMutable(cofs) then
           cofs:=ShallowCopy(cofs);
       fi;
@@ -40,13 +52,16 @@ InstallMethod( LaurentPolynomialByCoefficients,
   "warn about iterated polynomials", true,
     [ IsFamily and HasCoefficientsFamily, IsList, IsInt, IsInt ], 0,
 function( fam, cofs, val, ind )
-  Info(InfoWarning,1,
-    "You are creating a polynomial *over* a polynomial ring (i.e. in an");
-  Info(InfoWarning,1,
-    "iterated polynomial ring). Are you sure you want to do this?");
-  Info(InfoWarning,1,
-  "If not, the first argument should be the base ring, not a polynomial ring"
-    );
+  # catch algebraic extensions
+  if not IsBound(fam!.primitiveElm) then
+    Info(InfoWarning,1,
+      "You are creating a polynomial *over* a polynomial ring (i.e. in an");
+    Info(InfoWarning,1,
+      "iterated polynomial ring). Are you sure you want to do this?");
+    Info(InfoWarning,1,
+    "If not, the first argument should be the base ring, not a polynomial ring"
+      );
+  fi;
   TryNextMethod();
 end);
 
@@ -819,6 +834,19 @@ InstallMethod( LeadingMonomial,"for a univariate laurent polynomial", true,
 
 #############################################################################
 ##
+#M  EuclideanDegree( <pring>, <upol> )
+##
+InstallOtherMethod(EuclideanDegree,"laurent,ring",IsCollsElms,
+	      [IsPolynomialRing,IsLaurentPolynomial],0,
+function(R,a)
+  return DegreeOfLaurentPolynomial(a);
+end);
+
+InstallOtherMethod(EuclideanDegree,"laurent",true,
+	      [IsLaurentPolynomial],0,DegreeOfLaurentPolynomial);
+
+#############################################################################
+##
 #M  EuclideanRemainder( <pring>, <upol>, <upol> )
 ##
 BindGlobal("MOD_UPOLY",function(a,b)
@@ -859,6 +887,7 @@ local gcd,val,brci,fam;
   brci:=CIUnivPols(f,g);
   fam:=FamilyObj(f);
   if brci=fail then TryNextMethod();fi;
+
   f:=CoefficientsOfLaurentPolynomial(f);
   g:=CoefficientsOfLaurentPolynomial(g);
 
@@ -934,6 +963,18 @@ end);
 RedispatchOnCondition(Derivative,true,
   [IsPolynomial],[IsLaurentPolynomial],0);
 
+InstallOtherMethod(Derivative,"uratfun,ind",true,
+  [IsUnivariateRationalFunction],0,
+function(ratfun)
+local num,den;
+  num:=NumeratorOfRationalFunction(ratfun);
+  den:=DenominatorOfRationalFunction(ratfun);
+  return (Derivative(num)*den-num*Derivative(den))/(den^2);
+end);
+
+RedispatchOnCondition(Derivative,true,
+  [IsPolynomial],[IsUnivariateRationalFunction],0);
+
 #############################################################################
 ##
 #F  Discriminant( <f> ) . . . . . . . . . . . . discriminant of polynomial f
@@ -974,18 +1015,41 @@ local val, i;
   return val;
 end );
 
+InstallOtherMethod( Value,"univariate rational function",
+    true, [ IsUnivariateRationalFunction, IsRingElement, IsRingElement ], 0,
+function( f, x, one )
+local val, i,j;
+  val:= [Zero( one ),Zero(one)];
+  f:= CoefficientsOfUnivariateRationalFunction( f );
+  for j in [1,2] do
+    i:= Length( f[j] );
+    while 0 < i do
+      val[j]:= val[j] * x + one * f[j][i];
+      i:= i-1;
+    od;
+  od;
+  if  IsZero(val[2]) then
+    Error("Denominator evaluates as zero");
+  fi;
+  val:=val[1]/val[2];
+  if 0 <> f[3] then
+    val:= val * x^f[3];
+  fi;
+  return val;
+end );
+
 #############################################################################
 ##
 #M  Value( <upol>, <elm> )
 ##
-InstallOtherMethod(Value,"LaurentPolynomial",true,
-  [IsLaurentPolynomial,IsRingElement],0,
+InstallOtherMethod(Value,"supply `one'",true,
+  [IsUnivariateRationalFunction,IsRingElement],0,
 function(f,x)
   return Value(f,x,One(x));
 end);
 
 RedispatchOnCondition(Value,true,[IsRationalFunction,IsRingElement],
-  [IsLaurentPolynomial,IsRingElement],0);
+  [IsUnivariateRationalFunction,IsRingElement],0);
 
 # print coeff list f.
 BindGlobal("DoPrintUnivariateLaurent",function(fam,cofs,val,ind)

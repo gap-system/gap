@@ -52,9 +52,10 @@ DeclareGlobalFunction("BombieriNorm");
 ##
 #A  MinimizedBombieriNorm( <f> ) . . . Tschirnhaus transf'd polynomial
 ##
-##  This function applies linear Tschirnhaus transformations (x->x+i) to the
-##  polynomial <f>, trying to get the bombieri norm of <f> small. It returns a
-##  list [new polynomial, transformation <i>].
+##  This function applies linear Tschirnhaus transformations 
+##  ($x \mapsto x + i$) to the
+##  polynomial <f>, trying to get the Bombieri norm of <f> small. It returns a
+##  list `[<new_polynomial>, <i_of_transformation>]'.
 ##
 DeclareAttribute("MinimizedBombieriNorm",
    IsPolynomial and IsRationalFunctionsFamilyElement);
@@ -63,7 +64,8 @@ DeclareAttribute("MinimizedBombieriNorm",
 ##
 #F  RootBound(<f>)
 ##
-##  bound for absolute value of (complex) roots of ratinal univariate pol. <f>
+##  returns the bound for the norm of (complex) roots of the rational 
+##  univariate polynomial <f>.
 ##
 DeclareGlobalFunction("RootBound");
 
@@ -71,15 +73,18 @@ DeclareGlobalFunction("RootBound");
 ##
 #F  OneFactorBound(<pol>)
 ##
-##  Coefficient bound for single factor of rational polynomial <pol>
+##  returns the coefficient bound for a single factor of the rational 
+##  polynomial <pol>.
 ##
 DeclareGlobalFunction("OneFactorBound");
 
 #############################################################################
 ##
 #F  HenselBound(<pol>,[<minpol>,<den>]) . . . Bounds for Factor coefficients
-##    if the computation takes place over an algebraic extension, then
-##    minpol and denominator must be given
+##
+##  returns the Hensel bound of the polynomial <pol>.
+##  If the computation takes place over an algebraic extension, then
+##  the minimal polynomial <minpol> and denominator <den> must be given.
 ##
 DeclareGlobalFunction("HenselBound");
 
@@ -87,7 +92,7 @@ DeclareGlobalFunction("HenselBound");
 ##
 #F  TrialQuotientRPF(<f>,<g>,<b>)
 ##
-## $<f>/<g>$ if coefficient bounds are given by list <b>
+##  returns $<f>/<g>$ if coefficient bounds are given by list <b>.
 ##
 DeclareGlobalFunction("TrialQuotientRPF");
 

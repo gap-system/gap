@@ -76,6 +76,7 @@ There exist finitely
 presented groups for which no algorithm exists (it is known that no such
 algorithm can exist) that will tell for two arbitrary words in the
 generators whether the corresponding elements in the FpGroup are equal.
+
 Therefore the methods used by {\GAP} to compute in finitely
 presented groups may run into warning errors, run out of memory or run
 forever. If the FpGroup is (by theory) known to be finite the
@@ -242,9 +243,10 @@ fundamental tools for the examination of finitely presented groups. This
 section describes {\GAP} functions that can be used to invoke a coset
 enumeration.
 
-Note that in addition to the built-in coset enumerator there is the share
-package `ACE'. Moreover, {\GAP} provides an interactive Todd-Coxeter in the
-`XGAP' share package `ITC'.
+Note that in addition to the built-in coset enumerator there is the {\GAP}
+package \package{ACE}. Moreover, {\GAP} provides an interactive Todd-Coxeter
+in the {\GAP} package \package{ITC} which is based on the \package{XGAP}
+package.
 
 \Declaration{CosetTable}
 
@@ -253,8 +255,8 @@ The coset table is standard (see below).
 For finitely presented groups, a coset table is computed by a Todd-Coxeter
 coset enumeration. Note that
 you may influence the performance of that enumeration by changing the values
-of the global variables `CosetTableFpGroupDefaultLimit' and
-`CosetTableFpGroupDefaultMaxLimit' described below and that the options
+of the global variables `CosetTableDefaultLimit' and
+`CosetTableDefaultMaxLimit' described below and that the options
 described under `CosetTableFromGensAndRels' are recognized.
 
 \beginexample
@@ -415,8 +417,6 @@ gap> PrintArray( TransposedMat( tab ) );
 
 \Declaration{SubgroupOfWholeGroupByCosetTable}
 See also~`CosetTableBySubgroup' ("CosetTableBySubgroup").
-
-\Declaration{CosetTableInWholeGroup}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Augmented Coset Tables and Rewriting}
@@ -644,7 +644,7 @@ behave like ordinary words and no extra treatment should be necessary.
 gap> r:=Range(hom).1^10;
 F1^10
 gap> p:=PreImagesRepresentative(hom,r);
-< [ [ 1, 10 ] ]||f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
+<[ [ 1, 10 ] ]||f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
 -1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1>
 \endexample
 If desired, it also is possible to convert these underlying words using
@@ -692,7 +692,9 @@ subgroup generators increases with the index of the subgroup. However often
 these generators are not needed at all for further calculations, but what is
 needed is the action of the cosets of the subgroup. This gives the image of
 the subgroup in a finite quotient and this finite quotient can be used to
-calculate normalizers, closures, intersections and so forth.
+calculate normalizers, closures, intersections and so
+forth~\cite{HulpkeQuot}.
+
 The same applies for subgroups that are obtained as preimages under
 homomorphisms.
 
@@ -736,6 +738,16 @@ gap> Size(Image(hom));
 36
 \endexample
 
+\Declaration{PQuotient}
+\Declaration{EpimorphismQuotientSystem}
+\beginexample
+gap> PQuotient( FreeGroup(2), 5, 10, 1024, "combinatorial" );
+<5-quotient system of 5-class 10 with 520 generators>
+gap> phi := EpimorphismQuotientSystem( last );
+[ f1, f2 ] -> [ a1, a2 ]
+gap> Collected( Factors( Size( Image( phi ) ) ) );
+[ [ 5, 520 ] ]
+\endexample
 \Declaration{EpimorphismPGroup}
 \beginexample
 gap> hom:=EpimorphismPGroup(fp,2);
@@ -761,7 +773,7 @@ A related operation which is also applicable to finitely presented groups is
 group <F> onto a given (finite) group <G>, see~"GQuotients".
 \beginexample
 gap> GQuotients(fp,Group((1,2,3),(1,2)));
-[ [ f1, f2 ] -> [ (2,3), (1,2) ], [ f1, f2 ] -> [ (1,2), (1,2,3) ], 
+[ [ f1, f2 ] -> [ (1,3), (1,2) ], [ f1, f2 ] -> [ (1,2), (1,2,3) ], 
   [ f1, f2 ] -> [ (1,2,3), (1,2) ] ]
 \endexample
 
@@ -826,7 +838,6 @@ gap> # Compute the abelian invariants of B1'/B1".
 gap> K := Subgroup( B1, comms );;
 gap> A := AbelianInvariantsNormalClosureFpGroup( B1, K );
 [ 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
-gap> quit;
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

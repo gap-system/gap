@@ -1,6 +1,15 @@
-==Files
+==Files (do not clear out, only add)
+version.g
 
 === message, all XXX need replacing
+
+# this is the kernel bit for later bugfixes.
+This fix incorporates changes in the kernel that came with bugfix YYY. If
+you did not install this bugfix (or do not remember installing the bugfix),
+you have to recompile by calling `make' in the directory in which you
+unpacked the fix or download (and unpack) the most recent binary for your
+machine.
+
 
 # this is the kernel bit.
 This fix changes the kernel. You have to recompile by calling `make' in the
@@ -8,7 +17,7 @@ directory in which you unpacked the fix.
 
 Windows users can find a new binary in the file `wbin4rXXX.zoo' in the
 `bugfixes' directory: Extract this archive in the same place as the fix
-archive to get a new `gapw95.exe' file.
+archive to get a new `bin/gapw95.exe' file.
 
 Macintosh users should download the file 'bin4rXXX-PPC.sit' (for PPC
 machines) or 'bin4rXXX-68k.sit' (for 68k machines), from the 'bugfixes'
@@ -27,8 +36,11 @@ Dear Forum,
 This is to announce bugfix number XXX for GAP 4.XXX. The priority of this fix
 is XXX.
 
-You should not apply this fix to any version of GAP3, nor to any
-version of GAP4.1.
+You should not apply this fix to any version of GAP before GAP 4.3. (If you
+run such an old version, please update to GAP 4.3 (and this bugfix) as
+release 4.3 corrects many problems.)
+GAP Bugfixes now are comprehensive. If you forgot to install prior bugfixes,
+you do only need to install this, and no prior ones.
 
 This fix corrects:
 
@@ -65,7 +77,7 @@ directory and issuing
 
 gap> ReadTest("tst/bugfix.tst");
 + bugfixes test
-+ GAP4stones: 835
++ GAP4stones: 163
 true
 
 (The output should be like this if the bugfixes have been installed

@@ -6,7 +6,15 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  This file is being maintained by Thomas Breuer.
+##  Please do not make any changes without consulting him.
+##  (This holds also for minor changes such as the removal of whitespace or
+##  the correction of typos.)
+##
+
 gap> START_TEST("$Id$");
+
+# Check basic arithmetic operations.
 gap> cyc:= E(5) + E(7);
 -E(35)^2-2*E(35)^12-E(35)^17-E(35)^19-E(35)^22-E(35)^26-E(35)^27-E(35)^32
  -E(35)^33
@@ -36,7 +44,8 @@ gap> CycList( l1 ) = cyc;
 true
 gap> CycList( l2 ) = cyc;
 true
-gap> 
+
+# Check atomic irrationalities.
 gap> EB(5); EB(7); EB(9); EB(11);
 E(5)+E(5)^4
 E(7)+E(7)^2+E(7)^4
@@ -129,11 +138,37 @@ E(68)-E(68)^5+E(68)^9+E(68)^13+E(68)^21+E(68)^25-E(68)^29+E(68)^33-E(68)^37
 E(23)+E(23)^2+E(23)^3+E(23)^4-E(23)^5+E(23)^6-E(23)^7+E(23)^8+E(23)^9-E(23)^10
  -E(23)^11+E(23)^12+E(23)^13-E(23)^14-E(23)^15+E(23)^16-E(23)^17+E(23)^18
  -E(23)^19-E(23)^20-E(23)^21-E(23)^22
+
+# Check general Atlas irrationalities.
+gap> AtlasIrrationality( "b7*" );
+E(7)^3+E(7)^5+E(7)^6
+gap> AtlasIrrationality( "b7*3" );
+E(7)^3+E(7)^5+E(7)^6
+gap> AtlasIrrationality( "y'''24" );
+E(24)-E(24)^19
+gap> AtlasIrrationality( "-y'''24" );
+-E(24)+E(24)^19
+gap> AtlasIrrationality( "-y'''24*13" );
+E(24)-E(24)^19
+gap> AtlasIrrationality( "-3y'''24*13" );
+3*E(24)-3*E(24)^19
+gap> AtlasIrrationality( "-3y'''24*13&5" );
+3*E(8)-3*E(8)^3
+gap> AtlasIrrationality( "3y'''24*13-2&5" );
+-3*E(24)-2*E(24)^11+2*E(24)^17+3*E(24)^19
+gap> AtlasIrrationality( "3y'''24*13-&5" );
+-3*E(24)-E(24)^11+E(24)^17+3*E(24)^19
+gap> AtlasIrrationality( "3y'''24*13-4&5&7" );
+-7*E(24)-4*E(24)^11+4*E(24)^17+7*E(24)^19
+gap> AtlasIrrationality( "3y'''24&7" );
+6*E(24)-6*E(24)^19
+
 gap> StarCyc( EB(7) );
 E(7)^3+E(7)^5+E(7)^6
 gap> StarCyc( ER(13) );
 -E(13)+E(13)^2-E(13)^3-E(13)^4+E(13)^5+E(13)^6+E(13)^7+E(13)^8-E(13)^9
  -E(13)^10+E(13)^11-E(13)^12
+
 gap> Quadratic( 4 );
 rec( a := 4, b := 0, root := 1, d := 1, ATLAS := "4", display := "4" )
 gap> Quadratic( EB(7) );
@@ -149,6 +184,7 @@ rec( a := 0, b := 2, root := 3, d := 1, ATLAS := "2r3", display := "2*ER(3)" )
 gap> Quadratic( StarCyc( EB(5) ) );
 rec( a := -1, b := -1, root := 5, d := 2, ATLAS := "-1-b5", 
   display := "(-1-ER(5))/2" )
+
 gap> GeneratorsPrimeResidues( 7^4 );
 rec( primes := [ 7 ], exponents := [ 4 ], generators := [ 3 ] )
 gap> GeneratorsPrimeResidues( 27*125 );
@@ -165,7 +201,7 @@ rec( primes := [ 2, 7, 11 ], exponents := [ 3, 2, 1 ],
 gap> GeneratorsPrimeResidues( 16*13*29 );
 rec( primes := [ 2, 13, 29 ], exponents := [ 4, 1, 1 ], 
   generators := [ [ 5279, 1509 ], 1393, 1249 ] )
-gap> 
+
 gap> mat:= [ [       1333, EB(7),        -1,       0,      0 ],
 >            [  259775040,     0,         0, 2*ER(3),      0 ],
 >            [  885257856,     0, 2*ER(5)-1,       0,      0 ],
@@ -194,9 +230,10 @@ rec(
 gap> Print(RationalizedMat( gm.mat ),"\n");
 [ [ 2666, -1, -2, 0, 0 ], [ 519550080, 0, 0, 0, 0 ], 
   [ 1770515712, 0, -2, 0, 0 ], [ 4337827830, 0, 0, 0, -1 ] ]
+
 gap> STOP_TEST( "cyclotom.tst", 5832500 );
 
 #############################################################################
 ##
-#E  cyclotom.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

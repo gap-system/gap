@@ -63,7 +63,7 @@ InstallMethod( CanonicalBasis,
     local B;
 
     B:= Objectify( NewType( FamilyObj( GaussianIntegers ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisGaussianIntegersRep ),
 #T generalize this to integral rings of cyclotomics!

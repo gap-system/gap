@@ -35,14 +35,14 @@ gap> foo := function()
 function(  ) ... end
 gap> foo();
 myopt1 = fail myopt2 = fail
-gap> PushOptions(rec(myopt1 := 17)); 
-gap> foo();                
+gap> PushOptions(rec(myopt1 := 17));
+gap> foo();
 myopt1 = 17 myopt2 = fail
 gap> DisplayOptionsStack();
 [ rec(
       myopt1 := 17 ) ]
-gap> PopOptions();         
-gap> foo();                
+gap> PopOptions();
+gap> foo();
 myopt1 = fail myopt2 = fail
 gap> foo( : myopt1, myopt2 := [Z(3),"aardvark"]);
 myopt1 = true myopt2 = [ Z(3), "aardvark" ]

@@ -1241,6 +1241,10 @@ extern  void            CodeAssertEnd2Args ( void );
 
 extern  void            CodeAssertEnd3Args ( void );
 
+/*  CodeContinue() .  . . . . . . . . . . . .  code continue-statement */
+extern  void            CodeContinue ( void );
+
+
 
 /****************************************************************************
 **

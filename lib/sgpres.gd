@@ -440,7 +440,7 @@ DeclareGlobalFunction("SpanningTree");
 ##  RewriteWord rewrites <word> (which must be a word in the full group with
 ##  respect to which the augmented coset table <aug> is given) in the
 ##  subgroup generators given by the augmented coset table <aug>. It returns
-##  a tietze-type word (i.e. a list of integers), referring to the primary
+##  a Tietze-type word (i.e.~a list of integers), referring to the primary
 ##  and secondary generators of <aug>.
 ##
 ##  If <word> is not contained in the subgroup, `fail' is returned.

@@ -281,22 +281,27 @@ copy'' of an iterator that is returned by `ShallowCopy' is not as
 obvious as for lists and records, and must be explicitly defined.
 
 Many operations return immutable results, among those mainly
-attributes (see~"Attributes"); examples of attributes are 'Size',
-`Zero', `AdditiveInverse', `One', and `Inverse'.  Arithmetic
-operations, such as the binary infix operations `+', `-', `*', `/',
-`^', `mod', the unary `-', and operations such as `Comm' and
-`LeftQuotient', return *mutable* results, *except* if the operation is
-binary and both arguments are immutable.  So the product of two
-matrices or of a vector and a matrix is immutable if and only if the
-two matrices or both the vector and the matrix are immutable (see
-also~"Arithmetic for Lists").  It should be noted that `0 \* <obj>' is
-equivalent to `ZeroOp( <obj> )', `-<obj>' is equivalent to
-`AdditiveInverseOp( <obj> )', `<obj>^0' is equivalent to `OneOp( <obj>
-)', and `<obj>^-1' is equivalent to `InverseOp( <obj> )'.  The
-operations `ZeroOp', `AdditiveInverseOp', `OneOp', and `InverseOp'
-return *mutable* results whenever a mutable version of the result
-exists, contrary to the attributes `Zero', `AdditiveInverse', `One',
-and `Inverse'.
+attributes (see~"Attributes"); examples of attributes are `Size',
+`Zero', `AdditiveInverse', `One', and `Inverse'.
+Arithmetic operations, such as the binary infix operations `+', `-', `*',
+`/', `^', `mod', the unary `-', and operations such as `Comm' and
+`LeftQuotient', return *mutable* results, *except* if all arguments are
+immutable.
+So the product of two matrices or of a vector and a matrix is immutable
+if and only if the two matrices or both the vector and the matrix are
+immutable (see also~"Arithmetic for Lists").
+
+It should be noted that
+`0 \* <obj>' is equivalent to `ZeroSM( <obj> )',
+`-<obj>' is equivalent to `AdditiveInverseSM( <obj> )',
+`<obj>^0' is equivalent to `OneSM( <obj>)',
+and `<obj>^-1' is equivalent to `InverseSM( <obj> )'.
+The ``SM'' stands for ``same mutability'', and indicates that the result is
+mutable if nd only if the argument is mutable.
+
+The operations `ZeroOp', `AdditiveInverseOp', `OneOp', and `InverseOp'
+return *mutable* results whenever a mutable version of the result exists,
+contrary to the attributes `Zero', `AdditiveInverse', `One', and `Inverse'.
 
 If one introduces new arithmetic objects then one need not install
 methods for the attributes `One', `Zero', etc.
@@ -314,7 +319,7 @@ matrix partly as a data structure, and manipulate and change its
 entries.  For this, the matrix needs to be mutable, and the rule that
 attribute values are immutable is an obstacle.  For these situations,
 a number of additional operations are provided, for example
-`MutableTransposedMat' constructs a mutable matrix (contrary to the
+`TransposedMatMutable' constructs a mutable matrix (contrary to the
 attribute `TransposedMat'), while `TriangulizeMat' modifies a mutable
 matrix (in place) into upper triangular form.
 
@@ -323,6 +328,7 @@ knowledge.  For example, if it is found out that an immutable list is
 strictly sorted then the list may store this information.  More
 precisely, an immutable object may change in any way, provided that it
 continues to represent the same mathematical object.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Duplication of Objects}

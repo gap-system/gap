@@ -14,7 +14,7 @@
 **  {\Gasman}.   Those   blocks of  storage are    called  *bags*.  Then  the
 **  application writes data into and reads data from the bags.  Finally a bag
 **  is no longer needed  and the application  simply forgets it.  We say that
-**  such a bag that is no longer needed is *dead*.  {\Gasman} cares about the
+**  such a bag that is no longer needed is *odead*.  {\Gasman} cares about the
 **  allocation of bags and deallocation of  dead bags.  Thus these operations
 **  are  transparent    to  the application,  enabling   the    programmer to
 **  concentrate on algorithms instead of caring  about storage allocation and
@@ -777,8 +777,10 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
 {
   UInt target;
   Bag *newmem;
-  Bag *ptr;
+/*Bag *ptr; */
   target = (8*nBags)/7 + (8*maxSize)/7; /* ideal workspace size */
+  target = (target * sizeof (Bag) + (512L*1024L) - 1)/(512L*1024L)*(512L*1024L)/sizeof (Bag);
+              /* make sure that the allocated amount of memory is divisible by 512 * 1024 */
   if ((EndBags - MptrBags) < target)
     {
       newmem  = (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags))/1024,
@@ -786,6 +788,8 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
       if (newmem == 0)
         {
           target = nBags + maxSize; /* absolute requirement */
+          target = (target * sizeof (Bag) + (512L*1024L) - 1)/(512L*1024L)*(512L*1024L)/sizeof (Bag);
+               /* make sure that the allocated amount of memory is divisible by 512 * 1024 */
           if ((EndBags - MptrBags) < target)
             (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags))/1024, 1);
         }
@@ -837,7 +841,7 @@ Bag NextBagRestoring( UInt size, UInt type)
 void FinishedRestoringBags( void )
 {
   Bag p;
-  Bag *ptr;
+/*  Bag *ptr; */
   YoungBags = AllocBags;
   StopBags = AllocBags + WORDS_BAG(AllocSizeBags);
   if (StopBags > EndBags)
@@ -949,7 +953,7 @@ void            InitBags (
     MptrBags = (*AllocFuncBags)( initial_size, 1 );
     if ( MptrBags == 0 )
         (*AbortFuncBags)("cannot get storage for the initial workspace.");
-    EndBags = MptrBags + 1024*initial_size / sizeof(Bag*);
+    EndBags = MptrBags + 1024*(initial_size / sizeof(Bag*));
 
     /* 1/8th of the storage goes into the masterpointer area               */
     FreeMptrBags = (Bag)MptrBags;
@@ -1821,7 +1825,7 @@ again:
                   (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[HEADER_SIZE-1] );
                 
                 /* advance src                                             */
-                src += HEADER_SIZE + WORDS_BAG( *(UInt*)src >> 8 ) ;
+                src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1] ) ;
                 
               }
             
@@ -1837,7 +1841,7 @@ again:
 #endif
 
                 /* advance src                                             */
-                src += HEADER_SIZE + WORDS_BAG( *(UInt*)src >> 8 );
+                src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1]  );
 
             }
 
@@ -2107,7 +2111,7 @@ again:
             EndBags -= WORDS_BAG(512*1024L);
 
         /* if we want to increase the masterpointer area                   */
-        if ( (OldBags-MptrBags)-NrLiveBags < (EndBags-StopBags)/7 ) {
+        if ( (UInt)(OldBags-MptrBags)-NrLiveBags < (UInt)(EndBags-StopBags)/7 ) {
 
             /* this is how many new masterpointers we want                 */
             i = (EndBags-StopBags)/7 - ((OldBags-MptrBags)-NrLiveBags);
@@ -2292,19 +2296,19 @@ Bag BAG (
 UInt TNUM_BAG (
     Bag                 bag )
 {
-    return (*(*(bag)-2) & 0xFFL);
+    return (*(*(bag)-3) & 0xFFL);
 }
 
 const Char * TNAM_BAG (
     Bag                 bag )
 {
-    return InfoBags[ (*(*(bag)-2) & 0xFFL) ].name;
+    return InfoBags[ (*(*(bag)-3) & 0xFFL) ].name;
 }
 
 UInt SIZE_BAG (
     Bag                 bag )
 {
-    return (*(*(bag)-2) >> 8);
+    return (*(*(bag)-2));
 }
 
 Bag * PTR_BAG (

@@ -40,6 +40,7 @@ const char * Revision_funcs_c =
 #include        "funcs.h"               /* functions                       */
 #undef  INCLUDE_DECLARATION_PART
 
+#include        "read.h"                /* read expressions                */
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
 
@@ -113,6 +114,10 @@ UInt            ExecProccall0args (
     /* call the function                                                   */
     SET_BRK_CALL_TO( call );
     CALL_0ARGS( func );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -140,6 +145,10 @@ UInt            ExecProccall1args (
     /* call the function                                                   */
     SET_BRK_CALL_TO( call );
     CALL_1ARGS( func, arg1 );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -170,6 +179,10 @@ UInt            ExecProccall2args (
     SET_BRK_CALL_TO( call );
     CALL_2ARGS( func, arg1, arg2 );
 
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
@@ -201,6 +214,10 @@ UInt            ExecProccall3args (
     SET_BRK_CALL_TO( call );
     CALL_3ARGS( func, arg1, arg2, arg3 );
 
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
@@ -234,6 +251,10 @@ UInt            ExecProccall4args (
     SET_BRK_CALL_TO( call );
     CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
 
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
@@ -269,6 +290,10 @@ UInt            ExecProccall5args (
     SET_BRK_CALL_TO( call );
     CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
 
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
@@ -306,6 +331,10 @@ UInt            ExecProccall6args (
     SET_BRK_CALL_TO( call );
     CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
 
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
@@ -341,6 +370,10 @@ UInt            ExecProccallXargs (
     SET_BRK_CALL_TO( call );
     CALL_XARGS( func, args );
 
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
@@ -404,6 +437,10 @@ Obj             EvalFunccall0args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_0ARGS( func );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
@@ -435,6 +472,10 @@ Obj             EvalFunccall1args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_1ARGS( func, arg1 );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
@@ -468,6 +509,10 @@ Obj             EvalFunccall2args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_2ARGS( func, arg1, arg2 );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
@@ -503,6 +548,10 @@ Obj             EvalFunccall3args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_3ARGS( func, arg1, arg2, arg3 );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
@@ -540,6 +589,10 @@ Obj             EvalFunccall4args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
@@ -579,6 +632,10 @@ Obj             EvalFunccall5args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
@@ -620,6 +677,10 @@ Obj             EvalFunccall6args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
@@ -659,6 +720,10 @@ Obj             EvalFunccallXargs (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_XARGS( func, args );
+    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+				       READ() and the user quit from a break
+				       loop inside it */
+      ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",

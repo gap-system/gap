@@ -1,0 +1,50 @@
+@Name
+Extended table of marks library
+@Contact
+TB
+@Date
+1999/9/6
+@Time
+4
+@Need
+2
+@NeedA
+1
+@Math
+4
+@Prog
+3
+@Component
+Tables of Marks
+@Descr
+<P>
+Currently we cannot state that the library of Tables of Marks in GAP 4
+contains the Tables of Marks of all nonabelian simple groups until McL
+(page 100 in the ATLAS),
+but ``the only'' missing groups are L3(13), S4(7), U3(13), and several
+L2(q).
+It would be good if these tables could be added.
+As for the L2(q) case, the best solution would be a generic table of
+marks (along the lines of the description of the subgroups of PSL(2,q)
+for example in Huppert's book).
+</P>
+
+<P>
+Another candidate for the computation of the table of marks is the
+sporadic simple O'Nan group.
+As its maximal subgroups are comparatively small, this should be not
+too difficult with the methods developed by G&ouml;tz Pfeiffer and Thomas
+Merkwitz.
+(Already 9 or 10 years ago, the computation of possible permutation
+characters of the O'Nan group from the character table was surprisingly
+easy.)
+</P>
+
+<P>
+The project to extend the library of Tables of Marks would be a chance
+to translate the GAP 3 code for the interactive construction of tables of
+marks (written by G&ouml;tz and Thomas) to GAP 4.
+</P>
+@Manual
+@Ref
+@Rem

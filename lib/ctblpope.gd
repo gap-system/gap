@@ -33,7 +33,7 @@
 ##  permutation characters, using that such a class function $\pi$ must have
 ##  at least the following properties.
 ##  (For details, see~\cite{Isa76}, Theorem~5.18.)
-##  \beginlist
+##  \beginlist%ordered{a}
 ##  \item{(a)}
 ##      $\pi$ is a character of $G$,
 ##  \item{(b)}
@@ -87,13 +87,13 @@ Revision.ctblpope_gd :=
 
 #############################################################################
 ##
-#F  PermCharInfo( <tbl>, <permchars> )
+#F  PermCharInfo( <tbl>, <permchars>[, \"LaTeX\" ] )
+#F  PermCharInfo( <tbl>, <permchars>[, \"HTML\" ] )
 ##
 ##  Let <tbl> be the ordinary character table of the group $G$,
 ##  and `permchars' either the permutation character $(1_U)^G$,
 ##  for a subgroup $U$ of $G$, or a list of such permutation characters.
-##  `PermCharInfo' returns a record with components
-##
+##  `PermCharInfo' returns a record with the following components.
 ##  \beginitems
 ##  `contained': &
 ##    a list containing, for each character $\psi = (1_U)^G$ in <permchars>,
@@ -126,8 +126,13 @@ Revision.ctblpope_gd :=
 ##    of that degree, in the order in which they appear in `Irr( <tbl> )'.
 ##    A sequence of small letters (not necessarily distinct) after a single
 ##    number indicates a sum of irreducible constituents all of the same
-##    degree, an exponent of the form `<lett>^{<n>}' means the letter <lett>
+##    degree, an exponent <n> for the letter <lett> means that <lett>
 ##    is repeated <n> times.
+##    The default notation for exponentiation is `<lett>^{<n>}',
+##    this is also chosen if the optional third argument is the string
+##    `\"LaTeX\"';
+##    if the third argument is the string `\"HTML\"' then exponentiation is
+##    denoted by `<lett>\<sup><n>\<\/sup>'.
 ##  \enditems
 ##
 DeclareGlobalFunction( "PermCharInfo" );
@@ -308,8 +313,8 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  say.
 ##  \beginexample
 ##  gap> deg220:= PermChars( m11, 220 );
-##  [ Character( m11, [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ] ),
-##    Character( m11, [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ] ),
+##  [ Character( m11, [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ] ), 
+##    Character( m11, [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ] ), 
 ##    Character( m11, [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ) ]
 ##  \endexample
 ##
@@ -345,8 +350,8 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  characters.)
 ##  \beginexample
 ##  gap> PermChars( m11, rec( torso:= [ 220 ] ) );
-##  [ Character( m11, [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ] ),
-##    Character( m11, [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ),
+##  [ Character( m11, [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ] ), 
+##    Character( m11, [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ), 
 ##    Character( m11, [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ] ) ]
 ##  gap> PermChars( m11, rec( torso:= [ 220,,,,, 2 ] ) );
 ##  [ Character( m11, [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ) ]
@@ -359,7 +364,7 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  group $G$ of <tbl> and a possible permutation character $\pi$ of $G$,
 ##  respectively, such that $N$ is contained in the kernel of $\pi$.
 ##  In this case, `PermChars' returns the list of those possible permutation
-##  characters $\psi$ of <tbl> coinciding with `torso' whereever its values
+##  characters $\psi$ of <tbl> coinciding with `torso' wherever its values
 ##  are bound
 ##  and having the property that no irreducible constituent of $\psi-\pi$
 ##  has $N$ in its kernel.
@@ -368,7 +373,7 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  An interpretation of the computed characters is the following.
 ##  Suppose there exists a subgroup $V$ of $G$ such that $\pi = (1_V)^G$;
 ##  Then $N \leq V$, and if a computed character is of the form $(1_U)^G$
-##  for a s ubgroup $U$ of $G$ then $V = UN$.
+##  for a subgroup $U$ of $G$ then $V = UN$.
 ##  \beginexample
 ##  gap> s4:= CharacterTable( "Symmetric", 4 );;
 ##  gap> nsg:= ClassPositionsOfDerivedSubgroup( s4 );;
@@ -488,8 +493,9 @@ DeclareGlobalFunction( "PermBounds" );
 ##  this is useful if the multiplicities are expected to be small,
 ##  and if this is forced by high irreducible degrees.
 ##
-##  Upper bounds on the multiplicities of the constituents can be explicitly
-##  prescribed via a `maxmult' component in <arec>.
+##  A list of upper bounds on the multiplicities of the rational irreducibles
+##  characters can be explicitly prescribed as a `maxmult' component in
+##  <arec>.
 ##
 DeclareGlobalFunction( "PermComb" );
 
@@ -528,7 +534,7 @@ DeclareGlobalFunction( "PermCandidates" );
 ##  <tbl> with a generalization of the strategy using Gaussian elimination
 ##  (see~"PermCandidates").
 ##  These characters are all with the following properties.
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{1.}
 ##     Only the (necessarily rational) characters <chars> occur as
 ##     constituents,

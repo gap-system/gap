@@ -84,6 +84,11 @@ for j in lib grp tst pkg/example pkg/example/src pkg/example/doc pkg/example/gap
     addtext basic$RBVERSION ${DISTNAME}/${j}/*
 done
 
+addtext basic$RBVERSION ${DISTNAME}/etc/*.vim ${DISTNAME}/etc/emacs/* ${DISTNAME}/etc/xrmtcmd.c
+
+touch ${DISTNAME}/pkg/NOAUTO
+addtext basic$RBVERSION ${DISTNAME}/pkg/ALLPKG ${DISTNAME}/pkg/NOAUTO
+
 echo "Documentation -- TeX files"
 
 for j in ref tut ext prg new; do
@@ -262,10 +267,18 @@ for i in ${DISTNAME}/bin/gapw95.exe ${DISTNAME}/bin/cygwin1.dll; do
     addbin gappc$RBVERSION $i 
     addbin winbin$RBVERSION $i
 done
-for i in ${DISTNAME}/bin/gap.bat ${DISTNAME}/instwin.bat; do
-    addtext gappc$RBVERSION $i 
-    addtext winbin$RBVERSION $i
-done
+
+addtext gappc$RBVERSION ${DISTNAME}/bin/gap.bat
+addtext winbin$RBVERSION ${DISTNAME}/bin/gap.bat
+addbin gappc$RBVERSION ${DISTNAME}/bin/gap.pif
+addbin winbin$RBVERSION ${DISTNAME}/bin/gap.pif
+addbin gappc$RBVERSION ${DISTNAME}/bin/gapicon.bmp
+addbin winbin$RBVERSION ${DISTNAME}/bin/gapicon.bmp
+# instwin is obsolete now
+#for i in ${DISTNAME}/bin/gap.bat ${DISTNAME}/instwin.bat; do
+#    addtext gappc$RBVERSION $i 
+#    addtext winbin$RBVERSION $i
+#done
 
 	
 cp INSTALL.WIN ${DISTNAME}
@@ -319,7 +332,7 @@ done
 rm -f README*
 
 
-
+echo "Compressing tar files"
 gzip *.tar split/*.tar
 
 )

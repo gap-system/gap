@@ -1,6 +1,7 @@
 /****************************************************************************
 **
 *W  streams.h                   GAP source                       Frank Celler
+*W                                                  & Burkhard Hoefling (MAC)
 **
 *H  @(#)$Id$
 **

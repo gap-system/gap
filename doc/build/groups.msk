@@ -38,12 +38,14 @@ gap> Order(a*b);
 gap> Order( [ [ 1, 1 ], [ 0, 1 ] ] );
 infinity
 \endexample
+
+The next example may run into an infinite loop
+because the given matrix in fact has infinite order.
+
 \begintt
 gap> Order( [ [ 1, 1 ], [ 0, 1 ] ] * Indeterminate( Rationals ) );
 #I  Order: warning, order of <mat> might be infinite
 \endtt
-This last example might run into an infinite loop
-because the given matrix in fact has infinite order.
 
 \index{order! of a group}
 Since groups are domains, the recommended command to compute the order
@@ -246,7 +248,6 @@ permutation if we try it a few more times.
 
 \beginexample
 gap> words := [];;
-gap> SetInfoLevel( InfoFpGroup, 0 );
 gap> for i in [ 1 .. 10 ] do
 >   hom := GroupHomomorphismByImages( F, puzzle, gens, perms );
 >   word := PreImagesRepresentative( hom, (15,16) );
@@ -294,16 +295,16 @@ gap> Representative(c);
 gap> Size(c);
 6
 gap> AsList(c);
-[ (2,3,4), (1,4,2), (1,3,4,2), (1,3)(2,4), (2,4), (1,4,2,3) ]
+[ (2,3,4), (1,4,2), (1,3)(2,4), (2,4), (1,4,2,3), (1,3,4,2) ]
 \endexample
 
 \Declaration{RightCosets}
 \beginexample
 gap> RightCosets(g,u);
 [ RightCoset(Group( [ (1,2,3), (1,2) ] ),()), 
-  RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,2)(3,4)), 
   RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,3)(2,4)), 
-  RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,4)(2,3)) ]
+  RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,4)(2,3)), 
+  RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,2)(3,4)) ]
 \endexample
 
 \Declaration{CanonicalRightCosetElement}
@@ -325,7 +326,8 @@ cosets by inverting the representatives.
 
 \Declaration{RightTransversal}
 \beginexample
-gap> g:=Group((1,2,3,4),(1,2));;u:=Subgroup(g,[(1,2,3),(1,2)]);;
+gap> g:=Group((1,2,3,4),(1,2));;
+gap> u:=Subgroup(g,[(1,2,3),(1,2)]);;
 gap> rt:=RightTransversal(g,u);
 RightTransversal(Group([ (1,2,3,4), (1,2) ]),Group([ (1,2,3), (1,2) ]))
 gap> Length(rt);
@@ -334,14 +336,15 @@ gap> Position(rt,(1,2,3));
 fail
 \endexample
 
-(Note that the elements of a right transversal are not necessarily
+Note that the elements of a right transversal are not necessarily
 ``canonical'' in the sense of `CanonicalRightCosetElement'
-(see~"CanonicalRightCosetElement").
-The command
-\begintt
-List(RightTransversal(G,U),i->CanonicalCosetElement(U,i));
-\endtt
-would compute a list of such canonical coset representatives.)
+(see~"CanonicalRightCosetElement"), but we may compute a list of
+canonical coset representatives by calling that function.
+
+\beginexample
+gap> List(RightTransversal(g,u),i->CanonicalRightCosetElement(u,i));
+[ (), (2,3,4), (1,2,3,4), (3,4) ]
+\endexample
 
 The operation `PositionCanonical' is described in
 section~"PositionCanonical".
@@ -375,7 +378,7 @@ gap> RepresentativesContainedRightCosets(c);
 [ (2,3,4) ]
 \endexample
 
-\Declaration{DoubleCosets}
+\Declaration{DoubleCosets}!{operation}
 \beginexample
 gap> dc:=DoubleCosets(g,u,v);
 [ DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(),Group( [ (3,4) ] )), 
@@ -398,7 +401,7 @@ gap> dc:=DoubleCosetRepsAndSizes(g,u,v);
 \Section{Conjugacy Classes}
 
 \Declaration{ConjugacyClass}
-\Declaration{ConjugacyClasses}[grp]!{}
+\Declaration{ConjugacyClasses}[grp]!{attribute}
 \beginexample
 gap> g:=SymmetricGroup(4);;
 gap> cl:=ConjugacyClasses(g);
@@ -414,14 +417,14 @@ gap> Size(cl[2]);
 
 \Declaration{ConjugacyClassesByRandomSearch}
 \Declaration{ConjugacyClassesByOrbits}
-\begintt
+\beginexample
 gap> h:=Group((4,6)(5,7),(1,2,4)(3,6,5));;ConjugacyClasses(h:noaction);;time;
 190
 gap> h:=Group((4,6)(5,7),(1,2,4)(3,6,5));;ConjugacyClasses(h:random);;time;
 130
 gap> h:=Group((4,6)(5,7),(1,2,4)(3,6,5));;ConjugacyClasses(h:action);;time;
 70
-\endtt
+\endexample
 
 \Declaration{NrConjugacyClasses}
 \beginexample
@@ -522,7 +525,7 @@ gap> Size(last);
 \Declaration{DerivedSubgroup}
 \beginexample
 gap> DerivedSubgroup(g);
-Group([ (1,3,2), (2,4,3) ])
+Group([ (1,3,2), (1,4,3) ])
 \endexample
 
 \Declaration{CommutatorLength}
@@ -562,7 +565,7 @@ Group([  ])
 \Declaration{PerfectResiduum}
 \beginexample
 gap> PerfectResiduum(Group((1,2,3,4,5),(1,2)));
-Group([ (1,3,2), (1,4,3), (3,5,4) ])
+Group([ (1,3,2), (1,4,3), (2,4,5) ])
 \endexample
 
 \Declaration{RadicalGroup}
@@ -582,7 +585,7 @@ Group([ (1,4)(2,3), (1,2)(3,4) ])
 \Declaration{SupersolvableResiduum}
 \beginexample
 gap> SupersolvableResiduum(g);
-Group([ (1,3)(2,4), (1,4)(2,3) ])
+Group([ (1,2)(3,4), (1,4)(2,3) ])
 \endexample
 
 \Declaration{PRump}
@@ -603,7 +606,7 @@ Group([ (1,2), (3,4), (1,3)(2,4) ])
 With respect to the following {\GAP} functions,
 please note that by theorems of P.~Hall,
 a group $G$ is solvable if and only if one of the following conditions holds.
-\beginlist
+\beginlist%ordered
 \item{1.}
     For each prime $p$ dividing the order of $G$,
     there exists a $p$-complement (see~"SylowComplement").
@@ -693,6 +696,7 @@ to distinguish different meanings for different structures.
 \Declaration{IsCyclic}
 \Declaration{IsElementaryAbelian}
 \Declaration{IsNilpotentGroup}
+\Declaration{NilpotencyClassOfGroup}
 \Declaration{IsPerfectGroup}
 \Declaration{IsSolvableGroup}
 \Declaration{IsPolycyclicGroup}
@@ -701,16 +705,17 @@ to distinguish different meanings for different structures.
 
 \Declaration{IsSimpleGroup}
 \Declaration{IsomorphismTypeInfoFiniteSimpleGroup}
-\begintt
+\beginexample
 gap> IsomorphismTypeInfoFiniteSimpleGroup(Group((4,5)(6,7),(1,2,4)(3,5,6)));
-rec( series := "L", parameter := [ 2, 7 ], name:=
-  "A(1,7)=L(2,7)~B(1,7)=O(3,7)~C(1,7)=S(2,7)~2A(1,7)=U(2,7)~A(2,2)=L(3,2)")
-\endtt
+rec( series := "L", parameter := [ 2, 7 ], 
+  name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,7) = U(2\
+,7) ~ A(2,2) = L(3,2)" )
+\endexample
 
 \Declaration{IsFinitelyGeneratedGroup}
 \Declaration{IsSubsetLocallyFiniteGroup}
 
-\index{p-group}
+\atindex{p-group}{@$p$-group}
 \Declaration{IsPGroup}
 \Declaration{PrimePGroup}
 \Declaration{PClassPGroup}
@@ -723,7 +728,7 @@ gap> RankPGroup(h);
 2
 \endexample
 
-Note that the following following functions, although they are mathematical
+Note that the following functions, although they are mathematical
 properties, are not properties in the sense of {\GAP} (see~"Attributes" and
 "Properties"), as they depend on a parameter.
 
@@ -794,7 +799,7 @@ gap> ChiefSeries(g);
 \Declaration{SubnormalSeries}
 \beginexample
 gap> s:=SubnormalSeries(g,Group((1,2)(3,4)));
-[ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,4)(2,3) ]), 
+[ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
   Group([ (1,2)(3,4) ]) ]
 \endexample
 
@@ -806,15 +811,13 @@ gap> CompositionSeries(g);
 [ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
   Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
   Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) ]
-\endexample
-\begintt
 gap> DisplayCompositionSeries(Group((1,2,3,4,5,6,7),(1,2)));
 G (6 gens, size 5040)
  || Z(2)
 S (5 gens, size 2520)
  || A(7)
 1 (0 gens, size 1)
-\endtt
+\endexample
 
 \Declaration{DerivedSeriesOfGroup}
 \Declaration{DerivedLength}
@@ -922,39 +925,41 @@ gap> cl:=ConjugacyClassSubgroups(g,Subgroup(g,[(1,2)]));
 Group( [ (1,2) ] )^G
 gap> Size(cl);
 6
-gap> cl[4];
+gap> ClassElementLattice(cl,4);
 Group([ (2,3) ])
 \endexample
 
 \Declaration{IsConjugacyClassSubgroupsRep}
 
 \Declaration{ConjugacyClassesSubgroups}
-\begintt
+\beginexample
 gap> ConjugacyClassesSubgroups(g);
-[Group(())^G,Group([(1,4)(2,3)])^G,Group([(1,4)(2,3),(1,3)(2,4)])^G,
-["omitted"],
-Group([(1,2)(3,4),(1,2)])^G,Group([(1,2)(3,4),(1,3,2,4)])^G]
-\endtt
+[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (1,2) ] )^G, 
+  Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
+  Group( [ (1,2)(3,4), (1,2) ] )^G, Group( [ (1,2)(3,4), (1,4,2,3) ] )^G, 
+  Group( [ (3,4), (2,4,3) ] )^G, Group( [ (1,3)(2,4), (1,4)(2,3), (1,2) ] )^G,
+  Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3) ] )^G, 
+  Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,2) ] )^G ]
+\endexample
 
 \Declaration{ConjugacyClassesMaximalSubgroups}
 \beginexample
 gap> ConjugacyClassesMaximalSubgroups(g);
 [ AlternatingGroup( [ 1 .. 4 ] )^G, Group( [ (1,2,3), (1,2) ] )^G, 
-  Group( [ (1,2), (3,4), (1,3)(2,4) ] )^G, 
-  Group( [ (3,4), (2,4,3), (1,2)(3,4) ] )^G ]
+  Group( [ (1,2), (3,4), (1,3)(2,4) ] )^G ]
 \endexample
 
 \Declaration{MaximalSubgroupClassReps}
 \beginexample
 gap> MaximalSubgroupClassReps(g);
 [ Alt( [ 1 .. 4 ] ), Group([ (1,2,3), (1,2) ]), 
-  Group([ (1,2), (3,4), (1,3)(2,4) ]), Group([ (3,4), (2,4,3), (1,2)(3,4) ]) ]
+  Group([ (1,2), (3,4), (1,3)(2,4) ]) ]
 \endexample
 
 \Declaration{MaximalSubgroups}
 \beginexample
 gap> MaximalSubgroups(Group((1,2,3),(1,2)));
-[ Group([ (1,2,3) ]), Group([ (2,3) ]), Group([ (1,3) ]), Group([ (1,2) ]) ]
+[ Group([ (1,2,3) ]), Group([ (2,3) ]), Group([ (1,2) ]), Group([ (1,3) ]) ]
 \endexample
 
 \Declaration{NormalSubgroups}
@@ -979,33 +984,41 @@ gap> MaximalNormalSubgroups( g );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Subgroup Lattice}
 
-The share package `XGAP' permits a graphical display of the lattice of
-subgroups in a nice way.
+The {\GAP} package \package{XGAP} permits a graphical display of the lattice
+of subgroups in a nice way.
 
 \Declaration{LatticeSubgroups}
 \beginexample
 gap> g:=SymmetricGroup(4);;
 gap> l:=LatticeSubgroups(g);
 <subgroup lattice of Sym( [ 1 .. 4 ] ), 11 classes, 30 subgroups>
+gap> ConjugacyClassesSubgroups(l);
+[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (1,2) ] )^G, 
+  Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
+  Group( [ (1,2)(3,4), (1,2) ] )^G, Group( [ (1,2)(3,4), (1,4,2,3) ] )^G, 
+  Group( [ (3,4), (2,4,3) ] )^G, Group( [ (1,3)(2,4), (1,4)(2,3), (1,2) ] )^G,
+  Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3) ] )^G, 
+  Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,2) ] )^G ]
 \endexample
+\Declaration{ClassElementLattice}
 
 \Declaration{MaximalSubgroupsLattice}
 \beginexample
 gap> MaximalSubgroupsLattice(l);
 [ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], 
-  [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 3, 1 ], [ 3, 5 ], [ 2, 3 ] ], 
+  [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ], 
   [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 4 ], [ 3, 5 ], [ 3, 6 ] ], 
   [ [ 7, 1 ], [ 6, 1 ], [ 5, 1 ] ], 
   [ [ 5, 1 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
   [ [ 10, 1 ], [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 8, 1 ], [ 8, 2 ], [ 8, 3 ], 
       [ 8, 4 ] ] ]
 gap> last[6];
-[ [ 3, 1 ], [ 3, 5 ], [ 2, 3 ] ]
+[ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ]
 gap> u1:=Representative(ConjugacyClassesSubgroups(l)[6]);
 Group([ (1,2)(3,4), (1,2) ])
-gap> u2:=ConjugacyClassesSubgroups(l)[3][1];;
-gap> u3:=ConjugacyClassesSubgroups(l)[3][5];;
-gap> u4:=ConjugacyClassesSubgroups(l)[2][3];;
+gap> u2:=ClassElementLattice(ConjugacyClassesSubgroups(l)[3],1);;
+gap> u3:=ClassElementLattice(ConjugacyClassesSubgroups(l)[3],6);;
+gap> u4:=ClassElementLattice(ConjugacyClassesSubgroups(l)[2],3);;
 gap> IsSubgroup(u1,u2);IsSubgroup(u1,u3);IsSubgroup(u1,u4);
 true
 true
@@ -1017,15 +1030,15 @@ true
 gap> MinimalSupergroupsLattice(l);
 [ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
       [ 3, 5 ], [ 3, 6 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
-  [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], [ [ 6, 1 ], [ 8, 3 ], [ 8, 4 ] ], 
+  [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], [ [ 6, 1 ], [ 8, 2 ], [ 8, 3 ] ], 
   [ [ 8, 1 ], [ 10, 1 ] ], [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ], 
   [ [ 9, 1 ] ], [ [ 9, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], 
   [  ] ]
 gap> last[3];
-[ [ 6, 1 ], [ 8, 3 ], [ 8, 4 ] ]
-gap> u5:=ConjugacyClassesSubgroups(l)[8][3];
+[ [ 6, 1 ], [ 8, 2 ], [ 8, 3 ] ]
+gap> u5:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],2);
 Group([ (1,2), (1,4,2) ])
-gap> u6:=ConjugacyClassesSubgroups(l)[8][4];
+gap> u6:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],3);
 Group([ (1,2), (1,2,3) ])
 gap> IsSubgroup(u5,u2);
 true
@@ -1034,30 +1047,28 @@ true
 \endexample
 
 \Declaration{RepresentativesPerfectSubgroups}
-\begintt
+\beginexample
 gap> m11:=TransitiveGroup(11,6);
 M(11)
 gap> r:=RepresentativesPerfectSubgroups(m11);
-[ Group([(2,7)(3,8)(5,10)(6,9),(1,6,3)(2,8,10)(7,9,11)]),
-  Group([(2,7)(3,8)(5,10)(6,9),(1,4,3)(2,11,6)(5,10,8)]),
-  Group([(3,8)(4,9)(6,11)(7,10),(2,9,3)(4,5,10)(6,7,8),
-         (2,11,8)(3,9,5)(4,7,6)]),
-  Group([(2,7)(3,8)(5,10)(6,9),(1,6,11)(2,9,8)(4,7,5)]),
-  M(11), Group(()) ]
+[ Group([ (1,6,8)(3,5,11)(7,9,10), (1,7)(4,9)(5,10)(8,11) ]), 
+  Group([ (1,5,7)(2,9,11)(3,10,6), (1,7)(4,9)(5,10)(8,11) ]), 
+  Group([ (1,11)(3,8)(5,6)(9,10), (1,10,7,5)(4,11,9,8) ]), 
+  Group([ (1,10,11)(2,7,6)(3,8,9), (1,7)(4,9)(5,10)(8,11) ]), M(11), 
+  Group(()) ]
 gap> List(r,Size);
 [ 60, 60, 360, 660, 7920, 1 ]
-\endtt
+\endexample
 
 \Declaration{ConjugacyClassesPerfectSubgroups}
-\begintt
+\beginexample
 gap> ConjugacyClassesPerfectSubgroups(m11);
-[ Group( [ (1,7)(3,6)(4,8)(9,11), ( 1,10,6)( 2,7,11)( 3,9,4) ] )^G,
-  Group( [ (1,7)(3,6)(4,8)(9,11), (1,7,3)(2,8,11)(5,6,10)] )^G,
-  Group( [ (2,6)(3,7)(4,10)(8,9), (1,3,9)(2,8,4)(6,7,11),
-           (1,10,8)(2,4,7)(3,11,9) ] )^G,
-  Group( [ (1,7)(3,6)(4,8)(9,11), ( 1,11,8)(2,5,4)(3,10,9) ] )^G,
-    M(11)^G, Group( () )^G ]
-\endtt
+[ Group( [ ( 1, 6, 8)( 3, 5,11)( 7, 9,10), ( 1, 7)( 4, 9)( 5,10)( 8,11) ] )^G,
+  Group( [ ( 1, 5, 7)( 2, 9,11)( 3,10, 6), ( 1, 7)( 4, 9)( 5,10)( 8,11) ] )^G,
+  Group( [ ( 1,11)( 3, 8)( 5, 6)( 9,10), ( 1,10, 7, 5)( 4,11, 9, 8) ] )^G, 
+  Group( [ ( 1,10,11)( 2, 7, 6)( 3, 8, 9), ( 1, 7)( 4, 9)( 5,10)( 8,11) ] )^G,
+  M(11)^G, Group( () )^G ]
+\endexample
 
 \Declaration{Zuppos}
 
@@ -1308,7 +1319,8 @@ function `OCOneCocycles'.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Schur Covers and Multipliers}
 
-\index{Darstellungsgruppe}
+\atindex{Darstellungsgruppe!see EpimorphismSchurCover}%
+{@Darstellungsgruppe!see \noexpand`EpimorphismSchurCover'}
 
 \Declaration{EpimorphismSchurCover}
 \Declaration{SchurCover}
@@ -1333,9 +1345,14 @@ gap> AbelianInvariantsMultiplier(g);
 [ 2 ]
 gap> AbelianInvariantsMultiplier(MathieuGroup(22));
 [ 4, 3 ]
+\endexample
+
+Note that the following example will take some time.
+
+\begintt
 gap> AbelianInvariantsMultiplier(PSU(6,2));
 [ 2, 2, 3 ]
-\endexample
+\endtt
 
 At the moment, this operation will not give any information about how to
 extend the multiplier to a Schur Cover.

@@ -553,7 +553,6 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphismElmColl",
 
 #############################################################################
 ##
-
 #F  GroupSeriesMethodByNiceMonomorphism( <oper>, <par> )
 ##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphism", function( oper, par )
@@ -693,6 +692,5 @@ end );
 
 #############################################################################
 ##
-
 #E  grpnice.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

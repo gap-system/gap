@@ -33,17 +33,6 @@ DeclareRepresentation( "IsModuloTailPcgsRep", IsModuloPcgsRep,
 
 #############################################################################
 ##
-#R  IsNumeratorParentForExponentsRep(<obj>)
-##
-##  modulo pcgs in this representation can use the numerator parent for
-##  computing exponents
-DeclareRepresentation( "IsNumeratorParentForExponentsRep",
-    IsModuloPcgsRep,
-    [ "moduloDepths", "moduloMap", "numerator", "denominator",
-      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
-
-#############################################################################
-##
 #R  IsSubsetInducedNumeratorModuloTailPcgsRep(<obj>)
 ##
 DeclareRepresentation( "IsSubsetInducedNumeratorModuloTailPcgsRep",
@@ -56,6 +45,17 @@ DeclareRepresentation( "IsSubsetInducedNumeratorModuloTailPcgsRep",
 #R  IsModuloTailPcgsByListRep(<obj>)
 ##
 DeclareRepresentation( "IsModuloTailPcgsByListRep", IsModuloTailPcgsRep,
+    [ "moduloDepths", "moduloMap", "numerator", "denominator",
+      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
+
+#############################################################################
+##
+#R  IsNumeratorParentForExponentsRep(<obj>)
+##
+##  modulo pcgs in this representation can use the numerator parent for
+##  computing exponents
+DeclareRepresentation( "IsNumeratorParentForExponentsRep",
+    IsModuloPcgsRep,
     [ "moduloDepths", "moduloMap", "numerator", "denominator",
       "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
 
@@ -136,7 +136,7 @@ end );
 ##
 InstallGlobalFunction( ModuloTailPcgsByList,
 function( home, factor, wm )
-local   wd,  filter,  new,  i;
+local   wd,  filter,  new,  i,nupa;
 
   if IsSubset(home,factor) then
     wd:=List(factor,i->Position(home,i));
@@ -156,10 +156,12 @@ local   wd,  filter,  new,  i;
     # the depths are all different. We can get the exponetnts from the
     # parent pcgs
     filter:=filter and IsNumeratorParentForExponentsRep;
+    nupa:=true;
   fi;
 
-  if HasIsParentPcgsFamilyPcgs(home) 
-      and IsParentPcgsFamilyPcgs(home) then
+  # this can be more messy -- do not use
+  if HasIsFamilyPcgs(home) 
+      and IsFamilyPcgs(home) then
     filter:=filter and IsNumeratorParentPcgsFamilyPcgs;
   fi;
 
@@ -827,62 +829,6 @@ end );
 
 #############################################################################
 ##
-#M  ExponentsOfPcElement( <subset-induced,modulo-tail-pcgs>, <elm> )
-##
-InstallOtherMethod( ExponentsOfPcElement,
-    "subset induced pcgs modulo tail-pcgs", IsCollsElms,
-    [ IsModuloPcgs and IsModuloTailPcgsRep
-      and IsNumeratorParentForExponentsRep, IsObject ], 0,
-function( pcgs, elm )
-    return
-      ExponentsOfPcElement(pcgs!.numeratorParent,elm,pcgs!.depthsInParent);
-end );
-
-#############################################################################
-##
-#M  ExponentsOfPcElement( <subset-induced,modulo-tail-pcgs>,<elm>,<subrange> )
-##
-InstallOtherMethod( ExponentsOfPcElement,
-    "subset induced pcgs modulo tail-pcgs, subrange",
-    IsCollsElmsX,
-    [ IsModuloPcgs and IsModuloTailPcgsRep
-      and IsNumeratorParentForExponentsRep, IsObject,IsList ], 0,
-function( pcgs, elm, range )
-    return
-      ExponentsOfPcElement(pcgs!.numeratorParent,elm,pcgs!.depthsInParent{range});
-end );
-
-#############################################################################
-##
-#M  ExponentsOfRelativePower( <subset-induced,modulo-tail-pcgs>, <> )
-##
-InstallOtherMethod( ExponentsOfRelativePower,
-    "subset induced pcgs modulo tail-pcgs", true,
-    [ IsModuloPcgs and IsModuloTailPcgsRep
-      and IsNumeratorParentForExponentsRep, IsPosInt ], 0,
-function( pcgs, ind )
-  return ExponentsOfRelativePower(ParentPcgs(pcgs!.numeratorParent),
-    pcgs!.depthsInParent[ind]) # depth of the element in the parent
-                                {pcgs!.depthsInParent};
-end );
-
-#############################################################################
-##
-#M  ExponentsOfConjugate( <subset-induced,modulo-tail-pcgs>, <> )
-##
-InstallOtherMethod( ExponentsOfConjugate,
-    "subset induced pcgs modulo tail-pcgs", true,
-    [ IsModuloPcgs and IsModuloTailPcgsRep
-      and IsNumeratorParentForExponentsRep, IsPosInt,IsPosInt ], 0,
-function( pcgs, i,j )
-  return ExponentsOfConjugate(ParentPcgs(pcgs!.numeratorParent),
-    pcgs!.depthsInParent[i], # depth of the element in the parent
-    pcgs!.depthsInParent[j]) # depth of the element in the parent
-                                {pcgs!.depthsInParent};
-end );
-
-#############################################################################
-##
 #M  ExponentsConjugateLayer( <mpcgs>,<elm>,<e> )
 ##
 InstallMethod( ExponentsConjugateLayer,"default: compute brute force",
@@ -891,7 +837,6 @@ InstallMethod( ExponentsConjugateLayer,"default: compute brute force",
 function(m,elm,e)
   return ExponentsOfPcElement(m,elm^e);
 end);
-
 
 #############################################################################
 ##
@@ -984,6 +929,139 @@ local home;
   G:=InducedPcgs(home,G);
   return G mod InducedPcgs(home,H);
 end);
+
+#############################################################################
+##
+#M  PcElementByExponentsNC( <family pcgs modulo>, <list> )
+##
+InstallMethod( PcElementByExponentsNC,
+    "modulo subset induced wrt family pcgs", true,
+    [ IsModuloPcgs and
+      IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
+      and IsNumeratorParentPcgsFamilyPcgs,
+      IsRowVector and IsCyclotomicCollection ], 0,
+function( pcgs, list )
+local exp;
+  exp:=ShallowCopy(pcgs!.parentZeroVector);
+  exp{pcgs!.depthsInParent}:=list;
+  return ObjByVector(TypeObj(OneOfPcgs(pcgs)),exp);
+end);
+
+InstallOtherMethod( PcElementByExponentsNC,
+    "modulo subset induced wrt family pcgs,index", true,
+    [ IsModuloPcgs and 
+      IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
+      and IsNumeratorParentPcgsFamilyPcgs,
+      IsRowVector and IsCyclotomicCollection,
+      IsRowVector and IsCyclotomicCollection ], 0,
+function( pcgs,ind, list )
+local exp;
+  #Assert(1,ForAll(list,i->i>=0));
+  exp:=ShallowCopy(pcgs!.parentZeroVector);
+  exp{pcgs!.depthsInParent{ind}}:=list;
+  return ObjByVector(TypeObj(OneOfPcgs(pcgs)),exp);
+end);
+
+#############################################################################
+##
+#M  PcElementByExponentsNC( <family pcgs modulo>, <list> )
+##
+InstallMethod( PcElementByExponentsNC,
+    "modulo subset induced wrt family pcgs, FFE", true,
+    [ IsModuloPcgs and 
+      IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
+      and IsNumeratorParentPcgsFamilyPcgs,
+      IsRowVector and IsFFECollection ], 0,
+function( pcgs, list )
+local exp;
+  list:=IntVecFFE(list);
+  exp:=ShallowCopy(pcgs!.parentZeroVector);
+  exp{pcgs!.depthsInParent}:=list;
+  return ObjByVector(TypeObj(OneOfPcgs(pcgs)),exp);
+end);
+
+InstallOtherMethod( PcElementByExponentsNC,
+    "modulo subset induced wrt family pcgs, FFE, index", true,
+    [ IsModuloPcgs and 
+      IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
+      and IsNumeratorParentPcgsFamilyPcgs,
+      IsRowVector and IsCyclotomicCollection,
+      IsRowVector and IsFFECollection ], 0,
+function( pcgs,ind, list )
+local exp;
+  list:=IntVecFFE(list);
+  exp:=ShallowCopy(pcgs!.parentZeroVector);
+  exp{pcgs!.depthsInParent{ind}}:=list;
+  return ObjByVector(TypeObj(OneOfPcgs(pcgs)),exp);
+end);
+
+InstallMethod( ExponentsConjugateLayer,"subset induced modulo pcgs",
+  IsCollsElmsElms,
+  [ IsModuloPcgs and 
+    IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
+    and IsNumeratorParentPcgsFamilyPcgs,
+  IsMultiplicativeElementWithInverse,IsMultiplicativeElementWithInverse],0,
+function(m,e,c)
+  return DoExponentsConjLayerFampcgs(m!.numeratorParent,m,e,c);
+end);
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <subset-induced,modulo-tail-pcgs>,<elm>,<subrange> )
+##
+InstallOtherMethod( ExponentsOfPcElement,
+    "subset induced pcgs modulo tail-pcgs, subrange",
+    IsCollsElmsX,
+    [ IsModuloPcgs and IsModuloTailPcgsRep
+      and IsNumeratorParentForExponentsRep, IsObject,IsList ], 0,
+function( pcgs, elm, range )
+    return
+      ExponentsOfPcElement(pcgs!.numeratorParent,elm,pcgs!.depthsInParent{range});
+end );
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <subset-induced,modulo-tail-pcgs>, <elm> )
+##
+InstallOtherMethod( ExponentsOfPcElement,
+    "subset induced pcgs modulo tail-pcgs", IsCollsElms,
+    [ IsModuloPcgs and IsModuloTailPcgsRep
+      and IsNumeratorParentForExponentsRep, IsObject ], 0,
+function( pcgs, elm )
+    return
+      ExponentsOfPcElement(pcgs!.numeratorParent,elm,pcgs!.depthsInParent);
+end );
+
+#############################################################################
+##
+#M  ExponentsOfConjugate( <subset-induced,modulo-tail-pcgs>, <> )
+##
+InstallOtherMethod( ExponentsOfConjugate,
+    "subset induced pcgs modulo tail-pcgs", true,
+    [ IsModuloPcgs and IsModuloTailPcgsRep
+      and IsNumeratorParentForExponentsRep, IsPosInt,IsPosInt ], 0,
+function( pcgs, i,j )
+  return ExponentsOfConjugate(ParentPcgs(pcgs!.numeratorParent),
+    pcgs!.depthsInParent[i], # depth of the element in the parent
+    pcgs!.depthsInParent[j]) # depth of the element in the parent
+                                {pcgs!.depthsInParent};
+end );
+
+#############################################################################
+##
+#M  ExponentsOfRelativePower( <subset-induced,modulo-tail-pcgs>, <> )
+##
+InstallOtherMethod( ExponentsOfRelativePower,
+    "subset induced pcgs modulo tail-pcgs", true,
+    [ IsModuloPcgs and IsModuloTailPcgsRep
+      and IsNumeratorParentForExponentsRep, IsPosInt ], 0,
+function( pcgs, ind )
+  return ExponentsOfRelativePower(ParentPcgs(pcgs!.numeratorParent),
+    pcgs!.depthsInParent[ind]) # depth of the element in the parent
+                                {pcgs!.depthsInParent};
+end );
+
+
 
 #############################################################################
 ##

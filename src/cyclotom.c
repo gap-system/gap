@@ -329,11 +329,12 @@ Int             LtCyc (
     UInt                i;              /* loop variable                   */
 
     /* compare the order of both fields                                    */
-    if ( NOF_CYC(opL) != NOF_CYC(opR) )
+    if ( NOF_CYC(opL) != NOF_CYC(opR) ) {
         if ( INT_INTOBJ( NOF_CYC(opL) ) < INT_INTOBJ( NOF_CYC(opR) ) )
             return 1L;
         else
             return 0L;
+    }
 
     /* compare the cyclotomics termwise                                    */
     lel = SIZE_CYC(opL);
@@ -2042,9 +2043,13 @@ static Int InitKernel (
 
     /* install the unary arithmetic methods                                */
     ZeroFuncs[ T_CYC ] = ZeroCyc;
+    ZeroMutFuncs[ T_CYC ] = ZeroCyc;
     AInvFuncs[ T_CYC ] = AInvCyc;
+    AInvMutFuncs[ T_CYC ] = AInvCyc;
     OneFuncs [ T_CYC ] = OneCyc;
+    OneMutFuncs [ T_CYC ] = OneCyc;
     InvFuncs [ T_CYC ] = InvCyc;
+    InvMutFuncs [ T_CYC ] = InvCyc;
 
     /* install the arithmetic methods                                      */
     SumFuncs[  T_CYC    ][ T_CYC    ] = SumCyc;

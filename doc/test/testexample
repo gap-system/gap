@@ -11,5 +11,5 @@ else
       gapopts="$2"
       quiet=0
 fi
-../../bin/gap.sh -b -T $gapopts <in > /dev/null
+../../bin/gap.sh -b -r -T $gapopts <in > /dev/null
 awk -f parseoutput.awk -v quiet=$quiet gaout 

@@ -1,0 +1,30 @@
+@Name
+Windows Version
+@Contact
+GAP
+@Date
+2001/9/24
+@Time
+3
+@Need
+5
+@NeedA
+1
+@Math
+0
+@Prog
+5
+@Component
+Kernel
+@Descr
+<P>
+Provide a standard look-and-feel surface for the windows version, if
+possible incorporating the XGAP features.
+</P>
+
+<P>
+Provide a standard Windows installer.
+</P>
+@Ref
+@Rem
+The WISE uninstaller has a free license for open-source projects

@@ -1144,17 +1144,6 @@ InstallGlobalFunction( PermComb, function( tbl, arec )
       mindeg:= [1];
       Append(mindeg, minList(point));
 
-   elif IsBound( arec.maxmult ) then
-
-      # Explicit bounds for the maximal multiplicities are prescribed.
-      maxdeg:= arec.maxmult;
-      maxdeg:= List( [ 1 .. Length( xdegrees ) ],
-                   i -> Minimum( xdegrees[i], maxdeg[i],
-                                 QuoInt( arec.degree - 1, xdegrees[i] ) ) );
-      maxdeg[1]:= 1;
-      mindeg:= List( X, x -> 0 );
-      mindeg[1]:= 1;
-
    else
 
       # The maximal multiplicity of $\psi$ in $\pi$ is bounded
@@ -1166,6 +1155,15 @@ InstallGlobalFunction( PermComb, function( tbl, arec )
       mindeg:= List( X, x -> 0 );
       mindeg[1]:= 1;
 
+   fi;
+
+   # Explicit upper bounds for the maximal multiplicities are prescribed.
+   if IsBound( arec.maxmult ) then
+      if Length( maxdeg ) <> Length( arec.maxmult ) then
+        Error( "<arec>.maxmult corresponds to the rat. irred. characters" );
+      fi;
+      maxdeg:= List( [ 1 .. Length( maxdeg ) ],
+                   i -> Minimum( maxdeg[i], arec.maxmult[i] ) );
    fi;
 
    # `mindeg' prescribes a constituent.
@@ -1216,9 +1214,9 @@ InstallGlobalFunction( PermCandidates,
     tbl_size:= Size( tbl );
 
     if all = true then
-      ratchars:= characters;
+      ratchars:= List( characters, ValuesOfClassFunction );
     else
-      ratchars:= RationalizedMat( Irr( tbl ) );
+      ratchars:= RationalizedMat( List( Irr( tbl ), ValuesOfClassFunction ) );
     fi;
 
     # We know that `genchar' is a generalized character,
@@ -2505,16 +2503,37 @@ end );
 
 #############################################################################
 ##
-#F  PermCharInfo( <tbl>, <permchars> )
+#F  PermCharInfo( <tbl>, <permchars>[, \"LaTeX\" ] )
+#F  PermCharInfo( <tbl>, <permchars>[, \"HTML\" ] )
 ##
-InstallGlobalFunction( PermCharInfo, function( tbl, permchars )
+InstallGlobalFunction( PermCharInfo, function( arg )
 
-    local tbl_centralizers,   # attribute of `tbl'
+    local tbl,                # character table, first argument
+          permchars,          # list of characters, second argument
+          supopen,            # opening tag for exponentiation
+          supclose,           # closing tag for exponentiation
+          tbl_centralizers,   # attribute of `tbl'
           tbl_size,           # attribute of `tbl'
           tbl_irreducibles,   # attribute of `tbl'
           tbl_classes,        # attribute of `tbl'
           i, j, k, order, cont, bound, alp, degreeset, irreds, chi,
           ATLAS, ATL, error, scprs, cont1, bound1, char, chars;
+
+    if   1 < Length( arg ) and Length( arg ) < 4
+                           and IsNearlyCharacterTable( arg[1] )
+                           and IsList( arg[2] ) then
+      tbl:= arg[1];
+      permchars:= arg[2];
+      if IsBound( arg[3] ) and arg[3] = "HTML" then
+        supopen  := "<sup>";
+        supclose := "</sup>";
+      else
+        supopen  := "^{";
+        supclose := "}";
+      fi;
+    else
+      Error( "usage: PermCharInfo( <tbl>, <permchars>[, \"HTML\"] )" );
+    fi;
 
     cont  := [];
     bound := [];
@@ -2591,8 +2610,8 @@ InstallGlobalFunction( PermCharInfo, function( tbl, permchars )
               elif scprs[j] = 3 then
                 ATL:= Concatenation( ATL, alp[j], alp[j], alp[j] );
               elif scprs[j] > 3 then
-                ATL:= Concatenation( ATL, alp[j], "^{",
-                                           String( scprs[j] ), "}" );
+                ATL:= Concatenation( ATL, alp[j], supopen,
+                                           String( scprs[j] ), supclose );
               fi;
             od;
           fi;

@@ -657,7 +657,7 @@ UInt            completion_gvar (
 Obj FuncIDENTS_GVAR (
     Obj                 self )
 {
-    extern Obj          NameGVars;
+    /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i;
 

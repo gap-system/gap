@@ -1,0 +1,35 @@
+@Name
+Integral Basis
+@Contact
+AH
+@Date
+2001/9/24
+@Time
+3
+@Need
+2
+@NeedA
+2
+@Math
+3
+@Prog
+3
+@Component
+Number Theory
+@Descr
+Compute an integral basis and the discriminant of a ring of algebraic
+numbers.
+
+<P>
+Round2 and Round4 are the obvious choices
+@Ref
+<UL>
+<LI>
+H. Cohen, {\it A course in computational algebraic number theory},
+Springer, Berlin, 1993; MR 94i:11105 
+<LI>
+M. Pohst\ and\ H. Zassenhaus, {\it Algorithmic algebraic number theory},
+Cambridge Univ. Press, Cambridge, 1989; MR 92b:11074 
+</UL>
+@Rem
+The `polycyclic' package uses an interface to KANT for this purpose.

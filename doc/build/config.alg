@@ -1,4 +1,4 @@
-@msfiles = ("algebra","alglie","mgmring");
+@msfiles = ("algebra","algfp","alglie","mgmring");
 @gdfiles = ("algebra","alghom","alglie","object","liefam","mgmring","algrep",
             "lierep");
 DIR = "../ref";

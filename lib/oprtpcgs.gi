@@ -17,6 +17,7 @@ local   orb,             # orbit
 	S, rel,   # stabilizer and induced pcgs
 	img,  pos,       # image of <pnt> and its position in <orb>
 	stb,             # stabilizing element, a word in <pcgs>
+	depths,          # depths of stabilizer generators
 	i, ii, j, k;     # loop variables
 
   pnt:=Immutable(pnt);
@@ -26,6 +27,7 @@ local   orb,             # orbit
   len := ListWithIdenticalEntries( Length( pcgs ) + 1, 0 );
   len[ Length( len ) ] := 1;
   S := [  ];
+  depths:=[];
   rel := [  ];
   for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
     img := act( pnt, acts[ i ] );
@@ -67,97 +69,36 @@ local   orb,             # orbit
 	pos := ( pos - 1 ) mod len[ ii ] + 1;
       od;
       Add( S, LinearCombinationPcgs( pcgs, stb ) );
+      Add(depths,i);
       Add( rel, RelativeOrders( pcgs )[ i ] );
     fi;
     len[ i ] := Length( orb );
 
   od;
   return rec( orbit := orb, length := len, stabpcs := Reversed( S ),
+	      depths:=Reversed(depths),
 	      relords := Reversed( rel ),dictionary:=d );
 end);
 
 InstallGlobalFunction(Pcgs_OrbitStabilizer,function(pcgs,D,pnt,acts,act)
-  local pcs, new;    
+  local pcs, new,dep; 
   pcs := Pcs_OrbitStabilizer( pcgs, D,pnt, acts, act );
-  new := InducedPcgsByPcSequenceNC( ParentPcgs(pcgs), pcs.stabpcs );
+  dep:=pcs.depths;
+  if not IsIdenticalObj(pcgs,ParentPcgs(pcgs)) then
+    if IsBound(pcgs!.depthsInParent) then
+      dep:=pcgs!.depthsInParent{dep};
+      new:=InducedPcgsByPcSequenceNC(ParentPcgs(pcgs),pcs.stabpcs,dep);
+    else
+      # cannot translate depths to parent without calling `depth'.
+      new:=InducedPcgsByPcSequenceNC(ParentPcgs(pcgs),pcs.stabpcs);
+    fi;
+  else
+    new:=InducedPcgsByPcSequenceNC(ParentPcgs(pcgs),pcs.stabpcs,dep);
+  fi;
   SetRelativeOrders( new, pcs.relords );
   return rec( orbit := pcs.orbit, stabpcgs := new, lengths:=pcs.length,
               dictionary:=pcs.dictionary);
 end);
-
-# this function now becomes obsolete with dictionaries.
-#  InstallGlobalFunction(Pcgs_OrbitStabilizer_Blist,
-#  function(pcgs,dom,blist,pnt,acts,act)
-#  local   orb,             # orbit
-#          orpos,		 # position in orbit
-#  	bpos,		 # blist position
-#  	len,             # lengths of orbit before each extension
-#  	S, rel,   # stabilizer and induced pcgs
-#  	img,  pos,       # image of <pnt> and its position in <orb>
-#  	stb,             # stabilizing element, a word in <pcgs>
-#  	new,		 # new induced pcgs
-#  	i, ii, j, k;     # loop variables
-#  
-#    orb := [ pnt ];
-#    bpos:=PositionCanonical(dom,pnt);
-#    orpos:=[];
-#    orpos[bpos]:=1;
-#    blist[bpos]:=true;
-#    len := ListWithIdenticalEntries( Length( pcgs ) + 1, 0 );
-#    len[ Length( len ) ] := 1;
-#    S := [  ];
-#    rel := [  ];
-#    for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
-#      img := act( pnt, acts[ i ] );
-#  
-#      bpos:=PositionCanonical(dom,img);
-#      if not blist[bpos] then
-#        blist[bpos]:=true;
-#        
-#        # The current generator moves the orbit as a block.
-#        Add( orb, img );
-#        orpos[bpos]:=Length(orb);
-#        for j  in [ 2 .. len[ i + 1 ] ]  do
-#  	img := act( orb[ j ], acts[ i ] );
-#  	Add( orb, img );
-#  	bpos:=PositionCanonical(dom,img);
-#  	blist[bpos]:=true;
-#  	orpos[bpos]:=Length(orb);
-#        od;
-#        for k  in [ 3 .. RelativeOrders( pcgs )[ i ] ]  do
-#  	for j  in Length( orb ) + [ 1 - len[ i + 1 ] .. 0 ]  do
-#  	  img := act( orb[ j ], acts[ i ] );
-#  	  Add( orb, img );
-#  	  bpos:=PositionCanonical(dom,img);
-#  	  blist[bpos]:=true;
-#  	  orpos[bpos]:=Length(orb);
-#  	od;
-#        od;
-#        
-#      else
-#        pos := orpos[bpos];
-#        # The current generator leaves the orbit invariant.
-#        stb := ListWithIdenticalEntries( Length( pcgs ), 0 );
-#        stb[ i ] := 1;
-#        ii := i + 2;
-#        while pos <> 1  do
-#  	while len[ ii ] >= pos  do
-#  	  ii := ii + 1;
-#  	od;
-#  	stb[ ii - 1 ] := -QuoInt( pos - 1, len[ ii ] );
-#  	pos := ( pos - 1 ) mod len[ ii ] + 1;
-#        od;
-#        Add( S, LinearCombinationPcgs( pcgs, stb ) );
-#        Add( rel, RelativeOrders( pcgs )[ i ] );
-#  
-#      fi;
-#      len[ i ] := Length( orb );
-#    od;
-#    new := InducedPcgsByPcSequenceNC( ParentPcgs(pcgs), Reversed(S) );
-#    SetRelativeOrders( new, Reversed( rel ) );
-#    return rec( orbit := orb, lengths := len, stabpcgs := new);
-#  
-#  end);
 
 
 #############################################################################

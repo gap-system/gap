@@ -119,7 +119,7 @@ InstallMethod( CanonicalBasis,
     function( Integers )
     local B;
     B:= Objectify( NewType( FamilyObj( Integers ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisIntegersRep ),
                    rec() );
@@ -842,7 +842,7 @@ end);
 #F  LogInt( <n>, <base> ) . . . . . . . . . . . . . . logarithm of an integer
 ##
 InstallGlobalFunction(LogInt,function ( n, base )
-    local   log;
+    local   log, p;
 
     # check arguments
     if not IsInt(n) or n    <= 0  then 
@@ -853,17 +853,42 @@ InstallGlobalFunction(LogInt,function ( n, base )
     fi;
 
     # `log(b)' returns $log_b(n)$ and divides `n' by `b^log(b)'
-    log := function ( b )
-        local   i;
-        if b > n  then return 0;  fi;
-        i := log( b^2 );
-        if b > n  then return 2 * i;
-        else  n := QuoInt( n, b );  return 2 * i + 1;  fi;
-    end;
-
-    return log( base );
+##      log := function ( b )
+##          local   i;
+##          if b > n  then return 0;  fi;
+##          i := log( b^2 );
+##          if b > n  then return 2 * i;
+##          else  n := QuoInt( n, b );  return 2 * i + 1;  fi;
+##      end;
+##  
+##      return log( base );
+  if n < base then 
+    return 0;
+  elif base = 2 then
+    return Log2Int(n);
+  elif base = 8 then
+    return QuoInt(Log2Int(n), 3);
+  elif base = 16 then
+    return QuoInt(Log2Int(n), 4);
+  elif IsSmallIntRep(n) then
+    log := 1;
+    p := base * base;
+    while p <= n do
+      log := log + 1;
+      p := p * base;
+    od;
+    return log;
+  elif base = 10 then  
+    log := QuoInt(Log2Int(n) * 10^6 , 3321929);
+    return log + LogInt(QuoInt(n, 10^log), 10);
+  else
+    log := QuoInt(Log2Int(n), Log2Int(base)+1);
+    if log = 0 then
+      log := 1;
+    fi;
+    return log + LogInt(QuoInt(n, base^log), base);
+  fi;
 end);
-
 
 #############################################################################
 ##
@@ -1016,6 +1041,14 @@ InstallGlobalFunction( AbsInt, function( n )
     else            return -n;
     fi;
 end );
+
+#############################################################################
+##
+#F  AbsoluteValue( <n> )
+##
+# uses the particular form of AbsInt
+InstallMethod(AbsoluteValue,"rationals",true,[IsRat],0,AbsInt);
+
 
 
 #############################################################################
@@ -1392,7 +1425,10 @@ InstallMethod( QuotientRemainder,
     true,
     [ IsIntegers, IsInt, IsInt ], 0,
     function ( Integers, n, m )
-    return [ QuoInt(n,m), RemInt(n,m) ];
+      local q;
+      q := QuoInt(n,m);
+      #T kernel function should compute remainder at same time
+      return [ q, n - q * m ];
     end );
 
 

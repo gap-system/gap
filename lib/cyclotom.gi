@@ -7,6 +7,11 @@
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
+##  This file is being maintained by Thomas Breuer.
+##  Please do not make any changes without consulting him.
+##  (This holds also for minor changes such as the removal of whitespace or
+##  the correction of typos.)
+##
 ##  This file contains methods for cyclotomics.
 ##
 Revision.cyclotom_gi :=
@@ -17,13 +22,12 @@ Revision.cyclotom_gi :=
 ##
 #M  Conductor( <list> ) . . . . . . . . . . . . . . . . . . . . .  for a list
 ##
-##  (This works not only for lists of cyclotomics but also  for lists of
+##  (This works not only for lists of cyclotomics but also for lists of
 ##  lists of cyclotomics etc.)
 ##
 InstallOtherMethod( Conductor,
     "for a list",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     function( list )
     local n, entry;
     n:= 1;
@@ -38,8 +42,8 @@ InstallOtherMethod( Conductor,
 ##
 #M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
 ##
-InstallMethod( RoundCyc, "general cyclotomic", true, [ IsCyclotomic],
-        0,  function ( x )
+InstallMethod( RoundCyc, "general cyclotomic", [ IsCyclotomic],
+        function ( x )
     local i, int, n, cfs, e;
     n:= Conductor( x );
     e:= E(n);
@@ -66,8 +70,8 @@ end );
 #M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
 ##				rounding halves down
 ##
-InstallMethod( RoundCycDown, "general cyclotomic", true, [ IsCyclotomic],
-        0,  function ( x )
+InstallMethod( RoundCycDown, "general cyclotomic", [ IsCyclotomic],
+        function ( x )
     local i, int, n, cfs, e;
     n:= Conductor( x );
     e:= E(n);
@@ -85,8 +89,7 @@ end );
 ##
 InstallMethod( ComplexConjugate,
     "for a cyclotomic",
-    true,
-    [ IsCyc ], 0,
+    [ IsCyc ],
     cyc -> GaloisCyc( cyc, -1 ) );
 
 
@@ -100,8 +103,7 @@ InstallMethod( ComplexConjugate,
 ##
 InstallMethod( ExtRepOfObj,
     "for an internal cyclotomic",
-    true,
-    [ IsCyc and IsInternalRep ], 0,
+    [ IsCyc and IsInternalRep ],
     COEFFS_CYC );
 
 
@@ -110,7 +112,6 @@ InstallMethod( ExtRepOfObj,
 #F  CoeffsCyc( <z>, <N> )
 ##
 InstallGlobalFunction( CoeffsCyc, function( z, N )
-
     local coeffs,      # coefficients list (also intermediately)
           n,           # length of `coeffs'
           quo,         # factor by that we have to blow up
@@ -281,6 +282,7 @@ end );
 ##
 BindGlobal( "CycList", function( coeffs )
     local e, n;
+
     n:= Length( coeffs );
     e:= E(n);
     return Sum( [ 1 .. n ], i -> coeffs[i] * e^(i-1), 0 );
@@ -360,7 +362,6 @@ InstallGlobalFunction( IsGaussRat,
 ##  for these values of $n$.)
 ##
 InstallGlobalFunction( DescriptionOfRootOfUnity, function( root )
-
     local coeffs,   # Zumbroich basis coefficients of `root'
           n,        # conductor of `n'
           sum,      # sum of exponents with nonzero coefficients
@@ -468,7 +469,7 @@ end );
 ##        Chapter 7, Section 10)
 ##
 BindGlobal( "Atlas1", function( n, i )
-local k,atlas, En;
+    local k,atlas, En;
 
     if not IsInt( n ) or n < 1 then
       Error( "usage: EB(<n>), EC(<n>), ..., EH(<n>) with appropriate ",
@@ -523,6 +524,7 @@ InstallGlobalFunction( EH, n -> Atlas1( n, 8 ) );
 ##
 InstallGlobalFunction( NK, function( n, k, deriv )
     local  nk;
+
     if n <= 2 or ( k in [ 2, 3, 5, 6, 7 ] and Phi( n ) mod k <> 0 )
               or k < 2 or k > 8 then
       return fail;
@@ -591,7 +593,6 @@ end );
 #F  Atlas2( <n>, <k>, <deriv> ) . . . . . . utility for ATLAS irrationalities
 ##
 BindGlobal( "Atlas2", function( n, k, deriv )
-
     local i, e, nk, result;
 
     if not ( IsInt( n ) and IsInt( k ) and IsInt( deriv ) ) then
@@ -663,6 +664,7 @@ end );
 ##                                                        $m_{<n>}^{<deriv>}$
 InstallGlobalFunction( EM, function( arg )
     local n;
+
     n:= arg[1];
     if Length( arg ) = 1 then
       return E(n) - E(n)^(-1);
@@ -680,6 +682,7 @@ end );
 ##                                                        $l_{<n>}^{<deriv>}$
 InstallGlobalFunction( EL, function( arg )
     local n, nk;
+
     n:= arg[1];
     if Length( arg ) > 2 or not IsInt( n ) then
       Error( "usage: EL( <n> ) resp. EL( <n>, <deriv> )" );
@@ -698,7 +701,6 @@ end );
 #F  EK( <n> ), EK( <n>, <deriv> ) . . . . ATLAS irrationality $k_{<n>}$ resp.
 ##                                                        $k_{<n>}^{<deriv>}$
 InstallGlobalFunction( EK, function( arg )
-
     local n, nk, e;
 
     n:= arg[1];
@@ -722,6 +724,7 @@ end );
 ##                                                        $j_{<n>}^{<deriv>}$
 InstallGlobalFunction( EJ, function( arg )
     local n, nk, e;
+
     n:= arg[1];
     if Length( arg ) > 2 or not IsInt( n ) then
       Error( "usage: EJ( <n> ) resp. EJ( <n>, <deriv> )" );
@@ -805,8 +808,7 @@ InstallGlobalFunction( EI, n -> E(4) * ER(n) );
 ##
 InstallMethod( Sqrt,
     "for a rational",
-    true,
-    [ IsRat ], 0,
+    [ IsRat ],
     ER );
 
 
@@ -830,10 +832,187 @@ end );
 
 #############################################################################
 ##
+#F  AtlasIrrationality( <irratname> )
+##
+InstallGlobalFunction( AtlasIrrationality, function( irratname )
+    local len, pos, sign, pos2, coeff, letts, funcs, recurse, lpos, N,
+          dashes, irrat, qN, gal, oldpos;
+
+    # Check the argument.
+    if not IsString( irratname ) or IsEmpty( irratname ) then
+      return fail;
+    fi;
+    len:= Length( irratname );
+
+    # Get the first sign.
+    pos:= 1;
+    sign:= 1;
+    if irratname[1] = '-' then
+      sign:= -1;
+      pos:= 2;
+    elif irratname[1] = '+' then
+      pos:= 2;
+    fi;
+
+    # Get the first coefficient.
+    if pos <= len and IsDigitChar( irratname[ pos ] ) then
+      pos2:= pos;
+      while pos2 <= len and IsDigitChar( irratname[ pos2 ] ) do
+        pos2:= pos2+1;
+      od;
+      coeff:= sign * Int( irratname{ [ pos .. pos2-1 ] } );
+      pos:= pos2;
+    else
+      coeff:= sign;
+    fi;
+    if len < pos then
+      return coeff;
+    fi;
+
+    # Get the first atomic irrationality (with dashes).
+    letts:= "bcdefghijklmrstuvwxy";
+    funcs:= List( "BCDEFGHIJKLMRSTUVWXY", x -> ValueGlobal( [ 'E', x ] ) );
+    Add( letts, 'z' );
+    Add( funcs, E );
+
+    # Is the coefficient an integer summand?
+    if irratname[ pos ] in "+-" then
+      recurse:= AtlasIrrationality( irratname{ [ pos ..
+                    Length( irratname ) ] } );
+      if recurse = fail then
+        return fail;
+      else
+        return coeff + recurse;
+      fi;
+    fi;
+
+    lpos:= Position( letts, irratname[ pos ] );
+    if lpos = fail then
+      return fail;
+    fi;
+    pos:= pos + 1;
+    dashes:= 0;
+    while pos <= len and irratname[ pos ] in "\'\"" do
+      dashes:= dashes + 1;
+      if irratname[ pos ] = '\"' then
+        dashes:= dashes + 1;
+      fi;
+      pos:= pos + 1;
+    od;
+    pos2:= pos;
+    while pos2 <= len and IsDigitChar( irratname[ pos2 ] ) do
+      pos2:= pos2+1;
+    od;
+    if pos2 = pos and lpos = 8 then
+      N:= 1;
+    else
+      N:= Int( irratname{ [ pos .. pos2 - 1 ] } );
+    fi;
+    if dashes = 0 then
+      qN:= funcs[ lpos ]( N );
+    else
+      qN:= funcs[ lpos ]( N, dashes );
+    fi;
+    pos:= pos2;
+    irrat:= coeff * qN;
+    if len < pos then
+      return irrat;
+    fi;
+
+    # Get the Galois automorphism.
+    if irratname[ pos ] = '*' then
+      pos:= pos + 1;
+      if pos <= len and irratname[ pos ] = '*' then
+        pos:= pos + 1;
+        pos2:= pos;
+        while pos2 <= len and IsDigitChar( irratname[ pos2 ] ) do
+          pos2:= pos2 + 1;
+        od;
+        gal:= Int( irratname{ [ pos .. pos2-1 ] } );
+        if gal = 0 then
+          irrat:= ComplexConjugate( irrat );
+        else
+          irrat:= GaloisCyc( irrat, -gal );
+        fi;
+        pos:= pos2;
+      elif len < pos or irratname[ pos ] in "+-&" then
+        irrat:= StarCyc( irrat );
+      else
+        pos2:= pos;
+        while pos2 <= len and IsDigitChar( irratname[ pos2 ] ) do
+          pos2:= pos2 + 1;
+        od;
+        gal:= Int( irratname{ [ pos .. pos2-1 ] } );
+        irrat:= GaloisCyc( irrat, gal );
+        pos:= pos2;
+      fi;
+    fi;
+
+    while pos <= len do
+
+      # Get ampersand summands.
+      if irratname[ pos ] = '&' then
+        pos2:= pos + 1;
+        while pos2 <= len and IsDigitChar( irratname[ pos2 ] ) do
+          pos2:= pos2 + 1;
+        od;
+        gal:= Int( irratname{ [ pos+1 .. pos2-1 ] } );
+        irrat:= irrat + coeff * GaloisCyc( qN, gal );
+        pos:= pos2;
+      elif irratname[ pos ] in "+-" then
+        if irratname[ pos ] = '+' then
+          sign:= 1;
+          oldpos:= pos+1;
+        else
+          sign:= -1;
+          oldpos:= pos;
+        fi;
+        pos2:= pos + 1;
+        while pos2 <= len and IsDigitChar( irratname[ pos2 ] ) do
+          pos2:= pos2 + 1;
+        od;
+        if pos2 = pos + 1 then
+          coeff:= sign;
+        else
+          coeff:= sign * Int( irratname{ [ pos+1 .. pos2-1 ] } );
+        fi;
+        pos:= pos2;
+        if pos <= len then
+          if irratname[ pos ] = '&' then
+            pos2:= pos + 1;
+            while pos2 <= len and IsDigitChar( irratname[ pos2 ] ) do
+              pos2:= pos2 + 1;
+            od;
+            gal:= Int( irratname{ [ pos+1 .. pos2-1 ] } );
+            irrat:= irrat + coeff * GaloisCyc( qN, gal );
+            pos:= pos2;
+          else
+            recurse:= AtlasIrrationality( irratname{ [ oldpos .. len ] } );
+            if recurse = fail then
+              return fail;
+            fi;
+            irrat:= irrat + recurse;
+            pos:= len+1;
+          fi;
+        else
+          irrat:= irrat + coeff;
+        fi;
+      else
+        return fail;
+      fi;
+
+    od;
+
+    # Return the result.
+    return irrat;
+end );
+
+
+#############################################################################
+##
 #F  Quadratic( <cyc> ) . . . . .  information about quadratic irrationalities
 ##
 InstallGlobalFunction( Quadratic, function( cyc )
-
     local coeffs,     # Zumbroich basis coefficients of `cyc'
           facts,      # factors of conductor of `cyc'
           factsset,   # set of `facts'
@@ -1061,10 +1240,8 @@ end );
 ##
 InstallMethod( GaloisMat,
     "for a matrix of cyclotomics",
-    true,
-    [ IsMatrix and IsCyclotomicCollColl ], 0,
+    [ IsMatrix and IsCyclotomicCollColl ],
     function( mat )
-
     local warned,      # at most one warning will be printed if `mat' grows
           ncha,        # number of rows in `mat'
           nccl,        # number of columns in `mat'
@@ -1313,8 +1490,7 @@ InstallMethod( GaloisMat,
 ##
 InstallMethod( RationalizedMat,
     "for a matrix",
-    true,
-    [ IsMatrix ], 0,
+    [ IsMatrix ],
     function( mat )
     local i, rationalizedmat, rationalfams;
 
@@ -1337,8 +1513,7 @@ InstallMethod( RationalizedMat,
 
 InstallOtherMethod( RationalizedMat,
     "for an empty list",
-    true,
-    [ IsList and IsEmpty ], 0,
+    [ IsList and IsEmpty ],
     empty -> [] );
 
 
@@ -1352,7 +1527,6 @@ InstallOtherMethod( RationalizedMat,
 ##
 InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a collection of cyclotomics (return false)",
-    true,
     [ IsCyclotomicCollection ],
     SUM_FLAGS, # override evrything else
     function( gens )
@@ -1379,11 +1553,9 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
 ##
 InstallMethod( FactorsSquarefree,
     "for a polynomial over a field of cyclotomics",
-    true,
-    [ IsAbelianNumberFieldPolynomialRing, IsUnivariatePolynomial,
-      IsRecord ], 0,
+    IsCollsElmsX,
+    [ IsAbelianNumberFieldPolynomialRing, IsUnivariatePolynomial, IsRecord ],
     function( R, U, opt )
-
     local coeffring, theta, xind, yind, x, y, T, coeffs, G, powers, pow, i,
           B, c, val, j, k, N, factors;
 
@@ -1463,10 +1635,9 @@ InstallMethod( FactorsSquarefree,
 ##
 InstallMethod( Factors,
     "for a polynomial over a field of cyclotomics",
-    true,
-    [ IsAbelianNumberFieldPolynomialRing, IsUnivariatePolynomial ], 0,
+    IsCollsElms,
+    [ IsAbelianNumberFieldPolynomialRing, IsUnivariatePolynomial ],
     function( R, pol )
-
     local irrfacs, coeffring, i, factors, ind, coeffs, val,
           lc, der, g, factor, q;
 
@@ -1518,7 +1689,7 @@ InstallMethod( Factors,
     # We really have to compute the factorization.
     # First split the polynomial into leading coefficient and monic part.
     lc:= coeffs[ Length( coeffs ) ];
-    if lc <> 1 then
+    if not IsOne( lc ) then
       coeffs:= coeffs / lc;
     fi;
     if val = 0 then
@@ -1553,7 +1724,7 @@ InstallMethod( Factors,
     if not IsOne( g ) then
       lc:= g * lc;
     fi;
-    if lc <> 1 then
+    if not IsOne( lc ) then
       factors[1]:= lc * factors[1];
     fi;
 
@@ -1564,6 +1735,7 @@ InstallMethod( Factors,
     # Return the factorization.
     return factors;
     end );
+
 
 InstallGlobalFunction(DenominatorCyc,function(c)
 local n;

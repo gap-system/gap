@@ -175,7 +175,7 @@ DeclareOperation("AddDictionary",[IsDictionary,IsObject]);
 #O  LookupDictionary(<dict>,<key>)
 ##
 ##  looks up <key> in the lookup dictionary <dict> and returns the
-##  associated value. If <key> is not knwon to the dictionary, `fail' is
+##  associated value. If <key> is not known to the dictionary, `fail' is
 ##  returned.
 DeclareOperation("LookupDictionary",[IsDictionary,IsObject]);
 
@@ -408,7 +408,7 @@ DeclareGlobalFunction( "HashFunct", [ IsInt, IsInt, IsInt ] );
 ##
 ##  The function returned by `DenseIntKey' is guaranteed to give different
 ##  values for different objects.
-##  If no suitable hash key function has beed predefined, `fail' is returned.
+##  If no suitable hash key function has been predefined, `fail' is returned.
 DeclareOperation("DenseIntKey",[IsObject,IsObject]);
 
 #############################################################################
@@ -419,7 +419,7 @@ DeclareOperation("DenseIntKey",[IsObject,IsObject]);
 ##  such as <obj> in the collection <objcoll>. In contrast to `DenseIntKey',
 ##  the function returned may return the same key value for different
 ##  objects.
-##  If no suitable hash key function has beed predefined, `fail' is returned.
+##  If no suitable hash key function has been predefined, `fail' is returned.
 DeclareOperation("SparseIntKey",[IsObject,IsObject]);
 
 

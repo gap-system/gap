@@ -21,9 +21,9 @@
 
 \beginexample
 gap> m:= [ [ 1, 0 ], [ 0, 1 ] ];;
-gap> lo:= LieObject( m ); 
+gap> lo:= LieObject( m );
 LieObject( [ [ 1, 0 ], [ 0, 1 ] ] )
-gap> m*m; 
+gap> m*m;
 [ [ 1, 0 ], [ 0, 1 ] ]
 gap> lo*lo;
 LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
@@ -33,7 +33,7 @@ LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
 
 \beginexample
 gap> m:= [ [ 1, 0 ], [ 0, 1 ] ];;
-gap> lo:= LieObject( m ); 
+gap> lo:= LieObject( m );
 LieObject( [ [ 1, 0 ], [ 0, 1 ] ] )
 gap> IsLieObject( m );
 false
@@ -57,7 +57,7 @@ algebras; so for that we refer to Chapter "ref:algebras".
 
 \beginexample
 gap> T:= EmptySCTable( 2, 0, "antisymmetric" );;
-gap> SetEntrySCTable( T, 1, 2, [ 1/2, 1 ] );        
+gap> SetEntrySCTable( T, 1, 2, [ 1/2, 1 ] );
 gap> L:= LieAlgebraByStructureConstants( Rationals, T );
 <Lie algebra of dimension 2 over Rationals>
 \endexample
@@ -104,7 +104,7 @@ gap> L:= Derivations( Basis( A ) );
 \beginexample
 gap> SimpleLieAlgebra( "E", 6, Rationals );
 <Lie algebra of dimension 78 over Rationals>
-gap> SimpleLieAlgebra( "A", 6, GF(5) );    
+gap> SimpleLieAlgebra( "A", 6, GF(5) );
 <Lie algebra of dimension 48 over GF(5)>
 gap> SimpleLieAlgebra( "W", [1,2], GF(5) );
 <Lie algebra of dimension 250 over GF(5)>
@@ -145,10 +145,10 @@ gap> LieCentralizer( L, Subalgebra( L, [ b[1], b[2] ] ) );
 \Declaration{LieNormalizer}
 
 \beginexample
-gap> L:= SimpleLieAlgebra( "G", 2, Rationals );             
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );
 <Lie algebra of dimension 14 over Rationals>
 gap> b:= BasisVectors( Basis( L ) );;
-gap> LieNormalizer( L, Subalgebra( L, [ b[1], b[2] ] ) );      
+gap> LieNormalizer( L, Subalgebra( L, [ b[1], b[2] ] ) );
 <Lie algebra of dimension 8 over Rationals>
 \endexample
 
@@ -184,7 +184,7 @@ gap> SizeScreen([ 80, ]);;
 \beginexample
 gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
 gap> SizeScreen([ 81, ]);;
-gap> LieSolvableRadical( L ); 
+gap> LieSolvableRadical( L );
 <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (dimension 1)>
 gap> SizeScreen([ 80, ]);;
 \endexample
@@ -257,7 +257,7 @@ true
 gap> T:= EmptySCTable( 5, 0, "antisymmetric" );;
 gap> L:= LieAlgebraByStructureConstants( Rationals, T );
 <Lie algebra of dimension 5 over Rationals>
-gap> IsLieNilpotent( L );                                
+gap> IsLieNilpotent( L );
 true
 \endexample
 
@@ -284,7 +284,7 @@ and the decomposition into a direct sum of ideals.
 \Declaration{LeviMalcevDecomposition}!{for Lie algebras}
 
 \beginexample
-gap> L:= FullMatrixLieAlgebra( Rationals, 5 );; 
+gap> L:= FullMatrixLieAlgebra( Rationals, 5 );;
 gap> LeviMalcevDecomposition( L );
 [ <Lie algebra of dimension 24 over Rationals>, 
   <two-sided ideal in <Lie algebra of dimension 25 over Rationals>, 
@@ -295,7 +295,7 @@ gap> LeviMalcevDecomposition( L );
 \Declaration{DirectSumDecomposition}!{for Lie algebras}
 
 \beginexample
-gap> L:= FullMatrixLieAlgebra( Rationals, 5 );; 
+gap> L:= FullMatrixLieAlgebra( Rationals, 5 );;
 gap> DirectSumDecomposition( L );
 [ <two-sided ideal in 
       <two-sided ideal in <Lie algebra of dimension 25 over Rationals>, 
@@ -319,7 +319,7 @@ gap> L:= SimpleLieAlgebra( "E", 8, Rationals );;
 gap> b:= BasisVectors( Basis( L ) );;
 gap> K:= LieCentralizer( L, Subalgebra( L, [ b[61]+b[79]+b[101]+b[102] ] ) );
 <Lie algebra of dimension 102 over Rationals>
-gap> lev:= LeviMalcevDecomposition(K);; 
+gap> lev:= LeviMalcevDecomposition(K);;
 gap> SemiSimpleType( lev[1] );
 "B3 A1"
 \endexample
@@ -427,7 +427,7 @@ gap> L:= SimpleLieAlgebra( "F", 4, Rationals );;
 gap> W:= WeylGroup( RootSystem( L ) );;
 gap> C:= SparseCartanMatrix( W );;
 gap> w:= [ 1, 1, 1, 1 ];;
-gap> ApplySimpleReflection( C, 2, w );             
+gap> ApplySimpleReflection( C, 2, w );
 gap> w;
 [ 1, -1, 1, 2 ]
 \endexample
@@ -507,7 +507,7 @@ gap> IsRestrictedLieAlgebra( L );
 false
 gap> L:= SimpleLieAlgebra( "W", [1], GF(5));
 <Lie algebra of dimension 5 over GF(5)>
-gap> IsRestrictedLieAlgebra( L );           
+gap> IsRestrictedLieAlgebra( L );
 true
 \endexample
 
@@ -518,7 +518,7 @@ gap> L:= SimpleLieAlgebra( "W", [1], GF(11) );
 <Lie algebra of dimension 11 over GF(11)>
 gap> B:= Basis( L );
 CanonicalBasis( <Lie algebra of dimension 11 over GF(11)> )
-gap> PthPowerImages( B );           
+gap> PthPowerImages( B );
 [ 0*v.1, v.2, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1 ]
 \endexample
 
@@ -529,7 +529,7 @@ gap> L:= SimpleLieAlgebra( "W", [1], GF(11) );;
 gap> B:= Basis( L );;
 gap> x:= B[1]+B[11];
 v.1+v.11
-gap> PthPowerImage( B, x );         
+gap> PthPowerImage( B, x );
 v.1+v.11
 \endexample
 
@@ -548,7 +548,7 @@ gap> PthPowerImages( Basis( L ) );
 gap> g:= Grading( L );
 rec( min_degree := 1, max_degree := 3, source := Integers, 
   hom_components := function( d ) ... end )
-gap> List( [1,2,3], g.hom_components );  
+gap> List( [1,2,3], g.hom_components );
 [ <vector space over GF(3), with 3 generators>, 
   <vector space over GF(3), with 2 generators>, 
   <vector space over GF(3), with 1 generators> ]
@@ -613,7 +613,7 @@ true
 
 \beginexample
 gap> L:= SimpleLieAlgebra( "G", 2, Rationals );;
-gap> NonNilpotentElement( L );  
+gap> NonNilpotentElement( L );
 v.13
 gap> IsNilpotentElement( L, last );
 false
@@ -682,7 +682,7 @@ true
 
 
 \beginexample
-gap> C:= [ [ 2, -1 ], [ -3, 2 ] ];; 
+gap> C:= [ [ 2, -1 ], [ -3, 2 ] ];;
 gap> K:= FpLieAlgebraByCartanMatrix( C );
 <Lie algebra over Rationals, with 6 generators>
 gap> h:= NiceAlgebraMonomorphism( K );
@@ -699,7 +699,7 @@ gap> L:= FreeLieAlgebra( Rationals, "x", "y" );;
 gap> g:= GeneratorsOfAlgebra(L);; x:= g[1]; y:= g[2];
 (1)*x
 (1)*y
-gap> rr:=[((y*x)*x)*x-6*(y*x)*y, 3*((((y*x)*x)*x)*x)*x-20*(((y*x)*x)*x)*y ]; 
+gap> rr:=[((y*x)*x)*x-6*(y*x)*y, 3*((((y*x)*x)*x)*x)*x-20*(((y*x)*x)*x)*y ];
 [ (-1)*(x*(x*(x*y)))+(6)*((x*y)*y), 
   (-3)*(x*(x*(x*(x*(x*y)))))+(20)*(x*(x*((x*y)*y)))+(-20)*((x*(x*y))*(x*y)) ]
 gap> K:= L/rr;
@@ -716,7 +716,7 @@ rec( min_degree := 1, max_degree := 50, source := Integers,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Modules over Lie Algebras and Their Cohomology}
 
-Representatios of Lie algebras are dealt with in the same way as 
+Representations of Lie algebras are dealt with in the same way as 
 representations of ordinary algebras (see "Representations of Algebras").
 In this section we mainly deal with modules over general Lie algebras
 and their cohomology. The next section is devoted to modules over
@@ -766,7 +766,7 @@ true
 \beginexample
 gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
 gap> V:= AdjointModule( L );;
-gap> C:=CochainSpace( V, 2 );          
+gap> C:=CochainSpace( V, 2 );
 <vector space of dimension 9 over Rationals>
 gap> BasisVectors( Basis( C ) );
 [ <2-cochain>, <2-cochain>, <2-cochain>, <2-cochain>, <2-cochain>, 
@@ -781,7 +781,7 @@ gap> ExtRepOfObj( last[1] );
 gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
 gap> V:= AdjointModule( L );;
 gap> C:= CochainSpace( V, 2 );;
-gap> c:= Basis( C )[1];             
+gap> c:= Basis( C )[1];
 <2-cochain>
 gap>  ValueCochain( c, Basis(L)[2], Basis(L)[1] );
 (-1)*v.1
@@ -793,7 +793,7 @@ gap>  ValueCochain( c, Basis(L)[2], Basis(L)[1] );
 gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
 gap> V:= AdjointModule( L );;
 gap> C:= CochainSpace( V, 2 );;
-gap> c:= Basis( C )[1];;             
+gap> c:= Basis( C )[1];;
 gap> c1:= LieCoboundaryOperator( c );
 <3-cochain>
 gap> c2:= LieCoboundaryOperator( c1 );
@@ -910,7 +910,7 @@ gap> L:= DirectSumOfAlgebras( K1, K2 );
 gap> V:= HighestWeightModule( L, [ 0, 1, 1, 1 ] );
 <224-dimensional left-module over <Lie algebra of dimension 24 over Rationals>>
 gap> vv:= GeneratorsOfLeftModule( V );;
-gap> vv[100];                 
+gap> vv[100];
 y5*y7*y10*v0
 gap> e:= ExtRepOfObj( vv[100] );
 y5*y7*y10*v0
@@ -927,7 +927,7 @@ gap> Basis(L)[17]^vv[100];
 
 \beginexample
 gap> L:= SimpleLieAlgebra("G",2,Rationals);;
-gap> V:= HighestWeightModule( L, [ 1, 0 ] );;          
+gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
 gap> W:= TensorProductOfAlgebraModules( [ V, V, V ] );
 <343-dimensional left-module over <Lie algebra of dimension 14 over Rationals>>
 gap> w:= Basis(W)[1];

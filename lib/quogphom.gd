@@ -114,7 +114,7 @@ DeclareAttribute("HomCosetFamily",IsGroupHomomorphism);
 ##
 ##  AH, 27-jan-00: One should not call `CategoryCollections' on
 ##  representations. In fact what you want here is a separation of
-##  represenattions and categories.
+##  representations and categories.
 
 #############################################################################
 ##

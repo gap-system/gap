@@ -49,6 +49,10 @@ compile: config
 	( cd bin/@target@-@BASECC@ ; $(MAKE) CC=$(CC) )
 	chmod +x bin/gap.sh
 
+strip: compile
+	( cd bin/@target@-@BASECC@ ; strip gap)
+       
+
 clean:
 	rm -rf bin/@target@-@BASECC@
 	rm -f config.cache config.log config.status Makefile

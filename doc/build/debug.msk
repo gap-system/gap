@@ -57,7 +57,7 @@ afterwards.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{ApplicableMethod}
+\Section{ApplicableMethod}\nolabel
 
 \Declaration{ApplicableMethod}
 
@@ -198,7 +198,7 @@ gap> InfoLevel(InfoWarning);
 
 is an info class to which general warnings are sent at level 1, which is
 its default level. More specialised warnings are `Info'-ed at `InfoWarning'
-level 2, e.g.~information about the autoloading of share packages and the
+level 2, e.g.~information about the autoloading of {\GAP} packages and the
 initial line matched when displaying an on-line help topic.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -208,7 +208,7 @@ Assertions are used to find errors in algorithms.
 They test whether intermediate results conform to required conditions
 and issue an error if not.
 
-\>SetAssertionLevel(<lev>) F
+\>SetAssertionLevel( <lev> ) F
 
 assigns the global assertion level to <lev>. By default it is zero.
 
@@ -216,29 +216,25 @@ assigns the global assertion level to <lev>. By default it is zero.
 
 returns the current assertion level.
 
-\>Assert(<lev>,<cond>) F
+\>Assert( <lev>, <cond> ) F
+\>Assert( <lev>, <cond>, <message> ) F
 
-if the global assertion level is at least <lev>, condition <cond> is tested
-and if it does not return `true' an error is raised.
-Thus `Assert(lev, <code>)' is equivalent to the code
+With two arguments, if the global assertion  level  is  at  least  <lev>,
+condition <cond> is tested and if it does not return `true' an  error  is
+raised.
+Thus `Assert(lev, <cond>)' is equivalent to the code
 \begintt
-if AssertionLevel() >= lev and not <code> then
+if AssertionLevel() >= lev and not <cond> then
   Error("Assertion failure");
 fi;
 \endtt
 
-\>Assert(<lev>, <cond>, <message> ) F
-
-In this version of the `Assert' statement, if the global assertion
-level is at least <lev>, condition <cond> is tested and if it does not
-return `true' then <message> is evaluated and printed.
+With the <message> argument form of the `Assert' statement, if the global
+assertion level is at least <lev>, condition <cond> is tested and  if  it
+does not return `true' then <message> is evaluated and printed.
 
 Assertions are used at various places in the library.
 Thus turning assertions on can slow code execution significantly.
-
-
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Timing}
@@ -249,7 +245,7 @@ Thus turning assertions on can slow code execution significantly.
 This is usually the cpu time, i.e., not the wall clock time.
 Also time spent by subprocesses of {\GAP} (see "Process") is not counted.
 
-\>`time;'{time}
+\>`time;'{time}@{`time'}
 
 in the read-eval-print loop returns the time the last command took.
 
@@ -411,7 +407,7 @@ Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you may 'return;' to continue
 brk> return;
-gap>
+gap> 
 \endtt
 
 This behaviour can be controlled using the procedure

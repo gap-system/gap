@@ -1183,7 +1183,7 @@ InstallMethod( NamesOfFusionSources,
 InstallMethod( PossibleClassFusions,
     "for two ordinary character tables",
     IsIdenticalObj,
-    [ IsNearlyCharacterTable, IsNearlyCharacterTable ], 0,
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable ],
     function( subtbl, tbl )
     return PossibleClassFusions( subtbl, tbl,
                rec(
@@ -1203,8 +1203,7 @@ InstallMethod( PossibleClassFusions,
 ##
 InstallMethod( PossibleClassFusions,
     "for two ordinary character tables, and a parameters record",
-    true,
-    [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsRecord ], 0,
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsRecord ],
     function( subtbl, tbl, parameters )
 
 #T support option `no branch' ??
@@ -1532,7 +1531,7 @@ InstallMethod( PossibleClassFusions,
 InstallMethod( PossibleClassFusions,
     "for two Brauer tables",
     IsIdenticalObj,
-    [ IsBrauerTable, IsBrauerTable ], 0,
+    [ IsBrauerTable, IsBrauerTable ],
     function( submodtbl, modtbl )
 
     local ordsub, ordtbl, fus, invGfus, Hfus;
@@ -1541,9 +1540,9 @@ InstallMethod( PossibleClassFusions,
     ordtbl:= OrdinaryCharacterTable( modtbl );
     fus:= PossibleClassFusions( ordsub, ordtbl );
 
-    if fus <> fail then
-      invGfus:= InverseMap( GetFusionMap( submodtbl, ordsub ) );
-      Hfus:= GetFusionMap( modtbl, ordtbl );
+    if not IsEmpty( fus ) then
+      invGfus:= InverseMap( GetFusionMap( modtbl, ordtbl ) );
+      Hfus:= GetFusionMap( submodtbl, ordsub );
       fus:= Set( List( fus ),
                  map -> CompositionMaps( invGfus,
                             CompositionMaps( map, Hfus ) ) );

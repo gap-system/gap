@@ -1848,30 +1848,18 @@ end);
 ##
 #M  Factors(<R>,<f> [,<opt>]) . .  factors of rational polynomial
 ##
-InstallMethod(Factors,"univariate rational polynomial",true,
+InstallMethod(Factors,"univariate rational polynomial",IsCollsElms,
   [IsRationalsPolynomialRing,IsUnivariatePolynomial],0,
 function(R,f)
   return RPFactors(R,f);
 end);
 
-InstallOtherMethod(Factors,"univariate rational polynomial, w. options",true,
+InstallOtherMethod(Factors,"univariate rational polynomial, w.  options",
+ IsCollsElmsX,
   [IsRationalsPolynomialRing,IsUnivariatePolynomial,IsRecord],0,
 function(R,f,opt)
   return RPFactors(R,f,opt);
 end);
-
-#############################################################################
-##
-#M  IsIrreducibleRingElement(<pol>) . . . . . . . .  for rational polynomials
-##
-InstallMethod(IsIrreducibleRingElement,"RatPol",true,
-  [IsRationalsPolynomialRing,IsUnivariatePolynomial],0,
-function(R,f)
-  return Length(Factors(R,f,
-                    rec(stopdegs:=[1..DegreeOfLaurentPolynomial(f)])))<=1;
-end);
-
-
 
 #############################################################################
 ##

@@ -86,7 +86,7 @@ to labels which map under <hom> to the identity.
 \Section{The General Backtrack Algorithm with Ordered Partitions}
 
 \begingroup%
-\def\R{{\cal R}} \def\I{{\cal I}}%
+\def\calR{{\cal R}} \def\I{{\cal I}}%
 
 Section "ref:Backtrack" in the reference manual describes the basic
 functions for a backtrack search. The purpose of
@@ -126,21 +126,29 @@ operations, however, to be performed upon <P> are the splitting of a cell
 and the reuniting  of the two parts. Following  the strategy  of J.~Leon,
 this is done as follows:
 
-(1) The points which make up the cell that  is to be  split are sorted so
-that the ones  that remain inside occupy  positions `[ <P>.firsts[<m>] ..
-<last> ]' in the list `<P>.points' (for a suitable value of <last>).
+\beginlist%ordered
 
-(2) The  points   at positions  `[   <last>  + 1 ..    <P>.firsts[<m>]  +
-<P>.lengths[<m>] - 1 ]' will form the  additional cell. For this new cell
-requires additional entries are  added to the lists `<P>.firsts' (namely,
-`<last>+1')     and    `<P>.lengths'   (namely,      `<P>.firsts[<m>]   +
+\item{(1)}
+The points which make up the cell that is to be split are sorted so  that
+the ones that remain inside occupy positions `[ <P>.firsts[<m>] .. <last>
+]' in the list `<P>.points' (for a suitable value of <last>).
+
+\item{(2)}
+The  points  at  positions  `[  <last>   +   1   ..   <P>.firsts[<m>]   +
+<P>.lengths[<m>] - 1 ]' will form the additional cell. For this new  cell
+requires additional entries are added to the lists `<P>.firsts'  (namely,
+`<last>+1')    and    `<P>.lengths'    (namely,    `<P>.firsts[<m>]     +
 <P>.lengths[<m>] - <last> - 1').
 
-(3) The entries of the sublist `<P>.cellno{ [ <last>+1 .. <P>.firsts[<m>]
-+ P.lengths[<m>]-1 ] }' must be set to the number of the new cell.
+\item{(3)}
+The entries of the sublist `<P>.cellno{ [ <last>+1 ..  <P>.firsts[<m>]  +
+P.lengths[<m>]-1 ] }' must be set to the number of the new cell.
 
-(4) The entry    `<P>.lengths[<m>]'  must   be  reduced  to   `<last>   -
-<P>.firsts[<m>] + 1'.
+\item{(4)}
+The entry `<P>.lengths[<m>]' must be reduced to `<last> - <P>.firsts[<m>]
++ 1'.
+
+\endlist
 
 Then reuniting the  two cells requires  only the reversal of steps~2 to~4
 above. The list `<P>.points' need not be rearranged.
@@ -152,7 +160,7 @@ some  {\GAP}  functions   which   are   local   to   the   library   file
 groups. They are mentioned here because you might find them helpful  when
 you want  to  implement  you  own  backtracking  function  based  on  the
 partition concept. An important argument to most of the functions is  the
-R-base $\R$, which you should regard as a black box. We will tell you how
+R-base $\calR$, which you should regard as a black box. We will tell you how
 to set it up, how to maintain it and where to pass it as argument, but it
 is not necessary for you to know its internal representation. However, if
 you insist to learn the whole story: Here are the record components  from
@@ -209,124 +217,144 @@ As  our guiding example, we  present  code for the function `Centralizer'
 which calculates the centralizer of an element $g$ in the group $G$. (The
 real code is more general and has a few more subtleties.)
 
-{\newcount\lineno%
- \def\){\advance\lineno by1 \begingroup\obeylines\cloparen%
-        \hbox to\manindent{\hfil $\scriptstyle\the\lineno$\enspace}}%
-
-\)$\Pi_0$ := TrivialPartition( $\Omega$ );
-\)$\R$ := EmptyRBase( $G$, $\Omega$, $\Pi_0$ );
-\endgraf\medskip%
-
-\)$\R$.nextLevel := function( $\Pi$, <rbase> )
-\)local \ $fix$,  $p$,  $q$,  $where$;
-\)\quad NextRBasePoint( $\Pi$, <rbase> );
-\)\quad $fix$ := Fixcells( $\Pi$ );
-\)\quad for $p$  in $fix$  do
-\)\qquad $q$ := $p$ ^ $g$;
-\)\qquad $where$ := IsolatePoint( $\Pi$, $q$ );
-\)\qquad if $where$ \<> false  then
-\)\quad\qquad Add( $fix$, $q$ );
-\)\quad\qquad ProcessFixpoint( $\R$, $q$ );
-\)\quad\qquad AddRefinement( $\R$, "Centralizer", %
+\)\kernttindent 1 $\Pi_0$ := TrivialPartition( $\Omega$ );
+\)\kernttindent 2 $\calR$ := EmptyRBase( $G$, $\Omega$, $\Pi_0$ );
+\)\kernttindent 3 $\calR$.nextLevel := function( $\Pi$, <rbase> )
+\)\kernttindent 4 local \ $fix$,  $p$,  $q$,  $where$;
+\)\kernttindent 5 \quad NextRBasePoint( $\Pi$, <rbase> );
+\)\kernttindent 6 \quad $fix$ := Fixcells( $\Pi$ );
+\)\kernttindent 7 \quad for $p$  in $fix$  do
+\)\kernttindent 8 \qquad $q$ := $p$ ^ $g$;
+\)\kernttindent 9 \qquad $where$ := IsolatePoint( $\Pi$, $q$ );
+\)\kernttindent10 \qquad if $where$ \<> false  then
+\)\kernttindent12 \quad\qquad Add( $fix$, $q$ );
+\)\kernttindent13 \quad\qquad ProcessFixpoint( $\calR$, $q$ );
+\)\kernttindent14 \quad\qquad AddRefinement( $\calR$, "Centralizer", %
               [ $\Pi$.cellno[ $p$ ], $q$, $where$ ] );
-\)\quad\qquad if $\Pi$.lengths[ $where$ ] = 1  then
-\)\qquad\qquad $p$ := FixpointCellNo( $\Pi$, $where$ );
-\)\qquad\qquad ProcessFixpoint( $\R$, $p$ );
-\)\qquad\qquad AddRefinement( $\R$, "ProcessFixpoint", [ $p$, $where$ ] );
-\)\quad\qquad fi;
-\)\qquad fi;
-\)\quad od;
-\)end;
-\endgraf\medskip%
+\)\kernttindent15 \quad\qquad if $\Pi$.lengths[ $where$ ] = 1  then
+\)\kernttindent16 \qquad\qquad $p$ := FixpointCellNo( $\Pi$, $where$ );
+\)\kernttindent17 \qquad\qquad ProcessFixpoint( $\calR$, $p$ );
+\)\kernttindent18 \qquad\qquad AddRefinement( $\calR$, "ProcessFixpoint", %
+              [ $p$, $where$ ] );
+\)\kernttindent19 \quad\qquad fi;
+\)\kernttindent20 \qquad fi;
+\)\kernttindent21 \quad od;
+\)\kernttindent22 end;
+\)\kernttindent23 return PartitionBacktrack(
+\)\kernttindent24 \qquad $G$,
+\)\kernttindent25 \qquad $c$ -> $g$ ^ $c$ = $g$,
+\)\kernttindent26 \qquad false,
+\)\kernttindent27 \qquad $\calR$,
+\)\kernttindent28 \qquad [ $\Pi_0$, $g$ ],
+\)\kernttindent29 \qquad $L$, $R$ );
 
-\)return PartitionBacktrack( $G$,
-\)\qquad $c$ -> $g$ ^ $c$ = $g$,
-\)\qquad false,
-\)\qquad $\R$,
-\)\qquad [ $\Pi_0$, $g$ ],
-\)\qquad $L$, $R$ );
-  \vadjust{\allowbreak}%
+The list numbers below refer to the line numbers of the code above.
 
-}%
-1.\enspace $\Omega$ is the set on which $G$ acts and $\Pi_0$ is the first
-member   of   the  decreasing   sequence   of  partitions    mentioned in
-"ref:Backtrack" in the reference manual. We set  $\Pi_0=(\Omega)$,  which
-is constructed as `TrivialPartition( $\Omega$  )'),  but  we  could  have
-started with a finer partition, e.g., into unions of  $g$-cycles  of  the
-same length.
+\beginlist%ordered
 
-2.\enspace This statement sets up the R-base in the variable $\R$.
+\item{1.}
+$\Omega$ is the set on which $G$ acts and $\Pi_0$ is the first member  of
+the decreasing sequence of partitions mentioned in "ref:Backtrack" in the
+reference manual.  We  set  $\Pi_0=(\Omega)$,  which  is  constructed  as
+`TrivialPartition( $\Omega$ )'), but we could have started with  a  finer
+partition, e.g., into unions of $g$-cycles of the same length.
 
-3--21.\enspace These lines define  a  function `$\R$.nextLevel' which  is
-called  whenever an  additional member in   the sequence $\Pi_0 \ge \Pi_1
-\ge\ldots$ of   partitions is needed.  If  $\Pi_i$ does   not yet contain
-enough base points in one-point  cells, {\GAP} will call `$\R$.nextLevel(
-$\Pi_i$, $\R$  )',  and this  function   will choose   a  new base  point
-$a_{i+1}$, refine $\Pi_i$  to  $\Pi_{i+1}$ (thereby *changing*  the first
-argument) and store all necessary information in~$\R$.
+\item{2.}
+This statement sets up the R-base in the variable $\calR$.
 
-5.\enspace  This statement selects a new   base point $a_{i+1}$, which is
-not yet  in a one-point  cell of $\Pi$ and still  moved by the stabilizer
-$G_{a_1\ldots a_i}$  of the  earlier base points.   If certain points  of
-$\Omega$ should are preferred as base point (e.g., because they belong to
-long cycles of $g$), a list of points starting with the most wanted ones,
-can be given as an optional third argument to `NextRBasePoint' (actually,
-this is done in the real code for `Centralizer').
+\item{3.} -- 21.
+\enspace These lines define a function `$\calR$.nextLevel' which  is  called
+whenever an additional member in the sequence $\Pi_0 \ge \Pi_1 \ge\ldots$
+of partitions is needed. If $\Pi_i$ does  not  yet  contain  enough  base
+points in one-point cells, {\GAP}  will  call  `$\calR$.nextLevel(  $\Pi_i$,
+$\calR$ )', and this function will choose a new base point $a_{i+1}$, refine
+$\Pi_i$ to $\Pi_{i+1}$ (thereby *changing* the first argument) and  store
+all necessary information in~$\calR$.
 
-6.\enspace  `Fixcells( $\Pi$ )' returns the  list of  points in one-point
-cells of $\Pi$ (ordered as the cells are ordered in $\Pi$).
+\endlist
+\beginlist%ordered{1}{5}
 
-7.\enspace For every point $p\in fix$,  if we know the  image `$p$ ^ $g$'
-under $c\in C_G(e)$, we also know `( $p$ ^ $g$ ) ^ $c$ = (  $p$ ^ $c$ ) ^
-$g$'. We therefore want to isolate these extra points in $\Pi$.
+\item{5.}
+This statement selects a new base point $a_{i+1}$, which is not yet in  a
+one-point cell of $\Pi$ and still moved by the  stabilizer  $G_{a_1\ldots
+a_i}$ of the earlier base points. If certain points  of  $\Omega$  should
+are preferred as base point (e.g., because they belong to long cycles  of
+$g$), a list of points starting with the most wanted ones, can  be  given
+as an optional third argument to `NextRBasePoint' (actually, this is done
+in the real code for `Centralizer').
 
-9.\enspace This statement puts point $q$ in a cell  of its own, returning
-in $where$ the number of the cell  of $\Pi$ from  which $q$ was taken. If
-$q$ was already the only point in its cell, `$where$ = false' instead.
+\item{6.}
+`Fixcells( $\Pi$ )' returns the list of  points  in  one-point  cells  of
+$\Pi$ (ordered as the cells are ordered in $\Pi$).
 
-12.\enspace This  command does the   necessary bookkeeping for  the extra
-base point $q$:  It prescribes $q$ as next  base in the  stabilizer chain
-for $G$ (needed, e.g., in line~5) and  returns `false' if $q$ was already
-fixed the  stabilizer of the  earlier base points (and  `true' otherwise;
-this is not used here).  Another call to  `ProcessFixpoint' like this was
-implicitly  made by the  function  `NextRBasePoint' to register the chosen
-base  point. By contrast,  the  point $q$  was  not chosen  this  way, so
-`ProcessFixpoint' must be called explicitly for~$q$.
+\item{7.}
+For every point $p\in fix$, if we know the image `$p$ ^ $g$' under  $c\in
+C_G(e)$, we also know `( $p$ ^ $g$ ) ^ $c$ = ( $p$ ^ $c$  )  ^  $g$'.  We
+therefore want to isolate these extra points in $\Pi$.
 
-13.\enspace  This statement registers  the   function which will be  used
-during the  backtrack search to perform  the corresponding refinements on
-the ``image partition'' $\Sigma_i$ (to yield the refined $\Sigma_{i+1}$).
-After choosing an image  $b_{i+1}$ for the  base point $a_{i+1}$,  {\GAP}
-will compute $\Sigma_i \wedge (\{b_{i+1}\},\Omega-\{b_{i+1}\})$ and store
-this partition in `$\I$.partition', where $\I$  is a black box similar to
-$\R$, but  corresponding to the current  ``image partition'' (hence it is
-an   ``R-image'' in analogy  to the  R-base). Then {\GAP}   will call the
-function `Refinements.Centralizer( $\R$, $\I$,  $\Pi$.cellno[ $p$ ], $p$,
-$where$  )',  with the  then current values  of $\R$  and $\I$, but where
-`$\Pi$.cellno[ $p$ ]',  $p$, $where$ still  have the values they  have at
+\endlist
+\beginlist%ordered{1}{9}
+
+\item{9.}
+This statement puts point $q$ in a cell of its own, returning in  $where$
+the number of the cell of $\Pi$ from which $q$  was  taken.  If  $q$  was
+already the only point in its cell, `$where$ = false' instead.
+
+\endlist
+\beginlist%ordered{1}{12}
+
+\item{12.}
+This command does the necessary bookkeeping for the extra base point $q$:
+It prescribes $q$ as next base in the stabilizer chain for  $G$  (needed,
+e.g., in line~5) and  returns  `false'  if  $q$  was  already  fixed  the
+stabilizer of the earlier base points (and `true' otherwise; this is  not
+used here). Another call to `ProcessFixpoint' like  this  was  implicitly
+made by the function `NextRBasePoint' to register the chosen base  point.
+By contrast, the point $q$ was not chosen this way, so  `ProcessFixpoint'
+must be called explicitly for~$q$.
+
+\item{13.}
+This statement registers the function  which  will  be  used  during  the
+backtrack search to perform the corresponding refinements on the  ``image
+partition'' $\Sigma_i$  (to  yield  the  refined  $\Sigma_{i+1}$).  After
+choosing an image $b_{i+1}$ for the base  point  $a_{i+1}$,  {\GAP}  will
+compute $\Sigma_i \wedge (\{b_{i+1}\},\Omega-\{b_{i+1}\})$ and store this
+partition in `$\I$.partition', where $\I$ is a black box similar to $\calR$,
+but corresponding to the current ``image  partition''  (hence  it  is  an
+``R-image'' in analogy to the R-base). Then {\GAP} will call the function
+`Refinements.Centralizer( $\calR$, $\I$, $\Pi$.cellno[ $p$ ],  $p$,  $where$
+)',  with  the  then  current  values  of  $\calR$  and  $\I$,   but   where
+`$\Pi$.cellno[ $p$ ]', $p$, $where$ still have the values  they  have  at
 the time of this `AddRefinement' command. This function call will further
-refine  `$\I$.partition' to yield $\Sigma_{i+1}$ as  it  is programmed in
-the function `Refinements.Centralizer',  which  is described  below. (The
-global  variable `Refinements' is  a record which contains all refinement
+refine `$\I$.partition' to yield $\Sigma_{i+1}$ as it  is  programmed  in
+the function `Refinements.Centralizer', which is  described  below.  (The
+global variable `Refinements' is a record which contains  all  refinement
 functions for all backtracking procedures.)
 
-14--18.\enspace If  the cell from which  $q$ was taken  out  had only two
-points, we   now have an   additional one-point  cell. This  condition is
-checked  in line~13 and if it  is true, this  extra fixpoint $p$ is taken
-(line~15), processed like $q$  before   (line~16) and is then   (line~17)
-passed to another refinement function `Refinements.ProcessFixpoint( $\R$,
-$\I$, $p$, $where$ )', which is also described below.
+\item{14.} -- 19.
+If the cell from which $q$ was taken out had only two points, we now have
+an additional one-point cell. This condition is checked in line~13 and if
+it is true, this extra fixpoint $p$ is taken  (line~15),  processed  like
+$q$ before (line~16) and is then (line~17) passed to  another  refinement
+function `Refinements.ProcessFixpoint( $\calR$, $\I$, $p$, $where$ )', which
+is also described below.
 
-22--27.\enspace This command starts the backtrack search. Its result will
-be the centralizer as a subgroup of $G$. Its arguments are
-\beginlist
-  \item{22.} the group we want to run through,
-  \item{23.} the property we want to test, as a {\GAP} function,
-  \item{24.} `false' if we are looking for a subgroup, `true' in the case
+\endlist
+\beginlist%ordered{1}{22}
+
+\item{23.} -- 29.
+This command  starts  the  backtrack  search.  Its  result  will  be  the
+centralizer as a subgroup of $G$. Its arguments are
+
+\endlist
+\beginlist%ordered{1}{24}
+  \item{24.} the group we want to run through,
+  \item{25.} the property we want to test, as a {\GAP} function,
+  \item{26.} `false' if we are looking for a subgroup, `true' in the case
     of   a  representative  search    (when  the result   would    be one
     representative),
-  \item{25.} the R-base,
-  \item{26.} a list  of data, to be stored  in `$\I$.data', which has
+  \item{27.} the R-base,
+  \item{28.} a list  of data, to be stored  in `$\I$.data', which has
     in position~1 the first member $\Sigma_0$  of the decreasing sequence
     of ``image partitions'' mentioned in "ref:Backtrack" in the
     reference manual. In the centralizer example, position~2 contains the
@@ -335,21 +363,21 @@ be the centralizer as a subgroup of $G$. Its arguments are
     would  have $h$   instead of  $g$   here, and   possibly a $\Sigma_0$
     different from $\Pi_0$ (e.g., a  partition into unions of  $h$-cycles
     of same length).
-  \item{27.} two subgroups  $L\le  C_G(g)$  and  $R\le  C_G(h)$ known  in
+  \item{29.} two subgroups  $L\le  C_G(g)$  and  $R\le  C_G(h)$ known  in
     advance (we have $L=R$ in the centralizer case).
 \endlist
 
 \medskip
 {\bsf Refinement  functions   for the  backtrack  search.}\quad  The last
 subsection showed   how the refinement   process leading from  $\Pi_i$ to
-$\Pi_{i+1}$  is coded in the  function  `$\R$.nextLevel', this  has to be
+$\Pi_{i+1}$  is coded in the  function  `$\calR$.nextLevel', this  has to be
 executed once the  base point  $a_{i+1}$.  The analogous refinement  step
 from $\Sigma_i$ to $\Sigma_{i+1}$ must be performed for each choice of an
 image $b_{i+1}$ for  $a_{i+1}$, and it will  depend  on the corresponding
 value of $\Sigma_i\wedge  (\{b_{i+1}\}, \Omega-\{b_{i+1}\})$. But  before
 we  can continue  our centralizer example,  we  must,  for the interested
 reader, document the record components of the other black box $\I$, as we
-did above for the R-base black box $\R$. Most of the components change as
+did above for the R-base black box $\calR$. Most of the components change as
 {\GAP} walks up and down the levels of the search tree.
 \beginitems
 `data' &
@@ -359,13 +387,13 @@ did above for the R-base black box $\R$. Most of the components change as
     the level $i$ in the search tree of the current node $\Sigma_i$
 
 `bimg' &
-    a list of images of the points in `$\R$.base'
+    a list of images of the points in `$\calR$.base'
 
 `partition' &
     the partition $\Sigma_i$ of the current node
 
 `level' &
-    the stabilizer chain `$\R$.lev[ $i$ ]' at the current level
+    the stabilizer chain `$\calR$.lev[ $i$ ]' at the current level
 
 `perm' &
     a permutation mapping `Fixcells(  $\Pi_i$ )' to `Fixcells( $\Sigma_i$
@@ -373,15 +401,15 @@ did above for the R-base black box $\R$. Most of the components change as
 
 `level2', `perm2' &
     a  similar construction for    the second stabilizer chain,   `false'
-    otherwise (and `true' if `$\R$.level2 = true')
+    otherwise (and `true' if `$\calR$.level2 = true')
 \enditems
 
 As declared in    the above code  for  `Centralizer',  the refinement  is
-performed   by   the function     `Refinement.Centralizer(   $\R$,  $\I$,
+performed   by   the function     `Refinement.Centralizer(   $\calR$,  $\I$,
 $\Pi$.cellno[  $p$  ],  $p$,  $where$ )'.   The  functions in the  record
 `Refinement' always   take two  additional   arguments  before  the  ones
 specified  in  the `AddRefinement'  call (in  line~13 above),  namely the
-R-base  $\R$ and  the  current  value  $\I$  of the ``R-image''.   In our
+R-base  $\calR$ and  the  current  value  $\I$  of the ``R-image''.   In our
 example,  $p$   is a   fixpoint  of   $\Pi= \Pi_i   \wedge  (\{a_{i+1}\},
 \Omega-\{a_{i+1}\})$ such that `$where$ = $\Pi$.cellno[ $p$ ^ $g$ ]'. The
 `Refinement'   functions   must  return `false'    if   the refinement is
@@ -389,47 +417,52 @@ unsuccessful (e.g., because it  leads to $\Sigma_{i+1}$ having  different
 cell   sizes from  $\Pi_{i+1}$)  and  `true'  otherwise.   Our particular
 function looks like this.
 
-{\newcount\lineno%
- \def\){\advance\lineno by1 \begingroup\obeylines\cloparen%
-        \hbox to\manindent{\hfil $\scriptstyle\the\lineno$\enspace}}%
+\)\kernttindent 1 Refinements.Centralizer := function( %
+                  $\calR$, $\I$, $cellno$, $p$, $where$ )
+\)\kernttindent 2 local \ $\Sigma$,  $q$;
+\)\kernttindent 3 \quad $\Sigma$ := $\I$.partition;
+\)\kernttindent 4 \quad $q$ := FixpointCellNo( $\Sigma$, $cellno$ ) ^ %
+                  $\I$.data[ 2 ];
+\)\kernttindent 5 \quad return IsolatePoint( $\Sigma$, $q$ ) = $where$ %
+                  and ProcessFixpoint( $\I$, $p$, $q$ );
+\)\kernttindent 6 end;
 
-\)Refinements.Centralizer := function( $\R$, $\I$, $cellno$, $p$, $where$ )
-\)local \ $\Sigma$,  $q$;
-\)\quad $\Sigma$ := $\I$.partition;
-\)\quad $q$ := FixpointCellNo( $\Sigma$, $cellno$ ) ^ $\I$.data[ 2 ];
-\)\quad return IsolatePoint( $\Sigma$, $q$ ) = $where$ %
-           and ProcessFixpoint( $\I$, $p$, $q$ );
-\)end;
-  \vadjust{\allowbreak}%
+The list numbers below refer to the line numbers of the code immediately
+above.
 
-}%
-3.\enspace    The  current    value   of   $\Sigma_i\wedge  (\{b_{i+1}\},
-\Omega-\{b_{i+1}\})$ is always found in `$\I$.partition'.
+\beginlist%ordered{1}{3}
 
-4.\enspace  The image of  the  only  point  in  cell number  `$cellno$  =
-$\Pi_i$.cellno[ $p$  ]' in $\Sigma$  under `$g$ = $\I$.data[ 2 ]' is
-calculated.
+\item{3.}
+The current value of $\Sigma_i\wedge  (\{b_{i+1}\},  \Omega-\{b_{i+1}\})$
+is always found in `$\I$.partition'.
 
-5.\enspace The function returns `true' only if the image $q$ has the same
-cell number in $\Sigma$ as  $p$ had in  $\Pi$ (i.e., $where$) and if  $q$
-can be prescribed as  an image for $p$  under the coset of the stabilizer
-$G_{a_1\ldots a_{i+1}}.c$ where $c\in    G$ is an  (already  constructed)
-element  mapping the earlier  base   points $a_1,\ldots,a_{i+1}$ to   the
-already  chosen  images $b_1,\ldots,b_{i+1}$.  This  latter condition  is
-tested by `ProcessFixpoint( $\I$, $p$,  $q$ )' which, if successful, also
-does the  necessary bookkeeping in $\I$. In  analogy to  the remark about
-line~12 in  the program above, the   chosen image $b_{i+1}$  for the base
-point $a_{i+1}$ has  already  been processed implicitly by  the  function
+\item{4.}
+The image of the only point in cell number  `$cellno$  =  $\Pi_i$.cellno[
+$p$ ]' in $\Sigma$ under `$g$ = $\I$.data[ 2 ]' is calculated.
+
+\item{5.}
+The function returns `true' only if the  image  $q$  has  the  same  cell
+number in $\Sigma$ as $p$ had in $\Pi$ (i.e., $where$) and if $q$ can  be
+prescribed as an  image  for  $p$  under  the  coset  of  the  stabilizer
+$G_{a_1\ldots a_{i+1}}.c$ where $c\in  G$  is  an  (already  constructed)
+element mapping the  earlier  base  points  $a_1,\ldots,a_{i+1}$  to  the
+already chosen images  $b_1,\ldots,b_{i+1}$.  This  latter  condition  is
+tested by `ProcessFixpoint( $\I$, $p$, $q$ )' which, if successful,  also
+does the necessary bookkeeping in $\I$. In analogy to  the  remark  about
+line~12 in the program above, the chosen image  $b_{i+1}$  for  the  base
+point $a_{i+1}$ has already been processed  implicitly  by  the  function
 `PartitionBacktrack', and this processing includes the construction of an
-element  $c\in G$ which    maps   `Fixcells( $\Pi_i$  )'  to   `Fixcells(
-$\Sigma_i$  )'  and  $a_{i+1}$   to $b_{i+1}$.  By  contrast,   the extra
-fixpoints $p$  and $q$ in  $\Pi_{i+1}$ and $\Sigma_{i+1}$ were not chosen
-automatically,   so they require an  explicit  call of `ProcessFixpoint',
-which replaces the element  $c$ by some  $c'.c$ (with $c'\in G_{a_1\ldots
-a_{i+1}}$) which in addition maps $p$ to  $q$, or returns `false' if this
+element  $c\in  G$  which  maps  `Fixcells(  $\Pi_i$  )'  to   `Fixcells(
+$\Sigma_i$  )'  and  $a_{i+1}$  to  $b_{i+1}$.  By  contrast,  the  extra
+fixpoints $p$ and $q$ in $\Pi_{i+1}$ and $\Sigma_{i+1}$ were  not  chosen
+automatically, so they require an  explicit  call  of  `ProcessFixpoint',
+which replaces the element $c$ by some $c'.c$ (with  $c'\in  G_{a_1\ldots
+a_{i+1}}$) which in addition maps $p$ to $q$, or returns `false' if  this
 is impossible.
 
-You should now be able to  guess what `Refinements.ProcessFixpoint( $\R$,
+\endlist
+
+You should now be able to  guess what `Refinements.ProcessFixpoint( $\calR$,
 $\I$, $p$, $where$   )' does: it  simply returns  `ProcessFixpoint( $\I$,
 $p$, FixpointCellNo( $\I$.partition, $where$ ) )'.
 
@@ -448,14 +481,14 @@ involves computing  the  meet of $\Pi$  (cf.\ lines~6ff.\  above) with an
 arbitrary other partition  $\Lambda$, not just  with one point. To do this
 efficiently, {\GAP} uses the following two functions.
 
-\>StratMeetPartition( $\R$, $\Pi$, $\Lambda$ \[, $g$ \] )
-\>MeetPartitionStrat( $\R$, $\I$, {$\Lambda'$} \[, {$g'$} \], $strat$ )
+\>StratMeetPartition( $\calR$, $\Pi$, $\Lambda$ \[, $g$ \] )
+\>MeetPartitionStrat( $\calR$, $\I$, {$\Lambda'$} \[, {$g'$} \], $strat$ )
 
 \index{meet strategy}
 Such a  `StratMeetPartition'   command would   typically appear in    the
-function call `$\R$.nextLevel(  $\Pi$, $\R$ )'  (during the refinement of
+function call `$\calR$.nextLevel(  $\Pi$, $\calR$ )'  (during the refinement of
 $\Pi_i$  to  $\Pi_{i+1}$). This   command  replaces  $\Pi$  by $\Pi\wedge
-\Lambda$ (thereby  *changing* the  second  argument) and retuns  a ``meet
+\Lambda$ (thereby  *changing* the  second  argument) and returns a ``meet
 strategy''  $strat$. This  is  (for  us) a  black   box which  serves two
 purposes:  First, it allows {\GAP} to  calculate faster the corresponding
 meet $\Sigma\wedge \Lambda'$,  which must then  appear in a `Refinements'
@@ -474,16 +507,18 @@ On  the  other hand, if you  only  want to meet   a  partition $\Pi$ with
 $\Lambda$  for  a one-time  use, without recording   a strategy,  you can
 simply type `StratMeetPartition( $\Pi$, $\Lambda$ )'  as in the following
 example, which also demonstrates some other partition-related commands.
+
 \beginexample
-    gap> P := Partition( [[1,2],[3,4,5],[6]] );;  Cells( P );
-    [ [ 1, 2 ], [ 3, 4, 5 ], [ 6 ] ]
-    gap> Q := OnPartitions( P, (1,3,6) );;  Cells( Q );
-    [ [ 3, 2 ], [ 6, 4, 5 ], [ 1 ] ]
-    gap> StratMeetPartition( P, Q );
-    [  ]  # the ``meet strategy'' was not recorded, ignore this result
-    gap> Cells( P );
-    [ [ 1 ], [ 5, 4 ], [ 6 ], [ 2 ], [ 3 ] ]
+gap> P := Partition( [[1,2],[3,4,5],[6]] );;  Cells( P );
+[ [ 1, 2 ], [ 3, 4, 5 ], [ 6 ] ]
+gap> Q := OnPartitions( P, (1,3,6) );;  Cells( Q );
+[ [ 3, 2 ], [ 6, 4, 5 ], [ 1 ] ]
+gap> StratMeetPartition( P, Q );
+[  ]  # the ``meet strategy'' was not recorded, ignore this result
+gap> Cells( P );
+[ [ 1 ], [ 5, 4 ], [ 6 ], [ 2 ], [ 3 ] ]
 \endexample
+
 You can even say  `StratMeetPartition( $\Pi$, $\Delta$ )'  where $\Delta$
 is simple  a subset  of  $\Omega$, it   will then  be interpreted as  the
 partition $(\Delta,\Omega-\Delta)$.
@@ -501,13 +536,13 @@ In  all cases, an additional  argument $g$ means that the   meet is to be
 taken  not with $\Lambda$,   but  instead with $\Lambda.{g^{-1}}$,  where
 operation  on ordered partitions is  meant cellwise  (and setwise on each
 cell). (Analogously for the primed arguments.)
+
 \beginexample
-    gap> P := Partition( [[1,2],[3,4,5],[6]] );;
-    gap> StratMeetPartition( P, P, (1,6,3) );;  Cells( P );
-    [ [ 1 ], [ 5, 4 ], [ 6 ], [ 2 ], [ 3 ] ]  # |$P.(1,3,6) = Q|$
+gap> P := Partition( [[1,2],[3,4,5],[6]] );;
+gap> StratMeetPartition( P, P, (1,6,3) );;  Cells( P );
+[ [ 1 ], [ 5, 4 ], [ 6 ], [ 2 ], [ 3 ] ]  # |$P.(1,3,6) = Q|$
 \endexample
 
-\medskip
 {\bsf Avoiding multiplication  of permutations.}\quad In the  description
 of  the last subsections, the  backtrack  algorithm constructs an element
 $c\in G$ mapping  the base points   to the prescribed images  and finally
@@ -547,17 +582,12 @@ second argument (the property  in question) in  a different way, not as a
 single {\GAP} function, but as a list like in lines 2--4 of the following
 alternative excerpt from the code for `Centralizer'.
 
-{\newcount\lineno%
- \def\){\advance\lineno by1 \begingroup\obeylines\cloparen%
-        \hbox to\manindent{\hfil $\scriptstyle\the\lineno$\enspace}}%
-\)return PartitionBacktrack( $G$,
-\)\quad [ $g$, $g$,
-\)\qquad OnPoints,
-\)\qquad $c$ -> $c$!.lftObj = $c$!.rgtObj ],
-\)\quad false, $\R$, [ $\Pi_0$, $g$ ], $L$, $R$ );
-  \vadjust{\allowbreak}%
+\)\kernttindent 1 return PartitionBacktrack( $G$,
+\)\kernttindent 2 \quad [ $g$, $g$,
+\)\kernttindent 3 \qquad OnPoints,
+\)\kernttindent 4 \qquad $c$ -> $c$!.lftObj = $c$!.rgtObj ],
+\)\kernttindent 5 \quad false, $\calR$, [ $\Pi_0$, $g$ ], $L$, $R$ );
 
-}%
 The test for $c$ to have the property in question  is of the form `$opr$(
 $left$,  $c$  )  =  $right$' where  $opr$   is an  operation  function as
 explained in "ref:External sets" in the reference manual. In other words,
@@ -566,25 +596,31 @@ object'' under  a certain operation. In  the centralizer example, we have
 `$opr$ =  OnPoints' and $left = right  = g$, but  in a conjugacy test, we
 would have $right = h$.
 
-2.\enspace  Two first two  entries (here $g$ and  $g$)  are the values of
-$left$ and $right$.
+\beginlist%ordered{1}{2}
 
-3.\enspace The third entry (here `OnPoints') is the operation $opr$.
+\item{2.}
+Two first two entries (here $g$ and $g$) are the  values  of  $left$  and
+$right$.
 
-4.\enspace The fourth  entry is the test to  be performed upon the mapped
-left object $left$  and preimage  of  the right object `$opr$(   $right$,
-$c$^-1 )'.  Here {\GAP} operates with the  inverse of $c$ because this is
-the product of  the permutations stored  in the ``list of inverses''. The
-preimage of $right$ under $c$ is then calculated by mapping $right$ with
-the factors  of $c^{-1}$ one by one,  without the need  to multiply these
-factors.    This mapping  of  $right$  is     automatically done by   the
-`ProcessFixpoint' function whenever $c$ is extended, the current value of
-$right$ is always  stored  in `$c$!.rgtObj'.  When the test  given by the
-fourth entry  is finally performed,   the element $c$  has two components
-`$c$!.lftObj =  $left$' and `$c$!.rgtObj  =   $opr$( $right$, $c$^-1  )',
-which must be used to express the desired  relation as a function of $c$.
-In our  centralizer  example, we simply  have  to test   whether they are
-equal.
+\item{3.}
+The third entry (here `OnPoints') is the operation $opr$.
+
+\item{4.}
+The fourth entry is the test to be performed upon the mapped left  object
+$left$ and preimage of the right object `$opr$( $right$, $c$^-1 )'.  Here
+{\GAP} operates with the inverse of $c$ because this is  the  product  of
+the permutations stored in the ``list  of  inverses''.  The  preimage  of
+$right$ under $c$ is then calculated by mapping $right$ with the  factors
+of $c^{-1}$ one by one, without the need to multiply these factors.  This
+mapping  of  $right$  is  automatically  done  by  the  `ProcessFixpoint'
+function whenever $c$ is extended, the current value of $right$ is always
+stored in `$c$!.rgtObj'. When the test  given  by  the  fourth  entry  is
+finally performed, the element $c$  has  two  components  `$c$!.lftObj  =
+$left$' and `$c$!.rgtObj = $opr$( $right$, $c$^-1 )', which must be  used
+to express the desired relation as a function of $c$. In our  centralizer
+example, we simply have to test whether they are equal.
+
+\endlist
 
 \endgroup%
 
@@ -592,7 +628,7 @@ equal.
 \Section{Stabilizer Chains for Automorphisms Acting on Enumerators}
 
 This section describes a way of representing the automorphism group of a
-group as permutation group, following \cite{Sims97}. The code hoewever is
+group as permutation group, following \cite{Sims97}. The code however is
 not yet included in the {\GAP} library.
 
 In this section  we present an example in  which objects we  already know
@@ -685,15 +721,21 @@ abelian, but we will do so from  here on. Our  first task is to implement
 an enumerator (see "ref:AsList" and "ref:Enumerators"  in  the  reference
 manual) for a coset of a characteristic factor in a solvable  group  $G$.
 We assume that such a coset $gN/M$ is given by
-\beginlist
+
+\beginlist%ordered
+
 \item{(1)}  a pcgs for  the group  $G$ (see  "ref:Pcgs" in the  reference
   manual), let `$n$ = Length( $pcgs$ )';
+
 \item{(2)} a range `$range$ = [ $start$  .. $stop$ ]' indicating that `$N
   =  \langle pcgs$\{ [ $start$  .. $n$ ] \} $\rangle$'  and `$M = \langle
   pcgs$\{  [  $stop$ + 1   .. $n$ ]  \} $\rangle$',  i.e.,  the cosets of
   `$pcgs$\{ $range$ \}' form a base for the vector space $N/M$;
+
 \item{(3)} the representative $g$.
+
 \endlist
+
 We   first  define a  new representation  for   such enumerators and then
 construct them by simply putting these three pieces of data into a record
 object. The  enumerator  should  behave as  a   list of  group   elements

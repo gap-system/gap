@@ -1194,6 +1194,8 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
     local   rep,                # representative, result
             S,                  # stabilizer of <G>
             rep2,               # representative in <S>
+	    sel,
+	    dp,ep,		# point copies
             i,  f;              # loop variables
 
     # standard action on points, make a basechange and trace the rep
@@ -1210,24 +1212,60 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
         elif Length( d ) <> Length( e ) then
             rep:= fail;
         else
-            S := StabChainOp( G, d );
-            rep := S.identity;
-            for i  in [ 1 .. Length( d ) ]  do
-                if BasePoint( S ) = d[ i ]  then
-                    f := e[ i ] / rep;
-                    if not IsInBasicOrbit( S, f )  then
-                        rep := fail;
-                        break;
-                    else
-                        rep := LeftQuotient( InverseRepresentative( S, f ),
-                                       rep );
-                    fi;
-                    S := S.stabilizer;
-                elif e[ i ] <> d[ i ] ^ rep  then
-                    rep := fail;
-                    break;
-                fi;
-            od;
+	    # can we use the current stab chain? (try to avoid rebuilding
+	    # one if called frequently)
+	    S:=StabChainMutable(G);
+	    # move the points already in the base in front
+	    sel:=List(BaseStabChain(S),i->Position(d,i));
+	    sel:=Filtered(sel,i->i<>fail);
+	    if Length(sel)>0 then
+	      # rearrange
+	      sel:=Concatenation(sel,Difference([1..Length(d)],sel));
+	      dp:=d{sel};
+	      ep:=e{sel};
+	      rep := S.identity;
+	      for i  in [ 1 .. Length( dp ) ]  do
+		  if BasePoint( S ) = dp[ i ]  then
+		      f := ep[ i ] / rep;
+		      if not IsInBasicOrbit( S, f )  then
+			  rep := fail;
+			  break;
+		      else
+			  rep := LeftQuotient( InverseRepresentative( S, f ),
+					rep );
+		      fi;
+		      S := S.stabilizer;
+		  elif ep[ i ] <> dp[ i ] ^ rep  then
+		      rep := fail;
+		      break;
+		  fi;
+	      od;
+	    else
+	      rep:=fail; # we did not yet get anything
+	    fi;
+
+	    if rep=fail then
+	      # did not work with the existing stabchain - do again
+	      S := StabChainOp( G, d );
+	      rep := S.identity;
+	      for i  in [ 1 .. Length( d ) ]  do
+		  if BasePoint( S ) = d[ i ]  then
+		      f := e[ i ] / rep;
+		      if not IsInBasicOrbit( S, f )  then
+			  rep := fail;
+			  break;
+		      else
+			  rep := LeftQuotient( InverseRepresentative( S, f ),
+					rep );
+		      fi;
+		      S := S.stabilizer;
+		  elif e[ i ] <> d[ i ] ^ rep  then
+		      rep := fail;
+		      break;
+		  fi;
+	      od;
+	    fi;
+
         fi;
 
     # action on (lists of) permutations, use backtrack

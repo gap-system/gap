@@ -145,6 +145,14 @@ extern  Int             GrowPlist (
 */
 #define IS_MUTABLE_PLIST(list)  (!((TNUM_OBJ(list) - T_PLIST) % 2))
 
+/****************************************************************************
+**
+*F  AssPlist(<list>,<pos>,<val>)  . . . . . . . . . .  assign to a plain list
+*/
+extern void            AssPlist (
+    Obj                 list,
+    Int                 pos,
+    Obj                 val );
 
 /****************************************************************************
 **
@@ -156,6 +164,15 @@ extern void AssPlistEmpty (
     Obj                 list,
     Int                 pos,
     Obj                 val );
+
+extern void AssPlistFfe   (
+    Obj                 list,
+    Int                 pos,
+    Obj                 val );
+
+extern Int KTNumPlist (
+    Obj                 list,
+    Obj                 *famfirst);
 
 void            UnbPlistImm (
     Obj                 list,

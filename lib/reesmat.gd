@@ -13,7 +13,7 @@ Revision.reesmat_gd :=
     "@(#)$Id$";
 
 #1
-##  In this section we describe {\GAP} funtions for Rees matrix semigroups
+##  In this section we describe {\GAP} functions for Rees matrix semigroups
 ##  and Rees 0-matrix semigroups.
 ##  The importance of this construction is that 
 ##  Rees Matrix semigroups over groups 
@@ -111,8 +111,9 @@ DeclareGlobalFunction( "ReesZeroMatrixSemigroupElement" );
 #C  IsSubsemigroupReesMatrixSemigroup( <T> )
 #C  IsSubsemigroupReesZeroMatrixSemigroup( <T> )
 ##
-##  is the category of rees matrix semigroups.
-##  Returns true if <T> is a [subsemigroup of a] Rees (0-)matrix semigroup.
+##  is the category of Rees matrix semigroups.
+##  The functions return `true' if <T> is a (subsemigroup of a) 
+##  Rees (0-)matrix semigroup.
 ##
 DeclareSynonymAttr( "IsSubsemigroupReesMatrixSemigroup", 
 	IsSemigroup and IsReesMatrixSemigroupElementCollection);
@@ -124,7 +125,7 @@ DeclareSynonymAttr( "IsSubsemigroupReesZeroMatrixSemigroup",
 ##
 #P  IsReesMatrixSemigroup( <T> )
 ##
-##  returns true whenever we have a (whole) rees matrix semigroup.
+##  returns `true' if the object <T> is a (whole) Rees matrix semigroup.
 ##
 DeclareSynonymAttr( "IsReesMatrixSemigroup", 
 	IsSubsemigroupReesMatrixSemigroup and IsWholeFamily);
@@ -134,7 +135,7 @@ DeclareSynonymAttr( "IsReesMatrixSemigroup",
 #A  SandwichMatrixOfReesMatrixSemigroup( <R> )
 #A  SandwichMatrixOfReesZeroMatrixSemigroup( <R> )
 ##
-##  the defining matrix of the Rees (0-) matrix semigroup.
+##  each return the defining matrix of the Rees (0-) matrix semigroup.
 ##
 DeclareAttribute("SandwichMatrixOfReesMatrixSemigroup", IsSubsemigroupReesMatrixSemigroup);
 DeclareAttribute("SandwichMatrixOfReesZeroMatrixSemigroup", IsSubsemigroupReesZeroMatrixSemigroup);
@@ -145,7 +146,7 @@ DeclareAttribute("SandwichMatrixOfReesZeroMatrixSemigroup", IsSubsemigroupReesZe
 #A  RowsOfReesMatrixSemigroup( <R> )
 #A  RowsOfReesZeroMatrixSemigroup( <R> )
 ## 
-##  the number of rows in the defining matrix of <R>.
+##  return the number of rows in the defining matrix of <R>.
 ##
 DeclareAttribute("RowsOfReesMatrixSemigroup",IsSubsemigroupReesMatrixSemigroup );
 DeclareAttribute("RowsOfReesZeroMatrixSemigroup",IsSubsemigroupReesZeroMatrixSemigroup );
@@ -155,7 +156,7 @@ DeclareAttribute("RowsOfReesZeroMatrixSemigroup",IsSubsemigroupReesZeroMatrixSem
 #A  ColumnsOfReesMatrixSemigroup( <R> )
 #A  ColumnsOfReesZeroMatrixSemigroup( <R> )
 ##
-##  number of columns in the defining matrix of <R>.
+##  return the number of columns in the defining matrix of <R>.
 ##
 DeclareAttribute("ColumnsOfReesMatrixSemigroup",IsSubsemigroupReesMatrixSemigroup);
 DeclareAttribute("ColumnsOfReesZeroMatrixSemigroup",IsSubsemigroupReesZeroMatrixSemigroup);
@@ -165,7 +166,8 @@ DeclareAttribute("ColumnsOfReesZeroMatrixSemigroup",IsSubsemigroupReesZeroMatrix
 #A  UnderlyingSemigroupOfReesMatrixSemigroup( <R> )
 #A  UnderlyingSemigroupOfReesZeroMatrixSemigroup( <R> )
 ##
-##  underlying semigroup containing the entries in the defining matrix of <R>.
+##  return the underlying semigroup containing the entries in the defining
+##  matrix of <R>.
 ##
 DeclareAttribute("UnderlyingSemigroupOfReesMatrixSemigroup",
 	IsSubsemigroupReesMatrixSemigroup);
@@ -181,8 +183,8 @@ DeclareAttribute("UnderlyingSemigroupOfReesZeroMatrixSemigroup",
 #A  UnderlyingElementOfReesMatrixSemigroupElement( <x> )
 #A  UnderlyingElementOfReesZeroMatrixSemigroupElement( <x> )
 ##
-##  for an element <x> of a Rees Matrix semigroup, of the form
-##  (<s>, <i>, <lambda>),
+##  For an element <x> of a Rees Matrix semigroup, of the form
+##  `(<s>, <i>, <lambda>)',
 ##  the row index is <i>, the column index is <lambda> and the 
 ##  underlying element is <s>.
 ##  If we think of an element as a matrix then this corresponds to
@@ -206,7 +208,7 @@ DeclareAttribute("UnderlyingElementOfReesZeroMatrixSemigroupElement",
 ##
 #P  IsReesZeroMatrixSemigroup( <T> )
 ##
-##  returns true whenever we have a (whole) rees 0-matrix semigroup.
+##  returns `true' if the object <T> is a (whole) Rees 0-matrix semigroup.
 ##
 DeclareSynonymAttr( "IsReesZeroMatrixSemigroup", 
 	IsSubsemigroupReesZeroMatrixSemigroup and IsWholeFamily);
@@ -215,7 +217,7 @@ DeclareSynonymAttr( "IsReesZeroMatrixSemigroup",
 ##
 #P  ReesZeroMatrixSemigroupElementIsZero( <x> )
 ##
-##  returns true if <x> is the zero of the Rees 0-matrix semigroup.
+##  returns `true' if <x> is the zero of the Rees 0-matrix semigroup.
 ##
 DeclareProperty("ReesZeroMatrixSemigroupElementIsZero", 
 	IsReesZeroMatrixSemigroupElement);
@@ -225,12 +227,12 @@ DeclareProperty("ReesZeroMatrixSemigroupElementIsZero",
 #A  AssociatedReesMatrixSemigroupOfDClass( <D> )
 ##
 ##  Given a regular <D> class of a finite semigroup, it can be viewed as a
-##  rees matrix semigroup by identifying products which do not lie in the
-##  <D> class with zero.
+##  Rees matrix semigroup by identifying products which do not lie in the
+##  <D> class with zero, and this is what it is returned.
 ##
 ##  Formally, let $I_1$ be the ideal of all J classes less than or equal to
 ##  <D>, $I_2$ the ideal of all J classes *strictly* less than <D>,
-##  and $\rho$ the rees congurence associated with $I_2$.  Then $I/\rho$
+##  and $\rho$ the Rees congruence associated with $I_2$.  Then $I/\rho$
 ##  is zero-simple.  Then `AssociatedReesMatrixSemigroupOfDClass( <D> )'
 ##  returns this zero-simple semigroup as a Rees matrix semigroup.
 ##

@@ -9,7 +9,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares operations for `FFE's.
-##
 #1
 ##  For creating elements of a finite field the function `Z' can be used.
 ##  The call `Z( <p>^<d> )' returns  the designated generator of  the 

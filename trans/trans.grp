@@ -217,6 +217,7 @@ TRANSNONDISCRIM := [[],[],[],[],[],[],[],[],[],[],[],[[273,292]],[],
 TRANSSELECT :=[];
 TRANSSIZES  :=[];
 TRANSPARTNUM:=[];
+InstallFlushableValue(TRANSSHAPEFREQS,[]);
 
 if not IsBound(TRANSDEGREES) then
   TRANSDEGREES :=7;
@@ -247,6 +248,7 @@ local Tbak,Fbak,flg,sel,i,fname;
       if not IsBound(TRANSGRP[deg]) then
 	ReadGapRoot( Concatenation( "trans/", fname, ".grp" ) );
         if nr=0 then 
+	  UnhideGlobalVariables("T","F");
 	  return;
 	fi;
       else
@@ -288,6 +290,7 @@ local Tbak,Fbak,flg,sel,i,fname;
     MakeImmutable(TRANSPROPERTIES[deg][i]);
   od;
   TRANSPARTNUM[deg]:=NrPartitions(deg);
+  TRANSSHAPEFREQS[deg]:=[];
 end);
 
 BIND_GLOBAL("TRANSGrp",function(deg,nr)
@@ -468,10 +471,15 @@ local l,i;
   return Orbits(g,l,OnTuples);
 end); 
 
+# the (undocumented) `cheap' parameter has the following function:
+# not set -> proper test
+# true -> return `fail' if not unique ID
+# 1    -> ID list if no cheap unique ID
+# 2    -> as 1, but do not compute classes (expensive if big!)
 InstallMethod(TransitiveIdentification,"generic",true,[IsPermGroup],0,
 function(ogrp)
 local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
-  cheap:=ValueOption("cheap")<>fail;
+  cheap:=ValueOption("cheap");
   grp:=ogrp;
   dom:=MovedPoints(grp);
   if not IsTransitive(grp,dom) then
@@ -515,7 +523,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
 #    SetConjugacyClasses(grp,t);
 #  fi;
 
-  if Length(cand)>1 then
+  if Length(cand)>1 and cheap<>2 then
     s:=List(CycleStructuresGroup(grp),i->i=1);
     cand:=Filtered(cand,i->TRANSProperties(deg,i)[5]=s);
   fi;
@@ -552,7 +560,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     p:=p{s};
   fi;
 
-  if Length(cand)>1 then
+  if Length(cand)>1 and cheap<>2 then
     # As all computations, which follow involve only the groups, convert
     # them to PcGroups if possible
     if IsSolvableGroup(grp) then
@@ -581,7 +589,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
   fi;  
 
   # maximal subgroups
-  if not cheap and IsSolvableGroup(grp) and Length(cand)>1 then
+  if cheap=fail and IsSolvableGroup(grp) and Length(cand)>1 then
     t:=Collected(List(MaximalSubgroupClassReps(grp),
       i->[Size(i),Collected(List(Orbits(i,MovedPoints(grp)),Length))]));
     s:=Filtered([1..Length(cand)],k->
@@ -604,7 +612,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     fi;
   fi;
 
-  if not cheap and Length(cand)>1 and not IsSolvableGroup(grp) then
+  if cheap=fail and Length(cand)>1 and not IsSolvableGroup(grp) then
     # NormalSubgroups (some solvable groups have too many)
     t:=Collected(List(NormalSubgroups(grp),Size));
     s:=Filtered([1..Length(cand)],
@@ -613,7 +621,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     p:=p{s};
   fi;  
 
-  if not cheap and Length(cand)>1 and Size(grp)<3000 then
+  if cheap=fail and Length(cand)>1 and Size(grp)<3000 then
     # Subgroups
     Info(InfoWarning,2,"TransId: test Subgroups ",cand);
     t:=Collected(List(ConjugacyClassesSubgroups(Group(GeneratorsOfGroup(grp))),
@@ -625,9 +633,16 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     p:=p{s};
   fi;  
 
-  if not cheap and Length(cand)>1 then
+  if cheap=fail and Length(cand)>1 then
+    # two special cases in degree 30
+    if Length(dom)=30 and 2230 in cand or 4335 in cand then
+      Info(InfoWarning,2,"TransId: Isomorphism Test",cand);
+      cand:=First(cand,i->IsomorphismGroups(grp,
+         TransitiveGroup(30,i):nogensyssearch:=true)<>fail);
+      return cand;
+    fi;
     # now finally the hard test: Test for conjugacy
-    Info(InfoWarning,2,"TransId: test Conjugacy Test",cand);
+    Info(InfoWarning,2,"TransId: Conjugacy Test",cand);
     s:=SymmetricGroup(Maximum(dom));
 #    if IsSolvableGroup(grp) then
 #      grp:=PreImage(aiso,grp);
@@ -642,8 +657,10 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
 
   if Length(cand)=1 then
     return cand[1];
-  elif cheap then
-    return fail;
+  elif cheap=true then
+    return cand;
+  elif cheap<>fail then
+    return cand;
   else
     Error("Uh-Oh, this should never happen ",cand);
   fi;

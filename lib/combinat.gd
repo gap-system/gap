@@ -424,9 +424,9 @@ DeclareGlobalFunction("NrRestrictedPartitions");
 
 #############################################################################
 ##
-#F  SignPartition( <pi> ) . . . . . . . . . . . . .  signof partition <pi>
+#F  SignPartition( <pi> ) . . . . . . . . . . . . .  sign of partition <pi>
 ##
-##  returns the signof a permutation with cycle structure <pi>.
+##  returns the sign of a permutation with cycle structure <pi>.
 ##
 ##  This function actually describes  a homomorphism from  the  symmetric
 ##  group $S_n$ into  the  cyclic group of order  2,  whose  kernel  is
@@ -527,7 +527,7 @@ DeclareGlobalFunction("Lucas");
 ##  x - 1 = 0$.  Fibonacci  numbers have  the  property $Gcd( F_m,  F_n ) =
 ##  F_{Gcd(m,n)}$.  But a pair of Fibonacci numbers requires more division
 ##  steps in Euclid's algorithm (see~"Gcd") than any  other  pair of
-##  integers of the same size.  `Fibonnaci(<k>)' is the special case
+##  integers of the same size.  `Fibonacci(<k>)' is the special case
 ##  `Lucas(1,-1,<k>)[1]' (see "Lucas").
 ##
 DeclareGlobalFunction("Fibonacci");

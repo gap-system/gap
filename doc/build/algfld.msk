@@ -20,7 +20,7 @@ It is important to note that different extensions of the same field are
 entirely different (and its elements lie in different families), even if
 mathematically one could be embedded in the other one.
 
-Currently {\sf GAP} only allows extension fields of fields $K$, when $K$
+Currently {\GAP} only allows extension fields of fields $K$, when $K$
 itself is not an extension field.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -253,8 +253,7 @@ low level routines for manipulating stabilizer chains.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Randomized Methods for Permutation Groups}
 
-\index{Schreier-Sims!Random}
-
+\atindex{Schreier-Sims!random}{@Schreier-Sims!random}
 For most computations with permutation groups,
 it is crucial to construct stabilizer chains efficiently. Sims's
 original construction \cite{Sim70} is deterministic, and is called

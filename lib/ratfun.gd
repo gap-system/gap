@@ -9,7 +9,7 @@
 #Y  (C) 1998 School Math and Comp. Sci.,  University of St  Andrews, Scotland
 ##
 ##  This file contains the categories,  attributes, properties and operations
-##  for  rational functions, laurent polynomials   and polynomials and  their
+##  for  rational functions, Laurent polynomials   and polynomials and  their
 ##  families.
 Revision.ratfun_gd :=
     "@(#)$Id$";
@@ -18,7 +18,7 @@ Revision.ratfun_gd :=
 ##  If the mechanism for storing attributes is changed,
 ##  `LaurentPolynomialByExtRep' must be changed as well.
 ##  Also setter methods for coefficients and/or indeterminate number will be
-##  ignored when creatig laurent polynomials.
+##  ignored when creating Laurent polynomials.
 ##  (This is ugly and inconsistent, but crucial to get speed. ahulpke, May99)
 
 #############################################################################
@@ -75,7 +75,7 @@ DeclareCategory("IsRationalFunctionOverField", IsRationalFunction );
 ##
 ##  creates a   family  containing rational functions  with   coefficients
 ##  in <fam>. This family <fam> *must* be a UFD, that is to say, there are no
-##  zero divisors, the family must have a one, be comutative and the
+##  zero divisors, the family must have a one, be commutative and the
 ##  factorisation of an  elements into irreducible  elements of the  family
 ##  must be unique (up to units and order).
 ##  All elements of the `RationalFunctionsFamily' are rational functions
@@ -250,7 +250,7 @@ DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
 ##  \index{External representation of polynomials}
 ##  The representation of a polynomials is a list of the form
 ##  `[<mon>,<coeff>,<mon>,<coeff>,...]' where <mon> is a monomial in
-##  expanded form (that is given as list) and <coeff> its coefficent. The
+##  expanded form (that is given as list) and <coeff> its coefficient. The
 ##  monomials must be sorted according to the total degree/lexicographic
 ##  order (implemented by the function `MonomialTotalDegreeLess'). We call
 ##  this the *external representation* of a polynomial. (The
@@ -308,8 +308,8 @@ DeclareAttribute("ExtRepPolynomialRatFun",IsRationalFunction and IsPolynomial);
 ##
 #A  CoefficientsOfLaurentPolynomial( <laurent> )
 ##
-##  For a Laurent polynomial this function returns a pair [<cof>,<val>],
-##  consisiting of the coefficient list (in ascending order) <cof> and the
+##  For a Laurent polynomial this function returns a pair `[<cof>, <val>]',
+##  consisting of the coefficient list (in ascending order) <cof> and the
 ##  valuation <val> of the Laurent polynomial <laurent>.
 ##
 DeclareAttribute( "CoefficientsOfLaurentPolynomial",
@@ -360,9 +360,9 @@ DeclareSynonym( "UnivariateLaurentPolynomialByCoefficients",
 ##
 #F  LaurentPolynomialByExtRep( <fam>, <cofs>,<val> ,<ind> )
 ##
-##  creates a laurent polynomial in the family <fam> with [<cofs>,<val>] as
+##  creates a Laurent polynomial in the family <fam> with [<cofs>,<val>] as
 ##  value of `CoefficientsOfLaurentPolynomial'. No coefficient shifting is
-##  performed.  This is the lowest level function to create a laurent
+##  performed.  This is the lowest level function to create a Laurent
 ##  polynomial but will rely on the coefficients being shifted properly and
 ##  will not perform any tests. Unless this is guaranteed for the
 ##  parameters, `LaurentPolynomialByCoefficients'
@@ -487,7 +487,7 @@ DeclareSynonym( "DegreeOfUnivariateLaurentPolynomial",
 ##
 #O  UnivariatePolynomialByCoefficients( <fam>, <cofs>, <ind> )
 ##
-##  constructs an univariate polynomial over the coeffcients family
+##  constructs an univariate polynomial over the coefficients family
 ##  <fam> and in the indeterminate <ind> with the coefficients given by
 ##  <coefs>. This function should be used in algorithms to create
 ##  polynomials as it avoids overhead associated with
@@ -539,9 +539,8 @@ DeclareOperation( "UnivariateRationalFunctionByCoefficients",
 ##  indeterminates given in <indets> to the values given in <vals>,
 ##  replacing the $i$-th indeterminate $<indets>_i$ by $<vals>_i$. If this
 ##  specialization results in a constant polynomial, an element of the
-##  coefficient ring is returned.  If the specialization would specialize
-##  the denominator of <ratfun> to a noninvertible element, `fail' is
-##  returned.
+##  coefficient ring is returned. If the specialization would specialize
+##  the denominator of <ratfun> to zero, an error is raised.
 ##
 ##  A variation is the evaluation at elements of another ring $R$, for which
 ##  a multiplication with elements of the coefficient ring of <ratfun> are
@@ -662,15 +661,16 @@ DeclareOperation("DegreeIndeterminate",[IsPolynomial,IsPosInt]);
 
 #############################################################################
 ##
-#O  Derivative( <upol> )
-#O  Derivative( <pol>,<ind> )
+#O  Derivative( <ufun> )
+#O  Derivative( <ratfun>,<ind> )
 ##
-##  returns the derivative $<upoly>'$ of the univariate polynomial <upoly>
-##  by its indeterminant. The second version returns the derivative of <pol>
-##  by the indeterminate <ind> (respectively indeterminate number <ind>)
-##  when viewing <pol> as univariate in <ind>.
+##  returns the derivative $<upoly>'$ of the univariate rational function
+##  <ufun> by its indeterminant. The second version returns the derivative
+##  of <ratfun> by the indeterminate <ind> (respectively indeterminate
+##  number <ind>) when viewing <ratfun> as univariate in <ind>.
 ##
-DeclareOperation("Derivative",[IsPolynomial]);
+DeclareAttribute("Derivative",IsUnivariateRationalFunction);
+DeclareOperation("Derivative",[IsRationalFunction,IsPosInt]);
 
 #############################################################################
 ##
@@ -765,25 +765,29 @@ DeclareGlobalFunction("QuotientPolynomialsExtRep");
 ##
 #F  QuotRemLaurpols(<left>,<right>,<mode>)
 ##
-##  takes two laurent polynomials <left> and <right> and computes their
+##  takes two Laurent polynomials <left> and <right> and computes their
 ##  quotient. Depending on the integer variable <mode> it returns:
-##  \beginitems
-##  1&the quotient (there might be some remainder),
+##  \beginlist%ordered
+##  \item{1.}
+##  the quotient (there might be some remainder),
 ##
-##  2&the remainder,
+##  \item{2.}
+##  the remainder,
 ##
-##  3&a list [<q>,<r>] of quotient and remainder,
+##  \item{3.}
+##  a list [<q>,<r>] of quotient and remainder,
 ##
-##  4&the quotient if there is no remainder and `fail' otherwise.
-##  \enditems
+##  \item{4.}
+##  the quotient if there is no remainder and `fail' otherwise.
+##  \endlist
 DeclareGlobalFunction("QuotRemLaurpols");
 
 #############################################################################
 ##
 #F  GcdCoeffs(<a>,<b>)
 ##
-##  compute univariate gcd coeff list from coeff lists.
-##  This should eventually becomne an operation and dispatch specially for
+##  computes the univariate gcd coefficient list from coefficient lists.
+##  This should eventually become an operation and dispatch specially for
 ##  rationals.
 DeclareGlobalFunction("GcdCoeffs");
 
@@ -792,12 +796,12 @@ DeclareGlobalFunction("GcdCoeffs");
 #F  UnivariatenessTestRationalFunction(<f>)
 ##
 ##  takes a rational function <f> and tests whether it is univariate or even
-##  a laurent polynomial. It returns a list
-##  [<isunivariate>,<indet>,<islaurent>,<cofs>] where <indet> is the
+##  a Laurent polynomial. It returns a list
+##  `[<isunivariate>, <indet>, <islaurent>, <cofs>]' where <indet> is the
 ##  indeterminate number and <cofs> (if applicable) the coefficients lists.
 ##  The list <cofs> is the `CoefficientsOfLaurentPolynomial' if <islaurent>
 ##  is `true' and the `CoefficientsOfUnivariateRationalFunction' if
-##  <islaurent> is `false' and <isunivariate> true.
+##  <islaurent> is `false' and <isunivariate> `true'.
 ##  As there is no proper multivariate gcd, it might return `fail' for
 ##  <isunivariate>.
 DeclareGlobalFunction("UnivariatenessTestRationalFunction");
@@ -834,7 +838,7 @@ DeclareOperation( "ZippedSum", [ IsList, IsList, IsObject, IsList ] );
 ##
 ##  computes the product of two external representations of polynomials <z1>
 ##  and <z2>. <czero> is the appropriate coefficient zero and <funcs> a list
-##  [<monomial prod>,<monomial less>,<coefficient sum>,<coefficient prod> ]
+##  `[<monomial_prod>, <monomial_less>, <coefficient_sum>, <coefficient_prod>]'
 ##  containing functions to multiply and compare monomials, to add and to
 ##  multiply coefficients.  This list can be found in the component
 ##  `<fam>!.zippedProduct' of the rational functions family.
@@ -875,8 +879,8 @@ DeclareCategory( "IsUnivariatePolynomialsFamilyElement",
 ##
 #C  IsLaurentPolynomialsFamily(<obj>)
 ##
-##  at present Laurent polynomials  families only  exist if the  coefficients
-##  family is commutative and has a one
+##  At present Laurent polynomials  families only  exist if the  coefficients
+##  family is commutative and has a one.
 ##
 #T  1996/10/14 fceller can this be done with `CategoryFamily'?
 ##
@@ -888,8 +892,8 @@ DeclareCategory( "IsLaurentPolynomialsFamily",
 ##
 #C  IsUnivariatePolynomialsFamily
 ##
-##  at present univariate polynomials families only exist if the coefficients
-##  family is a skew field
+##  At present univariate polynomials families only exist if the coefficients
+##  family is a skew field.
 ##
 #T  1996/10/14 fceller can this be done with `CategoryFamily'?
 ##
@@ -897,7 +901,7 @@ DeclareCategory( "IsUnivariatePolynomialsFamily", IsFamily );
 
 
 
-##  IsRationalFunctionsFamilyElement',   an element of  a Laurent
+##  `IsRationalFunctionsFamilyElement',   an element of  a Laurent
 ##  polynomials family has category `IsLaurentPolynomialsFamilyElement',  and
 ##  an   element  of     a    univariate polynomials  family   has   category
 ##  `IsUnivariatePolynomialsFamilyElement'.   They  all   lie  in  the  super
@@ -912,7 +916,7 @@ DeclareCategory( "IsUnivariatePolynomialsFamily", IsFamily );
 ##    `ExtRepOfObj'
 ##    `ObjByExtRep'.
 ##
-##  The basic operations for rational functions  which are univariate laurent
+##  The basic operations for rational functions  which are univariate Laurent
 ##  polynomials are:
 ##
 ##    `UnivariateLaurentPolynomialByCoefficients'

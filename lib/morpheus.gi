@@ -302,7 +302,7 @@ local list,a,b,ab,i;
     ab:=a*b;
     list:=Concatenation(list,
 	 [ab,ab^2*b,ab^3*b,ab^4*b,ab^2*b*ab^3*b,ab^5*b,ab^2*b*ab^3*b*ab*b,
-	 ab*(ab*b)^2*ab^3*b]);
+	 ab*(ab*b)^2*ab^3*b,a*b^4*a,ab*a^3*b]);
   od;
   return list;
 end);
@@ -422,7 +422,7 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop;
+      e,offset,pows,TestRels,pop,mfw;
 
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
@@ -470,7 +470,14 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     fi;
   elif thom then
     free:=GeneratorsOfGroup(FreeGroup(Length(gens)));
-    rels:=List(MorFroWords(free),i->[i,Order(MappedWord(i,free,gens))]);
+    mfw:=MorFroWords(free);
+    # get some more
+    if Product(List(gens,Order))<2000 then
+      for i in Cartesian(List(gens,i->[1..Order(i)])) do
+	Add(mfw,Product(List([1..Length(gens)],z->free[z]^i[z])));
+      od;
+    fi;
+    rels:=List(mfw,i->[i,Order(MappedWord(i,free,gens))]);
   else
     rels:=false;
   fi;
@@ -655,9 +662,9 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	fi;
 
 	if ok and thom then
+	  Info(InfoMorph,3,"testing");
 	  imgs:=GroupGeneralMappingByImages(params.from,range,gens,imgs);
 	  SetIsTotal(imgs,true);
-	  Info(InfoMorph,3,"testing");
 	  ok:=IsSingleValued(imgs);
 	  if ok and tinj then
 	    ok:=IsInjective(imgs);
@@ -803,8 +810,9 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,
   Info(InfoMorph,1,"generating system ",Sum(Flat(combi),Size),
        " of price:",price,"");
 
-  if (not HasMinimalGeneratingSet(G) and price/Size(G)>10000)
-     or Sum(Flat(combi),Size)>Size(G)/10 or IsSolvableGroup(G) then
+  if ((not HasMinimalGeneratingSet(G) and price/Size(G)>10000)
+     or Sum(Flat(combi),Size)>Size(G)/10 or IsSolvableGroup(G)) 
+     and ValueOption("nogensyssearch")<>true then
     if IsSolvableGroup(G) then
       gens:=IsomorphismPcGroup(G);
       gens:=List(MinimalGeneratingSet(Image(gens)),
@@ -904,10 +912,11 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,
   # combi contains the classes, from which the
   # generators are taken.
 
-  free:=GeneratorsOfGroup(FreeGroup(Length(gens)));
-  rels:=MorFroWords(free);
-  rels:=List(rels,i->[i,Order(MappedWord(i,free,gens))]);
-  result:=rec(gens:=gens,from:=G,to:=H,free:=free,rels:=rels);
+  #free:=GeneratorsOfGroup(FreeGroup(Length(gens)));
+  #rels:=MorFroWords(free);
+  #rels:=List(rels,i->[i,Order(MappedWord(i,free,gens))]);
+  #result:=rec(gens:=gens,from:=G,to:=H,free:=free,rels:=rels);
+  result:=rec(gens:=gens,from:=G,to:=H);
 
   if DoAuto then
 
@@ -1304,7 +1313,7 @@ local Fgens,	# generators of F
   if Length(vsu)>1 then
     fak:=vsu[1];
     for i in [2..Length(vsu)] do
-      fak:=ClosureSubgroup(fak,vsu[i]);
+      fak:=ClosureGroup(fak,vsu[i]);
     od;
     Info(InfoMorph,1,"quotient of verbal subgroups :",Size(fak));
     h:=NaturalHomomorphismByNormalSubgroup(F,fak);
@@ -1391,7 +1400,13 @@ local Fgens,	# generators of F
 
   if ValueOption("findall")=false then
     # only one
-    h:=[MorClassLoop(G,best[2],rec(gens:=best[1],to:=G,from:=F),5)];
+    h:=MorClassLoop(G,best[2],rec(gens:=best[1],to:=G,from:=F),5);
+    # get the same syntax for the object returned
+    if Length(h)=0 then
+      return h;
+    else
+      return [h];
+    fi;
   else
     h:=MorClassLoop(G,best[2],rec(gens:=best[1],to:=G,from:=F),13);
   fi;
@@ -1526,8 +1541,15 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   od;
 
   Info(InfoMorph,2,"find ",bw," from ",cnt);
-  # find all embeddings
+
+  if Length(bg)>2 and cnt>Size(H)^2 and Size(G)<bw then
+    Info(InfoPerformance,1,
+    "The group tested requires many generators. `IsomorphicSubgroups' often\n",
+"#I  does not perform well for such groups -- see the documentation.");
+  fi;
+
   params:=rec(gens:=bg,from:=H);
+  # find all embeddings
   if ValueOption("findall")=false then
     # only one
     emb:=[MorClassLoop(G,bi,params,

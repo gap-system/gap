@@ -104,3 +104,9 @@ gap> DenominatorRat( 11 );
 
 \Declaration{Rat}
 
+\>Random( Rationals )!{for rationals}
+
+`Random' for rationals returns pseudo random rationals which are the
+quotient of two random integers. See the description of `Random' for integers
+("Random!for integers") for details. (Also see~"Random".)
+

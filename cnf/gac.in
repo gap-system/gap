@@ -48,6 +48,9 @@
 ##  The option '-p <option>' tells 'gac' to pass the option  <option> to  the
 ##  C compiler.
 ##
+##  The option '-P <option>' tells 'gac' to pass the option  <option> to  the
+##  C linker.
+##
 gap_bin=`echo $0 | sed -e 's:/[^/]*$::'`
 if [ "X${gap_bin}" = "X$0" ];  then
     gap_dir="../../";
@@ -66,6 +69,8 @@ stat_identifier="USER";
 c_compiler="@CC@"
 c_options="@CFLAGS@" 
 c_linker="@CC@"
+c_link_options=""
+c_libs="@LIBS@"
 
 # These three will need special care 
 c_dyn_options="@CDYNOPTIONS@"
@@ -117,7 +122,7 @@ c_compile () {
 ##
 c_link_dyn () {
     echo ${c_dyn_linker} ${c_dyn_linking} -o $1 $2
-    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2
+    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_link_options}
 }
 
 
@@ -126,8 +131,8 @@ c_link_dyn () {
 #F  c_link <output> <inputs_o>
 ##
 c_link () {
-    echo ${c_linker} $c_dynlibs -o $1 $2
-    ${c_linker} $c_dynlibs -o $1 $2
+    echo ${c_linker} $c_dynlibs  -o $1 $2 -lm ${c_libs}
+    ${c_linker} $c_dynlibs -o $1 $2 ${c_link_options} -lm ${c_libs}
 }
 
 #############################################################################
@@ -315,6 +320,8 @@ while [ $# -gt 0 ]; do
     -l|--gap-binary)      shift; gap_binary="$1";;
 
     -p)                   shift; c_options="${c_options} $1";;
+
+    -P)                   shift; c_link_options="${c_link_options} $1";;
 
     *.g|*.gap|*.gd|*.gi|*.c|*.o)
                           inputs="${inputs} $1";;

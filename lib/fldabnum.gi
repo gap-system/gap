@@ -1224,7 +1224,7 @@ InstallMethod( CanonicalBasis,
 
     # Make the basis object.
     B:= Objectify( NewType( FamilyObj( F ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisAbelianNumberFieldRep ),
                    rec() );
@@ -1501,7 +1501,7 @@ InstallMethod( CanonicalBasis,
     n:= Conductor( F );
 
     B:= Objectify( NewType( FamilyObj( F ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisCyclotomicFieldRep ),
                    rec() );

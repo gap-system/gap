@@ -29,6 +29,13 @@ const char * Revision_float_c =
 #undef  INCLUDE_DECLARATION_PART
 
 #include        "bool.h"
+#include        "scanner.h"
+#include        "string.h"
+
+/* the following two declarations would belong in `saveload.h', but then all
+ * files get float dependencies */
+extern Double LoadDouble( void);
+extern void SaveDouble( Double d);
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
@@ -37,6 +44,8 @@ const char * Revision_float_c =
 #ifdef HAVE_MATH_H
 #include <math.h>
 #endif
+
+#include <stdlib.h>
 
 #define VAL_FLOAT(obj) (*(Double *)ADDR_OBJ(obj))
 #define SET_VAL_FLOAT(obj, val) (*(Double *)ADDR_OBJ(obj) = val)
@@ -325,6 +334,18 @@ Obj FuncFLOAT_INT( Obj self, Obj i)
 
 /****************************************************************************
 **
+*F  FuncFLOAT_STRING(<int>) . . . . . . . . . . . . . . . conversion
+**
+*/
+
+Obj FuncFLOAT_STRING( Obj self, Obj s)
+{
+  /* no check yet ! */
+  return NEW_FLOAT((Double) atof((char*)CHARS_STRING(s)));
+}
+
+/****************************************************************************
+**
 *F SumIntFloat( <int>, <float> )
 **
 */
@@ -344,6 +365,26 @@ Obj SumIntFloat( Obj i, Obj f )
 Obj FuncSIN_FLOAT( Obj self, Obj f)
 {
   return NEW_FLOAT(sin(VAL_FLOAT(f)));
+}
+
+Obj FuncLOG_FLOAT( Obj self, Obj f)
+{
+  return NEW_FLOAT(log(VAL_FLOAT(f)));
+}
+
+Obj FuncEXP_FLOAT( Obj self, Obj f)
+{
+  return NEW_FLOAT(exp(VAL_FLOAT(f)));
+}
+
+Obj FuncRINT_FLOAT( Obj self, Obj f)
+{
+  return NEW_FLOAT(rint(VAL_FLOAT(f)));
+}
+
+Obj FuncFLOOR_FLOAT( Obj self, Obj f)
+{
+  return NEW_FLOAT(floor(VAL_FLOAT(f)));
 }
 
 /****************************************************************************
@@ -375,8 +416,23 @@ static StructGVarFunc GVarFuncs [] = {
   { "FLOAT_INT", 1, "int",
     FuncFLOAT_INT, "src/float.c:FLOAT_INT" },
 
+  { "FLOAT_STRING", 1, "int",
+    FuncFLOAT_STRING, "src/float.c:FLOAT_STRING" },
+
   { "SIN_FLOAT", 1, "float",
     FuncSIN_FLOAT, "src/float.c:SIN_FLOAT" },
+
+  { "LOG_FLOAT", 1, "float",
+    FuncLOG_FLOAT, "src/float.c:LOG_FLOAT" },
+
+  { "EXP_FLOAT", 1, "float",
+    FuncEXP_FLOAT, "src/float.c:EXP_FLOAT" },
+
+  { "RINT_FLOAT", 1, "float",
+    FuncRINT_FLOAT, "src/float.c:RINT_FLOAT" },
+
+  { "FLOOR_FLOAT", 1, "float",
+    FuncFLOOR_FLOAT, "src/float.c:FLOOR_FLOAT" },
 
   {0}
 };
@@ -418,8 +474,10 @@ static Int InitKernel (
     
     /* install the unary arithmetic methods                                */
     ZeroFuncs[ T_FLOAT ] = ZeroFloat;
-    AInvFuncs[ T_FLOAT ] = AInvFloat;
+    ZeroMutFuncs[ T_FLOAT ] = ZeroFloat;
+    AInvMutFuncs[ T_FLOAT ] = AInvFloat;
     OneFuncs [ T_FLOAT ] = OneFloat;
+    OneMutFuncs [ T_FLOAT ] = OneFloat;
     InvFuncs [ T_FLOAT ] = InvFloat;
 
     /* install binary arithmetic methods */
@@ -451,8 +509,8 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    UInt            gvar;
-    Obj             tmp;
+/*  UInt            gvar; */
+/*  Obj             tmp;  */
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );

@@ -403,7 +403,7 @@ DeclareGlobalFunction( "GapInputSCTable" );
 ##
 ##  Let <T> be a structure constants table of an algebra $A$ of dimension $n$.
 ##  `IdentityFromSCTable( <T> )' is either `fail' or the vector of length
-##  $n$ that contains the coefficients of the multipicative identity of $A$
+##  $n$ that contains the coefficients of the multiplicative identity of $A$
 ##  with respect to the basis that belongs to <T>.
 ##
 DeclareGlobalFunction( "IdentityFromSCTable" );
@@ -1049,26 +1049,26 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##
 ##  Let $G$ be an Abelian group and $A$ an algebra. Then $A$ is said to 
 ##  be graded over $G$ if for every $g\in G$ there is a subspace $A_g$
-##  of $A$ such that $A_g\cdot A_h\subset A_{g+h}$ for $g,h\in G$. 
-##  In \GAP~ a Grading of an algebra is a record containg a the following
+##  of $A$ such that $A_g \cdot A_h\subset A_{g+h}$ for $g,h \in G$. 
+##  In \GAP~4 a *grading* of an algebra is a record containing the following
 ##  components: 
-##  \beginlist
-##  \item{-} `source'
+##  \beginitems
+##  `source'&
 ##    the Abelian group over which the algebra is graded.
-##  \item{-} `hom_components'
+##  `hom_components'&
 ##    a function assigning to each element from the
 ##    source a subspace of the algebra.
-##  \item{-} `min_degree' 
+##  `min_degree'&
 ##    in the case where the algebra is graded over the integers
 ##    this is the minimum number for which `hom_components' returns a nonzero
 ##    subspace.
-##  \item{-} `max_degree'
+##  `max_degree'&
 ##    is analogous to `min_degree'.
-##  \endlist
+##  \enditems
 ##  We note that there are no methods to compute a grading of an 
 ##  arbitrary algebra; however some algebras get a natural grading when
-##  they are constructed (see "ref:jenningsliealgebra", 
-##  "ref:nilpotentquotientoffpliealgebra").
+##  they are constructed (see "ref:JenningsLieAlgebra", 
+##  "ref:NilpotentQuotientOfFpLieAlgebra").
 ##
 DeclareAttribute( "Grading", IsAlgebra );
 

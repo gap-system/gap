@@ -63,7 +63,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Orthogonal Embeddings}
+\Section{Orthogonal Embeddings}\nolabel
 
 \Declaration{OrthogonalEmbeddings}
 

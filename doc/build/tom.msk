@@ -297,7 +297,7 @@ true
 gap> for i in [ 1 .. 6 ] do
 > Print( i, ": ", IsCyclicTom(a5, i), "  " );
 > od;  Print( "\n" );
-1: true  2: true  3: true  4: false  5: true  6: false
+1: true  2: true  3: true  4: false  5: true  6: false  
 \endexample
 
 
@@ -414,15 +414,15 @@ gap> MinimalSupergroupsTom( s4, 5 );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Standard Generators of Groups}
 
-\FileHeader[1]{stdgen}
+\FileHeader[1]{../pkg/tomlib/gap/stdgen}
 
-\Declaration{StandardGeneratorsInfo}[stdgen]!{for groups}
+\Declaration{StandardGeneratorsInfo}[../pkg/tomlib/gap/stdgen]!{for groups}
 \beginexample
 gap> StandardGeneratorsInfo( TableOfMarks( "L3(3)" ) );
-[ rec( generators := "a, b",
-      description := "||a||=2, ||b||=3, ||C(b)||=9, ||ab||=13, ||ababb||=4",
-      script := [ [ 1, 2 ], [ 2, 3 ], [ [ 2, 1 ], [ "||C(",, ")||" ], 9 ],
-          [ 1, 1, 2, 1, 13 ], [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ],
+[ rec( generators := "a, b", 
+      description := "||a||=2, ||b||=3, ||C(b)||=9, ||ab||=13, ||ababb||=4", 
+      script := [ [ 1, 2 ], [ 2, 3 ], [ [ 2, 1 ], [ "||C(",, ")||" ], 9 ], 
+          [ 1, 1, 2, 1, 13 ], [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ], 
       ATLAS := true ) ]
 \endexample
 %T  replace by an example for isom. type as soon as this is implemented!
@@ -432,7 +432,7 @@ gap> StandardGeneratorsInfo( TableOfMarks( "L3(3)" ) );
 gap> scr:= ScriptFromString( "||a||=2, ||b||=3, ||C(b)||=9, ||ab||=13, ||ababb||=4" );
 [ [ 1, 2 ], [ 2, 3 ], [ [ 2, 1 ], [ "||C(",, ")||" ], 9 ], [ 1, 1, 2, 1, 13 ], 
   [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ]
-gap> info:= rec( script:= scr ); 
+gap> info:= rec( script:= scr );
 rec( script := [ [ 1, 2 ], [ 2, 3 ], [ [ 2, 1 ], [ "||C(",, ")||" ], 9 ], 
       [ 1, 1, 2, 1, 13 ], [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ] )
 gap> HumanReadableDefinition( info );
@@ -529,7 +529,7 @@ Group([ (2,3)(4,5), (2,4)(3,5) ])
 \Declaration{StandardGeneratorsInfo}[tom]!{for tables of marks}
 \beginexample
 gap> std:= StandardGeneratorsInfo( a5 );
-[ rec( generators := "a, b", description := "||a||=2, ||b||=3, ||ab||=5",
+[ rec( generators := "a, b", description := "||a||=2, ||b||=3, ||ab||=5", 
       script := [ [ 1, 2 ], [ 2, 3 ], [ 1, 1, 2, 1, 5 ] ], ATLAS := true ) ]
 gap> # Now find standard generators of an isomorphic group.
 gap> g:= SL(2,4);;
@@ -541,7 +541,7 @@ gap> repeat
 > until Order( y ) = 3 and Order( x*y ) = 5;
 gap> # Compute a representative w.r.t. these generators.
 gap> RepresentativeTomByGenerators( a5, 4, [ x, y ] );
-Group([ [ [ Z(2^2), Z(2^2)^2 ], [ Z(2^2)^2, Z(2^2) ] ],
+Group([ [ [ Z(2^2), Z(2^2)^2 ], [ Z(2^2)^2, Z(2^2) ] ], 
   [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ])
 gap> # Show that the new generators are really good.
 gap> grp:= UnderlyingGroup( a5 );;

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains methods that rely on the transitive groups library
 ##  being available.

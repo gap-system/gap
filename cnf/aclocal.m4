@@ -53,7 +53,7 @@ AC_DEFUN(GP_C_LONG_ALIGN,
 case "$host" in
    alpha* )
 	gp_cv_c_long_align=8;;
-   mips-* )
+   mips-* | sparc-* )
         gp_cv_c_long_align=$ac_cv_sizeof_void_p;;
    i586-* | i686-* )
         gp_cv_c_long_align=2;;
@@ -113,15 +113,15 @@ AC_DEFUN(GP_CFLAGS,
 [AC_CACHE_CHECK(C compiler default flags, gp_cv_cflags,
  [ case "$host-$CC" in
     *-gcc | *-linux*-cc )
-     	gp_cv_cflags="-g -O2";;
+     	gp_cv_cflags="-Wall -g -O2";;
     i686-*-egcs )
-        gp_cv_cflags="-g -O2 -mcpu=i686";;
+        gp_cv_cflags="-Wall -g -O2 -mcpu=i686";;
     i586-*-egcs )
-        gp_cv_cflags="-g -O2 -mcpu=i586";;
+        gp_cv_cflags="-Wall -g -O2 -mcpu=i586";;
     i486-*-egcs )
-        gp_cv_cflags="-g -O2 -mcpu=i486";;
+        gp_cv_cflags="-Wall -g -O2 -mcpu=i486";;
     i386-*-egcs )
-        gp_cv_cflags="-g -O2 -mcpu=i386";;
+        gp_cv_cflags="-Wall -g -O2 -mcpu=i386";;
     alphaev6-*-osf4*-cc )
 	gp_cv_cflags="-g3 -arch ev6 -O1 ";;
     alphaev56-*-osf4*-cc )
@@ -210,6 +210,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinking="-Bshareable -x";;
     *freebsd* )
         gp_cv_prog_cc_cdynlinking="-Bshareable -x";;
+    *netbsd* )
+        gp_cv_prog_cc_cdynlinking="-shared";;
     *hpux* )
         gp_cv_prog_cc_cdynlinking="-b +e Init__Dynamic";;
     alpha*osf*cc )

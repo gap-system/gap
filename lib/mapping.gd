@@ -539,6 +539,8 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  <coll> may be a proper set or a domain.
 ##  The result will be either a proper set or a domain.
 ##  Note that in this case <map> may also be multi-valued.
+##  (If <coll> and the result are lists then the positions of
+##  entries do in general *not* correspond.)
 ##
 ##  `Image' delegates to `ImagesSource' when called with one argument,
 ##  and to `ImageElm' resp. `ImagesSet' when called with two arguments.
@@ -568,6 +570,8 @@ DeclareGlobalFunction( "Image" );
 ##  of the range to which <map> maps elements of <coll>.
 ##  <coll> may be a proper set or a domain.
 ##  The result will be either a proper set or a domain.
+##  (If <coll> and the result are lists then the positions of
+##  entries do in general *not* correspond.)
 ##
 ##  `Images' delegates to `ImagesSource' when called with one argument,
 ##  and to `ImagesElm' resp. `ImagesSet' when called with two arguments.
@@ -656,6 +660,8 @@ DeclareOperation( "PreImagesSet", [ IsGeneralMapping, IsCollection ] );
 ##  The result will be either a proper set or a domain.
 ##  Note that in this case <map> may also be non-injective or
 ##  non-surjective.
+##  (If <coll> and the result are lists then the positions of
+##  entries do in general *not* correspond.)
 ##
 ##  `PreImage' delegates to `PreImagesRange' when called with one argument,
 ##  and to `PreImageElm' resp. `PreImagesSet' when called with two arguments.
@@ -685,6 +691,8 @@ DeclareGlobalFunction( "PreImage" );
 ##  of the source which <map> maps to elements of <coll>.
 ##  <coll> may be a proper set or a domain.
 ##  The result will be either a proper set or a domain.
+##  (If <coll> and the result are lists then the positions of
+##  entries do in general *not* correspond.)
 ##
 ##  `PreImages' delegates to `PreImagesRange' when called with one argument,
 ##  and to `PreImagesElm' resp. `PreImagesSet' when called with two

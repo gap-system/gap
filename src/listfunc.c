@@ -148,8 +148,8 @@ Obj             FuncAPPEND_LIST_INTR (
     Obj                 list1,
     Obj                 list2 )
 {
-    Int                 len1;           /* length of the first list        */
-    Int                 len2;           /* length of the second list       */
+    UInt                len1;           /* length of the first list        */
+    UInt                len2;           /* length of the second list       */
     Obj *               ptr1;           /* pointer into the first list     */
     Obj *               ptr2;           /* pointer into the second list    */
     Obj                 elm;            /* one element of the second list  */
@@ -166,7 +166,6 @@ Obj             FuncAPPEND_LIST_INTR (
     /* handle the case of strings now */
     if ( IS_STRING_REP(list1) && IS_STRING_REP(list2))
       {
-	UInt len1, len2;
 	len1 = GET_LEN_STRING(list1);
 	len2 = GET_LEN_STRING(list2);
 	GROW_STRING(list1, len1 + len2);

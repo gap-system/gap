@@ -886,7 +886,7 @@ InstallMethod( CanonicalBasis,
     zero := Zero( LeftActingDomain( RM ) );
 
     B:= Objectify( NewType( FamilyObj( RM ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsCanonicalBasisFreeMagmaRingRep ),
                    rec() );
 

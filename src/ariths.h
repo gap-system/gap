@@ -57,14 +57,13 @@ typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-
 *F  ZERO( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
 **
 **  'ZERO' returns the zero of the object <op>.
 */
 #define ZERO(op)        ((*ZeroFuncs[TNUM_OBJ(op)])(op))
 
-extern Obj ZeroOp;
+extern Obj ZEROOp;
 
 
 /****************************************************************************
@@ -79,6 +78,30 @@ extern ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
 *F  InstallZeroObject( <verb> )
 */
 extern void InstallZeroObject ( Int );
+
+/****************************************************************************
+**
+*F  ZERO_MUT( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
+**
+**  'ZERO_MUT' returns the mutable zero of the object <op>.
+*/
+#define ZERO_MUT(op)        ((*ZeroMutFuncs[TNUM_OBJ(op)])(op))
+
+extern Obj ZeroOp;
+
+
+/****************************************************************************
+**
+*V  ZeroMutFuncs[<type>] . . . . . . . . . . . . . . . . . table of zero methods
+*/
+extern ArithMethod1 ZeroMutFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  InstallZeroMutObject( <verb> )
+*/
+extern void InstallZeroMutObject ( Int );
 
 
 /****************************************************************************
@@ -106,13 +129,37 @@ extern ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
 */
 extern void InstallAinvObject ( Int );
 
+/****************************************************************************
+**
+*F  AINV_MUT( <op> )  . . . . . . . . . . . . . additive inverse of an object
+**
+**  'AINV_MUT' returns the mutable additive inverse of the object <op>.
+*/
+#define AINV_MUT(op) ((*AInvMutFuncs[TNUM_OBJ(op)])(op))
+
+extern Obj AdditiveInverseOp;
+
+
+/****************************************************************************
+**
+*V  AInvMutFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
+*/
+extern ArithMethod1 AInvMutFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  InstallAinvMutObject( <verb> )
+*/
+extern void InstallAinvMutObject ( Int );
+
 
 /****************************************************************************
 **
 *F  C_AINV( <val>, <left> ) . . . . . . . . . . . . . . . . . .  compute ainv
 */
 #define C_AINV(val,left) \
- val = AINV( left );
+ val = AINV_MUT( left );
 
 
 /****************************************************************************
@@ -120,7 +167,7 @@ extern void InstallAinvObject ( Int );
 *F  C_AINV_FIA( <val>, <left> ) . . . . . . . . .  compute ainv, fast integer
 */
 #define C_AINV_FIA(val,left) \
- val = AINV( left );
+ val = AINV_MUT( left );
 
 
 /****************************************************************************
@@ -128,12 +175,11 @@ extern void InstallAinvObject ( Int );
 *F  C_AINV_INTOBJS( <val>, <left> ) . . . . . . .  compute ainv of an integer
 */
 #define C_AINV_INTOBJS(val,left) \
- val = AINV( left );
+ val = AINV_MUT( left );
 
 
 /****************************************************************************
 **
-
 *F  ONE( <op> ) . . . . . . . . . . . . . . . . . . . . . .  one of an object
 **
 **  'ONE' returns the one of the object <op>.
@@ -156,10 +202,34 @@ extern ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
 */
 extern void InstallOneObject ( Int );
 
+/****************************************************************************
+**
+*F  ONE_MUT( <op> )    . . . . . . . .  one of an object retaining mutability
+**
+**  'ONE_MUT' returns the one of the object <op> with the same
+**  mutability level as <op>.
+*/
+#define ONE_MUT(op)         ((*OneMutFuncs[TNUM_OBJ(op)])(op))
+
+extern Obj OneMutOp;
+
 
 /****************************************************************************
 **
+*V  OneMutFuncs[<type>]  . . . . . .table of mutability preservingone methods
+*/
+extern ArithMethod1 OneMutFuncs [LAST_VIRTUAL_TNUM+1];
 
+
+/****************************************************************************
+**
+*F  InstallOneMutObject( <verb> )
+*/
+extern void InstallOneMutObject ( Int );
+
+
+/****************************************************************************
+**
 *F  INV( <op> ) . . . . . . . . . . . . . . . . . . . .  inverse of an object
 **
 **  'INV' returns the multiplicative inverse of the object <op>.
@@ -181,6 +251,31 @@ extern ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
 *F  InstallInvObject( <verb> )
 */
 extern void InstallInvObject ( Int );
+
+
+/****************************************************************************
+**
+*F  INV_MUT( <op> ) . . . . . . . . inverse of an object retaining mutability
+**
+**  'INV_MUT' returns the multiplicative inverse of the object <op>.
+*/
+#define INV_MUT(op)         ((*InvMutFuncs[TNUM_OBJ(op)])(op))
+
+extern Obj InvMutOp;
+
+
+/****************************************************************************
+**
+*V  InvMutFuncs[<type>]  .. .table of mutability preserving inverse functions
+*/
+extern ArithMethod1 InvMutFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  InstallInvMutObject( <verb> )
+*/
+extern void InstallInvMutObject ( Int );
 
 
 /****************************************************************************

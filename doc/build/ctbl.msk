@@ -110,21 +110,21 @@ false
 \Section{Conventions for Character Tables}
 
 The following few conventions should be noted.
-\beginlist
-\item{-}
+\beginlist%unordered
+\item{--}
     The class of the *identity element* is expected to be the first one;
     thus the degree of a character is the character value at position $1$.
-\item{-}
+\item{--}
     The *trivial character* of a character table need not be the first in
     the list of irreducibles.
-\item{-}
+\item{--}
     Most functions that take a character table as an argument and work with
     characters expect these characters as an argument, too.
     For some functions, the list of irreducible characters serves as the
     default, i.e, the value of the attribute `Irr' (see~"Irr");
     in these cases, the `Irr' value is automatically computed if it was not
     yet known.
-\item{-}
+\item{--}
     For a stored class fusion, the image table is denoted by its `Identifier'
     value (see~"Identifier!for character tables");
     each library table has a unique identifier by which it can be accessed
@@ -215,11 +215,11 @@ its default value 80 to 85 in order to get a nicer output format.
 
 \beginexample
 gap> Irr( SymmetricGroup( 4 ) );
-[ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 ] ), 
-  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 2, 0, 2, -1, 0 ] ), 
+[ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 ] ), 
   Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 3, -1, -1, 0, 1 ] ), 
-  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 3, 1, -1, 0, -1 ] ) ]
+  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 2, 0, 2, -1, 0 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 3, 1, -1, 0, -1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ) ]
 gap> Irr( SymmetricGroup( 4 ), 2 );
 [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ), 
   Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 2, -1 ] ) ]
@@ -340,11 +340,6 @@ gap> tbl.2a;
 \beginexample
 gap> Identifier( CharacterTable( "A5" ) );
 "A5"
-gap> g:= Group( () );;  HasName( g );
-false
-gap> SetName( g, "g" );
-gap> Identifier( CharacterTable( g ) );
-"g"
 gap> tbl:= CharacterTable( Group( () ) );;
 gap> Identifier( tbl );  Identifier( tbl mod 2 );
 "CT8"
@@ -653,10 +648,10 @@ Several algorithms are available for computing the irreducible characters of
 a finite group $G$.
 The default method for arbitrary finite groups is to use the Dixon-Schneider
 algorithm (see~"IrrDixonSchneider").
+For supersolvable groups, Conlon's algorithm can be used (see~"IrrConlon").
 For abelian-by-supersolvable groups, the Baum-Clausen algorithm for computing
 the irreducible representations (see~"IrreducibleRepresentations")
 can be used to compute the irreducible characters (see~"IrrBaumClausen").
-For supersolvable groups, Conlon's algorithm can be used (see~"IrrConlon").
 
 These functions are installed in methods for `Irr' (see~"Irr"),
 but explicitly calling one of them will *not* set the `Irr' value of $G$.
@@ -723,21 +718,22 @@ gap>  List( gens, x -> x^repr[4] );
 
 \Declaration{IrreducibleRepresentationsDixon}
 \beginexample
-gap> m11:=TransitiveGroup(11,6);
-M(11)
-gap> char:=First(Irr(m11),i->i[1]=10);
-Character( CharacterTable( M(11) ), [ 10, 2, 2, -1, 1, -1, -1, 0, 0, 0 ] )
-gap> hom:=IrreducibleRepresentationsDixon(m11,char);;
-gap> Order(m11.1*m11.2)=Order(Image(hom,m11.1)*Image(hom,m11.2)); 
+gap> a5:= AlternatingGroup( 5 );
+Alt( [ 1 .. 5 ] )
+gap> char:= First( Irr( a5 ), x -> x[1] = 4 );
+Character( CharacterTable( Alt( [ 1 .. 5 ] ) ), [ 4, 0, 1, -1, -1 ] )
+gap> hom:=IrreducibleRepresentationsDixon( a5, char );;
+gap> Order( a5.1*a5.2 ) = Order( Image( hom, a5.1 )*Image( hom, a5.2 ) );
 true
-gap> TraceMat(Image(hom,(1,6,11,9)(2,3,8,7)));    
-2
+gap> reps:= List( ConjugacyClasses( a5 ), Representative );;
+gap> List( reps, g -> TraceMat( Image( hom, g ) ) );
+[ 4, 0, 1, -1, -1 ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Dixon-Schneider Algorithm}
 
-\index{Dixon-Schneider algorithm}
+\atindex{Dixon-Schneider algorithm}{@Dixon-Schneider algorithm}
 
 \FileHeader[1]{ctblgrp}
 
@@ -826,11 +822,12 @@ After the initialisation, one structure matrix is evaluated,
 yielding smaller spaces and several irreducible characters.
 \beginexample
 gap> DixonSplit( d );
-#I  Matrix 19,Representative of Order 3,Centralizer: 5832
+#I  Matrix 18,Representative of Order 3,Centralizer: 5832
 #I  Dimensions: [ 1, 12, 2, 2, 4, 2, 1, 1, 1, 1, 1 ]
 #I  Two-dim space split
 #I  Two-dim space split
 #I  Two-dim space split
+18
 \endexample
 In this case spaces of the listed dimensions are a result of the
 splitting process.
@@ -892,9 +889,9 @@ So we convert them to a list of values
 before feeding them in the machinery of the Dixon-algorithm.
 \beginexample
 gap> l.irreducibles[1];
-Character( CharacterTable( PSL(4,3) ), [ 640, 0, -8, 0, 0, 0, 0, 0, 0, 0, 0, 
+Character( CharacterTable( PSL(4,3) ), [ 640, 0, 0, 0, 0, 0, 0, 0, 0, -8, 0, 
   0, E(13)^7+E(13)^8+E(13)^11, E(13)+E(13)^3+E(13)^9, E(13)^2+E(13)^5+E(13)^6,
-  E(13)^4+E(13)^10+E(13)^12, 0, 0, -8, 0, 0, 0, 0, -8, 1, 0, 1, 1, 0 ] )
+  E(13)^4+E(13)^10+E(13)^12, 1, -8, 0, 0, -8, 0, 0, 0, 0, 0, 0, 1, 1 ] )
 gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
 gap> DxIncludeIrreducibles( d, l );
 gap> Length( d.irreducibles );
@@ -908,7 +905,7 @@ group.
 This makes them available also to the character table.
 \beginexample
 gap> irrs:= DixontinI( d );;
-#I  Total:1 matrices,[ 19 ]
+#I  Total:1 matrices,[ 18 ]
 gap> SetIrr(g,irrs);
 gap> Length(Irr(c));
 29
@@ -1260,11 +1257,11 @@ gap> SetName( g, "S4" );
 gap> tbl:= CharacterTable( g );
 CharacterTable( S4 )
 gap> irr:= Irr( g );
-[ Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] ), 
-  Character( CharacterTable( S4 ), [ 2, 0, 2, -1, 0 ] ), 
+[ Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] ), 
   Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
-  Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ) ]
+  Character( CharacterTable( S4 ), [ 2, 0, 2, -1, 0 ] ), 
+  Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ), 
+  Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ) ]
 gap> kernel:= KernelOfCharacter( irr[3] );
 Group([ (1,2)(3,4), (1,4)(2,3) ])
 gap> HasNormalSubgroupClassesInfo( tbl );

@@ -1,0 +1,44 @@
+@Name
+Subgroup Lattice
+@Contact
+AH
+@Date
+2001/9/21
+@Time
+3
+@Need
+5
+@NeedA
+4
+@Math
+3
+@Prog
+4
+@Component
+Generic groups
+@Descr
+<P>
+The ``elementary abelian extension'' algorithm for the lattice of a
+subgroups of a solvable group has an obvious generalization to nonsolvable
+groups by computing the subgropups of the factor G/Rad(G) by cyclic
+extension and then lifting the subgroups by complement calculation.
+</P>
+
+<P>
+This would be faster and further reaching than a pure cyclic extension.
+</P>
+
+<P>
+(The only slightly subtle point is inclusion of conjugates)
+</P>
+<HR>
+A further improvements would be to use pretabulated information for almost
+simple subgroups
+@Ref
+<UL>
+<LI>
+A. Hulpke, J. Symbolic Comput. {\bf 27} (1999), no.~4, 415--427; MR 2000a:20001 
+<LI>
+J. J. Cannon, B. C. Cox\ and\ D. F. Holt, J. Symbolic Comput. {\bf 31}
+(2001), no.~1-2, 149--161; see MR 2001h:00021 
+</UL>

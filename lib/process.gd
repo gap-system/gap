@@ -21,9 +21,7 @@ Revision.process_gd :=
 ##  while {\GAP} is suspended until the process terminates.
 ##  Then there are processes that will run in parallel to {\GAP} as
 ##  subprocesses and {\GAP} can communicate and control the processes using
-##  streams (see~"Streams").
-##
-##  Note that the latter kind of process is *@not yet implemented@*.
+##  streams (see~"InputOutputLocalProcess").
 ##
 
 
@@ -51,7 +49,7 @@ Revision.process_gd :=
 ##  should be used because {\GAP} will attempt to remove these directories
 ##  together with all the files in them when quitting.
 ##
-##  If a program of a share package which does not only consist of {\GAP}
+##  If a program of a {\GAP} package which does not only consist of {\GAP}
 ##  code needs to be launched in a directory relative to certain data
 ##  libraries, then the first entry of `DirectoryPackageLibrary' should be
 ##  used.
@@ -59,7 +57,7 @@ Revision.process_gd :=
 ##  library relative to the package directory.
 ##
 ##  If a program calls other programs and needs to be launched in a directory
-##  containing the executables for such a share package then the first entry
+##  containing the executables for such a {\GAP} package then the first entry
 ##  of `DirectoriesPackagePrograms' should be used.
 ##
 ##  The latter two alternatives should only be used if absolutely necessary
@@ -75,13 +73,17 @@ Revision.process_gd :=
 ##  gap> stdout := OutputTextUser();;
 ##  gap> Process( path[1], ls, stdin, stdout, ["-c"] );;
 ##  awk    ls     mkdir
+##  \endexample
 ##  
-##  # current directory, here the root directory
+##  \beginexample
+##  gap> # current directory, here the root directory
 ##  gap> Process( DirectoryCurrent(), ls, stdin, stdout, ["-c"] );;
 ##  bin    lib    trans  tst    CVS    grp    prim   thr    two
 ##  src    dev    etc    tbl    doc    pkg    small  tom
-##  
-##  # create a temporary directory
+##  \endexample
+##
+##  \beginexample
+##  gap> # create a temporary directory
 ##  gap> tmpdir := DirectoryTemporary();;
 ##  gap> Process( tmpdir, ls, stdin, stdout, ["-c"] );;
 ##  gap> PrintTo( Filename( tmpdir, "emil" ) );
@@ -155,7 +157,7 @@ DeclareOperation( "Process",
 #F  Exec( <cmd>, <option1>, ..., <optionN> )  . . . . . . . execute a command
 ##
 ##  `Exec' runs a shell in the current directory to execute the command given
-##  by the string <cmd> with options <option1> ... <optionN>.
+##  by the string <cmd> with options `<option1>, ..., <optionN>'.
 ##
 ##  \begintt
 ##  gap> Exec( "date" );

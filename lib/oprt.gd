@@ -106,16 +106,11 @@ DeclareAttribute( "HomeEnumerator", IsExternalSet );
 DeclareRepresentation( "IsActionHomomorphism",
     IsGroupHomomorphism and IsAttributeStoringRep and
     IsPreimagesByAsGroupGeneralMappingByImages, [  ] );
-DeclareSynonym( "IsOperationHomomorphism",IsActionHomomorphism);
 
 DeclareRepresentation( "IsActionHomomorphismByActors",
       IsActionHomomorphism, [  ] );
-DeclareSynonym( "IsOperationHomomorphismByOperators",
-  IsActionHomomorphismByActors);
 
 DeclareRepresentation("IsActionHomomorphismSubset",IsActionHomomorphism,[]);
-DeclareSynonym( "IsOperationHomomorphismSubset",
-  IsActionHomomorphismSubset);
 
 #############################################################################
 ##
@@ -135,8 +130,6 @@ DeclareAttribute( "ActionKernelExternalSet", IsExternalSet );
 ##
 DeclareRepresentation( "IsActionHomomorphismByBase",
       IsActionHomomorphism, [  ] );
-DeclareSynonym( "IsOperationHomomorphismByBase",
-  IsActionHomomorphismByBase);
 
 #############################################################################
 ##
@@ -158,8 +151,6 @@ DeclareRepresentation( "IsBlocksHomomorphism",
 DeclareRepresentation( "IsLinearActionHomomorphism",
       IsActionHomomorphism,
       [  ] );
-DeclareSynonym( "IsLinearOperationHomomorphism",
-  IsLinearActionHomomorphism);
 
 #############################################################################
 ##
@@ -179,7 +170,6 @@ DeclareAttribute( "LinearActionBasis",IsLinearActionHomomorphism);
 ##
 ##  the acting function <act> of <xset>
 DeclareAttribute( "FunctionAction", IsExternalSet );
-DeclareSynonymAttr( "FunctionOperation", FunctionAction );
 
 #############################################################################
 ##
@@ -262,8 +252,7 @@ DeclareSynonymAttr( "OperatorOfExternalSet", ActorOfExternalSet );
 ##  the external set.
 ##
 BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
-
-    local nname, op,oldname;
+    local nname, op;
 
     # Create the attribute or property.
     op:= NewAorP( name, IsExternalSet );
@@ -272,11 +261,6 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
     BIND_GLOBAL( nname, SETTER_FILTER( op ) );
     nname:= "Has"; APPEND_LIST_INTR( nname, name );
     BIND_GLOBAL( nname, TESTER_FILTER( op ) );
-
-    oldname:=ReplacedString(name,"Action","Operation");
-    if oldname<>name then
-      DeclareSynonymAttr(oldname,op);
-    fi;
 
     # Make a declaration for non-default methods.
     DeclareOperation( name, reqs );
@@ -469,8 +453,7 @@ DeclareOperation( "PreOrbishProcessing", [IsGroup]);
 InstallMethod( PreOrbishProcessing, [IsGroup], x->x );
 
 BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype )
-
-    local str, nname, orbish, func,oldname;
+    local str, nname, orbish, func;
 
     # Create the operation.
     str:= SHALLOW_COPY_OBJ( name );
@@ -585,14 +568,6 @@ BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype )
       return result;
   end;
   BIND_GLOBAL( name, func );
-
-  oldname:=ReplacedString(name,"Action","Operation");
-  if oldname<>name then
-    DeclareSynonym(oldname,func);
-    oldname:=ReplacedString(str,"Action","Operation");
-    DeclareSynonym(oldname,orbish);
-  fi;
-
 end );
 
 
@@ -617,10 +592,6 @@ end );
 DeclareGlobalFunction( "ActionHomomorphism" );
 DeclareAttribute( "ActionHomomorphismAttr", IsExternalSet );
 DeclareGlobalFunction( "ActionHomomorphismConstructor" );
-DeclareSynonym( "OperationHomomorphism",ActionHomomorphism );
-DeclareSynonymAttr( "OperationHomomorphismAttr",ActionHomomorphismAttr );
-DeclareSynonym("OperationHomomorphismConstructor",
-               ActionHomomorphismConstructor);
 
 
 #############################################################################
@@ -632,8 +603,6 @@ DeclareSynonym("OperationHomomorphismConstructor",
 ##  range, this may take substantially longer
 ##  than `ActionHomomorphism'.)
 DeclareAttribute( "SurjectiveActionHomomorphismAttr", IsExternalSet );
-DeclareSynonymAttr( "SurjectiveOperationHomomorphismAttr",
-  SurjectiveActionHomomorphismAttr );
 
 #############################################################################
 ##
@@ -665,7 +634,7 @@ DeclareGlobalFunction("DoSparseActionHomomorphism");
 ##  is the union of the orbits `Orbit(<G>,<pnt>[,<gens>,<acts>][,<act>])'
 ##  for all points <pnt> from <start>. If <G> acts on a very large domain
 ##  <Omega> not surjectively this may yield a permutation image of
-##  substantially smarre degree than by action on <Omega>.
+##  substantially smaller degree than by action on <Omega>.
 ##
 ##  The operation `SparseActionHomomorphism' will only use `=' comparisons
 ##  of points in the orbit. Therefore it can be used even if no good `\<'
@@ -689,7 +658,6 @@ OrbitishFO( "SortedSparseActionHomomorphism", OrbitishReq,
 ##  guaranteed to use the action (and not the `AsGHBI', this is required
 ##  in some methods to bootstrap the range).
 DeclareGlobalFunction( "ImageElmActionHomomorphism" );
-DeclareSynonym( "ImageElmOperationHomomorphism",ImageElmActionHomomorphism );
 
 #############################################################################
 ##
@@ -698,8 +666,14 @@ DeclareSynonym( "ImageElmOperationHomomorphism",ImageElmActionHomomorphism );
 ##
 ##  returns the `Image' group of `ActionHomomorphism' called with the same
 ##  parameters.
+##
+##  Note that (for compatibility reasons to be able to get the
+##  action homomorphism) this image group internally stores the action
+##  homomorphism. If <G> or <Omega> are exteremly big, this can cause memory
+##  problems. In this case compute only generator images and form the image
+##  group yourself.
 DeclareGlobalFunction( "Action" );
-DeclareSynonym( "Operation",Action );
+
 
 #############################################################################
 ##
@@ -760,7 +734,7 @@ OrbitishFO( "ExternalOrbit", OrbitishReq, IsCollsElms, true );
 ##
 ##  The orbit of <pnt> will always contain one element that is *equal* to
 ##  <pnt>, however for performance reasons this element is not necessarily
-##  *identical* to <pnt>, in particulr if <pnt> is mutable.
+##  *identical* to <pnt>, in particular if <pnt> is mutable.
 ##
 OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false );
 
@@ -1128,8 +1102,6 @@ DeclareOperation( "CycleLengthsOp",
 DeclareGlobalFunction( "RepresentativeAction" );
 DeclareOperation( "RepresentativeActionOp",
     [ IsGroup, IsList, IsObject, IsObject, IsFunction ] );
-DeclareSynonym( "RepresentativeOperation",RepresentativeAction );
-DeclareSynonym( "RepresentativeOperationOp",RepresentativeActionOp);
 
 
 #############################################################################

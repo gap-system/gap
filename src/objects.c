@@ -731,7 +731,7 @@ void MakeImmutableError( Obj obj)
 
 void MakeImmutableComObj( Obj obj)
 {
-  UInt i;
+/*UInt i; */
   /* 
   for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 2 ) {
        MakeImmutable(ADDR_OBJ(obj)[i]);
@@ -744,7 +744,7 @@ void MakeImmutableComObj( Obj obj)
 
 void MakeImmutablePosObj( Obj obj)
 {
-  UInt i;
+/*UInt i; */
   /* 
   for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 1 ) {
        MakeImmutable(ADDR_OBJ(obj)[i]);

@@ -40,6 +40,6 @@ fi
 
 echo "============================================================="
 echo "Creating completion files"
-echo "CreateCompletionFiles();quit;" | ${GAPEXEC} -l ${DISTROOT}/${DISTNAME} -N
+echo "CreateCompletionFiles();quit;" | ${GAPEXEC} -l ${DISTROOT}/${DISTNAME} -N -A -r
 
 exit 0

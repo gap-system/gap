@@ -105,7 +105,11 @@ end);
 #F  DeclareInfoClass( <name> )
 ##
 InstallGlobalFunction( DeclareInfoClass, function( name )
-    BIND_GLOBAL( name, NewInfoClass( name ) );
+    if not ISBOUND_GLOBAL( name ) then
+      BIND_GLOBAL( name, NewInfoClass( name ) );
+    elif not IsInfoClass( VALUE_GLOBAL( name ) ) then
+      Error( "value of `",name,"' is already bound and not an info class" );
+    fi;
 end );
 
 

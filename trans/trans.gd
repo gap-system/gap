@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declarations for the transitive groups library
@@ -35,3 +35,4 @@ DeclareGlobalFunction("NrTransitiveGroups");
 
 DeclareGlobalVariable( "TRANSCOMBCACHE", "combinations cache" );
 DeclareGlobalVariable( "TRANSARRCACHE", "arrangements cache" );
+DeclareGlobalVariable( "TRANSSHAPEFREQS", "frequencies of shapes" );

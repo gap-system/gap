@@ -24,7 +24,8 @@ for dealing with the usual cases of
 component objects (see~"Component Objects")
 and positional objects (see~"Positional Objects"),
 and for the implementation of new kinds of lists
-(see~"Implementing New List Objects");
+(see~"Implementing New List Objects"
+and~"Arithmetic Issues in the Implementation of New Kinds of Lists").
 Finally, the external representation of objects is introduced
 (see~"External Representation"),
 as a tool for representation independent access to an object.
@@ -139,7 +140,7 @@ in~"A Second Attempt to Implement Elements of Residue Class Rings".
 \Section{Creating Attributes and Properties}
 
 \>NewAttribute( <name>, <filt> )
-\)\fmark NewAttribute( <name>, <filt>, <rank> )
+\>NewAttribute( <name>, <filt>, <rank> )
 
 `NewAttribute' returns a new attribute <attr> with name <name>
 (see also~"ref:Attributes" in the Reference Manual).
@@ -164,8 +165,8 @@ The optional third argument <rank> denotes the incremental rank
 (see~"ref:Filters" in the Reference Manual) of the tester of <attr>,
 the default value is 1.
 
-\>NewAttribute( <name>, <filt>, "mutable" )
-\)\fmark NewAttribute( <name>, <filt>, "mutable", <rank> )
+\>NewAttribute( <name>, <filt>, "mutable" )!{mutable}
+\>NewAttribute( <name>, <filt>, "mutable", <rank> )!{mutable}
 
 If the third argument is the string `"mutable"', the stored values of the
 new attribute are not forced to be immutable.
@@ -738,6 +739,92 @@ are not equal w.r.t. ```=''' because they lie in different families.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Arithmetic Issues in the Implementation of New Kinds of Lists}
+
+When designing a new kind of list objects in {\GAP},
+defining the arithmetic behaviour of these objects is an issue.
+
+There are situations where arithmetic operations of list objects
+are unimportant in the sense that adding two such lists need not be
+represented in a special way.
+In such cases it might be useful either to support no arithmetics at all
+for the new lists, or to enable the default arithmetic methods.
+The former can be achieved by not setting the filters
+`IsGeneralizedRowVector' and `IsMultiplicativeGeneralizedRowVector'
+in the types of the lists,
+the latter can be achieved by setting the filter `IsListDefault'.
+(for details, see~"ref:Filters Controlling the Arithmetic Behaviour of Lists"
+in the {\GAP} Reference Manual).
+An example for ``wrapped lists'' with default behaviour are vector space
+bases;
+they are lists with additional properties concerning the computation of
+coefficients, but arithmetic properties are not important.
+So it is no loss to enable the default methods for these lists.
+
+However, often the arithmetic behaviour of new list objects is important,
+and one wants to keep these lists away from default methods for addition,
+multiplication etc.
+For example, the sum and the product of (compatible) block matrices shall
+be represented as a block matrix, so the default methods for sum and
+product of matrices shall not be applicable,
+although the results will be equal to those of the default methods
+in the sense that their entries at corresponding positions are equal.
+
+So one does not set the filter `IsListDefault' in such cases,
+and thus one can implement one's own methods for arithmetic operations.
+% It should be stated explicitly what ``arithmetic operations'' means!
+(Of course ``can'' means on the other hand that one *must* implement such
+methods if one is interested in arithmetics of the new lists.)
+
+The specific binary arithmetic methods for the new lists will usually cover
+the case that both arguments are of the new kind,
+and perhaps also the interaction between a list of the new kind and certain
+other kinds of lists may be handled if this appears to be useful.
+
+For the last situation, interaction between a new kind of lists and other
+kinds of lists, {\GAP} provides already a setup.
+Namely, there are the categories `IsGeneralizedRowVector' and
+`IsMultiplicativeGeneralizedRowVector', which are concerned with the
+additive and the multiplicative behaviour, respectively, of lists. 
+For lists in these filters, the structure of the results of arithmetic
+operations is prescribed (see~"ref:Additive Arithmetic for Lists" and
+"ref:Multiplicative Arithmetic for Lists" in the {\GAP} Reference Manual).
+
+For example,
+if one implements block matrices in `IsMultiplicativeGeneralizedRowVector'
+then automatically the product of such a block matrix and a (plain) list
+of such block matrices will be defined as the obvious list of matrix
+products, and a default method for plain lists will handle this
+multiplication.
+(Note that this method will rely on a method for computing the product of
+the block matrices, and of course no default method is available for that.)
+Conversely, if the block matrices are not in
+`IsMultiplicativeGeneralizedRowVector' then the product of a block matrix
+and a (plain) list of block matrices is not defined.
+(There is no default method for it, and one can define the result and
+provide a method for computing it.)
+
+Thus if one decides to set the filters `IsGeneralizedRowVector' and
+`IsMultiplicativeGeneralizedRowVector' for the new lists,
+on the one hand one loses freedom in defining arithmetic behaviour,
+but on the other hand one gains several default methods for a more
+or less natural behaviour.
+
+If a list in the filter `IsGeneralizedRowVector'
+(`IsMultiplicativeGeneralizedRowVector') lies in `IsAttributeStoringRep',
+the values of additive (multiplicative) nesting depth is stored in
+the list and need not be calculated for each arithmetic operation.
+One can then store the value(s) already upon creation of the lists,
+with the effect that the default arithmetic operations will access
+elements of these lists only if this is unavoidable.
+For example, the sum of two plain lists of ``wrapped matrices'' with
+stored nesting depths are computed via the method for adding two such
+wrapped lists, and without accessing any of their rows
+(which might be expensive).
+In this sense, the wrapped lists are treated as black boxes.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{External Representation}
 
 An operation is defined for elements rather than for objects in the sense
@@ -865,7 +952,7 @@ This is used for instance by the code that stores Attribute values for reuse.
 In general, these `!' operations should only be used in Methods
 which depend on the Representation of the Object. Furthermore, we would *not*
 recommend users to install Methods which depend on the Representations of
-Objects created by the library or by share packages, as there is certainly no
+Objects created by the library or by {\GAP} packages, as there is certainly no
 guarantee of the representations being the same in future versions of {\GAP}.
 
 Here we see an immutable Object (the group $S_4$), in which we improperly
@@ -945,7 +1032,7 @@ you have just created, and which cannot share mutable subobjects with
 anything else.
 
 Both `Immutable' and `MakeImmutable' work on external objects by just
-reseting the `IsMutable' filter in the Object's type. This should make
+resetting the `IsMutable' filter in the Object's type. This should make
 ineligible any methods that might change the Object. As a consequence,
 you must allow for the possibility of immutable versions of any
 objects you create.
@@ -953,7 +1040,7 @@ objects you create.
 So, if you are implementing your own external Objects. The rules amount to the
 following:
 
-\beginlist
+\beginlist%ordered
 
 \item{1.}
 You decide if your Objects should be mutable or copyable or constants, by
@@ -962,7 +1049,7 @@ fixing whether their Type includes `IsMutable' or `IsCopyable'.
 \item{2.}
 You install Methods for your objects respecting that decision:
 
-\itemitem{$\bullet$}
+\itemitem{$\bullet$}%unordered
 for constants -- no methods change the underlying elements;
 
 \itemitem{$\bullet$}

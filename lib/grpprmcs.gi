@@ -130,7 +130,9 @@ InstallMethod( CompositionSeries,
 		 pcgs{ [ i - 1 .. Length( pcgs ) ] },
 		 Concatenation( GeneratorsOfGroup( fac ),
 		 List( [ i .. Length( pcgs ) ], k -> One( fac ) ) ) );
-            Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+	    if IsIdenticalObj(s,Parent(t)) then
+	      Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+	    fi;
 	    AddNaturalHomomorphismsPool(s,t,fahom);
             list[ i ] := t;
             s := t;
@@ -225,7 +227,9 @@ InstallMethod( CompositionSeries,
         SetIsSimpleGroup( fac, true );
 	fahom:=GroupHomomorphismByImagesNC( s, fac,
                         normals[i-1], factors[i-1] );
-        Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+	if IsIdenticalObj(s,Parent(t)) then
+	  Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+	fi;
         AddNaturalHomomorphismsPool(s, t,fahom);
         Add( list, t );
         s := t;
@@ -239,7 +243,9 @@ InstallMethod( CompositionSeries,
     SetIsSimpleGroup( fac, true );
     fahom:=GroupHomomorphismByImagesNC( s, fac,
                     normals[Length(normals)], factors[Length(normals)] );
-    Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+    if IsIdenticalObj(s,Parent(t)) then
+      Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+    fi;
     AddNaturalHomomorphismsPool(s, t,fahom);
     Add( list, t );
 

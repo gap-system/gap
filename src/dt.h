@@ -10,7 +10,7 @@ extern void  UnmarkTree(
 extern UInt   Mark(
             Obj   tree,
             Obj   reftree,
-            Int   index  );
+            Int   indexx  );
 
 
 extern Int     AlmostEqual(
@@ -37,7 +37,7 @@ extern Obj    Mark2(
 
 extern UInt    FindTree(
                  Obj     tree,
-                 Int     index );
+                 Int     indexx );
 
 
 extern Obj    MakeFormulaVector(

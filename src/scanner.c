@@ -48,6 +48,7 @@ const char * Revision_scanner_c =
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
+#include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
 
 #include        "bool.h"                /* booleans                        */
@@ -590,7 +591,7 @@ UInt OpenInput (
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( Input != InputFiles-1 ) {
+    if ( Input+1 != InputFiles ) {
         Input->ptr    = In;
         Input->symbol = Symbol;
     }
@@ -630,7 +631,7 @@ UInt OpenInputStream (
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( Input != InputFiles-1 ) {
+    if ( Input+1 != InputFiles ) {
         Input->ptr    = In;
         Input->symbol = Symbol;
     }
@@ -2094,16 +2095,16 @@ void PutLine2(
     UInt                    len )
 {
     Obj                     str;
-    UInt                    strlen;
+    UInt                    lstr;
     if ( output->isstream ) {
         /* special handling of string streams, where we can copy directly */
        if (output->isstringstream) {
            str = ADDR_OBJ(output->stream)[1];
-           strlen = GET_LEN_STRING(str);
-           GROW_STRING(str, strlen+len);
-           memcpy((void *) (CHARS_STRING(str) + strlen), (void *)line, len);
-           SET_LEN_STRING(str, strlen + len);
-           *(CHARS_STRING(str) + strlen + len) = '\0';
+           lstr = GET_LEN_STRING(str);
+           GROW_STRING(str, lstr+len);
+           memcpy((void *) (CHARS_STRING(str) + lstr), (void *)line, len);
+           SET_LEN_STRING(str, lstr + len);
+           *(CHARS_STRING(str) + lstr + len) = '\0';
            CHANGED_BAG(str);
            return;
        }
@@ -2428,6 +2429,7 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
 **          Between the '%' and the 'd' an integer might be used  to  specify
 **          the width of a field in which the integer is right justified.  If
 **          the first character is '0' 'Pr' pads with '0' instead of <space>.
+**  '%i'    is a synonym of %d, in line with recent C library developements
 **  '%I'    print an identifier
 **  '%>'    increment the indentation level.
 **  '%<'    decrement the indentation level.
@@ -2467,7 +2469,7 @@ void PrTo (
             }
 
             /* '%d' print an integer                                       */
-            if ( *p == 'd' ) {
+            if ( *p == 'd'|| *p == 'i' ) {
                 if ( arg1 < 0 ) {
                     prec--;
                     for ( n=1; n <= -(arg1/10); n*=10 )
@@ -2805,7 +2807,9 @@ static Int InitKernel (
     Int                 ignore;
     Int                 i;
 
-    Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
+    Input = InputFiles;
+    Input--;
+    ignore = OpenInput(  "*stdin*"  );
     Input->echo = 1; /* echo stdin */
     Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
 

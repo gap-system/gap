@@ -64,6 +64,7 @@ integers.
 
 \Declaration{AbsInt}
 \index{absolute value of an integer}
+See also "AbsoluteValue".
 \beginexample
 gap> AbsInt( 33 );
 33
@@ -117,6 +118,15 @@ gap> LogInt( 279936, 6 );
 gap> SmallestRootInt( 1001 );
 1001
 \endexample
+
+\>Random( Integers )!{for integers}
+
+`Random' for integers returns
+pseudo random integers between -10 and
+10 distributed according to a binomial distribution.
+To  generate  uniformly  distributed  integers from   a  range,  use the
+construct 'Random( [ <low> .. <high> ] )'. (Also see~"Random".)
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

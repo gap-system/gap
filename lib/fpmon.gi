@@ -57,7 +57,7 @@ InstallMethod( \*,
 ##
 #M  \<( <x1>, <x2> )
 ##
-##  This is just a hack while rws don't work for monoids
+## This method now uses the rws for monoids (30/01/2002)
 ##
 InstallMethod( \<,
     "for two elements of a f.p. monoid",
@@ -65,13 +65,12 @@ InstallMethod( \<,
     [ IsElementOfFpMonoid, IsElementOfFpMonoid],
     0,
     function( x1, x2 )
-      local s,phi;
+      local s,rws ;
 
-      s := FpMonoidOfElementOfFpMonoid(x1);
-      phi := IsomorphismFpSemigroup(s);
-
-      return Image(phi,x1)<Image(phi,x2);
-
+      s := CollectionsFamily(FamilyObj(x1))!.wholeMonoid;
+      rws := ReducedConfluentRewritingSystem(s);
+      return ReducedForm(rws, UnderlyingElement(x1)) <
+          ReducedForm(rws, UnderlyingElement(x2));
 
     end );
 
@@ -407,6 +406,7 @@ function(s)
 
 local fm,						# free monoid underlying s
 			fs,						# free semigroup
+                        gensfreemon,    # generators of fm
 			freesmggens,	# generators of fs
 			idgen,				# the generator of fs corresponding to the identity
 			rels,					# relations of the fp monoid s
@@ -477,7 +477,8 @@ local fm,						# free monoid underlying s
 	# get the free monoid underlying the given fp monoid
 	fm := FreeMonoidOfFpMonoid(s);
 	# build the free semigroup
-	fs := FreeSemigroup(GeneratorsOfSemigroup(fm));
+        gensfreemon := List(GeneratorsOfSemigroup( fm ),String);
+	fs := FreeSemigroup(gensfreemon);
 
 	freesmggens := GeneratorsOfSemigroup(fs);
 	idgen := freesmggens[1];

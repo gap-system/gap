@@ -114,7 +114,7 @@ DeclareGlobalFunction("PerfectGroup");
 ##  If no value of <n> has been specified, the invariants will be displayed
 ##  for all groups of size <size> available in the library.
 ##  The information provided for $G$ includes the following items:
-##  \beginlist
+##  \beginlist%unordered
 ##    \item{$\bullet$}
 ##        a headline containing the size number `[ <size>, <n> ]' of $G$
 ##        in the form `<size>.<n>' (the suffix `.<n>' will be suppressed
@@ -155,16 +155,18 @@ DeclareGlobalFunction("DisplayInformationPerfectGroups");
 ##  by their product.)
 ##
 ##  The following text strings are accepted as simple group names.
-##  \beginlist
+##  \beginlist%unordered
 ##    \item{$\bullet$} `A<n>' or  `A(<n>)' for the  alternating groups $A_n$,
 ##      $5\leq n\leq9$, for example `A5' or `A(6)'.
 ##    \item{$\bullet$}  `L<n>(<q>)'   or  `L(<n>,<q>)' for  $PSL(n,q)$, where
 ##      $n\in\{2,3\}$ and $q$ a prime power, ranging
-##      \itemitem{$\circ$} for $n=2$ from 4 to 125
+##      \itemitem{$\circ$}%unordered
+##                         for $n=2$ from 4 to 125
 ##      \itemitem{$\circ$} for $n=3$ from 2 to 5
 ##    \item{$\bullet$} `U<n>(<q>)'  or  `U(<n>,<q>)' for   $PSU(n,q)$,  where
 ##      $n\in\{3,4\}$ and $q$ a prime power, ranging
-##      \itemitem{$\circ$} for $n=3$ from 3 to 5
+##      \itemitem{$\circ$}%unordered
+##                         for $n=3$ from 3 to 5
 ##      \itemitem{$\circ$} for $n=4$ from 2 to 2
 ##    \item{$\bullet$} `Sp4(4)' or `S(4,4)' for the symplectic group $S(4,4)$,
 ##    \item{$\bullet$} `Sz(8)' for the Suzuki group $Sz(8)$,

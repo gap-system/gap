@@ -1198,6 +1198,18 @@ function( left, right )
   return SumCoefRatfun(left, right);
 end);
 
+InstallMethod( \+, "ratfun + rat", true,
+    [ IsRationalFunction, IsRat ],-RankFilter(IsRat),
+function( left, right )
+  return left+right*One(CoefficientsFamily(FamilyObj(left)));
+end );
+
+InstallMethod( \+, "rat + ratfun ", true,
+    [ IsRat, IsRationalFunction], -RankFilter(IsRat),
+function( left, right )
+  return left*One(CoefficientsFamily(FamilyObj(left)))+right;
+end);
+
 #############################################################################
 ##
 #M  DegreeIndeterminate( pol, ind )  degree in indeterminate number ind
@@ -1436,12 +1448,12 @@ end);
 #M  Derivative(<pol>,<ind>)
 ##
 # (this way around because we need the indeterminate
-InstallOtherMethod(Derivative,"poly,inum",true,
-  [IsRationalFunction and IsPolynomial,IsPosInt],0,
-function(pol,ind)
+InstallOtherMethod(Derivative,"ratfun,inum",true,
+  [IsRationalFunction,IsPosInt],0,
+function(ratfun,ind)
 local fam;
-  fam:=CoefficientsFamily(FamilyObj(pol));
-  return Derivative(pol,UnivariatePolynomialByCoefficients(fam,
+  fam:=CoefficientsFamily(FamilyObj(ratfun));
+  return Derivative(ratfun,UnivariatePolynomialByCoefficients(fam,
 		          [Zero(fam),One(fam)],ind));
 end);
 
@@ -1455,6 +1467,15 @@ local d,c,i;
     d := d + (i-1) * c[i] * ind^(i-2);
   od;
   return d;
+end);
+
+InstallOtherMethod(Derivative,"ratfun,ind",true,
+  [IsRationalFunction,IsRationalFunction and IsPolynomial],0,
+function(ratfun,ind)
+local num,den;
+  num:=NumeratorOfRationalFunction(ratfun);
+  den:=DenominatorOfRationalFunction(ratfun);
+  return (Derivative(num,ind)*den-num*Derivative(den,ind))/(den^2);
 end);
 
 InstallGlobalFunction(OnIndeterminates,function(p,g)

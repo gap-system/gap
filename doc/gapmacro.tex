@@ -88,7 +88,7 @@
 /Author (The GAP Group)
 }
 \pdfcatalog{
-/URI (http://www-gap.dcs.st-and.ac.uk)
+/URI (http://www.gap-system.org)
 /PageMode /UseOutlines}
 \pdfcompresslevel 9
 \fi
@@ -136,7 +136,7 @@
 \def\enddoublecolumns{\output={\balancecolumns}\eject
   \endgroup \global\vsize=\origvsize \pagegoal=\vsize}
 \def\doublecolumnout{\splittopskip=\topskip \splitmaxdepth=\maxdepth
-  \setbox0=\vsplit255 to.5\vsize \setbox2=\vsplit255 to.5\vsize
+  \setbox0=\vsplit255 to.46\vsize \setbox2=\vsplit255 to.46\vsize
   %\setbox0=\vbox{A\unvbox0B\vfill}\setbox2=\vbox{C\unvbox2D\vfill}%
   \onepageout\pagesofar \global\vsize=2\pageheight
   \unvbox255 \penalty\outputpenalty}
@@ -174,6 +174,7 @@
 % Additional fonts.
 \font\inchhigh=cminch
 \font\titlefont=cmssdc10 at 40pt
+\font\subtitlefont=cmssdc10 at 24pt
 \font\secfont=cmssdc10 at 14pt
 \font\sf=cmss10
 \font\bsf=cmssdc10
@@ -228,6 +229,7 @@
   |gdef|ttfinish#1^^M#2\endtt{#1|medskip{#2}|endgroup %
   |endgroup%
   |vskip-|parskip|medskip|noindent|ignorespaces}}
+\def\unstableoutput{}
 \outer\def\beginexample{\par
   \begingroup\advance\leftskip by \ttindent
   \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \examplefinish}
@@ -257,9 +259,9 @@
 \def\folio{\ifnum\pageno<0 \romannumeral-\pageno \else
   \number\pageno\fi}
 \def\doindex#1#2#3{\protectedwrite\indexout{\noexpand\indexentry{#1#2#3}%
-  {\ifnum\pageno<0 \romannumeral-\pageno \else
+  {\ifnum\pageno<0\romannumeral-\pageno\else%
    \number\pageno\fi}}%
-  \ifvmode\nobreak\fi}
+  \ifvmode\nobreak\else\unskip\fi}
 
 % Additional active characters and their default meanings.
 \mathcode`.="2201 \mathchardef\.="702E
@@ -301,7 +303,9 @@
 %    The labels formed inside TeX from the \makelabel commands maps
 %    underscores to | (needed to be a non-active character) and then
 %    converts to lowercase.
-% - GG 2001/06/11
+% 4. Since GapDoc uses < and > in some of its labels a temporary re-defintion
+%    of <#1> was necessary, inside \@xplowr.
+% - GG 2001/06/11, 2001/09/02
 \catcode`@=11
 \let\@xp\expandafter
 \long\def\@firstoftwo#1#2{#1}
@@ -313,10 +317,10 @@
   \else%
     \@xp\@secondoftwo%
   \fi}
-\def\protectedwrite#1#2{\begingroup\let_\relax \immediate\write#1{#2}\endgroup}
-\def\@xplowr#1{\def_{|}\let\next=\relax%
-  \expandafter\edef\next{\def\noexpand\xpandlowr{#1}}%
-  \lowercase\expandafter{\next}}
+\def\protectedwrite#1#2{\begingroup\let_\relax\immediate\write#1{#2}\endgroup}
+\def\@xplowr#1{\begingroup\def_{|}\def<##1>{|##1|}\let\next=\relax%
+  \expandafter\edef\next{\gdef\noexpand\xpandlowr{#1}}%
+  \lowercase\expandafter{\next}\endgroup}
 \def\makelabel#1#2{\@xplowr{r@#1}%
   \@ifundefined{\xpandlowr}%
     \relax%
@@ -349,13 +353,13 @@
 \catcode`@=12%
 
 \def\cite#1{\write\citeout{\bs citation{#1}}\sigel{#1}}
-\def\dosecindex#1#2#3{\ifchapter{\let\ =\space 
+\def\dosecindex#1#2#3{\ifchapter{\let\ =\space%
    \protectedwrite\secindout{#1 \the\chapno.\the\secno. #2#3}}\fi}
 \def\bothindex#1#2#3#4{\doindex{#2}{#3}{#4}\dosecindex{#1}{#2}{#4}}
 \def\index#1{\bothindex I{#1}{}{}}
-\def\atindex#1#2{\doindex{\scrubafterexcl#1!\end}{#2}{} \dosecindex I{#1}{}}
+\def\atindex#1#2{\doindex{\scrubafterexcl#1!\end}{#2}{}\dosecindex I{#1}{}}
 \def\indextt#1{\doindex{\scrubafterexcl#1!\end}%
-   {@`\scrubafterexcl#1!\end'\scrubbeforeexcl#1!\end}{} \dosecindex I{#1}{}}
+   {@`\scrubafterexcl#1!\end'\scrubbeforeexcl#1!\end}{}\dosecindex I{#1}{}}
 %\def\indextt#1{\atindex{#1}{@`#1'}}
 \def\indexit#1{{\it #1}}
 
@@ -463,7 +467,8 @@
   \bookmarkdestin{\tempa}
   \setbookmark{\tempa}{#1}
   \expandafter\writesecline\tempa\\{#1}
-  \dosecindex S{#1}{}{\let\ =\space\label{#1}}
+  \dosecindex S{#1}{}
+  \ifx#2\nolabel\else{\let\ =\space\label{#1}}\fi
   \ifx#2\null\else \edef\tempb{{#1@#1}}
     \expandafter\doindex\tempb{|indexit}{}\fi
   \noindent{\baselineskip 18pt\let!=\space \mark{Section \the\secno. #1}%
@@ -595,6 +600,10 @@
 
 \def\package#1{{\sf #1}}
 
+% The day
+
+\def\Day{\number\day}
+
 % The month in words
 
 \def\Month{\ifcase\month\or January\or February\or March\or April\or May\or
@@ -603,10 +612,14 @@
 % The year
 
 \def\Year{\number\year}
+
+% The date
+
+\def\Today{{\Day} {\Month} {\Year}}
   
 % Miscellaneous macros.
 \def\N{{\Bbb N}} \def\Z{{\Bbb Z}} \def\Q{{\Bbb Q}} \def\R{{\Bbb R}}
-\def\C{{\Bbb C}} \def\F{{\Bbb F}}
+\def\C{{\Bbb C}} \def\F{{\Bbb F}} \def\calR{{\cal R}}
 
 %T do we want these
 %\def\stars{\bigskip\centerline{\*\qquad\*\qquad\*}\bigskip}
@@ -672,6 +685,7 @@
   \def\thechapter{} \chapterfalse
   \def\lefthead{{\it \chapname}}
   \let\righthead=\lefthead
+  \hbadness=5000\relax
   \gdef\EndMatter{}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -696,6 +710,8 @@
 \def\UseReferences#1{{\undoquotes
     \inputaux\labelin{#1/}{lab}}
 }
+\let\UseGapDocReferences\UseReferences %needed so that the HTML converter
+                                       %can tell the difference
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,9 +1,12 @@
 #!/usr/bin/perl -w
-# was: /usr/bin/perl -w
 #
 # Script to convert GAP manual TeX files to HTML
 # Usage:
 #  convert.pl [-csti] [-f <frontpage>] [-n <sharepkg>] <doc-dir> [<html-dir>]
+#
+# Requirements: Perl (might need to edit the first line of this file)
+#               TtH is not strictlty necessary but very desirable to treat
+#               formulas.
 #
 #  Caveats: 
 #
@@ -40,12 +43,12 @@
 #     are created using this converter.
 #
 #  5. Only the manual.lab files for books that are referenced via the
-#     \UseReferences commands in the manual.tex file of the book being
-#     converted (and the book's own manual.lab file, of course) are
-#     read. Make sure all the \UseReferences commands needed are present!
-#     (The TeX-produced manuals will be missing lots of cross-references
-#     also, if some are missing.) You will get `Bad link' messages if you
-#     have some missing.
+#     \UseReferences and \UseGapDocReferences commands in the manual.tex
+#     file of the book being converted (and the book's own manual.lab 
+#     file, of course) are read. Make sure all the \UseReferences and
+#     \UseGapDocReferences commands needed are present! (The TeX-produced
+#     manuals will be missing lots of cross-references also, if some are
+#     missing.) You will get `Bad link' messages if you have some missing.
 #
 #  Options:
 #
@@ -98,6 +101,10 @@
 #     .  In a \beginitems ... \enditems environment everything is indented
 #        except for the item headers, rather than just the paragraph
 #        following the item header.
+#     .  By default, the \beginlist ... \endlist environment is interpreted
+#        as a compact description list. By adding %unordered or %ordered...
+#        markup it will be interpreted as either an unordered or ordered
+#        list respectively (see the ext manual for details).
 #     .  There are spacing differences e.g. \begintt ... \endtt etc.
 #        environments are not indented.
 #     .  Supports all accents of TeX, in probably the best way currently
@@ -106,11 +113,9 @@
 #     .  With -t switch announces the version of TtH used.
 #     .  Now supports %display{nontex}, %display{nontext} and
 #        %display{nonhtml} variants of %display environment.
+#     .  References to subsections are now interpreted as one would expect.
 #
 #  BUGS (and known departures from the TeX behaviour)
-#     .  Doesn't interpret macros in 2nd argument of \atindex.
-#     .  References to subsections are actually interpreted as links
-#        to the start of the section containing the subsection.
 #     .  $a.b$ is only interpreted correctly in -t mode.
 #     .  The citation keys that appear are the .bib file keys rather
 #        than the keys BibTeX constructs with the `alpha' bib-style.
@@ -170,6 +175,30 @@ $listdepth = 0;
 
 $sharepkg = "";
 
+# The books converted to HTML with this converter
+# The values set are: 0 or 1 according to whether or not -c was used.
+#
+
+%convertbooks = ();
+
+# This is added to when scanning for \UseGapDocReferences. 
+#
+
+%gapdocbooks = ();
+
+# Types of href label are:
+# 0 (non -c books) : C<MMM>S<NNN>.htm
+# 1 (-c books)     : CHAP<MMM>.htm#SECT<NNN>
+# 2 (== $gapdoc)   : chap<M>.html#s<N>ss0
+#
+# It would be nice to support subsections properly like GapDoc,
+# but this involves creating a subsection data-structure modelled
+# on section, which is a mite non-trivial (maybe ... if I find time).
+# For now in-text references go to the beginning of the chapter.
+#
+
+$gapdoc = 2;
+
 # sansserif:
 #
 # Used mainly to set GAP in sans serif font. Inside <title> ... </title>
@@ -191,9 +220,11 @@ sub sansserif {
 # that goes in the <title> ... </title> field which should be unembellished.
 #
 sub booktitle_body {
-    my ($bktitle, $prog_or_pkg) = @_;
-    $newstring = sansserif $prog_or_pkg;
-    $bktitle =~ s/$prog_or_pkg/$newstring/;
+    my ($bktitle, @prog_or_pkg) = @_;
+    foreach $prog_or_pkg (@prog_or_pkg) {
+        $newstring = sansserif $prog_or_pkg;
+        $bktitle =~ s/$prog_or_pkg/$newstring/;
+    }
     return $bktitle;
 }
 
@@ -216,15 +247,17 @@ sub kanonize {
 }
 
 sub def_section_by_name {
-    my ($sec, $chapno, $secno) = @_;
+    my ($sec, $chapno, $secno, $ssecno) = @_;
     my $secname = canonize $1;
     if (defined $sections_by_name{$secname}) {
         if (($sections_by_name{$secname}->{chapnum} ne $chapno) ||
-            ($sections_by_name{$secname}->{secnum}  ne $secno)) {
+            ($sections_by_name{$secname}->{secnum}  ne $secno)  ||
+            ($sections_by_name{$secname}->{ssecnum} ne $ssecno)) {
             print STDERR "Section: \"$secname\" already defined as: ",
                          "$sections_by_name{$secname}->{chapnum}.",
-                         "$sections_by_name{$secname}->{secnum}\n";
-            print STDERR "Now being redefined as: $chapno.$secno\n";
+                         "$sections_by_name{$secname}->{secnum}.",
+                         "$sections_by_name{$secname}->{ssecnum}\n";
+            print STDERR "Now being redefined as: $chapno.$secno.$ssecno\n";
             $redefined_secname{$secname} = 1;
         } else {
             return;
@@ -232,7 +265,9 @@ sub def_section_by_name {
     }
     $sections_by_name{$secname}
          = {chapnum => $chapno,
-            secnum  => $secno};
+            secnum  => $secno,
+            ssecnum => $ssecno};
+#   print STDERR "Defined section \"$secname\": $chapno.$secno.$ssecno\n";
 }
 
 sub tonum { # Needed since chanu may be A,B,... for appendices
@@ -304,11 +339,13 @@ sub getchaps {
                          number => $chanu};
                 $chap_as_sec = {name => $chapnam,
                                 chapnum => $chanu, 
-                                secnum => 0,
+                                secnum  => 0,
+                                ssecnum => 0,
                                 chapter => $chap};
                 if ($4 ne $5) {
-                    def_section_by_name("$book:$chapnam", $chanu, 0);
-                    add_to_index(htm_fname($opt_c,$chanu,0), $4, $chap_as_sec);
+                    def_section_by_name("$book:$chapnam", $chanu, 0, 0);
+                    add_to_index(htm_fname($opt_c,$chanu,0), 
+                                           $4, $chap_as_sec, 0);
                 }
 
                 $chap->{sections}[0] = $chap_as_sec;
@@ -328,7 +365,8 @@ sub getlabs {
         if ( /\\setcitlab/ ) {
             next; # We don't get the bibliography labels from here
         } elsif (/\\makelabel\s*\{([^}]+)\}\s*\{(\w+)(\.(\d+))?(\.(\d+))?\}/) {
-            def_section_by_name($1, $2, (defined($3) ? $4 : 0));
+            def_section_by_name($1, $2, (defined($3) ? $4 : 0),
+                                        (defined($5) ? $6 : 0));
         } else {
             chomp;
             print STDERR "Ignored line: $_\n... in ${bkdir}manual.lab\n";
@@ -363,23 +401,64 @@ sub printchaps {
 $footer = "<P>\n" . sansserif( "GAP 4 manual<br>" . `date +"%B %Y"` ) .
           "</body></html>";
 
+# Section label ... this is the bit that goes after a # in an HREF link
+# or is assigned to the value of NAME in an anchor.
+#
+sub sec_label {
+    my ($c_s_gapdoc,$cnum,$snum,$ssnum) = @_;
 
-# The names of the section and chapter files are determined by this routine
-# directly if the chapter and section number is known.
+    if ($c_s_gapdoc == $gapdoc) {
+      return "s${snum}ss${ssnum}";
+    }
+
+    $snum = "0" x (3 - length $snum) . $snum;
+    if ($c_s_gapdoc) {
+        if ($snum eq "000") {
+            return "";
+        } elsif ($ssnum) {
+            return "SSEC${snum}.$ssnum";
+        } else {
+            return "SECT${snum}";
+        }
+    } else {
+        return ($ssnum) ? "SSEC$ssnum" : "";
+    }
+}
+
+# The HREFs of subsections, sections and chapter files are determined by
+# this routine directly if the chapter, section, subsection numbers are known.
 sub htm_fname {
-    my ($c_or_main,$cnum,$snum) = @_;
+    my ($c_s_gapdoc,$cnum,$snum,$ssnum) = @_;
+
+    my $seclabel = sec_label($c_s_gapdoc,$cnum,$snum,$ssnum);
+    $seclabel = "#$seclabel" if ($seclabel ne "");
+
+    if ($c_s_gapdoc == $gapdoc) {
+      return "chap${cnum}.html$seclabel";
+    }
 
     $cnum = "0" x (3 - length $cnum) . $cnum;
     $snum = "0" x (3 - length $snum) . $snum;
-    if ($c_or_main) {
-        if ($snum eq "000") {
-            return "CHAP${cnum}.htm";
-        } else {
-            return "CHAP${cnum}.htm#SECT${snum}";
-        }
-    } else {
-        return "C${cnum}S$snum.htm";
+    return ($c_s_gapdoc) ? "CHAP${cnum}.htm$seclabel" 
+                         : "C${cnum}S$snum.htm$seclabel";
+}
+
+# Returns the value that $opt_c must have had when the book $book
+# was compiled with this converter.
+sub hreftype {
+    my ($book, $bdir) = @_;
+    if ( !(exists $convertbooks{$book}) ) {
+      my @ls = `ls ${odir}$bdir`;
+      $convertbooks{$book} 
+          = (grep { m/^CHAP...[.]htm$/ } @ls) ?
+                1 :         # .htm files have shape CHAP<MMM>.htm
+                (grep { m/^CHAP...[.]htm$/ } @ls) ?
+                    0 :     # .htm files have shape C<MMM>S<NNN>.htm
+                    $opt_c; # can't determine the shape ... don't exist
+                            # yet ... we assume the shape of the current
+                            # manual being compiled.
     }
+    return $convertbooks{$book};
 }
 
 # The names of the section and chapter files are determined by this routine
@@ -387,31 +466,41 @@ sub htm_fname {
 sub name2fn {
     my ($name,$ischap) = @_;
     my $bdir = "";
-    my $c_or_mainref = $opt_c;
+    my $c_s_gapdoc = $opt_c;
 
     # : indicates a cross-volume reference
     my $canon_name = canonize $name;
+    #print STDERR "canon_name = $canon_name\n";
     if ( $canon_name =~ /^(ref|tut|ext|prg|new):/ ) {
       if ($mainman==1) {
 	$bdir = "../$1/";
       } else {
         $bdir = "../../../doc/htm/$1/";
-        # If this is a cross-reference to a main manual
-        # we have to make an assumption on whether that main manual
-        # was processed with the -c option. We assume it was.
-        $c_or_mainref = 1;
       }
+      $c_s_gapdoc = hreftype($1, $bdir);
     } elsif ($canon_name =~ /^([a-zA-Z_0-9]*):/ ) {
       # presumably a package name
+      #print STDERR "package name = $1\n";
       if ($mainman==1) {
-	$bdir = "../../../pkg/$1/htm/";
+        if (exists $gapdocbooks{$1}) {    # a main manual referring
+	  $bdir = "../../../pkg/$1/doc/"; # to a GapDoc-produced manual
+          $c_s_gapdoc = $gapdoc;
+        } else {
+	  $bdir = "../../../pkg/$1/htm/";
+          $c_s_gapdoc = hreftype($1, $bdir);
+        }
+      } elsif (exists $gapdocbooks{$1}) { # a package manual referring
+	$bdir = "../../$1/doc/";          # to a GapDoc-produced manual
+        $c_s_gapdoc = $gapdoc;
       } else {
 	$bdir = "../../$1/htm/";
+        $c_s_gapdoc = hreftype($1, $bdir);
       }
     } elsif ($canon_name !~ /^($book):/) {
         $name = "$book:$name";
         $canon_name = canonize $name;
     }
+    $name =~ s/\s+/ /g;
     
     if (exists $redefined_secname{$canon_name}) {
         print STDERR "Ref to multiply defined label: ",
@@ -423,9 +512,10 @@ sub name2fn {
         print STDERR "Bad link: \"$name\" at line $. of $chap->{file}.tex\n";
         return "badlink:$name";
     }
-    return $bdir . htm_fname($c_or_mainref,
+    return $bdir . htm_fname($c_s_gapdoc,
                              $sec->{chapnum}, 
-                             ($ischap == 1) ? 0 : $sec->{secnum});
+                             ($ischap == 1) ? 0 : $sec->{secnum},
+                             ($ischap == 1) ? 0 : $sec->{ssecnum});
 }
 
 
@@ -442,9 +532,13 @@ sub name2linktext {
 # ($hname = $fname or $fname#..., where $fname is a filename)
 sub add_to_index {
     my ($hname, $key, $sec) = @_;
-    push @{$index{$key}}, [ $hname, "$sec->{chapnum}.$sec->{secnum}" ];
+    my $secno = "$sec->{chapnum}.$sec->{secnum}";
+    if (defined $sec->{ssecnum} and $sec->{ssecnum}) {
+         $secno .= ".$sec->{ssecnum}";
+    }
+    push @{$index{$key}}, [ $hname, $secno ];
 #   print STDERR "hname = $hname, key = $key, ";
-#   print STDERR "sec = $sec->{chapnum}.$sec->{secnum}\n";
+#   print STDERR "sec = $secno\n";
 }
 
 #
@@ -474,6 +568,53 @@ sub inxentry {
         $indexcount++;
     }
     return $label;
+} 
+
+#
+# Return a NAME anchor for a subsection
+#
+sub subsec_name {
+    my ($fname,$key,$sec) = @_;
+#   print STDERR "curs = $curs\n";
+#   print STDERR "sec = $sec->{chapnum}.$sec->{secnum}.$sec->{ssecnum}\n";
+    $key =~ s/!\{(.*)\}$/!$1/;
+    $key =~ s/\s+/ /g;
+    my $canon_name =  canonize "$book:$key";
+    my $sec_of_key = $sections_by_name{$canon_name};
+    if (exists $redefined_secname{$key}) {
+        print STDERR "Multiply defined label: ",
+                     "\"$key\" at line $. of $chap->{file}.tex\n",
+                     "... subsection will be unreachable\n";
+        return "";
+    } elsif ($sec_of_key->{chapnum} ne $sec->{chapnum} ||
+             $sec_of_key->{secnum}  ne $sec->{secnum}) {
+        print STDERR "Section of \"$key\" (",
+                     "$sec_of_key->{chapnum}.$sec_of_key->{secnum}) ",
+                     "doesn't agree with the current section (",
+                     "$sec->{chapnum}.$sec->{secnum}) ",
+                     "at line $. of $chap->{file}.tex\n",
+                     "... subsection will be unreachable\n";
+        return "";
+    } else {
+        my $curs = "$sec_of_key->{chapnum}.$sec_of_key->{secnum}" .
+                                         ".$sec_of_key->{ssecnum}";
+        my $label = sec_label($opt_c, $sec_of_key->{chapnum},
+                                      $sec_of_key->{secnum},
+                                      $sec_of_key->{ssecnum});
+        if (defined $index{$key}) {
+            my $ar;
+            foreach $ar (@{$index{$key}}) {
+	        if ( ($ar->[1]) eq $curs ) {
+	           return "";  # index entry is not new
+	        }
+            }
+        } else {
+            $index{$key} = [];
+        }
+#       print STDERR "Subsection key: \"$key\"\n";
+        add_to_index("$fname#$label", $key, $sec_of_key);
+        return "<a name = \"$label\"></a>\n";
+    }
 } 
 
 
@@ -745,20 +886,40 @@ sub macro_replace {
         elsif ($macro =~ /^bs?f|stars$/) { return ($rest, "<hr>");         }
         elsif ($macro eq "cr")           { return ($rest, "<br>");         }
         elsif ($macro eq "fmark")        { return ($rest, "<li>");         }
-        elsif ($macro eq "item" and $rest =~ /^\{([^}]*)\}/) 
-          { if ($listdepth == 2) {
+        elsif ($macro eq "item") 
+          { ($rest, $itemarg, $first) = get_arg("$rest"); # $first = ""
+            if ($listdepth == 2) {
                 $listdepth = 1;
-                return ("$1\\itmnd $'", "\n</dl>\n<dt>");
+                if ($listtype eq "d") {
+                    return ("$itemarg\\itmnd $rest", "\n</dl>\n<dt>");
+                } else { #ignore bit in braces (ordered and unordered lists)
+                    return ($rest, "\n</${listtype}l>\n<li>");
+                }
             } else {
-                return ("$1\\itmnd $'", "<dt>"); 
+                if ($listtype eq "d") {
+                    return ("$itemarg\\itmnd $rest", "<dt>");
+                } else { #ignore bit in braces (ordered and unordered lists)
+                    return ($rest, "<li>");
+                }
             }
           }
-        elsif ($macro eq "itemitem" and $rest =~ /^\{([^}]*)\}/) 
-          { if ($listdepth == 2) {
-                return ("$1\\itmnd $'", "<dt>"); 
-            } else {
+        elsif ($macro eq "itemitem")
+          { ($rest, $itemarg, $first) = get_arg("$rest"); # $first = ""
+            $rest =~ /^(%(un|)ordered)? #defines $sublisttype
+                       (\{([1aAiI])\})? #defines TYPE of ordered sublist
+                       (\{(\d+)\})?     #defines START of ordered sublist
+                       /x;
+            if ($listdepth == 1) {
+                $sublisttype = list_type($1, $2);
+                $sublistentry = begin_list($sublisttype, $3, $4, $5, $6) . "\n";
                 $listdepth = 2;
-                return ("$1\\itmnd $'", "<dl compact>\n<dt>");
+            } else {
+                $sublistentry = "";
+            }
+            if ($sublisttype eq "d") {
+                return ("$itemarg\\itmnd $rest", "$sublistentry<dt>");
+            } else { #ignore bit in braces (ordered and unordered lists)
+                return ($rest, "$sublistentry<li>");
             }
           }
 	# pseudo ``itemend'' character
@@ -780,6 +941,35 @@ sub macro_replace {
         $rest =~ /^./;
         return ($', $&);
     }
+}
+
+# Returns the type of a list
+
+sub list_type {
+    my ($type, $un) = @_;
+    return ( !(defined $type) ) ? "d"          #descriptive
+                                : ($un eq "un")
+                                    ? "u"      #unordered
+                                    : "o";     #ordered
+}
+
+# Returns a string for starting a list of the appropriate type
+
+sub begin_list {
+    my ($listtype, $otypedef, $otype, $ostartdef, $ostart) = @_;
+    my $beginlist = "<${listtype}l";
+    if      ($listtype eq "d") {
+      $beginlist .= " compact";
+    } elsif ($listtype eq "o") {
+      if ( (defined $otypedef) && (defined $otype) ) {
+        $beginlist .= " type=$otype";
+        if ( (defined $ostartdef) && (defined $ostart) ) {
+          $beginlist .= " start=$ostart";
+        }
+      }
+    }
+    $beginlist .= ">";
+    return $beginlist;
 }
 
 #
@@ -1002,7 +1192,7 @@ sub convert_text {
           # \>`<variable>' V
 	  if (/^\\> *`([^\']+)\'\s*(\[[^\]]*\])?\s*V?\s*$/) {
       	      $endline = "</code>";
-      	      $outline .= inxentry($fname,$1,$sec); # $1 = <variable>
+      	      $outline .= subsec_name($fname,$1,$sec); # $1 = <variable>
               $outline .= "<dt>" if $inlist;
       	      $outline .= "<li><code>";
       	      $tt = 1;
@@ -1016,7 +1206,7 @@ sub convert_text {
               $drei = defined($3) ? $3 : "";
               $vier = defined($4) ? " $4" : "";
 	      # $2$drei = <label><sub-entry> 
-      	      $outline .= inxentry($fname,"$2$drei",$sec);
+      	      $outline .= subsec_name($fname,"$2$drei",$sec);
 #print STDERR "non-func:$1 - $2 - $drei - $vier |$2$drei|\n";
               $outline .= "<dt>" if $inlist;
       	      $outline .= "<li><code>";
@@ -1031,7 +1221,7 @@ sub convert_text {
               $zwei = defined($2) ? $2 : "";
               $drei = defined($3) ? $3 : "";
               $vier = defined($4) ? " $4" : "";
-      	      $outline .= inxentry($fname,"$1$drei",$sec);
+      	      $outline .= subsec_name($fname,"$1$drei",$sec);
 	      # $1$drei = <func><sub-entry> 
 #print STDERR "func:$1 - $zwei - $drei - $vier |$1$drei|\n";
               $outline .= "<dt>" if $inlist;
@@ -1109,19 +1299,29 @@ sub convert_text {
         if ($matched eq "\\") {
             # commands that begin a new output line
           NEWLINE: {
-            if    ($rest =~ /^beginitems/ and not $inlist)
-                                          { $outline .= "<p>\n<dl compact>";
-                                            $inlist = 1;         }
-            elsif ($rest =~ /^enditems/ and $inlist)
-                                          { $outline .= "</dl>";
-                                            $inlist = 0;         }
-            elsif ($rest =~ /^beginlist/) { $outline .= "<dl compact>";
-                                            $listdepth = 1;      }
-            elsif ($rest =~ /^endlist/)   { $outline .= "</dl>" x $listdepth;
-                                            $listdepth = 0;      }
-            elsif ($rest =~ /^answer/)    { $outline = "";
-                                            $skip_lines = 1;     }
-            else  { last NEWLINE; }
+            if      ($rest =~ /^beginitems/ and not $inlist) { 
+                $outline .= "<p>\n<dl compact>";
+                $inlist = 1;
+            } elsif ($rest =~ /^enditems/ and $inlist) { 
+                $outline .= "</dl>";
+                $inlist = 0;
+            } elsif ($rest =~ /^beginlist
+                               (%(un|)ordered)? #defines $listtype
+                               (\{([1aAiI])\})? #defines TYPE of ordered list
+                               (\{(\d+)\})?     #defines START of ordered list
+                               /x ) {
+                $listtype = list_type($1, $2);
+                $outline .= begin_list($listtype, $3, $4, $5, $6);
+                $listdepth = 1;
+            } elsif ($rest =~ /^endlist/) {
+                $outline .= ("</${listtype}l>") x $listdepth;
+                $listdepth = 0;
+            } elsif ($rest =~ /^answer/) {
+                $outline = "";
+                $skip_lines = 1;
+            } else {
+                last NEWLINE;
+            }
             print "$outline\n";
             next LINE;
           }
@@ -1405,7 +1605,8 @@ sub startfile {
         $re = "^\\\\Section\\{$name1\\}";
     }
     $name2 = kanonize $name;
-    $fname = htm_fname($opt_c, $sec->{chapnum}, $sec->{secnum});
+    $fname = htm_fname($opt_c, 
+                       $sec->{chapnum}, $sec->{secnum}, $sec->{ssecnum});
 
     open ( OUT, ">${odir}${fname}" ) || die "Can't write to ${odir}${fname}";
     select OUT;
@@ -1413,6 +1614,7 @@ sub startfile {
     print  "<html><head><title>[$book] $num $name2</title></head>\n";
     print  "<body text=\"\#000000\" bgcolor=\"\#ffffff\">\n";
     add_to_index($fname, $name, $sec);
+    navigation( ($opt_c) ? $chap->{sections}[0] : $sec );
     print "<h1>$num $name2</h1><p>\n";
 
     return ($fname, $re);
@@ -1422,7 +1624,7 @@ sub startsec {
     my $sec = $_[0];
     my $snum = $sec->{secnum};
     my $name = $sec->{name};  
-    add_to_index(htm_fname($opt_c, $sec->{chapnum}, $snum), $name, $sec);
+    add_to_index(htm_fname($opt_c, $sec->{chapnum}, $snum, 0), $name, $sec);
     my $num = $sec->{chapnum} . "." .$snum;
     $snum = "0" x (3 - length $snum) . $snum;
     my $name1 = metaquote $name;
@@ -1437,10 +1639,10 @@ sub sectionlist {
     print  "<P>\n<H3>Sections</H3>\n<oL>\n";
   SUBSEC: for $sec (@{$chap->{sections}}) {
       next SUBSEC if ($sec->{secnum} == 0);
-      my $link = htm_fname($opt_c, $sec->{chapnum}, $sec->{secnum});
+      my $link = htm_fname($opt_c, $sec->{chapnum}, $sec->{secnum}, 0);
       my $name2 = kanonize $sec->{name};
       print  "<li> <A HREF=\"$link\">$name2</a>\n";
-  }
+    }
     print  "</ol><p>\n";
 }
 
@@ -1452,7 +1654,7 @@ sub sectionlist {
 sub navigation {
     my $sec = $_[0];
     my $chap = $sec->{chapter};
-    my $cfname = htm_fname($opt_c, $sec->{chapnum}, 0);
+    my $cfname = htm_fname($opt_c, $sec->{chapnum}, 0, 0);
     if ($mainman == 1) {
       print  "[<a href=\"../index.htm\">Top</a>] "
     } else {
@@ -1465,28 +1667,30 @@ sub navigation {
         if (tonum($chap->{number}) != 1) {
             my $prev = htm_fname($opt_c,
                                  $chapters[tonum($chap->{number}) - 1]{number},
-                                 0);
+                                 0, 0);
             print  "[<a href =\"$prev\">Previous</a>] ";
         }
         if (tonum($chap->{number}) != $#chapters) {
             my $next = htm_fname($opt_c,
                                  $chapters[tonum($chap->{number}) + 1]{number},
-                                 0);
+                                 0, 0);
             print  "[<a href =\"$next\">Next</a>] ";
         }
     } else {
         print  "[<a href = \"$cfname\">Up</a>] ";
         if ($sec->{secnum} != 1) {
-            my $prev = htm_fname($opt_c, $chap->{number}, $sec->{secnum} - 1);
+            my $prev = htm_fname($opt_c, $chap->{number}, $sec->{secnum} - 1, 
+                                 0);
             print  "[<a href =\"$prev\">Previous</a>] ";
         }
         if ($sec->{secnum} != $#{$chap->{sections}}) {
-            my $next = htm_fname($opt_c, $chap->{number}, $sec->{secnum} + 1);
+            my $next = htm_fname($opt_c, $chap->{number}, $sec->{secnum} + 1,
+                                 0);
             print  "[<a href =\"$next\">Next</a>] ";
         } elsif (tonum($chap->{number}) != $#chapters) {
             my $next = htm_fname($opt_c,
                                  $chapters[tonum($chap->{number}) + 1]{number},
-                                 0);
+                                 0, 0);
             print  "[<a href =\"$next\">Next</a>] ";
         }
     }
@@ -1505,6 +1709,7 @@ sub convert_chap {
     # loop, controlled by the list of sections that we expect
     # will fail, possibly messily if this does not match reality
 
+    # The call to startfile produces navigation + a chapter heading
     if ($opt_c) {               # each chapter in a single file
         ($fname,$re) = startfile $chap->{sections}[0];
     }
@@ -1518,6 +1723,7 @@ sub convert_chap {
       if ($opt_c) {
           $re = startsec $sec unless ($sec->{secnum} == 0);
       } else {
+          # The call to startfile produces navigation + a section heading
           ($fname, $re) = startfile $sec;
 #         print STDERR "fname: $fname, re: $re\n";
       } 
@@ -1543,13 +1749,10 @@ sub convert_chap {
       };
 
       unless ($secline =~ /$re/) {
-          die "Missing chapter or section line matching $re" };
+          die "Missing chapter or section line matching $re"
+      };
 
-      convert_text($fname);
-
-      # Here we have processed the whole section and start to attach footers
-      # to it. If it is really a chapter then it gets a list of its sections
-
+      # If this is the beginning of a chapter, we list its sections
       if ($sec->{secnum} == 0) {
           if (defined($chap->{sections}[1])) {
               sectionlist $chap;
@@ -1557,13 +1760,21 @@ sub convert_chap {
               print STDERR "Warning: Chapter has no sections\n";
           }
       }
+
+      # Now we print the section body
+      convert_text($fname);
+      print "<p>\n";
+
+      # If it's one file per section ... add navigation etc. at end of file
       unless ($opt_c) {
           navigation $sec;
-	  print $footer;
-	  close OUT;
-	  select STDOUT;
+          print $footer;
+          close OUT;
+          select STDOUT;
       }    
-  }
+    }
+
+    # If it's one file per chapter ... add navigation etc. at end of file
     if ($opt_c) {
         navigation $chap->{sections}[0];
 	print $footer;
@@ -1590,7 +1801,7 @@ END
 
   CHAP: foreach $chap (@chapters) {
       unless (defined $chap) { next CHAP};
-        my $link = htm_fname($opt_c, $chap->{number}, 0);
+        my $link = htm_fname($opt_c, $chap->{number}, 0, 0);
         my $name2 = kanonize $chap->{name};
         print  "</ol><ol type=\"A\">\n" if ( $chap->{number} eq "A" );
         print  "<li><a href=\"$link\">$name2</a>\n";
@@ -1646,16 +1857,16 @@ END
 }
     
 sub index_end {
-  print  "</dl><p>\n";
-  if ($mainman == 1) {
-    print  "[<a href=\"../index.htm\">Top</a>] "
-  } else {
-      if ($opt_f) {
-          print  "[<a href=\"$opt_f\">Top</a>] "
-      }
-  };
-  print  "[<a href=\"chapters.htm\">Up</a>]";
-  print  "<p>\n$footer";
+    print  "</dl><p>\n";
+    if ($mainman == 1) {
+      print  "[<a href=\"../index.htm\">Top</a>] "
+    } else {
+        if ($opt_f) {
+            print  "[<a href=\"$opt_f\">Top</a>] "
+        }
+    };
+    print  "[<a href=\"chapters.htm\">Up</a>]";
+    print  "<p>\n$footer";
 }
 
 sub index_page {
@@ -1714,23 +1925,23 @@ sub index_page {
 }
 
 sub biblio_page {
-  my $infile = "${dir}manual.bbl";
-  my $outfile = "${odir}biblio.htm";
-  my $macro;
-  open (OUT, ">${outfile}") || die "Can't write to ${outfile}";
-  select OUT;
+    my $infile = "${dir}manual.bbl";
+    my $outfile = "${odir}biblio.htm";
+    my $macro;
+    open (OUT, ">${outfile}") || die "Can't write to ${outfile}";
+    select OUT;
 
-  print <<END
+    print <<END
 <html><head><title>$booktitle - References</title></head>
 <body text=\"\#000000\" bgcolor=\"\#ffffff\">
 <h1>$booktitle_body - References</h1><dl>
 END
     ;
 
-  if (-f $infile and -r $infile) {
-    open IN, "<$infile";
-    my ($brace,$embrace) = (0,-1);
-    while (<IN>) {
+    if (-f $infile and -r $infile) {
+      open IN, "<$infile";
+      my ($brace,$embrace) = (0,-1);
+      while (<IN>) {
         chomp;
         my $outline = "";
         if (/newcommand/ || /thebibliography/) { }
@@ -1738,8 +1949,8 @@ END
             print "<dt><a name=\"$1\"><b>[$1]</b></a><dd>\n";
         } else {
             my $line = $_;
-            if ($line =~ /^\\newblock/) { $outline .= "<br>";
-                                          $line = $'; }
+            if ($line =~ /^\s*\\newblock/) { $outline .= "<br>";
+                                             $line = $'; }
             while ($line =~ /[\${}<>~&\\]/) {
                 $outline .= $`;
                 $matched = $&;
@@ -1781,22 +1992,22 @@ END
             }
             print "$outline$line\n";
         }
-    }
-  } else {
-      print STDERR "Warning: did not find a .bbl file ... ok?\n";
-  }
-  print "</dl><p>\n";
-  if ($mainman == 1) {
-    print  "[<a href=\"../index.htm\">Top</a>] "
-  } else {
-      if ($opt_f) {
-          print  "[<a href=\"$opt_f\">Top</a>] "
       }
-  };
-  print "[<a href=\"chapters.htm\">Up</a>]";
-  print "<p>\n$footer\n";
-  close OUT;
-  select STDOUT;
+    } else {
+        print STDERR "Warning: did not find a .bbl file ... ok?\n";
+    }
+    print "</dl><p>\n";
+    if ($mainman == 1) {
+      print  "[<a href=\"../index.htm\">Top</a>] "
+    } else {
+        if ($opt_f) {
+          print  "[<a href=\"$opt_f\">Top</a>] "
+        }
+    };
+    print "[<a href=\"chapters.htm\">Up</a>]";
+    print "<p>\n$footer\n";
+    close OUT;
+    select STDOUT;
 }
 
 #
@@ -1806,6 +2017,8 @@ END
 #
 
 getopts('csitn:f:');
+
+if (!$opt_c) {$opt_c = 0;} # just to ensure it is not empty
 
 chomp($dir = shift @ARGV);
 if (substr($dir,0,1) ne "/") {
@@ -1832,9 +2045,9 @@ if ($opt_t) {
 if ($opt_n) {
   # get book title
   $book=$opt_n;
-  #$booktitle = "$opt_n";
-  $booktitle = "The $opt_n share package";
-  $booktitle_body = booktitle_body($booktitle, $opt_n);
+  #$booktitle = "$opt_n : a GAP example";
+  $booktitle = "$opt_n : a GAP 4 package";
+  $booktitle_body = booktitle_body($booktitle, ("GAP", $opt_n));
   $mainman=0;
   $footer = "<P>\n<address>$opt_n manual<br>" .
     `date +"%B %Y"` . "</address></body></html>";
@@ -1866,19 +2079,19 @@ if ($opt_n) {
 }
 
 if ($#ARGV != -1) {
-    chomp($odir=shift @ARGV);
+  chomp($odir=shift @ARGV);
 } else {
-    $odir = "";
+  $odir = "";
 }
 if (substr($odir,0,1) ne "/") {
-    $odir = `pwd` . "/" . $odir;
-    $odir =~ s/\n//;
+  $odir = `pwd` . "/" . $odir;
+  $odir =~ s/\n//;
 }
 if (substr($odir,-1) ne "/") {
-    $odir .= "/";
+  $odir .= "/";
 }
 unless (-d $odir and -w $odir) {
-    die "Can't use output directory $odir";
+  die "Can't use output directory $odir";
 }
 print  "Reading input from $dir\n" unless ($opt_s);
 print  "Creating output in $odir\n" unless ($opt_s);
@@ -1890,12 +2103,13 @@ if ($opt_t) {
   print STDERR "Using TtH $opt_t to translate maths formulae.\n";
   $opt_t =~ s/Version //;
   open (TTHIN, ">tthmacros.tex") || die "Can't create tthmacros.tex";
-  print TTHIN "\\def\\Q{{\\bf Q}}\\def\\Z{{\\bf Z}}\\def\\N{{\\bf N}}\n";
+  print TTHIN "\\def\\Q{{\\bf Q}}\\def\\Z{{\\bf Z}}\\def\\N{{\\bf N}}\n",
+              "\\def\\R{{\\bf R}}\\def\\F{{\\bf F}}\n";
   # \R and \I are used in the last chapter of ext
-  print TTHIN "\\def\\R{{\\cal R}}\\def\\I{{\\cal I}}\\def\\F{{\\bf F}}\n";
-  print TTHIN "\\def\\frac#1#2{{{#1}\\over{#2}}}\\def\\colon{:}\n";
-  print TTHIN "\\def\\longmapsto{\\mapsto}\\def\\lneqq{<}\n";
-  print TTHIN "\\def\\hookrightarrow{\\rightarrow}\n";
+  print TTHIN "\\def\\calR{{\\cal R}}\\def\\I{{\\cal I}}\n",
+              "\\def\\frac#1#2{{{#1}\\over{#2}}}\\def\\colon{:}\n",
+              "\\def\\longmapsto{\\mapsto}\\def\\lneqq{<}\n",
+              "\\def\\hookrightarrow{\\rightarrow}\n";
   if ($opt_t < 2.52) {
      # We work-around most of the deficiencies of versions of TtH
      # prior to Version 2.52 ... but can't easily fix the lack of
@@ -1904,8 +2118,8 @@ if ($opt_t) {
            "Your version of TtH does not know many TeX commands.\n",
            "It is recommended that you upgrade to the latest version from\n",
            " http://hutchinson.belmont.ma.us/tth/tth-noncom/download.html\n";
-     print TTHIN "\\def\\mid{ | }\\def\\lbrack{[}\\def\\rbrack{]}\n";
-     print TTHIN "\\def\\gets{\\leftarrow}\\def\\land{\\wedge}\n";
+     print TTHIN "\\def\\mid{ | }\\def\\lbrack{[}\\def\\rbrack{]}\n",
+                 "\\def\\gets{\\leftarrow}\\def\\land{\\wedge}\n";
   }
   close TTHIN;
 }
@@ -1918,6 +2132,11 @@ getlabs $dir;
 while (<TEX>) {
   if (/\\UseReferences{([^}]*)}/) { 
       getlabs "$dir$1/";
+  } elsif (/\\UseGapDocReferences{([^}]*)}/) { 
+      getlabs "$dir$1/";
+      ($gapdocbook = $1) =~ s?.*/([^/]*)/doc?$1?;
+      $gapdocbooks{$gapdocbook} = 1;
+      print STDERR "GapDoc books: ", keys(%gapdocbooks), "\n";
   } elsif (/\\Package{([^}]*)}/) {
       $sharepkg .= "|$1"; 
   }
@@ -1929,12 +2148,12 @@ print  "Processed LAB files\n" unless ($opt_s);
 #
 
 CHAP: foreach $chap (@chapters) {
-    unless (defined $chap) {
-        next CHAP;
-    }
-    print "$chap->{number}. $chap->{name} ... $chap->{file}.tex\n" 
-        unless ($opt_s);
-    convert_chap $chap;
+  unless (defined $chap) {
+      next CHAP;
+  }
+  print "$chap->{number}. $chap->{name} ... $chap->{file}.tex\n" 
+      unless ($opt_s);
+  convert_chap $chap;
 }
 
 print  "and the chapters page\n" unless ($opt_s);

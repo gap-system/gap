@@ -14,12 +14,17 @@ These conventions are intended as a help on how to read library files and
 how to find information in them.
 So everybody is recommended to follow these conventions,
 although they do not prescribe a compulsory programming style
---{\GAP} itself will not bother with the formatting of files.
+-- {\GAP} itself will not bother with the formatting of files.
 
-All filenames used by {\GAP} adhere to the 8+3 convention (this makes it
-possible to use the same filenames even on a MS-DOS file system) and are in
+Filenames have traditionally {\GAP} adhered to the 8+3 convention (to make it
+possible to use the same filenames even on a MS-DOS file system) and been in
 lower case (systems that do not recognize lower case in file names will
-convert them automatically to upper case).
+convert them automatically to upper case). It is no longer so important to 
+adhere to these conventions, but at the very least filenames should adhere
+to a 16+5 convention, and be distinct even after identifying upper and lower
+case. Directory names of packages, however, *must* be in lower case (the
+`RequirePackage' command (see~"ref:RequirePackage" in the Reference manual)
+assumes this).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{File Types}
@@ -28,32 +33,32 @@ The {\GAP} library consists of the following types of files, distinguished
 by their suffixes:
 
 \beginitems
-`.g': &
+`.g' &
     Files which contain parts of the ``inner workings'' of {\GAP}.
     These files usually do not contain mathematical functionality,
     except for providing links to kernel functions.
 
-`.gd': &
+`.gd' &
     Declaration files.
     These files contain declarations of all categories, attributes,
     operations, and global functions.
     These files also contain the operation definitions in comments.
 
-`.gi': &
+`.gi' &
     Implementation files.
     These files contain all installations of methods and global functions.
     Usually declarations of representations are also considered to be
-    part of the implementation and are therefore found in the `gi' files.
+    part of the implementation and are therefore found in the `.gi' files.
 
     &
-    As a rule of thumb, all `gd' files are read in before the `gi' files
+    As a rule of thumb, all `.gd' files are read in before the `.gi' files
     are read.
-    Therefore a `gi' file usually may use any operation or global function
+    Therefore a `.gi' file usually may use any operation or global function
     (it has been declared before),
-    and no care has to be taken towards the order in which the `gi' files
+    and no care has to be taken towards the order in which the `.gi' files
     are read.
 
-`.co': &
+`.co' &
     Completion files.
     They are used only to speed up loading
     (see~"ref:Completion Files" in the Reference Manual).
@@ -80,27 +85,32 @@ file. (Do not mistake these revision numbers for the version number of
 Global comments usually are indented by two hash marks and two blanks.
 If a section of such a comment is introduced by a line containing
 a hash mark and a number it will be used for the manual
-(stripped of the hash marks and leading two blanks).
+(stripped of the hash marks and leading two blanks; see
+Section~"Using buildman.pe").
 
 Every declaration or method or function installation which is not only of
 local scope is introduced by a function header of the following type.
-\begintt
-#############################################################################
-##
-#X  ExampleFunction(<A>,<B>)
-##
-##  This function does nothing.
-\endtt
-The initial letter (`X' in the example) has the same meaning as at the end
+%\begintt
+\)\kernttindent\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\)\kernttindent\#\#
+\)\kernttindent\#<X>\ \ ExampleFunction(\<A>,\<B>)
+\)\kernttindent\#\#
+\)\kernttindent\#\#\ \ This function does nothing.
+%\endtt
+
+The <X> in the example is one of the letters: `F', `A', `P', `O',
+`C', `R' or `V', and has the same meaning as at the end
 of a declaration line in the Reference Manual (see~"ref:Manual Conventions"
-in the Reference Manual),
-it indicates whether the object declared will be a category, representation
-and so forth.
+in the Reference Manual);
+it indicates whether the object declared will be a function, attribute,
+property, operation, category, representation or variable, respectively.
 Additionally `M' is used in `.gi' files for method installations.
 The line then gives a sample usage of the function.
 This is followed by a comment which describes the identifier.
-This description will automatically be used by the process to build the
-Reference Manual source.
+This description will automatically be extracted to build the
+Reference Manual source, if there is a `\\Declaration' line in some
+`.msk' file together with an appropriate configuration file (see
+Section~"Using buildman.pe").
 
 Indentation in functions and the use of decorative spaces in the code are
 left to the decision of the authors of each file.
@@ -126,8 +136,8 @@ installation string for this method.
 
 To find the occurrence of functions and methods in the library, one can use
 the `grep' tool under UNIX. To find a function, search for the function name
-in the `gd' files (as it is declared only once, only one file will show up),
-the function installation is likely to occur in the corresponding `gi' file.
+in the `.gd' files (as it is declared only once, only one file will show up),
+the function installation is likely to occur in the corresponding `.gi' file.
 
 To find a method search for `Method(' (this catches `InstallMethod' and
 `InstallOtherMethod') and the installation string or the operation name.
@@ -138,8 +148,9 @@ To find a method search for `Method(' (this catches `InstallMethod' and
 
 For several global variables in {\GAP},
 no information is available via the help system 
-(see~"tut:Help", for a quick overview of the help system,
-or~"ref:The Help System", for details).
+(see Section~"tut:Help" in the Tutorial, for a quick overview of the 
+help system, or Chapter~"ref:The Help System" in the reference manual,
+for details).
 There are various reasons for ``hiding'' a variable from the user;
 namely, the variable may be regarded as of minor importance
 (for example, it may be a function called by documented {\GAP}
@@ -170,7 +181,7 @@ variables.
 
 In this case, whenever you write {\GAP} code involving undocumented
 variables,
-and want to get sure that this code will work in future versions of {\GAP},
+and want to make sure that this code will work in future versions of {\GAP},
 you may ask at \Mailto{gap-trouble@dcs.st-and.ac.uk} for documentation
 about the variables in question.
 The {\GAP} developers then decide whether these variables shall be

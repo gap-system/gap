@@ -103,7 +103,7 @@ DeclareGlobalFunction( "CyclotomicPolynomial" );
 ##  For a univariate polynomial <pol> of degree $d$ in the indeterminate $X$,
 ##  with coefficients in a finite field <F> with $q$ elements, say,
 ##  `IsPrimitivePolynomial' returns `true' if
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{1.}
 ##      <pol> divides $X^{q^d-1} - 1$, and
 ##  \item{2.}

@@ -13,7 +13,7 @@ gap> START_TEST("$Id$");
 #############################################################################
 
 # construct a nice big group
-gap> f := FreeGroup(65);;
+gap> f := FreeGroup(IsSyllableWordsFamily,65);;
 gap> g := GeneratorsOfGroup(f);;
 
 # setup generators as "fn"
@@ -594,7 +594,7 @@ Pcgs([ f1, f3, f10, f11, f12, f13, f14, f15, f16, f17, f19*f22*f23, f20*f22,
 
 #############################################################################
 
-gap> f := FreeGroup(9);;
+gap> f := FreeGroup(IsSyllableWordsFamily,9);;
 gap> g := GeneratorsOfGroup(f);;
 gap> g1 := g[1];;  g2 := g[2];;  g3 := g[3];;  g4 := g[4];;  g5 := g[5];;
 gap> g6 := g[6];;  g7 := g[7];;  g8 := g[8];;  g9 := g[9];;
@@ -611,7 +611,8 @@ gap> Print(CanonicalPcgsWrtFamilyPcgs(n),"\n");
 Pcgs([ f1, f2, f3, f4, f5*f7^2, f6*f7^2, f8*f9^2 ])
 
 gap> G:=function() local g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,r,f,g,rws,x;
-> f:=FreeGroup(10); g:=GeneratorsOfGroup(f); g1:=g[1]; g2:=g[2]; g3:=g[3];
+> f:=FreeGroup(IsSyllableWordsFamily,10); g:=GeneratorsOfGroup(f);
+> g1:=g[1]; g2:=g[2]; g3:=g[3];
 > g4:=g[4]; g5:=g[5]; g6:=g[6]; g7:=g[7]; g8:=g[8]; g9:=g[9]; g10:=g[10];
 > rws:=SingleCollector(f,[ 2, 3, 2, 3, 2, 2, 2, 2, 2, 2 ]);
 > r:=[ ];

@@ -40,7 +40,7 @@ Revision.straight_gd :=
 ##  category `IsStraightLineProgram' (see~"IsStraightLineProgram")
 ##  that stores a list of ``lines''
 ##  each of which has one of the following three forms.
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{1.}
 ##      a nonempty dense list $l$ of integers,
 ##  \item{2.}
@@ -187,7 +187,7 @@ DeclareAttribute( "NrInputsOfStraightLineProgram", IsStraightLineProgram );
 ##  The *result* of a straight line program with lines
 ##  $p_1, p_2, \ldots, p_k$
 ##  when applied to <gens> is defined as follows.
-##  \beginlist
+##  \beginlist%ordered{a}
 ##  \item{(a)}
 ##      First a list $r$ of intermediate results is initialized
 ##      with a shallow copy of $<gens>$.

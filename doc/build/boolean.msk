@@ -33,7 +33,7 @@ false
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Fail}\null
+\Section{Fail}\nolabel
 
 \>`fail' V
 
@@ -122,8 +122,9 @@ true
 gap> false or false;
 false
 gap> i := -1;; l := [1,2,3];;
-gap> if i <= 0 or l[i] = false then Print("aha\n"); fi;
-aha  # no error, because `l[i]' is not evaluated
+gap> if i <= 0 or l[i] = false then     # this does not cause an error,
+>    Print("aha\n"); fi;                # because `l[i]' is not evaluated
+aha
 \endexample
 
 \>`<bool1> and <bool2>'{and}@{`and'}
@@ -151,8 +152,8 @@ gap> true and false;
 false
 gap> true and true;
 true
-gap> false and 17;
-false  # is no error, because `17' is never looked at
+gap> false and 17;  # this does not cause an error, because `17' is never looked at
+false
 \endexample
 
 \>`<fil1> and <fil2>'{and!for filters}@{`and'!for filters}

@@ -616,7 +616,7 @@ IsPrimeInt := "2b defined";
 
 BIND_GLOBAL( "KeyDependentOperation",
     function( name, domreq, keyreq, keytest )
-    local str, nname, oper, attr;
+    local str, oper, attr;
 
     if keytest = "prime"  then
       keytest := function( key )

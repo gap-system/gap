@@ -64,8 +64,8 @@ For the comparison of finite field elements with other {\GAP} objects,
 see~"Comparisons".
 
 \beginexample
-gap> Z( 16 )^10 = Z( 4 )^2;  # this illustrates the embedding of GF( 4 )
-true                         # in GF( 16 ).
+gap> Z( 16 )^10 = Z( 4 )^2;  # this illustrates the embedding of GF(4) in GF(16)
+true
 gap> 0 < 0*Z(101);
 true
 gap> Z(256) > Z(101);
@@ -145,7 +145,7 @@ gap> Size( GaloisGroup ( f1 ) );
 4
 gap> BasisVectors( Basis( f1 ) );
 [ Z(2)^0, Z(2^4), Z(2^4)^2, Z(2^4)^3 ]
-gap> f2:= GF( GF(4), 2 );     
+gap> f2:= GF( GF(4), 2 );
 AsField( GF(2^2), GF(2^4) )
 gap> Size( GaloisGroup( f2 ) );
 2
@@ -163,7 +163,7 @@ Z(3^5)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{FrobeniusAutomorphism}
+\Section{FrobeniusAutomorphism}\nolabel
 
 \atindex{homomorphisms!Frobenius, field}{@homomorphisms!Frobenius, field}
 \atindex{field homomorphisms!Frobenius}{@field homomorphisms!Frobenius}

@@ -87,9 +87,14 @@ function( r, n )
 
     # construct a polynomial ring
     type := IsPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule;
+    # over a field the ring should be an algebra with one.
+    if HasIsField(r) and IsField(r)  then
+      type:=type and IsAlgebraWithOne;
+    fi;
+
     if Length(n) = 1 and HasIsField(r) and IsField(r)  then
-        type := type and IsUnivariatePolynomialRing and IsEuclideanRing
-                     and IsAlgebraWithOne;
+        type := type and IsUnivariatePolynomialRing and IsEuclideanRing;
+                     #and IsAlgebraWithOne; # done above already
     elif Length(n) = 1 and IsRingWithOne(r) then
         type := type and IsUnivariatePolynomialRing and IsFLMLORWithOne;
     elif Length(n) = 1  then
@@ -107,8 +112,11 @@ function( r, n )
             type := type and IsFiniteFieldPolynomialRing;
         elif IsRationals(r) then
             type := type and IsRationalsPolynomialRing;
-        elif IsAbelianNumberField( r ) then
+        elif # catch algebraic extensions
+	  IsIdenticalObj(One(r),1) and IsAbelianNumberField( r ) then
           type:= type and IsAbelianNumberFieldPolynomialRing;
+	elif IsAlgebraicExtension(r) then
+          type:= type and IsAlgebraicExtensionPolynomialRing;
         fi;
     fi;
     prng := Objectify( NewType( CollectionsFamily(rfun), type ), rec() );
@@ -287,6 +295,11 @@ function( r,n )
            [Zero(r),One(r)],n);
 end);
 
+InstallOtherMethod(Indeterminate,"fam,number",true,[IsFamily,IsPosInt],0,
+function(fam,n)
+  return UnivariatePolynomialByCoefficients(fam,[Zero(fam),One(fam)],n);
+end);
+
 InstallOtherMethod( Indeterminate,"number 1", true, [ IsRing ],0,
 function( r )
   return UnivariatePolynomialByCoefficients(ElementsFamily(FamilyObj(r)),
@@ -380,20 +393,23 @@ InstallMethod( DefaultRingByGenerators,
     [ IsRationalFunctionCollection ],
     0,
 
-function( gens )
-    local   ind,  cfs,  g,  ext,  exp,  i,univ;
+function( ogens )
+    local   gens,ind,  cfs,  g,  ext,  exp,  i,univ;
 
-    if not ForAll( gens, IsPolynomial )  then
+    if not ForAll( ogens, IsPolynomial )  then
         TryNextMethod();
     fi;
     # the indices of the non-constant functions that have an indeterminate
     # number
-    g:=Filtered([1..Length(gens)],
-      i->HasIndeterminateNumberOfUnivariateRationalFunction(gens[i]) and
-         HasCoefficientsOfLaurentPolynomial(gens[i]));
+    g:=Filtered([1..Length(ogens)],
+      i->HasIndeterminateNumberOfUnivariateRationalFunction(ogens[i]) and
+         HasCoefficientsOfLaurentPolynomial(ogens[i]));
 
-    univ:=gens{g};
-    gens:=gens{Difference([1..Length(gens)],g)};
+    univ:=Filtered(ogens{g},
+	     i->DegreeOfUnivariateLaurentPolynomial(i)>0 and
+		DegreeOfUnivariateLaurentPolynomial(i)<infinity);
+
+    gens:=ogens{Difference([1..Length(ogens)],g)};
 
     # univariate indeterminates set
     ind := Set(List(univ,IndeterminateNumberOfUnivariateRationalFunction));
@@ -417,11 +433,11 @@ function( gens )
 
     if Length(cfs)=0 then
       # special case for zero polynomial
-      Add(cfs,Zero(CoefficientsFamily(FamilyObj(gens[1]))));
+      Add(cfs,Zero(CoefficientsFamily(FamilyObj(ogens[1]))));
     fi;
 
     if Length(ind)=0 then
-      # this can only happen if the polynomials are constant. Enforce Indet 1
+      # this can only happen if the polynomials are constant. Enforce Index 1
       return PolynomialRing( DefaultField(cfs), [1] );
     else
       return PolynomialRing( DefaultField(cfs), ind );

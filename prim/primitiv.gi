@@ -504,13 +504,18 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   dom:=Set(MovedPoints(G));
   n:=Length(dom);
 
+  A:=AlternatingGroup(n);
+  issn:=Size(A)<>Size(G);
+
   if n<3 then
-    return [TrivialSubgroup(G)];
+    if n<=2 and not issn then
+      return [];
+    else
+      return [TrivialSubgroup(G)];
+    fi;
   fi;
   invol:=(1,2);
 
-  A:=AlternatingGroup(n);
-  issn:=A<>G;
   if not issn then
     S:=SymmetricGroup(n);
   else
@@ -533,7 +538,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
       if issn then
 	m:=DirectProduct(SymmetricGroup(i[1]),SymmetricGroup(i[2]));
       else
-	if i[2]<3 then
+	if i[2]<2 then
 	  m:=AlternatingGroup(i[1]);
 	else
 	  m:=DirectProduct(AlternatingGroup(i[1]),AlternatingGroup(i[2]));
@@ -552,7 +557,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     p:=Difference(DivisorsInt(n),[1,n]);
     for i in p do
       # exception: Table I, 1
-      if n<>8 or i<>2 then
+      if n<>8 or i<>2 or issn then
 	m:=WreathProduct(SymmetricGroup(i),SymmetricGroup(n/i));
 	if not issn then
 	  m:=AlternatingSubgroup(m);
@@ -572,24 +577,25 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     m:=Action(m,v,OnRight);
     k:=First(v,i->not IsZero(i));
     m:=ClosureGroup(m,PermList(List(v,i->Position(v,i+k))));
-
-    if SignPermGroup(m)=1 then
-      #its a subgroup of A_n, but there are two classes
-      # (the normalizer in S_n cannot increase)
-      if not issn then
-	Add(max,m);
-	Add(max,m^invol);
-      fi;
-    else
-      # the (intersection with A_n) is a maximal subgroup
-      if issn then
-	Add(max,m);
-      else
-	# exceptions: table I and Aff(3)=A3.
-	if not n in [3,7,11,17,23] then
-	  m:=AlternatingSubgroup(m);
+    if Size(m)<Size(S) then
+      if SignPermGroup(m)=1 then
+	#its a subgroup of A_n, but there are two classes
+	# (the normalizer in S_n cannot increase)
+	if not issn then
 	  Add(max,m);
-        fi;
+	  Add(max,m^invol);
+	fi;
+      else
+	# the (intersection with A_n) is a maximal subgroup
+	if issn then
+	  Add(max,m);
+	else
+	  # exceptions: table I and Aff(3)=A3.
+	  if not n in [3,7,11,17,23] then
+	    m:=AlternatingSubgroup(m);
+	    Add(max,m);
+	  fi;
+	fi;
       fi;
     fi;
   fi;

@@ -1212,7 +1212,86 @@ void MakeImmutableRange( Obj range )
   RetypeBag( range, IMMUTABLE_TNUM(TNUM_OBJ(range)));
 }
 
+/****************************************************************************
+**
+*F  FuncINTER_RANGE( <range1>, <range2> )
+**
+*/
 
+
+
+Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
+{
+  Int low1, low2, inc1, inc2, lowi, inci;
+  UInt len1, len2, leni;
+  
+  low1 = GET_LOW_RANGE(r1);
+  low2 = GET_LOW_RANGE(r2);
+  inc1 = GET_INC_RANGE(r1);
+  inc2 = GET_INC_RANGE(r2);
+  len1 = GET_LEN_RANGE(r1);
+  len2 = GET_LEN_RANGE(r2);
+  
+  if (inc1 < 0)
+    {
+      low1 = low1 + (len1-1)*inc1;
+      inc1 = -inc1;
+    }
+  if (inc2 < 0)
+    {
+      low2 = low2 + (len2-1)*inc2;
+      inc2 = -inc2;
+    }
+
+  if (inc1 > 1 && inc2 > 1)
+    return TRY_NEXT_METHOD;
+
+  if (low1 > low2)
+    {
+      Int t;
+      UInt ut;
+      t = low1;
+      low1 = low2;
+      low2 = t;
+      t = inc1;
+      inc1 = inc2;
+      inc2 = t;
+      ut = len1;
+      len1 = len2;
+      len2 = ut;
+    }
+
+  if ( low2 > low1 + (len1-1)*inc1)
+    {
+      RetypeBag(r1, T_PLIST_EMPTY);
+      ResizeBag(r1,0);
+      return (Obj) 0;
+    }
+
+  if (inc1 == 1)
+    {
+      lowi = low2;
+      inci = inc2;
+      leni = (len1 - (low2 - low1) + inc2 -1)/inc2;
+      if (leni > len2)
+	leni = len2;
+    }
+  else
+    {
+      lowi = low1 + inc1*((low2 + inc1-1 - low1)/inc1);
+      inci = inc1;
+      leni = len1 - ((low2 + inc1-1 - low1)/inc1);
+      if (leni > (len2+inc1-1)/inc1)
+	leni = (len2+inc1-1)/inc1;
+    }
+  
+  SET_LOW_RANGE(r1,lowi);
+  SET_LEN_RANGE(r1,leni);
+  SET_INC_RANGE(r1,inci);
+  return (Obj)0;
+}
+  
+     
 
 /****************************************************************************
 **
@@ -1445,6 +1524,20 @@ static StructGVarFilt GVarFilts [] = {
 
 };
 
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . . list of filters to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "INTER_RANGE", 2, "range1, range2",
+      FuncINTER_RANGE, "src/range.c:INTER_RANGE" },
+
+
+    { 0 }
+
+};
+
 
 /****************************************************************************
 **
@@ -1489,6 +1582,7 @@ static Int InitKernel (
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* Saving functions */
     SaveObjFuncs[T_RANGE_NSORT            ] = SaveRange;
@@ -1634,6 +1728,7 @@ static Int InitLibrary (
 {
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
     return 0;

@@ -51,6 +51,10 @@ ID_GROUP_FUNCS[ 17 ] := function( G, inforec )
 
     if ( not IsNormal( G, SylowSubgroup( G, inforec.q ) ) ) and
        ( not IsNormal( G, SylowSubgroup( G, inforec.p ) ) ) then
+        # in the case of size 1053 this situation is unique
+        if size = 1053 then
+            return 51;
+        fi;
         return ID_GROUP_FUNCS[ 8 ]( G, inforec, [ size, 2 ] );
     fi;
 

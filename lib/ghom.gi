@@ -156,23 +156,26 @@ local mapi;
 end);
 
 
-#############################################################################
-##
-#M  InverseGeneralMapping( <hom> )  . . . . . . . . . . . . . . .  via images
-##
-InstallMethod( InverseGeneralMapping,
-    "for PBG-Hom",
-    true,
-    [ IsPreimagesByAsGroupGeneralMappingByImages ], 0,
-    hom -> InverseGeneralMapping( AsGroupGeneralMappingByImages( hom ) ) );
+# thanks to `MappingGeneratorImages' this code is now obsolete.
+# #############################################################################
+# ##
+# #M  InverseGeneralMapping( <hom> )  . . . . . . . . . . . . . . .  via images
+# ##
+# InstallMethod( InverseGeneralMapping,
+#     "for PBG-Hom",
+#     true,
+#     [ IsPreimagesByAsGroupGeneralMappingByImages ], 0,
+# function(hom)
+#   return InverseGeneralMapping( AsGroupGeneralMappingByImages( hom ) );
+# end );
 
 InstallOtherMethod( SetInverseGeneralMapping,"transfer the AsGHBI", true,
-    [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
-      HasAsGroupGeneralMappingByImages,
-      IsGeneralMapping ], 0,
+     [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
+       HasAsGroupGeneralMappingByImages,
+       IsGeneralMapping ], 0,
 function( hom, inv )
-  SetInverseGeneralMapping( AsGroupGeneralMappingByImages( hom ), inv );
-  TryNextMethod();
+   SetInverseGeneralMapping( AsGroupGeneralMappingByImages( hom ), inv );
+   TryNextMethod();
 end );
 
 
@@ -180,7 +183,7 @@ end );
 ##
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . . . .  via images
 ##
-InstallMethod( ImagesRepresentative, "for PBG-Hom",
+InstallMethod( ImagesRepresentative, "for `ByAsGroupGeneralMapping' hom",
     FamSourceEqFamElm,
     [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
       IsMultiplicativeElementWithInverse ], 0,
@@ -193,14 +196,17 @@ end );
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
-InstallMethod( PreImagesRepresentative,
-    "for PBG-Hom",
-    FamRangeEqFamElm,
-    [ IsPreimagesByAsGroupGeneralMappingByImages,
-      IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    return PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ),
-                   elm );
+InstallMethod( PreImagesRepresentative, "for PBG-Hom", FamRangeEqFamElm,
+  [ IsPreimagesByAsGroupGeneralMappingByImages,
+    IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if HasIsHandledByNiceMonomorphism(Source(hom)) then
+    # if we use the `AsGGMBI' directly, it will be a composite through a big
+    # group
+    return ImagesRepresentative( InverseGeneralMapping( hom ), elm );
+  else
+    return PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
+  fi;
 end );
 
 InstallAttributeMethodByGroupGeneralMappingByImages
@@ -488,8 +494,8 @@ InstallMethod( PreImagesRange, "for GHBI", true,
 ##
 #M  InverseGeneralMapping( <hom> )  . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( InverseGeneralMapping, "for GHBI", true,
-  [ IsGroupGeneralMappingByImages ], 0,
+InstallMethod( InverseGeneralMapping, "via generators/images", true,
+  [ IsGroupGeneralMapping ], 0,
 function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);

@@ -79,7 +79,7 @@ Revision.unknown_gd :=
 ##  cyclotomics are row vectors and
 ##  they can be added and multiplied in the usual way.
 ##  Consequently, lists of such row vectors of equal length are (ordinary)
-##  matrices (see Chapter~"IsOrdinaryMatrix").
+##  matrices (see~"IsOrdinaryMatrix").
 
 
 #############################################################################

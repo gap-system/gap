@@ -64,11 +64,11 @@ $g_1, \ldots, g_n$ with relations of the above form and define a
 group $H$ by this. Then the subgroups $C_i = \langle g_i, \ldots, g_n
 \rangle$ of $H$ form a subnormal series whose factors are cyclic
 or trivial. In the case that all factors are non-trivial, we say
-that the pc presentation of $H$ is *confluent*. Note that GAP 4
+that the pc presentation of $H$ is *confluent*. Note that {\GAP}~4
 can only work correctly with pc groups defined by a confluent pc
 presentation.
 
-At the current level of implementation GAP can only deal with
+At the current level of implementation {\GAP} can only deal with
 finite pc groups. This will be extended in near future.
 
 %%  The Pc groups were designed and implemented by Frank Celler and
@@ -91,15 +91,15 @@ the *family pcgs*.
 \Declaration{InducedPcgsWrtFamilyPcgs}
 \Declaration{IsParentPcgsFamilyPcgs}
 
-In GAP 3 the family pcgs had been the only pcgs allowed for a
-pc group. Note that this has changed in GAP 4 where a pc group
+In {\GAP}~3 the family pcgs had been the only pcgs allowed for a
+pc group. Note that this has changed in {\GAP}~4 where a pc group
 may have several independent polycyclic generating sequences.
 
 However, the elementary operations for a non-family pcgs may
 not be as efficient as the elementary operations for the family
 pcgs.
 
-This can have a notable influence on the performance of algorithms for
+This can have a significant influence on the performance of algorithms for
 polycyclic groups. Many algorithms require a pcgs that corresponds to an
 elementary abelian series (see~"PcgsElementaryAbelianSeries") or even a
 special pcgs (see~"Special Pcgs"). If the family pcgs has the required
@@ -149,7 +149,7 @@ f2^2*f3*f4
 
 In theory pc groups are finitely presented groups.  In practice the
 arithmetic in pc groups is different from the arithmetic in fp
-groups. Thus for technical reasons the pc groups in GAP do not form
+groups. Thus for technical reasons the pc groups in {\GAP} do not form
 a subcategory of the fp groups and hence the methods for fp groups
 cannot be applied to pc groups in general.
 
@@ -164,7 +164,7 @@ gap> IsFpGroup( G );
 false
 \endexample
 
-Note that it is possible to convert a pc group to a fp group in GAP.
+Note that it is possible to convert a pc group to a fp group in {\GAP}.
 The following function computes the power-commutator presentation defined
 by <pcgs>. The string <str> can be used to give a name to the generators
 of the fp group.
@@ -187,13 +187,16 @@ gap> RelatorsOfFpGroup( F );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Constructing Pc Groups}
 
-If necessary, you can supply GAP with a pc presentation
+If necessary, you can supply {\GAP} with a pc presentation
 by hand. (Although this is the most tedious way to input a pc group.)
 Note that the pc presentation has to be confluent in order to
-work with the pc group in GAP.
+work with the pc group in {\GAP}.
+
+(If you have already a suitable pcgs in another representation, use
+`PcGroupWithPcgs', see below~"PcGroupWithPcgs".)
 
 One way is to define a finitely presented group with a
-pc presentation in GAP and then convert this presentation
+pc presentation in {\GAP} and then convert this presentation
 into a pc group. Note that this does not work for arbitrary presentations
 of polycyclic groups, see Chapter "Quotient Methods" for further information.
 
@@ -217,7 +220,7 @@ gap> H := PcGroupFpGroup( G );
 \endexample
 
 Equivalently to the above method one can initiate a collector of
-a pc group by hand and use it to define a pc group. In GAP there
+a pc group by hand and use it to define a pc group. In {\GAP} there
 are different collectors for different collecting strategies; at
 the moment, there are two collectors to choose from: the single
 collector for finite pc groups and the combinatorial collector
@@ -290,7 +293,7 @@ false
 \endexample
 
 With the above methods a pc group with arbitrary defining pcgs can be
-constructed. However, for almost all applications within GAP we need
+constructed. However, for almost all applications within {\GAP} we need
 to have a pc group whose defining pcgs is a prime order pcgs. Hence
 the following functions are useful.
 
@@ -300,19 +303,29 @@ the following functions are useful.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Computing Pc Groups}
 
-Another possibility to get a pc group in GAP is to convert a
+Another possibility to get a pc group in {\GAP} is to convert a
 polycyclic group given by some other representation to a pc group.
 For finitely presented groups there are various quotient methods
-available. For all other types of groups we use the following procedures.
+available. For all other types of groups one can use the following
+functions.
 
 \Declaration{PcGroupWithPcgs}
-
-returns a pc group with family pcgs corresponding to <pcgs>.
 
 \beginexample
 gap> G := Group( (1,2,3), (3,4,1) );;
 gap> PcGroupWithPcgs( Pcgs(G) );
 <pc group of size 12 with 3 generators>
+\endexample
+
+If a pcgs is only given by a list of pc elements, `PcgsByPcSequence'
+(see~"PcgsByPcSequence") can be used:
+\beginexample
+gap> G:=Group((1,2,3,4),(1,2));;
+gap> p:=PcgsByPcSequence(FamilyObj(One(G)),
+> [ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]);
+Pcgs([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
+gap> PcGroupWithPcgs(p);
+<pc group of size 24 with 4 generators>
 \endexample
 
 \beginexample
@@ -387,7 +400,7 @@ be represented as pc groups again.
 To define the elementary abelian group $M$ together with an action
 of $G$ on $M$ we consider $M$ as a meataxe module for $G$ over a finite
 field. For further information on meataxe modules see Chapter "The MeatAxe".
-Note that the matrices definining the module must correspond to the
+Note that the matrices defining the module must correspond to the
 pcgs of the group <G>.
 
 \Declaration{TwoCoboundaries}
@@ -420,6 +433,11 @@ gap> cc.cohom;
 
 returns the split extension of <G> by the <G>-module <M>.
 
+\> ModuleOfExtension( <E> ) 
+
+returns the module of an extension <E> of <G> by <M>. This is the normal
+subgroup of <E> which corresponds to <M>.
+
 \beginexample
 gap> G := SmallGroup( 4, 2 );;
 gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );;
@@ -448,7 +466,7 @@ equivalence, but not up to isomorphism.
 
 There exists an action of the subgroup of *compatible pairs* in
 $Aut(G) \times Aut(M)$ which acts on the second cohomology group.
-2-cocycles which ly in the same orbit under this action define
+2-cocycles which lie in the same orbit under this action define
 isomorphic extensions of $G$. However, there may be isomorphic
 extensions of $G$ corresponding to cocycles in different orbits.
 
@@ -481,7 +499,7 @@ gap> Extensions( G, M );
   <pc group of size 8 with 3 generators> ]
 \endexample
 
-See also the forthcoming share package on `Group Construction Methods'.
+See also the forthcoming {\GAP} package on `Group Construction Methods'.
 
 Finally we note that for the computation of split extensions it is not
 necessary that <M> must correspond to an elementary abelian group. Here
@@ -510,9 +528,10 @@ Group([ f1, f2, f3, f4 ])
 gap> G := Subgroup( H, Pcgs(H){[1,2]} );
 Group([ f1, f2 ])
 gap> inv := InverseGeneralMapping( iso );
-InverseGeneralMapping( CompositionMapping( Pcgs(
-[ (2,6,5,3), (1,3,5)(2,4,6), (2,5)(3,6), (1,4)(3,6) ]) -> [ f1, f2, f3, f4 
- ], <action isomorphism> ) )
+[ f1*f2, f2^2*f3, f4, f3 ] -> [ Pcgs([ f1, f2, f3 ]) -> [ f1*f2, f2, f3 ], 
+  Pcgs([ f1, f2, f3 ]) -> [ f2, f1*f2, f3 ], 
+  Pcgs([ f1, f2, f3 ]) -> [ f1*f3, f2, f3 ], 
+  Pcgs([ f1, f2, f3 ]) -> [ f1, f2*f3, f3 ] ]
 gap> K := SplitExtension( G, inv, N );
 <pc group of size 192 with 7 generators>
 \endexample

@@ -38,6 +38,7 @@ const char * Revision_system_c =
    "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
+#include        <fcntl.h>
 
 
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
@@ -89,6 +90,17 @@ extern int    fputs ( const char *, FILE * );
 #if SYS_DARWIN
 #define task_self mach_task_self
 #endif
+
+/****************************************************************************
+**
+*V  SyKernelVersion  . . . . . . . . . . . . . . . .  name of the architecture
+*/
+const Char * SyKernelVersion = "4.3.0";
+
+/****************************************************************************
+*V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
+*/
+const Char * SyWindowsPath = "C:/gap4r3/";
 
 /****************************************************************************
 **
@@ -948,7 +960,8 @@ Char * SyStrncat (
 **  during garbage collections.
 */
 #if SYS_MAC_MWC
-UInt syLastFreeWorkspace = 0;
+UInt syLastFreeWorkspace = 0;  
+	/* amout of free workspace during last collection */
 #endif
 
 void SyMsgsBags (
@@ -975,7 +988,7 @@ void SyMsgsBags (
 
 #if SYS_MAC_MWC
  	if (phase == 5)
- 		syLastFreeWorkspace = nr*1024; /* save for status message in about box */
+ 		syLastFreeWorkspace = nr; /* save for status message in about box */
 #endif
 
     /* ordinary full garbage collection messages                           */
@@ -1145,7 +1158,7 @@ UInt * * * SyAllocBags (
        /* set the overrun flag if we became larger than SyStorMax */
        if ( syWorksize  > SyStorMax)  {
 	 SyStorOverrun = -1;
-	 SyStorMax=syWorksize+1; /* new maximum */
+	 SyStorMax=syWorksize*2; /* new maximum */
 	 InterruptExecStat(); /* interrupt at the next possible point */
        }
     }
@@ -1187,6 +1200,12 @@ UInt * * * SyAllocBags (
     UInt * * *          ret;
     vm_address_t        adr;
 
+    /* check that we stay within our bounds                                */
+    if ( 0 < size && SyStorMax < sySize + size )
+        ret = (UInt***) -1;
+    else if ( size < 0 && sySize + size < SyStorMin )
+        ret = (UInt***) -1;
+
     size = size*1024;
     /* check that <size> is divisible by <vm_page_size>                    */
     if ( size % vm_page_size != 0 ) {
@@ -1194,12 +1213,6 @@ UInt * * * SyAllocBags (
                stderr );
         SyExit(1);
     }
-
-    /* check that we stay within our bounds                                */
-    if ( 0 < size && SyStorMax < sySize + size )
-        ret = (UInt***) -1;
-    else if ( size < 0 && sySize + size < SyStorMin )
-        ret = (UInt***) -1;
 
     /* check that we don't try to shrink uninialized memory                */
     else if ( size <= 0 && syBase == 0 ) {
@@ -1302,8 +1315,8 @@ char * SyGetmem ( size )
 #if SYS_MAC_MWC
 
 UInt * * * 		syWorkspace;
-long       		syWorksize = 0;  /* currently allocated amount */
-long			SyStorLimit;     /* maximum allocable amount */
+long       		syWorksize = 0;  /* currently allocated amount in KB*/
+long			SyStorLimit;     /* maximum allocable amount in KB*/
 
 UInt * * * SyAllocBags (
     Int                 size,
@@ -1311,38 +1324,36 @@ UInt * * * SyAllocBags (
 {
 	UInt*** ret;
 	long *p;
-	long div, rem;
-	char * q;
-
-	size = size*1024;
+	unsigned long count;
 	
     if ( (0 < size && (syWorksize + size <= SyStorMax || 
     				   (need && syWorksize + size <= SyStorLimit)))
       || (size < 0 && SyStorMin <= syWorksize + size) ) {
-		ret = (UInt***)((char*)syWorkspace + syWorksize);
+      
+		ret = (UInt***)((char*)syWorkspace + (syWorksize << 10L) );
         syWorksize += size;
 		syLastFreeWorkspace += size;
 		
        /* set the overrun flag if we became larger than SyStorMax */
        if ( syWorksize > SyStorMax && size > 0)  {
 	 		SyStorOverrun = -1;
+			SyStorMax=syWorksize+1; /* new maximum */
 	 		InterruptExecStat(); /* interrupt at the next possible point */
        }
-		/* clear memory, 64 bytes at a time */
-
+		/* clear memory, 256 bytes at a time */
  		p = (long *) ret;
 		if (size > 0) {
-			div = size / sizeof(*p) / 16;
-			rem = size - div * sizeof(*p) * 16;
-			while (div--) {
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
+			count = size * (1024UL / sizeof(*p) / 64);
+			while (count--) {
+				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
+				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
+				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
+				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
+				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
+				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
+				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
+				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
 			}
-			q = (char *) p;
-			while (rem--)
-				*q++ = 0;
 		}
         return ret;
     }
@@ -1682,6 +1693,23 @@ Char   syArgl [1024];
 #endif
 
 
+static UInt ParseMemory( Char * s)
+{
+  UInt size;
+  size = atoi(s);
+  if ( s[SyStrlen(s)-1] == 'k'
+       || s[SyStrlen(s)-1] == 'K' )
+    size = size * 1024;
+  if ( s[SyStrlen(s)-1] == 'm'
+       || s[SyStrlen(s)-1] == 'M' )
+    size = size * 1024 * 1024;
+  if ( s[SyStrlen(s)-1] == 'g'
+       || s[SyStrlen(s)-1] == 'G' )
+    size = size * 1024* 1024 * 1024;
+  return size;
+}
+
+
 void InitSystem (
     Int                 argc,
     Char *              argv [] )
@@ -1690,7 +1718,7 @@ void InitSystem (
 	char				first;  /* dummy for checking stack ptr */
     Int                 pre = 0;  /* amount to reserve for shared libs */
 #else
-    Int                 pre = 63*1024;  /* amount to pre'malloc'ate        */
+    Int                 pre = 100*1024;  /* amount to pre'malloc'ate        */
 #endif
     UInt                gaprc = 1;      /* read the .gaprc file            */
     Char *              ptr;            /* pointer to the pre'malloc'ated  */
@@ -1728,16 +1756,15 @@ void InitSystem (
 #endif
 
 #if SYS_MAC_MWC	
-#if !GENERATINGPOWERPC 
+# if !TARGET_API_MAC_CARBON && !powerc 
 	SyMinStack = GetApplLimit() - (syStackSpace - StackSpace()) + 1024;
     SetApplLimit( GetApplLimit() - (syStackSpace - StackSpace() + 1024) );
-    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 8192;
-#else /* we need more reserve stack for the PPC, apparently */
-    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 65536;
-#endif
-    MaxApplZone();
     /* compute the least possible value for the stack pointer */
     SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 8192;
+# else /* we need more reserve stack for the PPC, apparently */
+    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 65536;
+# endif
+    MaxApplZone();
     
 	err = FindFolder (kOnSystemDisk, kPreferencesFolderType, kCreateFolder, &s, &k);
 	if (err)
@@ -1759,9 +1786,11 @@ void InitSystem (
 	syIsIntrTime = TickCount();
 
     for (i = 0; i < 4; i++) {
-    	syBuf[i].fp = (FILE*)-1;   /* must not be used !!!, hope for a bus error*/
+    	syBuf[i].fp = -1;   /* must not be used !!!, hope for a bus error*/
     	syBuf[i].fromDoc = (char*)&LOGDOCUMENT;
     	syBuf[i].binary = false;
+		syBuf[i].isTTY = 1;
+		syBuf[i].bufno = -1;
 	}    
 	SyInFid = 0;  /* no input redirection */
     SyOutFid = 1; /* no output redirection */
@@ -1782,31 +1811,39 @@ void InitSystem (
 
     /* open the standard files                                             */
 #if SYS_BSD || SYS_MACH || SYS_USG || SYS_VMS || HAVE_TTYNAME
-    syBuf[0].fp = stdin;   setbuf( stdin, syBuf[0].buf );
+    syBuf[0].fp = fileno(stdin);
+    syBuf[0].bufno = -1;
     if ( isatty( fileno(stdin) ) ) {
         if ( isatty( fileno(stdout) )
           && ! SyStrcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
-            syBuf[0].echo = stdout;
+            syBuf[0].echo = fileno(stdout);
         else
-            syBuf[0].echo = fopen( ttyname(fileno(stdin)), "w" );
-        if ( syBuf[0].echo != (FILE*)0 && syBuf[0].echo != stdout )
-            setbuf( syBuf[0].echo, (char*)0 );
+            syBuf[0].echo = open( ttyname(fileno(stdin)), O_WRONLY );
+	syBuf[0].isTTY = 1;
     }
     else {
-        syBuf[0].echo = stdout;
+        syBuf[0].echo = fileno(stdout);
+	syBuf[0].isTTY = 0;
     }
-    syBuf[1].echo = syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
+    syBuf[1].echo = syBuf[1].fp = fileno(stdout); 
+    syBuf[1].bufno = -1;
     if ( isatty( fileno(stderr) ) ) {
         if ( isatty( fileno(stdin) )
           && ! SyStrcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
-            syBuf[2].fp = stdin;
+            syBuf[2].fp = fileno(stdin);
         else
-            syBuf[2].fp = fopen( ttyname(fileno(stderr)), "r" );
-        if ( syBuf[2].fp != (FILE*)0 && syBuf[2].fp != stdin )
-            setbuf( syBuf[2].fp, syBuf[2].buf );
-        syBuf[2].echo = stderr;
+            syBuf[2].fp = open( ttyname(fileno(stderr)), O_RDONLY );
+        syBuf[2].echo = fileno(stderr);
+	syBuf[2].isTTY = 1;
     }
-    syBuf[3].fp = stderr;  setbuf( stderr, (char*)0 );
+    else
+      syBuf[2].isTTY = 0;
+    syBuf[2].bufno = -1;
+    syBuf[3].fp = fileno(stderr);
+    syBuf[3].bufno = -1;
+    setbuf(stdin, (char *)0);
+    setbuf(stdout, (char *)0);
+    setbuf(stderr, (char *)0);
 #endif
 #if SYS_OS2_EMX
     syBuf[0].fp = stdin;   setbuf( stdin, syBuf[0].buf );
@@ -1847,6 +1884,11 @@ void InitSystem (
     syBuf[3].fp = stderr;
 #endif
 
+    for (i = 4; i < sizeof(syBuf)/sizeof(syBuf[0]); i++)
+      syBuf[i].fp = -1;
+    
+    for (i = 0; i < sizeof(syBuffers)/sizeof(syBuffers[0]); i++)
+	  syBuffers[i].inuse = 0;
 
 #if !SYS_MAC_MWC    /* install the signal handler for '<ctr>-C'                            */
     SyInstallAnswerIntr();
@@ -1873,9 +1915,10 @@ void InitSystem (
     } else
     	*syArgl = '\0';
     	        
-    /* see whether the user wants to change preferences */
+    /* see whether the user wants to change preferences, i.e., whether 
+       shift, cmd, ctrl, space, apple key pressed */
 	GetKeys (theKeys);
-	if (theKeys[1] & 0x00008004) { /* cmd key pressed? */
+	if (theKeys[1] & (1 | 4 | 8 | 512 | 32768L)) { 
 		ModifyOptions (syArgl);
 	}
 
@@ -1911,7 +1954,11 @@ void InitSystem (
 
     SySystemInitFile[0] = '\0';
     SyStrncat( SySystemInitFile, "lib/init.g", 10 );
+#if SYS_IS_CYGWIN32
+    SySetGapRootPath( SyWindowsPath );
+#else
     SySetGapRootPath( "./" );
+#endif
 
     /* scan the command line for options                                   */
     while ( argc > 1 && argv[1][0] == '-' ) {
@@ -1924,7 +1971,7 @@ void InitSystem (
 
         switch ( argv[1][1] ) {
 
-	  /* '-A', toggle autoload of share packages */
+	  /* '-A', toggle autoload of GAP packages */
 	case 'A':
 	  SyAutoloadSharePackages = !SyAutoloadSharePackages;
 	  break;
@@ -2009,20 +2056,15 @@ void InitSystem (
                 FPUTS_TO_STDERR("gap: option '-P' must have an argument.\n");
                 goto usage;
             }
-            gPrintBufferSize = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-                gPrintBufferSize = gPrintBufferSize * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                gPrintBufferSize = gPrintBufferSize * 1024 * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'g'
-              || argv[2][SyStrlen(argv[2])-1] == 'G' )
-                gPrintBufferSize = gPrintBufferSize * 1024* 1024 * 1024;
+	    gPrintBufferSize = ParseMemory( argv[2]);
             ++argv; --argc;
             break;
 #endif
 
+	case 'R':
+	  SyRestoring = (Char *)0;
+	  break;
+	  
 	case 'T':
 	  SyBreakSuppress = !SyBreakSuppress;
 	  break;
@@ -2043,16 +2085,7 @@ void InitSystem (
                 FPUTS_TO_STDERR("gap: option '-W' must have an argument.\n");
                 goto usage;
             }
-            gMaxLogSize = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-                gMaxLogSize = gMaxLogSize * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                gMaxLogSize = gMaxLogSize * 1024 * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'g'
-              || argv[2][SyStrlen(argv[2])-1] == 'G' )
-                gMaxLogSize = gMaxLogSize * 1024*1024 * 1024;
+	    gMaxLogSize = ParseMemory(argv[2]);
             ++argv; --argc;
             break;
 #endif
@@ -2075,16 +2108,7 @@ void InitSystem (
                 FPUTS_TO_STDERR("gap: option '-a' must have an argument.\n");
                 goto usage;
             }
-            pre = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-                pre = pre * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                pre = pre * 1024 * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'g'
-              || argv[2][SyStrlen(argv[2])-1] == 'G' )
-                pre = pre * 1024 * 1024 * 1024;
+	    pre = ParseMemory( argv[2] );
             ++argv; --argc;
             break;
 
@@ -2101,16 +2125,7 @@ void InitSystem (
                 FPUTS_TO_STDERR("gap: option '-c' must have an argument.\n");
                 goto usage;
             }
-            SyCacheSize = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-                SyCacheSize = SyCacheSize * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                SyCacheSize = SyCacheSize * 1024 * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'g'
-              || argv[2][SyStrlen(argv[2])-1] == 'G' )
-                SyCacheSize = SyCacheSize * 1024* 1024 * 1024;
+	    SyCacheSize = ParseMemory( argv[2]);
             ++argv; --argc;
             break;
 
@@ -2168,18 +2183,7 @@ void InitSystem (
                 FPUTS_TO_STDERR("gap: option '-m' must have an argument.\n");
                 goto usage;
             }
-            SyStorMin = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-	      ;
-            else if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                SyStorMin *=  1024;
-            else if ( argv[2][SyStrlen(argv[2])-1] == 'g'
-              || argv[2][SyStrlen(argv[2])-1] == 'G' )
-                SyStorMin *=  1024*1024;
-	    else
-                SyStorMin /=  1024;
+	    SyStorMin = ParseMemory( argv[2])/1024;
 	      
             ++argv; --argc;
             break;
@@ -2197,18 +2201,7 @@ void InitSystem (
                 FPUTS_TO_STDERR("gap: option '-o' must have an argument.\n");
                 goto usage;
             }
-            SyStorMax = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-	      ;
-            else if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                SyStorMax *=  1024;
-            else if ( argv[2][SyStrlen(argv[2])-1] == 'g'
-              || argv[2][SyStrlen(argv[2])-1] == 'G' )
-                SyStorMax *=  1024 * 1024;
-	    else
-	      SyStorMax /= 1024;
+	    SyStorMax = ParseMemory( argv[2])/1024;
             ++argv; --argc;
             break;
 
@@ -2219,18 +2212,7 @@ void InitSystem (
                 FPUTS_TO_STDERR("gap: option '-K' must have an argument.\n");
                 goto usage;
             }
-            SyStorKill = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
-	      ;
-            else if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                SyStorKill *=  1024;
-            else if ( argv[2][SyStrlen(argv[2])-1] == 'g'
-              || argv[2][SyStrlen(argv[2])-1] == 'G' )
-                SyStorKill *=  1024*1024;
-	    else
-	      SyStorKill /= 1024;
+	    SyStorKill = ParseMemory( argv[2] ) /1024;
             ++argv; --argc;
             break;
 
@@ -2330,8 +2312,8 @@ void InitSystem (
         SyLineEdit   = 1;
         SyCTRD       = 1;
 #if !SYS_MAC_MWC
-        syBuf[2].fp = stdin;  syBuf[2].echo = stdout;
-        syBuf[3].fp = stdout;
+        syBuf[2].fp = fileno(stdin);  syBuf[2].echo = fileno(stdout);
+        syBuf[3].fp = fileno(stdout);
 #endif
         syWinPut( 0, "@p", "1." );
     }
@@ -2350,19 +2332,20 @@ void InitSystem (
 
 	/* make SyStorLimit divisible by the minimum allocatable unit */
 #if GAPVER == 4
-	SyStorLimit -= SyStorLimit % (512L * 1024L);
+	SyStorLimit /= 1024L;
+	SyStorLimit -= SyStorLimit % 512L;
 #elif GAPVER == 3
 	SyStorLimit -= SyStorLimit % 1024;
 #endif
 
 	/* try to set SyStorMax so that the user gets a warning before memory is too low */
 	if (SyStorMax > SyStorLimit)
-		SyStorMax = SyStorLimit - 512L * 1024L;
+		SyStorMax = SyStorLimit - 512L;
 
     if ( SyStorMin <= 0 ) 
    	     SyStorMin = SyStorMax;
 
-	syWorkspace = (UInt***) NewPtr (SyStorLimit);  /* allocate all we can get */
+	syWorkspace = (UInt***) NewPtr (SyStorLimit*1024L);  /* allocate all we can get */
 	
 #if 0 /* sorry, no real options dialog box yet... */
 
@@ -2389,7 +2372,7 @@ void InitSystem (
     }
 	if (SyBanner && !SyCompilePlease) {
 		if (SyRestoring)
-			SyFputs ("Loading GAP workspace. Please be patient, this may take a while.\n", 1);
+			SyFputs ("Loading GAP workspace. Please be patient, this may take a while.\n\n", 1);
 		OpenAboutBox (5);   /* show GAP's About ... box for 5 seconds*/
 	}
 
@@ -2479,14 +2462,18 @@ void InitSystem (
     /* print a usage message                                               */
 usage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
- FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version 4.dev,\n");
+ FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version ");
+ FPUTS_TO_STDERR(SyKernelVersion);
+ FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("       use '-h' option to get help.\n");
  FPUTS_TO_STDERR("\n");
  SyExit( 1 );
   
 fullusage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
- FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version 4.dev.\n");
+ FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version ");
+ FPUTS_TO_STDERR(SyKernelVersion);
+ FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("\n");
 
  FPUTS_TO_STDERR("  -b          toggle banner suppression\n");
@@ -2513,7 +2500,7 @@ fullusage:
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("  -l <paths>  set the GAP root paths\n");
  FPUTS_TO_STDERR("  -r          toggle reading of the '.gaprc' file \n");
- FPUTS_TO_STDERR("  -A          toggle autoloading of share packages\n");
+ FPUTS_TO_STDERR("  -A          toggle autoloading of GAP packages\n");
  FPUTS_TO_STDERR("  -B <name>   current architecture\n");
  FPUTS_TO_STDERR("  -D          toggle debugging the loading of library files\n");
  FPUTS_TO_STDERR("  -M          toggle loading of compiled modules\n");
@@ -2525,6 +2512,7 @@ fullusage:
 
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("  -L <file>   restore a saved workspace\n");
+ FPUTS_TO_STDERR("  -R          disable restoring of workspace\n");
 
  FPUTS_TO_STDERR("\n");
 #if SYS_BSD || SYS_MACH || SYS_USG

@@ -153,8 +153,8 @@ InstallTrueMethod(IsGeneralLinearGroup,IsNaturalGL);
 #P  IsSL(<grp>)
 ##
 ##  The Special Linear group is the group of all invertible matrices over a
-##  ring. This property tests, whether a group is isomorphic to a Special  
-##  Linear group.
+##  ring, whose determinant is equal to 1. This property tests, wether a
+##  group is isomorphic to a Special Linear group.
 DeclareProperty( "IsSpecialLinearGroup", IsGroup );
 DeclareSynonymAttr( "IsSL", IsSpecialLinearGroup );
 

@@ -41,10 +41,8 @@ ReadLib( "ctblothe.gi" );
 #X  files dealing with tables of marks
 ##
 ReadLib( "tom.gd");
-ReadLib( "stdgen.gd");
 
 ReadLib( "tom.gi");
 ReadLib( "straight.gi");
-ReadLib( "stdgen.gi");
 
 

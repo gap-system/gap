@@ -15,18 +15,19 @@ Revision.primitiv_gd :=
 ##  {\GAP} contains a library of primitive permutation groups which includes
 ##  the following permutation groups up to permutation isomorphism (i.e., up
 ##  to conjugacy  in the corresponding symmetric group)
-##  \beginlist
+##  \beginlist%unordered
 ##    \item{$\bullet$} the  non-affine primitive permutation groups of degree
 ##      $\le999$,   described    in  \cite{DixonMortimer88},  with generators
 ##      calculated in \cite{Theissen97},
 ##    \item{$\bullet$} all  primitive  permutation groups of  degree $\<256$,
 ##      in particular,
-##      \itemitem{$\circ$} the primitive permutation groups up to degree~50,
+##      \itemitem{$\circ$}%unordered
+##        the primitive permutation groups up to degree~50,
 ##        calculated by C.~Sims,
 ##      \itemitem{$\circ$}  the solvable (hence affine) primitive permutation
-##        groups of degree $\<256$, calculated by M.~Short \cite{Sho92},
-##      \itemitem{$\circ$} the insolvable affine primitive permutation groups
-##        of degree $\<256$, calculated in \cite{Theissen97}.
+##        groups of degree $\<256$ as calculated by M.~Short \cite{Sho92},
+##      \itemitem{$\circ$} some insolvable affine primitive permutation groups
+##        of degree $\<256$ as calculated in \cite{Theissen97}.
 ##  \endlist
 ##  Note that the affine primitive permutation groups of degrees 256--999 are
 ##  not included.
@@ -41,15 +42,16 @@ Revision.primitiv_gd :=
 ##  group in a cohort for socle l3,4, but the socle factor is *not
 ##  necessarily* of order 3.
 ##
-##  As the work in \cite{Theissen97} has not been checked independently for
-##  completeness, it is perceivable in theory that for degrees above 50
-##  groups are missing. However when preparing the library it has been
+##  The work in \cite{Theissen97} is known to have ommissions. Because of this
+##  we do not guarantee completeness of the lists beyond degree 50, though
+##  we have corrected errors as far as we know of them.
+##  When preparing the library it also has been
 ##  ensured that the groups in it are all primitive and not conjugate.
 ##
 ##  In detail, we guarantee the following properties for this and further
 ##  versions (but *not* versions which came before {\GAP}~4.2) of the library:
 ##
-##  \beginlist
+##  \beginlist%unordered
 ##  \item{$\bullet$} All groups in the library are primitive permutation
 ##  groups of the indicated degree.
 ##  \item{$\bullet$} The positions of the groups in the library are stable.
@@ -62,6 +64,9 @@ Revision.primitiv_gd :=
 ##  \item{$\bullet$} If a group in the library has a primitive subgroup with 
 ##  the same socle, this group is in the library as well.
 ##  \endlist
+##
+##  (Note that the arrangement of groups is not guaranteed to be in
+##  increasing size, though it holds for many degrees.)
 
 #############################################################################
 ##
@@ -103,7 +108,7 @@ DeclareGlobalFunction( "NrPrimitiveGroups" );
 ##  `NrMovedPoints', `Size', `Transitivity', `ONanScottType',
 ##  `IsSimpleGroup', `IsSolvableGroup', and `SocleTypePrimitiveGroup'.
 ##
-##  (Note, that for groups of degree up to 999, ONan-Scott types 4a, 4b and
+##  (Note, that for groups of degree up to 999, O'Nan-Scott types 4a, 4b and
 ##  5 cannot occur.)
 
 #############################################################################
@@ -142,20 +147,17 @@ DeclareAttribute( "SimsNo", IsPermGroup );
 
 #############################################################################
 ##
-#F  IrreducibleSolvableGroup( <n>, <p>, <i> )
+#V  PrimitiveIndexIrreducibleSolvableGroup
 ##
-## returns  the   <i>-th  irreducible  solvable subgroup  of GL(  <n>,  <p> ).
-## The  irreducible  solvable subgroups of GL(n,p) are ordered with respect to
-## the following criteria:
-##  \beginlist
-##  \item{-} increasing size;
-##  \item{-} increasing guardian number.
-##  \endlist
-##  If two groups have the same size and guardian, they  are in no particular
-##  order.  (See the library documentation   or  \cite{Sho92} for the meaning
-##  of guardian.)
+##  This variable provides a way to get from irreducible solvable groups to
+##  primitive groups and vice versa. For the group
+## <G>=`IrreducibleSolvableGroup( <n>, <p>, <k> )' and $d=p^n$, the entry
+##  `PrimitiveIndexIrreducibleSolvableGroup[d][i]' gives the index number of
+##  the semidirect product $p^n:G$ in the library of primitive groups.
 ##
-DeclareGlobalFunction( "IrreducibleSolvableGroup" );
+##  Searching for an index `Position' in this list gives the translation in
+##  the other direction.
+DeclareGlobalVariable("PrimitiveIndexIrreducibleSolvableGroup");
 
 #############################################################################
 ##
@@ -176,5 +178,7 @@ DeclareGlobalFunction("MaximalSubgroupsSymmAlt");
 ##
 #E
 ##
+
+
 
 

@@ -33,7 +33,8 @@ local s,c,mp,o,i,step;
 	step:=true;
       elif IsPrimitive(s,o[i]) and not IsPrimitive(U,o[i]) then
 	Info(InfoCoset,2,"AC: blocks");
-	s:=Stabilizer(s,Set(List(Blocks(U,o[i]),Set)),OnSetsDisjointSets);
+	s:=Stabilizer(s,Set(List(MaximalBlocks(U,o[i]),Set)),
+                      OnSetsDisjointSets);
 	step:=true;
       else
 	i:=i+1;

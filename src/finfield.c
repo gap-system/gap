@@ -1863,8 +1863,8 @@ Obj FuncZ (
     UInt                r;              /* temporary                       */
 
     /* check the argument                                                  */
-    if ( TNUM_OBJ(q) == T_INT && (INT_INTOBJ(q) > 65536) ||
-	 TNUM_OBJ(q) == T_INTPOS)
+    if ( (TNUM_OBJ(q) == T_INT && (INT_INTOBJ(q) > 65536)) ||
+	 (TNUM_OBJ(q) == T_INTPOS))
       return CALL_1ARGS(ZOp, q);
     
     if ( TNUM_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 ) {
@@ -2001,9 +2001,13 @@ static Int InitKernel (
 
     /* install the arithmetic methods                                      */
     ZeroFuncs[ T_FFE ] = ZeroFFE;
+    ZeroMutFuncs[ T_FFE ] = ZeroFFE;
     AInvFuncs[ T_FFE ] = AInvFFE;
+    AInvMutFuncs[ T_FFE ] = AInvFFE;
     OneFuncs [ T_FFE ] = OneFFE;
+    OneMutFuncs [ T_FFE ] = OneFFE;
     InvFuncs [ T_FFE ] = InvFFE;
+    InvMutFuncs [ T_FFE ] = InvFFE;
     SumFuncs[  T_FFE ][ T_FFE ] = SumFFEFFE;
     SumFuncs[  T_FFE ][ T_INT ] = SumFFEInt;
     SumFuncs[  T_INT ][ T_FFE ] = SumIntFFE;

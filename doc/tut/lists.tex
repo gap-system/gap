@@ -34,7 +34,7 @@ in~"Plain Records".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Plain Lists}
 
-\atindex{lists!plain}{|indexit}
+\atindex{lists!plain}{@lists!plain|indexit}
 A *list* is a collection of objects separated by  commas and enclosed  in
 brackets.  Let us for example construct the list `primes' of the first 10
 prime numbers.
@@ -183,7 +183,7 @@ curly braces.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Identical Lists}
 
-\atindex{lists!identical}{|indexit}
+\atindex{lists!identical}{@lists!identical|indexit}
 This second  section  about lists is dedicated  to  the subtle difference
 between  *equality*  and *identity*  of lists. It is really important to
 understand   this  difference in  order   to  understand how complex data
@@ -404,7 +404,7 @@ gap> breakfast:= ["tea", "apple", "egg"];
 gap> Intersection(breakfast, fruits);
 [ "apple" ]
 \endexample
-The  arguments  of the functions  `Intersection'  and `Union' cou;d be
+The  arguments  of the functions  `Intersection'  and `Union' could be
 ordinary lists, while their  result is always  a set. Note that in the
 preceding  example at least one  argument of  `Intersection' was not a
 set.   The functions   `IntersectSet' and  `UniteSet'   also form  the
@@ -456,7 +456,8 @@ as it would have in the long representation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{For and While Loops}
 
-\atindex{loops!for}{|indexit}\atindex{loops!while}{|indexit}
+\atindex{loops!for}{@loops!\noexpand`for'|indexit}
+\atindex{loops!while}{@loops!\noexpand`while'|indexit}
 
 Given a list `pp' of permutations we can form their product by means of a
 `for' loop instead of writing down the product explicitly.
@@ -720,18 +721,18 @@ row  and the first  column of the matrix `m'  is referred to as the first
 element of the second element of the list `m' via `m[2][1]'.
 
 A matrix may be multiplied by scalars, row vectors and other matrices.
-The row vectors and matrices involved in such a multiplication must
-however have suitable dimensions.
-\begintt
-gap> [1, 0, 0, 0] * m;
-Vector *: <right> must have the same length as <left> (4)
+(If the row vectors and matrices involved in such a multiplication do not
+have suitable dimensions then the ``missing'' entries are treated as zeros,
+so the results may look unexpectedly in such cases.)
+
+\beginexample
 gap> [1, 0, 0] * m;
 [ 1, -1, 1 ]
-gap> m * [1, 0, 0, 0];
-Vector *: <right> must have the same length as <left> (3)
-\endtt
-\beginexample
+gap> [1, 0, 0, 2] * m;
+[ 1, -1, 1 ]
 gap> m * [1, 0, 0];
+[ 1, 2, 1 ]
+gap> m * [1, 0, 0, 2];
 [ 1, 2, 1 ]
 \endexample
 Note that multiplication  of a row vector with  a matrix will result in a
@@ -821,15 +822,8 @@ its record components.
 gap> date:= rec(year:= 1997,
 >               month:= "Jul",
 >               day:= 14);
-rec(
-  year := 1997,
-  month := "Jul",
-  day := 14 )
+rec( year := 1997, month := "Jul", day := 14 )
 \endexample
-
-Note that the output in the examples of this section have been edited
-with respect to white spaces and line breaks in order to illustrate the
-hierarchy of the record components.
 
 The value of a record component is accessible by  the record name and the
 record  component name separated   by one dot   as  the record  component
@@ -845,11 +839,17 @@ record is automatically resized to hold the new component.
 
 \beginexample
 gap> date.time:= rec(hour:= 19, minute:= 23, second:= 12);
-rec(
-  hour := 19,
-  minute := 23,
-  second := 12 )
+rec( hour := 19, minute := 23, second := 12 )
 gap> date;
+rec( year := 1997, month := "Jul", day := 14, 
+  time := rec( hour := 19, minute := 23, second := 12 ) )
+\endexample
+
+We may use the `Display' function to illustrate the hierarchy of the record
+components.
+
+\beginexample
+gap> Display( date );
 rec(
   year := 1997,
   month := "Jul",
@@ -900,6 +900,8 @@ what these sections mean for records.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Further Information about Lists}
+
+(The following cross-references point to the {\GAP} Reference Manual.)
 
 % In this chapter you have encountered the fundamental concept of a list.
 % You have seen how to construct lists, how to extend them and how to refer
@@ -962,5 +964,5 @@ in Chapter~"ref:Records".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%E  lists.tex . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+%E
 

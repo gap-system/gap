@@ -92,6 +92,8 @@ DeclareGlobalFunction("TrySecondaryImages");
 ##
 #F  KuKGenerators(<G>,<beta>,<alpha>) 
 ##
+##  \atindex{Krasner-Kaloujnine theorem}{@Krasner-Kaloujnine theorem}
+##  \index{Wreath product embedding}
 ##  If <beta> is a homomorphism from <G> in a transitive permutation group,
 ##  <U> the full preimage of the point stabilizer and
 ##  and <alpha> a homomorphism defined on (a superset) of <U>, this function
@@ -111,7 +113,7 @@ DeclareGlobalFunction("KuKGenerators");
 ##
 ##  The operation returns an isomorphism with source <G>, range a group
 ##  <H> isomorphic to <G>, so that the presentation of <H> has been
-##  simpliefied using tietze transformations.
+##  simplified using Tietze transformations.
 ##
 DeclareAttribute("IsomorphismSimplifiedFpGroup",IsSubgroupFpGroup);
 

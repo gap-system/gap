@@ -155,7 +155,7 @@ DeclareAttribute( "AllBlocks", IsPermGroup );
 ##
 #A  TransitiveIdentification( <G> )
 ##
-##  Let <G> be a permutation group, acting transitively on a set  of up to 23
+##  Let <G> be a permutation group, acting transitively on a set  of up to 30
 ##  points.  Then `TransitiveIdentification' will return the position of this
 ##  group in the transitive  groups library.  This means,  if <G> acts on
 ##  $m$ points and    `TransitiveIdentification'  returns $n$,  then <G>   is
@@ -180,13 +180,18 @@ DeclareAttribute( "TransitiveIdentification", IsPermGroup );
 ##
 ##  Methods only exist if the primitive groups library is installed.
 ##
+##  Note: As this function uses the primitive groups library, the result is
+##  only guaranteed to the same extent as this library. If it is incomplete,
+##  `PrimitiveIdentification' might return an existing index number for a
+##  group not in the library.
+##
 DeclareAttribute( "PrimitiveIdentification", IsPermGroup );
 
 #############################################################################
 ##
 #A  ONanScottType( <G> )
 ##
-##  returns the type of <G> of a primitiev permutation group <G>, according
+##  returns the type of <G> of a primitive permutation group <G>, according
 ##  to the O'Nan-Scott classification. The labelling of the different types
 ##  is not consistent in the literature, we use the following:
 ##  \beginlist

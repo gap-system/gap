@@ -7,7 +7,7 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains the operations for matrix groups over finite field.
+##  This file contains the operations for matrix groups over finite fields.
 ##
 Revision.grpffmat_gd :=
     "@(#)$Id$";
@@ -19,32 +19,45 @@ Revision.grpffmat_gd :=
 ##
 DeclareSynonym( "IsFFEMatrixGroup", IsFFECollCollColl and IsMatrixGroup );
 
+
 #############################################################################
 ##
 #M  IsFinite( <ffe-mat-grp> )
 ##
-##  NOTE:    The following implication    only  holds  if  there no  infinite
+##  *Note:*  The following implication only holds  if  there are no  infinite
 ##  dimensional matrices.
 ##
 InstallTrueMethod( IsFinite,
     IsFFEMatrixGroup and IsFinitelyGeneratedGroup );
 
-DeclareGlobalFunction( "NicomorphismOfFFEMatrixGroup" );
 
 #############################################################################
 ##
-#F  ProjectiveActionOnFullSpace(<G>,<f>,<n>)
+#F  NicomorphismOfFFEMatrixGroup
 ##
-##  returns the image of the projective acion of <G> on $<f>^<n>$, which
-##  must be finite.
+DeclareGlobalFunction( "NicomorphismOfFFEMatrixGroup" );
+
+
+#############################################################################
 ##
-DeclareGlobalFunction("ProjectiveActionOnFullSpace");
+#F  ProjectiveActionOnFullSpace( <G>, <F>, <n> )
+##
+##  Let <G> be a group of <n> by <n> matrices over a field contained in the
+##  finite field <F>.
+#T why is <n> an argument?
+#T (it should be read off from the group!)
+##  `ProjectiveActionOnFullSpace' returns the image of the projective action
+##  of <G> on the full row space $<F>^<n>$.
+##
+DeclareGlobalFunction( "ProjectiveActionOnFullSpace" );
+
 
 #############################################################################
 ##
 #F  ConjugacyClassesOfNaturalGroup 
 ##
 DeclareGlobalFunction( "ConjugacyClassesOfNaturalGroup" );
+
 
 #############################################################################
 ##
@@ -72,8 +85,8 @@ DeclareGlobalFunction("Phi2");
 ##  power $<q>$  the number of  conjugacy classes in the  classical groups
 ##  $GL( <n>, <q>  )$, $GU( <n>, <q>  )$, $SL( <n>, <q> )$,  $SU( <n>, <q>
 ##  )$, $PGL(  <n>, <q> )$,  $PGU( <n>, <q> )$,  $PSL( <n>, <q>  )$, $PSL(
-##  <n>, <q> )$, respectively. (See also "ConjugacyClasses" and "Classical 
-##  Groups".)
+##  <n>, <q> )$, respectively. (See also "ConjugacyClasses!attribute"  and
+##  Section~"Classical Groups".)
 ##  
 ##  For  each  divisor  $<f>$ of  $<n>$  there  is  a  group of  Lie  type
 ##  with  the same  order  as $SL(  <n>,  <q> )$,  such  that its  derived
@@ -102,7 +115,8 @@ DeclareGlobalFunction("NrConjugacyClassesPSU");
 DeclareGlobalFunction("NrConjugacyClassesSLIsogeneous");
 DeclareGlobalFunction("NrConjugacyClassesSUIsogeneous");
 
+
 #############################################################################
 ##
-#E  grpffmat.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

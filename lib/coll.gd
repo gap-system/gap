@@ -466,7 +466,8 @@ end );
 #V  ISOMORPHISM_MAINTAINED_INFO
 ##
 ##  is a list of lists of the form
-##  `[ <filtsold>, <filtsnew>, <opr>, <testopr>, <settopr> ]',
+##  `[ <filtsold>, <filtsnew>, <opr>, <testopr>, <settopr>, <old_req>,
+##  <new_req> ]'
 ##  which is used for calls of `UseIsomorphismRelation( <old>, <new> )'.
 ##  This list is enlarged by calls to `InstallIsomorphismMaintenance'.
 ##
@@ -485,7 +486,13 @@ end );
 ##      tester filter of <opr>,
 ##
 ##  <settopr> &
-##      setter filter of <opr>.
+##      setter filter of <opr>,
+##
+##  <old_req> &
+##      requirements for <old> in the `InstallIsomorphismMaintenance' call,
+##
+##  <new_req> &
+##      requirements for <new> in the `InstallIsomorphismMaintenance' call.
 ##  \enditems
 ##
 BIND_GLOBAL( "ISOMORPHISM_MAINTAINED_INFO", [] );
@@ -512,12 +519,10 @@ DeclareOperation( "UseIsomorphismRelation", [ IsCollection, IsCollection ] );
 
 InstallMethod( UseIsomorphismRelation,
     "default method that checks maintenances and then returns `true'",
-    true,
     [ IsCollection, IsCollection ],
     # Make sure that this method is installed with ``real'' rank zero.
     - 2 * RankFilter( IsCollection ),
     function( old, new )
-
     local entry;
 
     for entry in ISOMORPHISM_MAINTAINED_INFO do
@@ -528,6 +533,39 @@ InstallMethod( UseIsomorphismRelation,
 
     return true;
     end );
+
+
+#############################################################################
+##
+#F  InstallIsomorphismMaintenanceFunction( <func> )
+##
+##  `InstallIsomorphismMaintenanceFunction' installs <func>, so that
+##  `<func>( <filtsold>, <filtsnew>, <opr>, <testopr>, <settopr>, <old_req>,
+##  <new_req> )' is called for each isomorphism maintenance.
+##  More precisely, <func> is called for each entry in the global list
+##  `ISOMORPHISM_MAINTAINED_INFO', also to those that are entered into this
+##  list after the installation of <func>.
+##  (The mechanism is the same as for attributes, which is installed in the
+##  file `lib/oper.g'.)
+##
+BIND_GLOBAL( "ISOM_MAINT_FUNCS", [] );
+
+BIND_GLOBAL( "InstallIsomorphismMaintenanceFunction", function( func )
+    local entry;
+    for entry in ISOMORPHISM_MAINTAINED_INFO do
+      CallFuncList( func, entry );
+    od;
+    ADD_LIST( ISOM_MAINT_FUNCS, func );
+end );
+
+BIND_GLOBAL( "RUN_ISOM_MAINT_FUNCS",
+    function( arglist )
+    local func;
+    for func in ISOM_MAINT_FUNCS do
+      CallFuncList( func, arglist );
+    od;
+    ADD_LIST( ISOMORPHISM_MAINTAINED_INFO, arglist );
+end );
 
 
 #############################################################################
@@ -554,12 +592,14 @@ BIND_GLOBAL( "InstallIsomorphismMaintenance",
 
     tester:= Tester( opr );
 
-    ADD_LIST( ISOMORPHISM_MAINTAINED_INFO,
+    RUN_ISOM_MAINT_FUNCS(
         [ IsCollection and Tester( old_req ) and old_req and tester,
           IsCollection and Tester( new_req ) and new_req,
           opr,
           tester,
-          Setter( opr ) ] );
+          Setter( opr ),
+          old_req,
+          new_req ] );
 end );
 
 
@@ -748,7 +788,7 @@ end );
 ##  so the equality of two iterators cannot be checked with `='.
 ##
 ##  When `Iterator' is called for a *mutable* collection <C> then it is not
-##  defined whether <iter> rescpects changes to <C> occurring after the
+##  defined whether <iter> respects changes to <C> occurring after the
 ##  construction of <iter>, except if the documentation explicitly promises
 ##  a certain behaviour.  The latter is the case if the argument is a mutable
 ##  list <list> (see~"IteratorList" for subtleties in this case).
@@ -1035,12 +1075,33 @@ DeclareOperation( "Random", [ IsListOrCollection ] );
 ##  input will always produce the same result, even if random calculations
 ##  are involved.
 ##
-##  The random seed of this generator is stored in the two global variables
-##  `R_N' and `R_X', whose values can be copied and assigned to, to put the
-##  generator back in a defined state.
+##  See `StatusRandom' for a description on how to reset the random number
+##  generator to a previous state.
 ##
 DeclareSynonym( "RandomList", RANDOM_LIST);
 
+#############################################################################
+##
+#F  StateRandom()
+#F  RestoreStateRandom(<obj>)
+##
+##  For debugging purposes, it can be desirable to reset the random number
+##  generator to a state it had before. `StateRandom' returns a {\GAP}
+##  object that represents the current state of the random number generator
+##  used by `RandomList'.
+##
+##  By calling `RestoreStateRandom' with this object as argument, the
+##  random number is reset to this same state.
+##
+##  (The same result can be obtained by accessing the two global variables
+##  `R_N' and `R_X'.)
+##
+##  (The format of the object used to represent the random generator seed
+##  is not guaranteed to be stable betweed different machines or versions
+##  of {\GAP}.
+##
+DeclareGlobalFunction( "StateRandom" );
+DeclareGlobalFunction( "RestoreStateRandom" );
 
 #############################################################################
 ##
@@ -1084,7 +1145,7 @@ DeclareAttribute( "PseudoRandomSeed", IsListOrCollection, "mutable" );
 ##  order, which may change for repeated calls of `Enumerator'.
 ##  `<enum>[<pos>]' may not execute in constant time
 ##  (see~"IsConstantTimeAccessList"),
-##  and the size of <enum> in memory is as small as feasable.
+##  and the size of <enum> in memory is as small as is feasible.
 ##
 ##  For lists <list>, the default method is `Immutable'.
 ##  For collections <C> that are not lists, there is no default method.
@@ -1105,7 +1166,7 @@ DeclareAttribute( "Enumerator", IsListOrCollection );
 ##  and <enum> contains the different elements in sorted order, w.r.t.~`\<'.
 ##  `<enum>[<pos>]' may not execute in constant time
 ##  (see~"IsConstantTimeAccessList"),
-##  and the size of <enum> in memory is as small as feasable.
+##  and the size of <enum> in memory is as small as is feasible.
 ##
 DeclareAttribute( "EnumeratorSorted", IsListOrCollection );
 
@@ -1547,8 +1608,8 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##
 ##  `ListX' returns a new list constructed from the arguments.
 ##
-##  Each of the arguments <arg1>, <arg2>, ... <argn> must be one of the
-##  following.
+##  Each of the arguments `<arg1>, <arg2>, ... <argn>' must be one of the
+##  following:
 ##  \beginitems
 ##  a list or collection &
 ##      this introduces a new for-loop in the sequence of nested
@@ -1557,11 +1618,11 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##  a function returning a list or collection &
 ##      this introduces a new for-loop in the sequence of nested
 ##      for-loops and if-statements, where the loop-range depends on
-##      the values of the outer loop-variables;
+##      the values of the outer loop-variables; or
 ##
 ##  a function returning `true' or `false' &
 ##      this introduces a new if-statement in the sequence of nested
-##      for-loops and if-statements;
+##      for-loops and if-statements.
 ##  \enditems
 ##
 ##  The last argument <func> must be a function,
@@ -1574,25 +1635,26 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##
 ##  As a more elaborate example, assume <arg1> is a list or collection,
 ##  <arg2> is a function returning `true' or `false',
-##  <arg3> is a function returning a list or collection,
-##  <arg4> is another function returning `true' or `false'.
-##  Then the call
-##  \begintt
-##  <result> := ListX( <arg1>, <arg2>, <arg3>, <arg4>, <func> )
-##  \endtt
+##  <arg3> is a function returning a list or collection, and
+##  <arg4> is another function returning `true' or `false',
+##  then
+##
+##  \)\kernttindent<result> := ListX( <arg1>, <arg2>, <arg3>, <arg4>, <func> );
+##
 ##  is equivalent to
-##  \begintt
-##  <result> := [];
-##  for v1 in <arg1> do
-##      if <arg2>( v1 ) then
-##          for v2 in <arg3>( v1 ) do
-##              if <arg4>( v1, v2 ) then
-##                  Add( <result>, <func>( v1, v2 ) );
-##              fi;
-##          od;
-##      fi;
-##  od;
-##  \endtt
+##
+##  \){\kernttindent}<result> := [];
+##  \){\kernttindent}for v1 in <arg1> do
+##  \){\kernttindent\quad}if <arg2>( v1 ) then
+##  \){\kernttindent\quad\quad}for v2 in <arg3>( v1 ) do
+##  \){\kernttindent\quad\quad\quad}if <arg4>( v1, v2 ) then
+##  \){\kernttindent\quad\quad\quad\quad}Add( <result>, <func>( v1, v2 ) );
+##  \){\kernttindent\quad\quad\quad}fi;
+##  \){\kernttindent\quad\quad}od;
+##  \){\kernttindent\quad}fi;
+##  \){\kernttindent}od;
+##
+##  \goodbreak%
 ##  The following example shows how `ListX' can be used to compute all pairs
 ##  and all strictly sorted pairs of elements in a list.
 ##  \beginexample

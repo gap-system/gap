@@ -1,0 +1,48 @@
+@Name
+Better Algorithms for words
+@Contact
+AH
+@Date
+1999/2/18
+@Time
+3
+@Need
+4
+@NeedA
+4
+@Math
+3
+@Prog
+4
+@Component
+Associative words
+@Descr
+<P>
+Most algorithms for finitely presented groups (rewriting, tietze
+transformations, etc.) spend much of their time in subword search or
+subword-match routines.
+</P>
+<P>
+Many of these are well-known problems for strings and (in particular due to
+the fact that such problems also arise in Biology when sequencing DNA)
+efficient algorithms exist for many of these.
+</P>
+<P>
+Many of the methods in GAP however do use more naive linear-search
+algorithms. It would be nice to upgrade these methods to the state of the
+art. The payoff would be a potentially large payoff in runtime.
+</P>
+<P>
+As words exist in different representations, it might be desirable to
+implemnet methods for these different representations, however by now the
+letter representation (which is used for fp groups and within the Tietze
+routines) is probably the one which is mainly used.
+</P>
+<P>
+Implementation might have to use kernel routines to get sufficient speed
+</P>
+@Ref
+D. Gusfield, {\it Algorithms on strings, trees, and sequences}, Cambridge
+Univ. Press, Cambridge, 1997; MR 99b:68095 
+@Rem
+

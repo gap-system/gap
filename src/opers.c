@@ -3997,7 +3997,7 @@ Obj DoVerboseConstructor3Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     
-    kind1 = TYPE_OBJ_FEO( arg1 );
+    kind1 = FLAGS_FILT( arg1 );
     kind2 = TYPE_OBJ_FEO( arg2 );
     kind3 = TYPE_OBJ_FEO( arg3 );
 
@@ -5827,7 +5827,7 @@ void ChangeDoOperations (
         if ( oper == ModOper  )  { InstallModObject(1);  }
         if ( oper == InvOp  )  { InstallInvObject(1);  }
         if ( oper == OneOp  )  { InstallOneObject(1);  }
-        if ( oper == AInvOp )  { InstallAinvObject(1); }
+        if ( oper == AInvOp )  { InstallAinvObject(1); } 
         if ( oper == ZeroOp )  { InstallZeroObject(1); }
 
         /* switch do with do verbose                                       */

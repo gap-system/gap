@@ -303,8 +303,9 @@ gap> GeneratorsOfLeftIdeal( I );
 \beginexample
 gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 gap> A:= Algebra( Rationals, mats );;
-gap> I:= Ideal( A, [ mats[2] ], "basis" ); # we already know that the element
-                                           # `mats[2]' forms a basis of the ideal.
+gap> # Form the two-sided ideal for which `mats[2]' is known to be
+gap> # the unique basis element.
+gap> I:= Ideal( A, [ mats[2] ], "basis" );
 <two-sided ideal in <algebra of dimension 3 over Rationals>, (dimension 1)>
 \endexample
 
@@ -609,11 +610,11 @@ gap> G:= SmallGroup(3^6, 100 );
 gap> L:= JenningsLieAlgebra( G );
 <Lie algebra of dimension 6 over GF(3)>
 gap> g:= Grading( L );
-rec( min_degree := 1, max_degree := 5, source := Integers, 
+rec( min_degree := 1, max_degree := 9, source := Integers, 
   hom_components := function( d ) ... end )
-gap> g.hom_components( 4 );
+gap> g.hom_components( 3 );
 <vector space over GF(3), with 1 generators>
-gap> g.hom_components( 7 );
+gap> g.hom_components( 14 );
 <vector space over GF(3), with 0 generators>
 \endexample
 
@@ -714,7 +715,8 @@ gap> f:= AlgebraWithOneHomomorphismByImagesNC( A, B, bA{[1]}, bB{[1]} );
 \beginexample
 gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
 gap> C:= LieCentre( L );
-<two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (dimension 1)>
+<two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (dimension 1
+ )>
 gap> hom:= NaturalHomomorphismByIdeal( L, C );
 <linear mapping by matrix, <Lie algebra of dimension 
 9 over Rationals> -> <Lie algebra of dimension 8 over Rationals>>
@@ -797,24 +799,19 @@ fail
 gap> A:= Rationals^[3,3];
 ( Rationals^[ 3, 3 ] )
 gap> V:= LeftAlgebraModuleByGenerators( A, \*, [ [ 1, 0, 0 ] ] );
-#
-# i.e., A acts from the left on the 3-dimensional vector space
-# spanned by the unit vectors.
-#
 <left-module over ( Rationals^[ 3, 3 ] )>
 gap> W:= RightAlgebraModuleByGenerators( A, \*, [ [ 1, 0, 0 ] ] );
-#
-# i.e., A acts from the right on the 3-dimensional vector space
-# spanned by the unit vectors.
-#
 <right-module over ( Rationals^[ 3, 3 ] )>
 gap> M:= BiAlgebraModuleByGenerators( A, A, \*, \*, [ [ 1, 0, 0 ] ] );
-#
-# i.e., A acts from the left and from the right on the 3-dimensional vector
-# space spanned by the unit vectors.
-#
-<bi-module over ( Rationals^[ 3, 3 ] ) (left) and ( Rationals^[ 3, 3 ] ) (right)>
+<bi-module over ( Rationals^[ 3, 3 ] ) (left) and ( Rationals^
+[ 3, 3 ] ) (right)>
 \endexample
+
+In the above examples, the modules `V', `W', and `M' are $3$-dimensional
+vector spaces over the rationals.
+The algebra `A' acts from the left on `V', from the right on `W',
+and from the left and from the right on `M'.
+
 
 \Declaration{LeftAlgebraModule}
 \Declaration{RightAlgebraModule}
@@ -850,7 +847,8 @@ gap> GeneratorsOfAlgebraModule( V );
 gap> A:= Rationals^[3,3];
 ( Rationals^[ 3, 3 ] )
 gap> M:= BiAlgebraModuleByGenerators( A, A, \*, \*, [ [ 1, 0, 0 ] ] );
-<bi-module over ( Rationals^[ 3, 3 ] ) (left) and ( Rationals^[ 3, 3 ] ) (right)>
+<bi-module over ( Rationals^[ 3, 3 ] ) (left) and ( Rationals^
+[ 3, 3 ] ) (right)>
 gap> vv:= BasisVectors( Basis( M ) );
 [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
 gap> IsLeftAlgebraModuleElement( vv[1] );
@@ -898,7 +896,8 @@ Basis( <3-dimensional bi-module over ( Rationals^
 gap> IsBasisOfAlgebraModuleElementSpace( B );
 true
 gap> B!.delegateBasis;
-SemiEchelonBasis( <vector space of dimension 3 over Rationals>, ... )
+SemiEchelonBasis( <vector space of dimension 3 over Rationals>, 
+[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
 \endexample
 
 \Declaration{MatrixOfAction}
@@ -930,9 +929,11 @@ gap> Dimension( V );
 \Declaration{LeftModuleByHomomorphismToMatAlg}
 \Declaration{RightModuleByHomomorphismToMatAlg}
 
+First we produce a structure constants algebra with basis elements
+$x$, $y$, $z$ such that $x^2 = x$, $y^2 = y$, $xz = z$, $zy = z$
+and all other products are zero.
+
 \beginexample
-# first produce a structure constants algebra with basis x, y, z such that
-# x^2=x, y^2=y, xz=z, zy=z and all other products are zero.
 gap> T:= EmptySCTable( 3, 0 );;
 gap> SetEntrySCTable( T, 1, 1, [ 1, 1 ]);
 gap> SetEntrySCTable( T, 2, 2, [ 1, 2 ]);
@@ -940,14 +941,21 @@ gap> SetEntrySCTable( T, 1, 3, [ 1, 3 ]);
 gap> SetEntrySCTable( T, 3, 2, [ 1, 3 ]);
 gap> A:= AlgebraByStructureConstants( Rationals, T );
 <algebra of dimension 3 over Rationals>
-# now we construct an isomorphic matrix algebra:
+\endexample
 
+Now we construct an isomorphic matrix algebra.
+
+\beginexample
 gap> m1:= NullMat( 2, 2 );; m1[1][1]:= 1;;
 gap> m2:= NullMat( 2, 2 );; m2[2][2]:= 1;;
 gap> m3:= NullMat( 2, 2 );; m3[1][2]:= 1;;
 gap> B:= Algebra( Rationals, [ m1, m2, m3 ] );
 <algebra over Rationals, with 3 generators>
-# finally we construct the homomorphism and the corresponding right module.
+\endexample
+
+Finally we construct the homomorphism and the corresponding right module.
+
+\beginexample
 gap> f:= AlgebraHomomorphismByImages( A, B, Basis(A), [ m1, m2, m3 ] );;
 gap> RightModuleByHomomorphismToMatAlg( A, f );
 <2-dimensional right-module over <algebra of dimension 3 over Rationals>>
@@ -969,16 +977,24 @@ gap> W:= SubAlgebraModule( V, [ v ] );
 <left-module over <algebra of dimension 3 over Rationals>>
 gap> Dimension( W );
 1
-# i.e., W is a left ideal.
 \endexample
+
+% One would be tempted to call `W' a left ideal in `V',
+% but in the current implementation, neither `V' nor `W' are themselves
+% algebras; note that the element `v', although looking like a matrix,
+% cannot be multiplied with itself.
 
 \Declaration{FaithfulModule}
 
 \beginexample
-# create a 2-dimensional algebra where all products are zero.
 gap> T:= EmptySCTable( 2, 0 );;
 gap> A:= AlgebraByStructureConstants( Rationals, T );
 <algebra of dimension 2 over Rationals>
+\endexample
+
+`A' is a $2$-dimensional algebra where all products are zero.
+
+\beginexample
 gap> V:= FaithfulModule( A );
 <3-dimensional left-module over <algebra of dimension 2 over Rationals>>
 gap> vv:= BasisVectors( Basis( V ) );

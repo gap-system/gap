@@ -33,7 +33,7 @@
 ##
 ##  This can be abbreviated, to `DoSomething( <args> : <stuff> );' with
 ##  a small additional abbreviation of <stuff> permitted. See
-##  "ref:function call with options" for details. The full form
+##  "ref:function call!with options" for details. The full form
 ##  can be used where the same options are to run across several
 ##  calls, or where the `DoSomething' procedure is actually a binary
 ##  operation, or other function with special syntax. 
@@ -88,6 +88,23 @@ DeclareGlobalFunction( "PopOptions");
 ##  options (see~"quit").
 ##
 DeclareGlobalFunction( "ResetOptionsStack");
+
+#############################################################################
+##
+#F  OnQuit( )                                   currently removes all options
+##
+##  called when a user elects to `quit;' a break loop entered  via  execution
+##  of `Error'. As {\GAP} starts up, `OnQuit' is defined to  do  nothing,  in
+##  case an `Error' is encountered during {\GAP} start-up. Here  we  redefine
+##  `OnQuit' to do a variant of `ResetOptionsStack' to ensure  `OptionsStack'
+##  is empty after a user quits  an  `Error'-induced  break  loop.  (`OnQuit'
+##  differs from `ResetOptionsStack' in that it warns when it does  something
+##  rather than the other way round.) Currently, `OnQuit' is not  advertised,
+##  since exception handling may make it obsolete.
+##
+#Unbind(OnQuit);                    # We don't do this because it would leave
+#DeclareGlobalFunction( "OnQuit" ); # us vulnerable to an Error happening
+                                    # before OnQuit's definition is installed
 
 #############################################################################
 ##

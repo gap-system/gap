@@ -250,7 +250,8 @@ end);
 ##
 ##  Displays the object <obj> in a nice, formatted way which is easy to read
 ##  (but might be difficult for machines to understand). The actual format
-##  used for this depends on the type of <obj>.
+##  used for this depends on the type of <obj>. Each method should print a
+##  newline character as last character.
 ##
 DeclareOperation( "Display", [ IsObject ] );
 

@@ -582,7 +582,7 @@ Obj FuncMakeConsequencesPres (
     Int                 undefined;      /* maximal of undefined entreis    */
     Int                 apply;          /* num of next def to be applied   */
     Int                 ndefsMax;       /* maximal number of definitons    */
-    Int                 cos;            /* coset involved in current def   */
+    Int                 coset;          /* coset involved in current def   */
     Int                 gen;            /* gen involved in current def     */
     Int                 lp;             /* left pointer into relator       */
     Int                 lc;             /* left coset to apply to          */
@@ -620,7 +620,7 @@ Obj FuncMakeConsequencesPres (
     while ( apply <= ndefs ) {
 
         /* apply all relators that start with this generator               */
-        cos = INT_INTOBJ( ELM_PLIST( objDefs1, apply ) );
+        coset = INT_INTOBJ( ELM_PLIST( objDefs1, apply ) );
         gen = INT_INTOBJ( ELM_PLIST( objDefs2, apply ) );
         objRels = ELM_PLIST( ELM_PLIST( list, 6 ), gen );
         for ( i = 1; i <= LEN_LIST( objRels ); i++ ) {
@@ -630,7 +630,7 @@ Obj FuncMakeConsequencesPres (
             ptRel   = &(ELM_PLIST(objRel,1)) - 1;
 
             lp = INT_INTOBJ( ELM_PLIST( ELM_PLIST(objRels,i), 3 ) );
-            lc = cos;
+            lc = coset;
             rp = lp + INT_INTOBJ( ptRel[1] );
             rc = lc;
 

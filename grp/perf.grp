@@ -724,10 +724,16 @@ end);
 InstallMethod(IsomorphismFpGroup,"perfect library groups",true,
   [IsPerfectLibraryGroup],100,
 function(G)
-local H,hom;
+local H,hom,permgens,fpgens;
   H:=PerfectGroup(IsSubgroupFpGroup,PerfectIdentification(G));
-  hom:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
-                                     GeneratorsOfGroup(H));
+  permgens:=GeneratorsOfGroup(G);
+  fpgens:=GeneratorsOfGroup(H);
+  if Length(permgens)<>Length(fpgens) then
+    # remove auxiliary gens
+    hom:=GroupHomomorphismByImagesNC(G,H,permgens{[1..Length(fpgens)]},fpgens);
+  else
+    hom:=GroupHomomorphismByImagesNC(G,H,permgens,fpgens);
+  fi;
   SetIsInjective(hom,true);
   SetIsSurjective(hom,true);
   return hom;
@@ -740,10 +746,16 @@ end);
 InstallMethod(IsomorphismPermGroup,"perfect library groups",true,
   [IsPerfectLibraryGroup],100,
 function(G)
-local H,hom;
+local H,hom,permgens,fpgens;
   H:=PerfectGroup(IsPermGroup,PerfectIdentification(G));
-  hom:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
-                                     GeneratorsOfGroup(H));
+  fpgens:=GeneratorsOfGroup(G);
+  permgens:=GeneratorsOfGroup(H);
+  if Length(permgens)<>Length(fpgens) then
+    # remove auxiliary gens
+    hom:=GroupHomomorphismByImagesNC(G,H,fpgens,permgens{[1..Length(fpgens)]});
+  else
+    hom:=GroupHomomorphismByImagesNC(G,H,fpgens,permgens);
+  fi;
   SetIsInjective(hom,true);
   SetIsSurjective(hom,true);
   return hom;

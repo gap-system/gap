@@ -289,16 +289,7 @@ static inline Obj prod_intobjs(Int l, Int r)
         remove to get parity right */
 #define LAST_EXTERNAL_TNUM      T_WPOBJ
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
-
-#ifdef XTNUMS
-#define FIRST_VIRTUAL_TNUM      (LAST_EXTERNAL_TNUM+1)
-#define T_OBJECT                (FIRST_VIRTUAL_TNUM+ 0)
-#define T_MAT_CYC               (FIRST_VIRTUAL_TNUM+ 1)
-#define T_MAT_FFE               (FIRST_VIRTUAL_TNUM+ 2)
-#define LAST_VIRTUAL_TNUM       T_MAT_FFE
-#else
-#define LAST_VIRTUAL_TNUM       LAST_REAL_TNUM
-#endif
+#define LAST_VIRTUAL_TNUM LAST_EXTERNAL_TNUM
 
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)

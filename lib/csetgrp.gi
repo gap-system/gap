@@ -38,6 +38,7 @@ local   enum;
   if HasIsFinite( C ) then
     SetIsFinite( enum, IsFinite( C ) );
   fi;
+  SetLength(enum,Size(ActingDomain(C)));
   return enum;
 end );
 

@@ -347,10 +347,10 @@ gap> prg:= IntegratedStraightLineProgram( [ prg1, prg2, prg3 ] );;
 gap> ResultOfStraightLineProgram( prg, gens );
 [ x^4*y^-1, x^3*y^4, x^3*y^4 ]
 gap> prg:= IntegratedStraightLineProgram( [ prg2, prg3, prg1 ] );;
-gap> ResultOfStraightLineProgram( prg, gens );                         
+gap> ResultOfStraightLineProgram( prg, gens );
 [ x^3*y^4, x^3*y^4, x^4*y^-1 ]
 gap> prg:= IntegratedStraightLineProgram( [ prg3, prg1, prg2 ] );;
-gap> ResultOfStraightLineProgram( prg, gens );                         
+gap> ResultOfStraightLineProgram( prg, gens );
 [ x^3*y^4, x^4*y^-1, x^3*y^4 ]
 \endexample
 

@@ -29,7 +29,7 @@ HELP_FLUSHRIGHT:=true;
 InstallGlobalFunction(HELP_PRINT_SECTION_TEXT, function(arg)
 local   book, chapter, section, key, subkey, MatchKey, ssectypes,
 	info, chap, filename, stream, p, q, lico, 
-        line, linei, lines, IsIgnoredLine, macro, macroarg, tail,
+        line, i, lines, IsIgnoredLine, macro, macroarg, tail,
         ttenv, text, verbatim, nontex, item, initem, displaymath, align,
         lastblank, singleline, rund, blanks, SetArg, FlushLeft, Gather,
         width, buff, EmptyLine, ll, start, keynotfound; 
@@ -113,7 +113,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   Gather := function()
     local nextline;
 
-    while true do
+    while line <> fail do
         if nontex and 0<Length(line) and line[1] = '%' then
             line := line{[2..Length(line)]};
         fi;
@@ -128,13 +128,10 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
         else
             break;
         fi;
-        line := ReadLine(stream);
-        if 0<Length(line) and line[Length(line)]='\n' then
-            line := line{[1..Length(line)-1]};
-        fi;
+        line := Chomp( ReadLine(stream) );
     od;
     # a '%' at end-of-line indicates a continuation
-    while 0<Length(line) and line[Length(line)]='%' do
+    while line<> fail and 0<Length(line) and line[Length(line)]='%' do
         line := line{[1..Length(line)-1]};
         repeat
             nextline := ReadLine(stream);
@@ -145,8 +142,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
         until nextline=fail or 0<Length(nextline) and nextline[1]<>'%';
         if nextline=fail then
             break;
-        elif 0<Length(nextline) and nextline[Length(nextline)]='\n' then
-            nextline := nextline{[1..Length(nextline)-1]};
+        else
+            nextline := Chomp(nextline);
         fi;
         line := Concatenation(line, FlushLeft(nextline));
     od;
@@ -241,26 +238,21 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
       SeekPositionStream( stream, chap[2][section] );
       Add( lines, FILLED_LINE( info.sections[chapter][section],
                                info.chapters[chapter], '_' ) );
-      if ARCH_IS_UNIX() then
-	# stream positioning works, we discard the line starting with
-	# \Section...
-	ReadLine(stream);
-      else
-        # on other architectures stream positioning might get confused due
-	# to the CRLF problem. Continue reading until we know we have
-	# actually reached the line.
-	repeat
-	  line:=ReadLine(stream);
-	  if MATCH_BEGIN( line, HELP_SECTION_BEGIN ) then
-	    # a section starts. Make sure it is the right section:
-	    line:=line{[10..Length(line)]};
-	    if MATCH_BEGIN( line, info.sections[chapter][section] ) then
-	      # got the section header: break
-	      line:=true;
-	    fi;
-	  fi;
-        until line=true;
-      fi;
+      #The repeat loop was a ``workaround'' for a deficiency in
+      #`SeekPositionStream' which has now been fixed by FL
+      #... so now `ReadLine' need only be executed once. - GG
+      #repeat
+        # On UNIX with files not in DOS format, stream positioning works
+        #  and so we have the \Section... line on the first iteration.
+        # On other architectures or with a DOS format file, stream positioning
+        #  might get confused due to the CRLF problem (typically just one
+        #  extra iteration is necessary to get past the LF). We continue
+        #  reading until we know we have actually reached the line.
+        line:=ReadLine(stream);
+      #until MATCH_BEGIN( line, HELP_SECTION_BEGIN ) and
+      #      # A section starts ... ensure it is the right section:
+      #      MATCH_BEGIN( line{[10..Length(line)]}, 
+      #                   info.sections[chapter][section] );
   fi;
 
   # Initialise a number of variables before the main section-scanning loop
@@ -290,10 +282,11 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   displaymath:=false;# Set inside $$ .. $$ for maths displays delimited
                      #  by $$ lines i.e. lines with *only* $$.
   align := false;    # Set inside displaymath in \matrix{ .. }
+  keynotfound := false; # In case it is not set in the while loop
 
   line := ReadLine(stream);
   while line <> fail and not MATCH_BEGIN( line, HELP_SECTION_BEGIN ) do
-      line := line{[1..Length(line)-1]};
+      line := Chomp(line);
 
       if nontex and 0 < Length(line) and line[1] = '%' and 
          not MATCH_BEGIN( line, "%enddisplay" ) then
@@ -366,7 +359,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
       elif MATCH_BEGIN(line,"\\answer")  then
           repeat
               line := ReadLine(stream);
-          until line = fail  or  line = "\n";
+          until line = fail  or  line = "\n" or line = "\r\n";
                     
       # displays for text and HTML that need are interpreted
       # normally (except any initial % is first removed)
@@ -400,8 +393,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           # A '%' at end-of-line indicates a continuation
           while line <> fail and line <> "" and 
                 (line[1] = '%' or line[Length(line)] = '%') do
-              line := ReadLine(stream);
-              line := line{[1..Length(line)-1]};
+              line := Chomp( ReadLine(stream) );
           od;
           line:="";
 
@@ -484,6 +476,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                       if 5<Length(line) and line{[1..6]}="\\fmark" then
                           line:=Concatenation(">",line{[7..Length(line)]});
                       fi;
+                      # remove an \hfill if present
+                      line := ReplacedString(line, "\\hfill", "");
                   else
                       while 0<Length(line) and line[1]=' ' do
                           line:=line{[2..Length(line)]};
@@ -691,6 +685,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
 
                       elif macro in ["GAP", "MOC", "CAS", "ATLAS"] then
                           ; # nothing to do it's right already
+                      elif macro = "calR" then
+                          macro := "R";
                       elif macro="package" then
                           SetArg(); # sets macroarg and tail as we need it
                           macro := "";
@@ -722,6 +718,14 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                           if macroarg="$-$" then
                               macroarg:="-";
                           fi;
+                          # to get rid of any ordered list markup that
+                          # is only interpreted for the HTML version
+                          if macro="itemitem" then
+                              q := Position(tail, '%');
+                              if q <> fail then
+                                  tail := tail{[1..q-1]};
+                              fi;
+                          fi;
                           # we do this so macroarg is scanned for macros
                           tail:=Concatenation(macroarg,"\\endmacro ",tail);
                           macroarg:="";
@@ -740,7 +744,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                           macro:="";
                           tail:=FlushLeft(tail);
                           # we do this to prevent macroarg expanding
-                          REPLACE_SUBSTRING(macroarg," ","~"); 
+                          macroarg := ReplacedString(macroarg," ","~"); 
                           if Length(macroarg)>=3 then
                               macroarg:=Concatenation(macroarg,"~");
                           else
@@ -778,6 +782,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                           line:= FILLED_LINE("","",'-');
                           line[1] := '-';
                           line[Length(line)] := '-';
+                      elif macro="hfill" and align then
+                          macro:="";
                       elif macro="hfill" then
                           line:= FILLED_LINE(line,tail,' ');
                       elif macro="break" then
@@ -996,15 +1002,15 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   od;
   CloseStream(stream);
 
-  for linei in lines do
-    p := PositionSublist(linei,"URL{");
+  for i in [1 .. Length(lines)] do
+    p := PositionSublist(lines[i],"URL{");
     if p=fail then
-      REPLACE_SUBSTRING( linei, "~", " " );
-    elif Position(linei,'~')<>fail then
+      lines[i] := ReplacedString( lines[i], "~", " " );
+    elif Position(lines[i],'~')<>fail then
       # a URL may have a ~ 
       while p<>fail do
-        tail:=linei{[p+3..Length(linei)]};
-        line:=linei{[1..p+2]};
+        tail:=lines[i]{[p+3..Length(lines[i])]};
+        line:=lines[i]{[1..p+2]};
         SetArg();
         if macroarg="" then # abort ... no matching '}'
           line:=Concatenation(line,tail);
@@ -1015,9 +1021,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
         fi;
         p:=PositionSublist(line,"URL{",Length(line) - Length(tail));
       od;
-      REPLACE_SUBSTRING( line, "~", " " );
-      # have to do it this way ... to avoid `local' change to loop var linei
-      REPLACE_SUBSTRING( linei, linei, ReplacedString(line,"\\tilde","~") );
+      lines[i] := ReplacedString( line, "~", " " );
+      lines[i] := ReplacedString( lines[i], "\\tilde", "~" );
     fi;
   od;
 

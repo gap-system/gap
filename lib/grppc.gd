@@ -104,7 +104,7 @@ DeclareAttribute( "InducedPcgsWrtFamilyPcgs", IsGroup );
 #O  InducedPcgs( <pcgs>, <grp> )
 ##
 ##  computes a pcgs for <grp> which is induced by <pcgs>. If <pcgs> has
-##  a parent pcgs, then the result is induced with repect to this parent
+##  a parent pcgs, then the result is induced with respect to this parent
 ##  pcgs.
 DeclareOperation( "InducedPcgs", [IsPcgs,IsGroup] );
 
@@ -299,6 +299,11 @@ DeclareGlobalFunction( "GapInputPcGroup" );
 ##
 DeclareGlobalFunction( "CanonicalSubgroupRepresentativePcGroup" );
 
+#############################################################################
+##
+#F  CentrePcGroup( <grp> )
+##
+DeclareGlobalFunction( "CentrePcGroup" );
 
 #############################################################################
 ##

@@ -18,11 +18,11 @@
 ##  the ring elements $r_1$ and $r_2$, then $l_1 * l_2$ is equal to the
 ##  Lie object corresponding to $r_1 * r_2 - r_2 * r_2$. Two rules
 ##  for Lie objects are worth noting:
-##  \beginlist
-##  \item{-}
+##  \beginlist%unordered
+##  \item{--}
 ##    An element is *not* equal to its Lie element.
 ##
-##  \item{-}
+##  \item{--}
 ##    If we take the Lie object of an ordinary (associative) matrix
 ##    then this is again a matrix;
 ##    it is therefore a collection (of its rows) and a list.
@@ -49,18 +49,18 @@
 ##
 ##  Note that the family situation with Lie families may be not familiar.
 ##
-##  \beginlist
-##  \item{-}
+##  \beginlist%unordered
+##  \item{--}
 ##    An element is *not* equal to its Lie element.
 ##
-##  \item{-}
+##  \item{--}
 ##    If we take the Lie object of an ordinary (associative) matrix
 ##    then this is again a matrix;
 ##    it is therefore a collection (of its rows) and a list.
 ##    But it is *not* a collection of collections of its entries,
 ##    and its family is *not* a collections family.
 ##
-##  \item{-}
+##  \item{--}
 ##    We have to be careful when installing methods for certain types
 ##    of domains that may involve Lie elements.
 ##    For example, the zero element of a matrix space is either an ordinary
@@ -72,7 +72,7 @@
 ##    with the additional requirement `IsLieObjectCollection' but that
 ##    we must explicitly require non-Lie elements for the non-Lie case.
 ##
-##  \item{-}
+##  \item{--}
 ##    Being a full matrix space is a property that may hold for a space
 ##    of ordinary matrices or a space of Lie matrices.
 ##    So methods for full matrix spaces must also be aware of Lie matrices.

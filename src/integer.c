@@ -306,7 +306,7 @@ Obj FuncHexStringInt( Obj self, Obj integer )
          j = 0;
          for (; len; len--) {
              d = ADDR_INT(integer)[len-1];
-             f = 15 << (4*(NR_HEX_DIGITS-1));
+             f = 15L << (4*(NR_HEX_DIGITS-1));
              for (i = NR_HEX_DIGITS; i; i-- ) {
                  a = (d & f) >> (4*(i-1));
                  if (j==0 && a==0) SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
@@ -469,7 +469,47 @@ void            PrintInt (
     }
 }
 
+/****************************************************************************
+**
+*F  FuncLog2Int( <self>, <int> ) . . . . . . . . . nr of bits of integer - 1
+**  
+**  Given to GAP-Level as "Log2Int".
+*/
+Obj FuncLog2Int( Obj self, Obj integer)
+{
+  Int res;
+  Int a, len;
+  Int mask;
+  TypDigit dmask;
+  
+  /* case of small ints */
+  if (IS_INTOBJ(integer)) {
+    a = INT_INTOBJ(integer);
+    if (a < 0) a = -a;
+    res = NR_SMALL_INT_BITS;
+    for(res = NR_SMALL_INT_BITS - 1, mask = (Int)1 << (NR_SMALL_INT_BITS-1);
+        (mask & a) == 0 && mask != (Int)0;
+        mask = mask >> 1, res--);
+    return INTOBJ_INT(res);
+  }
 
+  /* case of long ints */
+  if (TNUM_OBJ(integer) == T_INTNEG || TNUM_OBJ(integer) == T_INTPOS) {
+    for (len = SIZE_INT(integer); ADDR_INT(integer)[len-1] == 0; len--);
+    res = len * NR_DIGIT_BITS - 1;
+    a = (TypDigit)(ADDR_INT(integer)[len-1]); 
+    for(dmask = (TypDigit)1 << (NR_DIGIT_BITS - 1);
+        (dmask & a) == 0 && dmask != (TypDigit)0;
+        dmask = dmask >> 1, res--);
+    return INTOBJ_INT(res);
+  }
+  else {
+    ErrorReturnObj("Log2Int: argument must be integer, (not a %s)",
+           (Int)TNAM_OBJ(integer), 0L,
+           "");
+    return (Obj) 0L; /* please picky cc */
+  }
+}
 
 /****************************************************************************
 **
@@ -1610,6 +1650,8 @@ Obj             PowInt (
 **
 *F  PowObjInt(<op>,<n>) . . . . . . . . . . power of an object and an integer
 */
+static Obj OneAttr;
+
 Obj             PowObjInt (
     Obj                 op,
     Obj                 n )
@@ -1619,7 +1661,7 @@ Obj             PowObjInt (
 
     /* if the integer is zero, return the neutral element of the operand   */
     if      ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
-        res = ONE( op );
+      return ONE_MUT( op );
     }
 
     /* if the integer is one, return a copy of the operand                 */
@@ -1629,12 +1671,12 @@ Obj             PowObjInt (
 
     /* if the integer is minus one, return the inverse of the operand      */
     else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
-        res = INV( op );
+        res = INV_MUT( op );
     }
 
     /* if the integer is negative, invert the operand and the integer      */
     else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) <   0 ) {
-        res = INV( op );
+        res = INV_MUT( op );
         if ( res == Fail ) {
             return ErrorReturnObj(
                 "Operations: <obj> must have an inverse",
@@ -1646,7 +1688,7 @@ Obj             PowObjInt (
 
     /* if the integer is negative, invert the operand and the integer      */
     else if ( TNUM_OBJ(n) == T_INTNEG ) {
-        res = INV( op );
+        res = INV_MUT( op );
         if ( res == Fail ) {
             return ErrorReturnObj(
                 "Operations: <obj> must have an inverse",
@@ -3077,6 +3119,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "IntHexString", 1, "string",
       FuncIntHexString, "src/integer.c:IntHexString" },
 
+    { "Log2Int", 1, "int",
+      FuncLog2Int, "src/integer.c:Log2Int" },
+
     { "STRING_INT", 1, "int",
       FuncSTRING_INT, "src/integer.c:STRING_INT" },
 
@@ -3135,8 +3180,11 @@ static Int InitKernel (
     /* install the unary arithmetic methods                                */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
         ZeroFuncs[ t1 ] = ZeroInt;
+        ZeroMutFuncs[ t1 ] = ZeroInt;
         AInvFuncs[ t1 ] = AInvInt;
+        AInvMutFuncs[ t1 ] = AInvInt;
         OneFuncs [ t1 ] = OneInt;
+        OneMutFuncs [ t1 ] = OneInt;
     }    
 
     /* install the default product and power methods                       */
@@ -3153,12 +3201,6 @@ static Int InitKernel (
             ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
             PowFuncs [ t2 ][ t1 ] = PowObjInt;
         }
-#ifdef XTNUMS
-        for ( t2 = FIRST_VIRTUAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
-            ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
-            PowFuncs [ t2 ][ t1 ] = PowObjInt;
-        }
-#endif
     }
 
     /* install the binary arithmetic methods                               */
@@ -3182,6 +3224,7 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_INT_LARGE_NEG",  &TYPE_INT_LARGE_NEG );
 
     ImportFuncFromLibrary( "STRING_INT_DEFAULT", &STRING_INT_DEFAULT );
+    ImportFuncFromLibrary( "One", &OneAttr);
 
     /* install the kind functions                                          */
     TypeObjFuncs[ T_INT    ] = TypeIntSmall;

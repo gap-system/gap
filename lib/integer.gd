@@ -55,7 +55,8 @@ DeclareGlobalVariable( "NonnegativeIntegers",
 ##
 ##  is the defining category for the domain `GaussianIntegers'.
 ##
-DeclareCategory( "IsGaussianIntegers", IsEuclideanRing and IsFLMLOR );
+DeclareCategory( "IsGaussianIntegers", IsEuclideanRing and IsFLMLOR 
+  and IsFiniteDimensional );
 
 
 #############################################################################
@@ -116,8 +117,6 @@ DeclareGlobalVariable( "Primes2", "sorted list of large primes" );
 ##  see~"EuclideanDegree").
 ##
 DeclareGlobalFunction( "AbsInt" );
-#T attribute `Abs' ?
-#T should be internal method!
 
 
 #############################################################################
@@ -353,7 +352,10 @@ DeclareGlobalFunction( "LcmInt" );
 ##  integer  <n> with  respect to   the positive integer   <base>, i.e.,  the
 ##  largest positive integer <exp> such  that $base^{exp} \leq  n$.  `LogInt'
 ##  will signal an error if either <n> or <base> is not positive.
-##
+##  
+##  For <base> $2$ this is very efficient because the internal binary
+##  representation of the integer is used. 
+##  
 DeclareGlobalFunction( "LogInt" );
 
 

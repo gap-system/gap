@@ -82,6 +82,8 @@ const char * Revision_string_c =
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        <assert.h>
+
 
 /****************************************************************************
 **
@@ -453,7 +455,7 @@ Obj NEW_STRING ( Int len )
   SET_LEN_STRING(res, len);
   /* it may be sometimes useful to have trailing zero characters */
   CHARS_STRING(res)[0] = '\0';
-  CHARS_STRING(res)[len + sizeof(UInt)] = '\0';
+  CHARS_STRING(res)[len] = '\0';
   return res;
 }
 
@@ -542,7 +544,7 @@ Obj TypeString (
 **
 **  'CleanString' is the function in 'CleanObjFuncs' for strings.
 */
-Obj CopyString (
+Obj CopyStringXXX (
     Obj                 list,
     Int                 mut )
 {
@@ -574,6 +576,31 @@ Obj CopyString (
     for ( i = 1; i < (SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj); i++ ) {
         ADDR_OBJ(copy)[i] = ADDR_OBJ(list)[i];
     }
+
+    /* return the copy                                                     */
+    return copy;
+}
+
+Obj CopyString (
+    Obj                 list,
+    Int                 mut )
+{
+    Obj                 copy;           /* handle of the copy, result      */
+
+    /* just return immutable objects                                       */
+    if ( ! IS_MUTABLE_OBJ(list) ) {
+        return list;
+    }
+
+    /* make object for  copy                                               */
+    if ( mut ) {
+        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
+    }
+    else {
+        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
+    }
+    memcpy((void*)ADDR_OBJ(copy), (void*)ADDR_OBJ(list), 
+           ((SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj)) * sizeof(Obj));
 
     /* return the copy                                                     */
     return copy;
@@ -1614,7 +1641,10 @@ Obj FuncNormalizeWhitespace (
     i--;
   s[i+1] = '\0';
   SET_LEN_STRING(string, i+1);
-  
+ 
+  /* to make it useful as C-string */
+  CHARS_STRING(string)[i+1] = (UInt1)0;
+
   return (Obj)0;
 }
 
@@ -1632,7 +1662,7 @@ void UnbString (
 {
         Int len;
         len = GET_LEN_STRING(string);
-
+	
         /* only do something special if last character is to be, and can be, 
          * unbound */
         if (len < pos) return;
@@ -1646,7 +1676,7 @@ void UnbString (
         }
         /* maybe the string becomes sorted */
         CLEAR_FILTS_LIST(string);
-        CHARS_STRING(string)[(pos) + sizeof(UInt) - 1] = 0;
+        CHARS_STRING(string)[pos] = (UInt1)0;
         SET_LEN_STRING(string, len-1);
 } 
             

@@ -65,23 +65,23 @@
 ##  through a session, starting with some rules which define the
 ##  algebra <A> as relations, and then adding more rules to make
 ##  the system confluent.
-##  
-##  For example in the case of Knuth Bendix rewriting systems
-##  (see~`Finitely Presented Semigroups'), the function
-##  `CreateKnuthBendixRewritingSystemOfFpSemigroup' creating the
+##  For example, in the case of Knuth-Bendix rewriting systems
+##  (see Chapter~"Finitely Presented Semigroups and Monoids"), the function
+##  `CreateKnuthBendixRewritingSystem' creating the
 ##  rewriting system (in `kbsemi.gi') uses
 ##  
-##  \beginexample
-##  kbrws := Objectify(NewType(fam,
-##  IsMutable and IsKnuthBendixRewritingSystem and
-##  IsKnuthBendixRewritingSystemRep),
-##  
-##  rec(semigroup:= s,
-##  reduced:=false,
-##  rules:=relations_with_correct_order(r),
-##  pairs2check:=CantorList(Length(r)),
-##  lessthan:=wordlt));
-##  \endexample
+##  \begintt
+##  kbrws := Objectify(NewType(rwsfam, 
+##    IsMutable and IsKnuthBendixRewritingSystem and 
+##    IsKnuthBendixRewritingSystemRep), 
+##    rec(family:= fam,
+##    reduced:=false,
+##    tzrules:=List(relwco,i->
+##     [LetterRepAssocWord(i[1]),LetterRepAssocWord(i[2])]),
+##    pairs2check:=CantorList(Length(r)),
+##    ordering:=wordord,
+##    freefam:=freefam));
+##  \endtt
 ##  
 ##  In particular, since we don't use the filter `IsAttributeStoringRep'
 ##  in the `Objectify', whenever `IsConfluent' is called, the appropriate

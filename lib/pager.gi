@@ -116,9 +116,12 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     halt := Concatenation("\033[0m", halt);
   fi;
   delhaltline := function()
-    for i  in halt  do Print( "\b" ); od; Print("\c");
-    for i  in halt  do Print( " " );  od; Print("\c");
-    for i  in halt  do Print( "\b" ); od; Print("\c");
+    local i;
+    for i  in halt  do 
+      if i <> '\c' then
+        Print( "\b\c \c\b\c" );
+      fi;
+    od;
   end;
   from := linepos; 
   len := Length(lines);

@@ -282,6 +282,8 @@ DeclareGlobalFunction( "RootsUnityMod" );
 ##  if such a number exists.
 ##  Otherwise `fail' is returned.
 ##
+##  At the moment only a very naive method has been implemented.
+##
 DeclareGlobalFunction( "LogMod" );
 
 
@@ -364,7 +366,7 @@ DeclareGlobalFunction( "MoebiusMu" );
 ##  Let $a$ be the product of all maximal powers of primes of the form $4k+3$
 ##  dividing <n>.  A representation of <n> as a sum of two squares  exists if
 ##  and only if $a$ is a perfect square.  Let $b$ be the maximal power of $2$
-##  dividing <n> or its half, whichever is a perfect square.  Then the minmal
+##  dividing <n> or its half, whichever is a perfect square. Then the minimal
 ##  possible gcd of $x$ and $y$ is the square root $c$ of $a b$.  The  number
 ##  of different minimal representation with $x\le y$ is $2^{l-1}$, where $l$
 ##  is the number of different prime factors of the form $4k+1$ of <n>.

@@ -6,6 +6,9 @@ dnl ##
 AC_INIT(gap.c)
 AC_CONFIG_AUX_DIR(../cnf)
 
+if test "x$CFLAGS" = "x" ;  then
+  CFLAGS=${COPTS}
+fi
 
 dnl #########################################################################
 dnl ##
@@ -62,6 +65,13 @@ dnl ## check how to get a pseudo-tty pair
 dnl ##
 
 AC_CHECK_FUNCS( getpseudotty _getpty getpt ptsname_r )
+
+dnl #########################################################################
+dnl ##
+dnl ## check whether we have setpgid to protect a background child from SIGINT
+dnl ##
+
+AC_CHECK_FUNCS( setpgid )
 
 dnl #########################################################################
 dnl ##

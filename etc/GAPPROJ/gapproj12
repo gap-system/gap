@@ -1,0 +1,28 @@
+@Name
+Module Automorphism group
+@Contact
+AH
+@Date
+2001/9/24
+@Time
+4
+@Need
+4
+@NeedA
+3
+@Math
+5
+@Prog
+4
+@Component
+MeatAxe
+@Descr
+The MeatAxe in GAP contains routines for isomorphism of simple modules,
+however not for the full automorphism group of an arbitrary module.
+Such an automorphism group would be desirable as a subroutine in various
+places, for example in the calculation of the automorphism group of a
+group.
+@Ref
+@Rem
+The MAGMA implementation is based on ideas by Leedham-Green, but apparently
+little has been published.

@@ -22,7 +22,7 @@ If `<i>^$p\ne i$', we say that <i> is *moved* by~<p>, otherwise
 it is *fixed*. Permutations in {\GAP} are  entered and displayed in cycle
 notation, such as `(1,2,3)(4,5)'.
 
-The preimage of the point <i> under the permutation <p> can be compputed
+The preimage of the point <i> under the permutation <p> can be computed
 as `<i> / <p>', without constructing the inverse of <p>.
 
 For arithmetic operations for permutations and their precedence,
@@ -101,9 +101,9 @@ gap> SmallestGeneratorPerm( (1,4,3,2) );
 \beginexample
 gap> SmallestMovedPointPerm((4,5,6)(7,2,8));
 2
-gap> LargestMovedPointPerm((4,5,6)(7,2,8)); 
+gap> LargestMovedPointPerm((4,5,6)(7,2,8));
 8
-gap> NrMovedPointsPerm((4,5,6)(7,2,8));    
+gap> NrMovedPointsPerm((4,5,6)(7,2,8));
 6
 gap> MovedPoints([(2,3,4),(7,6,3),(5,47)]);
 [ 2, 3, 4, 5, 6, 7, 47 ]
@@ -124,9 +124,9 @@ gap> LargestMovedPoint([()]);
 \Declaration{SignPerm}
 \Declaration{CycleStructurePerm}
 \beginexample
-gap> SignPerm((1,2,3)(4,5));  
+gap> SignPerm((1,2,3)(4,5));
 -1
-gap> CycleStructurePerm((1,2,3)(4,5,9,7,8)); 
+gap> CycleStructurePerm((1,2,3)(4,5,9,7,8));
 [ , 1,, 1 ]
 \endexample
 

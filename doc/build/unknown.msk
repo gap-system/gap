@@ -17,9 +17,10 @@
 \Declaration{IsUnknown}
 
 \beginexample
-gap> Unknown();  List( [ 1 .. 20 ], i -> Unknown() );;  Unknown();
+gap> Unknown();  List( [ 1 .. 20 ], i -> Unknown() );;
 Unknown(1)
-Unknown(22)     # There were created already 21 unknowns.
+gap> Unknown();   # note that we have already created 21 unknowns.
+Unknown(22)
 gap> Unknown(2000);  Unknown();
 Unknown(2000)
 Unknown(2001)
@@ -31,14 +32,14 @@ true
 \endexample
 
 \FileHeader[2]{unknown}
-\beginexample                                                               
-gap> Unknown() >= Unknown();  Unknown(2) < Unknown(3);                      
+\beginexample
+gap> Unknown() >= Unknown();  Unknown(2) < Unknown(3);
 false
 true
-gap> Unknown() > 3;  Unknown() > E(3);                                      
+gap> Unknown() > 3;  Unknown() > E(3);
 true
 true
-gap> Unknown() > Z(8);  Unknown() > [];                                     
+gap> Unknown() > Z(8);  Unknown() > [];
 false
 false
 \endexample

@@ -49,6 +49,16 @@ DeclareCategory( "IsFiniteFieldPolynomialRing", IsPolynomialRing );
 ##
 DeclareCategory( "IsAbelianNumberFieldPolynomialRing", IsPolynomialRing );
 
+#############################################################################
+##
+#C  IsAlgebraicExtensionPolynomialRing( <pring> )
+##
+##  is the category of polynomial rings over a field that has been formed as
+##  an `AlgebraicExtension' of a base field.
+##  (see chapter~"Algebraic extensions of fields").
+##
+DeclareCategory( "IsAlgebraicExtensionPolynomialRing", IsPolynomialRing );
+
 
 #############################################################################
 ##
@@ -98,6 +108,7 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 #O  Indeterminate( <R>,[<nr>] )
 #O  Indeterminate( <R>,[<avoid>] )
 #O  Indeterminate( <R>,<name>[,<avoid>] )
+#O  Indeterminate( <fam>,<nr> )
 ##
 ##  returns indeterminate number <nr> over the ring <R>. If <nr> is not
 ##  given it defaults to 1. If the number is not specified a list <avoid> of

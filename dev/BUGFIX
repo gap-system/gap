@@ -3,6 +3,7 @@ src/objcftl.c
 src/objccoll.c
 src/objscoll.c
 lib/tuples.gi
+lib/ctblauto.gi
 
 === message, all XXX need replacing
 
@@ -41,13 +42,16 @@ monomorphism.
 2) A bug in the collector for polycyclic groups, the bug occurs only
    if the package `polycyclic' is used.
 3) A problem in storing whether a finitely presented group has a decidable
-word problem if it is found out later
+   word problem if it is found out later
 4) The wrong combinatorial kernel collector was installed for the
    8-bit associative word reprsentation.
+5) A problem with `TransformingPermutationsCharacterTables';
+   `fail' may be returned in some cases although the given tables are in
+   fact permutation equivalent.
 
 Errors 1,3) may lead to error messages.
 Error 2) leads to a segmentation fault.
-Error 3) may lead to wrog results.
+Errors 3), 5) may lead to wrong results.
 
 Many thanks to:
 G"otz Pfeiffer for reporting error 1

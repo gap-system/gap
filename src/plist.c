@@ -234,7 +234,7 @@ Int KTNumPlist (
     Int                 len     = 0;    /* if so, this is the length       */
     Obj                 family  = 0;    /* family of <list>s elements      */
     Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element of <list>           */
+    Obj                 elm, x;         /* one element of <list>           */
     Int                 i;              /* loop variable                   */
     Int                 testing;        /* to test or not to test type     */
     Int                 res;            /* result                          */
@@ -366,8 +366,8 @@ Int KTNumPlist (
 	    UInt isFFE = 1;
 	    for (i = 2; i <= lenList; i++)
 	      {
-		Obj elm = ELM_PLIST(list,i);
-		if (!IS_FFE(elm) || FLD_FFE(elm) != fld)
+		x = ELM_PLIST(list,i);
+		if (!IS_FFE(x) || FLD_FFE(x) != fld)
 		  {
 		    isFFE = 0;
 		    break;
@@ -413,7 +413,7 @@ Int KTNumHomPlist (
     Int                 isRect  = 0;    /* are <list>s elms all equal length */
     Int                 len     = 0;    /* if so, this is the length       */
     Int                 lenList;        /* length of list                  */
-    Obj                 elm;            /* one element of <list>           */
+    Obj                 elm, x;         /* one element of <list>           */
     Int                 i;              /* loop variable                   */
     Int                 testing;        /* to test or not to test type     */
     Int                 res;            /* result                          */
@@ -457,8 +457,8 @@ Int KTNumHomPlist (
 	UInt isFFE = 1;
 	for (i = 2; i <= lenList; i++)
 	  {
-	    Obj elm = ELM_PLIST(list,i);
-	    if (!IS_FFE(elm) || FLD_FFE(elm) != fld)
+	    x = ELM_PLIST(list,i);
+	    if (!IS_FFE(x) || FLD_FFE(x) != fld)
 	      {
 		isFFE = 0;
 		break;
@@ -2091,7 +2091,7 @@ Int             IsSSortPlist (
     Obj elm2;
     Int                 areMut;
     Int                 i;
-    Obj fam;
+    Obj                 fam=0;    /* initialize to help compiler */
     Int                 isHom;
     
         
@@ -2171,7 +2171,7 @@ Int             IsSSortPlistDense (
     Obj elm2;
     Int                 areMut;
     Int                 i;
-    Obj fam;
+    Obj                 fam=0;     /* initialize to help compiler */
     Int                 isHom;
         
     /* get the length                                                      */

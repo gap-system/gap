@@ -81,8 +81,8 @@ BIND_GLOBAL( "MAX_SIZE_LIST_INTERNAL", 2^28 - 1 );
 ##
 #A  Length( <list> )  . . . . . . . . . . . . . . . . . . .  length of a list
 ##
-##  The *length* of the list <list> is the index of the last bound entry in
-##  <list>.
+##  returns the *length* of the list <list>, which is defined to be the index
+##  of the last bound entry in <list>.
 ##
 DeclareAttributeKernel( "Length", IsList, LENGTH );
 
@@ -215,6 +215,9 @@ DeclareCategoryKernel( "IsDenseList", IsList, IS_DENSE_LIST );
 ##
 #C  IsHomogeneousList( <obj> )
 ##
+##  returns `true' if <obj> is a list  and  it  is  homogeneous,  or  `false'
+##  otherwise.
+##
 ##  A *homogeneous* list is a dense list whose elements lie in the same
 ##  family (see~"Families").
 ##  The empty list is homogeneous but not a collection (see~"Collections"),
@@ -245,14 +248,15 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 
 #############################################################################
 ##
-#P  IsSortedList( <list> )
+#P  IsSortedList( <obj> )
 ##
-##  The list <list> is *sorted* if it is dense (see~"IsDenseList")
+##  returns `true' if <obj> is a list and it is sorted, or `false' otherwise.
+##
+##  \index{sorted list}
+##  A list <list> is *sorted* if it is dense (see~"IsDenseList")
 ##  and satisfies the relation $<list>[i] \leq <list>[j]$ whenever $i \< j$.
 ##  Note that a sorted list is not necessarily duplicate free
 ##  (see~"IsDuplicateFree" and "IsSSortedList").
-##
-##  `IsSortedList' returns `true' if <list> is sorted, and `false' otherwise.
 ##
 ##  Many sorted lists are in fact homogeneous (see~"IsHomogeneousList"),
 ##  but also non-homogeneous lists may be sorted
@@ -263,16 +267,17 @@ DeclareProperty( "IsSortedList", IsList);
 
 #############################################################################
 ##
-#P  IsSSortedList( <list> )
-#P  IsSet( <list> )
+#P  IsSSortedList( <obj> )
+#P  IsSet( <obj> )
 ##
-##  The list <list> is *strictly sorted* if it is sorted (see~"IsSortedList")
+##  returns `true' if <obj> is a list and it is strictly sorted,  or  `false'
+##  otherwise. `IsSSortedList' is short  for  ``is  strictly  sorted  list'';
+##  `IsSet' is just a synonym for `IsSSortedList'.
+##
+##  \index{strictly sorted list}
+##  A list <list> is *strictly sorted* if it is sorted (see~"IsSortedList")
 ##  and satisfies the relation $<list>[i] \lneqq <list>[j]$ whenever $i\< j$.
 ##  In particular, such lists are duplicate free (see~"IsDuplicateFree").
-##
-##  `IsSSortedList' (short for ``is strictly sorted list'') returns `true'
-##  if <list> is strictly sorted, and `false' otherwise.
-##  `IsSet' is just a synonym for `IsSSortedList'.
 ##
 ##  In sorted lists, membership test and computing of positions can be done
 ##  by binary search, see~"Sorted Lists and Sets".
@@ -307,11 +312,14 @@ InstallTrueMethod( IsSortedList, IsSSortedList );
 #P  IsDuplicateFree( <obj> )
 #P  IsDuplicateFreeList( <obj> )
 ##
+##  `IsDuplicateFree(<obj>);' returns `true' if  <obj>  is  both  a  list  or
+##  collection, and it is duplicate free; otherwise it returns `false'.
+##  `IsDuplicateFreeList' is a synonym for `IsDuplicateFree and IsList'.
+##
+##  \index{duplicate free}
 ##  A list is *duplicate free* if it is dense and does not contain equal
 ##  entries in different positions.
 ##  Every domain (see~"Domains") is duplicate free.
-##
-##  `IsDuplicateFreeList' is a synonym for `IsDuplicateFree and IsList'.
 ##
 DeclareProperty( "IsDuplicateFree", IsListOrCollection );
 
@@ -794,7 +802,7 @@ DeclareOperation( "SortParallel",
 #F  Maximum( <list> )
 ##
 ##  In the first form `Maximum' returns the *maximum* of its arguments,
-##  i.e., one argument <obj> for which `<obj> >= <obj1>', `<obj> >= <obj2>'
+##  i.e., one argument <obj> for which $<obj> \ge <obj1>$, $<obj> \ge <obj2>$
 ##  etc.
 ##  In the second form `Maximum' takes a homogeneous list <list> and returns
 ##  the maximum of the elements in this list.
@@ -808,7 +816,7 @@ DeclareGlobalFunction( "Maximum" );
 #F  Minimum( <list> )
 ##
 ##  In the first form `Minimum' returns the *minimum* of its arguments,
-##  i.e., one argument <obj> for which `<obj> \<= <obj1>', `<obj> \<= <obj2>'
+##  i.e., one argument <obj> for which $<obj> \le <obj1>$, $<obj> \le <obj2>$
 ##  etc.
 ##  In the second form `Minimum' takes a homogeneous list <list> and returns
 ##  the minimum of the elements in this list.
@@ -943,7 +951,8 @@ DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
 ##  which must take two arguments, to the elements of the list <list>.
 ##  More precisely `Iterated' returns the result of the following
 ##  application,
-##  <f>(..<f>( <f>( <list>[1], <list>[2] ), <list>[3] ),..,<list>[n] ).
+##  $<f>(\cdots <f>( <f>( <list>[1], <list>[2] ), <list>[3] ), \ldots,
+##  <list>[<n>] )$.
 ##
 DeclareOperation( "Iterated", [ IsList, IsFunction ] );
 
@@ -953,7 +962,7 @@ DeclareOperation( "Iterated", [ IsList, IsFunction ] );
 ##
 ##  Applies the <n>-argument function <func> to the lists.
 ##  That is, `ListN' returns the list whose <i>th entry is
-##  <f>(<list1>[<i>], <list2>[<i>], ..., <listn>[<i>]).
+##  $<f>(<list1>[<i>], <list2>[<i>], \ldots, <listn>[<i>])$.
 ##
 DeclareGlobalFunction( "ListN" );
 
@@ -966,9 +975,10 @@ DeclareGlobalFunction( "ListN" );
 ##  In the  first form `UnionBlist'  returns the union  of the  boolean
 ##  lists <blist1>, <blist2>, etc., which must have equal length.  The
 ##  *union* is a new boolean list such that `<union>[<i>] = <blist1>[<i>] or
-##  <blist2>[<i>] or ..'.
+##  <blist2>[<i>] or ...'.
 ##
-##  The second form takes the union of all blists in the list <list>.
+##  The second form takes the union of all blists (which
+##  as for the first form must have equal length) in the list <list>.
 DeclareGlobalFunction( "UnionBlist" );
 
 
@@ -990,8 +1000,8 @@ DeclareGlobalFunction("DifferenceBlist");
 ##
 ##  In the first  form `IntersectionBlist'  returns  the intersection  of
 ##  the boolean  lists <blist1>, <blist2>,  etc., which  must  have equal
-##  length.  The  *intersection*  is a  new boolean   list such  that
-##  `<inter>[<i>] = <blist1>[<i>] and <blist2>[<i>] and ..'.
+##  length.  The  *intersection*  is a  new blist such  that
+##  `<inter>[<i>] = <blist1>[<i>] and <blist2>[<i>] and ...'.
 ##
 ##  In  the  second form <list>   must be a  list of  boolean lists
 ##  <blist1>, <blist2>, etc., which   must have equal  length,  and
@@ -1015,7 +1025,7 @@ DeclareGlobalFunction( "ListWithIdenticalEntries" );
 #F  PlainListCopy( <list> ) . . . . . . . .  make a plain list copy of a list
 ##
 ##  This is intended for use in certain rare situations, such as before
-##  Objectifying. Normally, ConstantAccessTimeList should be enough
+##  Objectifying. Normally, `ConstantAccessTimeList' should be enough.
 ##
 DeclareGlobalFunction("PlainListCopy");
 
@@ -1026,7 +1036,7 @@ DeclareGlobalFunction("PlainListCopy");
 ##
 ##  This Operation returns a list equal to its argument, in a plain list
 ##  representation. This may be the argument converted in place, or
-##  may be new. It is only intended to be called by PlainListCopy
+##  may be new. It is only intended to be called by `PlainListCopy'.
 ##
 DeclareOperation("PlainListCopyOp", [IsSmallList]);
 
@@ -1084,7 +1094,7 @@ DeclareGlobalFunction("HexStringBlist");
 ##
 #F  HexStringBlistEncode(<b>)
 ##
-##  works like `HexStringBlist', but uses `sxx' (xx is a hex number up to
+##  works like `HexStringBlist', but uses `s<xx>' (<xx> is a hex number up to
 ##  255) to indicate skips of zeroes.
 DeclareGlobalFunction("HexStringBlistEncode");
 

@@ -76,7 +76,7 @@ gap> lex := LexicographicOrdering(f,[2,3,1]);
 Ordering
 gap> IsLessThanUnder(lex,f.2*f.3,f.3);
 true
-gap> IsLessThanUnder(lex,f.3,f.2);    
+gap> IsLessThanUnder(lex,f.3,f.2);
 false
 \endexample
 
@@ -103,7 +103,7 @@ true
 \beginexample
 gap> f := FreeSemigroup(3);
 <free semigroup on the generators [ s1, s2, s3 ]>
-gap> wtlex := WeightLexOrdering(f,[f.2,f.3,f.1],[3,2,1]); 
+gap> wtlex := WeightLexOrdering(f,[f.2,f.3,f.1],[3,2,1]);
 Ordering
 gap> IsLessThanUnder(wtlex,f.1,f.2);
 true
@@ -142,7 +142,7 @@ gap> f := FreeSemigroup(3);
 <free semigroup on the generators [ s1, s2, s3 ]>
 gap> wrp := WreathProductOrdering(f,[1,2,3],[1,1,2,]);
 Ordering
-gap> IsLessThanUnder(wrp,f.3,f.1);  
+gap> IsLessThanUnder(wrp,f.3,f.1);
 false
 gap> IsLessThanUnder(wrp,f.3,f.2);
 false

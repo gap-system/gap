@@ -455,7 +455,7 @@ local fam,a,l,m,i,j,mp,pt,head,tail,mid;
   fam:=FamilyObj(w);
   a:=w![1];
   l:=Length(a);
-  if e=1 then
+  if e=1 or l=0 then
     return w;
   elif e=-1 then
     return Inverse(w);
@@ -523,7 +523,7 @@ local fam,a,l,m,i,j,mp,pt,head,tail,mid;
   fam:=FamilyObj(w);
   a:=w![1];
   l:=Length(a);
-  if e=1 then
+  if e=1 or l=0 then
     return w;
   elif e=-1 then
     return Inverse(w);

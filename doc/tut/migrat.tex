@@ -97,13 +97,6 @@ inverse, which meant that roughly the same work was done twice.
 Some functions that were already available in {\GAP}~3  behave
 differently in {\GAP}~4.  This section lists them.
 
-% \>Exec( <string> )
-% 
-% {\GAP}~4 now supports processes (see Chapter~"ref:Processes"
-% in the Reference Manual),
-% which allow {\GAP}~4 to communicate with external programs in a more
-% general way than `Exec' did.
-
 \>Orbit( <G>,<pnt>)
 
 The {\GAP}~3 manual promised that <pnt> would be the first entry of the
@@ -123,6 +116,27 @@ be computed, see~"Elements of Finitely Presented Groups".)
 
 If <obj> is not contained in the list <list> then `fail' is returned
 in {\GAP}~4 (see~"Fail"), whereas `false' was returned in {\GAP}~3.
+
+
+\>PermGroupOps.ElementProperty( <G>, <prop>[, <K>] )
+
+In {\GAP}~3, this function took either two or three arguments,
+the optional argument <K> being a subgroup of <G> that stabilizes <prop>
+in the sense that for any element <g> in <G>,
+either all elements or no element in the coset `<g> \* <K>' have the
+property <prop>.
+
+The {\GAP}~4 function `ElementProperty', however,
+takes between two and four arguments,
+and the subgroup <K> known from {\GAP}~3 has to be entered as the *fourth*
+argument *not* the third.
+(The third argument in the {\GAP}~4 function denotes a subgroup <U>
+stabilizing <prop> in the sense that either all elements or no element
+in right cosets `<U> \* <g>' have the property <prop>.)
+
+(This discrepancy was discovered only in March~2002,
+short before the release of {\GAP}~4.3.)
+
 
 \>Print( <obj>, ... )
 
@@ -638,7 +652,7 @@ group can be obtained by the command
 gens:=List(GeneratorsOfGroup(Image(isofp)),i->PreImagesRepresentative(isofp,i));
 \endtt
 If a presentation in the given generators is needed, the command
-`IsomorphismFpGroupByGenerators(<G>,<gens>)' will produce one.
+`IsomorphismFpGroupByGenerators(<G>, <gens>)' will produce one.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -668,7 +682,7 @@ meaningful to call `Order( <G>, <g> )' for a group <G> and an element
 \Section{Polynomials}
 
 In {\GAP}~3, polynomials were defined over a field. So a polynomial over
-`GF(3)' was different from apolynomial over `GF(9)', even if the
+`GF(3)' was different from a polynomial over `GF(9)', even if the
 coefficients were exactly the same.
 
 {\GAP}~4 defines polynomials only over a characteristic. This makes it
@@ -680,7 +694,7 @@ In {\GAP}~3 the default ring for a polynomial was the polynomial ring of the
 field over which the polynomial was defined. In {\GAP}~4 no field is
 associated, so (to avoid having to define the algebraic closure as the only
 other sensible alternative) the default ring of a polynomial is the
-`DefaultRing' of its coefficents.
+`DefaultRing' of its coefficients.
 
 This has an effect on `Factors': If no ring is given, a polynomial is
 factorized over its `DefaultRing' and so `Factors(<poly>)'

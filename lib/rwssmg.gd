@@ -73,11 +73,11 @@ DeclareAttribute("FreeSemigroupOfRewritingSystem",
 
 #############################################################################
 ##
-#F  ReduceLetterRepWordsRewSys (<tzrules>,<w>)
+#F  ReduceLetterRepWordsRewSys(<tzrules>,<w>)
 ##
-##  w is a word of a free monoid or a free semigroup in tz represenattion,
-##  tzrules are rules in tzrepresentation. This function returns the reduced
-##  word in tz representation.
+##  Here <w> is  a  word  of  a  free  monoid  or  a  free  semigroup  in  tz
+##  represenattion, and  <tzrules>  are  rules  in  tz  representation.  This
+##  function returns the reduced word in tz representation.
 ##
 ##  All lists in <tzrules> as well as <w> must be plain lists, the entries
 ##  must be small integers. (The behaviour otherwise is unpredictable.)

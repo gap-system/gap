@@ -563,6 +563,9 @@ Obj             ProdVectorVector (
 **  'ProdVectorMatrix'  is an improved version of 'ProdListList',  which does
 **  not  call 'PROD' and  also accummulates  the sum into  one  fixed  vector
 **  instead of allocating a new for each product and sum.
+**
+**  We now need to supply a handler for this and install it as a library method,
+**  
 */
 Obj             ProdVectorMatrix (
     Obj                 vecL,
@@ -583,7 +586,7 @@ Obj             ProdVectorMatrix (
 
     /* check the lengths                                                   */
     len = LEN_PLIST( vecL );
-    if (len < LEN_PLIST( matR))
+    if (len > LEN_PLIST( matR))
       len = LEN_PLIST( matR );
     col = LEN_PLIST( ELM_PLIST( matR, 1 ) );
 
@@ -663,6 +666,11 @@ Obj             ProdVectorMatrix (
     return vecP;
 }
 
+Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
+{
+  return ProdVectorMatrix(vec, mat);
+}
+
 /****************************************************************************
 **
 *F  ZeroVector(<vec>) . . . .  zero of a cyclotomicVector
@@ -674,6 +682,20 @@ Obj             ProdVectorMatrix (
 */
 
 Obj ZeroVector( Obj vec )
+{
+  UInt i, len;
+  Obj res;
+  assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
+	 TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT+IMMUTABLE);
+  len = LEN_PLIST(vec);
+  res = NEW_PLIST( IS_MUTABLE_OBJ(vec) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE, len);
+  SET_LEN_PLIST(res, len);
+  for (i = 1; i <= len; i++)
+    SET_ELM_PLIST(res, i, INTOBJ_INT(0));
+  return res;
+}
+
+Obj ZeroMutVector( Obj vec )
 {
   UInt i, len;
   Obj res;
@@ -697,6 +719,18 @@ Obj ZeroVector( Obj vec )
 
 /****************************************************************************
 **
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+  { "PROD_VECTOR_MATRIX", 2, "vec, mat",
+    FuncPROD_VECTOR_MATRIX, "src/vector.c:PROD_VECTOR_MATRIX" },
+  { 0 }
+};
+
+
+/****************************************************************************
+**
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -706,9 +740,14 @@ static Int InitKernel (
     Int                 t2;
 
 
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
     /* install the arithmetic operation methods                            */
     for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT+IMMUTABLE; t1++ ) {
       ZeroFuncs[ t1 ] = ZeroVector;
+      ZeroMutFuncs[ t1 ] = ZeroMutVector;
+      
         for ( t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT+IMMUTABLE; t2++ ) {
             SumFuncs [ T_INT     ][ t2        ] = SumIntVector;
             SumFuncs [ t1        ][ T_INT     ] = SumVectorInt;
@@ -729,6 +768,22 @@ static Int InitKernel (
 
 /****************************************************************************
 **
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+
+  /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
 *F  InitInfoVector()  . . . . . . . . . . . . . . . . table of init functions
 */
 static StructInitInfo module = {
@@ -739,7 +794,7 @@ static StructInitInfo module = {
     0,                                  /* version                        */
     0,                                  /* crc                            */
     InitKernel,                         /* initKernel                     */
-    0,                                  /* initLibrary                    */
+    InitLibrary,                        /* initLibrary                    */
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */

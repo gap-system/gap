@@ -7,6 +7,11 @@
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
+##  This file is being maintained by Thomas Breuer.
+##  Please do not make any changes without consulting him.
+##  (This holds also for minor changes such as the removal of whitespace or
+##  the correction of typos.)
+##
 ##  This file declares operations for cyclotomics.
 ##
 Revision.cyclotom_gd :=
@@ -18,7 +23,7 @@ Revision.cyclotom_gd :=
 ##  `DefaultField' (see~"DefaultField")
 ##  for cyclotomics is defined to return the smallest *cyclotomic* field
 ##  containing the given elements.
-#F what about `DefaultRing'?? (integral rings are missing!)
+#T what about `DefaultRing'?? (integral rings are missing!)
 ##
 
 
@@ -29,6 +34,14 @@ Revision.cyclotom_gd :=
 InstallTrueMethod( IsIntegralRing,
     IsCyclotomicCollection and IsRing and IsNonTrivial );
 
+
+#############################################################################
+##
+#A  AbsoluteValue( <cyc> )
+##
+##  returns the absolute value of a cyclotomic number <cyc>.
+##  At the moment only methods for rational numbers exist.
+DeclareAttribute( "AbsoluteValue" ,  IsCyclotomic  );
 
 #############################################################################
 ##
@@ -108,7 +121,7 @@ DeclareGlobalFunction( "DescriptionOfRootOfUnity" );
 
 #############################################################################
 ##
-#F  EB( <n> ) . . . . . . . . . . . . . . . . . .  some ATLAS irrationalities
+#F  EB( <n> ) . . . . . . . . . . . . . . . some atomic ATLAS irrationalities
 #F  EC( <n> ) 
 #F  ED( <n> ) 
 #F  EE( <n> ) 
@@ -116,7 +129,7 @@ DeclareGlobalFunction( "DescriptionOfRootOfUnity" );
 #F  EG( <n> ) 
 #F  EH( <n> )
 ##
-##  For $N$ a positive integer, let $z = `E(<N>)' = e^{2 \pi i / N}$.
+##  For $N$ a positive integer, let $z = `E(<N>)' = \exp(2 \pi i/N)$.
 ##  The following so-called *atomic irrationalities*
 ##  (see Chapter~7, Section~10 of~\cite{CCN85}) can be entered using functions.
 ##  (Note that the values are not necessary irrational.)
@@ -279,6 +292,41 @@ DeclareGlobalFunction( "NK" );
 
 #############################################################################
 ##
+#F  AtlasIrrationality( <irratname> )
+##
+##  Let <irratname> be a string that describes an irrational value as
+##  described in Chapter~6, Section~10 of~\cite{CCN85}, that is,
+##  a linear combination of the atomic irrationalities introduced above.
+##  (The following definition is mainly copied from~\cite{CCN85}.)
+##  If $q_N$ is such a value (e.g. $y_{24}^{\prime\prime}$) then linear
+##  combinations of algebraic conjugates of $q_N$ are abbreviated as in the
+##  following examples:
+##
+##  $$
+##  \matrix{
+##  `2qN+3\&5-4\&7+\&9' & {\rm means}
+##  & 2 q_N + 3 q_N^{\ast 5} - 4 q_N^{\ast 7} + q_N^{\ast 9} \cr
+##  `4qN\&3\&5\&7-3\&4'  & {\rm means}
+##  & 4 (q_N + q_N^{\ast 3} + q_N^{\ast 5} + q_N^{\ast 7})
+##    - 3 q_N^{\ast 11} \cr
+##  `4qN*3\&5+\&7'     & {\rm means}
+##  & 4 (q_N^{\ast 3} + q_N^{\ast 5}) + q_N^{\ast 7} \cr
+##  }
+##  $$
+##
+##  To explain the ``ampersand'' syntax in general we remark that ``\&k''
+##  is interpreted as $q_N^{\ast k}$, where $q_N$ is the most recently named
+##  atomic irrationality, and that the scope of any premultiplying
+##  coefficient is broken by a $+$ or $-$ sign, but not by $\&$ or $\ast k$.
+##  The algebraic conjugations indicated by the ampersands apply directly to
+##  the *atomic* irrationality $q_N$, even when, as in the last example,
+##  $q_N$ first appears with another conjugacy $\ast k$.
+##
+DeclareGlobalFunction( "AtlasIrrationality" );
+
+
+#############################################################################
+##
 #F  StarCyc( <cyc> )  . . . . the unique nontrivial Galois conjugate of <cyc>
 ##
 ##  If the cyclotomic <cyc> is an irrational element of a quadratic
@@ -391,13 +439,17 @@ DeclareAttribute( "GaloisMat", IsMatrix );
 ##
 DeclareAttribute( "RationalizedMat", IsMatrix );
 
+
 #############################################################################
 ##
 #F  DenominatorCyc( <cyc> )
 ##
-##  for a cyclotomic number <cyc> this function returns the smallest integer
-##  <n> such that `CoeffsCyc(<cyc>,Conductor(<cyc>))' consists of
-##  integers.
+##  For a cyclotomic number <cyc> (see~"IsCyclotomic"),
+##  this function returns the smallest positive integer <n> such that
+##  `<n> * <cyc>' is a cyclotomic integer (see~"IsIntegralCyclotomic").
+##  For rational numbers <cyc>, the result is the same as that of
+##  `DenominatorRat' (see~"DenominatorRat").
+##
 DeclareGlobalFunction( "DenominatorCyc" );
 
 

@@ -695,9 +695,9 @@ DeclareAttribute( "JenningsLieAlgebra", IsGroup );
 ##
 #A  PCentralLieAlgebra( <G> )
 ##
-##  Here <G> is a nontrivial $p$-group. `PcentralLiealgebra( <G> )'
+##  Here <G> is a nontrivial $p$-group. `PCentralLieAlgebra( <G> )'
 ##  does the same as `JenningsLieAlgebra( <G> )' except that the
-##  $p$-central series is used instead of the JenningsSeries
+##  $p$-central series is used instead of the Jennings series
 ##  (see~"PCentralSeries"). This function also returns a graded
 ##  Lie algebra. However, it is not necessarily restricted.
 ##

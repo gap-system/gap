@@ -104,7 +104,7 @@ element of <Omega> which is to be acted on.
 \index{actions}
 \index{group operations}
 
-{\GAP} already provides acting functions for the more commpon actions of a
+{\GAP} already provides acting functions for the more common actions of a
 group.  For built-in operations such as `Stabilizer' special methods are
 available for many of these actions.
 
@@ -132,6 +132,7 @@ gap> Orbit(g,[1,2],OnPairs);
 gap> Orbit(g,[1,2],OnSets);
 [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 4 ], [ 1, 4 ], [ 2, 4 ] ]
 \endexample
+
 \beginexample
 gap> Orbit(g,[[1,2],[3,4]],OnSetsSets);
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], [ [ 1, 3 ], [ 2, 4 ] ] ]
@@ -207,7 +208,7 @@ gap> Orbit(g,[1,2],OnSets);
 \endexample
 (See Section~"Basic Actions" for information about specific actions.)
 
-\Declaration{Orbits}
+\Declaration{Orbits}!{operation/attribute}
 \Declaration{OrbitsDomain}
 \beginexample
 gap> g:=Group((1,3,2),(2,4,3));;
@@ -242,7 +243,7 @@ gap> OrbitLengths(g,Arrangements([1..4],4),OnTuples);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Stabilizers}
 
-\index{pointstabilizer}\index{setstabilizer}\index{tuplestabilizer}
+\index{point stabilizer}\index{set stabilizer}\index{tuple stabilizer}
 The *Stabilizer* of an element $\omega$ is the set of all those $g\in G$
 which fix $\omega$.
 
@@ -263,7 +264,7 @@ Group([ (1,2)(3,4) ])
 gap> Stabilizer(g,[1,2],OnTuples);
 Group(())
 gap> OrbitStabilizer(g,[1,2],OnSets);
-rec( orbit := [ [ 1, 2 ], [ 3, 4 ], [ 1, 3 ], [ 2, 4 ], [ 2, 3 ], [ 1, 4 ] ], 
+rec( orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ], 
   stabilizer := Group([ (1,2)(3,4) ]) )
 \endexample
 (See Section~"Basic Actions" for information about specific actions.)
@@ -376,13 +377,13 @@ efficient) functions are provided:
 \Declaration{FactorCosetAction}
 
 \beginexample
-gap> g:=Group((1,2,3,4,5),(1,2));;u:=SylowSubgroup(g,2);;Index(g,u);  
+gap> g:=Group((1,2,3,4,5),(1,2));;u:=SylowSubgroup(g,2);;Index(g,u);
 15
 gap> FactorCosetAction(g,u);
-<action homomorphism>
+<action epimorphism>
 gap> Range(last);
 Group([ (1,9,13,10,4)(2,8,14,11,5)(3,7,15,12,6), 
-  (1,7)(2,8)(3,9)(4,5)(11,12)(13,14) ])
+  (1,7)(2,8)(3,9)(5,6)(10,11)(14,15) ])
 \endexample
 
 A special case is the regular action on all elements:
@@ -397,14 +398,14 @@ gap> HasElementaryAbelianFactorGroup(c[3],c[4]);
 true
 gap> SetName(c[3],"my_group");;
 gap> a:=AbelianSubfactorAction(g,c[3],c[4]);
-gap> a;
 [ [ (1,8,10,7,3,5)(2,4,12,9,11,6), (1,9,5,6,3,10)(2,11,12,8,4,7) ] -> 
-    [<an immutable 2x2 matrix over GF2>,<an immutable 2x2 matrix over GF2>],
-  MappingByFunction( my_group, ( GF(2)^ 2 ), 
-                     function( e ) ... end, function( r ) ... end ), 
+    [ <an immutable 2x2 matrix over GF2>, <an immutable 2x2 matrix over GF2> ]
+    , MappingByFunction( my_group, ( GF(2)^
+    2 ), function( e ) ... end, function( r ) ... end ), 
   Pcgs([ (2,8,3,9)(4,10,5,11), (1,6,12,7)(4,10,5,11) ]) ]
-gap> mat:=Image(a[1],g);   
-Group([<an immutable 2x2 matrix over GF2>,<an immutable 2x2 matrix over GF2>])
+gap> mat:=Image(a[1],g);
+Group([ <an immutable 2x2 matrix over GF2>, 
+  <an immutable 2x2 matrix over GF2> ])
 gap> Size(mat);
 3
 gap> e:=PreImagesRepresentative(a[2],[Z(2),0*Z(2)]);
@@ -497,7 +498,7 @@ the action of <G>.
 \Declaration{Blocks}
 \beginexample
 gap> g:=TransitiveGroup(8,3);
-E(8) = 2[x]2[x]2
+E(8)=2[x]2[x]2
 gap> Blocks(g,[1..8]);
 [ [ 1, 8 ], [ 2, 3 ], [ 4, 5 ], [ 6, 7 ] ]
 gap> Blocks(g,[1..8],[1,4]);
@@ -539,8 +540,7 @@ largest subgroup which preserves <bs> as a block system.
 gap> g:=Group((1,2,3,4,5,6,7,8),(1,2));;
 gap> bs:=[[1,2,3,4],[5,6,7,8]];;
 gap> Stabilizer(g,bs,OnSetsDisjointSets);
-Group([ (2,4), (2,4,3), (1,2)(3,4), (1,4)(2,3), (5,6), (5,8,6), (5,7)(6,8), 
-  (5,6)(7,8), (1,5,4,8,2,7)(3,6) ])
+Group([ (6,7), (5,6), (5,8), (2,3), (3,4)(5,7), (1,4), (1,5,4,8)(2,6,3,7) ])
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -7,7 +7,7 @@
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains the declarations for Knuth Bendix Rewriting Systems
+##  This file contains the declarations for Knuth-Bendix Rewriting Systems
 ##
 
 Revision.kbsemi_gd :=
@@ -26,7 +26,7 @@ DeclareInfoClass("InfoKnuthBendix");
 ##
 #C  IsKnuthBendixRewritingSystem(<obj>)
 ## 
-##  This is the category of Knuth Bendix rewriting systems. 
+##  This is the category of Knuth-Bendix rewriting systems. 
 ##
 DeclareCategory("IsKnuthBendixRewritingSystem", IsRewritingSystem);
 
@@ -34,7 +34,7 @@ DeclareCategory("IsKnuthBendixRewritingSystem", IsRewritingSystem);
 ##
 #A  KnuthBendixRewritingSystem(<fam>,<wordord>)
 ##
-##  returns the Knuth Bendix rewriting system of the family <fam>
+##  returns the Knuth-Bendix rewriting system of the family <fam>
 ##  with respect to the reduction ordering on words given by <wordord>. 
 ##
 DeclareOperation("KnuthBendixRewritingSystem",[IsFamily,IsOrdering]);
@@ -81,7 +81,7 @@ DeclareGlobalFunction("ReduceWordUsingRewritingSystem");
 #A  TzRules( <kbrws> )
 ##
 ##  For a Knuth-Bendix rewriting system for a monoid, this attribute
-##  contains rewriting rules in compact form as ``tietze words''. The
+##  contains rewriting rules in compact form as ``Tietze words''. The
 ##  numbers used correspond to the generators of the monoid.
 ##
 DeclareAttribute( "TzRules", IsKnuthBendixRewritingSystem );

@@ -119,7 +119,7 @@ InstallOtherMethod( RepresentativeActionOp, "natural alternating group",
   # the objects might be group elements: rank up	
   2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
-local dom,sortfun,max,cd,ce,rep;
+local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
   dom:=Set(MovedPoints(G));
   if opr=OnPoints then
     if IsInt(d) and IsInt(e) then
@@ -141,27 +141,33 @@ local dom,sortfun,max,cd,ce,rep;
         return fail;
       fi;
       max:=Maximum(LargestMovedPoint(d),LargestMovedPoint(e));
+      dp:=d;
+      ep:=e;
       cd:=ShallowCopy(Cycles(d,[1..max]));
       ce:=ShallowCopy(Cycles(e,[1..max]));
       Sort(cd,sortfun);
       Sort(ce,sortfun);
       rep:=MappingPermListList(Concatenation(cd),Concatenation(ce));
       if SignPerm(rep)=-1 then
-        dom:=Difference(dom,Union(Concatenation(cd),Concatenation(ce)));
-	if Length(dom)>1 then
-	  rep:=rep*(dom[1],dom[2]);
+        dom2:=Difference(dom,Union(Concatenation(cd),Concatenation(ce)));
+	if Length(dom2)>1 then
+	  rep:=rep*(dom2[1],dom2[2]);
 	else
+	  #this is more complicated
+	  TryNextMethod();
+
+	  # temporarily disabled, Situation is more complicated
 	  cd:=Filtered(cd,i->IsSubset(dom,i));
 	  d:=CycleStructurePerm(d);
 	  e:=PositionProperty([1..Length(d)],i->IsBound(d[i]) and
 	    # cycle structure is shifted, so this is even length
 	    # we need either to swap a pair of even cycles or to 3-cycle
 	    # odd cycles
-	    ((IsInt(i+1/2) and d[i]>1) or
+	    ((IsInt((i+1)/2) and d[i]>1) or
 	    (IsInt(i/2) and d[i]>2)));
 	  if e=fail then
 	    rep:=fail;
-	  elif IsInt(e+1/2) then
+	  elif IsInt((e+1)/2) then
 	    cd:=Filtered(cd,i->Length(i)=e+1);
 	    cd:=cd{[1,2]};
 	    rep:=MappingPermListList(Concatenation(cd),
@@ -173,6 +179,9 @@ local dom,sortfun,max,cd,ce,rep;
 	                             Concatenation([cd[2],cd[3],cd[1]]))*rep;
 	  fi;
         fi;
+      fi;
+      if rep<>fail then
+	Assert(1,dp^rep=ep);
       fi;
       return rep;
     fi;
@@ -505,7 +514,7 @@ function ( G )
     deg:=Length(mov);
     rnd := [1..deg];
     sgn := 1;
-    for i  in [1..deg-2] do
+    for i  in [1..deg-1] do
         k := Random( [ i .. deg] );
         tmp := rnd[i];
         rnd[i] := rnd[k];

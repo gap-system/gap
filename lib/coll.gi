@@ -272,13 +272,12 @@ InstallMethod( Random, "for an internal list", true,
     RANDOM_LIST );
 
 InstallMethod( Random, "for a (finite) collection", true,
-    [ IsCollection ], 0,
+    [ IsCollection and IsFinite ], 0,
 function ( C )
-  if not IsFinite( C ) then
-    TryNextMethod();
-  fi;
   return RANDOM_LIST( Enumerator( C ) );
 end );
+
+RedispatchOnCondition(Random,true,[IsCollection],[IsFinite],0);
 
 
 #############################################################################

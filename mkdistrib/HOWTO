@@ -8,15 +8,19 @@ The distribution is built under /scratch/gap4dist (this is set in `setvar')
 The file `setvar' will need editing depending on the linux version used and
 the cvs path.
 
-Before you start, make sure to adjust the version number for the release
-in the help text you get with `gap -h'. For this change the two lines in 
-src/system.c containing the substring ", Version" and commit the  change.
+Before you start, make sure to adjust the kernel version number for the
+release, as well as the default windows path.
+For this change the values of the variables `SyKernelVersion' and
+`SyWindowsPath' in src/system.c and commit the  change.
 
 The files assume that
 
 - The current version is OK (testfiles &c.).
-- enough disk space (200-300MB due to the TOM's) is available
-- share packages are under /user1/ftp/pub/gap/gap4/{share,deposit/psh}
+- enough disk space (1GB+) is available
+- packages to include in the main distribution are under
+  /home/ftp/gappre/sys<version>
+- share packages are in /home/ftp/gappre/share<version>
+- deposited packages are in /home/ftp/gappre/dep<version>
 - Type1 PS fonts, `tth', `zoo' and `unzoo' are installed locally. (This all
   holds for `shades'.)
 - doc/build/config.install sets the right version number variables.
@@ -31,16 +35,21 @@ The files assume that
 
 To build, go into this directory and call
 
-  doit nr
+  doit x 
 
-where nr is the number of the version to be wrapped up.
+where x is the number of the version (4rx) to be wrapped up.
 
 After some time the program will prompt you to transfer a file to the
 Windows machine, compile it there under cygwin and transfer the result back.
 Then it continues zooing everything up.
 
-checkout and zooing both can take about an hour. You can write the
+On  Wedderburn checkout takes only a few minutes, but zooing
+takesmost of an hour. You can write the
 announcement during this time.
+
+The wrapping script (zooit) is designed to exploit a multi-processor
+machine (zoo, zip and tar run in parallel) with a lot of memory (for 
+file caches).
 
 ======
 

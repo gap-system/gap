@@ -51,7 +51,6 @@ Revision.streams_gd :=
 
 #############################################################################
 ##
-
 #R  IsInputTextStringRep   (used in kernel)
 ##
 DeclareRepresentation(
@@ -75,7 +74,7 @@ DeclareCategory( "IsClosedStream", IsObject );
 ##
 #C  IsStream( <obj> ) . . . . . . . . . . . . . . . . . . category of streams
 ##
-##  Streams are GAP objects and all open streams, input, output, text
+##  Streams are {\GAP} objects and all open streams, input, output, text
 ##  and binary, lie in this category.
 ##
 DeclareCategory( "IsStream", IsObject );
@@ -185,20 +184,31 @@ DeclareOperation( "PositionStream", [ IsInputStream ] );
 #############################################################################
 ##
 #O  ReadAll( <input-stream> )  . . . . . . .  read whole input as string
+#O  ReadAll( <input-stream> , <limit> )  . .  read whole input as string
 ##
-##  `ReadAll' returns all  characters  as   string  from the input     stream
-##  <stream-in>.  It reads in the input until the stream is at end-of-stream,
-##  it    returns  `fail' if   the   <input-text-stream>  is  already at  the
-##  end-of-stream.
+##  `ReadAll' returns all characters as string from the input stream
+##  <stream-in>.  It waits (blocks) until at least one
+##  character is available from the stream, or until there is evidence
+##  that no characters will ever be available again. This last indicates
+##  that the stream is at end-of-stream.
+##  Otherwise, it reads as much input as it can from the stream without
+##  blocking further and returns it to the user. If the stream is
+##  already at end of file, so that no bytes are available, `fail' is
+##   returned. In the case of a file
+##  stream connected to a normal file (not a pseudo-tty or named pipe
+##  or similar), all the bytes should be immediately available and
+##  this function will read the remainder of the file.
 ##
-##  If <stream-in> is the input stream of a input/output process, `ReadAll'
-##  reads all the input currently available.
+##  With a second argument, at most <limit> bytes will be
+##  returned. Depending on the stream a bounded number of additional bytes
+##  may have been read into an internal buffer.  
 ##
-##  A default method is supplied for `ReadAll' which simply calls `ReadByte'
-##  repeatedly.
+##  A default method is supplied for `ReadAll' which simply calls `ReadLine'
+##  repeatedly. This is only really safe for streams which cannot
+##  block. Other streams should install a method for ReadAll
 ##
 DeclareOperation( "ReadAll", [ IsInputStream ] );
-
+DeclareOperation( "ReadAll", [ IsInputStream, IsInt ] );
 
 #############################################################################
 ##
@@ -212,9 +222,14 @@ DeclareOperation( "ReadAll", [ IsInputStream ] );
 ##  may also return `fail' if no byte is currently available.
 ##
 ##  `ReadByte' is the basic operation for input streams. If a `ReadByte'
-##  method is installed for a user-defined type of stream, then all the other
+##  method is installed for a user-defined type of stream which does
+##  not block, then all the other
 ##  input stream operations will work (although possibly not at peak
 ##  efficiency).
+##
+##  `ReadByte' will wait (block) until a byte is available. For
+##  instance if the stream is a connection to another process, it will
+##  wait for the process to output a byte.
 ##
 DeclareOperation( "ReadByte", [ IsInputStream ] );
                     
@@ -229,10 +244,13 @@ DeclareOperation( "ReadByte", [ IsInputStream ] );
 ##
 ##  If <input-stream> is the input stream of a input/output process, `ReadLine'
 ##  may also return `fail' or return an incomplete line if the other
-##  process has not yet written any more.
+##  process has not yet written any more. It will always wait (block) for at
+##  least one byte to be available, but will then return as much input
+##  as is available, up to a limit of one  line
 ##
 ##  A default method is supplied for `ReadLine' which simply calls `ReadByte'
-##  repeatedly. The kernel uses calls to `ReadLine' to supply input to the
+##  repeatedly. This is only safe for streams that cannot block. The kernel 
+##  uses calls to `ReadLine' to supply input to the
 ##  parser when reading from a stream.
 ##
 DeclareOperation( "ReadLine", [ IsInputStream ] );
@@ -301,11 +319,13 @@ DeclareOperation( "SeekPositionStream", [ IsInputStream, IsInt ] );
 ##
 ##  appends  <string> to <output-stream>.   No final  newline is written.
 ##  The function returns `true' if the write succeeds and `fail' otherwise.
+##  It will block as long as necessary for the write operation to
+##  complete (for example for a child process to clear its input buffer )
 ##
-##  A default method is installed which implements `WriteAll' by repreated
+##  A default method is installed which implements `WriteAll' by repeated
 ##  calls to `WriteByte'.
 ##
-##  When Printing or appending to a stream (using `PrintTo', or `AppendTo' or
+##  When printing or appending to a stream (using `PrintTo', or `AppendTo' or
 ##  when logging to a stream), the kernel generates a call to `WriteAll' for
 ##  each line output.
 ##
@@ -336,7 +356,7 @@ DeclareOperation( "WriteByte", [ IsOutputStream, IsInt ] );
 ##  appends  <string> to <output-stream>.   A  final newline is written.
 ##  The function returns `true' if the write succeeds and `fail' otherwise.
 ##
-##  A default method is installed which implements `WriteLine' by repreated
+##  A default method is installed which implements `WriteLine' by repeated
 ##  calls to `WriteByte'.
 ##
 DeclareOperation( "WriteLine", [ IsOutputStream, IsList ] );
@@ -492,27 +512,13 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  implemented provide communication with a local child process,
 ##  using a pseudo-tty. They are only available on UNIX systems.
 ##
-##  At present, all operations on these streams are *non-blocking*, 
-##  and will read or write as much of the requested data as possible
-##  immediately, but will *not* wait, for instance, for the child
-##  process to clear its input buffers. This may be reviewed. The
-##  {\GAP} kernel functions used to implement these streams do support
-##  blocking operation, and this may be made available later.
-##  In non-blocking operation, `ReadByte' will return `fail' if no
-##  byte is available, and `ReadLine' and `ReadAll' may return only
-##  the bytes that were available. `WriteByte', `WriteLine' and
-## `WriteAll' will return `fail' if they did not succeed in writing all
-##  that they were asked to.
+##  Like other streams, write operations are blocking, read operations
+##  will block to get the first character, but not thereafter. 
 ##
 ##  As far as possible, no translation is done on characters written
 ##  to, or read from the stream, and no control characters have special
 ##  effects, but the details of particular pseudo-tty implementations 
-##  may effect this. The stream may try to read more characters from
-##  the child than the user requests in a `ReadByte' or `ReadLine' call
-##  (see Section~"Operations for input streams"), and
-##  store them up to handle subsequent reads more quickly, but will not
-##  block waiting for such characters. All characters written are
-##  delivered immediately to the pseudo-tty.
+##  may effect this. 
 ##
 
 #############################################################################
@@ -529,8 +535,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  `InputOutputLocalProcess' returns an InputOutputStream object. Bytes
 ##  written to this stream are received by the slave process as if typed
 ##  at a terminal on standard input. Bytes written to standard output
-##  by the slave process can be read from the stream. (Some buffering
-##  of reads, but not writes may be done by the stream).
+##  by the slave process can be read from the stream. 
 ##
 ##  When the stream if closed, the signal SIGTERM is delivered to the child
 ##  process, which is expected to exit.

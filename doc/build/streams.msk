@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%W  streams.tex               GAP documentation              Frank Celler
+%W  streams.msk               GAP documentation              Frank Celler
 %W                                                       Martin Schoenert
 %W                                                         & Steve Linton
 %%
@@ -99,7 +99,7 @@ See "File Operations" for details.
 *Example*
 
 \beginexample
-# a function with local `a' does not change the global one
+gap> # a function with local `a' does not change the global one
 gap> a := 1;;
 gap> i := InputTextString( "local a; a := 10; return a*10;" );;
 gap> ReadAsFunction(i)();
@@ -109,8 +109,8 @@ gap> a;
 \endexample
 
 \beginexample
-# reading it via `Read' does
-gap> i := InputTextString( "a := 10;" );;                      
+gap> # reading it via `Read' does
+gap> i := InputTextString( "a := 10;" );;
 gap> Read(i);
 gap> a;
 10
@@ -141,7 +141,7 @@ fail
 gap> ReadAll(i);
 ""
 gap> RewindStream(i);;
-gap> ReadAll(i);     
+gap> ReadAll(i);
 "1Hallo\nYou\n1"
 \endexample
 
@@ -211,8 +211,8 @@ possible    to turn      off   this behaviour     for   a   stream   using  the
 
 *Example*
 \beginexample
-gap> s := "";; str := OutputTextString(s,false);;                              
-gap> PrintTo(str,Primes{[1..30]});                                             
+gap> s := "";; str := OutputTextString(s,false);;
+gap> PrintTo(str,Primes{[1..30]});
 gap> s;
 "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,\
  \n  73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
@@ -269,7 +269,7 @@ You
 gap> CloseStream(input);
 
 # append a single line
-gap> output := OutputTextFile( name, true );; 
+gap> output := OutputTextFile( name, true );;
 gap> AppendTo( output, "AppendLine\n" );
 
 # close output stream to flush the output
@@ -353,16 +353,14 @@ gap> WriteLine(s,"The cat sat on the mat");
 true
 gap> Print(ReadLine(s));
 tam eht no tas tac ehT
-gap> ReadLine(s);
-fail
 gap> x := ListWithIdenticalEntries(10000,'x');;
 gap> ConvertToStringRep(x);
 gap> WriteLine(s,x);
-fail
+true
 gap> WriteByte(s,INT_CHAR('\n'));
 true
 gap> y := ReadAll(s);;
-gap> Length(y);      
+gap> Length(y);
 4095
 gap> CloseStream(s);
 gap> s;

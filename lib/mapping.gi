@@ -164,7 +164,7 @@ InstallGlobalFunction( Image, function ( arg )
             elm;        # element <elm>, second argument
 
     # image of the source under <map>, which may be multi valued in this case
-    if   Length( arg ) = 1 then
+    if   Length( arg ) = 1 and IsGeneralMapping(arg[1]) then
 
         return ImagesSource( arg[1] );
 

@@ -272,12 +272,13 @@ DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
 ##  up to multiplication of the factors by units (see~"Units").
 ##
 ##  Mathematically, a field should therefore also be a  unique factorization
-##  ring, since every element is a unit. In GAP, however, at least at present
-##  fields do not lie in the filter "IsUniqueFactorizationRing", since 
-##  Operations such as Factors, Gcd, StandardAssociate and so on do
+##  ring, since every element is a unit. In {\GAP}, however, at least at present
+##  fields do not lie in the filter `IsUniqueFactorizationRing' 
+##  (see~"IsUniqueFactorizationRing"), since 
+##  Operations such as `Factors', `Gcd', `StandardAssociate' and so on do
 ##  not apply to fields (the results would be trivial, and not
 ##  especially useful) and Methods which require their arguments to
-##  lie in IsUniqueFactorizationRing expect these Operations to work.
+##  lie in `IsUniqueFactorizationRing' expect these Operations to work.
 ##
 ##  (Note that we cannot install a subset maintained method for this category
 ##  since the factorization of an element needs not exist in a subring.
@@ -300,7 +301,7 @@ DeclareCategory( "IsUniqueFactorizationRing", IsRing );
 ##  $R-\{0_R\}$ to the nonnegative integers, such that for every pair $r \in
 ##  R$ and $s \in  R-\{0_R\}$ there exists an element $q$ such that either
 ##  $r - q s = 0_R$ or $\delta(r - q s) \< \delta( s )$. In {\GAP} the
-##  euclidean degree $\delta$ is implicitly built into an ring and cannot be
+##  Euclidean degree $\delta$ is implicitly built into an ring and cannot be
 ##  changed.  The existence of this division with remainder implies that the
 ##  Euclidean algorithm can be applied to compute a greatest common divisor
 ##  of two elements, which in turn implies that $R$ is a unique

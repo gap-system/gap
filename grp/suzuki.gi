@@ -86,9 +86,13 @@ function ( filter, q )
   od;
   Sort(Ovoid);
 
-  G := Operation(SuzukiGroupCons(IsMatrixGroup,q),Ovoid,OnLines);
+  G := Action(SuzukiGroupCons(IsMatrixGroup,q),Ovoid,OnLines);
   SetName(G,Concatenation("Sz(",String(q),")"));
   SetSize(G,q^2*(q-1)*(q^2+1));
   SetIsSimpleGroup(G,true);
   return G;
 end );
+
+#############################################################################
+##
+#E  suzuki.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

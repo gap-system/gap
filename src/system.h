@@ -19,7 +19,6 @@
 */
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 
-
 /****************************************************************************
 **
 
@@ -223,6 +222,8 @@
 const char * Revision_system_h =
    "@(#)$Id$";
 #endif
+extern const char * Revision_system_c;  /* gap.c uses this */
+extern const char * Revision_system_h;
 
 
 /****************************************************************************
@@ -328,6 +329,17 @@ const char * Revision_system_h =
 # define SYS_MAC_MWC    0
 #endif
 
+/****************************************************************************
+**
+*V  SYS_DARWIN . . . . . . . . . . . . . . .  DARWIN (BSD underlying MacOS X)
+*/
+#ifdef SYS_IS_DARWIN
+# define SYS_DARWIN    1
+#else
+# define SYS_DARWIN    0
+#endif
+
+
 #if SYS_MAC_MWC  /* on the Mac, fputs does not work. Print error messages 
 					using WriteToLog */
 # define FPUTS_TO_STDERR(str) 	WriteToLog (str)
@@ -423,6 +435,12 @@ extern UInt SyStackAlign;
 *V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
 */
 extern const Char * SyArchitecture;
+
+/****************************************************************************
+**
+*V  SyKernelVersion  . . . . . . . . . . . . . . . .  kernel version number
+*/
+extern const Char * SyKernelVersion;
 
 /****************************************************************************
 **

@@ -1,0 +1,52 @@
+@Name
+Discrete Logarithm
+@Contact
+GAP
+@Date
+2001/9/24
+@Time
+3
+@Need
+4
+@NeedA
+2
+@Math
+4
+@Prog
+3
+@Component
+Number Theory
+@Descr
+<P>
+The discrete logarithm problem asks to find -- for a pair of elements a,b of
+a finite field (or more general a residue class ring) an integer c such that
+a^b=c or to show that no such c can exist.
+</P>
+
+<P>
+The current implementation in GAP is extremely naive, however recognition
+algorithms are likely to require a better method.
+</P>
+@Ref
+<UL>
+<LI>
+J. M. Pollard, Nordisk Tidskr. Informationsbehandling (BIT) {\bf 15} (1975), no.~3, 331--334; MR {\bf 52} \#13611
+<LI>
+J. M. Pollard, J. Cryptology {\bf 13} (2000), no.~4, 437--447; MR
+2001i:94059 
+<LI>
+E. Teske, in {\it Algorithmic number theory (Portland, OR, 1998)},
+541--554, Lecture Notes in Comput. Sci., 1423, Springer, Berlin, 1998; MR
+2000j:11199 
+<LI>
+D. Weber, in {\it Algorithmic number theory (Talence, 1996)}, 391--403,
+Lecture Notes in Comput. Sci., 1122, Springer, Berlin, 1996; MR 98k:11186 
+<LI>
+K. S. McCurley, in {\it Cryptology and computational number theory
+(Boulder, CO, 1989)}, 49--74, Proc. Sympos. Appl. Math., 42, Amer. Math.
+Soc., Providence, RI, 1990; MR 92d:11133 
+<LI>
+A. Odlyzko, Des. Codes Cryptogr. {\bf 19} (2000), no.~2-3, 129--145; see
+MR 2000m:94023 
+</UL>
+@Rem

@@ -1,6 +1,7 @@
 /****************************************************************************
 **
 *W  streams.c                   GAP source                       Frank Celler
+*W                                                  & Burkhard Hoefling (MAC)
 **
 *H  @(#)$Id$
 **
@@ -13,12 +14,20 @@
 #include        <stdio.h>
 #include        <string.h>              /* memcpy */
 #include        <unistd.h>              /* fstat, write, read              */
-#include        <sys/types.h>
-#include        <sys/stat.h>
+#ifndef SYS_IS_MAC_MWC
+# include        <sys/types.h>
+# include        <sys/stat.h>
+#endif
+#ifdef SYS_IS_MAC_MWC
+#include         "macte.h"
+#include         "macedit.h"
+#endif
 #include        "system.h"              /* system dependent part           */
 #if HAVE_SELECT
 #include        <sys/time.h>
 #endif
+#include <errno.h>
+
 
 const char * Revision_streams_c =
    "@(#)$Id$";
@@ -239,10 +248,10 @@ Obj READ_AS_FUNC ( void )
 Int READ_TEST ( void )
 {
     UInt                type;
-    UInt                time;
+    UInt                oldtime;
 
     /* get the starting time                                               */
-    time = SyTime();
+    oldtime = SyTime();
 
     /* now do the reading                                                  */
     while ( 1 ) {
@@ -252,7 +261,7 @@ Int READ_TEST ( void )
         type = ReadEvalCommand();
 
         /* stop the stopwatch                                              */
-        AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
+        AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
 
         /* handle ordinary command                                         */
         if ( type == 0 && ReadEvalResult != 0 ) {
@@ -378,6 +387,7 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result) ) {
+	  SySetBuffering(Input->file);
             while ( 1 ) {
                 ClearError();
                 type = ReadEvalCommand();
@@ -952,6 +962,8 @@ Obj FuncREAD (
         return False;
     }
 
+    SySetBuffering(Input->file);
+   
     /* read the test file                                                  */
     return READ() ? True : False;
 }
@@ -1040,6 +1052,8 @@ Obj FuncREAD_AS_FUNC (
         return Fail;
     }
 
+    SySetBuffering(Input->file);
+    
     /* read the function                                                   */
     return READ_AS_FUNC();
 }
@@ -1448,6 +1462,7 @@ Obj FuncPOSITION_FILE (
 }
 
 
+
 /****************************************************************************
 **
 *F  FuncREAD_BYTE_FILE( <self>, <fid> ) . . . . . . . . . . . . . read a byte
@@ -1466,13 +1481,10 @@ Obj FuncREAD_BYTE_FILE (
             "you can replace <fid> via 'return <fid>;'" );
     }
     
-    /* Check if we are at the end of the file.                             */
-    ret = SyIsEndOfFile( INT_INTOBJ(fid) );
-    if( ret == -1 || ret == 1 ) return Fail;
-
     /* call the system dependent function                                  */
     ret = SyGetch( INT_INTOBJ(fid) );
-    return ret == -1 ? Fail : INTOBJ_INT(ret);
+
+    return ret == EOF ? Fail : INTOBJ_INT(ret);
 }
 
 
@@ -1484,6 +1496,9 @@ Obj FuncREAD_BYTE_FILE (
 */
 
 /*  this would be a proper function but it reads single chars and is slower
+
+Now SyFputs uses read byte-by-byte, so probably OK
+
 Obj FuncREAD_LINE_FILE (
     Obj             self,
     Obj             fid )
@@ -1533,7 +1548,8 @@ Obj FuncREAD_LINE_FILE (
 {
     Char            buf[256];
     Char *          cstr;
-    Int             len, buflen, strlen;
+    Int             ifid, len, buflen;
+    UInt            lstr;
     Obj             str;
 
     /* check the argument                                                  */
@@ -1543,22 +1559,26 @@ Obj FuncREAD_LINE_FILE (
             (Int)TNAM_OBJ(fid), 0L,
             "you can replace <fid> via 'return <fid>;'" );
     }
-    
-    /* read <fid> until we see a newline or eof                            */
+    ifid = INT_INTOBJ(fid);
+
+    /* read <fid> until we see a newline or eof or we've read at least
+       one byte and more are not immediately available */
     str = NEW_STRING(0);
     len = 0;
     while (1) {
-        len += 255;
-        GROW_STRING( str, len );
-        if ( SyFgets( buf, 256, INT_INTOBJ(fid) ) == 0 )
-            break;
-	buflen = SyStrlen(buf);
-	strlen = GET_LEN_STRING(str);
-        cstr = CSTR_STRING(str) + strlen;
-        memcpy( cstr, buf, buflen+1 );
-	SET_LEN_STRING(str, strlen+buflen);
-        if ( buf[buflen-1] == '\n' )
-            break;
+      if ( len > 0 && !HasAvailableBytes(ifid))
+	break;
+      len += 255;
+      GROW_STRING( str, len );
+      if ( SyFgetsSemiBlock( buf, 256, ifid ) == 0 )
+	break;
+      buflen = SyStrlen(buf);
+      lstr = GET_LEN_STRING(str);
+      cstr = CSTR_STRING(str) + lstr;
+      memcpy( cstr, buf, buflen+1 );
+      SET_LEN_STRING(str, lstr+buflen);
+      if ( buf[buflen-1] == '\n' )
+	break;
     }
 
     /* fix the length of <str>                                             */
@@ -1569,6 +1589,244 @@ Obj FuncREAD_LINE_FILE (
     return len == 0 ? Fail : str;
 }
 
+/****************************************************************************
+**
+*F  FuncREAD_ALL_FILE( <self>, <fid>, <limit> )  . . . . . . . read remainder
+**  
+** more precisely, read until either
+**   (a) we have read at least one byte and no more are available
+**   (b) we have evidence that it will never be possible to read a byte
+**   (c) we have read <limit> bytes (-1 indicates no limit)
+*/
+
+#ifndef SYS_IS_MAC_MWC
+
+Obj FuncREAD_ALL_FILE (
+    Obj             self,
+    Obj             fid,
+    Obj             limit)
+{
+    Char            buf[20000];
+    Int             ifid, len;
+    UInt            lstr;
+    Obj             str;
+    Int             ilim;
+    UInt            csize;
+
+    /* check the argument                                                  */
+    while ( ! IS_INTOBJ(fid) ) {
+        fid = ErrorReturnObj(
+            "<fid> must be an integer (not a %s)",
+            (Int)TNAM_OBJ(fid), 0L,
+            "you can replace <fid> via 'return <fid>;'" );
+    }
+    ifid = INT_INTOBJ(fid);
+
+    while ( ! IS_INTOBJ(limit) ) {
+      limit = ErrorReturnObj(
+			     "<limit> must be a small integer (not a %s)",
+			     (Int)TNAM_OBJ(limit), 0L,
+			     "you can replace limit via 'return <limit>;'" );
+    }
+    ilim = INT_INTOBJ(limit);
+
+    /* read <fid> until we see  eof or we've read at least
+       one byte and more are not immediately available */
+    str = NEW_STRING(0);
+    len = 0;
+    lstr = 0;
+
+
+    if (syBuf[ifid].bufno >= 0)
+      {
+	UInt bufno = syBuf[ifid].bufno;
+
+	/* first drain the buffer */
+	lstr = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
+	if (ilim != -1)
+	  {
+	    if (lstr > ilim)
+	      lstr = ilim;
+	    ilim -= lstr;
+	  }
+	GROW_STRING(str, lstr);
+	memcpy(CHARS_STRING(str), syBuffers[bufno].buf + syBuffers[bufno].bufstart, lstr);
+	len = lstr;
+	SET_LEN_STRING(str, len);
+	syBuffers[bufno].bufstart += lstr;
+      }
+#ifdef CYGWIN
+ getmore:
+#endif
+    while (ilim == -1 || len < ilim ) {
+      if ( len > 0 && !HasAvailableBytes(ifid))
+	break;
+      if (syBuf[ifid].isTTY)
+	{
+	  if (ilim == -1)
+	    {
+	      Pr("#W Warning -- reading to  end of input tty will never end\n",0,0);
+	      csize = 20000;
+	    }
+	  else
+	      csize = ((ilim- len) > 20000) ? 20000 : ilim - len;
+	    
+	  if (SyFgetsSemiBlock(buf, csize, ifid))
+	    lstr = SyStrlen(buf);
+	  else  
+	    lstr = 0;
+	}
+      else
+	{
+	  do {
+	    csize = (ilim == -1 || (ilim- len) > 20000) ? 20000 : ilim - len;
+	    lstr = read(syBuf[ifid].fp, buf, csize);
+	  } while (lstr == -1 && errno == EAGAIN);
+	}
+      if (lstr <= 0)
+	{
+	  syBuf[ifid].ateof = 1;
+	  break;
+	}
+      GROW_STRING( str, len+lstr );
+      memcpy(CHARS_STRING(str)+len, buf, lstr);
+      len += lstr;
+      SET_LEN_STRING(str, len);
+    }
+
+    /* fix the length of <str>                                             */
+    len = GET_LEN_STRING(str);
+#ifdef CYGWIN
+    /* line end hackery */
+    {
+      UInt i = 0,j = 0;
+      while ( i < len )
+	{
+	  if (CHARS_STRING(str)[i] == '\r')
+	    {
+	      if (i < len -1 && CHARS_STRING(str)[i+1] == '\n')
+		{
+		  i++;
+		  continue;
+		}
+	      else
+		CHARS_STRING(str)[i] = '\n';
+	    }
+	  CHARS_STRING(str)[j++] = CHARS_STRING(str)[i++];
+	}
+      len = j;
+      SET_LEN_STRING(str, len);
+      if (ilim != -1 && len < ilim)
+	goto getmore;
+      
+    }
+#endif
+    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
+
+    /* and return                                                          */
+    return len == 0 ? Fail : str;
+}
+#endif
+
+#ifdef SYS_IS_MAC_MWC
+Obj FuncREAD_ALL_FILE (
+    Obj             self,
+    Obj             iofid,
+    Obj             limit)
+{
+    Int             fid, read, len, count, ilim;
+    Obj             str;
+    TE32KHandle		tH;
+    Int 			bufno;
+    unsigned char 	* p;
+    
+    /* check the argument                                                  */
+    while ( ! (IS_INTOBJ(iofid)) ) {
+        iofid = ErrorReturnObj(
+            "<fid> must be an integer (not a %s)",
+            (Int)TNAM_OBJ(iofid), 0L,
+            "you can replace <fid> via 'return <fid>;'" );
+    }
+    fid = INT_INTOBJ (iofid);
+    if (fid == 0)  /* redirect input */
+    	fid = SyInFid;
+
+    while ( ! IS_INTOBJ(limit) ) {
+      limit = ErrorReturnObj(
+			     "<limit> must be a small integer (not a %s)",
+			     (Int)TNAM_OBJ(limit), 0L,
+			     "you can replace limit via 'return <limit>;'" );
+    }
+    ilim = INT_INTOBJ(limit);
+
+    if (syBuf[fid].fromDoc) {
+    	if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
+			&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) {
+			len = (**tH).teLength - (**tH).consolePos;
+			if (ilim != -1 && len > ilim)
+				len = ilim;  /* read at most ilim bytes */
+		    str = NEW_STRING( len );
+			HLock ((**tH).hText);
+			BlockMove (*(**tH).hText + (**tH).consolePos, CHARS_STRING (str), len);
+			HUnlock ((**tH).hText);
+		} else
+    	    return Fail;
+    } else { /* read from file */
+		SyLastMacErrorCode = GetEOF ((short) syBuf[fid].fp, &len);
+		if (SyLastMacErrorCode != noErr) 
+			return Fail;
+		read = len;
+		SyLastMacErrorCode = GetFPos ((short) syBuf[fid].fp, &len);
+		if (SyLastMacErrorCode != noErr) 
+			return Fail;
+		read -= len; /* number of bytes to be read from disk */
+		if ((bufno = syBuf[fid].bufno) >= 0) {
+	   		len = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;  /* number of bytes in buffer */
+			if (ilim != -1) {
+				if (len > ilim) {
+					len = ilim;  /* read at most ilim bytes */
+					read = 0;
+				}
+				ilim -= len;
+				if (ilim > read) 
+					read = ilim;
+			}
+			str = NEW_STRING (read+len);
+			BlockMove (syBuffers[bufno].buf + syBuffers[bufno].bufstart, 
+				CHARS_STRING (str), len); /* copy from buffer */
+			syBuffers[bufno].bufstart += len; /* mark as read */
+		} else {
+			if (ilim != -1 && ilim < read) 
+				read = ilim;
+			len = 0;
+			str = NEW_STRING (read);
+		}
+		if (read) { /* read from file */
+			count = read;
+			SyLastMacErrorCode = FSRead((short) syBuf[fid].fp, &read, CHARS_STRING(str)+len); 
+			if (SyLastMacErrorCode != noErr) 
+				return Fail;
+			if (count > read) { /* couldn't get all we wanted, shoouldn't happen */
+				SET_LEN_STRING (str, read+len);
+	    		ResizeBag( str, SIZEBAG_STRINGLEN(len) );
+	    	}
+		} else
+			read = 0;
+			
+	}
+	
+	if (!syBuf[fid].binary) {
+		count = read + len;
+		p = CHARS_STRING (str)-1;
+		while (count--) {
+			if (*++p == '\r')
+				*p = '\n';
+		}
+	}
+	
+	return read+len == 0 ? Fail : str;
+}
+#endif
 
 /****************************************************************************
 **
@@ -1630,6 +1888,7 @@ Obj FuncWRITE_BYTE_FILE (
     return ret == -1 ? Fail : True;
 }
 
+#ifndef SYS_IS_MAC_MWC
 /****************************************************************************
 **
 *F  FuncWRITE_STRING_FILE_NC( <self>, <fid>, <string> ) .write a whole string
@@ -1643,23 +1902,34 @@ Obj FuncWRITE_STRING_FILE_NC (
 
     /* don't check the argument                                            */
     
-    /* call the system dependent function                                  */
-    /* SyFputs( CSTR_STRING(str), INT_INTOBJ(fid) ); */
     len = GET_LEN_STRING(str);
-/*    ret = fwrite(CHARS_STRING(str), 1, len, syBuf[INT_INTOBJ(fid)].fp);*/
-
-    ret = write( fileno(syBuf[INT_INTOBJ(fid)].echo), CHARS_STRING(str), len);
+    ret = write( syBuf[INT_INTOBJ(fid)].echo, CHARS_STRING(str), len);
     return (ret == len)?True : Fail;
 }
 
+#else
+/****************************************************************************
+**
+*F  FuncWRITE_STRING_FILE_NC( <self>, <fid>, <string> ) .write a whole string
+*/
+Obj FuncWRITE_STRING_FILE_NC (
+    Obj             self,
+    Obj             fid,
+    Obj             str )
+{
+	return (syFputs (CSTR_STRING(str), INT_INTOBJ(fid)) == 0 ?True : Fail);
+}
+#endif
 
 
+#ifndef SYS_IS_MAC_MWC
 Obj FuncREAD_STRING_FILE (
     Obj             self,
     Obj             fid )
 {
     Char            buf[20001];
-    Int             ret, len, strlen;
+    Int             ret, len;
+    UInt            lstr;
     Obj             str;
 
     /* check the argument                                                  */
@@ -1670,15 +1940,18 @@ Obj FuncREAD_STRING_FILE (
             "you can replace <fid> via 'return <fid>;'" );
     }
 
-#if HAS_STAT
+#ifndef CYGWIN
+    /* fstat seems completely broken under CYGWIN */
+#if HAVE_STAT
     /* first try to get the whole file as one chunk, this avoids garbage
        collections because of the GROW_STRING calls below    */
     {
         struct stat fstatbuf;
-        if ( fstat( fileno(syBuf[INT_INTOBJ(fid)].echo),  &fstatbuf) == 0 ) {
+        if ( syBuf[INT_INTOBJ(fid)].pipe == 0 &&
+             fstat( syBuf[INT_INTOBJ(fid)].fp,  &fstatbuf) == 0 ) {
             len = fstatbuf.st_size;
             str = NEW_STRING( len );
-            ret = read( fileno(syBuf[INT_INTOBJ(fid)].echo), 
+            ret = read( syBuf[INT_INTOBJ(fid)].fp, 
                         CHARS_STRING(str), len);
             CHARS_STRING(str)[ret] = '\0';
             SET_LEN_STRING(str, ret);
@@ -1688,28 +1961,71 @@ Obj FuncREAD_STRING_FILE (
         }
     }
 #endif
-
+#endif
     /* read <fid> until we see  eof   (in 20kB pieces)                     */
     str = NEW_STRING(0);
     len = 0;
     while (1) {
-        if ( (ret = fread( buf, 1, 20000, syBuf[INT_INTOBJ(fid)].fp )) == 0 )
+        if ( (ret = read( syBuf[INT_INTOBJ(fid)].fp , buf, 20000)) <= 0 )
             break;
         len += ret;
         GROW_STRING( str, len );
-	strlen = GET_LEN_STRING(str);
-        memcpy( CHARS_STRING(str)+strlen, buf, ret );
-	*(CHARS_STRING(str)+strlen+ret) = '\0';
-	SET_LEN_STRING(str, strlen+ret);
+	lstr = GET_LEN_STRING(str);
+        memcpy( CHARS_STRING(str)+lstr, buf, ret );
+	*(CHARS_STRING(str)+lstr+ret) = '\0';
+	SET_LEN_STRING(str, lstr+ret);
     }
 
     /* fix the length of <str>                                             */
     len = GET_LEN_STRING(str);
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
-    /* and return                                                          */
+    /* and return */
+
+    syBuf[INT_INTOBJ(fid)].ateof = 1;
     return len == 0 ? Fail : str;
 }
+#endif
+
+#ifdef SYS_IS_MAC_MWC
+Obj FuncREAD_STRING_FILE (
+    Obj             self,
+    Obj             iofid )
+{
+    Int             len, fid;
+    Obj             str;
+    TE32KHandle     tH;
+    /* check the argument                                                  */
+    while ( ! (IS_INTOBJ(iofid)) ) {
+        iofid = ErrorReturnObj(
+            "<fid> must be an integer (not a %s)",
+            (Int)TNAM_OBJ(iofid), 0L,
+            "you can replace <fid> via 'return <fid>;'" );
+    }
+
+    if (iofid == INTOBJ_INT(0))  /* redirect input */
+    	iofid = INTOBJ_INT(SyInFid);
+    	
+	fid = INT_INTOBJ(iofid);
+	
+	if (fid < 4) 
+		return Fail;   /* only supposed to read from real files */
+		    	
+	/* get length of file to read */	    	
+    if (syBuf[fid].fromDoc) {
+    	if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
+			&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) {
+			len = (**tH).teLength; /* we assume that no data has been read */; 
+		} else
+    	    return Fail;  /* no data in window */
+    } else { /* read from file */
+		SyLastMacErrorCode = GetEOF ((short) syBuf[fid].fp, &len); /* we assume that no data has been read */; 
+		if (SyLastMacErrorCode != noErr) 
+			return Fail;
+	}
+	return FuncREAD_ALL_FILE (self, iofid, INTOBJ_INT(len));
+}
+#endif
 
 #if SYS_MAC_MWC
 
@@ -1720,6 +2036,14 @@ Obj FuncREAD_STRING_FILE (
 Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
   ErrorQuit("FD_OF_FILE is not available on this architecture", (Int)0L, 
+            (Int) 0L);
+  return Fail;
+}
+
+Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
+                   Obj timeoutsec, Obj timeoutusec)
+{
+  ErrorQuit("UNIXSelect is not available on this architecture", (Int)0L, 
             (Int) 0L);
   return Fail;
 }
@@ -1740,7 +2064,7 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
            "you can replace <fid> via 'return <fid>;'" );
 
   fd = INT_INTOBJ(fid);
-  fdi = fileno(syBuf[fd].fp);
+  fdi = syBuf[fd].fp;
   return INTOBJ_INT(fdi);
 }
 
@@ -1849,6 +2173,15 @@ Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist,
   }
   return INTOBJ_INT(n);
 }
+#else
+Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
+                   Obj timeoutsec, Obj timeoutusec)
+{
+  ErrorQuit("UNIXSelect is not available on this architecture", (Int)0L, 
+            (Int) 0L);
+  return Fail;
+}
+
 #endif
 
 #endif
@@ -2070,6 +2403,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "READ_LINE_FILE", 1L, "fid",
       FuncREAD_LINE_FILE, "src/streams.c:READ_LINE_FILE" },
 
+    { "READ_ALL_FILE", 2L, "fid, limit",
+      FuncREAD_ALL_FILE, "src/streams.c:READ_ALL_FILE" },
+
     { "SEEK_POSITION_FILE", 2L, "fid, pos",
       FuncSEEK_POSITION_FILE, "src/streams.c:SEEK_POSITION_FILE" },
 
@@ -2085,12 +2421,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "FD_OF_FILE", 1L, "fid",
       FuncFD_OF_FILE, "src/streams.c:FD_OF_FILE" },
 
-#if !SYS_MAC_MWC
-#if HAVE_SELECT
     { "UNIXSelect", 5L, "inlist, outlist, exclist, timeoutsec, timeoutusec",
       FuncUNIXSelect, "src/streams.c:UNIXSelect" },
-#endif
-#endif
 
     { "ExecuteProcess", 5L, "dir, prg, in, out, args",
       FuncExecuteProcess, "src/streams.c:ExecuteProcess" },

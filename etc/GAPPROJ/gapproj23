@@ -1,0 +1,23 @@
+@Name
+Rational function fields
+@Contact
+WDJ
+@Date
+2001/9/28
+@Time
+3
+@Need
+1
+@NeedA
+1
+@Math
+3
+@Prog
+4
+@Component
+Fields, Rational functions
+@Descr
+Implement code for rational function fields.
+@Manual
+@Ref
+@Rem

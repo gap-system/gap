@@ -20,6 +20,9 @@
 **  some sort of probe function
 **
 */
+
+#define _GNU_SOURCE  /* is used for ptsname_r prototype etc. */
+
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_iostream_c =
@@ -51,6 +54,15 @@ const char * Revision_iostream_c =
 # define SYS_STDIO_H
 #endif
 
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+#if !SYS_MAC_MWC
+#include  <sys/time.h>
+#endif
+
 #if SYS_MAC_MWC || SYS_MAC_MPW
 
 Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
@@ -66,6 +78,12 @@ Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
 }
 
 Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
+{
+  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
+  return Fail;
+}
+
+Obj FuncREAD_IOSTREAM_NOWAIT( Obj self, Obj stream, Obj string, Obj len )
 {
   ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
   return Fail;
@@ -169,14 +187,14 @@ typedef struct {
 				   implying that the child has vanished under our noses */
 } PtyIOStream;
 
-#define MAX_PTYS 32
+#define MAX_PTYS 64
 
 static PtyIOStream PtyIOStreams[MAX_PTYS];
-static UInt FreePtyIOStreams;
+static Int FreePtyIOStreams;
 
 Int NewStream( void )
 {
-  Int stream;
+  Int stream = -1;
   if (FreePtyIOStreams != -1)
     {
       stream = FreePtyIOStreams;
@@ -191,63 +209,15 @@ void FreeStream( UInt stream)
   FreePtyIOStreams = stream;
 }
 
-Int ReadFromPty( UInt stream, Char *buf, Int len )
-{
-  Int         n;
-  Int         old;
-
-  if ( len < 0 )
-    return read( PtyIOStreams[stream].ptyFD, buf, -len ); /* don't wait */
-  else
-    {
-      old = len;
-      while ( 0 < len )
-        {
-	  while ( ( n = read(PtyIOStreams[stream].ptyFD , buf, len ) ) < 0 )
-	    ;
-	  buf  += n;
-	  len  -= n;
-        }
-      return old;
-    }
-
-}
-
-extern int errno;
-
-UInt WriteToPty ( UInt stream, Char *buf, Int len )
-{
-    Int         res;
-    Int         old;
-    if (len < 0)
-      return  write( PtyIOStreams[stream].ptyFD, buf, -len );
-    old = len;
-    while ( 0 < len )
-    {
-        res = write( PtyIOStreams[stream].ptyFD, buf, len );
-        if ( res < 0 )
-        {
-	    if ( errno == EAGAIN )
-		continue;
-	    return errno;
-        }
-        len  -= res;
-        buf += res;
-    }
-    return old;
-}
-
-
-
 /****************************************************************************
 **
 *F  SignalChild(<stream>) . .. . . . . . . . . . .  interrupt the child process
 */
-void SignalChild (UInt stream, UInt signal)
+void SignalChild (UInt stream, UInt sig)
 {
     if ( PtyIOStreams[stream].childPID != -1 )
     {
-        kill( PtyIOStreams[stream].childPID, signal );
+        kill( PtyIOStreams[stream].childPID, sig );
     }
 }
 
@@ -305,14 +275,14 @@ void KillChild (UInt stream)
 #endif
 
 
-static UInt GetMasterPty ( int * pty, Char * ttyname, Char *ptyname )
+static UInt GetMasterPty ( int * pty, Char * nametty, Char *namepty )
 {
 #if HAVE_GETPT && HAVE_PTSNAME_R
   if ((*pty = getpt()) > 0 )
     {
       if (grantpt(*pty) || unlockpt(*pty))
 	return 1;
-      ptsname_r(*pty, ttyname, 32); 
+      ptsname_r(*pty, nametty, 32); 
       return 0;
     }
   return 1;
@@ -324,7 +294,7 @@ static UInt GetMasterPty ( int * pty, Char * ttyname, Char *ptyname )
 
 #   else
 #   if HAVE_GETPSEUDOTTY
-        return (*pty = getpseudotty( ttyname, ptyname )) >= 0 ? 0 : 1;
+        return (*pty = getpseudotty( nametty, namepty )) >= 0 ? 0 : 1;
 #   else
 #   if HAVE__GETPTY
 	char  * line;
@@ -332,7 +302,7 @@ static UInt GetMasterPty ( int * pty, Char * ttyname, Char *ptyname )
 	line = _getpty(pty, O_RDWR|O_NDELAY, 0600, 0) ;
         if (0 == line)
             return 1;
-	strcpy( ttyname, line );
+	strcpy( nametty, line );
 	return 0;
 
 #   else
@@ -342,10 +312,10 @@ static UInt GetMasterPty ( int * pty, Char * ttyname, Char *ptyname )
         *pty = open( "/dev/ptc", O_RDWR );
         if ( *pty < 0 || (fstat (*pty, &fstat_buf)) < 0 )
             return 1;
-        sprintf( ttyname, "/dev/ttyq%d", minor(fstat_buf.st_rdev) );
+        sprintf( nametty, "/dev/ttyq%d", minor(fstat_buf.st_rdev) );
 #       if !defined(sgi)
-            sprintf( ptyname, "/dev/ptyq%d", minor(fstat_buf.st_rdev) );
-            if ( (*tty = open (ttyname, O_RDWR)) < 0 ) 
+            sprintf( namepty, "/dev/ptyq%d", minor(fstat_buf.st_rdev) );
+            if ( (*tty = open (nametty, O_RDWR)) < 0 ) 
             {
                 close (*pty);
                 return 1;
@@ -360,16 +330,16 @@ static UInt GetMasterPty ( int * pty, Char * ttyname, Char *ptyname )
 
         while ( SYS_PTYCHAR1[letter] )
         {
-            ttyname[strlen(ttyname)-2] = SYS_PTYCHAR1[letter];
-            ptyname[strlen(ptyname)-2] = SYS_PTYCHAR1[letter];
+            nametty[strlen(nametty)-2] = SYS_PTYCHAR1[letter];
+            namepty[strlen(namepty)-2] = SYS_PTYCHAR1[letter];
 
             while ( SYS_PTYCHAR2[devindex] )
             {
-                ttyname[strlen(ttyname)-1] = SYS_PTYCHAR2[devindex];
-                ptyname[strlen(ptyname)-1] = SYS_PTYCHAR2[devindex];
+                nametty[strlen(nametty)-1] = SYS_PTYCHAR2[devindex];
+                namepty[strlen(namepty)-1] = SYS_PTYCHAR2[devindex];
                         
-                if ( (*pty = open( ptyname, O_RDWR )) >= 0 )
-                    if ( (slave = open( ttyname, O_RDWR, 0 )) >= 0 )
+                if ( (*pty = open( namepty, O_RDWR )) >= 0 )
+                    if ( (slave = open( nametty, O_RDWR, 0 )) >= 0 )
                     {
                         close(slave);
                         (void) devindex++;
@@ -416,23 +386,19 @@ RETSIGTYPE ChildStatusChanged( int whichsig )
     }
   /* Collect up any other zombie children */
   do {
-   retcode = waitpid( -1, &status, WNOHANG);
+    retcode = waitpid( -1, &status, WNOHANG);
    if (retcode == -1 && errno != ECHILD)
      Pr("#E Unexpected waitpid error %d\n",errno, 0);
-#if 0
-   else if (retcode != 0)
-     Pr"Reaped unexpected child %d\n",retcode, 0L);
-#endif
- } while (retcode != 0 && retcode != -1);
+  } while (retcode != 0 && retcode != -1);
   
   signal(SIGCHLD, ChildStatusChanged);
 }
 
 Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 {
-    Int             j;       /* loop variables                  */
-    char            c[8];    /* buffer for communication        */
-    int             n;       /* return value of 'select'        */
+/*  Int             j;       / loop variables                  */
+/*  char            c[8];    / buffer for communication        */
+/*  int             n;       / return value of 'select'        */
     int             slave;   /* pipe to child                   */
     Int            stream;
 
@@ -531,11 +497,14 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 #endif
 
 	/* set input to non blocking operation */
+	/* Not any more */
+#if 0
 	if ( fcntl( PtyIOStreams[stream].ptyFD, F_SETFL, O_NDELAY ) < 0 )
 	  {
 	    Pr( "Panic: cannot set non blocking operation.\n", 0, 0);
 	    goto cleanup;
 	  }
+#endif
 
 	PtyIOStreams[stream].inuse = 1;
 	PtyIOStreams[stream].alive = 1;
@@ -557,8 +526,10 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 	    
 	    if ( chdir(dir) == -1 ) {
 	      _exit(-1);
-	    }
-	   setpgrp(); 
+            }
+#if  HAVE_SETPGID
+           setpgid(0,0);
+#endif
 #       ifdef SYS_HAS_EXECV_CCHARPP
             execv( prg, (const char**) args );
 #       else
@@ -647,7 +618,149 @@ Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
   else
     return INTOBJ_INT(pty);
 }
+
+
+
+
+Int ReadFromPty2( UInt stream, Char *buf, Int maxlen, UInt block)
+{
+  /* read at most maxlen bytes from stream, into buf.
+    If block is non-zero then wait for at least one byte
+    to be available. Otherwise don't. Return the number of
+    bytes read, or -1 for error. A blocking return having read zero bytes
+    definitely indicates an end of file */
+
+  Int nread = 0;
+  int ret;
   
+  while (maxlen > 0)
+    {
+#if HAVE_SELECT
+      if (!block || nread > 0)
+      {
+	fd_set set;
+	struct timeval tv;
+	do {
+	  FD_ZERO( &set);
+	  FD_SET( PtyIOStreams[stream].ptyFD, &set );
+	  tv.tv_sec = 0;
+	  tv.tv_usec = 0;
+	  ret =  select( PtyIOStreams[stream].ptyFD + 1, &set, NULL, NULL, &tv);
+	} while (ret == -1 && errno == EAGAIN);
+	if (ret == -1 && nread == 0)
+	  return -1;
+	if (ret < 1)
+	  return nread ? nread : -1;
+      }
+#endif
+      do {
+	ret = read(PtyIOStreams[stream].ptyFD, buf, maxlen);
+      } while (ret == -1 && errno == EAGAIN);
+      if (ret == -1 && nread == 0)
+	return -1;
+      if (ret < 1)
+	return nread;
+      nread += ret;
+      buf += ret;
+      maxlen -= ret;
+    }
+  return nread;
+}
+  
+  
+
+#if 0
+Int ReadFromPty( UInt stream, Char *buf, Int len )
+{
+  Int         n;
+  Int         old;
+
+ 
+  /* with a negative length, make one attempt (now blocking until there are some
+     bytes, or an end-of-file condition.
+
+     with a positive length, keep trying until we get that many bytes or an end condition
+
+     we're now using blocking reads, so there is no need to put a select in the loop */
+
+  Pr("RFP %d %d\n",stream, len);
+  if ( len < 0 )
+    {
+      n = read( PtyIOStreams[stream].ptyFD, buf, -len ); /* don't wait */
+      if (n == -1)
+	{
+	  Pr("  %d %s\n",n,(Int)strerror(errno));
+	}
+      else
+	{
+	  Pr("  %d read\n",n,0);
+	}
+      return n;
+    }
+  else
+    {
+      old = len;
+      while ( 0 < len )
+        {
+	  
+	  n = read(PtyIOStreams[stream].ptyFD , buf, len );
+	  if (n == -1)
+	    {
+	      Pr("  %d %s\n",n,(Int)strerror(errno));
+	    }
+	  else
+	    {
+	      Pr("  %d read\n",n,0);
+	    }
+	  if (n <= 0)
+	    {
+	      if (len < old )
+		return old-len;
+	      else
+		return n;
+	    }
+	    
+	  buf  += n;
+	  len  -= n;
+        }
+      return old;
+    }
+}
+#endif
+extern int errno;
+
+UInt WriteToPty ( UInt stream, Char *buf, Int len )
+{
+    Int         res;
+    Int         old;
+/*  struct timeval tv; */
+/*  fd_set      writefds; */
+/*  int retval; */
+    if (len < 0)
+      return  write( PtyIOStreams[stream].ptyFD, buf, -len );
+    old = len;
+    while ( 0 < len )
+    {
+        res = write( PtyIOStreams[stream].ptyFD, buf, len );
+        if ( res < 0 )
+        {
+	  HandleChildStatusChanges(stream);
+	    if ( errno == EAGAIN )
+	      {
+		continue;
+	      }
+	    else
+	      return errno;
+        }
+        len  -= res;
+        buf += res;
+    }
+    return old;
+}
+
+
+
+
 Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
 {
   UInt pty = INT_INTOBJ(stream);
@@ -659,16 +772,42 @@ Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
   return INTOBJ_INT(WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len)));
 }
 
-Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
+Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
 {
   UInt pty = INT_INTOBJ(stream);
-  ConvString(string);
+  Int ret;
+  Obj string;
+  string = NEW_STRING(INT_INTOBJ(len));
   while (!PtyIOStreams[pty].inuse)
     pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
                                     "you can replace stream number <num> via 'return <num>;'"));
-  HandleChildStatusChanges(pty);
-  return INTOBJ_INT(ReadFromPty(pty, CSTR_STRING(string), INT_INTOBJ(len)));
+  /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
+  ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 1);
+  if (ret == -1)
+    return Fail;
+  SET_LEN_STRING(string, ret);
+  ResizeBag(string, SIZEBAG_STRINGLEN(ret));
+  return string;
 }
+
+Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
+{
+  Obj string;
+  UInt pty = INT_INTOBJ(stream);
+  Int ret;
+  string = NEW_STRING(INT_INTOBJ(len));
+  while (!PtyIOStreams[pty].inuse)
+    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
+                                    "you can replace stream number <num> via 'return <num>;'"));
+  /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
+  ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 0);
+  if (ret == -1)
+    return Fail;
+  SET_LEN_STRING(string, ret);
+  ResizeBag(string, SIZEBAG_STRINGLEN(ret));
+  return string;
+}
+     
 
 Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 {
@@ -681,14 +820,14 @@ Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
   return 0;
 }
 
-Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj signal)
+Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
 {
   UInt pty = INT_INTOBJ(stream);
   while (!PtyIOStreams[pty].inuse)
     pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
                                     "you can replace stream number <num> via 'return <num>;'"));
   /* Don't check for child having changes status */
-  SignalChild( pty, INT_INTOBJ(signal) );
+  SignalChild( pty, INT_INTOBJ(sig) );
   return 0;
 }
 
@@ -697,7 +836,7 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
   UInt pty = INT_INTOBJ(stream);
   int status;
   int retcode;
-  UInt count;
+/*UInt count; */
   while (!PtyIOStreams[pty].inuse)
     pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
                                     "you can replace stream number <num> via 'return <num>;'"));
@@ -752,8 +891,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "WRITE_IOSTREAM", 3, "stream, string, len",
       FuncWRITE_IOSTREAM, "src/iostream.c:WRITE_IOSTREAM" },
     
-    { "READ_IOSTREAM", 3, "stream, string, len",
+    { "READ_IOSTREAM", 2, "stream, len",
       FuncREAD_IOSTREAM, "src/iostream.c:READ_IOSTREAM" },
+
+    { "READ_IOSTREAM_NOWAIT", 2, "stream, len",
+      FuncREAD_IOSTREAM_NOWAIT, "src/iostream.c:READ_IOSTREAM_NOWAIT" },
 
     { "KILL_CHILD_IOSTREAM", 1, "stream",
       FuncKILL_CHILD_IOSTREAM, "src/iostream.c:KILL_CHILD_IOSTREAM" },
@@ -770,7 +912,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "FD_OF_IOSTREAM", 1, "stream",
       FuncFD_OF_IOSTREAM, "src/iostream.c:FD_OF_IOSTREAM" },
 
-    0 };
+      {0} };
   
 /* NB Should probably do some checks preSave for open files etc and refuse to save
    if any are found */

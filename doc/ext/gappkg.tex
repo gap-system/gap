@@ -1,0 +1,572 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  gappkg.tex                GAP documentation             Werner Nickel
+%W                                                       Alexander Hulpke
+%%
+%H  @(#)$Id$
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Writing a GAP Package}
+
+This chapter explains the basics of how to write a {\GAP} package so that it
+interfaces properly to {\GAP}.
+For the role of {\GAP} packages and the ways to load them,
+see Chapter~"ref:GAP Packages" in the Reference Manual.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Structure of a GAP Package}
+
+Every {\GAP} package is in a subdirectory of the directory `pkg' which
+itself is a subdirectory of a {\GAP} root directory
+(see Section~"ref:GAP Root Directory" in the Reference Manual).
+This directory is called the home directory of the {\GAP} package.
+*The name of this directory (modulo case) is the name of the package.*
+(The package name may have mixed case; but the directory must be *all* lower
+case.)
+
+The home directory of the {\GAP} package must contain a file
+`init.g'. This file contains the necessary {\GAP} code to set up all
+that the package needs. Section "The Init File of a GAP
+Package" explains how such an `init' file must look. If declaration
+and implementation are separated (see "Declaration and Implementation
+Part") or if completion (see "Package Completion") is used
+there also will be a second file `read.g' which reads in
+further files.)
+
+In addition, the home directory can contain other files and
+subdirectories. It is usually a good idea to follow the general
+example of the subdirectory structure of the {\GAP} root directory.
+Although this is not strictly necessary, it makes it easier to look
+through a {\GAP} package and some administrative functions for {\GAP}
+packages rely on it.
+
+Typically there are at least two subdirectories called `lib' and
+`doc'. The first contains files with {\GAP} code and corresponds to
+the {\GAP} library directory. The second contains the manual and
+documentation of the package.
+
+If the {\GAP} package has stand-alone programs, it should have a
+subdirectory called `bin' that contains the executables. This
+directory is subdivided into several others. Refer to section
+"Standalone Programs in a GAP Package" on stand-alone programs for a
+more detailed explanation. In this case there might also be a
+directory called `src' containing the source code of the stand-alone
+programs and instructions for their compilation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Init File of a GAP Package}
+
+\indextt{init.g!for a GAP package}
+The initialization file of a {\GAP} package is a file `init.g' in the
+home directory of the package. This file tells {\GAP} about the
+version number of the {\GAP} package, about the documentation and about
+the actual code. It is a proper {\GAP} file (so syntax and comments
+are standard), but only the following {\GAP} functions may be called
+(if further functions are called the loading process, which proceeds
+in two stages, may not work):
+
+The first command in the file will be a call to `DeclarePackage' (see
+"ref:DeclarePackage" in the Reference Manual). This indicates the package's
+version number and permits to test whether necessary external binaries or
+other {\GAP} packages are installed. If instead `DeclareAutoPackage'
+(see~"ref:DeclareAutoPackage" in the Reference Manual) is called, the
+package will be loaded automatically when {\GAP} has started. (To be exact:
+{\GAP} loads the library, then reads the users `.gaprc' or `gap.rc' file
+and then loads the {\GAP} packages which are intended for automatic loading
+and which are not yet loaded via the users `.gaprc' or `gap.rc' file.)
+
+\indextt{ALLPKG}
+At the moment automatic loading is only available for the packages listed
+in the file `pkg/ALLPKG'. This is due to the fact that there is no standard
+C-Function that will list the contents of a subdirectory.
+
+The next command will be a call to `DeclarePackageDocumentation' (see
+"ref:DeclarePackageDocumentation" in the Reference Manual) to indicate the
+location of the packages documentation to {\GAP}. If instead
+`DeclarePackageAutoDocumentation' (see "ref:DeclarePackageAutoDocumentation"
+in the Reference Manual) is called, the documentation will be read
+automatically when {\GAP} starts (however `RequirePackage' still has to be
+used to load the actual package in case the first command in the file is
+`DeclarePackage').
+
+If the package requires other {\GAP} packages (see "Requesting one GAP
+Package from within Another") this is followed by calls to `RequirePackage'.
+
+Finally, calls to `ReadPkg' (see~"ref:ReadPkg" in the Reference Manual)
+will read files which contain the actual {\GAP}
+functions the package provides.
+
+To separate declaration and implementation parts, for larger packages it is
+recommended to only load the declaration part from within `init.g' and to
+use the separate `read.g' file to load the implementation part.
+See sections~"Declaration and Implementation Part" and~"Package Completion"
+for details.
+
+For example this is the `init.g' file of a simple ``test'' {\GAP} package:
+
+\begintt
+# announce the package version
+DeclarePackage("test","1.0",ReturnTrue);
+
+# install the documentation
+DeclarePackageDocumentation( "test", "doc" );
+
+# read the actual code.
+ReadPkg( "test", "gap/code.g");
+\endtt
+
+This file installs the {\GAP} package ``test'' in version 1.0. There
+are no requirements that have to be tested, so `ReturnTrue'
+(see~"ref:ReturnTrue" in the Reference Manual) is used as
+test function. It then installs documentation for the package,
+which can be found in the `doc' subdirectory. Finally, it reads the
+file `code.g' in the `gap' subdirectory, which contains the actual
+code.
+
+If the package author wants the {\GAP} package to display a separate
+banner the printing of the banner must be issued from within a file
+which will be read via `ReadPkg' from the `init.g' file. If the
+package is intended for automatic loading we however recommend not to print
+any separate banner as the user will get a list of the loaded {\GAP} packages
+at the end of the initialization process.
+
+A {\GAP} package which has been loaded once
+cannot be unloaded and also cannot be loaded again.
+However, as with any file individual files may be ``reread''.
+
+\>RereadPkg( <pkg>, <file> ) F
+\>RereadPkg( <pkg-file> ) F
+
+In the first form, `RereadPkg' rereads  the  file  <file>  of  the {\GAP}
+package <pkg>, where <file> is given as a relative path to the  directory 
+of <pkg>. In the second form where only one argument <pkg-file> is given,
+<pkg-file> should be the complete path of a  file  relative  to  a  `pkg'
+subdirectory of a {\GAP} root path (see~"ref:GAP root directory"  in  the
+Reference Manual). Each of <pkg>,  <file>  and  <pkg-file>  should  be  a
+string.
+
+When  writing (and debugging) a {\GAP} package it may be therefore
+helpful to use  `RereadPkg' on single  files or to use a separate
+``reader'' file which does not use the `RequirePackage' mechanism.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{An Example of a GAP Package}
+
+\indextt{GAP_ROOT_PATHS}
+We illustrate the creation of a {\GAP} package by an example of a basic
+package. (The following assumes that you are using {\GAP} under UNIX.)
+
+Create the following  directories in your home area:  `pkg' and
+`pkg/test'. Inside the directory `test' create the file `init.g' with
+the lines
+
+\begintt
+DeclarePackage("test","1.0",ReturnTrue);
+ReadPkg( "test", "banner.g");
+\endtt
+and create a file `banner.g' containing the single line
+\begintt
+Print( "#I reading the GAP package ``test''\n" );
+\endtt
+
+The next bit is a bit tricky because you have to find out what the
+root directories of {\GAP} on your system are.  This is done by
+starting {\GAP} and looking at the variable `GAP_ROOT_PATHS'. This a
+list of directories which {\GAP} searches upon startup for things like
+the {\GAP} library.
+
+\begintt
+gap> GAP_ROOT_PATHS;
+[ "/gap/4.0/" ]
+\endtt
+Now start {\GAP} with the command 
+\begintt
+gap -l "./;/gap/4.0/"
+\endtt
+
+The string between the pair of double quotes gives the components of
+`GAP_ROOT_PATHS' separated by semicolons. We have added at the beginning
+the string `./' denoting the current directory. This adds the current
+directory to the list of {\GAP} root directories.  Now you can load your
+{\GAP} package `test':
+
+\begintt
+gap> RequirePackage("test");
+#I reading the GAP package ``test''
+true
+\endtt
+
+This {\GAP} package is too simple to be useful, but we have succeeded in
+loading it via `RequirePackage()'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Standalone Programs in a GAP Package}
+
+{\GAP} packages that  involve stand-alone programs are fundamentally
+different from {\GAP} packages that consist entirely of {\GAP} code.
+
+This difference is threefold: A  user who installs the {\GAP} package
+must also  compile (or install) the packages  binaries, the
+package must  check whether the binaries  are indeed available and
+finally the {\GAP} code of the package has to start the external
+binary and to communicate with it. We will treat these three points in
+the following sections.
+
+If the package does not solely consist of an interface to an external
+binary and if the external program called is not just special-purpose
+code, but a generally available program, chances are high that sooner
+or later other {\GAP} packages might also require this program.
+
+We therefore strongly suggest to provide a documented {\GAP} function
+that will call the external binary. We also suggest to create actually
+two {\GAP}  packages; the first providing only the binary and the
+interface and the second (requiring the first, see "Requesting one
+GAP Package from within Another") being the actual {\GAP} package.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installation of GAP Package Binaries}
+
+The scheme for the installation of package binaries which is described
+further on is intended to permit  the installation on different
+architectures which  share a common file  system (and share the
+architecture independent file).
+
+A {\GAP} package  which includes external binaries contains a `bin'
+subdirectory. This subdirectory in turn contains subdirectories for
+the different architectures on which the {\GAP} package binaries are
+installed.  The names of these directories must be the same as the
+names of the architecture dependent subdirectories of the main `bin'
+directory. Unless you use a tool like `autoconf' yourself, you must
+obtain the correct name of the binary directory from the main {\GAP}
+branch. To help with this, the main {\GAP} directory contains a file
+`sysinfo.gap' which assigns the shell variable `GAParch' to the proper
+name as determined by {\GAP}'s `configure' process. For example on a
+Linux system, the file `sysinfo.gap' may  look like this:
+
+\begintt
+GAParch=i586-unknown-linux2.0.31-gcc
+\endtt
+
+We suggest that your {\GAP} package contains a file `configure' which
+is  called with the  path of  the  {\GAP} root directory  as
+parameter. This file then  will  read `sysinfo.gap' and set  up
+everything for compiling under the given architecture (for example
+creating a `Makefile' from `Makefile.in'.
+
+The standard {\GAP} distribution contains a {\GAP} package ``example''
+whose installation script shows an example way of how to do this.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Test for the Existence of GAP Package Binaries}
+
+If an external binary is essential for the  workings of a {\GAP} package, the
+test function called  from `DeclarePackage' should test whether the program
+has been compiled on the architecture (and inhibit package loading if this
+is not the case). This is especially important if the package is loaded
+automatically.
+
+The easiest way to accomplish this is to use `Filename' (see "ref:Filename"
+in the Reference Manual) for checking for  the actual binaries in the path
+given by `DirectoriesPackagePrograms' (see~"ref:DirectoriesPackagePrograms"
+in the Reference Manual) for the respective package. For example
+the ``example'' {\GAP} package uses the following commands to test whether
+the binary `hello' has been compiled, it issues a warning if not and will
+only load if it is indeed available.
+
+\begintt
+DeclarePackage("example","1.0",
+  function()
+  local path,file;
+    # test for existence of the compiled binary
+    path:=DirectoriesPackagePrograms("example");
+    file:=Filename(path,"hello");
+    if file=fail then
+      Info(InfoWarning,1,
+        "Package ``example'': The program `hello' is not compiled");
+    fi;
+    return file<>fail;
+  end);
+\endtt
+
+You might also have to cope with the situation that external binaries will
+only run under UNIX (and not, say on a Macintosh). See section~"ref:Testing
+for the System Architecture" in the reference manual for information on how
+to test for the architecture.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Calling of and Communication with External Binaries}
+
+There are two reasons for this: the input data has  to be passed on to
+the stand-alone program and the  stand-alone program  has to be  started
+from within {\GAP}.
+
+There are two principal ways of doing this.  
+
+The first possibility is to write  all the data  for the stand-alone to
+one or several files, then start the stand-alone  which then writes the
+output data to file and finally read in the standalone's output file.
+
+The second way is interfacing via iostreams (see 
+Section~"ref:Input-Output Streams" in the Reference Manual).
+The support for this is in its infancy.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Requesting one GAP Package from within Another}
+
+It is possible for one {\GAP} package to require another. In principle this
+can be simply done by calling `RequirePackage' from the `init' file of the
+one package. However, the other package might be essential and we
+might want to fail loading if the other package is not available. To achieve
+this,  the <tester> function in `DeclarePackage' can call
+`TestPackageAvailability'  (see "ref:TestPackageAvailability") and check,
+whether it returns `fail' or not.
+
+(If the other {\GAP} package is not compulsory, it is also possible to leave
+out the `TestPackageAvailability' command and only to call `RequirePackage'
+later in the `init.g' file. In this case the other {\GAP} package will be
+loaded if available but if this is not the case this will not inhibit
+loading of the first package. See "Testing for a GAP Package".)
+
+Even if we tested the availability of another package this way, we
+still  need to eventually load the other package using
+`RequirePackage'. This might initially look like having to do the same
+work twice. The reason of this split between testing availability and
+package loading is to ensure the possibility of two {\GAP} packages
+compulsory requesting each other.
+
+For example, the `init.g' file of a {\GAP} package ``test'', which requires
+the {\GAP} package ``example'' in at least version 2.3 would look like:
+
+\begintt
+DeclarePackage("test","1.0",
+  function()
+  local a;
+    a:=TestPackageAvailability("example","2.3");
+    if a=fail then
+      Info(InfoWarning,1,"required GAP package ``example'' not available");
+    fi;
+    return a<>fail;
+  end
+  );
+
+DeclarePackageDocumentation( "test", "doc" );
+
+RequirePackage("example","2.3");
+
+ReadPkg( "test", "gap/read.g");
+\endtt
+
+If the {\GAP} package ``example'' was not available (or only available in an
+older version), the installation of the package ``test'' would fail, no code
+would be read in and no documentation would be installed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Declaration and Implementation Part}
+
+\indextt{init.g!for a GAP package}
+\indextt{read.g!for a GAP package}
+When  {\GAP}  packages  require  each other    in  a  circular  way, a
+``bootstrapping'' problem arises of defining functions before they are
+called. The same  problem occurs in the  library, it is resolved there
+by separating declarations (which  define categories, operations etc.)
+and   implementations (which install methods)   in different files. An
+implementation  file may use   declarations defined in any declaration
+file.   {\GAP} initially reads all  declaration  files (in the library
+they have a `.gd' suffix) and afterwards reads all implementation files
+(which have a `.gi' suffix).
+
+Something similar  is possible for {\GAP} packages: if a file `read.g'
+exists in the same place as `init.g',  this `read.g' file is read only
+*after*  all  the `init.g' files   of  all (implicitly) required {\GAP}
+packages  are read.  Therefore  it is possible to separate declaration
+and implementation for a {\GAP} package in the same way as done for the
+library  by  creating  such  a file   `read.g',   and restricting  the
+`ReadPkg' statements  in  `init.g' to  only load   those  files of the
+package which provide declaration and to load the implementation files
+from `read.g'.
+
+See Section~"prg:Declaration and Implementation Part" in the Programmers'
+Tutorial which discusses further the commands that should appear in the
+declaration part (in `init.g') and the implementation part (in `read.g')
+of a package.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Package Completion}
+
+Reading a larger package can take a few moments and will take up user
+workspace. This might be a nuisance to users, especially if the package is
+loaded automatically.
+The same problem of course affects the library, the problem there is solved
+using completion files (see~"ref:completion files" in the reference manual).
+
+Completion files make it possible to read only short function headers
+initially which are completed to full functions only if the functions are
+actually called.  This section explains how to set up completion for a {\GAP}
+package:
+
+Completion works for those files which are read (using `ReadPkg')
+from the `read.g' file. (This is no real restriction as completion affects
+only the implementation part.) To create completion files, load the {\GAP}
+package. Then use the following command.
+
+\>CreateCompletionFilesPkg(<pkgname>)
+
+This will create a new file `read.co' in the {\GAP} package's home directory
+<pkgname> (so you must have write permissions there). When reading the {\GAP}
+package this file is used in place of `read.g' if it exists and automatically
+takes care of completion.
+
+When you change files which are completed, {\GAP} will complain about
+non-matching CRC files and will not load them. In this case remove
+the `read.co' file and create it anew.
+
+As a {\GAP} package author you should consider including a completion file
+with the package.
+
+If you start {\GAP} with the command line option `-D', it displays
+information about reading and completion, the command line option `-N' turns
+completion off (as if all `.co' files were erased).
+(Section~"ref:Advanced Features of GAP" in the Reference Manual describes the
+options `-D' and `-N'.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Version Numbers}
+
+\indextt{VERSION}
+A version number is a string which contains nonnegative integers separated
+by non-numeric characters. Examples of valid version numbers are for
+example:
+
+\begintt
+"1.0"   "3.141.59"  "2-7-8.3" "5 release 2 patchlevel 666"
+\endtt
+
+Version numbers are interpreted as lists of integers and are compared in
+that way. Thus version `"2-3"' is larger than version `"2-2-5"' but smaller
+than `"11.0"'.
+
+It is possible for code to require {\GAP} packages in certain versions. In
+this case, all versions, whose number is equal or larger than the requested
+number are acceptable. It is the task of the package author to provide
+upwards compatibility.
+
+The global variable `VERSION' contains the version number of the version of
+{\GAP} and also can be checked against (using `CompareVersionNumbers', see
+"ref:CompareVersionNumbers" in the Reference Manual).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Testing for a GAP Package}
+
+\indextt{LOADED_PACKAGES}
+There are two ways in which one might want to test for a {\GAP} package. 
+
+The first is whether a package is available for loading or has been loaded.
+This can be done via the function `TestPackageAvailability' (see
+"ref:TestPackageAvailability" in the Reference Manual). 
+
+In order to test whether a {\GAP} package <name> has been loaded already, you
+can check the global variable `LOADED_PACKAGES' for a record component
+`LOADED_PACKAGES.(<name>)'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Writing Documentation}
+
+\indextt{README!for a GAP package}
+There  are  now  two  recognised  ways   of   producing  {\GAP}   package
+documentation. There is the method that has been used to produce the main
+manuals for {\GAP} which requires the  documentation  to  be  written  in
+{\TeX} according to the format described  in  chapter  "The  gapmacro.tex
+Manual format". There is now also an XML-based documentation method  that
+uses the \package{GAPDoc} package (see~"GAPDoc:Introduction and Example").
+Documentation written according to the format described in  chapter  "The
+gapmacro.tex Manual format" must include a `manual.tex' file to  actually
+run {\TeX} over the manual, the separate  {\TeX}  files  for  the  manual
+chapters and the file `manual.six', produced by running {\TeX}.  Whatever
+system that is used  to  produce  the  documentation,  there  must  be  a
+`manual.six' file, since this file is used by the online help to get  the
+index information. If you choose to use  a  method  other  than  the  two
+methods described above then you need to read chapter~"Interface  to  the
+GAP Help System" to find out how to provide the  necessary  help  handler
+functions and `manual.six' file. By the way, this does not mean  that  it
+is in anyway acceptable to provide documentation in just MSWord `.doc' format.
+Whatever, system you use to produce documentation, the output format must
+be one or more of plain text, {\TeX} `dvi', PostScript, PDF, or HTML, and
+preferably at least both plain text and {\TeX}  `dvi'.  It  may  also  be
+helpful to add a pre{\TeX}ed `dvi' or `ps' file of the package's manual.
+
+The main directory of the {\GAP} package should also contain a file `INSTALL'
+or `README' that briefly tells the user what the package does and (if
+applicable) how to compile and install binaries.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Wrapping Up a GAP Package}
+
+\indextt{zoo}
+The releases of {\GAP} packages are independent of releases of {\GAP}.
+Therefore {\GAP} packages should be wrapped up in separate files that can be
+installed onto any version of {\GAP}. Similarly a {\GAP} package can be
+upgraded any time without the need to wait for new releases of {\GAP}.
+
+Because it is independent of the version of {\GAP} a {\GAP} package should be
+archived from the {\GAP} `pkg'  directory, that is all files are archived with
+the path starting the package's name.
+
+The archive of a {\GAP} package should contain all files necessary for the
+package to work. This includes a `manual.six' file in the
+documentation subdirectory which is created by {\TeX}ing the documentation.
+If the package provides a substantial amount of code,
+especially if it is intended to be loaded automatically, create a completion
+file (see~"Package Completion") and include it with the package.
+
+We use the `zoo' archiver to provide {\GAP} archives and we ask you to
+use this format for your {\GAP} packages. If `zoo' is not installed on your
+system, you can get source code for example at
+\URL{ftp://ftp.tex.ac.uk/pub/archive/tools/zoo}
+
+or try a search engine like Google
+\URL{http://www.google.com}
+
+with the keywords: `zoo archiving software'.
+
+`zoo' by itself archives all files as binary files. This may lead to minor
+problems when viewing files on DOS or Macintosh systems, which use a
+different textfile format (CRLF versus LF). To overcome such problems we use
+the following mechanism for the {\GAP} archive files, which is supported by
+the `unzoo' we are providing (but is unfortunately not part of the standard
+`zoo' format):
+
+All files are archived as Unix versions. (If you are using a Windows PC or a
+Macintosh the easiest way to achieve this is to ftp the files in text mode
+to a Unix machine and do the archiving there.)
+
+When using `zoo' one can add comments to files. Whenever a file gets a comment
+`!TEXT!' this file  will be considered as text (respectively one can enforce
+binary mode by a `!BINARY' comment) and `unzoo' will extract it accordingly,
+adding a CR on non-Unix systems.
+
+If you are using the standard UNIX version of `zoo' the command
+\begintt
+zoo c archive.zoo filename
+\endtt
+will prompt you for a comment to add to the file <filename> in the archive
+`archive.zoo'. You will enter for example
+\begintt
+!TEXT!
+/END
+\endtt
+
+Normally, all files of a {\GAP} package except `dvi' files or special binary
+files are text files.
+
+If you are unsure about the format, you can use the ``list'' feature of
+`zoo' on an existing package (for example `XGAP') to see all files with
+comments:
+\begintt 
+zoo lc xgap.zoo
+\endtt 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
+%E
+

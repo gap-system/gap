@@ -46,6 +46,15 @@ IsNaturalGLnZ := IsNaturalGL and IsIntegerMatrixGroup;
 
 #############################################################################
 ##
+#P  IsNaturalSLnZ( <G> )
+##
+##  tests whether <G> is $SL_n(\Z)$ in its natural representation by
+##  $n\times n$ integer matrices. (The dimension $n$ will be read off the
+##  generating matrices.)
+IsNaturalSLnZ := IsNaturalSL and IsIntegerMatrixGroup;
+
+#############################################################################
+##
 #A  ZClassRepsQClass( G ) . . . . . . . . . . .  Z-class reps in Q-class of G
 ##
 ##  The conjugacy class in $GL_n(\Q)$ of the finite integer matrix 
@@ -83,7 +92,7 @@ DeclareAttribute( "CentralizerInGLnZ", IsCyclotomicMatrixGroup );
 ##  in crystallography implicitly depends on which action is assumed.
 ##  This holds true in particular for quadratic forms invariant under
 ##  a matrix group. In a similar way, the representation of affine 
-##  crystallographic groups, as they are provided by the share package
+##  crystallographic groups, as they are provided by the {\GAP} package
 ##  CrystGap, depends on which action is assumed. Crystallographers
 ##  are used to the action from the left, whereas the action from the
 ##  right is the natural one for {\GAP}. For this reason, a number of 
@@ -95,7 +104,7 @@ DeclareAttribute( "CentralizerInGLnZ", IsCyclotomicMatrixGroup );
 ##  For every such function, this fact is explicitly mentioned. 
 ##  The naming scheme is as follows: If `SomeThing' is such a function, 
 ##  there will be functions `SomeThingOnRight' and `SomeThingOnLeft', 
-##  assuming action from the right and from the left, repectively. 
+##  assuming action from the right and from the left, respectively. 
 ##  In addition, there is a generic function `SomeThing', which returns 
 ##  either the result of `SomeThingOnRight' or `SomeThingOnLeft', 
 ##  depending on the global variable `CrystGroupDefaultAction'.

@@ -305,7 +305,7 @@ InstallMethod( Basis,
 
     # Set up the basis object.
     B:= Objectify( NewType( FamilyObj( gens ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsBasisFiniteFieldRep ),
                    rec() );
     SetUnderlyingLeftModule( B, F );
@@ -333,9 +333,13 @@ InstallMethod( Basis,
     od;
 
     # We have a basis if and only if `mat' is invertible.
-    mat:= Inverse( mat );
-    if mat = fail then
-      return fail;
+    if Length(mat) > 0 then
+        mat:= Inverse( mat );
+        if mat = fail then
+            return fail;
+        fi;
+    else
+        mat := Immutable(mat);
     fi;
 
     # Add the coefficients information.
@@ -363,7 +367,7 @@ InstallMethod( BasisNC,
 
     # Set up the basis object.
     B:= Objectify( NewType( FamilyObj( gens ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsBasisFiniteFieldRep ),
                    rec() );
     SetUnderlyingLeftModule( B, F );
@@ -385,7 +389,11 @@ InstallMethod( BasisNC,
     od;
 
     # Add the coefficients information.
-    B!.inverseBase:= Inverse( mat );
+    if Length(mat) > 0 then
+        B!.inverseBase:= Inverse( mat );
+    else
+        B!.inverseBase:= Immutable(mat);
+    fi;
     B!.d:= d;
     B!.q:= q;
 
@@ -434,7 +442,10 @@ InstallMethod( LinearCombination,
     "for a basis of a finite field, and a hom. list",
     IsIdenticalObj,
     [ IsBasis and IsBasisFiniteFieldRep, IsHomogeneousList ],
-    function ( B, coeffs )
+        function ( B, coeffs )
+    if Length(coeffs) = 0 then
+        TryNextMethod();
+    fi;
     return coeffs * BasisVectors( B );
 #T This calls PROD_LIST_LIST_DEFAULT
 #T if both lists are known to be small,

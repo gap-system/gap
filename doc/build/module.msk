@@ -63,7 +63,7 @@ gap> V:= LeftModuleByGenerators( GF(16), coll );
 
 \beginexample
 gap> coll:= [ [Z(2),0*Z(2)], [0*Z(2),Z(2)], [Z(2),Z(2)] ];;
-gap> V:= LeftModuleByGenerators( GF(16), coll );; 
+gap> V:= LeftModuleByGenerators( GF(16), coll );;
 gap> W:= Submodule( V, [ coll[1], coll[2] ] );
 <vector space over GF(2^4), with 2 generators>
 gap> Parent( W ) = V;
@@ -104,7 +104,7 @@ gap> V:= FreeLeftModule( Rationals, [ [ 1, 0, 0 ], [ 0, 1, 0 ] ], "basis" );
 \Declaration{Dimension}
 
 \beginexample
-gap> V:= FreeLeftModule( Rationals, [ [ 1, 0 ], [ 0, 1 ], [ 1, 1 ] ] );;       
+gap> V:= FreeLeftModule( Rationals, [ [ 1, 0 ], [ 0, 1 ], [ 1, 1 ] ] );;
 gap> Dimension( V );
 2
 \endexample
@@ -122,8 +122,8 @@ true
 \beginexample
 gap> V:= FreeLeftModule( Rationals, [ [ 1, 0 ], [ 0, 1 ], [ 1, 1 ] ] );;
 gap> UseBasis( V, [ [ 1, 0 ], [ 1, 1 ] ] );
-gap> V;
-<vector space of dimension 2 over Rationals> # now V knows its dimension
+gap> V;  # now V knows its dimension
+<vector space of dimension 2 over Rationals>
 \endexample
 
 

@@ -1,0 +1,27 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  algfp.msk                    GAP documentation              Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Finitely Presented Algebras}
+
+Currently the {\GAP} library contains only few functions dealing with
+general finitely presented algebras,
+so this file is merely a placeholder.
+
+The special case of finitely presented *Lie* algebras is described
+in~"Finitely Presented Lie Algebras",
+and there is also a {\GAP} package `fplsa' for computing structure constants
+of *f*initely *p*resented *L*ie (*s*uper)*a*lgebras.
+
+% Finitely presented *associative* algebras will eventually be handled by
+% vector enumeration techniques.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

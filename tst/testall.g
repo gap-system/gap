@@ -118,6 +118,7 @@ TEST_FILES := [
 [ "listgen.tst", 1517500 ],
 [ "mapping.tst", 23067500 ],
 [ "matblock.tst", 1410500 ],
+[ "matrix.tst", 3897300000],
 [ "mgmring.tst", 21697500 ],
 [ "modfree.tst", 30792500 ],
 [ "morpheus.tst", 546842500 ],
@@ -127,14 +128,16 @@ TEST_FILES := [
 [ "rwspcgrp.tst", 304775000 ],
 [ "rwspcsng.tst", 403645000 ],
 [ "semigrp.tst", 74105000 ],
-[ "semicong.tst", 1000000000 ],
+[ "semicong.tst", 1517500 ],
+[ "semirel.tst", 1517500 ],
 [ "set.tst", 20930000 ],
 [ "unknown.tst", 320000 ],
 [ "vspchom.tst", 42737500 ],
 [ "vspcmali.tst", 35942500 ],
 [ "vspcmat.tst", 33682500 ],
 [ "vspcrow.tst", 155797500 ],
-[ "weakptr.tst", 24477500 ],
+# [ "weakptr.tst", 24477500 ], too sensitive to compiler
+#               idiosyncracies SL
 [ "xgap.tst", 310142500 ],
 [ "zlattice.tst", 10000000 ],
 [ "zmodnz.tst", 10520000 ],
@@ -146,7 +149,6 @@ TEST_FILES := [
 ];
 
 Sort( TEST_FILES, function(a,b) return a[2] < b[2]; end );
-
 
 #############################################################################
 ##

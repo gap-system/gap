@@ -26,7 +26,7 @@ DeclareInfoClass("InfoLattice");
 #R  IsConjugacyClassSubgroupsRep(<obj>)
 #R  IsConjugacyClassSubgroupsByStabilizerRep(<obj>)
 ##
-##  Is the representation {GAP} uses for conjugacy classes of subgroups. It
+##  Is the representation {\GAP} uses for conjugacy classes of subgroups. It
 ##  can be used to check whether an object is a class of subgroups.
 ##  The second representation `IsConjugacyClassSubgroupsByStabilizerRep' in
 ##  addition is an external orbit by stabilizer and will compute its
@@ -45,12 +45,24 @@ DeclareRepresentation("IsConjugacyClassSubgroupsByStabilizerRep",
 ##  (which returns <U>), `ActingDomain' (which returns <G>),
 ##  `StabilizerOfExternalSet' (which returns the normalizer of <U>), and
 ##  `AsList' work for it.
-##  It is possible to use the `[]'
-##  list access to select elements of the class. *Because of potential other
-##  methods installed, the `AsList' command may give a different arrangement
-##  of the class elements!*
+##
+##  (The use the `[]'
+##  list access to select elements of the class is considered obsolescent
+##  and will be removed in future versions. Use `ClassElementLattice'
+##  instead.)
 DeclareOperation("ConjugacyClassSubgroups", [IsGroup,IsGroup]);
-#T 1997/01/16 fceller was old `NewConstructor'
+
+#############################################################################
+##
+#O  ClassElementLattice(<C>,<n>)
+##
+##  For a class <C> of subgroups, obtained by a lattice computation, this
+##  operation returns the <n>-th conjugate subgroup in the class.
+##
+##  *Because of other
+##  methods installed, `AsList(C)' can give a different arrangement
+##  of the class elements!*
+DeclareOperation("ClassElementLattice", [IsExternalOrbit,IsPosInt]);
 
 #############################################################################
 ##
@@ -107,8 +119,10 @@ DeclareGlobalFunction("LatticeByCyclicExtension");
 ##  giving a list of the maximal subgroups of the representative of this class.
 ##  Every maximal subgroup is indicated by a list of the form [<cls>,<nr>] which
 ##  means that the <nr>st subgroup in class number <cls> is a maximal subgroup
-##  of the representative. The number <nr> corresponds to access via the
-##  `[]' operator and *not* necessarily the `AsList' arrangement!
+##  of the representative. 
+##
+##  The number <nr> corresponds to access via `ClassElementLattice'
+##  and *not* necessarily the `AsList' arrangement!
 ##  See also "MinimalSupergroupsLattice".
 DeclareAttribute("MaximalSubgroupsLattice",IsLatticeSubgroupsRep);
 
@@ -123,8 +137,10 @@ DeclareAttribute("MaximalSubgroupsLattice",IsLatticeSubgroupsRep);
 ##  class. Every minimal supergroup is indicated by a list of the
 ##  form [<cls>,<nr>] which means that the <nr>st subgroup in class number
 ##  <cls> is a minimal supergroup
-##  of the representative. The number <nr> corresponds to access via the
-##  `[]' operator and *not* necessarily the `AsList' arrangement!
+##  of the representative.
+##
+##  The number <nr> corresponds to access via `ClassElementLattice'
+##  and *not* necessarily the `AsList' arrangement!
 ##  See also "MaximalSubgroupsLattice".
 DeclareAttribute("MinimalSupergroupsLattice",IsLatticeSubgroupsRep);
 

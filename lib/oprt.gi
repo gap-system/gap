@@ -344,6 +344,17 @@ function( xset )
   return Orbit(xset,Representative(xset));
 end);
 
+InstallMethod( Random,"for external orbit: via acting domain", true,
+  [ IsExternalOrbit ], 0,
+function( xset )
+  if HasHomeEnumerator(xset) and not IsPlistRep(HomeEnumerator(xset)) then
+    TryNextMethod(); # can't do orbit because the home enumerator might
+    # imply a different `PositionCanonical' (and thus equivalence of objects)
+    # method.
+  fi;
+  return FunctionAction(xset)(Representative(xset),Random(ActingDomain(xset)));
+end);
+
 #############################################################################
 ##
 #F  ExternalOrbit( <arg> )  . . . . . . . . . . . . . . external set on orbit
@@ -824,54 +835,6 @@ local gens,imgs,ran,xset;
   return ran;
 end);
 
-# #############################################################################
-# ##
-# #M  AsGroupGeneralMappingByImages( <hom> )  . . .  for action homomorphism
-# ##
-# InstallMethod( AsGroupGeneralMappingByImages, "IsActionHomomorphism",
-#   true, [ IsActionHomomorphism ], 0,
-# function( hom )
-# local   xset,  G,  D,  act,  gens,  imgs;
-# 
-#   # avoid duplicity
-#   if HasIsSurjective(hom) and IsSurjective(hom) then
-#     Range(hom);
-#     if HasAsGroupGeneralMappingByImages(hom) then
-#       return AsGroupGeneralMappingByImages(hom);
-#     fi;
-#   fi;
-#   xset := UnderlyingExternalSet( hom );
-#   G := ActingDomain( xset );
-#   D := HomeEnumerator( xset );
-#   act := FunctionAction( xset );
-#   gens := GeneratorsOfGroup( G );
-#   imgs := List( gens, o -> Permutation( o, D, act ) );
-#   imgs:=GroupHomomorphismByImagesNC( G, Range(hom), gens, imgs );
-#   CopyMappingAttributes(hom,imgs);
-#   return imgs;
-# end );
-# 
-# #############################################################################
-# ##
-# #M  AsGroupGeneralMappingByImages( <hom> )  . . . . . . if given by operators
-# ##
-# InstallMethod( AsGroupGeneralMappingByImages,
-#   "IsActionHomomorphismByActors",true,
-#         [ IsActionHomomorphismByActors ], 0,
-#     function( hom )
-#     local   xset,  G,  D,  act,  gens,  acts,  imgs;
-#     
-#     xset := UnderlyingExternalSet( hom );
-#     G := ActingDomain( xset );
-#     D := HomeEnumerator( xset );
-#     gens := xset!.generators;
-#     acts := xset!.operators;
-#     act  := xset!.funcOperation;
-#     imgs := List( acts, o -> Permutation( o, D, act ) );
-#     return GroupHomomorphismByImagesNC( G,
-#                    Range(hom), gens, imgs );
-# end );
-
 #############################################################################
 ##
 #M  RestrictedMapping(<ophom>,<U>)
@@ -909,7 +872,10 @@ InstallGlobalFunction( Action, function( arg )
       Add(arg,"surjective"); # enforce surjective action homomorphism -- we
                              # anyhow compute the image
     fi;
+    PushOptions(rec(onlyimage:=true)); # we don't want `ActionHom' to build
+                                       # a stabilizer chain.
     hom := CallFuncList( ActionHomomorphism, arg );
+    PopOptions();
     O := ImagesSource( hom );
     O!.actionHomomorphism := hom;
     return O;
@@ -1337,21 +1303,26 @@ InstallMethod( OrbitsDomain, "for quick position domains", true,
 
 InstallMethod( OrbitsDomain, "for arbitrary domains", true,
     OrbitsishReq, 0,
-    function( G, D, gens, acts, act )
-    local   orbs, orb;
-    
-    if Length(D)>0 and not IsMutable(D) and IsSSortedList(D) 
-      and CanEasilySortElements(D[1]) then
-      return OrbitsByPosOp( G, D, gens, acts, act );
-    fi;
-    orbs := [  ];
-    while Length(D)>0  do
-        orb := OrbitOp( G,D, D[1], gens, acts, act );
-        Add( orbs, orb );
+function( G, D, gens, acts, act )
+local   orbs, orb,sort;
+  
+  if Length(D)>0 and not IsMutable(D) and IsSSortedList(D) 
+    and CanEasilySortElements(D[1]) then
+    return OrbitsByPosOp( G, D, gens, acts, act );
+  fi;
+  sort:=Length(D)>0 and CanEasilySortElements(D[1]);
+  orbs := [  ];
+  while Length(D)>0  do
+      orb := OrbitOp( G,D, D[1], gens, acts, act );
+      Add( orbs, orb );
+      if sort then
 	D:=Difference(D,orb);
 	MakeImmutable(D); # to remember sortedness
-    od;
-    return Immutable( orbs );
+      else
+	D:=Filtered(D,i-> not i in orb);
+      fi;
+  od;
+  return Immutable( orbs );
 end );
 
 InstallMethod( OrbitsDomain, "empty domain", true,
@@ -1367,16 +1338,21 @@ end );
 
 InstallMethod( Orbits, "for arbitrary domains", true, OrbitsishReq, 0,
 function( G, D, gens, acts, act )
-local   orbs, orb;
+local   orbs, orb,sort;
     
-    orbs := [  ];
-    while Length(D)>0  do
-        orb := OrbitOp( G,D[1], gens, acts, act );
-        Add( orbs, orb );
+  sort:=Length(D)>0 and CanEasilySortElements(D[1]);
+  orbs := [  ];
+  while Length(D)>0  do
+      orb := OrbitOp( G,D[1], gens, acts, act );
+      Add( orbs, orb );
+      if sort then
 	D:=Difference(D,orb);
 	MakeImmutable(D); # to remember sortedness
-    od;
-    return Immutable( orbs );
+      else
+	D:=Filtered(D,i-> not i in orb);
+      fi;
+  od;
+  return Immutable( orbs );
 end );
 
 InstallMethod( OrbitsDomain, "empty domain", true,
@@ -1720,10 +1696,9 @@ InstallMethod( PermutationOp, "object on list", true,
             old := new;
             pnt := act( pnt, g );
             new := PositionCanonical( D, pnt );
-            if new = fail  then
-                return fail;
-            fi;
-	    if blist[new] then
+	    if new=fail then
+	      return fail;
+	    elif blist[new] then
 	      Info(InfoWarning,1,"PermutationOp: mapping is not a permutation");
 	      return fail;
 	    fi;
@@ -2752,7 +2727,6 @@ local gens;
   gens:= GeneratorsOfGroup( PreImagesRange( map ) );
   return [gens, List( gens, g -> ImageElmActionHomomorphism( map, g ) ) ];
 end );
-
 
 #############################################################################
 ##

@@ -316,7 +316,7 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
       col := -OnTuples( range, perm );
       undefined := undefined + index;
       Add( table, col );
-      order := Order( perms[i] );
+      order := Order( gensG[i] );
       if order <= 2 then
         rel := gensF[i]^order;
         if sizeS > 1 then
@@ -1159,17 +1159,77 @@ InstallMethod( ImagesSet,"constituent homomorphism", CollFamSourceEqFamElms,
 	# this method should *not* be applied if the group to be mapped has
 	# no stabilizer chain (for example because it is very big).
         [ IsConstituentHomomorphism, IsPermGroup and HasStabChainMutable], 0,
-    function( hom, H )
-    local   D,  I;
-    
-    D := Enumerator( UnderlyingExternalSet( hom ) );
-    I := EmptyStabChain( [  ], One( Range( hom ) ) );
-    RemoveStabChain( ConjugateStabChain( StabChainOp( H, D ), I,
-            hom, hom!.conperm,
-            S -> BasePoint( S ) <> false
-             and BasePoint( S ) in D ) );
+function( hom, H )
+local   D,  I,G;
+  
+  D := Enumerator( UnderlyingExternalSet( hom ) );
+  I := EmptyStabChain( [  ], One(Range(hom)) );
+  RemoveStabChain( ConjugateStabChain( StabChainOp( H, D ), I,
+	  hom, hom!.conperm,
+	  S -> BasePoint( S ) <> false
+	    and BasePoint( S ) in D ) );
+  #GroupStabChain might give too many generators
+  if Length(I.generators)<10 then
     return GroupStabChain( Range( hom ), I, true );
+  else
+    G:=SubgroupNC(Range(hom),
+      List(GeneratorsOfGroup(H),i->Permutation(i,D)));
+    SetStabChainMutable(G,I);
+    return G;
+  fi;
 end );
+
+#############################################################################
+##
+#M  Range( <hom>, <H> ) . . . . . . . . . . . . . . . . . . for const hom
+##
+RanImgSrcSurjTraho:=function(hom)
+local   D,H,I,G;
+  H:=Source(hom);
+  # only worth if the source has a stab chain to utilize
+  if not HasStabChainMutable(H) then
+    TryNextMethod();
+  fi;
+  D := Enumerator( UnderlyingExternalSet( hom ) );
+  I := EmptyStabChain( [  ], () );
+  RemoveStabChain( ConjugateStabChain( StabChainOp( H, D ), I,
+	  hom, hom!.conperm,
+	  S -> BasePoint( S ) <> false
+	    and BasePoint( S ) in D ) );
+  #GroupStabChain might give too many generators
+  if Length(I.generators)<10 then
+    return GroupStabChain( I );
+  else
+    G:=Group(List(GeneratorsOfGroup(H),i->Permutation(i,D)),());
+    SetStabChainMutable(G,I);
+    return G;
+  fi;
+end;
+
+InstallMethod( Range,"surjective constituent homomorphism",true,
+  [ IsConstituentHomomorphism and IsActionHomomorphism and IsSurjective ],0,
+  RanImgSrcSurjTraho);
+
+InstallMethod( ImagesSource,"constituent homomorphism",true,
+  [ IsConstituentHomomorphism and IsActionHomomorphism ],0,
+  RanImgSrcSurjTraho);
+
+#############################################################################
+##
+#M  PreImagesRepresentative( <hom>, <elm> )
+##
+InstallMethod( PreImagesRepresentative,"constituent homomorphism",
+  FamRangeEqFamElm,[IsConstituentHomomorphism,IsPerm], 0,
+function( hom, elm )
+local D,DP;
+  if not HasStabChainMutable(Source(hom)) then
+    # do not enforce a stabchain if not neccessary -- it could be big
+    TryNextMethod();
+  fi;
+  D:=Enumerator(UnderlyingExternalSet(hom));
+  DP:=Permuted(D,elm^-1);
+  return RepresentativeAction(Source(hom),D,DP,OnTuples);
+end);
 
 #############################################################################
 ##
@@ -1226,7 +1286,7 @@ InstallMethod( StabChainMutable,
     function( hom )
     local   img;
     
-    img := ImageKernelBlocksHomomorphism( hom, Source( hom ) );
+    img := ImageKernelBlocksHomomorphism( hom, Source( hom ),false );
     if not HasImagesSource( hom )  then
         SetImagesSource( hom, img );
     fi;
@@ -1254,30 +1314,11 @@ InstallMethod( ImagesRepresentative, "blocks homomorphism", FamSourceEqFamElm,
     return PermList( img );
 end );
 
-InstallMethod( Range, "surjective blocks homomorphism",true,
-  [ IsBlocksHomomorphism and IsSurjective ], 0,
-function(hom)
-local gens,imgs,ran,dom;
-  gens:=GeneratorsOfGroup( Source( hom ) );
-  imgs:=List(gens,gen->ImagesRepresentative( hom, gen ) );
-  ran:=GroupByGenerators(imgs,());
-#  if HasStabChainMutable(Source(hom)) then
-#    dom:=Enumerator(UnderlyingExternalSet(hom));
-#    dom:=List(BaseStabChain(StabChainMutable(Source(hom))),
-#                            i->PositionProperty(dom,j->i in j));
-#    if not fail in dom then
-#      SetBaseOfGroup(ran,dom);
-#    fi;
-#  fi;
-  SetMappingGeneratorsImages(hom,[gens,imgs]);
-  return ran;
-end);
-
 #############################################################################
 ##
 #F  ImageKernelBlocksHomomorphism( <hom>, <H> ) . . . . . .  image and kernel
 ##
-InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H )
+InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H,par )
     local   D,          # the block system
             I,          # image of <H>, result
             S,          # block stabilizer in <H>
@@ -1292,7 +1333,11 @@ InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H )
     if full  then
         SetStabChainMutable( hom, S );
     fi;
-    I := EmptyStabChain( [  ], One( Range( hom ) ) );
+    if par<>false then
+      I := EmptyStabChain( [  ], One(par) );
+    else
+      I := EmptyStabChain( [  ], () );
+    fi;
     T := I;
 
     # loop over the blocks
@@ -1331,18 +1376,46 @@ InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H )
             GroupStabChain( Source( hom ), S, true ) );
     fi;
     
-    return GroupStabChain( Range( hom ), I, true );
+    if par<>false then
+      return GroupStabChain( par, I, true );
+    else
+      return GroupStabChain(I);
+    fi;
+
 end );
 
 #############################################################################
 ##
 #M  ImagesSet( <hom>, <H> ) . . . . . . . . . . . . . . . . .  for blocks hom
 ##
-InstallMethod( ImagesSet,
-    "for blocks homomorphism and perm. group",
-    CollFamSourceEqFamElms,
-        [ IsBlocksHomomorphism, IsPermGroup ], 0,
-    ImageKernelBlocksHomomorphism );
+InstallMethod( ImagesSet, "for blocks homomorphism and perm. group",
+    CollFamSourceEqFamElms, [ IsBlocksHomomorphism, IsPermGroup ], 0,
+function(hom,U)
+  return ImageKernelBlocksHomomorphism(hom,U,Range(hom));
+end);
+
+RanImgSrcSurjBloho:=function(hom)
+local gens,imgs,ran,dom;
+  if ValueOption("onlyimage")=fail and HasStabChainMutable(Source(hom)) 
+    and NrMovedPoints(Source(hom))<20000 then
+    # transfer stabchain information if not too expensive
+    ran:=ImageKernelBlocksHomomorphism(hom,Source(hom),false);
+  else
+    gens:=GeneratorsOfGroup( Source( hom ) );
+    imgs:=List(gens,gen->ImagesRepresentative( hom, gen ) );
+    ran:=GroupByGenerators(imgs,());
+    SetMappingGeneratorsImages(hom,[gens,imgs]);
+  fi;
+  return ran;
+end;
+
+InstallMethod( Range, "surjective blocks homomorphism",true,
+  [ IsBlocksHomomorphism and IsSurjective ], 0,
+  RanImgSrcSurjBloho);
+
+InstallMethod( ImagesSource, "blocks homomorphism",true,
+  [ IsBlocksHomomorphism ], 0,
+  RanImgSrcSurjBloho);
 
 #############################################################################
 ##
@@ -1455,7 +1528,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,"blocks homomorphism",
     function( hom )
     local   img;
     
-    img := ImageKernelBlocksHomomorphism( hom, Source( hom ) );
+    img := ImageKernelBlocksHomomorphism( hom, Source( hom ),false);
     if not HasImagesSource( hom )  then
         SetImagesSource( hom, img );
     fi;

@@ -1509,7 +1509,7 @@ Int             IsTableListDefault (
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
     Obj                 fam;            /* family of elements of <list>    */
-    Int                 len;            /* length of elements              */
+/*  Int                 len;            / length of elements              */
     Int                 i;              /* loop variable                   */
 
     /* get the length of the list                                          */
@@ -1720,10 +1720,10 @@ Int             IsPossListDefault (
 
 	/* if it's a small integer and non-positive then
 	   it's not a poss list */
-	if ( IS_INTOBJ(elm))
+	if ( IS_INTOBJ(elm)) {
 	  if (INT_INTOBJ(elm) <= 0)
 	    return  0L;
-
+        }
 	/* or if it's not a small integer or a positive large integer then it's
 	   not a poss list */
 	else if (TNUM_OBJ(elm) != T_INTPOS)
@@ -2189,47 +2189,6 @@ void            PlainListError (
 }
 
 
-#ifdef XTNUMS 
-/****************************************************************************
-**
-*F  XTNum(<list>) . . . . . . . . . . . . . . . . . extended type of an value
-*F  IS_XTNUM_LIST(<type>,<list>)  . . . . . . . . . .  test for extended type
-*V  IsXTNumListFuncs[<type>]  . . . . . table of extended type test functions
-**
-**  'XTNum'  calls 'IS_XTNUM_LIST(<type>,<list>)'  with  <type> running  from
-**  'T_VECTOR' to 'T_MATFFE' and returns    the first  type for which    this
-**  function returns 1.  If no one returns  1, then 'XTNum' returns 'T_LISTX'
-**  (and leaves the list as 'T_PLIST' or 'T_SET').
-**
-**  'IS_XTNUM_LIST' is defined in  the declaration  part  of this package  as
-**  follows
-**
-#define IS_XTNUM_LIST(t,list) \
-                        ((*IsXTNumListFuncs[t])(list))
-*/
-Int             (*IsXTNumListFuncs[LAST_VIRTUAL_TNUM+1]) ( Obj obj );
-
-Int             XTNum (
-    Obj                 obj )
-{
-    Int                 type;           /* loop variable                   */
-
-    /* first handle non lists                                              */
-    if ( TNUM_OBJ(obj) < FIRST_LIST_TNUM || LAST_LIST_TNUM < TNUM_OBJ(obj) )
-        return TNUM_OBJ(obj);
-
-    /* otherwise try the extended types in turn                            */
-    /* this is done backwards to catch the more specific types first       */
-    for ( type = LAST_VIRTUAL_TNUM; FIRST_REAL_TNUM <= type; type-- ) {
-        if ( IsXTNumListFuncs[type] != 0 && IS_XTNUM_LIST( type, obj ) )
-            return type;
-    }
-
-    /* nothing works, return 'T_OBJECT'                                    */
-    return T_OBJECT;
-}
-
-#endif
 /****************************************************************************
 **
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
@@ -2336,7 +2295,7 @@ void            PrintPathList (
 **  The macro  `SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
-UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
 
 /****************************************************************************
@@ -2351,14 +2310,14 @@ UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 **  The macro `RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
-UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN  + 1];
 
 
 /****************************************************************************
 **
 *V  HasFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . . . . . . . .  has filter
 */
-Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
 
 /****************************************************************************

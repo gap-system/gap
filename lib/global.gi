@@ -177,11 +177,11 @@ InstallGlobalFunction( MakeReadOnlyGlobal,
     fi;
     if not ISBOUND_GLOBAL( name ) then
         Info( InfoWarning + InfoGlobal, 1, 
-              "MakeReadOnlyGlobal: ", name, "no value bound");
+              "MakeReadOnlyGlobal: ", name, " no value bound");
     fi;
     if IS_READ_ONLY_GLOBAL( name ) then
         Info( InfoWarning + InfoGlobal, 1, 
-              "MakeReadOnlyGlobal: ", name, "already read-only");
+              "MakeReadOnlyGlobal: ", name, " already read-only");
     fi;
     Info( InfoGlobal, 2, "MakeReadOnlyGlobal: called for ", name);
     MAKE_READ_ONLY_GLOBAL( name );
@@ -347,6 +347,4 @@ end);
 #############################################################################
 ##
 #E  global.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

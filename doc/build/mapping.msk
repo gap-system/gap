@@ -16,7 +16,7 @@ have several images, these can be imagined as subsets of the cartesian
 product and are often called ``relations''.
 
 Most operations are declared for general mappings and therefore this manual
-often  refers to ``(general) mappings'', unless you deliberatily need the
+often  refers to ``(general) mappings'', unless you deliberately need the
 generalization you can ignore the ``general'' bit and just read
 it as ``mappings''.
 

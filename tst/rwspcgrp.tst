@@ -13,7 +13,7 @@ gap> START_TEST("$Id$");
 #############################################################################
 
 # create a free group, 8 bits
-gap> f := FreeGroup(11);;
+gap> f := FreeGroup(11);; # deliberately not syllable rep to test old version
 gap> g := GeneratorsOfGroup(f){[1..11]};;
 
 # use 'fn' as abbreviation of 'g[n]'
@@ -158,7 +158,7 @@ gap> Print(ExtRepOfObj( w / l[1] ),"\n");
 #############################################################################
 
 # create a free group, 16 bits
-gap> f := FreeGroup(61);;
+gap> f := FreeGroup(IsSyllableWordsFamily,61);;
 gap> g := GeneratorsOfGroup(f){[1..61]};;
 
 # use 'fn' as abbreviation of 'g[n]'
@@ -532,7 +532,7 @@ gap> Print(ExtRepOfObj( w / l[1] ),"\n");
 #############################################################################
 
 # create a free group, 32 bits
-gap> f := FreeGroup(1200);;
+gap> f := FreeGroup(IsSyllableWordsFamily,1200);;
 gap> g := GeneratorsOfGroup(f){[1..61]};;
 
 # use 'fn' as abbreviation of 'g[n]'

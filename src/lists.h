@@ -815,43 +815,6 @@ extern  void            AsssListLevel (
 extern  void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 
-#ifdef XTNUMS
-/****************************************************************************
-**
-*F  XTNum(<obj>)  . . . . . . . . . . . . . . . .  extended type of an object
-*F  IS_XTNUM_LIST(<type>,<obj>) . . . . . . . . . . .  test for extended type
-*V  IsXTNumListFuncs[<type>]  . . . . . table of extended type test functions
-**
-**  'XTNum' returns  the extended type of  the object <obj>.   For everything
-**  except objects of type 'T_PLIST' and 'T_SET' this is just the type of the
-**  object.  For objects of type 'T_PLIST' and 'T_SET', 'XTNum'  examines the
-**  object closer and returns  'T_VECTOR', 'T_VECFFE', 'T_BLIST', 'T_STRING',
-**  'T_RANGE',  'T_MATRIX', 'T_MATFFE', and  'T_LISTX'.  As  a sideeffect the
-**  object <obj> is converted into  the representation  of the extended  type,
-**  e.g., if  'XTNum' returns 'T_MATFFE', <obj>  is converted into a  list of
-**  vectors over  a  common  finite field.  'XTNum'  is   used by the  binary
-**  operations  functions for lists to decide   to which function they should
-**  dispatch.  'T_LISTX'  is the extended  type of otherwise untypable lists.
-**  The  only operation defined  for such lists  is the product with a scalar
-**  (where 'PROD( <list>[<pos>], <scl> )'  decides whether the multiplication
-**  is allowed or not).
-**
-**  A package implementing    a    list  type    <type>  must    provide    a
-**  tester/conversion function  and install it in 'IsXTNumListFuncs[<type>]'.
-**  This function should accept a list <list>  (with a representation that is
-**  equivalent  to  that of a  plain  list),  and  return 1 if  <list>  could
-**  successfully be converted to the type <type> and 0 otherwise.
-*/
-#define IS_XTNUM_LIST(t,obj) \
-                        ((*IsXTNumListFuncs[t])(obj))
-
-extern  Int             (*IsXTNumListFuncs[LAST_VIRTUAL_TNUM+1]) ( Obj obj );
-
-extern  Int             XTNum (
-            Obj                 obj );
-
-
-#endif
 /****************************************************************************
 **
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
@@ -873,7 +836,7 @@ extern  Obj             TYPES_LIST_FAM (
 **  The macro  `SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
-extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
 
 /****************************************************************************
@@ -910,7 +873,7 @@ extern Obj FuncSET_FILTER_LIST ( Obj self, Obj list, Obj filter );
 **  The macro `RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
-extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
 
 /****************************************************************************
@@ -934,7 +897,7 @@ extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
 **
 *V  HasFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . . . . . . . .  has filter
 */
-extern Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN ];
+extern Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
 
 /****************************************************************************

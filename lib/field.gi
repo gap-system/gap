@@ -1116,6 +1116,20 @@ InstallMethod( StandardAssociate,
     fi;
     end );
 
+#############################################################################
+##
+#M  IsIrreducibleRingElement( <F>, <x> )
+##
+InstallMethod(IsIrreducibleRingElement,"for field and ring element",
+    IsCollsElms, [ IsField, IsScalar ],0,
+function ( F, r )
+  if not r in F then
+    TryNextMethod();
+  fi;
+  # field elements are either zero or a unit
+  return false;
+end );
+
 
 #############################################################################
 ##

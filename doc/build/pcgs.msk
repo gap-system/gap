@@ -22,12 +22,12 @@ which are based upon the polycyclic structure of these groups. These
 methods are usually very efficient and hence {\GAP} tries to use them
 whenever possible.
 
-In {\GAP} 3 these methods have been available for AgGroups only; that
+In {\GAP}~3 these methods have been available for AgGroups only; that
 is, for groups defined via a power-commutator presentation, see
-Chapter "Pc Groups" for the {\GAP} 4 analogon. This has changed in {\GAP} 4
+Chapter~"Pc Groups" for the {\GAP}~4 analogon. This has changed in {\GAP}~4
 where these methods can be applied to many types of groups. For example,
 the methods can be applied to permutation groups or matrix groups which
-are known to be polycyclic. The only exeption is the representation as
+are known to be polycyclic. The only exception is the representation as
 finitely presented group for which the polycyclic methods cannot
 be used in general.
 
@@ -386,7 +386,7 @@ Pcgs([ (1,2,3,4), (1,3)(2,4) ])
 gap> I := InducedPcgsByGenerators(P, [(1,3)(2,4)]);
 Pcgs([ (1,3)(2,4) ])
 gap> M := P mod I;
-Pcgs([ (1,2,3,4) ])
+[ (1,2,3,4) ]
 gap> NumeratorOfModuloPcgs(M);
 Pcgs([ (1,2,3,4), (1,3)(2,4) ])
 gap> DenominatorOfModuloPcgs(M);
@@ -545,7 +545,7 @@ LG-series and gives the number of the first element in the
 special pcgs of the corresponding subgroup.
 
 \Declaration{IsSpecialPcgs}
-\Declaration{SpecialPcgs}
+\Declaration{SpecialPcgs}!{attribute}
 \Declaration{LGWeights}
 \Declaration{LGLayers}
 \Declaration{LGFirst}

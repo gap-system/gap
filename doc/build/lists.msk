@@ -73,10 +73,10 @@ not in any function
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' after assigning a value to continue
-brk> l[4] := 16;; # assigning a value                      
-brk> return;      # to escape the break-loop               
+brk> l[4] := 16;; # assigning a value
+brk> return;      # to escape the break-loop
 16
-gap>
+gap> 
 \endtt
 
 Observe that requesting the value of `l[4]', which was not
@@ -568,14 +568,12 @@ l1[1] := 2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Duplication of Lists}
 
-\index{ShallowCopy!for lists}
-\index{StructuralCopy!for lists}
-
 Here we describe the meaning of `ShallowCopy' and `StructuralCopy' for
 lists.
 For the general definition of these functions,
 see~"Duplication of Objects".
 
+\indextt{ShallowCopy!for lists}
 The subobjects (see~"ShallowCopy") of a list are exactly its elements.
 
 This means that for any list <list>, `ShallowCopy' returns a mutable
@@ -583,6 +581,7 @@ This means that for any list <list>, `ShallowCopy' returns a mutable
 (see~"Identical Lists"),
 and whose elements are identical to the elements of <list>.
 
+\indextt{StructuralCopy!for lists}
 Analogously, for a *mutable* list <list>, `StructuralCopy' returns a
 mutable *new* list <scp> that is *not identical* to any other list,
 and whose elements are structural copies (defined recursively)
@@ -654,9 +653,8 @@ gap> list1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Membership Test for Lists}
 
+\indextt{in!for lists}
 \>`<obj> in <list>'{element test}!{for lists}
-
-\index{in!for lists}
 
 tests whether there is a positive integer <index> such that
 `<list>[ <index> ] = <obj>'.
@@ -782,49 +780,501 @@ see~"Families".
 Also for the possibility to compare lists with other objects,
 see~"Families".
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Arithmetic for Lists}
 
 \index{operators!for lists}
-\>`<list> \* <obj>'{list and non-list!multiplication}
-\){\fmark <obj> \* <list>}
 
-The product of a list <list> with a *non-list* <obj> is a new list
-that contains at each position the product of the corresponding element
-of <list> with <obj>.
+It is convenient to have arithmetic operations for lists,
+in particular because in {\GAP},
+row vectors and matrices are special kinds of lists.
+However, it is the wide variance of list objects because of which we
+prescribe arithmetic operations *not for all* of them.
+(Keep in mind that ``list'' means just an object in the category `IsList',
+see~"IsList".)
 
-\>`<list> + <obj>'{list and non-list!sum}
-\){\fmark <obj> + <list>}
+For example, we want to deal with matrices which can be added and
+multiplied in the usual way, via the infix operators `+' and `*';
+and we want also Lie matrices, with the same additive behaviour but with
+the multiplication defined by the Lie bracket.
+Both kinds of matrices shall be lists, with the usual access to their rows,
+with `Length' (see~"Length") returning the number of rows etc.
 
-The sum of a list <list> with a *non-list* <obj> is a new list
-that contains at each position the sum of the corresponding element
-of <list> with <obj>.
+Due to the intended generality and flexibility,
+the definitions given in the following sections are quite technical.
+But for not too complicated cases such as matrices and row vectors
+whose entries aren't lists,
+the resulting behaviour should be intuitive.
 
-\>`<list> - <obj>'{list and non-list!difference}
-\){\fmark <obj> - <list>}
+For the categories and attributes that control the arithmetic behaviour
+of lists, see~"Filters Controlling the Arithmetic Behaviour of Lists".
 
-The difference of a list <list> with a *non-list* <obj> is a new list
-that contains at each position the difference of the corresponding element
-of <list> with <obj>.
+For the definition of return values of additive and multiplicative operations
+whose arguments are lists in these filters,
+see~"Additive Arithmetic for Lists" and
+"Multiplicative Arithmetic for Lists", respectively.
+It should be emphasized that these sections describe only what the return
+values are, and not how they are computed.
 
-In each of the above cases, if <list> has a hole at position $i$
-then also the $i$-th entry of the result list will be unbound.
+For the mutability status of the return values,
+see~"Mutability Status and List Arithmetic".
+(Note that this is not dealt with in the sections about the result values.)
+
+Further details about the special cases of row vectors and matrices
+can be found in~"Operators for Row Vectors" and in~"Operators for Matrices",
+the compression status is dealt with in~"Row Vectors over Finite Fields"
+and~"Matrices over Finite Fields".
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Filters Controlling the Arithmetic Behaviour of Lists}
+
+\FileHeader[1]{arith}
+
+\Declaration{IsGeneralizedRowVector}
+\Declaration{IsMultiplicativeGeneralizedRowVector}
+
+Note that these filters do *not* enable default methods for addition or
+multiplication (cf.~"IsListDefault").
 
 \beginexample
-gap> l1:= [ 1, 2, 3 ] * 2;  l2:= l1 + 3;  l3:= 5 - l2;
-[ 2, 4, 6 ]
-[ 5, 7, 9 ]
-[ 0, -2, -4 ]
+gap> IsList( "abc" ); IsGeneralizedRowVector( "abc" );
+true
+false
+gap> liemat:= LieObject( [ [ 1, 2 ], [ 3, 4 ] ] );
+LieObject( [ [ 1, 2 ], [ 3, 4 ] ] )
+gap> IsGeneralizedRowVector( liemat );
+true
+gap> IsMultiplicativeGeneralizedRowVector( liemat );
+false
+gap> bl:= BlockMatrix( [], 2, 3, 2, 3, 0 );
+<block matrix of dimensions (2*2)x(3*3)>
+gap> IsMultiplicativeGeneralizedRowVector( bl );
+true
+gap> bas:= CanonicalBasis( Rationals^3 );
+CanonicalBasis( ( Rationals^3 ) )
+gap> IsMultiplicativeGeneralizedRowVector( bas );
+true
+\endexample
+
+
+\Declaration{IsListDefault}
+
+\beginexample
+gap> v:= [ 1, 2 ];;  m:= [ v, 2*v ];;
+gap> IsListDefault( v );  IsListDefault( m );
+true
+true
+gap> IsListDefault( bas );  IsListDefault( bl );
+true
+false
+\endexample
+
+
+\Declaration{NestingDepthA}
+\Declaration{NestingDepthM}
+
+\beginexample
+gap> NestingDepthA( v );  NestingDepthM( v );
+1
+1
+gap> NestingDepthA( m );  NestingDepthM( m );
+2
+2
+gap> NestingDepthA( liemat );  NestingDepthM( liemat );
+2
+0
+gap> l1:= [ [ 1, 2 ], 3 ];;  l2:= [ 1, [ 2, 3 ] ];;
+gap> NestingDepthA( l1 );  NestingDepthM( l1 );
+2
+2
+gap> NestingDepthA( l2 );  NestingDepthM( l2 );
+1
+1
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Additive Arithmetic for Lists}
+
+In this general context, we define the results of additive operations
+only in the following situations.
+For unary operations (zero and additive inverse),
+the unique argument must be in `IsGeneralizedRowVector';
+for binary operations (addition and subtraction),
+at least one argument must be in `IsGeneralizedRowVector',
+and the other either not a list or also in `IsGeneralizedRowVector'.
+
+(For non-list {\GAP} objects, defining the result is not an issue here,
+and if at least one argument is a list not in `IsGeneralizedRowVector',
+it shall be left to this argument whether the result in question is defined
+and what it is.)
+
+
+*Zero*
+
+The zero (see~"Zero") of a list $x$ in `IsGeneralizedRowVector'
+is defined as the list whose entry at position $i$ is the zero of $x[i]$
+if this entry is bound, and is unbound otherwise.
+
+\beginexample
+gap> Zero( [ 1, 2, 3 ] );  Zero( [ [ 1, 2 ], 3 ] );  Zero( liemat );
+[ 0, 0, 0 ]
+[ [ 0, 0 ], 0 ]
+LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
+\endexample
+
+
+*AdditiveInverse*
+
+The additive inverse (see~"AdditiveInverse") of a list $x$ in
+`IsGeneralizedRowVector' is defined as the list whose entry at position $i$
+is the additive inverse of $x[i]$ if this entry is bound,
+and is unbound otherwise.
+
+\beginexample
+gap> AdditiveInverse( [ 1, 2, 3 ] );  AdditiveInverse( [ [ 1, 2 ], 3 ] );
+[ -1, -2, -3 ]
+[ [ -1, -2 ], -3 ]
+\endexample
+
+
+*Addition*
+
+\index{addition!list and non-list}
+
+If $x$ and $y$ are in `IsGeneralizedRowVector' and have the same
+additive nesting depth (see~"NestingDepthA"),
+% By definition, this depth is nonzero.
+the sum $x + y$ is defined *pointwise*, in the sense that the result is a
+list whose entry at position $i$ is $x[i] + y[i]$ if these entries are bound,
+is a shallow copy (see~"ShallowCopy") of $x[i]$ or $y[i]$ if the other
+argument is not bound at position $i$,
+and is unbound if both $x$ and $y$ are unbound at position $i$.
+
+If $x$ is in `IsGeneralizedRowVector' and $y$ is either not a list or is
+in `IsGeneralizedRowVector' and has lower additive nesting depth,
+the sum $x + y$ is defined as a list whose entry at position $i$ is
+$x[i] + y$ if $x$ is bound at position $i$, and is unbound if not.
+The equivalent holds in the reversed case,
+where the order of the summands is kept,
+as addition is not always commutative.
+
+\beginexample
+gap> 1 + [ 1, 2, 3 ];  [ 1, 2, 3 ] + [ 0, 2, 4 ];  [ 1, 2 ] + [ Z(2) ];
+[ 2, 3, 4 ]
+[ 1, 4, 7 ]
+[ 0*Z(2), 2 ]
+gap> l1:= [ 1, , 3, 4 ];;             l2:= [ , 2, 3, 4, 5 ];;
+gap> l3:= [ [ 1, 2 ], , [ 5, 6 ] ];;  l4:= [ , [ 3, 4 ], [ 5, 6 ] ];;
+gap> NestingDepthA( l1 );  NestingDepthA( l2 );
+1
+1
+gap> NestingDepthA( l3 );  NestingDepthA( l4 );
+2
+2
+gap> l1 + l2;
+[ 1, 2, 6, 8, 5 ]
+gap> l1 + l3;
+[ [ 2, 2, 3, 4 ],, [ 6, 6, 3, 4 ] ]
+gap> l2 + l4;
+[ , [ 3, 6, 3, 4, 5 ], [ 5, 8, 3, 4, 5 ] ]
+gap> l3 + l4;
+[ [ 1, 2 ], [ 3, 4 ], [ 10, 12 ] ]
+gap> l1 + [];
+[ 1,, 3, 4 ]
+\endexample
+
+
+*Subtraction*
+
+\index{list and non-list!difference}
+
+For two {\GAP} objects $x$ and $y$ of which one is in
+`IsGeneralizedRowVector' and the other is either not a list or is
+also in `IsGeneralizedRowVector',
+$x - y$ is defined as $x + (-y)$.
+
+\beginexample
+gap> l1 - l2;
+[ 1, -2, 0, 0, -5 ]
+gap> l1 - l3;
+[ [ 0, -2, 3, 4 ],, [ -4, -6, 3, 4 ] ]
+gap> l2 - l4;
+[ , [ -3, -2, 3, 4, 5 ], [ -5, -4, 3, 4, 5 ] ]
+gap> l3 - l4;
+[ [ 1, 2 ], [ -3, -4 ], [ 0, 0 ] ]
+gap> l1 - [];
+[ 1,, 3, 4 ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Multiplicative Arithmetic for Lists}
+
+In this general context, we define the results of multiplicative operations
+only in the following situations.
+For unary operations (one and inverse),
+the unique argument must be in `IsMultiplicativeGeneralizedRowVector';
+for binary operations (multiplication and division),
+at least one argument must be in `IsMultiplicativeGeneralizedRowVector',
+and the other either not a list or also in
+`Is\-Multiplicative\-Generalized\-Row\-Vector'.
+
+(For non-list {\GAP} objects, defining the result is not an issue here,
+and if at least one argument is a list not in
+`IsMultiplicativeGeneralizedRowVector',
+it shall be left to this argument whether the result in question is defined
+and what it is.)
+
+
+*One*
+
+The one (see~"One") of a dense list $x$ in
+`IsMultiplicativeGeneralizedRowVector' such that $x$ has even multiplicative
+nesting depth and has the same length as each of its rows is defined
+as the usual identity matrix on the outer two levels,
+that is, an identity matrix of the same dimensions, with diagonal entries
+$`One'( x[1][1] )$ and off-diagonal entries $`Zero'( x[1][1] )$.
+
+\beginexample
+gap> One( [ [ 1, 2 ], [ 3, 4 ] ] );
+[ [ 1, 0 ], [ 0, 1 ] ]
+gap> One( [ [ [ [ 1 ] ], [ [ 2 ] ] ], [ [ [ 3 ] ], [ [ 4 ] ] ] ] );
+[ [ [ [ 1 ] ], [ [ 0 ] ] ], [ [ [ 0 ] ], [ [ 1 ] ] ] ]
+\endexample
+
+
+*Inverse*
+
+The inverse (see~"Inverse") of an invertible square table $x$ in
+`IsMultiplicativeGeneralizedRowVector' whose entries lie in a common field
+is defined as the usual inverse $y$, i.e.,
+a square matrix over the same field such that $x y$ and $y x$ is equal to
+$`One'( x )$.
+
+\beginexample
+gap> Inverse( [ [ 1, 2 ], [ 3, 4 ] ] );
+[ [ -2, 1 ], [ 3/2, -1/2 ] ]
+\endexample
+
+
+*Multiplication*
+
+\index{list and non-list!product}
+
+There are three possible computations that might be triggered by a
+multiplication involving a list in `IsMultiplicativeGeneralizedRowVector'.
+Namely, $x * y$ might be
+\beginlist
+\item{(I)}
+    the inner product $x[1] * y[1] + x[2] * y[2] + \cdots + x[n] * y[n]$,
+    where summands are omitted for which the entry in $x$ or $y$ is unbound
+    (if this leaves no summand then the multiplication is an error),
+    or
+\item{(L)}
+    the left scalar multiple, i.e., a list whose entry at position $i$ is
+    $x * y[i]$ if $y$ is bound at position $i$, and is unbound if not, or
+\item{(R)}
+    the right scalar multiple, i.e., a list whose entry at position $i$ is
+    $x[i] * y$ if $x$ is bound at position $i$, and is unbound if not.
+\endlist
+
+Our aim is to generalize the basic arithmetic of simple row vectors and
+matrices, so we first summarize the situations that shall be covered.
+
+\begintt
+    | scl   vec   mat
+---------------------
+scl |       (L)   (L)
+vec | (R)   (I)   (I)
+mat | (R)   (R)   (R)
+\endtt
+
+This means for example that the product of a scalar (scl) with a vector (vec)
+or a matrix (mat) is computed according to (L).
+Note that this is asymmetric.
+
+Now we can state the general multiplication rules.
+
+If exactly one argument is in `IsMultiplicativeGeneralizedRowVector'
+then we regard the other argument (which is then not a list) as a scalar,
+and specify result (L) or (R), depending on ordering.
+
+In the remaining cases, both $x$ and $y$ are in
+`IsMultiplicativeGeneralizedRowVector', and we distinguish the possibilities
+by their multiplicative nesting depths.
+An argument with *odd* multiplicative nesting depth is regarded as a vector,
+and an argument with *even* multiplicative nesting depth is regarded as a
+scalar or a matrix.
+
+So if both arguments have odd multiplicative nesting depth,
+we specify result (I).
+
+If exactly one argument has odd nesting depth,
+the other is treated as a scalar if it has lower multiplicative nesting
+depth, and as a matrix otherwise.
+In the former case, we specify result (L) or (R), depending on ordering;
+in the latter case, we specify result (L) or (I), depending on ordering.
+
+We are left with the case that each argument has even multiplicative
+nesting depth.
+% By definition, this depth is nonzero.
+If the two depths are equal, we treat the computation as a matrix product,
+and specify result (R).
+Otherwise, we treat the less deeply nested argument as a scalar and the other
+as a matrix, and specify result (L) or (R), depending on ordering.
+
+\beginexample
 gap> [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ] * (1,4);
 [ (1,4), (1,4)(2,3), (1,2,4), (1,2,3,4), (1,3,2,4), (1,3,4) ]
 gap> [ 1, 2, , 4 ] * 2;
 [ 2, 4,, 8 ]
+gap> [ 1, 2, 3 ] * [ 1, 3, 5, 7 ];
+22
+gap> m:= [ [ 1, 2 ], 3 ];;  m * m;
+[ [ 7, 8 ], [ [ 3, 6 ], 9 ] ]
+gap> m * m = [ m[1] * m, m[2] * m ];
+true
+gap> n:= [ 1, [ 2, 3 ] ];;  n * n;
+14
+gap> n * n = n[1] * n[1] + n[2] * n[2];
+true
 \endexample
 
-The result of arithmetic operations with lists,
-for example the sum and product of two matrices, is *mutable*
-except if the operation is binary and both arguments are immutable
-(see also~"Mutability and Copyability").
+
+*Division*
+
+\index{list and non-list!quotient}
+
+For two {\GAP} objects $x$ and $y$ of which one is in
+`IsMultiplicativeGeneralizedRowVector' and the other is either not a list or is
+also in `IsMultiplicativeGeneralizedRowVector',
+$x / y$ is defined as $x * y^{-1}$.
+
+\beginexample
+gap> [ 1, 2, 3 ] / 2;  [ 1, 2 ] / [ [ 1, 2 ], [ 3, 4 ] ];
+[ 1/2, 1, 3/2 ]
+[ 1, 0 ]
+\endexample
+
+
+*mod*
+
+\index{list and non-list!mod}
+\index{mod!lists}
+
+If $x$ and $y$ are in `IsMultiplicativeGeneralizedRowVector' and have the
+same multiplicative nesting depth (see~"NestingDepthM"),
+% By definition, this depth is nonzero.
+$x `mod'  y$ is defined *pointwise*, in the sense that the result is a
+list whose entry at position $i$ is $x[i] `mod' y[i]$ if these entries are
+bound,
+is a shallow copy (see~"ShallowCopy") of $x[i]$ or $y[i]$ if the other
+argument is not bound at position $i$,
+and is unbound if both $x$ and $y$ are unbound at position $i$.
+
+If $x$ is in `IsMultiplicativeGeneralizedRowVector' and $y$ is either not a
+list or is in `Is\-Multiplicative\-Generalized\-Row\-Vector' and has lower
+multiplicative nesting depth,
+$x `mod' y$ is defined as a list whose entry at position $i$ is
+$x[i] `mod' y$ if $x$ is bound at position $i$, and is unbound if not.
+The equivalent holds in the reversed case,
+where the order of the arguments is kept.
+
+\beginexample
+gap> 4711 mod [ 2, 3,, 5, 7 ];
+[ 1, 1,, 1, 0 ]
+gap> [ 2, 3, 4, 5, 6 ] mod 3;
+[ 2, 0, 1, 2, 0 ]
+gap> [ 10, 12, 14, 16 ] mod [ 3, 5, 7 ];
+[ 1, 2, 0, 16 ]
+\endexample
+
+
+*Left Quotient*
+
+\index{list and non-list!left quotient}
+
+For two {\GAP} objects $x$ and $y$ of which one is in
+`IsMultiplicativeGeneralizedRowVector' and the other is either not a list or
+is also in `IsMultiplicativeGeneralizedRowVector',
+$`LeftQuotient'( x, y )$ is defined as $x^{-1} * y$.
+
+\beginexample
+gap> LeftQuotient( [ [ 1, 2 ], [ 3, 4 ] ], [ 1, 2 ] );
+[ 0, 1/2 ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mutability Status and List Arithmetic}
+
+Many results of arithmetic operations, when applied to lists,
+are again lists, and it is of interest whether their entries are mutable
+or not (if applicable).
+Note that the mutability status of the result itself is already defined
+by the general rule for any result of an arithmetic operation, not
+only for lists (see~"Mutability and Copyability").
+
+However, we do *not* define exactly the mutability status for each element
+on each level of a nested list returned by an arithmetic operation.
+(Of course it would be possible to define this recursively,
+but since the methods used are in general not recursive,
+in particular for efficient multiplication of compressed matrices,
+such a general definition would be a burden in these cases.)
+Instead we consider, for a list $x$ in `IsGeneralizedRowVector',
+the sequence $x = x_1, x_2, \ldots x_n$ where $x_{i+1}$ is the first bound
+entry in $x_i$ if exists (that is, if $x_i$ is a nonempty list),
+and $n$ is the largest $i$ such that $x_i$ lies in `IsGeneralizedRowVector'.
+The *immutability level* of $x$ is defined as infinity if $x$ is immutable,
+and otherwise the number of $x_i$ which are immutable.
+(So the immutability level of a mutable empty list is $0$.)
+
+Thus a fully mutable matrix has immutability level $0$,
+and a mutable matrix with immutable first row has immutability level $1$
+(independent of the mutability of other rows).
+
+The immutability level of the result of any of the binary operations
+discussed here is the minimum of the immutability levels of the arguments,
+provided that objects of the required mutability status exist in {\GAP}.
+% Note that this means to call `ShallowCopy' more often than necessary!
+% Would it be possible to promise the mutability status for all entries only
+% if the arguments are homogeneously mutable,
+% as a refinement of the general mutability rule?
+
+Moreover, the results have a ``homogeneous'' mutability status,
+that is, if the first bound entry at nesting depth $i$ is immutable (mutable)
+then all entries at nesting depth $i$ are immutable (mutable, provided that
+a mutable version of this entry exists in {\GAP}).
+
+Thus the sum of two mutable matrices whose first rows are mutable
+is a matrix all of whose rows are mutable,
+and the product of two matrices whose first rows are immutable
+is a matrix all of whose rows are immutable,
+independent of the mutability status of the other rows of the arguments.
+
+% Note that there are situations where this rule (and in fact already the
+% general rule mentioned above) leads to counter-intuitive results.
+
+For example, the sum of a matrix (mutable or immutable, i.e.,
+of immutability level one of $0$, $1$, or $2$) and a mutable row vector
+(i.e., immutability level $0$) is a fully mutable matrix.
+The product of two mutable row vectors of integers is an integer,
+and since {\GAP} does not support mutable integers, the result is immutable.
+
+For unary arithmetic operations, there are three operations available,
+an attribute that returns an immutable result
+(`Zero', `AdditiveInverse', `One', `Inverse'),
+an operation that returns a result that is mutable
+% at least on the outer level, or shall more be guaranteed?
+(`ZeroOp', `AdditiveInverseOp', `OneOp', `InverseOp'),
+and an operation whose result has the same immutability level as the argument
+(`ZeroSM', `AdditiveInverseSM', `OneSM', `InverseSM').
+The last kind of operations is equivalent to the corresponding infix
+operations `0 * <list>', `- <list>', `<list>^0', and `<list>^-1'.
+(This holds not only for lists, see~"Mutability and Copyability".)
 
 \beginexample
 gap> IsMutable( l1 );  IsMutable( 2 * Immutable( [ 1, 2, 3 ] ) );
@@ -835,11 +1285,11 @@ true
 true
 \endexample
 
-This rule is motivated by the fact that the corresponding
-syntactic constructs such as `<obj> \* <list>' and `- <list>' are used
-frequently as elegant and efficient ways to create lists needed for
-further manipulations, in particular one can construct a mutable
-zero vector of length <n> by `0 \* [ 1 .. <n> ]'.
+An example motivating the mutability rule is the use of syntactic constructs
+such as `<obj> \* <list>' and `- <list>' as an elegant and efficient way to
+create mutable lists needed for further manipulations from mutable lists.
+In particular one can construct a mutable zero vector of length <n>
+by `0 \* [ 1 .. <n> ]'.
 The latter can be done also using `ListWithIdenticalEntries'.
 
 \Declaration{ListWithIdenticalEntries}
@@ -847,11 +1297,6 @@ The latter can be done also using `ListWithIdenticalEntries'.
 gap> ListWithIdenticalEntries( 10, 0 );
 [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 \endexample
-
-\Declaration{IsListDefault}
-
-For the product, sum, or difference of *two lists*,
-see~"Operators for Row Vectors" and "Operators for Matrices".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1099,7 +1544,7 @@ and "AsSSortedList".
 For finding positions in sorted lists, see~"PositionSorted".
 
 
-\>`<obj> in <list>'{in!for strictly sorted lists}
+\>`<obj> in <list>'{in!for strictly sorted lists}@{`in'!for strictly sorted lists}
 
 The element test for strictly sorted lists uses binary search.
 
@@ -1600,7 +2045,7 @@ A typical example of this is a vector space over a finite field with $q$
 elements, say, for which it is very easy to enumerate all elements
 using $q$-adic expansions of integers.
 
-Using this enumartion can be even quicker than a binary search in a sorted
+Using this enumeration can be even quicker than a binary search in a sorted
 list of vectors:
 
 \Declaration{IsQuickPositionList}

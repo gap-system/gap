@@ -36,14 +36,14 @@ Revision.zmodnz_gd :=
 ##  `MAXSIZE_GF_INTERNAL'.
 ##
 ##  The reasons to distinguish the prime case from the nonprime case are
-##  \beginlist
-##  \item{-}
+##  \beginlist%unordered
+##  \item{--}
 ##    that objects in `IsZmodnZObjNonprime' have an external representation
 ##    (namely the residue in the range $[ 0, 1, \ldots, n-1 ]$),
-##  \item{-}
+##  \item{--}
 ##    that the comparison of elements can be defined as comparison of the
 ##    residues, and
-##  \item{-}
+##  \item{--}
 ##    that the elements lie in a family of type `IsZmodnZObjNonprimeFamily'
 ##    (note that for prime $n$, the family must be an `IsFFEFamily').
 ##  \endlist
@@ -116,6 +116,7 @@ InstallFlushableValue( Z_MOD_NZ, [ [], [] ] );
 ##  residue class corresponding to the element $x \in R$ can be computed by
 ##  $`Int'( x )$.
 ##
+##  \index{mod!Integers}
 ##  `ZmodnZ( <n> )' is equivalent to `Integers mod <n>'.
 ##
 ##  `ZmodpZ' does the same if the argument <p> is a prime integer,

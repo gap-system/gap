@@ -12,287 +12,797 @@ gap> START_TEST("$Id$");
 
 #############################################################################
 ##
-#F  TestOfListArithmetic( <R>, <dim>, <preparatory> )
+##  Parametrize the output; if `error' has the value `Error' then only the
+##  first error in each call is printed in the `ReadTest' run,
+##  if the value is `Print' then all errors are printed.
 ##
-##  performs a series of tests for vector and matrix arithmetics over the
-##  ring <R>, all vectors and matrices of dimension <dim>.
+gap> error:= Print;;
+
+
+#############################################################################
 ##
-##  One aim of these tests is to check whether the mutability rule holds.
-##  Another aim is to check whether the arithmetic operations with vectors
-##  and matrices over <R> work at all,
-##  also for possibly existing special representations that can be forced
-##  with `ConvertToVectorRep' and `ConvertToMatrixRep'.
+##  Define auxiliary functions.
 ##
-##  The result of an arithmetic operation is mutable except if the operation
-##  is binary and both arguments are immutable
-##  (see Section~"Copyability and Mutability" in the Reference Manual).
-##
-gap> TestOfListArithmetic := function( R, dim )
-> 
->   local UnaryTest,
->         BinaryTest,
->         z, s, int, v1, v2, v3, m1, m2, m3, m4, m5, res;
->   
->   # Create a function for testing a unary operation when applied to
->   # a mutable and an immutable list.
->   # (The result shall be *mutable*.)
->   UnaryTest:= function( list, opr, nameopr )
->     local res;
-> 
->     # Test the operation for the mutable list.
->     if not IsMutable( list ) then
->       Error( "<list> must be mutable" );
->     fi;
->     res:= opr( list );
->     if not IsMutable( res ) then
->       Print( "# failure in\n",
->              nameopr, "( ", list , " )\n",
->              "# (result must be mutable)\n" );
->     fi;
-> 
->     # Test the operation for the immutable list.
->     res:= opr( Immutable( list ) );
->     if not IsMutable( res ) then
->       Print( "# failure in\n",
->              nameopr, "( ", list, " )\n",
->              "# (result must be mutable)\n" );
->     fi;
->   end;
-> 
->   # Create a function for testing a binary operation when applied to
->   # two mutable or immutable lists (all combinations)
->   # or applied to one list and one immutable nonlist.
->   # (The result shall be *mutable* except if both arguments are immutable.)
->   BinaryTest:= function( list1, list2, opr, nameopr )
->     local res;
-> 
->     if IsList( list1 ) and IsList( list2 ) then
-> 
->       # Test the operation for two mutable lists.
->       if not IsMutable( list1 ) or not IsMutable( list2 ) then
->         Error( "both <list1> and <list2> must be mutable" );
->       fi;
-> 
->       res:= opr( list1, list2 );
->       if not IsMutable( res ) then
->         Print( "# failure in\n",
->                nameopr, "( ", list1, ", ", list2, " )\n",
->                "# (result must be mutable)\n" );
->       fi;
-> 
->       # Test the operation for two immutable lists.
->       res:= opr( Immutable( list1 ), Immutable( list2 ) );
->       if IsMutable( res ) then
->         Print( "# failure in\n",
->                nameopr, "( Immutable( ", list1,
->                " ), Immutable( ", list2, " ) )\n",
->                "# (result must be immutable)\n" );
->       fi;
-> 
->     fi;
-> 
->     if IsList( list1 ) then
-> 
->       # Test the operation for immutable first argument.
->       res:= opr( Immutable( list1 ), list2 );
->       if IsMutable( res ) <> IsMutable( list2 ) then
->         Print( "# failure in ", nameopr, "( Immutable( ", list1,
->                " ), ", list2, " )\n",
->                "# (result must be " );
->         if not IsMutable( list2 ) then
->           Print( "im" );
->         fi;
->         Print( "mutable)\n" );
->       fi;
-> 
->     fi;
-> 
->     if IsList( list2 ) then
-> 
->       # Test the operation for immutable second argument.
->       res:= opr( list1, Immutable( list2 ) );
->       if IsMutable( res ) <> IsMutable( list1 ) then
->         Print( "# failure in\n",
->                nameopr, "( ", list1,
->                ", Immutable( ", list2, " ) )\n",
->                "# (result must be " );
->         if not IsMutable( list1 ) then
->           Print( "im" );
->         fi;
->         Print( "mutable)\n" );
->       fi;
-> 
->     fi;
->   end;
-> 
-> 
->   # Create some vectors and matrices.
->   z:= Zero( R );
->   repeat
->     s:= Random( R );
->   until s <> z;
->   if Characteristic( R ) = 0 then
->     repeat
->       int:= Random( [ 1 .. 100 ] );
->     until int <> 0;
+
+gap> NestingDepthATest := function( obj )
+>   if not IsGeneralizedRowVector( obj ) then
+>     return 0;
+>   elif IsEmpty( obj ) then
+>     return 1;
 >   else
->     repeat
->       int:= Random( [ 1 .. 100 ] );
->     until int mod Characteristic(R) <> 0;
+>     return 1 + NestingDepthATest( obj[ PositionBound( obj ) ] );
 >   fi;
->   v1:= List( [ 1 .. dim ], i -> Random( R ) );
->   v2:= List( [ 1 .. dim ], i -> Random( R ) );
->   v3:= List( [ 1 .. dim ], i -> Random( R ) );
->   m1:= RandomMat( dim, dim, R );
->   m2:= RandomMat( dim, dim, R );
->   m3:= RandomMat( dim, dim, R );
->   m4:= RandomInvertibleMat( dim, R );
->   m5:= RandomInvertibleMat( dim, R );
->   ConvertToMatrixRep( m3 );
->   ConvertToMatrixRep( m5 );
-> 
->   # Start the tests.
->   # Test ZeroOp for vectors.
->   UnaryTest( v1, ZeroOp, "ZeroOp" );
->   UnaryTest( v3, ZeroOp, "ZeroOp" );
-> 
->   # Test AdditiveInverseOp for vectors.
->   UnaryTest( v1, AdditiveInverseOp, "AdditiveInverseOp" );
->   UnaryTest( v3, AdditiveInverseOp, "AdditiveInverseOp" );
-> 
->   # Test vector addition.
->   BinaryTest( v1, v2, \+, "\\+" );
->   BinaryTest( v1, v3, \+, "\\+" );
->   BinaryTest( v3, v2, \+, "\\+" );
-> 
->   # Test vector subtraction.
->   BinaryTest( v1, v2, \-, "\\-" );
->   BinaryTest( v1, v3, \-, "\\-" );
->   BinaryTest( v3, v2, \-, "\\-" );
-> 
->   # Test addition of scalar and vector.
->   BinaryTest( s, v2, \+, "\\+" );
->   BinaryTest( s, v3, \+, "\\+" );
-> 
->   # Test addition of vector and scalar.
->   BinaryTest( v2, s, \+, "\\+" );
->   BinaryTest( v3, s, \+, "\\+" );
-> 
->   # Test scalar multiples of coefficients with vectors.
->   BinaryTest( s, v2, \*, "\\*" );
->   BinaryTest( s, v3, \*, "\\*" );
-> 
->   # Test scalar multiples of vectors with coefficients.
->   BinaryTest( v2, s, \*, "\\*" );
->   BinaryTest( v3, s, \*, "\\*" );
-> 
->   # Test scalar multiples of integers with vectors.
->   BinaryTest( int, v2, \*, "\\*" );
->   BinaryTest( int, v3, \*, "\\*" );
-> 
->   # Test scalar multiples of vectors with integers.
->   BinaryTest( v2, int, \*, "\\*" );
->   BinaryTest( v3, int, \*, "\\*" );
-> 
->   # Test ZeroOp for matrices.
->   UnaryTest( m1, ZeroOp, "ZeroOp" );
->   UnaryTest( m3, ZeroOp, "ZeroOp" );
-> 
->   # Test AdditiveInverseOp for matrices.
->   UnaryTest( m1, AdditiveInverseOp, "AdditiveInverseOp" );
->   UnaryTest( m3, AdditiveInverseOp, "AdditiveInverseOp" );
-> 
->   # Test matrix addition.
->   BinaryTest( m1, m2, \+, "\\+" );
->   BinaryTest( m1, m3, \+, "\\+" );
->   BinaryTest( m3, m2, \+, "\\+" );
-> 
->   # Test matrix subtraction.
->   BinaryTest( m1, m2, \-, "\\-" );
->   BinaryTest( m1, m3, \-, "\\-" );
->   BinaryTest( m3, m2, \-, "\\-" );
-> 
->   # Test addition of scalar and vector.
->   BinaryTest( s, m2, \+, "\\+" );
->   BinaryTest( s, m3, \+, "\\+" );
-> 
->   # Test addition of vector and scalar.
->   BinaryTest( m2, s, \+, "\\+" );
->   BinaryTest( m3, s, \+, "\\+" );
-> 
->   # Test OneOp for matrices.
->   UnaryTest( m1, OneOp, "OneOp" );
->   UnaryTest( m3, OneOp, "OneOp" );
-> 
->   # Test InverseOp for matrices.
->   UnaryTest( m4, InverseOp, "InverseOp" );
->   UnaryTest( m5, InverseOp, "InverseOp" );
-> 
->   # Test matrix multiplication.
->   BinaryTest( m1, m2, \*, "\\*" );
->   BinaryTest( m1, m3, \*, "\\*" );
->   BinaryTest( m3, m2, \*, "\\*" );
-> 
->   # Test division of matrices.
->   BinaryTest( m1, m4, \/, "\\/" );
->   BinaryTest( m1, m5, \/, "\\/" );
->   BinaryTest( m3, m5, \/, "\\/" );
-> 
->   # Test conjugation of matrices.
->   BinaryTest( m1, m4, \^, "\\^" );
->   BinaryTest( m1, m5, \^, "\\^" );
->   BinaryTest( m3, m5, \^, "\\^" );
-> 
->   # Test Comm for matrices.
->   BinaryTest( m4, m4, Comm, "Comm" );
->   BinaryTest( m4, m5, Comm, "Comm" );
->   BinaryTest( m5, m4, Comm, "Comm" );
-> 
->   # Test LeftQuotient for matrices.
->   BinaryTest( m4, m1, LeftQuotient, "LeftQuotient" );
->   BinaryTest( m5, m1, LeftQuotient, "LeftQuotient" );
->   BinaryTest( m5, m3, LeftQuotient, "LeftQuotient" );
-> 
->   # Test scalar multiples of coefficients with matrices.
->   BinaryTest( s, m2, \*, "\\*" );
->   BinaryTest( s, m3, \*, "\\*" );
-> 
->   # Test scalar multiples of matrices with coefficients.
->   BinaryTest( m2, s, \*, "\\*" );
->   BinaryTest( m3, s, \*, "\\*" );
-> 
->   # Test scalar multiples of integers with matrices.
->   BinaryTest( int, m2, \*, "\\*" );
->   BinaryTest( int, m3, \*, "\\*" );
-> 
->   # Test scalar multiples of matrices with integers.
->   BinaryTest( m2, int, \*, "\\*" );
->   BinaryTest( m3, int, \*, "\\*" );
-> 
->   # Test multiplication of vector and matrix.
->   BinaryTest( v1, m2, \*, "\\*" );
->   BinaryTest( v1, m3, \*, "\\*" );
->   BinaryTest( v3, m2, \*, "\\*" );
->   BinaryTest( v3, m3, \*, "\\*" );
-> 
->   # Test multiplication of matrix and vector.
->   BinaryTest( m2, v1, \*, "\\*" );
->   BinaryTest( m3, v1, \*, "\\*" );
->   BinaryTest( m2, v3, \*, "\\*" );
->   BinaryTest( m3, v3, \*, "\\*" );
-> 
->   # Test LieBracket for matrices.
->   BinaryTest( m1, m2, LieBracket, "LieBracket" );
->   BinaryTest( m1, m3, LieBracket, "LieBracket" );
->   BinaryTest( m3, m2, LieBracket, "LieBracket" );
 > end;;
 
-# Here the tests themselves start.
-gap> TestOfListArithmetic( GF(2), 5 );
-gap> TestOfListArithmetic( GF(25), 5 );
-gap> TestOfListArithmetic( GF( NextPrimeInt( MAXSIZE_GF_INTERNAL ) ), 5 );
-gap> TestOfListArithmetic( Rationals, 2 );
-gap> TestOfListArithmetic( QuaternionAlgebra( Rationals ), 2 );
+gap> NestingDepthMTest := function( obj )
+>   if not IsMultiplicativeGeneralizedRowVector( obj ) then
+>     return 0;
+>   elif IsEmpty( obj ) then
+>     return 1;
+>   else
+>     return 1 + NestingDepthMTest( obj[ PositionBound( obj ) ] );
+>   fi;
+> end;;
+
+gap> ImmutabilityLevel2 := function( list )
+>   if not IsList( list ) then
+>     if IsMutable( list ) then
+>       Error( "<list> is not a list" );
+>     else
+>       return 0;
+>     fi;
+>   elif IsEmpty( list ) then
+>     # The empty list is defined to have immutability level 0.
+>     return 0;
+>   elif IsMutable( list ) then
+>     return ImmutabilityLevel2( list[ PositionBound( list ) ] );
+>   else
+>     return 1 + ImmutabilityLevel2( list[ PositionBound( list ) ] );
+>   fi;
+> end;;
+
+gap> ImmutabilityLevel := function( list )
+>   if IsMutable( list ) then
+>     return ImmutabilityLevel2( list );
+>   else
+>     return infinity;
+>   fi;
+> end;;
+
+
+##  Note that the two-argument version of `List' is defined only for
+##  dense lists.
+
+gap> ListWithPrescribedHoles := function( list, func )
+>   local result, i;
+> 
+>   result:= [];
+>   for i in [ 1 .. Length( list ) ] do
+>     if IsBound( list[i] ) then
+>       result[i]:= func( list[i] );
+>     fi;
+>   od;
+>   return result;
+> end;;
+
+
+gap> SumWithHoles := function( list )
+>   local pos, result, i;
+> 
+>   pos:= PositionBound( list );
+>   result:= list[ pos ];
+>   for i in [ pos+1 .. Length( list ) ] do
+>     if IsBound( list[i] ) then
+>       result:= result + list[i];
+>     fi;
+>   od;
+>   return result;
+> end;;
+
+
+gap> ParallelOp := function( op, list1, list2, mode )
+>   local result, i;
+> 
+>   result:= [];
+>   for i in [ 1 .. Maximum( Length( list1 ), Length( list2 ) ) ] do
+>     if IsBound( list1[i] ) then
+>       if IsBound( list2[i] ) then
+>         result[i]:= op( list1[i], list2[i] );
+>       elif mode = "one" then
+>         result[i]:= ShallowCopy( list1[i] );
+>       fi;
+>     elif IsBound( list2[i] ) and mode = "one" then
+>       result[i]:= ShallowCopy( list2[i] );
+>     fi;
+>   od;
+>   return result;
+> end;;
+
+
+gap> ErrorMessage := function( opname, operands, info, is, should )
+>   local str, i;
+> 
+>   str:= Concatenation( opname, "( " );
+>   for i in [ 1 .. Length( operands ) - 1 ] do
+>     Append( str, operands[i] );
+>     Append( str, ", " );
+>   od;
+>   error( str, operands[ Length( operands ) ], " ):  ", info, ",\n",
+>          "should be ", should, " but is ", is, "\n" );
+> end;;
+
+
+gap> CheckMutabilityStatus := function( opname, list )
+>   local attr, op, val, sm;
+> 
+>   attr:= ValueGlobal( Concatenation( opname, "Attr" ) );
+>   if ImmutabilityLevel( attr( list ) ) <> infinity then
+>     error( opname, "Attr: mutability problem for ", list,
+>            " (", ImmutabilityLevel( list ), ")\n" );
+>   fi;
+>   op:= ValueGlobal( Concatenation( opname, "Op" ) );
+>   val:= op( list );
+>   if val <> fail and IsCopyable( val ) and not IsMutable( val ) then
+>     error( opname, "Op: mutability problem for ", list,
+>            " (", ImmutabilityLevel( list ), ")\n" );
+>   fi;
+>   sm:= ValueGlobal( Concatenation( opname, "SM" ) );
+>   val:= sm( list );
+>   if     val <> fail
+>      and IsCopyable( val )
+> and opname <> "Inverse"      #T change this after Steve's fixes!! 
+>      and ImmutabilityLevel( sm( list ) ) <> ImmutabilityLevel( list ) then
+>     error( opname, "SM: mutability problem for ", list,
+>            " (", ImmutabilityLevel( list ), ")\n" );
+>   fi;
+> end;;
+
+
+##  Check whether a unary operation preserves the compression status.
+
+gap> COMPRESSIONS := [ "Is8BitMatrixRep", "Is8BitVectorRep",
+>                      "IsGF2VectorRep", "IsGF2MatrixRep" ];;
+
+gap> CheckCompressionStatus := function( opname, list )
+>   local value, namefilter, filter;
+> 
+>   value:= ValueGlobal( opname )( list );
+>   if value <> fail then
+>     for namefilter in COMPRESSIONS do
+>       filter:= ValueGlobal( namefilter );
+>       if filter( list ) and not filter( value ) then
+>         error( opname, " does not preserve `", namefilter, "'\n" );
+>       fi;
+>     od;
+>   fi;
+> end;;
+
+
+gap> CompareTest := function( opname, operands, result, desired )
+>   local i, j, val;
+> 
+>   # Check that the same positions are bound,
+>   # and that corresponding entries are equal.
+>   if IsList( result ) and IsList( desired ) then
+>     if Length( result ) <> Length( desired ) then
+>       ErrorMessage( opname, operands, "lengths differ",
+>                     Length( result ), Length( desired ) );
+>     fi;
+>     for i in [ 1 .. Length( result ) ] do
+>       if IsBound( result[i] ) then
+>         if not IsBound( desired[i] ) then
+>           ErrorMessage( opname, operands,
+>                         Concatenation( "bound at ", String( i ) ),
+>                         result[i], "unbound" );
+>         elif result[i] <> desired[i] then
+>           ErrorMessage( opname, operands,
+>                         Concatenation( "error at ", String( i ) ),
+>                         result[i], desired[i] );
+>         fi;
+>       elif IsBound( desired[i] ) then
+>           ErrorMessage( opname, operands,
+>                         Concatenation( "unbound at ", String( i ) ),
+>                         "unbound", desired[i] );
+>       fi;
+>     od;
+>   elif IsList( result ) or IsList( desired ) then
+>     ErrorMessage( opname, operands, "list vs. non-list", result, desired );
+>   elif result <> desired then
+>     ErrorMessage( opname, operands, "two non-lists", result, desired );
+>   fi;
+> 
+>   # Check the mutability status.
+>   if     Length( operands ) = 2
+>      and IsList( result ) and IsCopyable( result )
+> and ( opname <> "Subtraction" or operands[1] <> [] ) #T change this after Steve's fixes!!
+>      and ImmutabilityLevel( result )
+>          <> Minimum( List( operands, ImmutabilityLevel ) ) then
+>     error( opname, ": mutability problem for ", operands[1], " (",
+>            ImmutabilityLevel( operands[1] ), ") and ", operands[2], " (",
+>            ImmutabilityLevel( operands[2] ), ")\n" );
+>   fi;
+> end;;
+
+
+#############################################################################
+##
+#F  ZeroTest( <list> )
+##
+##  The zero of a list $x$ in `IsGeneralizedRowVector' is defined as
+##  the list whose entry at position $i$ is the zero of $x[i]$
+##  if this entry is bound, and is unbound otherwise.
+##
+gap> ZeroTest := function( list )
+>   if IsGeneralizedRowVector( list ) then
+>     CompareTest( "Zero", [ list ],
+>                  Zero( list ),
+>                  ListWithPrescribedHoles( list, Zero ) );
+>     CheckMutabilityStatus( "Zero", list );
+>     CheckCompressionStatus( "ZeroAttr", list );
+>     CheckCompressionStatus( "ZeroSM", list );
+>   fi;
+> end;;
+
+
+#############################################################################
+##
+#F  AdditiveInverseTest( <list> )
+##
+##  The additive inverse of a list $x$ in `IsGeneralizedRowVector' is defined
+##  as the list whose entry at position $i$ is the additive inverse of $x[i]$
+##  if this entry is bound, and is unbound otherwise.
+##
+gap> AdditiveInverseTest := function( list )
+>   if IsGeneralizedRowVector( list ) then
+>     CompareTest( "AdditiveInverse", [ list ],
+>                  AdditiveInverse( list ),
+>                  ListWithPrescribedHoles( list, AdditiveInverse ) );
+>     CheckMutabilityStatus( "AdditiveInverse", list );
+>     CheckCompressionStatus( "AdditiveInverseAttr", list );
+>     CheckCompressionStatus( "AdditiveInverseSM", list );
+>   fi;
+> end;;
+
+
+#############################################################################
+##
+#F  AdditionTest( <left>, <right> )
+##
+##  If $x$ and $y$ are in `IsGeneralizedRowVector' and have the same
+##  additive nesting depth (see~"NestingDepthA"),
+##  % By definition, this depth is nonzero.
+##  the sum $x + y$ is defined *pointwise*, in the sense that the result is a
+##  list whose entry at position $i$ is $x[i] + y[i]$ if these entries are
+##  bound,
+##  is a shallow copy (see~"ShallowCopy") of $x[i]$ or $y[i]$ if the other
+##  argument is not bound at position $i$,
+##  and is unbound if both $x$ and $y$ are unbound at position $i$.
+##
+##  If $x$ is in `IsGeneralizedRowVector' and $y$ is either not a list or is
+##  in `IsGeneralizedRowVector' and has lower additive nesting depth,
+##  the sum $x + y$ is defined as a list whose entry at position $i$ is
+##  $x[i] + y$ if $x$ is bound at position $i$, and is unbound if not.
+##  The equivalent holds in the reversed case,
+##  where the order of the summands is kept,
+##  as addition is not always commutative.
+##
+##  For two {\GAP} objects $x$ and $y$ of which one is in
+##  `IsGeneralizedRowVector' and the other is either not a list or is
+##  also in `IsGeneralizedRowVector',
+##  $x - y$ is defined as $x + (-y)$.
+##
+gap> AdditionTest := function( left, right )
+>   local depth1, depth2, desired;
+> 
+>   if IsGeneralizedRowVector( left ) and IsGeneralizedRowVector( right ) then
+>     depth1:= NestingDepthATest( left );
+>     depth2:= NestingDepthATest( right );
+>     if depth1 = depth2 then
+>       desired:= ParallelOp( \+, left, right, "one" );
+>     elif depth1 < depth2 then
+>       desired:= ListWithPrescribedHoles( right, x -> left + x );
+>     else
+>       desired:= ListWithPrescribedHoles( left, x -> x + right );
+>     fi;
+>   elif IsGeneralizedRowVector( left ) and not IsList( right ) then
+>     desired:= ListWithPrescribedHoles( left, x -> x + right );
+>   elif not IsList( left ) and IsGeneralizedRowVector( right ) then
+>     desired:= ListWithPrescribedHoles( right, x -> left + x );
+>   else
+>     return;
+>   fi;
+>   CompareTest( "Addition", [ left, right ], left + right, desired );
+>   if AdditiveInverse( right ) <> fail then
+>     CompareTest( "Subtraction", [ left, right ], left - right,
+>                  left + ( - right ) );
+>   fi;
+> end;;
+
+
+#############################################################################
+##
+#F  OneTest( <list> )
+##
+gap> OneTest := function( list )
+>   if IsOrdinaryMatrix( list ) and Length( list ) = Length( list[1] ) then
+>     CheckMutabilityStatus( "One", list );
+>     CheckCompressionStatus( "OneAttr", list );
+>     CheckCompressionStatus( "OneSM", list );
+>   fi;
+> end;;
+
+
+#############################################################################
+##
+#F  InverseTest( <obj> )
+##
+gap> InverseTest := function( list )
+>   if IsOrdinaryMatrix( list ) and Length( list ) = Length( list[1] ) then
+>     CheckMutabilityStatus( "Inverse", list );
+>     CheckCompressionStatus( "InverseAttr", list );
+>     CheckCompressionStatus( "InverseSM", list );
+>   fi;
+> end;;
+
+
+#############################################################################
+##
+#F  TransposedMatTest( <obj> )
+##
+gap> TransposedMatTest := function( list )
+>   if IsOrdinaryMatrix( list ) then
+>     CheckCompressionStatus( "TransposedMatAttr", list );
+>     CheckCompressionStatus( "TransposedMatOp", list );
+>   fi;
+> end;;
+
+
+#############################################################################
+##
+#F  MultiplicationTest( <left>, <right> )
+##
+##  There are three possible computations that might be triggered by a
+##  multiplication involving a list in
+##  `IsMultiplicativeGeneralizedRowVector'.
+##  Namely, $x * y$ might be
+##  \beginlist
+##  \item{(I)}
+##      the inner product $x[1] * y[1] + x[2] * y[2] + \cdots + x[n] * y[n]$,
+##      where summands are omitted for which the entry in $x$ or $y$ is
+##      unbound
+##      (if this leaves no summand then the multiplication is an error),
+##      or
+##  \item{(L)}
+##      the left scalar multiple, i.e., a list whose entry at position $i$ is
+##      $x * y[i]$ if $y$ is bound at position $i$, and is unbound if not, or
+##  \item{(R)}
+##      the right scalar multiple, i.e., a list whose entry at position $i$
+##      is $x[i] * y$ if $x$ is bound at position $i$, and is unbound if not.
+##  \endlist
+##  
+##  Our aim is to generalize the basic arithmetic of simple row vectors and
+##  matrices, so we first summarize the situations that shall be covered.
+##  
+##  \beginexample
+##      | scl   vec   mat
+##  ---------------------
+##  scl |       (L)   (L)
+##  vec | (R)   (I)   (I)
+##  mat | (R)   (R)   (R)
+##  \endexample
+##  
+##  This means for example that the product of a scalar (scl)
+##  with a vector (vec) or a matrix (mat) is computed according to (L).
+##  Note that this is asymmetric.
+##  
+##  Now we can state the general multiplication rules.
+##  
+##  If exactly one argument is in `IsMultiplicativeGeneralizedRowVector'
+##  then we regard the other argument (which is then not a list) as a scalar,
+##  and specify result (L) or (R), depending on ordering.
+##  
+##  In the remaining cases, both $x$ and $y$ are in
+##  `IsMultiplicativeGeneralizedRowVector', and we distinguish the
+##  possibilities by their multiplicative nesting depths.
+##  An argument with *odd* multiplicative nesting depth is regarded as a
+##  vector, and an argument with *even* multiplicative nesting depth is
+##  regarded as a scalar or a matrix.
+##  
+##  So if both arguments have odd multiplicative nesting depth,
+##  we specify result (I).
+##  
+##  If exactly one argument has odd nesting depth,
+##  the other is treated as a scalar if it has lower multiplicative nesting
+##  depth, and as a matrix otherwise.
+##  In the former case, we specify result (L) or (R), depending on ordering;
+##  in the latter case, we specify result (L) or (I), depending on ordering.
+##  
+##  We are left with the case that each argument has even multiplicative
+##  nesting depth.
+##  % By definition, this depth is nonzero.
+##  If the two depths are equal, we treat the computation as a matrix product,
+##  and specify result (R).
+##  Otherwise, we treat the less deeply nested argument as a scalar and the
+##  other as a matrix, and specify result (L) or (R), depending on ordering.
+##  
+##  For two {\GAP} objects $x$ and $y$ of which one is in
+##  `IsMultiplicativeGeneralizedRowVector' and the other is either not a list
+##  or is also in `IsMultiplicativeGeneralizedRowVector',
+##  $x / y$ is defined as $x * y^{-1}$.
+##
+gap> MultiplicationTest := function( left, right )
+>   local depth1, depth2, par, desired;
+> 
+>   if IsMultiplicativeGeneralizedRowVector( left ) and
+>      IsMultiplicativeGeneralizedRowVector( right ) then
+>     depth1:= NestingDepthMTest( left );
+>     depth2:= NestingDepthMTest( right );
+>     if IsOddInt( depth1 ) then
+>       if IsOddInt( depth2 ) or depth1 < depth2 then
+>         # <vec> * <vec> or <vec> * <mat>
+>         par:= ParallelOp( \*, left, right, "both" );
+>         if IsEmpty( par ) then
+>           error( "vector multiplication <left>*<right> with empty ",
+>                  "support:\n", left, "\n", right, "\n" );
+>         else
+>           desired:= SumWithHoles( par );
+>         fi;
+>       else
+>         # <vec> * <scl>
+>         desired:= ListWithPrescribedHoles( left, x -> x * right );
+>       fi;
+>     elif IsOddInt( depth2 ) then
+>       if depth1 < depth2 then
+>         # <scl> * <vec>
+>         desired:= ListWithPrescribedHoles( right, x -> left * x );
+>       else
+>         # <mat> * <vec>
+>         desired:= ListWithPrescribedHoles( left, x -> x * right );
+>       fi;
+>     elif depth1 = depth2 then
+>       # <mat> * <mat>
+>       desired:= ListWithPrescribedHoles( left, x -> x * right );
+>     elif depth1 < depth2 then
+>       # <scl> * <mat>
+>       desired:= ListWithPrescribedHoles( right, x -> left * x );
+>     else
+>       # <mat> * <scl>
+>       desired:= ListWithPrescribedHoles( left, x -> x * right );
+>     fi;
+>   elif IsMultiplicativeGeneralizedRowVector( left ) and
+>        not IsList( right ) then
+>     desired:= ListWithPrescribedHoles( left, x -> x * right );
+>   elif IsMultiplicativeGeneralizedRowVector( right ) and
+>        not IsList( left ) then
+>     desired:= ListWithPrescribedHoles( right, x -> left * x );
+>   else
+>     return;
+>   fi;
+>   CompareTest( "Multiplication", [ left, right ], left * right, desired );
+>   if     IsMultiplicativeGeneralizedRowVector( right )
+>      and IsOrdinaryMatrix( right )
+>      and Length( right ) = Length( right[1] )
+>      and NestingDepthM( right ) = 2
+>      and Inverse( right ) <> fail then
+>     CompareTest( "Division", [ left, right ], left / right,
+>                  left * ( right^-1 ) );
+>   fi;
+> end;;
+
+
+#############################################################################
+##
+#F  RunTest( <func>, <arg1>, ... )
+##
+##  Call <func> for the remaining arguments, or for shallow copies of them
+##  or immutable copies.
+##
+gap> RunTest := function( arg )
+>   local combinations, i, entry;
+> 
+>   combinations:= [ ];
+>   for i in [ 2 .. Length( arg ) ] do
+>     entry:= [ arg[i] ];
+>     if IsCopyable( arg[i] ) then
+>       Add( entry, ShallowCopy( arg[i] ) );
+>     fi;
+>     if IsMutable( arg[i] ) then
+>       Add( entry, Immutable( arg[i] ) );
+>     fi;
+>     Add( combinations, entry );
+>   od;
+>   for entry in Cartesian( combinations ) do
+>     CallFuncList( arg[1], entry );
+>   od;
+> end;;
+
+
+#############################################################################
+##
+#F  TestOfAdditiveListArithmetic( <R>, <dim> )
+##
+##  For a ring or list of ring elements <R> (such that `Random( <R> )'
+##  returns an element in <R> and such that not all elements in <R> are
+##  zero),
+##  `TestOfAdditiveListArithmetic' performs the following tests of additive
+##  arithmetic operations.
+##  \beginlist
+##  \item{1.}
+##      If the elements of <R> are in `IsGeneralizedRowVector' then
+##      it is checked whether `Zero', `AdditiveInverse', and `\+'
+##      obey the definitions.
+##  \item{2.}
+##      If the elements of <R> are in `IsGeneralizedRowVector' then
+##      it is checked whether the sum of elements in <R> and (non-dense)
+##      plain lists of integers obeys the definitions.
+##  \item{3.}
+##      Check `Zero' and `AdditiveInverse' for nested plain lists of elements
+##      in <R>, and `\+' for elements in <R> and nested plain lists of
+##      elements in <R>.
+##  \endlist
+##
+gap> TestOfAdditiveListArithmetic := function( R, dim )
+>   local r, i, intlist, j, vec1, vec2, mat1, mat2, row;
+> 
+>   r:= Random( R );
+>   if IsGeneralizedRowVector( r ) then
+> 
+>     # tests of kind 1.
+>     for i in [ 1 .. 10 ] do
+>       RunTest( ZeroTest, Random( R ) );
+>       RunTest( AdditiveInverseTest, Random( R ) );
+>       RunTest( AdditionTest, Random( R ), Random( R ) );
+>     od;
+> 
+>     # tests of kind 2.
+>     for i in [ 1 .. 10 ] do
+>       RunTest( AdditionTest, Random( R ), [] );
+>       RunTest( AdditionTest, [], Random( R ) );
+>       r:= Random( R );
+>       intlist:= List( [ 1 .. Length( r ) + Random( [ -1 .. 1 ] ) ],
+>                       x -> Random( Integers ) );
+>       for j in [ 1 .. Int( Length( r ) / 3 ) ] do
+>         Unbind( intlist[ Random( [ 1 .. Length( intlist ) ] ) ] );
+>       od;
+>       RunTest( AdditionTest, r, intlist );
+>       RunTest( AdditionTest, intlist, r );
+>     od;
+> 
+>   fi;
+> 
+>   # tests of kind 3.
+>   for i in [ 1 .. 10 ] do
+> 
+>     vec1:= List( [ 1 .. dim ], x -> Random( R ) );
+>     vec2:= List( [ 1 .. dim ], x -> Random( R ) );
+> 
+>     RunTest( ZeroTest, vec1 );
+>     RunTest( AdditiveInverseTest, vec1 );
+>     RunTest( AdditionTest, vec1, Random( R ) );
+>     RunTest( AdditionTest, Random( R ), vec2 );
+>     RunTest( AdditionTest, vec1, vec2 );
+>     RunTest( AdditionTest, vec1, [] );
+>     RunTest( AdditionTest, [], vec2 );
+>     Unbind( vec1[ dim ] );
+>     RunTest( AdditionTest, vec1, vec2 );
+>     Unbind( vec2[ Random( [ 1 .. dim ] ) ] );
+>     RunTest( ZeroTest, vec2 );
+>     RunTest( AdditiveInverseTest, vec1 );
+>     RunTest( AdditiveInverseTest, vec2 );
+>     RunTest( AdditionTest, vec1, vec2 );
+>     Unbind( vec1[ Random( [ 1 .. dim ] ) ] );
+>     RunTest( AdditionTest, vec1, vec2 );
+> 
+>     mat1:= RandomMat( dim, dim, R );
+>     mat2:= RandomMat( dim, dim, R );
+> 
+>     RunTest( ZeroTest, mat1 );
+>     RunTest( AdditiveInverseTest, mat1 );
+>     RunTest( TransposedMatTest, mat1 );
+>     RunTest( AdditionTest, mat1, Random( R ) );
+>     RunTest( AdditionTest, Random( R ), mat2 );
+>     RunTest( AdditionTest, vec1, mat2 );
+>     RunTest( AdditionTest, mat1, vec2 );
+>     RunTest( AdditionTest, mat1, mat2 );
+>     RunTest( AdditionTest, mat1, [] );
+>     RunTest( AdditionTest, [], mat2 );
+>     Unbind( mat1[ dim ] );
+>     row:= mat1[ Random( [ 1 .. dim-1 ] ) ];
+>     if not IsLockedRepresentationVector( row ) then
+>       Unbind( row[ Random( [ 1 .. dim ] ) ] );
+>     fi;
+>     RunTest( AdditionTest, mat1, mat2 );
+>     Unbind( mat2[ Random( [ 1 .. dim ] ) ] );
+>     RunTest( ZeroTest, mat2 );
+>     RunTest( AdditiveInverseTest, mat1 );
+>     RunTest( AdditiveInverseTest, mat2 );
+>     RunTest( TransposedMatTest, mat2 );
+>     RunTest( AdditionTest, mat1, mat2 );
+>     Unbind( mat1[ Random( [ 1 .. dim ] ) ] );
+>     RunTest( AdditionTest, mat1, mat2 );
+> 
+>   od;
+> end;;
+
+
+#############################################################################
+##
+#F  TestOfMultiplicativeListArithmetic( <R>, <dim> )
+##
+##  For a ring or list of ring elements <R> (such that `Random( <R> )'
+##  returns an element in <R> and such that not all elements in <R> are
+##  zero),
+##  `TestOfMultiplicativeListArithmetic' performs the following tests of
+##  multiplicative arithmetic operations.
+##  \beginlist
+##  \item{1.}
+##      If the elements of <R> are in `IsMultiplicativeGeneralizedRowVector'
+##      then it is checked whether `One', `Inverse', and `\*'
+##      obey the definitions.
+##  \item{2.}
+##      If the elements of <R> are in `IsMultiplicativeGeneralizedRowVector'
+##      then it is checked whether the product of elements in <R> and
+##      (non-dense) plain lists of integers obeys the definitions.
+##      (Note that contrary to the additive case, we need not chack the
+##      special case of a multiplication with an empty list.)
+##  \item{3.}
+##      Check `One' and `Inverse' for nested plain lists of elements
+##      in <R>, and `\*' for elements in <R> and nested plain lists of
+##      elements in <R>.
+##  \endlist
+##
+gap> TestOfMultiplicativeListArithmetic := function( R, dim )
+>   local r, i, intlist, j, vec1, vec2, mat1, mat2, row;
+> 
+>   r:= Random( R );
+>   if IsMultiplicativeGeneralizedRowVector( r ) then
+> 
+>     # tests of kind 1.
+>     for i in [ 1 .. 10 ] do
+>       RunTest( OneTest, Random( R ) );
+>       RunTest( InverseTest, Random( R ) );
+>       RunTest( MultiplicationTest, Random( R ), Random( R ) );
+>     od;
+> 
+>     # tests of kind 2.
+>     for i in [ 1 .. 10 ] do
+>       r:= Random( R );
+>       intlist:= List( [ 1 .. Length( r ) + Random( [ -1 .. 1 ] ) ],
+>                       x -> Random( Integers ) );
+>       for j in [ 1 .. Int( Length( r ) / 3 ) ] do
+>         Unbind( intlist[ Random( [ 1 .. Length( intlist ) ] ) ] );
+>       od;
+>       RunTest( MultiplicationTest, r, intlist );
+>       RunTest( MultiplicationTest, intlist, r );
+>     od;
+> 
+>   fi;
+> 
+>   # tests of kind 3.
+>   for i in [ 1 .. 10 ] do
+> 
+>     vec1:= List( [ 1 .. dim ], x -> Random( R ) );
+>     vec2:= List( [ 1 .. dim ], x -> Random( R ) );
+> 
+>     RunTest( OneTest, vec1 );
+>     RunTest( InverseTest, vec1 );
+>     RunTest( MultiplicationTest, vec1, Random( R ) );
+>     RunTest( MultiplicationTest, Random( R ), vec2 );
+>     RunTest( MultiplicationTest, vec1, vec2 );
+>     Unbind( vec1[ dim ] );
+>     RunTest( MultiplicationTest, vec1, vec2 );
+>     Unbind( vec2[ Random( [ 1 .. dim ] ) ] );
+>     RunTest( OneTest, vec2 );
+>     RunTest( InverseTest, vec1 );
+>     RunTest( InverseTest, vec2 );
+>     RunTest( MultiplicationTest, vec1, vec2 );
+>     Unbind( vec1[ Random( [ 1 .. dim ] ) ] );
+>     RunTest( MultiplicationTest, vec1, vec2 );
+> 
+>     mat1:= RandomMat( dim, dim, R );
+>     mat2:= RandomMat( dim, dim, R );
+> 
+>     RunTest( OneTest, mat1 );
+>     RunTest( InverseTest, mat1 );
+>     RunTest( MultiplicationTest, mat1, Random( R ) );
+>     RunTest( MultiplicationTest, Random( R ), mat2 );
+>     RunTest( MultiplicationTest, vec1, mat2 );
+>     RunTest( MultiplicationTest, mat1, vec2 );
+>     RunTest( MultiplicationTest, mat1, mat2 );
+>     Unbind( mat1[ dim ] );
+>     row:= mat1[ Random( [ 1 .. dim-1 ] ) ];
+>     if not IsLockedRepresentationVector( row ) then
+>       Unbind( row[ Random( [ 1 .. dim ] ) ] );
+>     fi;
+>     RunTest( MultiplicationTest, vec1, mat2 );
+>     RunTest( MultiplicationTest, mat1, vec2 );
+>     RunTest( MultiplicationTest, mat1, mat2 );
+>     Unbind( mat2[ Random( [ 1 .. dim ] ) ] );
+>     RunTest( OneTest, mat2 );
+>     RunTest( InverseTest, mat1 );
+>     RunTest( InverseTest, mat2 );
+>     RunTest( MultiplicationTest, mat1, mat2 );
+>     Unbind( mat1[ Random( [ 1 .. dim ] ) ] );
+>     RunTest( MultiplicationTest, mat1, mat2 );
+> 
+>   od;
+> end;;
+
+
+#############################################################################
+##
+#F  TestOfListArithmetic( <R>, <dimlist> )
+##
+gap> TestOfListArithmetic := function( R, dimlist )
+>   local n;
+> 
+>   for n in dimlist do
+>     TestOfAdditiveListArithmetic( R, n );
+>     TestOfMultiplicativeListArithmetic( R, n );
+>   od;
+> end;;
+
+
+#############################################################################
+##
+##  Here the tests start.
+##  (The dimension should always be at least 4,
+##  in order to avoid errors in inner products of non-dense lists.)
+##
+
+# over `GF(2)', `GF(3)', `GF(4)' (compressed elements)
+gap> stddims:= [ 4, 5, 6, 8, 17, 32, 33 ];;
+gap> TestOfListArithmetic( GF(2), stddims );
+gap> TestOfListArithmetic( GF(3), stddims );
+gap> TestOfListArithmetic( GF(4), stddims );
+
+# over another small finite field (compressed elements)
+gap> TestOfListArithmetic( GF(25), stddims );
+
+# over a big finite (prime) field
+gap> p:= NextPrimeInt( MAXSIZE_GF_INTERNAL );;
+gap> TestOfListArithmetic( GF( p ), stddims );
+gap> TestOfMultiplicativeListArithmetic( GF( p ), 5 );
+
+# over the rationals
+gap> TestOfListArithmetic( Rationals, [ 4 ] );
+
+# over a residue class ring
+gap> TestOfListArithmetic( Integers mod 12, [ 4 ] );
+
+# over a ring of non-internal objects
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> TestOfListArithmetic( A, [ 4 ] );
+
+# over a matrix space/algebra over `GF(2)' (compressed elements)
+gap> TestOfListArithmetic( GF(2)^[2,3], [ 4, 5, 6 ] );
+
+# over a matrix space/algebra over another small finite field
+# (compressed elements)
+gap> TestOfAdditiveListArithmetic( GF(5)^[2,3], [ 4, 5, 6 ] );
+
+# over a matrix space/algebra over a big finite (prime) field
+gap> p:= NextPrimeInt( MAXSIZE_GF_INTERNAL );;
+gap> TestOfListArithmetic( GF( p )^[2,3], [ 4, 5, 6 ] );
+
+# over a matrix space/algebra over the rationals
+gap> TestOfListArithmetic( Rationals^[2,3], [ 4, 5, 6 ] );
+
+# over a class function space
+gap> TestOfAdditiveListArithmetic( Irr( SymmetricGroup( 4 ) ), 4 );
+
+# over a space of Lie matrices
+#T gap> TestOfAdditiveListArithmetic( LieAlgebra( GF(3)^[2,2] ), 4 );
+
+# # over a group of block matrices
+# gap> hom:= IrreducibleRepresentations( SymmetricGroup( 4 ) )[3];;
+# gap> ind:= InducedRepresentation( hom, SymmetricGroup( 5 ) );;
+# gap> blockmats:= Elements( Image( ind ) );;
+# gap> # Note that `Random' for the matrix group would construct a matrix
+# gap> # via the homomorphism to a perm. group, and this would not be a
+# gap> # block matrix!
+# gap> TestOfAdditiveListArithmetic( blockmats, 4 );
+# gap> TestOfMultiplicativeListArithmetic( blockmats, 4 );
 
 
 gap> STOP_TEST( "arithlst.tst", 2000000 );

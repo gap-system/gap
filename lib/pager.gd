@@ -48,7 +48,7 @@ Revision.pager_gd :=
 ##  
 ##  The argument <lines> can have one of the following forms:
 ##  
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{(1)} a string (i.e., lines are separated by newline characters)
 ##  \item{(2)} a list of strings (without trailing newline characters) 
 ##  which are interpreted as lines of the text to be shown

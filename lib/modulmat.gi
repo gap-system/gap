@@ -261,7 +261,7 @@ InstallMethod( CanonicalBasis,
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsCanonicalBasis
                             and IsCanonicalBasisFullMatrixModule
                             and IsAttributeStoringRep ),

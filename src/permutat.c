@@ -456,23 +456,27 @@ Int             LtPerm22 (
     /* search for a difference and return if you find one                  */
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) )
+            if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
         for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) )
+            if (        p != *(ptR++) ) {
                 if (        p < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
     }
     else {
         for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) )
+            if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
         for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) != p )
+            if ( *(ptL++) != p ) {
                 if ( *(--ptL) <        p )  return 1L ;
                 else                        return 0L;
+	    }
     }
 
     /* otherwise they must be equal                                        */
@@ -500,23 +504,27 @@ Int             LtPerm24 (
     /* search for a difference and return if you find one                  */
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) )
+            if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
         for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) )
+            if (        p != *(ptR++) ) {
                 if (        p < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
     }
     else {
         for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) )
+            if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
         for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) != p )
+            if ( *(ptL++) != p ) {
                 if ( *(--ptL) <        p )  return 1L ;
                 else                        return 0L;
+	    }
     }
 
     /* otherwise they must be equal                                        */
@@ -544,23 +552,27 @@ Int             LtPerm42 (
     /* search for a difference and return if you find one                  */
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) )
+            if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
         for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) )
+            if (        p != *(ptR++) ) {
                 if (        p < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
     }
     else {
         for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) )
+            if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
         for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) != p )
+            if ( *(ptL++) != p ) {
                 if ( *(--ptL) <        p )  return 1L ;
                 else                        return 0L;
+	    }
     }
 
     /* otherwise they must be equal                                        */
@@ -588,23 +600,27 @@ Int             LtPerm44 (
     /* search for a difference and return if you find one                  */
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) )
+            if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
         for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) )
+            if (        p != *(ptR++) ) {
                 if (        p < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
     }
     else {
         for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) )
+            if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
                 else                        return 0L;
+	    }
         for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) != p )
+            if ( *(ptL++) != p ) {
                 if ( *(--ptL) <        p )  return 1L ;
                 else                        return 0L;
+	    }
     }
 
     /* otherwise they must be equal                                        */
@@ -3217,7 +3233,8 @@ Obj             FunSmallestImgTuplePerm (
     UInt                lmp;            /* largest moved point             */
     UInt                i, k;           /* loop variables                  */
 
-    res = 2<<30; /* ``infty''. We have no permutations on over 2^28 points */
+    res = 2UL << 30; /* ``infty''. 
+                        We have no permutations on over 2^28 points        */
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
@@ -3832,10 +3849,14 @@ static Int InitKernel (
     /* install the 'ONE' function for permutations                         */
     OneFuncs[ T_PERM2 ] = OnePerm;
     OneFuncs[ T_PERM4 ] = OnePerm;
+    OneMutFuncs[ T_PERM2 ] = OnePerm;
+    OneMutFuncs[ T_PERM4 ] = OnePerm;
 
     /* install the 'INV' function for permutations                         */
     InvFuncs[ T_PERM2 ] = InvPerm;
     InvFuncs[ T_PERM4 ] = InvPerm;
+    InvMutFuncs[ T_PERM2 ] = InvPerm;
+    InvMutFuncs[ T_PERM4 ] = InvPerm;
 
     /* return success                                                      */
     return 0;

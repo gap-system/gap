@@ -335,6 +335,14 @@ InstallMethod(FpGrpMonSmgOfFpGrpMonSmgElement,
 ##  2. methods for f.p. groups
 ##
 
+InstallGlobalFunction(IndexCosetTab,function(t)
+  if Length(t)=0 then
+    return 1;
+  else
+    return Length(t[1]);
+  fi;
+end);
+
 InstallMethod( PseudoRandom,"subgroups fp group: force generators",true,
     [IsSubgroupFpGroup],0,
 function( grp )
@@ -352,7 +360,7 @@ local S;
         rec() ); 
   SetParent(S,fam!.wholeGroup);
   SetCosetTableInWholeGroup(S,tab);
-  SetIndexInWholeGroup(S,Length(tab[1]));
+  SetIndexInWholeGroup(S,IndexCosetTab(tab));
   return S;
 end);
 
@@ -742,6 +750,8 @@ function ( fgens, grels, fsgens )
   # catch trivial subgroup generators
   if ForAny(fsgens,i->Length(i)=0) then
     fsgens:=Filtered(fsgens,i->Length(i)>0);
+  elif Length(fgens)=0 then
+    return [];
   fi;
   # call the TC plugin
   return TCENUM.CosetTableFromGensAndRels(fgens,grels,fsgens);
@@ -841,6 +851,11 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
     # make the rows for the subgroup generators
     subgroup := [];
     for rel  in fsgens  do
+      #T this code should use ExtRepOfObj -- its faster
+      # cope with SLP elms
+      if IsStraightLineProgElm(rel) then
+        rel:=EvalStraightLineProgElm(rel);
+      fi;
         length := Length( rel );
         length2 := 2 * length;
         nums := [ ]; nums[length2] := 0;
@@ -1089,7 +1104,7 @@ function( H )
         # get the coset table of N in G by constructing the coset table of
         # the trivial subgroup in K.
         T := CosetTable( K, TrivialSubgroup( K ) );
-        Info( InfoFpGroup, 1, "index is ", Length( T[1] ) );
+        Info( InfoFpGroup, 1, "index is ", IndexCosetTab(T) );
     fi;
 
     return T;
@@ -1370,7 +1385,7 @@ local T;
 
     # Get the coset table of <H> in its whole group.
     T := CosetTableInWholeGroup( H );
-    return Length( T[1] );
+    return IndexCosetTab( T );
 end );
 
 InstallMethod( IndexInWholeGroup, "for full fp group",
@@ -1392,7 +1407,7 @@ local V,t,w,wi,i,j,e,pos;
 
   # the image of g in the permutation group
   w:=UnderlyingElement(g);
-  wi:=[1..Length(t[1])];
+  wi:=[1..IndexCosetTab(t)];
   for i in [1..NumberSyllables(w)] do
     e:=ExponentSyllable(w,i);
     if e<0 then
@@ -1530,9 +1545,9 @@ function ( G, H )
     fi;
 
     tableG := CosetTableInWholeGroup(G);
-    nrcosG := Length( tableG[1] ) + 1;
+    nrcosG := IndexCosetTab( tableG ) + 1;
     tableH := CosetTableInWholeGroup(H);
-    nrcosH := Length( tableH[1] ) + 1;
+    nrcosH := IndexCosetTab( tableH ) + 1;
 
     if nrcosH<=nrcosG and HasGeneratorsOfGroup(G) then
       if ForAll(GeneratorsOfGroup(G),i->i in H) then
@@ -2651,7 +2666,7 @@ BindGlobal( "DoLowIndexSubgroupsFpGroup", function ( arg )
 		    fi;
 
 # ahulpke, 2-17-00: there is no particular reason to compute subgroup
-# generators, the coset tables are much more usable!
+# generators, the coset tables are much better
 #                    # find a generating system for the subgroup
 #                    gens := ShallowCopy( hgens );
 #                    for i  in [ 1 .. nract ]  do
@@ -2854,7 +2869,7 @@ local   N,          # normalizer of <H> in <G>, result
   # first we need the coset table of <H>
   table := CosetTableInWholeGroup(H);
   pargens:=GeneratorsOfGroup(FamilyObj(G)!.wholeGroup);
-  nrcos := Length( table[1] );
+  nrcos := IndexCosetTab( table );
   nrgens := 2*Length( pargens ) + 1;
 
   # find the cosets of <H> in its parent whose elements normalize <H>
@@ -3394,7 +3409,7 @@ local fgens,grels,max,gens,t,Attempt;
 	return Attempt(trial);
       fi;
     fi;
-    Info(InfoFpGroup,1,"FIS: found ",Length(t[1]));
+    Info(InfoFpGroup,1,"FIS: found ",IndexCosetTab(t));
     return [trial[1],t,max];
   end;
 
@@ -3551,10 +3566,10 @@ local G,t,p,H,max,sz,gens,rels,comb,l,m,i,j,trial,gen,bad;
       Error("<G> must be finite");
       return fail;
     fi;
-    sz:=t.exponent*Length(t.cosetTable[1]);
+    sz:=t.exponent*IndexCosetTab(t.cosetTable);
     SetSize(G,sz);
     Info(InfoFpGroup,1,"found size ",sz);
-    if sz>200*Length(t.cosetTable[1]) then
+    if sz>200*IndexCosetTab(t.cosetTable) then
       # try the corresponding perm rep
       p:=t.cosetTable{[1,3..Length(t.cosetTable)-1]};
       Unbind(t);
@@ -3591,7 +3606,7 @@ local G,t,p,H,max,sz,gens,rels,comb,l,m,i,j,trial,gen,bad;
       Info(InfoFpGroup,1,"Try subgroup ",trial);
       t:=CosetTableFromGensAndRels(gens,rels,trial:silent:=true,max:=max );
       if t<>fail then
-	Info(InfoFpGroup,1,"has index ",Length(t[1]));
+	Info(InfoFpGroup,1,"has index ",IndexCosetTab(t));
 	p:=t{[1,3..Length(t)-1]};
 	Unbind(t);
 	for j in [1..Length(p)] do
@@ -3717,7 +3732,7 @@ InstallGlobalFunction( SubgroupGeneratorsCosetTable,
 
     table:=List(table,ShallowCopy);
     # make all entries in the table negative
-    for cos  in [ 1 .. Length( table[1] ) ]  do
+    for cos  in [ 1 .. IndexCosetTab( table ) ]  do
         for gen  in table  do
             if 0 < gen[cos]  then
                 gen[cos] := -gen[cos];
@@ -3734,7 +3749,7 @@ InstallGlobalFunction( SubgroupGeneratorsCosetTable,
 
     # run over all the cosets
     cos := 1;
-    while cos <= Length( table[1] )  do
+    while cos <= IndexCosetTab( table )  do
 
         # run through all the rows and look for undefined entries
         for i  in [1..Length(freegens)]  do
@@ -4007,9 +4022,7 @@ function(g)
   # get the free group underlying the fp group given
   freegp := FreeGroupOfFpGroup( g );
   # and get its semigroup generators 
-  gensfreegp := GeneratorsOfSemigroup( freegp );  
-  # the first generator is the identity so we disregard it
-  # and we build the free monoid on the other generators
+  gensfreegp := List(GeneratorsOfSemigroup( freegp ),String);
   freesmg := FreeSemigroup(gensfreegp{[1..Length(gensfreegp)]});
   
   # now give names to the generators of freesmg
@@ -4371,7 +4384,7 @@ local G,T,gens,g,reps,ng,index,i,j,ndef,n,iso;
     Add(gens,g); Add(gens,g^-1);
   od;
   ng := Length(gens);
-  index := Length(T[1]);
+  index := IndexCosetTab(T);
   reps := [Identity(G)];
 
   if index=1 then

@@ -754,9 +754,9 @@ local  dom,  # operation domain for the group
         return P;
       elif Sum(csiz)=Length(subs.domain) and Length(typ)=2 then
         # only two cells
-	if csiz[1]<csiz[2] then pos:=1;
-	else pos:=2;fi;
-	P:=ConcatSubos(ran,dom[pos]);
+	# we need to indicate the first cell, the trick to take the sorted
+	# one does not work
+	P:=ConcatSubos(ran,dom[1]);
 	if IsInt( k )  then
 	  subs.orbitalPartitions[ k ] := P;
 	fi;
@@ -2673,35 +2673,36 @@ local   Omega,  P,  rbase,  L,mg,mh,i;
     # align the acting domains
     mg:=MovedPoints(G);
     mh:=MovedPoints(H);
-    if IsSubset(mg,mh) and IsSubset(G,H) then
-      return H;
-    elif IsSubset(mh,mg) and IsSubset(H,G) then
-      return G;
-    fi;
 
     G:=Stabilizer(G,Difference(mg,mh),OnTuples);
     H:=Stabilizer(H,Difference(mh,mg),OnTuples);
 
+    if IsSubset(G,H) then
+      return H;
+    elif IsSubset(H,G) then
+      return G;
+    fi;
+
     Omega := Intersection(mg,mh);
 
-    # the intersection must stabilize the other groups orbits.
-    # go through the orbits step by step
-    mg:=MovedPoints(G);
-    mg:=ShallowCopy(Orbits(H,mg));
-    Sort(mg,function(a,b) return Length(a)<Length(b);end);
-    for i in mg do
-      if Length(i)<7 then
-	G:=Stabilizer(G,Set(i),OnSets);
-      fi;
-    od;
-    mh:=MovedPoints(H);
-    mh:=ShallowCopy(Orbits(G,mh));
-    Sort(mh,function(a,b) return Length(a)<Length(b);end);
-    for i in mh do
-      if Length(i)<7 then
-	H:=Stabilizer(H,Set(i),OnSets);
-      fi;
-    od;
+#    # the intersection must stabilize the other groups orbits.
+#    # go through the orbits step by step
+#    mg:=MovedPoints(G);
+#    mg:=ShallowCopy(Orbits(H,mg));
+#    Sort(mg,function(a,b) return Length(a)<Length(b);end);
+#    for i in mg do
+#      if Length(i)<5 then
+#	G:=Stabilizer(G,Set(i),OnSets);
+#      fi;
+#    od;
+#    mh:=MovedPoints(H);
+#    mh:=ShallowCopy(Orbits(G,mh));
+#    Sort(mh,function(a,b) return Length(a)<Length(b);end);
+#    for i in mh do
+#      if Length(i)<5 then
+#	H:=Stabilizer(H,Set(i),OnSets);
+#      fi;
+#    od;
 
     P := OrbitsPartition( H, Omega );
     rbase := EmptyRBase( [ G, H ], Omega, P );

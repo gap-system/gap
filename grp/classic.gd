@@ -48,14 +48,25 @@ DeclareConstructor( "GeneralLinearGroupCons", [ IsGroup, IsInt, IsInt ] );
 ##
 #F  GeneralLinearGroup( [<filt>, ]<d>, <q> )  . . . . .  general linear group
 #F  GL( [<filt>, ]<d>, <q> )
+#F  GeneralLinearGroup( <d>, Integers )
+#F  GL( <d>, Integers )
+#F  GeneralLinearGroup( <d>, Integers mod <m> )
+#F  GL( <d>, Integers mod <m> )
 ##
-##  constructs a group isomorphic to the general linear group GL( <d>, <q> )
-##  of all $<d> \times <d>$ matrices over the field with <q> elements,
-##  in the category given by the filter <filt>.
+##  The first two forms construct a group isomorphic to the general linear
+##  group GL( <d>, <q> ) of all $<d> \times <d>$ matrices over the field with
+##  <q> elements, in the category given by the filter <filt>.
 ##
 ##  If <filt> is not given it defaults to `IsMatrixGroup',
 ##  and the returned group is the general linear group as a matrix group in
 ##  its natural action (see also~"IsNaturalGL").
+##
+##  The third and the fourth form construct the group of all integer
+##  $<d> \times <d>$ matrices invertible within the integers (see
+##  also~"IsNaturalGLnZ").
+##
+##  The last two forms construct the general linear group of degree <d> over 
+##  the residue class ring Z/<m>Z.
 ##
 BindGlobal( "GeneralLinearGroup", function ( arg )
 
@@ -171,15 +182,25 @@ DeclareConstructor( "SpecialLinearGroupCons", [ IsGroup, IsInt, IsInt ] );
 ##
 #F  SpecialLinearGroup( [<filt>, ]<d>, <q> )  . . . . .  special linear group
 #F  SL( [<filt>, ]<d>, <q> )
+#F  SpecialLinearGroup( <d>, Integers )
+#F  SL( <d>, Integers )
+#F  SpecialLinearGroup( <d>, Integers mod <m> )
+#F  SL( <d>, Integers mod <m> )
 ##
-##  constructs a group isomorphic to the special linear group SL( <d>, <q> )
-##  of all those $<d> \times <d>$ matrices over the field with <q> elements
-##  whose determinant is the identity of the field,
+##  The first two forms construct a group isomorphic to the special linear
+##  group SL( <d>, <q> ) of all those $<d> \times <d>$ matrices over the
+##  field with <q> elements whose determinant is the identity of the field,
 ##  in the category given by the filter <filt>.
 ##
 ##  If <filt> is not given it defaults to `IsMatrixGroup',
 ##  and the returned group is the special linear group as a matrix group in
 ##  its natural action (see also~"IsNaturalSL").
+##
+##  The third and the fourth form construct the group of all integer
+##  $<d> \times <d>$ matrices of determinant 1 (see also~"IsNaturalSLnZ").
+##
+##  The last two forms construct the group of all $<d> \times <d>$ matrices
+##  over Z/<m>Z with determinant 1 (mod <m>).
 ##
 BindGlobal( "SpecialLinearGroup", function ( arg )
 
@@ -259,7 +280,7 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 #F  SpecialUnitaryGroup( [<filt>, ]<d>, <q> ) . . . . . general unitary group
 #F  SU( [<filt>, ]<d>, <q> )
 ##
-##  constructs a group isomorphic to the speial unitary group GU( <d>, <q> )
+##  constructs a group isomorphic to the special unitary group `GU(<d>, <q>)'
 ##  of those $<d> \times <d>$ matrices over the field with $<q>^2$ elements
 ##  whose determinant is the identity of the field and that respect a fixed
 ##  nondegenerate sesquilinear form,

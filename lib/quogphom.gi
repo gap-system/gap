@@ -487,14 +487,14 @@ InstallMethod( PROD, "for additive hom coset rep * zero", true,
 ##
 #M  ZERO( <hcoset> ) for additive hom coset
 ##
-InstallMethod( ZERO, "for additive hom coset", true,
+InstallMethod( ZeroSameMutability, "for additive hom coset", true,
     [ IsOrdinaryMatrix and IsHomCosetToAdditiveElt ], 0, hcoset -> ONE(hcoset) );
 
 #############################################################################
 ##
 #M  ZeroOp( <hcoset> ) for additive hom coset
 ##
-InstallMethod( ZeroOp, "for additive hom coset", true,
+InstallMethod( ZeroMutable, "for additive hom coset", true,
     [ IsObject and IsAdditiveElement and IsOrdinaryMatrix and IsHomCosetToAdditiveElt ], 0, 
     hcoset -> One(hcoset) );
 
@@ -612,9 +612,18 @@ InstallMethod( DIFF, "for hom cosets to additive groups", IsIdenticalObj,
 
 #############################################################################
 ##
+#M  AdditiveInverseOp( <hcoset> ) unary minus for hom coset in additive rep 
+##
+InstallMethod( AdditiveInverseOp, "unary minus for hom coset in additive rep", true,
+    [ IsHomCosetToAdditiveElt ], 0,
+    hcoset -> HomCosetWithImage( Homomorphism( hcoset ),
+                             INV(SourceElt(hcoset)), AINV(ImageElt(hcoset)) ) );
+
+#############################################################################
+##
 #M  AINV( <hcoset> ) unary minus for hom coset in additive rep 
 ##
-InstallMethod( AINV, "unary minus for hom coset in additive rep", true,
+InstallMethod( AdditiveInverseOp, "unary minus for hom coset in additive rep", true,
     [ IsHomCosetToAdditiveElt ], 0,
     hcoset -> HomCosetWithImage( Homomorphism( hcoset ),
                              INV(SourceElt(hcoset)), AINV(ImageElt(hcoset)) ) );

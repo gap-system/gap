@@ -71,7 +71,7 @@ local g;
   if not IsAbelian(G) then
     Error("not abelian");
   fi;
-  g:=Product(IndependentGeneratorsOfAbelianGroup(G));
+  g:=Product(IndependentGeneratorsOfAbelianGroup(G),One(G));
   if Index(G,Subgroup(G,[g]))>1 then
     Error("not cyclic");
   fi;
@@ -811,11 +811,15 @@ InstallMethod( FittingSubgroup,
 ##
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . .  Frattini subgroup of a group
 ##
-InstallMethod( FrattiniSubgroup,
-    "generic method for groups",
-    [ IsGroup ],
-    G -> Intersection( List( ConjugacyClassesMaximalSubgroups( G ),
-                             C -> Core( G, Representative(C) ) ) ) );
+InstallMethod( FrattiniSubgroup, "generic method for groups", [ IsGroup ],0,
+function(G)
+local m;
+    if IsTrivial(G) then
+      return G;
+    fi;
+    m:=List(ConjugacyClassesMaximalSubgroups(G),C->Core(G,Representative(C)));
+    return Intersection(m);
+end);
 
 
 #############################################################################
@@ -885,6 +889,18 @@ InstallMethod( LowerCentralSeriesOfGroup,
 
 #############################################################################
 ##
+#M  NilpotencyClassOfGroup( <G> )  . . . . lower central series of a group
+##
+InstallMethod(NilpotencyClassOfGroup,"generic",[IsGroup],0,
+function(G)
+  if not IsNilpotentGroup(G) then
+    Error("<G> must be nilpotent");
+  fi;
+  return Length(LowerCentralSeriesOfGroup(G))-1;
+end);
+
+#############################################################################
+##
 #M  MaximalSubgroups( <G> )
 ##
 
@@ -928,6 +944,18 @@ InstallGlobalFunction( Omega, function( arg )
     return known[ n ];
 end );
 
+# to catch some trivial cases.
+InstallMethod(IndependentGeneratorsOfAbelianGroup,"finite abelian group", 
+  true,[IsGroup and IsAbelian],0,
+function(G)
+local hom,gens;
+  if not IsFinite(G) then
+    TryNextMethod();
+  fi;
+  hom:=IsomorphismPermGroup(G);
+  gens:=IndependentGeneratorsOfAbelianGroup(Image(hom,G));
+  return List(gens,i->PreImagesRepresentative(hom,i));
+end);
 
 #############################################################################
 ##
@@ -1563,7 +1591,11 @@ InstallGlobalFunction( ClosureGroupDefault, function( G, elm )
             Celements := ShallowCopy( AsSSortedList( G ) );
             rep := elm;
             while not rep in AsSSortedList( G ) do
-                Append( Celements, AsSSortedList( G ) * rep );
+                #Append( Celements, AsSSortedList( G ) * rep );
+		for e in AsSSortedList(G) do
+		  # we cannot have duplicates here
+		  Add(Celements,e*rep);
+		od;
                 rep := rep * elm;
             od;
             SetAsSSortedList( C, AsSSortedList( Celements ) );
@@ -1592,7 +1624,9 @@ InstallGlobalFunction( ClosureGroupDefault, function( G, elm )
                     fi;
                 od;
             od;
-            SetAsSSortedList( C, AsSSortedList( Celements ) );
+	    # Celements is sorted already
+            #SetAsSSortedList( C, AsSSortedList( Celements ) );
+            SetAsSSortedList( C, Celements );
             SetIsFinite( C, true );
             SetSize( C, Length( Celements ) );
 
@@ -2233,6 +2267,17 @@ InstallMethod( PCentralSeriesOp,
     return L;
     end );
 
+InstallOtherMethod( PCentralSeries, "pGroup", [ IsGroup ], function( G )
+local s;
+  s:=Size(G);
+  if s=1 then return [G];fi;
+  s:=Factors(s);
+  if Length(Set(s))>1 then
+    Error("<G> must be a p-group if no prime is given");
+  fi;
+  return PCentralSeries(G,s[1]);
+end);
+
 #############################################################################
 ##
 #M  PClassPGroup( <G> )   . . . . . . . . . .  . . . . . . <p>-central series
@@ -2764,7 +2809,7 @@ InstallGlobalFunction( IsomorphismTypeInfoFiniteSimpleGroup, function( G )
     fi;
 
     # test if <G> is a Chevalley group A(1,2^<k>-1), where p = 2 <> char.
-    if    p = 2  and IsPrime(q-1)
+    if    size>59 and p = 2  and IsPrime(q-1)
       and size = (q-1) * ((q-1)^2-1) / Gcd(2,(q-1)-1)
     then
         return rec(series:="L",parameter:=[2,q-1],
@@ -2779,7 +2824,7 @@ InstallGlobalFunction( IsomorphismTypeInfoFiniteSimpleGroup, function( G )
     fi;
 
     # test if <G> is a Chevalley group A(1,2^<k>), where p = 2^<k>+1 <> char.
-    if    p <> 2  and IsPrimePowerInt( p-1 )
+    if    size>59 and p <> 2  and IsPrimePowerInt( p-1 )
       and size = (p-1) * ((p-1)^2-1) / Gcd(2,(p-1)-1)
     then
         return rec(series:="L",parameter:=[2,p-1],
@@ -3429,7 +3474,8 @@ InstallGlobalFunction( Group, function( arg )
 
     # list of generators plus identity
     elif Length( arg ) = 2 and IsList( arg[1] )
-                           and IsGeneratorsOfMagmaWithInverses( arg[1] ) then
+                           and IsGeneratorsOfMagmaWithInverses( arg[1] )
+                           and IsOne( arg[2] ) then
       return GroupByGenerators( arg[1], arg[2] );
 
     elif 0 < Length( arg ) and IsGeneratorsOfMagmaWithInverses( arg ) then

@@ -71,6 +71,9 @@ extern Obj             ShallowCopyPlist( Obj  list );
 **  is an ordered word and stored in <xk>.
 */
 
+/* See below: */
+Obj     Evaluation( Obj vec, Obj xk, Obj power );
+
 void       MultGen(
                     Obj     xk,
                     UInt    gen,
@@ -78,7 +81,7 @@ void       MultGen(
                     Obj     dtpols    )
 {
     UInt  i, j, len, len2;
-    Obj   copy, sum, sum1, sum2, prod, ord, Evaluation(), help;
+    Obj   copy, sum, sum1, sum2, prod, ord, help;
 
     if ( IS_INTOBJ(power)  &&  INT_INTOBJ(power) == 0 )
         return;
@@ -179,7 +182,6 @@ void        Multbound(
                   Obj    dtpols  )
 {
     int     i;
-    void    MultGen();
 
     for (i=anf; i < end; i+=2)
         MultGen(xk, CELM( y, i), ELM_PLIST( y, i+1) , dtpols);
@@ -205,7 +207,6 @@ Obj       Multiplybound(
 {
     UInt   i, j, k, len, help;
     Obj    xk, res, sum;
-    void   Multbound();
 
     if ( LEN_PLIST( x ) == 0 )
         return y;
@@ -323,8 +324,6 @@ Obj      FuncMultiply(
                        Obj      y,
                        Obj      dtpols      )
 {
-    Obj    Multiplybound();
-
     return Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
 }
 
@@ -338,12 +337,15 @@ Obj      FuncMultiply(
 **  evaluating the deep thought polynomials <dtpols>.
 */
 
+/* See below: */
+Obj Solution( Obj x, Obj y, Obj dtpols );
+
 Obj      Power(
                 Obj         x,
                 Obj         n,
                 Obj         dtpols     )
 {
-    Obj     res, Solution(), Multiplybound(), m, y;
+    Obj     res, m, y;
     UInt    i,len;
 
     if ( LEN_PLIST(x) == 0 )
@@ -410,8 +412,6 @@ Obj        FuncPower(
                       Obj     n,
                       Obj     dtpols     )
 {
-    Obj      Power();
-
     return Power(x, n, dtpols);
 }
 
@@ -432,7 +432,6 @@ Obj      Solution( Obj       x,
 {
     Obj    xk, res, m;
     UInt   i,j,k, len1, len2;
-    void   MultGen();
 
     if ( LEN_PLIST(x) == 0)
         return y;
@@ -560,7 +559,7 @@ Obj       Commutator( Obj     x,
                       Obj     y,
                       Obj     dtpols  )
 {
-    Obj    res, Solution(), Multiplybound(), help;
+    Obj    res, help;
 
     res = Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
     help = Multiplybound(y, x, 1, LEN_PLIST(x), dtpols);
@@ -582,7 +581,7 @@ Obj       Conjugate( Obj     x,
                      Obj     y,
                      Obj     dtpols  )
 {
-    Obj    res, Solution(), Multiplybound();
+    Obj    res;
 
     res = Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
     res = Solution(y, res, dtpols);
@@ -607,7 +606,7 @@ Obj       Multiplyboundred( Obj     x,
                             UInt    end,
                             Obj     pcp )
 {
-    Obj   Multiplybound(), orders, res, mod, c;
+    Obj   orders, res, mod, c;
     UInt  i, len, len2, help;
 
     orders = ELM_PLIST(pcp, PC_ORDERS);
@@ -641,7 +640,7 @@ Obj       Powerred( Obj       x,
                     Obj       n,
                     Obj       pcp  )
 {
-    Obj   Power(),  orders, res, mod, c;
+    Obj   orders, res, mod, c;
     UInt  i, len, len2,help;
 
     orders = ELM_PLIST(pcp, PC_ORDERS);
@@ -675,7 +674,7 @@ Obj       Solutionred( Obj       x,
                        Obj       y,
                        Obj       pcp  )
 {
-    Obj   Solution(),  orders, res, mod, c;
+    Obj   orders, res, mod, c;
     UInt  i, len, len2, help;
 
     orders = ELM_PLIST(pcp, PC_ORDERS);
@@ -709,7 +708,7 @@ Obj       Commutatorred( Obj    x,
                          Obj    y,
                          Obj    pcp  )
 {
-    Obj    orders, Commutator(), mod, c, res;
+    Obj    orders, mod, c, res;
     UInt   i, len, len2, help;
 
     orders = ELM_PLIST(pcp, PC_ORDERS);
@@ -743,7 +742,7 @@ Obj       Conjugatered( Obj    x,
                          Obj    y,
                          Obj    pcp  )
 {
-    Obj    orders, Conjugate(), mod, c, res;
+    Obj    orders, mod, c, res;
     UInt   i, len, len2, help;
 
     orders = ELM_PLIST(pcp, PC_ORDERS);
@@ -827,10 +826,9 @@ Obj      Funccompress( Obj         self,
 void     ReduceWord( Obj      x,
                       Obj      pcp )   
 {
-    Obj       Powerred(), Multiplyboundred(), powers, exponent;
+    Obj       powers, exponent;
     Obj       deepthoughtpols, help, potenz, quo, mod, prel;
     UInt      i,j,flag, len, gen, lenexp, lenpow;
-    void      compress();
 
     powers = ELM_PLIST(pcp, PC_POWERS);
     exponent = ELM_PLIST(pcp, PC_EXPONENTS);
@@ -907,8 +905,7 @@ Obj       FuncDTMultiply( Obj      self,
                           Obj      y,
                           Obj      pcp    )
 {
-    Obj    Multiplyboundred(), res;
-    void   ReduceWord();
+    Obj res;
 
     if  ( LEN_PLIST(x) == 0 )
         return y;
@@ -938,8 +935,7 @@ Obj       FuncDTPower( Obj       self,
                        Obj       n,
                        Obj       pcp  )
 {
-    Obj    Powerred(), res;
-    void   ReduceWord();
+    Obj    res;
 
     res = Powerred(x, n, pcp);
     ReduceWord(res, pcp);
@@ -965,8 +961,7 @@ Obj      FuncDTSolution( Obj     self,
                          Obj     y,
                          Obj     pcp )
 {
-    Obj     Solutionred(), res;
-    void    ReduceWord();
+    Obj     res;
 
     if  ( LEN_PLIST(x) == 0 )
         return y;
@@ -994,8 +989,7 @@ Obj        FuncDTCommutator( Obj      self,
                              Obj      y,
                              Obj      pcp  )
 {
-    Obj   res, Commutatorred();
-    void  ReduceWord();
+    Obj   res;
 
     res = Commutatorred(x, y, pcp);
     ReduceWord(res, pcp);
@@ -1021,8 +1015,7 @@ Obj        FuncDTConjugate( Obj      self,
                             Obj      y,
                             Obj      pcp  )
 {
-    Obj   res, Conjugatered();
-    void  ReduceWord();
+    Obj   res;
 
     if  ( LEN_PLIST(y) == 0 )
         return x;
@@ -1050,8 +1043,7 @@ Obj       FuncDTQuotient( Obj      self,
                            Obj      y,
                            Obj      pcp )
 {
-    Obj     Solutionred(), Multiplyboundred(), help, res;
-    void    ReduceWord();
+    Obj     help, res;
 
     if  ( LEN_PLIST(y) == 0 )
         return x;

@@ -111,7 +111,11 @@ local rep;
   fi;
 end);
 
-InstallOtherMethod( \[\], "for classes of subgroups",
+#############################################################################
+##
+#M  ClassElementLattice
+##
+InstallMethod(ClassElementLattice, "for classes of subgroups",
   true, [ IsConjugacyClassSubgroupsRep, IsPosInt],0,
 function(c,nr)
 local rep;
@@ -123,8 +127,11 @@ local rep;
   return ConjugateSubgroup(rep,c!.normalizerTransversal[nr]);
 end);
 
+InstallOtherMethod( \[\], "for classes of subgroups",
+  true, [ IsConjugacyClassSubgroupsRep, IsPosInt],0,ClassElementLattice );
+
 InstallMethod( StabilizerOfExternalSet, true, [ IsConjugacyClassSubgroupsRep ], 
-    # override eventual pc method
+    # override potential pc method
     10,
 function(xset)
   return Normalizer(ActingDomain(xset),Representative(xset));
@@ -186,6 +193,7 @@ local   G,		   # group
 	zuppos,            # generators of prime power order
 	zupposPrime,       # corresponding prime
 	zupposPower,       # index of power of generator
+	ZupposSubgroup,    # function to compute zuppos for subgroup
 	nrClasses,         # number of classes
 	classes,           # list of all classes
 	classesZups,       # zuppos blist of classes
@@ -220,6 +228,26 @@ local   G,		   # group
     else
       func:=false;
     fi;
+
+  # if store is true, an element list will be kept in `Ielms' if possible
+  ZupposSubgroup:=function(U,store)
+  local elms,zups;
+    if Size(U)=Size(G) then
+      if store then Ielms:=fail;fi;
+      zups:=BlistList([1..Length(zuppos)],[1..Length(zuppos)]);
+    elif Size(U)>5*10^5 then
+      # the group is very big - test the zuppos with `in'
+      Info(InfoLattice,3,"testing zuppos with `in'");
+      if store then Ielms:=fail;fi;
+      zups:=List(zuppos,i->i in U);
+      IsBlist(zups);
+    else
+      elms:=AsSSortedListNonstored(U);
+      if store then Ielms:=elms;fi;
+      zups:=BlistList(zuppos,elms);
+    fi;
+    return zups;
+  end;
 
     # compute the factorized size of <G>
     factors:=Factors(Size(G));
@@ -270,7 +298,8 @@ local   G,		   # group
     perfectNew :=[];
     for i  in [1..Length(perfect)]  do
         I:=perfect[i];
-        perfectZups[i]:=BlistList(zuppos,AsSSortedListNonstored(I));
+        #perfectZups[i]:=BlistList(zuppos,AsSSortedListNonstored(I));
+        perfectZups[i]:=ZupposSubgroup(I,false);
         perfectNew[i]:=true;
     od;
     Info(InfoLattice,1,"<G> has ",Length(perfect),
@@ -315,8 +344,10 @@ local   G,		   # group
 		SetSize(I,Size(H) * zupposPrime[i]);
 
 		# compute the zuppos blist of <I>
-		Ielms:=AsSSortedListNonstored(I);
-		Izups:=BlistList(zuppos,Ielms);
+		#Ielms:=AsSSortedListNonstored(I);
+		#Izups:=BlistList(zuppos,Ielms);
+		Izups:=ZupposSubgroup(I,true);
+
 
 		# compute the normalizer of <I>
 		N:=Normalizer(G,I);
@@ -334,7 +365,8 @@ local   G,		   # group
 		# store the extend by list
 		if l < Length(factors)-1  then
 		  classesZups[nrClasses]:=Izups;
-		  Nzups:=BlistList(zuppos,AsSSortedListNonstored(N));
+		  #Nzups:=BlistList(zuppos,AsSSortedListNonstored(N));
+		  Nzups:=ZupposSubgroup(N,false);
 		  SubtractBlist(Nzups,Izups);
 		  classesExts[nrClasses]:=Nzups;
 		fi;
@@ -349,8 +381,10 @@ local   G,		   # group
 		  # compute the zuppos blist of the conjugate
 		  if r = One(G)  then
 		    Jzups:=Izups;
-		  else
+		  elif Ielms<>fail then
 		    Jzups:=BlistList(zuppos,OnTuples(Ielms,r));
+		  else
+		    Jzups:=ZupposSubgroup(I^r);
 		  fi;
 
 		  # loop over the already found classes
@@ -395,8 +429,10 @@ local   G,		   # group
 	    I:=perfect[i];
 
 	    # compute the zuppos blist of <I>
-	    Ielms:=AsSSortedListNonstored(I);
-	    Izups:=BlistList(zuppos,Ielms);
+	    #Ielms:=AsSSortedListNonstored(I);
+	    #Izups:=BlistList(zuppos,Ielms);
+	    Izups:=ZupposSubgroup(I,true);
+
 
 	    # compute the normalizer of <I>
 	    N:=Normalizer(G,I);
@@ -414,7 +450,8 @@ local   G,		   # group
 	    # store the extend by list
 	    if l < Length(factors)-1  then
 	      classesZups[nrClasses]:=Izups;
-	      Nzups:=BlistList(zuppos,AsSSortedListNonstored(N));
+	      #Nzups:=BlistList(zuppos,AsSSortedListNonstored(N));
+	      Nzups:=ZupposSubgroup(N,false);
 	      SubtractBlist(Nzups,Izups);
 	      classesExts[nrClasses]:=Nzups;
 	    fi;
@@ -429,8 +466,10 @@ local   G,		   # group
 	      # compute the zuppos blist of the conjugate
 	      if r = One(G)  then
 		Jzups:=Izups;
-	      else
+	      elif Ielms<>fail then
 		Jzups:=BlistList(zuppos,OnTuples(Ielms,r));
+	      else
+		Jzups:=ZupposSubgroup(I^r);
 	      fi;
 
 	      # loop over the perfect classes
@@ -572,9 +611,8 @@ end);
 ##
 #M  RepresentativesPerfectSubgroups
 ##
-InstallMethod(RepresentativesPerfectSubgroups,"using Holt/Plesken library",
-  true,[IsGroup],0,
-function(G)
+
+BindGlobal("RepsPerfSimpSub",function(G,simple)
 local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
       D,params,might,bo;
   if IsSolvableGroup(G) then
@@ -586,12 +624,32 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
     D:=PerfectResiduum(D);
     n:=Size(D);
     Info(InfoLattice,1,"The perfect residuum has size ",n);
-    if n>=10^6 then
-      Error("the perfect residuum is too large");
-    fi;
-    un:=Filtered(DivisorsInt(n),i->i in PERFRec.sizes and i>1
+
+    # sizes of possible perfect subgroups
+    un:=Filtered(DivisorsInt(n),i->i>1
 		 # index <=4 would lead to solvable factor
 		 and i<n/4);
+
+    # if D is simple, we can limit indices further
+    if IsSimpleGroup(D) then
+      k:=4;
+      l:=120;
+      while l<n do
+        k:=k+1;
+	l:=l*(k+1);
+      od;
+      # now k is maximal such that k!<Size(D). Thus subgroups of D must have
+      # index more than k
+      k:=Int(n/k);
+      un:=Filtered(un,i->i<=k);
+    fi;
+    Info(InfoLattice,1,"Searching perfect groups up to size ",Maximum(un));
+
+    if ForAny(un,i->i>10^6) then
+      Error("the perfect residuum is too large");
+    fi;
+
+    un:=Filtered(un,i->i in PERFRec.sizes);
     if Length(Intersection(badsizes,un))>0 then
       Error(
         "failed due to incomplete information in the Holt/Plesken library");
@@ -610,7 +668,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
 	  Info(InfoLattice,1,"trying group ",i,",",j,": ",u);
 
 	  # test whether there is a chance to embed
-	  might:=true;
+	  might:=simple=false or IsSimpleGroup(u);
 	  cnt:=0;
 	  while might and cnt<20 do
 	    bg:=Order(Random(u));
@@ -634,7 +692,8 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
 		    # try to get down to 2 gens
 		    gens:=List([1,2],i->Random(u));
 		  else
-		    gens:=List(gens,i->Random(u));
+		    gens:=List([1..Random([2..Length(SmallGeneratingSet(u))])],
+		      i->Random(u));
 		  fi;
                   # try to get small orders
 		  for k in [1..Length(gens)] do
@@ -696,6 +755,16 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
     return r;
   fi;
 end);
+
+InstallMethod(RepresentativesPerfectSubgroups,"using Holt/Plesken library",
+  true,[IsGroup],0,G->RepsPerfSimpSub(G,false));
+
+InstallMethod(RepresentativesSimpleSubgroups,"using Holt/Plesken library",
+  true,[IsGroup],0,G->RepsPerfSimpSub(G,true));
+
+InstallMethod(RepresentativesSimpleSubgroups,"if perfect subs are known",
+  true,[IsGroup and HasRepresentativesPerfectSubgroups],0,
+  G->Filtered(RepresentativesPerfectSubgroups(G),IsSimpleGroup));
 
 #############################################################################
 ##

@@ -301,7 +301,7 @@ Obj  FuncUnmarkTree(
 UInt   Mark(
             Obj   tree,
             Obj   reftree,
-            Int   index  )
+            Int   indexx  )
 {
     UInt  i, /*  loop variable                    */
           m, /*  integer to return                */
@@ -311,15 +311,15 @@ UInt   Mark(
     m = 0;
     i = 1;
     len = DT_LENGTH(tree, 1);
-    refgen = DT_GEN(reftree, index);
+    refgen = DT_GEN(reftree, indexx);
     while ( i <= len )
     {
         /*  skip all nodes (<tree>, i) with 
-        **  num(<tree>, i) > num(<reftree>, index)     */
+        **  num(<tree>, i) > num(<reftree>, indexx)     */
         while( i < len && 
                DT_GEN(tree, i)  >  refgen )
             i++;
-        if ( AlmostEqual(tree, i, reftree, index) )
+        if ( AlmostEqual(tree, i, reftree, indexx) )
         {
             DT_MARK(tree, i);
             if ( m < INT_INTOBJ( DT_POS(tree, i) )  )
@@ -548,18 +548,18 @@ Obj    Mark2(
 */
 UInt    FindTree(
                  Obj     tree,
-                 Int     index )
+                 Int     indexx )
 {
     UInt   i, len; /*     loop variable                                    */
 
-    /*  return 0 if (<tree>, index) is marked                           */
-    if ( DT_IS_MARKED(tree, index) )
+    /*  return 0 if (<tree>, indexx) is marked                           */
+    if ( DT_IS_MARKED(tree, indexx) )
         return  0;
-    i = index;
-    len = index + DT_LENGTH(tree, index);
-    /*  loop over all nodes of tree(<tree>, index) to find a tree with the
+    i = indexx;
+    len = indexx + DT_LENGTH(tree, indexx);
+    /*  loop over all nodes of tree(<tree>, indexx) to find a tree with the
     **  properties described above.                                       */
-    while( i < index + DT_LENGTH(tree, index)  )
+    while( i < indexx + DT_LENGTH(tree, indexx)  )
     {
         /*  skip all nodes that are unmarked and rooting non-atoms        */
         while( !( DT_IS_MARKED(tree, i) )  &&  DT_LENGTH(tree, i) > 1  )
@@ -748,7 +748,7 @@ Int     Leftof(
                 Obj     tree2,
                 Int     index2    )
 {
-    if  ( DT_LENGTH(tree1, index1) ==  1  &&  DT_LENGTH(tree2, index2) == 1  )
+    if  ( DT_LENGTH(tree1, index1) ==  1  &&  DT_LENGTH(tree2, index2) == 1 ) {
         if (DT_SIDE(tree1, index1) == LEFT && DT_SIDE(tree2, index2) == RIGHT)
             return  1;
         else if  (DT_SIDE(tree1, index1) == RIGHT  &&
@@ -758,16 +758,20 @@ Int     Leftof(
             return ( DT_POS(tree1, index1) < DT_POS(tree2, index2) );
         else
             return ( DT_GEN(tree1, index1) < DT_GEN(tree2, index2) );
+    }
     if  ( DT_LENGTH(tree1, index1) > 1                         &&  
           DT_LENGTH(tree2, index2) > 1                         &&
           Equal( tree1, DT_RIGHT(tree1, index1) , 
                  tree2, DT_RIGHT(tree2, index2)    )                    )
+    {
         if  ( Equal( tree1, DT_LEFT(tree1, index1),
-                     tree2, DT_LEFT(tree2, index2)  )     )
+                     tree2, DT_LEFT(tree2, index2)  )     ) {
             if  ( DT_GEN(tree1, index1) == DT_GEN(tree2, index2)  )
                 return   ( DT_POS(tree1, index1) < DT_POS(tree2, index2) );
             else
                 return   ( DT_GEN(tree1, index1) < DT_GEN(tree2, index2) );
+	}
+    }
     if( Earlier(tree1, index1, tree2, index2)  )
         return  !Leftof2( tree2, index2, tree1, index1);
     else
@@ -851,6 +855,10 @@ Int    Earlier(
 **  deep thought monomial and stores all these monomials in the list <pols>.
 */
 
+/* See below: */
+void GetReps( Obj list, Obj reps );
+void FindNewReps2( Obj tree, Obj reps, Obj pr);
+
 void    GetPols( 
                 Obj    list,
                 Obj    pr,
@@ -860,8 +868,6 @@ void    GetPols(
            rreps,
            tree,
            tree1;
-    void   GetReps(),
-           FindNewReps2();
     UInt   i,j,k,l, lenr, lenl, len;
 
     lreps = NEW_PLIST(T_PLIST, 2);
@@ -918,8 +924,6 @@ Obj      FuncGetPols(
                      Obj      pr,
                      Obj      pols      )
 {
-    void    GetPols();
-
     if  (LEN_PLIST(list) != 4)
         ErrorReturnVoid("<list> must be a generalised representative not a tree"
                         ,0L, 0L, "you can 'return;'");
@@ -937,6 +941,9 @@ Obj      FuncGetPols(
 **  pseudorepresentative <list> and adds them to the list <reps>.
 */
 
+/* See below: */
+void FindNewReps1( Obj tree, Obj reps);
+
 void    GetReps( 
                 Obj    list,
                 Obj    reps     )
@@ -945,7 +952,6 @@ void    GetReps(
            rreps,
            tree,
            tree1;
-    void   FindNewReps1();
     UInt   i,j,k,l, lenr, lenl, len;;
 
     if  ( LEN_PLIST(list) != 4 )
@@ -1023,6 +1029,10 @@ void    GetReps(
 **  elements in their equivalence class.
 */
 
+/* See below: */
+void  FindSubs1( Obj tree, Int x, Obj list1, Obj list2, Obj a, Obj b, 
+                 Int al, Int ar, Int bl, Int br, Obj reps );
+
 void   FindNewReps1(
                     Obj     tree,
                     Obj     reps
@@ -1044,7 +1054,6 @@ void   FindNewReps1(
           n,           /*  Length of lsubs                               */
           m,           /*  Length of rsubs                               */
           i;           /*  loop variable                                 */
-    void  FindSubs1();
 
     /*  get a subtree of right(<tree>) which is unmarked but whose 
     **  subtrees are all marked                                          */
@@ -1114,6 +1123,9 @@ void   FindNewReps1(
     UnmarkAEClass(tree, llist);
 }
 
+/* See below: */
+void  FindSubs2( Obj tree, Int x, Obj list1, Obj list2, Obj a, Obj b, 
+                 Int al, Int ar, Int bl, Int br, Obj reps, Obj pr );
 
 void   FindNewReps2(
                     Obj     tree,
@@ -1137,7 +1149,6 @@ void   FindNewReps2(
           n,           /*  Length of lsubs                               */
           m,           /*  Length of rsubs                               */
           i;           /*  loop variable                                 */
-    void  FindSubs2();
 
     /*  get a subtree of right(<tree>) which is unmarked but whose 
     **  subtrees are all marked                                          */
@@ -1481,7 +1492,6 @@ void  FindSubs1(
                                         )
 {
    Int    i;  /*  loop variable                                             */
-   void   FindNewReps1();
 
    /*  if <al> > <ar> or <bl> > <br> nothing remains to change.             */
    if (  al > ar  ||  bl > br  )
@@ -1560,7 +1570,6 @@ void  FindSubs2(
                                         )
 {
    Int    i;  /*  loop variable                                             */
-   void   FindNewReps2();
 
    /*  if <al> > <ar> or <bl> > <br> nothing remains to change.             */
    if (  al > ar  ||  bl > br  )

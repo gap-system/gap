@@ -871,7 +871,7 @@ InstallMethod( CanonicalBasis,
     B:= Objectify( NewType( FamilyObj( A ),
                                 IsCanonicalBasisFullSCAlgebra
                             and IsAttributeStoringRep
-                            and IsBasis
+                            and IsFiniteBasisDefault
                             and IsCanonicalBasis ),
                    rec() );
     SetUnderlyingLeftModule( B, A );

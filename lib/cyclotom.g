@@ -113,7 +113,6 @@ DeclareCategory( "IsZeroCyc", IsInt and IsZero );
 
 #############################################################################
 ##
-
 #V  CyclotomicsFamily . . . . . . . . . . . . . . . . . family of cyclotomics
 ##
 BIND_GLOBAL( "CyclotomicsFamily",
@@ -123,7 +122,6 @@ BIND_GLOBAL( "CyclotomicsFamily",
 
 #############################################################################
 ##
-
 #R  IsSmallIntRep . . . . . . . . . . . . . . . . . .  small internal integer
 ##
 DeclareRepresentation( "IsSmallIntRep", IsInternalRep, [] );
@@ -195,21 +193,11 @@ BIND_GLOBAL( "TYPE_CYC",
 #############################################################################
 ##
 #v  One( CyclotomicsFamily )
-##
-SetOne( CyclotomicsFamily, 1 );
-
-
-#############################################################################
-##
 #v  Zero( CyclotomicsFamily )
-##
-SetZero( CyclotomicsFamily, 0 );
-
-
-#############################################################################
-##
 #v  Characteristic( CyclotomicsFamily )
 ##
+SetOne( CyclotomicsFamily, 1 );
+SetZero( CyclotomicsFamily, 0 );
 SetCharacteristic( CyclotomicsFamily, 0 );
 
 
@@ -236,7 +224,6 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 
 #############################################################################
 ##
-
 #C  IsInfinity( <obj> ) . . . . . . . . . . . . . . . .  category of infinity
 #V  infinity  . . . . . . . . . . . . . . . . . . . . . .  the value infinity
 ##
@@ -264,31 +251,31 @@ BIND_GLOBAL( "infinity",
 
 InstallMethod( PrintObj,
     "for infinity",
-    true, [ IsInfinity ], 0, function(obj) Print("infinity"); end );
+    [ IsInfinity ], function( obj ) Print( "infinity" ); end );
 
 InstallMethod( \=,
     "for cyclotomic and `infinity'",
-    IsIdenticalObj, [ IsCyc, IsInfinity ], 0, ReturnFalse );
+    IsIdenticalObj, [ IsCyc, IsInfinity ], ReturnFalse );
 
 InstallMethod( \=,
     "for `infinity' and cyclotomic",
-    IsIdenticalObj, [ IsInfinity, IsCyc ], 0, ReturnFalse );
+    IsIdenticalObj, [ IsInfinity, IsCyc ], ReturnFalse );
 
 InstallMethod( \=,
     "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], 0, ReturnTrue );
+    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnTrue );
 
 InstallMethod( \<,
     "for cyclotomic and `infinity'",
-    IsIdenticalObj, [ IsCyc, IsInfinity ], 0, ReturnTrue );
+    IsIdenticalObj, [ IsCyc, IsInfinity ], ReturnTrue );
 
 InstallMethod( \<,
     "for `infinity' and cyclotomic",
-    IsIdenticalObj, [ IsInfinity, IsCyc ], 0, ReturnFalse );
+    IsIdenticalObj, [ IsInfinity, IsCyc ], ReturnFalse );
 
 InstallMethod( \<,
     "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], 0, ReturnFalse );
+    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnFalse );
 
 
 #############################################################################
@@ -309,12 +296,11 @@ InstallMethod( \<,
 ##
 DeclareProperty( "IsIntegralCyclotomic", IsObject );
 
-DeclareSynonym( "IsCycInt", IsIntegralCyclotomic );
+DeclareSynonymAttr( "IsCycInt", IsIntegralCyclotomic );
 
 InstallMethod( IsIntegralCyclotomic,
-    "for an internal object",
-    true,
-    [ IsInternalRep ], 0,
+    "for an internally represented cyclotomic",
+    [ IsInternalRep ],
     IS_CYC_INT );
 
 
@@ -364,16 +350,14 @@ DeclareOperation( "GaloisCyc", [ IsCyclotomicCollColl, IsInt ] );
 
 InstallMethod( GaloisCyc,
     "for a list of cyclotomics, and an integer",
-    true,
-    [ IsList and IsCyclotomicCollection, IsInt ], 0,
+    [ IsList and IsCyclotomicCollection, IsInt ],
     function( list, k )
     return List( list, entry -> GaloisCyc( entry, k ) );
     end );
 
 InstallMethod( GaloisCyc,
     "for a list of lists of cyclotomics, and an integer",
-    true,
-    [ IsList and IsCyclotomicCollColl, IsInt ], 0,
+    [ IsList and IsCyclotomicCollColl, IsInt ],
     function( list, k )
     return List( list, entry -> GaloisCyc( entry, k ) );
     end );
@@ -470,18 +454,30 @@ BIND_GLOBAL( "GcdInt", GCD_INT );
 ##
 #m  Order( <cyc> ) . . . . . . . . . . . . . . . . .  order of an alg. number
 ##
+##  If <cyc> is not a cyclotomic integer then its order is infinity.
+##  Otherwise, <cyc> is a root of unity iff its absolute value is $1$.
+##  (This follows from the more general theorem that an algebraic integer is
+##  a root of unity iff all its algebraic conjugates have absolute value $1$;
+##  note that we assume that <cyc> lies in a cyclotomic field,
+##  so the Galois group of the field extension is abelian.)
+##
+##  This method is thought for cyclotomics for which it is cheap to decide
+##  whether they are algebraic integers, and to compute the conductor;
+##  both conditions hold for internally represented cyclotomics,
+##  since they are represented w.r.t. an integral basis of the smallest
+##  possible cyclotomic field.
+##
 InstallMethod( Order,
     "for a cyclotomic",
-    true,
-    [ IsCyc ], 0,
+    [ IsCyc ],
     function ( cyc )
-
     local n;
 
     # Check that the argument is a root of unity.
     if cyc = 0 then
       Error( "argument must be nonzero" );
-    elif cyc * GaloisCyc( cyc, -1 ) <> 1 then   # not a root of unity
+    elif not IsIntegralCyclotomic( cyc )
+         or cyc * GaloisCyc( cyc, -1 ) <> 1 then
       return infinity;
     fi;
 
@@ -489,15 +485,11 @@ InstallMethod( Order,
     # The roots of unity in the $n$-th cyclotomic field are exactly the
     # $n$-th roots if $n$ is even, and the $2 n$-th roots if $n$ is odd.
     n:= Conductor( cyc );
-    if n mod 2 = 0 then
+    if n mod 2 = 0 or cyc^n = 1 then
       return n;
     else
-      cyc:= cyc^n;
-      if cyc = 1 then
-        return n;
-      else
-        return 2*n;
-      fi;
+      Assert( 1, cyc^n = -1 );
+      return 2*n;
     fi;
     end );
 
@@ -510,20 +502,17 @@ InstallMethod( Order,
 ##
 InstallMethod( Int,
     "for an integer",
-    true,
-    [ IsInt ], 0,
+    [ IsInt ],
     IdFunc );
 
 InstallMethod( Int,
     "for a rational",
-    true,
-    [ IsRat ], 0,
+    [ IsRat ],
     obj -> QuoInt( NumeratorRat( obj ), DenominatorRat( obj ) ) );
 
 InstallMethod( Int,
     "for a cyclotomic",
-    true,
-    [ IsCyc ], 0,
+    [ IsCyc ],
     function ( x )
     local i, int, n, cfs;
     n:= Conductor( x );
@@ -542,17 +531,46 @@ InstallMethod( Int,
 #M  String( <rat> ) . . . . . . . . . . . .  convert a rational into a string
 #M  String( <cyc> ) . . . . . . . . . . . .  convert cyclotomic into a string
 #M  String( <infinity> )  . . . . . . . . . . . . . . . . . .  for `infinity'
-##
+##  
 InstallMethod( String,
     "for an integer",
-    true,
-    [ IsInt ], 0,
-    STRING_INT );
+    [ IsInt ],
+function(a)
+  local sign, halflen, b, q, qr, s1, s2, pad;
+
+  # "small" numbers
+  if Log2Int(a) < 5000 then
+    # kernel method
+    return STRING_INT(a);
+  fi;
+  
+  # sign
+  if a < 0 then 
+    sign := "-";
+    a := -a;
+  else
+    sign := "";
+  fi;
+  
+  # recursion
+  halflen := QuoInt(Log2Int(a)*100, 664);
+  b := 10^halflen;
+  q := QUO_INT(a, b);
+  qr := [q, a-q*b]; #QuotientRemainder(a, 10^halflen);
+  if qr[1] = 0 then
+    s1 := "";
+  else
+    s1 := String(qr[1]);
+  fi;
+  s2 := String(qr[2]);
+  pad := ListWithIdenticalEntries(halflen-Length(s2), '0');
+  
+  return Concatenation(sign,s1,pad,s2);
+end);
 
 InstallMethod( String,
     "for a rational",
-    true,
-    [ IsRat ], 0,
+    [ IsRat ],
     function ( rat )
     local   str;
 
@@ -566,8 +584,7 @@ InstallMethod( String,
 
 InstallMethod( String,
     "for a cyclotomic",
-    true,
-    [ IsCyc ], 0,
+    [ IsCyc ],
     function( cyc )
     local i, j, En, coeffs, str;
 
@@ -627,14 +644,11 @@ InstallMethod( String,
 
 InstallMethod( String,
     "for infinity",
-    true,
-    [ IsInfinity ], 0,
+    [ IsInfinity ],
     x -> "infinity" );
 
 
 #############################################################################
 ##
-
 #E
-##
 

@@ -27,7 +27,6 @@ you plan to use these functions in your own code, please contact us.*
 \Declaration{IsLookupDictionary}
 
 \Declaration{KnowsDictionary}
-\Declaration{KnowsDictionary}
 \Declaration{LookupDictionary}
 
 \FileHeader[1]{dict}

@@ -146,9 +146,8 @@ InstallTrueMethod( IsLeftModuleGeneralMapping,
 ##
 InstallMethod( LeftModuleGeneralMappingByImages,
     "for two free left modules and two homogeneous lists",
-    true,
     [ IsFreeLeftModule, IsFreeLeftModule,
-      IsHomogeneousList, IsHomogeneousList ], 0,
+      IsHomogeneousList, IsHomogeneousList ],
     function( S, R, gens, imgs )
 
     local map;        # general mapping from <S> to <R>, result
@@ -200,8 +199,7 @@ InstallMethod( LeftModuleGeneralMappingByImages,
 ##
 InstallMethod( LeftModuleHomomorphismByImagesNC,
     "for two left modules and two lists",
-    true,
-    [ IsFreeLeftModule, IsFreeLeftModule, IsList, IsList ], 0,
+    [ IsFreeLeftModule, IsFreeLeftModule, IsList, IsList ],
     function( S, R, gens, imgs )
     local map;        # homomorphism from <source> to <range>, result
     map:= LeftModuleGeneralMappingByImages( S, R, gens, imgs );
@@ -233,9 +231,8 @@ end );
 ##
 InstallMethod( AsLeftModuleGeneralMappingByImages,
     "for a linear g.m.b.i.",
-    true,
     [     IsLeftModuleGeneralMapping
-      and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+      and IsLinearGeneralMappingByImagesDefaultRep ],
     IdFunc );
 
 
@@ -245,8 +242,7 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
 ##
 InstallMethod( ImagesSource,
     "for a linear g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map )
     if IsBound( map!.basisimage ) then
       return UnderlyingLeftModule( map!.basisimage );
@@ -262,8 +258,7 @@ InstallMethod( ImagesSource,
 ##
 InstallMethod( PreImagesRange,
     "for a linear g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map )
     if IsBound( map!.basispreimage ) then
       return UnderlyingLeftModule( map!.basispreimage );
@@ -280,8 +275,7 @@ InstallMethod( PreImagesRange,
 ##  Provide the information for computing images, that is, set up
 ##  the components `basispreimage', `imagesbasispreimage', `corelations'.
 ##
-MakeImagesInfoLinearGeneralMappingByImages := function( map )
-
+BindGlobal( "MakeImagesInfoLinearGeneralMappingByImages", function( map )
     local preimage,
           ech,
 	  mapi,
@@ -321,7 +315,7 @@ MakeImagesInfoLinearGeneralMappingByImages := function( map )
                                                  mapi[2] ) ) );
 
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -331,8 +325,7 @@ end;
 ##  Provide the information for computing preimages, that is, set up
 ##  the components `basisimage', `preimagesbasisimage', `relations'.
 ##
-MakePreImagesInfoLinearGeneralMappingByImages := function( map )
-
+BindGlobal( "MakePreImagesInfoLinearGeneralMappingByImages", function( map )
     local image,
           ech,
 	  mapi,
@@ -369,7 +362,7 @@ MakePreImagesInfoLinearGeneralMappingByImages := function( map )
                                                  row, mapi[1] ) ) );
 
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -378,8 +371,7 @@ end;
 ##
 InstallMethod( CoKernelOfAdditiveGeneralMapping,
     "for left module g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map )
     local genimages;
 
@@ -402,8 +394,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
 ##
 InstallMethod( IsSingleValued,
     "for left module g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map )
     local genimages;
 
@@ -422,8 +413,7 @@ InstallMethod( IsSingleValued,
 ##
 InstallMethod( KernelOfAdditiveGeneralMapping,
     "for left module g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map )
     local generators;
 
@@ -446,8 +436,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
 ##
 InstallMethod( IsInjective,
     "for left module g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map )
     local generators;
 
@@ -468,7 +457,7 @@ InstallMethod( ImagesRepresentative,
     "for left module g.m.b.i., and element",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep,
-      IsObject ], 0,
+      IsObject ],
     function( map, elm )
     if not IsBound( map!.basispreimage ) then
       MakeImagesInfoLinearGeneralMappingByImages( map );
@@ -489,7 +478,7 @@ InstallMethod( PreImagesRepresentative,
     "for left module g.m.b.i., and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep,
-      IsObject ], 0,
+      IsObject ],
     function( map, elm )
     if not IsBound( map!.basisimage ) then
       MakePreImagesInfoLinearGeneralMappingByImages( map );
@@ -506,40 +495,46 @@ InstallMethod( PreImagesRepresentative,
 ##
 #M  ViewObj( <map> )  . . . . . . . . . . . . . . .  for left module g.m.b.i.
 ##
-InstallMethod( ViewObj, "for a left module g.m.b.i", true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
-function( map )
-local mapi;
-  mapi:=MappingGeneratorsImages(map);
-  View(mapi[1]);
-  Print(" -> ");
-  View(mapi[2]);
-end );
+InstallMethod( ViewObj,
+    "for a left module g.m.b.i",
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
+    function( map )
+    local mapi;
+
+    mapi:= MappingGeneratorsImages( map );
+    View( mapi[1] );
+    Print( " -> " );
+    View( mapi[2] );
+    end );
 
 
 #############################################################################
 ##
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . .  for left module g.m.b.i.
 ##
-InstallMethod( PrintObj, "for a left module g.m.b.i", true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
-function( map )
-local mapi;
-  mapi:=MappingGeneratorsImages(map);
-  Print( "LeftModuleGeneralMappingByImages( ",
-	  Source( map ), ", ", Range( map ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
-end );
+InstallMethod( PrintObj,
+    "for a left module g.m.b.i",
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
+    function( map )
+    local mapi;
 
-InstallMethod( PrintObj, "for a left module hom. b.i", true,
-    [ IsMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
-function( map )
-local mapi;
-  mapi:=MappingGeneratorsImages(map);
-  Print( "LeftModuleHomomorphismByImages( ",
-	  Source( map ), ", ", Range( map ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
-end );
+    mapi:= MappingGeneratorsImages( map );
+    Print( "LeftModuleGeneralMappingByImages( ",
+	   Source( map ), ", ", Range( map ), ", ",
+	   mapi[1], ", ", mapi[2], " )" );
+    end );
+
+InstallMethod( PrintObj,
+    "for a left module hom. b.i",
+    [ IsMapping and IsLinearGeneralMappingByImagesDefaultRep ],
+    function( map )
+    local mapi;
+
+    mapi:= MappingGeneratorsImages( map );
+    Print( "LeftModuleHomomorphismByImages( ",
+	   Source( map ), ", ", Range( map ), ", ",
+	   mapi[1], ", ", mapi[2], " )" );
+    end );
 
 
 #############################################################################
@@ -548,11 +543,9 @@ end );
 ##
 InstallMethod( \*,
     "for scalar and linear g.m.b.i.",
-    true,
     [ IsMultiplicativeElement,
-      IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+      IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( scalar, map )
-
     local mult,   # the multiple of `map', result
 	  mapi,	  # generators and images
           F;      # left acting domain
@@ -619,10 +612,8 @@ InstallMethod( \*,
 ##
 InstallMethod( AdditiveInverseOp,
     "for linear g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map )
-
     local ainv,   # the additive inverse of `map', result
           mapi;
 
@@ -683,7 +674,7 @@ InstallMethod( CompositionMapping2,
     FamSource1EqFamRange2,
     [ IsLeftModuleHomomorphism,
       IsLeftModuleGeneralMapping
-      and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+      and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map2, map1 )
     local comp,        # composition of <map2> and <map1>, result
 	  mapi1,
@@ -739,9 +730,8 @@ InstallOtherMethod( \+,
     "for linear g.m.b.i. and general mapping",
     IsIdenticalObj,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep,
-      IsGeneralMapping ], 0,
+      IsGeneralMapping ],
     function( map1, map2 )
-
     local gens,
           genimages,
 	  mapi1,
@@ -802,9 +792,8 @@ InstallOtherMethod( \+,
     "for general mapping and linear g.m.b.i.",
     IsIdenticalObj,
     [ IsGeneralMapping,
-      IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+      IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map1, map2 )
-
     local gens,
           genimages,
 	  mapi2,
@@ -874,9 +863,8 @@ InstallOtherMethod( \+,
     "for linear m.b.i. and mapping",
     IsIdenticalObj,
     [ IsMapping and IsLinearGeneralMappingByImagesDefaultRep,
-      IsMapping ], 0,
+      IsMapping ],
     function( map1, map2 )
-
     local gens,
           genimages,
 	  mapi1,
@@ -947,9 +935,8 @@ InstallOtherMethod( \+,
     "for mapping and linear m.b.i.",
     IsIdenticalObj,
     [ IsMapping,
-      IsMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+      IsMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     function( map1, map2 )
-
     local gens,
           genimages,
 	  mapi1,mapi2,
@@ -1100,10 +1087,8 @@ InstallTrueMethod( IsLeftModuleGeneralMapping,
 ##
 InstallMethod( LeftModuleHomomorphismByMatrix,
     "for two bases of free left modules and a matrix",
-    true,
-    [ IsBasis, IsMatrix, IsBasis ], 0,
+    [ IsBasis, IsMatrix, IsBasis ],
     function( BS, matrix, BR )
-
     local S, R, map;
 
     S:= UnderlyingLeftModule( BS );
@@ -1144,8 +1129,7 @@ InstallMethod( LeftModuleHomomorphismByMatrix,
 ##  Provide the information for computing preimages, that is, set up
 ##  the components `basisimage', `preimagesbasisimage', `relations'.
 ##
-MakePreImagesInfoLinearMappingByMatrix := function( map )
-
+BindGlobal( "MakePreImagesInfoLinearMappingByMatrix", function( map )
     local ech,
           B;
 
@@ -1160,7 +1144,7 @@ MakePreImagesInfoLinearMappingByMatrix := function( map )
     map!.preimagesbasisimage := Immutable( List( ech.coeffs,
                                     row -> LinearCombination(
                                                map!.basissource, row ) ) );
-end;
+end );
 
 
 #############################################################################
@@ -1169,8 +1153,7 @@ end;
 ##
 InstallMethod( KernelOfAdditiveGeneralMapping,
     "for left module m.b.m.",
-    true,
-    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ],
     function( map )
     local generators, S;
 
@@ -1195,8 +1178,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
 ##
 InstallMethod( IsInjective,
     "for left module m.b.m.",
-    true,
-    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ],
     function( map )
     local generators;
 
@@ -1217,7 +1199,7 @@ InstallMethod( ImagesRepresentative,
     "for left module m.b.m., and element",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep,
-      IsObject ], 0,
+      IsObject ],
     function( map, elm )
     elm:= Coefficients( map!.basissource, elm );
     if elm <> fail then
@@ -1235,7 +1217,7 @@ InstallMethod( PreImagesRepresentative,
     "for left module m.b.m., and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep,
-      IsObject ], 0,
+      IsObject ],
     function( map, elm )
     if not IsBound( map!.basisimage ) then
       MakePreImagesInfoLinearMappingByMatrix( map );
@@ -1254,8 +1236,7 @@ InstallMethod( PreImagesRepresentative,
 ##
 InstallMethod( ViewObj,
     "for a left module m.b.m.",
-    true,
-    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ],
     function( map )
     Print( "<linear mapping by matrix, " );
     View( UnderlyingLeftModule( map!.basissource ) );
@@ -1271,8 +1252,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for a left module m.b.m.",
-    true,
-    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ],
     function( map )
     Print( "LeftModuleHomomorphismByMatrix( ",
            map!.basissource, ", ", map!.matrix, ", ",
@@ -1302,7 +1282,6 @@ InstallMethod( NaturalHomomorphismBySubspace,
 ##
 InstallGlobalFunction( NaturalHomomorphismBySubspaceOntoFullRowSpace,
     function( V, W )
-
     local F,
           Wvectors,
           mb,
@@ -1385,7 +1364,7 @@ InstallGlobalFunction( NaturalHomomorphismBySubspaceOntoFullRowSpace,
 InstallMethod( NaturalHomomorphismBySubspace,
     "for two finite dimensional free left modules",
     IsIdenticalObj,
-    [ IsFreeLeftModule, IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule, IsFreeLeftModule ],
     NaturalHomomorphismBySubspaceOntoFullRowSpace );
 
 
@@ -1395,11 +1374,9 @@ InstallMethod( NaturalHomomorphismBySubspace,
 ##
 InstallMethod( \*,
     "for scalar and linear m.b.m.",
-    true,
     [ IsMultiplicativeElement,
-      IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+      IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ],
     function( scalar, map )
-
     local mult,   # the multiple of `map', result
           F;      # left acting domain
 
@@ -1449,10 +1426,8 @@ InstallMethod( \*,
 ##
 InstallMethod( AdditiveInverseOp,
     "for linear m.b.m.",
-    true,
-    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ],
     function( map )
-
     local ainv;   # the additive inverse of `map', result
 
     # Construct the linear general mapping (if possible).
@@ -1489,7 +1464,7 @@ InstallMethod( CompositionMapping2,
     "for left module hom. and linear m.b.m.",
     FamSource1EqFamRange2,
     [ IsLeftModuleHomomorphism,
-      IsLeftModuleHomomorphism and IsLinearMappingByMatrixDefaultRep ], 0,
+      IsLeftModuleHomomorphism and IsLinearMappingByMatrixDefaultRep ],
     function( map2, map1 )
     local comp,        # composition of <map1> and <map2>, result
           BR,          # basis of the range of `map2'
@@ -1534,8 +1509,7 @@ InstallMethod( CompositionMapping2,
 ##  If both general mappings respect zero, additive inverses, scalar
 ##  multiplication then the sum also does.
 ##
-SumOfMBMAndMapping := function( map1, map2 )
-
+BindGlobal( "SumOfMBMAndMapping", function( map1, map2 )
     local sum;
 
     # Check that the linear mappings can be added.
@@ -1570,10 +1544,9 @@ SumOfMBMAndMapping := function( map1, map2 )
 
     # Return the sum.
     return sum;
-end;
+end );
 
-SumOfMappingAndMBM := function( map1, map2 )
-
+BindGlobal( "SumOfMappingAndMBM", function( map1, map2 )
     local sum;
 
     # Check that the linear mappings can be added.
@@ -1608,20 +1581,20 @@ SumOfMappingAndMBM := function( map1, map2 )
 
     # Return the sum.
     return sum;
-end;
+end );
 
 InstallOtherMethod( \+,
     "for linear m.b.m. and mapping",
     IsIdenticalObj,
     [ IsMapping and IsLinearMappingByMatrixDefaultRep,
-      IsMapping ], 0,
+      IsMapping ],
     SumOfMBMAndMapping );
 
 InstallOtherMethod( \+,
     "for mapping and linear m.b.m.",
     IsIdenticalObj,
     [ IsMapping,
-      IsMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+      IsMapping and IsLinearMappingByMatrixDefaultRep ],
     SumOfMappingAndMBM );
 
 
@@ -1633,14 +1606,14 @@ InstallMethod( \+,
     "for linear m.b.m. and linear m.b.i.",
     IsIdenticalObj,
     [ IsMapping and IsLinearMappingByMatrixDefaultRep,
-      IsMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+      IsMapping and IsLinearGeneralMappingByImagesDefaultRep ],
     SumOfMBMAndMapping );
 
 InstallMethod( \+,
     "for linear m.b.i. and linear m.b.m.",
     IsIdenticalObj,
     [ IsMapping and IsLinearGeneralMappingByImagesDefaultRep,
-      IsMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+      IsMapping and IsLinearMappingByMatrixDefaultRep ],
     SumOfMappingAndMBM );
 
 
@@ -1747,10 +1720,10 @@ InstallHandlingByNiceBasis( "IsLinearMappingsModule", rec(
 ##
 InstallOtherMethod( RingByGenerators,
     "for a list of linear mappings of finite vector spaces",
-    true,
-    [ IsGeneralMappingCollection ], 0,
+    [ IsGeneralMappingCollection ],
     function( maps )
     local S;
+
     maps:= AsList( maps );
     if IsEmpty( maps ) then
       Error( "need at least one element" );
@@ -1782,8 +1755,7 @@ InstallOtherMethod( RingByGenerators,
 ##
 InstallOtherMethod( DefaultRingByGenerators,
     "for a list of linear mappings of vector spaces",
-    true,
-    [ IsGeneralMappingCollection ], 0,
+    [ IsGeneralMappingCollection ],
     function( maps )
     local S;
     maps:= AsList( maps );
@@ -1815,10 +1787,10 @@ InstallOtherMethod( DefaultRingByGenerators,
 ##
 InstallOtherMethod( RingWithOneByGenerators,
     "for a list of linear mappings of finite vector spaces",
-    true,
-    [ IsGeneralMappingCollection ], 0,
+    [ IsGeneralMappingCollection ],
     function( maps )
     local S;
+
     maps:= AsList( maps );
     if IsEmpty( maps ) then
       Error( "need at least one element" );
@@ -1866,8 +1838,7 @@ InstallOtherMethod( RingWithOneByGenerators,
 ##
 InstallMethod( IsFullHomModule,
     "for space of linear mappings",
-    true,
-    [ IsFreeLeftModule and IsGeneralMappingCollection ], 0,
+    [ IsFreeLeftModule and IsGeneralMappingCollection ],
     V -> Dimension( V ) = Dimension( UnderlyingLeftModule( NiceFreeLeftModuleInfo( V ).basissource ) )
              * Dimension( UnderlyingLeftModule( NiceFreeLeftModuleInfo( V ).basisrange ) ) );
 
@@ -1878,9 +1849,8 @@ InstallMethod( IsFullHomModule,
 ##
 InstallMethod( Dimension,
     "for full hom space of linear mappings",
-    true,
     [ IsFreeLeftModule and IsGeneralMappingCollection
-      and IsFullHomModule ], 0,
+      and IsFullHomModule ],
     V ->   Dimension( UnderlyingLeftModule( NiceFreeLeftModuleInfo( V ).basissource ) )
          * Dimension( UnderlyingLeftModule( NiceFreeLeftModuleInfo( V ).basisrange  ) ) );
 
@@ -1891,11 +1861,11 @@ InstallMethod( Dimension,
 ##
 InstallMethod( Random,
     "for full hom space of linear mappings",
-    true,
     [ IsFreeLeftModule and IsGeneralMappingCollection
-      and IsFullHomModule ], 0,
+      and IsFullHomModule ],
     function( M )
     local BS, BR;
+
     BR:= NiceFreeLeftModuleInfo( M );
     BS:= BR.basissource;
     BR:= BR.basisrange;
@@ -1917,11 +1887,11 @@ InstallMethod( Random,
 ##
 InstallMethod( Representative,
     "for full hom space of linear mappings",
-    true,
     [ IsFreeLeftModule and IsGeneralMappingCollection
-      and IsFullHomModule ], 0,
+      and IsFullHomModule ],
     function( M )
     local BS, BR;
+
     BR:= NiceFreeLeftModuleInfo( M );
     BS:= BR.basissource;
     BR:= BR.basisrange;
@@ -1938,8 +1908,7 @@ InstallMethod( Representative,
 ##
 #M  GeneratorsOfLeftModule( <V> ) . . . for full hom space of linear mappings
 ##
-StandardGeneratorsOfFullHomModule := function( M )
-
+BindGlobal( "StandardGeneratorsOfFullHomModule", function( M )
     local BS, BR, R, one, m, n, zeromat, gens, i, j, gen;
 
     BR:= NiceFreeLeftModuleInfo( M );
@@ -1960,14 +1929,38 @@ StandardGeneratorsOfFullHomModule := function( M )
     od;
 
     return gens;
-end;
+end );
 
 InstallMethod( GeneratorsOfLeftModule,
     "for full hom space of linear mappings",
-    true,
     [ IsFreeLeftModule and IsGeneralMappingCollection
-      and IsFullHomModule ], 0,
+      and IsFullHomModule ],
     StandardGeneratorsOfFullHomModule );
+
+
+#############################################################################
+##
+#M  NiceFreeLeftModule( <M> ) . . . . . for full hom space of linear mappings
+##
+##  We need a special method since we decided not to store vector space
+##  generators in full hom spaces;
+##  note that the default methods for `NiceFreeLeftModule' are installed with
+##  requirement `HasGeneratorsOfLeftModule'.
+##
+InstallMethod( NiceFreeLeftModule,
+    "for full hom space of linear mappings",
+    [ IsFreeLeftModule and IsGeneralMappingCollection
+      and IsFullHomModule ],
+    function( M )
+    if HasGeneratorsOfLeftModule( M ) then
+      TryNextMethod();
+    fi;
+    GeneratorsOfLeftModule( M );
+    if not HasGeneratorsOfLeftModule( M ) then
+      TryNextMethod();
+    fi;
+    return NiceFreeLeftModule( M );
+    end );
 
 
 #############################################################################
@@ -1975,8 +1968,9 @@ InstallMethod( GeneratorsOfLeftModule,
 #M  ViewObj( <M> )  . . . . . . . . . . for full hom space of linear mappings
 #M  PrintObj( <M> ) . . . . . . . . . . for full hom space of linear mappings
 ##
-ViewFullHomModule := function( M )
+BindGlobal( "ViewFullHomModule", function( M )
     local info;
+
     info:= NiceFreeLeftModuleInfo( M );
     if IsIdenticalObj( info.basissource, info.basisrange ) then
       Print( "End( " );
@@ -1993,18 +1987,16 @@ ViewFullHomModule := function( M )
       View( UnderlyingLeftModule( info.basisrange  ) );
       Print( " )" );
     fi;
-end;
+end );
 
 InstallMethod( ViewObj,
     "for full hom space of linear mappings",
-    true,
     [ IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ], SUM_FLAGS,
     ViewFullHomModule );
 
 InstallMethod( PrintObj,
     "for full hom space of linear mappings",
-    true,
     [ IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ], SUM_FLAGS,
     ViewFullHomModule );
@@ -2019,7 +2011,7 @@ InstallMethod( \in,
     IsElmsColls,
     [ IsGeneralMapping,
       IsFreeLeftModule and IsGeneralMappingCollection
-      and IsFullHomModule ], 0,
+      and IsFullHomModule ],
     function( map, M )
     local info;
     info:= NiceFreeLeftModuleInfo( M );
@@ -2035,21 +2027,16 @@ InstallMethod( \in,
 ##
 InstallMethod( IsPseudoCanonicalBasisFullHomModule,
     "for a basis of a full hom module",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     function( B )
-    local V, info;
+    local V;
+
     V:= UnderlyingLeftModule( B );
     if IsGeneralMappingCollection( V ) then
       if not IsFullHomModule( V ) then
         return false;
       fi;
-      info:= NiceFreeLeftModuleInfo( V );
-      return List( BasisVectors( B ),
-                   map -> List( BasisVectors( info.basissource ),
-                                v -> Coefficients( info.basisrange,
-                                 ImagesRepresentative( map, v ) ) ) )
-             = StandardGeneratorsOfFullHomModule( V );
+      return BasisVectors( B ) = StandardGeneratorsOfFullHomModule( V );
     else
       Error( "do not know what a pseudo canon. basis for <V> is" );
     fi;
@@ -2062,8 +2049,7 @@ InstallMethod( IsPseudoCanonicalBasisFullHomModule,
 ##
 InstallMethod( BasisVectors,
     "for pseudo canonical basis of a full hom module",
-    true,
-    [ IsBasis and IsPseudoCanonicalBasisFullHomModule ], 0,
+    [ IsBasis and IsPseudoCanonicalBasisFullHomModule ],
     B -> StandardGeneratorsOfFullHomModule( UnderlyingLeftModule( B ) ) );
 
 
@@ -2074,7 +2060,7 @@ InstallMethod( BasisVectors,
 InstallOtherMethod( Coefficients,
     "for pseudo canon. basis of a full hom module, and lin. mapping",
     IsCollsElms,
-    [ IsBasis and IsPseudoCanonicalBasisFullHomModule, IsGeneralMapping ], 0,
+    [ IsBasis and IsPseudoCanonicalBasisFullHomModule, IsGeneralMapping ],
     function( B, map )
     local V, R, info;
     V:= UnderlyingLeftModule( B );
@@ -2099,7 +2085,7 @@ InstallMethod( Coefficients,
     "for pseudo can. basis of full hom module, and lin. m.b.m.",
     IsCollsElms,
     [ IsBasis and IsPseudoCanonicalBasisFullHomModule,
-      IsMapping and IsLinearMappingByMatrixDefaultRep ], 0,
+      IsMapping and IsLinearMappingByMatrixDefaultRep ],
     function( B, map )
     local V, R, info;
     V:= UnderlyingLeftModule( B );
@@ -2129,12 +2115,11 @@ InstallMethod( Coefficients,
 ##
 InstallMethod( Basis,
     "for full hom space of linear mappings",
-    true,
     [ IsFreeLeftModule and IsFullHomModule ], 100,
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsPseudoCanonicalBasisFullHomModule
                             and IsAttributeStoringRep ),
                    rec() );
@@ -2152,8 +2137,7 @@ InstallMethod( Basis,
 ##
 InstallMethod( Hom,
     "for division ring and two free left modules",
-    true,
-    [ IsDivisionRing, IsFreeLeftModule, IsFreeLeftModule ], 0,
+    [ IsDivisionRing, IsFreeLeftModule, IsFreeLeftModule ],
     function( F, V, W )
     local M;   # the free module record, result
 
@@ -2193,10 +2177,8 @@ InstallMethod( Hom,
 ##
 InstallMethod( End,
     "for division ring and space of linear mappings",
-    true,
-    [ IsDivisionRing, IsFreeLeftModule ], 0,
+    [ IsDivisionRing, IsFreeLeftModule ],
     function( F, V )
-
     local n,      # dimension of `V'
           i,      # loop over the rows
           gens,   # list of generators

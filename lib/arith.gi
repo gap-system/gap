@@ -27,6 +27,40 @@ InstallImmediateMethod( IsImpossible,
 
 #############################################################################
 ##
+#A  NestingDepthA( <obj> )
+##
+InstallMethod( NestingDepthA,
+    [ IsObject ],
+    function( obj )
+    if not IsGeneralizedRowVector( obj ) then
+      return 0;
+    elif IsEmpty( obj ) then
+      return 1;
+    else
+      return 1 + NestingDepthA( obj[ PositionBound( obj ) ] );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#A  NestingDepthM( <obj> )
+##
+InstallMethod( NestingDepthM,
+    [ IsObject ],
+    function( obj )
+    if not IsMultiplicativeGeneralizedRowVector( obj ) then
+      return 0;
+    elif IsEmpty( obj ) then
+      return 1;
+    else
+      return 1 + NestingDepthM( obj[ PositionBound( obj ) ] );
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  Zero( <elm> ) . . . . . . . . . . . . . . . .  for an add.-elm.-with-zero
 ##
 ##  `ZeroOp' guarantees that its results are *new* objects,
@@ -35,20 +69,32 @@ InstallImmediateMethod( IsImpossible,
 #T but at least in the compatibility mode we need it also for records ...
 ##
 InstallOtherMethod( Zero,
-    "for any object (call `ZeroOp')",
-    true,
-    [ IsObject ], 0,
+    "for any object (call `ZERO')",
+    [ IsObject ],
     function( elm )
-    elm:= ZeroOp( elm );
+    elm:= ZERO_MUT( elm );
     MakeImmutable( elm );
     return elm;
     end );
-#T In cases where the OneOp result will normally be immutable, we could install 
+#T In cases where the OneOp result will normally be immutable, we could install
 #T OneOp itself as a method for OneAttr. This is worse if the result is mutable,
-#T because a call to MakeImmutable is replaced by one to Immutable, but still 
-#T works. This reduces the indirection to a method selection in these cases, 
+#T because a call to MakeImmutable is replaced by one to Immutable, but still
+#T works. This reduces the indirection to a method selection in these cases,
 #T which takes less than 1 microsecond on my system.
 #T         Steve
+
+InstallOtherMethod( ZeroSameMutability,
+    "for an (immutable) object",
+    [ IsObject ],
+    function(elm)
+    local z;
+    if IsMutable( elm ) then
+      TryNextMethod();
+    fi;
+    z:= ZeroAttr( elm );
+    MakeImmutable( z );
+    return z;
+    end );
 
 
 #############################################################################
@@ -57,8 +103,7 @@ InstallOtherMethod( Zero,
 ##
 InstallMethod( Zero,
     "for a zero element",
-    true,
-    [ IsAdditiveElementWithZero and IsZero ], 0,
+    [ IsAdditiveElementWithZero and IsZero ],
     Immutable );
 
 
@@ -68,8 +113,7 @@ InstallMethod( Zero,
 ##
 InstallMethod( ZeroOp,
     "for a (non-copyable) zero element",
-    true,
-    [ IsAdditiveElementWithZero and IsZero ], 0,
+    [ IsAdditiveElementWithZero and IsZero ],
     function( zero )
     if IsCopyable( zero ) then
       TryNextMethod();
@@ -84,13 +128,12 @@ InstallMethod( ZeroOp,
 ##
 InstallMethod( Zero,
     "for an additive-element-with-zero (look at the family)",
-    true,
-    [ IsAdditiveElementWithZero ], 0,
+    [ IsAdditiveElementWithZero ],
     function ( elm )
     local   F;
     F := FamilyObj( elm );
     if not HasZero( F ) then
-        TryNextMethod();
+      TryNextMethod();
     fi;
     return Zero( F );
     end );
@@ -106,8 +149,7 @@ InstallMethod( Zero,
 ##
 InstallMethod( ZeroOp,
     "for an additive-element-with-zero (look at the family)",
-    true,
-    [ IsAdditiveElementWithZero ], 0,
+    [ IsAdditiveElementWithZero ],
 #T better install with requirement that the argument is not copyable?
 #T or test first that the argument is not copyable?
 #T (can we think of copyable arithmetic objects with non-copyable zero?)
@@ -116,11 +158,11 @@ InstallMethod( ZeroOp,
     local   F;
     F := FamilyObj( elm );
     if not HasZero( F ) then
-        TryNextMethod();
+      TryNextMethod();
     fi;
     elm:= Zero( F );
     if IsCopyable( elm ) then
-        TryNextMethod();
+      TryNextMethod();
     fi;
     return elm;
     end );
@@ -132,8 +174,7 @@ InstallMethod( ZeroOp,
 ##
 InstallMethod( IsZero,
     "for an additive-element-with-zero",
-    true,
-    [ IsAdditiveElementWithZero ], 0,
+    [ IsAdditiveElementWithZero ],
     function ( elm )
     return (elm = 0*elm);
     end );
@@ -149,13 +190,25 @@ InstallMethod( IsZero,
 #T but at least in the compatibility mode we need it also for records ...
 ##
 InstallOtherMethod( AdditiveInverse,
-    "for any object (call `AdditiveInverseOp')",
-    true,
-    [ IsObject ], 0,
+    "for any object (call `AINV')",
+    [ IsObject ],
     function( elm )
-    elm:= AdditiveInverseOp( elm );
+    elm:= AINV_MUT( elm );
     MakeImmutable( elm );
     return elm;
+    end );
+
+InstallOtherMethod( AdditiveInverseSameMutability,
+    "for an (immutable) object",
+    [ IsObject ],
+    function( elm )
+    local a;
+    if IsMutable( elm ) then
+      TryNextMethod();
+    fi;
+    a:= AdditiveInverseAttr( elm );
+    MakeImmutable( a );
+    return a;
     end );
 
 
@@ -165,8 +218,7 @@ InstallOtherMethod( AdditiveInverse,
 ##
 InstallMethod( AdditiveInverse,
     "for a zero element",
-    true,
-    [ IsAdditiveElementWithInverse and IsZero ], 0,
+    [ IsAdditiveElementWithInverse and IsZero ],
     Immutable );
 
 
@@ -176,8 +228,7 @@ InstallMethod( AdditiveInverse,
 ##
 InstallMethod( AdditiveInverseOp,
     "for a (non-copyable) zero element",
-    true,
-    [ IsAdditiveElementWithInverse and IsZero ], 0,
+    [ IsAdditiveElementWithInverse and IsZero ],
     function( zero )
     if IsCopyable( zero ) then
       TryNextMethod();
@@ -192,8 +243,7 @@ InstallMethod( AdditiveInverseOp,
 ##
 InstallMethod( \-,
     "for external add. element, and additive-element-with-zero",
-    true,
-    [ IsExtAElement, IsNearAdditiveElementWithInverse ], 0,
+    [ IsExtAElement, IsNearAdditiveElementWithInverse ],
     DIFF_DEFAULT );
 
 
@@ -206,10 +256,9 @@ InstallMethod( \-,
 #T This should be installed for `IsMultiplicativeElementWithOne',
 #T but at least in the compatibility mode we need it also for records ...
 ##
-InstallOtherMethod( One,
-    "for any object (call `OneOp')",
-    true,
-    [ IsObject ], 0,
+InstallOtherMethod( OneImmutable,
+    "for any object (call `OneOp' and make immutable)",
+    [ IsObject ],
     function( elm )
     elm:= OneOp( elm );
     MakeImmutable( elm );
@@ -223,8 +272,7 @@ InstallOtherMethod( One,
 ##
 InstallMethod( One,
     "for an identity element",
-    true,
-    [ IsMultiplicativeElementWithOne and IsOne ], 0,
+    [ IsMultiplicativeElementWithOne and IsOne ],
     Immutable );
 
 
@@ -234,13 +282,25 @@ InstallMethod( One,
 ##
 InstallMethod( OneOp,
     "for a (non-copyable) identity element",
-    true,
-    [ IsMultiplicativeElementWithOne and IsOne ], 0,
+    [ IsMultiplicativeElementWithOne and IsOne ],
     function( one )
     if IsCopyable( one ) then
       TryNextMethod();
     fi;
     return one;
+    end );
+
+InstallOtherMethod( OneSameMutability,
+    "for an (immutable) object",
+    [ IsObject ],
+    function( elm )
+    local o;
+    if IsMutable( elm ) then
+      TryNextMethod();
+    fi;
+    o:= OneMutable( elm );
+    MakeImmutable( o );
+    return o;
     end );
 
 
@@ -250,13 +310,12 @@ InstallMethod( OneOp,
 ##
 InstallMethod( One,
     "for a multiplicative-element-with-one (look at the family)",
-    true,
-    [ IsMultiplicativeElementWithOne ], 0,
+    [ IsMultiplicativeElementWithOne ],
     function( elm )
     local   F;
     F := FamilyObj( elm );
     if not HasOne( F ) then
-        TryNextMethod();
+      TryNextMethod();
     fi;
     return One( F );
     end );
@@ -272,17 +331,16 @@ InstallMethod( One,
 ##
 InstallMethod( OneOp,
     "for a multiplicative-element-with-one (look at the family)",
-    true,
-    [ IsMultiplicativeElementWithOne ], 0,
+    [ IsMultiplicativeElementWithOne ],
     function ( elm )
     local   F;
     F := FamilyObj( elm );
     if not HasOne( F ) then
-        TryNextMethod();
+      TryNextMethod();
     fi;
     elm:= One( F );
     if IsCopyable( elm ) then
-        TryNextMethod();
+      TryNextMethod();
     fi;
     return elm;
     end );
@@ -294,8 +352,7 @@ InstallMethod( OneOp,
 ##
 InstallMethod( IsOne,
     "for a multiplicative-element-with-one",
-    true,
-    [ IsMultiplicativeElementWithOne ], 0,
+    [ IsMultiplicativeElementWithOne ],
     function ( elm )
     return (elm = elm^0);
     end );
@@ -311,13 +368,25 @@ InstallMethod( IsOne,
 #T but at least in the compatibility mode we need it also for records ...
 ##
 InstallOtherMethod( Inverse,
-    "for any object (call `InverseOp')",
-    true,
-    [ IsObject ], 0,
+    "for any object (call `InverseOp' and make immutable)",
+    [ IsObject ],
     function( elm )
     elm:= InverseOp( elm );
     MakeImmutable( elm );
     return elm;
+    end );
+
+InstallOtherMethod( InverseSameMutability,
+    "for an (immutable) object",
+    [ IsObject ],
+    function( elm )
+    local a;
+    if IsMutable( elm ) then
+      TryNextMethod();
+    fi;
+    a:= InverseOp( elm );
+    MakeImmutable( a );
+    return a;
     end );
 
 
@@ -327,8 +396,7 @@ InstallOtherMethod( Inverse,
 ##
 InstallMethod( Inverse,
     "for an identity element",
-    true,
-    [ IsMultiplicativeElementWithInverse and IsOne ], 0,
+    [ IsMultiplicativeElementWithInverse and IsOne ],
     Immutable );
 
 
@@ -338,8 +406,21 @@ InstallMethod( Inverse,
 ##
 InstallMethod( InverseOp,
     "for a (non-copyable) identity element",
-    true,
-    [ IsMultiplicativeElementWithInverse and IsOne ], 0,
+    [ IsMultiplicativeElementWithInverse and IsOne ],
+    function( one )
+    if IsCopyable( one ) then
+      TryNextMethod();
+    fi;
+    return one;
+    end );
+
+#############################################################################
+##
+#M  InverseSameMutability( <elm> )  . . . for a non-copyable identity element
+##
+InstallMethod( InverseSameMutability,
+    "for a (non-copyable) identity element",
+    [ IsMultiplicativeElementWithInverse and IsOne ],
     function( one )
     if IsCopyable( one ) then
       TryNextMethod();
@@ -354,10 +435,25 @@ InstallMethod( InverseOp,
 ##
 InstallMethod( \/,
     "for ext. r elm., and multiplicative-element-with-inverse",
-    true,
-    [ IsExtRElement, IsMultiplicativeElementWithInverse ], 0,
-    QUO_DEFAULT );
+    [ IsExtRElement, IsMultiplicativeElementWithInverse ],
+        QUO_DEFAULT );
 
+InstallOtherMethod( \/,
+        "for multiplicative grvs which might not be IsExtRElement",
+        [ IsMultiplicativeGeneralizedRowVector, IsMultiplicativeGeneralizedRowVector],
+        QUO_DEFAULT);
+
+#T
+#T  This is there to handle some mgrvs, like [,2] which might not
+#T  be IsExtRElement. In fact, plain lists will be caught by the
+#T  kernel and x/y turned into  x*InverseSM(y). This method is thuse
+#T  needed only for compressed matrices and other external objects
+#T
+#T  It isn't clear that this is the right long-term solution. It might
+#T  be better to make IsMGRV imply is IsMultiplicativeObject, or some such
+#T  or simply to install QUO_DEFAULT for IsObject, matching the kernel
+#T  behaviour for internal objects
+#T
 
 #############################################################################
 ##
@@ -365,8 +461,7 @@ InstallMethod( \/,
 ##
 InstallMethod( LeftQuotient,
     "for multiplicative-element-with-inverse, and ext. l elm.",
-    true,
-    [ IsMultiplicativeElementWithInverse, IsExtLElement ], 0,
+    [ IsMultiplicativeElementWithInverse, IsExtLElement ],
     LQUO_DEFAULT );
 
 
@@ -379,7 +474,6 @@ InstallMethod( \^,
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
-    0,
     POW_DEFAULT );
 
 
@@ -392,7 +486,6 @@ InstallMethod( Comm,
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
-    0,
     COMM_DEFAULT );
 
 
@@ -403,7 +496,7 @@ InstallMethod( Comm,
 InstallMethod( LieBracket,
     "for two ring elements",
     IsIdenticalObj,
-    [ IsRingElement, IsRingElement ], 0,
+    [ IsRingElement, IsRingElement ],
     function ( elm1, elm2 )
     return ( elm1 * elm2 ) - ( elm2 * elm1 );
     end );
@@ -428,20 +521,19 @@ InstallMethod( LieBracket,
 ##
 InstallOtherMethod( \*,
     "positive integer * additive element",
-    true, [ IsPosInt, IsAdditiveElement ], 0,
+    [ IsPosInt, IsAdditiveElement ],
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
     "zero integer * additive element with zero",
-    true,
     [ IsInt and IsZeroCyc, IsAdditiveElementWithZero ], SUM_FLAGS,
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
     "negative integer * additive element with inverse",
-    true,
-    [ IsInt and IsNegRat, IsAdditiveElementWithInverse ], 0,
+    [ IsInt and IsNegRat, IsAdditiveElementWithInverse ],
     PROD_INT_OBJ );
+
 
 #############################################################################
 ##
@@ -449,15 +541,13 @@ InstallOtherMethod( \*,
 ##
 InstallOtherMethod( \*,
     "additive element * positive integer",
-    true,
-    [ IsAdditiveElement, IsPosInt ], 0,
+    [ IsAdditiveElement, IsPosInt ],
 function(a,b)
   return PROD_INT_OBJ(b,a);
 end);
 
 InstallOtherMethod( \*,
     "additive element with zero * zero integer",
-    true,
     [ IsAdditiveElementWithZero, IsInt and IsZeroCyc ], SUM_FLAGS,
 function(a,b)
   return PROD_INT_OBJ(b,a);
@@ -465,8 +555,7 @@ end);
 
 InstallOtherMethod( \*,
     "additive element with inverse * negative integer",
-    true,
-    [ IsAdditiveElementWithInverse, IsInt and IsNegRat ], 0,
+    [ IsAdditiveElementWithInverse, IsInt and IsNegRat ],
 function(a,b)
   return PROD_INT_OBJ(b,a);
 end);
@@ -481,24 +570,21 @@ end);
 ##
 InstallMethod( \^,
     "for mult. element, and positive integer",
-    true,
-    [ IsMultiplicativeElement, IsPosInt ], 0,
+    [ IsMultiplicativeElement, IsPosInt ],
     POW_OBJ_INT );
 
 InstallMethod( \^,
     "for mult. element-with-one, and zero",
-    true,
-    [ IsMultiplicativeElementWithOne, IsZeroCyc ], 0,
+    [ IsMultiplicativeElementWithOne, IsZeroCyc ],
     POW_OBJ_INT );
 
 InstallMethod( \^,
     "for mult. element-with-inverse, and negative integer",
-    true,
-    [ IsMultiplicativeElementWithInverse, IsInt and IsNegRat ], 0,
+    [ IsMultiplicativeElementWithInverse, IsInt and IsNegRat ],
     POW_OBJ_INT );
 
-InstallMethod( \^, "catch wrong root taking", true,
-    [ IsMultiplicativeElement, IsRat ], 0,
+InstallMethod( \^, "catch wrong root taking",
+    [ IsMultiplicativeElement, IsRat ],
 function(a,e)
   Error("^ cannot be used here to compute roots (use `RootInt' instead?)");
 end);
@@ -510,8 +596,7 @@ end);
 ##
 InstallMethod( SetElementsFamily,
     "method to inherit `Characteristic' to collections families",
-    true,
-    [ IsFamily and IsAttributeStoringRep, IsFamily ], 0,
+    [ IsFamily and IsAttributeStoringRep, IsFamily ],
     function( Fam, ElmsFam )
     if HasCharacteristic( ElmsFam ) then
       SetCharacteristic( Fam, Characteristic( ElmsFam ) );
@@ -526,13 +611,12 @@ InstallMethod( SetElementsFamily,
 ##
 InstallMethod( Characteristic,
     "method that asks the family",
-    true,
-    [ IsObject ], 0,
+    [ IsObject ],
     function ( obj )
     local   F;
     F := FamilyObj( obj );
     if not HasCharacteristic( F ) then
-        TryNextMethod();
+      TryNextMethod();
     fi;
     return Characteristic( F );
 end );
@@ -544,8 +628,7 @@ end );
 ##
 InstallMethod( Order,
     "for a mult. element-with-one",
-    true,
-    [ IsMultiplicativeElementWithOne ], 0,
+    [ IsMultiplicativeElementWithOne ],
     function( obj )
     local one, pow, ord;
 
@@ -579,7 +662,7 @@ InstallMethod( Order,
 #M  AdditiveElementsAsMultiplicativeElementsFamily( <fam> )
 ##
 InstallMethod(AdditiveElementsAsMultiplicativeElementsFamily,
-  "for families of additive elements",true,[IsFamily],0,
+  "for families of additive elements",[IsFamily],
 function(fam)
 local nfam;
   nfam:=NewFamily("AdditiveElementsAsMultiplicativeElementsFamily(...)");
@@ -600,7 +683,7 @@ end);
 #M  AdditiveElementAsMultiplicativeElement( <obj> )
 ##
 InstallMethod(AdditiveElementAsMultiplicativeElement,"for additive elements",
-  true,[IsAdditiveElement],0,function(obj)
+  [IsAdditiveElement],function(obj)
 local fam;
   fam:=AdditiveElementsAsMultiplicativeElementsFamily(FamilyObj(obj));
   return Objectify(fam!.defaultType,[obj]);
@@ -608,7 +691,7 @@ end);
 
 InstallMethod(AdditiveElementAsMultiplicativeElement,
   "for additive elements with zero",
-  true,[IsAdditiveElementWithZero],0,function(obj)
+  [IsAdditiveElementWithZero],function(obj)
 local fam;
   fam:=AdditiveElementsAsMultiplicativeElementsFamily(FamilyObj(obj));
   return Objectify(fam!.defaultTypeOne,[obj]);
@@ -616,7 +699,7 @@ end);
 
 InstallMethod(AdditiveElementAsMultiplicativeElement,
   "for additive elements with inverse",
-  true,[IsAdditiveElementWithInverse],0,function(obj)
+  [IsAdditiveElementWithInverse],function(obj)
 local fam;
   fam:=AdditiveElementsAsMultiplicativeElementsFamily(FamilyObj(obj));
   return Objectify(fam!.defaultTypeInverse,[obj]);
@@ -626,8 +709,8 @@ end);
 ##
 #M  PrintObj( <wrapped-addelm> )
 ##
-InstallMethod(PrintObj,"wrapped additive elements",true,
-  [IsAdditiveElementAsMultiplicativeElementRep],0,
+InstallMethod(PrintObj,"wrapped additive elements",
+  [IsAdditiveElementAsMultiplicativeElementRep],
 function(x)
   Print("AdditiveElementAsMultiplicativeElement(",x![1],")");
 end);
@@ -636,8 +719,8 @@ end);
 ##
 #M  ViewObj( <wrapped-addelm> )
 ##
-InstallMethod(ViewObj,"wrapped additive elements",true,
-  [IsAdditiveElementAsMultiplicativeElementRep],0,
+InstallMethod(ViewObj,"wrapped additive elements",
+  [IsAdditiveElementAsMultiplicativeElementRep],
 function(x)
   Print("<",x![1],", +>");
 end);
@@ -646,8 +729,8 @@ end);
 ##
 #M  UnderlyingElement( <wrapped-addelm> )
 ##
-InstallMethod(UnderlyingElement,"wrapped additive elements",true,
-  [IsAdditiveElementAsMultiplicativeElementRep],0,
+InstallMethod(UnderlyingElement,"wrapped additive elements",
+  [IsAdditiveElementAsMultiplicativeElementRep],
 function(x)
   return x![1];
 end);
@@ -658,7 +741,7 @@ end);
 ##
 InstallMethod(\*,"wrapped additive elements",IsIdenticalObj,
   [IsAdditiveElementAsMultiplicativeElementRep,
-   IsAdditiveElementAsMultiplicativeElementRep],0,
+   IsAdditiveElementAsMultiplicativeElementRep],
 function(x,y)
   # is this safe, or do we have to consider that one has and one doesn't
   # have inverses? AH
@@ -672,7 +755,7 @@ end);
 InstallMethod(\/,"wrapped additive elements",IsIdenticalObj,
   [IsAdditiveElementAsMultiplicativeElementRep,
    IsAdditiveElementAsMultiplicativeElementRep and
-   IsMultiplicativeElementWithInverse],0,
+   IsMultiplicativeElementWithInverse],
 function(x,y)
   # is this safe, or do we have to consider that one has and one doesn't
   # have inverses? AH
@@ -683,9 +766,9 @@ end);
 ##
 #M  InverseOp( <wrapped-addelm> )
 ##
-InstallMethod(InverseOp,"wrapped additive elements",true,
+InstallMethod(InverseOp,"wrapped additive elements",
   [IsAdditiveElementAsMultiplicativeElementRep and
-  IsMultiplicativeElementWithInverse],0,
+  IsMultiplicativeElementWithInverse],
 function(x)
   return Objectify(TypeObj(x),[-x![1]]);
 end);
@@ -694,9 +777,9 @@ end);
 ##
 #M  OneOp( <wrapped-addelm> )
 ##
-InstallMethod(OneOp,"wrapped additive elements",true,
+InstallMethod(OneOp,"wrapped additive elements",
   [IsAdditiveElementAsMultiplicativeElementRep and
-  IsMultiplicativeElementWithOne],0,
+  IsMultiplicativeElementWithOne],
 function(x)
   return Objectify(TypeObj(x),[Zero(x![1])]);
 end);
@@ -708,7 +791,7 @@ end);
 InstallMethod(\^,"wrapped additive elements",IsIdenticalObj,
   [IsAdditiveElementAsMultiplicativeElementRep,
    IsAdditiveElementAsMultiplicativeElementRep and
-   IsMultiplicativeElementWithInverse],0,
+   IsMultiplicativeElementWithInverse],
 function(x,y)
   # is this safe, or do we have to consider that one has and one doesn't
   # have inverses? AH
@@ -721,7 +804,7 @@ end);
 ##
 InstallMethod(\<,"wrapped additive elements",IsIdenticalObj,
   [IsAdditiveElementAsMultiplicativeElementRep,
-   IsAdditiveElementAsMultiplicativeElementRep],0,
+   IsAdditiveElementAsMultiplicativeElementRep],
 function(x,y)
   return x![1]<y![1];
 end);
@@ -732,7 +815,7 @@ end);
 ##
 InstallMethod(\=,"wrapped additive elements",IsIdenticalObj,
   [IsAdditiveElementAsMultiplicativeElementRep,
-   IsAdditiveElementAsMultiplicativeElementRep],0,
+   IsAdditiveElementAsMultiplicativeElementRep],
 function(x,y)
   return x![1]=y![1];
 end);
@@ -741,8 +824,8 @@ end);
 ##
 #M  IsIdempotent( <elm> )
 ##
-InstallMethod(IsIdempotent,"multiplicative element",true,
-  [IsMultiplicativeElement],0,
+InstallMethod(IsIdempotent,"multiplicative element",
+  [IsMultiplicativeElement],
 function(x)
   return x*x = x;
 end);

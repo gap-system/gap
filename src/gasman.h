@@ -36,6 +36,8 @@
 const char * Revision_gasman_h =
    "@(#)$Id$";
 #endif
+extern const char * Revision_gasman_h;  /* gap.c uses this. */
+extern const char * Revision_gasman_c;
 
 /* This definition switches to the bigger bag header, supporting bags up to
    4GB in length (lists limited to 1GB for other reasons) */
@@ -805,6 +807,8 @@ extern TNumGlobalBags GlobalBags;
 **  bag from all others.  It is used  in reconstructing  the Workspace
 **  after a save and load
 */
+
+extern Int WarnInitGlobalBag;
 
 extern void InitGlobalBag (
             Bag *               addr,

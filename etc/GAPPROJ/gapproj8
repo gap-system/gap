@@ -1,0 +1,40 @@
+@Name
+Frobenius Kernel
+@Contact
+GAP
+@Date
+1999/2/19
+@Time
+2
+@Need
+1
+@NeedA
+1
+@Math
+4
+@Prog
+0
+@Component
+Permutation
+@Descr
+The Frobenius Kernel $K=\{x\in G\mid fix(x)=\emptyset\}\cup\{1\}$
+is a nilpotent normal subgroup in a frobenius group.
+How could it be computed?
+(One could check all normal subgroups in F(G) but there might be a  better way.)
+@Manual
+\&gt; FrobeniusKernel(&lt;G&gt;)
+
+<P>
+If &lt;G&gt; is a Frobenius group this operation returns the frobenius kernel, that is
+the nilpotent normal subgroup $K=\{x\in G\mid fix(x)=\emptyset\}\cup\{1\}$.
+(What happens if &lt;G&gt; is not Frobenius?)
+
+<PRE>
+\beginexample
+gap&gt; frob:=TransitiveGroup(5,3);
+F(5) = 5:4
+gap&gt; FrobeniusKernel(frob);
+Group([ (1,2,3,4,5) ])
+\endexample
+</PRE>
+

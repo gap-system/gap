@@ -439,78 +439,12 @@ end);
 
 #############################################################################
 ##
-#M  PcElementByExponentsNC( <family pcgs modulo>, <list> )
-##
-InstallMethod( PcElementByExponentsNC,
-    "modulo subset induced wrt family pcgs", true,
-    [ IsModuloPcgs and
-      IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
-      and IsNumeratorParentPcgsFamilyPcgs,
-      IsRowVector and IsCyclotomicCollection ], 0,
-function( pcgs, list )
-local exp;
-  #Assert(1,ForAll(list,i->i>=0));
-  exp:=ShallowCopy(pcgs!.parentZeroVector);
-  exp{pcgs!.depthsInParent}:=list;
-  return ObjByVector(TypeObj(OneOfPcgs(pcgs)),exp);
-end);
-
-InstallOtherMethod( PcElementByExponentsNC,
-    "modulo subset induced wrt family pcgs,index", true,
-    [ IsModuloPcgs and 
-      IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
-      and IsNumeratorParentPcgsFamilyPcgs,
-      IsRowVector and IsCyclotomicCollection,
-      IsRowVector and IsCyclotomicCollection ], 0,
-function( pcgs,ind, list )
-local exp;
-  #Assert(1,ForAll(list,i->i>=0));
-  exp:=ShallowCopy(pcgs!.parentZeroVector);
-  exp{pcgs!.depthsInParent{ind}}:=list;
-  return ObjByVector(TypeObj(OneOfPcgs(pcgs)),exp);
-end);
-
-#############################################################################
-##
-#M  PcElementByExponentsNC( <family pcgs modulo>, <list> )
-##
-InstallMethod( PcElementByExponentsNC,
-    "modulo subset induced wrt family pcgs, FFE", true,
-    [ IsModuloPcgs and 
-      IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
-      and IsNumeratorParentPcgsFamilyPcgs,
-      IsRowVector and IsFFECollection ], 0,
-function( pcgs, list )
-local exp;
-  list:=IntVecFFE(list);
-  exp:=ShallowCopy(pcgs!.parentZeroVector);
-  exp{pcgs!.depthsInParent}:=list;
-  return ObjByVector(TypeObj(OneOfPcgs(pcgs)),exp);
-end);
-
-InstallOtherMethod( PcElementByExponentsNC,
-    "modulo subset induced wrt family pcgs, FFE, index", true,
-    [ IsModuloPcgs and 
-      IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
-      and IsNumeratorParentPcgsFamilyPcgs,
-      IsRowVector and IsCyclotomicCollection,
-      IsRowVector and IsFFECollection ], 0,
-function( pcgs,ind, list )
-local exp;
-  list:=IntVecFFE(list);
-  exp:=ShallowCopy(pcgs!.parentZeroVector);
-  exp{pcgs!.depthsInParent{ind}}:=list;
-  return ObjByVector(TypeObj(OneOfPcgs(pcgs)),exp);
-end);
-
-#############################################################################
-##
 #M  ExponentsConjugateLayer( <mpcgs>,<elm>,<e> )
 ##
 # this algorithm does not compute any conjugates but only looks them up and
 # adds vectors mod p.
 
-BindGlobal("DoExponentsConjLayerFampcgs",function(p,m,e,c)
+InstallGlobalFunction(DoExponentsConjLayerFampcgs,function(p,m,e,c)
 local d,q,l,i,j,k,n,g,v,res;
   c:=ExtRepOfObj(c);
   d:=m!.depthsInParent;
@@ -536,16 +470,6 @@ local d,q,l,i,j,k,n,g,v,res;
     fi;
   od;
   return e;
-end);
-
-InstallMethod( ExponentsConjugateLayer,"subset induced modulo pcgs",
-  IsCollsElmsElms,
-  [ IsModuloPcgs and 
-    IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
-    and IsNumeratorParentPcgsFamilyPcgs,
-  IsMultiplicativeElementWithInverse,IsMultiplicativeElementWithInverse],0,
-function(m,e,c)
-  return DoExponentsConjLayerFampcgs(m!.numeratorParent,m,e,c);
 end);
 
 InstallMethod( ExponentsConjugateLayer,"subset induced pcgs",

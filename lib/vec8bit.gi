@@ -137,7 +137,9 @@ InstallMethod( Unbind\[\], "For a compressed VecFFE",
 InstallMethod( ViewObj, "For a compressed VecFFE",
         true, [Is8BitVectorRep and IsSmallList], 0,
         function( vec )
-    if (LEN_VEC8BIT(vec) > 10) then
+    local len;
+    len := LEN_VEC8BIT(vec);
+    if (len = 0 or len > 10) then
         Print("< ");
         if not IsMutable(vec) then
             Print("im");
@@ -263,14 +265,19 @@ BindGlobal("Q_TO_DEGREE", # discrete logarithm list
 InstallOtherMethod( DegreeFFE, "for 8 bit vectors", true,
     [ IsRowVector and IsFFECollection and Is8BitVectorRep], 0,
 function( vec )
-local q, deg, i;
+local q, deg, i, maxdeg;
   q:=Q_VEC8BIT(vec);
-  q:=Q_TO_DEGREE[q]; 
+  maxdeg:=Q_TO_DEGREE[q]; 
   # the degree could be smaller. Check or prove.
+  if Length(vec) = 0 then
+      return 0;
+  fi;
   deg := DegreeFFE( vec[1] );
   for i  in [ 2 .. Length( vec ) ]  do
     deg := LcmInt( deg, DegreeFFE( vec[i] ) );
-    if deg=q then return q;fi;
+    if deg=maxdeg then 
+        return deg; 
+    fi;
   od;
   return deg;
 end );
@@ -414,19 +421,58 @@ end);
 InstallMethod( AdditiveInverseOp, "For an 8 bit vector",
         true, [IsRowVector and Is8BitVectorRep],
         0,
-        AINV_VEC8BIT);
+        AINV_VEC8BIT_MUTABLE);
+
+#############################################################################
+##
+#M  -<vec>
+##
+
+InstallMethod( AdditiveInverseSameMutability, "For an 8 bit vector",
+        true, [IsRowVector and Is8BitVectorRep],
+        0,
+        AINV_VEC8BIT_SAME_MUTABILITY );
+
+#############################################################################
+##
+#M  -<vec>
+##
+
+InstallMethod( AdditiveInverseImmutable, "For an 8 bit vector",
+        true, [IsRowVector and Is8BitVectorRep],
+        0,
+        AINV_VEC8BIT_IMMUTABLE );
 
 #############################################################################
 ##
 #M  ZeroOp( <vec> )
 ##
-##  A  zero vector of the same field and length and mutability
+##  A  mutable zero vector of the same field and length 
 ##
 
 InstallMethod( ZeroOp, "For an 8 bit vector",
         true, [IsRowVector and Is8BitVectorRep],
         0,
         ZERO_VEC8BIT);
+
+#############################################################################
+##
+#M  ZEROOp( <vec> )
+##
+##  A  zero vector of the same field and length and mutability
+##
+
+InstallMethod( ZeroSameMutability, "For an 8 bit vector",
+        true, [IsRowVector and Is8BitVectorRep],
+        0,
+        function(v)
+    local z;
+    z := ZERO_VEC8BIT(v);
+    if not IsMutable(v) then
+        MakeImmutable(z);
+    fi;
+    return z;
+end );
 
 #############################################################################
 ##
@@ -870,90 +916,6 @@ InstallMethod( PowerModCoeffs,
     return pow;
 end);
             
-#############################################################################
-##
-#M  SemiEchelonMat
-##
-
-#
-# If mat is in the  special representation, then we do 
-# have to copy it, but we know that the rows of the result will
-# already be in special representation, so don't convert
-#
-
-InstallMethod(SemiEchelonMat, "shortcut method for 8bit matrices",
-        true,
-        [ IsMatrix and Is8BitMatrixRep and IsFFECollColl ],
-        0,
-        function( mat )
-    local copymat;
-    copymat := List(mat, ShallowCopy);
-    return SemiEchelonMatDestructive( copymat );
-end);
-
-InstallMethod(SemiEchelonMatTransformation, "shortcut method for 8bit matrices",
-        true,
-        [ IsMatrix and Is8BitMatrixRep and IsFFECollColl ],
-        0,
-        function( mat )
-    local copymat;
-    copymat := List(mat, ShallowCopy);
-    return SemiEchelonMatTransformationDestructive( copymat );
-end);
-
-InstallMethod(SemiEchelonMatDestructive, "kernel method for plain lists of 8bit vectors",
-        true,
-        [ IsPlistRep and IsMatrix and IsMutable and IsFFECollColl ],
-        0,
-        SEMIECHELON_LIST_VEC8BITS
-        );
-        
-InstallMethod(SemiEchelonMatTransformationDestructive, 
-        " kernel method for plain lists of 8 bit vectors",
-        true,
-        [ IsMatrix and IsFFECollColl and IsPlistRep and IsMutable],
-        0, 
-        SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS);
-
-
-
-#############################################################################
-##
-#M  TriangulizeMat( <plain list of GF2 vectors> )
-##
-
-InstallMethod(TriangulizeMat,
-        "kernel method for plain list of GF2 vectors",
-        true,
-        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        0, 
-        TRIANGULIZE_LIST_VEC8BITS);
-
-#############################################################################
-##
-#M  DeterminantMatDestructive ( <plain list of GF2 vectors> )
-##
-
-InstallMethod(DeterminantMatDestructive,
-        "kernel method for plain list of GF2 vectors",
-        true,
-        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        0, 
-        DETERMINANT_LIST_VEC8BITS);
-
-#############################################################################
-##
-#M  RankMatDestructive ( <plain list of GF2 vectors> )
-##
-
-
-InstallMethod(RankMatDestructive,
-        "kernel method for plain list of GF2 vectors",
-        true,
-        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        0, 
-        RANK_LIST_VEC8BITS);
-  
             
 #############################################################################
 ##

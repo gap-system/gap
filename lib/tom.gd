@@ -234,23 +234,23 @@ DeclareAttribute( "TableOfMarks", IsTable );
 ##
 #4
 ##  The following `TableOfMarks' methods for a group are installed.
-##  \beginlist
-##  \item{-}
+##  \beginlist%unordered
+##  \item{--}
 ##      If the group is known to be cyclic then `TableOfMarks' constructs the
 ##      table of marks essentially without the group, instead the knowledge
 ##      about the structure of cyclic groups is used.
-##  \item{-}
+##  \item{--}
 ##      If the lattice of subgroups is already stored in the group then
 ##      `TableOfMarks' computes the table of marks from the lattice
 ##      (see~"TableOfMarksByLattice").
-##  \item{-}
+##  \item{--}
 ##      If the group is known to be solvable then `TableOfMarks' takes the
 ##      lattice of subgroups (see~"LatticeSubgroups") of the group
 ##      --which means that the lattice is computed if it is not yet stored--
 ##      and then computes the table of marks from it.
 ##      This method is also accessible via the global function
 ##      `TableOfMarksByLattice' (see~"TableOfMarksByLattice").
-##  \item{-}
+##  \item{--}
 ##      If the group doesn't know its lattice of subgroups or its conjugacy
 ##      classes of subgroups then the table of marks and the conjugacy
 ##      classes of subgroups are computed at the same time by the cyclic
@@ -537,7 +537,7 @@ DeclareAttribute( "ClassTypesTom", IsTableOfMarks );
 ##  Moreover, the braces `{}'  around the type are omitted if the type number
 ##  has only one digit.
 ##
-##  For classes of cyclic subgoups, the parentheses round the order and the
+##  For classes of cyclic subgroups, the parentheses round the order and the
 ##  type are omitted.
 ##  Hence the most general form of their generic names is `\"<o>,<l>\"'.
 ##  Again, the letter is omitted if there is only one class of cyclic
@@ -680,18 +680,12 @@ DeclareAttribute( "WeightsTom", IsTableOfMarks );
 ##  Additionally, if a positive integer <sub> is given as the second argument
 ##  then the value of the corresponding property for the <sub>-th class of
 ##  subgroups of <tom> is returned.
-##  \beginlist
-##  \item{}
-##      `IsAbelianTom( <tom>[, <sub>] )'\indextt{IsAbelianTom}
-##  \item{}
-##      `IsCyclicTom( <tom>[, <sub>] )'\indextt{IsCyclicTom}
-##  \item{}
-##      `IsNilpotentTom( <tom>[, <sub>] )'\indextt{IsNilpotentTom}
-##  \item{}
-##      `IsPerfectTom( <tom>[, <sub>] )'\indextt{IsPerfectTom}
-##  \item{}
-##      `IsSolvableTom( <tom>[, <sub>] )'\indextt{IsSolvableTom}
-##  \endlist
+##  
+##  \>IsAbelianTom( <tom>[, <sub>] )
+##  \>IsCyclicTom( <tom>[, <sub>] )
+##  \>IsNilpotentTom( <tom>[, <sub>] )
+##  \>IsPerfectTom( <tom>[, <sub>] )
+##  \>IsSolvableTom( <tom>[, <sub>] )
 ##
 
 
@@ -955,7 +949,7 @@ DeclareOperation( "DecomposedFixedPointVector",
 ##  function (see~"EulerianFunction") of the underlying group $G$ of the
 ##  table of marks <tom>,
 ##  that is, the number of <n>-tuples of elements in $G$ that generate $G$.
-##  In the secon form `EulerianFunctionByTom' computes the Eulerian function
+##  In the second form `EulerianFunctionByTom' computes the Eulerian function
 ##  of each subgroup in the <sub>-th class of subgroups of <tom>.
 ##
 ##  For a group $G$ whose table of marks is known, `EulerianFunctionByTom'
@@ -1104,23 +1098,6 @@ DeclareAttribute( "StraightLineProgramsTom", IsTableOfMarks );
 
 #############################################################################
 ##
-#A  WordsTom( <tom> )
-##
-##  Let <tom> be a table of marks with `IsTableOfMarksWithGens' value `true'.
-##  Then `WordsTom' returns a list that contains at position $i$ a list of
-##  words in abstract generators that encode generators of a representative
-##  of the $i$-th conjugacy class of subgroups of `UnderlyingGroup( <tom> )'.
-#T No!
-#T These "words" that are in fact wordlists are evaluated by
-#T `ResultOfStraightLineProgram'.
-##
-##  *WordsTom is obsolete, use StraightLineProgramsTom instead!*
-##
-DeclareAttribute( "WordsTom", IsTableOfMarks );
-
-
-#############################################################################
-##
 #A  StandardGeneratorsInfo( <tom> )
 ##
 ##  For a table of marks <tom>, a stored  value  of  `StandardGeneratorsInfo'
@@ -1164,7 +1141,7 @@ InstallTrueMethod( IsTableOfMarksWithGens,
 ##
 #O  RepresentativeTom( <tom>, <sub> )
 #O  RepresentativeTomByGenerators( <tom>, <sub>, <gens> )
-#O  RepresentativeTomByGeneratorsNC( <tom>, <sub>, <group> )
+#O  RepresentativeTomByGeneratorsNC( <tom>, <sub>, <gens> )
 ##
 ##  Let <tom> be a table of marks with `IsTableOfMarksWithGens' value `true'
 ##  (see~"IsTableOfMarksWithGens"), and <sub> a positive integer.
@@ -1220,7 +1197,7 @@ DeclareOperation( "RepresentativeTomByGeneratorsNC",
 ##  class of elements in <tbl>.
 ##
 ##  Three cases are handled differently.
-##  \beginlist
+##  \beginlist%ordered
 ##  \item{1.}
 ##       The fusion is explicitly stored on <tbl>.
 ##       Then nothing has to be done.
@@ -1245,7 +1222,7 @@ DeclareOperation( "RepresentativeTomByGeneratorsNC",
 ##  this fusion,
 ##  and if `FusionCharTableTom' returns `fail' then the length of this list
 ##  is different from $1$.
-##  The optional argumanet <quick>, a boolean, indicates whether a unique
+##  The optional argument <quick>, a boolean, indicates whether a unique
 ##  fusion shall be returned as soon as it has been determined,
 ##  without further checks.
 ##  The default value of <quick> is `false'.
@@ -1356,7 +1333,6 @@ BindGlobal( "TableOfMarksComponents", [
       "NormalizersTom",             NormalizersTom,
       "DerivedSubgroupsTomUnique",  DerivedSubgroupsTomUnique,
       "UnderlyingGroup",            UnderlyingGroup,
-      "WordsTom",                   WordsTom,
       "StraightLineProgramsTom",    StraightLineProgramsTom,
       "GeneratorsSubgroupsTom",     GeneratorsSubgroupsTom,
       "StandardGeneratorsInfo",     StandardGeneratorsInfo,

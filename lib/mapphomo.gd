@@ -250,7 +250,7 @@ DeclareAttribute( "KernelOfAdditiveGeneralMapping", IsGeneralMapping );
 ##
 ##  Let <mapp> be a general mapping.
 ##  Then `CoKernelOfAdditiveGeneralMapping' returns the set of all
-##  elements in the rqange of <mapp> that have the zero of the source in
+##  elements in the range of <mapp> that have the zero of the source in
 ##  their set of preimages.
 ##
 DeclareAttribute( "CoKernelOfAdditiveGeneralMapping", IsGeneralMapping );

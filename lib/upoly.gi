@@ -39,7 +39,22 @@ end);
 InstallMethod(IsIrreducibleRingElement,"polynomial",IsCollsElms,
   [IsPolynomialRing,IsPolynomial],0,
 function(R,f)
-  return Length(Factors(R,f))<=1;
+local d;
+  if not IsUnivariatePolynomial(f) then
+    TryNextMethod();
+  fi;
+  d:=DegreeOfLaurentPolynomial(f);
+  if d=infinity then
+    # the zero polynomial: irreducible elements are nonzero
+    return false;
+  elif d=0 then
+    # constant polynomial -> refer to base ring
+    f:=CoefficientsOfLaurentPolynomial(f)[1][1];
+    return IsIrreducibleRingElement(LeftActingDomain(R),f);
+  else
+    return Length(Factors(R,f,
+		    rec(stopdegs:=[1..DegreeOfLaurentPolynomial(f)-1])))<=1;
+  fi;
 end);
 
 #############################################################################

@@ -119,7 +119,8 @@ InstallMethod( RelativeBasis,
 
     # Construct the relative basis.
     R:= Objectify( NewType( FamilyObj( vectors ),
-                            IsBasis and IsRelativeBasisDefaultRep ),
+                                IsFiniteBasisDefault
+                            and IsRelativeBasisDefaultRep ),
                    rec() );
     SetUnderlyingLeftModule( R, V );
     SetBasisVectors( R, AsList( vectors ) );
@@ -154,7 +155,8 @@ InstallMethod( RelativeBasisNC,
 
     # Construct the relative basis.
     R:= Objectify( NewType( FamilyObj( vectors ),
-                            IsBasis and IsRelativeBasisDefaultRep ),
+                                IsFiniteBasisDefault
+                            and IsRelativeBasisDefaultRep ),
                    rec() );
     SetUnderlyingLeftModule( R, UnderlyingLeftModule( B ) );
     SetBasisVectors( R, AsList( vectors ) );
@@ -919,7 +921,9 @@ InstallMethod( Basis,
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasisByNiceBasis and IsAttributeStoringRep ),
+                                IsFiniteBasisDefault
+                            and IsBasisByNiceBasis
+                            and IsAttributeStoringRep ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
     return B;
@@ -940,7 +944,9 @@ InstallMethod( Basis,
 
     # Create the basis object.
     B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasisByNiceBasis and IsAttributeStoringRep ),
+                                IsFiniteBasisDefault
+                            and IsBasisByNiceBasis
+                            and IsAttributeStoringRep ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, vectors );
@@ -966,7 +972,9 @@ InstallMethod( BasisNC,
 
     # Create the basis object.
     B:= Objectify( NewType( FamilyObj( V ),
-                            IsBasisByNiceBasis and IsAttributeStoringRep ),
+                                IsFiniteBasisDefault
+                            and IsBasisByNiceBasis
+                            and IsAttributeStoringRep ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, vectors );
@@ -1123,7 +1131,7 @@ InstallMethod( Basis,
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsEmpty
                             and IsAttributeStoringRep ),
                    rec() );
@@ -1143,7 +1151,7 @@ InstallMethod( Basis,
 
     # Construct an empty basis.
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsEmpty
                             and IsAttributeStoringRep ),
                    rec() );
@@ -1162,7 +1170,7 @@ InstallMethod( BasisNC,
 
     # Construct an empty basis.
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsEmpty
                             and IsAttributeStoringRep ),
                    rec() );
@@ -1185,7 +1193,7 @@ InstallMethod( SemiEchelonBasis,
 
     # Construct an empty basis.
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsEmpty
                             and IsSemiEchelonized
                             and IsAttributeStoringRep ),
@@ -1205,7 +1213,7 @@ InstallMethod( SemiEchelonBasisNC,
 
     # Construct an empty basis.
     B:= Objectify( NewType( FamilyObj( V ),
-                                IsBasis
+                                IsFiniteBasisDefault
                             and IsEmpty
                             and IsSemiEchelonized
                             and IsAttributeStoringRep ),
@@ -1266,7 +1274,8 @@ InstallGlobalFunction( BasisWithReplacedLeftModule, function( B, V )
     local new;
 
     new:= Objectify( NewType( FamilyObj( B ),
-                              IsBasis and IsBasisWithReplacedLeftModuleRep ),
+                                  IsFiniteBasisDefault
+                              and IsBasisWithReplacedLeftModuleRep ),
                      rec() );
     SetUnderlyingLeftModule( new, V );
     new!.basisWithWrongModule:= B;

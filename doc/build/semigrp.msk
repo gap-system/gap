@@ -11,7 +11,7 @@
 This chapter describes functions for creating semigroups
 and determining information about them.
 
-%%  Support for algebraic semigroup theory in GAP was designed by Andrew
+%%  Support for algebraic semigroup theory in {\GAP} was designed by Andrew
 %%  Solomon, based on code by Goetz Pfeiffer, and was implemented by Isabel
 %%  Araujo, Robert Arthur, and Andrew Solomon.
 
@@ -106,7 +106,7 @@ For documentation on ideals for magmas, see `Magma' ("Magma").
 An equivalence or a congruence on a semigroup is the
 equivalence or congruence on the semigroup considered as a magma.
 So, to deal with equivalences and congruences on semigroups,
-magma funtions are used.
+magma functions are used.
 For documentation on equivalences and congruences for magmas,
 see `Magma' ("Magma").
 
@@ -118,7 +118,7 @@ see `Magma' ("Magma").
 
 Given a semigroup and a congruence on the semigroup, one
 can construct a new semigroup: the quotient semigroup.
-The following funtions deal with quotient semigroups in {\GAP}.
+The following functions deal with quotient semigroups in {\GAP}.
 
 
 

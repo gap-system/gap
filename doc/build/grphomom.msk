@@ -17,7 +17,7 @@ mappings, so in particular all operations for mappings, such as `Image',
 that Respect Multiplication") are applicable to them.
 
 Homomorphisms can be used to transfer calculations into isomorphic groups in
-another representation, for which better algoroithms are available.
+another representation, for which better algorithms are available.
 Section~"Nice Monomorphisms" explains a technique how to enforce this
 automatically.
 
@@ -111,7 +111,7 @@ of a group homomorphism.
 \beginexample
 gap> hom:=GroupHomomorphismByImages(g,h,gens,[(1,2),(1,3)]);;
 gap> Kernel(hom);
-Group([ (1,3)(2,4), (1,2)(3,4) ])
+Group([ (1,4)(2,3), (1,2)(3,4) ])
 \endexample
 
 Homomorphisms can map between groups in different representations and are
@@ -176,7 +176,7 @@ certain calculations might be expensive and some precaution might be needed
 to avoid unnecessarily expensive calculations.
 
 In short, it is always worth to tell a mapping that it is a homomorphism
-(this can be done by `SetIsMapping') (or to create it direcetly with
+(this can be done by `SetIsMapping') (or to create it directly with
 `GroupHomomorphismByImagesNC').
 
 The basic operations required are to compute image and preimage of elements
@@ -188,7 +188,7 @@ will differ depending on the type of the mapping.
 `GroupGeneralMappingByImages')*
 
 Computing images requires to express an element of the source as word in the
-generators. If it cannot be done effectivly (this is determined by
+generators. If it cannot be done effectively (this is determined by
 `KnowsHowToDecompose', see~"KnowsHowToDecompose" which returns `true' for
 example for arbitrary permutation groups, for Pc groups or for finitely
 presented groups with the images of the free generators) the span of the
@@ -251,6 +251,44 @@ The comparison of mappings is based on a lexicographic comparison of a
 sorted element list of the source. For groups this can be simplified:
 
 \Declaration{ImagesSmallestGenerators}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Homomorphism for very large groups}
+
+Some homomorphisms (notably particular actions) transfer known information
+about the source group (such as a stabilizer chain) to the image group if
+this is substantially cheaper than to compute the information in the image
+group anew. In most cases this is no problem and in fact speeds up further
+calculations notably.
+
+For a huge source group, however this can be time consuming or take a large
+amount of extra memory for storage. In this case it can be helpful to avoid
+as much automatism as possible.
+
+The following list of tricks might be useful in such a case. (However you
+will lose much automatic deduction. So please restrict the use of these to
+cases where the standard approach does not work.)
+\beginitems
+-&
+Compute only images (or the `PreImageRepresentative') of group elements. Do
+not compute the images of (sub)groups or the full preimage of a subgroup.
+
+-&
+Create action homomorphisms as ``surjective'' (see `ActionHomomorphism')
+(otherwise the range is set to be the full symmetric group)
+However do not compute  Range or Image, but only the images of a
+generator set.
+
+-&
+If you suspect an action homomorphism to do too much internally, replace the
+action function with a function that does the same; i.e. replace `OnPoints'
+by
+\begintt
+function(p,g) return p^g;end;
+\endtt
+The action will be the same, but as the action function is not `OnPoints',
+the extra processing for special cases is not triggered.
+\enditems
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Nice Monomorphisms}
@@ -321,7 +359,7 @@ gap> ConjugatorOfConjugatorIsomorphism(hom);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Groups of Automorphisms}
 
-Group automorphissm can be multiplied and inverted and thus it is possible
+Group automorphism can be multiplied and inverted and thus it is possible
 to form groups of automorphisms.
 
 \Declaration{IsGroupOfAutomorphisms}
@@ -336,9 +374,9 @@ Group([ (1,2,3,4), (1,3) ])
 gap> au:=AutomorphismGroup(g);
 <group of size 8 with 3 generators>
 gap> GeneratorsOfGroup(au);
-[ ^(1,2,3,4), ^(1,3), [ (1,2)(3,4), (1,3) ] -> [ (2,4), (1,2)(3,4) ] ]
+[ ^(1,2,3,4), ^(1,3), [ (1,2,3,4), (2,4) ] -> [ (1,2,3,4), (1,2)(3,4) ] ]
 gap> NiceObject(au);
-Group([ (1,3)(2,4), (2,4), (1,4,3,2) ])
+Group([ (1,4)(2,6), (2,6)(3,5), (1,2,4,6) ])
 \endexample
 
 \Declaration{InnerAutomorphismsAutomorphismGroup}
@@ -381,7 +419,7 @@ the automorphism group are done.
 
 \Declaration{AssignNiceMonomorphismAutomorphismGroup}
 
-If a good domain for a faithful permutation action is know already, a
+If a good domain for a faithful permutation action is known already, a
 homomorphism for the action on it can be created using
 `NiceMonomorphismAutomGroup'. It might be stored by `SetNiceMonomorphism'
 (see "NiceMonomorphism").
@@ -418,7 +456,7 @@ Group([ (1,2,3,4), (1,2) ])
 gap> h:=Group((1,2,3),(1,2));
 Group([ (1,2,3), (1,2) ])
 gap> quo:=GQuotients(g,h);
-[ [ (1,2,3,4), (1,2) ] -> [ (1,2), (1,3) ] ]
+[ [ (1,2,3,4), (1,2) ] -> [ (2,3), (1,2) ] ]
 \endexample
 
 \Declaration{IsomorphicSubgroups}

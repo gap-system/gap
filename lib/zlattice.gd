@@ -197,7 +197,7 @@ DeclareGlobalFunction( "DecompositionInt" );
 ##
 #F  LLLReducedBasis( [<L>, ]<vectors>[, <y>][, \"linearcomb\"][, <lllout>] )
 ##
-##  `LLLReducedBasis' provides an implementation of the LLL algorithm by
+##  provides an implementation of the LLL algorithm by
 ##  Lenstra, Lenstra and Lov{\accent19 a}sz (see~\cite{LLL82}, \cite{Poh87}).
 ##  The implementation follows the description on pages 94f. in~\cite{Coh93}.
 ##
@@ -238,15 +238,15 @@ DeclareGlobalFunction( "DecompositionInt" );
 ##  gap> vectors:= [ [ 9, 1, 0, -1, -1 ], [ 15, -1, 0, 0, 0 ],
 ##  >                [ 16, 0, 1, 1, 1 ], [ 20, 0, -1, 0, 0 ],
 ##  >                [ 25, 1, 1, 0, 0 ] ];;
-##  gap> LLLReducedBasis( vectors, "linearcomb" );
+##  gap> LLLReducedBasis( vectors, "linearcomb" );; Display( last );
 ##  rec(
-##    basis :=
-##     [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ], [ -1, 3, -1, -1, -1 ], 
-##       [ -3, 1, 0, 2, 2 ] ],
-##    relations := [ [ -1, 0, -1, 0, 1 ] ], 
-##    transformation := [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ], 
-##        [ 1, -2, 0, 1, 0 ], [ -1, -2, 1, 1, 0 ] ], 
-##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ], 
+##    basis := [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ], [ -1, 3, -1, -1, -1 ], 
+##        [ -3, 1, 0, 2, 2 ] ],
+##    relations := [ [ -1, 0, -1, 0, 1 ] ],
+##    transformation := 
+##     [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ], [ 1, -2, 0, 1, 0 ], 
+##        [ -1, -2, 1, 1, 0 ] ],
+##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ],
 ##    B := [ 5, 36/5, 12, 50/3 ] )
 ##  \endexample
 ##
@@ -292,7 +292,7 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##  \beginexample
 ##  gap> g:= [ [ 4, 6, 5, 2, 2 ], [ 6, 13, 7, 4, 4 ],
 ##  >    [ 5, 7, 11, 2, 0 ], [ 2, 4, 2, 8, 4 ], [ 2, 4, 0, 4, 8 ] ];;
-##  gap> LLLReducedGramMat( g );
+##  gap> LLLReducedGramMat( g );; Display( last );
 ##  rec(
 ##    remainder := [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ], [ 1, 0, 5, 0, 2 ], 
 ##        [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ],
@@ -300,7 +300,7 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##    transformation := 
 ##     [ [ 1, 0, 0, 0, 0 ], [ -1, 1, 0, 0, 0 ], [ -1, 0, 1, 0, 0 ], 
 ##        [ 0, 0, 0, 1, 0 ], [ -2, 0, 1, 0, 1 ] ],
-##    mue := [ [], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ], 
+##    mue := [ [  ], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ], 
 ##        [ -1/4, 1/8, 37/75, 8/21 ] ],
 ##    B := [ 4, 4, 75/16, 168/25, 32/7 ] )
 ##  \endexample
@@ -329,11 +329,10 @@ DeclareGlobalFunction( "LLLReducedGramMat" );
 ##  only those vectors $x$ with nonnegative entries are computed.
 ##  \beginexample
 ##  gap> g:= [ [ 2, 1, 1 ], [ 1, 2, 1 ], [ 1, 1, 2 ] ];;  
-##  gap> ShortestVectors(g,4);
-##  rec(                                                                 
-##    vectors := [ [ -1, 1, 1 ], [ 0, 0, 1 ], [ -1, 0, 1 ], [ 1, -1, 1 ],
-##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ], 
-##        [ 1, 0, 0 ] ],
+##  gap> ShortestVectors(g,4);; Display( last );
+##  rec(
+##    vectors := [ [ -1, 1, 1 ], [ 0, 0, 1 ], [ -1, 0, 1 ], [ 1, -1, 1 ], 
+##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ], [ 1, 0, 0 ] ],
 ##    norms := [ 4, 2, 2, 4, 2, 4, 2, 2, 2 ] )
 ##  \endexample
 ##
@@ -385,14 +384,12 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##  this will accelerate the algorithm in some cases.
 ##  \beginexample
 ##  gap> b:= [ [ 3, -1, -1 ], [ -1, 3, -1 ], [ -1, -1, 3 ] ];;
-##  gap> c:=OrthogonalEmbeddings( b );
+##  gap> c:=OrthogonalEmbeddings( b );; Display( c );
 ##  rec(
-##    vectors :=
-##     [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ], [ -1, 1, 0 ],
-##        [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ], [ 0, 1, 0 ],
-##        [ 0, 0, 1 ] ],
+##    vectors := [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ], [ -1, 1, 0 ], 
+##        [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
 ##    norms := [ 1, 1, 1, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2 ],
-##    solutions := [ [ 1, 2, 3 ], [ 1, 6, 6, 7, 7 ], [ 2, 5, 5, 8, 8 ],
+##    solutions := [ [ 1, 2, 3 ], [ 1, 6, 6, 7, 7 ], [ 2, 5, 5, 8, 8 ], 
 ##        [ 3, 4, 4, 9, 9 ], [ 4, 5, 6, 7, 8, 9 ] ] )
 ##  gap> c.vectors{ c.solutions[1] };
 ##  [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ] ]

@@ -197,15 +197,6 @@ Obj             InListDefaultHandler (
 **  two lists.
 */
 
-#ifdef  XTNUMS
-Obj             SumList (
-    Obj                 listL,
-    Obj                 listR )
-{
-    return (*SumFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
-}
-
-#endif
 
 Obj             SumSclList (
     Obj                 listL,
@@ -219,7 +210,7 @@ Obj             SumSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listS = NEW_PLIST( IS_MUTABLE_OBJ(listR) ?
+    listS = NEW_PLIST( IS_MUTABLE_OBJ(listL) ||  IS_MUTABLE_OBJ(listR) ?
 		       T_PLIST : (T_PLIST + IMMUTABLE), len );
     SET_LEN_PLIST( listS, len );
 
@@ -250,7 +241,7 @@ Obj             SumListScl (
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listS = NEW_PLIST( IS_MUTABLE_OBJ(listL) ?
+    listS = NEW_PLIST( IS_MUTABLE_OBJ(listR) || IS_MUTABLE_OBJ(listL) ?
 		       T_PLIST : T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listS, len );
 
@@ -279,29 +270,37 @@ Obj             SumListList (
     Obj                 elmR;           /* one element of the right list   */
     Int                 lenL,lenR, lenS;/* lengths                         */
     Int                 i;              /* loop variable                   */
+    UInt                mutS;
 
     /* get and check the length                                            */
     lenL = LEN_LIST( listL );
-#if 0
-    if ( len != LEN_LIST( listR ) ) {
-        listR = ErrorReturnObj(
-            "Vector +: <right> must have the same length as <left> (%d)",
-            (Int)LEN_LIST(listR), 0L,
-            "you can replace list <right> via 'return <right>;'" );
-        return SUM( listL, listR );
-    }
-#endif
     lenR = LEN_LIST( listR );
     lenS = (lenR > lenL) ? lenR : lenL;
     listS = NEW_PLIST( (IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR)) ?
 		       T_PLIST : T_PLIST+IMMUTABLE, lenS );
     SET_LEN_PLIST( listS, lenS );
 
+    /* Sort out mutability */
+    mutS = 0;
+    for (i = 1; i <= lenL; i++)
+      if ((elmL = ELM0_LIST( listL, i)))
+	{
+	  mutS = IS_MUTABLE_OBJ(elmL);
+	  break;
+	}
+    for (i = 1; i <= lenR; i++)
+      if ((elmR = ELM0_LIST( listR, i)))
+	{
+	  mutS = mutS || IS_MUTABLE_OBJ(elmR);
+	  break;
+	}
+    
     /* loop over the entries and add                                       */
     for ( i = 1; i <= lenS; i++ ) {
       elmL = ELM0_LIST( listL, i ) ;
       elmR = ELM0_LIST( listR, i ) ;
-      elmS =  elmL ? (elmR ? SUM( elmL, elmR ) : elmL) : elmR;
+      elmS =  elmL ? (elmR ? SUM( elmL, elmR ) : mutS ? SHALLOW_COPY_OBJ(elmL): elmL) :
+	elmR ? (mutS ? SHALLOW_COPY_OBJ(elmR): elmR) : 0;
       if (elmS)
 	{
 	  SET_ELM_PLIST( listS, i, elmS );
@@ -352,26 +351,19 @@ Obj             SumListListHandler (
 **  'ZeroListDefault' is a generic function for the zero.
 */
 
-#ifdef XTNUMS
-Obj             ZeroList (
-    Obj                 list )
-{
-    return (*ZeroFuncs[XTNum(list)])( list );
-}
-#endif
 
 
 Obj             ZeroListDefault (
     Obj                 list )
 {
     Obj                 res;
-    Obj                 elm;
+/*  Obj                 elm; */
     Int                 len;
     Int                 i;
 
-    /* make the result list                                                */
+    /* make the result list -- same mutability as argument */
     len = LEN_LIST( list );
-    res = NEW_PLIST( T_PLIST, len );
+    res = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( res, len );
 
     /* enter zeroes everywhere                                             */
@@ -393,10 +385,10 @@ Obj             ZeroListDefault (
       {
 	if (TNUM_OBJ(list) == T_PLIST_FFE ||
 	    TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
-	  RetypeBag(res, T_PLIST_FFE);
+	  RetypeBag(res, TNUM_OBJ(list));
 	else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
 		 TNUM_OBJ(list) < T_PLIST_FFE)
-	  RetypeBag(res, T_PLIST_CYC);
+	  RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE);
 	else if (HAS_FILT_LIST(list, FN_IS_DENSE))
 	  {
 	    SET_FILT_LIST( res, FN_IS_DENSE );
@@ -427,6 +419,68 @@ Obj             ZeroListDefaultHandler (
 }
 
 
+Obj             ZeroListMutDefault (
+    Obj                 list )
+{
+    Obj                 res;
+/*  Obj                 elm; */
+    Int                 len;
+    Int                 i;
+
+    /* make the result list -- always mutable */
+    len = LEN_LIST( list );
+    res = NEW_PLIST(  T_PLIST ,len );
+    SET_LEN_PLIST( res, len );
+
+    /* enter zeroes everywhere                                             */
+    /* For now, lets just do the simplest and safest thing */
+    for (i = 1; i <= len; i++ )
+      {
+	Obj tmp = ELM0_LIST( list, i);
+	if (tmp) {
+	  tmp = ZERO_MUT(tmp);
+	  SET_ELM_PLIST( res, i,tmp );
+	  CHANGED_BAG( res);
+	}
+      }
+    /* Now adjust the result TNUM info */
+
+    if (len == 0)
+      SET_FILT_LIST( res, FN_IS_EMPTY );
+    else if (IS_PLIST( list ))
+      {
+	if (TNUM_OBJ(list) == T_PLIST_FFE ||
+	    TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+	  RetypeBag(res, T_PLIST_FFE);
+	else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
+		 TNUM_OBJ(list) < T_PLIST_FFE)
+	  RetypeBag(res, T_PLIST_CYC);
+	else if (HAS_FILT_LIST(list, FN_IS_DENSE))
+	  {
+	    SET_FILT_LIST( res, FN_IS_DENSE );
+	    if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
+		!IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
+	      {
+		SET_FILT_LIST( res, FN_IS_HOMOG);
+	      }
+	  }
+	else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
+	  SET_FILT_LIST( res, FN_IS_NDENSE );
+      }
+
+    /* return the result                                                   */
+    return res;
+}
+
+Obj             ZeroListMutDefaultHandler (
+    Obj                 self,
+    Obj                 list )
+{
+    return ZeroListMutDefault( list );
+}
+
+
+
 /* This is intended to be installed as a method for the Attribute Zero, for
    rectangular matrices
    rather than the Operation ZeroOp. This is useful because, knowing that
@@ -453,8 +507,8 @@ Obj ZeroAttrMat( Obj self, Obj mat )
 
 /****************************************************************************
 **
-*F  AInvList(<list>)  . . . . . . . . . . . . . .  additive inverse of a list
 *F  AInvListDefault(<list>) . . . . . . . . . . .  additive inverse of a list
+*F  AInvMutListDefault
 **
 **  'AInvList' is the extended dispatcher for  the additive inverse involving
 **  lists.  That is, whenever  the additive inverse for  lists is called  and
@@ -464,15 +518,66 @@ Obj ZeroAttrMat( Obj self, Obj mat )
 **
 **  'AInvListDefault' is a generic function for the additive inverse.
 */
-#ifdef XTNUMS
 
-Obj AInvList (
+Obj AInvMutListDefault (
     Obj                 list )
 {
-    return (*AInvFuncs[XTNum(list)])( list );
+    Obj                 res;
+    Obj                 elm;
+    Int                 len;
+    Int                 i;
+
+    /* make the result list -- always mutable, since this might be a method for
+       AdditiveInverseOp */
+    len = LEN_LIST( list );
+    res = NEW_PLIST( T_PLIST , len );
+    SET_LEN_PLIST( res, len );
+
+    /* enter the additive inverses everywhere                              */
+    for ( i = 1; i <= len; i++ ) {
+        elm = ELM0_LIST( list, i );
+	if (elm) {
+	  elm = AINV_MUT( elm );
+	  SET_ELM_PLIST( res, i, elm );
+	  CHANGED_BAG( res );
+	}
+    }
+
+    /* Now adjust the result TNUM info */
+
+    if (len == 0)
+      SET_FILT_LIST( res, FN_IS_EMPTY );
+    else if (IS_PLIST( list ))
+      {
+	if (TNUM_OBJ(list) == T_PLIST_FFE ||
+	    TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+	  RetypeBag(res, T_PLIST_FFE);
+	else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
+		 TNUM_OBJ(list) < T_PLIST_FFE)
+	  RetypeBag(res, T_PLIST_CYC );
+	else if (HAS_FILT_LIST(list, FN_IS_DENSE))
+	  {
+	    SET_FILT_LIST( res, FN_IS_DENSE );
+	    if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
+		!IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
+	      {
+		SET_FILT_LIST( res, FN_IS_HOMOG);
+		
+	      }
+	  }
+	else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
+	  SET_FILT_LIST( res, FN_IS_NDENSE );
+      }
+    /* return the result                                                   */
+    return res;
 }
 
-#endif
+Obj AInvMutListDefaultHandler (
+    Obj                 self,
+    Obj                 list )
+{
+    return AInvMutListDefault( list );
+}
 
 Obj AInvListDefault (
     Obj                 list )
@@ -482,9 +587,9 @@ Obj AInvListDefault (
     Int                 len;
     Int                 i;
 
-    /* make the result list                                                */
+    /* make the result list -- same mutability as input */
     len = LEN_LIST( list );
-    res = NEW_PLIST(T_PLIST, len );
+    res = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE , len );
     SET_LEN_PLIST( res, len );
 
     /* enter the additive inverses everywhere                              */
@@ -505,14 +610,15 @@ Obj AInvListDefault (
       {
 	if (TNUM_OBJ(list) == T_PLIST_FFE ||
 	    TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
-	  RetypeBag(res, T_PLIST_FFE);
+	  RetypeBag(res, TNUM_OBJ(list));
 	else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
 		 TNUM_OBJ(list) < T_PLIST_FFE)
-	  RetypeBag(res, T_PLIST_CYC);
+	  RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE );
 	else if (HAS_FILT_LIST(list, FN_IS_DENSE))
 	  {
 	    SET_FILT_LIST( res, FN_IS_DENSE );
-	    if (HAS_FILT_LIST (list, FN_IS_HOMOG))
+	    if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
+		!IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
 	      {
 		SET_FILT_LIST( res, FN_IS_HOMOG);
 		if (HAS_FILT_LIST( list, FN_IS_TABLE))
@@ -536,7 +642,6 @@ Obj AInvListDefaultHandler (
 {
     return AInvListDefault( list );
 }
-
 
 /****************************************************************************
 **
@@ -562,14 +667,6 @@ Obj AInvListDefaultHandler (
 **  that of two lists.
 */
 
-#ifdef XTNUMS
-Obj             DiffList (
-    Obj                 listL,
-    Obj                 listR )
-{
-    return (*DiffFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
-}
-#endif
 
 Obj             DiffSclList (
     Obj                 listL,
@@ -583,7 +680,7 @@ Obj             DiffSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listD = NEW_PLIST(IS_MUTABLE_OBJ(listR) ? T_PLIST :
+    listD = NEW_PLIST(IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR) ? T_PLIST :
 		      T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listD, len );
 
@@ -625,7 +722,7 @@ Obj             DiffListScl (
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listD = NEW_PLIST( IS_MUTABLE_OBJ(listL) ? T_PLIST :
+    listD = NEW_PLIST( IS_MUTABLE_OBJ(listL)|| IS_MUTABLE_OBJ(listR) ? T_PLIST :
 		       T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listD, len );
 
@@ -638,6 +735,7 @@ Obj             DiffListScl (
 	    SET_ELM_PLIST( listD, i, elmD );
 	    CHANGED_BAG( listD );
 	  }
+	  
     }
 
     /* Now adjust the result TNUM info */
@@ -665,6 +763,7 @@ Obj             DiffListList (
     Obj                 elmR;           /* one element of the right list   */
     Int                 lenL,lenR,lenD; /* length                          */
     Int                 i;              /* loop variable                   */
+    UInt                mutD;
 
     /* get and check the length                                            */
     lenL = LEN_LIST( listL );
@@ -674,11 +773,48 @@ Obj             DiffListList (
 		       T_PLIST : T_PLIST+IMMUTABLE, lenD );
     SET_LEN_PLIST( listD, lenD );
 
+    /* Sort out mutability */
+    mutD = 0;
+    for (i = 1; i <= lenL; i++)
+      if ((elmL = ELM0_LIST( listL, i)))
+	{
+	  mutD = IS_MUTABLE_OBJ(elmL);
+	  break;
+	}
+    for (i = 1; i <= lenR; i++)
+      if ((elmR = ELM0_LIST( listR, i)))
+	{
+	  mutD = mutD || IS_MUTABLE_OBJ(elmR);
+	  break;
+	}    
+           
+    
     /* loop over the entries and subtract                                  */
     for ( i = 1; i <= lenD; i++ ) {
         elmL = ELM0_LIST( listL, i );
         elmR = ELM0_LIST( listR, i );
-        elmD = elmL ? (elmR ? DIFF( elmL, elmR ) : elmL) : (elmR ? AINV(elmR) : 0);
+	
+
+	/* Now compute the result 6 different cases! */
+	if (elmL)
+	  {
+	    if (elmR)
+	      elmD= DIFF(elmL,elmR);
+	    else if ( mutD)
+	      elmD = SHALLOW_COPY_OBJ(elmL);
+	    else
+	      elmD = elmL;
+	  }
+	else if (elmR)
+	  {
+	    if (mutD)
+	      elmD = AINV_MUT(elmR);
+	    else
+	      elmD = AINV(elmR);
+	  }
+	else
+	  elmD = 0;
+	  
 	if (elmD)
 	  {
 	    SET_ELM_PLIST( listD, i, elmD );
@@ -753,16 +889,6 @@ Obj             DiffListListHandler (
 **  matrices.
 */
 
-#ifdef XTNUMS
-
-Obj             ProdList (
-    Obj                 listL,
-    Obj                 listR )
-{
-    return (*ProdFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
-}
-
-#endif
 Obj             ProdSclList (
     Obj                 listL,
     Obj                 listR )
@@ -775,7 +901,8 @@ Obj             ProdSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listP = NEW_PLIST( IS_MUTABLE_OBJ(listR) ? T_PLIST :T_PLIST+IMMUTABLE, len );
+    listP = NEW_PLIST( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR) ?
+		       T_PLIST :T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */
@@ -882,7 +1009,7 @@ Obj             ProdListList (
     }
 
     if (!listP)
-      ErrorQuit("Inner product multiplication of lists: no summands", 0, 0);
+      ErrorMayQuit("Inner product multiplication of lists: no summands", 0, 0);
     
     /* adjust mutability */
 
@@ -921,34 +1048,26 @@ Obj             ProdListListHandler (
 
 /****************************************************************************
 **
-*F  OneList(<list>) . . . . . . . . . . . . . . . . . . . . . . one of a list
-*F  OneMatrix(<list>) . . . . . . . . . . . . . . . . . . . . . one of a list
+*F  OneMatrix(<list>, <mut>) . . .  . . . . . . . . . . . . . . one of a list
 **
-**  'OneList' is  the extended dispatcher for  the one involving lists.  That
-**  is, whenever one for a list is called and  'OneFuncs' does not point to a
-**  special  function, then 'OneList'  is  called.  'OneList' determines  the
-**  extended type of  the  operand and   then dispatches  through  'OneFuncs'
-**  again.
 **
-**  'OneMatrix' is a generic function for the one.
+**  'OneMatrix' is a generic function for the one. mut may be 0, for an
+**  immutable result, 1 for a result of the same mutability level as <list>
+**  and 2 for a fully mutable result.
 */
 
-#ifdef XTNUMS
-Obj             OneList (
-    Obj                 list )
-{
-    return (*OneFuncs[XTNum(list)])( list );
-}
-#endif
 Obj             OneMatrix (
-    Obj                 mat )
+    Obj                 mat,
+    UInt                mut)
 {
     Obj                 res = 0;        /* one, result                     */
     Obj                 row;            /* one row of the result           */
-    Obj                 zero;           /* zero element                    */
-    Obj                 one;            /* one element                     */
+    Obj                 zero = 0;       /* zero element                    */
+    Obj                 one = 0;        /* one element                     */
     UInt                len;            /* length (and width) of matrix    */
     UInt                i, k;           /* loop variables                  */
+    UInt                rtype= 0;       /* tnum for rows of result        */
+    UInt                ctype = 0;      /* tnum for  result        */
 
     /* check that the operand is a *square* matrix                         */
     len = LEN_LIST( mat );
@@ -960,14 +1079,41 @@ Obj             OneMatrix (
     }
 
     /* get the zero and the one                                            */
-    zero = ZERO( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-    one  = ONE( zero );
+    switch (mut) {
+    case 0:
+      zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+      one  = ONE_MUT( zero );
+      MakeImmutable(zero);
+      MakeImmutable(one);
+      ctype = rtype = T_PLIST+IMMUTABLE;
+      break;
+      
+    case 1:
+      zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+      one  = ONE_MUT( zero );
+      if (IS_MUTABLE_OBJ(mat))
+	{
+	  ctype = T_PLIST;
+	  rtype = IS_MUTABLE_OBJ(ELM_LIST(mat, 1)) ? T_PLIST : T_PLIST + IMMUTABLE;
+	}
+      else
+	ctype = rtype = T_PLIST + IMMUTABLE;
+      break;
+
+    case 2:
+      zero = ZERO( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+      one  = ONE( zero );
+      ctype = rtype = T_PLIST;
+      break;
+    }
+
+    
 
     /* make the identity matrix                                            */
-    res = NEW_PLIST(  T_PLIST, len );
+    res = NEW_PLIST(  ctype, len );
     SET_LEN_PLIST( res, len );
     for ( i = 1; i <= len; i++ ) {
-        row = NEW_PLIST( T_PLIST, len );
+        row = NEW_PLIST( rtype , len );
         SET_LEN_PLIST( row, len );
         for ( k = 1; k <= len; k++ )
             SET_ELM_PLIST( row, k, zero );
@@ -980,12 +1126,28 @@ Obj             OneMatrix (
     return res;
 }
 
-Obj             OneMatrixHandler (
+Obj             FuncOneMatrixImmutable (
     Obj                 self,
     Obj                 list )
 {
-    return OneMatrix( list );
+    return OneMatrix( list,0 );
 }
+
+Obj             FuncOneMatrixSameMutability (
+    Obj                 self,
+    Obj                 list )
+{
+    return OneMatrix( list,1 );
+}
+
+Obj             FuncOneMatrixMutable (
+    Obj                 self,
+    Obj                 list )
+{
+    return OneMatrix( list,2 );
+}
+
+
 
 
 /****************************************************************************
@@ -1003,31 +1165,24 @@ Obj             OneMatrixHandler (
 **  circumstances, we should use a more efficient function based on
 **  calls to AddRowVector, etc.
 */
-#ifdef XTNUMS
-
-Obj             InvList (
-    Obj                 list )
-{
-    return (*InvFuncs[XTNum(list)])( list );
-}
-
-#endif
 #ifdef SYS_IS_MAC_MWC
 #pragma global_optimizer on /* CW Pro 2 can't compile this w/o global optimization */
 #endif
 
 Obj             InvMatrix (
-    Obj                 mat )
+    Obj                 mat,
+    UInt                mut)
 {
     Obj                 res = 0;        /* power, result                   */
     Obj                 row;            /* one row of the matrix           */
     Obj                 row2;           /* another row of the matrix       */
     Obj                 elm;            /* one element of the matrix       */
     Obj                 elm2;           /* another element of the matrix   */
-    Obj                 zero;           /* zero element                    */
-    Obj                 one;            /* one element                     */
+    Obj                 zero = 0;       /* zero element                    */
+    Obj                 one = 0;        /* one element                     */
     UInt                len;            /* length (and width) of matrix    */
     UInt                i, k, l;        /* loop variables                  */
+    UInt                rtype = 0, ctype = 0;   /* types for lists to be created   */
 
     /* check that the operand is a *square* matrix                         */
     len = LEN_LIST( mat );
@@ -1039,14 +1194,40 @@ Obj             InvMatrix (
     }
 
     /* get the zero and the one                                            */
-    zero = ZERO( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-    one  = ONE( zero );
+    switch(mut)
+      {
+      case 0:
+	zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+	one  = ONE_MUT( zero );
+	ctype = rtype = T_PLIST+IMMUTABLE;
+	MakeImmutable(zero);
+	MakeImmutable(one);
+	break;
+	
+      case 1:
+	zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+	one  = ONE_MUT( zero );
+	if (IS_MUTABLE_OBJ(mat))
+	  {
+	    ctype = T_PLIST;
+	    rtype = IS_MUTABLE_OBJ(ELM_LIST(mat, 1)) ? T_PLIST : T_PLIST+IMMUTABLE;
+	  }
+	else
+	  ctype = rtype = T_PLIST+IMMUTABLE;
+	break;
+
+      case 2:
+	zero = ZERO( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+	one  = ONE( zero );
+	ctype = rtype = T_PLIST;
+	break;
+      }
 
     /* make a matrix of the form $ ( Id_<len> | <mat> ) $                  */
-    res = NEW_PLIST( T_PLIST, len );
+    res = NEW_PLIST( ctype, len );
     SET_LEN_PLIST( res, len );
     for ( i = 1; i <= len; i++ ) {
-        row = NEW_PLIST( T_PLIST, 2 * len );
+        row = NEW_PLIST( rtype, 2 * len );
         SET_LEN_PLIST( row, 2 * len );
         SET_ELM_PLIST( res, i, row );
         CHANGED_BAG( res );
@@ -1083,7 +1264,10 @@ Obj             InvMatrix (
         row = ELM_PLIST( res, i );
         SET_ELM_PLIST( res, i, ELM_PLIST( res, k-len ) );
         SET_ELM_PLIST( res, k-len, row );
-        elm2 = INV( ELM_PLIST( row, k ) );
+	if (mut < 2)
+	  elm2 = INV_MUT( ELM_PLIST( row, k ) );
+	else
+	  elm2 = INV( ELM_PLIST( row, k ) );
         for ( l = 1; l <= 2*len; l++ ) {
             elm = PROD( elm2, ELM_PLIST( row, l ) );
             SET_ELM_PLIST( row, l, elm );
@@ -1093,7 +1277,10 @@ Obj             InvMatrix (
         /* clear all entries in this column                                */
         for ( i = 1; i <= len; i++ ) {
             row2 = ELM_PLIST( res, i );
-            elm = AINV( ELM_PLIST( row2, k ) );
+	    if (mut < 2)
+	      elm = AINV_MUT( ELM_PLIST( row2, k ) );
+	    else
+	      elm = AINV( ELM_PLIST( row2, k ) );
             if ( i != k-len && ! EQ(elm,zero) ) {
                 for ( l = 1; l <= 2*len; l++ ) {
                     elm2 = PROD( elm, ELM_PLIST( row, l ) );
@@ -1120,54 +1307,20 @@ Obj             InvMatrix (
 #pragma global_optimizer reset 
 #endif
 
-Obj             InvMatrixHandler (
-    Obj                 self,
-    Obj                 list )
+Obj FuncINV_MATRIX_MUTABLE( Obj self, Obj mat)
 {
-    return InvMatrix( list );
+  return InvMatrix(mat, 2);
 }
 
-
-/****************************************************************************
-**
-*F  QuoList(<listL>,<listR>)  . . . . . . . . . . . . . . . quotient of lists
-**
-**  'QuoList' is the extended dispatcher  for the quotients involving  lists.
-**  This  is, whenever two  operands are  divided and  at   least one  of the
-**  operands is  a list and 'QuoFuncs' does  not point to a special function,
-**  then 'QuoList' is called.  'QuoList' determines the extended types of the
-**  operands (e.g.,   'T_INT', 'T_VECTOR',  'T_MATRIX',  'T_LISTX') and  then
-**  dispatches through 'QuoFuncs' again.
-*/
-#ifdef XTNUMS
-Obj             QuoList (
-    Obj                 listL,
-    Obj                 listR )
+Obj FuncINV_MATRIX_SAME_MUTABILITY( Obj self, Obj mat)
 {
-    return (*QuoFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
+  return InvMatrix(mat, 1);
 }
-#endif
 
-/****************************************************************************
-**
-*F  LQuoList(<listL>,<listR>) . . . . . . . . . . . .  left quotient of lists
-**
-**  'LQuoLists' is   the  extended dispatcher  for  left  quotients involving
-**  lists.   This is,  whenever two operands   are  divided and at  least one
-**  operand is a list and 'LQuoFuncs'  does not point  to a special function,
-**  then 'LQuoList'  is called.  'LQuoList' determines  the extended types of
-**  the operands (e.g., 'T_INT',  'T_VECTOR', 'T_MATRIX', 'T_LISTX') and then
-**  dispatches through 'LQuoFuncs' again.
-*/
-
-#ifdef XTNUMS
-Obj             LQuoList (
-    Obj                 listL,
-    Obj                 listR )
+Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
 {
-    return (*LQuoFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
+  return InvMatrix(mat, 0);
 }
-#endif
 
 /****************************************************************************
 **
@@ -1184,15 +1337,8 @@ Obj             LQuoList (
 **  through the extended dispatchers again and again.
 **
 *N  1996/08/28 M.Schoenert is this function really worth the trouble?
+*N  2002/01/21 S. Linton It's not used, and I'm not sure it works
 */
-#ifdef XTNUMS
-Obj             PowList (
-    Obj                 listL,
-    Obj                 listR )
-{
-    return (*PowFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
-}
-#endif
 
 Obj             PowMatrixInt (
     Obj                 mat,
@@ -1203,7 +1349,7 @@ Obj             PowMatrixInt (
 
     /* if the integer is zero, return the neutral element of the operand   */
     if      ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
-        res = OneMatrix( mat );
+        res = OneMatrix( mat, 1 );
     }
 
     /* if the integer is one, return a copy of the operand                 */
@@ -1286,27 +1432,6 @@ Obj             PowMatrixIntHandler (
     return PowMatrixInt( opL, opR );
 }
 
-
-/****************************************************************************
-**
-*F  CommList(<listL>,<listR>) . . . . . . . . . . . . . . commutator of lists
-**
-**  'CommList' is  the extended dispatcher   for commutators involving lists.
-**  That is, whenever two operands are commutated and at least one operand is
-**  a  list  and  'CommFuncs' does not  point   to a  special  function, then
-**  'CommList'  is called.  'CommList' determines the   extended types of the
-**  operands  (e.g., 'T_INT',  'T_VECTOR',  'T_MATRIX', 'T_LISTX')  and  then
-**  dispatches through 'CommFuncs' again.
-*/
-
-#ifdef XTNUMS
-Obj             CommList (
-    Obj                 listL,
-    Obj                 listR )
-{
-    return (*CommFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
-}
-#endif
 
 /****************************************************************************
 **
@@ -1627,7 +1752,7 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
   Obj vecr;
   UInt i,len;
   Obj z;
-  Obj o;
+/*Obj o;  */
   res = (Obj) 0;
   len = LEN_LIST(vec);
   if (len != LEN_LIST(mat))
@@ -1675,14 +1800,14 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
 
 Obj ConvertToMatrixRep;
 
-Obj FuncINV_MAT_DEFAULT( Obj self, Obj mat)
+Obj InvMatWithRowVecs( Obj mat, UInt mut)
 {
   Obj                 res;            /* result                          */
   Obj                 matcopy;        /* copy of mat                     */
-  Obj                 row;            /* one row of matcopy              */
+  Obj                 row = 0;            /* one row of matcopy              */
   Obj                 row2;           /* corresponding row of res        */
   Obj                 row3;           /* another row of matcopy          */
-  Obj                 x;              /* one element of the matrix       */
+  Obj                 x = 0;              /* one element of the matrix       */
   Obj                 xi;             /* 1/x                             */
   Obj                 y;              /* another element of the matrix   */
   Obj                 yi;             /* -y                              */
@@ -1691,6 +1816,7 @@ Obj FuncINV_MAT_DEFAULT( Obj self, Obj mat)
   Obj                 one;            /* one element                     */
   UInt                len;            /* length (and width) of matrix    */
   UInt                i, k, j;        /* loop variables                  */
+  UInt                ctype;          /* type for result                */
 
   /* check that the operand is a *square* matrix                         */
   len = LEN_LIST( mat );
@@ -1699,14 +1825,27 @@ Obj FuncINV_MAT_DEFAULT( Obj self, Obj mat)
 			 "Matrix INV: <mat> must be square (not %d by %d)",
 			 (Int)len, (Int)LEN_LIST( ELM_LIST( mat, 1 ) ),
 			 "you can replace <mat> via 'return <mat>;'" );
-    return INV(mat);
+    switch( mut) {
+    case 0:
+      res = INV(mat);
+      MakeImmutable(res);
+      return res;
+      break;
+    case 1:
+      return INV_MUT(mat);
+      break;
+    case 2:
+      return INV(mat);
+      break;
+    }
   }
 
   /* get the zero and the one                                            */
   zerov = ZERO( ELMW_LIST(mat, 1));
   zero = ZERO( ELMW_LIST( ELMW_LIST( mat, 1 ), 1 ) );
   one  = ONE( zero );
-
+  ctype = T_PLIST;
+    
   /* set up res (initially the identity) and matcopy */
   res = NEW_PLIST(T_PLIST,len);
   matcopy = NEW_PLIST(T_PLIST,len);
@@ -1788,15 +1927,47 @@ Obj FuncINV_MAT_DEFAULT( Obj self, Obj mat)
 				 
     }
 
-  /* if the matrix entries are not immutable, we cannot convert to a compact
-   * representation */
-  MakeImmutable(res);
-
-  /* Now res contains the result.
-     We put it into optimum format */
-  CALL_1ARGS(ConvertToMatrixRep, res);
+  /* Now we adjust mutability. Couldn't do it earlier, because AddRowVector, etc.
+     needs mutable target vectors */
+  switch (mut)
+    {
+    case 0:
+      MakeImmutable(res);
+      break;
+      
+    case 1:
+      if (IS_MUTABLE_OBJ(mat))
+	{
+	  if (!IS_MUTABLE_OBJ(ELM_LIST(mat,1)))
+	    for (i = 1; i <= len; i++)
+	      MakeImmutable(ELM_LIST(res,i));
+	}
+      else
+	MakeImmutable(res);
+      break;
+    case 2:
+      break;
+    }
+  
   return res;
 }
+
+
+Obj FuncINV_MAT_DEFAULT_MUTABLE ( Obj self, Obj mat)
+{
+  return InvMatWithRowVecs(mat, 2);
+}
+
+Obj FuncINV_MAT_DEFAULT_SAME_MUTABILITY ( Obj self, Obj mat)
+{
+  return InvMatWithRowVecs(mat, 1);
+}
+
+Obj FuncINV_MAT_DEFAULT_IMMUTABLE ( Obj self, Obj mat)
+{
+  return InvMatWithRowVecs(mat, 0);
+}
+
   
 #ifdef SYS_IS_MAC_MWC
 #pragma global_optimizer reset 
@@ -1962,11 +2133,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "ZERO_LIST_DEFAULT", 1, "list",
       ZeroListDefaultHandler, "src/listoper.c:ZERO_LIST_DEFAULT" },
 
+    { "ZERO_MUT_LIST_DEFAULT", 1, "list",
+      ZeroListMutDefaultHandler, "src/listoper.c:ZERO_MUT_LIST_DEFAULT" },
+
     { "ZERO_ATTR_MAT", 1, "mat",
       ZeroAttrMat, "src/listoper.c:ZERO_ATTR_MAT" },
 
     { "AINV_LIST_DEFAULT", 1, "list",
       AInvListDefaultHandler, "src/listoper.c:AINV_LIST_DEFAULT" },
+
+    { "AINV_MUT_LIST_DEFAULT", 1, "list",
+      AInvMutListDefaultHandler, "src/listoper.c:AINV_MUT_LIST_DEFAULT" },
 
     { "DIFF_SCL_LIST_DEFAULT", 2, "listL, listR",
       DiffSclListHandler, "src/listoper.c:DIFF_SCL_LIST_DEFAULT" },
@@ -1986,11 +2163,23 @@ static StructGVarFunc GVarFuncs [] = {
     { "PROD_LIST_LIST_DEFAULT", 2, "listL, listR",
       ProdListListHandler, "src/listoper.c:PROD_LIST_LIST_DEFAULT" },
 
-    { "ONE_MATRIX", 1, "list",
-      OneMatrixHandler, "src/listoper.c:ONE_MATRIX" },
+    { "ONE_MATRIX_MUTABLE", 1, "list",
+      FuncOneMatrixMutable, "src/listoper.c:ONE_MATRIX_MUTABLE" },
 
-    { "INV_MATRIX", 1, "list",
-      InvMatrixHandler, "src/listoper.c:INV_MATRIX" },
+    { "ONE_MATRIX_SAME_MUTABILITY", 1, "list",
+      FuncOneMatrixSameMutability, "src/listoper.c:ONE_MATRIX_SAME_MUTABILITY" },
+
+    { "ONE_MATRIX_IMMUTABLE", 1, "list",
+      FuncOneMatrixImmutable, "src/listoper.c:ONE_MATRIX_IMMUTABLE" },
+
+    { "INV_MATRIX_MUTABLE", 1, "list",
+      FuncINV_MATRIX_MUTABLE, "src/listoper.c:INV_MATRIX_MUTABLE" },
+
+    { "INV_MATRIX_SAME_MUTABILITY", 1, "list",
+      FuncINV_MATRIX_SAME_MUTABILITY, "src/listoper.c:INV_MATRIX_SAME_MUTABILITY" },
+
+    { "INV_MATRIX_IMMUTABLE", 1, "list",
+      FuncINV_MATRIX_IMMUTABLE, "src/listoper.c:INV_MATRIX_IMMUTABLE" },
 
     { "POW_MATRIX_INT", 2, "list, int",
       PowMatrixIntHandler, "src/listoper.c:POW_MATRIX_INT" },
@@ -2022,8 +2211,14 @@ static StructGVarFunc GVarFuncs [] = {
     { "PROD_VEC_MAT_DEFAULT", 2, "vec, mat",
       FuncPROD_VEC_MAT_DEFAULT, "src/listoper.c:PROD_VEC_MAT_DEFAULT" },
     
-    { "INV_MAT_DEFAULT", 1, "mat",
-      FuncINV_MAT_DEFAULT, "src/listoper.c:INV_MAT_DEFAULT" },
+    { "INV_MAT_DEFAULT_MUTABLE", 1, "mat",
+      FuncINV_MAT_DEFAULT_MUTABLE, "src/listoper.c:INV_MAT_DEFAULT_MUTABLE" },
+
+    { "INV_MAT_DEFAULT_SAME_MUTABILITY", 1, "mat",
+      FuncINV_MAT_DEFAULT_SAME_MUTABILITY, "src/listoper.c:INV_MAT_DEFAULT_SAME_MUTABILITY" },
+
+    { "INV_MAT_DEFAULT_IMMUTABLE", 1, "mat",
+      FuncINV_MAT_DEFAULT_IMMUTABLE, "src/listoper.c:INV_MAT_DEFAULT_IMMUTABLE" },
 
     { "ADD_TO_LIST_ENTRIES_PLIST_RANGE", 3, "list, range, x",
       FuncADD_TO_LIST_ENTRIES_PLIST_RANGE, "src/listfunc.c:ADD_TO_LIST_ENTRIES_PLIST_RANGE" },
@@ -2074,12 +2269,14 @@ static Int InitKernel (
         }
     }
 
-    for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
+    for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1 ++ ) {
             ZeroFuncs[t1] = ZeroListDefault;
+	    ZeroMutFuncs[t1] = ZeroListMutDefault;
     }
 
-    for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
+    for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1 ++ ) {
             AInvFuncs[t1] = AInvListDefault;
+	    AInvMutFuncs[t1] = AInvMutListDefault;
     }
 
     /* No kernel installations for One or Inverse any more */
@@ -2094,7 +2291,6 @@ static Int InitKernel (
        depth 2. Some of this will be overwritten in vector.c and
        vecffe.c
 
-       SumListList will also always handle the empty list and another list
 
        everything else needs to wait until the library */
        
@@ -2103,11 +2299,7 @@ static Int InitKernel (
 	SumFuncs[t1][t2] = SumListScl;
 	SumFuncs[t2][t1] = SumSclList;
       }
-      for (t2 = T_PLIST_EMPTY; t2 <= T_PLIST_EMPTY+IMMUTABLE; t2++)
-	{
-	  SumFuncs[t1][t2] = SumListList;
-	  SumFuncs[t2][t1] = SumListList;
-	}
+	
     }
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
       for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
@@ -2126,11 +2318,6 @@ static Int InitKernel (
 	DiffFuncs[t1][t2] = DiffListScl;
 	DiffFuncs[t2][t1] = DiffSclList;
       }
-      for (t2 = T_PLIST_EMPTY; t2 <= T_PLIST_EMPTY+IMMUTABLE; t2++)
-	{
-	  DiffFuncs[t1][t2] = DiffListList;
-	  DiffFuncs[t2][t1] = DiffListList;
-	}
     }
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
       for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {

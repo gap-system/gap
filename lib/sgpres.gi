@@ -347,6 +347,11 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
     # make the rows for the subgroup generators
     subgroup := [ ];
     for rel  in fsgens  do
+      #T this code should use ExtRepOfObj -- its faster
+      # cope with SLP elms
+      if IsStraightLineProgElm(rel) then
+        rel:=EvalStraightLineProgElm(rel);
+      fi;
         length := Length( rel );
         length2 := 2 * length;
         nums := [ ]; nums[length2] := 0;
@@ -564,7 +569,7 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
     if not HasCosetTableInWholeGroup( H ) then
         SetCosetTableInWholeGroup( H, table );
     fi;
-    index := Length( table[1] );
+    index := IndexCosetTab( table );
     if not HasIndexInWholeGroup( H ) then
         SetIndexInWholeGroup( H, index );
         Info( InfoFpGroup, 1, "index = ", index, "  total = ", nrdef,
@@ -875,7 +880,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     if numcols <> 2 * Length( fgens ) then
         Error( "parent group and coset table are inconsistent" );
     fi;
-    index  := Length( table[1] );
+    index  := IndexCosetTab( table );
 
     # get a negative copy of the coset table, and initialize the coset factor
     # table (parallel to it) by zeros.
@@ -1300,7 +1305,7 @@ InstallGlobalFunction( CheckCosetTableFpGroup, function ( G, table )
     fi;
 
     # check the columns to be permutations of equal degree.
-    index := Length( table[1] );
+    index := IndexCosetTab( table );
     perms := [ ]; perms[ngens] := 0;
     for i in [ 1 .. ngens ] do
         if Length( table[2*i-1] ) <> index then
@@ -1335,7 +1340,7 @@ InstallGlobalFunction( IsStandardized, function ( table )
 
     local i, index, j, next;
 
-    index := Length( table[1] );
+    index := IndexCosetTab( table );
     j := 1;
     next := 2;
     while next < index do

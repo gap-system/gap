@@ -162,7 +162,7 @@ DeclareGlobalFunction("FpGroupPresentation");
 ##
 ##  creates a presentation, i.e. a  Tietze object, for the given finitely
 ##  presented group <G>. This presentation will be exactly as the
-##  presentation of <G> and *no* initial tietze transformations are applied
+##  presentation of <G> and *no* initial Tietze transformations are applied
 ##  to it.
 ##
 ##  The  optional <printlevel> parameter can be used to restrict or to

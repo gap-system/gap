@@ -2225,6 +2225,9 @@ CVar CompProd (
 /****************************************************************************
 **
 *F  CompInv( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_INV
+**
+** C_INV is not defined, so I guess this never gets called SL
+**
 */
 CVar CompInv (
     Expr                expr )

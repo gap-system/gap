@@ -29,8 +29,7 @@ Revision.mgmfree_gi :=
 ##
 InstallMethod( IsWholeFamily,
     "for a free magma",
-    true,
-    [ IsMagma and IsNonassocWordCollection ], 0,
+    [ IsMagma and IsNonassocWordCollection ],
     M -> IsSubset( MagmaGeneratorsOfFamily( ElementsFamily( FamilyObj(M) ) ),
                    GeneratorsOfMagma( M ) ) );
 
@@ -53,8 +52,7 @@ InstallMethod( IsWholeFamily,
 ##
 InstallMethod( IsFinite,
     "for a magma of nonassoc. words",
-    true,
-    [ IsMagma and IsNonassocWordCollection ], 0,
+    [ IsMagma and IsNonassocWordCollection ],
     IsTrivial );
 
 
@@ -64,8 +62,7 @@ InstallMethod( IsFinite,
 ##
 InstallMethod( IsAssociative,
     "for a magma of nonassoc. words",
-    true,
-    [ IsMagma and IsNonassocWordCollection ], 0,
+    [ IsMagma and IsNonassocWordCollection ],
     IsTrivial );
 
 
@@ -75,8 +72,7 @@ InstallMethod( IsAssociative,
 ##
 InstallMethod( Size,
     "for a free magma",
-    true,
-    [ IsMagma and IsNonassocWordCollection ], 0,
+    [ IsMagma and IsNonassocWordCollection ],
     function( M )
     if IsTrivial( M ) then
       return 1;
@@ -94,14 +90,9 @@ InstallMethod( Size,
 ##
 InstallMethod( Random,
     "for a free magma",
-    true,
-    [ IsMagma and IsNonassocWordCollection ], 0,
+    [ IsMagma and IsNonassocWordCollection ],
     function( M )
-
-    local len,
-          result,
-          gens,
-          i;
+    local len, result, gens, i;
 
     # Get a random length for the word.
     len:= Random( Integers );
@@ -133,8 +124,7 @@ InstallMethod( Random,
 ##
 InstallMethod( MagmaGeneratorsOfFamily,
     "for a family of free magma elements",
-    true,
-    [ IsNonassocWordFamily ], 0,
+    [ IsNonassocWordFamily ],
     F -> List( [ 1 .. Length( F!.names ) ], i -> ObjByExtRep( F, i ) ) );
 
 
@@ -148,7 +138,6 @@ InstallMethod( MagmaGeneratorsOfFamily,
 ##
 InstallGlobalFunction( FreeMagma,
     function( arg )
-
     local   names,      # list of generators names
             F,          # family of free magma element objects
             M;          # free magma, result
@@ -170,7 +159,9 @@ InstallGlobalFunction( FreeMagma,
       MakeImmutable( names );
     elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
       names:= arg;
-    elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1]) then
+    elif Length( arg ) = 1 and IsList( arg[1] )
+                           and not IsEmpty( arg[1] )
+                           and ForAll( arg[1], IsString ) then
       names:= arg[1];
     else
       Error("usage: FreeMagma(<name1>,<name2>..),FreeMagma(<rank>)");
@@ -206,7 +197,6 @@ end );
 ##
 InstallGlobalFunction( FreeMagmaWithOne,
     function( arg )
-
     local   names,      # list of generators names
             F,          # family of free magma element objects
             M;          # free magma, result
@@ -228,7 +218,9 @@ InstallGlobalFunction( FreeMagmaWithOne,
       MakeImmutable( names );
     elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
       names:= arg;
-    elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1]) then
+    elif Length( arg ) = 1 and IsList( arg[1] )
+                           and not IsEmpty( arg[1])
+                           and ForAll( arg[1], IsString ) then
       names:= arg[1];
     else
       Error( "usage: FreeMagmaWithOne(<name1>,<name2>..),",
@@ -266,8 +258,7 @@ end );
 ##
 InstallMethod( ViewObj,
     "for a free magma containing the whole family",
-    true,
-    [ IsMagma and IsWordCollection and IsWholeFamily ], 0,
+    [ IsMagma and IsWordCollection and IsWholeFamily ],
     function( M )
     if VIEWLEN * 10 < Length( GeneratorsOfMagma( M ) ) then
       Print( "<free magma with ", Length( GeneratorsOfMagma( M ) ),
@@ -284,8 +275,7 @@ end );
 ##
 InstallMethod( ViewObj,
     "for a free magma-with-one containing the whole family",
-    true,
-    [ IsMagmaWithOne and IsWordCollection and IsWholeFamily ], 0,
+    [ IsMagmaWithOne and IsWordCollection and IsWholeFamily ],
     function( M )
     if VIEWLEN * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
       Print( "<free magma-with-one with ",

@@ -886,6 +886,7 @@ Obj FuncCallFuncTrapError( Obj self, Obj func)
 				         which by default is set to Where. */
     Obj OnBreakMessage;			/* a Fopy of the global
                                          OnBreakMessage.                   */
+    Obj OnQuit;		                /* a Copy of the global OnQuit     */
 
 Obj ErrorHandler = (Obj) 0;		/* not yet settable from GAP level */
 
@@ -948,36 +949,28 @@ Obj ErrorMode (
 	/* Transform the messages into GAP strings */
 	if (msg)
 	  {
-	    /*CCC mess = NEW_STRING(SyStrlen(msg));
-	    CSTR_STRING(mess)[0] = '\0';
-	    SyStrncat(CSTR_STRING(mess),msg,SyStrlen(msg));CCC*/
 	    len = SyStrlen(msg);
 	    C_NEW_STRING(mess, len, msg);
 	  }
 	else
 	  {
 	    mess = NEW_STRING(0);
-	    /*CCC CSTR_STRING(mess)[0] = '\0';CCC*/
 	  }
 	if (msg2)
 	  {
-	    /*CCC mess2 = NEW_STRING(SyStrlen(msg2));
-	    CSTR_STRING(mess2)[0] = '\0';
-	    SyStrncat(CSTR_STRING(mess2),msg2,SyStrlen(msg2));CCC*/
 	    len = SyStrlen(msg2);
 	    C_NEW_STRING(mess2, len, msg2);
 	  }
 	else
 	  {
 	    mess2 = NEW_STRING(0);
-	    /*CCC CSTR_STRING(mess2)[0] = '\0'; CCC*/
 	  }
 
 	/* Now call the handler */
 	if (args != 0)
-	  ret = CALL_4ARGS( errorHandler, mess, args, mess2, ObjsChar[mode]);
+	  ret=CALL_4ARGS(errorHandler,mess, args, mess2, ObjsChar[(Int)mode]);
 	else
-	  ret = CALL_4ARGS( errorHandler, mess, Fail, mess2, ObjsChar[mode]);
+	  ret=CALL_4ARGS(errorHandler,mess, Fail, mess2, ObjsChar[(Int)mode]);
 
 	/* Now handle the return, allowing for the mode */
 	if (ret == True)
@@ -995,7 +988,7 @@ Obj ErrorMode (
 		    Pr("%%E Error handler tried to return null in mode %c\n",mode,0);
 		    if (mode == 'v')
 		      return Fail;
-		    if (mode == 'q')
+		    if (mode == 'q' || mode == 'm')
 		      {
 			ReadEvalError();
 		      }
@@ -1016,7 +1009,7 @@ Obj ErrorMode (
 	      {
 		return 0;
 	      }
-	    if (mode == 'q')
+	    if (mode == 'q' || mode == 'm')
 	      {
 		ReadEvalError();
 	      }
@@ -1085,8 +1078,10 @@ Obj ErrorMode (
         CALL_0ARGS(OnBreakMessage);
     }
     else {
-        Pr( "you can 'quit;' to quit to outer loop, or\n", 0L, 0L );
-        Pr( "%s to continue\n", (Int)msg2, 0L );
+        Pr( "you can 'quit;' to quit to outer loop", 0L, 0L );
+	if (mode != 'm')
+	  Pr( ", or\n%s to continue", (Int)msg2, 0L );
+	Pr( "\n",0L,0L);
     }
 
     /* read-eval-print loop                                                */
@@ -1147,7 +1142,7 @@ Obj ErrorMode (
             }
         }
 
-        /* handle return-value                                             */
+        /* handle return-void                                             */
         else if ( status == STATUS_RETURN_VOID ) {
             if ( mode == 'x' || mode == 'f' ) {
                 ErrorLevel -= 1;
@@ -1167,6 +1162,7 @@ Obj ErrorMode (
 
         /* handle quit command or <end-of-file>                            */
         else if ( status == STATUS_EOF || status == STATUS_QUIT ) {
+          CALL_0ARGS(OnQuit);
 	  UserHasQuit = 1;
 	  break;
         }
@@ -1351,6 +1347,18 @@ void ErrorReturnVoid (
     ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
 }
 
+/****************************************************************************
+**
+*F  ErrorMayQuit( <msg>, <arg1>, <arg2> )  . . .  print and return
+*/
+void ErrorMayQuit (
+    const Char *        msg,
+    Int                 arg1,
+    Int                 arg2)
+{
+    ErrorMode( msg, arg1, arg2, (Obj)0, (Char *)0, 'm' );
+}
+
 
 /****************************************************************************
 **
@@ -1425,7 +1433,10 @@ void Complete (
         return;
     }
     ClearError();
-
+    
+    /* switch on the buffer for faster reading */
+    SySetBuffering(Input->file);
+    
     /* we are now completing                                               */
     if ( SyDebugLoading ) {
         Pr( "#I  completing '%s'\n", (Int)CSTR_STRING(filename), 0L );
@@ -2073,7 +2084,7 @@ Obj FuncLOAD_STAT (
     Obj                 filename,
     Obj                 crc )
 {
-    StructInitInfo *    info;
+    StructInitInfo *    info = 0;
     Obj                 crc1;
     Int                 k;
     Int                 res;
@@ -2386,6 +2397,9 @@ Obj FuncSHALLOW_SIZE (
     Obj                 self,
     Obj                 obj )
 {
+  if (IS_INTOBJ(obj) || IS_FFE(obj))
+    return INTOBJ_INT(0);
+  else
     return INTOBJ_INT( SIZE_BAG( obj ) );
 }
 
@@ -2439,38 +2453,12 @@ Obj FuncXTNUM_OBJ (
 {
     Obj                 res;
     Obj                 str;
-    UInt                xtype;
-    Int                 len;
-    const Char *        cst;
 
     res = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( res, 2 );
-#ifdef XTNUMS
-    /* set the type                                                        */
-    xtype = XTNum(obj);
-    SET_ELM_PLIST( res, 1, INTOBJ_INT(xtype) );
-    if ( xtype == T_OBJECT ) {
-        cst = "virtual object";
-    }
-    else if ( xtype == T_MAT_CYC ) {
-        cst = "virtual mat cyc";
-    }
-    else if ( xtype == T_MAT_FFE ) {
-        cst = "virtual mat ffe";
-    }
-    else {
-        cst = InfoBags[xtype].name;
-    }
-    /*CCC    str = NEW_STRING( SyStrlen(cst) );
-      SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) ); CCC*/
-    len = SyStrlen(cst);
-    C_NEW_STRING(str, len, cst);
-    SET_ELM_PLIST( res, 2, str );
-#else
     SET_ELM_PLIST( res, 1, Fail );
     C_NEW_STRING(str, 16, "xtnums abolished");
     SET_ELM_PLIST(res, 2,str);
-#endif
     /* and return                                                          */
     return res;
 }
@@ -2962,7 +2950,7 @@ void ImportFuncFromLibrary(
         NrImportedFuncs++;
     }
     if ( address != 0 ) {
-        InitFopyGVar( (Char *)name, address );
+        InitFopyGVar( name, address );
     }
 }
 
@@ -3222,6 +3210,7 @@ static Int InitKernel (
 
     /* Initialize some hooks: */
     InitCopyGVar("OnGapPromptHook",&OnGapPromptHook);
+    InitCopyGVar("OnQuit",&OnQuit);
 #if !SYS_MAC_MWC
 #if HAVE_SELECT
     InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
@@ -3253,9 +3242,6 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
     UInt var;
-    Obj string;
-    Int len;
-    Char *              version = "v4r0p0 1999/04/29";
   
     /* create a revision record                                            */
     Revisions = NEW_PREC(0);
@@ -3266,6 +3252,7 @@ static Int PostRestore (
 
     /* version info                                                        */
 /* either throw this away or maintain it properly !?  FL   
+   obsolete now -- other variable used AH
     len = SyStrlen(version);
     C_NEW_STRING(string, len, version);
     var = GVarName( "VERSRC" );
@@ -3312,8 +3299,6 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    Char *              version = "v4r0p0 1996/06/06";
-    Obj                 string;
     UInt                var;
 
     /* init the completion function                                        */
@@ -3505,7 +3490,7 @@ UInt NrBuiltinModules = 0;
 */
 
 void RecordLoadedModule (
-    StructInitInfo *        module,
+    StructInitInfo *        info,
     Char *filename )
 {
   UInt len;
@@ -3519,9 +3504,9 @@ void RecordLoadedModule (
     }
     *NextLoadedModuleFilename = '\0';
     SyStrncat(NextLoadedModuleFilename,filename, len);
-    module->filename = NextLoadedModuleFilename;
+    info->filename = NextLoadedModuleFilename;
     NextLoadedModuleFilename += len +1;
-    Modules[NrModules++] = module;
+    Modules[NrModules++] = info;
 }
 
 
@@ -3681,32 +3666,30 @@ void InitializeGap (
 	/* call the post restore functions */
 	if (POST_RESTORE_FUNCS != (Obj) 0
 	    && IS_SMALL_LIST(POST_RESTORE_FUNCS))
-	  {
-	    UInt len;
-	    UInt i;
+        {
+	    UInt l;
+	    UInt j;
 	    Obj func;
-	    Obj ret;
-	    len = LEN_LIST(POST_RESTORE_FUNCS);
-	    for (i = 1; i <= len; i++)
+	    Obj res; 
+	    l = LEN_LIST(POST_RESTORE_FUNCS);
+	    for (j = 1; j <= l; j++)
 	      {
-		func = ELM0_LIST(POST_RESTORE_FUNCS, i);
+		func = ELM0_LIST(POST_RESTORE_FUNCS, j);
 		if (func != (Obj) 0 && IS_FUNC(func))
 		  {
-		    ret = CALL_0ARGS(func);
-		    if (ret == Fail)
+		    res = CALL_0ARGS(func);
+		    if (res == Fail)
 		      {
 			FPUTS_TO_STDERR("panic -- post restore function returned fail");
-			SyExit(i);
+			SyExit(j);
 		      }
 		  }
 	      }
-	  }
+        }
     }
 
     /* otherwise call library initialisation                               */
     else {
-        extern Int WarnInitGlobalBag;
-
         WarnInitGlobalBag = 1;
 #       ifdef DEBUG_HANDLER_REGISTRATION
             CheckAllHandlers();
@@ -3764,11 +3747,6 @@ void InitializeGap (
 
     /* add revisions for files which are not modules                       */
     {
-        extern const char * Revision_system_c;
-        extern const char * Revision_system_h;
-        extern const char * Revision_gasman_c;
-        extern const char * Revision_gasman_h;
-
         SET_REVISION( "system_c", Revision_system_c );
         SET_REVISION( "system_h", Revision_system_h );
         SET_REVISION( "gasman_c", Revision_gasman_c );
