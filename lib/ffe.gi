@@ -28,7 +28,10 @@ Revision.ffe_gi :=
 ##
 #M  DegreeFFE( <vector> )
 ##
-InstallOtherMethod( DegreeFFE, true, [ IsRowVector and IsFFECollection ], 0,
+InstallOtherMethod( DegreeFFE,
+    "method for a row vector of FFEs",
+    true,
+    [ IsRowVector and IsFFECollection ], 0,
     function( list )
     local deg, i;
     deg:= DegreeFFE( list[1] );
@@ -39,6 +42,35 @@ InstallOtherMethod( DegreeFFE, true, [ IsRowVector and IsFFECollection ], 0,
     end );
 #T    list -> Lcm( List( list, DegreeFFE ) ) );
 #T to be provided by the kernel!
+
+
+#############################################################################
+##
+#M  DegreeFFE( <matrix> )
+##
+InstallOtherMethod( DegreeFFE,
+    "method for a matrix of FFEs",
+    true,
+    [ IsMatrix and IsFFECollColl ], 0,
+    function( mat )
+    local deg, i;
+    deg:= DegreeFFE( mat[1] );
+    for i in [ 2 .. Length( mat ) ] do
+      deg:= LcmInt( deg, DegreeFFE( mat[i] ) );
+    od;
+    return deg;
+    end );
+
+
+#############################################################################
+##
+#M  IntVecFFE( <vector> )
+##
+InstallOtherMethod( IntVecFFE,
+    "method for a row vector of FFEs",
+    true,
+    [ IsRowVector and IsFFECollection ], 0,
+    vector -> List( vector, IntFFE ) );
 
 
 #############################################################################

@@ -280,6 +280,43 @@ HasTrivialCharacter := Tester( TrivialCharacter );
 
 #############################################################################
 ##
+#A  NaturalCharacter( <G> )
+##
+##  If <G> is a permutation group then 'NaturalCharacter' returns the
+##  character of the natural permutation representation of <G> on the set of
+##  moved points.
+##
+##  If <G> is a matrix group in characteristic zero then 'NaturalCharacter'
+##  returns the character of the natural matrix representation of <G>.
+##
+NaturalCharacter := NewAttribute( "NaturalCharacter", IsGroup );
+SetNaturalCharacter := Setter( NaturalCharacter );
+HasNaturalCharacter := Tester( NaturalCharacter );
+
+
+#############################################################################
+##
+#O  PermutationCharacter( <G>, <U> )
+##
+##  is the permutation character of the operation of the group <G> on the
+##  cosets of its subgroup <U>.
+##  The $i$-th position contains the  value of the permutation character on
+##  the $i$-th conjugacy class of <G> (see "ConjugacyClasses").
+##  
+##  The value of the *permutation character* of <U> in <G> on a class $c$ of
+##  <G> is the number of right cosets invariant under the action of an
+##  element of $c$.
+##
+##  To compute the permutation character of a *transitive permutation group*
+##  <G> on the cosets of a point stabilizer <U>, 'NaturalCharacter( <G> )'
+##  can be used instead of 'PermutationCharacter( <G>, <U> )'.
+##
+PermutationCharacter := NewOperation( "PermutationCharacter",
+    [ IsGroup, IsGroup ] );
+
+
+#############################################################################
+##
 #O  ClassFunctionByValues( <tbl>, <values> )
 ##
 ##  Note that the characteristic of the class function is determined by

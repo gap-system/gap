@@ -80,6 +80,11 @@ function( pcgs, pcs )
     igs!.depthMapFromParent[Length(pcgs)+1] := 1;
     igs!.depthsInParent := [];
 
+    # check for special pcgs
+    if HasIsSpecialPcgs( pcgs ) and IsSpecialPcgs( pcgs ) then
+        SetIsInducedPcgsWrtSpecialPcgs( igs, true );
+    fi;
+
     # and return
     return igs;
     
@@ -188,6 +193,11 @@ function( pcgs, pcs )
         tmp := RelativeOrders(pcgs);
         tmp := tmp{igs!.depthsInParent};
         SetRelativeOrders( igs, tmp );
+    fi;
+
+    # check for special pcgs
+    if HasIsSpecialPcgs( pcgs ) and IsSpecialPcgs( pcgs ) then
+        SetIsInducedPcgsWrtSpecialPcgs( igs, true );
     fi;
 
     # and return

@@ -139,30 +139,33 @@ InstallTrueMethod(
     IsPcgsComputable,
     HasPcgs );
 
+#############################################################################
+##
+#O  SubgroupByPcgs( <G>, <pcgs> )
+##
+SubgroupByPcgs := NewOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
+
 
 #############################################################################
 ##
-
-#O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
+#O  AffineOperation( <G>, <gens>, <basisvectors>, <linear>, <transl> )
 ##
 AffineOperation := NewOperation(
     "AffineOperation", 
-    [ IsList, IsMatrix, IsObject, IsObject ] );
+    [ IsGroup, IsList, IsMatrix, IsFunction, IsFunction ] );
 
 
 #############################################################################
 ##
-#O  LinearOperation( <Ggens>, <basisvectors>, <linear> )
+#O  LinearOperation( <G>, <gens>, <basisvectors>, <linear> )
 ##
 LinearOperation := NewOperation(
     "LinearOperation",
-    [ IsList, IsMatrix, IsFunction ] );
+    [ IsGroup, IsList, IsMatrix, IsFunction ] );
 
 
 #############################################################################
 ##
-
-
 #M  IsSolvableGroup
 ##
 InstallTrueMethod(
@@ -172,8 +175,7 @@ InstallTrueMethod(
 
 #############################################################################
 ##
-
-#F  AffineOperationLayer( <Gpcgs>, <pcgs>, <transl> )
+#F  AffineOperationLayer( <G>, <gens>, <pcgs>, <transl> )
 ##
 AffineOperationLayer := NewOperationArgs( "AffineOperationLayer" );
 
@@ -187,7 +189,7 @@ GeneratorsCentrePGroup := NewOperationArgs( "GeneratorsCentrePGroup" );
 
 #############################################################################
 ##
-#F  LinearOperationLayer( <G>, <pcgs> )
+#F  LinearOperationLayer( <G>, <gens>, <pcgs> )
 ##
 LinearOperationLayer := NewOperationArgs( "LinearOperationLayer" );
 

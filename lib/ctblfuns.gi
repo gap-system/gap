@@ -965,6 +965,87 @@ InstallMethod( TrivialCharacter,
 
 #############################################################################
 ##
+#M  NaturalCharacter( <G> ) . . . . . . . . . . . . . for a permutation group
+##
+InstallMethod( NaturalCharacter,
+    "method for a permutation group",
+    true,
+    [ IsGroup and IsPermCollection ], 0,
+    function( G )
+    local deg;
+    deg:= NrMovedPoints( G );
+    return CharacterByValues( OrdinaryCharacterTable( G ),
+               List( ConjugacyClasses( G ),
+               C -> deg - NrMovedPointsPerm( Representative( C ) ) ) );
+    end );
+
+
+#############################################################################
+##
+#M  NaturalCharacter( <G> ) . . . . for a matrix group in characteristic zero
+##
+InstallMethod( NaturalCharacter,
+    "method for a matrix group in characteristic zero",
+    true,
+    [ IsGroup and IsRingElementCollCollColl ], 0,
+    function( G )
+    if Characteristic( G ) = 0 then
+      return CharacterByValues( OrdinaryCharacterTable( G ),
+                 List( ConjugacyClasses( G ),
+                       C -> TraceMat( Representative( C ) ) ) );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  PermutationCharacter( <G>, <U> )  . . . . . . . . . . . .  for two groups
+##
+InstallMethod( PermutationCharacter,
+    "method for two groups (use double cosets)",
+    IsIdentical,
+    [ IsGroup, IsGroup ], 0,
+    function( G, U )
+    local C, c, s, i;
+
+    C := ConjugacyClasses( G );
+    c := [ Index( G, U ) ];
+    s := Size( U );
+
+    for i  in [ 2 .. Length(C) ]  do
+      c[i]:= Number( DoubleCosets( G, U,
+                         SubgroupNC( G, [ Representative( C[i] ) ] ) ),
+                     x -> Size( x ) = s );
+    od;
+
+    # Return the character.
+    return CharacterByValues( OrdinaryCharacterTable( G ), c );
+    end );
+
+
+#T #############################################################################
+#T ##
+#T #M  PermutationCharacter( <G>, <U> )  . . . . . . . . .  for two small groups
+#T ##
+#T InstallMethod( PermutationCharacter,
+#T     "method for two small groups",
+#T     IsIdentical,
+#T     [ IsGroup and IsSmallGroup, IsGroup and IsSmallGroup ], 0,
+#T     function( G, U )
+#T     local E, I;
+#T 
+#T     E := AsList( U );
+#T     I := Size( G ) / Length( E );
+#T     return CharacterByValues( OrdinaryCharacterTable( G ),
+#T         List( ConjugacyClasses( G ),
+#T         C -> I * Length( Intersection2( AsList( C ), E ) ) / Size( C ) ) );
+#T     end );
+
+
+#############################################################################
+##
 #M  ClassFunctionByValues( <tbl>, <values> )
 ##
 #T change this to return list objects!

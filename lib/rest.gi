@@ -61,12 +61,24 @@ IsInfinity := NewRepresentation( "IsInfinity",
     IsCyclotomic and IsAttributeStoringRep,
     [] );
 infinity:= Objectify( NewKind( CyclotomicsFamily, IsInfinity ), rec() );
-InstallMethod( \=, IsIdentical, [ IsCyc, IsInfinity ], 0, ReturnFalse );
-InstallMethod( \=, IsIdentical, [ IsInfinity, IsCyc ], 0, ReturnFalse );
-InstallMethod( \=, IsIdentical, [ IsInfinity, IsInfinity ], 0, ReturnTrue );
-InstallMethod( \<, IsIdentical, [ IsCyc, IsInfinity ], 0, ReturnTrue );
-InstallMethod( \<, IsIdentical, [ IsInfinity, IsCyc ], 0, ReturnFalse );
-InstallMethod( \<, IsIdentical, [ IsInfinity, IsInfinity ], 0, ReturnFalse );
+InstallMethod( \=,
+    "method for cyclotomic and 'infinity'",
+    IsIdentical, [ IsCyc, IsInfinity ], 0, ReturnFalse );
+InstallMethod( \=,
+    "method for 'infinity' and cyclotomic",
+    IsIdentical, [ IsInfinity, IsCyc ], 0, ReturnFalse );
+InstallMethod( \=,
+    "method for 'infinity' and 'infinity'",
+    IsIdentical, [ IsInfinity, IsInfinity ], 0, ReturnTrue );
+InstallMethod( \<,
+    "method for cyclotomic and 'infinity'",
+    IsIdentical, [ IsCyc, IsInfinity ], 0, ReturnTrue );
+InstallMethod( \<,
+    "method for 'infinity' and cyclotomic",
+    IsIdentical, [ IsInfinity, IsCyc ], 0, ReturnFalse );
+InstallMethod( \<,
+    "method for 'infinity' and 'infinity'",
+    IsIdentical, [ IsInfinity, IsInfinity ], 0, ReturnFalse );
 SetName( infinity, "infinity" );
 
 
@@ -85,14 +97,21 @@ KIND_FFE  := function ( p )
     return KINDS_FFE[p];
 end;
 
-InstallMethod( DegreeFFE, true, [ IsFFE and IsInternalRep ], 0,
+InstallMethod( DegreeFFE,
+    "method for internal FFE",
+    true,
+    [ IsFFE and IsInternalRep ], 0,
     DEGREE_FFE_DEFAULT );
 
-InstallMethod( LogFFE, IsIdentical,
+InstallMethod( LogFFE,
+    "method for two internal FFEs",
+    IsIdentical,
     [ IsFFE and IsInternalRep, IsFFE and IsInternalRep ], 0,
     LOG_FFE_DEFAULT );
 
-InstallMethod( IntFFE, true, [ IsFFE and IsInternalRep ], 0,
+InstallMethod( IntFFE,
+    "method for internal FFE",
+    true, [ IsFFE and IsInternalRep ], 0,
     INT_FFE_DEFAULT );
 
 #############################################################################
@@ -123,11 +142,16 @@ KIND_PERM4              := NewKind(     PermutationsFamily,
 
 SetOne( PermutationsFamily, () );
 
-InstallMethod( SmallestMovedPointPerm, true, [ IsPerm and IsInternalRep ], 0,
+InstallMethod( SmallestMovedPointPerm,
+    "method for a permutation",
+    true,
+    [ IsPerm and IsInternalRep ], 0,
+#T why internal?
     function( p )
     local   i;
     
     if p = ()  then
+#T test 'IsOne' ?
         return infinity;
     fi;
     i := 1;
@@ -137,8 +161,29 @@ InstallMethod( SmallestMovedPointPerm, true, [ IsPerm and IsInternalRep ], 0,
     return i;
 end );
 
-InstallMethod( LargestMovedPointPerm, true, [ IsPerm and IsInternalRep ],
-        0, LARGEST_MOVED_POINT_PERM );
+InstallMethod( LargestMovedPointPerm,
+    "method for an internal permutation",
+    true,
+    [ IsPerm and IsInternalRep ], 0,
+    LARGEST_MOVED_POINT_PERM );
+
+InstallMethod( NrMovedPointsPerm,
+    "method for a permutation",
+    true,
+    [ IsPerm ], 0,
+    function( perm )
+    local mov, pnt;
+    mov:= 0;
+    if perm <> () then
+      for pnt in [ SmallestMovedPointPerm( perm )
+                   .. LargestMovedPointPerm( perm ) ] do
+        if pnt ^ perm <> pnt then
+          mov:= mov + 1;
+        fi;
+      od;
+    fi;
+    return mov;
+    end );
 
 
 #############################################################################

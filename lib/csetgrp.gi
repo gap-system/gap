@@ -276,7 +276,8 @@ end);
 
 InstallMethod(\=,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
 function(a,b)
-  return Representative(a)/Representative(b) in ActingDomain(a);
+  return ActingDomain(a)=ActingDomain(b) and
+         Representative(a)/Representative(b) in ActingDomain(a);
 end);
 
 InstallOtherMethod(\*,"RightCosets",IsCollsElms,
@@ -287,6 +288,11 @@ end);
 
 InstallMethod(\<,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
 function(a,b)
+  # this comparison is *NOT* necessarily equivalent to a comparison of the 
+  # element lists!
+  if ActingDomain(a)<>ActingDomain(b) then
+    return ActingDomain(a)<ActingDomain(b);
+  fi;
   return CanonicalRepresentativeOfExternalSet(a)
          <CanonicalRepresentativeOfExternalSet(b);
 end);
@@ -462,33 +468,41 @@ function(G,U,V)
   return CalcDoubleCosets(G,U,V);
 end);
 
-InstallMethod(RightCosetsNC,"generic",true,
-  [IsGroup,IsGroup],0,
-function(G,U)
-  return List(RightTransversal(G,U),i->RightCoset(U,i));
-end);
-
 #############################################################################
 ##
 #M  RightTransversal   generic
 ##
-InstallMethod(RightTransversal,
-  "generic via operation on canonical coset elements",
+InstallMethod(RightTransversal, "generic, use RightCosets",
   IsIdentical,[IsGroup,IsGroup],0,
 function(G,U)
-local i,j,t,img;
-  t:=[CanonicalRightCosetElement(U,One(G))];
-  for i in t do
-    for j in GeneratorsOfGroup(G) do
-      img:=CanonicalRightCosetElement(U,i*j);
-      if not img in t then
-        Add(t,img);
-      fi;
-    od;
-  od;
-  return t;
+  return List(RightCosets(G,U),Representative);
 end);
 
+InstallMethod(RightCosetsNC,"generic: orbit",IsIdentical,
+  [IsGroup,IsGroup],0,
+function(G,U)
+  return Orbit(G,RightCoset(U,One(U)),OnRight);
+end);
+
+# methods for groups which have a better 'RightTransversal' function
+InstallMethod(RightCosetsNC,"perm groups, use RightTransversal",IsIdentical,
+  [IsPermGroup,IsPermGroup],0,
+function(G,U)
+  return List(RightTransversal(G,U),i->RightCoset(U,i));
+end);
+
+InstallMethod(RightCosetsNC,"pc groups, use RightTransversal",IsIdentical,
+  [IsPcGroup,IsPcGroup],0,
+function(G,U)
+  return List(RightTransversal(G,U),i->RightCoset(U,i));
+end);
+
+InstallMethod(RightCosetsNC,"Niceomorphism groups, use RightTransversal",
+  IsIdentical, [IsGroup and IsHandledByNiceMonomorphism,
+  IsGroup and IsHandledByNiceMonomorphism],0,
+function(G,U)
+  return List(RightTransversal(G,U),i->RightCoset(U,i));
+end);
 
 #############################################################################
 ##

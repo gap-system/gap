@@ -2064,7 +2064,7 @@ CentralizerNormalTransCSPG := function(G,N)
 
     # compute transversal of centr
     centr.stabChain := EmptyStabChain( [  ], (), x^tchom!.conperm );
-    AddGeneratorsExtendSchreierTree(centr.stabChain,centr.generators);
+    AddGeneratorsExtendSchreierTree(centr.stabChain,GeneratorsOfGroup(centr));
 
     # compute images at homomorphism of GG, g -> g c_g^{-1} (cf. Luks-Seress)
     # the kernel of this homomorphism is C_G(N)
@@ -2138,7 +2138,7 @@ CentralizerTransSymmCSPG := function(G)
        n := LargestMovedPoint(G);
        if not IsBound(G.stabChain.orbit) or G.stabChain.orbit[1] <> x then
           G.stabChain := EmptyStabChain( [  ], (), x );
-          AddGeneratorsExtendSchreierTree(G.stabChain,G.generators);
+          AddGeneratorsExtendSchreierTree(G.stabChain,GeneratorsOfGroup(G));
        fi;
     else 
        n := LargestMovedPoint(G);
@@ -2310,12 +2310,14 @@ ActionAbelianCSPG := function(H,n)
         C[i].stabChain := EmptyStabChain( [  ], (), 1 );
         Add(action[i],());
         Add(inverse[i],());
-        AddGeneratorsExtendSchreierTree(C[i].stabChain,C[i].generators);
+        AddGeneratorsExtendSchreierTree(C[i].stabChain,
+                                        GeneratorsOfGroup(C[i]));
 
         # determine position of generators occuring in transversal
         for j in [1..Length(C[i].orbit)] do
             cpositiongenlist[i][j]:=Position(action[i],C[i].transversal[j]);
         od;
+
     od;
 
     return [inverse,C,positionlist,reprlist,

@@ -12,6 +12,19 @@ m[ 2 ][ 2 ] := Z(3);
   ( [ -id, m, Permuted( id, (1,2) ), Permuted( id, (1,2,3,4,5) ) ], P ) );
 SetName( 24splitS5, "2x(2^4:S_5)" );
 
+M11a := [
+[0,2,1,0,0],
+[2,1,1,2,2],
+[0,1,1,2,2],
+[1,0,2,2,1],
+[1,2,2,2,0]]*Z(3)^0;
+M11b := [
+[0,0,2,0,2],
+[1,1,2,2,0],
+[2,2,2,2,2],
+[1,2,1,1,0],
+[2,2,0,2,1]]*Z(3)^0;
+
 AFFINE_NON_SOLVABLE_GROUPS[ 243 ] := [
  function() return
  PrimitiveAffinePermGroupByMatrixGroup( GL( 5, 3 ) );
@@ -61,6 +74,23 @@ AFFINE_NON_SOLVABLE_GROUPS[ 243 ] := [
  function() return
  PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(24splitS5,5));
  end,
+
+ # almost simple subgroups
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( Group( M11a, M11b ) );
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( Group( TransposedMat(M11a)^-1,
+                                               TransposedMat(M11b)^-1 ) );
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( Group( M11a,
+  M11b*M11a*M11b^2*M11a*M11b ) );
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( Group( TransposedMat(M11a)^-1,
+  TransposedMat(M11b*M11a*M11b^2*M11a*M11b)^-1 ) );
+ end
 ];
  
 #############################################################################

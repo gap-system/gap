@@ -25,8 +25,6 @@ Revision.ctbl_gd :=
 #T subgroups; it is a big difference with what initial workspace GAP was
 #T started ...)
 
-#T 'PermutationCharacter' should return a proper character, not a list!
-
 
 #############################################################################
 ##

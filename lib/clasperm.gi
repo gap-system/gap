@@ -729,7 +729,8 @@ InstallMethod( RationalClasses, "perm group", true, [ IsPermGroup ], 0,
     local   cl;
 
     if IsPrimePowerInt( Size( G ) )  then
-        return ClassesSolvableGroup( G, G, true, 1 );
+        SetIsNilpotentGroup( G, true );
+        TryNextMethod();
     else
         cl := RationalClass( G, One( G ) );
         SetStabilizerOfExternalSet( cl, G );

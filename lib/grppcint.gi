@@ -75,8 +75,7 @@ GlasbyStabilizer := function( pcgs, A, B, pcgsS, pcgsR )
     end;
 
     A := InducedPcgsByPcSequence( pcgs, A );
-    U := Subgroup( GroupOfPcgs(pcgs), A );
-    SetPcgs( U, A ); 
+    U := SubgroupByPcgs( GroupOfPcgs(pcgs), A );
     matA  := AffineOperationLayer( A, pcgsL, transl );
 
     pt := List( pcgsL, x -> Zero( f ) );
@@ -199,8 +198,7 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
 
     # <A> is the unnormalized intersection.
     new := InducedPcgsByPcSequence( pcgs, A );
-    U   := Subgroup( G, A );
-    SetPcgs( U, new );
+    U   := SubgroupByPcgs( G, A );
     return U;
 end;
 
@@ -224,14 +222,12 @@ ZassenhausIntersection := function( pcgs, pcgsN, pcgsU )
             fi;
         od;
         new := InducedPcgsByPcSequence( pcgs, ins );
-        ins := Subgroup( GroupOfPcgs( pcgs ), new );
-        SetPcgs( ins, new );
+        ins := SubgroupByPcgs( GroupOfPcgs( pcgs ), new );
         return ins;
     else
         new := ExtendedIntersectionSumPcgs( pcgs, pcgsN, pcgsU );
         new := InducedPcgsByPcSequence( pcgs, new.intersection );
-        ins := Subgroup( GroupOfPcgs( pcgs ), new );
-        SetPcgs( ins, new );
+        ins := SubgroupByPcgs( GroupOfPcgs( pcgs ), new );
         return ins;
     fi;
 end;

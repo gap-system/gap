@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file  contains    the  methods  for    rational  functions,  laurent
 ##  polynomials and polynomials and their families.
@@ -232,11 +232,11 @@ UnivariateLaurentPolynomial_PrintObj := function( f )
             c := "*";
             if i > 1  then
                 if IsRat(f[1][i])  then
-                    if f[1][i] > 0  then
-                        Print( "+", f[1][i] );
-                    elif f[1][i] = one  then
+                    if f[1][i] = one  then
                         Print( "+" );
                         c := "";
+                    elif f[1][i] > 0  then
+                        Print( "+", f[1][i] );
                     elif f[1][i] = mone  then
                         Print( "-" );
                         c := "";
@@ -253,7 +253,6 @@ UnivariateLaurentPolynomial_PrintObj := function( f )
                     Print( "+", f[1][i] );
                 fi;
             elif f[1][i] = one  then
-                Print("");
                 c := "";
             elif f[1][i] = mone  then
                 Print("-");
@@ -610,47 +609,76 @@ end );
 
 #############################################################################
 ##
-#M  IsUnivariateRationalFunction( <rat-fun> )
+#F  IsUnivariateRationalFunctionByNumerAndDenom( <num>, <den> )
 ##
-InstallMethod( IsUnivariateRationalFunction,
-    true,
-    [ IsRationalFunction ],
-    0,
+##  <num> and <den> are the second entries in the 'ExtRepOfObj' value of
+##  polynomials, i.e., the zero coefficient is not involved.
+##
+IsUnivariateRationalFunctionByNumerAndDenom := function( num, den )
+    local   ind,  i;
 
-function( obj )
-    local   den,  num,  ind,  i;
-
-    # we cannot use 'ExtRepOfObj' because we need a reduced num/den
-    den := ExtRepOfObj( DenominatorOfRationalFunction(obj) );
-    num := ExtRepOfObj( NumeratorOfRationalFunction(obj) );
-
-    # now check the monials
+    # now check the monomials
     ind := false;
-    for i  in [ 1, 3 .. Length(den[2])-1 ]  do
-        if 2 < Length(den[2][i])  then
+    for i  in [ 1, 3 .. Length(den)-1 ]  do
+        if 2 < Length(den[i])  then
             return false;
-        elif 2 = Length(den[2][i])  then
+        elif 2 = Length(den[i])  then
             if ind = false  then
-                ind := den[2][i][1];
-            elif ind <> den[2][i][1]  then
+                ind := den[i][1];
+            elif ind <> den[i][1]  then
                 return false;
             fi;
         fi;
     od;
-    for i  in [ 1, 3 .. Length(num[2])-1 ]  do
-        if 2 < Length(num[2][i])  then
+    for i  in [ 1, 3 .. Length(num)-1 ]  do
+        if 2 < Length(num[i])  then
             return false;
-        elif 2 = Length(num[2][i])  then
+        elif 2 = Length(num[i])  then
             if ind = false  then
-                ind := num[2][i][1];
-            elif ind <> num[2][i][1]  then
+                ind := num[i][1];
+            elif ind <> num[i][1]  then
                 return false;
             fi;
         fi;
     od;
     return true;
-                   
-end );
+end;
+
+
+#############################################################################
+##
+#M  IsUnivariateRationalFunction( <rat-fun> ) . . . . for a rational function
+##
+##  Note that we cannot use 'ExtRepOfObj' because we need a reduced num/den.
+##
+InstallMethod( IsUnivariateRationalFunction,
+    "method for a rational function",
+    true,
+    [ IsRationalFunction ],
+    0,
+    ratfun -> IsUnivariateRationalFunctionByNumerAndDenom( 
+        ExtRepOfObj( NumeratorOfRationalFunction( ratfun ) )[2],
+        ExtRepOfObj( DenominatorOfRationalFunction( ratfun ) )[2] ) );
+
+
+#############################################################################
+##
+#M  IsUnivariateRationalFunction( <rat-fun> ) . . . . . . for default repres.
+##
+InstallMethod( IsUnivariateRationalFunction,
+    "method for a rational function in default repres.",
+    true,
+    [ IsRationalFunction and IsRationalFunctionDefaultRep ],
+    0,
+    function( ratfun )
+    if IsUnivariateRationalFunctionByNumerAndDenom( 
+                  ratfun!.numerator,
+                  ratfun!.denominator ) then
+      return true;
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################
@@ -1527,16 +1555,24 @@ local q;
   a:=UnivariatifiedPol(a);
   b:=UnivariatifiedPol(b);
   if not IsRationalFunction(b) then
-    b:=a*1/b;
+#T check IsPolynomial ?
+    b:= a * Inverse( b );
     return b;
   fi;
+  if not IsRationalFunction(a) then
+#T check IsPolynomial ?
+    return a/b;
+  fi;
   if IsUnivariatePolynomial(a) and IsUnivariatePolynomial(b) then
-    if IndeterminateNumberOfUnivariateLaurentPolynomial(a)
-       =IndeterminateNumberOfUnivariateLaurentPolynomial(b) then
-      return a/b;
-    else
-      TryNextMethod();
-    fi;
+    # we have tried already whether they divide each other. So we will need
+    # to conbstruct the rational function here.
+    TryNextMethod();
+    #if IndeterminateNumberOfUnivariateLaurentPolynomial(a)
+    #   =IndeterminateNumberOfUnivariateLaurentPolynomial(b) then
+    #  return a/b;
+    #else
+    #  TryNextMethod();
+    #fi;
   fi;
 
   q:=PolynomialReduction(a,[b],MonomialOrderPlex);

@@ -12,6 +12,14 @@
 Revision.upoly_gd:=
   "@(#)$Id$";
 
+
+#############################################################################
+##
+#I  InfoPoly
+##
+InfoPoly := NewInfoClass( "InfoPoly" );
+
+
 #############################################################################
 ##
 #O  Value( <upol>, <elm> )
@@ -53,11 +61,33 @@ FactorsSquarefree := NewOperation("FactorsSquarefree",[IsPolynomialRing,
 
 #############################################################################
 ##
-#I  InfoPoly
+#V  CYCLOTOMICPOLYNOMIALS . . . . . . . . . .  list of cyclotomic polynomials
 ##
-InfoPoly := NewInfoClass( "InfoPoly" );
+##  global list encoding cyclotomic polynomials by their coefficients lists
+##
+CYCLOTOMICPOLYNOMIALS := [];
+
 
 #############################################################################
 ##
-#E  upoly.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#F  CyclotomicPol( <n> )  . . .  coefficients of <n>-th cyclotomic polynomial
+##
+##  is the coefficients list of the <n>-th cyclotomic polynomial over
+##  the rationals.
+##
+CyclotomicPol := NewOperationArgs( "CyclotomicPol" );
+
+
+#############################################################################
+##
+#F  CyclotomicPolynomial( <F>, <n> )  . . . . . .  <n>-th cycl. pol. over <F>
+##
+##  is the <n>-th cyclotomic polynomial over the ring <F>.
+##
+CyclotomicPolynomial := NewOperationArgs( "CyclotomicPolynomial" );
+
+
+#############################################################################
+##
+#E  upoly.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

@@ -14,13 +14,6 @@ PcGroupFpGroup := NewOperationArgs( "PcGroupFpGroup" );
 
 #############################################################################
 ##
-#F  FpGroupPcGroup( G )
-##  should this become a method?
-##
-FpGroupPcGroup := NewOperationArgs( "FpGroupPcGroup" );
-
-#############################################################################
-##
 #F  SmithNormalFormSQ( mat ) 
 ##
 SmithNormalFormSQ := NewOperationArgs( "SmithNormalFormSQ" );

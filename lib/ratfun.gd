@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the categories,  attributes, properties and operations
 ##  for  rational functions, laurent polynomials   and polynomials and  their
@@ -254,6 +254,8 @@ HasIsUnivariatePolynomial := Tester(IsUnivariatePolynomial);
 IsUnivariateRationalFunction := NewProperty(
     "IsUnivariateRationalFunction",
     IsRationalFunction );
+SetIsUnivariateRationalFunction := Setter( IsUnivariateRationalFunction );
+HasIsUnivariateRationalFunction := Tester( IsUnivariateRationalFunction );
 
 
 #############################################################################

@@ -829,17 +829,26 @@ SingleCollector_GroupRelators := function(
             if IsBound(conjpp[i][j])  then
                 rhs := ( (gens[i]^-1)^gens[j] * conjpp[i][j] ) ^ -1;
                 SetConjugate( col, i, j, rhs );
-                if IsBound(commpp[i][j])  then
-                    Add( conflicts, commpp[i][j] );
-                fi;
+                Unbind(conjpp[i][j]);
             elif IsBound(commpp[i][j])  then
                 rhs := gens[i]*(Comm(gens[j],gens[i])*commpp[i][j])^-1;
                 SetConjugate( col, i, j, rhs );
+                Unbind(commpp[i][j]);
+            elif IsBound(conjnp[i][j])  then
+                rhs := gens[j]^-1*gens[i]*gens[j]*conjnp[i][j];
+                SetConjugate( col, i, j, rhs );
+                Unbind(conjnp[i][j]);
+            elif IsBound(commnp[i][j])  then
+                rhs := gens[i]^gens[j] * commnp[i][j]^gens[i];
+                SetConjugate( col, i, j, rhs );
+                Unbind(commnp[i][j]);
             fi;
         od;
     od;
 
     # everything must a consequence
+    Append( conflicts, Flat(commpp)  );
+    Append( conflicts, Flat(conjpp)  );
     Append( conflicts, Flat(powersn) );
     Append( conflicts, Flat(conjpn)  );
     Append( conflicts, Flat(conjnp)  );
@@ -951,7 +960,7 @@ function( efam, gens, rels )
                 e4 := ExponentSyllable( rel, 4 );
             fi;
 
-            # a word starting with gi^-1gjgi is a conjugate or commutator
+            # a word starting with gi^-1gj^+-1gi is a conjugate or commutator
             if e1 = -1 and e3 = 1 and g1 = g3  then
 
                 # gi^-1 gj^-1 gi gj is a commutator

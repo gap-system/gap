@@ -183,7 +183,7 @@ end;
 UnitaryCohortOnProjectivePoints := function( n, q, iso )
     local   G,  id,  fld,  z,    # <z> = fld^*
                            zeta, # zeta + zeta ^ q = 1
-                           imag, # imag ^ 2 = -1
+                           imag, # imag ^ (q+1) = -1
             X,  facs,  pro,  v,  gens,  M,  P,  i,  coh;
 
     G := SU( n, q );  id := One( G );
@@ -201,7 +201,7 @@ UnitaryCohortOnProjectivePoints := function( n, q, iso )
         imag := 1;
     else
         zeta := One( fld ) / 2;
-        imag := z ^ ( ( q + 1 ) / 2 );
+        imag := z ^ ( ( q - 1 ) / 2 );
     fi;
     P := ShallowCopy( id );
     for i  in [ 1 .. QuoInt( n, 2 ) ]  do
@@ -556,20 +556,20 @@ AFFINE_NON_SOLVABLE_GROUPS[ 2 ^ 7 ] := [ function() return
   PrimitiveAffinePermGroupByMatrixGroup( GL( 7, 2 ) );
 end ];
 
-ASLMaker := function( q, nr )
+ASLMaker := function( n, q, nr )
     return function()
         return PrimitiveAffinePermGroupByMatrixGroup
-               ( AlmostDerivedSubgroup( GL( 2, q ), nr ) );
+               ( AlmostDerivedSubgroup( GL( n, q ), nr ) );
     end;
 end;
 
-for p  in [ 5, 7, 11, 13 ]  do
-    AFFINE_NON_SOLVABLE_GROUPS[ p ^ 2 ] := [  ];
+for p  in [ [3,3], [5,2], [5,3], [7,2], [7,3], [11,2], [13,2] ]  do
+    AFFINE_NON_SOLVABLE_GROUPS[ p[1] ^ p[2] ] := [  ];
     hom := NaturalHomomorphismByNormalSubgroupInParent
-           ( DerivedSubgroup( GL( 2, p ) ) );
+           ( DerivedSubgroup( GL( p[2], p[1] ) ) );
     for nr  in Reversed
       ( [ 1 .. Length( ConjugacyClassesSubgroups( Range(hom) ) ) ] )  do
-        AFFINE_NON_SOLVABLE_GROUPS[ p ^ 2 ][ nr ] := ASLMaker( p, nr );
+        AFFINE_NON_SOLVABLE_GROUPS[p[1]^p[2]][nr] := ASLMaker(p[2],p[1],nr);
     od;
 od;
 
@@ -783,8 +783,7 @@ MakePrimitiveGroup := function( deg, nr )
             cls[ nr ] := PreImage( coh, cls[ nr ] );
         fi;
         Setter( IsPrimitiveAffineProp )( cls[ nr ], false );
-        SetName( cls[ nr ], Concatenation( Name( coh ),
-                ".", String( nr ), "#", String( deg ) ) );
+        SetName( cls[ nr ], Concatenation( Name( coh ), ".", String( nr ) ) );
         return cls[ nr ];
     elif deg > 4  and  nr = Length( cls ) + 1  then
         return AlternatingGroup( deg );

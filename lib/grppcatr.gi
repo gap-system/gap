@@ -72,8 +72,7 @@ function( G )
     # compute the pcgs of the composition subgroups
     for i  in [ 1 .. m+1 ]  do
         igs := InducedPcgsByPcSequence( parent, pcgsG{[i..m]} );
-        U   := Subgroup( G, igs );
-        SetPcgs( U, igs );
+        U   := SubgroupByPcgs( G, igs );
         Add( S, U );
     od;
 
@@ -111,8 +110,7 @@ function( U )
     else
         tmp := InducedPcgsByGeneratorsNC( pcgsU, C );
     fi;
-    C := Subgroup( U, tmp );
-    SetPcgs( C, tmp ); 
+    C := SubgroupByPcgs( U, tmp );
     return C;
 end);
 
@@ -136,8 +134,7 @@ function( G )
     S     := [G];
     for i  in [ 2 .. Length(first) ]  do
         igs := InducedPcgsByPcSequenceNC( spec, spec{[first[i]..m]} );
-        U   := Subgroup( G, igs );
-        SetPcgs( U, igs );
+        U   := SubgroupByPcgs( G, igs );
         Add( S, U );
     od;
     return S;
@@ -182,8 +179,7 @@ function( G, pi )
         if weights[i][3] in pi then Add( gens, spec[i] ); fi;
     od;
     gens := InducedPcgsByPcSequenceNC( spec, gens );
-    S := Subgroup( G, gens );
-    SetPcgs( S, gens );
+    S := SubgroupByPcgs( G, gens );
     return S;
 end );
 
@@ -231,8 +227,7 @@ function( G )
         fi;
     od;
     pref := InducedPcgsByPcSequenceNC( spec, pref );
-    P    := Subgroup( G, pref );
-    SetPcgs( P, pref );
+    P    := SubgroupByPcgs( G, pref );
     return P;
 end);
 
@@ -294,8 +289,7 @@ function( G, p )
         if weights[i][3] <> p then Add( gens, spec[i] ); fi;
     od;
     gens := InducedPcgsByPcSequenceNC( spec, gens );
-    S := Subgroup( G, gens );
-    SetPcgs( S, gens );
+    S := SubgroupByPcgs( G, gens );
     return S;
 end );
 
@@ -323,8 +317,7 @@ function( G, p )
         if weights[i][3] = p then Add( gens, spec[i] ); fi;
     od;
     gens := InducedPcgsByPcSequenceNC( spec, gens );
-    S := Subgroup( G, gens );
-    SetPcgs( S, gens );
+    S := SubgroupByPcgs( G, gens );
     return S;
 end );
 
@@ -363,8 +356,7 @@ MaximalSubgroupClassesRepsLayer := function( pcgs, l )
         elms := List( maxi[i], x -> PcElementByExponents( pcgsL, x ) );
         sub  := Concatenation( pcgs{[1..start-1]}, elms, pcgsN );
         sub  := InducedPcgsByPcSequenceNC( pcgs, sub );
-        M    := Subgroup( G, sub );
-        SetPcgs( M, sub );
+        M    := SubgroupByPcgs( G, sub );
         maxi[i] := M;
     od;
     return maxi;

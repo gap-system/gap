@@ -1098,6 +1098,46 @@ Obj             RecNamesHandler (
 
 /****************************************************************************
 **
+*F  FuncREC_NAMES_ROBJ( <self>, <rec> )	. . . record names of a record object
+*/
+Obj FuncREC_NAMES_ROBJ (
+    Obj                 self,
+    Obj                 rec )
+{
+    Obj                 list;           /* list of record names, result    */
+    UInt                rnam;           /* one name of record              */
+    Obj                 string;         /* one name as string              */
+    UInt                i;              /* loop variable                   */
+
+    /* check the argument                                                  */
+    while ( TYPE_OBJ(rec) != T_COMOBJ ) {
+        rec = ErrorReturnObj(
+            "RecNames: <rec> must be a component object (not a %s)",
+            (Int)(InfoBags[TYPE_OBJ(rec)].name), 0L,
+            "you can return a component object for <rec>" );
+    }
+
+    /* allocate the list                                                   */
+    list = NEW_PLIST( T_PLIST, LEN_PREC(rec) );
+    SET_LEN_PLIST( list, LEN_PREC(rec) );
+
+    /* loop over the components                                            */
+    for ( i = 1; i <= LEN_PREC(rec); i++ ) {
+        rnam = GET_RNAM_PREC( rec, i );
+        string = NEW_STRING( SyStrlen(NAME_RNAM(rnam)) );
+        SyStrncat( CSTR_STRING(string), NAME_RNAM(rnam),
+                   SyStrlen(NAME_RNAM(rnam)) );
+        SET_ELM_PLIST( list, i, string );
+        CHANGED_BAG( list );
+    }
+
+    /* return the list                                                     */
+    return list;
+}
+
+
+/****************************************************************************
+**
 *F  InitPRecord() . . . . . . . . . . . . . . . . . initialize record package
 **
 **  'InitPRecord' initializes the record package.
@@ -1236,6 +1276,10 @@ void            InitPRecord ( void )
         "REC_NAMES", 1L, "rec", RecNamesHandler );
     AssGVar( GVarName( "REC_NAMES" ), RecNamesFunc );
 
+    InitHandlerFunc( FuncREC_NAMES_ROBJ, "REC_NAMES_ROBJ" );
+    AssGVar(  GVarName( "REC_NAMES_ROBJ" ),
+          NewFunctionC( "REC_NAMES_ROBJ", 1L, "rec obj", 
+                     FuncREC_NAMES_ROBJ ) );
 }
 
 

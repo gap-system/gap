@@ -14,14 +14,14 @@ Revision.ctblmono_gd :=
     "@(#)$Id$";
 
 
-##############################################################################
+#############################################################################
 ##
 #V  InfoMonomial
 ##
 InfoMonomial := NewInfoClass( "InfoMonomial" );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  Alpha( <G> )
 ##
@@ -34,7 +34,7 @@ SetAlpha := Setter( Alpha );
 HasAlpha := Tester( Alpha );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  Delta( <G> )
 ##
@@ -46,7 +46,7 @@ SetDelta := Setter( Delta );
 HasDelta := Tester( Delta );
 
 
-##############################################################################
+#############################################################################
 ##
 #P  IsBergerCondition( <G> )
 #P  IsBergerCondition( <chi> )
@@ -58,7 +58,7 @@ HasDelta := Tester( Delta );
 ##  Called with a group <G>, 'IsBergerCondition' returns 'true' if all
 ##  irreducible characters of <G> satisfy
 ##  \[ ( \bigcap_{\psi(1) \leq f_i}  \ker(\psi) )^{\prime} \leq
-##       \bigcap_{\chi(1) = f_{i+1}} \ker(\chi) \ \forall 1 \leq i \leq n-1 \]
+##       \bigcap_{\chi(1) = f_{i+1}} \ker(\chi) \ \forall 1\leq i\leq n-1 \]
 ##  where $1 = f_1 \leq f_2 \leq\ldots \leq f_n$ are the distinct irreducible
 ##  degrees of <G>.
 ##
@@ -73,7 +73,7 @@ BergerCondition := IsBergerCondition;
 #T compat3!
 
 
-##############################################################################
+#############################################################################
 ##
 #F  TestHomogeneous( <chi>, <N> )
 ##
@@ -86,7 +86,7 @@ BergerCondition := IsBergerCondition;
 TestHomogeneous := NewOperationArgs( "TestHomogeneous" );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  TestQuasiPrimitive( <chi> )
 ##
@@ -102,14 +102,15 @@ TestHomogeneous := NewOperationArgs( "TestHomogeneous" );
 ##  'character':  \\ an irreducible constituent of a nonhomogeneous
 ##                   restriction of <chi>.
 ##
-##  *Note*\:\ For solvable groups quasiprimitivity is the same as primitivity.
+##  *Note* that for solvable groups, quasiprimitivity is the same as
+##  primitivity.
 ##
 TestQuasiPrimitive := NewAttribute( "TestQuasiPrimitive", IsCharacter );
 SetTestQuasiPrimitive := Setter( TestQuasiPrimitive );
 HasTestQuasiPrimitive := Tester( TestQuasiPrimitive );
 
 
-##############################################################################
+#############################################################################
 ##
 #P  IsQuasiPrimitive( <chi> )
 ##
@@ -121,7 +122,7 @@ SetIsQuasiPrimitive := Setter( IsQuasiPrimitive );
 HasIsQuasiPrimitive := Tester( IsQuasiPrimitive );
 
 
-##############################################################################
+#############################################################################
 ##
 #P  IsPrimitive( <chi> )
 ##
@@ -132,7 +133,7 @@ HasIsQuasiPrimitive := Tester( IsQuasiPrimitive );
 #T how to deal with such situations?
 
 
-##############################################################################
+#############################################################################
 ##
 #F  TestInducedFromNormalSubgroup( <chi>, <N> )
 #F  TestInducedFromNormalSubgroup( <chi> )
@@ -160,7 +161,7 @@ TestInducedFromNormalSubgroup := NewOperationArgs(
     "TestInducedFromNormalSubgroup" );
 
 
-##############################################################################
+#############################################################################
 ##
 #P  IsInducedFromNormalSubgroup( <chi> )
 ##
@@ -173,7 +174,7 @@ SetIsInducedFromNormalSubgroup := Setter( IsInducedFromNormalSubgroup );
 HasIsInducedFromNormalSubgroup := Tester( IsInducedFromNormalSubgroup );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  TestSubnormallyMonomial( <G> )
 #A  TestSubnormallyMonomial( <chi> )
@@ -192,7 +193,7 @@ SetTestSubnormallyMonomial := Setter( TestSubnormallyMonomial );
 HasTestSubnormallyMonomial := Tester( TestSubnormallyMonomial );
 
 
-##############################################################################
+#############################################################################
 ##
 #P  IsSubnormallyMonomial( <G> )
 #P  IsSubnormallyMonomial( <chi> )
@@ -242,7 +243,7 @@ HasIsSubnormallyMonomial := Tester( IsSubnormallyMonomial );
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #A  TestMonomialQuick( <obj> )
 ##
@@ -257,13 +258,13 @@ SetTestMonomialQuick := Setter( TestMonomialQuick );
 HasTestMonomialQuick := Tester( TestMonomialQuick );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  TestMonomial( <chi> )
 #A  TestMonomial( <G> )
 ##
-##  returns a record containing information about monomiality of the group <G>
-##  or the group character <chi>, respectively.
+##  returns a record containing information about monomiality of the group
+##  <G> or the group character <chi>, respectively.
 ##
 ##  If a character <chi> was proved to be monomial the result contains
 ##  components 'isMonomial' (then 'true'), 'comment' (a string telling a
@@ -297,7 +298,7 @@ SetTestMonomial := Setter( TestMonomial );
 HasTestMonomial := Tester( TestMonomial );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  TestRelativelySM( <G> )
 #F  TestRelativelySM( <chi> )
@@ -341,7 +342,7 @@ HasTestMonomial := Tester( TestMonomial );
 TestRelativelySM := NewOperationArgs( "TestRelativelySM" );
 
 
-##############################################################################
+#############################################################################
 ##
 #P  IsRelativelySM( <chi> )
 #P  IsRelativelySM( <G> )
@@ -357,7 +358,7 @@ SetIsRelativelySM := Setter( IsRelativelySM );
 HasIsRelativelySM := Tester( IsRelativelySM );
 
 
-##############################################################################
+#############################################################################
 ##
 #P  IsMinimalNonmonomial( <G> )
 ##
@@ -369,12 +370,12 @@ SetIsMinimalNonmonomial := Setter( IsMinimalNonmonomial );
 HasIsMinimalNonmonomial := Tester( IsMinimalNonmonomial );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  MinimalNonmonomialGroup( <p>, <factsize> )
 ##
-##  returns the minimal nonmonomial group described by the parameters
-##  <factsize> and <p> if such a group exists, and 'false' otherwise.
+##  is a minimal nonmonomial group described by the parameters <factsize> and
+##  <p> if such a group exists, and 'false' otherwise.
 ##
 ##  Suppose that the required group $K$ exists.
 ##  <factsize> must be the size of the Fitting factor $K / F(K)$.

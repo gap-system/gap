@@ -73,6 +73,7 @@ IsPermCollection        := CategoryCollections(
 
 SmallestMovedPointPerm := NewAttribute( "SmallestMovedPointPerm", IsPerm );
 LargestMovedPointPerm := NewAttribute( "LargestMovedPointPerm", IsPerm );
+NrMovedPointsPerm := NewAttribute( "NrMovedPointsPerm", IsPerm );
 
 # Booleans
 IsBool                  := NewCategoryKernel( "IsBool", IsObject, IS_BOOL );

@@ -1624,17 +1624,19 @@ NextLevelRegularGroups := function( P, rbase )
         UniteSet( fix, P.cellno{ S.orbit } );
         strat := [  ];
         for yh  in S.orbit  do
-            j := IsolatePoint( P, yh );
-            if j <> false  then
-                ProcessFixpoint( rbase, yh );
-                h := InverseRepresentativeWord( S, yh );
-                bh := PreImageWord( rbase.regorb.orbit[ 1 ], h );
-                i := P.cellno[ bh ];
-                Add( strat, [ yh, i, j ] );
-                if P.lengths[ j ] = 1  then
-                    p := FixpointCellNo( P, j );
-                    ProcessFixpoint( rbase, p );
-                    Add( strat, [ -p, j ] );
+            h := InverseRepresentativeWord( S, yh );
+            bh := PreImageWord( rbase.regorb.orbit[ 1 ], h );
+            i := P.cellno[ bh ];
+            if P.lengths[ i ] = 1  then
+                j := IsolatePoint( P, yh );
+                if j <> false  then
+                    ProcessFixpoint( rbase, yh );
+                    Add( strat, [ yh, i, j ] );
+                    if P.lengths[ j ] = 1  then
+                        p := FixpointCellNo( P, j );
+                        ProcessFixpoint( rbase, p );
+                        Add( strat, [ -p, j ] );
+                    fi;
                 fi;
             fi;
         od;

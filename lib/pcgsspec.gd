@@ -73,6 +73,45 @@ LGFirst := NewAttribute( "LGFirst",
 SetLGFirst := Setter(LGFirst);
 HasLGFirst := Tester(LGFirst);
 
+#############################################################################
+##
+#A  InducedPcgsWrtSpecialPcgs( <G> )
+##
+InducedPcgsWrtSpecialPcgs := NewAttribute( "InducedPcgsWrtSpecialPcgs",
+                                            IsGroup );
+
+SetInducedPcgsWrtSpecialPcgs := Setter( InducedPcgsWrtSpecialPcgs );
+HasInducedPcgsWrtSpecialPcgs := Tester( InducedPcgsWrtSpecialPcgs );
+
+#############################################################################
+##
+#A  CanonicalPcgsWrtSpecialPcgs( <G> )
+##
+CanonicalPcgsWrtSpecialPcgs := NewAttribute( "CanonicalPcgsWrtSpecialPcgs",
+                                              IsGroup );
+
+SetCanonicalPcgsWrtSpecialPcgs := Setter( CanonicalPcgsWrtSpecialPcgs );
+HasCanonicalPcgsWrtSpecialPcgs := Tester( CanonicalPcgsWrtSpecialPcgs );
+
+#############################################################################
+##
+#P  IsInducedPcgsWrtSpecialPcgs( <pcgs> )
+##
+IsInducedPcgsWrtSpecialPcgs := NewProperty( "IsInducedPcgsWrtSpecialPcgs",
+                                             IsPcgs );
+
+SetIsInducedPcgsWrtSpecialPcgs := Setter( IsInducedPcgsWrtSpecialPcgs );
+HasIsInducedPcgsWrtSpecialPcgs := Tester( IsInducedPcgsWrtSpecialPcgs );
+
+#############################################################################
+##
+#P  IsCanonicalPcgsWrtSpecialPcgs( <pcgs> )
+##
+IsCanonicalPcgsWrtSpecialPcgs := NewProperty( "IsCanonicalPcgsWrtSpecialPcgs",
+                                               IsPcgs );
+
+SetIsCanonicalPcgsWrtSpecialPcgs := Setter( IsCanonicalPcgsWrtSpecialPcgs );
+HasIsCanonicalPcgsWrtSpecialPcgs := Tester( IsCanonicalPcgsWrtSpecialPcgs );
 
 #############################################################################
 ##

@@ -830,11 +830,44 @@ end;
 #M  PowerMapOp( <ordtbl>, <n> ) . . . . . .  for ord. table, and pos. integer
 ##
 InstallMethod( PowerMapOp,
+    "method for ordinary table with group, and positive integer",
+    true,
+    [ IsOrdinaryTable and HasUnderlyingGroup, IsInt and IsPosRat ], 0,
+    function( tbl, n )
+
+    local G, map, p;
+
+    if IsPrimeInt( n ) then
+
+      G:= UnderlyingGroup( tbl );
+      map:= PowerMapOfGroup( G, n, ConjugacyClasses( G ) );
+
+    else
+
+      map:= [ 1 .. NrConjugacyClasses( tbl ) ];
+      for p in Factors( n ) do
+        map:= map{ PowerMap( tbl, p ) };
+      od;
+
+    fi;
+    return map;
+    end );
+
+
+#############################################################################
+##
+#M  PowerMapOp( <ordtbl>, <n> ) . . . . . .  for ord. table, and pos. integer
+##
+InstallMethod( PowerMapOp,
     "method for ordinary table, and positive integer",
     true,
     [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
     function( tbl, n )
     local i, powermap, nth_powermap, range, pmap;
+
+    if HasUnderlyingGroup( tbl ) then
+      TryNextMethod();
+    fi;
 
     range:= [ 1 .. NrConjugacyClasses( tbl ) ];
     nth_powermap:= range;
@@ -879,9 +912,9 @@ InstallOtherMethod( PowerMapOp,
     fi;
 
     n:= n mod OrdersClassRepresentatives( tbl )[ class ];
-    if n=0 then
+    if n = 0 then
       return 1;
-    elif n=1 then
+    elif n = 1 then
       return class;
     elif IsBound( powermap[n] ) then
       return powermap[n][ class ];
@@ -892,11 +925,11 @@ InstallOtherMethod( PowerMapOp,
       if not IsBound( powermap[i] ) then
 
         # Compute the missing power map.
-        pmap:= PossiblePowerMaps( tbl, i );
-        if 1 < Length( pmap ) then
-          Error( Ordinal( i ), " power map not determined for <tbl>" );
-        fi;
-        powermap[i]:= pmap[1];
+        powermap[i]:= PowerMap( tbl, i );
+#T if the group is available, better ask it directly?
+#T (careful: No maps are stored by the three-argument call,
+#T this may slow down the computation if many calls are done ...)
+
       fi;
       image:= powermap[i][ image ];
     od;

@@ -10,6 +10,9 @@
 ##  with verification.
 ##
 #H  $Log$
+#H  Revision 4.9  1997/04/28 07:36:51  htheisse
+#H  fixed a wrong comparison
+#H
 #H  Revision 4.8  1997/01/14 15:28:16  htheisse
 #H  fixed a bug in `SCRRestoredRecord'
 #H
@@ -1346,12 +1349,12 @@ VerifyStabilizer := function(S,z,missing,correct)
            for g in chain.stabilizer.generators do 
                if result = () then       
                   if correct then 
-                     residue := SiftAsWord(stab, [w1inv,g,w1]); 
+                     residue := SiftAsWord(stab, [w1inv,g,w1]);
                      if residue[2] <> 0 then 
                         result := Product(residue[1]);
                      else 
                         l := 0; 
-                        while ( l < Length(missing) ) and ( result <> () ) do 
+                        while ( l < Length(missing) ) and ( result = () ) do 
                            l:=l+1;
                               if ImageInWord(missing[l],residue[1])
                                   <> missing[l]  then
@@ -1428,7 +1431,7 @@ VerifyStabilizer := function(S,z,missing,correct)
                  result := Product(residue[1]); 
               else
                   l := 0; 
-                  while ( l < Length(missing) ) and ( result <> () ) do 
+                  while ( l < Length(missing) ) and ( result = () ) do 
                      l:=l+1;
                      if ImageInWord(missing[l],residue[1])
                                <> missing[l]  then
@@ -1443,7 +1446,7 @@ VerifyStabilizer := function(S,z,missing,correct)
         fi;  # result = () and not where2[i]
      od;
  fi; 
- 
+
  return result;
 
 end;
@@ -1504,7 +1507,7 @@ VerifySGS := function(S,missing,correct)
                   result := Product(residue[1]);
                else 
                   l := 0; 
-                  while ( l < Length(missing) ) and ( result <> () ) do 
+                  while ( l < Length(missing) ) and ( result = () ) do 
                      l:=l+1;
                      if ImageInWord(missing[l],residue[1])
                                <> missing[l]  then

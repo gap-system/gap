@@ -437,7 +437,91 @@ function(R,f)
   return Length(Factors(R,f))<=1;
 end);
 
+
 #############################################################################
 ##
-#E  upoly.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#F  CyclotomicPol( <n> )  . . .  coefficients of <n>-th cyclotomic polynomial
+##
+CyclotomicPol := function( n )
+
+    local f,   # result (after stripping off other cyclotomic polynomials)
+          div, # divisors of 'n'
+          d,   # one divisor of 'n'
+          q,   # coefficiens of a quotient that arises in division
+          g,   # coefficients of 'd'-th cyclotomic polynomial
+          l,   # degree of 'd'-th cycl. pol.
+          m,
+          i,
+          c,
+          k;
+
+    if not IsBound( CYCLOTOMICPOLYNOMIALS[ n ] ) then
+
+      # We have to compute the polynomial. Start with 'X^n - 1' ...
+      f := List( [ 1 .. n ], x -> 0 );
+      f[1]     := -1;
+      f[ n+1 ] :=  1;
+
+      div:= ShallowCopy( DivisorsInt( n ) );
+      RemoveSet( div, n );
+
+      # ... and divide by all 'd'-th cyclotomic polynomials
+      # for proper divisors 'd' of 'n'.
+      for d in div do
+        q := [];
+        g := CyclotomicPol( d );
+        l := Length( g );
+        m := Length( f ) - l;
+        for i  in [ 0 .. m ]  do
+          c := f[ m - i + l ] / g[ l ];
+          for k  in [ 1 .. l ]  do
+            f[ m - i + k ] := f[ m - i + k ] - c * g[k];
+          od;
+          q[ m - i + 1 ] := c;
+        od;
+        f:= q;
+      od;
+
+      # store the coefficients list
+      CYCLOTOMICPOLYNOMIALS[n]:= Immutable( f );
+    else
+
+      # just fetch the coefficients list
+      f := CYCLOTOMICPOLYNOMIALS[n];
+    fi;
+
+    # return the coefficients list
+    return f;
+end;
+
+
+############################################################################
+##
+#F  CyclotomicPolynomial( <F>, <n> ) . . . . . .  <n>-th cycl. pol. over <F>
+##
+##  returns the <n>-th cyclotomic polynomial over the ring <F>.
+##
+CyclotomicPolynomial := function( F, n )
+
+    local char;   # characteristic of 'F'
+
+    if not IsInt( n ) or n <= 0 or not IsRing( F ) then
+      Error( "<n> must be a positive integer, <F> a ring" );
+    fi;
+
+    char:= Characteristic( F );
+    if char <> 0 then
+
+      # replace 'n' by its $p^{\prime}$ part
+      while n mod char = 0  do
+        n := n / char;
+      od;
+    fi;
+    return UnivariatePolynomial( F, One( F ) * CyclotomicPol(n) );
+end;
+
+
+#############################################################################
+##
+#E  upoly.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

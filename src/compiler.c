@@ -141,6 +141,21 @@ Int CompPass = 0;
 /****************************************************************************
 **
 
+*V  compilerMagic1  . . . . . . . . . . . . . . . . . . . . .  current magic1
+*/
+static UInt4 compilerMagic1;
+
+
+/****************************************************************************
+**
+*V  compilerMagic2  . . . . . . . . . . . . . . . . . . . . .  current magic2
+*/
+static Char * compilerMagic2;
+
+
+/****************************************************************************
+**
+
 
 *T  CVar  . . . . . . . . . . . . . . . . . . . . . . .  type for C variables
 **
@@ -1146,6 +1161,14 @@ CVar CompFuncExpr (
     func = CVAR_TEMP( NewTemp( "func" ) );
 
     /* make the function (all the pieces are in global variables)          */
+    Emit( "InitHandlerFunc( HdlrFunc%d, \"%s: HdlrFunc%d (",
+	  nr, compilerMagic2, nr );
+    if ( compilerMagic1 < 10 ) {
+	Emit( "%d)\" );\n", compilerMagic1 );
+    }
+    else {
+	Emit( "%d%d)\" );\n", compilerMagic1/10, compilerMagic1%10 );
+    }
     Emit( "%c = NewFunction( NameFunc[%d], NargFunc[%d], NamsFunc[%d]",
           func, nr, nr, nr );
     Emit( ", HdlrFunc%d);\n", nr );
@@ -5268,7 +5291,7 @@ void CompFunc (
 
     /* compile the innner functions                                        */
     fexs = FEXS_FUNC(func);
-    for ( i = 1; i <= LEN_PLIST(fexs); i++ ) {
+    for ( i = 1;  i <= LEN_PLIST(fexs);  i++ ) {
         CompFunc( ELM_PLIST( fexs, i ) );
     }
 
@@ -5384,6 +5407,10 @@ Int CompileFunc (
     col = SyNrCols;
     SyNrCols = 255;
 
+    /* store the magic values                                              */
+    compilerMagic1 = magic1;
+    compilerMagic2 = magic2;
+
     /* create 'CompInfoGVar' and 'CompInfoRNam'                            */
     CompInfoGVar = NewBag( T_STRING, sizeof(UInt) * 1024 );
     CompInfoRNam = NewBag( T_STRING, sizeof(UInt) * 1024 );
@@ -5461,14 +5488,35 @@ Int CompileFunc (
     }
     Emit( "\n/* information for the functions */\n" );
     Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" )\n" );
-    Emit( "InitGlobalBag( &DefaultName );\n" );
+    if ( magic1 < 10 ) {
+	Emit( "InitGlobalBag( &DefaultName, \"%s: DefaultName (%d)\" );\n",
+              magic2, magic1 );
+    }
+    else {
+	Emit( "InitGlobalBag( &DefaultName, \"%s: DefaultName (%d)\" );\n",
+              magic2, magic1/10, magic1%10 );
+    }
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
-        Emit( "InitGlobalBag( &(NameFunc[%d]) );\n", i );
+	Emit( "InitGlobalBag( &(NameFunc[%d]), \"%s: NameFunc[%d] (", 
+               i, magic2, i );
+	if ( magic1 < 10 ) {
+	    Emit( "%d)\" );\n", magic1 );
+	}
+	else {
+	    Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
+	}
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
             Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" )\n",
                   i, SyStrlen(CSTR_STRING(n)), CSTR_STRING(n) );
-	    Emit( "InitGlobalBag( &(NamsFunc[%d]) );\n", i );
+	    Emit( "InitGlobalBag( &(NamsFunc[%d]), \"%s: NamsFunc[%d] (", 
+		  i, magic2, i );
+	    if ( magic1 < 10 ) {
+		Emit( "%d)\" );\n", magic1 );
+	    }
+	    else {
+		Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
+	    }
         }
         else {
 
@@ -5490,6 +5538,13 @@ Int CompileFunc (
     Emit( "static Obj  Function1 ( void )\n" );
     Emit( "{\n" );
     Emit( "Obj  func1;\n" );
+    Emit( "InitHandlerFunc( HdlrFunc1, \"%s: HdlrFunc1 (", magic2 );
+    if ( magic1 < 10 ) {
+	Emit( "%d)\" );\n", magic1 );
+    }
+    else {
+	Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
+    }
     Emit( "func1 = NewFunction( NameFunc[1], NargFunc[1], NamsFunc[1]" );
     Emit( ", HdlrFunc1 );\n" );
     Emit( "ENVI_FUNC( func1 ) = CurrLVars;\n" );

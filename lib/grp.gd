@@ -1127,8 +1127,15 @@ IsomorphismPcGroup := NewAttribute( "IsomorphismPcGroup", IsGroup );
 ##
 #A  IsomorphismFpGroup( <G> )
 ##
-IsomorphismFpGroup := NewOperation( "IsomorphismFpGroup", [IsGroup] );
+IsomorphismFpGroup := NewAttribute( "IsomorphismFpGroup", IsGroup );
 
+IsomorphismFpGroupByGenerators := NewOperation( 
+    "IsomorphismFpGroupByGenerators", [IsGroup, IsList, IsString] );
+IsomorphismFpGroupBySubnormalSeries := NewOperation( 
+    "IsomorphismFpGroupBySubnormalSeries", [IsGroup, IsList, IsString] );
+IsomorphismFpGroupByCompositionSeries := NewOperation( 
+    "IsomorphismFpGroupByCompositionSeries", [IsGroup, IsString] );
+IsomorphismFpGroupByPcgs := NewOperationArgs( "IsomorphismFpGroupByPcgs" );
 
 #############################################################################
 ##
@@ -1146,6 +1153,35 @@ PrimePowerComponents := NewAttribute(
 PrimePowerComponent := NewOperation(
     "PrimePowerComponent",
     [ IsMultiplicativeElement, IsInt and IsPosRat ] );
+
+
+#############################################################################
+##
+#O  PowerMapOfGroup( <G>, <n>, <ccl> )
+##
+##  is a list of positions, at position $i$ the position of the conjugacy
+##  class containing the <n>-th powers of the elements in the $i$-th class
+##  of the list <ccl> of conjugacy classes.
+##
+PowerMapOfGroup := NewOperation( "PowerMapOfGroup",
+    [ IsGroup, IsInt, IsHomogeneousList ] );
+
+
+#############################################################################
+##
+#F  PowerMapOfGroupWithInvariants( <G>, <n>, <ccl>, <invariants> )
+##
+##  is a list of integers, at position $i$ the position of the conjugacy
+##  class containimg the <n>-th powers of elements in class $i$ of <ccl>.
+##  The list <invariants> contains all invariants besides element order
+##  that shall be used before membership tests.
+##
+##  Element orders are tested first in any case since they may allow a
+##  decision without forming the <n>-th powers of elements.
+##
+PowerMapOfGroupWithInvariants := NewOperationArgs(
+    "PowerMapOfGroupWithInvariants" );
+
 
 #############################################################################
 ##

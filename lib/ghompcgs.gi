@@ -393,6 +393,33 @@ end );
 
 #############################################################################
 ##
+#M  <hom1> = <hom2> . . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
+##
+InstallMethod( \=, IsIdentical, 
+               [ IsPcGroupHomomorphismByImages, 
+                 IsPcGroupHomomorphismByImages ], 1,
+    function( hom1, hom2 )
+    if    Source( hom1 ) <> Source( hom2 )
+       or Range ( hom1 ) <> Range ( hom2 )  then
+        return false;
+    fi;
+    return hom1!.sourcePcgsImages = hom2!.sourcePcgsImages;
+end );
+
+#############################################################################
+##
+#M  PrintObj( )
+##
+InstallMethod( PrintObj,
+    "method for a PcGroupHomomorphisms",
+    true,
+    [ IsPcGroupHomomorphismByImages ], 0,
+    function( map )
+    Print(map!.sourcePcgs, " -> ", map!.sourcePcgsImages );
+    end );
+
+#############################################################################
+##
 
 #E  ghompcgs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

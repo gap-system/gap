@@ -267,6 +267,23 @@ function( grp, sub )
 
 end );
 
+#############################################################################
+##
+#M  SubgroupByPcgs( <G>, <pcgs> )
+##
+InstallMethod( SubgroupByPcgs, "subgroup with pcgs", 
+               true, [IsGroup, IsPcgs], 0,
+function( G, pcgs )
+    local U;
+    U := SubgroupNC( G, AsList( pcgs ) );
+    SetPcgs( U, pcgs );
+    if HasIsInducedPcgsWrtSpecialPcgs( pcgs ) and
+       IsInducedPcgsWrtSpecialPcgs( pcgs ) and
+       HasSpecialPcgs( G ) then
+        SetInducedPcgsWrtSpecialPcgs( U, pcgs );
+    fi;
+    return U;
+end);
 
 #############################################################################
 ##
@@ -291,54 +308,96 @@ end;
 
 #############################################################################
 ##
-#F  LinearOperationLayer( <Gpcgs>, <pcgs>  )
+#F  LinearOperationLayer( <G>, <gens>, <pcgs>  )
 ##
-LinearOperationLayer := function( Gpcgs, pcgs )
-local V, field, linear;
+LinearOperationLayer := function( arg )
+local G, gens, pcgs, V, field, linear;
 
+    # catch arguments
+    if Length( arg ) = 2 then
+        if IsGroup( arg[1] ) then
+            G := arg[1];
+            gens := GeneratorsOfGroup( G );
+        else
+            gens := arg[1];
+            G := GroupOfPcgs( gens );
+        fi;
+        pcgs := arg[2];
+    elif Length( arg ) = 3 then
+        G := arg[1];
+        gens := arg[2];
+        pcgs := arg[3];
+    fi;
+
+    # in case the layer is trivial
+    if Length( pcgs ) = 0 then
+        Error("pcgs is trivial - no field defined ");
+    fi;
+
+    # construct matrix rep
     field := GF( RelativeOrderOfPcElement( pcgs, pcgs[1] ) );
     V := IdentityMat(Length(pcgs),field);
     linear := function( x, g ) 
               return ExponentsOfPcElement( pcgs,
                      PcElementByExponents( pcgs, x )^g ) * One(field);
               end;
-    return LinearOperation( Gpcgs, V, linear );
+    return LinearOperation( G, gens, V, linear );
 end;
-
     
 #############################################################################
 ##
-#F  AffineOperationLayer( <Gpcgs>, <pcgs>, <transl> )
+#F  AffineOperationLayer( <G>, <pcgs>, <transl> )
 ##
-AffineOperationLayer := function( Gpcgs, pcgs, transl )
-    local V, field, linear;
+AffineOperationLayer := function( arg )
+    local G, gens, pcgs, transl, V, field, linear;
 
+    # catch arguments
+    if Length( arg ) = 3 then
+        if IsPcgs( arg[1] ) then
+            gens := arg[1];
+            G    := GroupOfPcgs( gens );
+        elif IsGroup( arg[1] ) then
+            G    := arg[1];
+            gens := GeneratorsOfGroup( G );
+        fi;
+        pcgs := arg[2];
+        transl := arg[3];
+    elif Length( arg ) = 4 then
+        G := arg[1];
+        gens := arg[2];
+        pcgs := arg[3];
+        transl := arg[4];
+    fi;
+       
+    # in the trivial case we cannot do anything
     if Length( pcgs ) = 0 then 
         Error("layer is trivial . . . field is not defined \n");
     fi;
+
+    # construct matrix rep
     field := GF( RelativeOrderOfPcElement( pcgs, pcgs[1] ) );
     V:=IdentityMat(Length(pcgs),field);
     linear := function( x, g ) 
               return ExponentsOfPcElement( pcgs, 
                      PcElementByExponents( pcgs, x )^g ) * One(field);
               end;
-    return AffineOperation( Gpcgs, V, linear, transl );
+    return AffineOperation( G, gens, V, linear, transl );
 end;
-
 
 #############################################################################
 ##
-#M  AffineOperation( <Ggens>, <V>, <linear>, <transl> )
+#M  AffineOperation( <G>, <gens>, <V>, <linear>, <transl> )
 ##
 InstallMethod( AffineOperation,
     true, 
-    [ IsList,
+    [ IsGroup, 
+      IsList,
       IsMatrix,
       IsFunction,
       IsFunction ],
     0,
 
-function( Ggens, V, linear, transl )
+function( G, Ggens, V, linear, transl )
 local mats, gens, zero,one, g, mat, i, vec;
 
     mats := [];
@@ -357,6 +416,28 @@ local mats, gens, zero,one, g, mat, i, vec;
     od;
     return mats;
 
+end );
+
+InstallOtherMethod( AffineOperation,
+    true, 
+    [ IsGroup, 
+      IsMatrix,
+      IsFunction,
+      IsFunction ],
+    0,
+function( G, V, linear, transl )
+    return AffineOperation( G, GeneratorsOfGroup(G), V, linear, transl );
+end );
+
+InstallOtherMethod( AffineOperation,
+    true, 
+    [ IsPcgs, 
+      IsMatrix,
+      IsFunction,
+      IsFunction ],
+    0,
+function( pcgsG, V, linear, transl )
+    return AffineOperation( GroupOfPcgs( pcgsG ), pcgsG, V, linear, transl );
 end );
 
 #############################################################################
@@ -718,27 +799,50 @@ end );
 
 #############################################################################
 ##
-#M  LinearOperation( <Ggens>, <basisvectors>, <linear>  )
+#M  LinearOperation( <G>, <gens>, <basisvectors>, <linear>  )
 ##
 InstallMethod( LinearOperation,
     true, 
-    [ IsList,
+    [ IsGroup, 
+      IsList,
       IsMatrix,
       IsFunction ],
     0,
 
-function( Ggens, base, linear )
+function( G, gens, base, linear )
     local  mats;
 
     # catch trivial cases
-    if Length( Ggens ) = 0 then 
-        return true;
+    if Length( gens ) = 0 then 
+        return [];
     fi;
 
     # compute matrices
-    mats := List( Ggens, x -> List( base, y -> linear( y, x ) ) );
+    mats := List( gens, x -> List( base, y -> linear( y, x ) ) );
     return mats;
 
+end );
+
+InstallOtherMethod( LinearOperation,
+    true, 
+    [ IsGroup, 
+      IsMatrix,
+      IsFunction ],
+    0,
+
+function( G, base, linear )
+    return LinearOperation( G, GeneratorsOfGroup( G ), base, linear );
+end );
+
+InstallOtherMethod( LinearOperation,
+    true, 
+    [ IsPcgs, 
+      IsMatrix,
+      IsFunction ],
+    0,
+
+function( pcgs, base, linear )
+    return LinearOperation( GroupOfPcgs( pcgs ), pcgs, base, linear );
 end );
 
 
@@ -1265,7 +1369,7 @@ local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
     else
       pcgs:=InducedPcgsWrtHomePcgs(e[i-1]);
       mpcgs:=pcgs mod InducedPcgsWrtHomePcgs(e[i]);
-      op:=LinearOperationLayer(GeneratorsOfGroup(U),mpcgs);
+      op:=LinearOperationLayer(U,GeneratorsOfGroup(U),mpcgs);
       m:=GModuleByMats(op,GF(RelativeOrderOfPcElement(pcgs,pcgs[1])));
       cs:=MTX.BasesCompositionSeries(m);
       Sort(cs,function(a,b) return Length(a)>Length(b);end);

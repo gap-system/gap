@@ -2,6 +2,9 @@
 ##
 #W  grppcfp.gi                  GAP library                      Bettina Eick
 ##
+##  This file contains some functions to convert a pc group into an
+##  fp group and vice versa.
+##
 Revision.grppcfp_gi :=
     "@(#)$Id:";
 
@@ -10,80 +13,19 @@ Revision.grppcfp_gi :=
 #F  PcGroupFpGroup( F )
 ##
 PcGroupFpGroup := function( F )
-    local gens, indices, powrels, comrels, conrels, rel, l, f, g, e, i, j, 
-          t, rws, H;
-
-    # set up
-    H       := FreeGroupOfFpGroup( F );
-    gens    := GeneratorsOfGroup( H );
-    indices := List( gens, x -> true );
-    powrels := [];
-    comrels := [];
-    conrels := [];
-
-    # run through relators of F
-    for rel in RelatorsOfFpGroup( F ) do
-        l := LengthWord( rel );
-        f := Subword( rel, 1, 1 );
-        g := Subword( rel, 2, 2 );
-
-        # it's a power
-        if f = g then
-            i := Position( gens, f );
-            e := ExponentSumWord( rel, f );
-            if e+1 <= l then
-                t := Subword( rel, e+1, l )^-1;
-            else
-                t := One( H );
-            fi;
-            indices[i] := e;
-            Add( powrels, [i, t] );
-        else
-            j := Position( gens, f^-1 );
-            i := Position( gens, g^-1 );
-            if not IsBool( i ) and 5 <= l then
-                t := Subword( rel, 5, l )^-1;
-                if t <> One( H ) then
-                    Add( comrels, [j, i, t] );
-                fi;
-            fi;
-            if IsBool( i ) and 4 <= l then
-                i := Position( gens, g );
-                t := Subword( rel, 4, l )^-1;
-                if t <> One( H ) then
-                    Add( conrels, [i, j, t] );
-                fi;
-            fi;
-        fi;
-    od;
-  
-    # create the collector for the free group
-    rws := SingleCollector( H, indices );
-
-    # add power relators
-    for rel in powrels do
-        SetPower( rws, rel[1], rel[2] );
-    od;
-
-    # add commutator relators
-    for rel in comrels do
-        SetCommutator( rws, rel[1], rel[2], rel[3] );
-    od;
-
-    # add conjugate relators
-    for rel in conrels do
-        SetConjugate( rws, rel[1], rel[2], rel[3] );
-    od;
-
-    # create the group
-    return GroupByRwsNC( rws );
+    return PolycyclicFactorGroup(
+        FreeGroupOfFpGroup( F ),
+        RelatorsOfFpGroup( F ) );
 end;
 
 #############################################################################
 ##
-#F  IsomorphismFpGroupPcGroupByGens( G, str, gens )
+#M  IsomorphismFpGroupByGenerators( G, gens, str )
 ##
-IsomorphismFpGroupPcGroupByGens := function( G, str, gens )
+InstallMethod( IsomorphismFpGroupByGenerators,
+               "method for pc groups", true,
+               [IsGroup, IsList, IsString], 0,
+function( G, gens, str )
     local F, hom, rels, H, gensH, iso;
     F   := FreeGroup( Length(gens), str );
     hom := GroupGeneralMappingByImages( G, F, gens, GeneratorsOfGroup(F) );
@@ -94,13 +36,20 @@ IsomorphismFpGroupPcGroupByGens := function( G, str, gens )
     SetIsBijective( iso, true );
     SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup(G) );
     return iso;
-end;
+end );
+
+InstallOtherMethod( IsomorphismFpGroupByGenerators,
+                    "method for pc groups", true,
+                    [IsGroup, IsList], 0,
+function( G, gens )
+    return IsomorphismFpGroupByGenerators( G, gens, "F" );
+end );
 
 #############################################################################
 ##
-#F  IsomorphismFpGroupPcgs( pcgs, str )
+#F  IsomorphismFpGroupByPcgs( pcgs, str )
 ##
-IsomorphismFpGroupPcgs := function( pcgs, str )
+IsomorphismFpGroupByPcgs := function( pcgs, str )
     local n, F, gens, rels, i, pis, exp, t, h, rel, comm, j, H;
 
     n    := Length( pcgs );
@@ -138,42 +87,37 @@ end;
 
 #############################################################################
 ##
-#O  IsomorphismFpGroup( G [,str] )
+#M  IsomorphismFpGroupByCompositionSeries( G, str )
+##
+InstallMethod( IsomorphismFpGroupByCompositionSeries, 
+               "method for pc groups",
+               true,
+               [IsGroup and IsPcgsComputable, IsString],
+               0,
+function( G, str )
+    return IsomorphismFpGroupByPcgs( Pcgs(G), str );
+end);
+
+InstallOtherMethod( IsomorphismFpGroupByCompositionSeries, 
+               "method for pc groups",
+               true,
+               [IsGroup and IsPcgsComputable],
+               0,
+function( G )
+    return IsomorphismFpGroupByPcgs( Pcgs(G), "F" );
+end);
+
+#############################################################################
+##
+#O  IsomorphismFpGroup( G )
 ##
 InstallMethod( IsomorphismFpGroup, 
                "method for pc groups",
                true,
-               [IsPcGroup],
+               [IsGroup and IsPcgsComputable],
                0,
 function( G )
-    return IsomorphismFpGroupPcgs( Pcgs( G ), "f" );
-end );
-               
-InstallOtherMethod( IsomorphismFpGroup, 
-               "method for pc groups",
-               true,
-               [IsPcGroup, IsString],
-               0,
-function( G, str )
-    return IsomorphismFpGroupPcgs( Pcgs( G ), str );
-end );
-               
-InstallOtherMethod( IsomorphismFpGroup, 
-               "method for pc groups",
-               true,
-               [IsPcGroup, IsList],
-               0,
-function( G, gens )
-    return IsomorphismFpGroupPcGroupByGens( G, "f", gens );
-end );
-               
-InstallOtherMethod( IsomorphismFpGroup, 
-               "method for pc groups",
-               true,
-               [IsPcGroup, IsString, IsList],
-               0,
-function( G, str, gens )
-    return IsomorphismFpGroupPcGroupByGens( G, str, gens );
+    return IsomorphismFpGroupByPcgs( Pcgs( G ), "F" );
 end );
                
 #############################################################################
@@ -775,4 +719,5 @@ SolvableQuotient := function ( F, primes )
     # this is the result - should be G only with setted epimorphism
     return epi;
 end;
+
 SQ := SolvableQuotient;

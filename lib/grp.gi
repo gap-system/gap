@@ -922,7 +922,7 @@ InstallMethod( ComplementSystem,
     0,
 
 function( G )
-    local pcgs, spec, weights, primes, comp, i, m, gens;
+    local pcgs, spec, weights, primes, comp, i, m, gens, sub;
 
     if not IsSolvableGroup(G) then
         return fail;
@@ -934,9 +934,9 @@ function( G )
     comp := List( primes, x -> false );
     for i in [1..Length( primes )] do
         gens := spec{Filtered( [1..Length(spec)], 
-                           x -> weights[x][3] <> primes[i] )};
-        comp[i] := Subgroup( G, gens );
-        SetPcgs( comp[i], gens );
+                     x -> weights[x][3] <> primes[i] )};
+        sub  := InducedPcgsByPcSequenceNC( spec, gens );
+        comp[i] := SubgroupByPcgs( G, sub );
     od;
     return comp;
 end );
@@ -953,7 +953,7 @@ InstallMethod( SylowSystem,
     0,
 
 function( G )
-    local pcgs, spec, weights, primes, comp, i, m, gens;
+    local pcgs, spec, weights, primes, comp, i, m, gens, sub;
 
     if not IsSolvableGroup(G) then
         return fail;
@@ -966,8 +966,8 @@ function( G )
     for i in [1..Length( primes )] do
         gens := spec{Filtered( [1..Length(spec)], 
                            x -> weights[x][3] = primes[i] )};
-        comp[i] := Subgroup( G, gens );
-        SetPcgs( comp[i], gens );
+        sub  := InducedPcgsByPcSequenceNC( spec, gens );
+        comp[i] := SubgroupByPcgs( G, sub );
     od;
     return comp;
 end );
@@ -983,7 +983,7 @@ InstallMethod( HallSystem,
     0,
 
 function( G )
-    local pcgs, spec, weights, primes, comp, i, m, gens, pis;
+    local pcgs, spec, weights, primes, comp, i, m, gens, pis, sub;
 
     if not IsSolvableGroup(G) then
         return fail;
@@ -997,8 +997,8 @@ function( G )
     for i in [1..Length( pis )] do
         gens := spec{Filtered( [1..Length(spec)], 
                            x -> weights[x][3] in pis[i] )};
-        comp[i] := Subgroup( G, gens );
-        SetPcgs( comp[i], gens );
+        sub  := InducedPcgsByPcSequenceNC( spec, gens );
+        comp[i] := SubgroupByPcgs( G, sub );
     od;
     return comp;
 end );
@@ -2903,6 +2903,132 @@ InstallMethod(\<,"groups by smallest generating sets",IsIdentical,
 function(a,b)
  return GeneratorsSmallest(a)<GeneratorsSmallest(b);
 end);
+
+
+#############################################################################
+##
+#F  PowerMapOfGroupWithInvariants( <G>, <n>, <ccl>, <invariants> )
+##
+PowerMapOfGroupWithInvariants := function( G, n, ccl, invariants )
+
+    local reps,      # list of representatives
+          ord,       # list of representative orders
+          invs,      # list of invariant tuples for representatives
+          map,       # power map, result
+          nccl,      # no. of classes
+          i,         # loop over the classes
+          candord,   # order of the power
+          cand,      # candidates for the power class
+          len,       # no. of candidates for the power class
+          j,         # loop over 'cand'
+          c,         # one candidate
+          pow,       # power of a representative
+          powinv;    # invariants of 'pow'
+
+    reps := List( ccl, Representative );
+    ord  := List( reps, Order );
+    invs := [];
+    map  := [];
+    nccl := Length( ccl );
+
+    # Loop over the classes
+    for i in [ 1 .. nccl ] do
+
+      candord:= ord[i] / Gcd( ord[i], n );
+      cand:= Filtered( [ 1 .. nccl ], x -> ord[x] = candord );
+      if Length( cand ) = 1 then
+
+        # The image is unique, no membership test is necessary.
+        map[i]:= cand[1];
+
+      else
+
+        # We check the invariants.
+        pow:= Representative( ccl[i] )^n;
+        powinv:= List( invariants, fun -> fun( pow ) );
+        for c in cand do
+          if not IsBound( invs[c] ) then
+            invs[c]:= List( invariants, fun -> fun( reps[c] ) );
+          fi;
+        od;
+        cand:= Filtered( cand, c -> invs[c] = powinv );
+        len:= Length( cand );
+        if len = 1 then
+
+          # The image is unique, no membership test is necessary.
+          map[i]:= cand[1];
+
+        else
+
+          # We have to check all candidates except one.
+          for j in [ 1 .. len - 1 ] do
+            c:= cand[j];
+            if pow in ccl[c] then
+              map[i]:= c;
+              break;
+            fi;
+          od;
+  
+          # The last candidate may be the right one.
+          if not IsBound( map[i] ) then
+            map[i]:= cand[ len ];
+          fi;
+
+        fi;
+
+      fi;
+
+    od;
+
+    # Return the power map.
+    return map;
+end;
+
+
+#############################################################################
+##
+#M  PowerMapOfGroup( <G>, <n>, <ccl> )  . . . . . . . . . . . . . for a group
+##
+##  We use only element orders as invariant of conjugation.
+##
+InstallMethod( PowerMapOfGroup,
+    "method for a group",
+    true,
+    [ IsGroup, IsInt, IsHomogeneousList ], 0,
+    function( G, n, ccl )
+    return PowerMapOfGroupWithInvariants( G, n, ccl, [] );
+    end );
+
+
+#############################################################################
+##
+#M  PowerMapOfGroup( <G>, <n>, <ccl> )  . . . . . . . for a permutation group
+##
+##  We use also the numbers of moved points as invariant of conjugation.
+##
+InstallMethod( PowerMapOfGroup,
+    "method for a permutation group",
+    true,
+    [ IsGroup and IsPermCollection, IsInt, IsHomogeneousList ], 0,
+    function( G, n, ccl )
+    return PowerMapOfGroupWithInvariants( G, n, ccl, [CycleStructurePerm] );
+    end );
+
+
+#############################################################################
+##
+#M  PowerMapOfGroup( <G>, <n>, <ccl> )  . . . . . . . . .  for a matrix group
+##
+##  We use also the traces as invariant of conjugation.
+##
+InstallMethod( PowerMapOfGroup,
+    "method for a matrix group",
+    true,
+    [ IsGroup and IsRingElementCollCollColl, IsInt, IsHomogeneousList ], 0,
+    function( G, n, ccl )
+    return PowerMapOfGroupWithInvariants( G, n, ccl, [ TraceMat ] );
+    end );
+
 
 #############################################################################
 ##

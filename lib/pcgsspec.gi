@@ -607,7 +607,7 @@ function( group )
     if HasPcgs(group)  then
         spec := SpecialPcgs( Pcgs( group ) );
     else
-        spec := SpecialPcgs(Pcgs(group));
+        spec := SpecialPcgs( Pcgs( group ) );
         SetPcgs( group, spec );
     fi;
     return spec;
