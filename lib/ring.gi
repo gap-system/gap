@@ -230,7 +230,7 @@ InstallMethod( IdealByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local I;
-    I:= Objectify( NewKind( FamilyObj( R ),
+    I:= Objectify( NewType( FamilyObj( R ),
                                 IsRing
                             and IsIdealInParent
                             and IsAttributeStoringRep ),
@@ -251,7 +251,7 @@ InstallMethod( LeftIdealByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local I;
-    I:= Objectify( NewKind( FamilyObj( R ),
+    I:= Objectify( NewType( FamilyObj( R ),
                                 IsRing
                             and IsLeftIdealInParent
                             and IsAttributeStoringRep ),
@@ -272,7 +272,7 @@ InstallMethod( RightIdealByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local I;
-    I:= Objectify( NewKind( FamilyObj( R ),
+    I:= Objectify( NewType( FamilyObj( R ),
                                 IsRing
                             and IsRightIdealInParent
                             and IsAttributeStoringRep ),
@@ -327,7 +327,7 @@ IdealNC := function( arg )
 
       # If <R> is a FLMLOR then also the ideal is a FLMLOR.
       if IsFLMLOR( arg[1] ) then
-        I:= Objectify( NewKind( FamilyObj( arg[1] ),
+        I:= Objectify( NewType( FamilyObj( arg[1] ),
                                     IsFLMLOR
                                 and IsTrivial
                                 and IsAttributeStoringRep ),
@@ -335,7 +335,7 @@ IdealNC := function( arg )
         SetLeftActingDomain( I, LeftActingDomain( arg[1] ) );
         SetGeneratorsOfLeftModule( I, AsList( arg[2] ) );
       else
-        I:= Objectify( NewKind( FamilyObj( arg[1] ),
+        I:= Objectify( NewType( FamilyObj( arg[1] ),
                                     IsRing
                                 and IsTrivial
                                 and IsAttributeStoringRep ),
@@ -528,7 +528,7 @@ InstallMethod( RingByGenerators,
     [ IsCollection ], 0,
     function( gens )
     local R;
-    R:= Objectify( NewKind( FamilyObj( gens ),
+    R:= Objectify( NewType( FamilyObj( gens ),
                             IsRing and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfRing( R, gens );
@@ -625,7 +625,7 @@ end;
 SubringNC := function( R, gens )
     local S;
     if Length( gens ) = 0 then
-      S:= Objectify( NewKind( FamilyObj( R ),
+      S:= Objectify( NewType( FamilyObj( R ),
                               IsRing and IsAttributeStoringRep ),
                      rec() );
       SetGeneratorsOfRing( S, AsList( gens ) );
@@ -647,7 +647,7 @@ InstallMethod( RingWithOneByGenerators,
     [ IsCollection ], 0,
     function( gens )
     local R;
-    R:= Objectify( NewKind( FamilyObj( gens ),
+    R:= Objectify( NewType( FamilyObj( gens ),
                             IsRingWithOne and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfRingWithOne( R, gens );

@@ -141,8 +141,10 @@ ReadTbl := ReadAndCheckFunc("tbl");
 #############################################################################
 ##
 #F  ReadSmall( <name> )
+#F  ReadIdLib( <name> )
 ##
 ReadSmall := ReadAndCheckFunc("small");
+ReadIdLib := ReadAndCheckFunc("small/idlib");
 
 
 #############################################################################

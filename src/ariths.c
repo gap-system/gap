@@ -8,14 +8,13 @@
 **
 **  This file contains the functions of the  arithmetic  operations  package.
 */
-char *          Revision_ariths_c =
+char * Revision_ariths_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* InfoBags                        */
-#include        "objects.h"             /* TYPE_OBJ, FIRST_VIRTUAL_TYPE,...*/
-#include        "scanner.h"             /* Pr                              */
+#include        "objects.h"             /* TNUM_OBJ, FIRST_VIRTUAL_TNUM,...*/
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
@@ -42,7 +41,7 @@ char *          Revision_ariths_c =
 **  'CompaMethod' is  defined  in the  declaration  part of  this package  as
 **  follows
 **
-typedef Int     (* CompaMethod) ( Obj opL, Obj opR );
+typedef Int (* CompaMethod) ( Obj opL, Obj opR );
 */
 
 
@@ -57,7 +56,7 @@ typedef Int     (* CompaMethod) ( Obj opL, Obj opR );
 **  'ArithMethod1'  is  defined in the   declaration part of  this package as
 **  follows
 **
-typedef Obj     (* ArithMethod1) ( Obj opL, Obj opR );
+typedef Obj (* ArithMethod1) ( Obj op );
 */
 
 
@@ -72,9 +71,311 @@ typedef Obj     (* ArithMethod1) ( Obj opL, Obj opR );
 **  'ArithMethod2'  is  defined in the   declaration part of  this package as
 **  follows
 **
-typedef Obj     (* ArithMethod2) ( Obj opL, Obj opR );
+typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
 */
 
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * *  unary arithmetic operations * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  ZERO( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
+**
+**  'ZERO' returns the zero of the object <op>.
+**
+**  'ZERO' is defined in the declaration part of this package as follows
+**
+#define ZERO(op)        ((*ZeroFuncs[TNUM_OBJ(op)])(op))
+*/
+Obj ZeroAttr;
+
+
+/****************************************************************************
+**
+*V  ZeroFuncs[ <type> ] . . . . . . . . . . . . . . . . table of zero methods
+*/
+ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  ZeroObject( <obj> ) . . . . . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj ZeroObject (
+    Obj                 obj )
+
+{
+    return DoAttribute( ZeroAttr, obj );
+}
+
+
+/****************************************************************************
+**
+*F  VerboseZeroObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
+*/
+Obj VerboseZeroObject (
+    Obj                 obj )
+
+{
+    return DoVerboseAttribute( ZeroAttr, obj );
+}
+
+
+/****************************************************************************
+**
+*F  ZeroHandler( <self>, <obj> )  . . . . . . . . . . . . . . . . call 'ZERO'
+*/
+Obj ZeroHandler (
+    Obj                 self,
+    Obj                 obj )
+{
+    return ZERO(obj);
+}
+
+
+/****************************************************************************
+**
+*F  InstallZeroObject( <verb> ) . . . . . . . . . . . .  install zero methods
+*/
+void InstallZeroObject ( Int verb )
+{
+    UInt                t1;             /* type of left  operand           */
+    ArithMethod1        func;           /* zero function                   */
+
+    func = ( verb ? VerboseZeroObject : ZeroObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        ZeroFuncs[t1] = func;
+    }
+    ZeroFuncs[T_OBJECT] = func;
+}
+
+
+/****************************************************************************
+**
+
+*F  AINV( <obj> ) . . . . . . . . . . . . . . . additive inverse of an object
+**
+**  'AINV' returns the additive inverse of the object <obj>.
+**
+**  'AINV' is defined in the declaration part of this package as follows
+**
+#define AINV(obj)        ((*AInvFuncs[TNUM_OBJ(obj)])(obj))
+*/
+Obj AInvAttr;
+
+
+/****************************************************************************
+**
+*V  AInvFuncs[ <type> ] . . . . . . . . . . table of additive inverse methods
+*/
+ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  AInvObj( <obj> )  . . . . . . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj AInvObject (
+    Obj                 obj )
+{
+    return DoAttribute( AInvAttr, obj );
+}
+
+
+/****************************************************************************
+**
+*F  VerboseAInvObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
+*/
+Obj VerboseAInvObject (
+    Obj                 obj )
+{
+    return DoVerboseAttribute( AInvAttr, obj );
+}
+
+
+/****************************************************************************
+**
+*F  AInvHandler( <self>, <obj> )  . . . . . . . . . . . . . . . . call 'AINV'
+*/
+Obj AInvHandler (
+    Obj                 self,
+    Obj                 obj )
+{
+    return AINV(obj);
+}
+
+
+/****************************************************************************
+**
+*F  InstallAinvObject( <verb> ) . . . . . .  install additive inverse methods
+*/
+void InstallAinvObject ( Int verb )
+{
+    UInt                t1;             /* type of left  operand           */
+    ArithMethod1        func;           /* ainv function                   */
+
+    func = ( verb ? VerboseAInvObject : AInvObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        AInvFuncs[t1] = func;
+    }
+    AInvFuncs[T_OBJECT] = func;
+}
+
+
+/****************************************************************************
+**
+
+*F  ONE( <obj> )  . . . . . . . . . . . . . . . . . . . . .  one of an object
+**
+**  'ONE' returns the one of the object <op>.
+**
+**  'ONE' is defined in the declaration part of this package as follows
+**
+#define ONE(obj)         ((*OneFuncs[TNUM_OBJ(obj)])(obj))
+*/
+Obj OneAttr;
+
+
+/****************************************************************************
+**
+*V  OneFuncs[ <type> ]  . . . . . . . . . . . . . . . .  table of one methods
+*/
+ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  OneObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj OneObject (
+    Obj                 obj )
+{
+    return DoAttribute( OneAttr, obj );
+}
+
+
+/****************************************************************************
+**
+*F  VerboseOneObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj VerboseOneObject (
+    Obj                 obj )
+{
+    return DoVerboseAttribute( OneAttr, obj );
+}
+
+
+/****************************************************************************
+**
+*F  OneHandler( <self>, <obj> ) . . . . . . . . . . . . . . . . .  call 'ONE'
+*/
+Obj OneHandler (
+    Obj                 self,
+    Obj                 obj )
+{
+    return ONE(obj);
+}
+
+
+/****************************************************************************
+**
+*F  InstallOneObject( <verb> )  . . . . . . . . . . . . . install one methods
+*/
+void InstallOneObject ( Int verb )
+{
+    UInt                t1;             /* type of left  operand           */
+    ArithMethod1        func;           /* one function                    */
+
+    func = ( verb ? VerboseOneObject : OneObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        OneFuncs[t1] = func;
+    }
+    OneFuncs[T_OBJECT] = func;
+}
+
+
+/****************************************************************************
+**
+
+*F  INV( <obj> )  . . . . . . . . . . . . . . . . . . .  inverse of an object
+**
+**  'INV' returns the multiplicative inverse of the object <obj>.
+**
+**  'INV' is defined in the declaration of this package as follows
+**
+#define INV(obj)         ((*InvFuncs[TNUM_OBJ(obj)])(obj))
+*/
+Obj InvAttr;
+
+
+/****************************************************************************
+**
+*V  InvFuncs[ <type> ]  . . . . . . . . . . . . .  table of inverse functions
+*/
+ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
+
+    
+/****************************************************************************
+**
+*F  InvObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj InvObject (
+    Obj                 obj )
+{
+    return DoAttribute( InvAttr, obj );
+}
+
+
+/****************************************************************************
+**
+*F  VerboseInvObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
+*/
+Obj VerboseInvObject (
+    Obj                 obj )
+{
+    return DoVerboseAttribute( InvAttr, obj );
+}
+
+
+/****************************************************************************
+**
+*F  InvHandler( <self>, <obj> ) . . . . . . . . . . . . . . . . .  call 'INV'
+*/
+Obj InvHandler (
+    Obj                 self,
+    Obj                 obj )
+{
+    return INV( obj );
+}
+
+
+/****************************************************************************
+**
+*F  InstallInvObject( <verb> )  . . . . . . . . . . . install inverse methods
+*/
+void InstallInvObject ( Int verb )
+{
+    UInt                t1;             /* type of left  operand           */
+    ArithMethod1        func;           /* inv function                    */
+
+    func = ( verb ? VerboseInvObject : InvObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        InvFuncs[t1] = func;
+    }
+    InvFuncs[T_OBJECT] = func;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * comparison operations  * * * * * * * * * * * * *
+*/
 
 /****************************************************************************
 **
@@ -88,21 +389,25 @@ typedef Obj     (* ArithMethod2) ( Obj opL, Obj opR );
 **
 #define EQ(opL,opR)     ((opL) == (opR) || \
                          (!ARE_INTOBJS(opL,opR) && \
-                          (*EqFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR)))
+                          (*EqFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR)))
 
 #define EQ2(opL,opR)    ((opL) == (opR) || \
-                          (*EqFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+                          (*EqFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj EqOper;
 
-Obj EqHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return (EQ( opL, opR ) ? True : False);
-}
 
+/****************************************************************************
+**
+*V  EqFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of comparison methods
+*/
+CompaMethod EqFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  EqNot( <opL>, <opR> ) . . . . . . . . . . . . . . . . . . . . . not equal
+*/
 Int EqNot (
     Obj                 opL,
     Obj                 opR )
@@ -110,6 +415,11 @@ Int EqNot (
     return 0L;
 }
 
+
+/****************************************************************************
+**
+*F  EqObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
+*/
 Int EqObject (
     Obj                 opL,
     Obj                 opR )
@@ -117,6 +427,11 @@ Int EqObject (
     return (DoOperation2Args( EqOper, opL, opR ) == True);
 }
 
+
+/****************************************************************************
+**
+*F  VerboseEqObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
+*/
 Int VerboseEqObject (
     Obj                 opL,
     Obj                 opR )
@@ -127,41 +442,37 @@ Int VerboseEqObject (
 
 /****************************************************************************
 **
-*V  EqFuncs[<typeL>][<typeR>] . . . . . . . . . . table of comparison methods
+*F  EqHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . . call 'EQ'
 */
-CompaMethod EqFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj EqHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return (EQ( opL, opR ) ? True : False);
+}
 
 
 /****************************************************************************
 **
-*F  InstallEqObject( <verb> )
+*F  InstallEqObject( <verb> ) . . . . . . . . . .  install comparison methods
 */
 void InstallEqObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    CompaMethod         func;           /* equal function                  */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		EqFuncs[ t1 ][ t2 ] = VerboseEqObject;
-		EqFuncs[ t2 ][ t1 ] = VerboseEqObject;
-	    }
-	    else {
-		EqFuncs[ t1 ][ t2 ] = EqObject;
-		EqFuncs[ t2 ][ t1 ] = EqObject;
-	    }
+    func = ( verb ? VerboseEqObject : EqObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            EqFuncs[t1][t2] = func;
+            EqFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    EqFuncs[ t2 ][ T_OBJECT ] = VerboseEqObject;
-	    EqFuncs[ T_OBJECT ][ t2 ] = VerboseEqObject;
-	}
-	else {
-	    EqFuncs[ t2 ][ T_OBJECT ] = EqObject;
-	    EqFuncs[ T_OBJECT ][ t2 ] = EqObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+        EqFuncs[t2][T_OBJECT] = func;
+        EqFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -178,32 +489,25 @@ void InstallEqObject ( Int verb )
 **
 #define LT(opL,opR)     ((opL) == (opR) ? 0 : \
                          (ARE_INTOBJS(opL,opR) ? (Int)(opL) < (Int)(opR) : \
-                          (*LtFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR)))
+                          (*LtFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR)))
 
 #define LT2(opL,opR)    ((opL) == (opR) ? 0 : \
-                          (*LtFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+                          (*LtFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj LtOper;
 
-Obj LtHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return (LT( opL, opR ) ? True : False);
-}
 
-Int LtUndefined (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return (ErrorReturnObj(
-        "operations: LT of %s and %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(opL)].name),
-        (Int)(InfoBags[TYPE_OBJ(opR)].name),
-        "you can return a value for the result" ) == True);
-}
+/****************************************************************************
+**
+*V  LtFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of comparison methods
+*/
+CompaMethod LtFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
+
+/****************************************************************************
+**
+*F  LtObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
+*/
 Int LtObject (
     Obj                 opL,
     Obj                 opR )
@@ -211,6 +515,11 @@ Int LtObject (
     return (DoOperation2Args( LtOper, opL, opR ) == True);
 }
 
+
+/****************************************************************************
+**
+*F  VerboseLtObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
+*/
 Int VerboseLtObject (
     Obj                 opL,
     Obj                 opR )
@@ -221,41 +530,37 @@ Int VerboseLtObject (
 
 /****************************************************************************
 **
-*V  LtFuncs[<typeL>][<typeR>] . . . . . . . . . . table of comparison methods
+*F  LtHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . . call 'LT'
 */
-CompaMethod LtFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj LtHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return (LT( opL, opR ) ? True : False);
+}
 
 
 /****************************************************************************
 **
-*F  InstallLtObject( <verb> )
+*F  InstallLtObject( <verb> ) . . . . . . . . . . . install less than methods
 */
 void InstallLtObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    CompaMethod         func;           /* less than function              */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		LtFuncs[ t1 ][ t2 ] = VerboseLtObject;
-		LtFuncs[ t2 ][ t1 ] = VerboseLtObject;
-	    }
-	    else {
-		LtFuncs[ t1 ][ t2 ] = LtObject;
-		LtFuncs[ t2 ][ t1 ] = LtObject;
-	    }
+    func = ( verb ? VerboseLtObject : LtObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            LtFuncs[t1][t2] = func;
+            LtFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    LtFuncs[ t2 ][ T_OBJECT ] = VerboseLtObject;
-	    LtFuncs[ T_OBJECT ][ t2 ] = VerboseLtObject;
-	}
-	else {
-	    LtFuncs[ t2 ][ T_OBJECT ] = LtObject;
-	    LtFuncs[ T_OBJECT ][ t2 ] = LtObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+        LtFuncs[t2][T_OBJECT] = func;
+        LtFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -270,29 +575,38 @@ void InstallLtObject ( Int verb )
 **
 **  'IN' is defined in the declaration part of this package as follows
 **
-#define IN(opL,opR)     ((*InFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define IN(opL,opR)     ((*InFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj InOper;
 
-Obj InHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return (IN( opL, opR ) ? True : False);
-}
 
+/****************************************************************************
+**
+*V  InFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of membership methods
+*/
+CompaMethod InFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  InUndefined( <self>, <opL>, <opR> ) . . . . . . . . . . . . . cannot 'in'
+*/
 Int InUndefined (
     Obj                 opL,
     Obj                 opR )
 {
     return (ErrorReturnObj(
         "operations: IN of %s and %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(opL)].name),
-        (Int)(InfoBags[TYPE_OBJ(opR)].name),
+        (Int)(InfoBags[TNUM_OBJ(opL)].name),
+        (Int)(InfoBags[TNUM_OBJ(opR)].name),
         "you can return a value for the result" ) == True);
 }
 
+
+/****************************************************************************
+**
+*F  InObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
+*/
 Int InObject (
     Obj                 opL,
     Obj                 opR )
@@ -300,6 +614,11 @@ Int InObject (
     return (DoOperation2Args( InOper, opL, opR ) == True);
 }
 
+
+/****************************************************************************
+**
+*F  VerboseInObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
+*/
 Int VerboseInObject (
     Obj                 opL,
     Obj                 opR )
@@ -310,44 +629,46 @@ Int VerboseInObject (
 
 /****************************************************************************
 **
-*V  InFuncs[<typeL>][<typeR>] . . . . . . . . . . table of membership methods
+*F  InHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . . call 'IN'
 */
-CompaMethod InFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj InHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return (IN( opL, opR ) ? True : False);
+}
 
 
 /****************************************************************************
 **
-*F  InstallInObject( <verb> )
+*F  InstallInObject( <verb> ) . . . . . . . . . . . . . .  install in methods
 */
 void InstallInObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    CompaMethod         func;           /* in function                     */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		InFuncs[ t1 ][ t2 ] = VerboseInObject;
-		InFuncs[ t2 ][ t1 ] = VerboseInObject;
-	    }
-	    else {
-		InFuncs[ t1 ][ t2 ] = InObject;
-		InFuncs[ t2 ][ t1 ] = InObject;
-	    }
+    func = ( verb ? VerboseInObject : InObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            InFuncs[t1][t2] = func;
+            InFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    InFuncs[ t2 ][ T_OBJECT ] = VerboseInObject;
-	    InFuncs[ T_OBJECT ][ t2 ] = VerboseInObject;
-	}
-	else {
-	    InFuncs[ t2 ][ T_OBJECT ] = InObject;
-	    InFuncs[ T_OBJECT ][ t2 ] = InObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+        InFuncs[t2][T_OBJECT] = func;
+        InFuncs[T_OBJECT][t2] = func;
     }
 }
 
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * binary arithmetic operations * * * * * * * * * * * *
+*/
 
 /****************************************************************************
 **
@@ -358,29 +679,22 @@ void InstallInObject ( Int verb )
 **
 **  'SUM' is defined in the declaration part of this package as follows
 **
-#define SUM(opL,opR)    ((*SumFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define SUM(opL,opR)    ((*SumFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj SumOper;
 
-Obj SumHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return SUM( opL, opR );
-}
 
-Obj SumUndefined (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return ErrorReturnObj(
-        "operations: SUM of %s and %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(opL)].name),
-        (Int)(InfoBags[TYPE_OBJ(opR)].name),
-        "you can return a value for the result" );
-}
+/****************************************************************************
+**
+*V  SumFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . . .  table of sum methods
+*/
+ArithMethod2    SumFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
+
+/****************************************************************************
+**
+*F  SumObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
+*/
 Obj SumObject (
     Obj                 opL,
     Obj                 opR )
@@ -388,6 +702,11 @@ Obj SumObject (
     return DoOperation2Args( SumOper, opL, opR );
 }
 
+
+/****************************************************************************
+**
+*F  VerboseSumObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
+*/
 Obj VerboseSumObject (
     Obj                 opL,
     Obj                 opR )
@@ -398,193 +717,37 @@ Obj VerboseSumObject (
 
 /****************************************************************************
 **
-*V  SumFuncs[<typeL>][<typeR>]  . . . . . . . . . . . .  table of sum methods
+*F  SumHandler( <self>, <opL>, <opR> )  . . . . . . . . . . . . .  call 'SUM'
 */
-ArithMethod2    SumFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj SumHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return SUM( opL, opR );
+}
 
 
 /****************************************************************************
 **
-*F  InstallSumObject( <verb> )
+*F  InstallSumObject( <verb> )  . . . . . . . . . . . . . install sum methods
 */
 void InstallSumObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    ArithMethod2        func;           /* sum function                    */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		SumFuncs[ t1 ][ t2 ] = VerboseSumObject;
-		SumFuncs[ t2 ][ t1 ] = VerboseSumObject;
-	    }
-	    else {
-		SumFuncs[ t1 ][ t2 ] = SumObject;
-		SumFuncs[ t2 ][ t1 ] = SumObject;
-	    }
+    func = ( verb ? VerboseSumObject : SumObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+            SumFuncs[t1][t2] = func;
+            SumFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    SumFuncs[ t2 ][ T_OBJECT ] = VerboseSumObject;
-	    SumFuncs[ T_OBJECT ][ t2 ] = VerboseSumObject;
-	}
-	else {
-	    SumFuncs[ t2 ][ T_OBJECT ] = SumObject;
-	    SumFuncs[ T_OBJECT ][ t2 ] = SumObject;
-	}
-    }
-}
-
-
-/****************************************************************************
-**
-
-*F  ZERO( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
-**
-**  'ZERO' returns the zero of the object <op>.
-**
-**  'ZERO' is defined in the declaration part of this package as follows
-**
-#define ZERO(op)        ((*ZeroFuncs[TYPE_OBJ(op)])(op))
-*/
-Obj ZeroAttr;
-
-Obj ZeroHandler (
-    Obj                 self,
-    Obj                 op )
-{
-    return ZERO( op );
-}
-
-Obj ZeroUndefined (
-    Obj                 op )
-{
-    return ErrorReturnObj(
-        "operations: ZERO of %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(op)].name),
-        0L,
-        "you can return a value for the result" );
-}
-
-Obj ZeroObject (
-    Obj                 op )
-
-{
-    return DoAttribute( ZeroAttr, op );
-}
-
-Obj VerboseZeroObject (
-    Obj                 op )
-
-{
-    return DoVerboseAttribute( ZeroAttr, op );
-}
-
-
-/****************************************************************************
-**
-*V  ZeroFuncs[<type>] . . . . . . . . . . . . . . . . . table of zero methods
-*/
-ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TYPE+1];
-
-
-/****************************************************************************
-**
-*F  InstallZeroObject( <verb> )
-*/
-void InstallZeroObject ( Int verb )
-{
-    UInt                t1;             /* type of left  operand           */
-
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-	if ( verb ) {
-	    ZeroFuncs[ t1 ] = VerboseZeroObject;
-	}
-	else {
-	    ZeroFuncs[ t1 ] = ZeroObject;
-	}
-    }
-    if ( verb ) {
-	ZeroFuncs[ t1 ] = VerboseZeroObject;
-    }
-    else {
-	ZeroFuncs[ T_OBJECT ] = ZeroObject;
-    }
-}
-
-
-/****************************************************************************
-**
-
-*F  AINV( <op> )  . . . . . . . . . . . . . . . additive inverse of an object
-**
-**  'AINV' returns the additive inverse of the object <op>.
-**
-**  'AINV' is defined in the declaration part of this package as follows
-**
-#define AINV(op)        ((*AInvFuncs[TYPE_OBJ(op)])(op))
-*/
-Obj AInvAttr;
-
-Obj AInvHandler (
-    Obj                 self,
-    Obj                 op )
-{
-    return AINV( op );
-}
-
-Obj AInvUndefined (
-    Obj                 op )
-{
-    return ErrorReturnObj(
-        "operations: AINV of %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(op)].name),
-        0L,
-        "you can return a value for the result" );
-}
-
-Obj AInvObject (
-    Obj                 op )
-{
-    return DoAttribute( AInvAttr, op );
-}
-
-Obj VerboseAInvObject (
-    Obj                 op )
-{
-    return DoVerboseAttribute( AInvAttr, op );
-}
-
-
-/****************************************************************************
-**
-*V  AInvFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
-*/
-ArithMethod1 AInvFuncs [LAST_VIRTUAL_TYPE+1];
-
-
-/****************************************************************************
-**
-*F  InstallAinvObject( <verb> )
-*/
-void InstallAinvObject ( Int verb )
-{
-    UInt                t1;             /* type of left  operand           */
-
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-	if ( verb ) {
-	    AInvFuncs[ t1 ] = VerboseAInvObject;
-	}
-	else {
-	    AInvFuncs[ t1 ] = AInvObject;
-	}
-    }
-    if ( verb ) {
-	AInvFuncs[ T_OBJECT ] = VerboseAInvObject;
-    }
-    else {
-	AInvFuncs[ T_OBJECT ] = AInvObject;
+    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+        SumFuncs[t2][T_OBJECT] = func;
+        SumFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -598,41 +761,37 @@ void InstallAinvObject ( Int verb )
 **
 **  'DIFF' is defined in the declaration part of this package as follows
 **
-#define DIFF(opL,opR)   ((*DiffFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define DIFF(opL,opR)   ((*DiffFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj DiffOper;
 
-Obj DiffHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DIFF( opL, opR );
-}
 
+/****************************************************************************
+**
+*V  DiffFuncs[ <typeL> ][ <typeR> ] . . . . . . . table of difference methods
+*/
+ArithMethod2 DiffFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  DiffDefault( <opL>, <opR> ) . . . . . . . . . . . . call 'SUM' and 'AINV'
+*/
 Obj DiffDefault (
     Obj                 opL,
     Obj                 opR )
 {
     Obj                 tmp;
+
     tmp = AINV( opR );
     return SUM( opL, tmp );
 }    
 
-Obj DiffObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoOperation2Args( DiffOper, opL, opR );
-}
 
-Obj VerboseDiffObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoVerboseOperation2Args( DiffOper, opL, opR );
-}
-
+/****************************************************************************
+**
+*F  DiffDefaultHandler( <self>, <opL>, <opR> )  . . . . .  call 'DiffDefault'
+*/
 Obj DiffDefaultFunc;
 
 Obj DiffDefaultHandler (
@@ -646,41 +805,61 @@ Obj DiffDefaultHandler (
 
 /****************************************************************************
 **
-*V  DiffFuncs[<typeL>][<typeR>] . . . . . . . . . table of difference methods
+*F  DiffObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-ArithMethod2    DiffFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj DiffObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoOperation2Args( DiffOper, opL, opR );
+}
 
 
 /****************************************************************************
 **
-*F  InstallDiffObject( <verb> )
+*F  VerboseDiffObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
+*/
+Obj VerboseDiffObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoVerboseOperation2Args( DiffOper, opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  DiffHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . call 'DIFF'
+*/
+Obj DiffHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DIFF( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  InstallDiffObject( <verb> ) . . . . . . . . .  install difference methods
 */
 void InstallDiffObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    ArithMethod2        func;           /* difference function             */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		DiffFuncs[ t1 ][ t2 ] = VerboseDiffObject;
-		DiffFuncs[ t2 ][ t1 ] = VerboseDiffObject;
-	    }
-	    else {
-		DiffFuncs[ t1 ][ t2 ] = DiffObject;
-		DiffFuncs[ t2 ][ t1 ] = DiffObject;
-	    }
+    func = ( verb ? VerboseDiffObject : DiffObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            DiffFuncs[t1][t2] = func;
+            DiffFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    DiffFuncs[ t2 ][ T_OBJECT ] = VerboseDiffObject;
-	    DiffFuncs[ T_OBJECT ][ t2 ] = VerboseDiffObject;
-	}
-	else {
-	    DiffFuncs[ t2 ][ T_OBJECT ] = DiffObject;
-	    DiffFuncs[ T_OBJECT ][ t2 ] = DiffObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+        DiffFuncs[t2][T_OBJECT] = func;
+        DiffFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -694,29 +873,22 @@ void InstallDiffObject ( Int verb )
 **
 **  'PROD' is defined in the declaration part of this package as follows
 **
-#define PROD(opL,opR)   ((*ProdFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define PROD(opL,opR)   ((*ProdFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj ProdOper;
 
-Obj ProdHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return PROD( opL, opR );
-}
 
-Obj ProdUndefined (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return ErrorReturnObj(
-        "operations: PROD of %s and %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(opL)].name),
-        (Int)(InfoBags[TYPE_OBJ(opR)].name),
-        "you can return a value for the result" );
-}
+/****************************************************************************
+**
+*V  ProdFuncs[ <typeL> ][ <typeR> ] . . . . . . . .  table of product methods
+*/
+ArithMethod2    ProdFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
+
+/****************************************************************************
+**
+*F  ProdObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
+*/
 Obj ProdObject (
     Obj                 opL,
     Obj                 opR )
@@ -725,6 +897,10 @@ Obj ProdObject (
 }
 
 
+/****************************************************************************
+**
+*F  VerboseProdObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
+*/
 Obj VerboseProdObject (
     Obj                 opL,
     Obj                 opR )
@@ -735,191 +911,37 @@ Obj VerboseProdObject (
 
 /****************************************************************************
 **
-*V  ProdFuncs[<typeL>][<typeR>] . . . . . . . . . .  table of product methods
+*F  ProdHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . call 'PROD'
 */
-ArithMethod2    ProdFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj ProdHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return PROD( opL, opR );
+}
 
 
 /****************************************************************************
 **
-*F  InstallProdObject( <verb> )
+*F  InstallProdObject( <verb> ) . . . . . . . . . . . install product methods
 */
 void InstallProdObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    ArithMethod2        func;           /* product function                */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		ProdFuncs[ t1 ][ t2 ] = VerboseProdObject;
-		ProdFuncs[ t2 ][ t1 ] = VerboseProdObject;
-	    }
-	    else {
-		ProdFuncs[ t1 ][ t2 ] = ProdObject;
-		ProdFuncs[ t2 ][ t1 ] = ProdObject;
-	    }
+    func = ( verb ? VerboseProdObject : ProdObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            ProdFuncs[t1][t2] = func;
+            ProdFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    ProdFuncs[ t2 ][ T_OBJECT ] = VerboseProdObject;
-	    ProdFuncs[ T_OBJECT ][ t2 ] = VerboseProdObject;
-	}
-	else {
-	    ProdFuncs[ t2 ][ T_OBJECT ] = ProdObject;
-	    ProdFuncs[ T_OBJECT ][ t2 ] = ProdObject;
-	}
-    }
-}
-
-
-/****************************************************************************
-**
-
-*F  ONE( <op> ) . . . . . . . . . . . . . . . . . . . . . .  one of an object
-**
-**  'ONE' returns the one of the object <op>.
-**
-**  'ONE' is defined in the declaration part of this package as follows
-**
-#define ONE(op)         ((*OneFuncs[TYPE_OBJ(op)])(op))
-*/
-Obj OneAttr;
-
-Obj OneHandler (
-    Obj                 self,
-    Obj                 op )
-{
-    return ONE( op );
-}
-
-Obj OneUndefined (
-    Obj                 op )
-{
-    return ErrorReturnObj(
-        "operations: ONE of %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(op)].name),
-        0L,
-        "you can return a value for the result" );
-}
-
-Obj OneObject (
-    Obj                 op )
-{
-    return DoAttribute( OneAttr, op );
-}
-
-Obj VerboseOneObject (
-    Obj                 op )
-{
-    return DoVerboseAttribute( OneAttr, op );
-}
-
-
-/****************************************************************************
-**
-*V  OneFuncs[<type>]  . . . . . . . . . . . . . . . . .  table of one methods
-*/
-ArithMethod1 OneFuncs [LAST_VIRTUAL_TYPE+1];
-
-
-/****************************************************************************
-**
-*F  InstallOneObject( <verb> )
-*/
-void InstallOneObject ( Int verb )
-{
-    UInt                t1;             /* type of left  operand           */
-
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-	if ( verb ) {
-	    OneFuncs[ t1 ] = VerboseOneObject;
-	}
-	else {
-	    OneFuncs[ t1 ] = OneObject;
-	}
-    }
-    if ( verb ) {
-	OneFuncs[ T_OBJECT ] = VerboseOneObject;
-    }
-    else {
-	OneFuncs[ T_OBJECT ] = OneObject;
-    }
-}
-
-
-/****************************************************************************
-**
-
-*F  INV( <op> ) . . . . . . . . . . . . . . . . . . . .  inverse of an object
-**
-**  'INV' returns the multiplicative inverse of the object <op>.
-**
-**  'INV' is defined in the declaration of this package as follows
-**
-#define INV(op)         ((*InvFuncs[TYPE_OBJ(op)])(op))
-*/
-Obj InvAttr;
-
-Obj InvHandler (
-    Obj                 self,
-    Obj                 op )
-{
-    return INV( op );
-}
-
-Obj InvUndefined (
-    Obj                 op )
-{
-    return ErrorReturnObj(
-        "operations: INV of %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(op)].name),
-        0L,
-        "you can return a value for the result" );
-}
-
-Obj InvObject (
-    Obj                 op )
-{
-    return DoAttribute( InvAttr, op );
-}
-
-Obj VerboseInvObject (
-    Obj                 op )
-{
-    return DoVerboseAttribute( InvAttr, op );
-}
-
-
-/****************************************************************************
-**
-*V  InvFuncs[<type>]  . . . . . . . . . . . . . .  table of inverse functions
-*/
-ArithMethod1 InvFuncs [LAST_VIRTUAL_TYPE+1];
-
-    
-/****************************************************************************
-**
-*F  InstallInvObject( <verb> )
-*/
-void InstallInvObject ( Int verb )
-{
-    UInt                t1;             /* type of left  operand           */
-
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-	if ( verb ) {
-	    InvFuncs[ t1 ] = VerboseInvObject;
-	}
-	else {
-	    InvFuncs[ t1 ] = InvObject;
-	}
-    }
-    if ( verb ) {
-	InvFuncs[ T_OBJECT ] = VerboseInvObject;
-    }
-    else {
-	InvFuncs[ T_OBJECT ] = InvObject;
+    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+        ProdFuncs[t2][T_OBJECT] = func;
+        ProdFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -933,18 +955,22 @@ void InstallInvObject ( Int verb )
 **
 **  'QUO' is defined in the declaration part of this package as follows
 **
-#define QUO(opL,opR)    ((*QuoFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define QUO(opL,opR)    ((*QuoFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj QuoOper;
 
-Obj QuoHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return QUO( opL, opR );
-}
 
+/****************************************************************************
+**
+*V  QuoFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . table of quotient methods
+*/
+ArithMethod2 QuoFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  QuoDefault( <opL>, <opR> )  . . . . . . . . . . . . call 'INV' and 'PROD'
+*/
 Obj QuoDefault (
     Obj                 opL,
     Obj                 opR )
@@ -954,20 +980,11 @@ Obj QuoDefault (
     return PROD( opL, tmp );
 }
 
-Obj QuoObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoOperation2Args( QuoOper, opL, opR );
-}
 
-Obj VerboseQuoObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoVerboseOperation2Args( QuoOper, opL, opR );
-}
-
+/****************************************************************************
+**
+*F  QuoDefaultHandler( <self>, <opL>, <opR> ) . . . . . . . call 'QuoDefault'
+*/
 Obj QuoDefaultFunc;
 
 Obj QuoDefaultHandler (
@@ -981,41 +998,61 @@ Obj QuoDefaultHandler (
 
 /****************************************************************************
 **
-*V  QuoFuncs[<typeL>][<typeR>]  . . . . . . . . . . table of quotient methods
+*F  QuoObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-ArithMethod2 QuoFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj QuoObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoOperation2Args( QuoOper, opL, opR );
+}
 
 
 /****************************************************************************
 **
-*F  InstallQuoObject( <verb> )
+*F  VerboseQuoObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
+*/
+Obj VerboseQuoObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoVerboseOperation2Args( QuoOper, opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  QuoHandler( <self>, <opL>, <opR> )  . . . . . . . . . . . . .  call 'QUO'
+*/
+Obj QuoHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return QUO( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  InstallQuoObject( <verb> )  . . . . . . . . . .  install quotient methods
 */
 void InstallQuoObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    ArithMethod2        func;           /* quotient function               */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		QuoFuncs[ t1 ][ t2 ] = VerboseQuoObject;
-		QuoFuncs[ t2 ][ t1 ] = VerboseQuoObject;
-	    }
-	    else {
-		QuoFuncs[ t1 ][ t2 ] = QuoObject;
-		QuoFuncs[ t2 ][ t1 ] = QuoObject;
-	    }
+    func = ( verb ? VerboseQuoObject : QuoObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            QuoFuncs[t1][t2] = func;
+            QuoFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    QuoFuncs[ t2 ][ T_OBJECT ] = VerboseQuoObject;
-	    QuoFuncs[ T_OBJECT ][ t2 ] = VerboseQuoObject;
-	}
-	else {
-	    QuoFuncs[ t2 ][ T_OBJECT ] = QuoObject;
-	    QuoFuncs[ T_OBJECT ][ t2 ] = QuoObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+        QuoFuncs[t2][T_OBJECT] = func;
+        QuoFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -1029,18 +1066,22 @@ void InstallQuoObject ( Int verb )
 **
 **  'LQUO' is defined in the declaration part of this package as follows
 **
-#define LQUO(opL,opR)   ((*LQuoFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define LQUO(opL,opR)   ((*LQuoFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj LQuoOper;
 
-Obj LQuoHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return LQUO( opL, opR );
-}
 
+/****************************************************************************
+**
+*V  LQuoFuncs[ <typeL> ][ <typeR> ] . . . . .  table of left quotient methods
+*/
+ArithMethod2 LQuoFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+
+
+/****************************************************************************
+**
+*F  LQuoDefault( <opL>, <opR> ) . . . . . . . . . . . . call 'INV' and 'PROD'
+*/
 Obj LQuoDefault (
     Obj                 opL,
     Obj                 opR )
@@ -1050,20 +1091,11 @@ Obj LQuoDefault (
     return PROD( tmp, opR );
 }
 
-Obj LQuoObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoOperation2Args( LQuoOper, opL, opR );
-}
 
-Obj VerboseLQuoObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoVerboseOperation2Args( LQuoOper, opL, opR );
-}
-
+/****************************************************************************
+**
+*F  LQuoDefaultHandler( <self>, <opL>, <opR> )  . . . . .  call 'LQuoDefault'
+*/
 Obj LQuoDefaultFunc;
 
 Obj LQuoDefaultHandler (
@@ -1077,41 +1109,61 @@ Obj LQuoDefaultHandler (
 
 /****************************************************************************
 **
-*V  LQuoFuncs[<typeL>][<typeR>] . . . . . . .  table of left quotient methods
+*F  LQuoObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-ArithMethod2 LQuoFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj LQuoObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoOperation2Args( LQuoOper, opL, opR );
+}
 
 
 /****************************************************************************
 **
-*F  InstallLQuoObject( <verb> )
+*F  VerboseLQuoObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
+*/
+Obj VerboseLQuoObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoVerboseOperation2Args( LQuoOper, opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  LQuoHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . call 'LQUO'
+*/
+Obj LQuoHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return LQUO( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  InstallLQuoObject( <verb> ) . . . . . . . . install left quotient methods
 */
 void InstallLQuoObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    ArithMethod2        func;           /* left quotient function          */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		LQuoFuncs[ t1 ][ t2 ] = VerboseLQuoObject;
-		LQuoFuncs[ t2 ][ t1 ] = VerboseLQuoObject;
-	    }
-	    else {
-		LQuoFuncs[ t1 ][ t2 ] = LQuoObject;
-		LQuoFuncs[ t2 ][ t1 ] = LQuoObject;
-	    }
+    func = ( verb ? VerboseLQuoObject : LQuoObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+            LQuoFuncs[t1][t2] = func;
+            LQuoFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    LQuoFuncs[ t2 ][ T_OBJECT ] = VerboseLQuoObject;
-	    LQuoFuncs[ T_OBJECT ][ t2 ] = VerboseLQuoObject;
-	}
-	else {
-	    LQuoFuncs[ t2 ][ T_OBJECT ] = LQuoObject;
-	    LQuoFuncs[ T_OBJECT ][ t2 ] = LQuoObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+        LQuoFuncs[t2][T_OBJECT] = func;
+        LQuoFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -1125,29 +1177,22 @@ void InstallLQuoObject ( Int verb )
 **
 **  'POW' is defined in the declaration part of this package as follows
 **
-#define POW(opL,opR)    ((*PowFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define POW(opL,opR)    ((*PowFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj PowOper;
 
-Obj PowHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return POW( opL, opR );
-}
 
-Obj PowUndefined (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return ErrorReturnObj(
-        "operations: POW of %s and %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(opL)].name),
-        (Int)(InfoBags[TYPE_OBJ(opR)].name),
-        "you can return a value for the result" );
-}
+/****************************************************************************
+**
+*V  PowFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . .  table of power methods
+*/
+ArithMethod2 PowFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
+
+/****************************************************************************
+**
+*F  PowDefault( <opL>, <opR> )  . . . . . . . . . . .  call 'LQUO' and 'PROD'
+*/
 Obj PowDefault (
     Obj                 opL,
     Obj                 opR )
@@ -1157,20 +1202,11 @@ Obj PowDefault (
     return PROD( tmp, opR );
 }
 
-Obj PowObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoOperation2Args( PowOper, opL, opR );
-}
 
-Obj VerbosePowObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoVerboseOperation2Args( PowOper, opL, opR );
-}
-
+/****************************************************************************
+**
+*F  PowDefaultHandler( <self>, <opL>, <opR> ) . . . . . . . call 'PowDefault'
+*/
 Obj PowDefaultFunc;
 
 Obj PowDefaultHandler (
@@ -1184,41 +1220,61 @@ Obj PowDefaultHandler (
 
 /****************************************************************************
 **
-*V  PowFuncs[<typeL>][<typeR>]  . . . . . . . . . . .  table of power methods
+*F  PowObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-ArithMethod2 PowFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj PowObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoOperation2Args( PowOper, opL, opR );
+}
 
 
 /****************************************************************************
 **
-*F  InstallPowObject( <verb> )
+*F  VerbosePowObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
+*/
+Obj VerbosePowObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoVerboseOperation2Args( PowOper, opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  PowHandler( <self>, <opL>, <opR> )  . . . . . . . . . . . . .  call 'POW'
+*/
+Obj PowHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return POW( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  InstallPowObject( <verb> )  . . . . . . . . . . install the power methods
 */
 void InstallPowObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    ArithMethod2        func;           /* power function                  */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		PowFuncs[ t1 ][ t2 ] = VerbosePowObject;
-		PowFuncs[ t2 ][ t1 ] = VerbosePowObject;
-	    }
-	    else {
-		PowFuncs[ t1 ][ t2 ] = PowObject;
-		PowFuncs[ t2 ][ t1 ] = PowObject;
-	    }
+    func = ( verb ? VerbosePowObject : PowObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            PowFuncs[t1][t2] = func;
+            PowFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    PowFuncs[ t2 ][ T_OBJECT ] = VerbosePowObject;
-	    PowFuncs[ T_OBJECT ][ t2 ] = VerbosePowObject;
-	}
-	else {
-	    PowFuncs[ t2 ][ T_OBJECT ] = PowObject;
-	    PowFuncs[ T_OBJECT ][ t2 ] = PowObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+        PowFuncs[t2][T_OBJECT] = func;
+        PowFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -1232,29 +1288,22 @@ void InstallPowObject ( Int verb )
 **
 **  'COMM' is defined in the declaration part of this package as follows
 **
-#define COMM(opL,opR)   ((*CommFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define COMM(opL,opR)   ((*CommFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj CommOper;
 
-Obj CommHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return COMM( opL, opR );
-}
 
-Obj CommUndefined (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return ErrorReturnObj(
-        "operations: COMM of %s and %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(opL)].name),
-        (Int)(InfoBags[TYPE_OBJ(opR)].name),
-        "you can return a value for the result" );
-}
+/****************************************************************************
+**
+*V  CommFuncs[ <typeL> ][ <typeR> ] . . . . . . . table of commutator methods
+*/
+ArithMethod2 CommFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
+
+/****************************************************************************
+**
+*F  CommDefault( <opL>, <opR> ) . . . . . . . . . . .  call 'LQUO' and 'PROD'
+*/
 Obj CommDefault (
     Obj                 opL,
     Obj                 opR )
@@ -1266,20 +1315,11 @@ Obj CommDefault (
     return LQUO( tmp1, tmp2 );
 }
 
-Obj CommObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoOperation2Args( CommOper, opL, opR );
-}
 
-Obj VerboseCommObject (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DoVerboseOperation2Args( CommOper, opL, opR );
-}
-
+/****************************************************************************
+**
+*F  CommDefaultHandler( <self>, <opL>, <opR> )  . . . . .  call 'CommDefault'
+*/
 Obj CommDefaultFunc;
 
 Obj CommDefaultHandler (
@@ -1293,41 +1333,61 @@ Obj CommDefaultHandler (
 
 /****************************************************************************
 **
-*V  CommFuncs[<typeL>][<typeR>] . . . . . . . . . table of commutator methods
+*F  CommObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-ArithMethod2 CommFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+Obj CommObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoOperation2Args( CommOper, opL, opR );
+}
 
 
 /****************************************************************************
 **
-*F  InstallCommObject( <verb> )
+*F  VerboseCommObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
+*/
+Obj VerboseCommObject (
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DoVerboseOperation2Args( CommOper, opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  CommHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . call 'COMM'
+*/
+Obj CommHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return COMM( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  InstallCommObject( <verb> ) . . . . . . . . .  install commutator methods
 */
 void InstallCommObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    ArithMethod2        func;           /* commutator function             */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		CommFuncs[ t1 ][ t2 ] = VerboseCommObject;
-		CommFuncs[ t2 ][ t1 ] = VerboseCommObject;
-	    }
-	    else {
-		CommFuncs[ t1 ][ t2 ] = CommObject;
-		CommFuncs[ t2 ][ t1 ] = CommObject;
-	    }
+    func = ( verb ? VerboseCommObject : CommObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            CommFuncs[t1][t2] = func;
+            CommFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    CommFuncs[ t2 ][ T_OBJECT ] = VerboseCommObject;
-	    CommFuncs[ T_OBJECT ][ t2 ] = VerboseCommObject;
-	}
-	else {
-	    CommFuncs[ t2 ][ T_OBJECT ] = CommObject;
-	    CommFuncs[ T_OBJECT ][ t2 ] = CommObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+        CommFuncs[t2][T_OBJECT] = func;
+        CommFuncs[T_OBJECT][t2] = func;
     }
 }
 
@@ -1341,29 +1401,23 @@ void InstallCommObject ( Int verb )
 **
 **  'MOD' is defined in the declaration part of this package as follows
 **
-#define MOD(opL,opR)    ((*ModFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define MOD(opL,opR)    ((*ModFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 */
 Obj ModOper;
 
-Obj ModHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return MOD( opL, opR );
-}
 
-Obj ModUndefined (
-    Obj                 opL,
-    Obj                 opR )
-{
-    return ErrorReturnObj(
-        "operations: MOD of %s and %s is not defined",
-        (Int)(InfoBags[TYPE_OBJ(opL)].name),
-        (Int)(InfoBags[TYPE_OBJ(opR)].name),
-        "you can return a value for the result" );
-}
+/****************************************************************************
+**
+*V  ModFuncs[ <typeL> ][ <typeR> ]  . . . . . . .  table of remainder methods
+*/
+ArithMethod2 ModFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
+
+
+/****************************************************************************
+**
+*F  ModObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
+*/
 Obj ModObject (
     Obj                 opL,
     Obj                 opR )
@@ -1371,6 +1425,11 @@ Obj ModObject (
     return DoOperation2Args( ModOper, opL, opR );
 }
 
+
+/****************************************************************************
+**
+*F  VerboseModObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
+*/
 Obj VerboseModObject (
     Obj                 opL,
     Obj                 opR )
@@ -1381,45 +1440,46 @@ Obj VerboseModObject (
 
 /****************************************************************************
 **
-*V  ModFuncs[<typeL>][<typeR>]  . . . . . . . . .  table of remainder methods
+*F  ModHandler( <self>, <opL>, <opR> )  . . . . . . . . . . . . .  call 'MOD'
 */
-ArithMethod2 ModFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
-
+Obj ModHandler (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return MOD( opL, opR );
+}
 
 
 /****************************************************************************
 **
-*F  InstallModObject( <verb> )
+*F  InstallModObject( <verb> )  . . . . . . . . . . . install the mod methods
 */
 void InstallModObject ( Int verb )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+    ArithMethod2        func;           /* mod function                    */
 
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	    if ( verb ) {
-		ModFuncs[ t1 ][ t2 ] = VerboseModObject;
-		ModFuncs[ t2 ][ t1 ] = VerboseModObject;
-	    }
-	    else {
-		ModFuncs[ t1 ][ t2 ] = ModObject;
-		ModFuncs[ t2 ][ t1 ] = ModObject;
-	    }
+    func = ( verb ? VerboseModObject : ModObject );
+    for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            ModFuncs[t1][t2] = func;
+            ModFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-	if ( verb ) {
-	    ModFuncs[ t2 ][ T_OBJECT ] = VerboseModObject;
-	    ModFuncs[ T_OBJECT ][ t2 ] = VerboseModObject;
-	}
-	else {
-	    ModFuncs[ t2 ][ T_OBJECT ] = ModObject;
-	    ModFuncs[ T_OBJECT ][ t2 ] = ModObject;
-	}
+    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+        ModFuncs[t2][T_OBJECT] = func;
+        ModFuncs[T_OBJECT][t2] = func;
     }
 }
 
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
 
 /****************************************************************************
 **
@@ -1428,164 +1488,189 @@ void InstallModObject ( Int verb )
 **
 **  'InitAriths' initializes the arithmetic operations package.
 */
-void            InitAriths ( void )
+void InitAriths ( void )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
 
+
+    /* make and install the 'ZERO' arithmetic operation                    */
+    C_NEW_GVAR_ATTR( "ZERO", "op", ZeroAttr, ZeroHandler,
+        "src/ariths.c:ZERO" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        ZeroFuncs[t1] = ZeroObject;
+    }
+    InstallZeroObject(0);
+
+
+    /* make and install the 'AINV' arithmetic operation                    */
+    C_NEW_GVAR_ATTR( "AINV", "op", AInvAttr, AInvHandler,
+        "src/ariths.c:AINV" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        AInvFuncs[t1] = AInvObject;
+    }
+    InstallAinvObject(0);
+
+
+    /* make and install the 'ONE' arithmetic operation                     */
+    C_NEW_GVAR_ATTR( "ONE", "op", OneAttr, OneHandler,
+        "src/ariths.c:ONE" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        OneFuncs[t1] = OneObject;
+    }
+    InstallOneObject(0);
+
+
+    /* make and install the 'INV' arithmetic operation                     */
+    C_NEW_GVAR_ATTR( "INV", "op", InvAttr, InvHandler,
+        "src/ariths.c:INV" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        InvFuncs[t1] = InvObject;
+    }
+    InstallInvObject(0);
+
+
     /* make and install the 'EQ' comparison operation                      */
-    EqOper = NewOperationC( "EQ", 2L, "opL, opR", EqHandler );
-    AssGVar( GVarName( "EQ" ), EqOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            EqFuncs[ t1 ][ t2 ] = EqNot;
+    C_NEW_GVAR_OPER( "EQ", 2L, "opL, opR", EqOper, EqHandler,
+        "src/ariths.c:EQ" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            EqFuncs[t1][t2] = EqNot;
         }
     }
     InstallEqObject(0);
 
+
     /* make and install the 'LT' comparison operation                      */
-    LtOper = NewOperationC( "LT", 2L, "opL, opR", LtHandler );
-    AssGVar( GVarName( "LT" ), LtOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            LtFuncs[ t1 ][ t2 ] = LtUndefined;
+    C_NEW_GVAR_OPER( "LT", 2L, "opL, opR", LtOper, LtHandler,
+        "src/ariths.c:LT" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            LtFuncs[t1][t2] = LtObject;
         }
     }
     InstallLtObject(0);
 
+
     /* make and install the 'IN' comparison operation                      */
-    InOper = NewOperationC( "IN", 2L, "opL, opR", InHandler );
-    AssGVar( GVarName( "IN" ), InOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            InFuncs[ t1 ][ t2 ] = InUndefined;
+    C_NEW_GVAR_OPER( "IN", 2L, "opL, opR", InOper, InHandler,
+        "src/ariths.c:IN" );
+
+    for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_VIRTUAL_TNUM; t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+            InFuncs[t1][t2] = InUndefined;
         }
     }
     InstallInObject(0);
 
+
     /* make and install the 'SUM' arithmetic operation                     */
-    SumOper = NewOperationC( "SUM", 2L, "opL, opR", SumHandler );
-    AssGVar( GVarName( "SUM" ), SumOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            SumFuncs[ t1 ][ t2 ] = SumUndefined;
+    C_NEW_GVAR_OPER( "SUM", 2L, "opL, opR", SumOper, SumHandler,
+        "src/ariths.c:SUM" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            SumFuncs[t1][t2] = SumObject;
         }
     }
     InstallSumObject(0);
 
-    /* make and install the 'ZERO' arithmetic operation                    */
-    ZeroAttr = NewAttributeC( "ZERO", 1L, "op", ZeroHandler );
-    AssGVar( GVarName( "ZERO" ), ZeroAttr );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        ZeroFuncs[ t1 ] = ZeroUndefined;
-    }
-    InstallZeroObject(0);
-
-    /* make and install the 'AINV' arithmetic operation                    */
-    AInvAttr = NewAttributeC( "AINV", 1L, "op", AInvHandler );
-    AssGVar( GVarName( "AINV" ), AInvAttr );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        AInvFuncs[ t1 ] = AInvUndefined;
-    }
-    InstallAinvObject(0);
 
     /* make and install the 'DIFF' arithmetic operation                    */
-    DiffOper = NewOperationC( "DIFF", 2L, "opL, opR", DiffHandler );
-    AssGVar( GVarName( "DIFF" ), DiffOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            DiffFuncs[ t1 ][ t2 ] = DiffDefault;
+    C_NEW_GVAR_OPER( "DIFF", 2L, "opL, opR", DiffOper, DiffHandler,
+        "src/ariths.c:DIFF" );
+    C_NEW_GVAR_FUNC( "DIFF_DEFAULT", 2L, "opL, opR", DiffDefaultHandler,
+        "src/ariths.c:DIFF_DEFAULT" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            DiffFuncs[t1][t2] = DiffDefault;
         }
     }
     InstallDiffObject(0);
-    DiffDefaultFunc = NewFunctionC(
-        "DIFF_DEFAULT", 2L, "opL, opR", DiffDefaultHandler );
-    AssGVar( GVarName( "DIFF_DEFAULT" ), DiffDefaultFunc );
+
 
     /* make and install the 'PROD' arithmetic operation                    */
-    ProdOper = NewOperationC( "PROD", 2L, "opL, opR", ProdHandler );
-    AssGVar( GVarName( "PROD" ), ProdOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            ProdFuncs[ t1 ][ t2 ] = ProdUndefined;
+    C_NEW_GVAR_OPER( "PROD", 2L, "opL, opR", ProdOper, ProdHandler,
+        "src/ariths.c:PROD" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            ProdFuncs[t1][t2] = ProdObject;
         }
     }
     InstallProdObject(0);
 
-    /* make and install the 'ONE' arithmetic operation                     */
-    OneAttr = NewAttributeC( "ONE", 1L, "op", OneHandler );
-    AssGVar( GVarName( "ONE" ), OneAttr );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        OneFuncs[ t1 ] = OneUndefined;
-    }
-    InstallOneObject(0);
-
-    /* make and install the 'INV' arithmetic operation                     */
-    InvAttr = NewAttributeC( "INV", 1L, "op", InvHandler );
-    AssGVar( GVarName( "INV" ), InvAttr );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        InvFuncs[ t1 ] = InvUndefined;
-    }
-    InstallInvObject(0);
 
     /* make and install the 'QUO' arithmetic operation                     */
-    QuoOper = NewOperationC( "QUO", 2L, "opL, opR", QuoHandler );
-    AssGVar( GVarName( "QUO" ), QuoOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            QuoFuncs[ t1 ][ t2 ] = QuoDefault;
+    C_NEW_GVAR_OPER( "QUO", 2L, "opL, opR", QuoOper, QuoHandler,
+        "src/ariths.c:QUO" );
+    C_NEW_GVAR_FUNC( "QUO_DEFAULT", 2L, "opL, opR", QuoDefaultHandler,
+        "src/ariths.c:QUO_DEFAULT" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            QuoFuncs[t1][t2] = QuoDefault;
         }
     }
     InstallQuoObject(0);
-    QuoDefaultFunc = NewFunctionC(
-        "QUO_DEFAULT", 2L, "opL, opR", QuoDefaultHandler );
-    AssGVar( GVarName( "QUO_DEFAULT" ), QuoDefaultFunc );
+
 
     /* make and install the 'LQUO' arithmetic operation                    */
-    LQuoOper = NewOperationC( "LQUO", 2L, "opL, opR", LQuoHandler );
-    AssGVar( GVarName( "LQUO" ), LQuoOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            LQuoFuncs[ t1 ][ t2 ] = LQuoDefault;
+    C_NEW_GVAR_OPER( "LQUO", 2L, "opL, opR", LQuoOper, LQuoHandler,
+        "src/ariths.c:LQUO" );
+    C_NEW_GVAR_FUNC( "LQUO_DEFAULT", 2L, "opL, opR", LQuoDefaultHandler,
+        "src/ariths.c:LQUO_DEFAULT" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            LQuoFuncs[t1][t2] = LQuoDefault;
         }
     }
     InstallLQuoObject(0);
-    LQuoDefaultFunc = NewFunctionC(
-        "LQUO_DEFAULT", 2L, "opL, opR", LQuoDefaultHandler );
-    AssGVar( GVarName( "LQUO_DEFAULT" ), LQuoDefaultFunc );
+
 
     /* make and install the 'POW' arithmetic operation                     */
-    PowOper = NewOperationC( "POW", 2L, "opL, opR", PowHandler );
-    AssGVar( GVarName( "POW" ), PowOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            PowFuncs[ t1 ][ t2 ] = PowUndefined;
+    C_NEW_GVAR_OPER( "POW", 2L, "opL, opR", PowOper, PowHandler,
+        "src/ariths.c:POW" );
+    C_NEW_GVAR_FUNC( "POW_DEFAULT", 2L, "opL, opR", PowDefaultHandler,
+        "src/ariths.c:POW_DEFAULT" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            PowFuncs[t1][t2] = PowObject;
         }
     }
     InstallPowObject(0);
-    PowDefaultFunc = NewFunctionC(
-        "POW_DEFAULT", 2L, "opL, opR", PowDefaultHandler );
-    AssGVar( GVarName( "POW_DEFAULT" ), PowDefaultFunc );
+
 
     /* make and install the 'COMM' arithmetic operation                    */
-    CommOper = NewOperationC( "COMM", 2L, "opL, opR", CommHandler );
-    AssGVar( GVarName( "COMM" ), CommOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            CommFuncs[ t1 ][ t2 ] = CommDefault;
+    C_NEW_GVAR_OPER( "COMM", 2L, "opL, opR", CommOper, CommHandler,
+        "src/ariths.c:COMM" );
+    C_NEW_GVAR_FUNC( "COMM_DEFAULT", 2L, "opL, opR", CommDefaultHandler,
+        "src/ariths.c:COMM_DEFAULT" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            CommFuncs[t1][t2] = CommDefault;
         }
     }
     InstallCommObject(0);
-    CommDefaultFunc = NewFunctionC(
-        "COMM_DEFAULT", 2L, "opL, opR", CommDefaultHandler );
-    AssGVar( GVarName( "COMM_DEFAULT" ), CommDefaultFunc );
+
 
     /* make and install the 'MOD' arithmetic operation                     */
-    ModOper = NewOperationC( "MOD", 2L, "opL, opR", ModHandler );
-    AssGVar( GVarName( "MOD" ), ModOper );
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
-            ModFuncs[ t1 ][ t2 ] = ModUndefined;
+    C_NEW_GVAR_OPER( "MOD", 2L, "opL, opR", ModOper, ModHandler,
+        "src/ariths.c:MOD" );
+
+    for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
+        for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+            ModFuncs[t1][t2] = ModObject;
         }
     }
     InstallModObject(0);

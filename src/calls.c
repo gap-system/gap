@@ -39,7 +39,7 @@ char * Revision_calls_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* Bag, NewBag                     */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -1060,9 +1060,9 @@ Obj DoProfXargs (
 typedef struct {
   ObjFunc hdlr;
   Char *cookie;
-} TypeHandlerInfo;
+} TNumHandlerInfo;
 
-static TypeHandlerInfo HandlerFuncs[MAX_HANDLERS];
+static TNumHandlerInfo HandlerFuncs[MAX_HANDLERS];
 static UInt NHandlerFuncs = 0;
  
 
@@ -1088,22 +1088,22 @@ static void CheckHandlersBag(
 #ifdef DEBUG_HANDLER_REGISTRATION
   UInt i,j;
   ObjFunc hdlr;
-  if (TYPE_BAG(bag) == T_FUNCTION)
+  if (TNUM_BAG(bag) == T_FUNCTION)
   {
     for (j = 0; j < 8; j++)
       {
-	hdlr = HDLR_FUNC(bag,j);
-	for (i = 0; i < NHandlerFuncs; i++)
-	  {
-	    if (hdlr == HandlerFuncs[i].hdlr)
-	      break;
-	  }
-	if (i == NHandlerFuncs)
-	  {
-	    Pr("Unregistered Handler %d args  ", j, 0L);
-	    PrintObj(NAME_FUNC(bag));
-	    Pr("\n",0L,0L);
-	  }
+        hdlr = HDLR_FUNC(bag,j);
+        for (i = 0; i < NHandlerFuncs; i++)
+          {
+            if (hdlr == HandlerFuncs[i].hdlr)
+              break;
+          }
+        if (i == NHandlerFuncs)
+          {
+            Pr("Unregistered Handler %d args  ", j, 0L);
+            PrintObj(NAME_FUNC(bag));
+            Pr("\n",0L,0L);
+          }
       }
   }
 #endif
@@ -1285,18 +1285,18 @@ Obj NewFunctionCT (
 
 /****************************************************************************
 **
-*F  KindFunction( <func> )  . . . . . . . . . . . . . . .  kind of a function
+*F  TypeFunction( <func> )  . . . . . . . . . . . . . . .  kind of a function
 **
-**  'KindFunction' returns the kind of the function <func>.
+**  'TypeFunction' returns the kind of the function <func>.
 **
-**  'KindFunction' is the function in 'KindObjFuncs' for functions.
+**  'TypeFunction' is the function in 'TypeObjFuncs' for functions.
 */
-Obj KIND_FUNCTION;
+Obj TYPE_FUNCTION;
 
-Obj KindFunction (
+Obj TypeFunction (
     Obj                 func )
 {
-    return KIND_FUNCTION;
+    return TYPE_FUNCTION;
 }
 
 
@@ -1388,10 +1388,10 @@ Obj IsFunctionHandler (
     Obj                 self,
     Obj                 obj )
 {
-    if      ( TYPE_OBJ(obj) == T_FUNCTION ) {
+    if      ( TNUM_OBJ(obj) == T_FUNCTION ) {
         return True;
     }
-    else if ( TYPE_OBJ(obj) < FIRST_EXTERNAL_TYPE ) {
+    else if ( TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -1436,7 +1436,7 @@ Obj CallFunctionHandler (
 
     /* check that the first argument is a function                         */
     /*N 1996/06/26 mschoene this should be done by 'CALL_<i>ARGS'          */
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "CallFunction: <func> must be a function",
             0L, 0L,
@@ -1519,7 +1519,7 @@ Obj CallFuncListHandler (
 
     /* check that the first argument is a function                         */
     /*N 1996/06/26 mschoene this should be done by 'CALL_<i>ARGS'          */
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "CallFuncList: <func> must be a function",
             0L, 0L,
@@ -1583,14 +1583,14 @@ Obj NAME_FUNC_Handler (
     Obj                 name;
     char *              deflt = "unknown";
 
-    if ( TYPE_OBJ(func) == T_FUNCTION ) {
+    if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
-	if ( name == 0 ) {
-	    name = NEW_STRING(SyStrlen(deflt));
-	    SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );
-	    NAME_FUNC(func) = name;
-	}
-	return name;
+        if ( name == 0 ) {
+            name = NEW_STRING(SyStrlen(deflt));
+            SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );
+            NAME_FUNC(func) = name;
+        }
+        return name;
     }
     else {
         return DoOperation1Args( self, func );
@@ -1608,10 +1608,10 @@ Obj NARG_FUNC_Handler (
     Obj                 self,
     Obj                 func )
 {
-    if ( TYPE_OBJ(func) == T_FUNCTION ) {
-	if ( HDLR_FUNC( func, 0 ) == DoComplete0args ) {
-	    return INTOBJ_INT(-1);
-	}
+    if ( TNUM_OBJ(func) == T_FUNCTION ) {
+        if ( HDLR_FUNC( func, 0 ) == DoComplete0args ) {
+            return INTOBJ_INT(-1);
+        }
         return INTOBJ_INT( NARG_FUNC(func) );
     }
     else {
@@ -1630,10 +1630,10 @@ Obj NAMS_FUNC_Handler (
     Obj                 self,
     Obj                 func )
 {
-    if ( TYPE_OBJ(func) == T_FUNCTION ) {
-	if ( HDLR_FUNC( func, 0 ) == DoComplete0args ) {
-	    Complete( BODY_FUNC(func) );
-	}
+    if ( TNUM_OBJ(func) == T_FUNCTION ) {
+        if ( HDLR_FUNC( func, 0 ) == DoComplete0args ) {
+            Complete( BODY_FUNC(func) );
+        }
         return NAMS_FUNC(func);
     }
     else {
@@ -1652,15 +1652,15 @@ Obj PROF_FUNC_Handler (
     Obj                 self,
     Obj                 func )
 {
-    Obj			prof;
+    Obj                 prof;
 
-    if ( TYPE_OBJ(func) == T_FUNCTION ) {
-	prof = PROF_FUNC(func);
-	if ( TYPE_OBJ(prof) == T_FUNCTION ) {
-	    return PROF_FUNC(prof);
-	} else {
-	    return prof;
-	}
+    if ( TNUM_OBJ(func) == T_FUNCTION ) {
+        prof = PROF_FUNC(func);
+        if ( TNUM_OBJ(prof) == T_FUNCTION ) {
+            return PROF_FUNC(prof);
+        } else {
+            return prof;
+        }
     }
     else {
         return DoOperation1Args( self, func );
@@ -1674,13 +1674,13 @@ Obj PROF_FUNC_Handler (
 *F  FuncCLEAR_PROFILE_FUNCTION( <self>, <func> )  . . . . . . . clear profile
 */
 Obj FuncCLEAR_PROFILE_FUNCTION(
-    Obj			self,
+    Obj                 self,
     Obj                 func )
 {
     Obj                 prof;
 
     /* check the argument                                                  */
-    if ( TYPE_OBJ(func) != T_FUNCTION ) {
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
@@ -1688,15 +1688,15 @@ Obj FuncCLEAR_PROFILE_FUNCTION(
     /* clear profile info                                                  */
     prof = PROF_FUNC(func);
     if ( prof == 0 ) {
-	ErrorQuit( "<func> has corrupted profile info", 0L, 0L );
-	return 0;
+        ErrorQuit( "<func> has corrupted profile info", 0L, 0L );
+        return 0;
     }
-    if ( TYPE_OBJ(prof) == T_FUNCTION ) {
-	prof = PROF_FUNC(prof);
+    if ( TNUM_OBJ(prof) == T_FUNCTION ) {
+        prof = PROF_FUNC(prof);
     }
     if ( prof == 0 ) {
-	ErrorQuit( "<func> has corrupted profile info", 0L, 0L );
-	return 0;
+        ErrorQuit( "<func> has corrupted profile info", 0L, 0L );
+        return 0;
     }
     SET_COUNT_PROF( prof, 0 );
     SET_TIME_WITH_PROF( prof, 0 );
@@ -1713,14 +1713,14 @@ Obj FuncCLEAR_PROFILE_FUNCTION(
 *F  FuncPROFILE_FUNCTION( <self>, <func> )  . . . . . . . . . . start profile
 */
 Obj FuncPROFILE_FUNCTION(
-    Obj			self,
+    Obj                 self,
     Obj                 func )
 {
     Obj                 prof;
     Obj                 copy;
 
     /* check the argument                                                  */
-    if ( TYPE_OBJ(func) != T_FUNCTION ) {
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
@@ -1732,8 +1732,8 @@ Obj FuncPROFILE_FUNCTION(
     prof = PROF_FUNC(func);
     
     /* install new handlers                                                */
-    if ( TYPE_OBJ(prof) != T_FUNCTION ) {
-        copy = NewBag( TYPE_OBJ(func), SIZE_OBJ(func) );
+    if ( TNUM_OBJ(prof) != T_FUNCTION ) {
+        copy = NewBag( TNUM_OBJ(func), SIZE_OBJ(func) );
         HDLR_FUNC(copy,0) = HDLR_FUNC(func,0);
         HDLR_FUNC(copy,1) = HDLR_FUNC(func,1);
         HDLR_FUNC(copy,2) = HDLR_FUNC(func,2);
@@ -1755,7 +1755,7 @@ Obj FuncPROFILE_FUNCTION(
         HDLR_FUNC(func,6) = DoProf6args;
         HDLR_FUNC(func,7) = DoProfXargs;
         PROF_FUNC(func)   = copy;
-	CHANGED_BAG(func);
+        CHANGED_BAG(func);
     }
 
     return (Obj)0;
@@ -1767,15 +1767,15 @@ Obj FuncPROFILE_FUNCTION(
 *F  FuncIS_PROFILED_FUNCTION( <self>, <func> )  check if function is profiled
 */
 Obj FuncIS_PROFILED_FUNCTION(
-    Obj			self,
+    Obj                 self,
     Obj                 func )
 {
     /* check the argument                                                  */
-    if ( TYPE_OBJ(func) != T_FUNCTION ) {
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
-    return ( TYPE_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
+    return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
 
 
@@ -1784,13 +1784,13 @@ Obj FuncIS_PROFILED_FUNCTION(
 *F  FuncUNPROFILE_FUNCTION( <self>, <func> )  . . . . . . . . .  stop profile
 */
 Obj FuncUNPROFILE_FUNCTION(
-    Obj			self,
+    Obj                 self,
     Obj                 func )
 {
     Obj                 prof;
 
     /* check the argument                                                  */
-    if ( TYPE_OBJ(func) != T_FUNCTION ) {
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
@@ -1800,7 +1800,7 @@ Obj FuncUNPROFILE_FUNCTION(
 
     /* profiling is active, restore handlers                               */
     prof = PROF_FUNC(func);
-    if ( TYPE_OBJ(prof) == T_FUNCTION ) {
+    if ( TNUM_OBJ(prof) == T_FUNCTION ) {
         HDLR_FUNC(func,0) = HDLR_FUNC(prof,0);
         HDLR_FUNC(func,1) = HDLR_FUNC(prof,1);
         HDLR_FUNC(func,2) = HDLR_FUNC(prof,2);
@@ -1810,7 +1810,7 @@ Obj FuncUNPROFILE_FUNCTION(
         HDLR_FUNC(func,6) = HDLR_FUNC(prof,6);
         HDLR_FUNC(func,7) = HDLR_FUNC(prof,7);
         PROF_FUNC(func)   = PROF_FUNC(prof);
-	CHANGED_BAG(func);
+        CHANGED_BAG(func);
     }
 
     return (Obj)0;
@@ -1831,8 +1831,8 @@ void            InitCalls ()
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "KIND_FUNCTION", &KIND_FUNCTION );
-    KindObjFuncs[     T_FUNCTION ] = KindFunction;
+    ImportGVarFromLibrary( "TYPE_FUNCTION", &TYPE_FUNCTION );
+    TypeObjFuncs[     T_FUNCTION ] = TypeFunction;
 
     /* install the printer                                                 */
     PrintObjFuncs[    T_FUNCTION ] = PrintFunction;

@@ -96,7 +96,7 @@ InstallMethod( Embedding, true,
     info := DirectProductInfo( D );
     if IsBound( info.embeddings[i] ) then return info.embeddings[i]; fi;
     
-    emb := Objectify( NewKind( GeneralMappingsFamily( PermutationsFamily,
+    emb := Objectify( NewType( GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsEmbeddingDirectProductPermGroup ),
                    rec( component := i ) );
@@ -187,7 +187,7 @@ InstallMethod( Projection, true,
     info := DirectProductInfo( D );
     if IsBound( info.projections[i] ) then return info.projections[i]; fi;
     
-    prj := Objectify( NewKind( GeneralMappingsFamily( PermutationsFamily,
+    prj := Objectify( NewType( GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsProjectionDirectProductPermGroup ),
                    rec( component := i ) );
@@ -342,7 +342,7 @@ InstallMethod( Projection, true,
     info := SubdirectProductInfo( S );
     if IsBound( info.projections[i] ) then return info.projections[i]; fi;
     
-    prj := Objectify( NewKind( GeneralMappingsFamily( PermutationsFamily,
+    prj := Objectify( NewType( GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsProjectionSubdirectProductPermGroup ),
                    rec( component := i ) );
@@ -549,7 +549,7 @@ function( W, i )
     if IsBound( info.embeddings[i] ) then return info.embeddings[i]; fi;
     
     if i<=info.degI then
-      emb := Objectify( NewKind( GeneralMappingsFamily( PermutationsFamily,
+      emb := Objectify( NewType( GeneralMappingsFamily( PermutationsFamily,
 							PermutationsFamily ),
 		     IsEmbeddingWreathProductPermGroup ),
 		     rec( component := i ) );

@@ -19,7 +19,7 @@ Revision.ringpoly_gi :=
 #M  PolynomialRing( <ring>, <rank> )  . . .  full polynomial ring over a ring
 ##
 #T polynomial rings should be special cases of free magma rings!  one needs
-#T to set an underlying magma with one, and modify the kind to be
+#T to set an underlying magma with one, and modify the type to be
 #T AlgebraWithOne and FreeMagmaRingWithOne.  (for example, ring generators in
 #T the case of polynomial rings over finite fields are then automatically
 #T computable ...)
@@ -33,7 +33,7 @@ InstallMethod( PolynomialRing,
     0,
 
 function( r, n )
-    local   efam,  rfun,  zero,  one,  ind,  i,  kind,  prng;
+    local   efam,  rfun,  zero,  one,  ind,  i,  type,  prng;
 
     # get the elements family of the ring
     efam := ElementsFamily( FamilyObj(r) );
@@ -50,25 +50,25 @@ function( r, n )
     od;
 
     # construct a polynomial ring
-    kind := IsPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule;
+    type := IsPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule;
     if Length(n) = 1 and HasIsField(r) and IsField(r)  then
-        kind := kind and IsUnivariatePolynomialRing and IsEuclideanRing
+        type := type and IsUnivariatePolynomialRing and IsEuclideanRing
                      and IsAlgebraWithOne;
     elif Length(n) = 1 and IsRingWithOne(r) then
-        kind := kind and IsUnivariatePolynomialRing and IsFLMLORWithOne;
+        type := type and IsUnivariatePolynomialRing and IsFLMLORWithOne;
     elif Length(n) = 1  then
-        kind := kind and IsUnivariatePolynomialRing;
+        type := type and IsUnivariatePolynomialRing;
     fi;
 
     # set categories to allow method selection according to base ring
     if HasIsField(r) and IsField(r) then
         if IsFinite(r) then
-            kind := kind and IsFiniteFieldPolynomialRing;
+            type := type and IsFiniteFieldPolynomialRing;
         elif IsRationals(r) then
-            kind := kind and IsRationalsPolynomialRing;
+            type := type and IsRationalsPolynomialRing;
         fi;
     fi;
-    prng := Objectify( NewKind( CollectionsFamily(rfun), kind ), rec() );
+    prng := Objectify( NewType( CollectionsFamily(rfun), type ), rec() );
 
     # set the left acting domain
     SetLeftActingDomain( prng, r );

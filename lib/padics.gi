@@ -264,7 +264,7 @@ function( x, shift )
 
     fam := FamilyObj(x);
     c := Immutable( [ x![1]+shift, x![2] ] );
-    return Objectify( fam!.defaultKind, c );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -388,7 +388,7 @@ PurePadicNumbersFamily := function( p, precision )
     fam!.precision:= precision;
     fam!.modulus:= p^precision;
     fam!.printPadicSeries:= true;
-    fam!.defaultKind := NewKind( fam, IsPurePadicNumber );
+    fam!.defaultType := NewType( fam, IsPurePadicNumber );
     return fam;
 end;
 
@@ -416,7 +416,7 @@ function( fam, list )
     elif not IsInt(list[2]) or list[2] < 0 or list[2] >= fam!.modulus then
         Error( "<list>[2] must be an integer in {0..p^precision}" );
     fi;
-    return Objectify( fam!.defaultKind, Immutable(list) );
+    return Objectify( fam!.defaultType, Immutable(list) );
 end );
 
 
@@ -436,7 +436,7 @@ function( fam, rat )
     local   c;
 
     c := Immutable( PadicExpansionByRat( rat, fam!.prime, fam!.precision ) );
-    return Objectify( fam!.defaultKind, c );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -487,7 +487,7 @@ function ( fam )
         c[1] := c[1] + 1;
         c[2] := c[2] / fam!.prime;
     od;
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -568,7 +568,7 @@ function( a )
 
     fam := FamilyObj( a );
     c := [ a![1], -a![2] mod fam!.modulus];
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -589,7 +589,7 @@ function( a )
     fi;
     fam:= FamilyObj( a );
     c:= [ -a![1] , 1/a![2] mod fam!.modulus ];
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -638,7 +638,7 @@ function( a, b )
         c:= [ b![1],
               (fam!.prime^(a![1]-b![1])*a![2]+b![2]) mod fam!.modulus ];
     fi;
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -662,7 +662,7 @@ function( a, b )
     else
         c:= [ a![1]+b![1] , a![2]*b![2] mod fam!.modulus ];
     fi;
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -683,7 +683,7 @@ function( a, b )
     fi;
     fam:= FamilyObj( a );
     c:= [ a![1]-b![1] , a![2]/b![2] mod fam!.modulus ];
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -751,7 +751,7 @@ PadicExtensionNumbersFamily := function( p, precision, unram, ram )
     Append( str, String(precision) );
     Append( str, ",...)" );
     fam := NewFamily( str, IsPadicExtensionNumber );
-    fam!.defaultKind := NewKind( fam, IsPadicExtensionNumber );
+    fam!.defaultType := NewType( fam, IsPadicExtensionNumber );
     fam!.prime       := p;
     fam!.precision   := precision;
     fam!.modulus     := p^precision;
@@ -767,7 +767,7 @@ PadicExtensionNumbersFamily := function( p, precision, unram, ram )
 
     yem1 := List( [1..fam!.n], i->0 );
     yem1[ (fam!.e-1) * fam!.f + 1 ] := 1;
-    fam!.yem1 := Objectify( fam!.defaultKind, [0, yem1] );
+    fam!.yem1 := Objectify( fam!.defaultType, [0, yem1] );
 
     fam!.printPadicSeries := true;
 
@@ -832,7 +832,7 @@ function( fam, list )
     elif not ForAll( list[2], x -> x in range )  then
         Error( "<list>[2] must be a list of integers in ", range );
     fi;
-    return Objectify( fam!.defaultKind, Immutable(list) );
+    return Objectify( fam!.defaultType, Immutable(list) );
 end );
 
 
@@ -857,7 +857,7 @@ function( fam, rat )
     erg    := List( [1..fam!.n], i->0 );
     erg[1] := c[2];
     c      := [ c[1], erg ];
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -914,7 +914,7 @@ function ( fam )
         c[1] := c[1] + 1;
         c[2] := c[2] / fam!.prime;
     od;
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -929,7 +929,7 @@ InstallOtherMethod( Zero,
     0,
 
 function( fam )
-    return Objectify( fam!.defaultKind, [0, List( [1..fam!.n], i->0 )] );
+    return Objectify( fam!.defaultType, [0, List( [1..fam!.n], i->0 )] );
 end );
 
 
@@ -964,7 +964,7 @@ function( fam )
 
     c := List( [ 1 .. fam!.n ], i -> 0 );
     c[1] := 1;
-    return Objectify( fam!.defaultKind, [0, c] );
+    return Objectify( fam!.defaultType, [0, c] );
 end );
 
 
@@ -1035,7 +1035,7 @@ function( a )
 
     fam := FamilyObj( a );
     c := [ a![1], List( a![2], x -> (-x) mod fam!.modulus ) ];
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -1057,7 +1057,7 @@ function(x)
     fi;
     fam := FamilyObj(x);
     # need a copy of x later:
-    z := Objectify( fam!.defaultKind, [x![1], ShallowCopy(x![2])] );
+    z := Objectify( fam!.defaultType, [x![1], ShallowCopy(x![2])] );
 
     # if x = [ppart, [x_1,...,x_n]] then 
     # Valuation(x) = ppart*fam!.e + coeffppart*fam!.e + coeffypart
@@ -1127,7 +1127,7 @@ function(x)
     c[1] := c[1] - coeffppart - addppart;
     c[2] := c[2] * fam!.prime^(coeffppart + addppart);
     c[2] := List( c[2], x -> x mod fam!.modulus );
-    Objectify( fam!.defaultKind, c );
+    Objectify( fam!.defaultType, c );
     return ( c * fam!.yem1^coeffypart );
 end );
 
@@ -1156,7 +1156,7 @@ function( x, y )
     c[1] := ppot;
     c[2] := fam!.prime^(x![1]-ppot)*x![2] + fam!.prime^(y![1]-ppot)*y![2];
     c[2] := List( c[2], x -> x mod fam!.modulus );
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -1184,7 +1184,7 @@ function( x, y )
     c[1] := ppot;
     c[2] := fam!.prime^(x![1]-ppot)*x![2] - fam!.prime^(y![1]-ppot)*y![2];
     c[2] := List( c[2], x -> x mod fam!.modulus );
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 
@@ -1211,7 +1211,7 @@ function( a, x )
     fi;
     c := [ a![1] + x![1] ];
     c[2] := List( a![2] * x![2], x -> x mod Qpxy!.modulus );
-    return Objectify( Qpxy!.defaultKind, Immutable( c ) );
+    return Objectify( Qpxy!.defaultType, Immutable( c ) );
 end );
 
 
@@ -1238,7 +1238,7 @@ function( x, a )
     fi;
     c := [ a![1] + x![1] ];
     c[2] := List( x![2] * a![2], x -> x mod Qpxy!.modulus );
-    return Objectify( Qpxy!.defaultKind, Immutable( c ) );
+    return Objectify( Qpxy!.defaultType, Immutable( c ) );
 end );
 
 
@@ -1277,7 +1277,7 @@ function (a, b)
         vec := ShiftedCoeffs( vec, fam!.f-1 );
     od;
     c := [ a![1] + b![1], List(addvec * fam!.M, x -> x mod fam!.modulus) ];
-    return Objectify( fam!.defaultKind, Immutable( c ) );
+    return Objectify( fam!.defaultType, Immutable( c ) );
 end );
 
 

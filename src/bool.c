@@ -14,7 +14,7 @@ char *          Revision_bool_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -62,18 +62,18 @@ Obj Fail;
 /****************************************************************************
 **
 
-*F  KindBool( <bool> )  . . . . . . . . . . . . . . . kind of a boolean value
+*F  TypeBool( <bool> )  . . . . . . . . . . . . . . . kind of a boolean value
 **
-**  'KindBool' returns the kind of boolean values.
+**  'TypeBool' returns the kind of boolean values.
 **
-**  'KindBool' is the function in 'KindObjFuncs' for boolean values.
+**  'TypeBool' is the function in 'TypeObjFuncs' for boolean values.
 */
-Obj KIND_BOOL;
+Obj TYPE_BOOL;
 
-Obj KindBool (
+Obj TypeBool (
     Obj                 val )
 {
-    return KIND_BOOL;
+    return TYPE_BOOL;
 }
 
 
@@ -159,10 +159,10 @@ Obj IsBoolHandler (
     Obj                 obj )
 {
     /* return 'true' if <obj> is a boolean and 'false' otherwise           */
-    if ( TYPE_OBJ(obj) == T_BOOL ) {
+    if ( TNUM_OBJ(obj) == T_BOOL ) {
         return True;
     }
-    else if ( TYPE_OBJ(obj) < FIRST_EXTERNAL_TYPE ) {
+    else if ( TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -297,8 +297,8 @@ void            InitBool ( void )
     AssGVar( GVarName( "FAIL" ), Fail );
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "KIND_BOOL", &KIND_BOOL );
-    KindObjFuncs[ T_BOOL ] = KindBool;
+    ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );
+    TypeObjFuncs[ T_BOOL ] = TypeBool;
 
     /* install the printer for boolean values                              */
     PrintObjFuncs[ T_BOOL ] = PrintBool;

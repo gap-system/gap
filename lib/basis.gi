@@ -122,7 +122,7 @@ InstallMethod( RelativeBasis, IsIdentical, [ IsBasis, IsHomogeneousList ], 0,
     fi;
 
     # Construct the relative basis.
-    R:= Objectify( NewKind( FamilyObj( vectors ),
+    R:= Objectify( NewType( FamilyObj( vectors ),
                             IsBasis and IsRelativeBasis ),
                    rec() );
     SetUnderlyingLeftModule( R, V );
@@ -155,7 +155,7 @@ InstallMethod( RelativeBasisNC, IsIdentical,
     fi;
 
     # Construct the relative basis.
-    R:= Objectify( NewKind( FamilyObj( vectors ),
+    R:= Objectify( NewType( FamilyObj( vectors ),
                             IsBasis and IsRelativeBasis ),
                    rec() );
     SetUnderlyingLeftModule( R, UnderlyingLeftModule( B ) );
@@ -323,7 +323,7 @@ InstallMethod( EnumeratorByBasis,
     fi;
 
     # Return the enumerator.
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsDomainEnumerator
                             and IsBasisSpaceEnumeratorRep ),
                    rec(
@@ -374,7 +374,7 @@ InstallMethod( IteratorByBasis,
     local V;
     V:= UnderlyingLeftModule( B );
     return Objectify(
-                      NewKind( IteratorsFamily,
+                      NewType( IteratorsFamily,
                                IsIterator and IsBasisSpaceIteratorRep ),
                       rec( basis          := B,
                            coeffspaceiter := IteratorByBasis( CanonicalBasis(
@@ -501,7 +501,7 @@ InstallOtherMethod( NewBasis, true,
     function( V )
     local B;
     NiceFreeLeftModule( V );
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                             IsBasisByNiceBasis and IsAttributeStoringRep ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
@@ -513,7 +513,7 @@ InstallMethod( NewBasis, IsIdentical,
     function( V, vectors )
     local B;
     NiceFreeLeftModule( V );
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                             IsBasisByNiceBasis and IsAttributeStoringRep ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
@@ -818,7 +818,7 @@ InstallMethod( BasisOfDomain,
     [ IsFreeLeftModule and IsTrivial ], 0,
     function( V )
     local B;
-    B:= Objectify( NewKind( FamilyObj( V ), 
+    B:= Objectify( NewType( FamilyObj( V ), 
                                 IsBasis
                             and IsEmpty
                             and IsAttributeStoringRep ),
@@ -839,7 +839,7 @@ InstallMethod( BasisByGenerators,
     fi;
 
     # Construct an empty basis.
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsEmpty
                             and IsAttributeStoringRep ),
@@ -859,7 +859,7 @@ InstallMethod( BasisByGeneratorsNC,
     local B;
 
     # Construct an empty basis.
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsEmpty
                             and IsAttributeStoringRep ),
@@ -883,7 +883,7 @@ InstallMethod( SemiEchelonBasisByGenerators,
     fi;
 
     # Construct an empty basis.
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsEmpty
                             and IsSemiEchelonized
@@ -904,7 +904,7 @@ InstallMethod( SemiEchelonBasisByGeneratorsNC,
     local B;
 
     # Construct an empty basis.
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsEmpty
                             and IsSemiEchelonized

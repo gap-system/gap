@@ -545,7 +545,7 @@ InstallMethod( Iterator,
     local V;      # the vector space
 
     V:= D!.structure;
-    return Objectify( NewKind( IteratorsFamily,
+    return Objectify( NewType( IteratorsFamily,
                                IsSubspacesSpaceIterator ),
                       rec(
                            structure          := V,
@@ -569,7 +569,7 @@ InstallMethod( SubspacesDim,
     [ IsVectorSpace, IsInt ], 0,
     function( V, dim )
     if IsFinite( V ) then
-      return Objectify( NewKind( CollectionsFamily( V ),
+      return Objectify( NewType( CollectionsFamily( V ),
                                  IsSubspacesVectorSpace ),
                         rec(
                              structure  := V,
@@ -587,7 +587,7 @@ InstallMethod( SubspacesAll,
     [ IsVectorSpace ], 0,
     function( V )
     if IsFinite( V ) then
-      return Objectify( NewKind( CollectionsFamily( V ),
+      return Objectify( NewType( CollectionsFamily( V ),
                                IsSubspacesVectorSpace ),
                         rec(
                              structure  := V,

@@ -216,8 +216,9 @@ ClassStructureCharTable := function( tbl, classes )
     fi;
 
     return Sum( Irr( tbl ),
-                chi -> Product( chi{ classes } ) / ( chi[1] ^ exp ) )
-           * Product( SizesConjugacyClasses( tbl ){ classes } )
+                chi -> Product( chi{ classes }, 1 ) / ( chi[1] ^ exp ),
+                0 )
+           * Product( SizesConjugacyClasses( tbl ){ classes }, 1 )
            / Size( tbl );
 end;
 
@@ -252,7 +253,7 @@ InstallMethod( OrdinaryCharacterTable,
     local tbl;
 
     # Make the object.
-    tbl:= Objectify( NewKind( NearlyCharacterTablesFamily,
+    tbl:= Objectify( NewType( NearlyCharacterTablesFamily,
                               IsOrdinaryTable and IsAttributeStoringRep ),
                      rec() );
 
@@ -316,7 +317,7 @@ InstallMethod( BrauerCharacterTableOp,
     local tbl;
 
     # Make the object.
-    tbl:= Objectify( NewKind( NearlyCharacterTablesFamily,
+    tbl:= Objectify( NewType( NearlyCharacterTablesFamily,
                               IsBrauerTable and IsAttributeStoringRep ),
                      rec() );
  
@@ -632,7 +633,7 @@ InstallOtherMethod( SizesCentralizers,
     function( tbl )
     local classlengths, size;
     classlengths:= SizesConjugacyClasses( tbl );
-    size:= Sum( classlengths );
+    size:= Sum( classlengths, 0 );
     return List( classlengths, s -> size / s );
     end );
 
@@ -1068,7 +1069,7 @@ InstallMethod( IsInternallyConsistent,
       classes:= List( centralizers, x -> order / x );
     fi;
 
-    if Sum( classes ) <> order then
+    if Sum( classes, 0 ) <> order then
       Info( InfoWarning, 1,
             "IsInternallyConsistent(", tbl,
             "): sum of class lengths not equal to group order" );
@@ -1127,7 +1128,7 @@ InstallMethod( IsInternallyConsistent,
     fi;
 
     if HasIrr( tbl ) then
-      characters:= Irr( tbl );
+      characters:= List( Irr( tbl ), ValuesOfClassFunction );
       for i in [ 1 .. Length( characters ) ] do
         row:= [];
         for j in [ 1 .. Length( characters[i] ) ] do
@@ -1146,7 +1147,8 @@ InstallMethod( IsInternallyConsistent,
       od;
 
       if centralizers <> Sum( characters,
-                              x -> List( x, y -> y * GaloisCyc(y,-1) ) ) then
+                              x -> List( x, y -> y * GaloisCyc(y,-1) ),
+                              0 ) then
         flag:= false;
         Info( InfoWarning, 1,
               "IsInternallyConsistent(", tbl,
@@ -1509,7 +1511,8 @@ InstallMethod( CharacterTableDirectProduct,
           ncc2_i,        # 
           fus;           # projection/embedding map
 
-    direct:= ConvertToOrdinaryTableNC( rec() );
+    direct:= ConvertToLibraryCharacterTableNC(
+                 rec( UnderlyingCharacteristic := 0 ) );
     SetSize( direct, Size( tbl1 ) * Size( tbl2 ) );
     SetIdentifier( direct, Concatenation( Identifier( tbl1 ), "x",
                                           Identifier( tbl2 ) ) );
@@ -1824,7 +1827,7 @@ InstallMethod( CharacterTableFactorGroup,
     # Compute the order of 'N'.
     size:= Size( tbl );
     tclasses:= SizesConjugacyClasses( tbl );
-    suborder:= Sum( tclasses{ N } );
+    suborder:= Sum( tclasses{ N }, 0 );
     if size mod suborder <> 0 then
       Error( "intersection of kernels of irreducibles containing\n",
              "<classes> has an order not dividing the size of <tbl>" );
@@ -1857,24 +1860,22 @@ InstallMethod( CharacterTableFactorGroup,
     F:= Concatenation( Identifier( tbl ), "/", String( N ) );
     ConvertToStringRep( F );
     F:= rec(
-             underlyingCharacteristic := 0,
-             size                     := size / suborder,
-             identifier               := F,
-             sizesCentralizers        := cents
+             UnderlyingCharacteristic := 0,
+             Size                     := size / suborder,
+             Identifier               := F,
+             Irr                      := factirr,
+             SizesCentralizers        := cents
             );
 
     # Transfer necessary power maps of 'tbl' to 'F'.
     inverse:= ProjectionMap( factorfusion );
-    F.computedPowerMaps:= [];
+    F.ComputedPowerMaps:= [];
     for p in Set( Factors( F.size ) ) do
-      F.computedPowerMaps[p]:= factorfusion{ PowerMap( tbl, p ){ inverse } };
+      F.ComputedPowerMaps[p]:= factorfusion{ PowerMap( tbl, p ){ inverse } };
     od;
 
     # Convert the record into a library table.
     ConvertToLibraryCharacterTableNC( F );
-
-    # Store the irreducibles.
-    SetIrr( F, List( factirr, vals -> CharacterByValues( F, vals ) ) );
 
     # Store the factor fusion on 'tbl'.
     StoreFusion( tbl, F, rec( map:= factorfusion, type:= "factor" ) );
@@ -1909,7 +1910,7 @@ InstallMethod( CharacterTableIsoclinic,
     half:= Size( tbl ) / 2;
     kernel:= Filtered( Irr( tbl ),
                  chi ->     DegreeOfCharacter( chi ) = 1
-                        and Sum( classes{ KernelChar( chi ) } ) = half );
+                        and Sum( classes{ KernelChar( chi ) }, 0 ) = half );
     if IsEmpty( kernel ) or 1 < Length( kernel ) then
       Error( "normal subgroup of index 2 not uniquely determined,\n",
              "use CharTableIsoclinic( <tbl>, <classes_of_nsg> )" );
@@ -1954,7 +1955,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
     size:= Size( tbl );
 
     # Check 'nsg'.
-    if Sum( classes{ nsg } ) <> size / 2 then
+    if Sum( classes{ nsg }, 0 ) <> size / 2 then
       Error( "normal subgroup described by <nsg> must have index 2" );
     fi;
 
@@ -1970,13 +1971,13 @@ InstallOtherMethod( CharacterTableIsoclinic,
     ConvertToStringRep( isoclinic );
 
     isoclinic:= rec(
-        underlyingCharacteristic   := 0,
-        identifier                 := isoclinic,
-        size                       := size,
-        sizesCentralizers          := centralizers,
-        sizesConjugacyClasses      := classes,
-        ordersClassRepresentatives := orders,
-        computedPowerMaps          := []             );
+        UnderlyingCharacteristic   := 0,
+        Identifier                 := isoclinic,
+        Size                       := size,
+        SizesCentralizers          := centralizers,
+        SizesConjugacyClasses      := classes,
+        OrdersClassRepresentatives := orders,
+        ComputedPowerMaps          := []             );
 
     # classes outside the normal subgroup
     outer:= Difference( [ 1 .. Length( classes ) ], nsg );
@@ -1997,7 +1998,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
       fi;
       Add( irreds, values );
     od;
-    isoclinic.irr:= irreds;
+    isoclinic.Irr:= irreds;
 
     # Get the fusion map onto the factor group modulo '[ 1, center ]'.
     factorfusion:= CollapsedMat( nonfaith, [] ).fusion;
@@ -2041,7 +2042,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
 
       fi;
 
-      isoclinic.computedPowerMaps[p]:= map;
+      isoclinic.ComputedPowerMaps[p]:= map;
 
     od;
 
@@ -2163,20 +2164,20 @@ InstallMethod( CharacterTableRegular,
     od;
 
     regular:= rec(
-       identifier                 := Concatenation( Identifier( ordtbl ),
+       Identifier                 := Concatenation( Identifier( ordtbl ),
                                          "mod", String( prime ) ),
-       underlyingCharacteristic   := prime,
-       size                       := Size( ordtbl ),
-       ordersClassRepresentatives := orders{ fusion },
-       sizesCentralizers          := SizesCentralizers( ordtbl ){ fusion },
-       computedPowerMaps          := [],
-       ordinaryCharacterTable     := ordtbl
+       UnderlyingCharacteristic   := prime,
+       Size                       := Size( ordtbl ),
+       OrdersClassRepresentatives := orders{ fusion },
+       SizesCentralizers          := SizesCentralizers( ordtbl ){ fusion },
+       ComputedPowerMaps          := [],
+       OrdinaryCharacterTable     := ordtbl
       );
 
     power:= ComputedPowerMaps( ordtbl );
     for i in [ 1 .. Length( power ) ] do
       if IsBound( power[i] ) then
-        regular.computedPowerMaps[i]:= inverse{ power[i]{ fusion } };
+        regular.ComputedPowerMaps[i]:= inverse{ power[i]{ fusion } };
       fi;
     od;
     
@@ -3254,25 +3255,28 @@ ConvertToOrdinaryTableNC := function( record )
     names:= RecNames( record );
 
     # Make the object.
-    if IsBound( record.characteristic ) and record.characteristic <> 0 then
+    if     IsBound( record.UnderlyingCharacteristic )
+       and record.UnderlyingCharacteristic <> 0 then
       ConvertToBrauerTableNC( record );
     else
 
-      Objectify( NewKind( NearlyCharacterTablesFamily,
+      record.UnderlyingCharacteristic:= 0;
+      Objectify( NewType( NearlyCharacterTablesFamily,
                           IsCharacterTable and IsAttributeStoringRep ),
                  record );
 
       # Enter the properties and attributes.
       for i in [ 1, 3 .. Length( SupportedOrdinaryTableInfo ) - 1 ] do
-        if SupportedOrdinaryTableInfo[ i+1 ] in names then
+        if     SupportedOrdinaryTableInfo[ i+1 ] in names
+           and SupportedOrdinaryTableInfo[ i+1 ] <> "Irr" then
           Setter( SupportedOrdinaryTableInfo[i] )( record,
               record!.( SupportedOrdinaryTableInfo[ i+1 ] ) );
         fi;
       od;
   
       # Make the lists of character values into character objects.
-      if "irr" in names then
-        SetIrr( record, List( record!.irr,
+      if "Irr" in names then
+        SetIrr( record, List( record!.Irr,
                               chi -> CharacterByValues( record, chi ) ) );
       fi;
 
@@ -3300,21 +3304,22 @@ ConvertToBrauerTableNC := function( record )
     names:= RecNames( record );
 
     # Make the object.
-    Objectify( NewKind( NearlyCharacterTablesFamily,
+    Objectify( NewType( NearlyCharacterTablesFamily,
                         IsBrauerTable and IsAttributeStoringRep ),
                record );
 
     # Enter the properties and attributes.
     for i in [ 1, 3 .. Length( SupportedBrauerTableInfo ) - 1 ] do
-      if SupportedBrauerTableInfo[ i+1 ] in names then
+      if     SupportedBrauerTableInfo[ i+1 ] in names
+         and SupportedOrdinaryTableInfo[ i+1 ] <> "Irr" then
         Setter( SupportedBrauerTableInfo[i] )( record,
             record!.( SupportedBrauerTableInfo[ i+1 ] ) );
       fi;
     od;
 
     # Make the lists of character values into character objects.
-    if "irr" in names then
-      SetIrr( record, List( record!.irr,
+    if "Irr" in names then
+      SetIrr( record, List( record!.Irr,
                             chi -> CharacterByValues( record, chi ) ) );
     fi;
 
@@ -3452,7 +3457,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T       while not IsSubsetSet( nsg[ i ], n ) do i:= i+1; od;
 #T 
 #T       # \ldots and its size.
-#T       nextsize:= Sum( classes{ nsg[i] } );
+#T       nextsize:= Sum( classes{ nsg[i] }, 0 );
 #T 
 #T       facts:= Set( FactorsInt( nextsize / size ) );
 #T       if 1 < Length( facts ) and ( p = 0 or p in facts ) then
@@ -3519,7 +3524,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T       while not IsSubsetSet( N, nsg[ i ] ) do i:= i-1; od;
 #T 
 #T       # \ldots and its size.
-#T       nextsize:= Sum( classes{ nsg[i] } );
+#T       nextsize:= Sum( classes{ nsg[i] }, 0 );
 #T 
 #T       if not IsPrimeInt( size / nextsize ) then
 #T 
@@ -3731,13 +3736,13 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T     orders:= OrdersClassRepresentatives( tbl );
 #T     ppow:= Filtered( N, i -> IsPrimePowerInt( orders[i] ) );
 #T 
-#T     for part in Collected( FactorsInt( Sum( classlengths{ N } ) ) ) do
+#T     for part in Collected( FactorsInt( Sum( classlengths{ N }, 0 ) ) ) do
 #T 
 #T       # Check whether the Sylow p subgroup of 'N' is normal in 'N',
 #T       # i.e., whether the number of elements of p-power is equal to
 #T       # the size of a Sylow p subgroup.
 #T       classes:= Filtered( ppow, i -> orders[i] mod part[1] = 0 );
-#T       if part[1] ^ part[2] <> Sum( classlengths{ classes } ) + 1 then
+#T       if part[1] ^ part[2] <> Sum( classlengths{ classes }, 0 ) + 1 then
 #T         return false;
 #T       fi;
 #T 
@@ -3883,7 +3888,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T     repeat
 #T 
 #T       next:= nsg[ Length( nsg ) ];
-#T       nextsize:= Sum( classes{ next } );
+#T       nextsize:= Sum( classes{ next }, 0 );
 #T       Add( elab, next );
 #T       Unbind( nsg[ Length( nsg ) ] );
 #T       nsg:= Filtered( nsg, x -> IsSubset( next, x ) );
@@ -3930,7 +3935,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T     classes:= SizesConjugacyClasses( tbl );
 #T     ppord:= [];
 #T     for n in nsg do
-#T       if IsPrimePowerInt( Sum( classes{n} ) ) then
+#T       if IsPrimePowerInt( Sum( classes{n}, 0 ) ) then
 #T         UniteSet( ppord, n );
 #T       fi;
 #T     od;
@@ -4065,7 +4070,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T     fi;
 #T     nsg:= tbl.normalSubgroups;
 #T     len:= Length( nsg );
-#T     sizes:= List( nsg, x -> Sum( tbl.classes{ x } ) );
+#T     sizes:= List( nsg, x -> Sum( tbl.classes{ x }, 0 ) );
 #T     SortParallel( sizes, nsg );
 #T 
 #T     # For each normal subgroup, compute the maximal contained ones.
@@ -4217,8 +4222,8 @@ InstallOtherMethod( CharacterTableWithSortedCharacters,
     local new, i;
 
     # Create the new table.
-    new:= rec();
-    ConvertToOrdinaryTable( new );
+    new:= ConvertToLibraryCharacterTableNC(
+                 rec( UnderlyingCharacteristic := 0 ) );
 
     # Set the permuted attribute values.
     SetIrr( new, Permuted( Irr( tbl ), perm ) );
@@ -4226,9 +4231,9 @@ InstallOtherMethod( CharacterTableWithSortedCharacters,
 
     # Set the other supported values.
     for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
-      if Tester( SupportedOrdinaryTableInfo[ i-1 ] )
-         and not SupportedOrdinaryTableInfo[i]
-                     in [ "irr", "irredInfo", "underlyingGroup" ] then
+      if Tester( SupportedOrdinaryTableInfo[ i-1 ] )( tbl )
+         and not ( SupportedOrdinaryTableInfo[i]
+                     in [ "Irr", "IrredInfo", "UnderlyingGroup" ] ) then
         Setter( SupportedOrdinaryTableInfo[ i-1 ] )( new,
             SupportedOrdinaryTableInfo[ i-1 ]( tbl ) );
       fi;
@@ -4360,8 +4365,8 @@ InstallOtherMethod( CharacterTableWithSortedClasses,
     local new, attr, fus, tblmaps, permmap, inverse, k;
 
     # Create the new table.
-    new:= rec();
-    ConvertToOrdinaryTable( new );
+    new:= ConvertToLibraryCharacterTableNC(
+                 rec( UnderlyingCharacteristic := 0 ) );
 
     # Set the permuted attribute values.
     if 1^perm <> 1 then
@@ -4374,7 +4379,7 @@ InstallOtherMethod( CharacterTableWithSortedClasses,
     for attr in [ Identifier, InfoText, IrredInfo, IsSimpleGroup,
                   Maxes, NamesOfFusionSources, UnderlyingCharacteristic ] do
       if Tester( attr )( tbl ) then
-        Setter( attr )( new, attr( new ) );
+        Setter( attr )( new, attr( tbl ) );
       fi;
     od;
 
@@ -4386,7 +4391,7 @@ InstallOtherMethod( CharacterTableWithSortedClasses,
     if HasIrr( tbl ) then
       SetIrr( new,
           List( Irr( tbl ), chi -> CharacterByValues( new,
-                Permuted( ValuesOfClassFunction( chi, perm ) ) ) ) );
+                Permuted( ValuesOfClassFunction( chi ), perm ) ) ) );
     fi;
     if HasOrdersClassRepresentatives( tbl ) then
       SetOrdersClassRepresentatives( new,
@@ -4404,8 +4409,8 @@ InstallOtherMethod( CharacterTableWithSortedClasses,
     if HasComputedPowerMaps( tbl ) then
 
       tblmaps:= ComputedPowerMaps( tbl );
-      permmap:= List( perm );
-      inverse:= List( perm^(-1) );
+      permmap:= ListPerm( perm );
+      inverse:= ListPerm( perm^(-1) );
       for k in [ Length( permmap ) + 1 .. NrConjugacyClasses( tbl ) ] do
         permmap[k]:= k;
         inverse[k]:= k;

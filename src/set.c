@@ -26,7 +26,7 @@ char *          Revision_set_c =
 #include        "system.h"              /* system dependent functions      */
 
 #include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -66,7 +66,7 @@ char *          Revision_set_c =
 **  If it is not  then 'SetList' is  called to make  a copy of 'list', remove
 **  the holes, sort the copy, and remove the duplicates.
 */
-#define IS_IMM_PLIST(list)  ((TYPE_OBJ(list) - T_PLIST) % 2)
+#define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
 
 Int             IsSet ( 
     Obj                 list )
@@ -74,8 +74,8 @@ Int             IsSet (
     Int                 isSet;          /* result                          */
 
     /* if <list> is a plain list                                           */
-    if ( T_PLIST <= TYPE_OBJ(list)
-      && TYPE_OBJ(list) <= T_PLIST_CYC_SSORT+IMMUTABLE ) {
+    if ( T_PLIST <= TNUM_OBJ(list)
+      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT+IMMUTABLE ) {
 
         /* if <list> is the empty list, its a set (:-)                     */
         if ( LEN_PLIST(list) == 0 ) {
@@ -172,8 +172,8 @@ Obj             SetList (
     mutable = RemoveDupsDensePlist( set );
 
     /* if possible, turn this into a set                                   */
-    /*N 1996/09/30 M.Schoenert should the result be immutable?             */
-    if ( ! mutable ) { RetypeBag( set, T_PLIST_HOM_SSORT ); }
+    /*N 1997/05/12 fceller this is a HACK until set props works for lists  */
+    IS_SSORT_LIST(set);
 
     /* return set                                                          */
     return set;
@@ -206,13 +206,13 @@ Obj             SetListHandler (
     while ( ! IS_LIST( list ) ) {
         list = ErrorReturnObj(
             "Set: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
             "you can return a list for <list>" );
     }
 
     /* if the list is empty create a new empty list                        */
     if ( LEN_LIST(list) == 0 ) {
-	set = NEW_PLIST( T_PLIST_EMPTY, 0 );
+        set = NEW_PLIST( T_PLIST_EMPTY, 0 );
     }
 
     /* if <list> is a set just shallow copy it                             */
@@ -284,14 +284,14 @@ Obj             IsEqualSetHandler (
     while ( ! IS_LIST(list1) ) {
         list1 = ErrorReturnObj(
             "IsEqualSet: <list1> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
             "you can return a list for <list1>" );
     }
     if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
     while ( ! IS_LIST(list2) ) {
         list2 = ErrorReturnObj(
             "IsEqualSet: <list2> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
             "you can return a list for <list2>" );
     }
     if ( ! IsSet( list2 ) )  list2 = SetList( list2 );
@@ -333,13 +333,13 @@ Obj             IsSubsetSetHandler (
     while ( ! IS_LIST(set1) ) {
         set1 = ErrorReturnObj(
             "IsSubsetSet: <set1> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set1)].name), 0L,
             "you can return a list for <set1>" );
     }
     while ( ! IS_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "IsSubsetSet: <set2> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set2)].name), 0L,
             "you can return a list for <set2>" );
     }
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
@@ -435,7 +435,7 @@ Obj             AddSetHandler (
     while ( ! IsSet( set ) || ! IS_MUTABLE_OBJ( set ) ) {
         set = ErrorReturnObj(
             "AddSet: <set> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set)].name), 0L,
             "you can return a set for <set>" );
     }
     len = LEN_LIST( set );
@@ -454,15 +454,15 @@ Obj             AddSetHandler (
         CHANGED_BAG( set );
         /* fix up the type of the result                                   */
         /*N 1996/07/17 mschoene this is a hack                             */
-        assert( TYPE_OBJ(set) == T_PLIST_DENSE \
-             || TYPE_OBJ(set) == T_PLIST_EMPTY \
-             || TYPE_OBJ(set) == T_PLIST_HOM_SSORT \
-             || TYPE_OBJ(set) == T_PLIST_TAB_SSORT \
-             || TYPE_OBJ(set) == T_PLIST_CYC_SSORT );
+        assert( TNUM_OBJ(set) == T_PLIST_DENSE \
+             || TNUM_OBJ(set) == T_PLIST_EMPTY \
+             || TNUM_OBJ(set) == T_PLIST_HOM_SSORT \
+             || TNUM_OBJ(set) == T_PLIST_TAB_SSORT \
+             || TNUM_OBJ(set) == T_PLIST_CYC_SSORT );
         if ( IS_MUTABLE_OBJ(obj) ) {
             RetypeBag( set, T_PLIST_DENSE );
         }
-        else if ( TYPE_OBJ(set) == T_PLIST_EMPTY ) {
+        else if ( TNUM_OBJ(set) == T_PLIST_EMPTY ) {
             RetypeBag( set, T_PLIST_HOM_SSORT );
         }
     }
@@ -504,7 +504,7 @@ Obj             RemoveSetHandler (
     while ( ! IsSet( set ) || ! IS_MUTABLE_OBJ( set ) ) {
         set = ErrorReturnObj(
             "RemoveSet: <set> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set)].name), 0L,
             "you can return a set for <set>" );
     }
     len = LEN_LIST( set );
@@ -521,10 +521,10 @@ Obj             RemoveSetHandler (
         SET_LEN_PLIST( set, len-1 );
         /* fix up the type of the result                                   */
         /*N 1996/07/17 mschoene this is a hack                             */
-        assert( TYPE_OBJ(set) == T_PLIST_DENSE \
-             || TYPE_OBJ(set) == T_PLIST_EMPTY \
-             || TYPE_OBJ(set) == T_PLIST_HOM_SSORT \
-             || TYPE_OBJ(set) == T_PLIST_CYC_SSORT );
+        assert( TNUM_OBJ(set) == T_PLIST_DENSE \
+             || TNUM_OBJ(set) == T_PLIST_EMPTY \
+             || TNUM_OBJ(set) == T_PLIST_HOM_SSORT \
+             || TNUM_OBJ(set) == T_PLIST_CYC_SSORT );
         if ( len-1 == 0 ) {
             RetypeBag( set, T_PLIST_EMPTY );
         }
@@ -577,13 +577,13 @@ Obj             UniteSetHandler (
     while ( ! IsSet( set1 ) || ! IS_MUTABLE_OBJ( set1 ) ) {
         set1 = ErrorReturnObj(
             "UniteSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set1)].name), 0L,
             "you can return a set for <set1>" );
     }
     while ( ! IS_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "UniteSet: <set2> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set2)].name), 0L,
             "you can return a list for <set2>" );
     }
     if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
@@ -645,29 +645,29 @@ Obj             UniteSetHandler (
 
     /* fix up the type of the result                                       */
     /*N 1996/07/17 mschoene this is a hack                                 */
-    assert( TYPE_OBJ(set1) == T_PLIST_DENSE \
-         || TYPE_OBJ(set1) == T_PLIST_EMPTY \
-         || TYPE_OBJ(set1) == T_PLIST_HOM_SSORT \
-         || TYPE_OBJ(set1) == T_PLIST_TAB_SSORT \
-         || TYPE_OBJ(set1) == T_PLIST_CYC_SSORT );
-    assert( TYPE_OBJ(set2) == T_PLIST_DENSE \
-         || TYPE_OBJ(set2) == T_PLIST_EMPTY \
-         || TYPE_OBJ(set2) == T_PLIST_HOM_SSORT \
-	 || TYPE_OBJ(set2) == T_PLIST_TAB_SSORT \
-         || TYPE_OBJ(set2) == T_PLIST_CYC_SSORT \
-         || TYPE_OBJ(set2) == T_PLIST_DENSE + IMMUTABLE \
-         || TYPE_OBJ(set2) == T_PLIST_EMPTY + IMMUTABLE \
-         || TYPE_OBJ(set2) == T_PLIST_HOM_SSORT + IMMUTABLE \
-	 || TYPE_OBJ(set2) == T_PLIST_TAB_SSORT + IMMUTABLE \
-         || TYPE_OBJ(set2) == T_PLIST_CYC_SSORT + IMMUTABLE );
-    if ( TYPE_OBJ(set1) == T_PLIST_EMPTY ) {
-        RetypeBag( set1, MUTABLE_TYPE(TYPE_OBJ(set2)) );
+    assert( TNUM_OBJ(set1) == T_PLIST_DENSE \
+         || TNUM_OBJ(set1) == T_PLIST_EMPTY \
+         || TNUM_OBJ(set1) == T_PLIST_HOM_SSORT \
+         || TNUM_OBJ(set1) == T_PLIST_TAB_SSORT \
+         || TNUM_OBJ(set1) == T_PLIST_CYC_SSORT );
+    assert( TNUM_OBJ(set2) == T_PLIST_DENSE \
+         || TNUM_OBJ(set2) == T_PLIST_EMPTY \
+         || TNUM_OBJ(set2) == T_PLIST_HOM_SSORT \
+         || TNUM_OBJ(set2) == T_PLIST_TAB_SSORT \
+         || TNUM_OBJ(set2) == T_PLIST_CYC_SSORT \
+         || TNUM_OBJ(set2) == T_PLIST_DENSE + IMMUTABLE \
+         || TNUM_OBJ(set2) == T_PLIST_EMPTY + IMMUTABLE \
+         || TNUM_OBJ(set2) == T_PLIST_HOM_SSORT + IMMUTABLE \
+         || TNUM_OBJ(set2) == T_PLIST_TAB_SSORT + IMMUTABLE \
+         || TNUM_OBJ(set2) == T_PLIST_CYC_SSORT + IMMUTABLE );
+    if ( TNUM_OBJ(set1) == T_PLIST_EMPTY ) {
+        RetypeBag( set1, MUTABLE_TNUM(TNUM_OBJ(set2)) );
     }
-    else if ( TYPE_OBJ(set2)==T_PLIST_DENSE ) {
+    else if ( TNUM_OBJ(set2)==T_PLIST_DENSE ) {
         RetypeBag( set1, T_PLIST_DENSE );
     }
-    else if ( TYPE_OBJ(set2)==T_PLIST_DENSE + IMMUTABLE ) {
-	RetypeBag( set1, T_PLIST_DENSE );
+    else if ( TNUM_OBJ(set2)==T_PLIST_DENSE + IMMUTABLE ) {
+        RetypeBag( set1, T_PLIST_DENSE );
     }
 
     /* return void, this is a procedure                                    */
@@ -708,13 +708,13 @@ Obj             IntersectSetHandler (
     while ( ! IsSet( set1 ) || ! IS_MUTABLE_OBJ( set1 ) ) {
         set1 = ErrorReturnObj(
             "IntersectSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set1)].name), 0L,
             "you can return a set for <set1>" );
     }
     while ( ! IS_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "IntersectSet: <set2> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set2)].name), 0L,
             "you can return a list for <set2>" );
     }
     if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
@@ -749,18 +749,18 @@ Obj             IntersectSetHandler (
 
     /* fix up the type of the result                                       */
     /*N 1996/07/17 mschoene this is a hack                                 */
-    assert( TYPE_OBJ(set1) == T_PLIST_DENSE \
-         || TYPE_OBJ(set1) == T_PLIST_EMPTY \
-         || TYPE_OBJ(set1) == T_PLIST_HOM_SSORT \
-         || TYPE_OBJ(set1) == T_PLIST_CYC_SSORT );
-    assert( TYPE_OBJ(set2) == T_PLIST_DENSE \
-         || TYPE_OBJ(set2) == T_PLIST_EMPTY \
-         || TYPE_OBJ(set2) == T_PLIST_HOM_SSORT \
-         || TYPE_OBJ(set2) == T_PLIST_CYC_SSORT \
-         || TYPE_OBJ(set2) == T_PLIST_DENSE + IMMUTABLE \
-         || TYPE_OBJ(set2) == T_PLIST_EMPTY + IMMUTABLE \
-         || TYPE_OBJ(set2) == T_PLIST_HOM_SSORT + IMMUTABLE \
-         || TYPE_OBJ(set2) == T_PLIST_CYC_SSORT + IMMUTABLE );
+    assert( TNUM_OBJ(set1) == T_PLIST_DENSE \
+         || TNUM_OBJ(set1) == T_PLIST_EMPTY \
+         || TNUM_OBJ(set1) == T_PLIST_HOM_SSORT \
+         || TNUM_OBJ(set1) == T_PLIST_CYC_SSORT );
+    assert( TNUM_OBJ(set2) == T_PLIST_DENSE \
+         || TNUM_OBJ(set2) == T_PLIST_EMPTY \
+         || TNUM_OBJ(set2) == T_PLIST_HOM_SSORT \
+         || TNUM_OBJ(set2) == T_PLIST_CYC_SSORT \
+         || TNUM_OBJ(set2) == T_PLIST_DENSE + IMMUTABLE \
+         || TNUM_OBJ(set2) == T_PLIST_EMPTY + IMMUTABLE \
+         || TNUM_OBJ(set2) == T_PLIST_HOM_SSORT + IMMUTABLE \
+         || TNUM_OBJ(set2) == T_PLIST_CYC_SSORT + IMMUTABLE );
     if ( lenr == 0 ) {
         RetypeBag( set1, T_PLIST_EMPTY );
     }
@@ -803,13 +803,13 @@ Obj             SubtractSetHandler (
     while ( ! IsSet( set1 ) || ! IS_MUTABLE_OBJ( set1 ) ) {
         set1 = ErrorReturnObj(
             "SubtractSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set1)].name), 0L,
             "you can return a set for <set1>" );
     }
     while ( ! IS_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "SubtractSet: <set2> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set2)].name), 0L,
             "you can return a list for <set2>" );
     }
     if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
@@ -850,11 +850,11 @@ Obj             SubtractSetHandler (
 
     /* fix up the type of the result                                       */
     /*N 1996/07/17 mschoene this is a hack                                 */
-    assert( TYPE_OBJ(set1) == T_PLIST_DENSE \
-         || TYPE_OBJ(set1) == T_PLIST_EMPTY \
-         || TYPE_OBJ(set1) == T_PLIST_HOM_SSORT \
-	 || TYPE_OBJ(set1) == T_PLIST_TAB_SSORT \
-         || TYPE_OBJ(set1) == T_PLIST_CYC_SSORT );
+    assert( TNUM_OBJ(set1) == T_PLIST_DENSE \
+         || TNUM_OBJ(set1) == T_PLIST_EMPTY \
+         || TNUM_OBJ(set1) == T_PLIST_HOM_SSORT \
+         || TNUM_OBJ(set1) == T_PLIST_TAB_SSORT \
+         || TNUM_OBJ(set1) == T_PLIST_CYC_SSORT );
     if ( lenr == 0 ) {
         RetypeBag( set1, T_PLIST_EMPTY );
     }

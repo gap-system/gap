@@ -87,7 +87,7 @@ char *          Revision_integer_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -124,42 +124,42 @@ typedef UInt2           TypDigit;
 
 /****************************************************************************
 **
-*F  KindInt(<int>)  . . . . . . . . . . . . . . . . . . . . . kind of integer
+*F  TypeInt(<int>)  . . . . . . . . . . . . . . . . . . . . . kind of integer
 **
-**  'KindInt' returns the kind of the integer <int>.
+**  'TypeInt' returns the kind of the integer <int>.
 **
-**  'KindInt' is the function in 'KindObjFuncs' for integers.
+**  'TypeInt' is the function in 'TypeObjFuncs' for integers.
 */
-Obj             KIND_INT_SMALL_ZERO;
-Obj             KIND_INT_SMALL_POS;
-Obj             KIND_INT_SMALL_NEG;
-Obj             KIND_INT_LARGE_POS;
-Obj             KIND_INT_LARGE_NEG;
+Obj             TYPE_INT_SMALL_ZERO;
+Obj             TYPE_INT_SMALL_POS;
+Obj             TYPE_INT_SMALL_NEG;
+Obj             TYPE_INT_LARGE_POS;
+Obj             TYPE_INT_LARGE_NEG;
 
-Obj             KindIntSmall (
+Obj             TypeIntSmall (
     Obj                 val )
 {
     if ( 0 == INT_INTOBJ(val) ) {
-        return KIND_INT_SMALL_ZERO;
+        return TYPE_INT_SMALL_ZERO;
     }
     else if ( 0 < INT_INTOBJ(val) ) {
-        return KIND_INT_SMALL_POS;
+        return TYPE_INT_SMALL_POS;
     }
     else /* if ( 0 > INT_INTOBJ(val) ) */ {
-        return KIND_INT_SMALL_NEG;
+        return TYPE_INT_SMALL_NEG;
     }
 }
 
-Obj             KindIntLargePos (
+Obj             TypeIntLargePos (
     Obj                 val )
 {
-    return KIND_INT_LARGE_POS;
+    return TYPE_INT_LARGE_POS;
 }
 
-Obj             KindIntLargeNeg (
+Obj             TypeIntLargeNeg (
     Obj                 val )
 {
-    return KIND_INT_LARGE_NEG;
+    return TYPE_INT_LARGE_NEG;
 }
 
 
@@ -196,7 +196,7 @@ void            PrintInt (
         /* start printing, %> means insert '\' before a linebreak          */
         Pr("%>",0L,0L);
 
-        if ( TYPE_OBJ(op) == T_INTNEG )
+        if ( TNUM_OBJ(op) == T_INTNEG )
             Pr("-",0L,0L);
 
         /* convert the integer into base 10000                             */
@@ -262,7 +262,7 @@ Int             EqInt (
     else {
 
         /* compare the sign and size                                       */
-        if ( TYPE_OBJ(opL) != TYPE_OBJ(opR)
+        if ( TNUM_OBJ(opL) != TNUM_OBJ(opR)
           || SIZE_INT(opL) != SIZE_INT(opR) )
             return 0L;
 
@@ -308,11 +308,11 @@ Int             LtInt (
 
     /* compare a small and a large integer                                 */
     else if ( IS_INTOBJ(opL) ) {
-        if ( TYPE_OBJ(opR) == T_INTPOS )  return 1L;
+        if ( TNUM_OBJ(opR) == T_INTPOS )  return 1L;
         else                              return 0L;
     }
     else if ( IS_INTOBJ(opR) ) {
-        if ( TYPE_OBJ(opL) == T_INTPOS )  return 0L;
+        if ( TNUM_OBJ(opL) == T_INTPOS )  return 0L;
         else                              return 1L;
     }
 
@@ -320,20 +320,20 @@ Int             LtInt (
     else {
 
         /* compare the sign and size                                       */
-        if (      TYPE_OBJ(opL) == T_INTNEG
-               && TYPE_OBJ(opR) == T_INTPOS )
+        if (      TNUM_OBJ(opL) == T_INTNEG
+               && TNUM_OBJ(opR) == T_INTPOS )
             return 1L;
-        else if ( TYPE_OBJ(opL) == T_INTPOS
-               && TYPE_OBJ(opR) == T_INTNEG )
+        else if ( TNUM_OBJ(opL) == T_INTPOS
+               && TNUM_OBJ(opR) == T_INTNEG )
             return 0L;
-        else if ( (TYPE_OBJ(opL) == T_INTPOS
+        else if ( (TNUM_OBJ(opL) == T_INTPOS
                 && SIZE_INT(opL) < SIZE_INT(opR))
-               || (TYPE_OBJ(opL) == T_INTNEG
+               || (TNUM_OBJ(opL) == T_INTNEG
                 && SIZE_INT(opL) > SIZE_INT(opR)) )
             return 1L;
-        else if ( (TYPE_OBJ(opL) == T_INTPOS
+        else if ( (TNUM_OBJ(opL) == T_INTPOS
                 && SIZE_INT(opL) > SIZE_INT(opR))
-               || (TYPE_OBJ(opL) == T_INTNEG
+               || (TNUM_OBJ(opL) == T_INTNEG
                 && SIZE_INT(opL) < SIZE_INT(opR)) )
             return 0L;
 
@@ -344,9 +344,9 @@ Int             LtInt (
         /* run through the digits, from the end downwards                  */
         for ( k = SIZE_INT(opL)-1; k >= 0; k-- ) {
             if ( l[k] != r[k] ) {
-                if ( (TYPE_OBJ(opL) == T_INTPOS
+                if ( (TNUM_OBJ(opL) == T_INTPOS
                    && l[k] < r[k])
-                  || (TYPE_OBJ(opL) == T_INTNEG
+                  || (TNUM_OBJ(opL) == T_INTNEG
                    && l[k] > r[k]) )
                     return 1L;
                 else
@@ -426,18 +426,18 @@ Obj             SumInt (
         }
 
         /* if the integers have different sign, let 'DiffInt' do the work  */
-        if ( (TYPE_OBJ(opL) == T_INTNEG && 0 <= INT_INTOBJ(opR))
-          || (TYPE_OBJ(opL) == T_INTPOS && INT_INTOBJ(opR) <  0) ) {
-            if ( TYPE_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
+        if ( (TNUM_OBJ(opL) == T_INTNEG && 0 <= INT_INTOBJ(opR))
+          || (TNUM_OBJ(opL) == T_INTPOS && INT_INTOBJ(opR) <  0) ) {
+            if ( TNUM_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
             else                              RetypeBag( opL, T_INTPOS );
             sum = DiffInt( opR, opL );
-            if ( TYPE_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
+            if ( TNUM_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
             else                              RetypeBag( opL, T_INTPOS );
             return sum;
         }
 
         /* allocate the result bag and set up the pointers                 */
-        if ( TYPE_OBJ(opL) == T_INTPOS ) {
+        if ( TNUM_OBJ(opL) == T_INTPOS ) {
             i   = INT_INTOBJ(opR);
             sum = NewBag( T_INTPOS, (SIZE_INT(opL)+4)*sizeof(TypDigit) );
         }
@@ -480,12 +480,12 @@ Obj             SumInt (
     else {
 
         /* if the integers have different sign, let 'DiffInt' do the work  */
-        if ( (TYPE_OBJ(opL) == T_INTPOS && TYPE_OBJ(opR) == T_INTNEG)
-          || (TYPE_OBJ(opL) == T_INTNEG && TYPE_OBJ(opR) == T_INTPOS) ) {
-            if ( TYPE_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
+        if ( (TNUM_OBJ(opL) == T_INTPOS && TNUM_OBJ(opR) == T_INTNEG)
+          || (TNUM_OBJ(opL) == T_INTNEG && TNUM_OBJ(opR) == T_INTPOS) ) {
+            if ( TNUM_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
             else                              RetypeBag( opL, T_INTPOS );
             sum = DiffInt( opR, opL );
-            if ( TYPE_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
+            if ( TNUM_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
             else                              RetypeBag( opL, T_INTPOS );
             return sum;
         }
@@ -496,7 +496,7 @@ Obj             SumInt (
         }
 
         /* allocate the result bag and set up the pointers                 */
-        if ( TYPE_OBJ(opL) == T_INTPOS ) {
+        if ( TNUM_OBJ(opL) == T_INTPOS ) {
             sum = NewBag( T_INTPOS, (SIZE_INT(opL)+4)*sizeof(TypDigit) );
         }
         else {
@@ -584,7 +584,7 @@ Obj         AInvInt (
     else {
 
         /* special case (ugh)                                              */
-        if ( TYPE_OBJ(op) == T_INTPOS && SIZE_INT(op) == 4
+        if ( TNUM_OBJ(op) == T_INTPOS && SIZE_INT(op) == 4
           && ADDR_INT(op)[3] == 0 && ADDR_INT(op)[2] == 0
           && 65536*ADDR_INT(op)[1] + ADDR_INT(op)[0] == (1L<<28) ) {
             inv = INTOBJ_INT( -(1L<<28) );
@@ -592,7 +592,7 @@ Obj         AInvInt (
 
         /* general case                                                    */
         else {
-            if ( TYPE_OBJ(op) == T_INTPOS ) {
+            if ( TNUM_OBJ(op) == T_INTPOS ) {
                 inv = NewBag( T_INTNEG, SIZE_OBJ(op) );
             }
             else {
@@ -680,22 +680,22 @@ Obj             DiffInt (
         }
 
         /* if the integers have different sign, let 'SumInt' do the work   */
-        if ( (TYPE_OBJ(opL) == T_INTNEG && 0 <= INT_INTOBJ(opR))
-          || (TYPE_OBJ(opL) == T_INTPOS && INT_INTOBJ(opR) < 0)  ) {
-            if ( TYPE_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
+        if ( (TNUM_OBJ(opL) == T_INTNEG && 0 <= INT_INTOBJ(opR))
+          || (TNUM_OBJ(opL) == T_INTPOS && INT_INTOBJ(opR) < 0)  ) {
+            if ( TNUM_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
             else                              RetypeBag( opL, T_INTPOS );
             dif = SumInt( opL, opR );
-            if ( TYPE_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
+            if ( TNUM_OBJ(opL) == T_INTPOS )  RetypeBag( opL, T_INTNEG );
             else                              RetypeBag( opL, T_INTPOS );
             if ( c == 1 ) {
-                if ( TYPE_OBJ(dif) == T_INTPOS )  RetypeBag( dif, T_INTNEG );
+                if ( TNUM_OBJ(dif) == T_INTPOS )  RetypeBag( dif, T_INTNEG );
                 else                              RetypeBag( dif, T_INTPOS );
             }
             return dif;
         }
 
         /* allocate the result bag and set up the pointers                 */
-        if ( TYPE_OBJ(opL) == T_INTPOS ) {
+        if ( TNUM_OBJ(opL) == T_INTPOS ) {
             i   = INT_INTOBJ(opR);
             if ( c == 1 )  dif = NewBag( T_INTPOS, SIZE_OBJ(opL) );
             else           dif = NewBag( T_INTNEG, SIZE_OBJ(opL) );
@@ -744,10 +744,10 @@ Obj             DiffInt (
             }
 
             /* reduce to small integer if possible, otherwise shrink bag   */
-            if ( k <= 2 && TYPE_OBJ(dif) == T_INTPOS
+            if ( k <= 2 && TNUM_OBJ(dif) == T_INTPOS
               && (UInt)(65536*d[1]+d[0]) < (1<<28) )
                 dif = INTOBJ_INT( 65536*d[1]+d[0] );
-            else if ( k <= 2 && TYPE_OBJ(dif) == T_INTNEG
+            else if ( k <= 2 && TNUM_OBJ(dif) == T_INTNEG
               && (UInt)(65536*d[1]+d[0]) <= (1<<28) )
                 dif = INTOBJ_INT( -(65536*d[1]+d[0]) );
             else
@@ -760,20 +760,20 @@ Obj             DiffInt (
     else {
 
         /* if the integers have different sign, let 'SumInt' do the work   */
-        if ( (TYPE_OBJ(opL) == T_INTPOS && TYPE_OBJ(opR) == T_INTNEG)
-          || (TYPE_OBJ(opL) == T_INTNEG && TYPE_OBJ(opR) == T_INTPOS) ) {
-            if ( TYPE_OBJ(opR) == T_INTPOS )  RetypeBag( opR, T_INTNEG );
+        if ( (TNUM_OBJ(opL) == T_INTPOS && TNUM_OBJ(opR) == T_INTNEG)
+          || (TNUM_OBJ(opL) == T_INTNEG && TNUM_OBJ(opR) == T_INTPOS) ) {
+            if ( TNUM_OBJ(opR) == T_INTPOS )  RetypeBag( opR, T_INTNEG );
             else                              RetypeBag( opR, T_INTPOS );
             dif = SumInt( opL, opR );
-            if ( TYPE_OBJ(opR) == T_INTPOS )  RetypeBag( opR, T_INTNEG );
+            if ( TNUM_OBJ(opR) == T_INTPOS )  RetypeBag( opR, T_INTNEG );
             else                              RetypeBag( opR, T_INTPOS );
             return dif;
         }
 
         /* make the right operand the smaller one                          */
         if ( SIZE_INT(opL) <  SIZE_INT(opR)
-          || (TYPE_OBJ(opL) == T_INTPOS && LtInt(opL,opR) )
-          || (TYPE_OBJ(opL) == T_INTNEG && LtInt(opR,opL) ) ) {
+          || (TNUM_OBJ(opL) == T_INTPOS && LtInt(opL,opR) )
+          || (TNUM_OBJ(opL) == T_INTNEG && LtInt(opR,opL) ) ) {
             dif = opL;  opL = opR;  opR = dif;  c = -1;
         }
         else {
@@ -781,8 +781,8 @@ Obj             DiffInt (
         }
 
         /* allocate the result bag and set up the pointers                 */
-        if ( (TYPE_OBJ(opL) == T_INTPOS && c ==  1)
-          || (TYPE_OBJ(opL) == T_INTNEG && c == -1) )
+        if ( (TNUM_OBJ(opL) == T_INTPOS && c ==  1)
+          || (TNUM_OBJ(opL) == T_INTNEG && c == -1) )
             dif = NewBag( T_INTPOS, SIZE_OBJ(opL) );
         else
             dif = NewBag( T_INTNEG, SIZE_OBJ(opL) );
@@ -828,10 +828,10 @@ Obj             DiffInt (
             }
 
             /* reduce to small integer if possible, otherwise shrink bag   */
-            if ( k <= 2 && TYPE_OBJ(dif) == T_INTPOS
+            if ( k <= 2 && TNUM_OBJ(dif) == T_INTPOS
               && (UInt)(65536*d[1]+d[0]) < (1<<28) )
                 dif = INTOBJ_INT( 65536*d[1]+d[0] );
-            else if ( k <= 2 && TYPE_OBJ(dif) == T_INTNEG
+            else if ( k <= 2 && TNUM_OBJ(dif) == T_INTNEG
               && (UInt)(65536*d[1]+d[0]) <= (1<<28) )
                 dif = INTOBJ_INT( -(65536*d[1]+d[0]) );
             else
@@ -928,14 +928,14 @@ Obj             ProdInt (
 
         /* the large integer 1<<28 times -1 is the small integer -(1<<28)  */
         if ( i == -1
-          && TYPE_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
+          && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
           && ADDR_INT(opR)[3] == 0     && ADDR_INT(opR)[2] == 0
           && 65536*ADDR_INT(opR)[1] + ADDR_INT(opR)[0] == (1<<28) )
             return INTOBJ_INT( -(1<<28) );
 
         /* multiplication by -1 is easy, just switch the sign and copy     */
         if ( i == -1 ) {
-            if ( TYPE_OBJ(opR) == T_INTPOS )
+            if ( TNUM_OBJ(opR) == T_INTPOS )
                 prd = NewBag( T_INTNEG, SIZE_OBJ(opR) );
             else
                 prd = NewBag( T_INTPOS, SIZE_OBJ(opR) );
@@ -949,8 +949,8 @@ Obj             ProdInt (
         }
 
         /* allocate a bag for the result                                   */
-        if ( (0 < i && TYPE_OBJ(opR) == T_INTPOS)
-          || (i < 0 && TYPE_OBJ(opR) == T_INTNEG) )
+        if ( (0 < i && TNUM_OBJ(opR) == T_INTPOS)
+          || (i < 0 && TNUM_OBJ(opR) == T_INTNEG) )
             prd = NewBag( T_INTPOS, (SIZE_INT(opR)+4)*sizeof(TypDigit) );
         else
             prd = NewBag( T_INTNEG, (SIZE_INT(opR)+4)*sizeof(TypDigit) );
@@ -1009,7 +1009,7 @@ Obj             ProdInt (
         }
 
         /* allocate a bag for the result                                   */
-        if ( TYPE_OBJ(opL) == TYPE_OBJ(opR) )
+        if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
             prd = NewBag( T_INTPOS, SIZE_OBJ(opL)+SIZE_OBJ(opR) );
         else
             prd = NewBag( T_INTNEG, SIZE_OBJ(opL)+SIZE_OBJ(opR) );
@@ -1059,22 +1059,22 @@ Obj             ProdIntObj (
     UInt                i, k, l;        /* loop variables                  */
 
     /* if the integer is zero, return the neutral element of the operand   */
-    if      ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
+    if      ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
         res = ZERO( op );
     }
 
     /* if the integer is one, return a copy of the operand                 */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
         res = CopyObj( op, 0 );
     }
 
     /* if the integer is minus one, return the inverse of the operand      */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
         res = AINV( op );
     }
 
     /* if the integer is negative, invert the operand and the integer      */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) <  -1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) <  -1 ) {
         res = AINV( op );
         if ( res == Fail ) {
             return ErrorReturnObj(
@@ -1086,7 +1086,7 @@ Obj             ProdIntObj (
     }
 
     /* if the integer is negative, invert the operand and the integer      */
-    else if ( TYPE_OBJ(n) == T_INTNEG ) {
+    else if ( TNUM_OBJ(n) == T_INTNEG ) {
         res = AINV( op );
         if ( res == Fail ) {
             return ErrorReturnObj(
@@ -1100,7 +1100,7 @@ Obj             ProdIntObj (
     /* if the integer is small, compute the product by repeated doubling   */
     /* the loop invariant is <result> = <k>*<res> + <l>*<op>, <l> < <k>    */
     /* <res> = 0 means that <res> is the neutral element                   */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) >   1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) >   1 ) {
         res = 0;
         k = 1L << 31;
         l = INT_INTOBJ(n);
@@ -1115,7 +1115,7 @@ Obj             ProdIntObj (
     }
 
     /* if the integer is large, compute the product by repeated doubling   */
-    else if ( TYPE_OBJ(n) == T_INTPOS ) {
+    else if ( TNUM_OBJ(n) == T_INTPOS ) {
         res = 0;
         for ( i = SIZE_OBJ(n)/sizeof(TypDigit); 0 < i; i-- ) {
             k = 1L << (8*sizeof(TypDigit));
@@ -1244,22 +1244,22 @@ Obj             PowObjInt (
     UInt                i, k, l;        /* loop variables                  */
 
     /* if the integer is zero, return the neutral element of the operand   */
-    if      ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
+    if      ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
         res = ONE( op );
     }
 
     /* if the integer is one, return a copy of the operand                 */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
         res = CopyObj( op, 0 );
     }
 
     /* if the integer is minus one, return the inverse of the operand      */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
         res = INV( op );
     }
 
     /* if the integer is negative, invert the operand and the integer      */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) <   0 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) <   0 ) {
         res = INV( op );
         if ( res == Fail ) {
             return ErrorReturnObj(
@@ -1271,7 +1271,7 @@ Obj             PowObjInt (
     }
 
     /* if the integer is negative, invert the operand and the integer      */
-    else if ( TYPE_OBJ(n) == T_INTNEG ) {
+    else if ( TNUM_OBJ(n) == T_INTNEG ) {
         res = INV( op );
         if ( res == Fail ) {
             return ErrorReturnObj(
@@ -1285,7 +1285,7 @@ Obj             PowObjInt (
     /* if the integer is small, compute the power by repeated squaring     */
     /* the loop invariant is <result> = <res>^<k> * <op>^<l>, <l> < <k>    */
     /* <res> = 0 means that <res> is the neutral element                   */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) >   0 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) >   0 ) {
         res = 0;
         k = 1L << 31;
         l = INT_INTOBJ(n);
@@ -1300,7 +1300,7 @@ Obj             PowObjInt (
     }
 
     /* if the integer is large, compute the power by repeated squaring     */
-    else if ( TYPE_OBJ(n) == T_INTPOS ) {
+    else if ( TNUM_OBJ(n) == T_INTPOS ) {
         res = 0;
         for ( i = SIZE_OBJ(n)/sizeof(TypDigit); 0 < i; i-- ) {
             k = 1L << (8*sizeof(TypDigit));
@@ -1395,7 +1395,7 @@ Obj             ModInt (
 
         /* the small int -(1<<28) mod the large int (1<<28) is 0           */
         if ( opL == INTOBJ_INT(-(1<<28))
-          && TYPE_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
+          && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
           && ADDR_INT(opR)[3] == 0 && ADDR_INT(opR)[2] == 0
           && 65536*ADDR_INT(opR)[1] + ADDR_INT(opR)[0] == 1<<28 )
             mod = INTOBJ_INT(0);
@@ -1403,7 +1403,7 @@ Obj             ModInt (
         /* in all other cases the remainder is equal the left operand      */
         else if ( 0 <= INT_INTOBJ(opL) )
             mod = opL;
-        else if ( TYPE_OBJ(opR) == T_INTPOS )
+        else if ( TNUM_OBJ(opR) == T_INTPOS )
             mod = SumInt( opL, opR );
         else
             mod = DiffInt( opL, opR );
@@ -1442,7 +1442,7 @@ Obj             ModInt (
         }
 
         /* now c is the result, it has the same sign as the left operand   */
-        if ( TYPE_OBJ(opL) == T_INTPOS )
+        if ( TNUM_OBJ(opL) == T_INTPOS )
             mod = INTOBJ_INT( c );
         else if ( c == 0 )
             mod = INTOBJ_INT( c );
@@ -1474,16 +1474,16 @@ Obj             ModInt (
 
         /* trivial case first                                              */
         if ( SIZE_INT(opL) < SIZE_INT(opR) ) {
-            if ( TYPE_OBJ(opL) == T_INTPOS )
+            if ( TNUM_OBJ(opL) == T_INTPOS )
                 return opL;
-            else if ( TYPE_OBJ(opR) == T_INTPOS )
+            else if ( TNUM_OBJ(opR) == T_INTPOS )
                 return SumInt( opL, opR );
             else
                 return DiffInt( opL, opR );
         }
 
         /* copy the left operand into a new bag, this holds the remainder  */
-        mod = NewBag( TYPE_OBJ(opL), (SIZE_INT(opL)+4)*sizeof(TypDigit) );
+        mod = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+4)*sizeof(TypDigit) );
         l = ADDR_INT(opL);
         m = ADDR_INT(mod);
         for ( k = SIZE_INT(opL)-1; k >= 0; k-- )
@@ -1546,10 +1546,10 @@ Obj             ModInt (
             }
 
             /* reduce to small integer if possible, otherwise shrink bag   */
-            if ( k <= 2 && TYPE_OBJ(mod) == T_INTPOS
+            if ( k <= 2 && TNUM_OBJ(mod) == T_INTPOS
               && (UInt)(65536*m[1]+m[0]) < (1<<28) )
                 mod = INTOBJ_INT( 65536*m[1]+m[0] );
-            else if ( k <= 2 && TYPE_OBJ(mod) == T_INTNEG
+            else if ( k <= 2 && TNUM_OBJ(mod) == T_INTNEG
               && (UInt)(65536*m[1]+m[0]) <= (1<<28) )
                 mod = INTOBJ_INT( -(65536*m[1]+m[0]) );
             else
@@ -1557,9 +1557,9 @@ Obj             ModInt (
         }
 
         /* make the representant positive                                  */
-        if ( (TYPE_OBJ(mod) == T_INT && INT_INTOBJ(mod) < 0)
-          || TYPE_OBJ(mod) == T_INTNEG ) {
-            if ( TYPE_OBJ(opR) == T_INTPOS )
+        if ( (TNUM_OBJ(mod) == T_INT && INT_INTOBJ(mod) < 0)
+          || TNUM_OBJ(mod) == T_INTNEG ) {
+            if ( TNUM_OBJ(opR) == T_INTPOS )
                 mod = SumInt( mod, opR );
             else
                 mod = DiffInt( mod, opR );
@@ -1590,12 +1590,12 @@ Obj             IsIntHandler (
     Obj                 val )
 {
     /* return 'true' if <obj> is an integer and 'false' otherwise          */
-    if ( TYPE_OBJ(val) == T_INT
-      || TYPE_OBJ(val) == T_INTPOS
-      || TYPE_OBJ(val) == T_INTNEG ) {
+    if ( TNUM_OBJ(val) == T_INT
+      || TNUM_OBJ(val) == T_INTPOS
+      || TNUM_OBJ(val) == T_INTNEG ) {
         return True;
     }
-    else if ( TYPE_OBJ(val) <= FIRST_EXTERNAL_TYPE ) {
+    else if ( TNUM_OBJ(val) <= FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -1676,7 +1676,7 @@ Obj             QuoInt (
 
         /* the small int -(1<<28) divided by the large int (1<<28) is -1   */
         if ( opL == INTOBJ_INT(-(1<<28))
-          && TYPE_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
+          && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
           && ADDR_INT(opR)[3] == 0 && ADDR_INT(opR)[2] == 0
           && 65536*ADDR_INT(opR)[1] + ADDR_INT(opR)[0] == 1<<28 )
             quo = INTOBJ_INT(-1);
@@ -1704,8 +1704,8 @@ Obj             QuoInt (
         i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
 
         /* allocate a bag for the result and set up the pointers           */
-        if ( (TYPE_OBJ(opL)==T_INTPOS && 0 < INT_INTOBJ(opR))
-          || (TYPE_OBJ(opL)==T_INTNEG && INT_INTOBJ(opR) < 0) )
+        if ( (TNUM_OBJ(opL)==T_INTPOS && 0 < INT_INTOBJ(opR))
+          || (TNUM_OBJ(opL)==T_INTNEG && INT_INTOBJ(opR) < 0) )
             quo = NewBag( T_INTPOS, SIZE_OBJ(opL) );
         else
             quo = NewBag( T_INTNEG, SIZE_OBJ(opL) );
@@ -1730,10 +1730,10 @@ Obj             QuoInt (
         /* reduce to small integer if possible                             */
         q = ADDR_INT(quo) + SIZE_INT(quo);
         if ( SIZE_INT(quo) == 4 && q[-2] == 0 && q[-1] == 0 ) {
-            if ( TYPE_OBJ(quo) == T_INTPOS
+            if ( TNUM_OBJ(quo) == T_INTPOS
               && (UInt)(65536*q[-3]+q[-4]) < (1<<28) )
                 quo = INTOBJ_INT( 65536*q[-3]+q[-4] );
-            else if ( TYPE_OBJ(quo) == T_INTNEG
+            else if ( TNUM_OBJ(quo) == T_INTNEG
               && (UInt)(65536*q[-3]+q[-4]) <= (1<<28) )
                 quo = INTOBJ_INT( -(65536*q[-3]+q[-4]) );
         }
@@ -1764,7 +1764,7 @@ Obj             QuoInt (
             return INTOBJ_INT(0);
 
         /* copy the left operand into a new bag, this holds the remainder  */
-        quo = NewBag( TYPE_OBJ(opL), (SIZE_INT(opL)+4)*sizeof(TypDigit) );
+        quo = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+4)*sizeof(TypDigit) );
         l = ADDR_INT(opL);
         q = ADDR_INT(quo);
         for ( k = SIZE_INT(opL)-1; k >= 0; k-- )
@@ -1780,7 +1780,7 @@ Obj             QuoInt (
         r2 = (r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(16-e) : 0);
 
         /* allocate a bag for the quotient                                 */
-        if ( TYPE_OBJ(opL) == TYPE_OBJ(opR) )
+        if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
             quo = NewBag( T_INTPOS, SIZE_OBJ(opL)-SIZE_OBJ(opR) );
         else
             quo = NewBag( T_INTNEG, SIZE_OBJ(opL)-SIZE_OBJ(opR) );
@@ -1835,10 +1835,10 @@ Obj             QuoInt (
         /* reduce to small integer if possible                             */
         q = ADDR_INT(quo) + SIZE_INT(quo);
         if ( SIZE_INT(quo) == 4 && q[-2] == 0 && q[-1] == 0 ) {
-            if ( TYPE_OBJ(quo) == T_INTPOS
+            if ( TNUM_OBJ(quo) == T_INTPOS
               && (UInt)(65536*q[-3]+q[-4]) < (1<<28) )
                 quo = INTOBJ_INT( 65536*q[-3]+q[-4] );
-            else if ( TYPE_OBJ(quo) == T_INTNEG
+            else if ( TNUM_OBJ(quo) == T_INTNEG
               && (UInt)(65536*q[-3]+q[-4]) <= (1<<28) )
                 quo = INTOBJ_INT( -(65536*q[-3]+q[-4]) );
         }
@@ -1871,20 +1871,20 @@ Obj             FuncQuoInt (
     Obj                 opR )
 {
     /* check the arguments                                                 */
-    while ( TYPE_OBJ(opL) != T_INT
-         && TYPE_OBJ(opL) != T_INTPOS
-         && TYPE_OBJ(opL) != T_INTNEG ) {
+    while ( TNUM_OBJ(opL) != T_INT
+         && TNUM_OBJ(opL) != T_INTPOS
+         && TNUM_OBJ(opL) != T_INTNEG ) {
         opL = ErrorReturnObj(
             "QuoInt: <left> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opL)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L,
             "you can return an integer for <left>" );
     }
-    while ( TYPE_OBJ(opR) != T_INT
-         && TYPE_OBJ(opR) != T_INTPOS
-         && TYPE_OBJ(opR) != T_INTNEG ) {
+    while ( TNUM_OBJ(opR) != T_INT
+         && TNUM_OBJ(opR) != T_INTPOS
+         && TNUM_OBJ(opR) != T_INTNEG ) {
         opR = ErrorReturnObj(
             "QuoInt: <right> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opR)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L,
             "you can return an integer for <rigth>" );
     }
 
@@ -1956,7 +1956,7 @@ Obj             RemInt (
 
         /* the small int -(1<<28) rem the large int (1<<28) is 0           */
         if ( opL == INTOBJ_INT(-(1<<28))
-          && TYPE_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
+          && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
           && ADDR_INT(opR)[3] == 0 && ADDR_INT(opR)[2] == 0
           && 65536*ADDR_INT(opR)[1] + ADDR_INT(opR)[0] == 1<<28 )
             rem = INTOBJ_INT(0);
@@ -1999,7 +1999,7 @@ Obj             RemInt (
         }
 
         /* now c is the result, it has the same sign as the left operand   */
-        if ( TYPE_OBJ(opL) == T_INTPOS )
+        if ( TNUM_OBJ(opL) == T_INTPOS )
             rem = INTOBJ_INT(  c );
         else
             rem = INTOBJ_INT( -c );
@@ -2030,7 +2030,7 @@ Obj             RemInt (
             return opL;
 
         /* copy the left operand into a new bag, this holds the remainder  */
-        rem = NewBag( TYPE_OBJ(opL), (SIZE_INT(opL)+4)*sizeof(TypDigit) );
+        rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+4)*sizeof(TypDigit) );
         l = ADDR_INT(opL);
         m = ADDR_INT(rem);
         for ( k = SIZE_INT(opL)-1; k >= 0; k-- )
@@ -2093,10 +2093,10 @@ Obj             RemInt (
             }
 
             /* reduce to small integer if possible, otherwise shrink bag   */
-            if ( k <= 2 && TYPE_OBJ(rem) == T_INTPOS
+            if ( k <= 2 && TNUM_OBJ(rem) == T_INTPOS
               && (UInt)(65536*m[1]+m[0]) < (1<<28) )
                 rem = INTOBJ_INT( 65536*m[1]+m[0] );
-            else if ( k <= 2 && TYPE_OBJ(rem) == T_INTNEG
+            else if ( k <= 2 && TNUM_OBJ(rem) == T_INTNEG
               && (UInt)(65536*m[1]+m[0]) <= (1<<28) )
                 rem = INTOBJ_INT( -(65536*m[1]+m[0]) );
             else
@@ -2130,20 +2130,20 @@ Obj             FuncRemInt (
     Obj                 opR )
 {
     /* check the arguments                                                 */
-    while ( TYPE_OBJ(opL) != T_INT
-         && TYPE_OBJ(opL) != T_INTPOS
-         && TYPE_OBJ(opL) != T_INTNEG ) {
+    while ( TNUM_OBJ(opL) != T_INT
+         && TNUM_OBJ(opL) != T_INTPOS
+         && TNUM_OBJ(opL) != T_INTNEG ) {
         opL = ErrorReturnObj(
             "RemInt: <left> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opL)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L,
             "you can return an integer for <left>" );
     }
-    while ( TYPE_OBJ(opR) != T_INT
-         && TYPE_OBJ(opR) != T_INTPOS
-         && TYPE_OBJ(opR) != T_INTNEG ) {
+    while ( TNUM_OBJ(opR) != T_INT
+         && TNUM_OBJ(opR) != T_INTPOS
+         && TNUM_OBJ(opR) != T_INTNEG ) {
         opR = ErrorReturnObj(
             "RemInt: <right> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opR)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L,
             "you can return an integer for <rigth>" );
     }
 
@@ -2383,10 +2383,10 @@ Obj             GcdInt (
                 }
 
                 /* reduce to small integer if possible, otherwise shrink b */
-                if ( k <= 2 && TYPE_OBJ(opL) == T_INTPOS
+                if ( k <= 2 && TNUM_OBJ(opL) == T_INTPOS
                   && (UInt)(65536*l[1]+l[0]) < (1<<28) )
                     opL = INTOBJ_INT( 65536*l[1]+l[0] );
-                else if ( k <= 2 && TYPE_OBJ(opL) == T_INTNEG
+                else if ( k <= 2 && TNUM_OBJ(opL) == T_INTNEG
                   && (UInt)(65536*l[1]+l[0]) <= (1<<28) )
                     opL = INTOBJ_INT( -(65536*l[1]+l[0]) );
                 else
@@ -2457,20 +2457,20 @@ Obj             FuncGcdInt (
     Obj                 opR )
 {
     /* check the arguments                                                 */
-    while ( TYPE_OBJ(opL) != T_INT
-         && TYPE_OBJ(opL) != T_INTPOS
-         && TYPE_OBJ(opL) != T_INTNEG ) {
+    while ( TNUM_OBJ(opL) != T_INT
+         && TNUM_OBJ(opL) != T_INTPOS
+         && TNUM_OBJ(opL) != T_INTNEG ) {
         opL = ErrorReturnObj(
             "GcdInt: <left> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opL)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L,
             "you can return an integer for <left>" );
     }
-    while ( TYPE_OBJ(opR) != T_INT
-         && TYPE_OBJ(opR) != T_INTPOS
-         && TYPE_OBJ(opR) != T_INTNEG ) {
+    while ( TNUM_OBJ(opR) != T_INT
+         && TNUM_OBJ(opR) != T_INTPOS
+         && TNUM_OBJ(opR) != T_INTNEG ) {
         opR = ErrorReturnObj(
             "GcdInt: <right> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opR)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L,
             "you can return an integer for <rigth>" );
     }
 
@@ -2498,15 +2498,15 @@ void            InitInt ( void )
 
 
     /* install the kind functions                                          */
-    ImportGVarFromLibrary( "KIND_INT_SMALL_ZERO", &KIND_INT_SMALL_ZERO );
-    ImportGVarFromLibrary( "KIND_INT_SMALL_POS",  &KIND_INT_SMALL_POS );
-    ImportGVarFromLibrary( "KIND_INT_SMALL_NEG",  &KIND_INT_SMALL_NEG );
-    ImportGVarFromLibrary( "KIND_INT_LARGE_POS",  &KIND_INT_LARGE_POS );
-    ImportGVarFromLibrary( "KIND_INT_LARGE_NEG",  &KIND_INT_LARGE_NEG );
+    ImportGVarFromLibrary( "TYPE_INT_SMALL_ZERO", &TYPE_INT_SMALL_ZERO );
+    ImportGVarFromLibrary( "TYPE_INT_SMALL_POS",  &TYPE_INT_SMALL_POS );
+    ImportGVarFromLibrary( "TYPE_INT_SMALL_NEG",  &TYPE_INT_SMALL_NEG );
+    ImportGVarFromLibrary( "TYPE_INT_LARGE_POS",  &TYPE_INT_LARGE_POS );
+    ImportGVarFromLibrary( "TYPE_INT_LARGE_NEG",  &TYPE_INT_LARGE_NEG );
 
-    KindObjFuncs[ T_INT    ] = KindIntSmall;
-    KindObjFuncs[ T_INTPOS ] = KindIntLargePos;
-    KindObjFuncs[ T_INTNEG ] = KindIntLargeNeg;
+    TypeObjFuncs[ T_INT    ] = TypeIntSmall;
+    TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
+    TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
 
 
     /* install the printing function                                       */
@@ -2534,19 +2534,19 @@ void            InitInt ( void )
 
     /* install the default product and power methods                       */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
-        for ( t2 = FIRST_CONSTANT_TYPE;  t2 <= LAST_CONSTANT_TYPE;  t2++ ) {
+        for ( t2 = FIRST_CONSTANT_TNUM;  t2 <= LAST_CONSTANT_TNUM;  t2++ ) {
             ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
             PowFuncs [ t2 ][ t1 ] = PowObjInt;
         }
-        for ( t2 = FIRST_RECORD_TYPE;  t2 <= LAST_RECORD_TYPE;  t2++ ) {
+        for ( t2 = FIRST_RECORD_TNUM;  t2 <= LAST_RECORD_TNUM;  t2++ ) {
             ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
             PowFuncs [ t2 ][ t1 ] = PowObjInt;
         }
-        for ( t2 = FIRST_LIST_TYPE;    t2 <= LAST_LIST_TYPE;    t2++ ) {
+        for ( t2 = FIRST_LIST_TNUM;    t2 <= LAST_LIST_TNUM;    t2++ ) {
             ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
             PowFuncs [ t2 ][ t1 ] = PowObjInt;
         }
-        for ( t2 = FIRST_VIRTUAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ) {
+        for ( t2 = FIRST_VIRTUAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
             ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
             PowFuncs [ t2 ][ t1 ] = PowObjInt;
         }

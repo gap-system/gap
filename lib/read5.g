@@ -2,6 +2,7 @@
 ##
 #X  now read all the implementation parts
 ##
+ReadLib( "rvecempt.gi" );
 ReadLib( "matrix.gi"   );
 
 ReadLib("tuples.gi"    );
@@ -158,10 +159,13 @@ ReadLib( "grpffmat.gi" );
 
 # files dealing with fp groups
 ReadLib( "grpfp.gi"    );
-ReadLib( "grpfpsgp.gi" );
+ReadLib( "sgpres.gi" );
+ReadLib( "tietze.gi" );
 
 
 # files dealing with trees and hash tables
 ReadLib( "hash.gi"     );
 
-
+# files dealing with construction of groups
+ReadLib( "frattfree.gi" );
+ReadLib( "frattext.gi" );

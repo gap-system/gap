@@ -21,7 +21,7 @@ char * Revision_vars_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -38,7 +38,7 @@ char * Revision_vars_c =
 #include        "plist.h"               /* ELM_PLIST, SET_ELM_PLIST, ...   */
 #include        "string.h"              /* CSTR_STRING used by NAME_RNAM   */
 
-#include        "code.h"                /* Stat, Expr, TYPE_EXPR, ADDR_E...*/
+#include        "code.h"                /* Stat, Expr, TNUM_EXPR, ADDR_E...*/
 
 #define INCLUDE_DECLARATION_PART
 #include        "vars.h"                /* declaration part of the package */
@@ -100,7 +100,7 @@ char * Revision_vars_c =
 **
 #define SWITCH_TO_OLD_LVARS(old)                                            \
                         do {                                                \
-			    CHANGED_BAG( CurrLVars );                       \
+                            CHANGED_BAG( CurrLVars );                       \
                             CurrLVars = (old);                              \
                             PtrLVars  = PTR_BAG( CurrLVars );               \
                             PtrBody   = PTR_BAG( BODY_FUNC( CURR_FUNC ) );  \
@@ -1291,7 +1291,7 @@ UInt            ExecAssList (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -1300,7 +1300,7 @@ UInt            ExecAssList (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* special case for plain list                                         */
-    if ( TYPE_OBJ(list) == T_PLIST ) {
+    if ( TNUM_OBJ(list) == T_PLIST ) {
         if ( LEN_PLIST(list) < p ) {
             GROW_PLIST( list, p );
             SET_LEN_PLIST( list, p );
@@ -1353,7 +1353,7 @@ UInt            ExecAsssList (
         if ( ! IS_DENSE_LIST( rhss ) ) {
             rhss = ErrorReturnObj(
                 "List Assignment: <rhss> must be a dense list (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(rhss)].name), 0L,
+                (Int)(InfoBags[TNUM_OBJ(rhss)].name), 0L,
                 "you can return a dense list for <rhss>" );
         }
         else /* if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) */ {
@@ -1405,7 +1405,7 @@ UInt            ExecAssListLevel (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -1497,7 +1497,7 @@ UInt            ExecUnbList (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -1533,13 +1533,13 @@ Obj             EvalElmList (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
 
     /* special case for plain lists (use generic code to signal errors)    */
-    if ( TYPE_OBJ(list) == T_PLIST ) {
+    if ( TNUM_OBJ(list) == T_PLIST ) {
         if ( LEN_PLIST(list) < p ) {
             return ELM_LIST( list, p );
         }
@@ -1623,7 +1623,7 @@ Obj             EvalElmListLevel (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
@@ -1706,7 +1706,7 @@ Obj             EvalIsbList (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
@@ -2200,7 +2200,7 @@ UInt            ExecAssPosObj (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
@@ -2209,7 +2209,7 @@ UInt            ExecAssPosObj (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* special case for plain list                                         */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
@@ -2250,13 +2250,13 @@ UInt            ExecUnbPosObj (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ(pos);
 
     /* unbind the element                                                  */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
@@ -2293,13 +2293,13 @@ Obj             EvalElmPosObj (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
 
     /* special case for plain lists (use generic code to signal errors)    */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         while ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
@@ -2348,13 +2348,13 @@ Obj             EvalIsbPosObj (
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
     p = INT_INTOBJ( pos );
 
     /* get the result                                                      */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
                True : False);
     }
@@ -2459,7 +2459,7 @@ UInt            ExecAssComObjName (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         AssPRec( record, rnam, rhs );
     }
     else {
@@ -2496,7 +2496,7 @@ UInt            ExecAssComObjExpr (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         AssPRec( record, rnam, rhs );
     }
     else {
@@ -2529,7 +2529,7 @@ UInt            ExecUnbComObjName (
     rnam = (UInt)(ADDR_STAT(stat)[1]);
 
     /* unbind the element of the record                                    */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         UnbPRec( record, rnam );
     }
     else {
@@ -2562,7 +2562,7 @@ UInt            ExecUnbComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_STAT(stat)[1] ) );
 
     /* unbind the element of the record                                    */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         UnbPRec( record, rnam );
     }
     else {
@@ -2595,7 +2595,7 @@ Obj             EvalElmComObjName (
     rnam = (UInt)(ADDR_EXPR(expr)[1]);
 
     /* select the element of the record                                    */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         elm = ElmPRec( record, rnam );
     }
     else {
@@ -2628,7 +2628,7 @@ Obj             EvalElmComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
 
     /* select the element of the record                                    */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         elm = ElmPRec( record, rnam );
     }
     else {
@@ -2661,7 +2661,7 @@ Obj             EvalIsbComObjName (
     rnam = (UInt)(ADDR_EXPR(expr)[1]);
 
     /* select the element of the record                                    */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         isb = (IsbPRec( record, rnam ) ? True : False);
     }
     else {
@@ -2694,7 +2694,7 @@ Obj             EvalIsbComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
 
     /* select the element of the record                                    */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         isb = (IsbPRec( record, rnam ) ? True : False);
     }
     else {

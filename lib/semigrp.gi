@@ -40,7 +40,7 @@ InstallMethod( PrintObj,
 InstallMethod( SemigroupByGenerators, true, [ IsCollection ], 0,
     function( gens )
     local S;
-    S:= Objectify( NewKind( FamilyObj( gens ),
+    S:= Objectify( NewType( FamilyObj( gens ),
                             IsSemigroup and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagma( S, AsList( gens ) );

@@ -77,7 +77,7 @@ IsLieObjectCollection := CategoryCollections( "IsLieObjectCollection",
 ##  That is, for $x$, $y$ in <Fam>, the product of the images in $F$ will be
 ##  the image of $x \* y - y \* x$.
 ##
-##  The standard kind of objects in a Lie family <F> is '<F>!.packedKind'.
+##  The standard type of objects in a Lie family <F> is '<F>!.packedType'.
 ##
 ##  The isomorphism is given by 'Embedding( <Fam>, $F$ )'.
 ##

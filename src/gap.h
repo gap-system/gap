@@ -17,6 +17,31 @@ char * Revision_gap_h =
 /****************************************************************************
 **
 
+*V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
+**
+**  'Last',  'Last2', and 'Last3'  are the  global variables 'last', 'last2',
+**  and  'last3', which are automatically  assigned  the result values in the
+**  main read-eval-print loop.
+*/
+extern UInt Last;
+
+
+/****************************************************************************
+**
+*V  Last2 . . . . . . . . . . . . . . . . . . . . . . global variable 'last2'
+*/
+extern UInt Last2;
+
+
+/****************************************************************************
+**
+*V  Last3 . . . . . . . . . . . . . . . . . . . . . . global variable 'last3'
+*/
+extern UInt Last3;
+
+
+/****************************************************************************
+**
 *V  Time  . . . . . . . . . . . . . . . . . . . . . . global variable  'time'
 **
 **  'Time' is the global variable 'time', which is automatically assigned the
@@ -96,7 +121,7 @@ extern Obj  CompNowFuncs;
 extern UInt CompNowCount;
 
 extern void Complete (
-        Obj                 list );
+            Obj                 list );
 
 
 /****************************************************************************
@@ -111,60 +136,44 @@ extern Obj DoComplete1args (
             Obj                 arg1 );
 
 extern Obj DoComplete2args (
-	    Obj                 self,
-	    Obj                 arg1,
-	    Obj                 arg2 );
+            Obj                 self,
+            Obj                 arg1,
+            Obj                 arg2 );
 
 extern Obj DoComplete3args (
-	    Obj                 self,
-	    Obj                 arg1,
-	    Obj                 arg2,
-	    Obj                 arg3 );
+            Obj                 self,
+            Obj                 arg1,
+            Obj                 arg2,
+            Obj                 arg3 );
 
 extern Obj DoComplete4args (
-	    Obj                 self,
-	    Obj                 arg1,
-	    Obj                 arg2,
-	    Obj                 arg3,
-	    Obj                 arg4 );
+            Obj                 self,
+            Obj                 arg1,
+            Obj                 arg2,
+            Obj                 arg3,
+            Obj                 arg4 );
 
 extern Obj DoComplete5args (
-	    Obj                 self,
-	    Obj                 arg1,
-	    Obj                 arg2,
-	    Obj                 arg3,
-	    Obj                 arg4,
-	    Obj                 arg5 );
+            Obj                 self,
+            Obj                 arg1,
+            Obj                 arg2,
+            Obj                 arg3,
+            Obj                 arg4,
+            Obj                 arg5 );
 
 extern Obj DoComplete6args (
-	    Obj                 self,
-	    Obj                 arg1,
-	    Obj                 arg2,
-	    Obj                 arg3,
-	    Obj                 arg4,
-	    Obj                 arg5,
-	    Obj                 arg6 );
+            Obj                 self,
+            Obj                 arg1,
+            Obj                 arg2,
+            Obj                 arg3,
+            Obj                 arg4,
+            Obj                 arg5,
+            Obj                 arg6 );
 
 extern Obj DoCompleteXargs (
-	    Obj                 self,
-	    Obj                 args );
+            Obj                 self,
+            Obj                 args );
 
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * streams and files related functions  * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*F  FuncREAD_AS_FUNC( <filename> )  . . . . . . . . . . . . . . . read a file
-*/
-extern Obj READ_AS_FUNC (
-            Char *              filename );
 
 
 /****************************************************************************
@@ -179,8 +188,8 @@ extern Obj READ_AS_FUNC (
 *F  ImportGVarFromLibrary( <name>, <address> )  . . .  import global variable
 */
 extern void ImportGVarFromLibrary(
-	    Char *	    name,
-	    Obj *           address );
+            Char *          name,
+            Obj *           address );
 
 
 /****************************************************************************
@@ -188,8 +197,8 @@ extern void ImportGVarFromLibrary(
 *F  ImportFuncFromLibrary( <name>, <address> )  . . .  import global function
 */
 extern void ImportFuncFromLibrary(
-	    Char *	    name,
-	    Obj *           address );
+            Char *          name,
+            Obj *           address );
 
 
 /****************************************************************************

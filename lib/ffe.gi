@@ -96,25 +96,26 @@ FFEFamily := function( p )
         F:= NewFamily( "FFEFamily", IsFFE );
         SetCharacteristic( F, p );
 
-        # Store the kind for the representation of prime field elements
+        # Store the type for the representation of prime field elements
         # via residues.
-        F!.kindOfZmodnZObj:= NewKind( F, IsZmodpZObjLarge and IsModulusRep );
-        SetDataKind( F!.kindOfZmodnZObj, p );
-        F!.kindOfZmodnZObj![ ZNZ_PURE_KIND ]:= F!.kindOfZmodnZObj;
+        F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge and IsModulusRep );
+        SetDataType( F!.typeOfZmodnZObj, p );
+        F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
+        F!.modulus:= p;
 
         SetOne(  F, ZmodnZObj( F, 1 ) );
         SetZero( F, ZmodnZObj( F, 0 ) );
 
       else
 
-        KIND_FFE( p );
+        TYPE_FFE( p );
         F:= FAMS_FFE[p];
 
-        # Store the kind for the representation of prime field elements
+        # Store the type for the representation of prime field elements
         # via residues.
-        F!.kindOfZmodnZObj:= NewKind( F, IsZmodpZObjSmall and IsModulusRep );
-        SetDataKind( F!.kindOfZmodnZObj, p );
-        F!.kindOfZmodnZObj![ ZNZ_PURE_KIND ]:= F!.kindOfZmodnZObj;
+        F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjSmall and IsModulusRep );
+        SetDataType( F!.typeOfZmodnZObj, p );
+        F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
 
         SetOne(  F, Z(p)^0 );
         SetZero( F, 0*Z(p) );
@@ -643,7 +644,7 @@ InstallMethod( FieldOverItselfByGenerators, true, [ IsFFECollection ], 0,
 
     local F, d, q;
 
-    F:= Objectify( NewKind( FamilyObj( elms ),
+    F:= Objectify( NewType( FamilyObj( elms ),
                             IsField and IsAttributeStoringRep ),
                    rec() );
     d:= DegreeFFE( elms );
@@ -677,7 +678,7 @@ InstallMethod( FieldByGenerators, IsIdentical,
 
     local F, d, q;
 
-    F := Objectify( NewKind( FamilyObj( gens ),
+    F := Objectify( NewType( FamilyObj( gens ),
                              IsField and IsAttributeStoringRep ),
                     rec() );
 

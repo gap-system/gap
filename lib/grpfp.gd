@@ -109,28 +109,24 @@ CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
 ##
 CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
 
-############################################################################
-##
-#F RelatorsOfFpGroup 
-##
-RelatorsOfFpGroup := NewOperationArgs( "RelatorsOfFpGroup" );
 
 #############################################################################
 ##
-#F FreeGeneratorsOfFpGroup( F )
+#F  FreeGeneratorsOfFpGroup( F )
 ##
 FreeGeneratorsOfFpGroup := NewOperationArgs( "FreeGeneratorsOfFpGroup" );
 
+
 ############################################################################
 ##
-#F FreeGroupOfFpGroup 
+#F  FreeGroupOfFpGroup 
 ##
 FreeGroupOfFpGroup := NewOperationArgs( "FreeGroupOfFpGroup" );
 
 
 ############################################################################
 ##
-#F IsToFpGroupGeneralMappingByImages
+#F  IsToFpGroupGeneralMappingByImages
 ##
 IsToFpGroupGeneralMappingByImages := NewRepresentation
     ( "IsToFpGroupGeneralMappingByImages",
@@ -138,6 +134,22 @@ IsToFpGroupGeneralMappingByImages := NewRepresentation
       [ "generators", "genimages" ] );
 IsToFpGroupHomomorphismByImages := IsToFpGroupGeneralMappingByImages
                                and IsMapping;
+
+
+############################################################################
+##
+#F  MostFrequentGeneratorFpGroup
+##
+MostFrequentGeneratorFpGroup :=
+    NewOperationArgs("MostFrequentGeneratorFpGroup");
+
+
+############################################################################
+##
+#F  RelatorsOfFpGroup 
+##
+RelatorsOfFpGroup := NewOperationArgs( "RelatorsOfFpGroup" );
+
 
 #############################################################################
 ##

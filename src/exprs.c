@@ -17,7 +17,7 @@ char *          Revision_exprs_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* Tilde, VAL_GVAR, AssGVar, GVa...*/
@@ -36,7 +36,7 @@ char *          Revision_exprs_c =
 #include        "range.h"               /* NEW_RANGE, SET_LEN_RANGE, SET...*/
 #include        "string.h"              /* NEW_STRING, CSTR_STRING         */
 
-#include        "code.h"                /* Expr, TYPE_EXPR, SIZE_EXPR,  ...*/
+#include        "code.h"                /* Expr, TNUM_EXPR, SIZE_EXPR,  ...*/
 #include        "vars.h"                /* used by EVAL_EXPR               */
 
 #define INCLUDE_DECLARATION_PART
@@ -101,15 +101,15 @@ char *          Revision_exprs_c =
 **  evaluator, i.e., to  the function that evaluates  expressions of the type
 **  of <expr>.
 **
-**  Note that 'EVAL_EXPR' does not use 'TYPE_EXPR', since it also handles the
-**  two special cases that 'TYPE_EXPR' handles.
+**  Note that 'EVAL_EXPR' does not use 'TNUM_EXPR', since it also handles the
+**  two special cases that 'TNUM_EXPR' handles.
 **
 **  'EVAL_EXPR' is defined in the declaration part of this package as follows:
 **
 #define EVAL_EXPR(expr) \
                         (IS_REFLVAR(expr) ? OBJ_REFLVAR(expr) : \
                          (IS_INTEXPR(expr) ? OBJ_INTEXPR(expr) : \
-                          (*EvalExprFuncs[ TYPE_STAT(exrp) ])( expr ) ))
+                          (*EvalExprFuncs[ TNUM_STAT(exrp) ])( expr ) ))
 */
 
 
@@ -140,7 +140,7 @@ Obj             (* EvalExprFuncs [256]) ( Expr expr );
 **  follows
 **
 #define EVAL_BOOL_EXPR(expr) \
-                        ( (*EvalBoolFuncs[ TYPE_EXPR( expr ) ])( expr ) )
+                        ( (*EvalBoolFuncs[ TNUM_EXPR( expr ) ])( expr ) )
 */
 
 
@@ -170,7 +170,7 @@ Obj             EvalUnknownExpr (
 {
     ErrorQuit(
       "Panic: tried to evaluate an expression of unknown type '%d'",
-                 (Int)TYPE_EXPR(expr), 0L );
+                 (Int)TNUM_EXPR(expr), 0L );
     return 0;
 }
 
@@ -199,7 +199,7 @@ Obj             EvalUnknownBool (
     while ( val != True && val != False ) {
         val = ErrorReturnObj(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
             "you can return 'true' or 'false'" );
     }
 
@@ -280,16 +280,16 @@ Obj             EvalAnd (
     }
 
     /* handle the 'and' of two features                                    */
-    else if ( TYPE_OBJ(opL) == T_FUNCTION ) {
+    else if ( TNUM_OBJ(opL) == T_FUNCTION ) {
         tmp = ADDR_EXPR(expr)[1];
         opR = EVAL_EXPR( tmp );
-        if ( TYPE_OBJ(opR) == T_FUNCTION ) {
+        if ( TNUM_OBJ(opR) == T_FUNCTION ) {
             return NewAndFilter( opL, opR );
         }
         else {
             ErrorQuit(
                 "<expr> must be 'true' or 'false' (not to a %s)",
-                (Int)(InfoBags[TYPE_OBJ(opL)].name), 0L );
+                (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
         }
     }
     
@@ -297,7 +297,7 @@ Obj             EvalAnd (
     else {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opL)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
     }
     
     /* please 'lint'                                                       */
@@ -949,7 +949,7 @@ Obj             EvalPermExpr (
             while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
                 val = ErrorReturnObj(
               "Permutation: <expr> must be a positive integer (not to a %s)",
-                    (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+                    (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
                     "you can return a positive integer" );
             }
             c = INT_INTOBJ(val);
@@ -1137,7 +1137,7 @@ void            ListExpr2 (
         }
 
         /* special case if subexpression is a list expression              */
-        else if ( TYPE_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
+        else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
             sub = ListExpr1( ADDR_EXPR(expr)[i-1] );
             SET_ELM_PLIST( list, i, sub );
             CHANGED_BAG( list );
@@ -1145,7 +1145,7 @@ void            ListExpr2 (
         }
 
         /* special case if subexpression is a record expression            */
-        else if ( TYPE_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
+        else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
             sub = RecExpr1( ADDR_EXPR(expr)[i-1] );
             SET_ELM_PLIST( list, i, sub );
             CHANGED_BAG( list );
@@ -1184,7 +1184,7 @@ Obj             EvalRangeExpr (
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
             "you can return an integer for <first>" );
     }
     low = INT_INTOBJ( val );
@@ -1196,7 +1196,7 @@ Obj             EvalRangeExpr (
             if ( ! IS_INTOBJ(val) ) {
                 val = ErrorReturnObj(
                     "Range: <second> must be an integer (not a %s)",
-                    (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+                    (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
                     "you can return an integer for <second>" );
             }
             else {
@@ -1218,7 +1218,7 @@ Obj             EvalRangeExpr (
         if ( ! IS_INTOBJ(val) ) {
             val = ErrorReturnObj(
                 "Range: <last> must be an integer (not a %d)",
-                (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+                (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
                 "you can return an integer for <last>" );
         }
         else {
@@ -1415,7 +1415,7 @@ void            RecExpr2 (
         }
 
         /* special case if subexpression is a list expression             */
-        else if ( TYPE_EXPR( tmp ) == T_LIST_EXPR ) {
+        else if ( TNUM_EXPR( tmp ) == T_LIST_EXPR ) {
             sub = ListExpr1( tmp );
             SET_ELM_PREC( rec, i, sub );
             CHANGED_BAG( rec );
@@ -1423,7 +1423,7 @@ void            RecExpr2 (
         }
 
         /* special case if subexpression is a record expression            */
-        else if ( TYPE_EXPR( tmp ) == T_REC_EXPR ) {
+        else if ( TNUM_EXPR( tmp ) == T_REC_EXPR ) {
             sub = RecExpr1( tmp );
             SET_ELM_PREC( rec, i, sub );
             CHANGED_BAG( rec );
@@ -1454,7 +1454,7 @@ void            RecExpr2 (
 void            PrintExpr (
     Expr                expr )
 {
-    (*PrintExprFuncs[ TYPE_EXPR(expr) ])( expr );
+    (*PrintExprFuncs[ TNUM_EXPR(expr) ])( expr );
 }
 
 
@@ -1483,7 +1483,7 @@ void            PrintUnknownExpr (
 {
     ErrorQuit(
       "Panic: tried to print an expression of unknown type '%d'",
-          (Int)TYPE_EXPR(expr), 0L );
+          (Int)TNUM_EXPR(expr), 0L );
 }
 
 
@@ -1566,7 +1566,7 @@ void            PrintBinop (
     oldPrec = PrintPreceedence;
 
     /* select the new preceedence level                                    */
-    switch ( TYPE_EXPR(expr) ) {
+    switch ( TNUM_EXPR(expr) ) {
     case T_OR:     op = "or";   PrintPreceedence =  2;  break;
     case T_AND:    op = "and";  PrintPreceedence =  4;  break;
     case T_EQ:     op = "=";    PrintPreceedence =  8;  break;
@@ -1590,10 +1590,10 @@ void            PrintBinop (
     else Pr("%2>",0L,0L);
 
     /* print the left operand                                              */
-    if ( TYPE_EXPR(expr) == T_POW
+    if ( TNUM_EXPR(expr) == T_POW
       && (  (IS_INTEXPR(ADDR_EXPR(expr)[0])
           && INT_INTEXPR(ADDR_EXPR(expr)[0]) < 0)
-        || TYPE_EXPR(ADDR_EXPR(expr)[0]) == T_INTNEG) ) {
+        || TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_INTNEG) ) {
         Pr( "(", 0L, 0L );
         PrintExpr( ADDR_EXPR(expr)[0] );
         Pr( ")", 0L, 0L );

@@ -26,7 +26,7 @@ InstallMethod( Enumerator, true, [ IsConjugacyClassPermGroupRep ], 0,
     function( xorb )
     local   enum;
     
-    enum := Objectify( NewKind( FamilyObj( xorb ),
+    enum := Objectify( NewType( FamilyObj( xorb ),
                     IsConjugacyClassPermGroupEnumerator ),
         rec( rightTransversal := RightTransversal( ActingDomain( xorb ),
                     StabilizerOfExternalSet( xorb ) ) ) );
@@ -114,7 +114,7 @@ InstallMethod( Enumerator, true, [ IsRationalClassPermGroupRep ], 0,
     function( rcl )
     local   enum;
     
-    enum := Objectify( NewKind( FamilyObj( rcl ),
+    enum := Objectify( NewType( FamilyObj( rcl ),
                 IsRationalClassPermGroupEnumerator ),
                 rec( rightTransversal := RightTransversal
                 ( ActingDomain( rcl ), StabilizerOfExternalSet( rcl ) ) ) );

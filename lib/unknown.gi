@@ -40,9 +40,9 @@ IsUnknown := NewRepresentation( "IsUnknown",
 
 #############################################################################
 ##
-#V  UnknownsKind
+#V  UnknownsType
 ##
-UnknownsKind := NewKind( CyclotomicsFamily, IsUnknown );
+UnknownsType := NewType( CyclotomicsFamily, IsUnknown );
 
 
 #############################################################################
@@ -54,7 +54,7 @@ InstallMethod( Unknown, true, [ IsPosRat and IsInt ], 0,
     if LargestUnknown < n then
       LargestUnknown:= n;
     fi;
-    return Objectify( UnknownsKind, [ n ] );
+    return Objectify( UnknownsType, [ n ] );
     end );
 
 
@@ -65,7 +65,7 @@ InstallMethod( Unknown, true, [ IsPosRat and IsInt ], 0,
 InstallOtherMethod( Unknown, true, [],             0,
     function()
     LargestUnknown:= LargestUnknown + 1;
-    return Objectify( UnknownsKind, [ LargestUnknown ] );
+    return Objectify( UnknownsType, [ LargestUnknown ] );
     end );
 
 

@@ -68,7 +68,7 @@ InfoData.InfoClass :=  function(num)
     if num < 1 or num > Length(InfoData.CurrentLevels) then
         Error("Bad info class number -- this is a bug");
     fi;
-    return Objectify(NewKind(InfoClassFamily,IsInfoClassListRep),
+    return Objectify(NewType(InfoClassFamily,IsInfoClassListRep),
                    [num]);
 end;
 

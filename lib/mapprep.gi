@@ -30,9 +30,9 @@ Revision.mapprep_gi :=
 ##
 #R  IsDefaultGeneralMappingRep( <map> )
 ##
-##  Source and range of such a general mapping are stored in its kind, as
-##  'DataKind( KindObj( <map> ) )[1]' resp.
-##  'DataKind( KindObj( <map> ) )[2]'.
+##  Source and range of such a general mapping are stored in its type, as
+##  'DataType( TypeObj( <map> ) )[1]' resp.
+##  'DataType( TypeObj( <map> ) )[2]'.
 ##
 ##  Note that this representation does *not* decide whether <map> is
 ##  a positional or a component object.
@@ -47,27 +47,27 @@ IsDefaultGeneralMappingRep := NewRepresentation(
 
 #############################################################################
 ##
-#F  KindOfDefaultGeneralMapping( <source>, <range>, <filter> )
+#F  TypeOfDefaultGeneralMapping( <source>, <range>, <filter> )
 ##
-KindOfDefaultGeneralMapping := function( source, range, filter )
-    local Kind;
+TypeOfDefaultGeneralMapping := function( source, range, filter )
+    local Type;
 
     # Do a cheap test whether the general mapping has equal source and range.
     if IsIdentical( source, range ) then
       filter:= filter and IsEndoGeneralMapping;
     fi;
 
-    # Construct the kind.
-    Kind:= NewKind( GeneralMappingsFamily(
+    # Construct the type.
+    Type:= NewType( GeneralMappingsFamily(
                           ElementsFamily( FamilyObj( source ) ),
                           ElementsFamily( FamilyObj( range  ) ) ),
                     IsDefaultGeneralMappingRep and filter );
 
     # Store source and range.
-    SetDataKind( Kind, [ source, range ] );
+    SetDataType( Type, [ source, range ] );
 
-    # Return the kind.
-    return Kind;
+    # Return the type.
+    return Type;
 end;
 
 
@@ -78,7 +78,7 @@ end;
 InstallMethod( Range, true,
     [ IsGeneralMapping and IsDefaultGeneralMappingRep ],
     2*SUM_FLAGS + 1,  # higher than the system getter!
-    map -> DataKind( KindObj( map ) )[2] );
+    map -> DataType( TypeObj( map ) )[2] );
 
 
 #############################################################################
@@ -88,7 +88,7 @@ InstallMethod( Range, true,
 InstallMethod( Source, true,
     [ IsGeneralMapping and IsDefaultGeneralMappingRep ],
     2*SUM_FLAGS + 1,  # higher than the system getter!
-    map -> DataKind( KindObj( map ) )[1] );
+    map -> DataType( TypeObj( map ) )[1] );
 
 
 #############################################################################
@@ -123,12 +123,12 @@ InstallMethod( CompositionMapping2,
 
     # make the general mapping
     if IsSPGeneralMapping( map1 ) and IsSPGeneralMapping( map2 ) then
-      com:= Objectify( KindOfDefaultGeneralMapping( Source( map1 ),
+      com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
                                                     Range( map2 ),
                         IsCompositionMappingRep and IsSPGeneralMapping ),
                      rec() );
     else
-      com:= Objectify( KindOfDefaultGeneralMapping( Source( map1 ),
+      com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
                                                     Range( map2 ),
                         IsCompositionMappingRep and IsNonSPGeneralMapping ),
                      rec() );
@@ -512,7 +512,7 @@ MappingByFunction := function ( arg )
     if Length(arg) = 3  then
 
       # make the general mapping
-      map:= Objectify( KindOfDefaultGeneralMapping( arg[1], arg[2],
+      map:= Objectify( TypeOfDefaultGeneralMapping( arg[1], arg[2],
                                IsMappingByFunctionRep
                            and IsSingleValued
                            and IsTotal ),
@@ -522,7 +522,7 @@ MappingByFunction := function ( arg )
     elif Length(arg) = 4  then
 
       # make the mapping
-      map:= Objectify( KindOfDefaultGeneralMapping( arg[1], arg[2],
+      map:= Objectify( TypeOfDefaultGeneralMapping( arg[1], arg[2],
                                IsMappingByFunctionWithInverseRep
                            and IsBijective ),
                        rec( fun    := arg[3],
@@ -710,7 +710,7 @@ InstallMethod( InverseGeneralMapping,
     local   inv;
 
     # make the mapping
-    inv:= Objectify( KindOfDefaultGeneralMapping( Range( map ),
+    inv:= Objectify( TypeOfDefaultGeneralMapping( Range( map ),
                                                   Source( map ),
                              IsInverseGeneralMappingRep
                          and IsAttributeStoringRep ),
@@ -1028,7 +1028,7 @@ InstallMethod( IdentityMapping,
     local id;
 
     # make the mapping
-    id := Objectify( KindOfDefaultGeneralMapping( D, D,
+    id := Objectify( TypeOfDefaultGeneralMapping( D, D,
                                   IsSPGeneralMapping
                               and IsAttributeStoringRep
                               and IsOne ),
@@ -1268,7 +1268,7 @@ InstallMethod( ZeroMapping,
     local zero;   # the zero mapping, result
 
     # make the mapping
-    zero := Objectify( KindOfDefaultGeneralMapping( S, R,
+    zero := Objectify( TypeOfDefaultGeneralMapping( S, R,
                                   IsSPGeneralMapping
                               and IsAttributeStoringRep
                               and IsZero ),

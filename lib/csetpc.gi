@@ -237,7 +237,7 @@ InstallMethod( RightTransversal, "PC",IsIdentical,
 function( G, U )
 local elements, g, u, e, i,t,depths,gens,p;
 
-  t := Objectify(NewKind(FamilyObj(G),IsRightTransversalPcGroup),
+  t := Objectify(NewType(FamilyObj(G),IsRightTransversalPcGroup),
           rec( group :=G,
             subgroup :=U,
 	    canonReps:=[]));
@@ -255,14 +255,20 @@ local elements, g, u, e, i,t,depths,gens,p;
 	  UniteSet( elements, e * u );
       od;
   od;
+  Assert(1,Length(elements)=Index(G,U));
   t!.transversal:=elements;
   return t;
 end);
 
-InstallMethod(\[\],"RT",true,[IsRightTransversalPcGroup,
+InstallMethod(\[\],"for Pc groups",true,[IsRightTransversalPcGroup,
         IsPosRat and IsInt ],0,
 function(t,num)
   return t!.transversal[num];
+end );
+
+InstallMethod(AsList,"for Pc groups",true,[IsRightTransversalPcGroup],0,
+function(t)
+  return t!.transversal;
 end );
 
 InstallMethod(PositionCanonical,"RT",true,

@@ -88,7 +88,7 @@ InstallMethod( NewBasis, IsIdentical,
     [ IsField and IsFinite, IsFFECollection ], 0,
     function( F, gens )
     local B;
-    B:= Objectify( NewKind( FamilyObj( gens ), IsBasisFiniteField ),
+    B:= Objectify( NewType( FamilyObj( gens ), IsBasisFiniteField ),
                    rec() );
     SetUnderlyingLeftModule( B, F );
     SetBasisVectors( B, gens );
@@ -292,7 +292,7 @@ FrobeniusAutomorphismI := function ( F, i )
     Fam:= ElementsFamily( FamilyObj( F ) );
 
     # make the mapping object
-    frob:= Objectify( KindOfDefaultGeneralMapping( F, F,
+    frob:= Objectify( TypeOfDefaultGeneralMapping( F, F,
                               IsFrobeniusAutomorphism
                           and IsSPGeneralMapping
                           and IsRingWithOneHomomorphism

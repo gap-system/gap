@@ -1275,7 +1275,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
     else
         if IsList( Pr )  then
             image.perm := Objectify
-                ( NewKind( PermutationsFamily, IsSlicedPerm ),
+                ( NewType( PermutationsFamily, IsSlicedPerm ),
                   rec( length := 0, word := [  ] ) );
             image.perm!.lftObj := Pr[ 1 ];
             image.perm!.rgtObj := Pr[ 2 ];
@@ -1339,7 +1339,7 @@ end;
 
 #############################################################################
 ##
-#F  Refinements.Intersection( <O>, <strat> )  . . . . . . . . . . second kind
+#F  Refinements.Intersection( <O>, <strat> )  . . . . . . . . . . second type
 ##
 Refinements.Intersection := function( rbase, image, O, strat )
     local   t;
@@ -1348,7 +1348,7 @@ Refinements.Intersection := function( rbase, image, O, strat )
                              else  t := image.perm2;  fi;
     if IsSlicedPerm( t )  then
         t := ShallowCopy( t );
-        SET_KIND_COMOBJ( t, NewKind( PermutationsFamily, IsSlicedPermInv ) );
+        SET_TYPE_COMOBJ( t, NewType( PermutationsFamily, IsSlicedPermInv ) );
     else
         t := t ^ -1;
     fi;

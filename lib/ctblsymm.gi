@@ -178,12 +178,12 @@ MatCharsWreathSymmetric := function( tbl, n)
        for j in [1..Length(pts[i])] do
 	 np:= [[], []];
 	 for t in pts[i][j] do
-	    s:= Sum(t);
+	    s:= Sum( t, 0 );
 	    Add(np[1], s);
 	    if s = 0 then
 	       Add(np[2], 1);
 	    else
-	       Add(np[2], Position(partitions[s], t));
+	       Add(np[2], Position( partitions[s], t, 0 ));
 	    fi;
 	 od;
 	 pts[i][j]:= np;
@@ -577,7 +577,7 @@ CharTableAlternating := rec(
         
             #  split case.
             if Length(lbl) = 2 and not IsInt(lbl[2])  then
-               prod:= Product(lbl[1]);
+               prod:= Product( lbl[1], 1 );
                
                #  coprime case needs complicated check.
                if prod mod prime <>  0 then
@@ -610,9 +610,9 @@ CharTableAlternating := rec(
                               alpha[1], pi[1]);
                     if val in [-1, 1] then
                        if alpha[2] = pi[2] then
-                          val:= -val * EB(Product(pi[1]));
+                          val:= -val * EB( Product( pi[1], 1 ) );
                        else
-                          val:= val * (1 + EB(Product(pi[1])));
+                          val:= val * (1 + EB( Product( pi[1], 1 ) ));
                        fi;
                     else
                        val:=  val/2;

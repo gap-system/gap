@@ -101,12 +101,12 @@ InstallMethod( LeftModuleByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      V:= Objectify( NewKind( FamilyObj( mats ),
+      V:= Objectify( NewType( FamilyObj( mats ),
                                   IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      V:= Objectify( NewKind( FamilyObj( mats ),
+      V:= Objectify( NewType( FamilyObj( mats ),
                                   IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
                      rec() );
@@ -137,7 +137,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     fi;
 #T explicit 2nd argument above!
 
-    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsGaussianSpace
                             and IsGaussianMatrixSpaceRep ),
                    rec() );
@@ -178,12 +178,12 @@ InstallOtherMethod( LeftModuleByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      V:= Objectify( NewKind( FamilyObj( mats ),
+      V:= Objectify( NewType( FamilyObj( mats ),
                                   IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      V:= Objectify( NewKind( FamilyObj( mats ),
+      V:= Objectify( NewType( FamilyObj( mats ),
                                   IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
                      rec() );
@@ -220,12 +220,12 @@ InstallMethod( LeftModuleByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      V:= Objectify( NewKind( FamilyObj( mats ),
+      V:= Objectify( NewType( FamilyObj( mats ),
                                   IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      V:= Objectify( NewKind( FamilyObj( mats ),
+      V:= Objectify( NewType( FamilyObj( mats ),
                                   IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
                      rec() );
@@ -256,7 +256,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     fi;
 #T explicit 2nd argument above!
 
-    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsGaussianSpace
                             and IsGaussianMatrixSpaceRep ),
                    rec() );
@@ -299,12 +299,12 @@ InstallOtherMethod( LeftModuleByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      V:= Objectify( NewKind( FamilyObj( mats ),
+      V:= Objectify( NewType( FamilyObj( mats ),
                                   IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      V:= Objectify( NewKind( FamilyObj( mats ),
+      V:= Objectify( NewType( FamilyObj( mats ),
                                   IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
                      rec() );
@@ -710,7 +710,7 @@ InstallMethod( BasisByGenerators,
     fi;
 
     # Construct a semi-echelonized basis.
-    B:= Objectify( NewKind( FamilyObj( gens ),
+    B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -750,7 +750,7 @@ InstallMethod( BasisByGeneratorsNC,
     fi;
 
     # Construct a semi-echelonized basis.
-    B:= Objectify( NewKind( FamilyObj( gens ),
+    B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -782,7 +782,7 @@ InstallMethod( SemiEchelonBasisOfDomain,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep ], 0,
     function( V )
     local B;
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -808,7 +808,7 @@ InstallMethod( SemiEchelonBasisByGenerators,
     fi;
 
     # Construct the basis.
-    B:= Objectify( NewKind( FamilyObj( gens ),
+    B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -840,7 +840,7 @@ InstallMethod( SemiEchelonBasisByGeneratorsNC,
     local B,  # the basis, result
           v;  # loop over vector space generators
 
-    B:= Objectify( NewKind( FamilyObj( gens ),
+    B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ),
@@ -990,7 +990,7 @@ InstallMethod( CanonicalBasis,
     fi;
 
     # Make the basis.
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianMatrixSpaceRep
@@ -1066,7 +1066,7 @@ InstallMethod( CanonicalBasis,
     0,
     function( V )
     local B, m, n;
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsSemiEchelonized
@@ -1129,7 +1129,7 @@ InstallMethod( MutableBasisByGenerators,
       # Note that 'mats' is not empty.
       newmats:= SemiEchelonMats( mats );
 
-      B:= Objectify( NewKind( FamilyObj( mats ),
+      B:= Objectify( NewType( FamilyObj( mats ),
                                   IsMutableBasis
                               and IsMutableBasisOfGaussianMatrixSpaceRep ),
                      rec(
@@ -1167,7 +1167,7 @@ InstallMethod( MutableBasisByGenerators,
       # Note that 'mats' is not empty.
       newmats:= SemiEchelonMats( mats );
 
-      B:= Objectify( NewKind( FamilyObj( mats ),
+      B:= Objectify( NewType( FamilyObj( mats ),
                                   IsMutableBasis
                               and IsMutableBasisOfGaussianMatrixSpaceRep ),
                      rec(
@@ -1208,7 +1208,7 @@ InstallOtherMethod( MutableBasisByGenerators,
 
     else
 
-      B:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+      B:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                   IsMutableBasis
                               and IsMutableBasisOfGaussianMatrixSpaceRep ),
                      rec(

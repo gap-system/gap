@@ -22,7 +22,7 @@ char *          Revision_funcs_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "calls.h"               /* CALL_<i>ARGS, Function, ObjFunc */
@@ -66,10 +66,10 @@ UInt            ExecProccall0args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -90,10 +90,10 @@ UInt            ExecProccall1args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -118,10 +118,10 @@ UInt            ExecProccall2args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -148,10 +148,10 @@ UInt            ExecProccall3args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -180,10 +180,10 @@ UInt            ExecProccall4args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -214,10 +214,10 @@ UInt            ExecProccall5args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -250,10 +250,10 @@ UInt            ExecProccall6args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -284,10 +284,10 @@ UInt            ExecProccallXargs (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -332,10 +332,10 @@ Obj             EvalFunccall0args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -360,10 +360,10 @@ Obj             EvalFunccall1args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -392,10 +392,10 @@ Obj             EvalFunccall2args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -426,10 +426,10 @@ Obj             EvalFunccall3args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -462,10 +462,10 @@ Obj             EvalFunccall4args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -500,10 +500,10 @@ Obj             EvalFunccall5args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -540,10 +540,10 @@ Obj             EvalFunccall6args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -578,10 +578,10 @@ Obj             EvalFunccallXargs (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 

@@ -91,7 +91,7 @@ char *          Revision_cyclotom_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -163,18 +163,18 @@ UInt                    LastNCyc;
 
 /****************************************************************************
 **
-*F  KindCyc( <cyc> )  . . . . . . . . . . . . . . . . .  kind of a cyclotomic
+*F  TypeCyc( <cyc> )  . . . . . . . . . . . . . . . . .  kind of a cyclotomic
 **
-**  'KindCyc' returns the kind of a cyclotomic.
+**  'TypeCyc' returns the kind of a cyclotomic.
 **
-**  'KindCyc' is the function in 'KindObjFuncs' for cyclotomics.
+**  'TypeCyc' is the function in 'TypeObjFuncs' for cyclotomics.
 */
-Obj             KIND_CYC;
+Obj             TYPE_CYC;
 
-Obj             KindCyc (
+Obj             TypeCyc (
     Obj                 cyc )
 {
-    return KIND_CYC;
+    return TYPE_CYC;
 }
 
 
@@ -756,14 +756,14 @@ Obj             SumCyc (
     UInt                i;              /* loop variable                   */
 
     /* take the cyclotomic with less terms as the right operand            */
-    if ( TYPE_OBJ(opL) != T_CYC
-      || (TYPE_OBJ(opR) == T_CYC && SIZE_CYC(opL) < SIZE_CYC(opR)) ) {
+    if ( TNUM_OBJ(opL) != T_CYC
+      || (TNUM_OBJ(opR) == T_CYC && SIZE_CYC(opL) < SIZE_CYC(opR)) ) {
         sum = opL;  opL = opR;  opR = sum;
     }
 
     /* get the smallest field that contains both cyclotomics               */
-    nl = (TYPE_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
-    nr = (TYPE_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
+    nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
+    nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
     n  = nl;  while ( n % nr != 0 )  n += nl;
     ml = n / nl;
     mr = n / nr;
@@ -776,7 +776,7 @@ Obj             SumCyc (
     }
 
     /* copy the left operand into the result                               */
-    if ( TYPE_OBJ(opL) != T_CYC ) {
+    if ( TNUM_OBJ(opL) != T_CYC ) {
         res = ADDR_OBJ( ResultCyc );
         res[0] = opL;
         CHANGED_BAG( ResultCyc );
@@ -798,7 +798,7 @@ Obj             SumCyc (
     }
 
     /* add the right operand to the result                                 */
-    if ( TYPE_OBJ(opR) != T_CYC ) {
+    if ( TNUM_OBJ(opR) != T_CYC ) {
         res = ADDR_OBJ( ResultCyc );
         sum = SUM( res[0], opR );
         res = ADDR_OBJ( ResultCyc );
@@ -914,8 +914,8 @@ Obj             DiffCyc (
     UInt                i;              /* loop variable                   */
 
     /* get the smallest field that contains both cyclotomics               */
-    nl = (TYPE_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
-    nr = (TYPE_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
+    nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
+    nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
     n  = nl;  while ( n % nr != 0 )  n += nl;
     ml = n / nl;
     mr = n / nr;
@@ -928,7 +928,7 @@ Obj             DiffCyc (
     }
 
     /* copy the left operand into the result                               */
-    if ( TYPE_OBJ(opL) != T_CYC ) {
+    if ( TNUM_OBJ(opL) != T_CYC ) {
         res = ADDR_OBJ( ResultCyc );
         res[ 0 ] = opL;
         CHANGED_BAG( ResultCyc );
@@ -950,7 +950,7 @@ Obj             DiffCyc (
     }
 
     /* subtract the right operand from the result                          */
-    if ( TYPE_OBJ(opR) != T_CYC ) {
+    if ( TNUM_OBJ(opR) != T_CYC ) {
         res = ADDR_OBJ( ResultCyc );
         sum = DIFF( res[0], opR );
         res = ADDR_OBJ( ResultCyc );
@@ -1011,12 +1011,12 @@ Obj             ProdCycInt (
     Obj                 prd;            /* product of two coefficients     */
 
     /* for $rat * rat$ delegate                                            */
-    if ( TYPE_OBJ(opL) != T_CYC && TYPE_OBJ(opR) != T_CYC ) {
+    if ( TNUM_OBJ(opL) != T_CYC && TNUM_OBJ(opR) != T_CYC ) {
         return PROD( opL, opR );
     }
 
     /* make the right operand the non cyclotomic                           */
-    if ( TYPE_OBJ(opL) != T_CYC ) { hdP = opL;  opL = opR;  opR = hdP; }
+    if ( TNUM_OBJ(opL) != T_CYC ) { hdP = opL;  opL = opR;  opR = hdP; }
 
     /* for $cyc * 0$ return 0 and for $cyc * 1$ return $cyc$               */
     if ( opR == INTOBJ_INT(0) ) {
@@ -1032,7 +1032,7 @@ Obj             ProdCycInt (
     }
 
     /* for $cyc * small$ use immediate multiplication if possible          */
-    else if ( TYPE_OBJ(opR) == T_INT ) {
+    else if ( TNUM_OBJ(opR) == T_INT ) {
         hdP = NewBag( T_CYC, SIZE_CYC(opL) * (sizeof(Obj)+sizeof(UInt2)) );
         NOF_CYC(hdP) = NOF_CYC(opL);
         len = SIZE_CYC(opL);
@@ -1111,7 +1111,7 @@ Obj             ProdCyc (
     UInt                i, k;           /* loop variable                   */
 
     /* for $rat * cyc$ and $cyc * rat$ delegate                            */
-    if ( TYPE_OBJ(opL) != T_CYC || TYPE_OBJ(opR) != T_CYC ) {
+    if ( TNUM_OBJ(opL) != T_CYC || TNUM_OBJ(opR) != T_CYC ) {
         return ProdCycInt( opL, opR );
     }
 
@@ -1121,8 +1121,8 @@ Obj             ProdCyc (
     }
 
     /* get the smallest field that contains both cyclotomics               */
-    nl = (TYPE_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
-    nr = (TYPE_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
+    nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
+    nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
     n  = nl;  while ( n % nr != 0 )  n += nl;
     ml = n / nl;
     mr = n / nr;
@@ -1180,7 +1180,7 @@ Obj             ProdCyc (
         }
 
         /* if the coefficient is a small integer use immediate operations  */
-        else if ( TYPE_OBJ(c) == T_INT ) {
+        else if ( TNUM_OBJ(c) == T_INT ) {
             len = SIZE_CYC(opL);
             cfs = COEFS_CYC(opL);
             exs = EXPOS_CYC(opL,len);
@@ -1335,7 +1335,7 @@ Obj             PowCyc (
     else if ( exp == 1 ) {
         pow = opL;
     }
-    else if ( TYPE_OBJ(opL) != T_CYC ) {
+    else if ( TNUM_OBJ(opL) != T_CYC ) {
         pow = PowInt( opL, opR );
     }
 
@@ -1405,15 +1405,15 @@ Obj             EHandler (
     Obj *               res;            /* pointer into result bag         */
 
     /* do full operation                                                   */
-    if ( FIRST_EXTERNAL_TYPE <= TYPE_OBJ(n) ) {
+    if ( FIRST_EXTERNAL_TNUM <= TNUM_OBJ(n) ) {
         return DoOperation1Args( self, n );
     }
 
     /* get and check the argument                                          */
-    while ( TYPE_OBJ(n) != T_INT || INT_INTOBJ(n) <= 0 ) {
+    while ( TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) <= 0 ) {
         n = ErrorReturnObj(
             "E: <n> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(n)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(n)].name), 0L,
             "you can return a positive integer for <n>" );
     }
 
@@ -1461,11 +1461,11 @@ Obj             IsCycHandler (
     Obj                 val )
 {
     /* return 'true' if <obj> is a cyclotomic and 'false' otherwise        */
-    if ( TYPE_OBJ(val) == T_CYC
-      || TYPE_OBJ(val) == T_INT    || TYPE_OBJ(val) == T_RAT
-      || TYPE_OBJ(val) == T_INTPOS || TYPE_OBJ(val) == T_INTNEG )
+    if ( TNUM_OBJ(val) == T_CYC
+      || TNUM_OBJ(val) == T_INT    || TNUM_OBJ(val) == T_RAT
+      || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG )
         return True;
-    else if ( TYPE_OBJ(val) < FIRST_EXTERNAL_TYPE ) {
+    else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -1498,23 +1498,23 @@ Obj             IsCycIntHandler (
     UInt                i;              /* loop variable                   */
 
     /* return 'true' if <obj> is a cyclotomic integer and 'false' otherwise*/
-    if ( TYPE_OBJ(val) == T_INT
-      || TYPE_OBJ(val) == T_INTPOS || TYPE_OBJ(val) == T_INTNEG ) {
+    if ( TNUM_OBJ(val) == T_INT
+      || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG ) {
         return True;
     }
-    else if ( TYPE_OBJ(val) == T_RAT ) {
+    else if ( TNUM_OBJ(val) == T_RAT ) {
         return False;
     }
-    else if ( TYPE_OBJ(val) == T_CYC ) {
+    else if ( TNUM_OBJ(val) == T_CYC ) {
         len = SIZE_CYC(val);
         cfs = COEFS_CYC(val);
         for ( i = 1; i < len; i++ ) {
-            if ( TYPE_OBJ(cfs[i]) == T_RAT )
+            if ( TNUM_OBJ(cfs[i]) == T_RAT )
                 return False;
         }
         return True;
     }
-    else if ( TYPE_OBJ(val) < FIRST_EXTERNAL_TYPE ) {
+    else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -1547,27 +1547,27 @@ Obj             NofCycHandler (
     UInt                i;              /* loop variable                   */
 
     /* do full operation                                                   */
-    if ( FIRST_EXTERNAL_TYPE <= TYPE_OBJ(cyc) ) {
+    if ( FIRST_EXTERNAL_TNUM <= TNUM_OBJ(cyc) ) {
         return DoOperation1Args( self, cyc );
     }
 
     /* check the argument                                                  */
-    while ( TYPE_OBJ(cyc) != T_INT    && TYPE_OBJ(cyc) != T_RAT
-         && TYPE_OBJ(cyc) != T_INTPOS && TYPE_OBJ(cyc) != T_INTNEG
-         && TYPE_OBJ(cyc) != T_CYC
+    while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
+         && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
+         && TNUM_OBJ(cyc) != T_CYC
          && ! IS_LIST(cyc) ) {
         cyc = ErrorReturnObj(
             "NofCyc: <cyc> must be a cyclotomic or a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(cyc)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(cyc)].name), 0L,
             "you can return a cyclotomic or a list for <cyc>" );
     }
 
     /* handle cyclotomics                                                  */
-    if ( TYPE_OBJ(cyc) == T_INT    || TYPE_OBJ(cyc) == T_RAT
-      || TYPE_OBJ(cyc) == T_INTPOS || TYPE_OBJ(cyc) == T_INTNEG ) {
+    if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
+      || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
         n = 1;
     }
-    else if ( TYPE_OBJ(cyc) == T_CYC ) {
+    else if ( TNUM_OBJ(cyc) == T_CYC ) {
         n = INT_INTOBJ( NOF_CYC(cyc) );
     }
 
@@ -1577,19 +1577,19 @@ Obj             NofCycHandler (
         n = 1;
         for ( i = 1; i <= LEN_LIST( list ); i++ ) {
             cyc = ELMV_LIST( list, i );
-            while ( TYPE_OBJ(cyc) != T_INT    && TYPE_OBJ(cyc) != T_RAT
-                 && TYPE_OBJ(cyc) != T_INTPOS && TYPE_OBJ(cyc) != T_INTNEG
-                 && TYPE_OBJ(cyc) != T_CYC ) {
+            while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
+                 && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
+                 && TNUM_OBJ(cyc) != T_CYC ) {
                 cyc = ErrorReturnObj(
                     "NofCyc: <list>[%d] must be a cyclotomic (not a %s)",
-                    (Int)i, (Int)(InfoBags[TYPE_OBJ(cyc)].name),
+                    (Int)i, (Int)(InfoBags[TNUM_OBJ(cyc)].name),
                     "you can return a cyclotomic for the list element" );
             }
-            if ( TYPE_OBJ(cyc) == T_INT    || TYPE_OBJ(cyc) == T_RAT
-              || TYPE_OBJ(cyc) == T_INTPOS || TYPE_OBJ(cyc) == T_INTNEG ) {
+            if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
+              || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
                 m = 1;
             }
-            else /* if ( TYPE_OBJ(cyc) == T_CYC ) */ {
+            else /* if ( TNUM_OBJ(cyc) == T_CYC ) */ {
                 m = INT_INTOBJ( NOF_CYC(cyc) );
             }
             gcd = n; s = m; while ( s != 0 ) { t = s; s = gcd % s; gcd = t; }
@@ -1629,23 +1629,23 @@ Obj             CoeffsCycHandler (
     UInt                i;              /* loop variable                   */
 
     /* do full operation                                                   */
-    if ( FIRST_EXTERNAL_TYPE <= TYPE_OBJ(cyc) ) {
+    if ( FIRST_EXTERNAL_TNUM <= TNUM_OBJ(cyc) ) {
         return DoOperation1Args( self, cyc );
     }
 
     /* check the argument                                                  */
-    while ( TYPE_OBJ(cyc) != T_INT    && TYPE_OBJ(cyc) != T_RAT
-         && TYPE_OBJ(cyc) != T_INTPOS && TYPE_OBJ(cyc) != T_INTNEG
-         && TYPE_OBJ(cyc) != T_CYC ) {
+    while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
+         && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
+         && TNUM_OBJ(cyc) != T_CYC ) {
         cyc = ErrorReturnObj(
             "COEFFSCYC: <cyc> must be a cyclotomic (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(cyc)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(cyc)].name), 0L,
             "you can return a cyclotomic for <cyc>" );
     }
 
     /* if <cyc> is rational just put it in a list of length 1              */
-    if ( TYPE_OBJ(cyc) == T_INT    || TYPE_OBJ(cyc) == T_RAT
-      || TYPE_OBJ(cyc) == T_INTPOS || TYPE_OBJ(cyc) == T_INTNEG ) {
+    if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
+      || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
         list = NEW_PLIST( T_PLIST, 1 );
         SET_LEN_PLIST( list, 1 );
         SET_ELM_PLIST( list, 1, cyc );
@@ -1707,33 +1707,33 @@ Obj             GaloisCycHandler (
     UInt                i;              /* loop variable                   */
 
     /* do full operation                                                   */
-    if ( FIRST_EXTERNAL_TYPE <= TYPE_OBJ(cyc)
-      || FIRST_EXTERNAL_TYPE <= TYPE_OBJ(ord) ) {
+    if ( FIRST_EXTERNAL_TNUM <= TNUM_OBJ(cyc)
+      || FIRST_EXTERNAL_TNUM <= TNUM_OBJ(ord) ) {
         return DoOperation2Args( self, cyc, ord );
     }
 
     /* get and check <ord>                                                 */
-    while ( TYPE_OBJ(ord) != T_INT ) {
+    while ( TNUM_OBJ(ord) != T_INT ) {
         ord = ErrorReturnObj(
             "GaloisCyc: <ord> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(ord)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(ord)].name), 0L,
             "you can return an integer for <ord>" );
     }
     o = INT_INTOBJ(ord);
 
     /* get and check the cyclotomic                                        */
-    while ( TYPE_OBJ(cyc) != T_INT    && TYPE_OBJ(cyc) != T_RAT
-         && TYPE_OBJ(cyc) != T_INTPOS && TYPE_OBJ(cyc) != T_INTNEG
-         && TYPE_OBJ(cyc) != T_CYC ) {
+    while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
+         && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
+         && TNUM_OBJ(cyc) != T_CYC ) {
         cyc = ErrorReturnObj(
             "GaloisCyc: <cyc> must be a cyclotomic (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(cyc)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(cyc)].name), 0L,
             "you can return a cyclotomic for <cyc>" );
     }
 
     /* every galois automorphism fixes the rationals                       */
-    if ( TYPE_OBJ(cyc) == T_INT    || TYPE_OBJ(cyc) == T_RAT
-      || TYPE_OBJ(cyc) == T_INTPOS || TYPE_OBJ(cyc) == T_INTNEG ) {
+    if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
+      || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
         return cyc;
     }
 
@@ -1901,8 +1901,8 @@ void            InitCyc ( void )
     InitGlobalBag( &LastECyc, "cyclotomic: primitive root");
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "KIND_CYC", &KIND_CYC );
-    KindObjFuncs[ T_CYC ] = KindCyc;
+    ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
+    TypeObjFuncs[ T_CYC ] = TypeCyc;
 
     /* install the evaluation and print function                           */
     PrintObjFuncs[ T_CYC ] = PrintCyc;

@@ -103,10 +103,14 @@ CONSTRUCTORS := [];
 #############################################################################
 ##
 #V  FILTERS
+#V  RANKS_FILTERS
 ##
-##  is a list containing at position <i> the filter with number <i>.
+##  are lists containing at position <i> the filter with number <i> resp.
+##  its rank.
 ##
 FILTERS := [];
+
+RANKS_FILTERS := [];
 
 
 #############################################################################
@@ -502,7 +506,7 @@ RunImmediateMethods := function ( obj, flags )
 
     local   flagspos,   # list of 'true' positions in 'flags'
             tried,      # list of numbers of methods that have been used
-            kind,       # kind of 'obj', used to notice kind changes
+            type,       # type of 'obj', used to notice type changes
             j,          # loop over 'flagspos'
             imm,        # immediate methods for filter 'j'
             i,          # loop over 'imm'
@@ -514,8 +518,8 @@ RunImmediateMethods := function ( obj, flags )
 
     flagspos := SHALLOW_COPY_OBJ(TRUES_FLAGS(flags));
     tried    := [];
-    kind     := KIND_OBJ( obj );
-    flags    := kind![2];
+    type     := TYPE_OBJ( obj );
+    flags    := type![2];
 
     # Check the immediate methods for all in 'flagspos'.
     # (Note that new information is handled via appending to that list.)
@@ -559,13 +563,13 @@ RunImmediateMethods := function ( obj, flags )
                         # add the numbers of newly known filters to
                         # 'flagspos', in order to call their immediate
                         # methods later.
-                        if not IS_IDENTICAL_OBJ( KIND_OBJ(obj), kind ) then
+                        if not IS_IDENTICAL_OBJ( TYPE_OBJ(obj), type ) then
 
-                          kind := KIND_OBJ(obj);
-                          newflags := SHALLOW_COPY_OBJ(TRUES_FLAGS(kind![2]));
+                          type := TYPE_OBJ(obj);
+                          newflags := SHALLOW_COPY_OBJ(TRUES_FLAGS(type![2]));
                           SUBTR_SET( newflags, TRUES_FLAGS(flags) );
                           APPEND_LIST_INTR( flagspos, newflags );
-                          flags := kind![2];
+                          flags := type![2];
 
                         fi;
                     fi;
@@ -860,7 +864,17 @@ end;
 #############################################################################
 ##
 #F  NewAttribute( <name>, <filter> )
+#F  NewAttribute( <name>, <filter>, <rank> )
 #F  NewAttribute( <name>, <filter>, "mutable" )
+##
+##  is a new attribute getter with name <name> that is applicable to objects
+##  with the property <filter>.
+##  If the optional third argument is given then there are two possibilities.
+##  Either it is an integer <rank>, then the attribute tester has this rank.
+##  Or it is the string "mutable", then the value of the attribute shall be
+##  mutable.
+##
+##  If no third argument is given then the rank of the tester is 1.
 ##
 NewAttribute := function ( arg )
     local   name, filter, mutflag, getter, setter, tester;
@@ -893,6 +907,13 @@ NewAttribute := function ( arg )
     InstallHiddenTrueMethod( filter, tester );
     RUN_ATTR_FUNCS( name, filter, getter, setter, tester, mutflag );
 
+    # store the rank
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+      RANKS_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
+    else
+      RANKS_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+    fi;
+
     # and return the getter
     return getter;
 end;
@@ -916,6 +937,9 @@ NewAttributeKernel := function ( name, filter, getter )
     FILTERS[ FLAG2_FILTER( tester ) ]:= tester;
     InstallHiddenTrueMethod( filter, tester );
     RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
+
+    # store the ranks
+    RANKS_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
 
     # and return the getter
     return getter;
@@ -1021,9 +1045,18 @@ InstallAttributeFunction(
 #############################################################################
 ##
 #F  NewProperty( <name>, <filter> )
+#F  NewProperty( <name>, <filter>, <rank> )
 ##
-NewProperty := function ( name, filter )
-    local   getter, setter, tester;
+##  is a new property getter with name <name> that is applicable to objects
+##  with property <filter>.
+##  If the optional argument <rank> is given then the property getter has
+##  this rank, otherwise its rank is 1.
+##
+NewProperty := function ( arg )
+    local   name, filter, getter, setter, tester;
+
+    name   := arg[1];
+    filter := arg[2];
 
     # construct getter, setter and tester
     getter := NEW_PROPERTY(  name );
@@ -1047,6 +1080,14 @@ NewProperty := function ( name, filter )
     InstallHiddenTrueMethod( tester, getter );
     InstallHiddenTrueMethod( filter, tester );
     RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
+
+    # store the rank
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+      RANKS_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
+    else
+      RANKS_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
+    fi;
+    RANKS_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
 
     # and return the getter
     return getter;
@@ -1076,6 +1117,10 @@ NewPropertyKernel := function ( name, filter, getter )
     InstallHiddenTrueMethod( tester, getter );
     InstallHiddenTrueMethod( filter, tester );
     RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
+
+    # store the ranks
+    RANKS_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
+    RANKS_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
 
     # and return the getter
     return getter;

@@ -22,7 +22,7 @@ char *          Revision_intrprtr_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* Tilde, VAL_GVAR, AssGVar        */
@@ -388,10 +388,10 @@ void            IntrFuncCallEnd (
 
     /* get and check the function from the stack                           */
     func = PopObj();
-    if ( TYPE_OBJ(func) != T_FUNCTION ) {
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit(
             "<func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L );
     }
 
     /* call the function                                                   */
@@ -564,7 +564,7 @@ void            IntrIfBeginBody ( void )
     if ( cond != True && cond != False ) {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TYPE_OBJ(cond)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(cond)].name), 0L );
     }
 
     /* if the condition is 'false', ignore the body                        */
@@ -708,13 +708,13 @@ void IntrForEndBody (
 
     /* otherwise must be coding                                            */
     if ( IntrCoding == 0 && CompNowFuncs != 0 ) {
-	while ( 1 < --nr ) {
-	    PopStat();
-	}
+        while ( 1 < --nr ) {
+            PopStat();
+        }
     }
     else {
-	assert( IntrCoding > 0 );
-	CodeForEndBody( nr );
+        assert( IntrCoding > 0 );
+        CodeForEndBody( nr );
     }
 }
 
@@ -817,13 +817,13 @@ void            IntrWhileEndBody (
 
     /* otherwise must be coding                                            */
     if ( IntrCoding == 0 && CompNowFuncs != 0 ) {
-	while ( 1 < --nr ) {
-	    PopStat();
-	}
+        while ( 1 < --nr ) {
+            PopStat();
+        }
     }
     else {
-	assert( IntrCoding > 0 );
-	CodeWhileEndBody( nr );
+        assert( IntrCoding > 0 );
+        CodeWhileEndBody( nr );
     }
 }
 
@@ -927,13 +927,13 @@ void            IntrRepeatEndBody (
 
     /* otherwise must be coding                                            */
     if ( IntrCoding == 0 && CompNowFuncs != 0 ) {
-	while ( 1 < --nr ) {
-	    PopStat();
-	}
+        while ( 1 < --nr ) {
+            PopStat();
+        }
     }
     else {
-	assert( IntrCoding > 0 );
-	CodeRepeatEndBody( nr );
+        assert( IntrCoding > 0 );
+        CodeRepeatEndBody( nr );
     }
 }
 
@@ -1135,7 +1135,7 @@ void            IntrOr ( void )
         else {
             ErrorQuit(
                 "<expr> must be 'true' or 'false' (not to a %s)",
-                (Int)(InfoBags[TYPE_OBJ(opR)].name), 0L );
+                (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L );
         }
     }
     
@@ -1143,7 +1143,7 @@ void            IntrOr ( void )
     else {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opL)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
     }
 }
 
@@ -1215,19 +1215,19 @@ void            IntrAnd ( void )
         else {
             ErrorQuit(
                 "<expr> must be 'true' or 'false' (not to a %s)",
-                (Int)(InfoBags[TYPE_OBJ(opR)].name), 0L );
+                (Int)(InfoBags[TNUM_OBJ(opR)].name), 0L );
         }
     }
 
     /* handle the 'and' of two features                                    */
-    else if ( TYPE_OBJ(opL) == T_FUNCTION ) {
-        if ( TYPE_OBJ(opR) == T_FUNCTION ) {
+    else if ( TNUM_OBJ(opL) == T_FUNCTION ) {
+        if ( TNUM_OBJ(opR) == T_FUNCTION ) {
             PushObj( NewAndFilter( opL, opR ) );
         }
         else {
             ErrorQuit(
                 "<expr> must be 'true' or 'false' (not to a %s)",
-                (Int)(InfoBags[TYPE_OBJ(opL)].name), 0L );
+                (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
         }
     }
     
@@ -1235,7 +1235,7 @@ void            IntrAnd ( void )
     else {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TYPE_OBJ(opL)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(opL)].name), 0L );
     }
 }
 
@@ -1262,7 +1262,7 @@ void            IntrNot ( void )
     if ( op != True && op != False ) {
         ErrorQuit(
             "<expr> must be 'true' or 'false' (not to a %s)",
-            (Int)(InfoBags[TYPE_OBJ(op)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(op)].name), 0L );
     }
 
     /* negate the operand                                                  */
@@ -1792,7 +1792,7 @@ void            IntrPermCycle (
         if ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
             ErrorQuit(
                 "Permutation: <expr> must be a positive integer (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(val)].name), 0L );
+                (Int)(InfoBags[TNUM_OBJ(val)].name), 0L );
         }
         c = INT_INTOBJ(val);
 
@@ -1999,7 +1999,7 @@ void            IntrListExprEnd (
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
                 "Range: <first> must be an integer (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(val)].name), 0L );
+                (Int)(InfoBags[TNUM_OBJ(val)].name), 0L );
         }
         low = INT_INTOBJ( val );
 
@@ -2009,7 +2009,7 @@ void            IntrListExprEnd (
             if ( ! IS_INTOBJ(val) ) {
                 ErrorQuit(
                     "Range: <second> must be an integer (not a %s)",
-                    (Int)(InfoBags[TYPE_OBJ(val)].name), 0L );
+                    (Int)(InfoBags[TNUM_OBJ(val)].name), 0L );
             }
             if ( INT_INTOBJ(val) == low ) {
                 ErrorQuit(
@@ -2027,7 +2027,7 @@ void            IntrListExprEnd (
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
                 "Range: <last> must not be an integer (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(val)].name), 0L );
+                (Int)(InfoBags[TNUM_OBJ(val)].name), 0L );
         }
         if ( (INT_INTOBJ(val) - low) % inc != 0 ) {
             ErrorQuit(
@@ -2546,7 +2546,7 @@ void            IntrAssList ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -2625,7 +2625,7 @@ void            IntrAssListLevel (
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -2692,7 +2692,7 @@ void            IntrUnbList ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "List Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -2732,7 +2732,7 @@ void            IntrElmList ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -2794,7 +2794,7 @@ void            IntrElmListLevel (
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -2858,7 +2858,7 @@ void            IntrIsbList ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "List Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -3105,7 +3105,7 @@ void            IntrAssPosObj ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -3113,7 +3113,7 @@ void            IntrAssPosObj ( void )
     list = PopObj();
 
     /* assign to the element of the list                                   */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         if ( SIZE_OBJ(list)/sizeof(Obj) - 1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
@@ -3165,7 +3165,7 @@ void            IntrAsssPosObj ( void )
     list = PopObj();
 
     /* assign to several elements of the list                              */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
     else {
@@ -3198,7 +3198,7 @@ void            IntrAssPosObjLevel (
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -3269,7 +3269,7 @@ void            IntrUnbPosObj ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
 
@@ -3277,7 +3277,7 @@ void            IntrUnbPosObj ( void )
     list = PopObj();
 
     /* unbind the element                                                  */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
@@ -3316,7 +3316,7 @@ void            IntrElmPosObj ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -3324,7 +3324,7 @@ void            IntrElmPosObj ( void )
     list = PopObj();
 
     /* get the element of the list                                         */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",
@@ -3369,7 +3369,7 @@ void            IntrElmsPosObj ( void )
     list = PopObj();
 
     /* select several elements from the list                               */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         elms = 0;
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
@@ -3399,7 +3399,7 @@ void            IntrElmPosObjLevel (
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -3467,7 +3467,7 @@ void            IntrIsbPosObj ( void )
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
             "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
 
@@ -3475,7 +3475,7 @@ void            IntrIsbPosObj ( void )
     list = PopObj();
 
     /* get the result                                                      */
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
                True : False);
     }
@@ -3512,7 +3512,7 @@ void            IntrAssComObjName (
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         AssPRec( record, rnam, rhs );
     }
     else {
@@ -3545,7 +3545,7 @@ void            IntrAssComObjExpr ( void )
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         AssPRec( record, rnam, rhs );
     }
     else {
@@ -3571,7 +3571,7 @@ void            IntrUnbComObjName (
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         UnbPRec( record, rnam );
     }
     else {
@@ -3600,7 +3600,7 @@ void            IntrUnbComObjExpr ( void )
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         UnbPRec( record, rnam );
     }
     else {
@@ -3633,7 +3633,7 @@ void            IntrElmComObjName (
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         elm = ElmPRec( record, rnam );
     }
     else {
@@ -3663,7 +3663,7 @@ void            IntrElmComObjExpr ( void )
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         elm = ElmPRec( record, rnam );
     }
     else {
@@ -3690,7 +3690,7 @@ void            IntrIsbComObjName (
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         isb = (IsbPRec( record, rnam ) ? True : False);
     }
     else {
@@ -3720,7 +3720,7 @@ void            IntrIsbComObjExpr ( void )
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TYPE_OBJ(record) == T_COMOBJ ) {
+    if ( TNUM_OBJ(record) == T_COMOBJ ) {
         isb = (IsbPRec( record, rnam ) ? True : False);
     }
     else {
@@ -3769,7 +3769,7 @@ void            IntrInfoMiddle( void )
     Obj selectors;   /* first argument of Info */
     Obj level;       /* second argument of Info */
     Obj selected;    /* GAP Boolean answer to whether this message
-			gets printed or not */
+                        gets printed or not */
   
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -3802,13 +3802,13 @@ void            IntrInfoEnd( UInt narg )
       IntrIgnoring--;
     else
       {
-	args = NEW_PLIST( T_PLIST, narg);
-	SET_LEN_PLIST(args, narg);
-	
-	while (narg > 0)
-	  SET_ELM_PLIST(args, narg--, PopObj());
-	
-	CALL_1ARGS(InfoDoPrint, args);
+        args = NEW_PLIST( T_PLIST, narg);
+        SET_LEN_PLIST(args, narg);
+        
+        while (narg > 0)
+          SET_ELM_PLIST(args, narg--, PopObj());
+        
+        CALL_1ARGS(InfoDoPrint, args);
       }
 
     /* If we actually executed this statement at all
@@ -3868,7 +3868,7 @@ void             IntrAssertAfterLevel ( void )
     level = PopObj();
 
     if (LT( CurrentAssertionLevel, level))
-	   IntrIgnoring = 1;
+           IntrIgnoring = 1;
 }   
 
 void             IntrAssertAfterCondition ( void )
@@ -3888,7 +3888,7 @@ void             IntrAssertAfterCondition ( void )
     else if (condition != False)
         ErrorQuit(
             "<condition> in Assert must yield 'true' or 'false' (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(condition)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(condition)].name), 0L );
 }   
 
 void             IntrAssertEnd2Args ( void )
@@ -3921,7 +3921,7 @@ void             IntrAssertEnd3Args ( void )
     {
       message = PopVoidObj();
       if (message != (Obj) 0)
-	PrintObj(message);
+        PrintObj(message);
     }
   else
     IntrIgnoring -= 2;
@@ -3941,7 +3941,7 @@ void             IntrAssertEnd3Args ( void )
 */
 void InitIntrprtr ( void )
 {
-    UInt	    lev;
+    UInt            lev;
 
     InitGlobalBag( &IntrResult, "interpreter: result"       );
     InitGlobalBag( &IntrState,  "interpreter: state"        );

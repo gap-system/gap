@@ -133,8 +133,8 @@ function( rws )
       IsObject,
       IsElementsFamilyByRws );
 
-    # create the default kind for the elements
-    fam!.defaultKind := NewKind( fam, IsElementByRwsDefaultRep );
+    # create the default type for the elements
+    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(rws) ) );
@@ -176,7 +176,7 @@ InstallMethod( PrintObj,
 function( obj )
     local   names,  word,  len,  i;
 
-    names := KindObj(obj)![PCWP_NAMES];
+    names := TypeObj(obj)![PCWP_NAMES];
     word  := ExtRepOfObj(obj);
     len   := Length(word) - 1;
     if len < 0 then
@@ -212,7 +212,7 @@ InstallMethod( Inverse,
 
 function( obj )
     return FinPowConjCol_ReducedPowerSmallInt(
-        KindObj(obj)![PCWP_COLLECTOR], obj, -1 );
+        TypeObj(obj)![PCWP_COLLECTOR], obj, -1 );
 end );
 
 
@@ -323,7 +323,7 @@ InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     "8 bits family",
     true, 
     [ IsPolycyclicCollector and IsFinite and Is8BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector ],
     0,
 
@@ -331,7 +331,7 @@ function( sc )
     local   fam,  i,  pcs;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily3( NewKind( FamilyOfFamilies,
+    fam := NewFamily3( NewType( FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy8BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy8BitsSingleCollector(...)",
@@ -341,27 +341,27 @@ function( sc )
     # store the rewriting system
     fam!.rewritingSystem := Immutable(sc);
 
-    # create the default kind for the elements
-    fam!.defaultKind := NewKind( fam, IsElementByRwsDefaultRep );
+    # create the default type for the elements
+    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
 
-    # create the special 8 bits kind
-    fam!.8BitsKind := NewKind( fam, Is8BitsPcWordRep );
+    # create the special 8 bits type
+    fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
 
-    # copy the assoc word kind
+    # copy the assoc word type
     for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
-        fam!.8BitsKind![i] := sc![SCP_DEFAULT_KIND]![i];
+        fam!.8BitsType![i] := sc![SCP_DEFAULT_TYPE]![i];
     od;
 
-    # default kind to use
-    fam!.8BitsKind![AWP_PURE_KIND] := fam!.8BitsKind;
+    # default type to use
+    fam!.8BitsType![AWP_PURE_TYPE] := fam!.8BitsType;
 
     # store the names
-    fam!.8BitsKind![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
+    fam!.8BitsType![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
 
-    # force the single collector to return elements of that kind
+    # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
-    sc![SCP_DEFAULT_KIND] := fam!.8BitsKind;
-    fam!.8BitsKind![PCWP_COLLECTOR] := sc;
+    sc![SCP_DEFAULT_TYPE] := fam!.8BitsType;
+    fam!.8BitsType![PCWP_COLLECTOR] := sc;
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
@@ -388,7 +388,7 @@ InstallMethod( ElementByRws,
     0,
 
 function( fam, elm )
-    return 8Bits_AssocWord( fam!.8BitsKind, ExtRepOfObj(elm) );
+    return 8Bits_AssocWord( fam!.8BitsType, ExtRepOfObj(elm) );
 end );
 
 
@@ -434,7 +434,7 @@ InstallMethod( ObjByExtRep,
     0,
 
 function( fam, elm )
-    return 8Bits_AssocWord( fam!.8BitsKind, elm );
+    return 8Bits_AssocWord( fam!.8BitsType, elm );
 end );
 
 
@@ -486,7 +486,7 @@ InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     "16 bits family",
     true, 
     [ IsPolycyclicCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector ],
     0,
 
@@ -494,7 +494,7 @@ function( sc )
     local   fam,  i,  pcs;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily3( NewKind( FamilyOfFamilies,
+    fam := NewFamily3( NewType( FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy16BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy16BitsSingleCollector(...)",
@@ -504,27 +504,27 @@ function( sc )
     # store the rewriting system
     fam!.rewritingSystem := Immutable(sc);
 
-    # create the default kind for the elements
-    fam!.defaultKind := NewKind( fam, IsElementByRwsDefaultRep );
+    # create the default type for the elements
+    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
 
-    # create the special 8 bits kind
-    fam!.16BitsKind := NewKind( fam, Is16BitsPcWordRep );
+    # create the special 8 bits type
+    fam!.16BitsType := NewType( fam, Is16BitsPcWordRep );
 
-    # copy the assoc word kind
+    # copy the assoc word type
     for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
-        fam!.16BitsKind![i] := sc![SCP_DEFAULT_KIND]![i];
+        fam!.16BitsType![i] := sc![SCP_DEFAULT_TYPE]![i];
     od;
 
-    # default kind to use
-    fam!.16BitsKind![AWP_PURE_KIND] := fam!.16BitsKind;
+    # default type to use
+    fam!.16BitsType![AWP_PURE_TYPE] := fam!.16BitsType;
 
     # store the names
-    fam!.16BitsKind![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
+    fam!.16BitsType![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
 
-    # force the single collector to return elements of that kind
+    # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
-    sc![SCP_DEFAULT_KIND] := fam!.16BitsKind;
-    fam!.16BitsKind![PCWP_COLLECTOR] := sc;
+    sc![SCP_DEFAULT_TYPE] := fam!.16BitsType;
+    fam!.16BitsType![PCWP_COLLECTOR] := sc;
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
@@ -551,7 +551,7 @@ InstallMethod( ElementByRws,
     0,
 
 function( fam, elm )
-    return 16Bits_AssocWord( fam!.16BitsKind, ExtRepOfObj(elm) );
+    return 16Bits_AssocWord( fam!.16BitsType, ExtRepOfObj(elm) );
 end );
 
 
@@ -597,7 +597,7 @@ InstallMethod( ObjByExtRep,
     0,
 
 function( fam, elm )
-    return 16Bits_AssocWord( fam!.16BitsKind, elm );
+    return 16Bits_AssocWord( fam!.16BitsType, elm );
 end );
 
 
@@ -649,7 +649,7 @@ InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     "32 bits family",
     true, 
     [ IsPolycyclicCollector and IsFinite and Is32BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector ],
     0,
 
@@ -657,7 +657,7 @@ function( sc )
     local   fam,  i,  pcs;
 
     # create a new family in the category <IsElementsFamilyByRws>
-    fam := NewFamily3( NewKind( FamilyOfFamilies,
+    fam := NewFamily3( NewType( FamilyOfFamilies,
                            IsFamily and IsFamilyDefaultRep
                            and IsElementsFamilyBy32BitsSingleCollector ),
       "MultiplicativeElementsWithInversesFamilyBy32BitsSingleCollector(...)",
@@ -667,27 +667,27 @@ function( sc )
     # store the rewriting system
     fam!.rewritingSystem := Immutable(sc);
 
-    # create the default kind for the elements
-    fam!.defaultKind := NewKind( fam, IsElementByRwsDefaultRep );
+    # create the default type for the elements
+    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
 
-    # create the special 8 bits kind
-    fam!.32BitsKind := NewKind( fam, Is32BitsPcWordRep );
+    # create the special 8 bits type
+    fam!.32BitsType := NewType( fam, Is32BitsPcWordRep );
 
-    # copy the assoc word kind
+    # copy the assoc word type
     for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
-        fam!.32BitsKind![i] := sc![SCP_DEFAULT_KIND]![i];
+        fam!.32BitsType![i] := sc![SCP_DEFAULT_TYPE]![i];
     od;
 
-    # default kind to use
-    fam!.32BitsKind![AWP_PURE_KIND] := fam!.32BitsKind;
+    # default type to use
+    fam!.32BitsType![AWP_PURE_TYPE] := fam!.32BitsType;
 
     # store the names
-    fam!.32BitsKind![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
+    fam!.32BitsType![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
 
-    # force the single collector to return elements of that kind
+    # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
-    sc![SCP_DEFAULT_KIND] := fam!.32BitsKind;
-    fam!.32BitsKind![PCWP_COLLECTOR] := sc;
+    sc![SCP_DEFAULT_TYPE] := fam!.32BitsType;
+    fam!.32BitsType![PCWP_COLLECTOR] := sc;
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
@@ -714,7 +714,7 @@ InstallMethod( ElementByRws,
     0,
 
 function( fam, elm )
-    return 32Bits_AssocWord( fam!.32BitsKind, ExtRepOfObj(elm) );
+    return 32Bits_AssocWord( fam!.32BitsType, ExtRepOfObj(elm) );
 end );
 
 
@@ -760,7 +760,7 @@ InstallMethod( ObjByExtRep,
     0,
 
 function( fam, elm )
-    return 32Bits_AssocWord( fam!.32BitsKind, elm );
+    return 32Bits_AssocWord( fam!.32BitsType, elm );
 end );
 
 

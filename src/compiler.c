@@ -19,7 +19,7 @@ char * Revision_compiler_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* InitGVars                       */
@@ -35,7 +35,7 @@ char * Revision_compiler_c =
 
 #include        "string.h"              /* LEN_STRING, CSTR_STRING, ...    */
 
-#include        "code.h"                /* Stat, Expr, TYPE_EXPR, ADDR_E...*/
+#include        "code.h"                /* Stat, Expr, TNUM_EXPR, ADDR_E...*/
 
 #include        "exprs.h"               /* PrintExpr                       */
 #include        "stats.h"               /* PrintStat                       */
@@ -235,9 +235,9 @@ typedef UInt4           LVar;
 #define NTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+4)))
 #define NLOOP_INFO(info)        (*((Int*)(PTR_BAG(info)+5)))
 #define CTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+6)))
-#define TYPE_LVAR_INFO(info,i)  (*((Int*)(PTR_BAG(info)+7+(i))))
+#define TNUM_LVAR_INFO(info,i)  (*((Int*)(PTR_BAG(info)+7+(i))))
 
-#define TYPE_TEMP_INFO(info,i)  \
+#define TNUM_TEMP_INFO(info,i)  \
     (*((Int*)(PTR_BAG(info)+7+NLVAR_INFO(info)+(i))))
 
 #define SIZE_INFO(nlvar,ntemp)  (sizeof(Int) * (8 + (nlvar) + (ntemp)))
@@ -265,13 +265,13 @@ void            SetInfoCVar (
 
     /* set the type of a temporary                                         */
     if ( IS_TEMP_CVAR(cvar) ) {
-        TYPE_TEMP_INFO( info, TEMP_CVAR(cvar) ) = type;
+        TNUM_TEMP_INFO( info, TEMP_CVAR(cvar) ) = type;
     }
 
     /* set the type of a lvar (but do not change if its a higher variable) */
     else if ( IS_LVAR_CVAR(cvar)
-           && TYPE_LVAR_INFO( info, LVAR_CVAR(cvar) ) != W_HIGHER ) {
-        TYPE_LVAR_INFO( info, LVAR_CVAR(cvar) ) = type;
+           && TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) ) != W_HIGHER ) {
+        TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) ) = type;
     }
 }
 
@@ -290,12 +290,12 @@ Int             GetInfoCVar (
 
     /* get the type of a temporary                                         */
     else if ( IS_TEMP_CVAR(cvar) ) {
-        return TYPE_TEMP_INFO( info, TEMP_CVAR(cvar) );
+        return TNUM_TEMP_INFO( info, TEMP_CVAR(cvar) );
     }
 
     /* get the type of a lvar                                              */
     else if ( IS_LVAR_CVAR(cvar) ) {
-        return TYPE_LVAR_INFO( info, LVAR_CVAR(cvar) );
+        return TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) );
     }
 
     /* hmm, avoid warning by compiler                                      */
@@ -317,7 +317,7 @@ Bag             NewInfoCVars ( void )
     Bag                 old;
     Bag                 new;
     old = INFO_FEXP( CURR_FUNC );
-    new = NewBag( TYPE_BAG(old), SIZE_BAG(old) );
+    new = NewBag( TNUM_BAG(old), SIZE_BAG(old) );
     return new;
 }
 
@@ -335,10 +335,10 @@ void            CopyInfoCVars (
     NLOOP_INFO(dst) = NLOOP_INFO(src);
     CTEMP_INFO(dst) = CTEMP_INFO(src);
     for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
-        TYPE_LVAR_INFO(dst,i) = TYPE_LVAR_INFO(src,i);
+        TNUM_LVAR_INFO(dst,i) = TNUM_LVAR_INFO(src,i);
     }
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
-        TYPE_TEMP_INFO(dst,i) = TYPE_TEMP_INFO(src,i);
+        TNUM_TEMP_INFO(dst,i) = TNUM_TEMP_INFO(src,i);
     }
 }
 
@@ -351,10 +351,10 @@ void            MergeInfoCVars (
     if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
     if ( NTEMP_INFO(dst)<NTEMP_INFO(src) )  NTEMP_INFO(dst)=NTEMP_INFO(src);
     for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
-        TYPE_LVAR_INFO(dst,i) &= TYPE_LVAR_INFO(src,i);
+        TNUM_LVAR_INFO(dst,i) &= TNUM_LVAR_INFO(src,i);
     }
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
-        TYPE_TEMP_INFO(dst,i) &= TYPE_TEMP_INFO(src,i);
+        TNUM_TEMP_INFO(dst,i) &= TNUM_TEMP_INFO(src,i);
     }
 }
 
@@ -366,12 +366,12 @@ Int             IsEqInfoCVars (
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
     if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
     for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
-        if ( TYPE_LVAR_INFO(dst,i) != TYPE_LVAR_INFO(src,i) ) {
+        if ( TNUM_LVAR_INFO(dst,i) != TNUM_LVAR_INFO(src,i) ) {
             return 0;
         }
     }
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
-        if ( TYPE_TEMP_INFO(dst,i) != TYPE_TEMP_INFO(src,i) ) {
+        if ( TNUM_TEMP_INFO(dst,i) != TNUM_TEMP_INFO(src,i) ) {
             return 0;
         }
     }
@@ -415,7 +415,7 @@ Temp            NewTemp (
         }
         NTEMP_INFO( info ) = temp;
     }
-    TYPE_TEMP_INFO( info, temp ) = W_UNKNOWN;
+    TNUM_TEMP_INFO( info, temp ) = W_UNKNOWN;
 
     /* return the temporary                                                */
     return temp;
@@ -435,7 +435,7 @@ void            FreeTemp (
     }
 
     /* free the temporary                                                  */
-    TYPE_TEMP_INFO( info, temp ) = W_UNUSED;
+    TNUM_TEMP_INFO( info, temp ) = W_UNUSED;
     CTEMP_INFO( info )--;
 }
 
@@ -484,8 +484,8 @@ void            CompSetUseHVar (
     }
 
     /* set mark                                                            */
-    if ( TYPE_LVAR_INFO( info, (hvar & 0xFFFF) ) != W_HIGHER ) {
-        TYPE_LVAR_INFO( info, (hvar & 0xFFFF) ) = W_HIGHER;
+    if ( TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) != W_HIGHER ) {
+        TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) = W_HIGHER;
         NHVAR_INFO(info) = NHVAR_INFO(info) + 1;
     }
 
@@ -504,7 +504,7 @@ Int             CompGetUseHVar (
     }
 
     /* get mark                                                            */
-    return (TYPE_LVAR_INFO( info, (hvar & 0xFFFF) ) == W_HIGHER);
+    return (TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) == W_HIGHER);
 }
 
 UInt            GetLevlHVar (
@@ -543,7 +543,7 @@ UInt            GetIndxHVar (
     /* walk right                                                          */
     indx = 0;
     for ( i = 1; i <= (hvar & 0xFFFF); i++ ) {
-        if ( TYPE_LVAR_INFO( info, i ) == W_HIGHER )  indx++;
+        if ( TNUM_LVAR_INFO( info, i ) == W_HIGHER )  indx++;
     }
 
     /* return the index                                                    */
@@ -942,7 +942,7 @@ CVar (* CompExprFuncs[256]) ( Expr expr );
 CVar CompExpr (
     Expr                expr )
 {
-    return (* CompExprFuncs[ TYPE_EXPR(expr) ])( expr );
+    return (* CompExprFuncs[ TNUM_EXPR(expr) ])( expr );
 }
 
 
@@ -953,7 +953,7 @@ CVar CompExpr (
 CVar CompUnknownExpr (
     Expr                expr )
 {
-    Emit( "CANNOT COMPILE EXPRESSION OF TYPE %d;\n", TYPE_EXPR(expr) );
+    Emit( "CANNOT COMPILE EXPRESSION OF TNUM %d;\n", TNUM_EXPR(expr) );
     return 0;
 }
 
@@ -968,7 +968,7 @@ CVar (* CompBoolExprFuncs[256]) ( Expr expr );
 CVar CompBoolExpr (
     Expr                expr )
 {
-    return (* CompBoolExprFuncs[ TYPE_EXPR(expr) ])( expr );
+    return (* CompBoolExprFuncs[ TNUM_EXPR(expr) ])( expr );
 }
 
 
@@ -1029,7 +1029,7 @@ CVar CompFunccall0to6Args (
 
     /* special case to inline 'Length'                                     */
     if ( CompFastListFuncs
-      && TYPE_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR
+      && TNUM_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR
       && ADDR_EXPR( FUNC_CALL(expr) )[0] == G_Length
       && NARG_SIZE_CALL(SIZE_EXPR(expr)) == 1 ) {
         result = CVAR_TEMP( NewTemp( "result" ) );
@@ -1049,7 +1049,7 @@ CVar CompFunccall0to6Args (
     result = CVAR_TEMP( NewTemp( "result" ) );
 
     /* compile the reference to the function                               */
-    if ( TYPE_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR ) {
+    if ( TNUM_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR ) {
         func = CompRefGVarFopy( FUNC_CALL(expr) );
     }
     else {
@@ -1102,7 +1102,7 @@ CVar CompFunccallXArgs (
     result = CVAR_TEMP( NewTemp( "result" ) );
 
     /* compile the reference to the function                               */
-    if ( TYPE_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR ) {
+    if ( TNUM_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR ) {
         func = CompRefGVarFopy( FUNC_CALL(expr) );
     }
     else {
@@ -1162,12 +1162,12 @@ CVar CompFuncExpr (
 
     /* make the function (all the pieces are in global variables)          */
     Emit( "InitHandlerFunc( HdlrFunc%d, \"%s: HdlrFunc%d (",
-	  nr, compilerMagic2, nr );
+          nr, compilerMagic2, nr );
     if ( compilerMagic1 < 10 ) {
-	Emit( "%d)\" );\n", compilerMagic1 );
+        Emit( "%d)\" );\n", compilerMagic1 );
     }
     else {
-	Emit( "%d%d)\" );\n", compilerMagic1/10, compilerMagic1%10 );
+        Emit( "%d%d)\" );\n", compilerMagic1/10, compilerMagic1%10 );
     }
     Emit( "%c = NewFunction( NameFunc[%d], NargFunc[%d], NamsFunc[%d]",
           func, nr, nr, nr );
@@ -2282,19 +2282,19 @@ CVar CompIntExpr (
         return CVAR_INTG( INT_INTEXPR(expr) );
     }
     else {
-	val = CVAR_TEMP( NewTemp( "val" ) );
-	siz = SIZE_EXPR(expr);
-	if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
-	    Emit( "%c = NewBag( T_INTPOS, %d );\n", val, siz-sizeof(UInt2) );
-	}
-	else {
-	    Emit( "%c = NewBag( T_INTNEG, %d );\n", val, siz-sizeof(UInt2) );
-	}
-	for ( i = 1; i < siz/sizeof(UInt2); i++ ) {
-	    Emit( "((UInt2*)ADDR_OBJ(%c))[%d-1] = %d;\n",
-		  val, i, ((UInt2*)ADDR_EXPR(expr))[i] );
-	}
-	return val;
+        val = CVAR_TEMP( NewTemp( "val" ) );
+        siz = SIZE_EXPR(expr);
+        if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
+            Emit( "%c = NewBag( T_INTPOS, %d );\n", val, siz-sizeof(UInt2) );
+        }
+        else {
+            Emit( "%c = NewBag( T_INTNEG, %d );\n", val, siz-sizeof(UInt2) );
+        }
+        for ( i = 1; i < siz/sizeof(UInt2); i++ ) {
+            Emit( "((UInt2*)ADDR_OBJ(%c))[%d-1] = %d;\n",
+                  val, i, ((UInt2*)ADDR_EXPR(expr))[i] );
+        }
+        return val;
     }
 }
 
@@ -2375,7 +2375,7 @@ CVar            CompCharExpr (
 CVar CompPermExpr (
     Expr                expr )
 {
-    CVar		perm;		/* result                          */
+    CVar                perm;           /* result                          */
     CVar                lcyc;           /* one cycle as list               */
     CVar                lprm;           /* perm as list of list cycles     */
     CVar                val;            /* one point                       */
@@ -2387,10 +2387,10 @@ CVar CompPermExpr (
 
     /* check for the identity                                              */
     if ( SIZE_EXPR(expr) == 0 ) {
-	perm = CVAR_TEMP( NewTemp( "idperm" ) );
-	Emit( "%c = IdentityPerm;\n", perm );
-	SetInfoCVar( perm, W_BOUND );
-	return perm;
+        perm = CVAR_TEMP( NewTemp( "idperm" ) );
+        Emit( "%c = IdentityPerm;\n", perm );
+        SetInfoCVar( perm, W_BOUND );
+        return perm;
     }
 
     /* for each cycle create a list                                        */
@@ -2407,20 +2407,20 @@ CVar CompPermExpr (
     Emit( "SET_LEN_PLIST( %c, %d );\n", lprm, n );
 
     for ( i = 1;  i <= n;  i++ ) {
-	cycle = ADDR_EXPR(expr)[i-1];
-	csize = SIZE_EXPR(cycle)/sizeof(Expr);
-	Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", lcyc, csize );
-	Emit( "SET_LEN_PLIST( %c, %d );\n", lcyc, csize );
-	Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lprm, i, lcyc );
-	Emit( "CHANGED_BAG( %c );\n", lprm );
+        cycle = ADDR_EXPR(expr)[i-1];
+        csize = SIZE_EXPR(cycle)/sizeof(Expr);
+        Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", lcyc, csize );
+        Emit( "SET_LEN_PLIST( %c, %d );\n", lcyc, csize );
+        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lprm, i, lcyc );
+        Emit( "CHANGED_BAG( %c );\n", lprm );
 
-	/* loop over the entries of the cycle                              */
-	for ( j = 1;  j <= csize;  j++ ) {
-	    val = CompExpr( ADDR_EXPR(cycle)[j-1] );
-	    Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lcyc, j, val );
-	    Emit( "CHANGED_BAG( %c );\n", lcyc );
-	    if ( IS_TEMP_CVAR(val) )  FreeTemp( TEMP_CVAR(val) );
-	}
+        /* loop over the entries of the cycle                              */
+        for ( j = 1;  j <= csize;  j++ ) {
+            val = CompExpr( ADDR_EXPR(cycle)[j-1] );
+            Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lcyc, j, val );
+            Emit( "CHANGED_BAG( %c );\n", lcyc );
+            if ( IS_TEMP_CVAR(val) )  FreeTemp( TEMP_CVAR(val) );
+        }
     }
     Emit( "%c = Array2Perm( %c );\n", perm, lprm );
 
@@ -2539,7 +2539,7 @@ void CompListExpr2 (
         }
 
         /* special case if subexpression is a list expression              */
-        else if ( TYPE_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
+        else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
             sub = CompListExpr1( ADDR_EXPR(expr)[i-1] );
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
             Emit( "CHANGED_BAG( %c );\n", list );
@@ -2548,7 +2548,7 @@ void CompListExpr2 (
         }
 
         /* special case if subexpression is a record expression            */
-        else if ( TYPE_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
+        else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
             sub = CompRecExpr1( ADDR_EXPR(expr)[i-1] );
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
             Emit( "CHANGED_BAG( %c );\n", list );
@@ -2770,7 +2770,7 @@ void            CompRecExpr2 (
         }
 
         /* special case if subexpression is a list expression             */
-        else if ( TYPE_EXPR( tmp ) == T_LIST_EXPR ) {
+        else if ( TNUM_EXPR( tmp ) == T_LIST_EXPR ) {
             sub = CompListExpr1( tmp );
             Emit( "SET_ELM_PREC( %c, %d, %c );\n", rec, i, sub );
             Emit( "CHANGED_BAG( %c );\n", rec );
@@ -2779,7 +2779,7 @@ void            CompRecExpr2 (
         }
 
         /* special case if subexpression is a record expression            */
-        else if ( TYPE_EXPR( tmp ) == T_REC_EXPR ) {
+        else if ( TNUM_EXPR( tmp ) == T_REC_EXPR ) {
             sub = CompRecExpr1( tmp );
             Emit( "SET_ELM_PREC( %c, %d, %c );\n", rec, i, sub );
             Emit( "CHANGED_BAG( %c );\n", rec );
@@ -3406,7 +3406,7 @@ CVar CompElmPosObj (
 CVar CompElmsPosObj (
     Expr                expr )
 {
-    Emit( "CANNOT COMPILE EXPRESSION OF TYPE %d;\n", TYPE_EXPR(expr) );
+    Emit( "CANNOT COMPILE EXPRESSION OF TNUM %d;\n", TNUM_EXPR(expr) );
     return 0;
 }
 
@@ -3418,7 +3418,7 @@ CVar CompElmsPosObj (
 CVar CompElmPosObjLev (
     Expr                expr )
 {
-    Emit( "CANNOT COMPILE EXPRESSION OF TYPE %d;\n", TYPE_EXPR(expr) );
+    Emit( "CANNOT COMPILE EXPRESSION OF TNUM %d;\n", TNUM_EXPR(expr) );
     return 0;
 }
 
@@ -3430,7 +3430,7 @@ CVar CompElmPosObjLev (
 CVar CompElmsPosObjLev (
     Expr                expr )
 {
-    Emit( "CANNOT COMPILE EXPRESSION OF TYPE %d;\n", TYPE_EXPR(expr) );
+    Emit( "CANNOT COMPILE EXPRESSION OF TNUM %d;\n", TNUM_EXPR(expr) );
     return 0;
 }
 
@@ -3457,7 +3457,7 @@ CVar CompIsbPosObj (
     CompCheckIntSmallPos( pos );
 
     /* emit the code to test the element                                   */
-    Emit( "if ( TYPE_OBJ(%c) == T_POSOBJ ) {\n", list );
+    Emit( "if ( TNUM_OBJ(%c) == T_POSOBJ ) {\n", list );
     Emit( "%c = (%i <= SIZE_OBJ(%c)/sizeof(Obj)-1\n", isb, pos, list );
     Emit( "   && ELM_PLIST(%c,%i) != 0 ? True : False);\n", list, pos );
     Emit( "}\nelse {\n" );
@@ -3498,7 +3498,7 @@ CVar CompElmComObjName (
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code to select the element of the record                   */
-    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = ElmPRec( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
     Emit( "}\nelse {\n" );
     Emit( "%c = ELM_REC( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
@@ -3537,7 +3537,7 @@ CVar CompElmComObjExpr (
     rnam = CompExpr( ADDR_EXPR(expr)[1] );
 
     /* emit the code to select the element of the record                   */
-    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = ElmPRec( %c, RNamObj(%c) );\n", elm, record, rnam );
     Emit( "}\nelse {\n" );
     Emit( "%c = ELM_REC( %c, RNamObj(%c) );\n", elm, record, rnam );
@@ -3577,9 +3577,9 @@ CVar CompIsbComObjName (
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code to test the element                                   */
-    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = (IsbPRec( %c, R_%n ) ? True : False);\n",
-	  isb, record, NAME_RNAM(rnam) );
+          isb, record, NAME_RNAM(rnam) );
     Emit( "}\nelse {\n" );
     Emit( "%c = (ISB_REC( %c, R_%n ) ? True : False);\n",
           isb, record, NAME_RNAM(rnam) );
@@ -3617,9 +3617,9 @@ CVar CompIsbComObjExpr (
     rnam = CompExpr( ADDR_EXPR(expr)[1] );
 
     /* emit the code to test the element                                   */
-    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = (IsbPRec( %c, RNamObj(%c) ) ? True : False);\n",
-	  isb, record, rnam );
+          isb, record, rnam );
     Emit( "}\nelse {\n" );
     Emit( "%c = (ISB_REC( %c, RNamObj(%c) ) ? True : False);\n",
           isb, record, rnam );
@@ -3655,7 +3655,7 @@ void (* CompStatFuncs[256]) ( Stat stat );
 void CompStat (
     Stat                stat )
 {
-    (* CompStatFuncs[ TYPE_STAT(stat) ])( stat );
+    (* CompStatFuncs[ TNUM_STAT(stat) ])( stat );
 }
 
 
@@ -3666,7 +3666,7 @@ void CompStat (
 void CompUnknownStat (
     Stat                stat )
 {
-    Emit( "CANNOT COMPILE STATEMENT OF TYPE %d;\n", TYPE_STAT(stat) );
+    Emit( "CANNOT COMPILE STATEMENT OF TNUM %d;\n", TNUM_STAT(stat) );
 }
 
 
@@ -3696,7 +3696,7 @@ void CompProccall0to6Args (
 
     /* special case to inline 'Add'                                        */
     if ( CompFastListFuncs
-      && TYPE_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR
+      && TNUM_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR
       && ADDR_EXPR( FUNC_CALL(stat) )[0] == G_Add
       && NARG_SIZE_CALL(SIZE_EXPR(stat)) == 2 ) {
         args[1] = CompExpr( ARGI_CALL(stat,1) );
@@ -3713,7 +3713,7 @@ void CompProccall0to6Args (
     }
 
     /* compile the reference to the function                               */
-    if ( TYPE_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR ) {
+    if ( TNUM_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR ) {
         func = CompRefGVarFopy( FUNC_CALL(stat) );
     }
     else {
@@ -3761,7 +3761,7 @@ void CompProccallXArgs (
     }
 
     /* compile the reference to the function                               */
-    if ( TYPE_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR ) {
+    if ( TNUM_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR ) {
         func = CompRefGVarFopy( FUNC_CALL(stat) );
     }
     else {
@@ -3860,7 +3860,7 @@ void CompIf (
     for ( i = 2; i <= nr; i++ ) {
 
         /* do not handle 'else' branch here                                */
-        if ( i == nr && TYPE_EXPR(ADDR_STAT(stat)[2*(i-1)]) == T_TRUE_EXPR )
+        if ( i == nr && TNUM_EXPR(ADDR_STAT(stat)[2*(i-1)]) == T_TRUE_EXPR )
             break;
 
         /* print a comment                                                 */
@@ -3935,7 +3935,7 @@ void CompIf (
 
     /* close all unbalanced parenthesis                                    */
     for ( i = 2; i <= nr; i++ ) {
-        if ( i == nr && TYPE_EXPR(ADDR_STAT(stat)[2*(i-1)]) == T_TRUE_EXPR )
+        if ( i == nr && TNUM_EXPR(ADDR_STAT(stat)[2*(i-1)]) == T_TRUE_EXPR )
             break;
         Emit( "}\n" );
     }
@@ -3969,7 +3969,7 @@ void CompFor (
     /* handle 'for <lvar> in [<first>..<last>] do'                         */
     if ( IS_REFLVAR( ADDR_STAT(stat)[0] )
       && ! CompGetUseHVar( LVAR_REFLVAR( ADDR_STAT(stat)[0] ) )
-      && TYPE_EXPR( ADDR_STAT(stat)[1] ) == T_RANGE_EXPR
+      && TNUM_EXPR( ADDR_STAT(stat)[1] ) == T_RANGE_EXPR
       && SIZE_EXPR( ADDR_STAT(stat)[1] ) == 2*sizeof(Expr) ) {
 
         /* print a comment                                                 */
@@ -4077,22 +4077,22 @@ void CompFor (
             var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
             vart = 'm';
         }
-        else if ( T_REF_LVAR <= TYPE_EXPR( ADDR_STAT(stat)[0] )
-               && TYPE_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16
+        else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
+               && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16
                && ! CompGetUseHVar( ADDR_EXPR( ADDR_STAT(stat)[0] )[0] ) ) {
             var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
             vart = 'l';
         }
-        else if ( T_REF_LVAR <= TYPE_EXPR( ADDR_STAT(stat)[0] )
-               && TYPE_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
+        else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
+               && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
             var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
             vart = 'm';
         }
-        else if ( TYPE_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
+        else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
             var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
             vart = 'h';
         }
-        else /* if ( TYPE_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
+        else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
             var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
             vart = 'g';
         }
@@ -4879,10 +4879,10 @@ void CompAssPosObj (
 
     /* emit the code                                                       */
     if ( HasInfoCVar( rhs, W_INT_SMALL ) ) {
-	Emit( "C_ASS_POSOBJ_INTOBJ( %c, %i, %c )\n", list, pos, rhs );
+        Emit( "C_ASS_POSOBJ_INTOBJ( %c, %i, %c )\n", list, pos, rhs );
     }
     else {
-	Emit( "C_ASS_POSOBJ( %c, %i, %c )\n", list, pos, rhs );
+        Emit( "C_ASS_POSOBJ( %c, %i, %c )\n", list, pos, rhs );
     }
 
     /* free the temporaries                                                */
@@ -4935,7 +4935,7 @@ void CompAsssPosObj (
 void CompAssPosObjLev (
     Stat                stat )
 {
-    Emit( "CANNOT COMPILE STATEMENT OF TYPE %d;\n", TYPE_STAT(stat) );
+    Emit( "CANNOT COMPILE STATEMENT OF TNUM %d;\n", TNUM_STAT(stat) );
 }
 
 
@@ -4946,7 +4946,7 @@ void CompAssPosObjLev (
 void CompAsssPosObjLev (
     Stat                stat )
 {
-    Emit( "CANNOT COMPILE STATEMENT OF TYPE %d;\n", TYPE_STAT(stat) );
+    Emit( "CANNOT COMPILE STATEMENT OF TNUM %d;\n", TNUM_STAT(stat) );
 }
 
 
@@ -4973,7 +4973,7 @@ void CompUnbPosObj (
     CompCheckIntSmallPos( pos );
 
     /* emit the code                                                       */
-    Emit( "if ( TYPE_OBJ(%c) == T_POSOBJ ) {\n", list );
+    Emit( "if ( TNUM_OBJ(%c) == T_POSOBJ ) {\n", list );
     Emit( "if ( %i <= SIZE_OBJ(%c)/sizeof(Obj)-1 ) {\n", pos, list );
     Emit( "SET_ELM_PLIST( %c, %i, 0 );\n", list, pos );
     Emit( "}\n}\n" );
@@ -5014,7 +5014,7 @@ void CompAssComObjName (
     rhs = CompExpr( ADDR_STAT(stat)[2] );
 
     /* emit the code for the assignment                                    */
-    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "AssPRec( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
     Emit( "}\nelse {\n" );
     Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
@@ -5052,7 +5052,7 @@ void CompAssComObjExpr (
     rhs = CompExpr( ADDR_STAT(stat)[2] );
 
     /* emit the code for the assignment                                    */
-    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "AssPRec( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
     Emit( "}\nelse {\n" );
     Emit( "ASS_REC( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
@@ -5088,7 +5088,7 @@ void CompUnbComObjName (
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code for the assignment                                    */
-    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "UnbPRec( %c, R_%n );\n", record, NAME_RNAM(rnam) );
     Emit( "}\nelse {\n" );
     Emit( "UNB_REC( %c, R_%n );\n", record, NAME_RNAM(rnam) );
@@ -5122,7 +5122,7 @@ void CompUnbComObjExpr (
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code for the assignment                                    */
-    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "UnbPRec( %c, RNamObj(%c) );\n", record, rnam );
     Emit( "}\nelse {\n" );
     Emit( "UNB_REC( %c, RNamObj(%c) );\n", record, rnam );
@@ -5141,7 +5141,7 @@ void CompUnbComObjExpr (
 void CompInfo (
     Stat                stat )
 {
-    CVar		tmp;
+    CVar                tmp;
     CVar                sel;
     CVar                lev;
     CVar                lst;
@@ -5160,10 +5160,10 @@ void CompInfo (
     Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", lst, narg );
     Emit( "SET_LEN_PLIST( %c, %d );\n", lst, narg );
     for ( i = 1;  i <= narg;  i++ ) {
-	tmp = CompExpr( ARGI_INFO( stat, i+2 ) );
-	Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lst, i, tmp );
-	Emit( "CHANGED_BAG(%c);\n", lst );
-	if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
+        tmp = CompExpr( ARGI_INFO( stat, i+2 ) );
+        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lst, i, tmp );
+        Emit( "CHANGED_BAG(%c);\n", lst );
+        if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
     }
     Emit( "CALL_1ARGS( InfoDoPrint, %c );\n", lst );
     Emit( "}\n" );
@@ -5183,7 +5183,7 @@ void CompAssert2 (
     Stat                stat )
 {
     CVar                lev;            /* the level                       */
-    CVar		cnd;		/* the condition                   */
+    CVar                cnd;            /* the condition                   */
 
     Emit( "\n/* Assert( ... ); */\n" );
     lev = CompExpr( ADDR_STAT(stat)[0] );
@@ -5209,7 +5209,7 @@ void CompAssert3 (
     Stat                stat )
 {
     CVar                lev;            /* the level                       */
-    CVar		cnd;		/* the condition                   */
+    CVar                cnd;            /* the condition                   */
     CVar                msg;            /* the message                     */
 
     Emit( "\n/* Assert( ... ); */\n" );
@@ -5358,9 +5358,9 @@ void CompFunc (
         }
     }
     else {
-	Emit( "\n/* restoring old stack frame */\n" );
-	Emit( "oldFrame = CurrLVars;\n" );
-	Emit( "SWITCH_TO_OLD_FRAME(ENVI_FUNC(self));\n" );
+        Emit( "\n/* restoring old stack frame */\n" );
+        Emit( "oldFrame = CurrLVars;\n" );
+        Emit( "SWITCH_TO_OLD_FRAME(ENVI_FUNC(self));\n" );
     }
 
     /* we know all the arguments have values                               */
@@ -5398,7 +5398,7 @@ Int CompileFunc (
 {
     Int                 i;              /* loop variable                   */
     Obj                 n;              /* temporary                       */
-    UInt		col;
+    UInt                col;
 
     /* open the output file                                                */
     if ( ! OpenOutput( output ) ) {
@@ -5489,39 +5489,39 @@ Int CompileFunc (
     Emit( "\n/* information for the functions */\n" );
     Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" )\n" );
     if ( magic1 < 10 ) {
-	Emit( "InitGlobalBag( &DefaultName, \"%s: DefaultName (%d)\" );\n",
+        Emit( "InitGlobalBag( &DefaultName, \"%s: DefaultName (%d)\" );\n",
               magic2, magic1 );
     }
     else {
-	Emit( "InitGlobalBag( &DefaultName, \"%s: DefaultName (%d)\" );\n",
+        Emit( "InitGlobalBag( &DefaultName, \"%s: DefaultName (%d)\" );\n",
               magic2, magic1/10, magic1%10 );
     }
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
-	Emit( "InitGlobalBag( &(NameFunc[%d]), \"%s: NameFunc[%d] (", 
+        Emit( "InitGlobalBag( &(NameFunc[%d]), \"%s: NameFunc[%d] (", 
                i, magic2, i );
-	if ( magic1 < 10 ) {
-	    Emit( "%d)\" );\n", magic1 );
-	}
-	else {
-	    Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
-	}
+        if ( magic1 < 10 ) {
+            Emit( "%d)\" );\n", magic1 );
+        }
+        else {
+            Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
+        }
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
             Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" )\n",
                   i, SyStrlen(CSTR_STRING(n)), CSTR_STRING(n) );
-	    Emit( "InitGlobalBag( &(NamsFunc[%d]), \"%s: NamsFunc[%d] (", 
-		  i, magic2, i );
-	    if ( magic1 < 10 ) {
-		Emit( "%d)\" );\n", magic1 );
-	    }
-	    else {
-		Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
-	    }
+            Emit( "InitGlobalBag( &(NamsFunc[%d]), \"%s: NamsFunc[%d] (", 
+                  i, magic2, i );
+            if ( magic1 < 10 ) {
+                Emit( "%d)\" );\n", magic1 );
+            }
+            else {
+                Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
+            }
         }
         else {
 
-	    /* MISSING: tell save workspace about this                     */
-	    Emit( "NameFunc[%d] = DefaultName;\n", i );
+            /* MISSING: tell save workspace about this                     */
+            Emit( "NameFunc[%d] = DefaultName;\n", i );
         }
         Emit( "NamsFunc[%d] = 0;\n", i );
         Emit( "NargFunc[%d] = %d;\n",
@@ -5540,10 +5540,10 @@ Int CompileFunc (
     Emit( "Obj  func1;\n" );
     Emit( "InitHandlerFunc( HdlrFunc1, \"%s: HdlrFunc1 (", magic2 );
     if ( magic1 < 10 ) {
-	Emit( "%d)\" );\n", magic1 );
+        Emit( "%d)\" );\n", magic1 );
     }
     else {
-	Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
+        Emit( "%d%d)\" );\n", magic1/10, magic1%10 );
     }
     Emit( "func1 = NewFunction( NameFunc[1], NargFunc[1], NamsFunc[1]" );
     Emit( ", HdlrFunc1 );\n" );
@@ -5557,10 +5557,10 @@ Int CompileFunc (
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructCompInitInfo Description = {\n" );
     if ( magic1 < 10 ) {
-	Emit( "/* magic1    = */ %d%dUL,\n", magic1 );
+        Emit( "/* magic1    = */ %d%dUL,\n", magic1 );
     }
     else {
-	Emit( "/* magic1    = */ %d%dUL,\n", magic1/10, magic1%10 );
+        Emit( "/* magic1    = */ %d%dUL,\n", magic1/10, magic1%10 );
     }
     Emit( "/* magic2    = */ \"%C\",\n", magic2 );
     Emit( "/* link      = */ Link,\n" );
@@ -5602,7 +5602,7 @@ Obj CompileFuncHandler (
     if ( ! IsStringConv( output ) ) {
         ErrorQuit("CompileFunc: <output> must be a string",0L,0L);
     }
-    if ( TYPE_OBJ(func) != T_FUNCTION ) {
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit("CompileFunc: <func> must be a function",0L,0L);
     }
     if ( ! IsStringConv( name ) ) {

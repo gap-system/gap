@@ -18,7 +18,7 @@ char *          Revision_stats_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar                         */
@@ -30,7 +30,7 @@ char *          Revision_stats_c =
 
 #include        "bool.h"                /* True, False                     */
 
-#include        "code.h"                /* Stat, Expr, TYPE_STAT, ADDR_S...*/
+#include        "code.h"                /* Stat, Expr, TNUM_STAT, ADDR_S...*/
 #include        "vars.h"                /* ASS_LVAR, ASS_HVAR              */
 #include        "exprs.h"               /* EVAL_EXPR, EVAL_BOOL_EXPR, ...  */
 
@@ -64,7 +64,7 @@ char *          Revision_stats_c =
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*ExecStatFuncs[ TYPE_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -116,7 +116,7 @@ UInt            ExecUnknownStat (
 {
     ErrorQuit(
         "Panic: tried to execute a statement of unknown type '%d'",
-        (Int)TYPE_STAT(stat), 0L );
+        (Int)TNUM_STAT(stat), 0L );
     return 0;
 }
 
@@ -419,16 +419,16 @@ UInt            ExecFor (
         var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
         vart = 'l';
     }
-    else if ( T_REF_LVAR <= TYPE_EXPR( ADDR_STAT(stat)[0] )
-           && TYPE_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
+    else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
+           && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'l';
     }
-    else if ( TYPE_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
+    else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'h';
     }
-    else /* if ( TYPE_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
+    else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'g';
     }
@@ -523,16 +523,16 @@ UInt            ExecFor2 (
         var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
         vart = 'l';
     }
-    else if ( T_REF_LVAR <= TYPE_EXPR( ADDR_STAT(stat)[0] )
-           && TYPE_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
+    else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
+           && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'l';
     }
-    else if ( TYPE_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
+    else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'h';
     }
-    else /* if ( TYPE_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
+    else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'g';
     }
@@ -635,16 +635,16 @@ UInt            ExecFor3 (
         var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
         vart = 'l';
     }
-    else if ( T_REF_LVAR <= TYPE_EXPR( ADDR_STAT(stat)[0] )
-           && TYPE_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
+    else if ( T_REF_LVAR <= TNUM_EXPR( ADDR_STAT(stat)[0] )
+           && TNUM_EXPR( ADDR_STAT(stat)[0] ) <= T_REF_LVAR_16 ) {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'l';
     }
-    else if ( TYPE_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
+    else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'h';
     }
-    else /* if ( TYPE_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
+    else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
         var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
         vart = 'g';
     }
@@ -782,7 +782,7 @@ UInt            ExecForRange (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(elm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
             "you can return an integer for <first>" );
     }
     first = INT_INTOBJ(elm);
@@ -790,7 +790,7 @@ UInt            ExecForRange (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(elm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
             "you can return an integer for <last>" );
     }
     last  = INT_INTOBJ(elm);
@@ -844,7 +844,7 @@ UInt            ExecForRange2 (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(elm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
             "you can return an integer for <first>" );
     }
     first = INT_INTOBJ(elm);
@@ -852,7 +852,7 @@ UInt            ExecForRange2 (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(elm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
             "you can return an integer for <last>" );
     }
     last  = INT_INTOBJ(elm);
@@ -911,7 +911,7 @@ UInt            ExecForRange3 (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(elm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
             "you can return an integer for <first>" );
     }
     first = INT_INTOBJ(elm);
@@ -919,7 +919,7 @@ UInt            ExecForRange3 (
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(elm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(elm)].name), 0L,
             "you can return an integer for <last>" );
     }
     last  = INT_INTOBJ(elm);
@@ -1271,7 +1271,7 @@ UInt            ExecBreak (
 UInt ExecInfo (
     Stat            stat )
 {
-    Obj      	    selectors;
+    Obj             selectors;
     Obj             level;
     Obj             selected;
     UInt            narg;
@@ -1284,28 +1284,28 @@ UInt ExecInfo (
     selected = CALL_2ARGS(InfoDecision, selectors, level);
     if (selected == True) {
 
-	/* Get the number of arguments to be printed                       */
-	narg = NARG_SIZE_INFO(SIZE_STAT(stat)) - 2;
+        /* Get the number of arguments to be printed                       */
+        narg = NARG_SIZE_INFO(SIZE_STAT(stat)) - 2;
 
-	/* set up a list                                                   */
-	args = NEW_PLIST( T_PLIST, narg );
-	SET_LEN_PLIST( args, narg );
+        /* set up a list                                                   */
+        args = NEW_PLIST( T_PLIST, narg );
+        SET_LEN_PLIST( args, narg );
 
         /* evaluate the objects to be printed into the list                */
-	for (i = 1; i <= narg; i++) {
+        for (i = 1; i <= narg; i++) {
 
-	    /* These two statements must not be combined into one because of
-	       the risk of a garbage collection during the evaluation
-	       of arg, which may happen after the pointer to args has been
-	       extracted
-	    */
-	    arg = EVAL_EXPR(ARGI_INFO(stat, i+2));
-	    SET_ELM_PLIST(args, i, arg);
-	    CHANGED_BAG(args);
-	}
+            /* These two statements must not be combined into one because of
+               the risk of a garbage collection during the evaluation
+               of arg, which may happen after the pointer to args has been
+               extracted
+            */
+            arg = EVAL_EXPR(ARGI_INFO(stat, i+2));
+            SET_ELM_PLIST(args, i, arg);
+            CHANGED_BAG(args);
+        }
 
         /* and print them                                                  */
-	CALL_1ARGS(InfoDoPrint, args);
+        CALL_1ARGS(InfoDoPrint, args);
     }
     return 0;
 }
@@ -1323,25 +1323,25 @@ UInt ExecAssert2Args (
     Stat            stat )
 {
     Obj             level;
-    Obj		    decision;
+    Obj             decision;
 
     level = EVAL_EXPR( ADDR_STAT( stat )[0] );
     if ( ! LT(CurrentAssertionLevel, level) )  {
-	decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
-	while ( decision != True && decision != False ) {
-	 decision = ErrorReturnObj(
+        decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
+        while ( decision != True && decision != False ) {
+         decision = ErrorReturnObj(
           "Assertion condition must evaluate to 'true' or 'false', not a %s",
-	  (Int)(InfoBags[TYPE_OBJ(decision)].name), 0L,
-	  "you may return 'true' or 'false' or you may quit");
-	}
-	if ( decision == False ) {
-	    ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may return");
-	}
+          (Int)(InfoBags[TNUM_OBJ(decision)].name), 0L,
+          "you may return 'true' or 'false' or you may quit");
+        }
+        if ( decision == False ) {
+            ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may return");
+        }
 
-	/* decision must be 'True' here                                    */
-	else {
-	    return 0;
-	}
+        /* decision must be 'True' here                                    */
+        else {
+            return 0;
+        }
     }
   return 0;
 }
@@ -1358,25 +1358,25 @@ UInt ExecAssert2Args (
 UInt ExecAssert3Args (
     Stat            stat )
 {
-    Obj 	    level;
-    Obj		    decision;
-    Obj 	    message;
+    Obj             level;
+    Obj             decision;
+    Obj             message;
 
     level = EVAL_EXPR( ADDR_STAT( stat )[0] );
     if ( ! LT(CurrentAssertionLevel, level) ) {
-	decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
-	while ( decision != True && decision != False ) {
-	 decision = ErrorReturnObj(
-	 "Assertion condition must evaluate to 'true' or 'false', not a %s",
-	 (Int)(InfoBags[TYPE_OBJ(decision)].name), 0L,
+        decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
+        while ( decision != True && decision != False ) {
+         decision = ErrorReturnObj(
+         "Assertion condition must evaluate to 'true' or 'false', not a %s",
+         (Int)(InfoBags[TNUM_OBJ(decision)].name), 0L,
          "you may return 'true' or 'false' or you may quit");
-	}
-	if ( decision == False ) {
-	    message = EVAL_EXPR(ADDR_STAT( stat )[2]);
-	    if ( message != (Obj) 0 ) 
-		PrintObj(message);
-	}
-	return 0;
+        }
+        if ( decision == False ) {
+            message = EVAL_EXPR(ADDR_STAT( stat )[2]);
+            if ( message != (Obj) 0 ) 
+                PrintObj(message);
+        }
+        return 0;
     }
     return 0;
 }
@@ -1526,7 +1526,7 @@ void            InterruptExecStat ( void )
 void            PrintStat (
     Stat                stat )
 {
-    (*PrintStatFuncs[TYPE_STAT(stat)])( stat );
+    (*PrintStatFuncs[TNUM_STAT(stat)])( stat );
 }
 
 
@@ -1555,7 +1555,7 @@ void            PrintUnknownStat (
 {
     ErrorQuit(
         "Panic: cannot print statement of type '%d'",
-        (Int)TYPE_STAT(stat), 0L );
+        (Int)TNUM_STAT(stat), 0L );
 }
 
 
@@ -1611,7 +1611,7 @@ void            PrintIf (
 
     /* print the 'elif' branch                                             */
     for ( i = 2; i <= SIZE_STAT(stat)/(2*sizeof(Stat)); i++ ) {
-        if ( TYPE_EXPR( ADDR_STAT(stat)[2*(i-1)] ) == T_TRUE_EXPR ) {
+        if ( TNUM_EXPR( ADDR_STAT(stat)[2*(i-1)] ) == T_TRUE_EXPR ) {
             Pr( "else%4>\n", 0L, 0L );
         }
         else {

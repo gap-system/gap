@@ -30,7 +30,8 @@ a dense list, which is immutable and homogeneous and not a table
 T_PLIST_HOM_NSORT
 -----------------
 a dense list, which is immutable and homogeneous and not a table and
-is known to be unsorted
+is known to be unsorted.  NSORT means that the list is not strictly
+sorted.
 
 T_PLIST_HOM_SSORT
 -----------------
@@ -40,7 +41,7 @@ is known to be strictly sorted
 T_PLIST_TAB
 -----------
 a dense list, which is immutable and homogeneous and a table;  a table
-is a list of lists of equal lengths
+is a list of lists of equal lengths which not empty
 
 T_PLIST_TAB_NSORT
 -----------------
@@ -162,6 +163,47 @@ T_MAT_CYC
 ---------
 if <list> is a non-empty, dense list of lists of equal lengths which can be
 converted into lists of type T_PLIST_CYC*
+
+#############################################################################
+
+T_PLIST     |Empty    |SSort    |NSort     |Dense     |NDense|Homog    |NHomog    |Table    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+T_PLIST     |EMPTY    |HOM_SSORT|T_PLIST   |DENSE     |NDENSE|HOM      |T_PLIST   |TAB      |
+NDENSE      |error    |error    |NDENSE    |error     |NDENSE|error    |NDENSE    |error    |
+DENSE       |EMPTY    |HOM_SSORT|DENSE     |DENSE     |error |HOM      |DENSE_NHOM|TAB      |
+DENSE_NHOM  |error    |error    |DENSE_NHOM|DENSE_NHOM|error |error    |DENSE_NHOM|error    |
+EMPTY       |EMPTY    |EMPTY    |error     |EMPTY     |error |EMPTY    |error     |error    |
+HOM         |EMPTY    |HOM_SSORT|HOM_NSORT |HOM       |error |HOM      |error     |TAB      |
+HOM_NSORT   |error    |error    |HOM_NSORT |HOM_NSORT |error |HOM_NSORT|error     |TAB_NSORT|
+HOM_SSORT   |EMPTY    |HOM_SSORT|error     |HOM_SSORT |error |HOM_SSORT|error     |TAB_SSORT|
+TAB         |error    |TAB_SSORT|TAB_NSORT |TAB       |error |TAB      |error     |TAB      |
+TAB_NSORT   |error    |error    |TAB_NSORT |TAB_NSORT |error |TAB_NSORT|error     |TAB_NSORT|
+TAB_SSORT   |error    |TAB_SSORT|error     |TAB_SSORT |error |TAB_SSORT|error     |TAB_SSORT|
+CYC         |CYC      |CYC_SSORT|CYC_NSORT |CYC       |error |CYC      |error     |error    |
+CYC_NSORT   |error    |error    |CYC_NSORT |CYC_NSORT |error |CYC_NSORT|error     |error    |
+CYC_SSORT   |CYC_SSORT|CYC_SSORT|error     |CYC_SSORT |error |CYC_SSORT|error     |error    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+
+T_RANGE     |Empty    |SSort    |NSort     |Dense     |NDense|Homog    |NHomog    |Table    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+SSORT	    |error    |SSORT    |error     |SSORT     |error |SSORT    |error     |error    |
+NSORT       |error    |error    |NSORT     |NSORT     |error |NSORT    |error     |error    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+
+T_STRING    |Empty    |SSort    |NSort     |Dense     |NDense|Homog    |NHomog    |Table    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+T_STRING    |T_STRING |SSORT    |NSORT     |T_STRING  |error |T_STRING |error     |error    |
+NSORT       |error    |error    |NSORT     |NSORT     |error |NSORT    |error     |error    |
+SSORT       |SSORT    |SSORT    |error     |SSORT     |error |SSORT    |error     |error    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+
+T_BLIST     |Empty    |SSort    |NSort     |Dense     |NDense|Homog    |NHomog    |Table    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+T_BLIST     |T_BLIST  |SSORT    |NSORT     |T_BLIST   |error |T_BLIST  |error     |error    |
+NSORT       |error    |error    |NSORT     |NSORT     |error |NSORT    |error     |error    |
+SSORT       |SSORT    |SSORT    |error     |SSORT     |error |SSORT    |error     |error    |
+------------+---------+---------+----------+----------+------+---------+----------+---------+
+
 
 #############################################################################
 

@@ -39,7 +39,7 @@ char * Revision_plist_c =
 #include        "system.h"              /* system dependent functions      */
 
 #include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -164,7 +164,7 @@ Int             GrowPlist (
 **  'IS_PLIST' is defined in the declaration part of this package as follows
 **
 #define IS_PLIST( list ) \
-  (FIRST_PLIST_TYPE <= TYPE_OBJ(list) && TYPE_OBJ(list) <= LAST_PLIST_TYPE)
+  (FIRST_PLIST_TNUM <= TNUM_OBJ(list) && TNUM_OBJ(list) <= LAST_PLIST_TNUM)
 */
 
 
@@ -175,7 +175,7 @@ Int             GrowPlist (
 **  'IS_IMM_PLIST'  is  defined in  the declaration  part  of this package as
 **  follows
 **
-#define IS_IMM_PLIST(list) ((TYPE_OBJ(list) - T_PLIST) % 2)
+#define IS_IMM_PLIST(list) ((TNUM_OBJ(list) - T_PLIST) % 2)
 */
 
 
@@ -185,45 +185,45 @@ Int             GrowPlist (
 *F  SetFilterPlist( <list>, <fil> ) . . . . . . . . . . . . . . set a feature
 */
 void SetFilterPlist (
-    Obj			list,
+    Obj                 list,
     Obj                 fil )
 {
     Int                 type;
 
     /* is strictly sorted plain list                                       */
-    type = TYPE_OBJ(list);
+    type = TNUM_OBJ(list);
     if ( fil == IsSSortListProp ) {
-	if ( T_PLIST_HOM <= type && type <= T_PLIST_CYC_SSORT+IMMUTABLE ) {
-	    RetypeBag( list, type + (T_PLIST_HOM_SSORT-T_PLIST_HOM) );
-	}
+        if ( T_PLIST_HOM <= type && type <= T_PLIST_CYC_SSORT+IMMUTABLE ) {
+            RetypeBag( list, type + (T_PLIST_HOM_SSORT-T_PLIST_HOM) );
+        }
     }
 
     /* is plain list with is not sorted                                    */
     else if ( fil == IsNSortListProp ) {
-	if ( T_PLIST_HOM <= type && type <= T_PLIST_CYC_SSORT+IMMUTABLE ) {
-	    RetypeBag( list, type + (T_PLIST_HOM_NSORT-T_PLIST_HOM) );
-	}
+        if ( T_PLIST_HOM <= type && type <= T_PLIST_CYC_SSORT+IMMUTABLE ) {
+            RetypeBag( list, type + (T_PLIST_HOM_NSORT-T_PLIST_HOM) );
+        }
     }
 }
 
 
 /****************************************************************************
 **
-*F  KindPlist(<list>) . . . . . . . . . . . . . . . . .  kind of a plain list
+*F  TypePlist(<list>) . . . . . . . . . . . . . . . . .  kind of a plain list
 **
-**  'KindPlist' returns the kind of the plain list <list>.
+**  'TypePlist' returns the kind of the plain list <list>.
 **
-**  'KindPlist' is the function in 'KindObjFuncs' for plain lists.
+**  'TypePlist' is the function in 'TypeObjFuncs' for plain lists.
 */
-Obj             KIND_LIST_NDENSE_MUTABLE;
-Obj             KIND_LIST_NDENSE_IMMUTABLE;
-Obj             KIND_LIST_DENSE_NHOM_MUTABLE;
-Obj             KIND_LIST_DENSE_NHOM_IMMUTABLE;
-Obj             KIND_LIST_EMPTY_MUTABLE;
-Obj             KIND_LIST_EMPTY_IMMUTABLE;
-Obj             KIND_LIST_HOM;
+Obj             TYPE_LIST_NDENSE_MUTABLE;
+Obj             TYPE_LIST_NDENSE_IMMUTABLE;
+Obj             TYPE_LIST_DENSE_NHOM_MUTABLE;
+Obj             TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+Obj             TYPE_LIST_EMPTY_MUTABLE;
+Obj             TYPE_LIST_EMPTY_IMMUTABLE;
+Obj             TYPE_LIST_HOM;
 
-Int             KTypePlist (
+Int             KTNumPlist (
     Obj                 list )
 {
     Int                 isImm   = 0;    /* is <list> immutable             */
@@ -255,7 +255,7 @@ Int             KTypePlist (
         isDense = 0;
     }
     else {
-        family  = FAMILY_KIND( KIND_OBJ(elm) );
+        family  = FAMILY_TYPE( TYPE_OBJ(elm) );
         isHom   = 1;
         areMut  = IS_MUTABLE_OBJ( elm );
         if ( IS_HOMOG_LIST(elm) ) {
@@ -271,7 +271,7 @@ Int             KTypePlist (
             isDense = 0;
         }
         else {
-            isHom   = (isHom && family == FAMILY_KIND( KIND_OBJ(elm) ));
+            isHom   = (isHom && family == FAMILY_TYPE( TYPE_OBJ(elm) ));
             areMut  = (areMut || IS_MUTABLE_OBJ( elm ));
             isTable = (isTable && IS_LIST(elm) && LEN_LIST(elm) == len);
         }
@@ -299,7 +299,7 @@ Int             KTypePlist (
     }
 }
 
-Obj             KindPlist (
+Obj             TypePlist (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -308,41 +308,41 @@ Obj             KindPlist (
     Obj                 kinds;          /* kinds list of <family>          */
 
     /* get the kind type                                                   */
-    ktype  = KTypePlist( list );
+    ktype  = KTNumPlist( list );
 
     /* handle special cases                                                */
     if      ( ktype == T_PLIST_NDENSE ) {
-        return KIND_LIST_NDENSE_MUTABLE;
+        return TYPE_LIST_NDENSE_MUTABLE;
     }
     else if ( ktype == T_PLIST_NDENSE+IMMUTABLE ) {
-        return KIND_LIST_NDENSE_IMMUTABLE;
+        return TYPE_LIST_NDENSE_IMMUTABLE;
     }
     else if ( ktype == T_PLIST_DENSE_NHOM ) {
-        return KIND_LIST_DENSE_NHOM_MUTABLE;
+        return TYPE_LIST_DENSE_NHOM_MUTABLE;
     }
     else if ( ktype == T_PLIST_DENSE_NHOM+IMMUTABLE ) {
-        return KIND_LIST_DENSE_NHOM_IMMUTABLE;
+        return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
     }
     else if ( ktype == T_PLIST_EMPTY ) {
-        return KIND_LIST_EMPTY_MUTABLE;
+        return TYPE_LIST_EMPTY_MUTABLE;
     }
     else if ( ktype == T_PLIST_EMPTY+IMMUTABLE ) {
-        return KIND_LIST_EMPTY_IMMUTABLE;
+        return TYPE_LIST_EMPTY_IMMUTABLE;
     }
 
     /* handle homogeneous list                                             */
     else if ( ktype >= T_PLIST_HOM ) {
 
         /* get the family of the elements                                  */
-        family = FAMILY_KIND( KIND_OBJ( ELM_PLIST(list,1) ) );
+        family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST(list,1) ) );
 
         /* get the list kinds of that family                               */
-        kinds  = KINDS_LIST_FAM( family );
+        kinds  = TYPES_LIST_FAM( family );
 
         /* if the kind is not yet known, compute it                        */
         kind = ELM0_LIST( kinds, ktype-T_PLIST_HOM+1 );
         if ( kind == 0 ) {
-            kind = CALL_2ARGS( KIND_LIST_HOM,
+            kind = CALL_2ARGS( TYPE_LIST_HOM,
                 family, INTOBJ_INT(ktype-T_PLIST_HOM+1) );
             ASS_LIST( kinds, ktype-T_PLIST_HOM+1, kind );
         }
@@ -356,52 +356,52 @@ Obj             KindPlist (
     else {
         ErrorQuit(
             "Panic: strange kind type '%s' ('%d')",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), (Int)(TYPE_OBJ(list)) );
+            (Int)(InfoBags[TNUM_OBJ(list)].name), (Int)(TNUM_OBJ(list)) );
         return 0;
     }
 
 }
 
-Obj             KindPlistNDenseMut (
+Obj             TypePlistNDenseMut (
     Obj                 list )
 {
-    return KIND_LIST_NDENSE_MUTABLE;
+    return TYPE_LIST_NDENSE_MUTABLE;
 }
 
-Obj             KindPlistNDenseImm (
+Obj             TypePlistNDenseImm (
     Obj                 list )
 {
-    return KIND_LIST_NDENSE_IMMUTABLE;
+    return TYPE_LIST_NDENSE_IMMUTABLE;
 }
 
-#define         KindPlistDenseMut       KindPlist
-#define         KindPlistDenseImm       KindPlist
+#define         TypePlistDenseMut       TypePlist
+#define         TypePlistDenseImm       TypePlist
 
-Obj             KindPlistDenseNHomMut (
+Obj             TypePlistDenseNHomMut (
     Obj                 list )
 {
-    return KIND_LIST_DENSE_NHOM_MUTABLE;
+    return TYPE_LIST_DENSE_NHOM_MUTABLE;
 }
 
-Obj             KindPlistDenseNHomImm (
+Obj             TypePlistDenseNHomImm (
     Obj                 list )
 {
-    return KIND_LIST_DENSE_NHOM_IMMUTABLE;
+    return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
 }
 
-Obj             KindPlistEmptyMut (
+Obj             TypePlistEmptyMut (
     Obj                 list )
 {
-    return KIND_LIST_EMPTY_MUTABLE;
+    return TYPE_LIST_EMPTY_MUTABLE;
 }
 
-Obj             KindPlistEmptyImm (
+Obj             TypePlistEmptyImm (
     Obj                 list )
 {
-    return KIND_LIST_EMPTY_IMMUTABLE;
+    return TYPE_LIST_EMPTY_IMMUTABLE;
 }
 
-Obj             KindPlistHom (
+Obj             TypePlistHom (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -410,16 +410,16 @@ Obj             KindPlistHom (
     Obj                 kinds;          /* kinds list of <family>          */
 
     /* get the kind type and the family of the elements                    */
-    ktype  = TYPE_OBJ( list );
-    family = FAMILY_KIND( KIND_OBJ( ELM_PLIST( list, 1 ) ) );
+    ktype  = TNUM_OBJ( list );
+    family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
     /* get the list kinds of that family                                   */
-    kinds  = KINDS_LIST_FAM( family );
+    kinds  = TYPES_LIST_FAM( family );
 
     /* if the kind is not yet known, compute it                            */
     kind = ELM0_LIST( kinds, ktype-T_PLIST_HOM+1 );
     if ( kind == 0 ) {
-        kind = CALL_2ARGS( KIND_LIST_HOM,
+        kind = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(ktype-T_PLIST_HOM+1) );
         ASS_LIST( kinds, ktype-T_PLIST_HOM+1, kind );
     }
@@ -428,7 +428,7 @@ Obj             KindPlistHom (
     return kind;
 }
 
-Obj             KindPlistCyc (
+Obj             TypePlistCyc (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -437,16 +437,16 @@ Obj             KindPlistCyc (
     Obj                 kinds;          /* kinds list of <family>          */
 
     /* get the kind type and the family of the elements                    */
-    ktype  = TYPE_OBJ( list );
-    family = FAMILY_KIND( KIND_OBJ( ELM_PLIST( list, 1 ) ) );
+    ktype  = TNUM_OBJ( list );
+    family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
     /* get the list kinds of that family                                   */
-    kinds  = KINDS_LIST_FAM( family );
+    kinds  = TYPES_LIST_FAM( family );
 
     /* if the kind is not yet known, compute it                            */
     kind = ELM0_LIST( kinds, ktype-T_PLIST_CYC+1 );
     if ( kind == 0 ) {
-        kind = CALL_2ARGS( KIND_LIST_HOM,
+        kind = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(ktype-T_PLIST_CYC+1) );
         ASS_LIST( kinds, ktype-T_PLIST_CYC+1, kind );
     }
@@ -477,10 +477,10 @@ Obj             ShallowCopyPlist (
     /* make the new object and copy the contents                           */
     len = LEN_PLIST(list);
     if ( IS_IMM_PLIST(list) ) {
-	new = NEW_PLIST( TYPE_OBJ(list) - IMMUTABLE, len );
+        new = NEW_PLIST( TNUM_OBJ(list) - IMMUTABLE, len );
     }
     else {
-	new = NEW_PLIST( TYPE_OBJ(list), len );
+        new = NEW_PLIST( TNUM_OBJ(list), len );
     }
     o = ADDR_OBJ(list);
     n = ADDR_OBJ(new);
@@ -528,10 +528,10 @@ Obj CopyPlist (
 
     /* make a copy                                                         */
     if ( mut ) {
-        copy = NewBag( TYPE_OBJ(list), SIZE_OBJ(list) );
+        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
     }
     else {
-        copy = NewBag( IMMUTABLE_TYPE( TYPE_OBJ(list) ), SIZE_OBJ(list) );
+        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
     ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
 
@@ -540,7 +540,7 @@ Obj CopyPlist (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    RetypeBag( list, TYPE_OBJ(list) + COPYING );
+    RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
     for ( i = 1; i <= LEN_PLIST(copy); i++ ) {
@@ -591,7 +591,7 @@ void CleanPlistCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    RetypeBag( list, TYPE_OBJ(list) - COPYING );
+    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 
     /* clean the subvalues                                                 */
     for ( i = 1; i <= LEN_PLIST(list); i++ ) {
@@ -1060,29 +1060,29 @@ Obj             ElmsPlistDense (
 
         /* make the result list                                            */
         /* try to assert as many properties as possible                    */
-        if      ( (TYPE_OBJ(list) == T_PLIST_HOM_SSORT
-		|| TYPE_OBJ(list) == T_PLIST_TAB_SSORT
-                || TYPE_OBJ(list) == T_PLIST_CYC_SSORT)
-               && (TYPE_OBJ(poss) == T_PLIST_HOM_SSORT
-                || TYPE_OBJ(poss) == T_PLIST_CYC_SSORT) )
-	{
-            elms = NEW_PLIST( TYPE_OBJ(list), lenPoss );
+        if      ( (TNUM_OBJ(list) == T_PLIST_HOM_SSORT
+                || TNUM_OBJ(list) == T_PLIST_TAB_SSORT
+                || TNUM_OBJ(list) == T_PLIST_CYC_SSORT)
+               && (TNUM_OBJ(poss) == T_PLIST_HOM_SSORT
+                || TNUM_OBJ(poss) == T_PLIST_CYC_SSORT) )
+        {
+            elms = NEW_PLIST( TNUM_OBJ(list), lenPoss );
         }
-        else if (  TYPE_OBJ(list) == T_PLIST_HOM
-		|| TYPE_OBJ(list) == T_PLIST_HOM_NSORT
-		|| TYPE_OBJ(list) == T_PLIST_HOM_SSORT )
+        else if (  TNUM_OBJ(list) == T_PLIST_HOM
+                || TNUM_OBJ(list) == T_PLIST_HOM_NSORT
+                || TNUM_OBJ(list) == T_PLIST_HOM_SSORT )
         {
             elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
         }
-        else if (  TYPE_OBJ(list) == T_PLIST_TAB
-		|| TYPE_OBJ(list) == T_PLIST_TAB_NSORT
-		|| TYPE_OBJ(list) == T_PLIST_TAB_SSORT )
+        else if (  TNUM_OBJ(list) == T_PLIST_TAB
+                || TNUM_OBJ(list) == T_PLIST_TAB_NSORT
+                || TNUM_OBJ(list) == T_PLIST_TAB_SSORT )
         {
             elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
         }
-        else if (  TYPE_OBJ(list) == T_PLIST_CYC
-		|| TYPE_OBJ(list) == T_PLIST_CYC_NSORT
-		|| TYPE_OBJ(list) == T_PLIST_CYC_SSORT )
+        else if (  TNUM_OBJ(list) == T_PLIST_CYC
+                || TNUM_OBJ(list) == T_PLIST_CYC_NSORT
+                || TNUM_OBJ(list) == T_PLIST_CYC_SSORT )
         {
             elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
         }
@@ -1146,29 +1146,29 @@ Obj             ElmsPlistDense (
 
         /* make the result list                                            */
         /* try to assert as many properties as possible                    */
-        if      ( (TYPE_OBJ(list) == T_PLIST_HOM_SSORT
-		|| TYPE_OBJ(list) == T_PLIST_TAB_SSORT
-                || TYPE_OBJ(list) == T_PLIST_CYC_SSORT)
-               && (TYPE_OBJ(poss) == T_PLIST_HOM_SSORT
-                || TYPE_OBJ(poss) == T_PLIST_CYC_SSORT) )
-	{
-            elms = NEW_PLIST( TYPE_OBJ(list), lenPoss );
+        if      ( (TNUM_OBJ(list) == T_PLIST_HOM_SSORT
+                || TNUM_OBJ(list) == T_PLIST_TAB_SSORT
+                || TNUM_OBJ(list) == T_PLIST_CYC_SSORT)
+               && (TNUM_OBJ(poss) == T_PLIST_HOM_SSORT
+                || TNUM_OBJ(poss) == T_PLIST_CYC_SSORT) )
+        {
+            elms = NEW_PLIST( TNUM_OBJ(list), lenPoss );
         }
-        else if (  TYPE_OBJ(list) == T_PLIST_HOM
-		|| TYPE_OBJ(list) == T_PLIST_HOM_NSORT
-		|| TYPE_OBJ(list) == T_PLIST_HOM_SSORT )
+        else if (  TNUM_OBJ(list) == T_PLIST_HOM
+                || TNUM_OBJ(list) == T_PLIST_HOM_NSORT
+                || TNUM_OBJ(list) == T_PLIST_HOM_SSORT )
         {
             elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
         }
-        else if (  TYPE_OBJ(list) == T_PLIST_TAB
-		|| TYPE_OBJ(list) == T_PLIST_TAB_NSORT
-		|| TYPE_OBJ(list) == T_PLIST_TAB_SSORT )
+        else if (  TNUM_OBJ(list) == T_PLIST_TAB
+                || TNUM_OBJ(list) == T_PLIST_TAB_NSORT
+                || TNUM_OBJ(list) == T_PLIST_TAB_SSORT )
         {
             elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
         }
-        else if (  TYPE_OBJ(list) == T_PLIST_CYC
-		|| TYPE_OBJ(list) == T_PLIST_CYC_NSORT
-		|| TYPE_OBJ(list) == T_PLIST_CYC_SSORT )
+        else if (  TNUM_OBJ(list) == T_PLIST_CYC
+                || TNUM_OBJ(list) == T_PLIST_CYC_NSORT
+                || TNUM_OBJ(list) == T_PLIST_CYC_SSORT )
         {
             elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
         }
@@ -1490,7 +1490,7 @@ Int             IsHomogPlist (
     Obj                 list )
 {
     Int                 ktype;
-    ktype = KTypePlist( list );
+    ktype = KTNumPlist( list );
     return (T_PLIST_HOM <= ktype);
 }
 
@@ -1520,7 +1520,7 @@ Int             IsTablePlist (
     Obj                 list )
 {
     Int                 ktype;
-    ktype = KTypePlist( list );
+    ktype = KTNumPlist( list );
     return (T_PLIST_TAB <= ktype && ktype <= T_PLIST_TAB_SSORT);
 }
 
@@ -1606,13 +1606,13 @@ Int             IsSSortPlistHom (
     /* set the flag (unless the elements are mutable)                      */
     if ( lenList < i ) {
         if ( ! areMut ) {
-	    SetFilterPlist( list, IsSSortListProp );
+            SetFilterPlist( list, IsSSortListProp );
         }
         return 2L;
     }
     else {
         if ( ! areMut ) {
-	    SetFilterPlist( list, IsNSortListProp );
+            SetFilterPlist( list, IsNSortListProp );
         }
         return 0L;
     }
@@ -1794,173 +1794,173 @@ void            InitPlist ( void )
 
     /* install the names                                                   */
     InfoBags[ T_PLIST                     ].name
-	= "list (plain)";
+        = "list (plain)";
     InfoBags[ T_PLIST +IMMUTABLE          ].name
-	= "list (plain,immutable)";
+        = "list (plain,immutable)";
     InfoBags[ T_PLIST            +COPYING ].name
-	= "list (plain,copied)";
+        = "list (plain,copied)";
     InfoBags[ T_PLIST +IMMUTABLE +COPYING ].name
-	= "list (plain,immutable,copied)";
+        = "list (plain,immutable,copied)";
 
     InfoBags[ T_PLIST_NDENSE                     ].name
-	= "list (plain,ndense)";
+        = "list (plain,ndense)";
     InfoBags[ T_PLIST_NDENSE +IMMUTABLE          ].name
-	= "list (plain,ndense,immutable)";
+        = "list (plain,ndense,immutable)";
     InfoBags[ T_PLIST_NDENSE            +COPYING ].name
-	= "list (plain,ndense,copied)";
+        = "list (plain,ndense,copied)";
     InfoBags[ T_PLIST_NDENSE +IMMUTABLE +COPYING ].name
-	= "list (plain,ndense,immutable,copied)";
+        = "list (plain,ndense,immutable,copied)";
 
     InfoBags[ T_PLIST_DENSE                     ].name
-	= "list (plain,dense)";
+        = "list (plain,dense)";
     InfoBags[ T_PLIST_DENSE +IMMUTABLE          ].name
-	= "list (plain,dense,immutable)";
+        = "list (plain,dense,immutable)";
     InfoBags[ T_PLIST_DENSE            +COPYING ].name
-	= "list (plain,dense,copied)";
+        = "list (plain,dense,copied)";
     InfoBags[ T_PLIST_DENSE +IMMUTABLE +COPYING ].name
-	= "list (plain,dense,immutable,copied)";
+        = "list (plain,dense,immutable,copied)";
 
     InfoBags[ T_PLIST_DENSE_NHOM                     ].name
-	= "list (plain,dense,nhom)";
+        = "list (plain,dense,nhom)";
     InfoBags[ T_PLIST_DENSE_NHOM +IMMUTABLE          ].name
-	= "list (plain,dense,nhom,immutable)";
+        = "list (plain,dense,nhom,immutable)";
     InfoBags[ T_PLIST_DENSE_NHOM            +COPYING ].name
-	= "list (plain,dense,nhom,copied)";
+        = "list (plain,dense,nhom,copied)";
     InfoBags[ T_PLIST_DENSE_NHOM +IMMUTABLE +COPYING ].name
-	= "list (plain,dense,nhom,immutable,copied)";
+        = "list (plain,dense,nhom,immutable,copied)";
 
     InfoBags[ T_PLIST_EMPTY                     ].name
-	= "list (plain,empty)";
+        = "list (plain,empty)";
     InfoBags[ T_PLIST_EMPTY +IMMUTABLE          ].name
-	= "list (plain,empty,immutable)";
+        = "list (plain,empty,immutable)";
     InfoBags[ T_PLIST_EMPTY            +COPYING ].name
-	= "list (plain,empty,copied)";
+        = "list (plain,empty,copied)";
     InfoBags[ T_PLIST_EMPTY +IMMUTABLE +COPYING ].name
-	= "list (plain,empty,immutable,copied)";
+        = "list (plain,empty,immutable,copied)";
 
     InfoBags[ T_PLIST_HOM                     ].name
-	= "list (plain,hom)";
+        = "list (plain,hom)";
     InfoBags[ T_PLIST_HOM +IMMUTABLE          ].name
-	= "list (plain,hom,immutable)";
+        = "list (plain,hom,immutable)";
     InfoBags[ T_PLIST_HOM            +COPYING ].name
-	= "list (plain,hom,copied)";
+        = "list (plain,hom,copied)";
     InfoBags[ T_PLIST_HOM +IMMUTABLE +COPYING ].name
-	= "list (plain,hom,immutable,copied)";
+        = "list (plain,hom,immutable,copied)";
 
     InfoBags[ T_PLIST_HOM_NSORT                     ].name
-	= "list (plain,hom,nsort)";
+        = "list (plain,hom,nsort)";
     InfoBags[ T_PLIST_HOM_NSORT +IMMUTABLE          ].name
-	= "list (plain,hom,nsort,immutable)";
+        = "list (plain,hom,nsort,immutable)";
     InfoBags[ T_PLIST_HOM_NSORT            +COPYING ].name
-	= "list (plain,hom,nsort,copied)";
+        = "list (plain,hom,nsort,copied)";
     InfoBags[ T_PLIST_HOM_NSORT +IMMUTABLE +COPYING ].name
-	= "list (plain,hom,nsort,immutable,copied)";
+        = "list (plain,hom,nsort,immutable,copied)";
 
     InfoBags[ T_PLIST_HOM_SSORT                     ].name
-	= "list (plain,hom,ssort)";
+        = "list (plain,hom,ssort)";
     InfoBags[ T_PLIST_HOM_SSORT +IMMUTABLE          ].name
-	= "list (plain,hom,ssort,immutable)";
+        = "list (plain,hom,ssort,immutable)";
     InfoBags[ T_PLIST_HOM_SSORT            +COPYING ].name
-	= "list (plain,hom,ssort,copied)";
+        = "list (plain,hom,ssort,copied)";
     InfoBags[ T_PLIST_HOM_SSORT +IMMUTABLE +COPYING ].name
-	= "list (plain,hom,ssort,immutable,copied)";
+        = "list (plain,hom,ssort,immutable,copied)";
 
     InfoBags[ T_PLIST_TAB                     ].name
-	= "list (plain,table)";
+        = "list (plain,table)";
     InfoBags[ T_PLIST_TAB +IMMUTABLE          ].name
-	= "list (plain,table,immutable)";
+        = "list (plain,table,immutable)";
     InfoBags[ T_PLIST_TAB            +COPYING ].name
-	= "list (plain,table,copied)";
+        = "list (plain,table,copied)";
     InfoBags[ T_PLIST_TAB +IMMUTABLE +COPYING ].name
-	= "list (plain,table,immutable,copied)";
+        = "list (plain,table,immutable,copied)";
 
     InfoBags[ T_PLIST_TAB_NSORT                     ].name
-	= "list (plain,table,nsort)";
+        = "list (plain,table,nsort)";
     InfoBags[ T_PLIST_TAB_NSORT +IMMUTABLE          ].name
-	= "list (plain,table,nsort,immutable)";
+        = "list (plain,table,nsort,immutable)";
     InfoBags[ T_PLIST_TAB_NSORT            +COPYING ].name
-	= "list (plain,table,nsort,copied)";
+        = "list (plain,table,nsort,copied)";
     InfoBags[ T_PLIST_TAB_NSORT +IMMUTABLE +COPYING ].name
-	= "list (plain,table,nsort,immutable,copied)";
+        = "list (plain,table,nsort,immutable,copied)";
 
     InfoBags[ T_PLIST_TAB_SSORT                     ].name
-	= "list (plain,table,ssort)";
+        = "list (plain,table,ssort)";
     InfoBags[ T_PLIST_TAB_SSORT +IMMUTABLE          ].name
-	= "list (plain,table,ssort,immutable)";
+        = "list (plain,table,ssort,immutable)";
     InfoBags[ T_PLIST_TAB_SSORT            +COPYING ].name
-	= "list (plain,table,ssort,copied)";
+        = "list (plain,table,ssort,copied)";
     InfoBags[ T_PLIST_TAB_SSORT +IMMUTABLE +COPYING ].name
-	= "list (plain,table,ssort,immutable,copied)";
+        = "list (plain,table,ssort,immutable,copied)";
 
     InfoBags[ T_PLIST_CYC                     ].name
-	= "list (plain,cyc)";
+        = "list (plain,cyc)";
     InfoBags[ T_PLIST_CYC +IMMUTABLE          ].name
-	= "list (plain,cyc,immutable)";
+        = "list (plain,cyc,immutable)";
     InfoBags[ T_PLIST_CYC            +COPYING ].name
-	= "list (plain,cyc,copied)";
+        = "list (plain,cyc,copied)";
     InfoBags[ T_PLIST_CYC +IMMUTABLE +COPYING ].name
-	= "list (plain,cyc,immutable,copied)";
+        = "list (plain,cyc,immutable,copied)";
 
     InfoBags[ T_PLIST_CYC_NSORT                     ].name
-	= "list (plain,cyc,nsort)";
+        = "list (plain,cyc,nsort)";
     InfoBags[ T_PLIST_CYC_NSORT +IMMUTABLE          ].name
-	= "list (plain,cyc,nsort,immutable)";
+        = "list (plain,cyc,nsort,immutable)";
     InfoBags[ T_PLIST_CYC_NSORT            +COPYING ].name
-	= "list (plain,cyc,nsort,copied)";
+        = "list (plain,cyc,nsort,copied)";
     InfoBags[ T_PLIST_CYC_NSORT +IMMUTABLE +COPYING ].name
-	= "list (plain,cyc,nsort,immutable,copied)";
+        = "list (plain,cyc,nsort,immutable,copied)";
 
     InfoBags[ T_PLIST_CYC_SSORT                     ].name
-	= "list (plain,cyc,ssort)";
+        = "list (plain,cyc,ssort)";
     InfoBags[ T_PLIST_CYC_SSORT +IMMUTABLE          ].name
-	= "list (plain,cyc,ssort,immutable)";
+        = "list (plain,cyc,ssort,immutable)";
     InfoBags[ T_PLIST_CYC_SSORT            +COPYING ].name
-	= "list (plain,cyc,ssort,copied)";
+        = "list (plain,cyc,ssort,copied)";
     InfoBags[ T_PLIST_CYC_SSORT +IMMUTABLE +COPYING ].name
-	= "list (plain,cyc,ssort,immutable,copied)";
+        = "list (plain,cyc,ssort,immutable,copied)";
 
 
     /* get the kinds (resp. kind functions)                                */
-    ImportGVarFromLibrary( "KIND_LIST_NDENSE_MUTABLE", 
-                           &KIND_LIST_NDENSE_MUTABLE );
+    ImportGVarFromLibrary( "TYPE_LIST_NDENSE_MUTABLE", 
+                           &TYPE_LIST_NDENSE_MUTABLE );
 
-    ImportGVarFromLibrary( "KIND_LIST_NDENSE_IMMUTABLE", 
-                           &KIND_LIST_NDENSE_IMMUTABLE );
+    ImportGVarFromLibrary( "TYPE_LIST_NDENSE_IMMUTABLE", 
+                           &TYPE_LIST_NDENSE_IMMUTABLE );
 
-    ImportGVarFromLibrary( "KIND_LIST_DENSE_NHOM_MUTABLE", 
-                           &KIND_LIST_DENSE_NHOM_MUTABLE );
+    ImportGVarFromLibrary( "TYPE_LIST_DENSE_NHOM_MUTABLE", 
+                           &TYPE_LIST_DENSE_NHOM_MUTABLE );
 
-    ImportGVarFromLibrary( "KIND_LIST_DENSE_NHOM_IMMUTABLE", 
-                           &KIND_LIST_DENSE_NHOM_IMMUTABLE );
+    ImportGVarFromLibrary( "TYPE_LIST_DENSE_NHOM_IMMUTABLE", 
+                           &TYPE_LIST_DENSE_NHOM_IMMUTABLE );
 
-    ImportGVarFromLibrary( "KIND_LIST_EMPTY_MUTABLE", 
-                           &KIND_LIST_EMPTY_MUTABLE );
+    ImportGVarFromLibrary( "TYPE_LIST_EMPTY_MUTABLE", 
+                           &TYPE_LIST_EMPTY_MUTABLE );
 
-    ImportGVarFromLibrary( "KIND_LIST_EMPTY_IMMUTABLE", 
-                           &KIND_LIST_EMPTY_IMMUTABLE );
+    ImportGVarFromLibrary( "TYPE_LIST_EMPTY_IMMUTABLE", 
+                           &TYPE_LIST_EMPTY_IMMUTABLE );
 
-    ImportFuncFromLibrary( "KIND_LIST_HOM",
-			   &KIND_LIST_HOM );
+    ImportFuncFromLibrary( "TYPE_LIST_HOM",
+                           &TYPE_LIST_HOM );
 
 
     /* install the kind methods                                            */
-    KindObjFuncs[ T_PLIST                       ] = KindPlist;
-    KindObjFuncs[ T_PLIST            +IMMUTABLE ] = KindPlist;
-    KindObjFuncs[ T_PLIST_NDENSE                ] = KindPlistNDenseMut;
-    KindObjFuncs[ T_PLIST_NDENSE     +IMMUTABLE ] = KindPlistNDenseImm;
-    KindObjFuncs[ T_PLIST_DENSE                 ] = KindPlistDenseMut;
-    KindObjFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = KindPlistDenseImm;
-    KindObjFuncs[ T_PLIST_DENSE_NHOM            ] = KindPlistDenseNHomMut;
-    KindObjFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = KindPlistDenseNHomImm;
-    KindObjFuncs[ T_PLIST_EMPTY                 ] = KindPlistEmptyMut;
-    KindObjFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = KindPlistEmptyImm;
+    TypeObjFuncs[ T_PLIST                       ] = TypePlist;
+    TypeObjFuncs[ T_PLIST            +IMMUTABLE ] = TypePlist;
+    TypeObjFuncs[ T_PLIST_NDENSE                ] = TypePlistNDenseMut;
+    TypeObjFuncs[ T_PLIST_NDENSE     +IMMUTABLE ] = TypePlistNDenseImm;
+    TypeObjFuncs[ T_PLIST_DENSE                 ] = TypePlistDenseMut;
+    TypeObjFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = TypePlistDenseImm;
+    TypeObjFuncs[ T_PLIST_DENSE_NHOM            ] = TypePlistDenseNHomMut;
+    TypeObjFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = TypePlistDenseNHomImm;
+    TypeObjFuncs[ T_PLIST_EMPTY                 ] = TypePlistEmptyMut;
+    TypeObjFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = TypePlistEmptyImm;
     for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_TAB_SSORT; t1 += 2 ) {
-        KindObjFuncs[ t1            ] = KindPlistHom;
-        KindObjFuncs[ t1 +IMMUTABLE ] = KindPlistHom;
+        TypeObjFuncs[ t1            ] = TypePlistHom;
+        TypeObjFuncs[ t1 +IMMUTABLE ] = TypePlistHom;
     }
     for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
-        KindObjFuncs[ t1            ] = KindPlistCyc;
-        KindObjFuncs[ t1 +IMMUTABLE ] = KindPlistCyc;
+        TypeObjFuncs[ t1            ] = TypePlistCyc;
+        TypeObjFuncs[ t1 +IMMUTABLE ] = TypePlistCyc;
     }
 
 

@@ -15,9 +15,16 @@ Revision.streams_gi :=
 #############################################################################
 ##
 
-#V  ClosedStreamKind
+#F  # # # # # # # # # # # # # # closed stream # # # # # # # # # # # # # # # #
 ##
-ClosedStreamKind := NewKind(
+
+
+#############################################################################
+##
+
+#V  ClosedStreamType
+##
+ClosedStreamType := NewType(
     StreamsFamily,
     IsClosedStream );
 
@@ -25,7 +32,7 @@ ClosedStreamKind := NewKind(
 #############################################################################
 ##
 
-#M  CloseStream( <input-stream> )
+#M  CloseStream( <stream> )
 ##
 InstallMethod( CloseStream,
     "input stream",
@@ -34,7 +41,7 @@ InstallMethod( CloseStream,
     0,
 
 function( stream )
-    SET_KIND_COMOBJ( stream, ClosedStreamKind );
+    SET_TYPE_COMOBJ( stream, ClosedStreamType );
 end );
         
 
@@ -55,6 +62,14 @@ end );
 
 #############################################################################
 ##
+
+#F  # # # # # # # # # # # # # #  input stream # # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+
 #M  ReadAll( <input-text-stream> )
 ##
 InstallMethod( ReadAll,
@@ -124,6 +139,129 @@ end );
 #############################################################################
 ##
 
+#F  # # # # # # # # # # # # # # output stream # # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+
+#M  LogTo( <stream> )
+##
+InstallMethod( LogTo,
+    "for output stream",
+    true,
+    [ IsOutputTextStream ],
+    0,
+    function(stream) LOG_TO_STREAM(stream); end );
+
+
+#############################################################################
+##
+#M  LogTo( <filename> )
+##
+InstallOtherMethod( LogTo,
+    "for output file",
+    true,
+    [ IsString ],
+    0,
+    function(name) LOG_TO(name); end );
+
+
+#############################################################################
+##
+#M  LogTo()
+##
+InstallOtherMethod( LogTo,
+    "close log",
+    true,
+    [],
+    0,
+    function() CLOSE_LOG_TO(); end );
+
+
+#############################################################################
+##
+#M  InputLogTo( <stream> )
+##
+InstallMethod( InputLogTo,
+    "for output stream",
+    true,
+    [ IsOutputTextStream ],
+    0,
+    function(stream) INPUT_LOG_TO_STREAM(stream); end );
+
+
+#############################################################################
+##
+#M  InputLogTo( <filename> )
+##
+InstallOtherMethod( InputLogTo,
+    "for output file",
+    true,
+    [ IsString ],
+    0,
+    function(name) INPUT_LOG_TO(name); end );
+
+
+#############################################################################
+##
+#M  InputLogTo()
+##
+InstallOtherMethod( InputLogTo,
+    "close log",
+    true,
+    [],
+    0,
+    function() CLOSE_INPUT_LOG_TO(); end );
+
+
+#############################################################################
+##
+#M  OutputLogTo( <stream> )
+##
+InstallMethod( OutputLogTo,
+    "for output stream",
+    true,
+    [ IsOutputTextStream ],
+    0,
+    function(stream) OUTPUT_LOG_TO_STREAM(stream); end );
+
+
+#############################################################################
+##
+#M  OutputLogTo( <filename> )
+##
+InstallOtherMethod( OutputLogTo,
+    "for output file",
+    true,
+    [ IsString ],
+    0,
+    function(name) OUTPUT_LOG_TO(name); end );
+
+
+#############################################################################
+##
+#M  OutputLogTo()
+##
+InstallOtherMethod( OutputLogTo,
+    "close log",
+    true,
+    [],
+    0,
+    function() CLOSE_OUTPUT_LOG_TO(); end );
+
+
+#############################################################################
+##
+
+#F  # # # # # # # # # # # # # input text string # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+
 #R  IsInputTextStringRep
 ##
 IsInputTextStringRep := NewRepresentation(
@@ -134,9 +272,9 @@ IsInputTextStringRep := NewRepresentation(
 
 #############################################################################
 ##
-#V  InputTextStringKind
+#V  InputTextStringType
 ##
-InputTextStringKind := NewKind(
+InputTextStringType := NewType(
     StreamsFamily,
     IsInputTextStream and IsInputTextStringRep );
 
@@ -152,7 +290,8 @@ InstallMethod( InputTextString,
     0,
         
 function( str )
-    return Objectify( InputTextStringKind, [ 0, Immutable(str) ] );
+    ConvertToStringRep(str);
+    return Objectify( InputTextStringType, [ 0, Immutable(str) ] );
 end );
 
 
@@ -199,7 +338,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "stream(", obj![1], ",", Length(obj![2]), ")" );
+    Print( "input-stream(", obj![1], ",", Length(obj![2]), ")" );
 end );
 
 
@@ -314,6 +453,13 @@ end );
 #############################################################################
 ##
 
+#F  # # # # # # # # # # # # # input text file # # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+
 #R  IsInputTextFileRep
 ##
 IsInputTextFileRep := NewRepresentation(
@@ -324,9 +470,9 @@ IsInputTextFileRep := NewRepresentation(
 
 #############################################################################
 ##
-#V  InputTextFileKind
+#V  InputTextFileType
 ##
-InputTextFileKind := NewKind(
+InputTextFileType := NewType(
     StreamsFamily,
     IsInputTextStream and IsInputTextFileRep );
 
@@ -348,7 +494,7 @@ function( str )
     if fid = fail  then
         return fail;
     else
-        return Objectify( InputTextFileKind, [fid,Immutable(str)] );
+        return Objectify( InputTextFileType, [fid,Immutable(str)] );
     fi;
 end );
 
@@ -366,7 +512,7 @@ InstallMethod( CloseStream,
 
 function( stream )
     CLOSE_FILE(stream![1]);
-    SET_KIND_COMOBJ( stream, ClosedStreamKind );
+    SET_TYPE_COMOBJ( stream, ClosedStreamType );
 end );
         
 
@@ -460,6 +606,113 @@ function( stream, pos )
     if SEEK_POSITION_FILE( stream![1], pos ) = fail  then
         Error( "illegal position <pos>" );
     fi;
+end );
+
+
+#############################################################################
+##
+
+#F  # # # # # # # # # # # #  output text string # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+
+#R  IsOutputTextStringRep
+##
+IsOutputTextStringRep := NewRepresentation(
+    "IsOutputTextStringRep",
+    IsPositionalObjectRep,
+    [] );
+
+
+#############################################################################
+##
+#V  OutputTextStringType
+##
+OutputTextStringType := NewType(
+    StreamsFamily,
+    IsOutputTextStream and IsOutputTextStringRep );
+
+
+#############################################################################
+##
+#M  OutputTextString( <str>, <append> )
+##
+InstallMethod( OutputTextString,
+    "output text stream from string",
+    true,
+    [ IsList,
+      IsBool ],
+    0,
+        
+function( str, append )
+    local   i;
+
+    if not append  then
+        for i  in [ Length(str), Length(str)-1 .. 1 ]   do
+            Unbind(str[i]);
+        od;
+    fi;
+    if not IsMutable(str)  then
+        Error( "<str> must be mutable" );
+    fi;
+    return Objectify( OutputTextStringType, [ str ] );
+end );
+
+
+#############################################################################
+##
+
+#M  PrintObj( <output-text-string> )
+##
+InstallMethod( PrintObj,
+    "output text string",
+    true,
+    [ IsOutputTextStringRep ],
+    0,
+        
+function( obj )
+    Print( "output-stream(", Length(obj![1]), ")" );
+end );
+
+
+#############################################################################
+##
+#M  WriteAll( <output-text-string>, <string> )
+##
+InstallMethod( WriteAll,
+    "output text string",
+    true,
+    [ IsOutputTextStream and IsOutputTextStringRep,
+      IsList ],
+    0,
+                    
+function( stream, string )
+    if not IsString(string)  then
+        Error( "<string> must be a string" );
+    fi;
+    Append( stream![1], string );
+end );
+
+
+#############################################################################
+##
+#M  WriteByte( <output-text-string>, <byte> )
+##
+InstallMethod( WriteByte,
+    "output text string",
+    true,
+    [ IsOutputTextStream and IsOutputTextStringRep,
+      IsInt ],
+    0,
+                    
+function( stream, byte )
+    if byte < 1 or 255 < byte  then
+        Error( "<byte> must an integer between 1 and 255" );
+    fi;
+    Add( stream![1], CHAR_INT(byte) );
 end );
 
 

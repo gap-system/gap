@@ -109,7 +109,7 @@ SubadditiveMagmaNC := function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
-      K:= NewKind( FamilyObj(M),
+      K:= NewType( FamilyObj(M),
                        IsAdditiveMagma
                    and IsTrivial
                    and IsAttributeStoringRep );
@@ -185,7 +185,7 @@ SubadditiveMagmaWithZeroNC := function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
-      K:= NewKind( FamilyObj(M),
+      K:= NewType( FamilyObj(M),
                        IsAdditiveMagmaWithInverses
                    and IsTrivial
                    and IsAttributeStoringRep );
@@ -258,7 +258,7 @@ SubadditiveMagmaWithInversesNC := function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
-      K:= NewKind( FamilyObj(M),
+      K:= NewType( FamilyObj(M),
                        IsAdditiveMagmaWithInverses
                    and IsTrivial
                    and IsAttributeStoringRep );
@@ -302,7 +302,7 @@ InstallMethod( AdditiveMagmaByGenerators,
     [ IsCollection ] , 0,
     function( gens )
     local M;
-    M:= Objectify( NewKind( FamilyObj( gens ),
+    M:= Objectify( NewType( FamilyObj( gens ),
                             IsAdditiveMagma and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfAdditiveMagma( M, AsList( gens ) );
@@ -323,7 +323,7 @@ InstallOtherMethod( AdditiveMagmaByGenerators,
     if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
-    M:= Objectify( NewKind( family,
+    M:= Objectify( NewType( family,
                             IsAdditiveMagma and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfAdditiveMagma( M, AsList( gens ) );
@@ -341,7 +341,7 @@ InstallMethod( AdditiveMagmaWithZeroByGenerators,
     [ IsCollection ] , 0,
     function( gens )
     local M;
-    M:= Objectify( NewKind( FamilyObj( gens ),
+    M:= Objectify( NewType( FamilyObj( gens ),
                        IsAdditiveMagmaWithZero and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfAdditiveMagmaWithZero( M, AsList( gens ) );
@@ -362,7 +362,7 @@ InstallOtherMethod( AdditiveMagmaWithZeroByGenerators,
     if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
-    M:= Objectify( NewKind( family,
+    M:= Objectify( NewType( family,
                        IsAdditiveMagmaWithZero and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfAdditiveMagmaWithZero( M, AsList( gens ) );
@@ -380,7 +380,7 @@ InstallMethod( AdditiveMagmaWithInversesByGenerators,
     [ IsCollection ] , 0,
     function( gens )
     local M;
-    M:= Objectify( NewKind( FamilyObj( gens ),
+    M:= Objectify( NewType( FamilyObj( gens ),
                      IsAdditiveMagmaWithInverses and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfAdditiveMagmaWithInverses( M, AsList( gens ) );
@@ -401,7 +401,7 @@ InstallOtherMethod( AdditiveMagmaWithInversesByGenerators,
     if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
-    M:= Objectify( NewKind( family,
+    M:= Objectify( NewType( family,
                      IsAdditiveMagmaWithInverses and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfAdditiveMagmaWithInverses( M, AsList( gens ) );

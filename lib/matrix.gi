@@ -48,7 +48,7 @@ end;
 ##
 IsNullMapMatrix := NewRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
 
-NullMapMatrix := Objectify( NewKind( ListsFamily, IsNullMapMatrix ), [  ] );
+NullMapMatrix := Objectify( NewType( ListsFamily, IsNullMapMatrix ), [  ] );
 
 InstallMethod( Length,
     "method for null map matrix",

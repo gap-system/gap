@@ -20,7 +20,7 @@ char * Revision_sysfiles_c =
 #include        "system.h"               /* system dependent stuff          */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #define INCLUDE_DECLARATION_PART
@@ -106,35 +106,35 @@ Int SyFopen (
     /* handle standard files                                               */
     if ( SyStrcmp( name, "*stdin*" ) == 0 ) {
         if ( SyStrcmp( mode, "r" ) != 0 )
-	  return -1;
-	else
-	  return 0;
+          return -1;
+        else
+          return 0;
     }
     else if ( SyStrcmp( name, "*stdout*" ) == 0 ) {
         if ( SyStrcmp( mode, "w" ) != 0 )
-	  return -1;
-	else
-	  return 1;
+          return -1;
+        else
+          return 1;
     }
     else if ( SyStrcmp( name, "*errin*" ) == 0 ) {
         if ( SyStrcmp( mode, "r" ) != 0 )
-	  return -1;
+          return -1;
         else if ( syBuf[2].fp == (FILE*)0 )
-	  return -1;
+          return -1;
         else
-	  return 2;
+          return 2;
     }
     else if ( SyStrcmp( name, "*errout*" ) == 0 ) {
         if ( SyStrcmp( mode, "w" ) != 0 )
-	  return -1;
+          return -1;
         else
-	  return 3;
+          return 3;
     }
 
     /* try to find an unused file identifier                               */
     for ( fid = 4; fid < sizeof(syBuf)/sizeof(syBuf[0]); ++fid )
         if ( syBuf[fid].fp == (FILE*)0 )
-	  break;
+          break;
     if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) )
         return (Int)-1;
 
@@ -198,8 +198,8 @@ Int SyFclose (
     {
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
-	syBuf[fid].fp = (FILE*)0;
-	return -1;
+        syBuf[fid].fp = (FILE*)0;
+        return -1;
     }
 
     /* mark the buffer as unused                                           */
@@ -1364,20 +1364,20 @@ Int SyIsExecutableFile ( Char * name )
 */
 Char * SyFindGapRootFile ( Char * filename )
 {
-    static Char	    result [256];
+    static Char     result [256];
     Int             k;
 
     for ( k=0;  k<sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]);  k++ ) {
-	if ( SyGapRootPaths[k][0] ) {
-	    result[0] = '\0';
-	    SyStrncat( result, SyGapRootPaths[k], sizeof(result) );
-	    if ( sizeof(result) <= SyStrlen(filename)+SyStrlen(result)-1 )
-		continue;
-	    SyStrncat( result, filename, SyStrlen(filename) );
-	    if ( SyIsReadableFile(result) ) {
-		return result;
-	    }
-	}
+        if ( SyGapRootPaths[k][0] ) {
+            result[0] = '\0';
+            SyStrncat( result, SyGapRootPaths[k], sizeof(result) );
+            if ( sizeof(result) <= SyStrlen(filename)+SyStrlen(result)-1 )
+                continue;
+            SyStrncat( result, filename, SyStrlen(filename) );
+            if ( SyIsReadableFile(result) ) {
+                return result;
+            }
+        }
     }
     return 0;
 }
@@ -1495,7 +1495,7 @@ Char * SyTmpname ( void )
 void InitSysFiles( void )
 {
     Obj             list;
-    Obj		    tmp;
+    Obj             tmp;
     UInt            gvar;
     Int             len;
     Int             i;
@@ -1513,12 +1513,12 @@ void InitSysFiles( void )
     list = NEW_PLIST( T_PLIST, MAX_GAP_DIRS );
     for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
         if ( SyGapRootPaths[i][0] ) {
-  	    len = SyStrlen(SyGapRootPaths[i]);
-	    tmp = NEW_STRING(len);
-	    SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
-	    SET_ELM_PLIST( list, j, tmp );
-	    j++;
-	}
+            len = SyStrlen(SyGapRootPaths[i]);
+            tmp = NEW_STRING(len);
+            SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
+            SET_ELM_PLIST( list, j, tmp );
+            j++;
+        }
     }
     SET_LEN_PLIST( list, j-1 );
     gvar = GVarName("GAP_ROOT_PATHS");
@@ -1530,5 +1530,5 @@ void InitSysFiles( void )
 /****************************************************************************
 **
 
-*E  sysfiles.h	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

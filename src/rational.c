@@ -47,7 +47,7 @@ char *          Revision_rational_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -79,34 +79,34 @@ char *          Revision_rational_c =
 
 /****************************************************************************
 **
-*F  KindRat( <rat> )  . . . . . . . . . . . . . . . . . .  kind of a rational
+*F  TypeRat( <rat> )  . . . . . . . . . . . . . . . . . .  kind of a rational
 **
-**  'KindRat' returns the kind of the rational <rat>.
+**  'TypeRat' returns the kind of the rational <rat>.
 **
-**  'KindRat' is the function in 'KindObjFuncs' for rationals.
+**  'TypeRat' is the function in 'TypeObjFuncs' for rationals.
 */
-Obj             KIND_RAT_POS;
-Obj             KIND_RAT_NEG;
+Obj             TYPE_RAT_POS;
+Obj             TYPE_RAT_NEG;
 
-Obj             KindRat (
+Obj             TypeRat (
     Obj                 rat )
 {
     Obj                 num;
     num = NUM_RAT(rat);
     if ( IS_INTOBJ(num) ) {
         if ( 0 < INT_INTOBJ(num) ) {
-            return KIND_RAT_POS;
+            return TYPE_RAT_POS;
         }
         else {
-            return KIND_RAT_NEG;
+            return TYPE_RAT_NEG;
         }
     }
     else {
-        if ( TYPE_OBJ(num) == T_INTPOS ) {
-            return KIND_RAT_POS;
+        if ( TNUM_OBJ(num) == T_INTPOS ) {
+            return TYPE_RAT_POS;
         }
         else {
-            return KIND_RAT_NEG;
+            return TYPE_RAT_NEG;
         }
     }
 }
@@ -146,7 +146,7 @@ Int             EqRat (
     Obj                 numR, denR;     /* numerator and denominator right */
 
     /* get numerator and denominator of the operands                       */
-    if ( TYPE_OBJ(opL) == T_RAT ) {
+    if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
         denL = DEN_RAT(opL);
     }
@@ -154,7 +154,7 @@ Int             EqRat (
         numL = opL;
         denL = INTOBJ_INT( 1L );
     }
-    if ( TYPE_OBJ(opR) == T_RAT ) {
+    if ( TNUM_OBJ(opR) == T_RAT ) {
         numR = NUM_RAT(opR);
         denR = DEN_RAT(opR);
     }
@@ -193,7 +193,7 @@ Int             LtRat (
     Obj                 numR, denR;     /* numerator and denominator right */
 
     /* get numerator and denominator of the operands                       */
-    if ( TYPE_OBJ(opL) == T_RAT ) {
+    if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
         denL = DEN_RAT(opL);
     }
@@ -201,7 +201,7 @@ Int             LtRat (
         numL = opL;
         denL = INTOBJ_INT( 1L );
     }
-    if ( TYPE_OBJ(opR) == T_RAT ) {
+    if ( TNUM_OBJ(opR) == T_RAT ) {
         numR = NUM_RAT(opR);
         denR = DEN_RAT(opR);
     }
@@ -233,7 +233,7 @@ Obj             SumRat (
     Obj                 sum;            /* sum                             */
 
     /* get numerator and denominator of the operands                       */
-    if ( TYPE_OBJ(opL) == T_RAT ) {
+    if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
         denL = DEN_RAT(opL);
     }
@@ -241,7 +241,7 @@ Obj             SumRat (
         numL = opL;
         denL = INTOBJ_INT( 1L );
     }
-    if ( TYPE_OBJ(opR) == T_RAT ) {
+    if ( TNUM_OBJ(opR) == T_RAT ) {
         numR = NUM_RAT(opR);
         denR = DEN_RAT(opR);
     }
@@ -331,7 +331,7 @@ Obj             DiffRat (
     Obj                 dif;            /* diff                            */
 
     /* get numerator and denominator of the operands                       */
-    if ( TYPE_OBJ(opL) == T_RAT ) {
+    if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
         denL = DEN_RAT(opL);
     }
@@ -339,7 +339,7 @@ Obj             DiffRat (
         numL = opL;
         denL = INTOBJ_INT( 1L );
     }
-    if ( TYPE_OBJ(opR) == T_RAT ) {
+    if ( TNUM_OBJ(opR) == T_RAT ) {
         numR = NUM_RAT(opR);
         denR = DEN_RAT(opR);
     }
@@ -400,7 +400,7 @@ Obj             ProdRat (
     Obj                 prd;            /* prod                            */
 
     /* get numerator and denominator of the operands                       */
-    if ( TYPE_OBJ(opL) == T_RAT ) {
+    if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
         denL = DEN_RAT(opL);
     }
@@ -408,7 +408,7 @@ Obj             ProdRat (
         numL = opL;
         denL = INTOBJ_INT( 1L );
     }
-    if ( TYPE_OBJ(opR) == T_RAT ) {
+    if ( TNUM_OBJ(opR) == T_RAT ) {
         numR = NUM_RAT(opR);
         denR = DEN_RAT(opR);
     }
@@ -493,7 +493,7 @@ Obj             QuoRat (
     Obj                 quo;            /* Qrod                            */
 
     /* get numerator and denominator of the operands                       */
-    if ( TYPE_OBJ(opL) == T_RAT ) {
+    if ( TNUM_OBJ(opL) == T_RAT ) {
         numL = NUM_RAT(opL);
         denL = DEN_RAT(opL);
     }
@@ -501,7 +501,7 @@ Obj             QuoRat (
         numL = opL;
         denL = INTOBJ_INT( 1L );
     }
-    if ( TYPE_OBJ(opR) == T_RAT ) {
+    if ( TNUM_OBJ(opR) == T_RAT ) {
         numR = NUM_RAT(opR);
         denR = DEN_RAT(opR);
     }
@@ -521,8 +521,8 @@ Obj             QuoRat (
 
     /* we multiply the left numerator with the right denominator           */
     /* so the right denominator should carry the sign of the right operand */
-    if ( (TYPE_OBJ(numR) == T_INT && INT_INTOBJ(numR) < 0)
-      || TYPE_OBJ(numR) == T_INTNEG ) {
+    if ( (TNUM_OBJ(numR) == T_INT && INT_INTOBJ(numR) < 0)
+      || TNUM_OBJ(numR) == T_INTNEG ) {
         numR = ProdInt( INTOBJ_INT( -1L ), numR );
         denR = ProdInt( INTOBJ_INT( -1L ), denR );
     }
@@ -588,8 +588,8 @@ Obj             ModRat (
     Obj                 a, aL, b, bL, c, cL, hdQ;
 
     /* make the integer positive                                           */
-    if ( (TYPE_OBJ(opR) == T_INT && INT_INTOBJ(opR) < 0)
-      || TYPE_OBJ(opR) == T_INTNEG ) {
+    if ( (TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) < 0)
+      || TNUM_OBJ(opR) == T_INTNEG ) {
         opR = ProdInt( INTOBJ_INT( -1L ), opR );
     }
 
@@ -647,8 +647,8 @@ Obj             PowRat (
     }
 
     /* if <opR> is positive raise numberator and denominator seperately    */
-    else if ( (TYPE_OBJ(opR) == T_INT && 0 < INT_INTOBJ(opR))
-           || TYPE_OBJ(opR) == T_INTPOS ) {
+    else if ( (TNUM_OBJ(opR) == T_INT && 0 < INT_INTOBJ(opR))
+           || TNUM_OBJ(opR) == T_INTPOS ) {
         numP = PowInt( NUM_RAT(opL), opR );
         denP = PowInt( DEN_RAT(opL), opR );
         pow = NewBag( T_RAT, 2 * sizeof(Obj) );
@@ -673,8 +673,8 @@ Obj             PowRat (
         numP = PowInt( DEN_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
         denP = PowInt( NUM_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
         pow  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        if ( (TYPE_OBJ(denP) == T_INT && 0 < INT_INTOBJ(denP))
-          || TYPE_OBJ(denP) == T_INTPOS ) {
+        if ( (TNUM_OBJ(denP) == T_INT && 0 < INT_INTOBJ(denP))
+          || TNUM_OBJ(denP) == T_INTPOS ) {
             NUM_RAT(pow) = numP;
             DEN_RAT(pow) = denP;
         }
@@ -708,11 +708,11 @@ Obj             IsRatHandler (
     Obj                 val )
 {
     /* return 'true' if <val> is a rational and 'false' otherwise          */
-    if ( TYPE_OBJ(val) == T_RAT    || TYPE_OBJ(val) == T_INT
-      || TYPE_OBJ(val) == T_INTPOS || TYPE_OBJ(val) == T_INTNEG ) {
+    if ( TNUM_OBJ(val) == T_RAT    || TNUM_OBJ(val) == T_INT
+      || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG ) {
         return True;
     }
-    else if ( TYPE_OBJ(val) < FIRST_EXTERNAL_TYPE ) {
+    else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -736,8 +736,8 @@ Obj             FuncNumeratorRat (
     Obj                 rat )
 {
     /* check the argument                                                   */
-    while ( TYPE_OBJ(rat) != T_RAT    && TYPE_OBJ(rat) != T_INT
-         && TYPE_OBJ(rat) != T_INTPOS && TYPE_OBJ(rat) != T_INTNEG ) {
+    while ( TNUM_OBJ(rat) != T_RAT    && TNUM_OBJ(rat) != T_INT
+         && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
         rat = ErrorReturnObj(
             "Numerator: <rat> must be a rational (not a %s)",
             0L, 0L,
@@ -745,7 +745,7 @@ Obj             FuncNumeratorRat (
     }
 
     /* return the numerator                                                */
-    if ( TYPE_OBJ(rat) == T_RAT ) {
+    if ( TNUM_OBJ(rat) == T_RAT ) {
         return NUM_RAT(rat);
     }
     else {
@@ -769,8 +769,8 @@ Obj             FuncDenominatorRat (
     Obj                 rat )
 {
     /* check the argument                                                  */
-    while ( TYPE_OBJ(rat) != T_RAT    && TYPE_OBJ(rat) != T_INT
-         && TYPE_OBJ(rat) != T_INTPOS && TYPE_OBJ(rat) != T_INTNEG ) {
+    while ( TNUM_OBJ(rat) != T_RAT    && TNUM_OBJ(rat) != T_INT
+         && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
         rat = ErrorReturnObj(
             "DenominatorRat: <rat> must be a rational (not a %s)",
             0L, 0L,
@@ -778,7 +778,7 @@ Obj             FuncDenominatorRat (
     }
 
     /* return the denominator                                              */
-    if ( TYPE_OBJ(rat) == T_RAT ) {
+    if ( TNUM_OBJ(rat) == T_RAT ) {
         return DEN_RAT(rat);
     }
     else {
@@ -801,10 +801,10 @@ void            InitRat ( void )
 
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "KIND_RAT_POS", &KIND_RAT_POS );
-    ImportGVarFromLibrary( "KIND_RAT_NEG", &KIND_RAT_NEG );
+    ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );
+    ImportGVarFromLibrary( "TYPE_RAT_NEG", &TYPE_RAT_NEG );
 
-    KindObjFuncs[       T_RAT           ] = KindRat;
+    TypeObjFuncs[       T_RAT           ] = TypeRat;
 
 
     /* install the printer                                                 */

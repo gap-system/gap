@@ -107,15 +107,15 @@ RightCosetsNC := NewOperation("RightCosetsNC",[IsGroup,IsGroup]);
 
 #############################################################################
 ##
-#A  RightCosetsDefaultKind
+#A  RightCosetsDefaultType
 ##
-RightCosetsDefaultKind := NewAttribute("RightCosetsDefaultKind",IsFamily);
+RightCosetsDefaultType := NewAttribute("RightCosetsDefaultType",IsFamily);
 
 #############################################################################
 ##
-#A  DoubleCosetsDefaultKind
+#A  DoubleCosetsDefaultType
 ##
-DoubleCosetsDefaultKind := NewAttribute("DoubleCosetsDefaultKind",IsFamily);
+DoubleCosetsDefaultType := NewAttribute("DoubleCosetsDefaultType",IsFamily);
 
 #############################################################################
 ##

@@ -28,6 +28,6 @@
 #define PC_SYLLABLE_STACK           18
 #define PC_EXPONENT_STACK           19
 #define PC_STACK_POINTER            20
-#define PC_DEFAULT_KIND             21
+#define PC_DEFAULT_TYPE             21
 
 extern void InitPcc( void );

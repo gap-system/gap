@@ -59,7 +59,7 @@ char *          Revision_vars_h =
 */
 #define SWITCH_TO_OLD_LVARS(old)                                            \
                         do {                                                \
-			    CHANGED_BAG( CurrLVars );                       \
+                            CHANGED_BAG( CurrLVars );                       \
                             CurrLVars = (old);                              \
                             PtrLVars  = PTR_BAG( CurrLVars );               \
                             PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
@@ -154,7 +154,7 @@ extern  Obj *           PtrLVars;
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
-#define ASS_LVAR(lvar,val)	(PtrLVars[(lvar)+2] = (val))
+#define ASS_LVAR(lvar,val)      (PtrLVars[(lvar)+2] = (val))
 
 
 /****************************************************************************

@@ -17,7 +17,7 @@ char * Revision_costab_c =
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
 #include        "gasman.h"              /* Retype                          */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -91,7 +91,7 @@ static Int      wordSize = 1023;        /* maximal no. of coset rep words  */
 **  ... more about ApplyRel ...
 */
 Obj FuncApplyRel (
-    Obj			self,
+    Obj                 self,
     Obj                 app,            /* handle of the application list  */
     Obj                 rel )           /* handle of the relator           */
 {
@@ -105,14 +105,14 @@ Obj FuncApplyRel (
     /* check the application list                                          */
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     if ( ! IS_PLIST(app) ) {
-	ErrorQuit( "<app> must be a plain list (not a %s)",
-   	           (Int)(InfoBags[TYPE_OBJ(app)].name), 0L );
-	return 0;
+        ErrorQuit( "<app> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(app)].name), 0L );
+        return 0;
     }
     if ( LEN_PLIST(app) != 4 ) {
-	ErrorQuit( "<app> must be a list of length 4 not %d",
-		   (Int) LEN_PLIST(app), 0L );
-	return 0;
+        ErrorQuit( "<app> must be a list of length 4 not %d",
+                   (Int) LEN_PLIST(app), 0L );
+        return 0;
     }
 
     /* get the four entries                                                */
@@ -124,14 +124,14 @@ Obj FuncApplyRel (
     /* get and check the relator (well, only a little bit)                 */
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     if ( ! IS_PLIST(rel) ) {
-	ErrorQuit( "<rel> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(rel)].name), 0L );
-	return 0;
+        ErrorQuit( "<rel> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(rel)].name), 0L );
+        return 0;
     }
 
     /* fix right pointer if requested                                      */
     if ( rp == -1 )
-	rp = lp + INT_INTOBJ( ELM_PLIST( rel, 1 ) );
+        rp = lp + INT_INTOBJ( ELM_PLIST( rel, 1 ) );
 
     /* scan as long as possible from the right to the left                 */
     while ( lp < rp
@@ -156,7 +156,7 @@ Obj FuncApplyRel (
 
     /* return 'true' if a coincidence or deduction was found               */
     if ( lp == rp+1
-	 && INT_INTOBJ(ELM_PLIST(ELM_PLIST(rel,lp),lc)) != rc )
+         && INT_INTOBJ(ELM_PLIST(ELM_PLIST(rel,lp),lc)) != rc )
     {
         return True;
     }
@@ -178,13 +178,13 @@ Obj FuncApplyRel (
 static void CompressDeductionList ()
 {
     Obj               * ptTable;          /* pointer to the coset table    */
-    Int			i;
+    Int                 i;
     Int                 j;
 
     /* check if the situation is as assumed                                */
     if ( dedlst != dedSize ) {
         ErrorQuit( "invalid call of CompressDeductionList", 0L, 0L );
-	return;
+        return;
     }
 
     /* run through the lists and compress them                             */
@@ -223,8 +223,8 @@ static void CompressDeductionList ()
 **  coincidence  cos2 = cos1.
 */
 static void HandleCoinc (
-    UInt       		cos1,
-    UInt		cos2 )
+    UInt                cos1,
+    UInt                cos2 )
 {
     Obj *               ptTable;        /* pointer to the coset table    */
     Obj *               ptNext;
@@ -289,7 +289,7 @@ static void HandleCoinc (
                     gen[cos2] = INTOBJ_INT( 0 );
                     inv[c2]   = INTOBJ_INT( cos1 );
                     if ( dedlst == dedSize )
-			CompressDeductionList( );
+                        CompressDeductionList( );
                     dedgen[dedlst] = i;
                     dedcos[dedlst] = cos1;
                     dedlst++;
@@ -302,7 +302,7 @@ static void HandleCoinc (
                     if ( gen[cos1] == INTOBJ_INT( 0 ) ) {
                         gen[cos1] = INTOBJ_INT( cos1 );
                         if ( dedlst == dedSize )
-			    CompressDeductionList( );
+                            CompressDeductionList( );
                         dedgen[dedlst] = i;
                         dedcos[dedlst] = cos1;
                         dedlst++;
@@ -311,14 +311,14 @@ static void HandleCoinc (
                     /* find the representative of <c1>                     */
                     while ( c1 != 1
                         && INT_INTOBJ(ptNext[INT_INTOBJ(ptPrev[c1])]) != c1 )
-		    {
+                    {
                         c1 = INT_INTOBJ(ptPrev[c1]);
                     }
 
                     /* find the representative of <c2>                     */
                     while ( c2 != 1
                         && INT_INTOBJ(ptNext[INT_INTOBJ(ptPrev[c2])]) != c2 )
-		    {
+                    {
                         c2 = INT_INTOBJ(ptPrev[c2]);
                     }
 
@@ -378,7 +378,7 @@ static void HandleCoinc (
 *F  FuncMakeConsequences( <self>, <list> )  find consqs of a coset definition
 */
 Obj FuncMakeConsequences (
-    Obj			self,
+    Obj                 self,
     Obj                 list )
 {
     Obj                 hdSubs;         /*                                 */
@@ -395,9 +395,9 @@ Obj FuncMakeConsequences (
 
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     if ( ! IS_PLIST(list) ) {
-	ErrorQuit( "<list> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(list)].name), 0L );
-	return 0;
+        ErrorQuit( "<list> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(list)].name), 0L );
+        return 0;
     }
 
     objTable  = ELM_PLIST( list, 1 );
@@ -455,29 +455,29 @@ Obj FuncMakeConsequences (
 
             /* if a coincidence or deduction has been found, handle it     */
             if ( lp == rp+1 && INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc ) {
-	      if ( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ) != 0 ) {
-		  HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ), rc );
-	      }
-	      else if ( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ) != 0 ) {
-		  HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ), lc );
-	      }
-	      else {
-		  SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( rc ) );
-		  SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( lc ) );
-		  if ( dedlst == dedSize )
-		      CompressDeductionList();
-		  dedgen[ dedlst ] = INT_INTOBJ( ptNums[lp] );
-		  dedcos[ dedlst ] = lc;
-		  dedlst++;
-	      }
+              if ( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ) != 0 ) {
+                  HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ), rc );
+              }
+              else if ( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ) != 0 ) {
+                  HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[rp],rc) ), lc );
+              }
+              else {
+                  SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( rc ) );
+                  SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( lc ) );
+                  if ( dedlst == dedSize )
+                      CompressDeductionList();
+                  dedgen[ dedlst ] = INT_INTOBJ( ptNums[lp] );
+                  dedcos[ dedlst ] = lc;
+                  dedlst++;
+              }
 
-	      /* remove the completed subgroup generator                 */
-	      SET_ELM_PLIST( hdSubs, i, 0 );
-	      if ( i == LEN_PLIST(hdSubs) ) {
-		  while ( 0 < i  && ELM_PLIST(hdSubs,i) == 0 )
-		      --i;
-		  SET_LEN_PLIST( hdSubs, i );
-	      }
+              /* remove the completed subgroup generator                 */
+              SET_ELM_PLIST( hdSubs, i, 0 );
+              if ( i == LEN_PLIST(hdSubs) ) {
+                  while ( 0 < i  && ELM_PLIST(hdSubs,i) == 0 )
+                      --i;
+                  SET_LEN_PLIST( hdSubs, i );
+              }
             }
           }
         }
@@ -517,7 +517,7 @@ Obj FuncMakeConsequences (
                     SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( rc ) );
                     SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( lc ) );
                     if ( dedlst == dedSize )
-			CompressDeductionList();
+                        CompressDeductionList();
                     dedgen[ dedlst ] = INT_INTOBJ( ptNums[lp] );
                     dedcos[ dedlst ] = lc;
                     dedlst++;
@@ -545,7 +545,7 @@ Obj FuncMakeConsequences (
 *F  FuncStandardizeTable( <self>, <list> )  . . . . standardize a coset table
 */
 Obj FuncStandardizeTable (
-    Obj			self,
+    Obj                 self,
     Obj                 list )
 {
     Obj *               ptTable;        /* pointer to table                */
@@ -563,20 +563,20 @@ Obj FuncStandardizeTable (
     /* get the arguments                                                   */
     objTable = list;
     if ( ! IS_PLIST(objTable) ) {
-	ErrorQuit( "<table> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(objTable)].name), 0L );
-	return 0;
+        ErrorQuit( "<table> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(objTable)].name), 0L );
+        return 0;
     }
     ptTable  = ADDR_OBJ(objTable);
     nrgen    = LEN_PLIST(objTable) / 2;
     for ( j = 1;  j <= nrgen*2;  j++ ) {
-	if ( ! IS_PLIST(ptTable[j]) ) {
-	    ErrorQuit(
-		"<table>[%d] must be a plain list (not a %s)",
-		(Int)j,
-		(Int)(InfoBags[TYPE_OBJ(ptTable[j])].name) );
-	    return 0;
-	}
+        if ( ! IS_PLIST(ptTable[j]) ) {
+            ErrorQuit(
+                "<table>[%d] must be a plain list (not a %s)",
+                (Int)j,
+                (Int)(InfoBags[TNUM_OBJ(ptTable[j])].name) );
+            return 0;
+        }
     }
 
     /* run over all cosets                                                 */
@@ -629,10 +629,10 @@ Obj FuncStandardizeTable (
 
     /* shrink the table                                                    */
     for ( j = 1; j <= nrgen; j++ ) {
-	SET_LEN_PLIST( ptTable[2*j-1], lcos );
-	SET_LEN_PLIST( ptTable[2*j  ], lcos );
-	CHANGED_BAG(ptTable[2*j-1]);
-	CHANGED_BAG(ptTable[2*j  ]);
+        SET_LEN_PLIST( ptTable[2*j-1], lcos );
+        SET_LEN_PLIST( ptTable[2*j  ], lcos );
+        CHANGED_BAG(ptTable[2*j-1]);
+        CHANGED_BAG(ptTable[2*j  ]);
     }
     CHANGED_BAG(objTable);
 
@@ -665,9 +665,9 @@ static void InitializeCosetFactorWord ( void )
     else if ( treeType == 0 ) {
         ptWord = ADDR_OBJ(objTree2);
         for ( i = 1;  i <= treeWordLength;  i++ ) {
-	    ptWord[i] = INTOBJ_INT(0);
-	}
-	CHANGED_BAG(objTree2);
+            ptWord[i] = INTOBJ_INT(0);
+        }
+        CHANGED_BAG(objTree2);
     }
 
     /* handle the general case                                             */
@@ -694,13 +694,13 @@ static void InitializeCosetFactorWord ( void )
 */
 static Int TreeEntryC ( void )
 {
-    Obj *            	ptTree1;        /* ptr to first tree component     */
+    Obj *               ptTree1;        /* ptr to first tree component     */
     Obj *               ptTree2;        /* ptr to second tree component    */
     Obj *               ptWord;         /* ptr to given word               */
     Obj *               ptFac;          /* ptr to old word                 */
     Obj *               ptNew;          /* ptr to new word                 */
     Obj                 objNew;         /* handle of new word              */
-    Int            	treesize;       /* tree size                       */
+    Int                 treesize;       /* tree size                       */
     Int                 numgens;        /* tree length                     */
     Int                 leng;           /* word length                     */
     Int                 sign;           /* sign flag                       */
@@ -723,16 +723,16 @@ static Int TreeEntryC ( void )
         ptWord = ADDR_OBJ(objTree2);
         for ( leng = treeWordLength;  leng >= 1;  leng-- ) {
             if ( ptWord[leng] != INTOBJ_INT(0) )  {
-		break;
-	    }
+                break;
+            }
         }
         if ( leng == 0 )  {
-	    return 0;
-	}
+            return 0;
+        }
         for ( k = 1; k <= leng; k++ ) {
             if ( ptWord[k] != INTOBJ_INT(0) )  { 
-		break;
-	    }
+                break;
+            }
         }
         sign = 1;
         if ( INT_INTOBJ( ptWord[k] ) < 0 ) {
@@ -748,12 +748,12 @@ static Int TreeEntryC ( void )
             if ( LEN_PLIST(ptTree1[k]) == leng ) {
                 for ( i = 1;  i <= leng;  i++ ) {
                     if ( ptFac[i] != ptWord[i] )  {
-			break;
-		    }
+                        break;
+                    }
                 }
                 if ( i > leng )  {
-		    return sign * k;
-		}
+                    return sign * k;
+                }
             }
         }
 
@@ -761,26 +761,26 @@ static Int TreeEntryC ( void )
         numgens++;
         if ( treesize < numgens ) {
             treesize = 2 * treesize;
-	    GROW_PLIST( objTree1, treesize );
+            GROW_PLIST( objTree1, treesize );
         }
         objNew = NEW_PLIST( T_PLIST, leng );
-	SET_LEN_PLIST( objNew, leng );
+        SET_LEN_PLIST( objNew, leng );
 
-	SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
-	CHANGED_BAG(objTree);
+        SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
+        CHANGED_BAG(objTree);
 
-	SET_LEN_PLIST( objTree1, treesize );
-	SET_ELM_PLIST( objTree1, numgens, objNew );
-	CHANGED_BAG(objTree1);
+        SET_LEN_PLIST( objTree1, treesize );
+        SET_ELM_PLIST( objTree1, numgens, objNew );
+        CHANGED_BAG(objTree1);
 
         /* copy the word to the new bag                                    */
         ptWord = ADDR_OBJ(objTree2);
         ptNew  = ADDR_OBJ(objNew);
         while ( leng > 0 ) {
             ptNew[leng] = ptWord[leng];
-	    leng--;
+            leng--;
         }
-	CHANGED_BAG(objNew);
+        CHANGED_BAG(objNew);
 
         return sign * numgens;
     }
@@ -807,12 +807,12 @@ static Int TreeEntryC ( void )
             u1 = INT_INTOBJ( ptTree1[ (u > 0) ? u : -u ] );
             if ( u1 != 0 ) {
                 if ( u > 0 ) {
-		    u2 = INT_INTOBJ( ptTree2[u] );
-		}
+                    u2 = INT_INTOBJ( ptTree2[u] );
+                }
                 else {
-		    u2 = - u1;
-		    u1 = - INT_INTOBJ( ptTree2[-u] );
-		}
+                    u2 = - u1;
+                    u1 = - INT_INTOBJ( ptTree2[-u] );
+                }
                 if ( u2 == -v ) {
                     gen = u1;
                     break;
@@ -821,41 +821,41 @@ static Int TreeEntryC ( void )
             v1 = INT_INTOBJ( ptTree1[ (v > 0) ? v : -v ] );
             if ( v1 != 0 ) {
                 if ( v > 0 ) {
-		    v2 = INT_INTOBJ( ptTree2[v] );
-		}
+                    v2 = INT_INTOBJ( ptTree2[v] );
+                }
                 else {
-		    v2 = - v1;
-		    v1 = - INT_INTOBJ( ptTree2[-v] );
-		}
+                    v2 = - v1;
+                    v1 = - INT_INTOBJ( ptTree2[-v] );
+                }
                 if ( v1 == -u ) {
                     gen = v2;
                     break;
                 }
                 if ( u1 != 0 && v1 == - u2 ) {
                     u = u1;
-		    v = v2;
+                    v = v2;
                     continue;
                 }
             }
 
             /*  Check if there is already a tree entry [u,v] or [-v,-u]    */
             if ( u < -v ) {
-		t1 = u;
-		t2 = v;
-	    }
+                t1 = u;
+                t2 = v;
+            }
             else {
-		t1 = -v;
-		t2 = -u;
-	    }
+                t1 = -v;
+                t2 = -u;
+            }
             uabs = ( u > 0 ) ? u : -u;
             vabs = ( v > 0 ) ? v : -v;
             k = ( uabs > vabs ) ? uabs : vabs;
             for ( k++; k <= numgens; k++ ) {
                 if ( INT_INTOBJ(ptTree1[k]) == t1 &&
                      INT_INTOBJ(ptTree2[k]) == t2 )
-		{
-		    break;
-		}
+                {
+                    break;
+                }
             }
 
             /*  Extend the tree, if necessary                              */
@@ -867,15 +867,15 @@ static Int TreeEntryC ( void )
                     GROW_PLIST( objTree2, treesize );
                     ptTree1 = ADDR_OBJ(objTree1);
                     ptTree2 = ADDR_OBJ(objTree2);
-		    SET_LEN_PLIST( objTree1, treesize );
-		    SET_LEN_PLIST( objTree2, treesize );
+                    SET_LEN_PLIST( objTree1, treesize );
+                    SET_LEN_PLIST( objTree2, treesize );
                 }
                 ptTree1[numgens] = INTOBJ_INT( t1 );
                 ptTree2[numgens] = INTOBJ_INT( t2 );
-		SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
-		CHANGED_BAG(objTree);
-		CHANGED_BAG(objTree1);
-		CHANGED_BAG(objTree2);
+                SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
+                CHANGED_BAG(objTree);
+                CHANGED_BAG(objTree1);
+                CHANGED_BAG(objTree2);
             }
             gen = ( u > - v ) ? -k : k;
             break;
@@ -902,45 +902,45 @@ static void AddCosetFactor2 (
     Int                factor )
 {
     Obj *               ptFac;          /* pointer to the factor           */
-    Obj *            	ptWord;         /* pointer to the word             */
+    Obj *               ptWord;         /* pointer to the word             */
     Int                 leng;           /* length of the factor            */
     Obj                 sum;            /* intermediate result             */
     Int                 i;              /* integer variable                */
-    Obj		        tmp;
+    Obj                 tmp;
 
     /* handle the abelianized case                                         */
     if ( treeType == 0 ) {
         ptWord = ADDR_OBJ(objTree2);
         if ( factor > 0 ) {
-	    tmp   = ELM_PLIST( objTree1, factor );
+            tmp   = ELM_PLIST( objTree1, factor );
             ptFac = ADDR_OBJ(tmp);
             leng  = LEN_PLIST(tmp);
             for ( i = 1;  i <= leng;  i++ ) {
-		if ( ! SUM_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
+                if ( ! SUM_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
                         0L, 0L );
-		    return;
-		}
+                    return;
+                }
                 ptWord[i] = sum;
             }
         }
         else
         {
-	    tmp   = ELM_PLIST( objTree1, -factor );
+            tmp   = ELM_PLIST( objTree1, -factor );
             ptFac = ADDR_OBJ(tmp);
             leng  = LEN_PLIST(tmp);
             for ( i = 1;  i <= leng;  i++ ) {
-		if ( ! DIFF_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
+                if ( ! DIFF_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
                         0L, 0L );
-		    return;
-		}
+                    return;
+                }
                 ptWord[i] = sum;
             }
         }
-	CHANGED_BAG(objTree2);
+        CHANGED_BAG(objTree2);
     }
 
     /* handle the general case                                             */
@@ -948,10 +948,10 @@ static void AddCosetFactor2 (
         wordList[++wordList[0]] = factor;
     }
     else if ( wordList[wordList[0]] == -factor ) {
-	--wordList[0];
+        --wordList[0];
     }
     else if ( wordList[0] < wordSize ) {
-	wordList[++wordList[0]] = factor;
+        wordList[++wordList[0]] = factor;
     }
     else {
         wordList[0] = ( wordList[1] = TreeEntryC( ) == 0 ) ? 0 : 1;
@@ -974,12 +974,12 @@ static void AddCosetFactor2 (
 **  ...more about ApplyRel2...
 */
 Obj FuncApplyRel2 (
-    Obj			self,
-    Obj			app,
-    Obj			rel,
-    Obj			nums )
+    Obj                 self,
+    Obj                 app,
+    Obj                 rel,
+    Obj                 nums )
 {
-    Obj * 		ptApp;          /* pointer to that list            */
+    Obj *               ptApp;          /* pointer to that list            */
     Obj                 word;           /* handle of resulting word        */
     Obj *               ptWord;         /* pointer to this word            */
     Obj *               ptTree;         /* pointer to the tree             */
@@ -1002,14 +1002,14 @@ Obj FuncApplyRel2 (
 
     /* get and check the application list                                  */
     if ( ! IS_PLIST(app) ) {
-	ErrorQuit( "<app> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(app)].name), 0L );
-	return 0;
+        ErrorQuit( "<app> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(app)].name), 0L );
+        return 0;
     }
     if ( LEN_PLIST(app) != 9 ) {
-	ErrorQuit( "<app> must be a list of length 9 not %d",
-		   (Int) LEN_PLIST(app), 0L );
-	return 0;
+        ErrorQuit( "<app> must be a list of length 9 not %d",
+                   (Int) LEN_PLIST(app), 0L );
+        return 0;
     }
     ptApp = ADDR_OBJ(app);
 
@@ -1022,29 +1022,29 @@ Obj FuncApplyRel2 (
     /* get and check the relator (well, only a little bit)                 */
     objRel = rel;
     if ( ! IS_PLIST(rel) ) {
-	ErrorQuit( "<rel> must be a plain list (not a %s)", 
-	           (Int)(InfoBags[TYPE_OBJ(rel)].name), 0L );
-	return 0;
+        ErrorQuit( "<rel> must be a plain list (not a %s)", 
+                   (Int)(InfoBags[TNUM_OBJ(rel)].name), 0L );
+        return 0;
     }
 
     /* fix right pointer if requested                                      */
     if ( rp == -1 )
-	rp = lp + INT_INTOBJ( ADDR_OBJ(objRel)[1] );
+        rp = lp + INT_INTOBJ( ADDR_OBJ(objRel)[1] );
 
     /* get and check the numbers list parallel to the relator              */
     objNums = nums;
     if ( ! IS_PLIST(objNums) ) {
         ErrorQuit( "<nums> must be a plain list (not a %s)", 
-	           (Int)(InfoBags[TYPE_OBJ(objNums)].name), 0L );
-	return 0;
+                   (Int)(InfoBags[TNUM_OBJ(objNums)].name), 0L );
+        return 0;
     }
 
     /* get and check the corresponding factors list                        */
     objTable2 = ptApp[6];
     if ( ! IS_PLIST(objTable2) ) {
-	ErrorQuit( "<nums> must be a plain list (not a %s)", 
-	           (Int)(InfoBags[TYPE_OBJ(objTable2)].name), 0L );
-	return 0;
+        ErrorQuit( "<nums> must be a plain list (not a %s)", 
+                   (Int)(InfoBags[TNUM_OBJ(objTable2)].name), 0L );
+        return 0;
     }
 
     /* get the tree type                                                   */
@@ -1058,26 +1058,26 @@ Obj FuncApplyRel2 (
 
         /* scan as long as possible from the left to the right             */
         while ( lp < rp + 2 &&
-		0 < (tc = INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
-	{
-	    tmp = INT_INTOBJ( ELM_PLIST(objNums,lp) );
-	    objRep = ELM_PLIST( objTable2, tmp );
+                0 < (tc = INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
+        {
+            tmp = INT_INTOBJ( ELM_PLIST(objNums,lp) );
+            objRep = ELM_PLIST( objTable2, tmp );
             objRep = ELM_PLIST( objRep, lc );
             objExponent = DiffInt( objExponent, objRep );
             lc = tc;
-	    lp = lp + 2;
+            lp = lp + 2;
         }
 
         /* scan as long as possible from the right to the left             */
         while ( lp < rp + 2 &&
-		0 < (tc = INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
-	{
-	    tmp = INT_INTOBJ( ELM_PLIST(objNums,rp) );
-	    objRep = ELM_PLIST( objTable2, tmp );
+                0 < (tc = INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
+        {
+            tmp = INT_INTOBJ( ELM_PLIST(objNums,rp) );
+            objRep = ELM_PLIST( objTable2, tmp );
             objRep = ELM_PLIST( objRep, rc );
             objExponent = SumInt( objExponent, objRep );
             rc = tc;
-	    rp = rp - 2;
+            rp = rp - 2;
         }
 
         /* The functions DiffInt or SumInt may have caused a garbage       */
@@ -1090,145 +1090,145 @@ Obj FuncApplyRel2 (
     else {
 
         /* get and check the corresponding word                            */
-	word = ptApp[7];
-	if ( ! IS_PLIST(word) ) {
-	    ErrorQuit( "<word> must be a plain list (not a %s)", 
-		       (Int)(InfoBags[TYPE_OBJ(word)].name), 0L );
-	    return 0;
-	}
+        word = ptApp[7];
+        if ( ! IS_PLIST(word) ) {
+            ErrorQuit( "<word> must be a plain list (not a %s)", 
+                       (Int)(InfoBags[TNUM_OBJ(word)].name), 0L );
+            return 0;
+        }
 
-	/* handle the abelianized case                                     */
-	if ( treeType == 0 ) {
-	    objTree  = ptApp[8];
-	    objTree1 = ELM_PLIST( objTree, 1 );
-	    objTree2 = ELM_PLIST( objTree, 2 );
-	    ptTree   = ADDR_OBJ(objTree);
-	    treeWordLength = INT_INTOBJ( ptTree[4] );
-	    if ( LEN_PLIST(objTree2) != treeWordLength ) {
-		ErrorQuit( "ApplyRel2: illegal word length", 0L, 0L );
-		return 0;
-	    }
+        /* handle the abelianized case                                     */
+        if ( treeType == 0 ) {
+            objTree  = ptApp[8];
+            objTree1 = ELM_PLIST( objTree, 1 );
+            objTree2 = ELM_PLIST( objTree, 2 );
+            ptTree   = ADDR_OBJ(objTree);
+            treeWordLength = INT_INTOBJ( ptTree[4] );
+            if ( LEN_PLIST(objTree2) != treeWordLength ) {
+                ErrorQuit( "ApplyRel2: illegal word length", 0L, 0L );
+                return 0;
+            }
 
-	    /* initialize the coset representative word                    */
-	    InitializeCosetFactorWord();
+            /* initialize the coset representative word                    */
+            InitializeCosetFactorWord();
 
-	    /* scan as long as possible from the left to the right         */
-	    while ( lp < rp + 2 &&
-		    0 < (tc=INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
-	    {
-		tmp    = INT_INTOBJ( ELM_PLIST(objNums,lp) );
-		objRep = ELM_PLIST(objTable2,tmp);
-		objRep = ELM_PLIST(objRep,lc);
-		rep    = INT_INTOBJ(objRep);
-		if ( rep != 0 ) {
-		    AddCosetFactor2(-rep);
-		}
-		lc = tc;
-		lp = lp + 2;
-	    }
+            /* scan as long as possible from the left to the right         */
+            while ( lp < rp + 2 &&
+                    0 < (tc=INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
+            {
+                tmp    = INT_INTOBJ( ELM_PLIST(objNums,lp) );
+                objRep = ELM_PLIST(objTable2,tmp);
+                objRep = ELM_PLIST(objRep,lc);
+                rep    = INT_INTOBJ(objRep);
+                if ( rep != 0 ) {
+                    AddCosetFactor2(-rep);
+                }
+                lc = tc;
+                lp = lp + 2;
+            }
 
-	    /* scan as long as possible from the right to the left         */
-	    while ( lp < rp + 2 &&
-		    0 < (tc=INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
-   	    {
-		tmp    = INT_INTOBJ( ELM_PLIST(objNums,rp) );
-		objRep = ELM_PLIST(objTable2,tmp);
-		objRep = ELM_PLIST(objRep,rc);
-		rep    = INT_INTOBJ(objRep);
-		if ( rep != 0 ) {
-		    AddCosetFactor2(rep);
-		}
-		rc = tc;
-		rp = rp - 2;
-	    }
+            /* scan as long as possible from the right to the left         */
+            while ( lp < rp + 2 &&
+                    0 < (tc=INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
+            {
+                tmp    = INT_INTOBJ( ELM_PLIST(objNums,rp) );
+                objRep = ELM_PLIST(objTable2,tmp);
+                objRep = ELM_PLIST(objRep,rc);
+                rep    = INT_INTOBJ(objRep);
+                if ( rep != 0 ) {
+                    AddCosetFactor2(rep);
+                }
+                rc = tc;
+                rp = rp - 2;
+            }
 
-	    /* initialize some local variables                             */
-	    ptWord  = ADDR_OBJ(word);
-	    ptTree2 = ADDR_OBJ(objTree2);
+            /* initialize some local variables                             */
+            ptWord  = ADDR_OBJ(word);
+            ptTree2 = ADDR_OBJ(objTree2);
 
-	    /* copy the result to its destination, if necessary            */
-	    if ( ptWord != ptTree2 ) {
-		if ( LEN_PLIST(word) != treeWordLength ) {
-		    ErrorQuit( "illegal word length", 0L, 0L );
-		    return 0;
-		}
-		for ( i = 1;  i <= treeWordLength;  i++ ) {
-		    ptWord[i] = ptTree2[i];
-		}
-		SET_LEN_PLIST( word, LEN_PLIST(objTree2) );
-		CHANGED_BAG(word);
-	    }
-	}
+            /* copy the result to its destination, if necessary            */
+            if ( ptWord != ptTree2 ) {
+                if ( LEN_PLIST(word) != treeWordLength ) {
+                    ErrorQuit( "illegal word length", 0L, 0L );
+                    return 0;
+                }
+                for ( i = 1;  i <= treeWordLength;  i++ ) {
+                    ptWord[i] = ptTree2[i];
+                }
+                SET_LEN_PLIST( word, LEN_PLIST(objTree2) );
+                CHANGED_BAG(word);
+            }
+        }
 
-	/* handle the general case                                         */
-	else {
+        /* handle the general case                                         */
+        else {
 
-	    /* extend the word size, if necessary                          */
+            /* extend the word size, if necessary                          */
             bound = ( rp - lp + 3 ) / 2;
             size  = SIZE_OBJ(word)/sizeof(Obj) - 1;
             if ( size < bound ) {
                 size = ( bound > 2 * size ) ? bound : 2 * size;
-		GROW_PLIST( word, size );
+                GROW_PLIST( word, size );
             }
 
-	    /* initialize some local variables                             */
-	    ptRel   = ADDR_OBJ(objRel);
-	    ptNums  = ADDR_OBJ(objNums);
-	    ptTabl2 = ADDR_OBJ(objTable2);
-	    ptWord  = ADDR_OBJ(word);
-	    last    = 0;
+            /* initialize some local variables                             */
+            ptRel   = ADDR_OBJ(objRel);
+            ptNums  = ADDR_OBJ(objNums);
+            ptTabl2 = ADDR_OBJ(objTable2);
+            ptWord  = ADDR_OBJ(word);
+            last    = 0;
 
-	    /* scan as long as possible from the left to the right         */
-	    while ( lp < rp + 2
-		  && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))) )
-	    {
-		objRep = ELM_PLIST( ptTabl2[INT_INTOBJ(ptNums[lp])], lc );
-		rep    = INT_INTOBJ(objRep);
-		if ( rep != 0 ) {
-		    if ( last > 0 && INT_INTOBJ(ptWord[last]) == rep ) {
-			last--;
-		    }
-		    else {
-			ptWord[++last] = INTOBJ_INT(-rep);
-		    }
-		}
-		lc = tc;
-		lp = lp + 2;
-	    }
+            /* scan as long as possible from the left to the right         */
+            while ( lp < rp + 2
+                  && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))) )
+            {
+                objRep = ELM_PLIST( ptTabl2[INT_INTOBJ(ptNums[lp])], lc );
+                rep    = INT_INTOBJ(objRep);
+                if ( rep != 0 ) {
+                    if ( last > 0 && INT_INTOBJ(ptWord[last]) == rep ) {
+                        last--;
+                    }
+                    else {
+                        ptWord[++last] = INTOBJ_INT(-rep);
+                    }
+                }
+                lc = tc;
+                lp = lp + 2;
+            }
 
-	    /* revert the ordering of the word constructed so far          */
-	    if ( last > 0 ) {
-		last++;
-		for ( i = last / 2;  i > 0;  i-- ) {
-		    objRep = ptWord[i];
-		    ptWord[i] = ptWord[last-i];
-		    ptWord[last-i] = objRep;
-		}
-		last--;
-	    }
+            /* revert the ordering of the word constructed so far          */
+            if ( last > 0 ) {
+                last++;
+                for ( i = last / 2;  i > 0;  i-- ) {
+                    objRep = ptWord[i];
+                    ptWord[i] = ptWord[last-i];
+                    ptWord[last-i] = objRep;
+                }
+                last--;
+            }
 
-	    /* scan as long as possible from the right to the left         */
-	    while ( lp < rp + 2
-		 && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) )
-	    {
-		objRep = ELM_PLIST( ptTabl2[INT_INTOBJ(ptNums[rp])], rc );
-		rep    = INT_INTOBJ(objRep);
-		if ( rep != 0 ) {
-		    if ( last > 0 && INT_INTOBJ(ptWord[last]) == -rep ) {
-			last--;
-		    }
-		    else {
-			ptWord[++last] = INTOBJ_INT(rep);
-		    }
-		}
-		rc = tc;
-		rp = rp - 2;
-	    }
+            /* scan as long as possible from the right to the left         */
+            while ( lp < rp + 2
+                 && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) )
+            {
+                objRep = ELM_PLIST( ptTabl2[INT_INTOBJ(ptNums[rp])], rc );
+                rep    = INT_INTOBJ(objRep);
+                if ( rep != 0 ) {
+                    if ( last > 0 && INT_INTOBJ(ptWord[last]) == -rep ) {
+                        last--;
+                    }
+                    else {
+                        ptWord[++last] = INTOBJ_INT(rep);
+                    }
+                }
+                rc = tc;
+                rp = rp - 2;
+            }
 
-	    /* save the word length                                        */
-	    SET_LEN_PLIST( word, last );
-	    CHANGED_BAG(word);
-	}
+            /* save the word length                                        */
+            SET_LEN_PLIST( word, last );
+            CHANGED_BAG(word);
+        }
     }
 
     /* copy the information back into the application list                 */
@@ -1251,8 +1251,8 @@ Obj FuncApplyRel2 (
 **  of the copy does not exceed the minimal required size.
 */
 Obj FuncCopyRel ( 
-    Obj			self,
-    Obj           	rel )           /* the given relator               */
+    Obj                 self,
+    Obj                 rel )           /* the given relator               */
 {
     Obj *               ptRel;          /* pointer to the given relator    */
     Obj                 copy;           /* the copy                        */
@@ -1261,9 +1261,9 @@ Obj FuncCopyRel (
 
     /* Get and check argument                                              */
     if ( ! IS_PLIST(rel) ) {
-	ErrorQuit( "<rel> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(rel)].name), 0L );
-	return 0;
+        ErrorQuit( "<rel> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(rel)].name), 0L );
+        return 0;
     }
     leng = LEN_PLIST(rel);
 
@@ -1276,7 +1276,7 @@ Obj FuncCopyRel (
     /*  Copy the relator to the new bag                                    */
     while ( leng > 0 ) {
         *ptCopy++ = *ptRel++; 
-	leng--;
+        leng--;
     }
 
     /*  Return the copy                                                    */
@@ -1293,8 +1293,8 @@ Obj FuncCopyRel (
 **  It does not return anything.
 */
 Obj FuncMakeCanonical (
-    Obj			self,
-    Obj           	rel )           /* the given relator               */
+    Obj                 self,
+    Obj                 rel )           /* the given relator               */
 {
     Obj *               ptRel;          /* pointer to the relator          */
     Obj                 obj1,  obj2;    /* handles 0f relator entries      */
@@ -1305,9 +1305,9 @@ Obj FuncMakeCanonical (
 
     /* Get and check the argument                                          */
     if ( ! IS_PLIST(rel) ) {
-	ErrorQuit( "<rel> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(rel)].name), 0L );
-	return 0;
+        ErrorQuit( "<rel> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(rel)].name), 0L );
+        return 0;
     }
     ptRel = ADDR_OBJ(rel) + 1;
     leng  = LEN_PLIST(rel);
@@ -1317,7 +1317,7 @@ Obj FuncMakeCanonical (
     i = 0;
     while ( i<leng1 && INT_INTOBJ(ptRel[i]) == -INT_INTOBJ(ptRel[leng1]) ) {
         i++;
-	leng1--;
+        leng1--;
     }
     if ( i > 0 ) {
         for ( j = i;  j <= leng1;  j++ ) {
@@ -1325,7 +1325,7 @@ Obj FuncMakeCanonical (
         }
         leng1 = leng1 - i;
         leng  = leng1 + 1;
-	SET_LEN_PLIST( rel, leng );
+        SET_LEN_PLIST( rel, leng );
     }
 
     /*  Loop over the relator and find the maximal postitve and negative   */
@@ -1335,76 +1335,76 @@ Obj FuncMakeCanonical (
     for ( k = 1;  k < leng;  k++ ) {
         next = INT_INTOBJ( ptRel[k] );
         if ( next > max ) {
-	    max = next; 
-	    i = k;
-	}
+            max = next; 
+            i = k;
+        }
         else if ( next <= min ) {
-	    min = next;
-	    j = k;
-	}
+            min = next;
+            j = k;
+        }
     }
 
     /*  Find the lexicographically last cyclic permutation of the relator  */
     if ( max < -min ) {
-	i = leng;
+        i = leng;
     }
     else {
         for ( k = i + 1;  k < leng;  k++ ) {
             for ( ii = i, kk = k, l = 0;
-		  l < leng;
-		  ii = (ii + 1) % leng, kk = (kk + 1) % leng, l++ )
-	    {
+                  l < leng;
+                  ii = (ii + 1) % leng, kk = (kk + 1) % leng, l++ )
+            {
                 if ( INT_INTOBJ(ptRel[kk]) < INT_INTOBJ(ptRel[ii]) ) {
-		    break;
-		}
+                    break;
+                }
                 else if ( INT_INTOBJ(ptRel[kk]) > INT_INTOBJ(ptRel[ii]) ) {
-		    i = k; 
-		    break;
-		}
+                    i = k; 
+                    break;
+                }
             }
             if ( l == leng ) {
-		break;
-	    }
+                break;
+            }
         }
     }
 
     /*  Find the lexicographically last cyclic permutation of its inverse  */
     if ( -max < min ) {
-	j = leng;
+        j = leng;
     }
     else {
         for ( k = j - 1;  k >= 0;  k-- ) {
             for ( jj = j, kk = k, l = 0;
-		  l < leng;
-		  jj = (jj + leng1) % leng, kk = (kk + leng1) % leng, l++ )
-	    {
+                  l < leng;
+                  jj = (jj + leng1) % leng, kk = (kk + leng1) % leng, l++ )
+            {
                 if ( INT_INTOBJ(ptRel[kk]) > INT_INTOBJ(ptRel[jj]) ) {
-		    break;
-		}
+                    break;
+                }
                 else if ( INT_INTOBJ(ptRel[kk]) < INT_INTOBJ(ptRel[jj]) ) {
-		    j = k;
-		    break;
-		}
+                    j = k;
+                    break;
+                }
             }
             if ( l == leng ) {
-		break;
-	    }
+                break;
+            }
         }
     }
 
     /*  Compare the two words and find the lexicographically last one      */
     if ( -min == max ) {
         for ( ii = i, jj = j, l = 0;
-	      l < leng;
-	      ii = (ii + 1) % leng, jj = (jj + leng1) % leng, l++ )
-	{
+              l < leng;
+              ii = (ii + 1) % leng, jj = (jj + leng1) % leng, l++ )
+        {
             if ( - INT_INTOBJ(ptRel[jj]) < INT_INTOBJ(ptRel[ii]) ) {
-		break;
-	    }
+                break;
+            }
             else if ( - INT_INTOBJ(ptRel[jj]) > INT_INTOBJ(ptRel[ii]) ) {
-		i = leng; 
-		break;
-	    }
+                i = leng; 
+                break;
+            }
         }
     }
 
@@ -1450,16 +1450,16 @@ Obj FuncMakeCanonical (
 **  tree entry, and then returns it.
 */
 Obj FuncTreeEntry(
-    Obj			self,
-    Obj			tree,
-    Obj			word )
+    Obj                 self,
+    Obj                 tree,
+    Obj                 word )
 {
-    Obj * 		ptTree1;        /* pointer to that component       */
-    Obj * 		ptTree2;        /* pointer to that component       */
-    Obj * 		ptWord;         /* pointer to that word            */
-    Obj 		new;            /* handle of new word              */
-    Obj * 		ptNew;          /* pointer to new word             */
-    Obj * 		ptFac;          /* pointer to old word             */
+    Obj *               ptTree1;        /* pointer to that component       */
+    Obj *               ptTree2;        /* pointer to that component       */
+    Obj *               ptWord;         /* pointer to that word            */
+    Obj                 new;            /* handle of new word              */
+    Obj *               ptNew;          /* pointer to new word             */
+    Obj *               ptFac;          /* pointer to old word             */
     Int                 treesize;       /* tree size                       */
     Int                 numgens;        /* tree length                     */
     Int                 leng;           /* word length                     */
@@ -1498,35 +1498,35 @@ Obj FuncTreeEntry(
 
     /*  Get the second argument (word)                                     */
     if ( IS_PLIST(word) ) {
-	ErrorQuit( "invalid <word>", 0L, 0L );
-	return 0;
+        ErrorQuit( "invalid <word>", 0L, 0L );
+        return 0;
     }
 
     /* handle the abelianized case                                         */
     ptWord = ADDR_OBJ(word);
     if ( treeType == 0 ) {
-	if ( LEN_PLIST(word) != treeWordLength ) {
-	    ErrorQuit( "inconsistent <word> length", 0L, 0L );
-	    return 0;
-	}
+        if ( LEN_PLIST(word) != treeWordLength ) {
+            ErrorQuit( "inconsistent <word> length", 0L, 0L );
+            return 0;
+        }
         ptWord = ADDR_OBJ(objTree2);
         for ( leng = treeWordLength;  leng >= 1;  leng-- ) {
             if ( ptWord[leng] != INTOBJ_INT(0) ) {
-		break;
-	    }
+                break;
+            }
         }
         if ( leng == 0 ) {
-	    return INTOBJ_INT( 0 );
-	}
+            return INTOBJ_INT( 0 );
+        }
 
         for ( k = 1; k <= leng; k++ ) {
             if ( ptWord[k] != INTOBJ_INT(0) ) {
-		break;
-	    }
+                break;
+            }
         }
         sign = 1;
 
-	/* invert the word                                                 */
+        /* invert the word                                                 */
         if ( INT_INTOBJ(ptWord[k]) < 0 ) {
             sign = -1;
             for ( i = k; i <= leng; i++ ) {
@@ -1539,12 +1539,12 @@ Obj FuncTreeEntry(
             if ( INT_INTOBJ( ptFac[0] ) == leng ) {
                 for ( i = 1;  i <= leng;  i++ ) {
                     if ( ptFac[i] != ptWord[i] ) {
-			break;
-		    }
+                        break;
+                    }
                 }
                 if ( i > leng ) {
-		    return INTOBJ_INT( sign * k );
-		}
+                    return INTOBJ_INT( sign * k );
+                }
             }
         }
 
@@ -1552,10 +1552,10 @@ Obj FuncTreeEntry(
         numgens++;
         if ( treesize < numgens ) {
             treesize = 2 * treesize;
-	    GROW_PLIST( objTree1, treesize );
-	    SET_LEN_PLIST( objTree1, treesize );
+            GROW_PLIST( objTree1, treesize );
+            SET_LEN_PLIST( objTree1, treesize );
         }
-	new = NEW_PLIST( T_PLIST, leng );
+        new = NEW_PLIST( T_PLIST, leng );
         SET_LEN_PLIST( new, leng );
 
         ADDR_OBJ(objTree)[3] = INTOBJ_INT(numgens);
@@ -1566,7 +1566,7 @@ Obj FuncTreeEntry(
         ptNew  = ADDR_OBJ(new);
         while ( leng > 0 ) {
             ptNew[leng] = ptWord[leng];
-	    leng--;
+            leng--;
         }
 
         return INTOBJ_INT( sign * numgens );
@@ -1575,7 +1575,7 @@ Obj FuncTreeEntry(
     /* handle the general case                                             */
     if ( LEN_PLIST(objTree1) != LEN_PLIST(objTree2) ) {
         ErrorQuit( "inconsistent <tree> components", 0L, 0L );
-	return 0;
+        return 0;
     }
 
     for ( i = 1;  i <= numgens;  i++ ) {
@@ -1583,8 +1583,8 @@ Obj FuncTreeEntry(
           || INT_INTOBJ(ptTree2[i]) <= -i || INT_INTOBJ(ptTree2[i]) >= i )
         {
             ErrorQuit( "invalid <tree> components", 0L, 0L );
-	    return 0;
-	}
+            return 0;
+        }
     }
 
     /*  Freely reduce the given word                                       */
@@ -1592,21 +1592,21 @@ Obj FuncTreeEntry(
     for ( j = 0, i = 1;  i <= leng;  i++ ) {
         gen = INT_INTOBJ(ptWord[i]);
         if ( gen == 0 ) {
-	    continue;
-	}
+            continue;
+        }
         if ( gen > numgens || gen < -numgens ) {
             ErrorQuit( "invalid <word> entry [%d]", i, 0L );
-	    return 0;
-	}
+            return 0;
+        }
         if ( j > 0 && gen == - INT_INTOBJ(ptWord[j]) ) {
-	    j--;
-	}
+            j--;
+        }
         else {
-	    ptWord[++j] = ptWord[i];
-	}
+            ptWord[++j] = ptWord[i];
+        }
     }
     for ( i = j + 1;  i <= leng;  i++ ) {
-	ptWord[i] = INTOBJ_INT( 0 );
+        ptWord[i] = INTOBJ_INT( 0 );
     }
     leng = j;
 
@@ -1627,12 +1627,12 @@ Obj FuncTreeEntry(
             u1 = INT_INTOBJ( ptTree1[ (u > 0) ? u : -u ] );
             if ( u1 != 0 ) {
                 if ( u > 0 ) {
-		    u2 = INT_INTOBJ( ptTree2[u] );
-		}
+                    u2 = INT_INTOBJ( ptTree2[u] );
+                }
                 else {
-		    u2 = - u1;
-		    u1 = - INT_INTOBJ( ptTree2[-u] );
-		}
+                    u2 = - u1;
+                    u1 = - INT_INTOBJ( ptTree2[-u] );
+                }
                 if ( u2 == -v ) {
                     gen = u1;
                     break;
@@ -1641,41 +1641,41 @@ Obj FuncTreeEntry(
             v1 = INT_INTOBJ( ptTree1[ (v > 0) ? v : -v ] );
             if ( v1 != 0 ) {
                 if ( v > 0 ) {
-		    v2 = INT_INTOBJ( ptTree2[v] );
-		}
+                    v2 = INT_INTOBJ( ptTree2[v] );
+                }
                 else {
-		    v2 = - v1;
-		    v1 = - INT_INTOBJ( ptTree2[-v] );
-		}
+                    v2 = - v1;
+                    v1 = - INT_INTOBJ( ptTree2[-v] );
+                }
                 if ( v1 == -u ) {
                     gen = v2;
                     break;
                 }
                 if ( u1 != 0 && v1 == - u2 ) {
                     u = u1;
-		    v = v2;
+                    v = v2;
                     continue;
                 }
             }
 
             /*  Check if there is already a tree entry [u,v] or [-v,-u]    */
             if ( u < -v ) {
-		t1 = u; 
-		t2 = v;
-	    }
+                t1 = u; 
+                t2 = v;
+            }
             else {
-		t1 = -v; 
-		t2 = -u;
-	    }
+                t1 = -v; 
+                t2 = -u;
+            }
             uabs = ( u > 0 ) ? u : -u;
             vabs = ( v > 0 ) ? v : -v;
             k = ( uabs > vabs ) ? uabs : vabs;
             for ( k++;  k <= numgens;  k++ ) {
                 if ( INT_INTOBJ(ptTree1[k]) == t1 &&
                      INT_INTOBJ(ptTree2[k]) == t2 )
-		{
-		    break;
-		}
+                {
+                    break;
+                }
             }
 
             /*  Extend the tree, if necessary                              */
@@ -1683,10 +1683,10 @@ Obj FuncTreeEntry(
                 numgens++;
                 if ( treesize < numgens ) {
                     treesize = 2 * treesize;
-		    GROW_PLIST( objTree1, treesize );
-		    GROW_PLIST( objTree2, treesize );
-		    SET_LEN_PLIST( objTree1, treesize );
-		    SET_LEN_PLIST( objTree2, treesize );
+                    GROW_PLIST( objTree1, treesize );
+                    GROW_PLIST( objTree2, treesize );
+                    SET_LEN_PLIST( objTree1, treesize );
+                    SET_LEN_PLIST( objTree2, treesize );
                     ptTree1 = ADDR_OBJ(objTree1);
                     ptTree2 = ADDR_OBJ(objTree2);
                 }
@@ -1716,7 +1716,7 @@ Obj FuncTreeEntry(
 **  Warning: 'factor' is not checked for being zero.
 */
 static void AddCosetFactor (
-    Obj           	factor )
+    Obj                 factor )
 {
     /* handle the one generator MTC case                                   */
     objWordValue = SumInt( objWordValue, factor );
@@ -1739,7 +1739,7 @@ static void AddCosetFactor (
 **  Warning: 'factor' is not checked for being zero.
 */
 static void SubtractCosetFactor (
-    Obj           	factor )
+    Obj                 factor )
 {
     /* handle the one generator MTC case                                   */
     objWordValue = DiffInt( objWordValue, factor );
@@ -1757,21 +1757,21 @@ static void SubtractCosetFactor (
 **  coincidence  cos2 = factor * cos1.
 */
 static void HandleCoinc2 (
-    Int			cos1,
-    Int			cos2,
-    Obj           	factor )
+    Int                 cos1,
+    Int                 cos2,
+    Obj                 factor )
 {
     Obj                 f,  ff2;        /* handles of temporary factors    */
     Obj                 f1, f2;         /* handles of temporary factors    */
     Obj                 rem;            /* handle of remainder             */
     Obj                 tmp;            /* temporary variable              */
-    Obj * 		gen2;
-    Obj * 		gen;
-    Obj * 		inv2;
-    Obj * 		inv;
-    Obj * 		ptNext;
-    Obj * 		ptPrev;
-    Int 		c1, c2;
+    Obj *               gen2;
+    Obj *               gen;
+    Obj *               inv2;
+    Obj *               inv;
+    Obj *               ptNext;
+    Obj *               ptPrev;
+    Int                 c1, c2;
     Int                 firstCoinc;
     Int                 i, j;           /* loop variables                  */
     Int                 lastCoinc;
@@ -1784,8 +1784,8 @@ static void HandleCoinc2 (
         /* but pick up a relator before in case treeType = 1               */
         if ( treeType == 1 && factor != INTOBJ_INT(0) ) {
             if ( objExponent == INTOBJ_INT(0) ) {
-		objExponent = factor;
-	    }
+                objExponent = factor;
+            }
             else {
                 rem = RemInt( factor, objExponent );
                 while ( rem != INTOBJ_INT(0) ) {
@@ -1854,27 +1854,27 @@ static void HandleCoinc2 (
                 /* if the other entry is empty copy it                     */
                 if ( c1 == 0 )  {
                     if ( f2 == factor ) {
-			ff2 = INTOBJ_INT(0);
-		    }
+                        ff2 = INTOBJ_INT(0);
+                    }
                     else {
                         if ( treeType == 1 ) {
                             objWordValue = INTOBJ_INT(0);
                             if ( factor != INTOBJ_INT(0) ) {
                                 SubtractCosetFactor(factor);
-			    }
+                            }
                             if ( f2 != INTOBJ_INT(0) ) {
                                 AddCosetFactor( f2 );
-			    }
+                            }
                             ff2 = objWordValue;
                         }
                         else {
                             InitializeCosetFactorWord();
                             if ( factor != INTOBJ_INT(0) ) {
                                 AddCosetFactor2( -INT_INTOBJ(factor) );
-			    }
+                            }
                             if ( f2 != INTOBJ_INT(0) ) {
                                 AddCosetFactor2( INT_INTOBJ(f2) );
-			    }
+                            }
                             ff2 = INTOBJ_INT(TreeEntryC());
                         }
                     }
@@ -1892,8 +1892,8 @@ static void HandleCoinc2 (
                     inv[c2]    = INTOBJ_INT(cos1);
                     inv2[c2]   = tmp;
                     if ( dedlst == dedSize ) {
-			CompressDeductionList();
-		    }
+                        CompressDeductionList();
+                    }
                     dedgen[dedlst] = i;
                     dedcos[dedlst] = cos1;
                     dedlst++;
@@ -1913,26 +1913,26 @@ static void HandleCoinc2 (
                     if ( gen[cos1] == INTOBJ_INT(0) ) {
                         if ( f2 == factor ) {
                             ff2 = INTOBJ_INT(0);
-			}
+                        }
                         else {
                             if ( treeType == 1 ) {
                                 objWordValue = INTOBJ_INT(0);
                                 if ( factor != INTOBJ_INT(0) ) {
                                     SubtractCosetFactor(factor);
-				}
+                                }
                                 if ( f2 != INTOBJ_INT(0) ) {
                                     AddCosetFactor(f2);
-				}
+                                }
                                 ff2 = objWordValue;
                             }
                             else {
                                 InitializeCosetFactorWord();
                                 if ( factor != INTOBJ_INT(0) ) {
                                     AddCosetFactor2( -INT_INTOBJ(factor) );
-				}
+                                }
                                 if ( f2 != INTOBJ_INT(0) ) {
                                     AddCosetFactor2( INT_INTOBJ(f2) );
-				}
+                                }
                                 ff2 = INTOBJ_INT( TreeEntryC() );
                             }
                             gen  = ADDR_OBJ( ELM_PLIST(objTable,i) );
@@ -1941,8 +1941,8 @@ static void HandleCoinc2 (
                         gen[cos1]  = INTOBJ_INT(cos1);
                         gen2[cos1] = ff2;
                         if ( dedlst == dedSize ) {
-			    CompressDeductionList();
-			}
+                            CompressDeductionList();
+                        }
                         dedgen[dedlst] = i;
                         dedcos[dedlst] = cos1;
                         dedlst++;
@@ -1953,97 +1953,97 @@ static void HandleCoinc2 (
 
                     /* find the representative of <c2>                     */
 
-		    /* handle the one generator MTC case                   */
+                    /* handle the one generator MTC case                   */
                     if ( treeType == 1 ) {
 
                         if ( f2 != INTOBJ_INT(0) ) {
                            SubtractCosetFactor(f2);
-			}
+                        }
                         while ( c2 != 1 && INT_INTOBJ( ELM_PLIST( objNext,
                                 INT_INTOBJ(ELM_PLIST(objPrev,c2)))) != c2 )
-			{
-			    f2 = ELM_PLIST(objFactor,c2);
-			    c2 = INT_INTOBJ( ELM_PLIST(objPrev,c2) );
-			    if ( f2 != INTOBJ_INT(0) ) {
-				SubtractCosetFactor(f2);
-			    }
+                        {
+                            f2 = ELM_PLIST(objFactor,c2);
+                            c2 = INT_INTOBJ( ELM_PLIST(objPrev,c2) );
+                            if ( f2 != INTOBJ_INT(0) ) {
+                                SubtractCosetFactor(f2);
+                            }
                         }
                         if ( factor != INTOBJ_INT(0) ) {
-			    AddCosetFactor(factor);
-			}
+                            AddCosetFactor(factor);
+                        }
                         if ( f1 != INTOBJ_INT(0) ) {
                            AddCosetFactor(f1);
-			}
+                        }
                     }
 
-		    /* handle the abelianized case                         */
+                    /* handle the abelianized case                         */
                     else if ( treeType == 0 ) {
                         if ( f2 != INTOBJ_INT(0) ) {
                            AddCosetFactor2( -INT_INTOBJ(f2) );
-			}
+                        }
                         while ( c2 != 1 && INT_INTOBJ( ELM_PLIST( objNext,
-				INT_INTOBJ(ELM_PLIST(objPrev,c2)))) != c2 )
-			{
-			    f2 = ELM_PLIST(objFactor,c2);
-			    c2 = INT_INTOBJ( ELM_PLIST(objPrev,c2) );
-			    if ( f2 != INTOBJ_INT(0) ) {
-				AddCosetFactor2( -INT_INTOBJ(f2) );
-			    }
+                                INT_INTOBJ(ELM_PLIST(objPrev,c2)))) != c2 )
+                        {
+                            f2 = ELM_PLIST(objFactor,c2);
+                            c2 = INT_INTOBJ( ELM_PLIST(objPrev,c2) );
+                            if ( f2 != INTOBJ_INT(0) ) {
+                                AddCosetFactor2( -INT_INTOBJ(f2) );
+                            }
                         }
                         if ( factor != INTOBJ_INT(0) ) {
                             AddCosetFactor2( INT_INTOBJ(factor) );
-			}
+                        }
                         if ( f1 != INTOBJ_INT(0) ) {
                             AddCosetFactor2( INT_INTOBJ(f1) );
-			}
+                        }
                     }
 
-		    /* handle the general case                             */
+                    /* handle the general case                             */
                     else
                     {
                         if ( f2 != INTOBJ_INT(0) ) {
-			    AddCosetFactor2( INT_INTOBJ(f2) );
-			}
+                            AddCosetFactor2( INT_INTOBJ(f2) );
+                        }
                         while ( c2 != 1 && INT_INTOBJ( ELM_PLIST( objNext,
-				INT_INTOBJ(ELM_PLIST(objPrev,c2)))) != c2 )
-			{
-			    f2 = ELM_PLIST(objFactor,c2);
-			    c2 = INT_INTOBJ( ELM_PLIST(objPrev,c2) );
-			    if ( f2 != INTOBJ_INT(0) ) {
-				AddCosetFactor2( INT_INTOBJ(f2) );
-			    }
+                                INT_INTOBJ(ELM_PLIST(objPrev,c2)))) != c2 )
+                        {
+                            f2 = ELM_PLIST(objFactor,c2);
+                            c2 = INT_INTOBJ( ELM_PLIST(objPrev,c2) );
+                            if ( f2 != INTOBJ_INT(0) ) {
+                                AddCosetFactor2( INT_INTOBJ(f2) );
+                            }
                         }
 
                         /* invert the word constructed so far              */
                         if ( wordList[0] > 0 ) {
-			    length = wordList[0] + 1;
-			    for ( i = length / 2;  i > 0;  i-- ) {
-				save = wordList[i];
-				wordList[i] = - wordList[length-i];
-				wordList[length-i] = - save;
-			    }
+                            length = wordList[0] + 1;
+                            for ( i = length / 2;  i > 0;  i-- ) {
+                                save = wordList[i];
+                                wordList[i] = - wordList[length-i];
+                                wordList[length-i] = - save;
+                            }
                         }
                         if ( factor != INTOBJ_INT(0) ) {
                             AddCosetFactor2( INT_INTOBJ(factor) );
-			}
+                        }
                         if ( f1 != INTOBJ_INT(0) ) {
                             AddCosetFactor2( INT_INTOBJ(f1) );
-			}
+                        }
                     }
 
                     /* find the representative of <c1>                     */
                     while ( c1 != 1 && INT_INTOBJ( ELM_PLIST( objNext,
-			    INT_INTOBJ(ELM_PLIST(objPrev,c1)))) != c1 )
-		    {
+                            INT_INTOBJ(ELM_PLIST(objPrev,c1)))) != c1 )
+                    {
                         f1 = ELM_PLIST(objFactor,c1);
                         c1 = INT_INTOBJ( ELM_PLIST(objPrev,c1) );
                         if ( f1 != INTOBJ_INT(0) ) {
                             if ( treeType == 1 ) {
                                 AddCosetFactor( f1 );
-			    }
+                            }
                             else {
                                 AddCosetFactor2( INT_INTOBJ(f1) );
-			    }
+                            }
                         }
                     }
 
@@ -2069,10 +2069,10 @@ static void HandleCoinc2 (
                         /* if we are removing an important coset update it */
                         if ( c2 == lastDef ) {
                             lastDef  = INT_INTOBJ(ptPrev[lastDef]);
-			}
+                        }
                         if ( c2 == firstDef ) {
                             firstDef = INT_INTOBJ(ptPrev[firstDef]);
-			}
+                        }
 
                         /* remove <c2> from the coset list                 */
                         ptNext[INT_INTOBJ(ptPrev[c2])] = ptNext[c2];
@@ -2090,13 +2090,13 @@ static void HandleCoinc2 (
                         SET_ELM_PLIST( objFactor, c2, f );
                     }
 
-		    /* pick up a relator in case treeType = 1              */
+                    /* pick up a relator in case treeType = 1              */
                     else if ( treeType == 1 ) {
                         f = objWordValue;
                         if ( f != INTOBJ_INT(0) ) {
                             if ( objExponent == INTOBJ_INT(0) ) {
-				objExponent = f;
-			    }
+                                objExponent = f;
+                            }
                             else {
                                 rem = RemInt( f, objExponent );
                                 while ( rem != INTOBJ_INT(0) ) {
@@ -2134,8 +2134,8 @@ static void HandleCoinc2 (
 *F  FuncMakeConsequences2( <self>, <list> )  . . . . . . .  find consequences
 */
 Obj FuncMakeConsequences2 (
-    Obj			self,
-    Obj			list )
+    Obj                 self,
+    Obj                 list )
 {
     Obj                 subs;           /*                                 */
     Obj                 rels;           /*                                 */
@@ -2154,13 +2154,13 @@ Obj FuncMakeConsequences2 (
 
     /* get the list of arguments                                           */
     if ( ! IS_PLIST(list) ) {
-	ErrorQuit( "<list> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(list)].name), 0L );
-	return 0;
+        ErrorQuit( "<list> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(list)].name), 0L );
+        return 0;
     }
     if ( LEN_PLIST(list) != 16 ) {
-	ErrorQuit( "<list> must be a list of length 16", 0L, 0L );
-	return 0;
+        ErrorQuit( "<list> must be a list of length 16", 0L, 0L );
+        return 0;
     }
 
     /* get the coset table, the corresponding factor table, the subgroup   */
@@ -2207,216 +2207,216 @@ Obj FuncMakeConsequences2 (
         subs = ELM_PLIST(list,5);
         for ( i = LEN_PLIST(subs);  1 <= i;  i-- ) {
           if ( ELM_PLIST(subs,i) != 0 ) {
-	      tmp     = ELM_PLIST(subs,i);
-	      objNums = ELM_PLIST(tmp,1);
-	      objRel  = ELM_PLIST(tmp,2);
-	      ptRel   = ADDR_OBJ(objRel);
+              tmp     = ELM_PLIST(subs,i);
+              objNums = ELM_PLIST(tmp,1);
+              objRel  = ELM_PLIST(tmp,2);
+              ptRel   = ADDR_OBJ(objRel);
 
-	      lp = 2;
-	      lc = 1;
-	      rp = LEN_PLIST(objRel) - 1;
-	      rc = 1;
+              lp = 2;
+              lc = 1;
+              rp = LEN_PLIST(objRel) - 1;
+              rc = 1;
 
-	      /* scan as long as possible from the left to the right       */
-	      while ( lp < rp 
+              /* scan as long as possible from the left to the right       */
+              while ( lp < rp 
                       && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))) )
-	      {
-		  lc = tc;
-		  lp = lp + 2;
-	      }
+              {
+                  lc = tc;
+                  lp = lp + 2;
+              }
 
-	      /* scan as long as possible from the right to the left       */
-	      while ( lp < rp
-		      && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) )
-	      {
-		  rc = tc;
-		  rp = rp - 2;
-	      }
+              /* scan as long as possible from the right to the left       */
+              while ( lp < rp
+                      && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) )
+              {
+                  rc = tc;
+                  rp = rp - 2;
+              }
 
               /* scan once more, but now with factors, if a coincidence or */
               /* a deduction has been found                                */
-	      if (lp == rp+1 && INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc) {
-		  lp = 2;
-		  lc = 1;
-		  rp = LEN_PLIST(objRel) - 1;
-		  rc = 1;
+              if (lp == rp+1 && INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc) {
+                  lp = 2;
+                  lc = 1;
+                  rp = LEN_PLIST(objRel) - 1;
+                  rc = 1;
 
-		  /* initialize the coset representative word              */
-		  InitializeCosetFactorWord();
+                  /* initialize the coset representative word              */
+                  InitializeCosetFactorWord();
 
-		  /* scan as long as possible from the left to the right   */
+                  /* scan as long as possible from the left to the right   */
 
-		  /* handle the one generator MTC case                     */
-		  if ( treeType == 1 ) {
-		      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
-			      ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
-		      {
-			  objRep = ELM_PLIST(objNums,lp);
-			  objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			  objRep = ELM_PLIST(objRep,lc);
-			  if ( objRep != INTOBJ_INT(0) ) {
-			      SubtractCosetFactor(objRep);
-			  }
-			  lc = tc;
-			  lp = lp + 2;
-		      }
-
-		      /* add the factor defined by the ith subgrp generator*/
-		      if ( i != 0 ) {
-			  AddCosetFactor( INTOBJ_INT(i) );
-		      }
-
-		      /* scan as long as poss from the right to the left   */
-		      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
-			      ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
-		      {
-			  objRep = ELM_PLIST(objNums,rp);
-			  objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			  objRep = ELM_PLIST(objRep,rc);
-			  if ( objRep != INTOBJ_INT(0) ) {
-			      AddCosetFactor(objRep);
-			  }
-			  rc = tc;
-			  rp = rp - 2;
-		      }
-		  }
-
-		  /* handle the abelianized case                           */
-		  else if ( treeType == 0 ) {
-		      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
-			      ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
-		      {
-			  objRep = ELM_PLIST(objNums,lp);
-			  objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			  objRep = ELM_PLIST(objRep,lc);
-			  rep    = INT_INTOBJ(objRep);
-                          if ( rep != 0 ) {
-			      AddCosetFactor2(-rep);
-			  }
-			  lc = tc;
-			  lp = lp + 2;
-		      }
-
-		      /* add the factor defined by the ith subgrp generator*/
-		      if ( i != 0 ) {
-			  AddCosetFactor2(i);
-		      }
-
-		      /* scan as long as poss from the right to the left   */
-		      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
-			      ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
-		      {
-			  objRep = ELM_PLIST(objNums,rp);
-			  objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			  objRep = ELM_PLIST(objRep,rc);
-			  rep    = INT_INTOBJ(objRep);
-			  if ( rep != 0 ) {
-			      AddCosetFactor2(rep);
-			  }
-			  rc = tc;
-			  rp = rp - 2;
-		      }
-		  }
-
-		  /* handle the general case                               */
-		  else {
-		      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
-			      ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
-		      {
-			  objRep = ELM_PLIST(objNums,lp);
-			  objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			  objRep = ELM_PLIST(objRep,lc);
-			  rep    = INT_INTOBJ(objRep);
-			  if ( rep != 0 ) {
-			      AddCosetFactor2(rep);
-			  }
-			  lc = tc;
-			  lp = lp + 2;
-		      }
-
-		      /* invert the word constructed so far                */
-		      if ( wordList[0] > 0 ) {
-			  length = wordList[0] + 1;
-			  for ( j = length / 2; j > 0; j-- ) {
-			      rep = wordList[j];
-			      wordList[j] = - wordList[length-j];
-			      wordList[length-j] = - rep;
-			  }
-		      }
+                  /* handle the one generator MTC case                     */
+                  if ( treeType == 1 ) {
+                      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
+                              ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
+                      {
+                          objRep = ELM_PLIST(objNums,lp);
+                          objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                          objRep = ELM_PLIST(objRep,lc);
+                          if ( objRep != INTOBJ_INT(0) ) {
+                              SubtractCosetFactor(objRep);
+                          }
+                          lc = tc;
+                          lp = lp + 2;
+                      }
 
                       /* add the factor defined by the ith subgrp generator*/
-		      if ( i != 0 ) {
-			  AddCosetFactor2(i);
-		      }
+                      if ( i != 0 ) {
+                          AddCosetFactor( INTOBJ_INT(i) );
+                      }
 
-		      /* scan as long as poss from the right to the left   */
-		      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
-			      ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
-  		      {
-			  objRep = ELM_PLIST(objNums,rp);
-			  objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			  objRep = ELM_PLIST(objRep,rc);
-			  rep    = INT_INTOBJ(objRep);
-			  if ( rep != 0 ) {
-			      AddCosetFactor2(rep);
-			  }
-			  rc = tc;
-			  rp = rp - 2;
-		      }
-		  }
+                      /* scan as long as poss from the right to the left   */
+                      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
+                              ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
+                      {
+                          objRep = ELM_PLIST(objNums,rp);
+                          objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                          objRep = ELM_PLIST(objRep,rc);
+                          if ( objRep != INTOBJ_INT(0) ) {
+                              AddCosetFactor(objRep);
+                          }
+                          rc = tc;
+                          rp = rp - 2;
+                      }
+                  }
 
-		  /* enter the word into the tree and return its number    */
-		  objNum = ( treeType == 1 ) ?
-		      objWordValue : INTOBJ_INT(TreeEntryC());
+                  /* handle the abelianized case                           */
+                  else if ( treeType == 0 ) {
+                      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
+                              ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
+                      {
+                          objRep = ELM_PLIST(objNums,lp);
+                          objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                          objRep = ELM_PLIST(objRep,lc);
+                          rep    = INT_INTOBJ(objRep);
+                          if ( rep != 0 ) {
+                              AddCosetFactor2(-rep);
+                          }
+                          lc = tc;
+                          lp = lp + 2;
+                      }
 
-		  /* work off a coincidence                                */
-		  if ( lp >= rp + 2 ) {
-		      HandleCoinc2( rc, lc, objNum );
-		  }
+                      /* add the factor defined by the ith subgrp generator*/
+                      if ( i != 0 ) {
+                          AddCosetFactor2(i);
+                      }
 
-		  /* enter a decuction to the tables                       */
-		  else {
-		      objRep = ELM_PLIST(objRel,lp);
-		      SET_ELM_PLIST( objRep, lc, INTOBJ_INT(rc) );
+                      /* scan as long as poss from the right to the left   */
+                      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
+                              ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
+                      {
+                          objRep = ELM_PLIST(objNums,rp);
+                          objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                          objRep = ELM_PLIST(objRep,rc);
+                          rep    = INT_INTOBJ(objRep);
+                          if ( rep != 0 ) {
+                              AddCosetFactor2(rep);
+                          }
+                          rc = tc;
+                          rp = rp - 2;
+                      }
+                  }
 
-		      objRep = ELM_PLIST(objNums,lp);
-		      objRep = ADDR_OBJ(objTable2)[INT_INTOBJ(objRep)];
-		      SET_ELM_PLIST( objRep, lc, objNum );
+                  /* handle the general case                               */
+                  else {
+                      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
+                              ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
+                      {
+                          objRep = ELM_PLIST(objNums,lp);
+                          objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                          objRep = ELM_PLIST(objRep,lc);
+                          rep    = INT_INTOBJ(objRep);
+                          if ( rep != 0 ) {
+                              AddCosetFactor2(rep);
+                          }
+                          lc = tc;
+                          lp = lp + 2;
+                      }
 
-		      objRep = ELM_PLIST(objRel,rp);
-		      SET_ELM_PLIST( objRep, rc, INTOBJ_INT(lc) );
+                      /* invert the word constructed so far                */
+                      if ( wordList[0] > 0 ) {
+                          length = wordList[0] + 1;
+                          for ( j = length / 2; j > 0; j-- ) {
+                              rep = wordList[j];
+                              wordList[j] = - wordList[length-j];
+                              wordList[length-j] = - rep;
+                          }
+                      }
 
-		      tmp = ( treeType == 1 ) ?
-			  DiffInt( INTOBJ_INT(0), objNum ) :
-			  INTOBJ_INT( -INT_INTOBJ( objNum ) );
-		      objRep = ELM_PLIST(objNums,rp);
-		      objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-		      SET_ELM_PLIST( objRep, rc, tmp );
+                      /* add the factor defined by the ith subgrp generator*/
+                      if ( i != 0 ) {
+                          AddCosetFactor2(i);
+                      }
 
-		      if ( dedlst == dedSize ) {
-			  CompressDeductionList();
-		      }
-		      dedgen[dedlst] = INT_INTOBJ( ELM_PLIST(objNums,lp) );
-		      dedcos[dedlst] = lc;
-		      dedlst++;
-		  }
+                      /* scan as long as poss from the right to the left   */
+                      while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ(
+                              ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
+                      {
+                          objRep = ELM_PLIST(objNums,rp);
+                          objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                          objRep = ELM_PLIST(objRep,rc);
+                          rep    = INT_INTOBJ(objRep);
+                          if ( rep != 0 ) {
+                              AddCosetFactor2(rep);
+                          }
+                          rc = tc;
+                          rp = rp - 2;
+                      }
+                  }
 
-		  /* remove the completed subgroup generator               */
-		  SET_ELM_PLIST( subs, i, 0 );
-		  if ( i == LEN_PLIST(subs) ) {
-		      while ( 0 < i  && ELM_PLIST(subs,i) == 0 ) {
-			  --i;
-		      }
-		      SET_LEN_PLIST( subs, i );
-		  }
-	      }
+                  /* enter the word into the tree and return its number    */
+                  objNum = ( treeType == 1 ) ?
+                      objWordValue : INTOBJ_INT(TreeEntryC());
+
+                  /* work off a coincidence                                */
+                  if ( lp >= rp + 2 ) {
+                      HandleCoinc2( rc, lc, objNum );
+                  }
+
+                  /* enter a decuction to the tables                       */
+                  else {
+                      objRep = ELM_PLIST(objRel,lp);
+                      SET_ELM_PLIST( objRep, lc, INTOBJ_INT(rc) );
+
+                      objRep = ELM_PLIST(objNums,lp);
+                      objRep = ADDR_OBJ(objTable2)[INT_INTOBJ(objRep)];
+                      SET_ELM_PLIST( objRep, lc, objNum );
+
+                      objRep = ELM_PLIST(objRel,rp);
+                      SET_ELM_PLIST( objRep, rc, INTOBJ_INT(lc) );
+
+                      tmp = ( treeType == 1 ) ?
+                          DiffInt( INTOBJ_INT(0), objNum ) :
+                          INTOBJ_INT( -INT_INTOBJ( objNum ) );
+                      objRep = ELM_PLIST(objNums,rp);
+                      objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                      SET_ELM_PLIST( objRep, rc, tmp );
+
+                      if ( dedlst == dedSize ) {
+                          CompressDeductionList();
+                      }
+                      dedgen[dedlst] = INT_INTOBJ( ELM_PLIST(objNums,lp) );
+                      dedcos[dedlst] = lc;
+                      dedlst++;
+                  }
+
+                  /* remove the completed subgroup generator               */
+                  SET_ELM_PLIST( subs, i, 0 );
+                  if ( i == LEN_PLIST(subs) ) {
+                      while ( 0 < i  && ELM_PLIST(subs,i) == 0 ) {
+                          --i;
+                      }
+                      SET_LEN_PLIST( subs, i );
+                  }
+              }
           }
         }
 
         /* apply all relators that start with this generator               */
         rels = ELM_PLIST( ELM_PLIST(list,4), dedgen[dedfst] );
         for ( i = 1;  i <= LEN_PLIST(rels);  i++ ) {
-	    tmp     = ELM_PLIST(rels,i);
+            tmp     = ELM_PLIST(rels,i);
             objNums = ELM_PLIST(tmp,1);
             objRel  = ELM_PLIST(tmp,2);
             ptRel   = ADDR_OBJ(objRel);
@@ -2428,23 +2428,23 @@ Obj FuncMakeConsequences2 (
 
             /* scan as long as possible from the left to the right         */
             while (lp < rp && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))))
-	    {
+            {
                 lc = tc;
-		lp = lp + 2;
+                lp = lp + 2;
             }
 
             /* scan as long as possible from the right to the left         */
             while (lp < rp && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))))
-	    {
+            {
                 rc = tc;
-		rp = rp - 2;
+                rp = rp - 2;
             }
 
             /* scan once more, but now with factors, if a coincidence or a */
             /* deduction has been found                                    */
             if ( lp == rp+1 && ( INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc
-	         || treeType == 1 ) )
-	    {
+                 || treeType == 1 ) )
+            {
 
                 lp = INT_INTOBJ( ELM_PLIST( ELM_PLIST(rels,i), 3 ) );
                 lc = dedcos[dedfst];
@@ -2455,84 +2455,84 @@ Obj FuncMakeConsequences2 (
                 InitializeCosetFactorWord();
 
                 /* scan as long as possible from the left to the right     */
-		/* handle the one generator MTC case                       */
+                /* handle the one generator MTC case                       */
 
                 if ( treeType == 1 ) {
 
                     while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ( ELM_PLIST(
-			    ELM_PLIST(objRel,lp),lc))) )
-		    {
-			objRep = ELM_PLIST(objNums,lp);
-			objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                            ELM_PLIST(objRel,lp),lc))) )
+                    {
+                        objRep = ELM_PLIST(objNums,lp);
+                        objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
                         objRep = ELM_PLIST(objRep,lc);
                         if ( objRep != INTOBJ_INT(0) ) {
                             SubtractCosetFactor(objRep);
-			}
+                        }
                         lc = tc;
-			lp = lp + 2;
+                        lp = lp + 2;
                     }
 
                     /* scan as long as possible from the right to the left */
                     while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ( ELM_PLIST(
-			    ELM_PLIST(objRel,rp),rc))) )
-		    {
-			objRep = ELM_PLIST(objNums,rp);
-			objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                            ELM_PLIST(objRel,rp),rc))) )
+                    {
+                        objRep = ELM_PLIST(objNums,rp);
+                        objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
                         objRep = ELM_PLIST(objRep,rc);
                         if ( objRep != INTOBJ_INT(0) ) {
                             AddCosetFactor( objRep );
-			}
+                        }
                         rc = tc;
-			rp = rp - 2;
+                        rp = rp - 2;
                     }
                 }
 
-		/* handle the abelianized case                             */
+                /* handle the abelianized case                             */
                 else if ( treeType == 0 ) {
                     while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ( ELM_PLIST(
-			    ELM_PLIST(objRel,lp),lc))) )
-		    {
-			objRep = ELM_PLIST(objNums,lp);
-			objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			objRep = ELM_PLIST(objRep,lc);
+                            ELM_PLIST(objRel,lp),lc))) )
+                    {
+                        objRep = ELM_PLIST(objNums,lp);
+                        objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                        objRep = ELM_PLIST(objRep,lc);
                         rep    = INT_INTOBJ(objRep);
                         if ( rep != 0 ) {
-			    AddCosetFactor2(rep);
-			}
+                            AddCosetFactor2(rep);
+                        }
                         lc = tc;
-			lp = lp + 2;
+                        lp = lp + 2;
                     }
 
                     /* scan as long as possible from the right to the left */
                     while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ( ELM_PLIST(
-			    ELM_PLIST(objRel,rp),rc))) )
-		    {
-			objRep = ELM_PLIST(objNums,rp);
-			objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			objRep = ELM_PLIST(objRep,rc);
+                            ELM_PLIST(objRel,rp),rc))) )
+                    {
+                        objRep = ELM_PLIST(objNums,rp);
+                        objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                        objRep = ELM_PLIST(objRep,rc);
                         rep    = INT_INTOBJ(objRep);
                         if ( rep != 0 ) {
-			    AddCosetFactor2(rep);
-			}
+                            AddCosetFactor2(rep);
+                        }
                         rc = tc;
-			rp = rp - 2;
+                        rp = rp - 2;
                     }
                 }
 
-		/* handle the general case                                 */
+                /* handle the general case                                 */
                 else {
                     while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ( ELM_PLIST(
-			    ELM_PLIST(objRel,lp),lc))) )
-		    {
-			objRep = ADDR_OBJ(objNums)[lp];
-			objRep = ADDR_OBJ(objTable2)[INT_INTOBJ(objRep)];
-			objRep = ADDR_OBJ(objRep)[lc];
+                            ELM_PLIST(objRel,lp),lc))) )
+                    {
+                        objRep = ADDR_OBJ(objNums)[lp];
+                        objRep = ADDR_OBJ(objTable2)[INT_INTOBJ(objRep)];
+                        objRep = ADDR_OBJ(objRep)[lc];
                         rep    = INT_INTOBJ(objRep);
                         if ( rep != 0 ) {
-			    AddCosetFactor2(rep);
-			}
+                            AddCosetFactor2(rep);
+                        }
                         lc = tc;
-			lp = lp + 2;
+                        lp = lp + 2;
                     }
 
                     /* invert the word constructed so far                  */
@@ -2547,17 +2547,17 @@ Obj FuncMakeConsequences2 (
 
                     /* scan as long as possible from the right to the left */
                     while ( lp < rp + 2 && 0 < (tc = INT_INTOBJ( ELM_PLIST(
-			    ELM_PLIST(objRel,rp),rc))) )
-		    {
-			objRep = ELM_PLIST(objNums,rp);
-			objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
-			objRep = ELM_PLIST(objRep,rc);
+                            ELM_PLIST(objRel,rp),rc))) )
+                    {
+                        objRep = ELM_PLIST(objNums,rp);
+                        objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                        objRep = ELM_PLIST(objRep,rc);
                         rep    = INT_INTOBJ(objRep);
                         if ( rep != 0 ) {
-			    AddCosetFactor2( rep );
-			}
+                            AddCosetFactor2( rep );
+                        }
                         rc = tc;
-			rp = rp - 2;
+                        rp = rp - 2;
                     }
                 }
 
@@ -2565,33 +2565,33 @@ Obj FuncMakeConsequences2 (
                 objNum = ( treeType == 1 ) ?
                     objWordValue : INTOBJ_INT(TreeEntryC());
 
-		/* work off a coincidence                                  */
+                /* work off a coincidence                                  */
                 if ( lp >= rp + 2 ) {
                     HandleCoinc2( rc, lc, objNum );
                 }
 
-		/* enter a decuction to the tables                         */
+                /* enter a decuction to the tables                         */
                 else {
-		    objRep = ELM_PLIST(objRel,lp);
+                    objRep = ELM_PLIST(objRel,lp);
                     SET_ELM_PLIST( objRep, lc, INTOBJ_INT(rc) );
 
-		    objRep = ADDR_OBJ(objNums)[lp];
-		    objRep = ADDR_OBJ(objTable2)[INT_INTOBJ(objRep)];
+                    objRep = ADDR_OBJ(objNums)[lp];
+                    objRep = ADDR_OBJ(objTable2)[INT_INTOBJ(objRep)];
                     SET_ELM_PLIST( objRep, lc, objNum );
 
-		    objRep = ELM_PLIST(objRel,rp);
+                    objRep = ELM_PLIST(objRel,rp);
                     SET_ELM_PLIST( objRep, rc, INTOBJ_INT(lc) );
 
                     tmp = ( treeType == 1 ) ?
                         DiffInt( INTOBJ_INT(0), objNum ) :
                         INTOBJ_INT( -INT_INTOBJ(objNum) );
-		    objRep = ELM_PLIST(objNums,rp);
-		    objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
+                    objRep = ELM_PLIST(objNums,rp);
+                    objRep = ELM_PLIST(objTable2,INT_INTOBJ(objRep));
                     SET_ELM_PLIST( objRep, rc, tmp );
 
                     if ( dedlst == dedSize ) {
-			CompressDeductionList();
-		    }
+                        CompressDeductionList();
+                    }
                     dedgen[dedlst] = INT_INTOBJ( ELM_PLIST(objNums,lp) );
                     dedcos[dedlst] = lc;
                     dedlst++;
@@ -2616,12 +2616,12 @@ Obj FuncMakeConsequences2 (
 
 /****************************************************************************
 **
-*F  FuncStandardizeTable2( <self>, <table>, <table2> ) 	.  standardize aug CT
+*F  FuncStandardizeTable2( <self>, <table>, <table2> )  .  standardize aug CT
 **
 **  'FuncStandardizeTable2' standardizes an augmented coset table.
 */
 Obj FuncStandardizeTable2 (
-    Obj			self,
+    Obj                 self,
     Obj                 list,
     Obj                 list2 )
 {
@@ -2643,26 +2643,26 @@ Obj FuncStandardizeTable2 (
     /* get the arguments                                                   */
     objTable = list;
     if ( ! IS_PLIST(objTable) ) {
-	ErrorQuit( "<table> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(objTable)].name), 0L );
-	return 0;
+        ErrorQuit( "<table> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(objTable)].name), 0L );
+        return 0;
     }
     ptTable  = ADDR_OBJ(objTable);
     nrgen    = LEN_PLIST(objTable) / 2;
     for ( j = 1;  j <= nrgen*2;  j++ ) {
-	if ( ! IS_PLIST(ptTable[j]) ) {
-	    ErrorQuit(
-		"<table>[%d] must be a plain list (not a %s)",
-		(Int)j,
-		(Int)(InfoBags[TYPE_OBJ(ptTable[j])].name) );
-	    return 0;
-	}
+        if ( ! IS_PLIST(ptTable[j]) ) {
+            ErrorQuit(
+                "<table>[%d] must be a plain list (not a %s)",
+                (Int)j,
+                (Int)(InfoBags[TNUM_OBJ(ptTable[j])].name) );
+            return 0;
+        }
     }
     objTable2 = list2;
     if ( ! IS_PLIST(objTable2) ) {
-	ErrorQuit( "<table2> must be a plain list (not a %s)",
-	           (Int)(InfoBags[TYPE_OBJ(objTable)].name), 0L );
-	return 0;
+        ErrorQuit( "<table2> must be a plain list (not a %s)",
+                   (Int)(InfoBags[TNUM_OBJ(objTable)].name), 0L );
+        return 0;
     }
     ptTabl2 = ADDR_OBJ(objTable2);
 
@@ -2724,14 +2724,14 @@ Obj FuncStandardizeTable2 (
 
     /* shrink the tables                                                   */
     for ( j = 1; j <= nrgen; j++ ) {
-	SET_LEN_PLIST( ptTable[2*j-1], lcos );
-	SET_LEN_PLIST( ptTable[2*j  ], lcos );
-	SET_LEN_PLIST( ptTabl2[2*j-1], lcos );
-	SET_LEN_PLIST( ptTabl2[2*j  ], lcos );
-	CHANGED_BAG(ptTable[2*j-1]);
-	CHANGED_BAG(ptTable[2*j  ]);
-	CHANGED_BAG(ptTabl2[2*j-1]);
-	CHANGED_BAG(ptTabl2[2*j  ]);
+        SET_LEN_PLIST( ptTable[2*j-1], lcos );
+        SET_LEN_PLIST( ptTable[2*j  ], lcos );
+        SET_LEN_PLIST( ptTabl2[2*j-1], lcos );
+        SET_LEN_PLIST( ptTabl2[2*j  ], lcos );
+        CHANGED_BAG(ptTable[2*j-1]);
+        CHANGED_BAG(ptTable[2*j  ]);
+        CHANGED_BAG(ptTabl2[2*j-1]);
+        CHANGED_BAG(ptTabl2[2*j  ]);
     }
     CHANGED_BAG(objTable);
     CHANGED_BAG(objTable2);
@@ -2748,9 +2748,9 @@ Obj FuncStandardizeTable2 (
 **  'FuncAddAbelianRelator' implements 'AddAbelianRelator(<rels>,<number>)'
 */
 Obj FuncAddAbelianRelator (
-    Obj			self,
-    Obj			rels,           /* relators list                   */
-    Obj			number )
+    Obj                 self,
+    Obj                 rels,           /* relators list                   */
+    Obj                 number )
 {
     Obj *               ptRels;         /* pointer to relators list        */
     Obj *               pt1;            /* pointer to a relator            */
@@ -2762,29 +2762,29 @@ Obj FuncAddAbelianRelator (
 
     /* check the arguments                                                 */
     if ( ! IS_PLIST(rels) ) {
-	ErrorQuit(
-	    "<rels> must be a plain list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(rels)].name), 0L );
-	return 0;
+        ErrorQuit(
+            "<rels> must be a plain list (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(rels)].name), 0L );
+        return 0;
     }
     ptRels = ADDR_OBJ(rels);
-    if ( ! TYPE_OBJ(number) != T_INT ) {
-	ErrorQuit(
-	    "<rels> must be a small integer (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(number)].name), 0L );
-	return 0;
+    if ( ! TNUM_OBJ(number) != T_INT ) {
+        ErrorQuit(
+            "<rels> must be a small integer (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(number)].name), 0L );
+        return 0;
     }
 
     /* get the length of the given relators list                           */
     numrows = INT_INTOBJ(number);
     if ( numrows < 1 || LEN_PLIST(rels) < numrows ) {
         ErrorQuit( "inconsistent relator number", 0L, 0L );
-	return 0;
+        return 0;
     }
     tmp = ELM_PLIST( rels, numrows );
     if ( tmp == 0 ) {
         ErrorQuit( "inconsistent relator number", 0L, 0L );
-	return 0;
+        return 0;
     }
     pt2 = ADDR_OBJ(tmp);
 
@@ -2794,11 +2794,11 @@ Obj FuncAddAbelianRelator (
     /* remove the last relator if it has length zero                       */
     for ( i = 1;  i <= numcols;  i++ ) {
         if ( INT_INTOBJ(pt2[i]) ) {
-	    break;
-	}
+            break;
+        }
     }
     if ( i > numcols ) {
-	return INTOBJ_INT(numrows-1);
+        return INTOBJ_INT(numrows-1);
     }
 
     /* invert the relator if its first non-zero exponent is negative       */
@@ -2813,12 +2813,12 @@ Obj FuncAddAbelianRelator (
         pt1 = ADDR_OBJ( ptRels[i] );
         for ( j = 1;  j <= numcols;  j++ ) {
             if ( pt1[j] != pt2[j] ) {
-		break;
-	    }
+                break;
+            }
         }
         if ( j > numcols ) {
-	    break;
-	}
+            break;
+        }
     }
     if ( i < numrows ) {
         for ( i = 1;  i <= numcols;  i++ ) {

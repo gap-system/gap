@@ -44,13 +44,13 @@ end;
 ##
 #F  METHOD_1ARGS
 ##
-METHOD_1ARGS := function ( operation, kind1 )
+METHOD_1ARGS := function ( operation, type1 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 1 );
     for i  in [1..LEN_LIST(methods)/5]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[5*(i-1)+2] )
-          and methods[5*(i-1)+1]( kind1![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[5*(i-1)+2] )
+          and methods[5*(i-1)+1]( type1![1] )
         then
             return methods[5*(i-1)+3];
         fi;
@@ -64,14 +64,14 @@ end;
 ##
 #F  METHOD_2ARGS
 ##
-METHOD_2ARGS := function ( operation, kind1, kind2 )
+METHOD_2ARGS := function ( operation, type1, type2 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 2 );
     for i  in [1..LEN_LIST(methods)/6]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[6*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( kind1![1], kind2![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[6*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
+          and methods[6*(i-1)+1]( type1![1], type2![1] )
         then
             return methods[6*(i-1)+4];
         fi;
@@ -85,15 +85,15 @@ end;
 ##
 #F  METHOD_3ARGS
 ##
-METHOD_3ARGS := function ( operation, kind1, kind2, kind3 )
+METHOD_3ARGS := function ( operation, type1, type2, type3 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 3 );
     for i  in [1..LEN_LIST(methods)/7]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[7*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( kind1![1], kind2![1], kind3![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[7*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
+          and methods[7*(i-1)+1]( type1![1], type2![1], type3![1] )
         then
             return methods[7*(i-1)+5];
         fi;
@@ -107,18 +107,18 @@ end;
 ##
 #F  METHOD_4ARGS
 ##
-METHOD_4ARGS := function ( operation, kind1, kind2, kind3,
-                                      kind4 )
+METHOD_4ARGS := function ( operation, type1, type2, type3,
+                                      type4 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 4 );
     for i  in [1..LEN_LIST(methods)/8]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[8*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[8*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
+          and  methods[8*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1] )
         then
             return methods[8*(i-1)+6];
         fi;
@@ -132,19 +132,19 @@ end;
 ##
 #F  METHOD_5ARGS
 ##
-METHOD_5ARGS := function ( operation, kind1, kind2, kind3,
-                                      kind4, kind5 )
+METHOD_5ARGS := function ( operation, type1, type2, type3,
+                                      type4, type5 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 5 );
     for i  in [1..LEN_LIST(methods)/9]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[9*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1], kind5![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[9*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
+          and  methods[9*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1], type5![1] )
         then
             return methods[9*(i-1)+7];
         fi;
@@ -158,20 +158,20 @@ end;
 ##
 #F  METHOD_6ARGS
 ##
-METHOD_6ARGS := function ( operation, kind1, kind2, kind3,
-                                      kind4, kind5, kind6 )
+METHOD_6ARGS := function ( operation, type1, type2, type3,
+                                      type4, type5, type6 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 6 );
     for i  in [1..LEN_LIST(methods)/10]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[10*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( kind6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1], kind5![1], kind6![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[10*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
+          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
+          and  methods[10*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1], type5![1], type6![1] )
         then
             return methods[10*(i-1)+8];
         fi;
@@ -226,14 +226,14 @@ end;
 ##
 #F  NEXT_METHOD_1ARGS
 ##
-NEXT_METHOD_1ARGS := function ( operation, k, kind1 )
+NEXT_METHOD_1ARGS := function ( operation, k, type1 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 1 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/5]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[5*(i-1)+2] )
-          and methods[5*(i-1)+1]( kind1![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[5*(i-1)+2] )
+          and methods[5*(i-1)+1]( type1![1] )
         then
             if k = j  then
                 return methods[5*(i-1)+3];
@@ -251,15 +251,15 @@ end;
 ##
 #F  NEXT_METHOD_2ARGS
 ##
-NEXT_METHOD_2ARGS := function ( operation, k, kind1, kind2 )
+NEXT_METHOD_2ARGS := function ( operation, k, type1, type2 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 2 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/6]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[6*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( kind1![1], kind2![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[6*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
+          and methods[6*(i-1)+1]( type1![1], type2![1] )
         then
             if k = j  then
                 return methods[6*(i-1)+4];
@@ -277,16 +277,16 @@ end;
 ##
 #F  NEXT_METHOD_3ARGS
 ##
-NEXT_METHOD_3ARGS := function ( operation, k, kind1, kind2, kind3 )
+NEXT_METHOD_3ARGS := function ( operation, k, type1, type2, type3 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 3 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/7]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[7*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( kind1![1], kind2![1], kind3![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[7*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
+          and methods[7*(i-1)+1]( type1![1], type2![1], type3![1] )
         then
             if k = j  then
                 return methods[7*(i-1)+5];
@@ -304,19 +304,19 @@ end;
 ##
 #F  NEXT_METHOD_4ARGS
 ##
-NEXT_METHOD_4ARGS := function ( operation, k, kind1, kind2, kind3,
-                                              kind4 )
+NEXT_METHOD_4ARGS := function ( operation, k, type1, type2, type3,
+                                              type4 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 4 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/8]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[8*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[8*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
+          and  methods[8*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1] )
         then
             if k = j  then
                 return methods[8*(i-1)+6];
@@ -334,20 +334,20 @@ end;
 ##
 #F  NEXT_METHOD_5ARGS
 ##
-NEXT_METHOD_5ARGS := function ( operation, k, kind1, kind2, kind3,
-                                              kind4, kind5 )
+NEXT_METHOD_5ARGS := function ( operation, k, type1, type2, type3,
+                                              type4, type5 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 5 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/9]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[9*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1], kind5![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[9*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
+          and  methods[9*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1], type5![1] )
         then
             if k = j  then
                 return methods[9*(i-1)+7];
@@ -365,21 +365,21 @@ end;
 ##
 #F  NEXT_METHOD_6ARGS
 ##
-NEXT_METHOD_6ARGS := function ( operation, k, kind1, kind2, kind3,
-                                              kind4, kind5, kind6 )
+NEXT_METHOD_6ARGS := function ( operation, k, type1, type2, type3,
+                                              type4, type5, type6 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 6 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/10]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[10*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( kind6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1], kind5![1], kind6![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[10*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
+          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
+          and  methods[10*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1], type5![1], type6![1] )
         then
             if k = j  then
                 return methods[10*(i-1)+8];
@@ -434,13 +434,13 @@ end;
 ##
 #F  VMETHOD_1ARGS
 ##
-VMETHOD_1ARGS := function ( operation, kind1 )
+VMETHOD_1ARGS := function ( operation, type1 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 1 );
     for i  in [1..LEN_LIST(methods)/5]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[5*(i-1)+2] )
-          and methods[5*(i-1)+1]( kind1![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[5*(i-1)+2] )
+          and methods[5*(i-1)+1]( type1![1] )
         then
             Print( "#I  ", methods[5*(i-1)+5], "\n" );
             return methods[5*(i-1)+3];
@@ -455,14 +455,14 @@ end;
 ##
 #F  VMETHOD_2ARGS
 ##
-VMETHOD_2ARGS := function ( operation, kind1, kind2 )
+VMETHOD_2ARGS := function ( operation, type1, type2 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 2 );
     for i  in [1..LEN_LIST(methods)/6]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[6*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( kind1![1], kind2![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[6*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
+          and methods[6*(i-1)+1]( type1![1], type2![1] )
         then
             Print( "#I  ", methods[6*(i-1)+6], "\n" );
             return methods[6*(i-1)+4];
@@ -477,15 +477,15 @@ end;
 ##
 #F  VMETHOD_3ARGS
 ##
-VMETHOD_3ARGS := function ( operation, kind1, kind2, kind3 )
+VMETHOD_3ARGS := function ( operation, type1, type2, type3 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 3 );
     for i  in [1..LEN_LIST(methods)/7]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[7*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( kind1![1], kind2![1], kind3![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[7*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
+          and methods[7*(i-1)+1]( type1![1], type2![1], type3![1] )
         then
             Print( "#I  ", methods[7*(i-1)+7], "\n" );
             return methods[7*(i-1)+5];
@@ -500,18 +500,18 @@ end;
 ##
 #F  VMETHOD_4ARGS
 ##
-VMETHOD_4ARGS := function ( operation, kind1, kind2, kind3,
-                                      kind4 )
+VMETHOD_4ARGS := function ( operation, type1, type2, type3,
+                                      type4 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 4 );
     for i  in [1..LEN_LIST(methods)/8]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[8*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[8*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
+          and  methods[8*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1] )
         then
             Print( "#I  ", methods[8*(i-1)+8], "\n" );
             return methods[8*(i-1)+6];
@@ -526,19 +526,19 @@ end;
 ##
 #F  VMETHOD_5ARGS
 ##
-VMETHOD_5ARGS := function ( operation, kind1, kind2, kind3,
-                                      kind4, kind5 )
+VMETHOD_5ARGS := function ( operation, type1, type2, type3,
+                                      type4, type5 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 5 );
     for i  in [1..LEN_LIST(methods)/9]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[9*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1], kind5![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[9*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
+          and  methods[9*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1], type5![1] )
         then
             Print( "#I  ", methods[9*(i-1)+9], "\n" );
             return methods[9*(i-1)+7];
@@ -553,20 +553,20 @@ end;
 ##
 #F  VMETHOD_6ARGS
 ##
-VMETHOD_6ARGS := function ( operation, kind1, kind2, kind3,
-                                      kind4, kind5, kind6 )
+VMETHOD_6ARGS := function ( operation, type1, type2, type3,
+                                      type4, type5, type6 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 6 );
     for i  in [1..LEN_LIST(methods)/10]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[10*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( kind6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1], kind5![1], kind6![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[10*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
+          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
+          and  methods[10*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1], type5![1], type6![1] )
         then
             Print( "#I  ", methods[10*(i-1)+10], "\n" );
             return methods[10*(i-1)+8];
@@ -624,14 +624,14 @@ end;
 ##
 #F  NEXT_VMETHOD_1ARGS
 ##
-NEXT_VMETHOD_1ARGS := function ( operation, k, kind1 )
+NEXT_VMETHOD_1ARGS := function ( operation, k, type1 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 1 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/5]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[5*(i-1)+2] )
-          and methods[5*(i-1)+1]( kind1![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[5*(i-1)+2] )
+          and methods[5*(i-1)+1]( type1![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[5*(i-1)+5], "\n" );
@@ -650,15 +650,15 @@ end;
 ##
 #F  NEXT_VMETHOD_2ARGS
 ##
-NEXT_VMETHOD_2ARGS := function ( operation, k, kind1, kind2 )
+NEXT_VMETHOD_2ARGS := function ( operation, k, type1, type2 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 2 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/6]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[6*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( kind1![1], kind2![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[6*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
+          and methods[6*(i-1)+1]( type1![1], type2![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[6*(i-1)+6], "\n" );
@@ -677,16 +677,16 @@ end;
 ##
 #F  NEXT_VMETHOD_3ARGS
 ##
-NEXT_VMETHOD_3ARGS := function ( operation, k, kind1, kind2, kind3 )
+NEXT_VMETHOD_3ARGS := function ( operation, k, type1, type2, type3 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 3 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/7]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[7*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( kind1![1], kind2![1], kind3![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[7*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
+          and methods[7*(i-1)+1]( type1![1], type2![1], type3![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[7*(i-1)+7], "\n" );
@@ -705,19 +705,19 @@ end;
 ##
 #F  NEXT_VMETHOD_4ARGS
 ##
-NEXT_VMETHOD_4ARGS := function ( operation, k, kind1, kind2, kind3,
-                                              kind4 )
+NEXT_VMETHOD_4ARGS := function ( operation, k, type1, type2, type3,
+                                              type4 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 4 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/8]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[8*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[8*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
+          and  methods[8*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[8*(i-1)+8], "\n" );
@@ -736,20 +736,20 @@ end;
 ##
 #F  NEXT_VMETHOD_5ARGS
 ##
-NEXT_VMETHOD_5ARGS := function ( operation, k, kind1, kind2, kind3,
-                                              kind4, kind5 )
+NEXT_VMETHOD_5ARGS := function ( operation, k, type1, type2, type3,
+                                              type4, type5 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 5 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/9]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[9*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1], kind5![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[9*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
+          and  methods[9*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1], type5![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[9*(i-1)+9], "\n" );
@@ -768,21 +768,21 @@ end;
 ##
 #F  NEXT_VMETHOD_6ARGS
 ##
-NEXT_VMETHOD_6ARGS := function ( operation, k, kind1, kind2, kind3,
-                                              kind4, kind5, kind6 )
+NEXT_VMETHOD_6ARGS := function ( operation, k, type1, type2, type3,
+                                              type4, type5, type6 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 6 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/10]  do
-        if    IS_SUBSET_FLAGS( kind1![2], methods[10*(i-1)+2] )
-          and IS_SUBSET_FLAGS( kind2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( kind6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( kind1![1], kind2![1], kind3![1],
-                                   kind4![1], kind5![1], kind6![1] )
+        if    IS_SUBSET_FLAGS( type1![2], methods[10*(i-1)+2] )
+          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
+          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
+          and  methods[10*(i-1)+1]( type1![1], type2![1], type3![1],
+                                   type4![1], type5![1], type6![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[10*(i-1)+10], "\n" );
@@ -857,14 +857,14 @@ end;
 ##
 #F  CONSTRUCTOR_2ARGS
 ##
-CONSTRUCTOR_2ARGS := function ( operation, flags1, kind2 )
+CONSTRUCTOR_2ARGS := function ( operation, flags1, type2 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 2 );
     for i  in [1..LEN_LIST(methods)/6]  do
         if    IS_SUBSET_FLAGS( methods[6*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( flags1, kind2![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
+          and methods[6*(i-1)+1]( flags1, type2![1] )
         then
             return methods[6*(i-1)+4];
         fi;
@@ -878,15 +878,15 @@ end;
 ##
 #F  CONSTRUCTOR_3ARGS
 ##
-CONSTRUCTOR_3ARGS := function ( operation, flags1, kind2, kind3 )
+CONSTRUCTOR_3ARGS := function ( operation, flags1, type2, type3 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 3 );
     for i  in [1..LEN_LIST(methods)/7]  do
         if    IS_SUBSET_FLAGS( methods[7*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( flags1, kind2![1], kind3![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
+          and methods[7*(i-1)+1]( flags1, type2![1], type3![1] )
         then
             return methods[7*(i-1)+5];
         fi;
@@ -900,18 +900,18 @@ end;
 ##
 #F  CONSTRUCTOR_4ARGS
 ##
-CONSTRUCTOR_4ARGS := function ( operation, flags1, kind2, kind3,
-                                      kind4 )
+CONSTRUCTOR_4ARGS := function ( operation, flags1, type2, type3,
+                                      type4 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 4 );
     for i  in [1..LEN_LIST(methods)/8]  do
         if    IS_SUBSET_FLAGS( methods[8*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
+          and  methods[8*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1] )
         then
             return methods[8*(i-1)+6];
         fi;
@@ -925,19 +925,19 @@ end;
 ##
 #F  CONSTRUCTOR_5ARGS
 ##
-CONSTRUCTOR_5ARGS := function ( operation, flags1, kind2, kind3,
-                                      kind4, kind5 )
+CONSTRUCTOR_5ARGS := function ( operation, flags1, type2, type3,
+                                      type4, type5 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 5 );
     for i  in [1..LEN_LIST(methods)/9]  do
         if    IS_SUBSET_FLAGS( methods[9*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1], kind5![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
+          and  methods[9*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1], type5![1] )
         then
             return methods[9*(i-1)+7];
         fi;
@@ -951,20 +951,20 @@ end;
 ##
 #F  CONSTRUCTOR_6ARGS
 ##
-CONSTRUCTOR_6ARGS := function ( operation, flags1, kind2, kind3,
-                                      kind4, kind5, kind6 )
+CONSTRUCTOR_6ARGS := function ( operation, flags1, type2, type3,
+                                      type4, type5, type6 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 6 );
     for i  in [1..LEN_LIST(methods)/10]  do
         if    IS_SUBSET_FLAGS( methods[10*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( kind6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1], kind5![1], kind6![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
+          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
+          and  methods[10*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1], type5![1], type6![1] )
         then
             return methods[10*(i-1)+8];
         fi;
@@ -1044,15 +1044,15 @@ end;
 ##
 #F  NEXT_CONSTRUCTOR_2ARGS
 ##
-NEXT_CONSTRUCTOR_2ARGS := function ( operation, k, flags1, kind2 )
+NEXT_CONSTRUCTOR_2ARGS := function ( operation, k, flags1, type2 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 2 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/6]  do
         if    IS_SUBSET_FLAGS( methods[6*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( flags1, kind2![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
+          and methods[6*(i-1)+1]( flags1, type2![1] )
         then
             if k = j  then
                 return methods[6*(i-1)+4];
@@ -1070,16 +1070,16 @@ end;
 ##
 #F  NEXT_CONSTRUCTOR_3ARGS
 ##
-NEXT_CONSTRUCTOR_3ARGS := function ( operation, k, flags1, kind2, kind3 )
+NEXT_CONSTRUCTOR_3ARGS := function ( operation, k, flags1, type2, type3 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 3 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/7]  do
         if    IS_SUBSET_FLAGS( methods[7*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( flags1, kind2![1], kind3![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
+          and methods[7*(i-1)+1]( flags1, type2![1], type3![1] )
         then
             if k = j  then
                 return methods[7*(i-1)+5];
@@ -1097,19 +1097,19 @@ end;
 ##
 #F  NEXT_CONSTRUCTOR_4ARGS
 ##
-NEXT_CONSTRUCTOR_4ARGS := function ( operation, k, flags1, kind2, kind3,
-                                              kind4 )
+NEXT_CONSTRUCTOR_4ARGS := function ( operation, k, flags1, type2, type3,
+                                              type4 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 4 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/8]  do
         if    IS_SUBSET_FLAGS( methods[8*(i-1)+2], flags1 )
-          and IS_SUBSET_FLAGS( kind2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
+          and  methods[8*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1] )
         then
             if k = j  then
                 return methods[8*(i-1)+6];
@@ -1127,20 +1127,20 @@ end;
 ##
 #F  NEXT_CONSTRUCTOR_5ARGS
 ##
-NEXT_CONSTRUCTOR_5ARGS := function ( operation, k, flags1, kind2, kind3,
-                                              kind4, kind5 )
+NEXT_CONSTRUCTOR_5ARGS := function ( operation, k, flags1, type2, type3,
+                                              type4, type5 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 5 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/9]  do
         if    IS_SUBSET_FLAGS( methods[9*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1], kind5![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
+          and  methods[9*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1], type5![1] )
         then
             if k = j  then
                 return methods[9*(i-1)+7];
@@ -1158,21 +1158,21 @@ end;
 ##
 #F  NEXT_CONSTRUCTOR_6ARGS
 ##
-NEXT_CONSTRUCTOR_6ARGS := function ( operation, k, flags1, kind2, kind3,
-                                              kind4, kind5, kind6 )
+NEXT_CONSTRUCTOR_6ARGS := function ( operation, k, flags1, type2, type3,
+                                              type4, type5, type6 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 6 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/10]  do
         if    IS_SUBSET_FLAGS(  methods[10*(i-1)+2], flags1   )
-          and IS_SUBSET_FLAGS( kind2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( kind6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1], kind5![1], kind6![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
+          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
+          and  methods[10*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1], type5![1], type6![1] )
         then
             if k = j  then
                 return methods[10*(i-1)+8];
@@ -1248,14 +1248,14 @@ end;
 ##
 #F  VCONSTRUCTOR_2ARGS
 ##
-VCONSTRUCTOR_2ARGS := function ( operation, flags1, kind2 )
+VCONSTRUCTOR_2ARGS := function ( operation, flags1, type2 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 2 );
     for i  in [1..LEN_LIST(methods)/6]  do
         if    IS_SUBSET_FLAGS( methods[6*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( flags1, kind2![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
+          and methods[6*(i-1)+1]( flags1, type2![1] )
         then
             Print( "#I  ", methods[6*(i-1)+6], "\n" );
             return methods[6*(i-1)+4];
@@ -1270,15 +1270,15 @@ end;
 ##
 #F  VCONSTRUCTOR_3ARGS
 ##
-VCONSTRUCTOR_3ARGS := function ( operation, flags1, kind2, kind3 )
+VCONSTRUCTOR_3ARGS := function ( operation, flags1, type2, type3 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 3 );
     for i  in [1..LEN_LIST(methods)/7]  do
         if    IS_SUBSET_FLAGS( methods[7*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( flags1, kind2![1], kind3![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
+          and methods[7*(i-1)+1]( flags1, type2![1], type3![1] )
         then
             Print( "#I  ", methods[7*(i-1)+7], "\n" );
             return methods[7*(i-1)+5];
@@ -1293,18 +1293,18 @@ end;
 ##
 #F  VCONSTRUCTOR_4ARGS
 ##
-VCONSTRUCTOR_4ARGS := function ( operation, flags1, kind2, kind3,
-                                      kind4 )
+VCONSTRUCTOR_4ARGS := function ( operation, flags1, type2, type3,
+                                      type4 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 4 );
     for i  in [1..LEN_LIST(methods)/8]  do
         if    IS_SUBSET_FLAGS( methods[8*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
+          and  methods[8*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1] )
         then
             Print( "#I  ", methods[8*(i-1)+8], "\n" );
             return methods[8*(i-1)+6];
@@ -1319,19 +1319,19 @@ end;
 ##
 #F  VCONSTRUCTOR_5ARGS
 ##
-VCONSTRUCTOR_5ARGS := function ( operation, flags1, kind2, kind3,
-                                      kind4, kind5 )
+VCONSTRUCTOR_5ARGS := function ( operation, flags1, type2, type3,
+                                      type4, type5 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 5 );
     for i  in [1..LEN_LIST(methods)/9]  do
         if    IS_SUBSET_FLAGS( methods[9*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1], kind5![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
+          and  methods[9*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1], type5![1] )
         then
             Print( "#I  ", methods[9*(i-1)+9], "\n" );
             return methods[9*(i-1)+7];
@@ -1346,20 +1346,20 @@ end;
 ##
 #F  VCONSTRUCTOR_6ARGS
 ##
-VCONSTRUCTOR_6ARGS := function ( operation, flags1, kind2, kind3,
-                                      kind4, kind5, kind6 )
+VCONSTRUCTOR_6ARGS := function ( operation, flags1, type2, type3,
+                                      type4, type5, type6 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 6 );
     for i  in [1..LEN_LIST(methods)/10]  do
         if    IS_SUBSET_FLAGS( methods[10*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( kind6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1], kind5![1], kind6![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
+          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
+          and  methods[10*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1], type5![1], type6![1] )
         then
             Print( "#I  ", methods[10*(i-1)+10], "\n" );
             return methods[10*(i-1)+8];
@@ -1443,15 +1443,15 @@ end;
 ##
 #F  NEXT_VCONSTRUCTOR_2ARGS
 ##
-NEXT_VCONSTRUCTOR_2ARGS := function ( operation, k, flags1, kind2 )
+NEXT_VCONSTRUCTOR_2ARGS := function ( operation, k, flags1, type2 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 2 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/6]  do
         if    IS_SUBSET_FLAGS( methods[6*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( flags1, kind2![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
+          and methods[6*(i-1)+1]( flags1, type2![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[6*(i-1)+6], "\n" );
@@ -1470,16 +1470,16 @@ end;
 ##
 #F  NEXT_VCONSTRUCTOR_3ARGS
 ##
-NEXT_VCONSTRUCTOR_3ARGS := function ( operation, k, flags1, kind2, kind3 )
+NEXT_VCONSTRUCTOR_3ARGS := function ( operation, k, flags1, type2, type3 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 3 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/7]  do
         if    IS_SUBSET_FLAGS( methods[7*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( flags1, kind2![1], kind3![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
+          and methods[7*(i-1)+1]( flags1, type2![1], type3![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[7*(i-1)+7], "\n" );
@@ -1498,19 +1498,19 @@ end;
 ##
 #F  NEXT_VCONSTRUCTOR_4ARGS
 ##
-NEXT_VCONSTRUCTOR_4ARGS := function ( operation, k, flags1, kind2, kind3,
-                                              kind4 )
+NEXT_VCONSTRUCTOR_4ARGS := function ( operation, k, flags1, type2, type3,
+                                              type4 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 4 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/8]  do
         if    IS_SUBSET_FLAGS( methods[8*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
+          and  methods[8*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[8*(i-1)+8], "\n" );
@@ -1529,20 +1529,20 @@ end;
 ##
 #F  NEXT_VCONSTRUCTOR_5ARGS
 ##
-NEXT_VCONSTRUCTOR_5ARGS := function ( operation, k, flags1, kind2, kind3,
-                                              kind4, kind5 )
+NEXT_VCONSTRUCTOR_5ARGS := function ( operation, k, flags1, type2, type3,
+                                              type4, type5 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 5 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/9]  do
         if    IS_SUBSET_FLAGS( methods[9*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1], kind5![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
+          and  methods[9*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1], type5![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[9*(i-1)+9], "\n" );
@@ -1561,21 +1561,21 @@ end;
 ##
 #F  NEXT_VCONSTRUCTOR_6ARGS
 ##
-NEXT_VCONSTRUCTOR_6ARGS := function ( operation, k, flags1, kind2, kind3,
-                                              kind4, kind5, kind6 )
+NEXT_VCONSTRUCTOR_6ARGS := function ( operation, k, flags1, type2, type3,
+                                              type4, type5, type6 )
     local   methods, i, j;
 
     methods := METHODS_OPERATION( operation, 6 );
     j := 0;
     for i  in [1..LEN_LIST(methods)/10]  do
         if    IS_SUBSET_FLAGS( methods[10*(i-1)+2], flags1    )
-          and IS_SUBSET_FLAGS( kind2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( kind3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( kind4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( kind5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( kind6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( flags1, kind2![1], kind3![1],
-                                   kind4![1], kind5![1], kind6![1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
+          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
+          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
+          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
+          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
+          and  methods[10*(i-1)+1]( flags1, type2![1], type3![1],
+                                   type4![1], type5![1], type6![1] )
         then
             if k = j  then
                 Print( "#I  trying next: ", methods[10*(i-1)+10], "\n" );

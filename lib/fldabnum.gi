@@ -40,7 +40,7 @@ AbelianNumberFieldByReducedGaloisStabilizerInfo := function( F, N, stab )
 
     local D, d;
 
-    D:= Objectify( NewKind( CollectionsFamily( CyclotomicsFamily ),
+    D:= Objectify( NewType( CollectionsFamily( CyclotomicsFamily ),
                                 IsField
                             and IsFiniteDimensional
                             and IsAbelianNumberField
@@ -1132,7 +1132,7 @@ InstallMethod( CanonicalBasis,
           l;
 
     # Make the basis object.
-    B:= Objectify( NewKind( FamilyObj( F ),
+    B:= Objectify( NewType( FamilyObj( F ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsCanonicalBasisAbelianNumberFieldRep ),
@@ -1405,7 +1405,7 @@ InstallMethod( CanonicalBasis,
 
     n:= Conductor( F );
 
-    B:= Objectify( NewKind( FamilyObj( F ),
+    B:= Objectify( NewType( FamilyObj( F ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsCanonicalBasisCyclotomicFieldRep ),
@@ -1649,7 +1649,7 @@ InstallMethod( Coefficients,
 ##
 #V  Cyclotomics . . . . . . . . . . . . . . . . . .  field of all cyclotomics
 ##
-Cyclotomics := Objectify( NewKind( CollectionsFamily( CyclotomicsFamily ),
+Cyclotomics := Objectify( NewType( CollectionsFamily( CyclotomicsFamily ),
                                    IsField and IsAttributeStoringRep ),
                           rec() );
 SetName( Cyclotomics, "Cyclotomics" );
@@ -1721,7 +1721,7 @@ ANFAutomorphism := function ( F, k )
     fi;
 
     # make the mapping
-    aut:= Objectify( KindOfDefaultGeneralMapping( F, F,
+    aut:= Objectify( TypeOfDefaultGeneralMapping( F, F,
                              IsSPGeneralMapping
                          and IsANFAutomorphism ),
                      rec() );

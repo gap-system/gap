@@ -18,7 +18,7 @@ char * Revision_objfgelm_h =
 *D  AWP_SOMETHING
 */
 #define AWP_FIRST_ENTRY          5
-#define AWP_PURE_KIND 		 (AWP_FIRST_ENTRY+0)
+#define AWP_PURE_TYPE            (AWP_FIRST_ENTRY+0)
 #define AWP_NR_BITS_EXP          (AWP_FIRST_ENTRY+1)
 #define AWP_NR_GENS              (AWP_FIRST_ENTRY+2)
 #define AWP_NR_BITS_PAIR         (AWP_FIRST_ENTRY+3)
@@ -30,34 +30,34 @@ char * Revision_objfgelm_h =
 /****************************************************************************
 **
 
-*F  BITS_WORDKIND( <kind> )
+*F  BITS_WORDTYPE( <kind> )
 */
-#define BITS_WORDKIND( kind ) \
+#define BITS_WORDTYPE( kind ) \
     ( INT_INTOBJ( ELM_PLIST( (kind), AWP_NR_BITS_PAIR ) ) )
 
 
 /****************************************************************************
 **
-*F  EBITS_WORDKIND( <kind> )
+*F  EBITS_WORDTYPE( <kind> )
 */
-#define EBITS_WORDKIND( kind ) \
+#define EBITS_WORDTYPE( kind ) \
     ( INT_INTOBJ( ELM_PLIST( (kind), AWP_NR_BITS_EXP ) ) )
 
 
 /****************************************************************************
 **
-*F  RANK_WORDKIND( <kind> )
+*F  RANK_WORDTYPE( <kind> )
 */
-#define RANK_WORDKIND( kind ) \
+#define RANK_WORDTYPE( kind ) \
     ( INT_INTOBJ( ELM_PLIST( (kind), AWP_NR_GENS ) ) )
 
 
 /****************************************************************************
 **
-*F  PUREKIND_WORDKIND( <kind> )
+*F  PURETYPE_WORDTYPE( <kind> )
 */
-#define PUREKIND_WORDKIND( kind ) \
-    ( ELM_PLIST( (kind), AWP_PURE_KIND ) )
+#define PURETYPE_WORDTYPE( kind ) \
+    ( ELM_PLIST( (kind), AWP_PURE_TYPE ) )
 
 
 /****************************************************************************
@@ -66,7 +66,7 @@ char * Revision_objfgelm_h =
 *F  BITS_WORD( <word> )
 */
 #define BITS_WORD( word ) \
-    ( BITS_WORDKIND( KIND_DATOBJ( (word) ) ) )
+    ( BITS_WORDTYPE( TYPE_DATOBJ( (word) ) ) )
 
 
 /****************************************************************************
@@ -84,7 +84,7 @@ char * Revision_objfgelm_h =
 *F  EBITS_WORD( <word> )
 */
 #define EBITS_WORD( word ) \
-    ( EBITS_WORDKIND( KIND_DATOBJ( (word) ) ) )
+    ( EBITS_WORDTYPE( TYPE_DATOBJ( (word) ) ) )
 
 
 /****************************************************************************
@@ -103,15 +103,15 @@ char * Revision_objfgelm_h =
 *F  RANK_WORD( <word> )
 */
 #define RANK_WORD( word ) \
-    ( RANK_WORDKIND( KIND_DATOBJ( (word) ) ) )
+    ( RANK_WORDTYPE( TYPE_DATOBJ( (word) ) ) )
 
 
 /****************************************************************************
 **
-*F  PUREKIND_WORD( <word> )
+*F  PURETYPE_WORD( <word> )
 */
-#define PUREKIND_WORD( word ) \
-    ( PUREKIND_WORDKIND( KIND_DATOBJ( (word) ) ) )
+#define PURETYPE_WORD( word ) \
+    ( PURETYPE_WORDTYPE( TYPE_DATOBJ( (word) ) ) )
 
 
 /****************************************************************************
@@ -124,9 +124,9 @@ char * Revision_objfgelm_h =
 **  <word>.
 */
 #define NEW_WORD( word, kind, npairs ) \
- ((word)=NewBag(T_DATOBJ,2*sizeof(Obj)+((npairs)*BITS_WORDKIND((kind))/8L)),\
+ ((word)=NewBag(T_DATOBJ,2*sizeof(Obj)+((npairs)*BITS_WORDTYPE((kind))/8L)),\
   (ADDR_OBJ((word))[1] = INTOBJ_INT((npairs))),\
-  SET_KIND_DATOBJ( (word), (kind) ), (word) )
+  SET_TYPE_DATOBJ( (word), (kind) ), (word) )
 
 
 /****************************************************************************

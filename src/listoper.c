@@ -15,7 +15,7 @@ char *          Revision_listoper_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -23,7 +23,7 @@ char *          Revision_listoper_c =
 #include        "calls.h"               /* NewFunctionC                    */
 
 #include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* XType, LEN_LIST, ELM_LIST,  ... */
+#include        "lists.h"               /* XTNum, LEN_LIST, ELM_LIST,  ... */
 
 #include        "bool.h"                /* True, False                     */
 
@@ -198,7 +198,7 @@ Obj             SumList (
     Obj                 listL,
     Obj                 listR )
 {
-    return (*SumFuncs[XType(listL)][XType(listR)])( listL, listR );
+    return (*SumFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
 }
 
 Obj             SumSclList (
@@ -338,7 +338,7 @@ Obj             SumListListHandler (
 Obj             ZeroList (
     Obj                 list )
 {
-    return (*ZeroFuncs[XType(list)])( list );
+    return (*ZeroFuncs[XTNum(list)])( list );
 }
 
 Obj             ZeroListDefault (
@@ -393,7 +393,7 @@ Obj             ZeroListDefaultHandler (
 Obj             AInvList (
     Obj                 list )
 {
-    return (*AInvFuncs[XType(list)])( list );
+    return (*AInvFuncs[XTNum(list)])( list );
 }
 
 Obj             AInvListDefault (
@@ -458,7 +458,7 @@ Obj             DiffList (
     Obj                 listL,
     Obj                 listR )
 {
-    return (*DiffFuncs[XType(listL)][XType(listR)])( listL, listR );
+    return (*DiffFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
 }
 
 Obj             DiffSclList (
@@ -614,7 +614,7 @@ Obj             ProdList (
     Obj                 listL,
     Obj                 listR )
 {
-    return (*ProdFuncs[XType(listL)][XType(listR)])( listL, listR );
+    return (*ProdFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
 }
 
 Obj             ProdSclList (
@@ -754,7 +754,7 @@ Obj             ProdListListHandler (
 Obj             OneList (
     Obj                 list )
 {
-    return (*OneFuncs[XType(list)])( list );
+    return (*OneFuncs[XTNum(list)])( list );
 }
 
 Obj             OneMatrix (
@@ -823,7 +823,7 @@ Obj             OneMatrixHandler (
 Obj             InvList (
     Obj                 list )
 {
-    return (*InvFuncs[XType(list)])( list );
+    return (*InvFuncs[XTNum(list)])( list );
 }
 
 Obj             InvMatrix (
@@ -951,7 +951,7 @@ Obj             QuoList (
     Obj                 listL,
     Obj                 listR )
 {
-    return (*QuoFuncs[XType(listL)][XType(listR)])( listL, listR );
+    return (*QuoFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
 }
 
 
@@ -970,7 +970,7 @@ Obj             LQuoList (
     Obj                 listL,
     Obj                 listR )
 {
-    return (*LQuoFuncs[XType(listL)][XType(listR)])( listL, listR );
+    return (*LQuoFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
 }
 
 
@@ -994,7 +994,7 @@ Obj             PowList (
     Obj                 listL,
     Obj                 listR )
 {
-    return (*PowFuncs[XType(listL)][XType(listR)])( listL, listR );
+    return (*PowFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
 }
 
 Obj             PowMatrixInt (
@@ -1005,22 +1005,22 @@ Obj             PowMatrixInt (
     UInt                i, k, l;        /* loop variables                  */
 
     /* if the integer is zero, return the neutral element of the operand   */
-    if      ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
+    if      ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  0 ) {
         res = OneMatrix( mat );
     }
 
     /* if the integer is one, return a copy of the operand                 */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
         res = CopyObj( mat, 0 );
     }
 
     /* if the integer is minus one, return the inverse of the operand      */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) == -1 ) {
         res = InvMatrix( mat );
     }
 
     /* if the integer is negative, invert the operand and the integer      */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) <  -1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) <  -1 ) {
         res = InvMatrix( mat );
         if ( res == Fail ) {
             return ErrorReturnObj(
@@ -1032,7 +1032,7 @@ Obj             PowMatrixInt (
     }
 
     /* if the integer is negative, invert the operand and the integer      */
-    else if ( TYPE_OBJ(n) == T_INTNEG ) {
+    else if ( TNUM_OBJ(n) == T_INTNEG ) {
         res = InvMatrix( mat );
         if ( res == Fail ) {
             return ErrorReturnObj(
@@ -1046,7 +1046,7 @@ Obj             PowMatrixInt (
     /* if the integer is small, compute the power by repeated squaring     */
     /* the loop invariant is <result> = <res>^<k> * <op>^<l>, <l> < <k>    */
     /* <res> = 0 means that <res> is the neutral element                   */
-    else if ( TYPE_OBJ(n) == T_INT && INT_INTOBJ(n) >   1 ) {
+    else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) >   1 ) {
         res = 0;
         k = 1L << 31;
         l = INT_INTOBJ(n);
@@ -1061,7 +1061,7 @@ Obj             PowMatrixInt (
     }
 
     /* if the integer is large, compute the power by repeated squaring     */
-    else if ( TYPE_OBJ(n) == T_INTPOS ) {
+    else if ( TNUM_OBJ(n) == T_INTPOS ) {
         res = 0;
         for ( i = SIZE_OBJ(n)/sizeof(TypDigit); 0 < i; i-- ) {
             k = 1L << (8*sizeof(TypDigit));
@@ -1107,7 +1107,7 @@ Obj             CommList (
     Obj                 listL,
     Obj                 listR )
 {
-    return (*CommFuncs[XType(listL)][XType(listR)])( listL, listR );
+    return (*CommFuncs[XTNum(listL)][XTNum(listR)])( listL, listR );
 }
 
 
@@ -1121,7 +1121,7 @@ Obj             CommList (
 **  C = constant, R = record, L = list,   X = extrnl, V = virtual
 **
 **  s = scalar, v = vector, m = matrix, e = empty,  - = nothing
-**  i = incomplete type (call 'XType' and try again), ] = end marker
+**  i = incomplete type (call 'XTNum' and try again), ] = end marker
 **
 ** 0    0    1    1    2    2    3    3    4    4    5    5    6    6
 ** 0    5    0    5    0    5    0    5    0    5    0    5    0    5
@@ -1135,31 +1135,31 @@ void InitListOper ( void )
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
 
-    /* check that <CAT> is consistent with the number LAST_VIRTUAL_TYPE    */
-    if ( CAT[LAST_VIRTUAL_TYPE+1] != ']' ) {
-	SyFputs( "panic: <CAT> in file \"listoper.c\" is corrupted\n", 1 );
-	exit(0);
+    /* check that <CAT> is consistent with the number LAST_VIRTUAL_TNUM    */
+    if ( CAT[LAST_VIRTUAL_TNUM+1] != ']' ) {
+        SyFputs( "panic: <CAT> in file \"listoper.c\" is corrupted\n", 1 );
+        exit(0);
     }
 
     /* install the generic comparisons                                     */
-    for ( t1 = FIRST_LIST_TYPE; t1 <= LAST_LIST_TYPE; t1++ ) {
-        for ( t2 = FIRST_LIST_TYPE; t2 <= LAST_LIST_TYPE; t2++ ) {
+    for ( t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
+        for ( t2 = FIRST_LIST_TNUM; t2 <= LAST_LIST_TNUM; t2++ ) {
             EqFuncs[ t1 ][ t2 ] = EqListList;
         }
     }
-    for ( t1 = FIRST_LIST_TYPE; t1 <= LAST_LIST_TYPE; t1++ ) {
-        for ( t2 = FIRST_LIST_TYPE; t2 <= LAST_LIST_TYPE; t2++ ) {
+    for ( t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
+        for ( t2 = FIRST_LIST_TNUM; t2 <= LAST_LIST_TNUM; t2++ ) {
             LtFuncs[ t1 ][ t2 ] = LtListList;
         }
     }
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_LIST_TYPE; t1++ ) {
-        for ( t2 = FIRST_LIST_TYPE; t2 <= LAST_LIST_TYPE; t2++ ) {
+    for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
+        for ( t2 = FIRST_LIST_TNUM; t2 <= LAST_LIST_TNUM; t2++ ) {
             InFuncs[ t1 ][ t2 ] = InList;
         }
     }
 
     /* install generic methods for list operations                         */
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_VIRTUAL_TYPE; t1++ ) {
+    for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_VIRTUAL_TNUM; t1++ ) {
 
         if ( CAT[t1] == '-' )
             continue;
@@ -1190,7 +1190,7 @@ void InitListOper ( void )
             PowFuncs [t1][T_INTNEG] = PowMatrixInt;
         }
 
-        for ( t2 = FIRST_REAL_TYPE; t2 <= LAST_VIRTUAL_TYPE; t2++ ){
+        for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ){
 
             if      ( CAT[t1] == '-' || CAT[t2] == '-' )
                 continue;
@@ -1345,5 +1345,5 @@ void InitListOper ( void )
 /****************************************************************************
 **
 
-*E  listoper.c 	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*E  listoper.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -4,6 +4,7 @@
 ##
 ReadLib( "tuples.gd"   );
 
+ReadLib( "rvecempt.gd" );
 ReadLib( "matrix.gd"   );
 
 ReadLib( "domain.gd"   );
@@ -107,7 +108,8 @@ ReadLib( "oprtglat.gd" );
 
 # files dealing with fp groups
 ReadLib( "grpfp.gd"    );
-ReadLib( "grpfpsgp.gd" );
+ReadLib( "sgpres.gd" );
+ReadLib( "tietze.gd" );
 
 
 # files dealing with trees and hash tables
@@ -137,3 +139,8 @@ ReadLib( "grpffmat.gd" );
 # group library
 ReadGrp( "basic.gd"    );
 ReadGrp( "perf.gd"     );
+ReadSmall( "small.gd" );
+
+# group constructions
+ReadLib( "frattfree.gd" );
+ReadLib( "frattext.gd" );

@@ -1,118 +1,118 @@
 
 extern void  UnmarkTree(
-		  Obj   z );
+                  Obj   z );
 
 
 extern UInt   Mark(
-	    Obj   tree,
-	    Obj   reftree,
-	    int   index  );
+            Obj   tree,
+            Obj   reftree,
+            int   index  );
 
 
 extern int     AlmostEqual(
-		     Obj    tree1,
-		     int    index1,
-		     Obj    tree2,
-		     int    index2    );
+                     Obj    tree1,
+                     int    index1,
+                     Obj    tree2,
+                     int    index2    );
 
 
 extern int     Equal(
-	       Obj     tree1,
-	       int     index1,
-	       Obj     tree2,
-	       int     index2   );
+               Obj     tree1,
+               int     index1,
+               Obj     tree2,
+               int     index2   );
 
 
 
 extern Obj    Mark2(
-	      Obj        tree,
-	      int        index1,
-	      Obj        reftree,
-	      int        index2   );
+              Obj        tree,
+              int        index1,
+              Obj        reftree,
+              int        index2   );
 
 
 extern UInt    FindTree(
-		 Obj     tree,
-		 int     index );
+                 Obj     tree,
+                 int     index );
 
 
 extern Obj    MakeFormulaVector(
-			  Obj    tree,
-			  Obj    pr   );
+                          Obj    tree,
+                          Obj    pr   );
 
 
 extern Obj  binomial(
-	       Obj     n,
-	       Obj     k    );
+               Obj     n,
+               Obj     k    );
 
 
 extern int     Leftof(
-	        Obj     tree1,
-	        int     index1,
-	        Obj     tree2,
-	        int     index2    );
+                Obj     tree1,
+                int     index1,
+                Obj     tree2,
+                int     index2    );
 
 
 
 extern int    Leftof2(
-	        Obj    tree1,
-	        int    index1,
-	        Obj    tree2,
-	        int    index2     );
+                Obj    tree1,
+                int    index1,
+                Obj    tree2,
+                int    index2     );
 
 
 
 extern int    Earlier(
-	        Obj    tree1,
-	        int    index1,
-	        Obj    tree2,
-	        int    index2         );
+                Obj    tree1,
+                int    index1,
+                Obj    tree2,
+                int    index2         );
 
 extern void   FindNewReps(
-		    Obj     tree,
-		    Obj     reps,
-		    Obj     pr,
-		    Obj     max      );
+                    Obj     tree,
+                    Obj     reps,
+                    Obj     pr,
+                    Obj     max      );
 
 
 
 extern void  FindSubs(
-	        Obj        tree,
+                Obj        tree,
                 int        x,
                 Obj        list1,
                 Obj        list2,
                 Obj        a,
                 Obj        b,
                 int        al,
-	        int        ar,
-	        int        bl,
-	        int        br,
-	        Obj        reps,
-	        Obj        pr,
-	        Obj        max       );
+                int        ar,
+                int        bl,
+                int        br,
+                Obj        reps,
+                Obj        pr,
+                Obj        max       );
 
 
 
 extern void    SetSubs(
-		 Obj       list,
-		 Obj       a,
-		 Obj       tree    );
+                 Obj       list,
+                 Obj       a,
+                 Obj       tree    );
 
 
 
 extern void    UnmarkAEClass(
-		       Obj      tree,
-		       Obj      list  );
+                       Obj      tree,
+                       Obj      list  );
 
 
 extern void    TestTree(
-			 Obj     tree);
+                         Obj     tree);
 
 
 extern Obj      Part(
-		      Obj   list,
-		      int   pos1,
-		      int   pos2         );
+                      Obj   list,
+                      int   pos1,
+                      int   pos2         );
 
 
 
@@ -129,5 +129,5 @@ extern void MultGen(
 
 extern Obj Power(
                 Obj         x,
-	        Obj         n,
-	        Obj         pseudoreps     );
+                Obj         n,
+                Obj         pseudoreps     );

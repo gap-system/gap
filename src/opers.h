@@ -18,16 +18,49 @@ char *          Revision_opers_h =
 /****************************************************************************
 **
 
-*V  SET_FILTER_OBJ
+*V  SET_FILTER_OBJ  . . . . . . . . . . . .  library function to set a filter
 */
 extern Obj SET_FILTER_OBJ;
 
 
 /****************************************************************************
 **
-*V  RESET_FILTER_OBJ
+*V  RESET_FILTER_OBJ  . . . . . . . . . .  library function to reset a filter
 */
 extern Obj RESET_FILTER_OBJ;
+
+
+
+/****************************************************************************
+**
+*V  CountFlags  . . . . . . . . . . . . . . . . . . . . next free flag number
+*/
+extern Int CountFlags;
+
+
+/****************************************************************************
+**
+*F  RESERVE_FILTER( <filt>, <numr> )  . . . . . . . . reserve a filter number
+*/
+#define RESERVE_FILTER( filt, numr ) \
+    do { \
+        if ( CountFlags < numr )  CountFlags = numr; \
+        filt = INTOBJ_INT(numr); \
+    } \
+    while (0)
+
+
+/****************************************************************************
+**
+*F  RESERVE_PROPERTY( <filt>, <num1>, <num2> )  . . reserve a property number
+*/
+#define RESERVE_PROPERTY( filt, num1, num2 ) \
+    do { \
+        if ( CountFlags < num1 )  CountFlags = num1; \
+        if ( CountFlags < num2 )  CountFlags = num2; \
+        filt = INTOBJ_INT( (num1 << 10) + num2 ); \
+    } \
+    while (0)
 
 
 /****************************************************************************
@@ -239,8 +272,8 @@ extern Obj NewPropertyC (
 *F  ChangeDoOperations( <oper>, <verb> )
 */
 extern void ChangeDoOperations (
-  	    Obj                 oper,
-	    Int                 verb );
+            Obj                 oper,
+            Int                 verb );
 
 
 /****************************************************************************

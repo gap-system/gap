@@ -25,9 +25,9 @@ IsDirectoryRep := NewRepresentation(
 
 #############################################################################
 ##
-#V  DirectoryKind
+#V  DirectoryType
 ##
-DirectoryKind := NewKind(
+DirectoryType := NewType(
     DirectoriesFamily,
     IsDirectory and IsDirectoryRep );
 
@@ -52,7 +52,7 @@ function( str )
     else
         str := Immutable( Concatenation( str, "/" ) );
     fi;
-    return Objectify( DirectoryKind, [str] );
+    return Objectify( DirectoryType, [str] );
 end );
 
 

@@ -42,138 +42,24 @@ end;
 
 #############################################################################
 ##
-#F PermGroupCode( c ) . . . . . . . . . . . . . . .look up permgroup in table
+#F PermGroupCode( c, size ) . . . . . . . . . . . .look up permgroup in table
 ##
-PermGroupCode := function( c )
-    local size, nr, tab, g;
-
-    size := -c mod 1000;
-    nr   := QuoInt( -c, 1000 );
-    tab  := PermGroupTable[ size ][ nr ];
+PermGroupCode := function( c, size )
+    local tab, g;
+    tab  := PermGroupTable[ size ][ -c ];
     g    := Group( tab.gens, () );
     return g;
 end;
 
 #############################################################################
 ##
-#F  AgGroupCode( code ) . . . . . . . .construct ag-group from numerical code
+#F GroupCode( c, size ) . . . . . . . . . . . . . . . . . . . . . . . .decode
 ##
-AgGroupCode := function( code )
-    local n1, size, f, l, mi, n, t1, indices, gens, rels, g, i, 
-          uc, ll, rr, t, j, z, z2, result, F, rws, x;
-
-    # get the size
-    size:= code mod 1000;
-    if size = 0 then 
-        size := 1000;
-        code := code - 1000;
+GroupCode := function( c, size )
+    if c >= 0 then
+        return PcGroupCode( c, size );
     fi;
-    n := QuoInt( code, 1000 );
-
-    # single out 1-group
-    if size = 1 then
-        return Range( IsomorphismPcGroup( Group(()) ) );
-    fi;
-
-    # create free group
-    f := Factors(size);
-    l := Length(f);
-    F := FreeGroup( l );
-    gens := GeneratorsOfGroup( F );
-    rels := [];
-
-    # get relative orders
-    mi:= Maximum(f)-1;
-    if Length(Set(f)) > 1 then
-        if mi^l < 2^28 then
-            indices:=CoefficientsMultiadic(List([1..l], x->mi),n mod (mi^l))+2;
-        else
-            indices := [ ];
-            n1 := n mod (mi^l);
-            for i in Reversed( [1..l] ) do
-                indices[ i ] := ( n1 mod mi ) + 2;
-                n1 := QuoInt( n1, mi );
-            od;
-        fi;
-        n:=QuoInt(n,mi^l);
-    else
-        indices := f;
-    fi;
-
-    # create the collector for the free group
-    rws := SingleCollector( F, indices );
-
-    # set up non-trivial relators
-    ll:=l*(l+1)/2-1;
-    if ll < 28 then
-        uc:=Reversed(CoefficientsMultiadic(List([1..ll],x->2),n mod (2^ll)));
-    else
-        uc := [];
-        n1 := n mod (2^ll);
-        for i in [1..ll] do
-            uc[i] := n1 mod 2;
-            n1 := QuoInt( n1, 2 );
-        od;
-    fi;
-    n:=QuoInt(n,2^ll);
-
-    # construct non-trivial relators - get tails
-    rr   := [];
-    for i in [1..Sum(uc)] do
-        t:=CoefficientsMultiadic(indices,n mod size);
-        g:=gens[1]^0;
-        for j in [1..l] do
-            if t[j] > 0 then 
-                g:=g*gens[j]^t[j];
-            fi;
-        od;
-        Add(rr,g);
-        n:=QuoInt(n,size);
-    od;
-
-    # compute non-trivial power relators
-    z:=1;
-    for i in [1..l-1] do
-        if uc[i] = 1 then
-            Add( rels, [i, rr[z]] );
-            z:=z+1;
-        fi;
-    od;
-    z2:=l-1;
-
-    # compute non-trivial commutator relators
-    for i in [1..l] do
-        for j in [i+1..l] do
-            z2:=z2+1;
-            if uc[z2] = 1 then
-                Add( rels , [j, i, rr[z]] );
-                z:=z+1;
-            fi;
-        od;
-    od;
-
-    # introduce powers and commutators for the rws
-    for x  in rels  do
-        if 2 = Length(x)  then
-            SetPower( rws, x[1], x[2] );
-        else
-            SetCommutator( rws, x[1], x[2], x[3] );
-        fi;
-    od;
-
-    # create the group
-    return GroupByRwsNC( rws );
-end;
-
-#############################################################################
-##
-#F GroupCode( c ) . . . . . . . . . . . . . . . . . . . . . . . . . . .decode
-##
-GroupCode := function( c )
-    if c > 0 then
-        return AgGroupCode( c );
-    fi;
-    return PermGroupCode( c );
+    return PermGroupCode( c, size );
 end;
 
 #############################################################################
@@ -279,7 +165,7 @@ SmallGroup := function( size, nr )
     fi;
 
     # get the group
-    g := GroupCode( Table1000[ size ][ nr ] );
+    g := GroupCode( Table1000[ size ][ nr ], size );
     return g;
 end;
 

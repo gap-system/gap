@@ -139,7 +139,7 @@ InstallMethod( GroupGeneralMappingByImages, true,
     if IsSubgroupFpGroup(H) then
         filter := filter and IsToFpGroupGeneralMappingByImages;
     fi;
-    Objectify( NewKind( GeneralMappingsFamily
+    Objectify( NewType( GeneralMappingsFamily
             ( ElementsFamily( FamilyObj( G ) ),
               ElementsFamily( FamilyObj( H ) ) ), filter ), hom );
     SetSource( hom, G );
@@ -405,7 +405,7 @@ InstallMethod( InnerAutomorphism, IsCollsElms,
     local   fam,  inn;
     
     fam := ElementsFamily( FamilyObj( G ) );
-    inn := Objectify( NewKind( GeneralMappingsFamily( fam, fam ),
+    inn := Objectify( NewType( GeneralMappingsFamily( fam, fam ),
                    IsInnerAutomorphismRep ),
                    rec( conjugator := g ) );
     SetSource( inn, G );

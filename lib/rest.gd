@@ -14,13 +14,13 @@ Revision.rest_gd :=
 
 # Flags
 FlagsFamily := NewFamily( "FlagsFamily", IsObject );
-KIND_FLAGS  := NewKind(    FlagsFamily,  IsInternalRep );
+TYPE_FLAGS  := NewType(    FlagsFamily,  IsInternalRep );
 
 
 # Functions
 
 FunctionsFamily         := NewFamily(  "FunctionsFamily", IsFunction );
-KIND_FUNCTION           := NewKind(     FunctionsFamily,
+TYPE_FUNCTION           := NewType(     FunctionsFamily,
                             IsFunction and IsInternalRep );
 
 # Integers, Rationals, and Cyclotomics
@@ -108,12 +108,12 @@ IsString := NewCategoryKernel(
     IsDenseList,
     IS_STRING_CONV );
 
-##  Note that empty list and empty string have the same kind,
-##  the only way to distinguish them is via 'TYPE_OBJ'.
+##  Note that empty list and empty string have the same type,
+##  the only way to distinguish them is via 'TNUM_OBJ'.
 IsEmptyString := function( obj )
     return     IsString( obj )
            and IsEmpty( obj )
-           and TYPE_OBJ( obj ) = TYPE_OBJ( "" );
+           and TNUM_OBJ( obj ) = TNUM_OBJ( "" );
 end;
 
 ConvertToStringRep      := CONV_STRING;
@@ -129,10 +129,9 @@ IsRange := NewCategoryKernel(
 
 #F  ListSortedList(<list>)
 ##
-##  'ListSortedList' returns a sorted list, containing the same elements as
-##  the list <list> (which may have holes).
-##  If <list> is already sorted, 'ListSortedList' returns <list> directly.
-##  Otherwise it makes a shallow copy, sorts it, and removes duplicates.
+##  'ListSortedList' returns a strictly sorted list containing the same
+##  elements as the list <list> (which may have holes).
+##  'ListSortedList' makes a shallow copy, sorts it, and removes duplicates.
 ##  'ListSortedList' is an internal function.
 ##
 ListSortedList          := LIST_SORTED_LIST;

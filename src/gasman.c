@@ -171,7 +171,7 @@ char * Revision_gasman_c =
 **  The *size-type word* contains the size of the bag in the upper  (at least
 **  24) bits, and the type (abbreviated as <tp> in the  above picture) in the
 **  lower 8  bits.  Thus 'SIZE_BAG'   simply extracts the size-type  word and
-**  shifts it 8 bits to the right, and 'TYPE_BAG' extracts the size-type word
+**  shifts it 8 bits to the right, and 'TNUM_BAG' extracts the size-type word
 **  and masks out everything except the lower 8 bits.
 **
 **  The  *link word* usually   contains the identifier of  the  bag,  i.e., a
@@ -401,7 +401,7 @@ UInt                    SizeDeadBags;
 **
 *V  InfoBags[<type>]  . . . . . . . . . . . . . . . . .  information for bags
 */
-TypeInfoBags            InfoBags [ 256 ];
+TNumInfoBags            InfoBags [ 256 ];
 
 
 /****************************************************************************
@@ -411,10 +411,10 @@ TypeInfoBags            InfoBags [ 256 ];
 **  'InitMsgsFuncBags'  simply  stores  the  printing  function  in a  global
 **  variable.
 */
-TypeMsgsFuncBags        MsgsFuncBags;
+TNumMsgsFuncBags        MsgsFuncBags;
 
 void            InitMsgsFuncBags (
-    TypeMsgsFuncBags    msgs_func )
+    TNumMsgsFuncBags    msgs_func )
 {
     MsgsFuncBags = msgs_func;
 }
@@ -434,26 +434,26 @@ void            InitMsgsFuncBags (
 **  'MarkAllSubBagsDefault' is the same  as 'MarkAllSubBags' but is only used
 **  by GASMAN as default.  This will allow to catch type clashes.
 */
-TypeMarkFuncBags TabMarkFuncBags [ 256 ];
+TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 
 extern void MarkAllSubBagsDefault ( Bag );
 
 void InitMarkFuncBags (
     UInt                type,
-    TypeMarkFuncBags    mark_func )
+    TNumMarkFuncBags    mark_func )
 {
 #ifdef CHECK_FOR_CLASH_IN_INIT_MARK_FUNC
     char                str[256];
 
     if ( TabMarkFuncBags[type] != MarkAllSubBagsDefault ) {
-	str[0] = 0;
-	SyStrncat( str, "warning: mark function for type ", 32 );
-	str[32] = '0' + ((type/100) % 10);
-	str[33] = '0' + ((type/ 10) % 10);
-	str[34] = '0' + ((type/  1) % 10);
-	str[35] = 0;
-	SyStrncat( str, " already installed\n", 19 );
-	SyFputs( str, 0 );
+        str[0] = 0;
+        SyStrncat( str, "warning: mark function for type ", 32 );
+        str[32] = '0' + ((type/100) % 10);
+        str[33] = '0' + ((type/ 10) % 10);
+        str[34] = '0' + ((type/  1) % 10);
+        str[35] = 0;
+        SyStrncat( str, " already installed\n", 19 );
+        SyFputs( str, 0 );
     }
 #endif
     TabMarkFuncBags[type] = mark_func;
@@ -530,7 +530,7 @@ void CallbackForAllBags(
   for (ptr = (Bag)MptrBags; ptr < (Bag)OldBags; ptr ++)
     if (*ptr != 0)
       {
-	(*func)(ptr);
+        (*func)(ptr);
       }
 }
 
@@ -539,7 +539,7 @@ void CallbackForAllBags(
 **  
 *V  GlobalBags  . . . . . . . . . . . . . . . . . . . . . list of global bags
 */  
-TypeGlobalBags GlobalBags;
+TNumGlobalBags GlobalBags;
 
 
 /****************************************************************************
@@ -554,7 +554,7 @@ void InitGlobalBag (
     Bag *               addr,
     Char *              cookie )
 {
-    extern TypeAbortFuncBags   AbortFuncBags;
+    extern TNumAbortFuncBags   AbortFuncBags;
 
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
         (*AbortFuncBags)(
@@ -564,11 +564,11 @@ void InitGlobalBag (
     {
       UInt i;
       for (i = 0; i < GlobalBags.nr; i++)
-	if ( 0 == SyStrcmp(GlobalBags.cookie[i], cookie) )
-	  if (GlobalBags.addr[i] == addr)
-	    Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
-	  else
-	    Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0L);
+        if ( 0 == SyStrcmp(GlobalBags.cookie[i], cookie) )
+          if (GlobalBags.addr[i] == addr)
+            Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
+          else
+            Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0L);
     }
 #endif    
     GlobalBags.addr[GlobalBags.nr] = addr;
@@ -583,13 +583,13 @@ void InitGlobalBag (
 **
 **  'InitFreeFuncBag' is really too simple for an explanation.
 */
-TypeFreeFuncBags        TabFreeFuncBags [ 256 ];
+TNumFreeFuncBags        TabFreeFuncBags [ 256 ];
 
 UInt                    NrTabFreeFuncBags;
 
 void            InitFreeFuncBag (
     UInt                type,
-    TypeFreeFuncBags    free_func )
+    TNumFreeFuncBags    free_func )
 {
     if ( free_func != 0 ) {
         NrTabFreeFuncBags = NrTabFreeFuncBags + 1;
@@ -607,13 +607,13 @@ void            InitFreeFuncBag (
 **
 **  'InitCollectFuncBags' is really too simple for an explanation.
 */
-TypeCollectFuncBags     BeforeCollectFuncBags;
+TNumCollectFuncBags     BeforeCollectFuncBags;
 
-TypeCollectFuncBags     AfterCollectFuncBags;
+TNumCollectFuncBags     AfterCollectFuncBags;
 
 void            InitCollectFuncBags (
-    TypeCollectFuncBags before_func,
-    TypeCollectFuncBags after_func )
+    TNumCollectFuncBags before_func,
+    TNumCollectFuncBags after_func )
 {
     BeforeCollectFuncBags = before_func;
     AfterCollectFuncBags  = after_func;
@@ -629,9 +629,9 @@ void            InitCollectFuncBags (
 **  variables.   It also  allocates  the initial workspace,   and sets up the
 **  linked list of available masterpointer.
 */
-TypeAllocFuncBags       AllocFuncBags;
+TNumAllocFuncBags       AllocFuncBags;
 
-TypeStackFuncBags       StackFuncBags;
+TNumStackFuncBags       StackFuncBags;
 
 Bag *                   StackBottomBags;
 
@@ -641,17 +641,17 @@ UInt                    CacheSizeBags;
 
 UInt                    DirtyBags;
 
-TypeAbortFuncBags       AbortFuncBags;
+TNumAbortFuncBags       AbortFuncBags;
 
 void            InitBags (
-    TypeAllocFuncBags   alloc_func,
+    TNumAllocFuncBags   alloc_func,
     UInt                initial_size,
-    TypeStackFuncBags   stack_func,
+    TNumStackFuncBags   stack_func,
     Bag *               stack_bottom,
     UInt                stack_align,
     UInt                cache_size,
     UInt                dirty,
-    TypeAbortFuncBags   abort_func )
+    TNumAbortFuncBags   abort_func )
 {
     Bag *               p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
@@ -755,14 +755,14 @@ Bag NewBag (
 
     /* check the size                                                      */
     if ( (1L<<24) <= size ) {
-	(*AbortFuncBags)("Panic: NewBag called with size >= 2^24\n");
+        (*AbortFuncBags)("Panic: NewBag called with size >= 2^24\n");
     }
 
     /* check that a masterpointer and enough storage are available         */
     if ( (FreeMptrBags == 0 || StopBags < AllocBags+2+WORDS_BAG(size))
       && CollectBags( size, 0 ) == 0 )
     {
-	return 0;
+        return 0;
     }
 
 #ifdef  COUNT_BAGS
@@ -816,7 +816,7 @@ void            RetypeBag (
     UInt                size;           /* size of the bag                 */
 
     /* get old type and size of the bag                                    */
-    old_type = TYPE_BAG(bag);
+    old_type = TNUM_BAG(bag);
     size     = SIZE_BAG(bag);
 
 #ifdef  COUNT_BAGS
@@ -917,11 +917,11 @@ UInt ResizeBag (
 
     /* check the size                                                      */
     if ( (1L<<24) <= new_size ) {
-	(*AbortFuncBags)("Panic: NewBag called with size >= 2^24\n");
+        (*AbortFuncBags)("Panic: NewBag called with size >= 2^24\n");
     }
 
     /* get type and old size of the bag                                    */
-    type     = TYPE_BAG(bag);
+    type     = TNUM_BAG(bag);
     old_size = SIZE_BAG(bag);
 
 #ifdef  COUNT_BAGS
@@ -1333,7 +1333,7 @@ again:
         ChangedBags = PTR_BAG(first)[-1];
         PTR_BAG(first)[-1] = first;
         if ( PTR_BAG(first) <= YoungBags )
-            (*TabMarkFuncBags[TYPE_BAG(first)])( first );
+            (*TabMarkFuncBags[TNUM_BAG(first)])( first );
         else
             MARK_BAG(first);
     }
@@ -1350,22 +1350,22 @@ again:
             p += 2 + WORDS_BAG( *(UInt*)p >> 8 );
         }
         else {
-            (*TabMarkFuncBags[TYPE_BAG(p[1])])( p[1] );
-	    pos = 0;
+            (*TabMarkFuncBags[TNUM_BAG(p[1])])( p[1] );
+            pos = 0;
             while ( MarkedBags != OldMarkedBags ) {
-		Pr( "#W  Old bag (type %s, size %d, ",
-		    (Int)InfoBags[ TYPE_BAG(p[1]) ].name,
-		    (Int)SIZE_BAG(p[1]) );
-		Pr( "handle %d, pos %d) points to\n",
-		    (Int)p[1],
-		    (Int)pos );
-		Pr( "#W    new bag (type %s, size %d, ",
-		    (Int)InfoBags[ TYPE_BAG(MarkedBags) ].name,
-		    (Int)SIZE_BAG(MarkedBags) );
-		Pr( "handle %d)\n",
-		    (Int)MarkedBags,
-		    (Int)0 );
-		pos++;
+                Pr( "#W  Old bag (type %s, size %d, ",
+                    (Int)InfoBags[ TNUM_BAG(p[1]) ].name,
+                    (Int)SIZE_BAG(p[1]) );
+                Pr( "handle %d, pos %d) points to\n",
+                    (Int)p[1],
+                    (Int)pos );
+                Pr( "#W    new bag (type %s, size %d, ",
+                    (Int)InfoBags[ TNUM_BAG(MarkedBags) ].name,
+                    (Int)SIZE_BAG(MarkedBags) );
+                Pr( "handle %d)\n",
+                    (Int)MarkedBags,
+                    (Int)0 );
+                pos++;
                 first = PTR_BAG(MarkedBags)[-1];
                 PTR_BAG(MarkedBags)[-1] = MarkedBags;
                 MarkedBags = first;
@@ -1382,7 +1382,7 @@ again:
         first = MarkedBags;
         MarkedBags = PTR_BAG(first)[-1];
         PTR_BAG(first)[-1] = first + 1;
-        (*TabMarkFuncBags[TYPE_BAG(first)])( first );
+        (*TabMarkFuncBags[TNUM_BAG(first)])( first );
         nrLiveBags++;
         sizeLiveBags += SIZE_BAG(first);
     }
@@ -1673,14 +1673,14 @@ again:
 *F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
 */
 void SwapMasterPoint (
-    Bag			bag1,
-    Bag			bag2 )
+    Bag                 bag1,
+    Bag                 bag2 )
 {
     Bag *               ptr1;
     Bag *               ptr2;
 
     if ( bag1 == bag2 )
-	return;
+        return;
 
     /* get the pointers                                                    */
     ptr1 = PTR_BAG(bag1);
@@ -1688,16 +1688,16 @@ void SwapMasterPoint (
 
     /* check and update the link field and changed bags                    */
     if ( PTR_BAG(bag1)[-1] == bag1 && PTR_BAG(bag2)[-1] == bag2 ) {
-	PTR_BAG(bag1)[-1] = bag2;
-	PTR_BAG(bag2)[-1] = bag1;
+        PTR_BAG(bag1)[-1] = bag2;
+        PTR_BAG(bag2)[-1] = bag1;
     }
     else if ( PTR_BAG(bag1)[-1] == bag1 ) {
-	PTR_BAG(bag1)[-1] = ChangedBags;
-	ChangedBags = bag1; 
+        PTR_BAG(bag1)[-1] = ChangedBags;
+        ChangedBags = bag1; 
     }
     else if ( PTR_BAG(bag2)[-1] == bag2 ) {
-	PTR_BAG(bag2)[-1] = ChangedBags;
-	ChangedBags = bag2; 
+        PTR_BAG(bag2)[-1] = ChangedBags;
+        ChangedBags = bag2; 
     }
 
     /* swap them                                                           */
@@ -1713,20 +1713,20 @@ void SwapMasterPoint (
 *F  BID(<bag>)  . . . . . . . . . . . .  bag identifier (as unsigned integer)
 *F  IS_BAG(<bid>) . . . . . .  test whether a bag identifier identifies a bag
 *F  BAG(<bid>)  . . . . . . . . . . . . . . . . . . bag (from bag identifier)
-*F  TYPE_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . type of a bag
+*F  TNUM_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . type of a bag
 *F  SIZE_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . size of a bag
 *F  PTR_BAG(<bag>)  . . . . . . . . . . . . . . . . . . . .  pointer to a bag
 *F  ELM_BAG(<bag>,<i>)  . . . . . . . . . . . . . . . <i>-th element of a bag
 *F  SET_ELM_BAG(<bag>,<i>,<elm>)  . . . . . . . . set <i>-th element of a bag
 **
-**  'BID', 'IS_BAG', 'BAG', 'TYPE_BAG', 'TNAM_BAG', 'PTR_BAG', 'ELM_BAG', and
+**  'BID', 'IS_BAG', 'BAG', 'TNUM_BAG', 'TNAM_BAG', 'PTR_BAG', 'ELM_BAG', and
 **  'SET_ELM_BAG' are functions to support  debugging.  They are not intended
 **  to be used  in an application  using {\Gasman}.  Note  that the functions
-**  'TYPE_BAG', 'SIZE_BAG', and 'PTR_BAG' shadow the macros of the same name,
+**  'TNUM_BAG', 'SIZE_BAG', and 'PTR_BAG' shadow the macros of the same name,
 **  which are usually not available in a debugger.  */
 #ifdef  DEBUG_FUNCTIONS_BAGS
 
-#undef  TYPE_BAG
+#undef  TNUM_BAG
 #undef  SIZE_BAG
 #undef  PTR_BAG
 
@@ -1753,7 +1753,7 @@ Bag BAG (
         return (Bag) 0;
 }
 
-UInt TYPE_BAG (
+UInt TNUM_BAG (
     Bag                 bag )
 {
     return (*(*(bag)-2) & 0xFFL);

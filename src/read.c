@@ -17,7 +17,7 @@ char *          Revision_read_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* Tilde, VAL_GVAR, AssGVar        */
@@ -1209,7 +1209,7 @@ void            ReadUnbind (
 void            ReadInfo (
     TypSymbolSet        follow )
 {
-    volatile UInt narg;  	/* numer of arguments to print (or not) */
+    volatile UInt narg;         /* numer of arguments to print (or not) */
     if ( !READ_ERROR() ) { IntrInfoBegin(); }
     Match( S_INFO, "Info", follow );
     Match( S_LPAREN, "(", follow );
@@ -1220,9 +1220,9 @@ void            ReadInfo (
     narg = 0;
     while ( Symbol == S_COMMA )
       {
-	narg ++;
-	Match( S_COMMA, "", 0L);
-	ReadExpr( S_RPAREN | S_COMMA | follow, 'r');
+        narg ++;
+        Match( S_COMMA, "", 0L);
+        ReadExpr( S_RPAREN | S_COMMA | follow, 'r');
       }
     Match(S_RPAREN, ")", follow );
     if ( !READ_ERROR() ) { IntrInfoEnd(narg); }
@@ -1250,15 +1250,15 @@ void            ReadAssert (
     if ( !READ_ERROR() ) { IntrAssertAfterCondition(); }
     if ( Symbol == S_RPAREN )
       {
-	Match( S_RPAREN, ")", follow);
-	if ( !READ_ERROR() ) { IntrAssertEnd2Args(); }
+        Match( S_RPAREN, ")", follow);
+        if ( !READ_ERROR() ) { IntrAssertEnd2Args(); }
       }
     else if ( Symbol == S_COMMA )
       {
-	Match( S_COMMA, "", 0L);
-	ReadExpr( S_RPAREN |  follow, 'r');
-	Match( S_RPAREN, ")", follow);
-	if ( !READ_ERROR() ) { IntrAssertEnd3Args(); }
+        Match( S_COMMA, "", 0L);
+        ReadExpr( S_RPAREN |  follow, 'r');
+        Match( S_RPAREN, ")", follow);
+        if ( !READ_ERROR() ) { IntrAssertEnd3Args(); }
       }
 }
 

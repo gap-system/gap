@@ -69,11 +69,11 @@ function( fam, cofs, val, ind )
         coefficients := Immutable(coefficients);
     fi;
 
-    # the rational functions family knows a kind
+    # the rational functions family knows a type
     rfun := RationalFunctionsFamily(fam);
 
     # objectify
-    Objectify( rfun!.univariateLaurentPolynomialKind, f );
+    Objectify( rfun!.univariateLaurentPolynomialType, f );
     SetIndeterminateNumberOfUnivariateLaurentPolynomial( f, ind );
     SetCoefficientsOfUnivariateLaurentPolynomial( f, coefficients );
 

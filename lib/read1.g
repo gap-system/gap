@@ -5,7 +5,7 @@
 ##
 ReadLib( "kernel.g"    );
 ReadLib( "oper.g"      );
-ReadLib( "kind.g"      );
+ReadLib( "type.g"      );
 ReadLib( "methsel.g"   );
 
 ReadLib( "object.gd"   );
@@ -18,7 +18,7 @@ ReadLib( "listcoef.gd" );
 
 ReadLib( "object.gi"   );
 ReadLib( "coll.gi"     );
-ReadLib( "listkind.gi" );
+ReadLib( "listtype.gi" );
 ReadLib( "arith.gi"    );
 ReadLib( "rest.gi"     );
 ReadLib( "listcoef.gi" );

@@ -40,8 +40,8 @@ IsExternalOrbit := NewRepresentation( "IsExternalOrbit",
     IsExternalSubset, [ "start" ] );
 IsExternalSetByPcgs := NewCategory( "IsExternalSetByPcgs", IsExternalSet );
 
-XSET_XSSETKIND := 4;
-XSET_XORBKIND  := 5;
+XSET_XSSETTYPE := 4;
+XSET_XORBTYPE  := 5;
 
 IsExternalSetDefaultRep := NewRepresentation( "IsExternalSetDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
@@ -190,8 +190,8 @@ ExternalSetAttr := NewAttribute( "ExternalSet", IsGroup );
                                     # properly: ^IsExternalSet
 ExternalSetByFilterConstructor := NewOperationArgs
                                   ( "ExternalSetByFilterConstructor" );
-ExternalSetByKindConstructor := NewOperationArgs
-                                ( "ExternalSetByKindConstructor" );
+ExternalSetByTypeConstructor := NewOperationArgs
+                                ( "ExternalSetByTypeConstructor" );
 
 #############################################################################
 ##

@@ -183,11 +183,11 @@ typedef UInt            TypSymbolSet;
 **  'STATBEGIN' is the set of symbols that might start a stament.
 */
 #define EXPRBEGIN  (S_IDENT|S_ISBOUND|S_INT|S_TRUE|S_FALSE \
-		    |S_CHAR|S_STRING|S_LBRACK|S_REC|S_FUNCTION \
-		    |S_PLUS|S_MINUS|S_NOT|S_LPAREN)
+                    |S_CHAR|S_STRING|S_LBRACK|S_REC|S_FUNCTION \
+                    |S_PLUS|S_MINUS|S_NOT|S_LPAREN)
 
 #define STATBEGIN  (S_IDENT|S_UNBIND|S_IF|S_FOR|S_WHILE|S_REPEAT \
-		    |S_BREAK|S_RETURN|S_QUIT)
+                    |S_BREAK|S_RETURN|S_QUIT)
 
 
 /****************************************************************************
@@ -334,7 +334,9 @@ extern  void            SyntaxError (
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
 **  the next symbol it prints the string pointed to by 'Prompt'.
 */
-extern  void            Match (
+extern Int DualSemicolon;
+
+extern void Match (
             UInt                symbol,
             Char *              msg,
             TypSymbolSet        skipto );
@@ -457,13 +459,15 @@ extern Char *          In;
 **  of the stack 'OutputFiles'.
 */
 typedef struct {
+    UInt        isstream;
     Int         file;
     Char        line [256];
     Int         pos;
     Int         indent;
     Int         spos;
     Int         sindent;
-}       TypOutputFile;
+    Obj         stream;
+} TypOutputFile;
 
 extern TypOutputFile   OutputFiles [16];
 extern TypOutputFile * Output;
@@ -474,10 +478,10 @@ extern TypOutputFile * Output;
 *V  InputLog  . . . . . . . . . . . . . . . file identifier of logfile, local
 **
 **  'InputLog' is the file identifier of the current input logfile.  If it is
-**  not -1 the    scanner echoes all input   from  the files  '*stdin*'   and
+**  not 0  the    scanner echoes all input   from  the files  '*stdin*'   and
 **  '*errin*' to this file.
 */
-extern Int             InputLog;
+extern TypOutputFile * InputLog;
 
 
 /****************************************************************************
@@ -485,10 +489,10 @@ extern Int             InputLog;
 *V  OutputLog . . . . . . . . . . . . . . . file identifier of logfile, local
 **
 **  'OutputLog' is the file identifier of  the current output logfile.  If it
-**  is  not -1  the  scanner echoes  all output  to  the files '*stdout*' and
+**  is  not  0  the  scanner echoes  all output  to  the files '*stdout*' and
 **  '*errout*' to this file.
 */
-extern Int             OutputLog;
+extern TypOutputFile * OutputLog;
 
 
 /****************************************************************************

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains generic methods for monoids.
 ##
@@ -43,7 +43,7 @@ InstallOtherMethod( MonoidByGenerators,
     [ IsCollection ] , 0,
     function( gens )
     local M;
-    M:= Objectify( NewKind( FamilyObj( gens ),
+    M:= Objectify( NewType( FamilyObj( gens ),
                             IsMonoid and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithOne( M, AsList( gens ) );
@@ -56,7 +56,7 @@ InstallOtherMethod( MonoidByGenerators,
     [ IsCollection, IsMultiplicativeElementWithOne ], 0,
     function( gens, id )
     local M;
-    M:= Objectify( NewKind( FamilyObj( gens ),
+    M:= Objectify( NewType( FamilyObj( gens ),
                             IsMonoid and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithOne( M, AsList( gens ) );
@@ -70,7 +70,7 @@ InstallOtherMethod( MonoidByGenerators,
     [ IsEmpty, IsMultiplicativeElementWithOne ], 0,
     function( gens, id )
     local M;
-    M:= Objectify( NewKind( CollectionsFamily( FamilyObj( id ) ),
+    M:= Objectify( NewType( CollectionsFamily( FamilyObj( id ) ),
                                 IsMonoid
                             and IsTrivial
                             and IsAttributeStoringRep ),

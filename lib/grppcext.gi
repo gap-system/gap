@@ -7,6 +7,50 @@ Revision.grppcext_gi :=
 
 #############################################################################
 ##
+#F FpGroupPcGroupSQ( G ). . . . . . . . .relators according to sq-algorithmus
+##
+FpGroupPcGroupSQ := function( G )
+    local F, f, g, n, rels, i, j, w, v, t, p;
+
+    F := FreeGroup( Length(Pcgs(G)) );
+    f := GeneratorsOfGroup( F );
+    g := Pcgs( G );
+    n := Length( g );
+    rels := List( [1..n], x -> List( [1..x], y -> false ) );
+    for i in [1..n] do
+        for j in [1..i-1] do
+            w := f[j]^-1 * f[i]^-1 * f[j];
+            v := ExponentsOfPcElement( g, g[i]^g[j] );
+            t := Product( List( [1..n], x -> f[x]^v[x] ) ); 
+            rels[i][j] := w * t;
+        od; 
+        p := RelativeOrderOfPcElement( g, g[i] );
+        w := (f[i]^-1)^p;
+        v := ExponentsOfPcElement( g, g[i]^p );
+        t := Product( List( [1..n], x -> f[x]^v[x] ) ); 
+        rels[i][i] := w * t;
+    od;
+    return rec( group := F, relators := Concatenation( rels ) );
+end;
+
+#############################################################################
+##
+#F MappedPcElement( elm, pcgs, list )
+##
+MappedPcElement := function( elm, pcgs, list )
+    local vec, new, i;
+    if Length( list ) = 0 then return fail; fi;
+    vec := ExponentsOfPcElement( pcgs, elm );
+    if Length( list ) < Length( vec ) then return fail; fi;
+    new := list[1]^0;
+    for i in [1..Length(vec)] do
+        new := new * list[i]^vec[i];
+    od;
+    return new;
+end;
+
+#############################################################################
+##
 #F  ExtensionSQ( C, G, M, c )
 ##
 ##  If <c> is zero,  construct the split extension of <G> and <M>
@@ -151,142 +195,230 @@ function( G, M )
     return ext;
 end );
 
-#############################################################################
+############################################################################
 ##
-#F  CompatiblePairs( G, M, [A] )
+#F CompatiblePairs( G, M )
+#F CompatiblePairs( G, M, D )  ... D <= Aut(G) x GL
+#F CompatiblePairs( G, M, D, flagA, flagB ) ... D <= Aut(G) x GL
 ##
 CompatiblePairs := function( arg )
-    local G, M, A, d, p, B, pcgs, Mgrp, oper, D, f, n, H, i, K, N;
+    local G, M, d, p, pcgs, Mgrp, oper, A, B, D, K, f, tmp, V, id, xset, 
+          iso, P, L, S; 
 
-    # catch the arguments
+    # catch arguments
     G := arg[1];
     M := arg[2];
+
+    # set up
     d := M.dimension;
+    p := Characteristic( M.field );
     pcgs := Pcgs( G );
-    Mgrp := Group( M.generators, IdentityMat( d, M.field ) );
+    Mgrp := Group( M.generators );
     oper := GroupHomomorphismByImages( G, Mgrp, pcgs, M.generators );
 
-    # automorphism group of G
-    if Length( arg ) = 3 then
-        A := arg[3];
-    else
+    # automorphism groups of G and M
+    if Length( arg ) = 2 then
+        Info( InfoCompPairs, 1, "    comp pairs: compute aut group \n");
         A := AutomorphismGroup( G );
+        B := GL( d, p );
+        D := DirectProduct( A, B );
+    else
+        D := arg[3];
     fi;
 
-    # stabiliser
-    K := KernelOfMultiplicativeGeneralMapping( oper );
-    f := function( pt, a ) return Image( a, pt ); end;
-    A := Stabilizer( A, K, f );
+    # compute stabilizer of K in A 
+    if Length( arg ) <= 3 or not arg[4] then
 
-    # automorphism group of M
-    p := Characteristic( M.field );
-    B := GL( d, p );
+        # get kernel of oper
+        Info( InfoCompPairs, 1, "    comp pairs: compute kernel \n");
+        K := KernelOfMultiplicativeGeneralMapping( oper );
 
-    # normalizer
-    N := Normalizer( B, Mgrp );
+        # get its stabilizer
+        Info( InfoCompPairs, 1,"    comp pairs: compute stab of kernel");
+        f   := function( pt, a ) return Image( a[1], pt ); end;
+        tmp := OrbitStabilizer( D, K, f );
+        D   := tmp.stabilizer;
+    fi;
 
-    # the direct product
-    D := DirectProduct( A, N );
+    # compute normalizer of M in D
+    if Length( arg ) <= 3 or not arg[5] then
+        
+        # construct perm rep of D
+        Info( InfoCompPairs, 1, "    comp pairs: compute perm rep of B");
+        V    := M.field ^ d;
+        id   := IdentityMat( d, M.field );
+        f    := function( pt, a ) return pt * a[2]; end;
+        xset := ExternalSubset( D, V, id, f );
+        SetBase( xset, id );
+        iso  := OperationHomomorphism( xset );
+        P    := Image( iso );
 
-    # the action
-    f := function( pt, tup )
-        local h;
-        h := PreImagesRepresentative( oper, pt );
-        h := Image( tup[1], h );
-        h := Image( oper, h );
-        h := tup[2] * h * tup[2]^-1;
-        return h;
+        # compute normalizer
+        Info( InfoCompPairs, 1, "    comp pairs: compute normalizer in GL");
+        L := Operation( Mgrp, Enumerator( xset ), OnRight );
+        S := Normalizer( P, L );
+        tmp := PreImages( iso, S );
+        SetSize( tmp, Size( D ) / Index( P, S ) );
+        D := tmp;
+    fi; 
+
+    # compute stabilizer of oper in D
+    f := function( pt, elm )
+        local gens;
+        gens := pt!.sourcePcgs;
+        gens := List( gens, x -> Image( Inverse( elm[1] ), x ) );
+        gens := List( gens, x -> Image( pt, x ) );
+        gens := List( gens, x -> x^elm[2] );
+        return GroupHomomorphismByImages( Source(pt), Range(pt), 
+               AsList( pt!.sourcePcgs ), gens );
     end;
-
-    # compute iterated stabilisers
-    n := Length( pcgs );
-    H := ShallowCopy( D );
-    for i in [1..n] do
-        H := Stabilizer( H, M.generators[i], f );
-    od;
-   
-    return H;
+    Info( InfoCompPairs, 1,"    comp pairs: compute stabilizer \n");
+    tmp := OrbitStabilizer( D, oper, f );
+    return tmp.stabilizer;
 end;
 
 #############################################################################
 ##
-#M  ExtensionRepresentatives( G, M, P )
+#F LinearOperationOfCompatiblePairs( C, gensC, cohom )
+##
+LinearOperationOfCompatiblePairs := function( arg )
+    local z, pcgsG, n, d, F, gensF, mats, id, g, mat, c, H, pcgsH, pcgsN,
+          imgs, new, base, l, gensC, C, cohom;
+
+    # catch arguments
+    if Length( arg ) = 2 then
+        C := arg[1];
+        gensC := GeneratorsOfGroup( C );
+        cohom := arg[2];
+    else
+        C := arg[1];
+        gensC := arg[2];
+        cohom := arg[3];
+    fi; 
+
+    # set up
+    z     := One( cohom.module.field );
+    pcgsG := Pcgs( cohom.group );
+    n     := Length(pcgsG);
+    d     := cohom.module.dimension;
+    F     := FpGroupPcGroupSQ( cohom.group );
+    gensF := GeneratorsOfGroup( F.group );
+    l     := Length( cohom.factor );
+
+    # change basis for cocycles
+    base := Concatenation( cohom.factor, cohom.coboundaries );
+
+    # compute matrices
+    mats  := [];
+    id    := IdentityMat( l, cohom.module.field );
+    for g in gensC do
+        mat := [];
+        for c in cohom.factor do
+            H     := ExtensionSQ( cohom.collector, 
+                                  cohom.group, cohom.module, c );   
+            pcgsH := Pcgs( H );
+            pcgsN := InducedPcgsByPcSequence( pcgsH, pcgsH{[n+1..n+d]} );
+
+            imgs  := List( pcgsG, x -> x^Inverse( g[1] ) );
+            imgs  := List( imgs, x -> MappedPcElement( x, pcgsG, pcgsH ) );
+
+            new  := List( F.relators, x -> MappedWord( x, gensF, imgs ) );
+            new  := List( new, x -> ExponentsOfPcElement(pcgsN, x) * z );
+            new  := List( new, x -> x^g[2] );
+            new  := Concatenation( new );
+            new  := SolutionMat( base, new ){[1..l]};
+            Add( mat, new );
+        od;
+        Add( mats, mat );
+    od;
+    return mats;
+end;
+
+#############################################################################
+##
+#M ExtensionRepresentatives( G, M, C )
 ##
 InstallMethod( ExtensionRepresentatives,
     "generic method for pc groups",
     true, 
-    [ IsPcGroup, IsObject, IsObject ],
+    [ IsPcGroup, IsRecord, IsList ],
     0,
-function( G, M, P )
-    local C, cc, l, ext, gens, mats, id, g, mat, c, sub, pcgsN, imgs, rels,
-          new, Mgrp, orbs, o, H, n, pcgs, d, co, cb, base, pcgsH, F, f;
+function( G, M, C )
+    local Cl, co, cb, cc, ext, new, cohom, mats, Mgrp, orbs, o, V;
 
-    pcgs := Pcgs(G);
-    n := Length(pcgs);
-    d := M.dimension;
-    F := Image( IsomorphismFpGroup( G ) );
-    rels := RelatorsOfFpGroup( F );
-    f := GeneratorsOfGroup( FreeGroupOfFpGroup( F ) );
+    # compute H^2(G, M)
+    Cl := CollectorSQ( G, M, false ); 
+    co := TwoCocyclesSQ( Cl, G, M );
+    cb := TwoCoboundariesSQ( Cl, G, M );
+    cc := BaseSteinitzVectors( co, cb ).factorspace;
+
+    # catch the trivial case
+    if Length(cc) = 0 then
+        return [ExtensionSQ( Cl, G, M, 0 )];
+    elif Length(cc) = 1 then
+        new := ExtensionSQ( Cl, G, M, cc[1] );
+        return [ExtensionSQ( Cl, G, M, 0 ), new];
+    fi;
+
+    # set up to compute linear operation
+    cohom := rec( group        := G,
+                  module       := M,
+                  collector    := Cl,
+                  cocycles     := co,
+                  coboundaries := cb,
+                  factor       := cc );
+    mats  := LinearOperationOfCompatiblePairs( C, cohom );
+
+    # compute orbit of mats on cc
+    Mgrp := Group( mats );
+    V    := VectorSpace( M.field, IdentityMat( Length(cc), M.field ) );
+    orbs := Orbits( Mgrp, V, OnRight );
+    ext  := List( orbs, x -> ExtensionSQ( Cl, G, M, x[1]*cc ) );
+    return ext;
+end);
+
+#############################################################################
+##
+#F NonSplitExtensionReps( G, M ) 
+##
+NonSplitExtensionReps := function( G, M )
+    local C, co, cb, cc, cohom, mats, V, Mgrp, orbs, ext, CP;
 
     # compute H^2(G, M)
     C  := CollectorSQ( G, M, false ); 
     co := TwoCocyclesSQ( C, G, M );
     cb := TwoCoboundariesSQ( C, G, M );
     cc := BaseSteinitzVectors( co, cb ).factorspace;
-    base := Concatenation( cc, cb );
-    l  := Length( cc );
-
-    # set up and trivial cases
-    ext := [ExtensionSQ( C, G, M, 0 )];
+    Info( InfoExtReps, 1, "    H2 has dimension ",Length(cc));
 
     # catch the trivial case
-    if l = 0 then
-        return ext;
-    elif l = 1 then
-        new := ExtensionSQ( C, G, M, cc[1] );
-        Add( ext, new );
-        return ext;
+    if Length(cc) = 0 then
+        return [];
+    elif Length(cc) = 1 then
+        return [ExtensionSQ( C, G, M, cc[1] )];
     fi;
 
-    # compute linear action on H^2(S, M)
-    gens := GeneratorsOfGroup( P );
-    mats := [];
-    id   := IdentityMat( l, M.field );
-    for g in gens do
-        mat := [];
-        for c in cc do
-            H     := ExtensionSQ( C, G, M, c );   
-            pcgsH := Pcgs( H );
-            sub   := pcgsH{[n+1..n+d]};
-            pcgsN := InducedPcgsByPcSequence( pcgsH, sub );
-            imgs  := List( pcgs, x -> x^g[1] );
-            imgs  := List( imgs, x -> ExponentsOfPcElement( pcgs, x ) );
-            imgs  := List( imgs, 
-                     x -> PcElementByExponents( pcgsH, pcgsH{[1..n]}, x ) );
-            new  := List( rels, x -> MappedWord( x, f, imgs ) );
-            new  := List( new, x -> ExponentsOfPcElement(pcgsN, x, M.field));
-            new  := List( new, x -> g[2] * x * g[2]^-1 );
-            new  := Concatenation( new );
-            new  := SolutionMat( base, new ){[1..l]};
-            Add( mat, new );
-        od;
-        if not mat = id then
-            AddSet( mats, mat );
-        fi;
-    od;
+    # set up to compute linear operation
+    cohom := rec( group        := G,
+                  module       := M,
+                  collector    := C,
+                  cocycles     := co,
+                  coboundaries := cb,
+                  factor       := cc );
+    Info( InfoExtReps, 1, "    compute compatible pairs and operation");
+    CP := CompatiblePairs( G, M );
+    mats := LinearOperationOfCompatiblePairs( CP, cohom );
 
     # compute orbit of mats on cc
-    Mgrp := Group( mats, id );
-    cc   := VectorSpace( M.field, cc );
-    orbs := Orbits( Mgrp, cc, OnRight );
-
-    for o in orbs do
-        new := ExtensionSQ( C, G, M, o );
-        Add( ext, new );
-    od;
-
+    Info( InfoExtReps, 1, "    compute orbits ");
+    Mgrp := Group( mats );
+    V    := VectorSpace( M.field, IdentityMat( Length(cc), M.field ) );
+    orbs := Orbits( Mgrp, V, OnRight );
+    orbs := orbs{[2..Length(orbs)]};
+    Info( InfoExtReps, 1, "    found ",Length(orbs)," orbits ");
+    ext  := List( orbs, x -> ExtensionSQ(C, G, M, x[1]*cc) );
     return ext;
-end);
+end;
 
 #############################################################################
 ##

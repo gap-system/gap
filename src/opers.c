@@ -19,7 +19,7 @@ char * Revision_opers_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -68,7 +68,7 @@ Obj TRY_NEXT_METHOD;
 #define SIZE_OPER               (37*sizeof(Bag))
 
 #define IS_OPERATION(func) \
-    (TYPE_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == SIZE_OPER )
+    (TNUM_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == SIZE_OPER )
 
 Obj             CacheOper (
     Obj                 oper,
@@ -198,14 +198,14 @@ void            PrintFlags (
 
 /****************************************************************************
 **
-*F  KindFlags( <flags> )  . . . . . . . . . . . . . . .  kind of a flags list
+*F  TypeFlags( <flags> )  . . . . . . . . . . . . . . .  kind of a flags list
 */
-Obj KIND_FLAGS;
+Obj TYPE_FLAGS;
 
-Obj KindFlags (
+Obj TypeFlags (
     Obj                 flags )
 {
-    return KIND_FLAGS;
+    return TYPE_FLAGS;
 }
 
 
@@ -220,10 +220,10 @@ Obj FuncLEN_FLAGS (
     Obj                 flags )
 {
     /* do some trivial checks                                              */
-    while ( TYPE_OBJ(flags) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
             "you can return a list for <flags>" );
     }
 
@@ -241,10 +241,10 @@ Obj FuncELM_FLAGS (
     Obj                 pos )
 {
     /* do some trivial checks                                              */
-    while ( TYPE_OBJ(flags) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
             "you can return a list for <flags>" );
     }
 
@@ -270,10 +270,10 @@ Obj FuncHASH_FLAGS (
     Int                 i;
 
     /* do some trivial checks                                              */
-    while ( TYPE_OBJ(flags) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
             flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
             "you can return a list for <flags>" );
     }
     if ( HASH_FLAGS(flags) != 0 ) {
@@ -312,16 +312,16 @@ Obj FuncIS_EQUAL_FLAGS (
     Int                 i;
 
     /* do some trivial checks                                              */
-    while ( TYPE_OBJ(flags1) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags1)].name), 0L,
             "you can return a list for <flags1>" );
     }
-    while ( TYPE_OBJ(flags2) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags2)].name), 0L,
             "you can return a list for <flags2>" );
     }
     if ( flags1 == flags2 ) {
@@ -425,16 +425,16 @@ Obj FuncAND_FLAGS (
 #endif
 
     /* do some trivial checks                                              */
-    while ( TYPE_OBJ(flags1) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags1)].name), 0L,
             "you can return a list for <flags1>" );
     }
-    while ( TYPE_OBJ(flags2) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags2)].name), 0L,
             "you can return a list for <flags2>" );
     }
 
@@ -499,16 +499,16 @@ Obj FuncSUB_FLAGS (
     Int                 i;
 
     /* do some trivial checks                                              */
-    while ( TYPE_OBJ(flags1) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags1)].name), 0L,
             "you can return a list for <flags1>" );
     }
-    while ( TYPE_OBJ(flags2) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags2)].name), 0L,
             "you can return a list for <flags2>" );
     }
 
@@ -562,10 +562,10 @@ Obj FuncTRUES_FLAGS (
     UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
-    while ( TYPE_OBJ(flags) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
             "you can return a list for <flags>" );
     }
     if ( TRUES_FLAGS(flags) != 0 ) {
@@ -587,7 +587,7 @@ Obj FuncTRUES_FLAGS (
     }
 
     /* make the sublist (we now know its size exactely)                    */
-    sub = NEW_PLIST( IMMUTABLE_TYPE(T_PLIST), n );
+    sub = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), n );
     SET_LEN_PLIST( sub, n );
 
     /* loop over the boolean list and stuff elements into <sub>            */
@@ -629,16 +629,16 @@ Obj FuncIS_SUBSET_FLAGS (
     Obj                 trues;
 
     /* do some trivial checks                                              */
-    while ( TYPE_OBJ(flags1) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags1)].name), 0L,
             "you can return a list for <flags1>" );
     }
-    while ( TYPE_OBJ(flags2) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags2)].name), 0L,
             "you can return a list for <flags2>" );
     }
     if ( flags1 == flags2 ) {
@@ -726,10 +726,10 @@ Obj FuncSIZE_FLAGS (
     UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
-    while ( TYPE_OBJ(flags) != T_FLAGS ) {
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(flags)].name), 0L,
             "you can return a list for <flags>" );
     }
 
@@ -795,11 +795,15 @@ Obj TesterFilter (
 
 /****************************************************************************
 **
-*F  NewFilter( <name> )  . . . . . . . . . . . . . . . . .  make a new filter
+*V  CountFlags  . . . . . . . . . . . . . . . . . . . . next free flag number
 */
 Int CountFlags;
 
 
+/****************************************************************************
+**
+*F  NewFilter( <name> )  . . . . . . . . . . . . . . . . .  make a new filter
+*/
 Obj DoTestFilter (
     Obj                 self,
     Obj                 obj )
@@ -832,8 +836,8 @@ Obj DoSetFilter (
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     
     /* get the kind of the object and its flags                            */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
     
     /* return the value of the feature                                     */
     if ( flag1 <= LEN_FLAGS( flags ) ) {
@@ -886,8 +890,8 @@ Obj DoFilter (
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     
     /* get the kind of the object and its flags                            */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
     
     /* return the value of the feature                                     */
     if ( flag1 <= LEN_FLAGS( flags ) ) {
@@ -1435,7 +1439,7 @@ Obj FuncMethodsOperation (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    if ( TYPE_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
@@ -1462,7 +1466,7 @@ Obj FuncChangedMethodsOperation (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    if ( TYPE_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
@@ -1491,7 +1495,7 @@ Obj FuncSetMethodsOperation (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    if ( TYPE_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
@@ -1619,7 +1623,7 @@ Obj DoOperation1Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
+    kind1 = TYPE_OBJ( arg1 );  id1 = ID_TYPE( kind1 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 1 ) );
@@ -1705,8 +1709,8 @@ Obj DoOperation2Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
-    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
+    kind1 = TYPE_OBJ( arg1 );  id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ( arg2 );  id2 = ID_TYPE( kind2 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 2 ) );
@@ -1800,9 +1804,9 @@ Obj DoOperation3Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
-    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
-    kind3 = KIND_OBJ( arg3 );  id3 = ID_KIND( kind3 );
+    kind1 = TYPE_OBJ( arg1 );  id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ( arg2 );  id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ( arg3 );  id3 = ID_TYPE( kind3 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 3 ) );
@@ -1904,10 +1908,10 @@ Obj DoOperation4Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
-    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
-    kind3 = KIND_OBJ( arg3 );  id3 = ID_KIND( kind3 );
-    kind4 = KIND_OBJ( arg4 );  id4 = ID_KIND( kind4 );
+    kind1 = TYPE_OBJ( arg1 );  id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ( arg2 );  id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ( arg3 );  id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ( arg4 );  id4 = ID_TYPE( kind4 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 4 ) );
@@ -2019,11 +2023,11 @@ Obj DoOperation5Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
-    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
-    kind3 = KIND_OBJ( arg3 );  id3 = ID_KIND( kind3 );
-    kind4 = KIND_OBJ( arg4 );  id4 = ID_KIND( kind4 );
-    kind5 = KIND_OBJ( arg5 );  id5 = ID_KIND( kind5 );
+    kind1 = TYPE_OBJ( arg1 );  id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ( arg2 );  id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ( arg3 );  id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ( arg4 );  id4 = ID_TYPE( kind4 );
+    kind5 = TYPE_OBJ( arg5 );  id5 = ID_TYPE( kind5 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 5 ) );
@@ -2150,12 +2154,12 @@ Obj DoOperation6Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
-    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
-    kind3 = KIND_OBJ( arg3 );  id3 = ID_KIND( kind3 );
-    kind4 = KIND_OBJ( arg4 );  id4 = ID_KIND( kind4 );
-    kind5 = KIND_OBJ( arg5 );  id5 = ID_KIND( kind5 );
-    kind6 = KIND_OBJ( arg6 );  id6 = ID_KIND( kind6 );
+    kind1 = TYPE_OBJ( arg1 );  id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ( arg2 );  id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ( arg3 );  id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ( arg4 );  id4 = ID_TYPE( kind4 );
+    kind5 = TYPE_OBJ( arg5 );  id5 = ID_TYPE( kind5 );
+    kind6 = TYPE_OBJ( arg6 );  id6 = ID_TYPE( kind6 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 6 ) );
@@ -2329,7 +2333,7 @@ Obj DoVerboseOperation1Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
+    kind1 = TYPE_OBJ( arg1 );
 
     /* try to find one in the list of methods                              */
     method = CALL_2ARGS( VMethod1Args, oper, kind1 );
@@ -2375,8 +2379,8 @@ Obj DoVerboseOperation2Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
+    kind1 = TYPE_OBJ( arg1 );
+    kind2 = TYPE_OBJ( arg2 );
 
     /* try to find one in the list of methods                              */
     method = CALL_3ARGS( VMethod2Args, oper, kind1, kind2 );
@@ -2424,9 +2428,9 @@ Obj DoVerboseOperation3Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
+    kind1 = TYPE_OBJ( arg1 );
+    kind2 = TYPE_OBJ( arg2 );
+    kind3 = TYPE_OBJ( arg3 );
 
     /* try to find one in the list of methods                              */
     method = CALL_4ARGS( VMethod3Args, oper, kind1, kind2, kind3 );
@@ -2476,10 +2480,10 @@ Obj DoVerboseOperation4Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
+    kind1 = TYPE_OBJ( arg1 );
+    kind2 = TYPE_OBJ( arg2 );
+    kind3 = TYPE_OBJ( arg3 );
+    kind4 = TYPE_OBJ( arg4 );
 
     /* try to find one in the list of methods                              */
     method = CALL_5ARGS( VMethod4Args, oper, kind1, kind2, kind3, kind4 );
@@ -2532,11 +2536,11 @@ Obj DoVerboseOperation5Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
-    kind5 = KIND_OBJ( arg5 );
+    kind1 = TYPE_OBJ( arg1 );
+    kind2 = TYPE_OBJ( arg2 );
+    kind3 = TYPE_OBJ( arg3 );
+    kind4 = TYPE_OBJ( arg4 );
+    kind5 = TYPE_OBJ( arg5 );
 
     /* try to find one in the list of methods                              */
     method = CALL_6ARGS( VMethod5Args, oper, kind1, kind2, kind3, kind4,
@@ -2600,12 +2604,12 @@ Obj DoVerboseOperation6Args (
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
-    kind5 = KIND_OBJ( arg5 );
-    kind6 = KIND_OBJ( arg6 );
+    kind1 = TYPE_OBJ( arg1 );
+    kind2 = TYPE_OBJ( arg2 );
+    kind3 = TYPE_OBJ( arg3 );
+    kind4 = TYPE_OBJ( arg4 );
+    kind5 = TYPE_OBJ( arg5 );
+    kind6 = TYPE_OBJ( arg6 );
 
     /* try to find one in the list of methods                              */
     margs = NEW_PLIST( T_PLIST, 7 );
@@ -3004,7 +3008,7 @@ Obj DoConstructor2Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
+    kind2 = TYPE_OBJ(   arg2 );  id2 = ID_TYPE( kind2 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 2 ) );
@@ -3102,8 +3106,8 @@ Obj DoConstructor3Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
-    kind3 = KIND_OBJ(   arg3 );  id3 = ID_KIND( kind3 );
+    kind2 = TYPE_OBJ(   arg2 );  id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ(   arg3 );  id3 = ID_TYPE( kind3 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 3 ) );
@@ -3209,9 +3213,9 @@ Obj DoConstructor4Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
-    kind3 = KIND_OBJ(   arg3 );  id3 = ID_KIND( kind3 );
-    kind4 = KIND_OBJ(   arg4 );  id4 = ID_KIND( kind4 );
+    kind2 = TYPE_OBJ(   arg2 );  id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ(   arg3 );  id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ(   arg4 );  id4 = ID_TYPE( kind4 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 4 ) );
@@ -3327,10 +3331,10 @@ Obj DoConstructor5Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
-    kind3 = KIND_OBJ(   arg3 );  id3 = ID_KIND( kind3 );
-    kind4 = KIND_OBJ(   arg4 );  id4 = ID_KIND( kind4 );
-    kind5 = KIND_OBJ(   arg5 );  id5 = ID_KIND( kind5 );
+    kind2 = TYPE_OBJ(   arg2 );  id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ(   arg3 );  id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ(   arg4 );  id4 = ID_TYPE( kind4 );
+    kind5 = TYPE_OBJ(   arg5 );  id5 = ID_TYPE( kind5 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 5 ) );
@@ -3461,11 +3465,11 @@ Obj DoConstructor6Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
-    kind3 = KIND_OBJ(   arg3 );  id3 = ID_KIND( kind3 );
-    kind4 = KIND_OBJ(   arg4 );  id4 = ID_KIND( kind4 );
-    kind5 = KIND_OBJ(   arg5 );  id5 = ID_KIND( kind5 );
-    kind6 = KIND_OBJ(   arg6 );  id6 = ID_KIND( kind6 );
+    kind2 = TYPE_OBJ(   arg2 );  id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ(   arg3 );  id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ(   arg4 );  id4 = ID_TYPE( kind4 );
+    kind5 = TYPE_OBJ(   arg5 );  id5 = ID_TYPE( kind5 );
+    kind6 = TYPE_OBJ(   arg6 );  id6 = ID_TYPE( kind6 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 6 ) );
@@ -3694,7 +3698,7 @@ Obj DoVerboseConstructor2Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
+    kind2 = TYPE_OBJ(   arg2 );
 
     /* try to find one in the list of methods                              */
     method = CALL_3ARGS( VConstructor2Args, oper, kind1, kind2 );
@@ -3747,8 +3751,8 @@ Obj DoVerboseConstructor3Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
-    kind3 = KIND_OBJ(   arg3 );
+    kind2 = TYPE_OBJ(   arg2 );
+    kind3 = TYPE_OBJ(   arg3 );
 
     /* try to find one in the list of methods                              */
     method = CALL_4ARGS( VConstructor3Args, oper, kind1, kind2, kind3 );
@@ -3803,9 +3807,9 @@ Obj DoVerboseConstructor4Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
-    kind3 = KIND_OBJ(   arg3 );
-    kind4 = KIND_OBJ(   arg4 );
+    kind2 = TYPE_OBJ(   arg2 );
+    kind3 = TYPE_OBJ(   arg3 );
+    kind4 = TYPE_OBJ(   arg4 );
 
     /* try to find one in the list of methods                              */
     method = CALL_5ARGS( VConstructor4Args, oper, kind1, kind2, kind3, kind4 );
@@ -3863,10 +3867,10 @@ Obj DoVerboseConstructor5Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
-    kind3 = KIND_OBJ(   arg3 );
-    kind4 = KIND_OBJ(   arg4 );
-    kind5 = KIND_OBJ(   arg5 );
+    kind2 = TYPE_OBJ(   arg2 );
+    kind3 = TYPE_OBJ(   arg3 );
+    kind4 = TYPE_OBJ(   arg4 );
+    kind5 = TYPE_OBJ(   arg5 );
 
     /* try to find one in the list of methods                              */
     method = CALL_6ARGS( VConstructor5Args, oper, kind1, kind2, kind3, kind4,
@@ -3935,11 +3939,11 @@ Obj DoVerboseConstructor6Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
-    kind3 = KIND_OBJ(   arg3 );
-    kind4 = KIND_OBJ(   arg4 );
-    kind5 = KIND_OBJ(   arg5 );
-    kind6 = KIND_OBJ(   arg6 );
+    kind2 = TYPE_OBJ(   arg2 );
+    kind3 = TYPE_OBJ(   arg3 );
+    kind4 = TYPE_OBJ(   arg4 );
+    kind5 = TYPE_OBJ(   arg5 );
+    kind6 = TYPE_OBJ(   arg6 );
 
     /* try to find one in the list of methods                              */
     margs = NEW_PLIST( T_PLIST, 7 );
@@ -4154,8 +4158,8 @@ Obj DoTestAttribute (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, return 'true'        */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4186,8 +4190,8 @@ Obj DoAttribute (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4198,13 +4202,13 @@ Obj DoAttribute (
     val = CopyObj( DoOperation1Args( self, obj ), 0 );
     
     /* set the value (but not for internal objects)                        */
-    if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
+    if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
         DoSetAttribute( SETTR_FILT(self), obj, val );
     }
-    else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
         DoSetAttribute( SETTR_FILT(self), obj, val );
     }
-    else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
         DoSetAttribute( SETTR_FILT(self), obj, val );
     }
     
@@ -4232,8 +4236,8 @@ Obj DoVerboseAttribute (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4244,13 +4248,13 @@ Obj DoVerboseAttribute (
     val = CopyObj( DoVerboseOperation1Args( self, obj ), 0 );
     
     /* set the value (but not for internal objects)                        */
-    if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
+    if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
         DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
-    else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
         DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
-    else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
         DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
     
@@ -4276,8 +4280,8 @@ Obj DoMutableAttribute (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4288,13 +4292,13 @@ Obj DoMutableAttribute (
     val = DoOperation1Args( self, obj );
     
     /* set the value (but not for internal objects)                        */
-    if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
+    if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
         DoSetAttribute( SETTR_FILT(self), obj, val );
     }
-    else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
         DoSetAttribute( SETTR_FILT(self), obj, val );
     }
-    else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
         DoSetAttribute( SETTR_FILT(self), obj, val );
     }
     
@@ -4320,8 +4324,8 @@ Obj DoVerboseMutableAttribute (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4332,13 +4336,13 @@ Obj DoVerboseMutableAttribute (
     val = DoVerboseOperation1Args( self, obj );
     
     /* set the value (but not for internal objects)                        */
-    if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
+    if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
         DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
-    else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
         DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
-    else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
         DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
     
@@ -4535,8 +4539,8 @@ Obj DoTestProperty (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, return 'true'        */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4567,8 +4571,8 @@ Obj DoSetProperty (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, compare it           */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4586,15 +4590,15 @@ Obj DoSetProperty (
     /* set the value                                                       */
     /*N 1996/06/28 mschoene <self> is the <setter> here, not the <getter>! */
     /*N 1996/06/28 mschoene see hack below                                 */
-    if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
+    if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
         flags = (val == True ? self : TESTR_FILT(self));
         CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
-    else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
         flags = (val == True ? self : TESTR_FILT(self));
         CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
-    else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
         flags = (val == True ? self : TESTR_FILT(self));
         CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
@@ -4629,8 +4633,8 @@ Obj DoProperty (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4642,15 +4646,15 @@ Obj DoProperty (
     
     /* set the value (but not for internal objects)                        */
     if ( ! IS_MUTABLE_OBJ(obj) ) {
-        if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
+        if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
         }
-        else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
+        else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
         }
-        else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
+        else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
         }
@@ -4680,8 +4684,8 @@ Obj DoVerboseProperty (
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
-    kind  = KIND_OBJ( obj );
-    flags = FLAGS_KIND( kind );
+    kind  = TYPE_OBJ( obj );
+    flags = FLAGS_TYPE( kind );
 
     /* if the value of the property is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
@@ -4692,15 +4696,15 @@ Obj DoVerboseProperty (
     val = DoVerboseOperation1Args( self, obj );
     
     /* set the value (but not for internal objects)                        */
-    if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
+    if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
         flags = (val == True ? self : TESTR_FILT(self));
         CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
-    else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
         flags = (val == True ? self : TESTR_FILT(self));
         CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
-    else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
+    else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
         flags = (val == True ? self : TESTR_FILT(self));
         CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
@@ -4880,14 +4884,29 @@ Obj DoSetterFunction (
     Obj                 value )
 {
     Obj                 tmp;
+    Obj                 tester;
+    Obj                 flags;
+    UInt                flag2;
+    Obj                 kind;
 
-    if ( TYPE_OBJ(obj) != T_COMOBJ ) {
+    if ( TNUM_OBJ(obj) != T_COMOBJ ) {
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
+
+    /* if the attribute is already there *do not* chage it                 */
     tmp = ENVI_FUNC(self);
+    tester = ELM_PLIST( tmp, 2 );
+    flag2  = INT_INTOBJ( FLAG2_FILT(tester) );
+    kind   = TYPE_OBJ(obj);
+    flags  = FLAGS_TYPE(kind);
+    if ( flag2 <= LEN_FLAGS(flags) && ELM_FLAGS(flags,flag2) == True ) {
+        return 0;
+    }
+
+    /* set the value                                                       */
     AssPRec( obj, INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
-    CALL_2ARGS( SET_FILTER_OBJ, obj, ELM_PLIST(tmp,2) );
+    CALL_2ARGS( SET_FILTER_OBJ, obj, tester );
     return 0;
 }
 
@@ -4926,7 +4945,7 @@ Obj DoGetterFunction (
     Obj                 self,
     Obj                 obj )
 {
-    if ( TYPE_OBJ(obj) != T_COMOBJ ) {
+    if ( TNUM_OBJ(obj) != T_COMOBJ ) {
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
@@ -5060,7 +5079,7 @@ Obj FuncTraceMethods (
     Obj                 oper )
 {
     /* check the argument                                                  */
-    if ( TYPE_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != SIZE_OPER ) {
+    if ( TNUM_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != SIZE_OPER ) {
         ErrorQuit( "<oper> must be an operation", 0L, 0L );
         return 0;
     }
@@ -5083,7 +5102,7 @@ Obj FuncUntraceMethods (
 {
 
     /* check the argument                                                  */
-    if ( TYPE_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != SIZE_OPER ) {
+    if ( TNUM_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != SIZE_OPER ) {
         ErrorQuit( "<oper> must be an operation", 0L, 0L );
         return 0;
     }
@@ -5105,7 +5124,7 @@ Obj FuncOPERS_CACHE_INFO (
 {
     Obj                 list;
 
-    list = NEW_PLIST( IMMUTABLE_TYPE(T_PLIST), 9 );
+    list = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), 9 );
     SET_LEN_PLIST( list, 9 );
     SET_ELM_PLIST( list, 1, INTOBJ_INT(AndFlagsCacheHit)    );
     SET_ELM_PLIST( list, 2, INTOBJ_INT(AndFlagsCacheMiss)   );
@@ -5265,8 +5284,8 @@ void InitOpers ( void )
 
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "KIND_FLAGS", &KIND_FLAGS );
-    KindObjFuncs[ T_FLAGS ] = KindFlags;
+    ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
+    TypeObjFuncs[ T_FLAGS ] = TypeFlags;
 
     /* install the marking function                                        */
     InfoBags[T_FLAGS].name = "flags list";

@@ -391,6 +391,7 @@ sgi-mips-irix-cc:
 #F  sun-sparc-solaris-gcc2
 ##
 ##  From: Burkhard.Hofling@maths.anu.edu.au (Burkhard Hofling)
+##  From: Franz Gaehler <gaehler@pth.polytechnique.fr>
 ##
 sun-sparc-solaris-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
@@ -402,14 +403,26 @@ sun-sparc-solaris-gcc2:
 	  $(MAKE) -f ../../src/Makefile gap \
             SRC="../../src" \
 	    CC="gcc" \
-	    LFLAGS="$(LOPTS)" \
+	    LFLAGS="$(LOPTS) -ldl" \
 	    CFLAGS="$(COPTS) -DSPARC -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
                        -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
                        -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
                        -DSYS_HAS_MISC_PROTO\
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
+                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
+                       -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
+		       -DSYS_HAS_DL_LIBRARY \
+                       -DSYS_ARCH='\"sun-sparc-solaris\"'" )
+	@(cd ../bin/sun-sparc-solaris-gcc2; \
+          $(MAKE) -f ../../src/Makefile gac \
+            SRC="../../src" \
+	    CC="gcc" \
+            TARGET="sun-sparc-solaris-gcc2" \
+            COPTIONS="-ansi -Wall -O2" \
+            CDYNOPTIONS="-fpic -ansi -Wall -O2" \
+            CDYNLINKER="ld" \
+            CDYNLINKING="-G -Bdynamic" )
 
 
 #############################################################################

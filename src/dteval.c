@@ -40,7 +40,7 @@ void       MultGen(
     if ( IS_INTOBJ( ELM_PLIST(pseudoreps, gen) ) )
     {
         SET_ELM_PLIST(xk, gen, sum);
-	CHANGED_BAG(xk);
+        CHANGED_BAG(xk);
         return;
     }
     copy = ShallowCopyPlist(xk);
@@ -53,23 +53,23 @@ void       MultGen(
           i <= len;
           i++ )
     {
-	ord = Evaluation( ELM_PLIST( sum, i), copy, power  );
+        ord = Evaluation( ELM_PLIST( sum, i), copy, power  );
         if ( !IS_INTOBJ(ord)  ||  INT_INTOBJ(ord) != 0 )
-	{
-	    help = ELM_PLIST(sum1, i);
-	    len2 = LEN_PLIST(help);
-	    for ( j=1; 
+        {
+            help = ELM_PLIST(sum1, i);
+            len2 = LEN_PLIST(help);
+            for ( j=1; 
                   j < len2;
-	          j+=2    )
-	    {
-	        prod = ProdInt( ord, ELM_PLIST(  help, j+1 ) );
-		sum2 = SumInt(ELM_PLIST( xk, CELM( help,j ) ),
+                  j+=2    )
+            {
+                prod = ProdInt( ord, ELM_PLIST(  help, j+1 ) );
+                sum2 = SumInt(ELM_PLIST( xk, CELM( help,j ) ),
                               prod);
-	        SET_ELM_PLIST(xk, CELM( help, j ),  
+                SET_ELM_PLIST(xk, CELM( help, j ),  
                               sum2 );
-	        CHANGED_BAG(xk);
-	    }
-	}
+                CHANGED_BAG(xk);
+            }
+        }
     }
 }
 
@@ -78,7 +78,7 @@ void       MultGen(
 Obj     Evaluation(
                     Obj     vec,
                     Obj     xk,
-		    Obj     power      )
+                    Obj     power      )
 {
     UInt i, len;
     Obj  prod, help;
@@ -92,10 +92,10 @@ Obj     Evaluation(
     {
         help = ELM_PLIST(xk, CELM(vec, i) );
         if ( IS_INTOBJ( help )                       &&
-	     ( INT_INTOBJ(help) == 0                 ||
-	       ( INT_INTOBJ(help) > 0  &&  help < ELM_PLIST(vec, i+1) )  ) )
-	    return INTOBJ_INT(0);
-	prod = ProdInt( prod, binomial( help, ELM_PLIST(vec, i+1) ) );
+             ( INT_INTOBJ(help) == 0                 ||
+               ( INT_INTOBJ(help) > 0  &&  help < ELM_PLIST(vec, i+1) )  ) )
+            return INTOBJ_INT(0);
+        prod = ProdInt( prod, binomial( help, ELM_PLIST(vec, i+1) ) );
     }
     return prod;
 }
@@ -118,8 +118,8 @@ void        Multbound(
 
 
 Obj       Multiplybound(
-		     Obj      x,
-		     Obj      y,       
+                     Obj      x,
+                     Obj      y,       
                      Int      anf,
                      Int      end,
                      Obj      pseudoreps  )
@@ -136,56 +136,56 @@ Obj       Multiplybound(
          CELM(pseudoreps, CELM(y, anf) ) == 0                          )
     {
         res = NEW_PLIST( T_PLIST, 2*LEN_PLIST( pseudoreps ) );
-	len = LEN_PLIST(x);
-	j = 1;
-	k = anf;
-	i = 1;
-	while ( j<len && k<end )
-	{
-	    if ( ELM_PLIST(x, j) == ELM_PLIST(y, k) )
-	    {
-	        sum = SumInt( ELM_PLIST(x, j+1), ELM_PLIST(y, k+1) );
-		SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
-		SET_ELM_PLIST(res, i+1, sum );
-		j+=2;
-		k+=2;
-	    }
-	    else if ( ELM_PLIST(x, j) < ELM_PLIST(y, k) )
-	    {
-	        SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
-		SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
-		j+=2;
-	    }
-	    else
-	    {
-	        SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
-		SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1) );
-		k+=2;
-	    }
-	    CHANGED_BAG(res);
-	    i+=2;
-	}
-	if ( j>=len )
-	    while ( k<end )
-	    {
-	        SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
-		SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1 ) );
-		CHANGED_BAG(res);
-		k+=2;
-		i+=2;
-	    }
-	else
-	    while ( j<len )
-	    {
-	        SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
-		SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
-		CHANGED_BAG(res);
-		j+=2;
-		i+=2;
-	    }
-	SET_LEN_PLIST(res, i-1);
-	SHRINK_PLIST(res, i-1);
-	return res;
+        len = LEN_PLIST(x);
+        j = 1;
+        k = anf;
+        i = 1;
+        while ( j<len && k<end )
+        {
+            if ( ELM_PLIST(x, j) == ELM_PLIST(y, k) )
+            {
+                sum = SumInt( ELM_PLIST(x, j+1), ELM_PLIST(y, k+1) );
+                SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
+                SET_ELM_PLIST(res, i+1, sum );
+                j+=2;
+                k+=2;
+            }
+            else if ( ELM_PLIST(x, j) < ELM_PLIST(y, k) )
+            {
+                SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
+                SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
+                j+=2;
+            }
+            else
+            {
+                SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
+                SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1) );
+                k+=2;
+            }
+            CHANGED_BAG(res);
+            i+=2;
+        }
+        if ( j>=len )
+            while ( k<end )
+            {
+                SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
+                SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1 ) );
+                CHANGED_BAG(res);
+                k+=2;
+                i+=2;
+            }
+        else
+            while ( j<len )
+            {
+                SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
+                SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
+                CHANGED_BAG(res);
+                j+=2;
+                i+=2;
+            }
+        SET_LEN_PLIST(res, i-1);
+        SHRINK_PLIST(res, i-1);
+        return res;
     }
     len = LEN_PLIST(pseudoreps);
     help = LEN_PLIST(x);
@@ -195,12 +195,12 @@ Obj       Multiplybound(
     for (i=1; i <= len; i++)
     {
         if ( j >= help  ||  i < CELM(x, j) )
-	    SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
-	else
-	{
-	    SET_ELM_PLIST(xk, i, ELM_PLIST(x, j+1) );
-	    j+=2;
-	}
+            SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
+        else
+        {
+            SET_ELM_PLIST(xk, i, ELM_PLIST(x, j+1) );
+            j+=2;
+        }
     }
     Multbound(xk, y, anf, end, pseudoreps);
     res = NEW_PLIST(T_PLIST, 2*len);
@@ -208,11 +208,11 @@ Obj       Multiplybound(
     for (i=1; i <= len; i++)
     {
         if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
-	{
-	    j+=2;
-	    SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
-	    SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
-	}
+        {
+            j+=2;
+            SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
+            SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
+        }
     }
     SET_LEN_PLIST(res, j);
     SHRINK_PLIST(res, j);
@@ -222,10 +222,10 @@ Obj       Multiplybound(
 
 
 Obj      FuncMultiply(
-		       Obj      self,
-		       Obj      x,
-		       Obj      y,
-		       Obj      pseudoreps      )
+                       Obj      self,
+                       Obj      x,
+                       Obj      y,
+                       Obj      pseudoreps      )
 {
     Obj    Multiplybound();
 
@@ -236,8 +236,8 @@ Obj      FuncMultiply(
 
 Obj      Power(
                 Obj         x,
-	        Obj         n,
-	        Obj         pseudoreps     )
+                Obj         n,
+                Obj         pseudoreps     )
 {
     Obj     res, Solution(), Multiplybound(), m, y;
     UInt    i,len;
@@ -248,21 +248,21 @@ Obj      Power(
     {
         len = LEN_PLIST(x);
         res = NEW_PLIST( T_PLIST, len );
-	SET_LEN_PLIST(res, len );
-	for (i=2;i<=len;i+=2)
-	{
-	    m = ProdInt( ELM_PLIST(x, i), n );
-	    SET_ELM_PLIST(res, i, m );
-	    SET_ELM_PLIST(res, i-1, ELM_PLIST(x, i-1) );
-	    CHANGED_BAG( res );
-	}
-	return res;
+        SET_LEN_PLIST(res, len );
+        for (i=2;i<=len;i+=2)
+        {
+            m = ProdInt( ELM_PLIST(x, i), n );
+            SET_ELM_PLIST(res, i, m );
+            SET_ELM_PLIST(res, i-1, ELM_PLIST(x, i-1) );
+            CHANGED_BAG( res );
+        }
+        return res;
     }
-    if (  TYPE_OBJ(n) == T_INTNEG  ||  INT_INTOBJ(n) < 0  ) 
+    if (  TNUM_OBJ(n) == T_INTNEG  ||  INT_INTOBJ(n) < 0  ) 
     {
         y = NEW_PLIST( T_PLIST, 0);
-	SET_LEN_PLIST(y, 0);
-	return  Power( Solution(x, y, pseudoreps), 
+        SET_LEN_PLIST(y, 0);
+        return  Power( Solution(x, y, pseudoreps), 
                        ProdInt(INTOBJ_INT(-1), n),   pseudoreps  );    
     }
     res = NEW_PLIST(T_PLIST, 2);
@@ -273,10 +273,10 @@ Obj      Power(
     {
         len = LEN_PLIST(x);
         if ( ModInt(n, INTOBJ_INT(2) ) == INTOBJ_INT(1)  )
-	    res = Multiplybound(res, x, 1, len, pseudoreps);
-	if ( LtInt(INTOBJ_INT(1), n) )
-	    x = Multiplybound(x, x, 1, len, pseudoreps);
-	n = QuoInt(n, INTOBJ_INT(2) );
+            res = Multiplybound(res, x, 1, len, pseudoreps);
+        if ( LtInt(INTOBJ_INT(1), n) )
+            x = Multiplybound(x, x, 1, len, pseudoreps);
+        n = QuoInt(n, INTOBJ_INT(2) );
     }
     return res;
 }
@@ -284,10 +284,10 @@ Obj      Power(
 
 
 Obj        FuncPower(
-		      Obj     self,
-		      Obj     x,
-		      Obj     n,
-		      Obj     pseudoreps     )
+                      Obj     self,
+                      Obj     x,
+                      Obj     n,
+                      Obj     pseudoreps     )
 {
     Obj      Power();
 
@@ -298,7 +298,7 @@ Obj        FuncPower(
    
 
 Obj      Solution( Obj       x,
-		   Obj       y,
+                   Obj       y,
                    Obj       pseudoreps  )
 
 {
@@ -314,57 +314,57 @@ Obj      Solution( Obj       x,
          CELM( pseudoreps, CELM(y, 1) ) == 0                     )
     {
         res = NEW_PLIST( T_PLIST, 2*LEN_PLIST( pseudoreps ) );
-	i = 1;
-	j = 1;
-	k = 1;
+        i = 1;
+        j = 1;
+        k = 1;
         len1 = LEN_PLIST(x);
-	len2 = LEN_PLIST(y);
-	while ( j < len1 && k < len2 )
-	{
-	    if ( ELM_PLIST(x, j) == ELM_PLIST(y, k) )
-	    {
-	        m = DiffInt( ELM_PLIST(y, k+1), ELM_PLIST(x, j+1) );
-		SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
-		SET_ELM_PLIST( res, i+1, m );
-		CHANGED_BAG( res );
-		i+=2; j+=2; k+=2;
-	    }
-	    else if ( CELM(x, j) < CELM(y, k) )
-	    {
-	        m = ProdInt( INTOBJ_INT(-1), ELM_PLIST(x, j+1) );
-		SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
-		SET_ELM_PLIST( res, i+1, m );
-		CHANGED_BAG( res );
-		i+=2; j+=2;
-	    }
-	    else
-	    {
-	        SET_ELM_PLIST( res, i, ELM_PLIST(y, k) );
-		SET_ELM_PLIST( res, i+1, ELM_PLIST(y, k+1) );
-		CHANGED_BAG( res );
-		i+=2; k+=2;
-	    }
-	}
-	if ( j < len1 )
-	    while( j < len1 )
-	    {
-	        m = ProdInt( INTOBJ_INT(-1), ELM_PLIST( x, j+1 ) );
-		SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
-		SET_ELM_PLIST( res, i+1, m );
-		CHANGED_BAG( res );
-		i+=2; j+=2;
-	    }
-	else
-	    while( k < len2 )
-	    {
-	        SET_ELM_PLIST( res, i ,ELM_PLIST(y, k) );
-		SET_ELM_PLIST( res, i+1, ELM_PLIST(y, k+1) );
-		CHANGED_BAG( res );
-		i+=2; k+=2;
-	    }
-	SET_LEN_PLIST( res, i-1 );
-	SHRINK_PLIST( res, i-1);
-	return res;
+        len2 = LEN_PLIST(y);
+        while ( j < len1 && k < len2 )
+        {
+            if ( ELM_PLIST(x, j) == ELM_PLIST(y, k) )
+            {
+                m = DiffInt( ELM_PLIST(y, k+1), ELM_PLIST(x, j+1) );
+                SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
+                SET_ELM_PLIST( res, i+1, m );
+                CHANGED_BAG( res );
+                i+=2; j+=2; k+=2;
+            }
+            else if ( CELM(x, j) < CELM(y, k) )
+            {
+                m = ProdInt( INTOBJ_INT(-1), ELM_PLIST(x, j+1) );
+                SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
+                SET_ELM_PLIST( res, i+1, m );
+                CHANGED_BAG( res );
+                i+=2; j+=2;
+            }
+            else
+            {
+                SET_ELM_PLIST( res, i, ELM_PLIST(y, k) );
+                SET_ELM_PLIST( res, i+1, ELM_PLIST(y, k+1) );
+                CHANGED_BAG( res );
+                i+=2; k+=2;
+            }
+        }
+        if ( j < len1 )
+            while( j < len1 )
+            {
+                m = ProdInt( INTOBJ_INT(-1), ELM_PLIST( x, j+1 ) );
+                SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
+                SET_ELM_PLIST( res, i+1, m );
+                CHANGED_BAG( res );
+                i+=2; j+=2;
+            }
+        else
+            while( k < len2 )
+            {
+                SET_ELM_PLIST( res, i ,ELM_PLIST(y, k) );
+                SET_ELM_PLIST( res, i+1, ELM_PLIST(y, k+1) );
+                CHANGED_BAG( res );
+                i+=2; k+=2;
+            }
+        SET_LEN_PLIST( res, i-1 );
+        SHRINK_PLIST( res, i-1);
+        return res;
     }
     xk = NEW_PLIST( T_PLIST, LEN_PLIST(pseudoreps) );
     SET_LEN_PLIST(xk, LEN_PLIST(pseudoreps) );
@@ -372,12 +372,12 @@ Obj      Solution( Obj       x,
     for (i=1; i <= LEN_PLIST(pseudoreps); i++)
     {
         if ( j >= LEN_PLIST(x)  ||  i < CELM(x, j) )
-	    SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
-	else
-	{
-	    SET_ELM_PLIST(xk, i, ELM_PLIST(x, j+1) );
-	    j+=2;
-	}
+            SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
+        else
+        {
+            SET_ELM_PLIST(xk, i, ELM_PLIST(x, j+1) );
+            j+=2;
+        }
     }
     res = NEW_PLIST( T_PLIST, 2*LEN_PLIST( xk ) );
     j = 1;
@@ -387,27 +387,27 @@ Obj      Solution( Obj       x,
     for (i=1; i <= len1; i++)
     {
         if ( k < len2   &&   i == CELM(y, k)  )
-	{
-	    if  ( !EqInt( ELM_PLIST(xk, i), ELM_PLIST(y, k+1) )  )
-	    {
-	        m = DiffInt( ELM_PLIST(y, k+1), ELM_PLIST(xk, i) );
-		SET_ELM_PLIST(res, j, INTOBJ_INT(i) );
-		SET_ELM_PLIST(res, j+1, m);
-		CHANGED_BAG(res);
-		MultGen(xk, i, m, pseudoreps);
-		j+=2;
-	    }
-	    k+=2;
-	}
+        {
+            if  ( !EqInt( ELM_PLIST(xk, i), ELM_PLIST(y, k+1) )  )
+            {
+                m = DiffInt( ELM_PLIST(y, k+1), ELM_PLIST(xk, i) );
+                SET_ELM_PLIST(res, j, INTOBJ_INT(i) );
+                SET_ELM_PLIST(res, j+1, m);
+                CHANGED_BAG(res);
+                MultGen(xk, i, m, pseudoreps);
+                j+=2;
+            }
+            k+=2;
+        }
         else if ( !IS_INTOBJ( ELM_PLIST(xk, i) )  ||  CELM( xk, i ) != 0 )
-	{
-	    m = ProdInt( INTOBJ_INT(-1), ELM_PLIST(xk, i) );
-	    SET_ELM_PLIST( res, j, INTOBJ_INT(i) );
-	    SET_ELM_PLIST( res, j+1, m );
-	    CHANGED_BAG(res);
-	    MultGen(xk, i, m, pseudoreps);
-	    j+=2;
-	}
+        {
+            m = ProdInt( INTOBJ_INT(-1), ELM_PLIST(xk, i) );
+            SET_ELM_PLIST( res, j, INTOBJ_INT(i) );
+            SET_ELM_PLIST( res, j+1, m );
+            CHANGED_BAG(res);
+            MultGen(xk, i, m, pseudoreps);
+            j+=2;
+        }
     }
     SET_LEN_PLIST(res, j-1);
     SHRINK_PLIST(res, j-1);
@@ -417,8 +417,8 @@ Obj      Solution( Obj       x,
 
 
 Obj       Commutator( Obj     x,
-		      Obj     y,
-		      Obj     pseudoreps  )
+                      Obj     y,
+                      Obj     pseudoreps  )
 {
     Obj    res, Solution(), Multiplybound(), help;
 
@@ -431,8 +431,8 @@ Obj       Commutator( Obj     x,
 
 
 Obj       Conjugate( Obj     x,
-		     Obj     y,
-		     Obj     pseudoreps  )
+                     Obj     y,
+                     Obj     pseudoreps  )
 {
     Obj    res, Solution(), Multiplybound();
 
@@ -444,8 +444,8 @@ Obj       Conjugate( Obj     x,
 
 
 Obj      CommutatorredL( Obj    x,
-			 Obj    y,
-			 Obj    pcp  )
+                         Obj    y,
+                         Obj    pcp  )
 {
     Obj    orders, Commutator(), mod, c, res;
     UInt   i, len, len2, help;
@@ -457,19 +457,19 @@ Obj      CommutatorredL( Obj    x,
     for (i=2; i<=len; i+=2)
         if ( (help=CELM(res, i-1)) <= len2         &&
              ( c=ELM_PLIST( orders, help )) != 0 )
-	{
-	    mod = ModInt( ELM_PLIST(res, i), c );
-	    SET_ELM_PLIST( res, i, mod);
-	    CHANGED_BAG(res);
-	}
+        {
+            mod = ModInt( ELM_PLIST(res, i), c );
+            SET_ELM_PLIST( res, i, mod);
+            CHANGED_BAG(res);
+        }
     return res;
 }
 
 
 
 Obj       ConjugateredL( Obj    x,
-			 Obj    y,
-			 Obj    pcp  )
+                         Obj    y,
+                         Obj    pcp  )
 {
     Obj    orders, Conjugate(), mod, c, res;
     UInt   i, len, len2, help;
@@ -481,11 +481,11 @@ Obj       ConjugateredL( Obj    x,
     for (i=2; i<=len; i+=2)
         if ( (help=CELM(res, i-1)) <= len2         &&
              ( c=ELM_PLIST( orders, help )) != 0 )
-	{
-	    mod = ModInt( ELM_PLIST(res, i), c );
-	    SET_ELM_PLIST( res, i, mod);
-	    CHANGED_BAG(res);
-	}
+        {
+            mod = ModInt( ELM_PLIST(res, i), c );
+            SET_ELM_PLIST( res, i, mod);
+            CHANGED_BAG(res);
+        }
     return res;
 }
 
@@ -494,8 +494,8 @@ Obj       ConjugateredL( Obj    x,
 
 Obj       FuncDTCommutatorL( Obj      self,
                              Obj      x,
-		   	     Obj      y,
-			     Obj      pcp  )
+                             Obj      y,
+                             Obj      pcp  )
 {
     Obj   res, CommutatorredL();
     void  ReduceWordL();
@@ -509,8 +509,8 @@ Obj       FuncDTCommutatorL( Obj      self,
 
 Obj       FuncDTConjugateL( Obj      self,
                             Obj      x,
-		   	    Obj      y,
-			    Obj      pcp  )
+                            Obj      y,
+                            Obj      pcp  )
 {
     Obj   res, ConjugateredL();
     void  ReduceWordL();
@@ -525,9 +525,9 @@ Obj       FuncDTConjugateL( Obj      self,
 
 
 Obj       FuncDTQuotientL( Obj      self,
-			   Obj      x,
-		           Obj      y,
-		           Obj      pcp )
+                           Obj      x,
+                           Obj      y,
+                           Obj      pcp )
 {
     Obj     SolutionredL(), MultiplyboundredL(), help, res;
     void    ReduceWordL();
@@ -546,7 +546,7 @@ Obj       FuncDTQuotientL( Obj      self,
 
 Obj      MultiplyboundredL( Obj     x,
                             Obj     y,
-			    UInt    anf,
+                            UInt    anf,
                             UInt    end,
                             Obj     pcp )
 {
@@ -560,11 +560,11 @@ Obj      MultiplyboundredL( Obj     x,
     for (i=2; i<=len; i+=2)
         if ( (help=CELM(res, i-1)) <= len2        &&
              ( c=ELM_PLIST( orders, help )) != 0 )
-	{
-	    mod = ModInt( ELM_PLIST(res, i), c );
-	    SET_ELM_PLIST( res, i, mod);
-	    CHANGED_BAG(res);
-	}
+        {
+            mod = ModInt( ELM_PLIST(res, i), c );
+            SET_ELM_PLIST( res, i, mod);
+            CHANGED_BAG(res);
+        }
     return res;
 }
 
@@ -584,11 +584,11 @@ Obj      PowerredL( Obj       x,
     for (i=2; i<=len; i+=2)
         if ( (help=CELM(res, i-1)) <= len2         &&
              ( c=ELM_PLIST( orders, help )) != 0 )
-	{
-	    mod = ModInt( ELM_PLIST(res, i), c );
-	    SET_ELM_PLIST( res, i, mod);
-	    CHANGED_BAG(res);
-	}
+        {
+            mod = ModInt( ELM_PLIST(res, i), c );
+            SET_ELM_PLIST( res, i, mod);
+            CHANGED_BAG(res);
+        }
     return res;
 }
 
@@ -608,11 +608,11 @@ Obj      SolutionredL( Obj       x,
     for (i=2; i<=len; i+=2)
         if ( (help=CELM(res, i-1)) <= len2       &&
              ( c=ELM_PLIST( orders, help )) != 0 )
-	{
-	    mod = ModInt( ELM_PLIST(res, i), c );
-	    SET_ELM_PLIST( res, i, mod);
-	    CHANGED_BAG(res);
-	}
+        {
+            mod = ModInt( ELM_PLIST(res, i), c );
+            SET_ELM_PLIST( res, i, mod);
+            CHANGED_BAG(res);
+        }
     return res;
 }
 
@@ -638,42 +638,42 @@ void     ReduceWordL( Obj      x,
     {
         if ( (gen = CELM(x, i) ) <= lenexp              &&
              (potenz = ELM_PLIST(exponent, gen) ) != 0                    )
-	{
-	    quo = ELM_PLIST(x, i+1);
-	    if  ( !IS_INTOBJ(quo) || INT_INTOBJ(quo) >= INT_INTOBJ(potenz) || 
+        {
+            quo = ELM_PLIST(x, i+1);
+            if  ( !IS_INTOBJ(quo) || INT_INTOBJ(quo) >= INT_INTOBJ(potenz) || 
                   INT_INTOBJ(quo)<0 )
-	    {
-	        mod = ModInt( quo, potenz );
-	        SET_ELM_PLIST(x, i+1, mod);
-	        CHANGED_BAG(x);
-		if ( gen <= lenpow            &&
+            {
+                mod = ModInt( quo, potenz );
+                SET_ELM_PLIST(x, i+1, mod);
+                CHANGED_BAG(x);
+                if ( gen <= lenpow            &&
                      (prel = ELM_PLIST( powers, gen) )  != 0  )
-		{
-		    if ( ( IS_INTOBJ(quo) && INT_INTOBJ(quo) >= INT_INTOBJ(potenz) )   ||
-		         TYPE_OBJ(quo) == T_INTPOS    )
-		    {
-		        help = PowerredL( prel,
-			   	          QuoInt(quo, potenz),
-				          pcp    );
-		        help = MultiplyboundredL( help, x, i+2, flag, pcp);
-		    }
-		    else
-		    {
-		        quo = INT_INTOBJ(mod) == 0? QuoInt(quo,potenz):SumInt(QuoInt(quo, potenz),INTOBJ_INT(-1));
-		        help = PowerredL( prel, 
+                {
+                    if ( ( IS_INTOBJ(quo) && INT_INTOBJ(quo) >= INT_INTOBJ(potenz) )   ||
+                         TNUM_OBJ(quo) == T_INTPOS    )
+                    {
+                        help = PowerredL( prel,
+                                          QuoInt(quo, potenz),
+                                          pcp    );
+                        help = MultiplyboundredL( help, x, i+2, flag, pcp);
+                    }
+                    else
+                    {
+                        quo = INT_INTOBJ(mod) == 0? QuoInt(quo,potenz):SumInt(QuoInt(quo, potenz),INTOBJ_INT(-1));
+                        help = PowerredL( prel, 
                                           quo, 
                                           pcp );
-		        help = MultiplyboundredL( help, x, i+2, flag, pcp);
-		    }
-		    len = LEN_PLIST(help);
-		    for (j=1; j<=len; j++)
-		        SET_ELM_PLIST(x, j+i+1, ELM_PLIST(help, j) );
-		    CHANGED_BAG(x);
-		    flag = i+len+1;
-		    /*SET_LEN_PLIST(x, flag);*/
-		}
-	    }
-	}
+                        help = MultiplyboundredL( help, x, i+2, flag, pcp);
+                    }
+                    len = LEN_PLIST(help);
+                    for (j=1; j<=len; j++)
+                        SET_ELM_PLIST(x, j+i+1, ELM_PLIST(help, j) );
+                    CHANGED_BAG(x);
+                    flag = i+len+1;
+                    /*SET_LEN_PLIST(x, flag);*/
+                }
+            }
+        }
     }
     SET_LEN_PLIST(x, flag);
     SHRINK_PLIST(x, flag);
@@ -683,9 +683,9 @@ void     ReduceWordL( Obj      x,
 
 
 Obj      FuncDTmultiplyL( Obj      self,
-			  Obj      x,
-			  Obj      y,
-			  Obj      pcp    )
+                          Obj      x,
+                          Obj      y,
+                          Obj      pcp    )
 {
     Obj    MultiplyboundredL(), res;
     void   ReduceWordL();
@@ -702,9 +702,9 @@ Obj      FuncDTmultiplyL( Obj      self,
 
 
 Obj      FuncDTPowerL( Obj       self,
-		       Obj       x,
-		       Obj       n,
-		       Obj       pcp  )
+                       Obj       x,
+                       Obj       n,
+                       Obj       pcp  )
 {
     Obj    PowerredL(), res;
     void   ReduceWordL();
@@ -717,9 +717,9 @@ Obj      FuncDTPowerL( Obj       self,
 
 
 Obj     FuncDTSolutionL( Obj     self,
-		         Obj     x,
-			 Obj     y,
-		         Obj     pcp )
+                         Obj     x,
+                         Obj     y,
+                         Obj     pcp )
 {
     Obj     SolutionredL(), res;
     void    ReduceWordL();
@@ -735,9 +735,9 @@ Obj     FuncDTSolutionL( Obj     self,
 
 
 Obj     FuncWernerProduct( Obj      self,
-			   Obj      lword,
-			   Obj      rword,
-			   Obj      pcp  )
+                           Obj      lword,
+                           Obj      rword,
+                           Obj      pcp  )
 {
     Obj   res, xk;
     UInt  help, len, i, j;
@@ -750,12 +750,12 @@ Obj     FuncWernerProduct( Obj      self,
     for (i=1; i <= help; i++)
     {
         if ( j >= len  ||  i < CELM(lword, j) )
-	    SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
-	else
-	{
-	    SET_ELM_PLIST(xk, i, ELM_PLIST(lword, j+1) );
-	    j+=2;
-	}
+            SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
+        else
+        {
+            SET_ELM_PLIST(xk, i, ELM_PLIST(lword, j+1) );
+            j+=2;
+        }
     }
     CollectPolycyc(pcp, xk, rword);
     res = NEW_PLIST(T_PLIST, 2*help);
@@ -763,11 +763,11 @@ Obj     FuncWernerProduct( Obj      self,
     for (i=1; i <= help; i++)
     {
         if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
-	{
-	    j+=2;
-	    SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
-	    SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
-	}
+        {
+            j+=2;
+            SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
+            SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
+        }
     }
     SET_LEN_PLIST(res, j);
     SHRINK_PLIST(res, j);
@@ -785,15 +785,15 @@ void     compress( Obj        list )
     while  ( i <= len )
     {
         while ( i<=len  &&  CELM(list, i) == 0)
-	{
-	    skip+=2;
-	    i+=2;
-	}
-	if ( i <= len )
-	{
-	    SET_ELM_PLIST(list, i-skip, ELM_PLIST(list, i) );
-	    SET_ELM_PLIST(list, i-1-skip, ELM_PLIST( list, i-1 ) );
-	}
+        {
+            skip+=2;
+            i+=2;
+        }
+        if ( i <= len )
+        {
+            SET_ELM_PLIST(list, i-skip, ELM_PLIST(list, i) );
+            SET_ELM_PLIST(list, i-1-skip, ELM_PLIST( list, i-1 ) );
+        }
         i+=2;
     }
     SET_LEN_PLIST( list, len-skip );

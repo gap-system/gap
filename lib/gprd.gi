@@ -153,22 +153,36 @@ end );
 
 #############################################################################
 ##
+#M  IsPcgsComputable( <D> )
+##
+InstallMethod( IsPcgsComputable, true, 
+               [IsGroup and HasDirectProductInfo], 0,
+function( D )
+    return ForAll( DirectProductInfo( D ).groups, IsPcgsComputable );
+end );
+
+#############################################################################
+##
 #M  Pcgs( <D> )
 ##
 InstallMethod( Pcgs, true, [IsGroup and HasDirectProductInfo], 0,
 function( D )
-    local info, pcs, i, pcgs, emb;
+    local info, pcs, i, pcgs, emb, rels;
     info := DirectProductInfo( D );
     if not ForAll( info.groups, IsPcgsComputable ) then
         return fail;
     fi;
     pcs := [];
+    rels := [];
     for i in [1..Length(info.groups)] do
         pcgs := Pcgs( info.groups[i] );
         emb  := Embedding( D, i );
         Append( pcs, List( pcgs, x -> Image( emb, x ) ) );
+        Append( rels, RelativeOrders( pcgs ) );
     od;
     pcs := PcgsByPcSequenceNC( ElementsFamily(FamilyObj( D ) ), pcs );
+    SetRelativeOrders( pcs, rels );
+    SetOneOfPcgs( pcs, One(D) );
     return pcs;
 end );
 

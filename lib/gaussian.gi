@@ -64,7 +64,7 @@ InstallMethod( CanonicalBasis,
     function( GaussianIntegers )
     local B;
 
-    B:= Objectify( NewKind( FamilyObj( GaussianIntegers ),
+    B:= Objectify( NewType( FamilyObj( GaussianIntegers ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsCanonicalBasisGaussianIntegersRep ),
@@ -384,7 +384,7 @@ InstallMethod( Factors,
 #T InstallMethod( Enumerator, true, [ IsIntegers ], 0,
 #T     function( Integers )
 #T     local enum;
-#T     enum:= Objectify( NewKind( FamilyObj( Integers ), IsIntegersEnumerator ),
+#T     enum:= Objectify( NewType( FamilyObj( Integers ), IsIntegersEnumerator ),
 #T                       rec() );
 #T     SetUnderlyingCollection( enum, Integers );
 #T     return enum;
@@ -425,7 +425,7 @@ InstallMethod( Factors,
 #T 
 #T InstallMethod( Iterator, true, [ IsIntegers ], 0,
 #T     function( Integers )
-#T     return Objectify( NewKind( IteratorsFamily, IsIntegersIterator ),
+#T     return Objectify( NewType( IteratorsFamily, IsIntegersIterator ),
 #T                       rec(
 #T                            structure := Integers,
 #T                            counter   := 0         ) );

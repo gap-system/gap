@@ -14,20 +14,20 @@ Revision.rest_gi :=
 
 # Booleans
 BooleanFamily           := NewFamily(  "BooleanFamily", IS_BOOL );
-KIND_BOOL               := NewKind(     BooleanFamily,
+TYPE_BOOL               := NewType(     BooleanFamily,
                             IS_BOOL and IsInternalRep );
 
 
 # Characters
 CharsFamily             := NewFamily(  "CharsFamily", IsChar );
-KIND_CHAR               := NewKind(     CharsFamily,
+TYPE_CHAR               := NewType(     CharsFamily,
                             IsChar and IsInternalRep );
 
 # Records
 RecordsFamily           := NewFamily(  "RecordsFamily", IS_REC );
-KIND_PREC_MUTABLE       := NewKind(     RecordsFamily,
+TYPE_PREC_MUTABLE       := NewType(     RecordsFamily,
                             IS_MUTABLE_OBJ and IS_REC and IsInternalRep );
-KIND_PREC_IMMUTABLE     := NewKind(     RecordsFamily,
+TYPE_PREC_IMMUTABLE     := NewType(     RecordsFamily,
                             IS_REC and IsInternalRep );
 
 
@@ -35,21 +35,21 @@ KIND_PREC_IMMUTABLE     := NewKind(     RecordsFamily,
 CyclotomicsFamily       := NewFamily(  "CyclotomicsFamily", IsCyclotomic );
 IsSmallIntRep           := NewRepresentation( "IsSmallIntRep",
                             IsInternalRep, "", IsObject );
-KIND_INT_SMALL_ZERO     := NewKind(     CyclotomicsFamily,
+TYPE_INT_SMALL_ZERO     := NewType(     CyclotomicsFamily,
                             IsInt and IsZeroCyc and IsSmallIntRep );
-KIND_INT_SMALL_NEG      := NewKind(     CyclotomicsFamily,
+TYPE_INT_SMALL_NEG      := NewType(     CyclotomicsFamily,
                             IsInt and IsNegRat and IsSmallIntRep );
-KIND_INT_SMALL_POS      := NewKind(     CyclotomicsFamily,
+TYPE_INT_SMALL_POS      := NewType(     CyclotomicsFamily,
                             IsInt and IsPosRat and IsSmallIntRep );
-KIND_INT_LARGE_NEG      := NewKind(     CyclotomicsFamily,
+TYPE_INT_LARGE_NEG      := NewType(     CyclotomicsFamily,
                             IsInt and IsNegRat and IsInternalRep );
-KIND_INT_LARGE_POS      := NewKind(     CyclotomicsFamily,
+TYPE_INT_LARGE_POS      := NewType(     CyclotomicsFamily,
                             IsInt and IsPosRat and IsInternalRep );
-KIND_RAT_NEG            := NewKind(     CyclotomicsFamily,
+TYPE_RAT_NEG            := NewType(     CyclotomicsFamily,
                             IsRat and IsNegRat and IsInternalRep );
-KIND_RAT_POS            := NewKind(     CyclotomicsFamily,
+TYPE_RAT_POS            := NewType(     CyclotomicsFamily,
                             IsRat and IsPosRat and IsInternalRep );
-KIND_CYC                := NewKind(     CyclotomicsFamily,
+TYPE_CYC                := NewType(     CyclotomicsFamily,
                             IsCyc           and IsInternalRep );
 
 SetOne(            CyclotomicsFamily, 1    );
@@ -60,7 +60,7 @@ SetIsUFDFamily(    CyclotomicsFamily, true );
 IsInfinity := NewRepresentation( "IsInfinity",
     IsCyclotomic and IsAttributeStoringRep,
     [] );
-infinity:= Objectify( NewKind( CyclotomicsFamily, IsInfinity ), rec() );
+infinity:= Objectify( NewType( CyclotomicsFamily, IsInfinity ), rec() );
 InstallMethod( \=,
     "method for cyclotomic and 'infinity'",
     IsIdentical, [ IsCyc, IsInfinity ], 0, ReturnFalse );
@@ -86,15 +86,15 @@ SetName( infinity, "infinity" );
 MAXSIZE_GF_INTERNAL := 2^16;
 
 FAMS_FFE  := [];
-KINDS_FFE := [];
-KIND_FFE  := function ( p )
-    if not IsBound( KINDS_FFE[p] )  then
+TYPES_FFE := [];
+TYPE_FFE  := function ( p )
+    if not IsBound( TYPES_FFE[p] )  then
         FAMS_FFE[p] := NewFamily( "FFEFamily", IS_FFE );
         SetIsUFDFamily( FAMS_FFE[p], true );
         SetCharacteristic( FAMS_FFE[p], p );
-        KINDS_FFE[p] := NewKind( FAMS_FFE[p], IS_FFE and IsInternalRep );
+        TYPES_FFE[p] := NewType( FAMS_FFE[p], IS_FFE and IsInternalRep );
     fi;
-    return KINDS_FFE[p];
+    return TYPES_FFE[p];
 end;
 
 InstallMethod( DegreeFFE,
@@ -135,12 +135,21 @@ IsPerm2Rep              := NewRepresentation( "IsPerm2Rep",
                             IsInternalRep, "", IsObject );
 IsPerm4Rep              := NewRepresentation( "IsPerm4Rep",
                             IsInternalRep, "", IsObject );
-KIND_PERM2              := NewKind(     PermutationsFamily,
+TYPE_PERM2              := NewType(     PermutationsFamily,
                             IS_PERM and IsPerm2Rep );
-KIND_PERM4              := NewKind(     PermutationsFamily,
+TYPE_PERM4              := NewType(     PermutationsFamily,
                             IS_PERM and IsPerm4Rep );
 
 SetOne( PermutationsFamily, () );
+
+ListPerm := function( perm )
+    local lst, i;
+    lst:= [];
+    for i in [ 1 .. LargestMovedPointPerm( perm ) ] do
+      lst[i]:= i ^ perm;
+    od;
+    return lst;
+end;
 
 InstallMethod( SmallestMovedPointPerm,
     "method for a permutation",
@@ -188,37 +197,37 @@ InstallMethod( NrMovedPointsPerm,
 
 #############################################################################
 ##
-#F  KIND_RANGE_SSORT_MUTABLE
+#F  TYPE_RANGE_SSORT_MUTABLE
 ##
-KIND_RANGE_SSORT_MUTABLE := Subkind(
-                            KIND_LIST_HOM( CyclotomicsFamily, 4 ),
+TYPE_RANGE_SSORT_MUTABLE := Subtype(
+                            TYPE_LIST_HOM( CyclotomicsFamily, 4 ),
                             IsRange and IsMutable );
 
 
 #############################################################################
 ##
-#F  KIND_RANGE_NSORT_MUTABLE
+#F  TYPE_RANGE_NSORT_MUTABLE
 ##
-KIND_RANGE_NSORT_MUTABLE := Subkind(
-                            KIND_LIST_HOM( CyclotomicsFamily, 2 ),
+TYPE_RANGE_NSORT_MUTABLE := Subtype(
+                            TYPE_LIST_HOM( CyclotomicsFamily, 2 ),
                             IsRange and IsMutable );
 
 
 #############################################################################
 ##
-#F  KIND_RANGE_SSORT_IMMUTABLE
+#F  TYPE_RANGE_SSORT_IMMUTABLE
 ##
-KIND_RANGE_SSORT_IMMUTABLE := Subkind(
-                              KIND_LIST_HOM( CyclotomicsFamily, 4 ),
+TYPE_RANGE_SSORT_IMMUTABLE := Subtype(
+                              TYPE_LIST_HOM( CyclotomicsFamily, 4 ),
                               IsRange );
 
 
 #############################################################################
 ##
-#F  KIND_RANGE_NSORT_IMMUTABLE
+#F  TYPE_RANGE_NSORT_IMMUTABLE
 ##
-KIND_RANGE_NSORT_IMMUTABLE := Subkind(
-                              KIND_LIST_HOM( CyclotomicsFamily, 2 ),
+TYPE_RANGE_NSORT_IMMUTABLE := Subtype(
+                              TYPE_LIST_HOM( CyclotomicsFamily, 2 ),
                               IsRange );
 
 

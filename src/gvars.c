@@ -31,7 +31,7 @@ char *          Revision_gvars_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
 
 #include        "scanner.h"             /* Pr                              */
 
@@ -191,24 +191,24 @@ void            AssGVar (
     cops = ELM_PLIST( CopiesGVars, gvar );
     if ( cops != 0 ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-	    copy  = (Obj*) ELM_PLIST(cops,i);
+            copy  = (Obj*) ELM_PLIST(cops,i);
             *copy = val;
         }
     }
 
     /* if the value is a function, assign it to all the internal fopies    */
     cops = ELM_PLIST( FopiesGVars, gvar );
-    if ( cops != 0 && val != 0 && TYPE_OBJ(val) == T_FUNCTION ) {
+    if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-	    copy  = (Obj*) ELM_PLIST(cops,i);
+            copy  = (Obj*) ELM_PLIST(cops,i);
             *copy = val;
         }
     }
 
     /* if the values is not a function, assign the error function          */
-    else if ( cops != 0 && val != 0 /* && TYPE_OBJ(val) != T_FUNCTION */ ) {
+    else if ( cops != 0 && val != 0 /* && TNUM_OBJ(val) != T_FUNCTION */ ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-	    copy  = (Obj*) ELM_PLIST(cops,i);
+            copy  = (Obj*) ELM_PLIST(cops,i);
             *copy = ErrorMustEvalToFuncFunc;
         }
     }
@@ -216,7 +216,7 @@ void            AssGVar (
     /* if this was an unbind, assign the other error function              */
     else if ( cops != 0 /* && val == 0 */ ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-	    copy  = (Obj*) ELM_PLIST(cops,i);
+            copy  = (Obj*) ELM_PLIST(cops,i);
             *copy = ErrorMustHaveAssObjFunc;
         }
     }
@@ -374,13 +374,13 @@ typedef struct  {
   Obj * copy;
   UInt isFopy;
   Char * name;
-} TypeCopyGVar;
+} TNumCopyGVar;
 
 #ifndef MAX_COPY_AND_FOPY_GVARS
 #define MAX_COPY_AND_FOPY_GVARS 20000
 #endif
 
-static TypeCopyGVar CopyAndFopyGVars[MAX_COPY_AND_FOPY_GVARS];
+static TNumCopyGVar CopyAndFopyGVars[MAX_COPY_AND_FOPY_GVARS];
 
 static NCopyAndFopyGVars = 0;
 
@@ -405,7 +405,7 @@ void            InitCopyGVar (
     else {
         cops = NEW_PLIST( T_PLIST, 0 );
         SET_ELM_PLIST( CopiesGVars, gvar, cops );
-	CHANGED_BAG(CopiesGVars)
+        CHANGED_BAG(CopiesGVars)
     }
     ncop = LEN_PLIST(cops);
 
@@ -421,8 +421,8 @@ void            InitCopyGVar (
     /* make a record in the kernel also, for saving and loading */
     if (NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS)
       {
-	Pr("Panic, no room to record CopyGVar\n",0L,0L);
-	SyExit(1);
+        Pr("Panic, no room to record CopyGVar\n",0L,0L);
+        SyExit(1);
       }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
     CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
@@ -458,7 +458,7 @@ void            InitFopyGVar (
     else {
         cops = NEW_PLIST( T_PLIST, 0 );
         SET_ELM_PLIST( FopiesGVars, gvar, cops );
-	CHANGED_BAG(FopiesGVars)
+        CHANGED_BAG(FopiesGVars)
     }
     ncop = LEN_PLIST(cops);
 
@@ -469,7 +469,7 @@ void            InitFopyGVar (
     CHANGED_BAG(cops)
 
     /* now copy the value of <gvar> to <cvar>                              */
-    if ( VAL_GVAR(gvar) != 0 && TYPE_OBJ(VAL_GVAR(gvar)) == T_FUNCTION ) {
+    if ( VAL_GVAR(gvar) != 0 && TNUM_OBJ(VAL_GVAR(gvar)) == T_FUNCTION ) {
         *copy = VAL_GVAR(gvar);
     }
     else if ( VAL_GVAR(gvar) != 0 ) {
@@ -482,8 +482,8 @@ void            InitFopyGVar (
     /* make a record in the kernel also, for saving and loading */
     if (NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS)
       {
-	Pr("Panic, no room to record FopyGVar\n",0L,0L);
-	SyExit(1);
+        Pr("Panic, no room to record FopyGVar\n",0L,0L);
+        SyExit(1);
       }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
     CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
@@ -538,7 +538,7 @@ Obj MakeReadOnlyGVarHandler (
     while ( ! IsStringConv( name ) ) {
         name = ErrorReturnObj(
             "MakeReadOnlyGVar: <name> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(name)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(name)].name), 0L,
             "you can return a string for <name>" );
     }
 
@@ -583,7 +583,7 @@ Obj MakeReadWriteGVarHandler (
     while ( ! IsStringConv( name ) ) {
         name = ErrorReturnObj(
             "MakeReadWriteGVar: <name> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(name)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(name)].name), 0L,
             "you can return a string for <name>" );
     }
 
@@ -633,10 +633,10 @@ Obj             AUTOHandler (
 
     /* get and check the function                                          */
     func = ELM_LIST( args, 1 );
-    while ( TYPE_OBJ(func) != T_FUNCTION ) {
+    while ( TNUM_OBJ(func) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "AUTO: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
@@ -655,7 +655,7 @@ Obj             AUTOHandler (
         while ( ! IsStringConv(name) ) {
             name = ErrorReturnObj(
                 "AUTO: <name> must be a string (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(name)].name), 0L,
+                (Int)(InfoBags[TNUM_OBJ(name)].name), 0L,
                 "you can return a string for <name>" );
         }
         gvar = GVarName( CSTR_STRING(name) );
@@ -730,13 +730,13 @@ void            InitGVars ( void )
     /* make the error functions for 'AssGVar'                              */
     InitGlobalBag( &ErrorMustEvalToFuncFunc, "gvars: error function 1" );
     InitHandlerFunc( ErrorMustEvalToFuncHandler,
-		     "error must evaluate to a function");
+                     "error must evaluate to a function");
     ErrorMustEvalToFuncFunc = NewFunctionC( "ErrorMustEvalToFunc", -1L,"args",
                                 ErrorMustEvalToFuncHandler );
     
     InitGlobalBag( &ErrorMustHaveAssObjFunc, "gvars: error function 2" );
     InitHandlerFunc( ErrorMustHaveAssObjHandler,
-		     "error must have associated object");
+                     "error must have associated object");
     ErrorMustHaveAssObjFunc = NewFunctionC( "ErrorMustHaveAssObj", -1L,"args",
                                 ErrorMustHaveAssObjHandler );
 

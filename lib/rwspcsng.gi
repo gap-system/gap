@@ -58,17 +58,18 @@ Is32BitsSingleCollectorRep := NewRepresentation(
 #############################################################################
 ##
 
-#P  IsDefaultRhsKindSingleCollector
+#P  IsDefaultRhsTypeSingleCollector
 ##
-##  This feature is set as soon as all right hand sides have the same kind as
-##  the one stored  in  the component 'defaultKind'.   Calling  'ReduceRules'
-##  will reduce all right hand sides and convert  them into an object of kind
-##  'defaultKind'.
+##  This feature is set as soon as all right hand sides have the same type as
+##  the one stored  in  the component 'defaultType'.   Calling  'ReduceRules'
+##  will reduce all right hand sides and convert  them into an object of type
+##  'defaultType'.
 ##
-IsDefaultRhsKindSingleCollector := NEW_FILTER(
-    "IsDefaultRhsKindSingleCollector" );
-FILTERS[FLAG1_FILTER(IsDefaultRhsKindSingleCollector)] :=
-    IsDefaultRhsKindSingleCollector;
+IsDefaultRhsTypeSingleCollector := NEW_FILTER(
+    "IsDefaultRhsTypeSingleCollector" );
+FILTERS[FLAG1_FILTER(IsDefaultRhsTypeSingleCollector)] :=
+    IsDefaultRhsTypeSingleCollector;
+RANKS_FILTERS[FLAG1_FILTER(IsDefaultRhsTypeSingleCollector)] := 1;
 
 
 #############################################################################
@@ -280,7 +281,7 @@ SingleCollector_Solution := function( sc, a, b )
     for i  in [ 1 .. sc![SCP_NUMBER_RWS_GENERATORS] ]  do
         dif := (bv[i] - av[i]) mod rod[i];
         if dif <> 0  then
-            y := AssocWord( sc![SCP_DEFAULT_KIND], [ i, dif ] );
+            y := AssocWord( sc![SCP_DEFAULT_TYPE], [ i, dif ] );
             Add( x, i );
             Add( x, dif );
             CollectWord( sc, av, y );
@@ -288,7 +289,7 @@ SingleCollector_Solution := function( sc, a, b )
     od;
 
     # and return the solution <x>
-    return AssocWord( sc![SCP_DEFAULT_KIND], x );
+    return AssocWord( sc![SCP_DEFAULT_TYPE], x );
 
 end;
 
@@ -357,7 +358,7 @@ function( sc )
 
     # return if there is nothing to reduce
     if n = 0  then
-        SetFeatureObj( sc, IsDefaultRhsKindSingleCollector, true );
+        SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, true );
         OutdatePolycyclicCollector(sc);
         UpdatePolycyclicCollector(sc);
         return;
@@ -387,7 +388,7 @@ function( sc )
                 while CollectWordOrFail( sc, l, cnj[j][i] ) = fail  do
                     l := List( gns, x -> 0 );
                 od;
-                cnj[j][i] := ObjByVector( sc![SCP_DEFAULT_KIND], l );
+                cnj[j][i] := ObjByVector( sc![SCP_DEFAULT_TYPE], l );
                 if cnj[j][i] = gns[j]  then
                     Unbind(cnj[j][i]);
                 fi;
@@ -398,15 +399,15 @@ function( sc )
             while CollectWordOrFail( sc, l, pow[i] ) = fail  do
                 l := List( gns, x -> 0 );
             od;
-            pow[i] := ObjByVector( sc![SCP_DEFAULT_KIND], l );
+            pow[i] := ObjByVector( sc![SCP_DEFAULT_TYPE], l );
             if 0 = NumberSyllables(pow[i])  then
                 Unbind(pow[i]);
             fi;
         fi;
     od;
 
-    # now all right hand sides have the default kind
-    SetFeatureObj( sc, IsDefaultRhsKindSingleCollector, true );
+    # now all right hand sides have the default type
+    SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, true );
 
     # but we have to outdate the collector to force recomputation of avec
     OutdatePolycyclicCollector(sc);
@@ -430,8 +431,8 @@ SingleCollector_SetConjugateNC := function( sc, i, j, rhs )
     # install the rhs
     else
         sc![SCP_CONJUGATES][i][j] := rhs;
-        if not sc![SCP_IS_DEFAULT_KIND](rhs)  then
-            SetFeatureObj( sc, IsDefaultRhsKindSingleCollector, false );
+        if not sc![SCP_IS_DEFAULT_TYPE](rhs)  then
+            SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, false );
         fi;
     fi;
 
@@ -512,8 +513,8 @@ SingleCollector_SetPowerNC := function( sc, i, rhs )
         Unbind(sc![SCP_POWERS][i]);
     else
         sc![SCP_POWERS][i] := rhs;
-        if not sc![SCP_IS_DEFAULT_KIND](rhs)  then
-            SetFeatureObj( sc, IsDefaultRhsKindSingleCollector, false );
+        if not sc![SCP_IS_DEFAULT_TYPE](rhs)  then
+            SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, false );
         fi;
     fi;
 
@@ -819,7 +820,7 @@ InstallMethod( SingleCollectorByGenerators,
     0,
 
 function( efam, gens, orders )
-    local   i,  sc,  m,  bits,  kind,  fam;
+    local   i,  sc,  m,  bits,  type,  fam;
 
     # create the correct family
     fam := NewFamily( "PowerConjugateCollectorFamily",
@@ -846,7 +847,7 @@ function( efam, gens, orders )
     # and the relative orders
     sc[SCP_RELATIVE_ORDERS] := ShallowCopy(orders);
 
-    # and a default kind
+    # and a default type
     if 0 = Length(gens)  then
         m := 1;
     else
@@ -856,31 +857,31 @@ function( efam, gens, orders )
     while i < 4 and sc[SCP_UNDERLYING_FAMILY]!.expBitsInfo[i] <= m  do
         i := i + 1;
     od;
-    sc[SCP_DEFAULT_KIND] := sc[SCP_UNDERLYING_FAMILY]!.kinds[i];
+    sc[SCP_DEFAULT_TYPE] := sc[SCP_UNDERLYING_FAMILY]!.types[i];
 
     # set the corresponding feature later
     if i = 1  then
-        sc[SCP_IS_DEFAULT_KIND] := Is8BitsAssocWord;
+        sc[SCP_IS_DEFAULT_TYPE] := Is8BitsAssocWord;
         sc[SCP_COLLECTOR] := 8Bits_SingleCollector;
         bits := Is8BitsSingleCollectorRep;
     elif i = 2  then
-        sc[SCP_IS_DEFAULT_KIND] := Is16BitsAssocWord;
+        sc[SCP_IS_DEFAULT_TYPE] := Is16BitsAssocWord;
         sc[SCP_COLLECTOR] := 16Bits_SingleCollector;
         bits := Is16BitsSingleCollectorRep;
     elif i = 3  then
-        sc[SCP_IS_DEFAULT_KIND] := Is32BitsAssocWord;
+        sc[SCP_IS_DEFAULT_TYPE] := Is32BitsAssocWord;
         sc[SCP_COLLECTOR] := 32Bits_SingleCollector;
         bits := Is32BitsSingleCollectorRep;
     else
-        sc[SCP_IS_DEFAULT_KIND] := IsInfBitsAssocWord;
+        sc[SCP_IS_DEFAULT_TYPE] := IsInfBitsAssocWord;
         bits := IsSingleCollectorRep;
     fi;
 
-    # the generators must have the default kind
+    # the generators must have the default type
     gens := ShallowCopy(gens);
     for i  in [ 1 .. Length(gens) ]  do
-        if not sc[SCP_IS_DEFAULT_KIND](gens[i])  then
-            gens[i] := AssocWord( sc[SCP_DEFAULT_KIND],
+        if not sc[SCP_IS_DEFAULT_TYPE](gens[i])  then
+            gens[i] := AssocWord( sc[SCP_DEFAULT_TYPE],
                                   ExtRepOfObj(gens[i]) );
         fi;
     od;
@@ -909,16 +910,16 @@ function( efam, gens, orders )
     sc[SCP_MAX_STACK_SIZE] := 256;
 
     # convert into a list object and set number of bits
-    kind := NewKind( fam, IsSingleCollectorRep and bits and IsFinite
+    type := NewType( fam, IsSingleCollectorRep and bits and IsFinite
                           and IsMutable );
-    Objectify( kind, sc );
+    Objectify( type, sc );
     SetFeatureObj( sc, HasUnderlyingFamily,      true );
     SetFeatureObj( sc, HasRelativeOrders,        true );
     SetFeatureObj( sc, HasGeneratorsOfRws,       true );
     SetFeatureObj( sc, HasNumberGeneratorsOfRws, true );
 
     # there are no right hand sides
-    SetFeatureObj( sc, IsDefaultRhsKindSingleCollector, true );
+    SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, true );
 
     # we haven't computed the avector and the inverses
     OutdatePolycyclicCollector(sc);
@@ -1007,7 +1008,7 @@ InstallMethod( CollectWordOrFail,
 InstallMethod( CollectWordOrFail,
     IsIdenticalFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
-      and IsDefaultRhsKindSingleCollector and IsUpToDatePolycyclicCollector,
+      and IsDefaultRhsTypeSingleCollector and IsUpToDatePolycyclicCollector,
       IsList,
       Is8BitsAssocWord ],
     0,
@@ -1018,7 +1019,7 @@ InstallMethod( CollectWordOrFail,
 InstallMethod( CollectWordOrFail,
     IsIdenticalFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector and IsUpToDatePolycyclicCollector,
+          and IsDefaultRhsTypeSingleCollector and IsUpToDatePolycyclicCollector,
       IsList,
       Is16BitsAssocWord ],
     0,
@@ -1029,7 +1030,7 @@ InstallMethod( CollectWordOrFail,
 InstallMethod( CollectWordOrFail,
     IsIdenticalFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       IsList,
       Is32BitsAssocWord ],
@@ -1058,11 +1059,11 @@ function( sc )
     # and the relative orders
     copy[SCP_RELATIVE_ORDERS] := ShallowCopy(sc![SCP_RELATIVE_ORDERS]);
 
-    # and a default kind
-    copy[SCP_DEFAULT_KIND] := sc![SCP_DEFAULT_KIND];
-    copy[SCP_IS_DEFAULT_KIND] := sc![SCP_IS_DEFAULT_KIND];
+    # and a default type
+    copy[SCP_DEFAULT_TYPE] := sc![SCP_DEFAULT_TYPE];
+    copy[SCP_IS_DEFAULT_TYPE] := sc![SCP_IS_DEFAULT_TYPE];
 
-    # the generators must have the default kind
+    # the generators must have the default type
     copy[SCP_RWS_GENERATORS] := ShallowCopy(sc![SCP_RWS_GENERATORS]);
     copy[SCP_NUMBER_RWS_GENERATORS] := sc![SCP_NUMBER_RWS_GENERATORS];
 
@@ -1096,7 +1097,7 @@ function( sc )
     copy[SCP_COLLECTOR] := sc![SCP_COLLECTOR];
 
     # convert into a list object
-    copy := Objectify( KindObj(sc), copy );
+    copy := Objectify( TypeObj(sc), copy );
     SetFilterObj( copy, IsMutable );
     return copy;
 
@@ -1144,7 +1145,7 @@ InstallMethod( ObjByExponents,
     0,
 
 function( sc, data )
-    return ObjByVector( sc![SCP_DEFAULT_KIND], data );
+    return ObjByVector( sc![SCP_DEFAULT_TYPE], data );
 end );
 
 
@@ -1260,7 +1261,7 @@ end );
 InstallMethod( ReducedComm,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is8BitsAssocWord,
       Is8BitsAssocWord ],
@@ -1272,7 +1273,7 @@ InstallMethod( ReducedComm,
 InstallMethod( ReducedComm,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is16BitsAssocWord,
       Is16BitsAssocWord ],
@@ -1284,7 +1285,7 @@ InstallMethod( ReducedComm,
 InstallMethod( ReducedComm,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is32BitsAssocWord,
       Is32BitsAssocWord ],
@@ -1304,7 +1305,7 @@ InstallMethod( ReducedInverse,
 
 function( sc, word )
     return SingleCollector_Solution( sc, word,
-               AssocWord( sc![SCP_DEFAULT_KIND], [] ) );
+               AssocWord( sc![SCP_DEFAULT_TYPE], [] ) );
 end );
 
 
@@ -1318,7 +1319,7 @@ end );
 InstallMethod( ReducedForm,
     IsIdenticalFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector 
+          and IsDefaultRhsTypeSingleCollector 
           and IsUpToDatePolycyclicCollector,
       Is8BitsAssocWord ],
     0,
@@ -1329,7 +1330,7 @@ InstallMethod( ReducedForm,
 InstallMethod( ReducedForm,
     IsIdenticalFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector 
+          and IsDefaultRhsTypeSingleCollector 
           and IsUpToDatePolycyclicCollector,
       Is16BitsAssocWord ],
     0,
@@ -1340,7 +1341,7 @@ InstallMethod( ReducedForm,
 InstallMethod( ReducedForm,
     IsIdenticalFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is32BitsAssocWord ],
     0,
@@ -1357,7 +1358,7 @@ InstallMethod( ReducedForm,
 InstallMethod( ReducedLeftQuotient,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is8BitsAssocWord,
       Is8BitsAssocWord ],
@@ -1369,7 +1370,7 @@ InstallMethod( ReducedLeftQuotient,
 InstallMethod( ReducedLeftQuotient,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is16BitsAssocWord,
       Is16BitsAssocWord ],
@@ -1381,7 +1382,7 @@ InstallMethod( ReducedLeftQuotient,
 InstallMethod( ReducedLeftQuotient,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is32BitsAssocWord,
       Is32BitsAssocWord ],
@@ -1399,7 +1400,7 @@ InstallMethod( ReducedOne,
     0,
 
 function( sc )
-    return AssocWord( sc![SCP_DEFAULT_KIND], [] );
+    return AssocWord( sc![SCP_DEFAULT_TYPE], [] );
 end );
 
 
@@ -1413,7 +1414,7 @@ end );
 InstallMethod( ReducedProduct,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is8BitsAssocWord,
       Is8BitsAssocWord ],
@@ -1425,7 +1426,7 @@ InstallMethod( ReducedProduct,
 InstallMethod( ReducedProduct,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is16BitsAssocWord,
       Is16BitsAssocWord ],
@@ -1437,7 +1438,7 @@ InstallMethod( ReducedProduct,
 InstallMethod( ReducedProduct,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is32BitsAssocWord,
       Is32BitsAssocWord ],
@@ -1455,7 +1456,7 @@ InstallMethod( ReducedProduct,
 InstallMethod( ReducedPower,
     IsIdenticalFamiliesRwsObjXXX,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is8BitsAssocWord,
       IsInt and IsSmallIntRep ],
@@ -1467,7 +1468,7 @@ InstallMethod( ReducedPower,
 InstallMethod( ReducedPower,
     IsIdenticalFamiliesRwsObjXXX,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is16BitsAssocWord,
       IsInt and IsSmallIntRep ],
@@ -1479,7 +1480,7 @@ InstallMethod( ReducedPower,
 InstallMethod( ReducedPower,
     IsIdenticalFamiliesRwsObjXXX,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is32BitsAssocWord,
       IsInt and IsSmallIntRep ],
@@ -1497,7 +1498,7 @@ InstallMethod( ReducedPower,
 InstallMethod( ReducedQuotient,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is8BitsAssocWord,
       Is8BitsAssocWord ],
@@ -1509,7 +1510,7 @@ InstallMethod( ReducedQuotient,
 InstallMethod( ReducedQuotient,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is16BitsAssocWord,
       Is16BitsAssocWord ],
@@ -1521,7 +1522,7 @@ InstallMethod( ReducedQuotient,
 InstallMethod( ReducedQuotient,
     IsIdenticalFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
-          and IsDefaultRhsKindSingleCollector
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is32BitsAssocWord,
       Is32BitsAssocWord ],

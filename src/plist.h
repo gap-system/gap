@@ -130,14 +130,14 @@ extern  Int             GrowPlist (
 *F  IS_PLIST( <list> )  . . . . . . . . . . . check if <list> is a plain list
 */
 #define IS_PLIST( list ) \
-  (FIRST_PLIST_TYPE <= TYPE_OBJ(list) && TYPE_OBJ(list) <= LAST_PLIST_TYPE)
+  (FIRST_PLIST_TNUM <= TNUM_OBJ(list) && TNUM_OBJ(list) <= LAST_PLIST_TNUM)
 
 
 /****************************************************************************
 **
 *F  IS_IMM_PLIST( <list> )  . . . . . . . . . . .  is a plain listy immutable
 */
-#define IS_IMM_PLIST(list)  ((TYPE_OBJ(list) - T_PLIST) % 2)
+#define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
 
 
 /****************************************************************************

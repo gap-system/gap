@@ -1,0 +1,284 @@
+\Chapter{An Example of a new Kind of Objects}
+
+In  this chapter we explain  the   development and implementation of  new
+kinds  of objects in {\GAP}. We  do so by  presenting an example in which
+objects  we already know (namely, automorphisms   of solvable groups) are
+equipped with  operations that we   also already know, but for  different
+objects (namely, the  binary  operations  `^'  and `/' between   positive
+integers and permutations). Our  goal is to generalize  the Schreier-Sims
+algorithm for  construction of a stabilizer  chain to groups  of such new
+automorphisms.
+
+\Section{An operation domain for automorphisms}\null
+
+The  idea we describe  in this section is  due to C.~Sims.  We consider a
+group  $A$ of automorphisms  of a group $G$, given  by generators, and we
+would like to  know its order. Of course  we could follow the strategy of
+the  Schreier-Sims algorithm (see "Stabilizer chains")  for $A$ acting on
+$G$. This would involve a call of  `StabChainStrong( EmptyStabChain( [ ],
+One(  $A$  ) ), GroupGenerators( $A$  )  )' where `StabChainStrong'  is a
+function as the one described in the pseudo-code below:
+\bigskip
+{\obeylines\frenchspacing
+`StabChainStrong := function( $S$, $newgens$ )'
+\quad Extend the Schreier tree of $S$ with $newgens$.
+\quad `for each' Schreier generator $sch$ `do':
+\qquad `if $sch \notin S$.stabilizer  then'
+\qquad\quad `StabChainStrong( $S$.stabilizer, [ $sch$ ] );'
+\qquad `fi;'
+\quad `od;'
+`end;'}
+\bigskip \noindent
+The membership test `$sch  \notin S$.stabilizer' can be performed because
+the  stabilizer chain  of `$S$.stabilizer'  is   already correct at  that
+moment. We  even know a base  in advance, namely  any  generating set for
+$G$. Fix such  a generating set  $(g_1,\ldots,g_d)$ and observe that this
+base  is  generally very   short compared  to   the degree $|G|$  of  the
+operation. The problem with the Schreier-Sims algorithm, however, is then
+that the length of the first  basic orbit $g_1.A$  would already have the
+magnitude of $|G|$,  and the basic orbits at  deeper levels would  not be
+much shorter. For the advantage of a short base  we pay the high price of
+long basic  orbits, since the  product of  the  (few) basic orbit lengths
+must  equal $|A|$.  Such  long  orbits  make the Schreier-Sims  algorithm
+infeasible,   so we have to   look for a  longer base  with shorter basic
+orbits.
+
+Assume that   $G$ is solvable  and  choose  a  characteristic series with
+elementary abelian factors. For the sake of  simplicity we assume that $N
+\< G$ is an   elementary abelian characteristic subgroup  with elementary
+abelian factor group $G/N$. Since $N$ is characteristic, $A$ also acts as
+a group of automorphisms  on the factor  group $G/N$,  but of course  not
+necessarily  faithfully. To retain  a faithful action,  we let $A$ act on
+the disjoint  union  $G/N   \mathbin{\dot\cup} G$  and  choose  as   base
+$(g_1N,\ldots,g_dN,g_1,\ldots,g_d)$.  Now the first  $d$ basic orbits lie
+inside $G/N$ and can have length at  most $[G\mathbin:N]$. Since the base
+points  $g_1N,\ldots,  g_dN$  form a  generating   set  for  $G/N$, their
+iterated stabilizer $A^{(d+1)}$ acts trivially on the factor group $G/N$,
+i.e., it leaves  the cosets $g_iN$  invariant. Accordingly,  the next $d$
+basic orbits lie inside  $g_iN$ (for $i=1,\ldots,d$)  and can have length
+at most~$|N|$.
+
+Generalizing this method to a characteristic series $G=N_0 > N_1 > \ldots
+> N_l=\{1\}$ of length $l>2$, we  can always find  a base of length $l.d$
+such that each  basic orbit is  contained in a  coset of a characteristic
+factor, i.e. in a set of the form $g_iN_{j-1}/N_j$ (where $g_i$ is one of
+the generators  of $G$ and $1\le j\le  l$). In particular, the  length of
+the basic  orbits   is  bounded   by  the  size  of    the  corresponding
+characteristic factors. To implement a Schreier-Sims algorithm for such a
+base, we  must  be   able  to  let   automorphisms  act  on   cosets   of
+characteristic  factors $g_iN_{j-1}/N_j$, for  varying  $i$  and $j$.  We
+would    like to    translate each such     action  into  an  action   on
+$\{1,\ldots,[N_{j-1}\mathbin: N_j]\}$, because then we need not enumerate
+the operation domain
+$$ G/N_1 \mathbin{\dot\cup} G/N_2 \mathbin{\dot\cup} \ldots
+         \mathbin{\dot\cup} G/N_l $$
+as a whole. Enumerating it  as a whole would result  in basic orbits like
+$`orbit'\subseteq \{1001,\ldots,1100\}$  with a  `transversal' list whose
+first 1000 entries would be unbound, but  still require 4~bytes of memory
+each (see "Stabilizer chain records").
+
+Identifying   each  coset   $g_iN_{j-1}/N_j$ into   $\{1,\ldots, [N_{j-1}
+\mathbin: N_j]\}$ of  course means that we have  to change the action  of
+the automorphisms on     every  level of   the  stabilizer   chain.  Such
+flexibility is not   possible with permutations  because their  effect on
+positive  integers  is ``hardwired''  into them,  but  we can install new
+operations for automorphisms.
+
+\Section{Enumerators for cosets of characteristic factors}\null
+
+So far we have  not used  the  fact that  the characteristic factors  are
+elementary abelian, but we will do so from here on. Our  first task is to
+implement an   enumerator   (see  "Enumerators")   for  a   coset  of   a
+characteristic factor   in a solvable  group  $G$. We assume that  such a
+coset $gN/M$ is given by
+{\medskip\frenchspacing
+\item{(1)} a pcgs   for the group $G$  (see  "Pcgs"), let `$n$ =  Length(
+  $pcgs$ )';
+\item{(2)} a range `$range$ = [ $start$  .. $stop$ ]' indicating that `$N
+  =  \langle pcgs$\{ [ $start$  .. $n$ ] \} $\rangle$'  and `$M = \langle
+  pcgs$\{  [  $stop$ + 1   .. $n$ ]  \} $\rangle$',  i.e.,  the cosets of
+  `$pcgs$\{ $range$ \}' form a base for the vector space $N/M$;
+\item{(3)} the representative $g$.}
+\medskip\noindent
+We   first  define a  new representation  for   such enumerators and then
+construct them by simply putting these three pieces of data into a record
+object. The  enumerator  should  behave as  a   list of  group   elements
+(representing cosets modulo $M$),   consequently, its family will  be the
+family of the $pcgs$ itself.
+\begintt
+IsCosetSolvableFactorEnumeratorRep := NewRepresentation
+    ( "isCosetSolvableFactorEnumerator", IsEnumerator,
+                                [ "pcgs", "range", "representative" ] );
+
+EnumeratorCosetSolvableFactor := function( pcgs, range, g )
+    return Objectify( NewKind( FamilyObj( pcgs ),
+                   IsCosetSolvableFactorEnumeratorRep ),
+                   rec( pcgs := pcgs,
+                       range := range,
+              representative := g ) );
+end;
+\endtt
+The definition of the operations `Length', `\\[\\]' and `Position' is now
+straightforward. The  code has sometimes  been  abbreviated and is  meant
+``cum grano salis'',  e.g.,  the declaration of  the local  variables has
+been left out.
+\begintt
+InstallMethod( Length, true, [ IsCosetSolvableFactorEnumeratorRep ], 0,
+    enum -> Product( RelativeOrdersPcgs( enum!.pcgs ){ enum!.range } ) );
+
+InstallMethod( \[\], true, [ IsCosetSolvableFactorEnumeratorRep,
+        IsPosRat and IsInt ], 0,
+    function( enum, pos )
+    elm := ();
+    pos := pos - 1;
+    for i  in Reversed( enum!.range )  do
+        p := RelativeOrderOfPcElement( enum!.pcgs, i );
+        elm := enum!.pcgs[ i ] ^ ( pos mod p ) * elm;
+        pos := QuoInt( pos, p );
+    od;
+    return enum!.representative * elm;
+end );
+
+InstallMethod( Position, true, [ IsCosetSolvableFactorEnumeratorRep,
+        IsObject, IsZeroCyc ], 0,
+    function( enum, elm, zero )
+    exp := ExponentsOfPcElement( enum!.pcgs,
+                   LeftQuotient( enum!.representative, elm ) );
+    pos := 0;
+    for i  in enum!.range  do
+        pos := pos * RelativeOrderOfPcElement( pcgs, i ) + exp[ i ];
+    od;
+    return pos + 1;
+end );
+\endtt
+
+\Section{Making automorphisms act on such enumerators}\null
+
+Our  next  task  is   to  make   automorphisms   of the   solvable  group
+`$pcgs$!.group' act on `[ 1 .. Length( $enum$ ) ]' for such an enumerator
+$enum$.   We   achieve this  by introducing   a    new representation  of
+automorphisms on enumerators and by  putting the enumerator together with
+the automorphism into an object which behaves like a permutation. Turning
+an  ordinary automorphism into  such a special automorphism requires then
+the construction  of a new object which  has the new  kind. We provide an
+operation  `PermOnEnumerator( $model$,  $aut$ )' which  constructs such a
+new  object  having the   same kind   as  $model$,  but  representing the
+automorphism $aut$. So  $aut$ can be either  an  ordinary automorphism or
+one which  already has an enumerator  in its  kind, but perhaps different
+from the one we want (i.e. from the one in $model$).
+\begintt
+IsPermOnEnumerator := NewCategory( "IsPermOnEnumerator",
+    IsMultiplicativeElementWithInverse and IsPerm );
+
+IsPermOnEnumeratorDefaultRep := NewRepresentation
+    ( "IsPermOnEnumeratorDefaultRep",
+      IsPermOnEnumerator and IsAttributeStoringRep,
+      [ "perm" ] );
+
+PermOnEnumerator := NewOperation( "PermOnEnumerator", [ IsObject, IsObject ] );
+
+InstallMethod( PermOnEnumerator, true,
+        [ IsEnumerator, IsObject ], 0,
+    function( enum, a )
+    if IsAttributeStoringRep( a )  then
+        SetFilterObj( a, IsMultiplicativeElementWithInverse );
+    fi;
+    a := Objectify( NewKind( PermutationsOnEnumeratorsFamily,
+                 IsPermOnEnumeratorDefaultRep ),
+                 rec( perm := a ) );
+    SetEnumerator( a, enum );
+    return a;
+end );
+
+InstallMethod( PermOnEnumerator, true,
+        [ IsEnumerator, IsPermOnEnumeratorDefaultRep ], 0,
+    function( enum, a )
+    a := Objectify( KindObj( a ), rec( perm := a!.perm ) );
+    SetEnumerator( a, enum );
+    return a;
+end );
+\endtt
+Now we have to install new methods for the operations which calculate the
+product of two  automorphisms, because this  product must  again have the
+right kind. We also  have to write  a function which uses the enumerators
+to apply such an automorphism to positive integers.
+\begintt
+InstallMethod( \*, IsIdentical,
+        [ IsPermOnEnumeratorDefaultRep, IsPermOnEnumeratorDefaultRep ], 0,
+    function( a, b )
+    local   perm;
+        
+    perm := op( a!.perm, b!.perm );
+    SetIsBijective( perm, true );
+    return PermOnEnumerator( Enumerator( a ), perm );
+end );
+
+InstallMethod( \^, true,
+        [ IsPosRat and IsInt, IsPermOnEnumeratorDefaultRep ], 0,
+    function( p, a )
+    return PositionCanonical( Enumerator( a ),
+                   Enumerator( a )[ p ] ^ a!.perm );
+end );
+\endtt
+How the corresponding  methods for `$p$ /  $aut$' and `$aut$  ^ $n$' look
+like is obvious.
+
+Now we  can  formulate  the recursive procedure   `StabChainStrong' which
+extends  the stabilizer chain by adding  in new  generators $newgens$. We
+content  ourselves again   with pseudo-code, emphasizing  only  the lines
+which set the `EnumeratorDomainPermutation'. We assume that initially $S$
+is a stabilizer chain for the trivial subgroup with a level for each pair
+$(range,g)$ characterizing an enumerator  (as  described above). We  also
+assume that  the `identity'  element at each  level already  has the kind
+corresponding to that level.
+\bigskip
+{\obeylines\frenchspacing
+`StabChainStrong := function( $S$, $newgens$ )'
+\quad `for $i$  in [ 1 .. Length( $newgens$ ) ]  do'
+\qquad `$newgens$[ $i$ ] := AutomorphismOnEnumerator( $S$.identity,
+\qquad\quad $newgens$[ $i$ ] );'
+\quad `od;'
+\quad Extend the Schreier tree of $S$ with $newgens$.
+\quad `for each' Schreier generator $sch$ `do':
+\qquad `if $sch \notin S$.stabilizer  then'
+\qquad\quad `StabChainStrong( $S$.stabilizer, [ $sch$ ] );'
+\qquad `fi;'
+\quad `od;'
+`end;'}
+
+\Section{Expressing the operation via affine mappings}\null
+
+If $\alpha$ is  in the stabilizer of the  first $d$ base  points, it acts
+trivially on   $N_0/N_1 = G/N$  (we  assume $N_2=\{1\}$ for  the  sake of
+simplicity here). The action of such an $\alpha$ on  a coset $gN$ is then
+translated into an action on $N$ because for $n\in N$ we have $(gn)\alpha
+=  g(n\star\alpha)$ for some $n\star\alpha\in  N$  which we can regard as
+the image   of $n$  under $\alpha$  via  the  $\star$-operation.  We have
+$n\star\alpha =  g^{-1}g\alpha.n\alpha$,  so  that ${}\star\alpha$ is  an
+affine mapping on the    vector  space~$N$. The translation    vector  is
+$g^{-1}g\alpha$, and this depends on  the representative $g$, whereas the
+linear part is the mapping $\alpha$ restricted to  $N$, and this does not
+depend on the representative  $g$. Moreover, since $N$ is characteristic,
+this  linear mapping is always   defined, even if   $\alpha$ does not act
+trivially on $G/N$.    Only the condition $g^{-1}g\alpha\in  N$  requires
+$\alpha$ to act trivially on $G/N$.
+
+We therefore want to store all the  linear mappings in every automorphism
+and   to   maintain   them when  we     calculate  new  automorphisms  by
+multiplication. The linear mappings  are easily represented by  matrices,
+stored in a list  $maps$  such that `$maps$[  $D$!.range[  1 ] ]' is  the
+linear mapping on the characteristic factor represented by the enumerator
+$D$  (i.e.,  on the  factor corresponding  to the  generators `$D$!.pcgs{
+$D$!.range  }'). The  affine  mappings require an additional  translation
+vector. We must then, of course, construct new enumerators for the cosets
+of  characteristic factors, which  deal   with vectors instead  of  group
+elements. This is straightforward, we omit the code.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:             text
+% mode:             outline-minor
+% outline-regexp:   "\\\\Chapter\\|\\\\Section"
+% fill-column:      73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

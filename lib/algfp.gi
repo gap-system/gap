@@ -24,7 +24,7 @@ InstallMethod(ElementOfFpAlgebra,
   "for family of fp. alg. elements and ring element",true,
   [IsFamilyOfFpAlgebraElements,IsRingElement],0,
 function(fam,elm)
-    return Objectify( fam!.defaultKind, [ Immutable( elm ) ] );
+    return Objectify( fam!.defaultType, [ Immutable( elm ) ] );
 end );
 
 
@@ -98,8 +98,8 @@ local A, fam,gens;
     # Create a new family.
     fam := NewFamily( "FamilyElementsFpAlgebra", IsElementOfFpAlgebra );
 
-    # Create the default kind for the elements.
-    fam!.defaultKind := NewKind( fam, IsPackedAlgebraElmDefaultRep );
+    # Create the default type for the elements.
+    fam!.defaultType := NewType( fam, IsPackedAlgebraElmDefaultRep );
 
     fam!.freeAlgebra := F;
     fam!.relators := Immutable( rels );
@@ -107,7 +107,7 @@ local A, fam,gens;
 
     # Create the algebra.
     A := Objectify(
-        NewKind( CollectionsFamily( fam ),
+        NewType( CollectionsFamily( fam ),
             IsSubalgebraFpAlgebra and IsWholeFamily and IsAttributeStoringRep ),
         rec() );
 

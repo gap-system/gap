@@ -2594,7 +2594,7 @@ InstallMethod( GroupByGenerators,
     true, [ IsCollection ] , 0,
     function( gens )
     local G;
-    G:= Objectify( NewKind( FamilyObj( gens ),
+    G:= Objectify( NewType( FamilyObj( gens ),
                             IsGroup and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( G, AsList( gens ) );
@@ -2607,7 +2607,7 @@ InstallOtherMethod( GroupByGenerators,
     IsCollsElms, [ IsCollection, IsMultiplicativeElementWithInverse ], 0,
     function( gens, id )
     local G;
-    G:= Objectify( NewKind( FamilyObj( gens ),
+    G:= Objectify( NewType( FamilyObj( gens ),
                             IsGroup and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( G, AsList( gens ) );
@@ -2625,7 +2625,7 @@ InstallOtherMethod( GroupByGenerators,
     true, [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ], 0,
     function( empty, id )
     local G;
-    G:= Objectify( NewKind( CollectionsFamily( FamilyObj( id ) ),
+    G:= Objectify( NewType( CollectionsFamily( FamilyObj( id ) ),
                             IsGroup and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( G, [] );

@@ -7,6 +7,13 @@ Revision.grppcext_gd :=
 
 #############################################################################
 ##
+#I  Infos
+##
+InfoCompPairs := NewInfoClass( "InfoCompPairs" );
+InfoExtReps   := NewInfoClass( "InfoExtReps");
+
+#############################################################################
+##
 #F  ExtensionSQ( C, G, M, c )
 ##
 ExtensionSQ := NewOperationArgs( "ExtensionSQ" );

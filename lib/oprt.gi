@@ -11,17 +11,17 @@ Revision.oprt_gi :=
 ##
 #F  AttributeOperation( <arg> ) . . . . . . . . . .  attribute for operations
 ##
-##  `AttributeOperation(  op, attr,  usekind,   args  )' calls an   operation
+##  `AttributeOperation(  op, attr,  usetype,   args  )' calls an   operation
 ##  function with   the arguments <args>: If  <args>  specify an external set
 ##  <xset> or a group <G>  operating `OnPoints' on  its `MovedPoints', and if
 ##  <xset> resp. <G>  has  the  attribute <attr>,   its  value  is  returned.
 ##  Otherwise, <args> are parsed  and converted into  the form `( G, D, gens,
 ##  oprs, opr )' and the operation <op> is called with this argument list. If
 ##  <xset>  or <G>  was specified   as above, the   result  is stored as  the
-##  attribute <attr>  in <hom>  resp. <G>. If  <usekind> is  true and  <xset>
-##  present, it is passed instead of <D>, to allow usage of `KindObj(xset)'.
+##  attribute <attr>  in <hom>  resp. <G>. If  <usetype> is  true and  <xset>
+##  present, it is passed instead of <D>, to allow usage of `TypeObj(xset)'.
 ##
-AttributeOperation := function( propop, propat, usekind, args )
+AttributeOperation := function( propop, propat, usetype, args )
     local   G,  D,  gens,  oprs,  opr,  xset,  result,  attrG;
     
     # Get the arguments.
@@ -74,7 +74,7 @@ AttributeOperation := function( propop, propat, usekind, args )
          and IsIdentical( MovedPoints( G ), D );
     if attrG  and  Tester( propat )( G )  then
         result := propat( G );
-    elif     usekind
+    elif     usetype
          and IsBound( xset )  then
         result := propop( G, xset, gens, oprs, opr );
     else
@@ -92,7 +92,7 @@ end;
 ##
 #F  OrbitishOperation( <arg> )  . . . . . . . . . . . .  orbit-like operation
 ##
-OrbitishOperation := function( orbish, famrel, usekind, args )
+OrbitishOperation := function( orbish, famrel, usetype, args )
     local   G,  D,  pnt,  gens,  oprs,  opr,  xset,  p;
     
     # Get the arguments.
@@ -139,7 +139,7 @@ OrbitishOperation := function( orbish, famrel, usekind, args )
                                   else  gens := GeneratorsOfGroup( G );  fi;
         oprs := gens;
     fi;
-    if     usekind
+    if     usetype
        and IsBound( xset )  then
         return orbish( G, xset, pnt, gens, oprs, opr );
     elif IsBound( D )  then
@@ -231,7 +231,7 @@ ExternalSetByFilterConstructor := function( filter, G, D, gens, oprs, opr )
     else
         filter := filter and IsExternalSetDefaultRep;
     fi;
-    Objectify( NewKind( FamilyObj( D ), filter ), xset );
+    Objectify( NewType( FamilyObj( D ), filter ), xset );
     SetActingDomain  ( xset, G );
     SetHomeEnumerator( xset, D );
     if not IsExternalSetByOperatorsRep( xset )  then
@@ -240,10 +240,10 @@ ExternalSetByFilterConstructor := function( filter, G, D, gens, oprs, opr )
     return xset;
 end;
 
-ExternalSetByKindConstructor := function( kind, G, D, gens, oprs, opr )
+ExternalSetByTypeConstructor := function( type, G, D, gens, oprs, opr )
     local   xset;
     
-    xset := Objectify( kind, rec(  ) );
+    xset := Objectify( type, rec(  ) );
     if not IsIdentical( gens, oprs )  then
         xset!.generators    := gens;
         xset!.operators     := oprs;
@@ -263,6 +263,7 @@ end;
 ##
 InstallMethod( Size, true, [ IsExternalSet ], 0,
     xset -> Length( Enumerator( xset ) ) );
+#T is this necessary at all? (method in 'coll.gi')
 
 #############################################################################
 ##
@@ -329,15 +330,15 @@ InstallOtherMethod( ExternalSubsetOp,
           IsList,
           IsFunction ], 0,
     function( G, xset, start, gens, oprs, opr )
-    local   kind,  xsset;
+    local   type,  xsset;
 
-    kind := KindObj( xset );
-    if not IsBound( kind![XSET_XSSETKIND] )  then
+    type := TypeObj( xset );
+    if not IsBound( type![XSET_XSSETTYPE] )  then
         xsset := ExternalSetByFilterConstructor( IsExternalSubset,
                          G, HomeEnumerator( xset ), gens, oprs, opr );
-        kind![XSET_XSSETKIND] := KindObj( xsset );
+        type![XSET_XSSETTYPE] := TypeObj( xsset );
     else
-        xsset := ExternalSetByKindConstructor( kind![XSET_XSSETKIND],
+        xsset := ExternalSetByTypeConstructor( type![XSET_XSSETTYPE],
                          G, HomeEnumerator( xset ), gens, oprs, opr );
     fi;
     xsset!.start := Immutable( start );
@@ -387,7 +388,7 @@ InstallMethod( Enumerator, true, [ IsExternalSubset ], 0,
             OrbitByPosOp( G, henum, sublist, pos, pnt, gens, oprs, opr );
         fi;
     od;
-    return Objectify( NewKind( FamilyObj( henum ), IsSubsetEnumerator ),
+    return Objectify( NewType( FamilyObj( henum ), IsSubsetEnumerator ),
         rec( homeEnumerator := henum,
                     sublist := sublist ) );
 end );
@@ -420,15 +421,15 @@ InstallOtherMethod( ExternalOrbitOp,
           IsList,
           IsFunction ], 0,
     function( G, xset, pnt, gens, oprs, opr )
-    local   kind,  xorb;
+    local   type,  xorb;
 
-    kind := KindObj( xset );
-    if not IsBound( kind![XSET_XORBKIND] )  then
+    type := TypeObj( xset );
+    if not IsBound( type![XSET_XORBTYPE] )  then
         xorb := ExternalSetByFilterConstructor( IsExternalOrbit,
                         G, HomeEnumerator( xset ), gens, oprs, opr );
-        kind![XSET_XORBKIND] := KindObj( xorb );
+        type![XSET_XORBTYPE] := TypeObj( xorb );
     else
-        xorb := ExternalSetByKindConstructor( kind![XSET_XORBKIND],
+        xorb := ExternalSetByTypeConstructor( type![XSET_XORBTYPE],
                         G, HomeEnumerator( xset ), gens, oprs, opr );
     fi;
     SetRepresentative( xorb, pnt );
@@ -642,7 +643,7 @@ InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
     if HasBase( xset )  then
         filter := filter and IsOperationHomomorphismByBase;
     fi;
-    return Objectify( NewKind( fam, filter ), hom );
+    return Objectify( NewType( fam, filter ), hom );
 end );
 
 #############################################################################

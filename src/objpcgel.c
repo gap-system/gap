@@ -12,7 +12,7 @@ char * Revision_objpcgel_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -86,7 +86,7 @@ Obj FuncNBitsPcWord_Comm ( Obj self, Obj left, Obj right )
 Obj FuncNBitsPcWord_Conjugate ( Obj self, Obj left, Obj right )
 {
     left = FuncFinPowConjCol_ReducedLeftQuotient(
-	        self, COLLECTOR_PCWORD(left), right, left );
+                self, COLLECTOR_PCWORD(left), right, left );
     return FuncFinPowConjCol_ReducedProduct(
                 self, COLLECTOR_PCWORD(left), left, right );
 }
@@ -185,23 +185,23 @@ Obj Func8Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 
     /* otherwise find the syllable belonging to <exp>                      */
     else {
-	ebits = EBITS_WORD(w);
+        ebits = EBITS_WORD(w);
         exps  = 1UL << (ebits-1);
         expm  = exps - 1;
-	npos  = INT_INTOBJ(pos);
+        npos  = INT_INTOBJ(pos);
         ptr   = ((UInt1*)DATA_WORD(w));
-	for ( i = 1;  i <= num;  i++, ptr++ ) {
-	    gen = ((*ptr) >> ebits) + 1;
-	    if ( gen == npos ) {
-		if ( (*ptr) & exps )
-		    return INTOBJ_INT(((*ptr)&expm)-exps);
-		else
-		    return INTOBJ_INT((*ptr)&expm);
-	    }
-	    if ( npos < gen )
-		return INTOBJ_INT(0);
-	}
-	return INTOBJ_INT(0);
+        for ( i = 1;  i <= num;  i++, ptr++ ) {
+            gen = ((*ptr) >> ebits) + 1;
+            if ( gen == npos ) {
+                if ( (*ptr) & exps )
+                    return INTOBJ_INT(((*ptr)&expm)-exps);
+                else
+                    return INTOBJ_INT((*ptr)&expm);
+            }
+            if ( npos < gen )
+                return INTOBJ_INT(0);
+        }
+        return INTOBJ_INT(0);
     }
 }
 
@@ -276,23 +276,23 @@ Obj Func16Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 
     /* otherwise find the syllable belonging to <exp>                      */
     else {
-	ebits = EBITS_WORD(w);
+        ebits = EBITS_WORD(w);
         exps  = 1UL << (ebits-1);
         expm  = exps - 1;
-	npos  = INT_INTOBJ(pos);
+        npos  = INT_INTOBJ(pos);
         ptr   = ((UInt2*)DATA_WORD(w));
-	for ( i = 1;  i <= num;  i++, ptr++ ) {
-	    gen = ((*ptr) >> ebits) + 1;
-	    if ( gen == npos ) {
-		if ( (*ptr) & exps )
-		    return INTOBJ_INT(((*ptr)&expm)-exps);
-		else
-		    return INTOBJ_INT((*ptr)&expm);
-	    }
-	    if ( npos < gen )
-		return INTOBJ_INT(0);
-	}
-	return INTOBJ_INT(0);
+        for ( i = 1;  i <= num;  i++, ptr++ ) {
+            gen = ((*ptr) >> ebits) + 1;
+            if ( gen == npos ) {
+                if ( (*ptr) & exps )
+                    return INTOBJ_INT(((*ptr)&expm)-exps);
+                else
+                    return INTOBJ_INT((*ptr)&expm);
+            }
+            if ( npos < gen )
+                return INTOBJ_INT(0);
+        }
+        return INTOBJ_INT(0);
     }
 }
 
@@ -367,23 +367,23 @@ Obj Func32Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 
     /* otherwise find the syllable belonging to <exp>                      */
     else {
-	ebits = EBITS_WORD(w);
+        ebits = EBITS_WORD(w);
         exps  = 1UL << (ebits-1);
         expm  = exps - 1;
-	npos  = INT_INTOBJ(pos);
+        npos  = INT_INTOBJ(pos);
         ptr   = ((UInt4*)DATA_WORD(w));
-	for ( i = 1;  i <= num;  i++, ptr++ ) {
-	    gen = ((*ptr) >> ebits) + 1;
-	    if ( gen == npos ) {
-		if ( (*ptr) & exps )
-		    return INTOBJ_INT(((*ptr)&expm)-exps);
-		else
-		    return INTOBJ_INT((*ptr)&expm);
-	    }
-	    if ( npos < gen )
-		return INTOBJ_INT(0);
-	}
-	return INTOBJ_INT(0);
+        for ( i = 1;  i <= num;  i++, ptr++ ) {
+            gen = ((*ptr) >> ebits) + 1;
+            if ( gen == npos ) {
+                if ( (*ptr) & exps )
+                    return INTOBJ_INT(((*ptr)&expm)-exps);
+                else
+                    return INTOBJ_INT((*ptr)&expm);
+            }
+            if ( npos < gen )
+                return INTOBJ_INT(0);
+        }
+        return INTOBJ_INT(0);
     }
 }
 
@@ -454,35 +454,35 @@ void InitPcElements ( void )
                     FuncNBitsPcWord_Comm ) );
 
     InitHandlerFunc( FuncNBitsPcWord_Conjugate,
-		     "NBitsPcWord_Conjugate" );
+                     "NBitsPcWord_Conjugate" );
     AssGVar( GVarName( "NBitsPcWord_Conjugate" ),
          NewFunctionC( "NBitsPcWord_Conjugate", 2L,
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_Conjugate ) );
 
     InitHandlerFunc( FuncNBitsPcWord_LeftQuotient,
-		     "NBitsPcWord_LeftQuotient" );
+                     "NBitsPcWord_LeftQuotient" );
     AssGVar( GVarName( "NBitsPcWord_LeftQuotient" ),
          NewFunctionC( "NBitsPcWord_LeftQuotient", 2L, 
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_LeftQuotient ) );
 
     InitHandlerFunc( FuncNBitsPcWord_PowerSmallInt,
-		     "NBitsPcWord_PowerSmallInt" );
+                     "NBitsPcWord_PowerSmallInt" );
     AssGVar( GVarName( "NBitsPcWord_PowerSmallInt" ),
          NewFunctionC( "NBitsPcWord_PowerSmallInt", 2L, 
                        "n_bits_pcword, small_integer",
                     FuncNBitsPcWord_PowerSmallInt ) );
 
     InitHandlerFunc( FuncNBitsPcWord_Product,
-		     "NBitsPcWord_Product" );
+                     "NBitsPcWord_Product" );
     AssGVar( GVarName( "NBitsPcWord_Product" ),
          NewFunctionC( "NBitsPcWord_Product", 2L, 
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_Product ) );
 
     InitHandlerFunc( FuncNBitsPcWord_Quotient,
-		     "NBitsPcWord_Quotient" );
+                     "NBitsPcWord_Quotient" );
     AssGVar( GVarName( "NBitsPcWord_Quotient" ),
          NewFunctionC( "NBitsPcWord_Quotient", 2L, 
                        "n_bits_pcword, n_bits_pcword",
@@ -491,21 +491,21 @@ void InitPcElements ( void )
 
     /* 8 bits word                                                         */
     InitHandlerFunc( Func8Bits_DepthOfPcElement,
-		     "8Bits_DepthOfPcElement" );
+                     "8Bits_DepthOfPcElement" );
     AssGVar( GVarName( "8Bits_DepthOfPcElement" ),
          NewFunctionC( "8Bits_DepthOfPcElement", 2L, 
                        "8_bits_pcgs, 8_bits_pcword",
                     Func8Bits_DepthOfPcElement ) );
 
     InitHandlerFunc( Func8Bits_ExponentOfPcElement,
-		     "8Bits_ExponentOfPcElement" );
+                     "8Bits_ExponentOfPcElement" );
     AssGVar( GVarName( "8Bits_ExponentOfPcElement" ),
          NewFunctionC( "8Bits_ExponentOfPcElement", 3L, 
                        "8_bits_pcgs, 8_bits_pcword, int",
                     Func8Bits_ExponentOfPcElement ) );
 
     InitHandlerFunc( Func8Bits_LeadingExponentOfPcElement,
-		     "8Bits_LeadingExponentOfPcElement" );
+                     "8Bits_LeadingExponentOfPcElement" );
     AssGVar( GVarName( "8Bits_LeadingExponentOfPcElement" ),
          NewFunctionC( "8Bits_LeadingExponentOfPcElement", 2L, 
                        "8_bits_pcgs, 8_bits_word",
@@ -513,21 +513,21 @@ void InitPcElements ( void )
 
     /* 16 bits word                                                        */
     InitHandlerFunc( Func16Bits_DepthOfPcElement,
-		     "16Bits_DepthOfPcElement" );
+                     "16Bits_DepthOfPcElement" );
     AssGVar( GVarName( "16Bits_DepthOfPcElement" ),
          NewFunctionC( "16Bits_DepthOfPcElement", 2L, 
                        "16_bits_pcgs, 16_bits_pcword",
                     Func16Bits_DepthOfPcElement ) );
 
     InitHandlerFunc( Func16Bits_ExponentOfPcElement,
-		     "16Bits_ExponentOfPcElement" );
+                     "16Bits_ExponentOfPcElement" );
     AssGVar( GVarName( "16Bits_ExponentOfPcElement" ),
          NewFunctionC( "16Bits_ExponentOfPcElement", 3L, 
                        "16_bits_pcgs, 16_bits_pcword, int",
                     Func16Bits_ExponentOfPcElement ) );
 
     InitHandlerFunc( Func16Bits_LeadingExponentOfPcElement,
-		     "16Bits_LeadingExponentOfPcElement" );
+                     "16Bits_LeadingExponentOfPcElement" );
     AssGVar( GVarName( "16Bits_LeadingExponentOfPcElement" ),
          NewFunctionC( "16Bits_LeadingExponentOfPcElement", 2L, 
                        "16_bits_pcgs, 16_bits_word",
@@ -535,21 +535,21 @@ void InitPcElements ( void )
 
     /* 32 bits word                                                        */
     InitHandlerFunc( Func32Bits_DepthOfPcElement,
-		     "32Bits_DepthOfPcElement" );
+                     "32Bits_DepthOfPcElement" );
     AssGVar( GVarName( "32Bits_DepthOfPcElement" ),
          NewFunctionC( "32Bits_DepthOfPcElement", 2L, 
                        "32_bits_pcgs, 32_bits_pcword",
                     Func32Bits_DepthOfPcElement ) );
 
     InitHandlerFunc( Func32Bits_ExponentOfPcElement,
-		     "32Bits_ExponentOfPcElement" );
+                     "32Bits_ExponentOfPcElement" );
     AssGVar( GVarName( "32Bits_ExponentOfPcElement" ),
          NewFunctionC( "32Bits_ExponentOfPcElement", 3L, 
                        "32_bits_pcgs, 32_bits_pcword, int",
                     Func32Bits_ExponentOfPcElement ) );
 
     InitHandlerFunc( Func32Bits_LeadingExponentOfPcElement,
-		     "32Bits_LeadingExponentOfPcElement" );
+                     "32Bits_LeadingExponentOfPcElement" );
     AssGVar( GVarName( "32Bits_LeadingExponentOfPcElement" ),
          NewFunctionC( "32Bits_LeadingExponentOfPcElement", 2L, 
                        "32_bits_pcgs, 32_bits_word",

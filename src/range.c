@@ -54,7 +54,7 @@ char *          Revision_range_c =
 #include        "system.h"              /* system dependent functions      */
 
 #include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -105,7 +105,7 @@ char *          Revision_range_c =
 **
 **  'IS_RANGE' is defined in the declaration part of this package as follows
 **
-#define IS_RANGE(val)   (TYPE_OBJ(val)==T_RANGE_NSORT || TYPE_OBJ(val)==T_RANGE_SSORT)
+#define IS_RANGE(val)   (TNUM_OBJ(val)==T_RANGE_NSORT || TNUM_OBJ(val)==T_RANGE_SSORT)
 */
 
 
@@ -231,63 +231,63 @@ char *          Revision_range_c =
 /****************************************************************************
 **
 
-*F  KindRangeNSortImmutable( <range> )  . . . . . . . . . . . kind of a range
+*F  TypeRangeNSortImmutable( <range> )  . . . . . . . . . . . kind of a range
 **
-**  'KindRangeNSortMutable' is the   function in 'KindObjFuncs' for immutable
+**  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
 **  ranges which are not strictly sorted.
 */
-Obj KIND_RANGE_NSORT_IMMUTABLE;
+Obj TYPE_RANGE_NSORT_IMMUTABLE;
 
-Obj KindRangeNSortImmutable (
+Obj TypeRangeNSortImmutable (
     Obj                 list )
 {
-    return KIND_RANGE_NSORT_IMMUTABLE;
+    return TYPE_RANGE_NSORT_IMMUTABLE;
 }
     
 /****************************************************************************
 **
-*F  KindRangeNSortMutable( <range> )  . . . . . . . . . . . . kind of a range
+*F  TypeRangeNSortMutable( <range> )  . . . . . . . . . . . . kind of a range
 **
-**  'KindRangeNSortMutable' is the   function in 'KindObjFuncs' for   mutable
+**  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for   mutable
 **  ranges which are not strictly sorted.
 */
-Obj KIND_RANGE_NSORT_MUTABLE;
+Obj TYPE_RANGE_NSORT_MUTABLE;
 
-Obj KindRangeNSortMutable (
+Obj TypeRangeNSortMutable (
     Obj                 list )
 {
-    return KIND_RANGE_NSORT_MUTABLE;
+    return TYPE_RANGE_NSORT_MUTABLE;
 }
     
 /****************************************************************************
 **
-*F  KindRangeSSortImmutable( <range> )  . . . . . . . . . . . kind of a range
+*F  TypeRangeSSortImmutable( <range> )  . . . . . . . . . . . kind of a range
 **
-**  'KindRangeNSortMutable' is the   function in 'KindObjFuncs' for immutable
+**  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
 **  ranges which are strictly sorted.
 */
-Obj KIND_RANGE_SSORT_IMMUTABLE;
+Obj TYPE_RANGE_SSORT_IMMUTABLE;
 
-Obj KindRangeSSortImmutable (
+Obj TypeRangeSSortImmutable (
     Obj                 list )
 {
-    return KIND_RANGE_SSORT_IMMUTABLE;
+    return TYPE_RANGE_SSORT_IMMUTABLE;
 }
 
 
 /****************************************************************************
 **
-*F  KindRangeSSortMutable( <range> )  . . . . . . . . . . . . kind of a range
+*F  TypeRangeSSortMutable( <range> )  . . . . . . . . . . . . kind of a range
 **
-**  'KindRangeNSortMutable' is the   function in 'KindObjFuncs' for   mutable
+**  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for   mutable
 **  ranges which are strictly sorted.
 */
-Obj KIND_RANGE_SSORT_MUTABLE;
+Obj TYPE_RANGE_SSORT_MUTABLE;
 
-Obj KindRangeSSortMutable (
+Obj TypeRangeSSortMutable (
     Obj                 list )
 {
-    return KIND_RANGE_SSORT_MUTABLE;
+    return TYPE_RANGE_SSORT_MUTABLE;
 }
     
 /****************************************************************************
@@ -323,10 +323,10 @@ Obj CopyRange (
 
     /* make a copy                                                         */
     if ( mut ) {
-	copy = NewBag( TYPE_OBJ(list), SIZE_OBJ(list) );
+        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
     }
     else {
-        copy = NewBag( IMMUTABLE_TYPE( TYPE_OBJ(list) ), SIZE_OBJ(list) );
+        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
     ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
 
@@ -335,7 +335,7 @@ Obj CopyRange (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    RetypeBag( list, TYPE_OBJ(list) + COPYING );
+    RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
     ADDR_OBJ(copy)[1] = ADDR_OBJ(list)[1];
@@ -379,7 +379,7 @@ void CleanRangeCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    RetypeBag( list, TYPE_OBJ(list) - COPYING );
+    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
 
 
@@ -861,7 +861,7 @@ Int             PosRange (
     }
 
     /* look for an integer                                                 */
-    else if ( TYPE_OBJ(val) == T_INT ) {
+    else if ( TNUM_OBJ(val) == T_INT ) {
         v = INT_INTOBJ(val);
         if ( 0 < inc
           && low + start * inc <= v && v <= low + (lenList-1) * inc
@@ -879,7 +879,7 @@ Int             PosRange (
     }
 
     /* for a record compare every entry                                    */
-    else if ( TYPE_OBJ(val) == T_PREC ) {
+    else if ( TNUM_OBJ(val) == T_PREC ) {
         for ( k = start+1; k <= lenList; k++ ) {
             if ( EQ( INTOBJ_INT( low + (k-1) * inc ), val ) )
                 break;
@@ -950,8 +950,8 @@ Int             IsRange (
     Int                 i;              /* loop variable                   */
 
     /* if <list> is represented as a range, it is of course a range      */
-    if ( TYPE_OBJ(list) == T_RANGE_NSORT
-      || TYPE_OBJ(list) == T_RANGE_SSORT ) {
+    if ( TNUM_OBJ(list) == T_RANGE_NSORT
+      || TNUM_OBJ(list) == T_RANGE_SSORT ) {
         isRange = 1;
     }
 
@@ -966,17 +966,17 @@ Int             IsRange (
     }
 
     /* if <list> is a list with just one integer, it is also a range     */
-    else if ( LEN_LIST(list)==1 && TYPE_OBJ(ELMW_LIST(list,1))==T_INT ) {
+    else if ( LEN_LIST(list)==1 && TNUM_OBJ(ELMW_LIST(list,1))==T_INT ) {
         isRange = 1;
     }
 
     /* if the first element is not an integer, it is not a range           */
-    else if ( ELMV0_LIST(list,1)==0 || TYPE_OBJ(ELMW_LIST(list,1))!=T_INT ) {
+    else if ( ELMV0_LIST(list,1)==0 || TNUM_OBJ(ELMW_LIST(list,1))!=T_INT ) {
         isRange = 0;
     }
 
     /* if the second element is not an integer, it is not a range          */
-    else if ( ELMV0_LIST(list,2)==0 || TYPE_OBJ(ELMW_LIST(list,2))!=T_INT ) {
+    else if ( ELMV0_LIST(list,2)==0 || TNUM_OBJ(ELMW_LIST(list,2))!=T_INT ) {
         isRange = 0;
     }
 
@@ -1082,22 +1082,22 @@ void            InitRange ( void )
 
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "KIND_RANGE_NSORT_MUTABLE",
-			   &KIND_RANGE_NSORT_MUTABLE );
+    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
+                           &TYPE_RANGE_NSORT_MUTABLE );
 
-    ImportGVarFromLibrary( "KIND_RANGE_SSORT_MUTABLE",
-			   &KIND_RANGE_SSORT_MUTABLE );
+    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_MUTABLE",
+                           &TYPE_RANGE_SSORT_MUTABLE );
 
-    ImportGVarFromLibrary( "KIND_RANGE_NSORT_IMMUTABLE",
-			   &KIND_RANGE_NSORT_IMMUTABLE );
+    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_IMMUTABLE",
+                           &TYPE_RANGE_NSORT_IMMUTABLE );
 
-    ImportGVarFromLibrary( "KIND_RANGE_SSORT_IMMUTABLE",
-			   &KIND_RANGE_SSORT_IMMUTABLE );
+    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_IMMUTABLE",
+                           &TYPE_RANGE_SSORT_IMMUTABLE );
 
-    KindObjFuncs[ T_RANGE_NSORT            ] = KindRangeNSortMutable;
-    KindObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = KindRangeNSortImmutable;
-    KindObjFuncs[ T_RANGE_SSORT            ] = KindRangeSSortMutable;
-    KindObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = KindRangeSSortImmutable;
+    TypeObjFuncs[ T_RANGE_NSORT            ] = TypeRangeNSortMutable;
+    TypeObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = TypeRangeNSortImmutable;
+    TypeObjFuncs[ T_RANGE_SSORT            ] = TypeRangeSSortMutable;
+    TypeObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = TypeRangeSSortImmutable;
 
     /* install the copy methods                                            */
     CopyObjFuncs [ T_RANGE_NSORT                     ] = CopyRange;

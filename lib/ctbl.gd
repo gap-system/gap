@@ -143,6 +143,51 @@ NearlyCharacterTablesFamily := NewFamily( "NearlyCharacterTablesFamily",
 
 #############################################################################
 ##
+#V  SupportedOrdinaryTableInfo
+#V  SupportedBrauerTableInfo
+##
+##  are used to create ordinary or Brauer character tables from records.
+##  The most important applications are the construction of library tables
+##  and the construction of derived tables (direct products, factors etc.)
+##  by library functions.
+##
+##  'SupportedOrdinaryTableInfo' is a list that contains at position $2i-1$
+##  an attribute getter function, and at position $2i$ the name of this
+##  attribute.
+##  This allows to set components with these names as attribute values.
+##
+##  Supported attributes must be created using 'NewAttributeSuppCT'.
+##
+SupportedOrdinaryTableInfo := [
+    IsSimpleGroup,                "IsSimpleGroup",
+    OrdersClassRepresentatives,   "OrdersClassRepresentatives",
+    SizesCentralizers,            "SizesCentralizers",
+    SizesConjugacyClasses,        "SizesConjugacyClasses",
+    ];
+#T what about classtext?
+
+SupportedBrauerTableInfo := ShallowCopy( SupportedOrdinaryTableInfo );
+
+
+#############################################################################
+##
+#F  NewAttributeSuppCT( <name>, <filter> )
+#F  NewAttributeSuppCT( <name>, <filter>, "mutable" )
+##
+NewAttributeSuppCT := function( arg )
+    if Length( arg ) = 2 then
+      attr:= NewAttribute( arg[1], arg[2] );
+    else
+      attr:= NewAttribute( arg[1], arg[2], arg[3] );
+    fi;
+    Append( SupportedOrdinaryTableInfo, [ attr, arg[1] ] );
+    Append( SupportedBrauerTableInfo, [ attr, arg[1] ] );
+    return attr;
+end;
+
+
+#############################################################################
+##
 ##  2. operations for groups that concern characters and character tables
 ##
 
@@ -211,6 +256,10 @@ OrdinaryCharacterTable := NewAttribute(
 SetOrdinaryCharacterTable := Setter( OrdinaryCharacterTable );
 HasOrdinaryCharacterTable := Tester( OrdinaryCharacterTable );
 
+Append( SupportedBrauerTableInfo, [
+    OrdinaryCharacterTable, "OrdinaryCharacterTable",
+    ] );
+
 
 #############################################################################
 ##
@@ -258,7 +307,7 @@ ComputedBrauerCharacterTables := NewAttribute(
 ##
 ##  ('Irr' may delegate back to the group <G>.)
 ##
-Irr := NewAttribute( "Irr", IsGroup );
+Irr := NewAttributeSuppCT( "Irr", IsGroup );
 SetIrr := Setter( Irr );
 HasIrr := Tester( Irr );
 
@@ -298,7 +347,7 @@ IBr := NewOperationArgs( "IBr" );
 ##  of course each Brauer character is an element of characteristic zero
 ##  in the sense of {\GAP}.)
 ##
-UnderlyingCharacteristic := NewAttribute( "UnderlyingCharacteristic",
+UnderlyingCharacteristic := NewAttributeSuppCT( "UnderlyingCharacteristic",
     IsNearlyCharacterTable );
 SetUnderlyingCharacteristic := Setter( UnderlyingCharacteristic );
 HasUnderlyingCharacteristic := Tester( UnderlyingCharacteristic );
@@ -314,7 +363,7 @@ HasUnderlyingCharacteristic := Tester( UnderlyingCharacteristic );
 ##
 ##  If <tbl> is an ordinary character table then ...
 ##
-BlocksInfo := NewAttribute( "BlocksInfo", IsNearlyCharacterTable );
+BlocksInfo := NewAttributeSuppCT( "BlocksInfo", IsNearlyCharacterTable );
 SetBlocksInfo := Setter( BlocksInfo );
 HasBlocksInfo := Tester( BlocksInfo );
 
@@ -332,7 +381,8 @@ HasBlocksInfo := Tester( BlocksInfo );
 #T remove this, better store the info in the irred. characters themselves
 #T ('IrredInfo' is used in 'Display' and '\*' methods)
 ##
-IrredInfo := NewAttribute( "IrredInfo", IsNearlyCharacterTable, "mutable" );
+IrredInfo := NewAttributeSuppCT( "IrredInfo",
+    IsNearlyCharacterTable, "mutable" );
 SetIrredInfo := Setter( IrredInfo );
 HasIrredInfo := Tester( IrredInfo );
 
@@ -341,7 +391,8 @@ HasIrredInfo := Tester( IrredInfo );
 ##
 #A  ClassParameters( <tbl> )
 ##
-ClassParameters := NewAttribute( "ClassParameters", IsNearlyCharacterTable );
+ClassParameters := NewAttributeSuppCT( "ClassParameters",
+    IsNearlyCharacterTable );
 SetClassParameters := Setter( ClassParameters );
 HasClassParameters := Tester( ClassParameters );
 
@@ -361,7 +412,7 @@ HasClassParameters := Tester( ClassParameters );
 ##  It is necessary because the original table and the sorted table have the
 ##  same identifier, and hence the same fusions are valid for the two tables.
 ##
-ClassPermutation := NewAttribute( "ClassPermutation",
+ClassPermutation := NewAttributeSuppCT( "ClassPermutation",
     IsNearlyCharacterTable );
 SetClassPermutation := Setter( ClassPermutation );
 HasClassPermutation := Tester( ClassPermutation );
@@ -405,7 +456,7 @@ HasDisplayOptions := Tester( DisplayOptions );
 #T one would have to compare identifiers only via 'IsIdentical',
 #T and this is the wrong approach for strings!
 ##
-Identifier := NewAttribute( "Identifier", IsNearlyCharacterTable );
+Identifier := NewAttributeSuppCT( "Identifier", IsNearlyCharacterTable );
 SetIdentifier := Setter( Identifier );
 HasIdentifier := Tester( Identifier );
 
@@ -416,7 +467,7 @@ HasIdentifier := Tester( Identifier );
 ##
 ##  is a string with information about <tbl>.
 ##
-InfoText := NewAttribute( "InfoText", IsNearlyCharacterTable );
+InfoText := NewAttributeSuppCT( "InfoText", IsNearlyCharacterTable );
 SetInfoText := Setter( InfoText );
 HasInfoText := Tester( InfoText );
 
@@ -438,7 +489,7 @@ HasInverseClasses := Tester( InverseClasses );
 ##  This is known usually only for library tables.
 #T meaningful also for tables with group?
 ##
-Maxes := NewAttribute( "Maxes", IsNearlyCharacterTable );
+Maxes := NewAttributeSuppCT( "Maxes", IsNearlyCharacterTable );
 SetMaxes := Setter( Maxes );
 HasMaxes := Tester( Maxes );
 
@@ -450,7 +501,7 @@ HasMaxes := Tester( Maxes );
 ##  is the list of identifiers of all those tables that are known to have
 ##  fusions into <tbl> stored.
 ##
-NamesOfFusionSources := NewAttribute( "NamesOfFusionSources",
+NamesOfFusionSources := NewAttributeSuppCT( "NamesOfFusionSources",
     IsNearlyCharacterTable, "mutable" );
 SetNamesOfFusionSources := Setter( NamesOfFusionSources );
 HasNamesOfFusionSources := Tester( NamesOfFusionSources );
@@ -460,7 +511,7 @@ HasNamesOfFusionSources := Tester( NamesOfFusionSources );
 ##
 #A  AutomorphismsOfTable( <tbl> )
 ##
-AutomorphismsOfTable := NewAttribute( "AutomorphismsOfTable",
+AutomorphismsOfTable := NewAttributeSuppCT( "AutomorphismsOfTable",
     IsNearlyCharacterTable );
 SetAutomorphismsOfTable := Setter( AutomorphismsOfTable );
 HasAutomorphismsOfTable := Tester( AutomorphismsOfTable );
@@ -515,7 +566,7 @@ InducedCyclic := NewOperation( "InducedCyclic", [ IsNearlyCharacterTable ] );
 ##  the class functions can notify knowledge of the group via the
 ##  category 'IsClassFunctionWithGroup'.
 ##
-UnderlyingGroup := NewAttribute( "UnderlyingGroup", IsOrdinaryTable );
+UnderlyingGroup := NewAttributeSuppCT( "UnderlyingGroup", IsOrdinaryTable );
 SetUnderlyingGroup := Setter( UnderlyingGroup );
 HasUnderlyingGroup := Tester( UnderlyingGroup );
 
@@ -729,7 +780,7 @@ FusionConjugacyClasses := NewOperationArgs( "FusionConjugacyClasses" );
 FusionConjugacyClassesOp := NewOperation( "FusionConjugacyClassesOp",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ] );
 
-ComputedClassFusions := NewAttribute( "ComputedClassFusions",
+ComputedClassFusions := NewAttributeSuppCT( "ComputedClassFusions",
     IsNearlyCharacterTable, "mutable" );
 SetComputedClassFusions := Setter( ComputedClassFusions );
 HasComputedClassFusions := Tester( ComputedClassFusions );
@@ -824,7 +875,7 @@ PowerMap := NewOperationArgs( "PowerMap" );
 PowerMapOp := NewOperation( "PowerMapOp",
     [ IsNearlyCharacterTable, IsInt ] );
 
-ComputedPowerMaps := NewAttribute( "ComputedPowerMaps",
+ComputedPowerMaps := NewAttributeSuppCT( "ComputedPowerMaps",
     IsNearlyCharacterTable, "mutable" );
 SetComputedPowerMaps := Setter( ComputedPowerMaps );
 HasComputedPowerMaps := Tester( ComputedPowerMaps );
@@ -849,43 +900,6 @@ InverseMap := NewOperationArgs( "InverseMap" );
 #F  NrPolyhedralSubgroups( <tbl>, <c1>, <c2>, <c3>)  . # polyhedral subgroups
 ##
 NrPolyhedralSubgroups := NewOperationArgs( "NrPolyhedralSubgroups" );
-
-
-#############################################################################
-##
-#V  SupportedOrdinaryTableInfo
-#V  SupportedBrauerTableInfo
-##
-##  are used to create ordinary or Brauer character tables from records.
-##  The most important applications are the construction of library tables
-##  and the construction of derived tables (direct products, factors etc.)
-##  by library functions.
-##
-SupportedOrdinaryTableInfo := [
-    AutomorphismsOfTable,         "automorphismsOfTable",
-    BlocksInfo,                   "blocksInfo",
-    ComputedClassFusions,         "computedClassFusions",
-    ClassParameters,              "classParameters",
-    ClassPermutation,             "classPermutation",
-    ComputedPowerMaps,            "computedPowerMaps",
-    Identifier,                   "identifier",
-    InfoText,                     "infoText",
-    Irr,                          "irr",
-    IrredInfo,                    "irredInfo",
-    IsSimpleGroup,                "isSimpleGroup",
-    Maxes,                        "maxes",
-    NamesOfFusionSources,         "namesOfFusionSources",
-    OrdersClassRepresentatives,   "ordersClassRepresentatives",
-    SizesCentralizers,            "sizesCentralizers",
-    SizesConjugacyClasses,        "sizesConjugacyClasses",
-    UnderlyingCharacteristic,     "underlyingCharacteristic",
-    UnderlyingGroup,              "underlyingGroup",
-    ];
-#T what about classtext?
-
-SupportedBrauerTableInfo := Concatenation( SupportedOrdinaryTableInfo, [
-    OrdinaryCharacterTable,       "ordinaryCharacterTable",
-    ] );
 
 
 #############################################################################
@@ -1094,10 +1108,10 @@ CharacterTableWithSortedClasses := NewOperation(
 ##  relative positions of classes and characters that are not distinguished
 ##  by any relevant property is not changed.
 ##
-##  The result has all those attributes and properties of <tbl> that are
+##  The result has at most those attributes and properties of <tbl> that are
 ##  stored in 'SupportedOrdinaryTableInfo'.
-##  If <tbl> is a library table then also the components of <tbl> that are
-##  stored in 'SupportedLibraryTableComponents' are components of <tbl>.
+##  If <tbl> is a library table then the components of <tbl> that are stored
+##  in 'SupportedLibraryTableComponents' are components of <tbl>.
 ##
 ##  The 'ClassPermutation' value of <tbl> is changed if necessary,
 ##  see "Conventions for Character Tables".

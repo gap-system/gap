@@ -17,7 +17,7 @@ char * Revision_streams_c =
 #include        "system.h"              /* Ints, UInts                     */
 extern char * In;
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* InitGVars                       */
@@ -94,18 +94,57 @@ extern char * In;
 /****************************************************************************
 **
 
-*F  READ_AS_FUNC( <filename> )  . . . . . . . . . . . . . . . . . read a file
+*F  READ()  . . . . . . . . . . . . . . . . . . . . . . .  read current input
+**
+**  Read the current input and close the input stream.
 */
-Obj READ_AS_FUNC (
-    Char *              filename )
+Int READ ( void )
+{
+    UInt                type;
+
+    NrError = 0;
+
+    /* now do the reading                                                  */
+    while ( 1 ) {
+        type = ReadEvalCommand();
+
+        /* handle return-value or return-void command                      */
+        if ( type == 1 || type == 2 ) {
+            Pr(
+                "'return' must not be used in file read-eval loop",
+                0L, 0L );
+        }
+
+        /* handle quit command or <end-of-file>                            */
+        else if ( type == 8 || type == 16 ) {
+            break;
+        }
+
+    }
+
+    /* close the input file again, and return 'true'                       */
+    if ( ! CloseInput() ) {
+        ErrorQuit(
+            "Panic: READ cannot close input, this should not happen",
+            0L, 0L );
+    }
+    NrError = 0;
+
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  READ_AS_FUNC()  . . . . . . . . . . . . .  read current input as function
+**
+**  Read the current input as function and close the input stream.
+*/
+Obj READ_AS_FUNC ( void )
 {
     Obj                 func;
     UInt                type;
 
-    /* try to open the file                                                */
-    if ( ! OpenInput( filename ) ) {
-        return Fail;
-    }
     NrError = 0;
 
     /* now do the reading                                                  */
@@ -134,6 +173,74 @@ Obj READ_AS_FUNC (
 
 /****************************************************************************
 **
+*F  READ_TEST() . . . . . . . . . . . . . . . . .  read current input as test
+**
+**  Read the current input as test and close the input stream.
+*/
+Int READ_TEST ( void )
+{
+    UInt                type;
+    UInt                time;
+
+    NrError = 0;
+
+    /* get the starting time                                               */
+    time = SyTime();
+
+    /* now do the reading                                                  */
+    while ( 1 ) {
+
+        /* read and evaluate the command                                   */
+        NrError = 0;
+        DualSemicolon = 0;
+        type = ReadEvalCommand();
+
+        /* stop the stopwatch                                              */
+        AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
+
+        /* handle ordinary command                                         */
+        if ( type == 0 && ReadEvalResult != 0 ) {
+
+            /* remember the value in 'last' and the time in 'time'         */
+            AssGVar( Last3, VAL_GVAR( Last2 ) );
+            AssGVar( Last2, VAL_GVAR( Last  ) );
+            AssGVar( Last,  ReadEvalResult   );
+
+            /* print the result                                            */
+            if ( ! DualSemicolon ) {
+                IsStringConv( ReadEvalResult );
+                PrintObj( ReadEvalResult );
+                Pr( "\n", 0L, 0L );
+            }
+        }
+
+        /* handle return-value or return-void command                      */
+        else if ( type == 1 || type == 2 ) {
+            Pr( "'return' must not be used in file read-eval loop",
+                0L, 0L );
+        }
+
+        /* handle quit command or <end-of-file>                            */
+        else if ( type == 8 || type == 16 ) {
+            break;
+        }
+
+    }
+
+    /* close the input file again, and return 'true'                       */
+    if ( ! CloseTest() ) {
+        ErrorQuit(
+            "Panic: ReadTest cannot close input, this should not happen",
+            0L, 0L );
+    }
+    NrError = 0;
+
+    return 1;
+}
+
+
+/****************************************************************************
+**
 *F  READ_GAP_ROOT( <filename> ) . . .  read from gap root, dyn-load or static
 **
 **  'READ_GAP_ROOT' tries to find  a file under  the root directory,  it will
@@ -153,10 +260,10 @@ Int READ_GAP_ROOT ( Char * filename )
     /* try to find the file                                                */
     file = SyFindGapRootFile(filename);
     if ( file ) {
-	crc = SyGAPCRC(file);
+        crc = SyGAPCRC(file);
     }
     else {
-	crc = 0;
+        crc = 0;
     }
     res = SyFindOrLinkGapRootFile( filename, crc, result, 256 );
 
@@ -228,55 +335,218 @@ Int READ_GAP_ROOT ( Char * filename )
 /****************************************************************************
 **
 
-*F  FuncLogTo( <filename> ) . . . . . . . . . . . . internal function 'LogTo'
+*F  FuncCLOSE_LOG_TO()  . . . . . . . . . . . . . . . . . . . .  stop logging
 **
-**  'FunLogTo' implements the internal function 'LogTo'.
+**  'FuncCLOSE_LOG_TO' implements a method for 'LogTo'.
 **
-**  'LogTo( <filename> )' \\
 **  'LogTo()'
-**
-**  'LogTo' instructs GAP to echo all input from the  standard  input  files,
-**  '*stdin*' and '*errin*' and all output  to  the  standard  output  files,
-**  '*stdout*'  and  '*errout*',  to  the  file  with  the  name  <filename>.
-**  The file is created if it does not  exist,  otherwise  it  is  truncated.
 **
 **  'LogTo' called with no argument closes the current logfile again, so that
 **  input   from  '*stdin*'  and  '*errin*'  and  output  to  '*stdout*'  and
 **  '*errout*' will no longer be echoed to a file.
 */
-Obj FuncLogTo (
-    Obj                 self,
-    Obj                 args )
+Obj FuncCLOSE_LOG_TO (
+    Obj                 self )
 {
-    Obj                 filename;
-
-    /* 'LogTo()'                                                           */
-    if ( LEN_LIST(args) == 0 ) {
-        if ( ! CloseLog() ) {
-            ErrorQuit("LogTo: can not close the logfile",0L,0L);
-            return 0;
-        }
+    if ( ! CloseLog() ) {
+        ErrorQuit("LogTo: can not close the logfile",0L,0L);
+        return False;
     }
+    return True;
+}
 
-    /* 'LogTo( <filename> )'                                               */
-    else if ( LEN_LIST(args) == 1 ) {
-        filename = ELM_LIST(args,1);
-        while ( ! IsStringConv(filename) ) {
-            filename = ErrorReturnObj(
-                "LogTo: <filename> must be a string (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-                "you can return a string for <filename>" );
-        }
-        if ( ! OpenLog( CSTR_STRING(filename) ) ) {
-            ErrorReturnVoid(
-                "LogTo: cannot log to %s",
-                (Int)CSTR_STRING(filename), 0L,
-                "you can return" );
-            return 0;
-        }
+
+/****************************************************************************
+**
+*F  FuncLOG_TO( <filename> ) . . . . . . . . . . . .  start logging to a file
+**
+**  'FuncLOG_TO' implements a method for 'LogTo'
+**
+**  'LogTo( <filename> )'
+**
+**  'LogTo' instructs GAP to echo all input from the  standard  input  files,
+**  '*stdin*' and '*errin*' and all output  to  the  standard  output  files,
+**  '*stdout*'  and  '*errout*',  to  the  file  with  the  name  <filename>.
+**  The file is created if it does not  exist,  otherwise  it  is  truncated.
+*/
+Obj FuncLOG_TO (
+    Obj                 self,
+    Obj                 filename )
+{
+    while ( ! IsStringConv(filename) ) {
+        filename = ErrorReturnObj(
+            "LogTo: <filename> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            "you can return a string for <filename>" );
     }
+    if ( ! OpenLog( CSTR_STRING(filename) ) ) {
+        ErrorReturnVoid( "LogTo: cannot log to %s",
+                         (Int)CSTR_STRING(filename), 0L,
+                         "you can return" );
+        return False;
+    }
+    return True;
+}
 
-    return 0;
+
+/****************************************************************************
+**
+*F  FuncLOG_TO_STREAM( <stream> ) . . . . . . . . . start logging to a stream
+*/
+Obj FuncLOG_TO_STREAM (
+    Obj                 self,
+    Obj                 stream )
+{
+    if ( ! OpenLogStream(stream) ) {
+        ErrorReturnVoid( "LogTo: cannot log to stream", 0L, 0L,
+                         "you can return" );
+        return False;
+    }
+    return True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncCLOSE_INPUT_LOG_TO()  . . . . . . . . . . . . . . . . .  stop logging
+**
+**  'FuncCLOSE_INPUT_LOG_TO' implements a method for 'InputLogTo'.
+**
+**  'InputLogTo()'
+**
+**  'InputLogTo' called with no argument closes the current logfile again, so
+**  that input from  '*stdin*' and '*errin*' will   no longer be  echoed to a
+**  file.
+*/
+Obj FuncCLOSE_INPUT_LOG_TO (
+    Obj                 self )
+{
+    if ( ! CloseInputLog() ) {
+        ErrorQuit("InputLogTo: can not close the logfile",0L,0L);
+        return False;
+    }
+    return True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncINPUT_LOG_TO( <filename> )  . . . . . . . . . start logging to a file
+**
+**  'FuncINPUT_LOG_TO' implements a method for 'InputLogTo'
+**
+**  'InputLogTo( <filename> )'
+**
+**  'InputLogTo'  instructs  GAP to echo   all input from  the standard input
+**  files, '*stdin*' and '*errin*' to the file with the name <filename>.  The
+**  file is created if it does not exist, otherwise it is truncated.
+*/
+Obj FuncINPUT_LOG_TO (
+    Obj                 self,
+    Obj                 filename )
+{
+    while ( ! IsStringConv(filename) ) {
+        filename = ErrorReturnObj(
+            "InputLogTo: <filename> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            "you can return a string for <filename>" );
+    }
+    if ( ! OpenInputLog( CSTR_STRING(filename) ) ) {
+        ErrorReturnVoid( "InputLogTo: cannot log to %s",
+                         (Int)CSTR_STRING(filename), 0L,
+                         "you can return" );
+        return False;
+    }
+    return True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncINPUT_LOG_TO_STREAM( <stream> ) . . . . . . start logging to a stream
+*/
+Obj FuncINPUT_LOG_TO_STREAM (
+    Obj                 self,
+    Obj                 stream )
+{
+    if ( ! OpenInputLogStream(stream) ) {
+        ErrorReturnVoid( "InputLogTo: cannot log to stream", 0L, 0L,
+                         "you can return" );
+        return False;
+    }
+    return True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncCLOSE_OUTPUT_LOG_TO()  . . . . . . . . . . . . . . . . .  stop logging
+**
+**  'FuncCLOSE_OUTPUT_LOG_TO' implements a method for 'OutputLogTo'.
+**
+**  'OutputLogTo()'
+**
+**  'OutputLogTo'  called with no argument  closes the current logfile again,
+**  so that output from '*stdin*' and '*errin*' will no longer be echoed to a
+**  file.
+*/
+Obj FuncCLOSE_OUTPUT_LOG_TO (
+    Obj                 self )
+{
+    if ( ! CloseOutputLog() ) {
+        ErrorQuit("OutputLogTo: can not close the logfile",0L,0L);
+        return False;
+    }
+    return True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncOUTPUT_LOG_TO( <filename> )  . . . . . . . . . start logging to a file
+**
+**  'FuncOUTPUT_LOG_TO' implements a method for 'OutputLogTo'
+**
+**  'OutputLogTo( <filename> )'
+**
+**  'OutputLogTo' instructs GAP  to echo all  output from the standard output
+**  files, '*stdin*' and '*errin*' to the file with the name <filename>.  The
+**  file is created if it does not exist, otherwise it is truncated.
+*/
+Obj FuncOUTPUT_LOG_TO (
+    Obj                 self,
+    Obj                 filename )
+{
+    while ( ! IsStringConv(filename) ) {
+        filename = ErrorReturnObj(
+            "OutputLogTo: <filename> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            "you can return a string for <filename>" );
+    }
+    if ( ! OpenOutputLog( CSTR_STRING(filename) ) ) {
+        ErrorReturnVoid( "OutputLogTo: cannot log to %s",
+                         (Int)CSTR_STRING(filename), 0L,
+                         "you can return" );
+        return False;
+    }
+    return True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncOUTPUT_LOG_TO_STREAM( <stream> ) . . . . . . start logging to a stream
+*/
+Obj FuncOUTPUT_LOG_TO_STREAM (
+    Obj                 self,
+    Obj                 stream )
+{
+    if ( ! OpenOutputLogStream(stream) ) {
+        ErrorReturnVoid( "OutputLogTo: cannot log to stream", 0L, 0L,
+                         "you can return" );
+        return False;
+    }
+    return True;
 }
 
 
@@ -292,12 +562,12 @@ Obj FuncPrint (
     UInt                i;
 
     /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i <= LEN_PLIST(args); i++ ) {
+    for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IsStringConv(arg) && MUTABLE_TYPE(TYPE_OBJ(arg))==T_STRING ) {
+        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
             PrintString1(arg);
         }
-        else if ( TYPE_OBJ( arg ) == T_FUNCTION ) {
+        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
             PrintObjFull = 1;
             PrintFunction( arg );
             PrintObjFull = 0;
@@ -313,19 +583,223 @@ Obj FuncPrint (
 
 /****************************************************************************
 **
+*F  FuncPRINT_TO( <self>, <args> )  . . . . . . . . . . . . . .  print <args>
+*/
+Obj FuncPRINT_TO (
+    Obj                 self,
+    Obj                 args )
+{
+    Obj                 arg;
+    Obj                 filename;
+    UInt                i;
+
+    /* first entry is the filename                                         */
+    filename = ELM_LIST(args,1);
+    while ( ! IsStringConv(filename) ) {
+        filename = ErrorReturnObj(
+            "PrintTo: <filename> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            "you can return a string for <filename>" );
+    }
+
+    /* try to open the file for output                                     */
+    if ( ! OpenOutput( CSTR_STRING(filename) ) ) {
+        ErrorQuit( "PrintTo: cannot open '%s' for output",
+                   (Int)CSTR_STRING(filename), 0L );
+        return 0;
+    }
+
+    /* print all the arguments, take care of strings and functions         */
+
+    for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
+        arg = ELM_LIST(args,i);
+        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
+            PrintString1(arg);
+        }
+        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+            PrintObjFull = 1;
+            PrintFunction( arg );
+            PrintObjFull = 0;
+        }
+        else {
+            PrintObj( arg );
+        }
+    }
+
+    /* close the output file again, and return nothing                     */
+    if ( ! CloseOutput() ) {
+        ErrorQuit( "PrintTo: cannot close output", 0L, 0L );
+        return 0;
+    }
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncPRINT_TO_STREAM( <self>, <args> ) . . . . . . . . . . .  print <args>
+*/
+Obj FuncPRINT_TO_STREAM (
+    Obj                 self,
+    Obj                 args )
+{
+    Obj                 arg;
+    Obj                 stream;
+    UInt                i;
+
+    /* first entry is the stream                                           */
+    stream = ELM_LIST(args,1);
+
+    /* try to open the file for output                                     */
+    if ( ! OpenOutputStream(stream) ) {
+        ErrorQuit( "PrintTo: cannot open stream for output", 0L, 0L );
+        return 0;
+    }
+
+    /* print all the arguments, take care of strings and functions         */
+
+    for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
+        arg = ELM_LIST(args,i);
+        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
+            PrintString1(arg);
+        }
+        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+            PrintObjFull = 1;
+            PrintFunction( arg );
+            PrintObjFull = 0;
+        }
+        else {
+            PrintObj( arg );
+        }
+    }
+
+    /* close the output file again, and return nothing                     */
+    if ( ! CloseOutput() ) {
+        ErrorQuit( "PrintTo: cannot close output", 0L, 0L );
+        return 0;
+    }
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncAPPEND_TO( <self>, <args> ) . . . . . . . . . . . . . . append <args>
+*/
+Obj FuncAPPEND_TO (
+    Obj                 self,
+    Obj                 args )
+{
+    Obj                 arg;
+    Obj                 filename;
+    UInt                i;
+
+    /* first entry is the filename                                         */
+    filename = ELM_LIST(args,1);
+    while ( ! IsStringConv(filename) ) {
+        filename = ErrorReturnObj(
+            "AppendTo: <filename> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            "you can return a string for <filename>" );
+    }
+
+    /* try to open the file for output                                     */
+    if ( ! OpenAppend( CSTR_STRING(filename) ) ) {
+        ErrorQuit( "AppendTo: cannot open '%s' for output",
+                   (Int)CSTR_STRING(filename), 0L );
+        return 0;
+    }
+
+    /* print all the arguments, take care of strings and functions         */
+
+    for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
+        arg = ELM_LIST(args,i);
+        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
+            PrintString1(arg);
+        }
+        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+            PrintObjFull = 1;
+            PrintFunction( arg );
+            PrintObjFull = 0;
+        }
+        else {
+            PrintObj( arg );
+        }
+    }
+
+    /* close the output file again, and return nothing                     */
+    if ( ! CloseOutput() ) {
+        ErrorQuit( "AppendTo: cannot close output", 0L, 0L );
+        return 0;
+    }
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncAPPEND_TO_STREAM( <self>, <args> )  . . . . . . . . . . append <args>
+*/
+Obj FuncAPPEND_TO_STREAM (
+    Obj                 self,
+    Obj                 args )
+{
+    Obj                 arg;
+    Obj                 stream;
+    UInt                i;
+
+    /* first entry is the stream                                           */
+    stream = ELM_LIST(args,1);
+
+    /* try to open the file for output                                     */
+    if ( ! OpenAppendStream(stream) ) {
+        ErrorQuit( "AppendTo: cannot open stream for output", 0L, 0L );
+        return 0;
+    }
+
+    /* print all the arguments, take care of strings and functions         */
+
+    for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
+        arg = ELM_LIST(args,i);
+        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
+            PrintString1(arg);
+        }
+        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+            PrintObjFull = 1;
+            PrintFunction( arg );
+            PrintObjFull = 0;
+        }
+        else {
+            PrintObj( arg );
+        }
+    }
+
+    /* close the output file again, and return nothing                     */
+    if ( ! CloseOutput() ) {
+        ErrorQuit( "AppendTo: cannot close output", 0L, 0L );
+        return 0;
+    }
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
 *F  FuncREAD( <self>, <filename> )  . . . . . . . . . . . . . . . read a file
 */
 Obj FuncREAD (
     Obj                 self,
     Obj                 filename )
 {
-    UInt                type;
-
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "READ: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -333,34 +807,9 @@ Obj FuncREAD (
     if ( ! OpenInput( CSTR_STRING(filename) ) ) {
         return False;
     }
-    NrError = 0;
 
-    /* now do the reading                                                  */
-    while ( 1 ) {
-        type = ReadEvalCommand();
-
-        /* handle return-value or return-void command                      */
-        if ( type == 1 || type == 2 ) {
-            Pr(
-                "'return' must not be used in file read-eval loop",
-                0L, 0L );
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
-        }
-
-    }
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() ) {
-        ErrorQuit(
-            "Panic: READ cannot close input, this should not happen",
-            0L, 0L );
-    }
-    NrError = 0;
-    return True;
+    /* read the test file                                                  */
+    return READ() ? True : False;
 }
 
 
@@ -372,40 +821,13 @@ Obj FuncREAD_STREAM (
     Obj                 self,
     Obj                 stream )
 {
-    UInt                type;
-
     /* try to open the file                                                */
     if ( ! OpenInputStream(stream) ) {
         return False;
     }
-    NrError = 0;
 
-    /* now do the reading                                                  */
-    while ( 1 ) {
-        type = ReadEvalCommand();
-
-        /* handle return-value or return-void command                      */
-        if ( type == 1 || type == 2 ) {
-            Pr(
-                "'return' must not be used in file read-eval loop",
-                0L, 0L );
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
-        }
-
-    }
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() ) {
-        ErrorQuit(
-            "Panic: READ cannot close input, this should not happen",
-            0L, 0L );
-    }
-    NrError = 0;
-    return True;
+    /* read the test file                                                  */
+    return READ() ? True : False;
 }
 
 
@@ -417,14 +839,11 @@ Obj FuncREAD_TEST (
     Obj                 self,
     Obj                 filename )
 {
-    UInt                type;
-    UInt                time;
-
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "ReadTest: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -432,57 +851,9 @@ Obj FuncREAD_TEST (
     if ( ! OpenTest( CSTR_STRING(filename) ) ) {
         return False;
     }
-    NrError = 0;
 
-    /* get the starting time                                               */
-    time = SyTime();
-
-    /* now do the reading                                                  */
-    while ( 1 ) {
-
-        /* read and evaluate the command                                   */
-        type = ReadEvalCommand();
-
-        /* stop the stopwatch                                              */
-        AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-
-        /* handle ordinary command                                         */
-        if ( type == 0 && ReadEvalResult != 0 ) {
-
-            /* print the result                                            */
-            if ( *In != ';' ) {
-                IsStringConv( ReadEvalResult );
-                PrintObj( ReadEvalResult );
-                Pr( "\n", 0L, 0L );
-            }
-            else {
-                Match( S_SEMICOLON, ";", 0UL );
-            }
-
-        }
-
-        /* handle return-value or return-void command                      */
-        else if ( type == 1 || type == 2 ) {
-            Pr(
-                "'return' must not be used in file read-eval loop",
-                0L, 0L );
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
-        }
-
-    }
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseTest() ) {
-        ErrorQuit(
-            "Panic: ReadTest cannot close input, this should not happen",
-            0L, 0L );
-    }
-    NrError = 0;
-    return True;
+    /* read the test file                                                  */
+    return READ_TEST() ? True : False;
 }
 
 
@@ -501,57 +872,9 @@ Obj FuncREAD_TEST_STREAM (
     if ( ! OpenTestStream(stream) ) {
         return False;
     }
-    NrError = 0;
 
-    /* get the starting time                                               */
-    time = SyTime();
-
-    /* now do the reading                                                  */
-    while ( 1 ) {
-
-        /* read and evaluate the command                                   */
-        type = ReadEvalCommand();
-
-        /* stop the stopwatch                                              */
-        AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-
-        /* handle ordinary command                                         */
-        if ( type == 0 && ReadEvalResult != 0 ) {
-
-            /* print the result                                            */
-            if ( *In != ';' ) {
-                IsStringConv( ReadEvalResult );
-                PrintObj( ReadEvalResult );
-                Pr( "\n", 0L, 0L );
-            }
-            else {
-                Match( S_SEMICOLON, ";", 0UL );
-            }
-
-        }
-
-        /* handle return-value or return-void command                      */
-        else if ( type == 1 || type == 2 ) {
-            Pr(
-                "'return' must not be used in file read-eval loop",
-                0L, 0L );
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
-        }
-
-    }
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseTest() ) {
-        ErrorQuit(
-            "Panic: ReadTest cannot close input, this should not happen",
-            0L, 0L );
-    }
-    NrError = 0;
-    return True;
+    /* read the test file                                                  */
+    return READ_TEST() ? True : False;
 }
 
 
@@ -567,12 +890,35 @@ Obj FuncREAD_AS_FUNC (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "READ_AS_FUNC: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
 
+    /* try to open the file                                                */
+    if ( ! OpenInput( CSTR_STRING(filename) ) ) {
+        return Fail;
+    }
+
     /* read the function                                                   */
-    return READ_AS_FUNC( CSTR_STRING(filename) );
+    return READ_AS_FUNC();
+}
+
+
+/****************************************************************************
+**
+*F  FuncREAD_AS_FUNC_STREAM( <self>, <filename> ) . . . . . . . . read a file
+*/
+Obj FuncREAD_AS_FUNC_STREAM (
+    Obj                 self,
+    Obj                 stream )
+{
+    /* try to open the file                                                */
+    if ( ! OpenTestStream(stream) ) {
+        return Fail;
+    }
+
+    /* read the function                                                   */
+    return READ_AS_FUNC();
 }
 
 
@@ -588,17 +934,12 @@ Obj FuncREAD_GAP_ROOT (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "READ: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
 
     /* try to open the file                                                */
-    if ( READ_GAP_ROOT( CSTR_STRING(filename) ) ) {
-        return True;
-    }
-    else {
-        return False;
-    }
+    return READ_GAP_ROOT(CSTR_STRING(filename)) ? True : False;
 }
 
 
@@ -622,7 +963,7 @@ Obj FuncIsExistingFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -643,7 +984,7 @@ Obj FuncIsReadableFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -664,7 +1005,7 @@ Obj FuncIsWritableFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -685,7 +1026,7 @@ Obj FuncIsExecutableFile (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -706,7 +1047,7 @@ Obj FuncIsExecutableFile (
 *F  FuncCLOSE_FILE( <self>, <fid> ) . . . . . . . . . . . . .  close a stream
 */
 Obj FuncCLOSE_FILE (
-    Obj		    self,
+    Obj             self,
     Obj             fid )
 {
     Int             ret;
@@ -715,7 +1056,7 @@ Obj FuncCLOSE_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(fid)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -730,7 +1071,7 @@ Obj FuncCLOSE_FILE (
 *F  FuncINPUT_TEXT_FILE( <self>, <name>  )  . . . . . . . . . . open a stream
 */
 Obj FuncINPUT_TEXT_FILE (
-    Obj		    self,
+    Obj             self,
     Obj             filename )
 {
     Int             fid;
@@ -739,7 +1080,7 @@ Obj FuncINPUT_TEXT_FILE (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
     
@@ -754,7 +1095,7 @@ Obj FuncINPUT_TEXT_FILE (
 *F  FuncIS_END_OF_FILE( <self>, <fid> ) . . . . . . . . . . .  is end of file
 */
 Obj FuncIS_END_OF_FILE (
-    Obj		    self,
+    Obj             self,
     Obj             fid )
 {
     Int             ret;
@@ -763,7 +1104,7 @@ Obj FuncIS_END_OF_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(fid)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -774,10 +1115,10 @@ Obj FuncIS_END_OF_FILE (
 
 /****************************************************************************
 **
-*F  FuncPOSITION_FILE( <self>, <fid> )	. . . . . . . . .  position of stream
+*F  FuncPOSITION_FILE( <self>, <fid> )  . . . . . . . . .  position of stream
 */
 Obj FuncPOSITION_FILE (
-    Obj		    self,
+    Obj             self,
     Obj             fid )
 {
     Int             ret;
@@ -786,7 +1127,7 @@ Obj FuncPOSITION_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(fid)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -800,7 +1141,7 @@ Obj FuncPOSITION_FILE (
 *F  FuncREAD_BYTE_FILE( <self>, <fid> ) . . . . . . . . . . . . . read a byte
 */
 Obj FuncREAD_BYTE_FILE (
-    Obj		    self,
+    Obj             self,
     Obj             fid )
 {
     Int             ret;
@@ -809,7 +1150,7 @@ Obj FuncREAD_BYTE_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(fid)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -824,7 +1165,7 @@ Obj FuncREAD_BYTE_FILE (
 *F  FuncREAD_LINE_FILE( <self>, <fid> ) . . . . . . . . . . . . . read a line
 */
 Obj FuncREAD_LINE_FILE (
-    Obj		    self,
+    Obj             self,
     Obj             fid )
 {
     Char            buf[256];
@@ -836,7 +1177,7 @@ Obj FuncREAD_LINE_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(fid)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
             "you can return an integer for <fid>" );
     }
     
@@ -846,12 +1187,12 @@ Obj FuncREAD_LINE_FILE (
     while (1) {
         ResizeBag( str, 1+len );
         if ( SyFgets( buf, 256, INT_INTOBJ(fid) ) == 0 )
-	    break;
-	cstr = CSTR_STRING(str);
-	SyStrncat( cstr, buf, 255 );
-	if ( buf[SyStrlen(buf)-1] == '\n' )
-	    break;
-	len += 255;
+            break;
+        cstr = CSTR_STRING(str);
+        SyStrncat( cstr, buf, 255 );
+        if ( buf[SyStrlen(buf)-1] == '\n' )
+            break;
+        len += 255;
     }
 
     /* fix the length of <str>                                             */
@@ -868,7 +1209,7 @@ Obj FuncREAD_LINE_FILE (
 *F  FuncSEEK_POSITION_FILE( <self>, <fid>, <pos> )  . seek position of stream
 */
 Obj FuncSEEK_POSITION_FILE (
-    Obj		    self,
+    Obj             self,
     Obj             fid,
     Obj             pos )
 {
@@ -878,13 +1219,13 @@ Obj FuncSEEK_POSITION_FILE (
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(fid)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
             "you can return an integer for <fid>" );
     }
     while ( ! IS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "<pos> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
             "you can return an integer for <pos>" );
     }
     
@@ -906,102 +1247,138 @@ Obj FuncSEEK_POSITION_FILE (
 */
 void InitStreams ()
 {
-    /* import functions from the library                                   */
-    ImportGVarFromLibrary( "ReadLine", &ReadLineFunc );
-
     /* streams and files related functions                                 */
-    InitHandlerFunc( FuncREAD, "READ" );
-    AssGVar( GVarName( "READ" ),
-         NewFunctionC( "READ", 1L, "filename",
-                    FuncREAD ) );
+    C_NEW_GVAR_FUNC( "READ", 1L, "filename",
+                  FuncREAD,
+       "src/streams.c:READ" );
 
-    InitHandlerFunc( FuncREAD_STREAM, "READ_STREAM" );
-    AssGVar( GVarName( "READ_STREAM" ),
-         NewFunctionC( "READ_STREAM", 1L, "stream",
-                    FuncREAD_STREAM ) );
+    C_NEW_GVAR_FUNC( "READ_STREAM", 1L, "stream",
+                  FuncREAD_STREAM,
+        "src/sreams.c:READ_STREAM" );
 
-    InitHandlerFunc( FuncREAD_TEST, "READ_TEST" );
-    AssGVar( GVarName( "READ_TEST" ),
-         NewFunctionC( "READ_TEST", 1L, "filename",
-                    FuncREAD_TEST ) );
+    C_NEW_GVAR_FUNC( "READ_TEST", 1L, "filename", 
+                  FuncREAD_TEST,
+        "src/sreams.c:READ_TEST" );
 
-    InitHandlerFunc( FuncREAD_TEST_STREAM, "READ_TEST_STREAM" );
-    AssGVar( GVarName( "READ_TEST_STREAM" ),
-         NewFunctionC( "READ_TEST_STREAM", 1L, "filename",
-                    FuncREAD_TEST_STREAM ) );
+    C_NEW_GVAR_FUNC( "READ_TEST_STREAM", 1L, "stream",
+                  FuncREAD_TEST_STREAM,
+        "src/sreams.c:READ_TEST_STREAM" );
 
-    InitHandlerFunc( FuncREAD_AS_FUNC, "READ_AS_FUNC" );
-    AssGVar( GVarName( "READ_AS_FUNC" ),
-         NewFunctionC( "READ_AS_FUNC", 1L, "filename",
-                    FuncREAD_AS_FUNC ) );
+    C_NEW_GVAR_FUNC( "READ_AS_FUNC", 1L, "filename",
+                  FuncREAD_AS_FUNC,
+        "src/sreams.c:READ_AS_FUNC" );
 
-    InitHandlerFunc( FuncREAD_GAP_ROOT, "READ_GAP_ROOT" );
-    AssGVar( GVarName( "READ_GAP_ROOT" ),
-         NewFunctionC( "READ_GAP_ROOT", 1L, "filename",
-                    FuncREAD_GAP_ROOT ) );
+    C_NEW_GVAR_FUNC( "READ_AS_FUNC_STREAM", 1L, "stream", 
+                  FuncREAD_AS_FUNC_STREAM, 
+        "src/sreams.c:READ_AS_FUNC_STREAM" );
 
-    InitHandlerFunc( FuncLogTo, "LogTo" );
-    AssGVar( GVarName( "LogTo" ),
-         NewFunctionC( "LogTo", -1L, "args",
-                    FuncLogTo ) );
+    C_NEW_GVAR_FUNC( "READ_GAP_ROOT", 1L, "filename",
+                  FuncREAD_GAP_ROOT,
+        "src/sreams.c:READ_GAP_ROOT" );
+
+    C_NEW_GVAR_FUNC( "LOG_TO", 1L, "filename", 
+                  FuncLOG_TO,
+        "src/sreams.c:LOG_TO" );
+
+    C_NEW_GVAR_FUNC( "LOG_TO_STREAM", 1L, "filename", 
+                  FuncLOG_TO_STREAM,
+        "src/sreams.c:LOG_TO_STREAM" );
+
+    C_NEW_GVAR_FUNC( "CLOSE_LOG_TO", 0L, "", 
+                  FuncCLOSE_LOG_TO,
+        "src/sreams.c:CLOSE_LOG_TO" );
+
+    C_NEW_GVAR_FUNC( "INPUT_LOG_TO", 1L, "filename", 
+                  FuncINPUT_LOG_TO,
+        "src/sreams.c:INPUT_LOG_TO" );
+
+    C_NEW_GVAR_FUNC( "INPUT_LOG_TO_STREAM", 1L, "filename", 
+                  FuncINPUT_LOG_TO_STREAM,
+        "src/sreams.c:INPUT_LOG_TO_STREAM" );
+
+    C_NEW_GVAR_FUNC( "CLOSE_INPUT_LOG_TO", 0L, "", 
+                  FuncCLOSE_INPUT_LOG_TO,
+        "src/sreams.c:CLOSE_INPUT_LOG_TO" );
+
+    C_NEW_GVAR_FUNC( "OUTPUT_LOG_TO", 1L, "filename", 
+                  FuncOUTPUT_LOG_TO,
+        "src/sreams.c:OUTPUT_LOG_TO" );
+
+    C_NEW_GVAR_FUNC( "OUTPUT_LOG_TO_STREAM", 1L, "filename", 
+                  FuncOUTPUT_LOG_TO_STREAM,
+        "src/sreams.c:OUTPUT_LOG_TO_STREAM" );
+
+    C_NEW_GVAR_FUNC( "CLOSE_OUTPUT_LOG_TO", 0L, "", 
+                  FuncCLOSE_OUTPUT_LOG_TO,
+        "src/sreams.c:CLOSE_OUTPUT_LOG_TO" );
+
+    C_NEW_GVAR_FUNC( "Print", -1L, "args",
+                  FuncPrint,
+       "src/streams.c:Print" );
+
+    C_NEW_GVAR_FUNC( "PRINT_TO", -1L, "args",
+                  FuncPRINT_TO,
+       "src/streams.c:PRINT_TO" );
+
+    C_NEW_GVAR_FUNC( "PRINT_TO_STREAM", -1L, "args",
+                  FuncPRINT_TO_STREAM,
+       "src/streams.c:PRINT_TO_STREAM" );
+
+    C_NEW_GVAR_FUNC( "APPEND_TO", -1L, "args",
+                  FuncAPPEND_TO,
+       "src/streams.c:APPEND_TO" );
+
+    C_NEW_GVAR_FUNC( "APPEND_TO_STREAM", -1L, "args",
+                  FuncAPPEND_TO_STREAM,
+       "src/streams.c:APPEND_TO_STREAM" );
+
 
     /* file access test functions                                          */
-    InitHandlerFunc( FuncIsExistingFile, "IsExistingFile" );
-    AssGVar( GVarName( "IsExistingFile" ),
-         NewFunctionC( "IsExistingFile", 1L, "filename",
-                    FuncIsExistingFile ) );
+    C_NEW_GVAR_FUNC( "IsExistingFile", 1L, "filename", 
+                  FuncIsExistingFile,
+        "src/sreams.c:IsExistingFile" );
 
-    InitHandlerFunc( FuncIsReadableFile, "IsReadableFile" );
-    AssGVar( GVarName( "IsReadableFile" ),
-         NewFunctionC( "IsReadableFile", 1L, "filename",
-                    FuncIsReadableFile ) );
+    C_NEW_GVAR_FUNC( "IsReadableFile", 1L, "filename",
+                  FuncIsReadableFile,
+        "src/sreams.c:IsReadableFile" );
 
-    InitHandlerFunc( FuncIsWritableFile, "IsWritableFile" );
-    AssGVar( GVarName( "IsWritableFile" ),
-         NewFunctionC( "IsWritableFile", 1L, "filename",
-                    FuncIsWritableFile ) );
+    C_NEW_GVAR_FUNC( "IsWritableFile", 1L, "filename",
+                  FuncIsWritableFile,
+        "src/sreams.c:IsWritableFile" );
 
-    InitHandlerFunc( FuncIsExecutableFile, "IsExecutableFile" );
-    AssGVar( GVarName( "IsExecutableFile" ),
-         NewFunctionC( "IsExecutableFile", 1L, "filename",
-                    FuncIsExecutableFile ) );
+    C_NEW_GVAR_FUNC( "IsExecutableFile", 1L, "filename",
+                  FuncIsExecutableFile,
+        "src/sreams.c:IsExecutableFile" );
 
 
-    /* stream functions                                                    */
-    InitHandlerFunc( FuncCLOSE_FILE, "CLOSE_FILE" );
-    AssGVar( GVarName( "CLOSE_FILE" ),
-         NewFunctionC( "CLOSE_FILE", 1L, "fid",
-                    FuncCLOSE_FILE ) );
+    /* text stream functions                                               */
+    C_NEW_GVAR_FUNC( "CLOSE_FILE", 1L, "fid",
+                  FuncCLOSE_FILE,
+        "src/sreams.c:CLOSE_FILE" );
 
-    InitHandlerFunc( FuncINPUT_TEXT_FILE, "INPUT_TEXT_FILE" );
-    AssGVar( GVarName( "INPUT_TEXT_FILE" ),
-         NewFunctionC( "INPUT_TEXT_FILE", 1L, "filename",
-                    FuncINPUT_TEXT_FILE ) );
+    C_NEW_GVAR_FUNC( "INPUT_TEXT_FILE", 1L, "filename",
+                  FuncINPUT_TEXT_FILE,
+        "src/sreams.c:INPUT_TEXT_FILE" );
 
-    InitHandlerFunc( FuncIS_END_OF_FILE, "IS_END_OF_FILE" );
-    AssGVar( GVarName( "IS_END_OF_FILE" ),
-         NewFunctionC( "IS_END_OF_FILE", 1L, "fid",
-                    FuncIS_END_OF_FILE ) );
+    C_NEW_GVAR_FUNC( "IS_END_OF_FILE", 1L, "fid",
+                  FuncIS_END_OF_FILE,
+        "src/sreams.c:IS_END_OF_FILE" );
 
-    InitHandlerFunc( FuncPOSITION_FILE, "POSITION_FILE" );
-    AssGVar( GVarName( "POSITION_FILE" ),
-         NewFunctionC( "POSITION_FILE", 1L, "fid",
-                    FuncPOSITION_FILE ) );
+    C_NEW_GVAR_FUNC( "POSITION_FILE", 1L, "fid",
+                  FuncPOSITION_FILE,
+        "src/sreams.c:POSITION_FILE" );
 
-    InitHandlerFunc( FuncREAD_BYTE_FILE, "READ_BYTE_FILE" );
-    AssGVar( GVarName( "READ_BYTE_FILE" ),
-         NewFunctionC( "READ_BYTE_FILE", 1L, "fid",
-                    FuncREAD_BYTE_FILE ) );
+    C_NEW_GVAR_FUNC( "READ_BYTE_FILE", 1L, "fid",
+                  FuncREAD_BYTE_FILE,
+        "src/sreams.c:READ_BYTE_FILE" );
 
-    InitHandlerFunc( FuncREAD_LINE_FILE, "READ_LINE_FILE" );
-    AssGVar( GVarName( "READ_LINE_FILE" ),
-         NewFunctionC( "READ_LINE_FILE", 1L, "fid",
-                    FuncREAD_LINE_FILE ) );
+    C_NEW_GVAR_FUNC( "READ_LINE_FILE", 1L, "fid",
+                  FuncREAD_LINE_FILE,
+        "src/sreams.c:READ_LINE_FILE" );
 
-    InitHandlerFunc( FuncSEEK_POSITION_FILE, "SEEK_POSITION_FILE" );
-    AssGVar( GVarName( "SEEK_POSITION_FILE" ),
-         NewFunctionC( "SEEK_POSITION_FILE", 2L, "fid, pos",
-                    FuncSEEK_POSITION_FILE ) );
+    C_NEW_GVAR_FUNC( "SEEK_POSITION_FILE", 2L, "fid, pos",
+                  FuncSEEK_POSITION_FILE,
+        "src/sreams.c:SEEK_POSITION_FILE" );
 }
 
 

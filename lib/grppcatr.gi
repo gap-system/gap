@@ -763,6 +763,40 @@ Print("case p <> q \n");
     return Subgroup( G, Concatenation( cent ) );
 end );
 
+#############################################################################
+##
+#M OmegaSeries( G )
+##
+InstallMethod( OmegaSeries,
+               "for p-groups",
+               true,
+               [IsGroup and HasInducedPcgsWrtSpecialPcgs],
+               0,
+function( G )
+    local pcgs, cl, U, series, exp, sub, p, M;
+
+    pcgs := InducedPcgsWrtSpecialPcgs( G );
+    if Length( pcgs ) = 0 then return [G]; fi;
+    if Length( pcgs ) = 1 then return [TrivialSubgroup(G), G]; fi;
+
+    U      := TrivialSubgroup( G );
+    series := [U];
+    p      := RelativeOrderOfPcElement( pcgs, pcgs[1] );
+    cl     := ConjugacyClasses( G );
+    exp    := 1;
+    while Size( U ) < Size( G ) do
+        sub := Filtered( cl, x -> Order( Representative( x ) ) = p ^ exp );
+        sub := List( sub, x -> Representative( x ) );
+        sub := InducedPcgsByPcSequenceAndGenerators( pcgs, Pcgs(U), sub );
+        M   := SubgroupByPcgs( G, sub );
+        if Size( M ) > Size( U ) then 
+            Add( series, M );
+        fi;
+        U := M;
+        exp := exp + 1;
+    od;
+    return series;
+end);
 
 #############################################################################
 ##

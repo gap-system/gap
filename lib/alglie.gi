@@ -3523,7 +3523,7 @@ InstallMethod( UniversalEnvelopingAlgebra,
 
     # Enter data to handle elements.
     Fam:= ElementsFamily( FamilyObj( U ) );
-    Fam!.normalizedKind:= NewKind( Fam,
+    Fam!.normalizedType:= NewType( Fam,
                                        IsPackedAlgebraElmDefaultRep
                                    and IsNormalForm );
 
@@ -3539,8 +3539,8 @@ InstallMethod( UniversalEnvelopingAlgebra,
         for i in [ 1, 3 .. Length( extrep ) - 1 ] do
           extrep[i]:= ObjByExtRep( FamMon, extrep[i] );
         od;
-        return Objectify( Fam!.normalizedKind,
-                   [ Objectify( FamFree!.defaultKind, [ zero, extrep ] ) ] );
+        return Objectify( Fam!.normalizedType,
+                   [ Objectify( FamFree!.defaultType, [ zero, extrep ] ) ] );
         end );
 
     SetOne( U, ElementOfFpAlgebra( Fam, One( F ) ) );

@@ -218,22 +218,22 @@ GeneratorSyllable := NewOperation( "GeneratorSyllable",
 #############################################################################
 ##
 #O  AssocWord( <Fam>, <extrep> )  . . . .  construct word from external repr.
-#O  AssocWord( <Kind>, <extrep> ) . . . .  construct word from external repr.
+#O  AssocWord( <Type>, <extrep> ) . . . .  construct word from external repr.
 ##
 AssocWord := NewOperationArgs( "AssocWord" );
-#T maybe this will become a constructor of 'KindArg1' type again
+#T maybe this will become a constructor of 'TypeArg1' type again
 
 
 #############################################################################
 ##
 #O  ObjByVector( <Fam>, <exponents> )
-#O  ObjByVector( <Kind>, <exponents> )
+#O  ObjByVector( <Type>, <exponents> )
 ##
 ##  is the associative word in the family <Fam> that has exponents vector
 ##  <exponents>.
 ##
 ObjByVector := NewOperationArgs( "ObjByVector" );
-#T maybe this will become a constructor of 'KindArg1' type again
+#T maybe this will become a constructor of 'TypeArg1' type again
 
 
 #############################################################################
@@ -277,6 +277,20 @@ CyclicReducedWordList := NewOperation(
 ##  'IsAssocWord', 'IsAssocWordWithOne', or 'IsAssocWordWithInverse'.
 ##
 StoreInfoFreeMagma := NewOperationArgs( "StoreInfoFreeMagma" );
+
+
+#############################################################################
+##
+#F  InfiniteListOfNames( <string> )
+##
+InfiniteListOfNames := NewOperationArgs( "InfiniteListOfNames" );
+
+
+#############################################################################
+##
+#F  InfiniteListOfGenerators( <F> )
+##
+InfiniteListOfGenerators := NewOperationArgs( "InfiniteListOfGenerators" );
 
 
 #############################################################################

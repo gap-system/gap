@@ -772,7 +772,7 @@ extern  void            IntrIsbComObjExpr ( void );
 extern void             IntrInfoBegin ( void );
 extern void             IntrInfoMiddle( void );
 extern void             IntrInfoEnd   (
-	   UInt                   narg );
+           UInt                   narg );
 extern Obj              InfoDecision;
 extern Obj              InfoDoPrint;
 

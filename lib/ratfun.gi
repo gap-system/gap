@@ -176,16 +176,16 @@ function( efam )
       IsObject,
       IsUFDFamily and IsRationalFunctionsFamily );
 
-    # default kind for rational functions
-    fam!.rationalKind := NewKind( fam,
+    # default type for rational functions
+    fam!.rationalType := NewType( fam,
         IsRationalFunctionDefaultRep );
 
-    # default kind for polynomials
-    fam!.polynomialKind := NewKind( fam,
+    # default type for polynomials
+    fam!.polynomialType := NewType( fam,
         IsPolynomial and IsPolynomialDefaultRep );
 
-    # default kind for univariate laurent polynomials
-    fam!.univariateLaurentPolynomialKind := NewKind( fam,
+    # default type for univariate laurent polynomials
+    fam!.univariateLaurentPolynomialType := NewType( fam,
         IsUnivariateLaurentPolynomial
         and IsUnivariateLaurentPolynomialDefaultRep );
 
@@ -493,7 +493,7 @@ function( fam, zipped )
     if 2 = Length(zipped)  then
         rf.zeroCoefficient := Immutable(zipped[1]);
         rf.numerator       := Immutable(zipped[2]);
-        Objectify( fam!.polynomialKind, rf );
+        Objectify( fam!.polynomialType, rf );
     elif 3 = Length(zipped)  then
         if 0 = Length(zipped[3])  then
             Error( "denominator must be non-trivial" );
@@ -501,7 +501,7 @@ function( fam, zipped )
         rf.zeroCoefficient := Immutable(zipped[1]);
         rf.numerator       := Immutable(zipped[2]);
         rf.denominator     := Immutable(zipped[3]);
-        Objectify( fam!.rationalKind, rf );
+        Objectify( fam!.rationalType, rf );
     else
         Error( "<zipped> must have length 2 or 3" );
     fi;

@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Solvable Groups}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Polycyclic generating systems}
+
+A generating sequence  $(g_1,\ldots,g_n)$ for  a  group <G> is  called  a
+_polycyclic generating system_ (or _pcgs_) if the  series of subgroups $G
+= G_0 > G_1 > \ldots > G_n = \{1\}$ with $G_i  = \< g_{i+1}, \ldots,
+g_n  >$   is a  subnormal    series for  <G>  with  cyclic  factors
+$G_i/G_{i+1}$ of prime order.  Such a pcgs  exists for finite <G> if  and
+only if <G> is solvable.
+
+\>Pcgs( <G> )
+
+This function constructs and returns  a pcgs for the group  <G> if it  is
+solvable and returns `false' otherwise. The default function converts <G>
+into  an  ag group  and returns the   image  of the polycyclic generating
+system of   that ag  group under  the  isomorphism between  the  ag group
+and~<G>.
+
+\>ExponentsOfPcElement( <pcgs>, <g> )
+\>DepthOfPcElement( <pcgs>, <g> )
+\>LeadingExponentOfPcElement( <pcgs>, <g> )
+
+These functions ``factorize'' a given  element <g> of `<pcgs>.group' into
+the  generators  in  the  list $(g_1,\ldots,g_n)$. `ExponentsOfPcElement'
+returns a list <e> such that
+$$ g = g_1^{e[1]} \cdot g_2^{e[2]} \cdot \ldots \cdot g_n^{e[n]}. $$
+
+The  default   method  for `ExponentsOfPcElement'  performs   a  division
+algorithm, i.e., it determines $e[1]$ such that $g_1^{-e[1]}g \in \<
+g_2, \ldots, g_n >$, by increasing $e[1]$ until the membership test
+yields true. Then  <g>  is replaced   by $g_1^{-e[1]}g$ and  the step  is
+repeated for $e[2]$ and so on.
+
+The  functions      `DepthOfPcElement'   and `LeadingExponentOfPcElement'
+determine  the depth  and the  leading  exponent (as  an  integer)  of an
+element  w.r.t.~to a  pcgs.   Both functions can   be  viewed  as special
+versions of the function `ExponentsOfPcElement'.
+
+\>RelativeOrderOfPcElement( <pcgs>, <g> )
+
+Given  an element <g> with  `DepthPcElement(  <pcgs>, <g>  ) = <d>', this
+function determines the order of the coset $G_{d-1}g$ in the factor group
+$G_{d-1}/G_d$.
+
+The default  function performs a division step  like the one described in
+`ExponentsOfPcElement' above.
+
+\>ElementaryAbelianSeries( <G> )
+
+The default  function converts   <G> into an   isomorphic pc   group  and
+computes the elementary abelian series in this group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Affine methods!for solvable groups}
+
+Let <U> and <H> be subgroups of a group <G>  such that <H> normalizes <U>
+and consider the   action of <H> on  <U>  by conjugation. If   <U> has an
+elementary abelian subgroup <N> (i.e., a vector space)  that is normal in
+both  <U> and   <H>, then  affine   methods  can  be employed to   deduce
+information   about   <H>-conjugacy    in  <U>  from   information  about
+<H>-conjugacy in $U/N$.  In particular, one  can define a set $R_H(U)$ of
+_canonical <H>-class    representatives_   for <U>  such  that,  given  a
+representative  $hN\in  R_H(U/N)$ in  the  factor group, the intersection
+$R_H(U) \cap hN$ (i.e., the set  of canonical representatives in <U> that
+map  to <hN>  in  $U/N$) is of   the form <hK>   with <K> a set of  orbit
+representatives of the affine action on the vector space <N> given by
+$$ C \to {\rm AGL}(N), \qquad c \mapsto ( n \mapsto [h,c] n^c ), $$
+where <C> is the preimage  of $C_{H/N}(hN)$ in  <H>. The centralizer of a
+representative  $hk  \in  hK$  can also  be   calculated  as described in
+\cite{MeckyNeubuser89}.
+
+\>Centralizer( <G>, <U> | <u> )!{for solvable groups}
+
+The centralizer of a  group or an element   is calculated by  the methods
+mentioned  above. If only one argument  <U> is given,  the centralizer of
+<U> in its parent group is calculated.
+
+\>ConjugacyClasses( [ <H>, ] <U> )!{for solvable groups}
+
+The <H>-conjugacy classes of <U> are calculated by affine methods. If the
+first argument <H> is not given, the <U>-classes of <U> are calculated.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operation functions!for solvable groups}
+
+\>ExternalSet( <G>, <D>, \[, {Pcgs( <G> )}, <oprs> \] \[, <opr> \] )!{for
+solvable groups}
+\){{\it and the other operation functions analogously}}
+
+For a solvable group <G>, the  operation functions use special algorithms
+which make use of  a pcgs for  <G>. To activate  these methods, you  must
+supply an external set constructed
+\medskip
+\item
+  either via <gens>    and <oprs>, where `<gens>   =  Pcgs( <G>  )'  (for
+  example, as `ExternalSet( <G>, <D>, Pcgs( <G> ), <oprs>, <opr> )'), or
+\item
+  or without   <gens> and  <oprs>, where   `IsPcgsComputable(  <G> )'  is
+  `true', e.g. if <G> already has a pcgs.
+
+\>Enumerator( <xset> )!{for external orbits!for solvable groups}
+\>Stabilizer( <G>, <D>, <p> \[, {Pcgs( <G> )}, <oprs> \] \[, <opr> \]
+)!{for solvable groups}
+\>StabilizerOfExternalSet( <xset> )!{for solvable groups}
+\>OrbitStabilizer( <G>, \[ <D>, \] <pnt> \[, {Pcgs( <G> )}, <oprs> \] \[,
+<opr> \] )!{for solvable groups}
+\>CanonicalRepresentativeOfExternalSet( <xset> )!{for solvable groups}
+\>OperatorOfExternalSet( <xset> )!{for solvable groups}
+
+\danger    Since every group permutes   the  orbits of  a normal subgroup
+setwise, and since  a solvable group <G> has  a composition series $<G> =
+G_0 > \ldots  > G_n=\{1\}$ with cyclic  factors, the <G>-orbit of a point
+<pnt> can  be  constructed by iterated  cyclic   extension. The  orbit $p
+G_{i-1}$ is   either  equal  to the   orbit   $<p>  G_i$  or it    is the
+concatenation  the pairwise   disjoint  mapped orbits   $<p>  G_ig^j$ for
+$j=0,\ldots, [G_{i-1}:G_i] - 1$ if  $\langle G_i, g\rangle = G_{i-1}$. In
+particular, the orbit of <p> under a  member of the composition series is
+always a starting-piece of the entire <G>-orbit.
+
+If the orbit is stable in a cyclic extension step,  i.e., if $p G_{i-1} =
+p G_i$, there is an element $h\in G_i$ such that $p.gh^{-1} = p$ with <g>
+as above. The  elements $gh^{-1}$ collected over  all steps  in which the
+orbit is stable form a (reversed) pcgs for the stabilizer of <p>. In this
+way the    stabilizer  can be   computed together    with   the orbit  in
+`OrbitStabilizer'. In a similar manner one can construct, given any point
+<p> of   the operation domain,  an   element in  <G> mapping <p>   to its
+canonical representative.
+
+\>RepresentativeOperation( <G>, <D>, <d>, <e> \[, {Pcgs( <G> )}, <oprs>
+\] \[, <opr> \] )!{for solvable groups}
+
+If <d> and <e> are in the same orbit of an operation <xset>, the external
+orbits `$xorb_d$    := ExternalOrbit( <xset>,  <d>   )'  and `$xorb_e$ :=
+ExternalOrbit(      <xset>,     <e>    )'     will     have    the   same
+`CanonicalRepresentativeOfExternalSet',        and    hence             a
+`RepresentativeOperation'  from   <d> to <e>   can be  calculated  as the
+quotient `OperatorOfExternalSet(  $xorb_d$  )    * OperatorOfExternalSet(
+$xorb_e$ ) ^ -1'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:             text
+% mode:             outline-minor
+% outline-regexp:   "\\\\Chapter\\|\\\\Section"
+% fill-column:      73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

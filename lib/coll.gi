@@ -204,19 +204,17 @@ InstallMethod( RepresentativeSmallest,
 
 #############################################################################
 ##
-#M  Random(<C>)
+#M  Random( <C> ) . . . . . . . . . . . . . . . . . . . . .  for a collection
 ##
 ##  The default function for random selection in a finite collection computes
 ##  an enumerator of <C> and selects a random element of this list using the
 ##  function 'RANDOM_LIST', which is a pseudo random number generator.
 ##
 InstallMethod( Random,
-    "method for a collection that is a list",
-    true, [ IsCollection and IsList ], 100,
+    "method for a collection that is an internal list",
+    true, [ IsCollection and IsList and IsInternalRep ], 100,
 #T ?
-    function ( C )
-    return RANDOM_LIST( C );
-    end );
+    RANDOM_LIST );
 
 InstallMethod( Random,
     "method for a collection",
@@ -386,7 +384,7 @@ InstallMethod( ListSorted,
 InstallMethod( ListSorted,
     "method for a collection that is a list",
     true, [ IsCollection and IsList ], 0,
-    C -> ShallowCopy( ListSortedList( C ) ) );
+    ListSortedList );
 
 
 #############################################################################
@@ -450,7 +448,7 @@ IsTrivialIterator := NewRepresentation( "IsTrivialIterator",
 #F  TrivialIterator( <elm> )
 ##
 TrivialIterator := function( elm )
-    return Objectify( NewKind( IteratorsFamily,
+    return Objectify( NewType( IteratorsFamily,
                                IsIterator and IsTrivialIterator ),
                       rec( element := elm, isDone := false ) );
 end;

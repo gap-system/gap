@@ -408,7 +408,7 @@ void InitPcc ( void ) {
             INTOBJ_INT( PC_EXPONENT_STACK ) );
     AssGVar( GVarName( "PC_STACK_POINTER" ),
             INTOBJ_INT( PC_STACK_POINTER ) );
-    AssGVar( GVarName( "PC_DEFAULT_KIND" ), INTOBJ_INT( PC_DEFAULT_KIND ) );
+    AssGVar( GVarName( "PC_DEFAULT_TYPE" ), INTOBJ_INT( PC_DEFAULT_TYPE ) );
 
     /* Install internal functions. */
 

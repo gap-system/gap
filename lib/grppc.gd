@@ -214,6 +214,13 @@ GapInputPcGroup := NewOperationArgs( "GapInputPcGroup" );
 CanonicalSubgroupRepresentativePcGroup :=
   NewOperationArgs( "CanonicalSubgroupRepresentativePcGroup" );
 
+
+#############################################################################
+##
+#A  OmegaSeries( G )
+##
+OmegaSeries := NewAttribute( "OmegaSeries", IsGroup );
+
 #############################################################################
 ##
 #E  grppc.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

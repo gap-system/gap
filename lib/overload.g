@@ -23,11 +23,11 @@
 ##  Such non-qualified operations should be kept to a minimum.
 ##  (Remember the problems we had with 'NewObject'.)
 ##
-##  Note that operations such as 'IsCommutative' are not of this kind,
+##  Note that operations such as 'IsCommutative' are not of this type,
 ##  since the result means the same for any multiplicative structure.
 ##  
 ##  The key requirement is that no object ever exists which inherits from
-##  two kinds with distinct meanings.
+##  two types with distinct meanings.
 ##  If this ever happens, there *must* be a method installed for the join
 ##  of the relevant categories which decides which meaning applies,
 ##  otherwise the meaning of the operation is at the mercy of the ranking
@@ -178,8 +178,14 @@ InstallOtherMethod( Induced, true,
 ##
 IsMonomial := NewOperation( "IsMonomial", [ IsObject ] );
 
-InstallMethod( IsMonomial, true, [ IsGroup  ], 0, IsMonomialGroup  );
-InstallMethod( IsMonomial, true, [ IsMatrix ], 0, IsMonomialMatrix );
+InstallMethod( IsMonomial, true, [ IsCharacter ], 0,
+    IsMonomialCharacter );
+InstallMethod( IsMonomial, true, [ IsGroup ], 0,
+    IsMonomialGroup );
+InstallMethod( IsMonomial, true, [ IsMatrix ], 0,
+    IsMonomialMatrix );
+InstallMethod( IsMonomial, true, [ IsInt and IsPosRat ], 0,
+    IsMonomialNumber );
 
 
 #############################################################################

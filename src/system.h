@@ -839,7 +839,7 @@ extern SYS_SY_BUF syBuf [256];
 **  is a system dependent description of the file.
 */
 extern Int SyIsExistingFile(
-	    Char * name );
+            Char * name );
 
 
 /****************************************************************************
@@ -850,7 +850,7 @@ extern Int SyIsExistingFile(
 **  otherwise. <name> is a system dependent description of the file.
 */
 extern Int SyIsReadableFile(
-	    Char * name );
+            Char * name );
 
 
 /****************************************************************************
@@ -861,7 +861,7 @@ extern Int SyIsReadableFile(
 **  otherwise. <name> is a system dependent description of the file.
 */
 extern Int SyIsWritableFile(
-	    Char * name );
+            Char * name );
 
 
 /****************************************************************************
@@ -872,7 +872,7 @@ extern Int SyIsWritableFile(
 **  otherwise. <name> is a system dependent description of the file.
 */
 extern Int SyIsExecutableFile(
-	    Char * name );
+            Char * name );
 
 
 /****************************************************************************
@@ -880,7 +880,7 @@ extern Int SyIsExecutableFile(
 *F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
 */
 extern Char * SyFindGapRootFile (
-	    Char * 	    filename );
+            Char *          filename );
 
 
 /****************************************************************************
@@ -893,10 +893,10 @@ extern Char * SyFindGapRootFile (
 **  is returned.
 */
 extern Int SyFindOrLinkGapRootFile (
-	    Char * 	    filename,
-	    UInt4           crc_gap,
-	    Char * 	    result,
-	    Int             len );
+            Char *          filename,
+            UInt4           crc_gap,
+            Char *          result,
+            Int             len );
 
 
 /****************************************************************************
@@ -953,7 +953,7 @@ extern Char * SyTmpname ( void );
 **  one has to certain that such characters are not ignored in strings.
 */
 extern UInt4 SyGAPCRC(
-	    Char * 	    name );
+            Char *          name );
 
 
 /****************************************************************************
@@ -976,7 +976,7 @@ typedef StructCompInitInfo * (* CompInitFunc) ( void );
 *F  SyLoadModule( <name> )  . . . . . . . . . . . . .  load a compiled module
 */
 extern void * SyLoadModule(
-            Char *	    name );
+            Char *          name );
 
 
 /****************************************************************************

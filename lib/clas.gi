@@ -15,7 +15,7 @@ InstallMethod( Enumerator, true, [ IsExternalOrbitByStabilizerRep ], 0,
     function( xorb )
     local   enum;
     
-    enum := Objectify( NewKind( FamilyObj( xorb ),
+    enum := Objectify( NewType( FamilyObj( xorb ),
                     IsExternalOrbitByStabilizerEnumerator ),
         rec( rightTransversal := RightTransversal( ActingDomain( xorb ),
                     StabilizerOfExternalSet( xorb ) ) ) );
@@ -25,9 +25,24 @@ end );
 
 #############################################################################
 ##
-#M  Size( <xorb> )  . . . . . . . . . . . . . . . . . . . index of stabilizer
+#M  IsFinite( <xorb> )  . . . . . . . . . . . for an ext. orbit by stabilizer
 ##
-InstallMethod( Size, true, [ IsExternalOrbitByStabilizerRep ], 0,
+InstallMethod( IsFinite,
+    "method for an ext. orbit by stabilizer",
+    true,
+    [ IsExternalOrbitByStabilizerRep ], 0,
+    xorb -> IsFinite( Index( ActingDomain( xorb ),
+                             StabilizerOfExternalSet( xorb ) ) ) );
+
+
+#############################################################################
+##
+#M  Size( <xorb> )  . . . . . . . . . . . . . for an ext. orbit by stabilizer
+##
+InstallMethod( Size,
+    "method for an ext. orbit by stabilizer",
+    true,
+    [ IsExternalOrbitByStabilizerRep ], 0,
     xorb -> Index( ActingDomain( xorb ), StabilizerOfExternalSet( xorb ) ) );
 
 #############################################################################
@@ -71,7 +86,7 @@ InstallMethod( ConjugacyClass, IsCollsElms, [ IsGroup, IsObject ], 0,
     function( G, g )
     local   cl;
     
-    cl := Objectify( NewKind( FamilyObj( G ) ), rec( start := [ g ] ) );
+    cl := Objectify( NewType( FamilyObj( G ) ), rec( start := [ g ] ) );
     if IsPermGroup( G )  then
         SetFilterObj( cl, IsConjugacyClassPermGroupRep );
     else
@@ -102,9 +117,24 @@ end );
 
 #############################################################################
 ##
-#M  Size( <G>, <g> )  . . . . . . . . . . . . . . . . . . . . . size function
+#M  IsFinite( <cl> )  . . . . . . . . . . . . . . . . . . . for a conj. class
 ##
-InstallMethod( Size, true, [ IsConjugacyClassGroupRep ], 0,
+InstallMethod( IsFinite,
+    "method for a conjugacy class",
+    true,
+    [ IsConjugacyClassGroupRep ], 0,
+    cl -> IsFinite( Index( ActingDomain( cl ),
+                           StabilizerOfExternalSet( cl ) ) ) );
+
+
+#############################################################################
+##
+#M  Size( <cl> )  . . . . . . . . . . . . . . . . . . . . . for a conj. class
+##
+InstallMethod( Size,
+    "method for a conjugacy class",
+    true,
+    [ IsConjugacyClassGroupRep ], 0,
     cl -> Index( ActingDomain( cl ), StabilizerOfExternalSet( cl ) ) );
 
 InstallOtherMethod( Centralizer, true, [ IsConjugacyClassGroupRep ], 0,
@@ -223,7 +253,7 @@ InstallMethod( RationalClass, IsCollsElms, [ IsGroup, IsObject ], 0,
     function( G, g )
     local   cl;
     
-    cl := Objectify( NewKind( FamilyObj( G ) ), rec(  ) );
+    cl := Objectify( NewType( FamilyObj( G ) ), rec(  ) );
     if IsPermGroup( G )  then
         SetFilterObj( cl, IsRationalClassPermGroupRep );
     else
@@ -282,9 +312,21 @@ end );
 
 #############################################################################
 ##
-#M  Size( <cl> )  . . . . . . . . . . . . . . . . . . . . . . . size function
+#M  IsFinite( <cl> )  . . . . . . . . . . . . . . . . .  for a rational class
 ##
-InstallMethod( Size, true, [ IsRationalClassGroupRep ], 0,
+InstallTrueMethod( IsFinite, IsRationalClassGroupRep );
+#T The '*' in the 'Size' method below indicates that infinite
+#T rational classes are not allowed.
+
+
+#############################################################################
+##
+#M  Size( <cl> )  . . . . . . . . . . . . . . . . . . .  for a rational class
+##
+InstallMethod( Size,
+    "method for a rational class",
+    true,
+    [ IsRationalClassGroupRep ], 0,
     cl -> IndexInParent( GaloisGroup( cl ) ) *
           Index( ActingDomain( cl ), StabilizerOfExternalSet( cl ) ) );
 
@@ -326,7 +368,7 @@ InstallMethod( Enumerator, true, [ IsRationalClassGroupRep ], 0,
     function( rcl )
     local   enum;
     
-    enum := Objectify( NewKind( FamilyObj( rcl ),
+    enum := Objectify( NewType( FamilyObj( rcl ),
                 IsRationalClassGroupEnumerator ),
                 rec( rightTransversal := RightTransversal
                 ( ActingDomain( rcl ), StabilizerOfExternalSet( rcl ) ) ) );

@@ -45,7 +45,7 @@ InstallMethod( LeftModuleByGenerators,
     function( R, mats )
     local V;
 
-    V:= Objectify( NewKind( FamilyObj( mats ),
+    V:= Objectify( NewType( FamilyObj( mats ),
                                 IsLeftModule
                             and IsMatrixModuleRep
                             and IsAttributeStoringRep ),
@@ -71,7 +71,7 @@ InstallMethod( LeftModuleByGenerators,
     function( R, mats )
     local V;
 
-    V:= Objectify( NewKind( FamilyObj( mats ),
+    V:= Objectify( NewType( FamilyObj( mats ),
                                 IsLeftModule
                             and IsMatrixModuleRep
                             and IsAttributeStoringRep ),
@@ -106,7 +106,7 @@ InstallOtherMethod( LeftModuleByGenerators,
       TryNextMethod();
     fi;
 
-    V:= Objectify( NewKind( FamilyObj( mats ),
+    V:= Objectify( NewType( FamilyObj( mats ),
                                 IsLeftModule
                             and IsMatrixModuleRep
                             and IsAttributeStoringRep ),
@@ -144,7 +144,7 @@ FullMatrixModule := function( R, m, n )
     fi;
 
     if IsDivisionRing( R ) then
-      M:= Objectify( NewKind( CollectionsFamily( CollectionsFamily(
+      M:= Objectify( NewType( CollectionsFamily( CollectionsFamily(
                                                      FamilyObj( R ) ) ),
                                   IsFreeLeftModule
                               and IsGaussianSpace
@@ -153,7 +153,7 @@ FullMatrixModule := function( R, m, n )
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      M:= Objectify( NewKind( CollectionsFamily( CollectionsFamily(
+      M:= Objectify( NewType( CollectionsFamily( CollectionsFamily(
                                                      FamilyObj( R ) ) ),
                                   IsFreeLeftModule
                               and IsMatrixModuleRep
@@ -314,7 +314,7 @@ InstallMethod( CanonicalBasis, true,
     [ IsFreeLeftModule and IsFullMatrixModule ], 0,
     function( V )
     local B;
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsCanonicalBasisFullMatrixModule

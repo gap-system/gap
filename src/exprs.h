@@ -64,13 +64,13 @@ char *          Revision_exprs_h =
 **  evaluator, i.e., to  the function that evaluates  expressions of the type
 **  of <expr>.
 **
-**  Note that 'EVAL_EXPR' does not use 'TYPE_EXPR', since it also handles the
-**  two special cases that 'TYPE_EXPR' handles.
+**  Note that 'EVAL_EXPR' does not use 'TNUM_EXPR', since it also handles the
+**  two special cases that 'TNUM_EXPR' handles.
 */
 #define EVAL_EXPR(expr) \
                         (IS_REFLVAR(expr) ? OBJ_REFLVAR(expr) : \
                          (IS_INTEXPR(expr) ? OBJ_INTEXPR(expr) : \
-                          (*EvalExprFuncs[ TYPE_STAT(expr) ])( expr ) ))
+                          (*EvalExprFuncs[ TNUM_STAT(expr) ])( expr ) ))
 
 
 /****************************************************************************
@@ -97,7 +97,7 @@ extern  Obj             (* EvalExprFuncs [256]) ( Expr expr );
 **  'false').
 */
 #define EVAL_BOOL_EXPR(expr) \
-                        ( (*EvalBoolFuncs[ TYPE_EXPR( expr ) ])( expr ) )
+                        ( (*EvalBoolFuncs[ TNUM_EXPR( expr ) ])( expr ) )
 
 
 /****************************************************************************

@@ -26,7 +26,7 @@ char * Revision_objscoll_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -44,9 +44,9 @@ char * Revision_objscoll_c =
 #include        "plist.h"               /* ELM_PLIST, SET_ELM_PLIST, ...   */
 #include        "string.h"              /* CSTR_STRING used by NAME_RNAM   */
 
-#include        "code.h"                /* Stat, Expr, TYPE_EXPR, ADDR_E...*/
+#include        "code.h"                /* Stat, Expr, TNUM_EXPR, ADDR_E...*/
 
-#include        "objfgelm.h"            /* NEW_WORD, WORKKIND, ...         */
+#include        "objfgelm.h"            /* NEW_WORD, WORKTYPE, ...         */
 
 #define INCLUDE_DECLARATION_PART
 #include        "objscoll.h"            /* declaration part of the package */
@@ -75,7 +75,7 @@ typedef Int (*FuncIOOOF) (Obj,Obj,Obj,FuncIOOO);
 
 typedef struct {
 
-    FuncOOOI	wordVectorAndClear;
+    FuncOOOI    wordVectorAndClear;
     FuncIOOI    vectorWord;
     FuncIOOO    collectWord;
     FuncIOOOF   solution;
@@ -105,7 +105,7 @@ Obj C8Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     Obj         obj;            /* result                                  */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -147,15 +147,15 @@ Int C8Bits_VectorWord ( Obj vv, Obj v, Int num )
     UInt1 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <vv> must be a string                                               */
-    if ( TYPE_OBJ(vv) != T_STRING ) {
-	if ( TYPE_OBJ(vv) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( vv, T_STRING );
-	}
-	else {
-	    ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TYPE_OBJ(vv) ].name, 0L );
-	    return -1;
-	}
+    if ( TNUM_OBJ(vv) != T_STRING ) {
+        if ( TNUM_OBJ(vv) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( vv, T_STRING );
+        }
+        else {
+            ErrorQuit( "collect vector must be a string not a %s", 
+                       (Int)InfoBags[ TNUM_OBJ(vv) ].name, 0L );
+            return -1;
+        }
     }
 
     /* fix the length                                                      */
@@ -272,7 +272,7 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     }
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND( SC_DEFAULT_KIND(sc) );
+    ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -464,54 +464,54 @@ Int C8Bits_Solution(
     rod = SC_RELATIVE_ORDERS(sc);
 
     /* <ww> must be a string                                               */
-    if ( TYPE_OBJ(ww) != T_STRING ) {
-	if ( TYPE_OBJ(ww) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( ww, T_STRING );
-	}
-	else {
-	    ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TYPE_OBJ(ww) ].name, 0L );
-	    return -1;
-	}
+    if ( TNUM_OBJ(ww) != T_STRING ) {
+        if ( TNUM_OBJ(ww) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( ww, T_STRING );
+        }
+        else {
+            ErrorQuit( "collect vector must be a string not a %s", 
+                       (Int)InfoBags[ TNUM_OBJ(ww) ].name, 0L );
+            return -1;
+        }
     }
 
     /* fix the length                                                      */
     if ( SIZE_OBJ(ww) != num*sizeof(Int)+sizeof(Obj)+1 ) {
-	i = (SIZE_OBJ(ww)-sizeof(Obj)-1) / sizeof(Int);
+        i = (SIZE_OBJ(ww)-sizeof(Obj)-1) / sizeof(Int);
         ResizeBag( ww, num*sizeof(Int)+sizeof(Obj)+1 );
-	qtr = (Int*)(ADDR_OBJ(ww)+1);
-	for ( i = i+1;  i <= num;  i++ )
+        qtr = (Int*)(ADDR_OBJ(ww)+1);
+        for ( i = i+1;  i <= num;  i++ )
             qtr[i] = 0;
     }
 
     /* <uu> must be a string                                               */
-    if ( TYPE_OBJ(uu) != T_STRING ) {
-	if ( TYPE_OBJ(uu) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( ww, T_STRING );
-	} else {
-	    ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TYPE_OBJ(uu) ].name, 0L );
-	    return -1;
-	}
+    if ( TNUM_OBJ(uu) != T_STRING ) {
+        if ( TNUM_OBJ(uu) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( ww, T_STRING );
+        } else {
+            ErrorQuit( "collect vector must be a string not a %s", 
+                       (Int)InfoBags[ TNUM_OBJ(uu) ].name, 0L );
+            return -1;
+        }
     }
 
     /* fix the length                                                      */
     if ( SIZE_OBJ(uu) != num*sizeof(Int)+sizeof(Obj)+1 ) {
-	i = (SIZE_OBJ(uu)-sizeof(Obj)-1) / sizeof(Int);
+        i = (SIZE_OBJ(uu)-sizeof(Obj)-1) / sizeof(Int);
         ResizeBag( uu, num*sizeof(Int)+sizeof(Obj)+1 );
-	qtr = (Int*)(ADDR_OBJ(uu)+1);
-	for ( i = i+1;  i <= num;  i++ )
+        qtr = (Int*)(ADDR_OBJ(uu)+1);
+        for ( i = i+1;  i <= num;  i++ )
             qtr[i] = 0;
     }
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND( SC_DEFAULT_KIND(sc) );
+    ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* use <g> as right argument for the collector                         */
-    NEW_WORD( g, SC_DEFAULT_KIND(sc), 1 );
+    NEW_WORD( g, SC_DEFAULT_TYPE(sc), 1 );
 
     /* start clearing <ww>, storing the result in <uu>                     */
     ptr = (Int*)(ADDR_OBJ(ww)+1);
@@ -560,7 +560,7 @@ Obj C16Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     Obj         obj;            /* result                                  */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -602,15 +602,15 @@ Int C16Bits_VectorWord ( Obj vv, Obj v, Int num )
     UInt2 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <vv> must be a string                                               */
-    if ( TYPE_OBJ(vv) != T_STRING ) {
-	if ( TYPE_OBJ(vv) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( vv, T_STRING );
-	}
-	else {
-	    ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TYPE_OBJ(vv) ].name, 0L );
-	    return -1;
-	}
+    if ( TNUM_OBJ(vv) != T_STRING ) {
+        if ( TNUM_OBJ(vv) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( vv, T_STRING );
+        }
+        else {
+            ErrorQuit( "collect vector must be a string not a %s", 
+                       (Int)InfoBags[ TNUM_OBJ(vv) ].name, 0L );
+            return -1;
+        }
     }
 
     /* fix the length                                                      */
@@ -727,7 +727,7 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     }
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND( SC_DEFAULT_KIND(sc) );
+    ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -919,55 +919,55 @@ Int C16Bits_Solution(
     rod = SC_RELATIVE_ORDERS(sc);
 
     /* <ww> must be a string                                               */
-    if ( TYPE_OBJ(ww) != T_STRING ) {
-	if ( TYPE_OBJ(ww) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( ww, T_STRING );
-	}
-	else {
-	    ErrorQuit( "collect vector must be a string not a %s", 
-		       (Int)InfoBags[ TYPE_OBJ(ww) ].name, 0L );
-	    return -1;
-	}
+    if ( TNUM_OBJ(ww) != T_STRING ) {
+        if ( TNUM_OBJ(ww) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( ww, T_STRING );
+        }
+        else {
+            ErrorQuit( "collect vector must be a string not a %s", 
+                       (Int)InfoBags[ TNUM_OBJ(ww) ].name, 0L );
+            return -1;
+        }
     }
 
     /* fix the length                                                      */
     if ( SIZE_OBJ(ww) != num*sizeof(Int)+sizeof(Obj)+1 ) {
-	i = (SIZE_OBJ(ww)-sizeof(Obj)-1) / sizeof(Int);
+        i = (SIZE_OBJ(ww)-sizeof(Obj)-1) / sizeof(Int);
         ResizeBag( ww, num*sizeof(Int)+sizeof(Obj)+1 );
-	qtr = (Int*)(ADDR_OBJ(ww)+1);
-	for ( i = i+1;  i <= num;  i++ )
+        qtr = (Int*)(ADDR_OBJ(ww)+1);
+        for ( i = i+1;  i <= num;  i++ )
             qtr[i] = 0;
     }
 
     /* <uu> must be a string                                               */
-    if ( TYPE_OBJ(uu) != T_STRING ) {
-	if ( TYPE_OBJ(uu) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( uu, T_STRING );
-	}
-	else {
-	    ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TYPE_OBJ(uu) ].name, 0L );
-	    return -1;
-	}
+    if ( TNUM_OBJ(uu) != T_STRING ) {
+        if ( TNUM_OBJ(uu) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( uu, T_STRING );
+        }
+        else {
+            ErrorQuit( "collect vector must be a string not a %s", 
+                       (Int)InfoBags[ TNUM_OBJ(uu) ].name, 0L );
+            return -1;
+        }
     }
 
     /* fix the length                                                      */
     if ( SIZE_OBJ(uu) != num*sizeof(Int)+sizeof(Obj)+1 ) {
-	i = (SIZE_OBJ(uu)-sizeof(Obj)-1) / sizeof(Int);
+        i = (SIZE_OBJ(uu)-sizeof(Obj)-1) / sizeof(Int);
         ResizeBag( uu, num*sizeof(Int)+sizeof(Obj)+1 );
-	qtr = (Int*)(ADDR_OBJ(uu)+1);
-	for ( i = i+1;  i <= num;  i++ )
+        qtr = (Int*)(ADDR_OBJ(uu)+1);
+        for ( i = i+1;  i <= num;  i++ )
             qtr[i] = 0;
     }
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND( SC_DEFAULT_KIND(sc) );
+    ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* use <g> as right argument for the collector                         */
-    NEW_WORD( g, SC_DEFAULT_KIND(sc), 1 );
+    NEW_WORD( g, SC_DEFAULT_TYPE(sc), 1 );
 
     /* start clearing <ww>, storing the result in <uu>                     */
     ptr = (Int*)(ADDR_OBJ(ww)+1);
@@ -1016,7 +1016,7 @@ Obj C32Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     Obj         obj;            /* result                                  */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -1058,15 +1058,15 @@ Int C32Bits_VectorWord ( Obj vv, Obj v, Int num )
     UInt4 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <vv> must be a string                                               */
-    if ( TYPE_OBJ(vv) != T_STRING ) {
-	if ( TYPE_OBJ(vv) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( vv, T_STRING );
-	}
-	else {
-	    ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TYPE_OBJ(vv) ].name, 0L );
-	    return -1;
-	}
+    if ( TNUM_OBJ(vv) != T_STRING ) {
+        if ( TNUM_OBJ(vv) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( vv, T_STRING );
+        }
+        else {
+            ErrorQuit( "collect vector must be a string not a %s", 
+                       (Int)InfoBags[ TNUM_OBJ(vv) ].name, 0L );
+            return -1;
+        }
     }
 
     /* fix the length                                                      */
@@ -1183,7 +1183,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
     }
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND( SC_DEFAULT_KIND(sc) );
+    ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
     if ( 28 < ebits ) {
         ErrorQuit( "number of exponent bits must be less than 29", 0L, 0L );
         return 0;
@@ -1379,55 +1379,55 @@ Int C32Bits_Solution(
     rod = SC_RELATIVE_ORDERS(sc);
 
     /* <ww> must be a string                                               */
-    if ( TYPE_OBJ(ww) != T_STRING ) {
-	if ( TYPE_OBJ(ww) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( ww, T_STRING );
-	}
-	else {
-	    ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TYPE_OBJ(ww) ].name, 0L );
-	    return -1;
-	}
+    if ( TNUM_OBJ(ww) != T_STRING ) {
+        if ( TNUM_OBJ(ww) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( ww, T_STRING );
+        }
+        else {
+            ErrorQuit( "collect vector must be a string not a %s", 
+                       (Int)InfoBags[ TNUM_OBJ(ww) ].name, 0L );
+            return -1;
+        }
     }
 
     /* fix the length                                                      */
     if ( SIZE_OBJ(ww) != num*sizeof(Int)+sizeof(Obj)+1 ) {
-	i = (SIZE_OBJ(ww)-sizeof(Obj)-1) / sizeof(Int);
+        i = (SIZE_OBJ(ww)-sizeof(Obj)-1) / sizeof(Int);
         ResizeBag( ww, num*sizeof(Int)+sizeof(Obj)+1 );
-	qtr = (Int*)(ADDR_OBJ(ww)+1);
-	for ( i = i+1;  i <= num;  i++ )
+        qtr = (Int*)(ADDR_OBJ(ww)+1);
+        for ( i = i+1;  i <= num;  i++ )
             qtr[i] = 0;
     }
 
     /* <uu> must be a string                                               */
-    if ( TYPE_OBJ(uu) != T_STRING ) {
-	if ( TYPE_OBJ(uu) == IMMUTABLE_TYPE(T_STRING) ) {
-	    RetypeBag( uu, T_STRING );
-	}
-	else {
+    if ( TNUM_OBJ(uu) != T_STRING ) {
+        if ( TNUM_OBJ(uu) == IMMUTABLE_TNUM(T_STRING) ) {
+            RetypeBag( uu, T_STRING );
+        }
+        else {
             ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)InfoBags[ TYPE_OBJ(uu) ].name, 0L );
+                       (Int)InfoBags[ TNUM_OBJ(uu) ].name, 0L );
             return -1;
-	}
+        }
     }
 
     /* fix the length                                                      */
     if ( SIZE_OBJ(uu) != num*sizeof(Int)+sizeof(Obj)+1 ) {
-	i = (SIZE_OBJ(uu)-sizeof(Obj)-1) / sizeof(Int);
+        i = (SIZE_OBJ(uu)-sizeof(Obj)-1) / sizeof(Int);
         ResizeBag( uu, num*sizeof(Int)+sizeof(Obj)+1 );
-	qtr = (Int*)(ADDR_OBJ(uu)+1);
-	for ( i = i+1;  i <= num;  i++ )
+        qtr = (Int*)(ADDR_OBJ(uu)+1);
+        for ( i = i+1;  i <= num;  i++ )
             qtr[i] = 0;
     }
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND( SC_DEFAULT_KIND(sc) );
+    ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* use <g> as right argument for the collector                         */
-    NEW_WORD( g, SC_DEFAULT_KIND(sc), 1 );
+    NEW_WORD( g, SC_DEFAULT_TYPE(sc), 1 );
 
     /* start clearing <ww>, storing the result in <uu>                     */
     ptr = (Int*)(ADDR_OBJ(ww)+1);
@@ -1467,11 +1467,11 @@ FinPowConjCol C32Bits_SingleCollector = {
 */
 FinPowConjCol * FinPowConjCollectors [3] =
 {
-#define C8Bits_SingleCollectorNo	0
+#define C8Bits_SingleCollectorNo        0
        &C8Bits_SingleCollector,
-#define C16Bits_SingleCollectorNo	1
+#define C16Bits_SingleCollectorNo       1
        &C16Bits_SingleCollector,
-#define C32Bits_SingleCollectorNo	2
+#define C32Bits_SingleCollectorNo       2
        &C32Bits_SingleCollector
 };
 
@@ -1489,13 +1489,13 @@ FinPowConjCol * FinPowConjCollectors [3] =
 *F  CollectWordOrFail( <fc>, <sc>, <vv>, <w> )
 */
 Obj CollectWordOrFail ( 
-    FinPowConjCol * 	fc, 
-    Obj 		sc,
-    Obj 		vv,
-    Obj 		w )
+    FinPowConjCol *     fc, 
+    Obj                 sc,
+    Obj                 vv,
+    Obj                 w )
 {
-    Int         	i;              /* loop variable                   */
-    Obj *       	ptr;            /* pointer into the array <vv>     */
+    Int                 i;              /* loop variable                   */
+    Obj *               ptr;            /* pointer into the array <vv>     */
 
     /* convert <vv> into a list of C integers                              */
     ptr = ADDR_OBJ(vv)+1;
@@ -1519,17 +1519,17 @@ Obj CollectWordOrFail (
 *F  ReducedComm( <fc>, <sc>, <w>, <u> )
 */
 Obj ReducedComm (
-    FinPowConjCol * 	fc,
-    Obj         	sc,
-    Obj         	w,
-    Obj         	u )
+    FinPowConjCol *     fc,
+    Obj                 sc,
+    Obj                 w,
+    Obj                 u )
 {
-    Obj         	kind;       /* kind of the returned object         */
-    Int         	num;        /* number of gen/exp pairs in <data>   */
-    Int         	i;          /* loop variable for gen/exp pairs     */
-    Obj         	vcw;        /* collect vector                      */
-    Obj         	vc2;        /* collect vector                      */
-    Int *       	qtr;  	    /* pointer into the collect vector     */
+    Obj                 kind;       /* kind of the returned object         */
+    Int                 num;        /* number of gen/exp pairs in <data>   */
+    Int                 i;          /* loop variable for gen/exp pairs     */
+    Obj                 vcw;        /* collect vector                      */
+    Obj                 vc2;        /* collect vector                      */
+    Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <u>*<w> to                           */
     vcw = SC_CW_VECTOR(sc);
@@ -1581,7 +1581,7 @@ Obj ReducedComm (
     }
 
     /* convert the vector <vc2> into a word and clear <vc2>                */
-    kind = SC_DEFAULT_KIND(sc);
+    kind = SC_DEFAULT_TYPE(sc);
     return fc->wordVectorAndClear( kind, vc2, num );
 }
 
@@ -1591,7 +1591,7 @@ Obj ReducedComm (
 *F  ReducedForm( <fc>, <sc>, <w> )
 */
 Obj ReducedForm (
-    FinPowConjCol * 	fc,
+    FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w )
 {
@@ -1617,7 +1617,7 @@ Obj ReducedForm (
     num = i;
 
     /* get the default kind                                                */
-    kind = SC_DEFAULT_KIND(sc);
+    kind = SC_DEFAULT_TYPE(sc);
 
     /* convert the vector <cvw> into a word and clear <vcw>                */
     return fc->wordVectorAndClear( kind, vcw, num );
@@ -1629,7 +1629,7 @@ Obj ReducedForm (
 *F  ReducedLeftQuotient( <fc>, <sc>, <w>, <u> )
 */
 Obj ReducedLeftQuotient ( 
-    FinPowConjCol * 	fc,
+    FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
     Obj                 u )
@@ -1675,7 +1675,7 @@ Obj ReducedLeftQuotient (
     }
 
     /* convert the vector <vc2> into a word and clear <vc2>                */
-    kind = SC_DEFAULT_KIND(sc);
+    kind = SC_DEFAULT_TYPE(sc);
     return fc->wordVectorAndClear( kind, vc2, num );
 }
 
@@ -1685,7 +1685,7 @@ Obj ReducedLeftQuotient (
 *F  ReducedProduct( <fc>, <sc>, <w>, <u> )
 */
 Obj ReducedProduct ( 
-    FinPowConjCol * 	fc,
+    FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
     Obj                 u )
@@ -1715,7 +1715,7 @@ Obj ReducedProduct (
     }
 
     /* convert the vector <vcw> into a word and clear <vcw>                */
-    kind = SC_DEFAULT_KIND(sc);
+    kind = SC_DEFAULT_TYPE(sc);
     return fc->wordVectorAndClear( kind, vcw, num );
 }
 
@@ -1725,7 +1725,7 @@ Obj ReducedProduct (
 *F  ReducedPowerSmallInt( <fc>, <sc>, <w>, <pow> )
 */
 Obj ReducedPowerSmallInt ( 
-    FinPowConjCol *	fc,
+    FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
     Obj                 vpow )
@@ -1746,78 +1746,78 @@ Obj ReducedPowerSmallInt (
     vcw  = SC_CW_VECTOR(sc);
     vc2  = SC_CW2_VECTOR(sc);
     num  = SC_NUMBER_RWS_GENERATORS(sc);
-    kind = SC_DEFAULT_KIND(sc);
+    kind = SC_DEFAULT_TYPE(sc);
 
     /* return the trivial word if <pow> is zero                            */
     if ( pow == 0 ) {
-	NEW_WORD( res, kind, 0 );
-	return res;
+        NEW_WORD( res, kind, 0 );
+        return res;
     }
 
     /* invert <w> if <pow> is negative                                     */
     if ( pow < 0 ) {
-	
-	/* check that it has the correct length, unpack <w> into it        */
-	if ( fc->vectorWord( vcw, w, num ) == -1 )  {
-	    for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
-		*qtr = 0;
-	    return Fail;
-	}
+        
+        /* check that it has the correct length, unpack <w> into it        */
+        if ( fc->vectorWord( vcw, w, num ) == -1 )  {
+            for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
+                *qtr = 0;
+            return Fail;
+        }
 
-	/* use 'Solution' to invert it, this will clear <vcw>              */
-	if (fc->solution(sc,vcw,vc2,fc->collectWord) == -1) {
-		for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
-		    *qtr = 0;
-		for ( i=num, qtr=(Int*)(ADDR_OBJ(vc2)+1);  0<i;  i--,qtr++ )
-		    *qtr = 0;
-		return ReducedPowerSmallInt(fc,sc,w,vpow);
-	}
+        /* use 'Solution' to invert it, this will clear <vcw>              */
+        if (fc->solution(sc,vcw,vc2,fc->collectWord) == -1) {
+                for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
+                    *qtr = 0;
+                for ( i=num, qtr=(Int*)(ADDR_OBJ(vc2)+1);  0<i;  i--,qtr++ )
+                    *qtr = 0;
+                return ReducedPowerSmallInt(fc,sc,w,vpow);
+        }
 
-	/* and replace <pow> and <w> by its inverse                        */
-	pow  = -pow;
-	vpow = INTOBJ_INT(pow);
-	w    = fc->wordVectorAndClear( kind, vc2, num );
+        /* and replace <pow> and <w> by its inverse                        */
+        pow  = -pow;
+        vpow = INTOBJ_INT(pow);
+        w    = fc->wordVectorAndClear( kind, vc2, num );
 
     }
 
     /* if <pow> is one, do nothing                                         */
     if ( pow == 1 ) {
-	return w;
+        return w;
     }
 
     /* catch small cases                                                   */
     if ( pow < 6 ) {
 
-	/* check that it has the correct length, unpack <w> into it        */
-	if ( fc->vectorWord( vcw, w, num ) == -1 )  {
-	    for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
-		*qtr = 0;
-	    return Fail;
-	}
+        /* check that it has the correct length, unpack <w> into it        */
+        if ( fc->vectorWord( vcw, w, num ) == -1 )  {
+            for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
+                *qtr = 0;
+            return Fail;
+        }
 
-	/* multiply <w> into <vcw>                                         */
-	for ( i = pow;  1 < i;  i-- ) {
-	    if ( fc->collectWord( sc, vcw, w ) == -1 ) {
-		for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
-		    *qtr = 0;
-		return ReducedPowerSmallInt(fc,sc,w,vpow);
-	    }
-	}
+        /* multiply <w> into <vcw>                                         */
+        for ( i = pow;  1 < i;  i-- ) {
+            if ( fc->collectWord( sc, vcw, w ) == -1 ) {
+                for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
+                    *qtr = 0;
+                return ReducedPowerSmallInt(fc,sc,w,vpow);
+            }
+        }
 
-	/* convert it back, this will clear <vcw>                          */
-	return fc->wordVectorAndClear( kind, vcw, num );
+        /* convert it back, this will clear <vcw>                          */
+        return fc->wordVectorAndClear( kind, vcw, num );
 
     }
 
     /* use "divide et impera" instead of repeated squaring r2l             */
     if ( pow % 2 ) {
-	res = ReducedPowerSmallInt( fc, sc, w, INTOBJ_INT((pow-1)/2) );
-	return ReducedProduct( fc, sc, w,
+        res = ReducedPowerSmallInt( fc, sc, w, INTOBJ_INT((pow-1)/2) );
+        return ReducedProduct( fc, sc, w,
             ReducedProduct( fc, sc, res, res ) );
     }
     else {
-	res = ReducedPowerSmallInt( fc, sc, w, INTOBJ_INT(pow/2) );
-	return ReducedProduct( fc, sc, res, res );
+        res = ReducedPowerSmallInt( fc, sc, w, INTOBJ_INT(pow/2) );
+        return ReducedProduct( fc, sc, res, res );
     }
 
 }
@@ -1828,7 +1828,7 @@ Obj ReducedPowerSmallInt (
 *F  ReducedQuotient( <fc>, <sc>, <w>, <u> )
 */
 Obj ReducedQuotient ( 
-    FinPowConjCol * 	fc,
+    FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
     Obj                 u )
@@ -1844,22 +1844,22 @@ Obj ReducedQuotient (
     vcw  = SC_CW_VECTOR(sc);
     vc2  = SC_CW2_VECTOR(sc);
     num  = SC_NUMBER_RWS_GENERATORS(sc);
-    kind = SC_DEFAULT_KIND(sc);
+    kind = SC_DEFAULT_TYPE(sc);
 
     /* check that it has the correct length, unpack <u> into it            */
     if ( fc->vectorWord( vcw, u, num ) == -1 )  {
-	for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
-	    *qtr = 0;
-	return Fail;
+        for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
+            *qtr = 0;
+        return Fail;
     }
 
     /* use 'Solution' to invert it, this will clear <vcw>                  */
     if ( fc->solution( sc, vcw, vc2, fc->collectWord ) == -1 ) {
-	for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
-	    *qtr = 0;
-	for ( i=num, qtr=(Int*)(ADDR_OBJ(vc2)+1);  0<i;  i--,qtr++ )
-	    *qtr = 0;
-	return ReducedQuotient( fc, sc, w, u );
+        for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
+            *qtr = 0;
+        for ( i=num, qtr=(Int*)(ADDR_OBJ(vc2)+1);  0<i;  i--,qtr++ )
+            *qtr = 0;
+        return ReducedQuotient( fc, sc, w, u );
     }
 
     /* and replace <u> by its inverse                                      */
@@ -1976,97 +1976,97 @@ void InitSingleCollector ( void )
              INTOBJ_INT(SCP_RWS_GENERATORS) );
     AssGVar( GVarName( "SCP_NUMBER_RWS_GENERATORS" ),
              INTOBJ_INT(SCP_NUMBER_RWS_GENERATORS) );
-    AssGVar( GVarName( "SCP_DEFAULT_KIND" ),
-	     INTOBJ_INT(SCP_DEFAULT_KIND) );
-    AssGVar( GVarName( "SCP_IS_DEFAULT_KIND" ),
-	     INTOBJ_INT(SCP_IS_DEFAULT_KIND) );
+    AssGVar( GVarName( "SCP_DEFAULT_TYPE" ),
+             INTOBJ_INT(SCP_DEFAULT_TYPE) );
+    AssGVar( GVarName( "SCP_IS_DEFAULT_TYPE" ),
+             INTOBJ_INT(SCP_IS_DEFAULT_TYPE) );
     AssGVar( GVarName( "SCP_RELATIVE_ORDERS" ),
-	     INTOBJ_INT(SCP_RELATIVE_ORDERS) );
+             INTOBJ_INT(SCP_RELATIVE_ORDERS) );
     AssGVar( GVarName( "SCP_POWERS" ),
-	     INTOBJ_INT(SCP_POWERS) );
+             INTOBJ_INT(SCP_POWERS) );
     AssGVar( GVarName( "SCP_CONJUGATES" ),
-	     INTOBJ_INT(SCP_CONJUGATES) );
+             INTOBJ_INT(SCP_CONJUGATES) );
     AssGVar( GVarName( "SCP_INVERSES" ),
-	     INTOBJ_INT(SCP_INVERSES) );
+             INTOBJ_INT(SCP_INVERSES) );
     AssGVar( GVarName( "SCP_NW_STACK" ),
-	     INTOBJ_INT(SCP_NW_STACK) );
+             INTOBJ_INT(SCP_NW_STACK) );
     AssGVar( GVarName( "SCP_LW_STACK" ),
-	     INTOBJ_INT(SCP_LW_STACK) );
+             INTOBJ_INT(SCP_LW_STACK) );
     AssGVar( GVarName( "SCP_PW_STACK" ),
-	     INTOBJ_INT(SCP_PW_STACK) );
+             INTOBJ_INT(SCP_PW_STACK) );
     AssGVar( GVarName( "SCP_EW_STACK" ),
-	     INTOBJ_INT(SCP_EW_STACK) );
+             INTOBJ_INT(SCP_EW_STACK) );
     AssGVar( GVarName( "SCP_GE_STACK" ),
-	     INTOBJ_INT(SCP_GE_STACK) );
+             INTOBJ_INT(SCP_GE_STACK) );
     AssGVar( GVarName( "SCP_CW_VECTOR" ),
-	     INTOBJ_INT(SCP_CW_VECTOR) );
+             INTOBJ_INT(SCP_CW_VECTOR) );
     AssGVar( GVarName( "SCP_CW2_VECTOR" ),
-	     INTOBJ_INT(SCP_CW2_VECTOR) );
+             INTOBJ_INT(SCP_CW2_VECTOR) );
     AssGVar( GVarName( "SCP_MAX_STACK_SIZE" ),
-	     INTOBJ_INT(SCP_MAX_STACK_SIZE) );
+             INTOBJ_INT(SCP_MAX_STACK_SIZE) );
     AssGVar( GVarName( "SCP_COLLECTOR" ),
-	     INTOBJ_INT(SCP_COLLECTOR) );
+             INTOBJ_INT(SCP_COLLECTOR) );
     AssGVar( GVarName( "SCP_AVECTOR" ),
-	     INTOBJ_INT(SCP_AVECTOR) );
+             INTOBJ_INT(SCP_AVECTOR) );
 
 
     /* export collector number                                             */
     AssGVar( GVarName( "8Bits_SingleCollector" ),
             INTOBJ_INT(C8Bits_SingleCollectorNo) );
     AssGVar( GVarName( "16Bits_SingleCollector" ),
-	    INTOBJ_INT(C16Bits_SingleCollectorNo) );
+            INTOBJ_INT(C16Bits_SingleCollectorNo) );
     AssGVar( GVarName( "32Bits_SingleCollector" ),
-	    INTOBJ_INT(C32Bits_SingleCollectorNo) );
+            INTOBJ_INT(C32Bits_SingleCollectorNo) );
 
 
     /* collector methods                                                   */
     InitHandlerFunc( FuncFinPowConjCol_CollectWordOrFail,
-		     "FinPowConjCol_CollectWordOrFail" );
+                     "FinPowConjCol_CollectWordOrFail" );
     AssGVar( GVarName( "FinPowConjCol_CollectWordOrFail" ),
          NewFunctionC( "FinPowConjCol_CollectWordOrFail", 3L,
-			   "collector, list, word",
+                           "collector, list, word",
                     FuncFinPowConjCol_CollectWordOrFail ) );
 
     InitHandlerFunc( FuncFinPowConjCol_ReducedComm,
-		     "FinPowConjCol_ReducedComm" );
+                     "FinPowConjCol_ReducedComm" );
     AssGVar( GVarName( "FinPowConjCol_ReducedComm" ),
          NewFunctionC( "FinPowConjCol_ReducedComm", 3L, 
-			   "collector, word, word",
+                           "collector, word, word",
                     FuncFinPowConjCol_ReducedComm ) );
 
     InitHandlerFunc( FuncFinPowConjCol_ReducedForm,
-		     "FinPowConjCol_ReducedForm" );
+                     "FinPowConjCol_ReducedForm" );
     AssGVar( GVarName( "FinPowConjCol_ReducedForm" ),
          NewFunctionC( "FinPowConjCol_ReducedForm", 2L, 
-			   "collector, word",
+                           "collector, word",
                     FuncFinPowConjCol_ReducedForm ) );
 
     InitHandlerFunc( FuncFinPowConjCol_ReducedLeftQuotient,
-		     "FinPowConjCol_ReducedLeftQuotient" );
+                     "FinPowConjCol_ReducedLeftQuotient" );
     AssGVar( GVarName( "FinPowConjCol_ReducedLeftQuotient" ),
          NewFunctionC( "FinPowConjCol_ReducedLeftQuotient", 3L,
-			   "collector, word, word",
+                           "collector, word, word",
                     FuncFinPowConjCol_ReducedLeftQuotient ) );
 
     InitHandlerFunc( FuncFinPowConjCol_ReducedPowerSmallInt,
-		     "FinPowConjCol_ReducedPowerSmallInt" );
+                     "FinPowConjCol_ReducedPowerSmallInt" );
     AssGVar( GVarName( "FinPowConjCol_ReducedPowerSmallInt" ),
          NewFunctionC( "FinPowConjCol_ReducedPowerSmallInt", 3L, 
-			   "collector, word, small_int",
+                           "collector, word, small_int",
                     FuncFinPowConjCol_ReducedPowerSmallInt ) );
 
     InitHandlerFunc( FuncFinPowConjCol_ReducedProduct,
-		     "FinPowConjCol_ReducedProduct" );
+                     "FinPowConjCol_ReducedProduct" );
     AssGVar( GVarName( "FinPowConjCol_ReducedProduct" ),
          NewFunctionC( "FinPowConjCol_ReducedProduct", 3L, 
-			   "collector, word, word",
+                           "collector, word, word",
                     FuncFinPowConjCol_ReducedProduct ) );
 
     InitHandlerFunc( FuncFinPowConjCol_ReducedQuotient,
-		     "FinPowConjCol_ReducedQuotient" );
+                     "FinPowConjCol_ReducedQuotient" );
     AssGVar( GVarName( "FinPowConjCol_ReducedQuotient" ),
          NewFunctionC( "FinPowConjCol_ReducedQuotient", 3L, 
-			   "collector, word, word",
+                           "collector, word, word",
                     FuncFinPowConjCol_ReducedQuotient ) );
 }
 

@@ -156,7 +156,7 @@ InstallMethod( LeftModuleGeneralMappingByImages,
     fi;
 
     # Make the general mapping.
-    map:= Objectify( KindOfDefaultGeneralMapping( S, R, 
+    map:= Objectify( TypeOfDefaultGeneralMapping( S, R, 
                              IsSPGeneralMapping
                          and RespectsAddition
                          and RespectsAdditiveInverses
@@ -925,7 +925,7 @@ InstallMethod( LeftModuleHomomorphismByMatrix,
 #T check entries of the matrix?
 
     # Make the mapping.
-    map:= Objectify( KindOfDefaultGeneralMapping( S, R, 
+    map:= Objectify( TypeOfDefaultGeneralMapping( S, R, 
                              IsSPGeneralMapping
                          and IsSingleValued
                          and IsTotal
@@ -1684,7 +1684,7 @@ InstallMethod( LeftModuleByGenerators,
       R:= AsLeftModule( F, R );
     fi;
 
-    V:= Objectify( NewKind( FamilyObj( gens ),
+    V:= Objectify( NewType( FamilyObj( gens ),
                                 IsFreeLeftModule
                             and IsLeftActedOnByDivisionRing
                             and IsLinearMappingsSpaceDefaultRep
@@ -1734,7 +1734,7 @@ InstallOtherMethod( LeftModuleByGenerators,
       R:= AsLeftModule( F, R );
     fi;
 
-    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFreeLeftModule
                             and IsLeftActedOnByDivisionRing
                             and IsLinearMappingsSpaceDefaultRep
@@ -1889,7 +1889,7 @@ InstallMethod( FLMLORByGenerators,
       S:= AsLeftModule( F, S );
     fi;
 
-    A:= Objectify( NewKind( FamilyObj( maps ),
+    A:= Objectify( NewType( FamilyObj( maps ),
                                 IsFLMLOR
                             and IsAttributeStoringRep
                             and IsLinearMappingsSpaceDefaultRep ),
@@ -1917,7 +1917,7 @@ InstallOtherMethod( FLMLORByGenerators,
       Error( "<zero> must be a zero mapping" );
     fi;
 
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLOR
                             and IsAttributeStoringRep
                             and IsLinearMappingsSpaceDefaultRep
@@ -1956,7 +1956,7 @@ InstallOtherMethod( FLMLORByGenerators,
       S:= AsLeftModule( F, S );
     fi;
 
-    A:= Objectify( NewKind( FamilyObj( maps ),
+    A:= Objectify( NewType( FamilyObj( maps ),
                                 IsFLMLOR
                             and IsAttributeStoringRep
                             and IsLinearMappingsSpaceDefaultRep ),
@@ -1996,7 +1996,7 @@ InstallMethod( FLMLORWithOneByGenerators,
       S:= AsLeftModule( F, S );
     fi;
 
-    A:= Objectify( NewKind( FamilyObj( maps ),
+    A:= Objectify( NewType( FamilyObj( maps ),
                                 IsFLMLORWithOne
                             and IsAttributeStoringRep
                             and IsLinearMappingsSpaceDefaultRep ),
@@ -2024,7 +2024,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
       Error( "<zero> must be a zero mapping" );
     fi;
 
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLORWithOne
                             and IsAttributeStoringRep
                             and IsLinearMappingsSpaceDefaultRep
@@ -2063,7 +2063,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
       S:= AsLeftModule( F, S );
     fi;
 
-    A:= Objectify( NewKind( FamilyObj( maps ),
+    A:= Objectify( NewType( FamilyObj( maps ),
                                 IsFLMLORWithOne
                             and IsAttributeStoringRep
                             and IsLinearMappingsSpaceDefaultRep ),
@@ -2308,7 +2308,7 @@ InstallMethod( BasisOfDomain,
     [ IsFreeLeftModule and IsFullHomModule ], 100,
     function( V )
     local B;
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsPseudoCanonicalBasisFullHomModule
                             and IsAttributeStoringRep ),
@@ -2339,7 +2339,7 @@ InstallMethod( Hom,
       W:= AsLeftModule( F, W );
     fi;
 
-    M:= Objectify( NewKind( CollectionsFamily( GeneralMappingsFamily(
+    M:= Objectify( NewType( CollectionsFamily( GeneralMappingsFamily(
                                 ElementsFamily( FamilyObj( V ) ),
                                 ElementsFamily( FamilyObj( W ) ) ) ),
                                 IsFreeLeftModule

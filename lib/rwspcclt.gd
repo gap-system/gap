@@ -90,6 +90,7 @@ SetRelativeOrders := Setter( RelativeOrders );
 IsUpToDatePolycyclicCollector := NEW_FILTER("IsUpToDatePolycyclicCollector");
 FILTERS[FLAG1_FILTER(IsUpToDatePolycyclicCollector)] :=
     IsUpToDatePolycyclicCollector;
+RANKS_FILTERS[FLAG1_FILTER(IsUpToDatePolycyclicCollector)] := 1;
 
 
 #############################################################################

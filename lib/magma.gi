@@ -324,7 +324,7 @@ SubmagmaNC := function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
-      K:= NewKind( FamilyObj(M),
+      K:= NewType( FamilyObj(M),
                        IsMagma
                    and IsTrivial
                    and IsAttributeStoringRep );
@@ -400,7 +400,7 @@ SubmagmaWithOneNC := function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
-      K:= NewKind( FamilyObj(M),
+      K:= NewType( FamilyObj(M),
                        IsMagmaWithInverses
                    and IsTrivial
                    and IsAttributeStoringRep );
@@ -475,7 +475,7 @@ SubmagmaWithInversesNC := function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
-      K:= NewKind( FamilyObj(M),
+      K:= NewType( FamilyObj(M),
                        IsMagmaWithInverses
                    and IsTrivial
                    and IsAttributeStoringRep );
@@ -499,7 +499,7 @@ InstallMethod( MagmaByGenerators,
     [ IsCollection ] , 0,
     function( gens )
     local M;
-    M:= Objectify( NewKind( FamilyObj( gens ),
+    M:= Objectify( NewType( FamilyObj( gens ),
                             IsMagma and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagma( M, AsList( gens ) );
@@ -520,7 +520,7 @@ InstallOtherMethod( MagmaByGenerators,
     if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
-    M:= Objectify( NewKind( family,
+    M:= Objectify( NewType( family,
                             IsMagma and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagma( M, AsList( gens ) );
@@ -538,7 +538,7 @@ InstallMethod( MagmaWithOneByGenerators,
     [ IsCollection ] , 0,
     function( gens )
     local M;
-    M:= Objectify( NewKind( FamilyObj( gens ),
+    M:= Objectify( NewType( FamilyObj( gens ),
                             IsMagmaWithOne and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithOne( M, AsList( gens ) );
@@ -559,7 +559,7 @@ InstallOtherMethod( MagmaWithOneByGenerators,
     if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
-    M:= Objectify( NewKind( family,
+    M:= Objectify( NewType( family,
                             IsMagmaWithOne and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithOne( M, AsList( gens ) );
@@ -577,7 +577,7 @@ InstallMethod( MagmaWithInversesByGenerators,
     [ IsCollection ] , 0,
     function( gens )
     local M;
-    M:= Objectify( NewKind( FamilyObj( gens ),
+    M:= Objectify( NewType( FamilyObj( gens ),
                             IsMagmaWithInverses and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( M, AsList( gens ) );
@@ -598,7 +598,7 @@ InstallOtherMethod( MagmaWithInversesByGenerators,
     if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
-    M:= Objectify( NewKind( family,
+    M:= Objectify( NewType( family,
                             IsMagmaWithInverses and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( M, AsList( gens ) );

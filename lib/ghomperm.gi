@@ -83,7 +83,7 @@ CoKernelGensIterator := function( hom )
     
     S := StabChainAttr( hom );
     iter := Objectify
-            ( NewKind( IteratorsFamily, IsCoKernelGensIterator ),
+            ( NewType( IteratorsFamily, IsCoKernelGensIterator ),
               rec( level := S,
                  pointNo := 1,
               genlabelNo := 1,

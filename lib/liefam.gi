@@ -45,8 +45,8 @@ InstallMethod( LieFamily, true, [ IsFamilyRingElements ], 0,
     fi;
 #T maintain other req/imp properties as implied properties of 'F'?
 
-    # Enter the kind of objects in the image.
-    F!.packedKind:= NewKind( F, IsLieObject );
+    # Enter the type of objects in the image.
+    F!.packedType:= NewType( F, IsLieObject );
 
     # Return the Lie family.
     return F;
@@ -66,8 +66,8 @@ InstallMethod( LieFamily, true, [ IsFamilyCollections ], 0,
     fi;
 #T maintain other req/imp properties as implied properties of 'F'?
 
-    # Enter the kind of objects in the image.
-    F!.packedKind:= NewKind( F, IsLieObject and IsMatrix );
+    # Enter the type of objects in the image.
+    F!.packedType:= NewType( F, IsLieObject and IsMatrix );
 
     # Return the Lie family.
     return F;
@@ -79,7 +79,7 @@ InstallMethod( LieFamily, true, [ IsFamilyCollections ], 0,
 #M  LieObject( <obj> )
 ##
 InstallMethod( LieObject, true, [ IsRingElement ], 0,
-    obj -> Objectify( LieFamily( FamilyObj( obj ) )!.packedKind,
+    obj -> Objectify( LieFamily( FamilyObj( obj ) )!.packedType,
                       [ Immutable( obj ) ] ) );
 
 
@@ -275,7 +275,7 @@ IsLieEmbedding := NewRepresentation( "IsLieEmbedding",
     and IsMapping
     and IsInjective
     and IsAttributeStoringRep,
-    [ "packedKind" ] );
+    [ "packedType" ] );
 
 
 #############################################################################
@@ -294,7 +294,7 @@ InstallOtherMethod( Embedding, true, [ IsFamily and HasLieFamily,
     fi;
 
     # Make the mapping object.
-    emb := Objectify( KindOfDefaultGeneralMapping( Fam, LieFam,
+    emb := Objectify( TypeOfDefaultGeneralMapping( Fam, LieFam,
                                                    IsLieEmbedding ),
                       rec() );
 
@@ -397,7 +397,7 @@ InstallMethod( LeftModuleByGenerators,
     function( R, lieelms )
     local dims, V;
 
-    V:= Objectify( NewKind( FamilyObj( lieelms ),
+    V:= Objectify( NewType( FamilyObj( lieelms ),
                                 IsFreeLeftModule
                             and IsLieObjectsModuleRep ),
                    rec() );
@@ -415,7 +415,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     function( R, empty, zero )
     local V;
 
-    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFreeLeftModule
                             and IsLieObjectsModuleRep ),
                    rec() );
@@ -433,7 +433,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     function( R, lieelms, zero )
     local V;
 
-    V:= Objectify( NewKind( FamilyObj( lieelms ),
+    V:= Objectify( NewType( FamilyObj( lieelms ),
                                 IsFreeLeftModule
                             and IsLieObjectsModuleRep ),
                    rec() );
@@ -504,7 +504,7 @@ InstallMethod( FLMLORByGenerators,
     function( R, elms )
     local A;
 
-    A:= Objectify( NewKind( FamilyObj( elms ),
+    A:= Objectify( NewType( FamilyObj( elms ),
                                 IsFLMLOR
                             and IsLieAlgebra
                             and IsLieObjectsModuleRep ),
@@ -524,7 +524,7 @@ InstallOtherMethod( FLMLORByGenerators,
     function( R, empty, zero )
     local A;
 
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLOR
                             and IsLieObjectsModuleRep
                             and IsTrivial ),
@@ -544,7 +544,7 @@ InstallOtherMethod( FLMLORByGenerators,
     function( R, elms, zero )
     local A;
 
-    A:= Objectify( NewKind( FamilyObj( elms ),
+    A:= Objectify( NewType( FamilyObj( elms ),
                                 IsFLMLOR
                             and IsLieAlgebra
                             and IsLieObjectsModuleRep ),

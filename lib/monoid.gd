@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declaration of operations for monoids.
 ##
@@ -91,8 +91,20 @@ SubmonoidNC := SubmagmaWithOneNC;
 
 #############################################################################
 ##
-#F  FreeMonoid( <rank> ) . . . . . . . . . . . . .  free monoid of given rank
+#F  FreeMonoid( <rank> )
+#F  FreeMonoid( <rank>, <name> )
+#F  FreeMonoid( <name1>, <name2>, ... )
 #F  FreeMonoid( <names> )
+##
+##  Called in the first form, 'FreeMonoid' returns a free monoid on
+##  <rank> generators.
+##  Called in the second form, 'FreeMonoid' returns a free monoid on
+##  <rank> generators, printed as '<name>1', '<name>2' etc.
+##  Called in the third form, 'FreeMonoid' returns a free monoid on
+##  as many generators as arguments, printed as <name1>, <name2> etc.
+##  Called in the fourth form, 'FreeMonoid' returns a free monoid on
+##  as many generators as the length of the list <names>, the $i$-th
+##  generator being printed as '<names>[$i$]'.
 ##
 FreeMonoid := NewOperationArgs( "FreeMonoid" );
 

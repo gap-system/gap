@@ -42,7 +42,7 @@ InstallMethod( LeftModuleByGenerators,
     function( R, mat )
     local V;
 
-    V:= Objectify( NewKind( FamilyObj( mat ),
+    V:= Objectify( NewType( FamilyObj( mat ),
                                 IsLeftModule
                             and IsRowModuleRep
                             and IsAttributeStoringRep ),
@@ -78,7 +78,7 @@ InstallOtherMethod( LeftModuleByGenerators,
       TryNextMethod();
     fi;
 
-    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsLeftModule
                             and IsRowModuleRep
                             and IsAttributeStoringRep ),
@@ -105,7 +105,7 @@ FullRowModule := function( R, n )
     fi;
 
     if IsDivisionRing( R ) then
-      M:= Objectify( NewKind( CollectionsFamily( FamilyObj( R ) ),
+      M:= Objectify( NewType( CollectionsFamily( FamilyObj( R ) ),
                                   IsFreeLeftModule
                               and IsGaussianSpace
                               and IsRowModuleRep
@@ -113,7 +113,7 @@ FullRowModule := function( R, n )
                               and IsAttributeStoringRep ),
                      rec() );
     else
-      M:= Objectify( NewKind( CollectionsFamily( FamilyObj( R ) ),
+      M:= Objectify( NewType( CollectionsFamily( FamilyObj( R ) ),
                                   IsFreeLeftModule
                               and IsRowModuleRep
                               and IsFullRowModule
@@ -236,7 +236,7 @@ InstallMethod( CanonicalBasis, true,
     [ IsFreeLeftModule and IsFullRowModule ], 0,
     function( V )
     local B;
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsCanonicalBasisFullRowModule
@@ -493,7 +493,7 @@ InstallMethod( EnumeratorByBasis,
 
     if IsFinite( F ) then
 
-      F:= Objectify( NewKind( FamilyObj( V ),
+      F:= Objectify( NewType( FamilyObj( V ),
                               IsEnumeratorOfFiniteFullRowModuleRep ),
                      rec(
                           coeffsenum := Enumerator( F ),
@@ -507,7 +507,7 @@ InstallMethod( EnumeratorByBasis,
 
       # The ring is infinite, use the canonical ordering of $\N_0^n$
       # as defined for the iterator.
-      F:= Objectify( NewKind( FamilyObj( V ),
+      F:= Objectify( NewType( FamilyObj( V ),
                               IsEnumeratorOfInfiniteFullRowModuleRep ),
                      rec(
                           dim        := Dimension( V ),
@@ -693,7 +693,7 @@ InstallMethod( IteratorByBasis,
       counter[ Length( counter ) ]:= 0;
       q:= Size( F );
 
-      return Objectify( NewKind( IteratorsFamily,
+      return Objectify( NewType( IteratorsFamily,
                                      IsIterator
                                  and IsIteratorOfFiniteFullRowModuleRep ),
                         rec(
@@ -713,7 +713,7 @@ InstallMethod( IteratorByBasis,
       firstval:= enum[1];
       result:= List( [ 1 .. dim ], x -> firstval );
 
-      return Objectify( NewKind( IteratorsFamily,
+      return Objectify( NewType( IteratorsFamily,
                                      IsIterator
                                  and IsIteratorOfInfiniteFullRowModuleRep ),
                         rec(

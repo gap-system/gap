@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.27  1997/05/13 10:38:19  htheisse
+#H  used a mutable stab chain instead of an immutable one
+#H
 #H  Revision 4.26  1997/04/15 10:28:06  htheisse
 #H  more detailed checks in `RepresentativeOperation'
 #H
@@ -85,7 +88,7 @@ InstallOtherMethod( OrbitStabilizerOp,
     if gens <> oprs  or  opr <> OnPoints  then
         TryNextMethod();
     fi;
-    S := StabChain( G, [ pnt ] );
+    S := StabChainOp( G, [ pnt ] );
     if BasePoint( S ) = pnt  then
         return Immutable( rec( orbit := S.orbit,
                           stabilizer := GroupStabChain
@@ -585,12 +588,12 @@ InstallMethod( EarnsOp,
     alpha := BasePoint( StabChainAttr( G ) );
     G1 := Stabilizer( G, alpha );
     
-    # If <G1> is regular, it must be cyclic of prime order.
+    # If <G> is regular, it must be cyclic of prime order.
     if IsTrivial( G1 )  then
         return G;
     fi;
     
-    # If <G1> is not a Frobenius group ...
+    # If <G> is not a Frobenius group ...
     for orb  in Orbits( G1, Omega )  do
         beta := orb[ 1 ];
         if beta <> alpha  then

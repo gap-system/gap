@@ -54,7 +54,7 @@ char *          Revision_finfield_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -162,20 +162,20 @@ Obj             SuccFF;
 
 /****************************************************************************
 **
-*F  KIND_FF(<ff>) . . . . . . . . . . . . . . .  kind of a small finite field
+*F  TYPE_FF(<ff>) . . . . . . . . . . . . . . .  kind of a small finite field
 **
-**  'KIND_FF' returns the kind of elements of the small finite field <ff>.
+**  'TYPE_FF' returns the kind of elements of the small finite field <ff>.
 **
-**  Note that  'KIND_FF' is a macro, so  do not call  it  with arguments that
+**  Note that  'TYPE_FF' is a macro, so  do not call  it  with arguments that
 **  have sideeffects.
 **
-**  'KIND_FF' is defined in the declaration part of this package as follows
+**  'TYPE_FF' is defined in the declaration part of this package as follows
 **
-#define KIND_FF(ff)             (ELM_PLIST( KindFF, ff ))
+#define TYPE_FF(ff)             (ELM_PLIST( TypeFF, ff ))
 */
-Obj             KindFF;
+Obj             TypeFF;
 
-Obj             KIND_FFE;
+Obj             TYPE_FFE;
 
 
 /****************************************************************************
@@ -588,8 +588,8 @@ FF              FiniteField (
     ASS_LIST( CharFF, ff, INTOBJ_INT(p) );
     ASS_LIST( DegrFF, ff, INTOBJ_INT(d) );
     ASS_LIST( SuccFF, ff, bag );
-    bag = CALL_1ARGS( KIND_FFE, INTOBJ_INT(p) );
-    ASS_LIST( KindFF, ff, bag );
+    bag = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
+    ASS_LIST( TypeFF, ff, bag );
 
     /* return the finite field                                             */
     return ff;
@@ -720,17 +720,17 @@ Obj             DegreeFFEDefaultHandler (
 
 /****************************************************************************
 **
-*F  KindFFE(<ffe>)  . . . . . . . . . . kind of element of small finite field
+*F  TypeFFE(<ffe>)  . . . . . . . . . . kind of element of small finite field
 **
-**  'KindFFE' returns the kind of the element <ffe> of a small finite field.
+**  'TypeFFE' returns the kind of the element <ffe> of a small finite field.
 **
-**  'KindFFE' is the function in 'KindObjFuncs' for  elements in small finite
+**  'TypeFFE' is the function in 'TypeObjFuncs' for  elements in small finite
 **  fields.
 */
-Obj             KindFFE (
+Obj             TypeFFE (
     Obj                 ffe )
 {
-    return KIND_FF( FLD_FFE( ffe ) );
+    return TYPE_FF( FLD_FFE( ffe ) );
 }
 
 
@@ -895,14 +895,14 @@ void            PrFFV (
         /* print the element                                               */
         Pr( "%>Z(%>%d%<", (Int)p, 0L );
         if ( d == 1 ) {
-	    Pr( "%<)", 0L, 0L );
-	}
+            Pr( "%<)", 0L, 0L );
+        }
         else {
-	    Pr( "^%>%d%2<)", (Int)d, 0L );
-	}
+            Pr( "^%>%d%2<)", (Int)d, 0L );
+        }
         if ( val != 2 ) {
-	    Pr( "^%>%d%<", (Int)(val-1), 0L );
-	}
+            Pr( "^%>%d%<", (Int)(val-1), 0L );
+        }
     }
 
 }
@@ -1603,11 +1603,11 @@ Obj PowFFEFFE (
 {
     /* get the field for the result                                        */
     while ( CHAR_FF( FLD_FFE(opL) ) != CHAR_FF( FLD_FFE(opR) ) ) {
-	opR = ErrorReturnObj(
+        opR = ErrorReturnObj(
           "FFE operations: characteristic of conjugating element must be %d",
           (Int)CHAR_FF(FLD_FFE(opL)), 0L,
-	  "you can return a conjugating element" );
-	return POW( opL, opR );
+          "you can return a conjugating element" );
+        return POW( opL, opR );
     }
 
     /* compute and return the result                                       */
@@ -1632,10 +1632,10 @@ Obj             IsFFEHandler (
     Obj                 obj )
 {
     /* return 'true' if <obj> is a finite field element                    */
-    if ( TYPE_OBJ(obj) == T_FFE ) {
+    if ( TNUM_OBJ(obj) == T_FFE ) {
         return True;
     }
-    else if ( TYPE_OBJ(obj) <= FIRST_EXTERNAL_TYPE ) {
+    else if ( TNUM_OBJ(obj) <= FIRST_EXTERNAL_TNUM ) {
         return False;
     }
     else {
@@ -1850,10 +1850,10 @@ Obj             ZHandler (
     UInt                r;              /* temporary                       */
 
     /* check the argument                                                  */
-    if ( TYPE_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 || 65536<INT_INTOBJ(q) ) {
+    if ( TNUM_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 || 65536<INT_INTOBJ(q) ) {
         q = ErrorReturnObj(
             "Z: <q> must be a positive prime power (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(q)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(q)].name), 0L,
             "you can return a positive integer for <q>" );
         return ZHandler( self, q );
     }
@@ -1877,7 +1877,7 @@ Obj             ZHandler (
     if ( r != INT_INTOBJ(q) ) {
         q = ErrorReturnObj(
             "Z: <q> must be a positive prime power (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(q)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(q)].name), 0L,
             "you can return a positive integer for <q>" );
         return ZHandler( self, q );
     }
@@ -1903,8 +1903,8 @@ void            InitFinfield ( void )
     InitMarkFuncBags(   T_FFE               , MarkNoSubBags );
 
     /* install the kind function                                           */
-    ImportFuncFromLibrary( "KIND_FFE", &KIND_FFE );
-    KindObjFuncs[ T_FFE ] = KindFFE;
+    ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
+    TypeObjFuncs[ T_FFE ] = TypeFFE;
 
     /* install the printing method                                         */
     PrintObjFuncs[ T_FFE ] = PrFFE;
@@ -1943,9 +1943,9 @@ void            InitFinfield ( void )
     SuccFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( SuccFF, 0 );
     InitGlobalBag( &SuccFF, "finfield: successor" );
-    KindFF = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( KindFF, 0 );
-    InitGlobalBag( &KindFF, "finfield: element kinds" );
+    TypeFF = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( TypeFF, 0 );
+    InitGlobalBag( &TypeFF, "finfield: element kinds" );
     IntFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( IntFF, 0 );
     InitGlobalBag( &IntFF, "finifield: integer conversion" );

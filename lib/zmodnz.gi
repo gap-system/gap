@@ -30,12 +30,12 @@ Revision.zmodnz_gi :=
 
 #############################################################################
 ##
-#V  ZNZ_PURE_KIND
+#V  ZNZ_PURE_TYPE
 ##
-##  position where the kind of an object in $\Z \bmod n \Z$
-##  stores the default kind
+##  position where the type of an object in $\Z \bmod n \Z$
+##  stores the default type
 ##
-ZNZ_PURE_KIND := POS_FIRST_FREE_KIND;
+ZNZ_PURE_TYPE := POS_FIRST_FREE_TYPE;
 
 
 #############################################################################
@@ -64,7 +64,7 @@ InstallMethod( ZmodnZObj,
     true,
     [ IsZmodnZObjNonprimeFamily, IsInt ], 0,
     function( Fam, residue )
-    return Objectify( Fam!.kindOfZmodnZObj, [ residue mod Fam!.modulus ] );
+    return Objectify( Fam!.typeOfZmodnZObj, [ residue mod Fam!.modulus ] );
     end );
 
 InstallOtherMethod( ZmodnZObj,
@@ -72,7 +72,7 @@ InstallOtherMethod( ZmodnZObj,
     true,
     [ IsFFEFamily, IsInt ], 0,
     function( Fam, residue )
-    return Objectify( Fam!.kindOfZmodnZObj,
+    return Objectify( Fam!.typeOfZmodnZObj,
                       [ residue mod Characteristic( Fam ) ] );
     end );
 
@@ -112,7 +112,7 @@ InstallMethod( PrintObj,
     true,
     [ IsZmodnZObj and IsModulusRep ], 0,
     function( x )
-    Print( "ZmodnZObj( ", x![1], ", ", DataKind( KindObj( x ) ), " )" );
+    Print( "ZmodnZObj( ", x![1], ", ", DataType( TypeObj( x ) ), " )" );
     end );
 
 InstallMethod( PrintObj,
@@ -220,8 +220,8 @@ InstallMethod( \+,
     IsIdentical,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                      [ ( x![1] + y![1] ) mod DataKind( KindObj( x ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                      [ ( x![1] + y![1] ) mod DataType( TypeObj( x ) ) ] );
     end );
 
 InstallMethod( \+,
@@ -229,8 +229,8 @@ InstallMethod( \+,
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, y )
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                      [ ( x![1] + y ) mod DataKind( KindObj( x ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                      [ ( x![1] + y ) mod DataType( TypeObj( x ) ) ] );
     end );
 
 InstallMethod( \+,
@@ -238,8 +238,8 @@ InstallMethod( \+,
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
-    return Objectify( KindObj( y )![ ZNZ_PURE_KIND ],
-                      [ ( x + y![1] ) mod DataKind( KindObj( y ) ) ] );
+    return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                      [ ( x + y![1] ) mod DataType( TypeObj( y ) ) ] );
     end );
 
 InstallMethod( \+,
@@ -259,8 +259,8 @@ InstallMethod( \-,
     IsIdentical,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                      [ ( x![1] - y![1] ) mod DataKind( KindObj( x ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                      [ ( x![1] - y![1] ) mod DataType( TypeObj( x ) ) ] );
     end );
 
 InstallMethod( \-,
@@ -268,8 +268,8 @@ InstallMethod( \-,
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, y )
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                      [ ( x![1] - y ) mod DataKind( KindObj( x ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                      [ ( x![1] - y ) mod DataType( TypeObj( x ) ) ] );
     end );
 
 InstallMethod( \-,
@@ -277,8 +277,8 @@ InstallMethod( \-,
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
-    return Objectify( KindObj( y )![ ZNZ_PURE_KIND ],
-                      [ ( x - y![1] ) mod DataKind( KindObj( y ) ) ] );
+    return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                      [ ( x - y![1] ) mod DataType( TypeObj( y ) ) ] );
     end );
 
 InstallMethod( \-,
@@ -298,8 +298,8 @@ InstallMethod( \*,
     IsIdentical,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                      [ ( x![1] * y![1] ) mod DataKind( KindObj( x ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                      [ ( x![1] * y![1] ) mod DataType( TypeObj( x ) ) ] );
     end );
 
 InstallMethod( \*,
@@ -307,8 +307,8 @@ InstallMethod( \*,
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, y )
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                      [ ( x![1] * y ) mod DataKind( KindObj( x ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                      [ ( x![1] * y ) mod DataType( TypeObj( x ) ) ] );
     end );
 
 InstallMethod( \*,
@@ -316,8 +316,8 @@ InstallMethod( \*,
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
-    return Objectify( KindObj( y )![ ZNZ_PURE_KIND ],
-                      [ ( x * y![1] ) mod DataKind( KindObj( y ) ) ] );
+    return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                      [ ( x * y![1] ) mod DataType( TypeObj( y ) ) ] );
     end );
 
 InstallMethod( \*,
@@ -338,8 +338,8 @@ InstallMethod( \/,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
     # Avoid to touch the rational arithmetics.
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                 [ QuotientMod( x![1], y![1], DataKind( KindObj( x ) ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                 [ QuotientMod( x![1], y![1], DataType( TypeObj( x ) ) ) ] );
     end );
 
 InstallMethod( \/,
@@ -348,8 +348,8 @@ InstallMethod( \/,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, y )
     # Avoid to touch the rational arithmetics.
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                     [ QuotientMod( x![1], y, DataKind( KindObj( x ) ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                     [ QuotientMod( x![1], y, DataType( TypeObj( x ) ) ) ] );
     end );
 
 InstallMethod( \/,
@@ -358,8 +358,8 @@ InstallMethod( \/,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
     # Avoid to touch the rational arithmetics.
-    return Objectify( KindObj( y )![ ZNZ_PURE_KIND ],
-                     [ QuotientMod( x, y![1], DataKind( KindObj( y ) ) ) ] );
+    return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                     [ QuotientMod( x, y![1], DataType( TypeObj( y ) ) ) ] );
     end );
 
 InstallMethod( \/,
@@ -379,8 +379,8 @@ InstallMethod( \^,
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, n )
-    return Objectify( KindObj( x )![ ZNZ_PURE_KIND ],
-                  [ PowerModInt( x![1], n, DataKind( KindObj( x ) ) ) ] );
+    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                  [ PowerModInt( x![1], n, DataType( TypeObj( x ) ) ) ] );
     end );
 
 
@@ -558,7 +558,7 @@ InstallMethod( Units,
 ##
 IsZmodnZEnumeratorRep := NewRepresentation( "ZmodnZEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
-    [ "size", "kind" ] );
+    [ "size", "type" ] );
 
 
 #############################################################################
@@ -571,7 +571,7 @@ InstallMethod( \[\],
     [ IsList and IsZmodnZEnumeratorRep, IsPosRat and IsInt ], 0,
     function( enum, nr )
     if nr <= enum!.size then
-      return Objectify( enum!.kind, [ nr - 1 ] );
+      return Objectify( enum!.type, [ nr - 1 ] );
     else
       Error( "<nr> is too large" );
     fi;
@@ -595,13 +595,13 @@ InstallMethod( Enumerator,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
     function( R )
     local enum;
-    enum:= Objectify( NewKind( FamilyObj( R ),
+    enum:= Objectify( NewType( FamilyObj( R ),
                                    IsList
                                and IsSSortedList
                                and IsZmodnZEnumeratorRep ),
                 rec(
                      size:= Size( R ),
-                     kind:= ElementsFamily( FamilyObj( R ) )!.kindOfZmodnZObj
+                     type:= ElementsFamily( FamilyObj( R ) )!.typeOfZmodnZObj
                     ) );
     SetUnderlyingCollection( enum, R );
     return enum;
@@ -694,11 +694,11 @@ ZmodnZ := function( n )
       # Install the data.
       F!.modulus:= n;
 
-      # Store the objects kind.
-      F!.kindOfZmodnZObj:= NewKind( F,     IsZmodnZObjNonprime
+      # Store the objects type.
+      F!.typeOfZmodnZObj:= NewType( F,     IsZmodnZObjNonprime
                                        and IsModulusRep );
-      SetDataKind( F!.kindOfZmodnZObj, n );
-      F!.kindOfZmodnZObj![ ZNZ_PURE_KIND ]:= F!.kindOfZmodnZObj;
+      SetDataType( F!.typeOfZmodnZObj, n );
+      F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
 
       # Make the domain.
       R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );

@@ -143,7 +143,7 @@ function( filter, imp, efam, pcs )
     fam := CollectionsFamily(efam);
 
     # convert record into component object
-    Objectify( NewKind( fam, filter and imp ), pcgs );
+    Objectify( NewType( fam, filter and imp ), pcgs );
 
     # set a one
     if HasOne(efam)  then
@@ -854,13 +854,13 @@ end );
 #M  GroupByPcgs( <pcgs> )
 ##
 GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
-    local   f,  e,  m,  i,  kind,  s,  id,  tmp,  j;
+    local   f,  e,  m,  i,  type,  s,  id,  tmp,  j;
 
     # construct a new free group
     f := FreeGroup( Length(pcgs) );
     e := ElementsFamily( FamilyObj(f) );
 
-    # and a default kind
+    # and a default type
     if 0 = Length(pcgs)  then
         m := 1;
     else
@@ -870,7 +870,7 @@ GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
     while i < 4 and e!.expBitsInfo[i] <= m  do
         i := i + 1;
     od;
-    kind := e!.kinds[i];
+    type := e!.types[i];
 
     # and use a single collector
     s := SingleCollector( f, RelativeOrders(pcgs) );
@@ -881,7 +881,7 @@ GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
         tmp := pcgs[i]^RelativeOrderOfPcElement(pcgs,pcgs[i]);
         if tmp <> id  then
             tmp := ExponentsOfPcElement( pcgs, tmp );
-            tmp := ObjByVector( kind, tmp );
+            tmp := ObjByVector( type, tmp );
             SetPowerNC( s, i, tmp );
         fi;
     od;
@@ -892,7 +892,7 @@ GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
             tmp := pcgs[j] ^ pcgs[i];
             if tmp <> id  then
                 tmp := ExponentsOfPcElement( pcgs, tmp );
-                tmp := ObjByVector( kind, tmp );
+                tmp := ObjByVector( type, tmp );
                 SetConjugateNC( s, j, i, tmp );
             fi;
         od;
@@ -960,7 +960,7 @@ InstallMethod( EnumeratorByPcgs,
 
 function( pcgs )
     return Objectify(
-        NewKind( FamilyObj(pcgs), IsEnumerator and IsEnumeratorByPcgsRep ),
+        NewType( FamilyObj(pcgs), IsEnumerator and IsEnumeratorByPcgsRep ),
         rec( pcgs := pcgs, sublist := [ 1 .. Length(pcgs) ],
              relativeOrders := RelativeOrders(pcgs),
              complementList := [] ) );
@@ -979,7 +979,7 @@ InstallOtherMethod( EnumeratorByPcgs,
 
 function( pcgs, sublist )
     return Objectify(
-        NewKind( FamilyObj(pcgs), IsEnumerator and IsEnumeratorByPcgsRep ),
+        NewType( FamilyObj(pcgs), IsEnumerator and IsEnumeratorByPcgsRep ),
         rec( pcgs := pcgs, sublist := sublist,
              relativeOrders := RelativeOrders(pcgs),
              complementList := Difference([1..Length(pcgs)],sublist) ) );

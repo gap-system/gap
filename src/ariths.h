@@ -57,10 +57,10 @@ typedef Obj     (* ArithMethod2) ( Obj opL, Obj opR );
 */
 #define EQ(opL,opR)     ((opL) == (opR) || \
                          (!ARE_INTOBJS(opL,opR) && \
-                          (*EqFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR)))
+                          (*EqFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR)))
 
 #define EQ2(opL,opR)    ((opL) == (opR) || \
-                          (*EqFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+                          (*EqFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj EqOper;
 
@@ -69,7 +69,7 @@ extern Obj EqOper;
 **
 *V  EqFuncs[<typeL>][<typeR>] . . . . . . . . . . table of comparison methods
 */
-extern CompaMethod EqFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern CompaMethod EqFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -89,10 +89,10 @@ extern void InstallEqObject ( Int );
 */
 #define LT(opL,opR)     ((opL) == (opR) ? 0 : \
                          (ARE_INTOBJS(opL,opR) ? (Int)(opL) < (Int)(opR) : \
-                          (*LtFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR)))
+                          (*LtFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR)))
 
 #define LT2(opL,opR)    ((opL) == (opR) ? 0 : \
-                          (*LtFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+                          (*LtFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj LtOper;
 
@@ -101,7 +101,7 @@ extern Obj LtOper;
 **
 *V  LtFuncs[<typeL>][<typeR>] . . . . . . . . . . table of comparison methods
 */
-extern CompaMethod LtFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern CompaMethod LtFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -119,7 +119,7 @@ extern void InstallLtObject ( Int );
 **  'IN' returns a nonzero   value if the object  <opL>  is a member  of  the
 **  object <opR>, and zero otherwise.
 */
-#define IN(opL,opR)     ((*InFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define IN(opL,opR)     ((*InFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj InOper;
 
@@ -128,7 +128,7 @@ extern Obj InOper;
 **
 *V  InFuncs[<typeL>][<typeR>] . . . . . . . . . . table of membership methods
 */
-extern CompaMethod InFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern CompaMethod InFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -151,7 +151,7 @@ extern void InstallInObject ( Int );
 **        || ! SUM_INTOBJS( <res>, <opL>, <opR> ) )
 **          <res> = SUM( <opL>, <opR> );
 */
-#define SUM(opL,opR)    ((*SumFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define SUM(opL,opR)    ((*SumFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj SumOper;
 
@@ -160,7 +160,7 @@ extern Obj SumOper;
 **
 *V  SumFuncs[<typeL>][<typeR>]  . . . . . . . . . . . .  table of sum methods
 */
-extern ArithMethod2 SumFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern ArithMethod2 SumFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -177,7 +177,7 @@ extern void InstallSumObject ( Int );
 **
 **  'ZERO' returns the zero of the object <op>.
 */
-#define ZERO(op)        ((*ZeroFuncs[TYPE_OBJ(op)])(op))
+#define ZERO(op)        ((*ZeroFuncs[TNUM_OBJ(op)])(op))
 
 extern Obj ZeroAttr;
 
@@ -186,7 +186,7 @@ extern Obj ZeroAttr;
 **
 *V  ZeroFuncs[<type>] . . . . . . . . . . . . . . . . . table of zero methods
 */
-extern ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TYPE+1];
+extern ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -203,7 +203,7 @@ extern void InstallZeroObject ( Int );
 **
 **  'AINV' returns the additive inverse of the object <op>.
 */
-#define AINV(op)        ((*AInvFuncs[TYPE_OBJ(op)])(op))
+#define AINV(op)        ((*AInvFuncs[TNUM_OBJ(op)])(op))
 
 extern Obj AInvAttr;
 
@@ -212,7 +212,7 @@ extern Obj AInvAttr;
 **
 *V  AInvFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
 */
-extern ArithMethod1 AInvFuncs [LAST_VIRTUAL_TYPE+1];
+extern ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -235,7 +235,7 @@ extern void InstallAinvObject ( Int );
 **        || ! DIFF_INTOBJS( <res>, <opL>, <opR> ) )
 **          <res> = DIFF( <opL>, <opR> );
 */
-#define DIFF(opL,opR)   ((*DiffFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define DIFF(opL,opR)   ((*DiffFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj DiffOper;
 
@@ -244,7 +244,7 @@ extern Obj DiffOper;
 **
 *V  DiffFuncs[<typeL>][<typeR>] . . . . . . . . . table of difference methods
 */
-extern ArithMethod2 DiffFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern ArithMethod2 DiffFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -267,7 +267,7 @@ extern void InstallDiffObject ( Int );
 **        || ! PROD_INTOBJS( <res>, <opL>, <opR> ) )
 **          <res> = PROD( <opL>, <opR> );
 */
-#define PROD(opL,opR)   ((*ProdFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define PROD(opL,opR)   ((*ProdFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj ProdOper;
 
@@ -276,7 +276,7 @@ extern Obj ProdOper;
 **
 *V  ProdFuncs[<typeL>][<typeR>] . . . . . . . . . .  table of product methods
 */
-extern  ArithMethod2    ProdFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern  ArithMethod2    ProdFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -293,7 +293,7 @@ extern void InstallProdObject ( Int );
 **
 **  'ONE' returns the one of the object <op>.
 */
-#define ONE(op)         ((*OneFuncs[TYPE_OBJ(op)])(op))
+#define ONE(op)         ((*OneFuncs[TNUM_OBJ(op)])(op))
 
 extern Obj OneAttr;
 
@@ -302,7 +302,7 @@ extern Obj OneAttr;
 **
 *V  OneFuncs[<type>]  . . . . . . . . . . . . . . . . .  table of one methods
 */
-extern ArithMethod1 OneFuncs [LAST_VIRTUAL_TYPE+1];
+extern ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -319,7 +319,7 @@ extern void InstallOneObject ( Int );
 **
 **  'INV' returns the multiplicative inverse of the object <op>.
 */
-#define INV(op)         ((*InvFuncs[TYPE_OBJ(op)])(op))
+#define INV(op)         ((*InvFuncs[TNUM_OBJ(op)])(op))
 
 extern Obj InvAttr;
 
@@ -328,7 +328,7 @@ extern Obj InvAttr;
 **
 *V  InvFuncs[<type>]  . . . . . . . . . . . . . .  table of inverse functions
 */
-extern ArithMethod1 InvFuncs [LAST_VIRTUAL_TYPE+1];
+extern ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -345,7 +345,7 @@ extern void InstallInvObject ( Int );
 **
 **  'QUO' returns the quotient of the object <opL> by the object <opR>.
 */
-#define QUO(opL,opR)    ((*QuoFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define QUO(opL,opR)    ((*QuoFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj QuoOper;
 
@@ -354,7 +354,7 @@ extern Obj QuoOper;
 **
 *V  QuoFuncs[<typeL>][<typeR>]  . . . . . . . . . . table of quotient methods
 */
-extern ArithMethod2 QuoFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern ArithMethod2 QuoFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -371,7 +371,7 @@ extern void InstallQuoObject ( Int );
 **
 **  'LQUO' returns the left quotient of the object <opL> by the object <opR>.
 */
-#define LQUO(opL,opR)   ((*LQuoFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define LQUO(opL,opR)   ((*LQuoFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj LQuoOper;
 
@@ -380,7 +380,7 @@ extern Obj LQuoOper;
 **
 *V  LQuoFuncs[<typeL>][<typeR>] . . . . . . .  table of left quotient methods
 */
-extern ArithMethod2 LQuoFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern ArithMethod2 LQuoFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -397,7 +397,7 @@ extern void InstallLQuoObject ( Int );
 **
 **  'POW' returns the power of the object <opL> by the object <opL>.
 */
-#define POW(opL,opR)    ((*PowFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define POW(opL,opR)    ((*PowFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj PowOper;
 
@@ -408,7 +408,7 @@ extern Obj PowDefault ( Obj opL, Obj opR );
 **
 *V  PowFuncs[<typeL>][<typeR>]  . . . . . . . . . . .  table of power methods
 */
-extern ArithMethod2 PowFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern ArithMethod2 PowFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -425,7 +425,7 @@ extern void InstallPowObject ( Int );
 **
 **  'COMM' returns the commutator of the two objects <opL> and <opR>.
 */
-#define COMM(opL,opR)   ((*CommFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define COMM(opL,opR)   ((*CommFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj CommOper;
 
@@ -434,7 +434,7 @@ extern Obj CommOper;
 **
 *V  CommFuncs[<typeL>][<typeR>] . . . . . . . . . table of commutator methods
 */
-extern ArithMethod2 CommFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern ArithMethod2 CommFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************
@@ -451,7 +451,7 @@ extern void InstallCommObject ( Int );
 **
 **  'MOD' returns the remainder of the object <opL> by the object <opR>.
 */
-#define MOD(opL,opR)    ((*ModFuncs[TYPE_OBJ(opL)][TYPE_OBJ(opR)])(opL,opR))
+#define MOD(opL,opR)    ((*ModFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
 extern Obj ModOper;
 
@@ -460,7 +460,7 @@ extern Obj ModOper;
 **
 *V  ModFuncs[<typeL>][<typeR>]  . . . . . . . . .  table of remainder methods
 */
-extern ArithMethod2 ModFuncs [LAST_VIRTUAL_TYPE+1][LAST_VIRTUAL_TYPE+1];
+extern ArithMethod2 ModFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
 
 
 /****************************************************************************

@@ -1110,9 +1110,20 @@ IsomorphismTypeFiniteSimpleGroup := NewOperationArgs(
 
 #############################################################################
 ##
-#F  FreeGroup( <rank> ) . . . . . . . . . . . . . .  free group of given rank
+#F  FreeGroup( <rank> )
 #F  FreeGroup( <rank>, <name> )
 #F  FreeGroup( <name1>, <name2>, ... )
+#F  FreeGroup( <names> )
+##
+##  Called in the first form, 'FreeGroup' returns a free group on
+##  <rank> generators.
+##  Called in the second form, 'FreeGroup' returns a free group on
+##  <rank> generators, printed as '<name>1', '<name>2' etc.
+##  Called in the third form, 'FreeGroup' returns a free group on
+##  as many generators as arguments, printed as <name1>, <name2> etc.
+##  Called in the fourth form, 'FreeGroup' returns a free group on
+##  as many generators as the length of the list <names>, the $i$-th
+##  generator being printed as '<names>[$i$]'.
 ##
 FreeGroup := NewOperationArgs( "FreeGroup" );
 

@@ -151,6 +151,13 @@ RecFields := RecNames;
 
 #############################################################################
 ##
+#F  TestCharTable( <tbl> )
+##
+TestCharTable := IsInternallyConsistent;
+
+
+#############################################################################
+##
 #F  Sublist( <list>, <list> ) . . . . . . . . . . .  extract a part of a list
 ##
 Sublist := ELMS_LIST;
@@ -165,17 +172,8 @@ Sublist := ELMS_LIST;
 
 #############################################################################
 ##
-#M  Order( <D>, <elm> ) . . . . . . . . . . . . . . two argument order method
-##
-InstallOtherMethod( Order, true, [ IsObject, IsObject ], 0,
-    function( D, elm )
-    return Order( elm );
-    end );
-
-
-#############################################################################
-##
 #M  List( <obj> ) . . . . . . . . . . . . . . . . . . . . . convert to a list
+#M  List( <perm> )  . . . . . . . . . . . . . . . . . . . . convert to a list
 ##
 ##  In this version, <obj> may be a list, or a permutation, or any
 ##  object for that a method for 'List' is installed.
@@ -183,18 +181,44 @@ InstallOtherMethod( Order, true, [ IsObject, IsObject ], 0,
 ##  (Note the different behaviour in {\GAP-3} if the argument is a string;
 ##  but fortunately this was never documented.)
 ##
-InstallOtherMethod( List, true, [ IsList ], SUM_FLAGS, IdFunc );
+InstallOtherMethod( List,
+    "method for a list (compatibility mode)",
+    true,
+    [ IsList ], SUM_FLAGS,
+    IdFunc );
 
-InstallOtherMethod( List, true, [ IsPerm ], SUM_FLAGS,
-    function( perm )
-    local lst, i;
-    lst:= [];
-    for i in [ 1 .. LargestMovedPointPerm( perm ) ] do
-      lst[i]:= i ^ perm;
-    od;
-    return lst;
+InstallOtherMethod( List,
+    "method for a permutation (compatibility mode)",
+    true,
+    [ IsPerm ], SUM_FLAGS,
+    ListPerm );
+
+
+#############################################################################
+##
+#M  Order( <D>, <elm> ) . . . . . . . . . . . . . . two argument order method
+##
+InstallOtherMethod( Order,
+    "two argument version (compatibility mode)",
+    true,
+    [ IsObject, IsObject ], 0,
+    function( D, elm )
+    return Order( elm );
     end );
 
+
+#############################################################################
+##
+#M  PermutationCharacter( <P> ) . . . . . . . . . . . for a permutation group
+##
+##  Note that the manual of {\GAP-3} did *not* require <P> to be transitive,
+##  although the text presupposed this.
+##
+InstallOtherMethod( PermutationCharacter,
+    "method for a permutation group (compatibility mode)",
+    true,
+    [ IsPermGroup ], 0,
+    NaturalCharacter );
 
 
 #############################################################################
@@ -239,6 +263,23 @@ CartesianProduct := function ( arg )
 
     # make the cartesian product
     return Cartesian( arg );
+end;
+
+
+#############################################################################
+##
+#F  Domain( <list> )
+##
+##  We must forbid calling 'Domain'.
+##  In {\GAP}-3, it was used as an oracle in the construction of domains,
+##  it returned for example 'FiniteFieldMatrices' or 'Permutations'.
+##
+##  In {\GAP}-4, the various aspects of information to create domains is
+##  encoded in families, categories, representations, and properties.
+##  
+Domain := function( arg )
+    Error( "this function is not available in GAP 4\n",
+           "because the domain construction mechanism has changed" );
 end;
 
 
@@ -417,6 +458,22 @@ InstallMethod( Generators, true, [ IsAlgebraWithOne ], 0,
 
 #############################################################################
 ##
+#F  InitClassesCharTable( <tbl> )  . . initialize classes of character tables
+##
+InitClassesCharTable := function( tbl )
+    local initclasses;
+  # if not IsInt( tbl.centralizers[1] ) then return; fi; # generic tables
+    initclasses:= SizesConjugacyClasses( tbl );
+    if not ForAll( initclasses, IsInt ) then
+      Print( "#E InitClassesCharTable: not all centralizer orders divide",
+             " the group order\n" );
+    fi;
+    return initclasses;
+end;
+
+
+#############################################################################
+##
 #F  Lcm( [<R>,] <r1>, <r2>,.. ) .  least common multiple of two ring elements
 ##
 ##  Allow calls with arbitrarily many arguments.
@@ -494,6 +551,48 @@ NumberConjugacyClasses := function( arg )
       Error( "usage: NumberConjugacyClasses( [<U>, ]<H> )" );
     fi;
 
+end;
+
+
+#############################################################################
+##
+#F  PrintToCAS( <filename>, <tbl> )
+#F  PrintToCAS( <tbl>, <filename> )
+##
+##  prints a CAS library table of the GAP table <tbl> to the file <filename>,
+##  with linelength 'SizeScreen()[1]'.
+##
+PrintToCAS := function( filename, tbl )
+
+    # Allow both successions of arguments.
+    if IsString( tbl ) then
+      PrintTo( tbl, CASString( filename ) );
+    else
+      PrintTo( filename, CASString( tbl ) );
+    fi;
+end;
+
+
+#############################################################################
+##
+#F  SortCharactersCharTable( <arg> )
+#F  SortClassesCharTable( <arg> )
+#F  SortCharTable( <arg> )
+##
+SortCharactersCharTable := function( arg )
+    Error( "character tables must not be sorted in GAP 4,",
+           "please use `CharacterTableWithSortedCharacters' or ",
+           "`SortedCharacters' instead" );
+end;
+
+SortClassesCharTable := function( arg )
+    Error( "character tables must not be sorted in GAP 4,",
+           "please use `CharacterTableWithSortedClasses' instead" );
+end;
+
+SortCharTable := function( arg )
+    Error( "character tables must not be sorted in GAP 4,",
+           "please use `SortedCharacterTable' instead" );
 end;
 
 

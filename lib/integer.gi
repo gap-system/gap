@@ -20,7 +20,7 @@ Revision.integer_gi :=
 
 #V  Integers  . . . . . . . . . . . . . . . . . . . . .  ring of the integers
 ##
-Integers := Objectify( NewKind( CollectionsFamily( CyclotomicsFamily ),
+Integers := Objectify( NewType( CollectionsFamily( CyclotomicsFamily ),
     IsIntegers and IsAttributeStoringRep ),
     rec() );
 
@@ -37,7 +37,7 @@ SetUnits( Integers, [ -1, 1 ] );
 ##
 #V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
 ##
-GaussianIntegers := Objectify( NewKind( CollectionsFamily(CyclotomicsFamily),
+GaussianIntegers := Objectify( NewType( CollectionsFamily(CyclotomicsFamily),
     IsGaussianIntegers and IsAttributeStoringRep ),
     rec() );
 
@@ -80,7 +80,7 @@ InstallMethod( CanonicalBasis,
     true, [ IsIntegers ], 0,
     function( Integers )
     local B;
-    B:= Objectify( NewKind( FamilyObj( Integers ),
+    B:= Objectify( NewType( FamilyObj( Integers ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsCanonicalBasisIntegersRep ),
@@ -845,7 +845,7 @@ IsIntegersEnumerator := NewRepresentation( "IsIntegersEnumerator",
 InstallMethod( Enumerator, true, [ IsIntegers ], 0,
     function( Integers )
     local enum;
-    enum:= Objectify( NewKind( FamilyObj( Integers ), IsIntegersEnumerator ),
+    enum:= Objectify( NewType( FamilyObj( Integers ), IsIntegersEnumerator ),
                       rec() );
     SetUnderlyingCollection( enum, Integers );
     return enum;
@@ -1022,7 +1022,7 @@ IsIntegersIterator := NewRepresentation( "IsIntegersIterator",
 
 InstallMethod( Iterator, true, [ IsIntegers ], 0,
     function( Integers )
-    return Objectify( NewKind( IteratorsFamily, IsIntegersIterator ),
+    return Objectify( NewType( IteratorsFamily, IsIntegersIterator ),
                       rec(
                            structure := Integers,
                            counter   := 0         ) );

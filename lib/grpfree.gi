@@ -102,7 +102,7 @@ InstallMethod( Iterator,
     "method for a free group",
     true,
     [ IsAssocWordWithInverseCollection and IsWholeFamily ], 0,
-    G -> Objectify( NewKind( IteratorsFamily, IsFreeGroupIterator ),
+    G -> Objectify( NewType( IteratorsFamily, IsFreeGroupIterator ),
                     rec(
                          family         := ElementsFamily( FamilyObj( G ) ),
                          nrgenerators   := Length( GeneratorsOfGroup( G ) ),
@@ -306,7 +306,7 @@ InstallMethod( Enumerator,
 #T generalize!
     function( G )
     local enum;
-    enum:= Objectify( NewKind( FamilyObj( G ), IsFreeGroupEnumerator ),
+    enum:= Objectify( NewType( FamilyObj( G ), IsFreeGroupEnumerator ),
                     rec( family        := ElementsFamily( FamilyObj( G ) ),
                          nrgenerators  := Length( GeneratorsOfGroup( G ) ) )
                      );
@@ -421,6 +421,7 @@ InstallMethod( GeneratorsMagmaFamily,
 #F  FreeGroup( <rank> ) . . . . . . . . . . . . . .  free group of given rank
 #F  FreeGroup( <rank>, <name> )
 #F  FreeGroup( <name1>, <name2>, ... )
+#F  FreeGroup( <names> )
 ##
 FreeGroup := function ( arg )
 
@@ -429,7 +430,11 @@ FreeGroup := function ( arg )
             G;          # free group, result
 
     # Get and check the argument list, and construct names if necessary.
-    if Length( arg ) = 1 and IsInt( arg[1] ) and 0 <= arg[1] then
+    if   Length( arg ) = 1 and arg[1] = infinity then
+      names:= InfiniteListOfNames( "f." );
+    elif Length( arg ) = 2 and arg[1] = infinity then
+      names:= InfiniteListOfNames( arg[2] );
+    elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 <= arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( "f.", String(i) ) );
     elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 <= arg[1] then
@@ -446,16 +451,18 @@ FreeGroup := function ( arg )
     # Construct the family of element objects of our group.
     F:= NewFamily( "FreeGroupElementsFamily", IsAssocWordWithInverse );
 
-    # Install the data (names, no. of bits available for exponents, kinds).
+    # Install the data (names, no. of bits available for exponents, types).
     StoreInfoFreeMagma( F, names, IsAssocWordWithInverse );
 
     # Make the group.
     if IsEmpty( names ) then
       G:= GroupByGenerators( [], One( F ) );
-    else
+    elif IsFinite( names ) then
       G:= GroupByGenerators( List( [ 1 .. Length( names ) ],
                      i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
-
+    else
+      G:= GroupByGenerators( InfiniteListOfGenerators( F ) );
+      SetIsFinitelyGeneratedGroup( G, false );
     fi;
 
     SetIsWholeFamily( G, true );

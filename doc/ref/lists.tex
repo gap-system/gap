@@ -1,0 +1,167 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Lists and Sets}
+
+Modern mathematics, especially algebra, is based on set theory. When sets
+are represented in a computer, they inadvertently turn into lists. That's
+why we start our  survey of the various  objects {\GAP} can handle with a
+description of  lists  and their  manipulation. {\GAP}  regards sets as a
+special kind of lists, namely  as lists without  holes or duplicates, and
+whose entries are ordered with respect to the precedence relation~`\<'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lists and list objects}\null
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Basic list operations}
+
+\>Length( <list> )
+\>IsBound( <list>[ <pos> ] )
+\>`<list>[ <pos> ]'{list element access}
+
+What is a _list_ in  {\GAP} may mathematically be  regarded as a function
+<list> defined on  a subset of the  natural numbers which takes as values
+{\GAP} objects. The highest number for which this  function is defined is
+called the `Length' of the list. More  generally, `IsBound( <list>[ <pos>
+] )' returns `true' if <list> is defined on the number  <pos>, and if so,
+`<list>[ <pos> ]'  returns its value on this  number. These are the three
+basic operations that must be implemented for any list. They allow access
+to the entries of a list, but they do not allow changes to the list.
+
+If you  want to  install your  own  methods for  the operation  `IsBound(
+<list>[  <pos>  ] )', you   have to specify this   operation  as a {\GAP}
+object, i.e., you  want to know  a  name for  it: It  is  assigned to the
+variable `IsBound\\[\\]', which you can,  e.g., pass to  `InstallMethod'.
+In other words,  `IsBound\\[\\]( <list>,  <pos>  )' is the function  call
+equivalent  to the (more  elegant) syntactic expression `IsBound( <list>[
+<pos> ]  )'.  Similarly, the operation   for `<list>[ <pos> ]'  is called
+`\\[\\]'.
+
+\>`<elm> in <list>'{membership test}!{for lists}
+\>Position( <list>, <elm> \[, <after> \] )
+\>`<list>\{ <poss> \}'{sublist access}
+
+`<elm> in <list>' returns `true' if <elm> is equal to  one of the entries
+of  <list>, and `false'  otherwise. `Position( <list>,  <elm>, <after> )'
+returns the first position $pos  > after$  such  that `<list>[ <pos> ]  =
+<elm>', and `false' if  there is no  such  position. If a third  argument
+<after> is  not given, it is  set to 0, i.e.  the whole list is searched.
+Finally, in  the construct `<list>\{  <poss> \}',  <poss> must  be a list
+without holes, this makes a  list as long as <poss>  whose <i>th entry is
+`<list>[ <poss>[ <i> ] ]'.
+
+These  functions  are automatically  manufactured    from the basic  list
+operations   above.  The  operation  `<list>\{    <poss>  \}' is   called
+`\\\{\\\}'.
+
+\>Unbind( <list>[ <pos> ] )
+\>`<list>[ <pos> ] := <elm>'{list element assignment}
+\>`<list>\{ <poss> \} := <sublist>'{sublist assignment}
+
+These   operations modify a  given  list.  `Unbind'  removes an entry and
+decreases  the `Length' of the list  if it was  the  last entry. `<list>[
+<pos> ]  := <elm>' sets an  entry  and `<list>\{ <poss> \}  := <sublist>'
+sets a whole sublist  (of course <poss> and <sublist>  must have the same
+length). This latter operation is automatically manufactured from the one
+before  which sets a  single entry.  If  you  perform such an  assignment
+operation and type  the left hand side of  the assignment afterwards, you
+will get the right hand side as result.
+
+These     operations      are    called   `Unbind\\[\\]',  `\\[\\]\\:\\='
+resp.~`\\\{\\\}\\:\\='.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsList and Enumerators}\null
+
+\>AsList( <D> )
+
+`AsList( <D> )' constructs a {\GAP} object that represents a domain as if
+it  were a list  of its elements. Note that  we say ``a list'', not ``the
+list'' because there are many ways of ordering  the elements and, indeed,
+{\GAP} does not guarantee anything about the  ordering it chooses. If you
+say `$list_1$ :=  AsList( $D_1$ );'  and `$list_2$  := AsList( $D_2$  );'
+then even if `$D_1$ = $D_2$', the  orderings of $list_1$ and $list_2$ may
+be different, and consequently you may have `$list_1$ <> $list_2$'. After
+all, $D_1$ may be represented differently than $D_2$ and the `AsList' may
+be constructed   depending  on the   representation.   (Even if you   say
+`$list_3$ := AsList(  $D_1$ );' again  later,  you may have `$list_3$  <>
+$list_1$'.)
+
+Objects constructed by  `AsList' behave like lists, so   you can use  the
+three basic list operations `Length', `IsBound' and `[  ]' with them. The
+sublist operator `<list>\{ <poss>  \}' is also  available, it is normally
+just  manufactured from the  `[  ]' operator.  The  time needed  by these
+operations  should not depend on  the length of the  list, but the memory
+needed should grow proportionally  to   the length,  as should  the  time
+needed by `Position'. This  is just as it is  with ordinary lists, but it
+is not always  what you want. To   make these operations  space efficient
+rather  than time efficient, and to  make `Position' more time efficient,
+it  is  necessary    to overlay the  generic   methods   by  more special
+algorithms,  which    will  generally   require   a   different  internal
+representation of the object  <list>. To emphasize this distinction, such
+space  efficient objects are not  constructed by `AsList', but instead by
+the operation `Enumerator'.
+
+\>Enumerator( <D> )
+
+An _enumerator_ is a {\GAP} object that represents  a collection as if it
+were a list of its elements; just like an object constructed by `AsList'.
+The  remarks  made  at  the  beginning  of  that  section   also apply to
+enumerators,  and the only    difference is  that enumerators  are  space
+efficient  rather than  time    efficient. Again  you can  use   the list
+operations like `<enum>[ <pos> ]'  and `Position', but you cannot  assign
+to single positions or  to sublists of enumerators,  nor can you `Unbind'
+elements.
+
+\>PositionCanonical( <enum>, <elm> )
+
+`PositionCanonical( <enum>,  <elm> )'  works  basically  like  `Position(
+<enum>, <elm>  )', but there  can be a  difference in the  behaviour when
+<enum> is  not a plain list  but a specially-constructed enumerator. Such
+enumerators  are   often used  to   enumerate domains  whose elements are
+mathematically defined as equivalence classes   of other elements. As  an
+example, take a projective space  (see "ProjectiveSpace"), whose elements
+can be defined     as  equivalence  classes  of  vectors    under  scalar
+transformations.  The     following   {\GAP}   commands    construct  the
+three-dimensional projective space over the field with three elements.
+\begintt
+    gap> vec := GF(3)^4;;  pro := ProjectiveSpace( vec );
+    ProjectiveSpace( ( GF(3)^4 ) )
+    gap> enum := Enumerator( vec );
+    <enumerator of ProjectiveSpace( ( GF(3)^4 ) )>
+\endtt
+Mathematically  the elements  of `pro'   are  equivalence classes  of two
+non-zero vectors from `vec' each, but {\GAP} represents such a class by a
+canonical  (i.e. here, left-normed)  representative.   This is what   the
+enumerator returns when you ask for `enum[ <pos> ]'.
+\begintt
+    gap> enum{[3..4]};
+    [ [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0 ], [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3) ] ]
+\endtt
+On the other hand, if you want to  specify an element  of `pro', i.e., an
+equivalence class,  you can give either  of its elements;  and if you ask
+for  the   `PositionCanonical'  in  the   enumerator `enum',  {\GAP} will
+silently replace the element by the  canonical representative. This does,
+however, no  longer work, if you ask  for the `Position'  because in this
+case {\GAP} replaces `pro'  by the plain  list  of its elements  and does
+then no longer know that these elements form a projective space.
+\begintt
+    gap> v := [2,1,1,1]*Z(3)^0;;  PositionCanonical( enum, v );
+    40
+    gap> enum[40];
+    [ Z(3)^0, Z(3), Z(3), Z(3) ]
+    gap> Position( enum, v );
+    fail
+\endtt
+This  manual always mentions explicitly when  such a silent conversion is
+done by an enumerator.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:             text
+% mode:             outline-minor
+% outline-regexp:   "\\\\Chapter\\|\\\\Section"
+% fill-column:      73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

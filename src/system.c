@@ -2220,12 +2220,12 @@ UInt SyIsIntr ( void )
 *f  SyIsIntr()  . . . . . . . . . . . . . . . . . . . . . . . . .  MS-DOS/TOS
 **
 **  In DOS we check the input queue to look for <ctr>-'C', chars read are put
-**  on the 'osTypeahead' buffer. The buffer is flushed if <ctr>-'C' is found.
+**  on the 'osTNumahead' buffer. The buffer is flushed if <ctr>-'C' is found.
 **  Actually with the current DOS extender we cannot trap  <ctr>-'C', because
 **  the DOS extender does so already, so be use <ctr>-'Z' and <alt>-'C'.
 **
 **  In TOS we check the input queue to look for <ctr>-'C', chars read are put
-**  on the 'osTypeahead' buffer. The buffer is flushed if <ctr>-'C' is found.
+**  on the 'osTNumahead' buffer. The buffer is flushed if <ctr>-'C' is found.
 **  There is however a problem, if 2 or  more characters are pending (that is
 **  waiting to be read by either 'SyIsIntr' or 'SyGetch') and the second is a
 **  <ctr>-'C', GAP will be killed when 'SyIsIntr' or  'syGetch' tries to read
@@ -2382,9 +2382,9 @@ UInt SyIsIntr ( void )
 
 #else
 
-#ifndef SYS_TYPES_H                     /* various types                   */
-# include       <Types.h>
-# define SYS_TYPES_H
+#ifndef SYS_TNUMS_H                     /* various types                   */
+# include       <TNums.h>
+# define SYS_TNUMS_H
 #endif
 
 #ifndef SYS_OSUTILS_H                   /* system utils:                   */
@@ -2482,9 +2482,9 @@ typedef SYS_SIG_T       sig_handler_t ( int );
 extern  sig_handler_t * signal ( int, sig_handler_t * );
 #endif
 
-#ifndef SYS_TYPES_H                     /* various types                   */
-# include       <Types.h>
-# define SYS_TYPES_H
+#ifndef SYS_TNUMS_H                     /* various types                   */
+# include       <TNums.h>
+# define SYS_TNUMS_H
 #endif
 
 #ifndef SYS_LOWMEM_H                    /* variables in low memory:        */
@@ -2794,7 +2794,7 @@ Char *          SyWinCmd (
 /****************************************************************************
 **
 
-*F  SyFindOrLinkGapRootFile( <filename>, <crc>, <res>, <len> ) 	 load or link
+*F  SyFindOrLinkGapRootFile( <filename>, <crc>, <res>, <len> )   load or link
 **
 **  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
 **  check  if   there is a corresponding    statically  or dynamically linked
@@ -2805,17 +2805,17 @@ Char *          SyWinCmd (
 
 /****************************************************************************
 **
-*f  SyFindOrLinkGapRootFile( <filename>, <crc>, <res>, <len> ) 	 BSD/Mach/USG
+*f  SyFindOrLinkGapRootFile( <filename>, <crc>, <res>, <len> )   BSD/Mach/USG
 */
 #if SYS_BSD || SYS_MACH || SYS_USG
 
 #include "compstat.h"
 
 Int SyFindOrLinkGapRootFile (
-    Char * 		filename,
+    Char *              filename,
     UInt4               crc_gap,
-    Char * 		result, 
-    Int 		len )
+    Char *              result, 
+    Int                 len )
 {
     UInt4               crc_dyn;
     UInt4               crc_sta;
@@ -2840,18 +2840,18 @@ Int SyFindOrLinkGapRootFile (
     result[0] = '\0';
     tmp = SyFindGapRootFile(filename);
     if ( tmp ) {
-	SyStrncat( result, tmp, len );
+        SyStrncat( result, tmp, len );
     }
     if ( result[0] ) {
-	if ( SyIsReadableFile(result) ) {
-	    found_gap = 1;
-	}
-	else {
-	    result[0] = '\0';
-	}
+        if ( SyIsReadableFile(result) ) {
+            found_gap = 1;
+        }
+        else {
+            result[0] = '\0';
+        }
     }
     if ( ! SyUseModule ) {
-	return ( found_gap ? 3 : 0 );
+        return ( found_gap ? 3 : 0 );
     }
 
     /* try to find any statically link module                              */
@@ -2859,15 +2859,15 @@ Int SyFindOrLinkGapRootFile (
     SyStrncat( module, "GAPROOT/", 8 );
     SyStrncat( module, filename, SyStrlen(filename) );
     for ( k = 0;  CompInitFuncs[k];  k++ ) {
-	info_sta = (*(CompInitFuncs[k]))();
-	if ( info_sta == 0 ) {
-	    continue;
-	}
-	if ( ! SyStrcmp( module, info_sta->magic2 ) ) {
-	    crc_sta   = info_sta->magic1;
-	    found_sta = 1;
-	    break;
-	}
+        info_sta = (*(CompInitFuncs[k]))();
+        if ( info_sta == 0 ) {
+            continue;
+        }
+        if ( ! SyStrcmp( module, info_sta->magic2 ) ) {
+            crc_sta   = info_sta->magic1;
+            found_sta = 1;
+            break;
+        }
     }
     
 
@@ -2877,76 +2877,76 @@ Int SyFindOrLinkGapRootFile (
     p   = filename + pos;
     dot = 0;
     while ( filename <= p && *p != '/' ) {
-	if ( *p == '.' ) {
-	    dot = p;
-	    pot = pos;
-	}
-	p--;
-	pos--;
+        if ( *p == '.' ) {
+            dot = p;
+            pot = pos;
+        }
+        p--;
+        pos--;
     }
     if ( dot ) {
-	module[0] = '\0';
-	SyStrncat( module, "bin/", 4 );
-	SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
-	SyStrncat( module, "/compiled/", 10 );
-	if ( p < filename ) {
-	    SyStrncat( module, dot+1, SyStrlen(dot+1) );
-	    SyStrncat( module, "/", 1 );
-	    SyStrncat( module, filename, pot );
-	    SyStrncat( module, ".so", 3 );
-	}
-	else {
-	    SyStrncat( module, filename, pos );
-	    SyStrncat( module, "/", 1 );
-	    SyStrncat( module, dot+1, SyStrlen(dot+1) );
-	    SyStrncat( module, filename+pos, pot-pos );
-	    SyStrncat( module, ".so", 3 );
-	}
+        module[0] = '\0';
+        SyStrncat( module, "bin/", 4 );
+        SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
+        SyStrncat( module, "/compiled/", 10 );
+        if ( p < filename ) {
+            SyStrncat( module, dot+1, SyStrlen(dot+1) );
+            SyStrncat( module, "/", 1 );
+            SyStrncat( module, filename, pot );
+            SyStrncat( module, ".so", 3 );
+        }
+        else {
+            SyStrncat( module, filename, pos );
+            SyStrncat( module, "/", 1 );
+            SyStrncat( module, dot+1, SyStrlen(dot+1) );
+            SyStrncat( module, filename+pos, pot-pos );
+            SyStrncat( module, ".so", 3 );
+        }
     }
     else {
-	module[0] = '\0';
-	SyStrncat( module, "bin/", 4 );
-	SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
-	SyStrncat( module, "/compiled/", 1 );
-	SyStrncat( module, filename, SyStrlen(filename) );
-	SyStrncat( module, ".so", 3 );
+        module[0] = '\0';
+        SyStrncat( module, "bin/", 4 );
+        SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
+        SyStrncat( module, "/compiled/", 1 );
+        SyStrncat( module, filename, SyStrlen(filename) );
+        SyStrncat( module, ".so", 3 );
     }
     tmp = SyFindGapRootFile(module);
     if ( tmp ) {
         init = SyLoadModule(tmp);
-	if ( ( (Int)init & 1 ) == 0 ) {
-	    info_dyn  = (*init)();
-	    crc_dyn   = info_dyn->magic1;
-	    found_dyn = 1;
-	}
+        if ( ( (Int)init & 1 ) == 0 ) {
+            info_dyn  = (*init)();
+            crc_dyn   = info_dyn->magic1;
+            found_dyn = 1;
+        }
     }
 #endif
 
     /* now decide what to do                                               */
     if ( found_gap && found_dyn && crc_gap != crc_dyn ) {
-	found_dyn = 0;
+        found_dyn = 0;
     }
     if ( found_gap && found_sta && crc_gap != crc_sta ) {
-	found_sta = 0;
+        found_sta = 0;
     }
     if ( found_gap && found_sta ) {
-	*(StructCompInitInfo**)result = info_sta;
-	return 2;
+        *(StructCompInitInfo**)result = info_sta;
+        return 2;
     }
     if ( found_gap && found_dyn ) {
-	*(StructCompInitInfo**)result = info_dyn;
-	return 1;
+        *(StructCompInitInfo**)result = info_dyn;
+        return 1;
     }
     if ( found_gap ) {
-	return 3;
+        return 3;
     }
     if ( found_sta ) {
-	*(StructCompInitInfo**)result = info_sta;
-	return 2;
+        *(StructCompInitInfo**)result = info_sta;
+        return 2;
     }
     if ( found_dyn ) {
-	*(StructCompInitInfo**)result = info_dyn;
-	return 1;
+        *(StructCompInitInfo**)result = info_dyn;
+        return 1;
     }
     return 0;
 }
@@ -3285,7 +3285,7 @@ void            SyHelp (
     if ( SyStrcmp(topic,"chapters")==0 || SyStrcmp(topic,"Chapters")==0 ) {
 
         /* open the table of contents file                                 */
-	filename = SyFindGapRootFile( "doc/manual.toc" );
+        filename = SyFindGapRootFile( "doc/manual.toc" );
         if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
             syEchos( "Help: cannot open the table of contents file '",fin );
             syEchos( "doc/manual.toc'\n", fin );
@@ -3366,7 +3366,7 @@ void            SyHelp (
     if ( SyStrcmp(topic,"sections")==0 || SyStrcmp(topic,"Sections")==0 ) {
 
         /* open the table of contents file                                 */
-	filename = SyFindGapRootFile( "doc/manual.toc" );
+        filename = SyFindGapRootFile( "doc/manual.toc" );
         if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
             syEchos( "Help: cannot open the table of contents file '",fin );
             syEchos( "doc/manual.toc'\n", fin );
@@ -3445,7 +3445,7 @@ void            SyHelp (
     if ( SyStrcmp(topic,"copyright")==0 || SyStrcmp(topic,"Copyright")==0 ) {
 
         /* open the copyright file                                         */
-	filename = SyFindGapRootFile( "doc/copyright.toc" );
+        filename = SyFindGapRootFile( "doc/copyright.toc" );
         if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
             syEchos( "Help: cannot open the table of contents file '",fin );
             syEchos( "doc/copyright.toc'\n", fin );
@@ -3550,7 +3550,7 @@ void            SyHelp (
         while ( *topic == ' ' )  topic++;
 
         /* open the index                                                  */
-	filename = SyFindGapRootFile( "doc/manual.idx" );
+        filename = SyFindGapRootFile( "doc/manual.idx" );
         if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
             syEchos( "Help: cannot open the table of contents file '",fin );
             syEchos( "doc/manual.idx'\n", fin );
@@ -3656,9 +3656,9 @@ void            SyHelp (
     /* open the table of contents                                          */
     filename = SyFindGapRootFile( "doc/manual.toc" );
     if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
-	syEchos( "Help: cannot open the table of contents file '",fin );
-	syEchos( "doc/manual.toc'\n", fin );
-	syEchos( "maybe use the option '-l <gaproot>'?\n", fin );
+        syEchos( "Help: cannot open the table of contents file '",fin );
+        syEchos( "doc/manual.toc'\n", fin );
+        syEchos( "maybe use the option '-l <gaproot>'?\n", fin );
         if ( raw )  syStopraw( fin );
         return;
     }
@@ -3842,7 +3842,7 @@ void            SyHelp (
     if ( syChapnames[0][0] == '\0' ) {
 
         /* open the 'manual.tex' file                                      */
-	filename = SyFindGapRootFile( "doc/manual.tex" );
+        filename = SyFindGapRootFile( "doc/manual.tex" );
         if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
             syEchos( "Help: cannot open the table of contents file '",fin );
             syEchos( "doc/manual.tex'\n", fin );
@@ -4538,13 +4538,13 @@ void SyExit (
 
 void SySetGapRootPath( Char * string )
 {
-    Char * 	    p;
-    Char * 	    q;
+    Char *          p;
+    Char *          q;
     Int             n;
 
     /* set string to a default value if unset                              */
     if ( string == 0 ) {
-	string = "./";
+        string = "./";
     }
 
     /* store the string in 'SyGapRootPath'                                 */
@@ -4555,24 +4555,24 @@ void SySetGapRootPath( Char * string )
     p = SyGapRootPath;
     n = 0;
     while ( *p ) {
-	q = SyGapRootPaths[n];
-	while ( *p && *p != ';' ) {
-	    *q++ = *p++;
-	}
-	if ( q == SyGapRootPaths[n] ) {
-	    SyGapRootPaths[n][0] = '\0';
-	    SyStrncat( SyGapRootPaths[n], "./", 2 );
-	}
-	else if ( q[-1] != '/' ) {
-	    *q++ = '/';
-	    *q   = '\0';
-	}
-	else {
-	    *q   = '\0';
-	}
-	if ( *p ) {
-	    p++;  n++;
-	}
+        q = SyGapRootPaths[n];
+        while ( *p && *p != ';' ) {
+            *q++ = *p++;
+        }
+        if ( q == SyGapRootPaths[n] ) {
+            SyGapRootPaths[n][0] = '\0';
+            SyStrncat( SyGapRootPaths[n], "./", 2 );
+        }
+        else if ( q[-1] != '/' ) {
+            *q++ = '/';
+            *q   = '\0';
+        }
+        else {
+            *q   = '\0';
+        }
+        if ( *p ) {
+            p++;  n++;
+        }
     }
 }
 
@@ -4584,30 +4584,30 @@ void SySetGapRootPath( Char * string )
 */
 void sySetGapRCFile ( void )
 {
-    Int	            i;
+    Int             i;
 
     /* find a free slot                                                    */
     for ( i = 0;  i < sizeof(SyInitfiles)/sizeof(SyInitfiles[0]);  i++ ) {
-	if ( SyInitfiles[i][0] == '\0' )
-	    break;
+        if ( SyInitfiles[i][0] == '\0' )
+            break;
     }
     if ( i == sizeof(SyInitfiles)/sizeof(SyInitfiles[0]) )
-	return;
+        return;
 
 #if SYS_BSD || SYS_MACH || SYS_USG
     if ( getenv("HOME") != 0 ) {
-	SyInitfiles[i][0] = '\0';
-	SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
-	SyStrncat( SyInitfiles[i], "/.gaprc",
-	    (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
+        SyInitfiles[i][0] = '\0';
+        SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
+        SyStrncat( SyInitfiles[i], "/.gaprc",
+            (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
 #endif
 
 #if SYS_OS2_EMX || SYS_MSDOS_DJGPP || SYS_TOS_GCC2
     if ( getenv("HOME") != 0 ) {
-	SyInitfiles[i][0] = '\0';
-	SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
-	SyStrncat( SyInitfiles[i], "/gap.rc",
-	    (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
+        SyInitfiles[i][0] = '\0';
+        SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
+        SyStrncat( SyInitfiles[i], "/gap.rc",
+            (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
 #endif
 
 #if SYS_VMS
@@ -4618,14 +4618,14 @@ void sySetGapRCFile ( void )
 
 #if SYS_MAC_MPW || SYS_MAC_SYC
     if ( 1 ) {
-	SyInitfiles[i][0] = '\0';
-	SyStrncat( SyInitfiles[i], "gap.rc",
+        SyInitfiles[i][0] = '\0';
+        SyStrncat( SyInitfiles[i], "gap.rc",
             (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
 #endif
 
-	if ( ! SyIsReadableFile(SyInitfiles[i]) ) {
-	    SyInitfiles[i][0] = '\0';
-	}
+        if ( ! SyIsReadableFile(SyInitfiles[i]) ) {
+            SyInitfiles[i][0] = '\0';
+        }
     }
 }
 
@@ -4873,65 +4873,65 @@ void            InitSystem (
         switch ( argv[1][1] ) {
 
 
-	/* '-b', supress the banner                                        */
+        /* '-b', supress the banner                                        */
         case 'b':
             SyBanner = ! SyBanner;
             break;
 
 
-	/* '-g', Gasman should be verbose                                  */
+        /* '-g', Gasman should be verbose                                  */
         case 'g':
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
             break;
 
 
         /* '-i' <initname>, changes the name of the init file              */
-	case 'i':
+        case 'i':
             if ( argc < 3 ) {
                 fputs("gap: option '-i' must have an argument.\n",stderr);
                 goto usage;
             }
-	    SySystemInitFile[0] = '\0';
-	    SyStrncat( SySystemInitFile, argv[2], 255 );
+            SySystemInitFile[0] = '\0';
+            SyStrncat( SySystemInitFile, argv[2], 255 );
             ++argv; --argc;
             break;
-	    
+            
 
-	/* '-l <root1>;<root2>;...', changes the value of 'GAPROOT'        */
+        /* '-l <root1>;<root2>;...', changes the value of 'GAPROOT'        */
         case 'l':
             if ( argc < 3 ) {
                 fputs("gap: option '-l' must have an argument.\n",stderr);
                 goto usage;
             }
-	    gapRoot = argv[2];
+            gapRoot = argv[2];
             ++argv; --argc;
             break;
 
 
         /* '-B', name of the directory containing execs within root/bin    */
-	case 'B':
+        case 'B':
             if ( argc < 3 ) {
                 fputs("gap: option '-B' must have an argument.\n",stderr);
                 goto usage;
             }
-	    SyArchitecture = argv[2];
-	    ++argv;  --argc;
-	    break;
-	
+            SyArchitecture = argv[2];
+            ++argv;  --argc;
+            break;
+        
 
-	/* '-N', check for completion files in "init.g"                    */
+        /* '-N', check for completion files in "init.g"                    */
         case 'N':
             SyCheckForCompFiles = ! SyCheckForCompFiles;
             break;
 
 
-	/* '-D', debug loading of files                                    */
+        /* '-D', debug loading of files                                    */
         case 'D':
             SyDebugLoading = ! SyDebugLoading;
             break;
 
 
-	/* '-M', no dynamic/static modules                                 */
+        /* '-M', no dynamic/static modules                                 */
         case 'M':
             SyUseModule = ! SyUseModule;
             break;
@@ -5119,11 +5119,11 @@ void            InitSystem (
 
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
-	SyLineEdit   = 1;
-	SyCTRD       = 1;
-	syWinPut( 0, "@p", "" );
-	syBuf[2].fp = stdin;  syBuf[2].echo = stdout;
-	syBuf[3].fp = stdout;
+        SyLineEdit   = 1;
+        SyCTRD       = 1;
+        syWinPut( 0, "@p", "" );
+        syBuf[2].fp = stdin;  syBuf[2].echo = stdout;
+        syBuf[3].fp = stdout;
     }
    
 #if SYS_MAC_SYC
@@ -5148,18 +5148,18 @@ void            InitSystem (
 
     /* try to find 'LIBNAME/init.g' to read it upon initialization         */
     if ( SyCompilePlease ) {
-	SySystemInitFile[0] = 0;
+        SySystemInitFile[0] = 0;
     }
 
     /* the compiler will *not* read in the .gaprc file                     */
     if ( gaprc && ! SyCompilePlease ) {
-	sySetGapRCFile();
+        sySetGapRCFile();
     }
 
     /* use the files from the command line                                 */
     for ( i = 0;  i < sizeof(SyInitfiles)/sizeof(SyInitfiles[0]);  i++ ) {
-	if ( SyInitfiles[i][0] == '\0' )
-	    break;
+        if ( SyInitfiles[i][0] == '\0' )
+            break;
     }
     while ( argc > 1 ) {
         if ( i >= sizeof(SyInitfiles)/sizeof(SyInitfiles[0]) ) {
@@ -5170,7 +5170,7 @@ void            InitSystem (
         SyStrncat( SyInitfiles[i], argv[1], sizeof(SyInitfiles[0])-1 );
         ++i;
         ++argv;
-	--argc;
+        --argc;
     }
 
 #if SYS_TOS_GCC2

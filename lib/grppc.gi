@@ -318,7 +318,7 @@ local gens, pcgs, V, field, linear;
         if IsGroup( arg[1] ) then
             gens := GeneratorsOfGroup( arg[1] );
         elif IsPcgs( arg[1] ) then
-            gens := arg[1];
+            gens := AsList( arg[1] );
         else 
             gens := arg[1];
         fi;
@@ -353,7 +353,7 @@ AffineOperationLayer := function( arg )
     # catch arguments
     if Length( arg ) = 3 then
         if IsPcgs( arg[1] ) then
-            gens := arg[1];
+            gens := AsList( arg[1] );
         elif IsGroup( arg[1] ) then
             gens := GeneratorsOfGroup( arg[1] );
         else
@@ -935,7 +935,11 @@ function(grp)
     local   p;
 
     p := Pcgs(grp);
-    return Product( p, x -> x^Random(1,RelativeOrderOfPcElement(p,x)) );
+    if Length( p ) = 0 then 
+        return One( grp );
+    else
+        return Product( p, x -> x^Random(1,RelativeOrderOfPcElement(p,x)) );
+    fi;
 end );
 
 
@@ -1342,7 +1346,7 @@ InstallMethod(ConjugacyClassSubgroups,IsIdentical,[IsPcGroup,IsPcGroup],0,
 function(G,U)
 local cl;
 
-    cl:=Objectify(NewKind(CollectionsFamily(FamilyObj(G)),
+    cl:=Objectify(NewType(CollectionsFamily(FamilyObj(G)),
       IsConjugacyClassSubgroupsRep),rec());
     SetActingDomain(cl,G);
     SetRepresentative(cl,U);

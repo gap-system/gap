@@ -21,14 +21,6 @@ InfoTuples := NewInfoClass("InfoTuples");
 
 #############################################################################
 ##
-#M  HasComponentsOfTuplesFamily( <tuplesfam> ) . . . . . . . . . .always there
-##
-
-InstallTrueMethod( HasComponentsOfTuplesFamily, IsTuplesFamily );
-
-
-#############################################################################
-##
 #V  TUPLES_FAMILIES . . . . . . . . . . . . . . . list of all tuples families
 ##
 
@@ -193,7 +185,7 @@ InstallMethod( TupleNC, true, [ IsTuplesFamily, IsList ], 0,
         function( fam, objlist )
     local t;
     Assert(2, ComponentsOfTuplesFamily = List(objlist, FamilyObj));
-    t := Objectify( NewKind(fam,  IsDefaultTupleRep ), 
+    t := Objectify( NewType(fam,  IsDefaultTupleRep ), 
          List(objlist, Immutable) );
     Info(InfoTuples,3,"Created a new Tuple ",t);
     return t;

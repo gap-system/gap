@@ -146,6 +146,20 @@ typedef Obj             (* ObjFunc) ();
 
 /****************************************************************************
 **
+*F  InitHandlerFunc( <handler>, <cookie> ) . . . . . . . . register a handler
+**
+**  Every handler should  be registered (once) before  it is installed in any
+**  function bag. This is needed so that it can be  identified when loading a
+**  saved workspace.  <cookie> should be a  unique  C string, identifying the
+**  handler
+*/
+extern void InitHandlerFunc (
+     ObjFunc        hdlr,
+     Char *         cookie );
+
+
+/****************************************************************************
+**
 *F  NewFunction(<name>,<narg>,<nams>,<hdlr>) . . . . . .  make a new function
 *F  NewFunctionC(<name>,<narg>,<nams>,<hdlr>)  . . . . .  make a new function
 *F  NewFunctionT(<type>,<size>,<name>,<narg>,<nams>,<hdlr>) . .  new function
@@ -206,6 +220,35 @@ extern  Obj             NewFunctionCT (
 */
 extern void PrintFunction (
     Obj                 func );
+
+
+/****************************************************************************
+**
+*F  C_NEW_GVAR_FUNC( <name>, <nargs>, <nams>, <hdlr>, <cookie> )
+*/
+#define C_NEW_GVAR_FUNC( name, nargs, nams, hdlr, cookie ) \
+    InitHandlerFunc( hdlr, cookie ); \
+    AssGVar( GVarName( name ), NewFunctionC( name, nargs, nams, hdlr ) )
+
+
+/****************************************************************************
+**
+*F  C_NEW_GVAR_ATTR( <name>, <nams>, <attr>, <hdlr>, <cookie> )
+*/
+#define C_NEW_GVAR_ATTR( name, nams, attr, hdlr, cookie ) \
+    InitHandlerFunc( hdlr, cookie ); \
+    attr = NewAttributeC( name, 1L, nams, hdlr ); \
+    AssGVar( GVarName( name ), attr )
+
+
+/****************************************************************************
+**
+*F  C_NEW_GVAR_OPER( <name>, <nargs>, <nams>, <oper>, <hdlr>, <cookie> )
+*/
+#define C_NEW_GVAR_OPER( name, nargs, nams, oper, hdlr, cookie ) \
+    InitHandlerFunc( hdlr, cookie ); \
+    oper = NewOperationC( name, nargs, nams, hdlr ); \
+    AssGVar( GVarName( name ), oper )
 
 
 /****************************************************************************

@@ -73,7 +73,7 @@ char *          Revision_blister_c =
 #include        "system.h"              /* system dependent functions      */
 
 #include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -229,20 +229,20 @@ char *          Revision_blister_c =
 /****************************************************************************
 **
 
-*F  KindBlist(<list>) . . . . . . . . . . . . . . . .  kind of a boolean list
+*F  TypeBlist(<list>) . . . . . . . . . . . . . . . .  kind of a boolean list
 **
-**  'KindBlist' returns the kind of a boolean list.
+**  'TypeBlist' returns the kind of a boolean list.
 **
-**  'KindBlist' is the function in 'KindObjFuncs' for boolean lists.
+**  'TypeBlist' is the function in 'TypeObjFuncs' for boolean lists.
 */
-extern  Obj             KIND_LIST_EMPTY_MUTABLE;
-extern  Obj             KIND_LIST_EMPTY_IMMUTABLE;
+extern  Obj             TYPE_LIST_EMPTY_MUTABLE;
+extern  Obj             TYPE_LIST_EMPTY_IMMUTABLE;
 
-extern  Obj             KIND_LIST_HOM;
+extern  Obj             TYPE_LIST_HOM;
 
-#define IS_IMM_BLIST(list)  ((TYPE_OBJ(list) - T_BLIST) % 2)
+#define IS_IMM_BLIST(list)  ((TNUM_OBJ(list) - T_BLIST) % 2)
 
-Obj             KindBlist (
+Obj             TypeBlist (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -253,24 +253,24 @@ Obj             KindBlist (
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
         if ( ! IS_IMM_BLIST(list) ) {
-            return KIND_LIST_EMPTY_MUTABLE;
+            return TYPE_LIST_EMPTY_MUTABLE;
         }
         else {
-            return KIND_LIST_EMPTY_IMMUTABLE;
+            return TYPE_LIST_EMPTY_IMMUTABLE;
         }
     }
 
     /* get the kind type and the family of the elements                    */
-    ktype  = TYPE_OBJ( list );
-    family = FAMILY_KIND( KIND_OBJ( ELM_BLIST( list, 1 ) ) );
+    ktype  = TNUM_OBJ( list );
+    family = FAMILY_TYPE( TYPE_OBJ( ELM_BLIST( list, 1 ) ) );
 
     /* get the list kinds of that family                                   */
-    kinds  = KINDS_LIST_FAM( family );
+    kinds  = TYPES_LIST_FAM( family );
 
     /* get the kind, if it is not known, compute it                        */
     kind = ELM0_LIST( kinds, ktype-T_BLIST+1 );
     if ( kind == 0 ) {
-        kind = CALL_2ARGS( KIND_LIST_HOM,
+        kind = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(ktype-T_BLIST+1) );
         ASS_LIST( kinds, ktype-T_BLIST+1, kind );
     }
@@ -317,10 +317,10 @@ Obj CopyBlist (
 
     /* make a copy                                                         */
     if ( mut ) {
-        copy = NewBag( TYPE_OBJ(list), SIZE_OBJ(list) );
+        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
     }
     else {
-        copy = NewBag( IMMUTABLE_TYPE( TYPE_OBJ(list) ), SIZE_OBJ(list) );
+        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
     ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
 
@@ -329,7 +329,7 @@ Obj CopyBlist (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    RetypeBag( list, TYPE_OBJ(list) + COPYING );
+    RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
     l = (UInt4*)(ADDR_OBJ(list)+1);
@@ -375,7 +375,7 @@ void CleanBlistCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    RetypeBag( list, TYPE_OBJ(list) - COPYING );
+    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
 
 
@@ -980,8 +980,8 @@ Int             IsBlist (
     UInt                i;              /* loop variable                   */
 
     /* if <list> is known to be a boolean list, it is very easy            */
-    if ( T_BLIST <= TYPE_OBJ(list)
-      && TYPE_OBJ(list) <= T_BLIST_SSORT ) {
+    if ( T_BLIST <= TNUM_OBJ(list)
+      && TNUM_OBJ(list) <= T_BLIST_SSORT ) {
         isBlist = 1;
     }
 
@@ -1090,13 +1090,13 @@ Obj FuncBlistList (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "BlistList: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
             "you can return a list for <list>" );
     }
     while ( ! IS_LIST(sub) ) {
         sub = ErrorReturnObj(
             "BlistList: <sub> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(sub)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(sub)].name), 0L,
             "you can return a list for <sub>" );
     }
 
@@ -1130,8 +1130,8 @@ Obj FuncBlistList (
 
     /* for a list as subset of a range, we need basically no search        */
     else if ( IS_RANGE(list)
-          && (T_PLIST <= TYPE_OBJ(sub)
-           && TYPE_OBJ(sub) <= T_PLIST_CYC_SSORT) ) {
+          && (T_PLIST <= TNUM_OBJ(sub)
+           && TNUM_OBJ(sub) <= T_PLIST_CYC_SSORT) ) {
 
         /* allocate the boolean list and get pointer                       */
         lenList  = GET_LEN_RANGE( list );
@@ -1147,7 +1147,7 @@ Obj FuncBlistList (
             if ( ptrSub[l] != 0 ) {
 
                 /* if <sub>[<l>] is an integer it is very easy             */
-                if ( TYPE_OBJ( ptrSub[l] ) == T_INT ) {
+                if ( TNUM_OBJ( ptrSub[l] ) == T_INT ) {
                     t = INT_INTOBJ( ptrSub[l] ) - s + 1;
                     if ( 0 < t && t <= lenList )
                         ptrBlist[(t-1)/BIPEB] |= (1UL << (t-1)%BIPEB);
@@ -1343,7 +1343,7 @@ Obj FuncListBlist (
     while ( ! IS_LIST( list ) ) {
         list = ErrorReturnObj(
             "ListBlist: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
             "you can return a list for <list>" );
     }
 
@@ -1351,7 +1351,7 @@ Obj FuncListBlist (
     if ( ! IsBlist( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(blist)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
             "you can return a boolean list for <blist>" );
     }
     while ( LEN_LIST( list ) != LEN_BLIST( blist ) ) {
@@ -1418,7 +1418,7 @@ Obj FuncPositionsTrueBlist (
     if ( ! IsBlist( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(blist)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
             "you can return a boolean list for <blist>" );
     }
 
@@ -1444,10 +1444,10 @@ Obj FuncPositionsTrueBlist (
     len = LEN_BLIST( blist );
     nn  = 1;
     for ( i = 1; nn <= n && i <= len;  i++ ) {
-	if ( ELM_BLIST( blist, i ) == True ) {
-	    SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
-	    nn++;
-	}
+        if ( ELM_BLIST( blist, i ) == True ) {
+            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
+            nn++;
+        }
     }
     CHANGED_BAG(sub);
 
@@ -1476,13 +1476,13 @@ Obj FuncPositionNthTrueBlist (
     while ( ! IsBlist( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(blist)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
             "you can return a boolean list for <blist>" );
     }
     while ( ! IS_INTOBJ(Nth) || INT_INTOBJ(Nth) <= 0 ) {
         Nth = ErrorReturnObj(
             "Position: <nth> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(Nth)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(Nth)].name), 0L,
             "you can return a positive integer for <nth>" );
     }
     
@@ -1499,23 +1499,23 @@ Obj FuncPositionNthTrueBlist (
     m = (m + (m >>  8));
     m = (m + (m >> 16)) & 0x000000ff;
     while ( nth > m ) {
-	if ( ++i > nrb )  return Fail;
+        if ( ++i > nrb )  return Fail;
         nth -= m;
-	pos += BIPEB;
+        pos += BIPEB;
         ptr++;
-	m = *ptr;
-	m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
-	m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
-	m = (m + (m >>  4)) & 0x0f0f0f0f;
-	m = (m + (m >>  8));
-	m = (m + (m >> 16)) & 0x000000ff;
+        m = *ptr;
+        m = (m & 0x55555555) + ((m >> 1) & 0x55555555);
+        m = (m & 0x33333333) + ((m >> 2) & 0x33333333);
+        m = (m + (m >>  4)) & 0x0f0f0f0f;
+        m = (m + (m >>  8));
+        m = (m + (m >> 16)) & 0x000000ff;
     }
     m = *ptr;
     mask = 0x1;
     while ( nth > 0 ) {
         pos++;
-	if ( m & mask )  nth--;
-	mask <<= 1;
+        if ( m & mask )  nth--;
+        mask <<= 1;
     }
     return INTOBJ_INT( pos );
 }
@@ -1566,10 +1566,10 @@ Obj FuncSizeBlist (
     UInt                i;              /* loop variable                   */
 
     /* get and check the argument                                          */
-    while ( TYPE_OBJ(blist) != T_BLIST && ! IsBlist(blist) ) {
+    while ( TNUM_OBJ(blist) != T_BLIST && ! IsBlist(blist) ) {
         blist = ErrorReturnObj(
             "SizeBlist: <blist> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(blist)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(blist)].name), 0L,
             "you can return a boolean list for <blist>" );
     }
 
@@ -1619,13 +1619,13 @@ Obj FuncIsSubsetBlist (
     while ( ! IsBlist( list1 ) ) {
         list1 = ErrorReturnObj(
             "IsSubsetBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
             "you can return a boolean list for <blist1>" );
     }
     while ( ! IsBlist( list2 ) ) {
         list2 = ErrorReturnObj(
             "IsSubsetBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
             "you can return a boolean list for <blist2>" );
     }
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
@@ -1674,13 +1674,13 @@ Obj FuncUniteBlist (
     while ( ! IsBlist( list1 ) ) {
         list1 = ErrorReturnObj(
             "UniteBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
             "you can return a boolean list for <blist1>" );
     }
     while ( ! IsBlist( list2 ) ) {
         list2 = ErrorReturnObj(
             "UniteBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
             "you can return a boolean list for <blist2>" );
     }
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
@@ -1727,13 +1727,13 @@ Obj FuncIntersectBlist (
     while ( ! IsBlist( list1 ) ) {
         list1 = ErrorReturnObj(
             "IntersectBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
             "you can return a boolean list for <blist1>" );
     }
     while ( ! IsBlist( list2 ) ) {
         list2 = ErrorReturnObj(
             "IntersectBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
             "you can return a boolean list for <blist2>" );
     }
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
@@ -1780,13 +1780,13 @@ Obj FuncSubtractBlist (
     while ( ! IsBlist( list1 ) ) {
         list1 = ErrorReturnObj(
             "SubtractBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list1)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
             "you can return a boolean list for <blist1>" );
     }
     while ( ! IsBlist( list2 ) ) {
         list2 = ErrorReturnObj(
             "SubtractBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list2)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
             "you can return a boolean list for <blist2>" );
     }
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
@@ -1839,8 +1839,8 @@ void InitBlist ( void )
 
     /* install the kind method                                             */
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
-        KindObjFuncs[ t1            ] = KindBlist;
-        KindObjFuncs[ t1 +IMMUTABLE ] = KindBlist;
+        TypeObjFuncs[ t1            ] = TypeBlist;
+        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeBlist;
     }
 
     /* install the copy functions                                          */

@@ -18,19 +18,23 @@ Revision.list_gi :=
 #M  methods for comparisons
 ##
 InstallMethod( EQ,
+    "method for two homogeneous lists",
     IsIdentical, [ IsHomogeneousList, IsHomogeneousList ], 0,
     EQ_LIST_LIST_DEFAULT );
 InstallMethod( EQ,
+    "method for two lists, the first being empty",
     true, [ IsList and IsEmpty, IsList ], SUM_FLAGS,
     function( empty, list )
     return IsEmpty( list );
 end );
 InstallMethod( EQ,
+    "method for two lists, the second being empty",
     true, [ IsList, IsList and IsEmpty ], SUM_FLAGS,
     function( list, empty )
     return IsEmpty( list );
 end );
 InstallMethod( LT,
+    "method for two homogeneous lists",
     IsIdentical, [ IsHomogeneousList, IsHomogeneousList ], 0,
     LT_LIST_LIST_DEFAULT );
 
@@ -39,6 +43,7 @@ InstallMethod( LT,
 #M  \in( <obj>, <list> )
 ##
 InstallMethod( IN,
+    "method for an object, and an empty list",
     true,
     [ IsObject, IsList and IsEmpty ], 0,
     ReturnFalse );
@@ -48,20 +53,41 @@ InstallMethod( IN,
 #M  <elm> \in <whole-family>
 ##
 InstallMethod( IN,
+    "method for an object, and a collection that contains the whole family",
     IsElmsColls,
     [ IsObject, IsCollection and IsWholeFamily ],
     SUM_FLAGS,
     RETURN_TRUE );
 
 InstallMethod( IN,
+    "method for wrong family relation",
     IsNotElmsColls,
     [ IsObject, IsCollection ], 0,
     ReturnFalse );
 
 InstallMethod( IN,
+    "method for an object, and a list",
     true,
     [ IsObject, IsList ], 0,
     IN_LIST_DEFAULT );
+#T internal lists only?
+
+
+#############################################################################
+##
+#M  Length( <list> )  . . . . . . . . . . . . . . . . .  for an infinite list
+##
+InstallMethod( Length,
+    "method for an infinite list",
+    true,
+    [ IsList and HasIsFinite ], 0,
+    function( list )
+    if IsFinite( list ) then
+      TryNextMethod();
+    else
+      return infinity;
+    fi;
+    end );
 
 
 #############################################################################
@@ -70,14 +96,19 @@ InstallMethod( IN,
 #M  String( <range> ) . . . . . . . . . . . . . . . . . . . . . . for a range
 ##
 InstallMethod( String,
-    "method for a list",
+    "method for a finite list",
     true,
     [ IsList ], 0,
     function ( list )
     local   str, i;
 
+    # Check that we are in the right method.
+    if not IsFinite( list ) then
+      TryNextMethod();
+    fi;
+
     # We cannot handle the case of an empty string in the method for strings
-    # because the kind of the empty string does not satify the requirement
+    # because the type of the empty string does not satify the requirement
     # 'IsString'.
     if IsEmptyString( list ) then
       return "";
@@ -142,6 +173,7 @@ InstallOtherMethod( Size,
 #M  Representative(<list>)
 ##
 InstallOtherMethod( Representative,
+    "method for an empty list",
     true,
     [ IsList and IsEmpty ],
     0,
@@ -152,6 +184,7 @@ end );
 
 
 InstallOtherMethod( Representative,
+    "method for a list",
     true,
     [ IsList ],
     0,
@@ -166,18 +199,21 @@ end );
 #M  RepresentativeSmallest(<list>)
 ##
 InstallOtherMethod( RepresentativeSmallest,
+    "method for an empty list",
     true, [ IsList and IsEmpty ], 0,
     function ( list )
     Error( "<C> must be nonempty to have a representative" );
     end );
 
 InstallOtherMethod( RepresentativeSmallest,
+    "method for a strictly sorted list",
     true, [ IsSSortedList ], 0,
     function ( list )
     return list[1];
     end );
 
 InstallOtherMethod( RepresentativeSmallest,
+    "method for a homogeneous list",
     true, [ IsHomogeneousList ], 0,
     function ( list )
     return MinimumList( list );
@@ -186,11 +222,30 @@ InstallOtherMethod( RepresentativeSmallest,
 
 #############################################################################
 ##
-#M  Random(<list>)
+#M  Random( <list> )  . . . . . . . . . . . . . . . for a dense internal list
 ##
 InstallOtherMethod( Random,
-    true, [ IsList ], 0,
+    "method for a dense internal list",
+    true,
+    [ IsList and IsDenseList and IsInternalRep ], 0,
     RANDOM_LIST );
+
+
+#############################################################################
+##
+#M  Random( <list> )  . . . . . . . . . . . . . . . .  for a short dense list
+##
+InstallOtherMethod( Random,
+    "method for a short dense list",
+    true,
+    [ IsList and IsDenseList ], 0,
+    function( list )
+    if Length( list ) < 2^28 then
+      return RANDOM_LIST( list );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################
@@ -227,21 +282,26 @@ for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
     
 od;
 
-InstallMethod( ConstantTimeAccessList, true,
-        [ IsList and IsConstantTimeAccessListRep ], SUM_FLAGS,
+InstallMethod( ConstantTimeAccessList,
+    "method for a constant time access list",
+    true,
+    [ IsList and IsConstantTimeAccessListRep ], SUM_FLAGS,
     Immutable );
+
 
 #############################################################################
 ##
 #M  AsList( <list> )
 ##
 InstallOtherMethod( AsList,
+    "method for a list",
     true,
     [ IsList ],
     0,
     list -> ConstantTimeAccessList( Enumerator( list ) ) );
 
 InstallOtherMethod( AsList,
+    "method for a constant time access list",
     true,
     [ IsList and IsConstantTimeAccessListRep ],
     0,
@@ -256,12 +316,14 @@ InstallOtherMethod( AsList,
 ##  same family then 'AsListSorted' is applicable.
 ##
 InstallOtherMethod( AsListSorted,
+    "method for a list",
     true,
     [ IsList ],
     0,
     list -> ConstantTimeAccessList( EnumeratorSorted( list ) ) );
 
 InstallOtherMethod( AsListSorted,
+    "method for a constant time access list",
     true,
     [ IsList and IsConstantTimeAccessListRep ],
     0,
@@ -273,6 +335,7 @@ InstallOtherMethod( AsListSorted,
 #M  Enumerator( <list> )
 ##
 InstallOtherMethod( Enumerator,
+    "method for a list",
     true, [ IsList ], 0,
     Immutable );
 
@@ -282,6 +345,7 @@ InstallOtherMethod( Enumerator,
 #M  EnumeratorSorted( <list> )
 ##
 InstallOtherMethod( EnumeratorSorted,
+    "method for a list",
     true, [ IsList ], 0,
     AsListSortedList );
 
@@ -291,13 +355,17 @@ InstallOtherMethod( EnumeratorSorted,
 #M  List(<list>)
 ##
 InstallOtherMethod( List,
+    "method for a list",
     true, [ IsList ], 0,
     ShallowCopy );
 
-InstallOtherMethod( List, true, [ IsList and IsDenseList ], 0,
+InstallOtherMethod( List,
+    "method for a dense list",
+    true, [ IsList and IsDenseList ], 0,
     list -> list{ [ 1 .. Length( list ) ] } );
 
 InstallOtherMethod( List,
+    "method for a list, and a function",
     true, [ IsList, IsFunction ], 0,
     function ( list, func )
     local   res, i;
@@ -313,12 +381,10 @@ InstallOtherMethod( List,
 ##
 #M  ListSorted( <list> )  . . . . . . . . . . . set of the elements of a list
 ##
-##  Note that we need the call of 'ShallowCopy', since 'ListSortedList' may
-##  return the argument if it is already sorted.
-##
 InstallOtherMethod( ListSorted,
+    "method for a list",
     true, [ IsList ], 0,
-    list -> ShallowCopy( ListSortedList( list ) ) );
+    ListSortedList );
 
 
 #############################################################################
@@ -326,6 +392,7 @@ InstallOtherMethod( ListSorted,
 #M  ListSorted( <list>, <func> )
 ##
 InstallOtherMethod( ListSorted,
+    "method for a list, and a function",
     true, [ IsList, IsFunction ], 0,
     function ( list, func )
     local   res, i;
@@ -346,12 +413,14 @@ IsListIteratorRep :=
         IsComponentObjectRep, "pos, list" );
 
 InstallMethod( IsDoneIterator,
+    "method for a list iterator",
     true, [ IsIterator and IsListIteratorRep ], 0,
     function ( iter )
         return (iter!.pos = Length( iter!.list ));
     end );
 
 InstallMethod( NextIterator,
+    "method for a list iterator",
     true, [ IsIterator and IsListIteratorRep ], 0,
     function ( iter )
     if iter!.pos = Length( iter!.list ) then
@@ -370,10 +439,12 @@ IteratorList := function ( list )
         list := list,
         pos  := 0
     );
-    return Objectify( NewKind( IteratorsFamily, IsListIteratorRep ), iter );
+    return Objectify( NewType( IteratorsFamily, IsListIteratorRep ), iter );
 end;
 
-InstallOtherMethod( Iterator, true, [ IsList ], 0,
+InstallOtherMethod( Iterator,
+    "method for a list",
+    true, [ IsList ], 0,
     IteratorList );
 
 
@@ -381,7 +452,9 @@ InstallOtherMethod( Iterator, true, [ IsList ], 0,
 ##
 #M  IteratorSorted(<list>)
 ##
-InstallOtherMethod( IteratorSorted, true, [ IsList ], 0,
+InstallOtherMethod( IteratorSorted,
+    "method for a list",
+    true, [ IsList ], 0,
     list -> IteratorList( ListSortedList( list ) ) );
 
 
@@ -1241,7 +1314,7 @@ InstallMethod( First,
             return elm;
         fi;
     od;
-    Error( "at least one element of <C> must fulfill <func>" );
+    return fail;
     end );
 
 #############################################################################

@@ -76,6 +76,7 @@ function( pcgs, pcs )
 
     # store the parent
     SetParentPcgs( igs, pcgs );
+    SetOneOfPcgs( igs, OneOfPcgs( pcgs ) );
     igs!.depthMapFromParent := [];
     igs!.depthMapFromParent[Length(pcgs)+1] := 1;
     igs!.depthsInParent := [];
@@ -150,6 +151,7 @@ function( pcgs, pcs )
 
     # store the parent
     SetParentPcgs( igs, pcgs );
+    SetOneOfPcgs( igs, OneOfPcgs( pcgs ) );
 
     # store other useful information
     igs!.depthMapFromParent := [];

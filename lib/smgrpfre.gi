@@ -166,7 +166,7 @@ InstallMethod( Iterator,
                 length         := 1
                );
 
-    return Objectify( NewKind( IteratorsFamily, IsFreeSemigroupIterator ),
+    return Objectify( NewType( IteratorsFamily, IsFreeSemigroupIterator ),
                       iter );
     end );
 
@@ -311,7 +311,7 @@ InstallMethod( Enumerator,
       TryNextMethod();
     fi;
 
-    enum:= Objectify( NewKind( FamilyObj( S ), IsFreeSemigroupEnumerator ),
+    enum:= Objectify( NewType( FamilyObj( S ), IsFreeSemigroupEnumerator ),
                    rec( family       := ElementsFamily( FamilyObj( S ) ),
                         nrgenerators := Length( GeneratorsOfMagma( S ) ) ) );
     SetUnderlyingCollection( enum, S );
@@ -398,40 +398,54 @@ InstallMethod( GeneratorsMagmaFamily,
 
 #############################################################################
 ##
-#F  FreeSemigroup( <n> )
+#F  FreeSemigroup( <rank> )
+#F  FreeSemigroup( <rank>, <name> )
+#F  FreeSemigroup( <name1>, <name2>, ... )
 #F  FreeSemigroup( <names> )
 ##
-##  is a free semigroup on <n> generators, or on generators that shall be
-##  printed as the strings in the list <names>.
-##
-FreeSemigroup := function( n )
+FreeSemigroup := function( arg )
 
     local   names,      # list of generators names
             F,          # family of free semigroup element objects
             S;          # free semigroup, result
 
-    # Check the arguments.
-    if IsInt( n ) and 0 <= n then
-      names:= List( [ 1 .. n ], x -> Concatenation( "s.", String( x ) ) );
-    elif IsList( n ) and 0 < Length( n ) and ForAll( n, IsString ) then
-      names:= n;
-      n:= Length( names );
+    # Get and check the argument list, and construct names if necessary.
+    if   Length( arg ) = 1 and arg[1] = infinity then
+      names:= InfiniteListOfNames( "s." );
+    elif Length( arg ) = 2 and arg[1] = infinity then
+      names:= InfiniteListOfNames( arg[2] );
+    elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
+      names:= List( [ 1 .. arg[1] ],
+                    i -> Concatenation( "s.", String(i) ) );
+    elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
+      names:= List( [ 1 .. arg[1] ],
+                    i -> Concatenation( arg[2], String(i) ) );
+    elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
+      names:= arg;
+    elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1]) then
+      names:= arg[1];
     else
-      Error( "<n> must be a pos. integer or a nonempty list of strings" );
+      Error("usage: FreeSemigroup(<name1>,<name2>..),FreeSemigroup(<rank>)");
     fi;
 
-    if n = 0 then
-      return FreeMonoid( 0 );
-    fi;
+    # Construct the family of element objects of our group.
+    F:= NewFamily( "FreeGroupElementsFamily", IsAssocWordWithInverse );
+
+    # Install the data (names, no. of bits available for exponents, types).
+    StoreInfoFreeMagma( F, names, IsAssocWordWithInverse );
 
     # Construct the family of element objects of our semigroup.
     F:= NewFamily( "FreeSemigroupElementsFamily", IsAssocWord );
 
-    # Install the data (names, no. of bits available for exponents, kinds).
+    # Install the data (names, no. of bits available for exponents, types).
     StoreInfoFreeMagma( F, names, IsAssocWord );
 
     # Make the semigroup.
-    S:= SemigroupByGenerators( GeneratorsMagmaFamily( F ) );
+    if IsFinite( names ) then
+      S:= SemigroupByGenerators( GeneratorsMagmaFamily( F ) );
+    else
+      S:= SemigroupByGenerators( InfiniteListOfGenerators( F ) );
+    fi;
 
     SetIsWholeFamily( S, true );
     SetIsTrivial( S, false );

@@ -51,7 +51,7 @@ char *          Revision_string_c =
 #include        "system.h"              /* system dependent functions      */
 
 #include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -88,18 +88,18 @@ Obj ObjsChar [256];
 
 /****************************************************************************
 **
-*F  KindChar( <chr> ) . . . . . . . . . . . . . . . kind of a character value
+*F  TypeChar( <chr> ) . . . . . . . . . . . . . . . kind of a character value
 **
-**  'KindChar' returns the kind of the character <chr>.
+**  'TypeChar' returns the kind of the character <chr>.
 **
-**  'KindChar' is the function in 'KindObjFuncs' for character values.
+**  'TypeChar' is the function in 'TypeObjFuncs' for character values.
 */
-Obj KIND_CHAR;
+Obj TYPE_CHAR;
 
-Obj KindChar (
+Obj TypeChar (
     Obj                 chr )
 {
-    return KIND_CHAR;
+    return TYPE_CHAR;
 }
 
 
@@ -164,7 +164,7 @@ void PrintChar (
 *F  FuncCHAR_INT( <self>, <int> ) . . . . . . . . . . . . . . char by integer
 */
 Obj FuncCHAR_INT (
-    Obj		    self,
+    Obj             self,
     Obj             val )
 {
     Int             chr;
@@ -174,7 +174,7 @@ again:
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
             "<val> must be an integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
             "you can return an integer for <val>" );
     }
     chr = INT_INTOBJ(val);
@@ -182,7 +182,7 @@ again:
         val = ErrorReturnObj(
             "<val> must be an integer between 0 and 255",
             0L, 0L, "you can return a new integer for <val>" );
-	goto again;
+        goto again;
     }
 
     /* return the character                                                */
@@ -195,14 +195,14 @@ again:
 *F  FuncINT_CHAR( <self>, <char> )  . . . . . . . . . . . . . integer by char
 */
 Obj FuncINT_CHAR (
-    Obj		    self,
+    Obj             self,
     Obj             val )
 {
     /* get and check the character                                         */
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
             "<val> must be a character (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
             "you can return a character for <val>" );
     }
 
@@ -285,19 +285,19 @@ Obj FuncINT_CHAR (
 
 /****************************************************************************
 **
-*F  KindString(<list>)  . . . . . . . . . . . . . . . . . .  kind of a string
+*F  TypeString(<list>)  . . . . . . . . . . . . . . . . . .  kind of a string
 **
-**  'KindString' returns the kind of the string <list>.
+**  'TypeString' returns the kind of the string <list>.
 **
-**  'KindString' is the function in 'KindObjFuncs' for strings.
+**  'TypeString' is the function in 'TypeObjFuncs' for strings.
 */
-extern  Obj             KIND_LIST_EMPTY_MUTABLE;
+extern  Obj             TYPE_LIST_EMPTY_MUTABLE;
 
-extern  Obj             KIND_LIST_EMPTY_IMMUTABLE;
+extern  Obj             TYPE_LIST_EMPTY_IMMUTABLE;
 
-extern  Obj             KIND_LIST_HOM;
+extern  Obj             TYPE_LIST_HOM;
 
-Obj             KindString (
+Obj             TypeString (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -308,24 +308,24 @@ Obj             KindString (
     /* special case for the empty string                                   */
     if ( GET_LEN_STRING(list) == 0 ) {
         if ( IS_MUTABLE_OBJ(list) ) {
-            return KIND_LIST_EMPTY_MUTABLE;
+            return TYPE_LIST_EMPTY_MUTABLE;
         }
         else {
-            return KIND_LIST_EMPTY_IMMUTABLE;
+            return TYPE_LIST_EMPTY_IMMUTABLE;
         }
     }
 
     /* get the kind type and the family of the elements                    */
-    ktype  = TYPE_OBJ( list );
-    family = FAMILY_KIND( KIND_CHAR );
+    ktype  = TNUM_OBJ( list );
+    family = FAMILY_TYPE( TYPE_CHAR );
 
     /* get the list kinds of that family                                   */
-    kinds  = KINDS_LIST_FAM( family );
+    kinds  = TYPES_LIST_FAM( family );
 
     /* if the kind is not yet known, compute it                            */
     kind = ELM0_LIST( kinds, ktype-T_STRING+1 );
     if ( kind == 0 ) {
-        kind = CALL_2ARGS( KIND_LIST_HOM,
+        kind = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(ktype-T_STRING+1) );
         ASS_LIST( kinds, ktype-T_STRING+1, kind );
     }
@@ -370,10 +370,10 @@ Obj CopyString (
 
     /* make a copy                                                         */
     if ( mut ) {
-        copy = NewBag( TYPE_OBJ(list), SIZE_OBJ(list) );
+        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
     }
     else {
-        copy = NewBag( IMMUTABLE_TYPE( TYPE_OBJ(list) ), SIZE_OBJ(list) );
+        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
     ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
 
@@ -382,7 +382,7 @@ Obj CopyString (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    RetypeBag( list, TYPE_OBJ(list) + COPYING );
+    RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
     for ( i = 1; i < (SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj); i++ ) {
@@ -427,7 +427,7 @@ void CleanStringCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    RetypeBag( list, TYPE_OBJ(list) - COPYING );
+    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
 
 
@@ -964,7 +964,7 @@ void            PlainString (
 
     /* change size and type of the string and copy back                    */
     ResizeBag( list, SIZE_OBJ(tmp) );
-    RetypeBag( list, TYPE_OBJ(tmp) );
+    RetypeBag( list, TNUM_OBJ(tmp) );
     SET_LEN_PLIST( list, lenList );
     for ( i = 1; i <= lenList; i++ ) {
         SET_ELM_PLIST( list, i, ELM_PLIST( tmp, i ) );
@@ -982,9 +982,9 @@ void            PlainString (
 **
 **  'IS_STRING' is defined in the declaration part of this package as follows
 **
-#define IS_STRING(obj)  ((*IsStringFuncs[ TYPE_OBJ( obj ) ])( obj ))
+#define IS_STRING(obj)  ((*IsStringFuncs[ TNUM_OBJ( obj ) ])( obj ))
 */
-Int             (*IsStringFuncs [LAST_REAL_TYPE+1]) ( Obj obj );
+Int             (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
 Obj             IsStringFilt;
 
@@ -1017,7 +1017,7 @@ Int             IsStringList (
     lenList = LEN_LIST( list );
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || TYPE_OBJ( elm ) != T_CHAR )
+        if ( elm == 0 || TNUM_OBJ( elm ) != T_CHAR )
             break;
     }
 
@@ -1027,7 +1027,7 @@ Int             IsStringList (
 Int             IsStringListHom (
     Obj                 list )
 {
-    return (TYPE_OBJ( ELM_LIST(list,1) ) == T_CHAR);
+    return (TNUM_OBJ( ELM_LIST(list,1) ) == T_CHAR);
 }
 
 Int             IsStringObject (
@@ -1053,7 +1053,9 @@ void            ConvString (
     Int                 i;              /* loop variable                   */
 
     /* do nothing if the string is already in the string representation    */
-    if ( T_STRING<=TYPE_OBJ(string) && TYPE_OBJ(string)<=T_STRING_SSORT ) {
+    if ( T_STRING <= TNUM_OBJ(string)
+      && TNUM_OBJ(string) <= T_STRING_SSORT+IMMUTABLE )
+    {
         return;
     }
 
@@ -1077,7 +1079,7 @@ Obj             ConvStringHandler (
     if ( ! IS_STRING( string ) ) {
         string = ErrorReturnObj(
             "ConvString: <string> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(string)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(string)].name), 0L,
             "you can return a string for <string>" );
         return ConvStringHandler( self, string );
     }
@@ -1158,18 +1160,18 @@ void InitString ( void )
     for ( i = 0; i < 256; i++ ) {
         ObjsChar[i] = NewBag( T_CHAR, 1L );
         *(UChar*)ADDR_OBJ(ObjsChar[i]) = (UChar)i;
-	for (j = 0; j < 13; j++)
-	  CharCookie[i][j] = cookie_base[j];
-	CharCookie[i][13] = '0' + i/100;
-	CharCookie[i][14] = '0' + (i % 100)/10;
-	CharCookie[i][15] = '0' + i % 10;
-	CharCookie[i][16] = '\0';
+        for (j = 0; j < 13; j++)
+          CharCookie[i][j] = cookie_base[j];
+        CharCookie[i][13] = '0' + i/100;
+        CharCookie[i][14] = '0' + (i % 100)/10;
+        CharCookie[i][15] = '0' + i % 10;
+        CharCookie[i][16] = '\0';
         InitGlobalBag( &ObjsChar[i], &(CharCookie[i][0]) );
     }
 
     /* install the kind method                                             */
-    ImportGVarFromLibrary( "KIND_CHAR", &KIND_CHAR );
-    KindObjFuncs[ T_CHAR ] = KindChar;
+    ImportGVarFromLibrary( "TYPE_CHAR", &TYPE_CHAR );
+    TypeObjFuncs[ T_CHAR ] = TypeChar;
 
     /* install the character functions                                     */
     PrintObjFuncs[ T_CHAR ] = PrintChar;
@@ -1194,8 +1196,8 @@ void InitString ( void )
 
     /* install the kind method                                             */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
-        KindObjFuncs[ t1            ] = KindString;
-        KindObjFuncs[ t1 +IMMUTABLE ] = KindString;
+        TypeObjFuncs[ t1            ] = TypeString;
+        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeString;
     }
 
     /* install the copy method                                             */
@@ -1267,16 +1269,16 @@ void InitString ( void )
     IsSSortListFuncs[ T_STRING_SSORT +IMMUTABLE ] = IsSSortStringYes;
 
     /* install the internal function                                       */
-    for ( t1 = FIRST_REAL_TYPE; t1 <= LAST_REAL_TYPE; t1++ ) {
+    for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_REAL_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringNot;
     }
-    for ( t1 = FIRST_LIST_TYPE; t1 <= LAST_LIST_TYPE; t1++ ) {
+    for ( t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringList;
     }
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringYes;
     }
-    for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
+    for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringObject;
     }
     InitHandlerFunc( IsStringHandler, "IS_STRING" );
@@ -1289,7 +1291,7 @@ void InitString ( void )
         "CONV_STRING", 1L, "string", ConvStringHandler );
     AssGVar( GVarName( "CONV_STRING" ), ConvStringFunc );
 
-    IsStringConvFilt = NewBag( TYPE_OBJ(IsStringFilt),
+    IsStringConvFilt = NewBag( TNUM_OBJ(IsStringFilt),
                                SIZE_OBJ(IsStringFilt) );
     for ( i = 0; i < SIZE_OBJ(IsStringFilt)/sizeof(Obj); i++ ) {
         ADDR_OBJ(IsStringConvFilt)[i] = ADDR_OBJ(IsStringFilt)[i];

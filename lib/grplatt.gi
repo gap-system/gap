@@ -53,7 +53,7 @@ InstallMethod(ConjugacyClassSubgroups,IsIdentical,[IsGroup,IsGroup],0,
 function(G,U)
 local filter,cl;
 
-    cl:=Objectify(NewKind(CollectionsFamily(FamilyObj(G)),
+    cl:=Objectify(NewType(CollectionsFamily(FamilyObj(G)),
       IsConjugacyClassSubgroupsRep),rec());
     SetActingDomain(cl,G);
     SetRepresentative(cl,U);
@@ -424,7 +424,7 @@ local   G,		   # group
                    end);
 
     # create the lattice
-    lattice:=Objectify(NewKind(FamilyObj(classes),IsLatticeSubgroupsRep),
+    lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
                        rec());
     lattice!.conjugacyClassesSubgroups:=classes;
     lattice!.group     :=G;

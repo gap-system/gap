@@ -60,7 +60,7 @@ IsInfBitsAssocWord := NewRepresentation(
 
 #############################################################################
 ##
-#V  AWP_PURE_KIND
+#V  AWP_PURE_TYPE
 #V  AWP_NR_BITS_EXP
 #V  AWP_NR_GENS
 #V  AWP_NR_BITS_PAIR
@@ -68,9 +68,9 @@ IsInfBitsAssocWord := NewRepresentation(
 #V  AWP_FUN_ASSOC_WORD
 #V  AWP_FIRST_FREE
 ##
-##  are positions of non-defining data in the kinds of associative words,
+##  are positions of non-defining data in the types of associative words,
 ##  namely
-##  - the pure kind of the object itself, without knowledge features,
+##  - the pure type of the object itself, without knowledge features,
 ##  - the number of bits available for each exponent,
 ##  - the number of generators,
 ##  - the number of bits available for each generator/exponent pair,
@@ -79,23 +79,23 @@ IsInfBitsAssocWord := NewRepresentation(
 ##  - the first position that can be used for private purposes.
 ##
 ##  This data must be provided already in the construction of the family,
-##  in order to make sure that calls of 'NewKind' fetch kinds that know
+##  in order to make sure that calls of 'NewType' fetch types that know
 ##  this data.
 ##
 
 
 #############################################################################
 ##
-#F  InfBits_AssocWord( <Kind>, <list> )
+#F  InfBits_AssocWord( <Type>, <list> )
 ##
-InfBits_AssocWord := function( Kind, list )
+InfBits_AssocWord := function( Type, list )
 
     local n,
           i,
           j;
 
     # Check that the data is admissible.
-    n:= Kind![ AWP_NR_GENS ];
+    n:= Type![ AWP_NR_GENS ];
     if Length( list ) mod 2 <> 0 then
       Error( "<list> must have even length" );
     fi;
@@ -108,7 +108,7 @@ InfBits_AssocWord := function( Kind, list )
         Error( "value at even position <j+1> must be an integer" );
       fi;
     od;
-    return Objectify( Kind, [ Immutable( list ) ] );
+    return Objectify( Type, [ Immutable( list ) ] );
 end;
 
 
@@ -190,10 +190,10 @@ InstallMethod( String, true, [ IsAssocWord ], 0,
 
 #############################################################################
 ##
-#F  AssocWord( <Kind>, <descr> )
+#F  AssocWord( <Type>, <descr> )
 ##
-AssocWord := function( Kind, descr )
-    return Kind![ AWP_FUN_ASSOC_WORD ]( Kind![ AWP_PURE_KIND ], descr );
+AssocWord := function( Type, descr )
+    return Type![ AWP_FUN_ASSOC_WORD ]( Type![ AWP_PURE_TYPE ], descr );
 end;
 
 
@@ -219,14 +219,14 @@ InstallMethod( ObjByExtRep, true,
     expbits:= F!.expBitsInfo;
     if   maxexp < expbits[2] then
       if maxexp < expbits[1] then
-        return AssocWord( F!.kinds[1], descr );
+        return AssocWord( F!.types[1], descr );
       else
-        return AssocWord( F!.kinds[2], descr );
+        return AssocWord( F!.types[2], descr );
       fi;
     elif maxexp < expbits[3] then
-        return AssocWord( F!.kinds[3], descr );
+        return AssocWord( F!.types[3], descr );
     else
-        return AssocWord( F!.kinds[4], descr );
+        return AssocWord( F!.types[4], descr );
     fi;
     end );
 
@@ -235,12 +235,12 @@ InstallMethod( ObjByExtRep, true,
 ##
 #M  ObjByExtRep( <F>, <expbits>, <maxcand>, <descr> )
 ##
-##  is an object that belongs to the smallest possible kind that has
+##  is an object that belongs to the smallest possible type that has
 ##  at least <expbits> bits for the exponent and that allows <maxcand> as
 ##  exponent.
 ##
 ##  If the family itself knows that its objects have (at most) a specified
-##  size then objects of the corresponding kind are created faster.
+##  size then objects of the corresponding type are created faster.
 ##
 InstallOtherMethod( ObjByExtRep, true,
     [ IsAssocWordFamily, IsInt, IsInt, IsHomogeneousList ], 0,
@@ -248,7 +248,7 @@ InstallOtherMethod( ObjByExtRep, true,
 
     local info, expbits;
 
-    # Choose the appropriate kind.
+    # Choose the appropriate type.
     if maxcand < 0 then
       maxcand:= - maxcand;
     fi;
@@ -256,21 +256,21 @@ InstallOtherMethod( ObjByExtRep, true,
     expbits:= F!.expBits;
     if   exp <= expbits[2] and maxcand < info[2] then
       if exp <= expbits[1] and maxcand < info[1] then
-        return AssocWord( F!.kinds[1], descr );
+        return AssocWord( F!.types[1], descr );
       else
-        return AssocWord( F!.kinds[2], descr );
+        return AssocWord( F!.types[2], descr );
       fi;
     elif exp <= expbits[3] and maxcand < info[3] then
-        return AssocWord( F!.kinds[3], descr );
+        return AssocWord( F!.types[3], descr );
     else
-        return AssocWord( F!.kinds[4], descr );
+        return AssocWord( F!.types[4], descr );
     fi;
     end );
 
 
 #############################################################################
 ##
-#M  Install (internal) methods for objects of the 8 bits kind
+#M  Install (internal) methods for objects of the 8 bits type
 ##
 InstallMethod( ExtRepOfObj, true, [ Is8BitsAssocWord ], 0,
     8Bits_ExtRepOfObj );
@@ -285,7 +285,7 @@ InstallMethod( \*, IsIdentical, [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
     8Bits_Product );
 
 InstallMethod( One, true, [ Is8BitsAssocWord and IsAssocWordWithOne ], 0,
-    x -> 8Bits_AssocWord( FamilyObj( x )!.kinds[1], [] ) );
+    x -> 8Bits_AssocWord( FamilyObj( x )!.types[1], [] ) );
 
 InstallMethod( \^, true, [ Is8BitsAssocWord, IsInt and IsSmallIntRep ], 0,
     8Bits_Power );
@@ -308,7 +308,7 @@ InstallOtherMethod( ExponentSums, true, [ Is8BitsAssocWord, IsInt, IsInt ],
 
 #############################################################################
 ##
-#M  Install (internal) methods for objects of the 16 bits kind
+#M  Install (internal) methods for objects of the 16 bits type
 ##
 InstallMethod( ExtRepOfObj, true, [ Is16BitsAssocWord ], 0,
     16Bits_ExtRepOfObj );
@@ -323,7 +323,7 @@ InstallMethod( \*, IsIdentical, [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
     16Bits_Product );
 
 InstallMethod( One, true, [ Is16BitsAssocWord and IsAssocWordWithOne ], 0,
-    x -> 16Bits_AssocWord( FamilyObj( x )!.kinds[2], [] ) );
+    x -> 16Bits_AssocWord( FamilyObj( x )!.types[2], [] ) );
 
 InstallMethod( \^, true, [ Is16BitsAssocWord, IsInt and IsSmallIntRep ], 0,
     16Bits_Power );
@@ -346,7 +346,7 @@ InstallOtherMethod( ExponentSums, true, [ Is16BitsAssocWord, IsInt, IsInt ],
 
 #############################################################################
 ##
-#M  Install (internal) methods for objects of the 32 bits kind
+#M  Install (internal) methods for objects of the 32 bits type
 ##
 InstallMethod( ExtRepOfObj, true, [ Is32BitsAssocWord ], 0,
     32Bits_ExtRepOfObj );
@@ -361,7 +361,7 @@ InstallMethod( \*, IsIdentical, [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
     32Bits_Product );
 
 InstallMethod( One, true, [ Is32BitsAssocWord and IsAssocWordWithOne ], 0,
-    x -> 32Bits_AssocWord( FamilyObj( x )!.kinds[3], [] ) );
+    x -> 32Bits_AssocWord( FamilyObj( x )!.types[3], [] ) );
 
 InstallMethod( \^, true, [ Is32BitsAssocWord, IsInt and IsSmallIntRep ], 0,
     32Bits_Power );
@@ -384,7 +384,7 @@ InstallOtherMethod( ExponentSums, true, [ Is32BitsAssocWord, IsInt, IsInt ],
 
 #############################################################################
 ##
-#M  Install methods for objects of the infinity kind
+#M  Install methods for objects of the infinity type
 ##
 InstallMethod( ExtRepOfObj, true, [ IsInfBitsAssocWord ], 0,
     function( elm ) return elm![1]; end );
@@ -396,7 +396,7 @@ InstallMethod( \<, IsIdentical, [ IsInfBitsAssocWord, IsInfBitsAssocWord ], 0,
     function( x, y ) return x![1] < y![1]; end );
 
 InstallMethod( One, true, [ IsInfBitsAssocWord and IsAssocWordWithOne ], 0,
-    x -> InfBits_AssocWord( FamilyObj( x )!.kinds[4], [] ) );
+    x -> InfBits_AssocWord( FamilyObj( x )!.types[4], [] ) );
 
 InstallMethod( ExponentSyllable, true, [ IsInfBitsAssocWord, 
     IsInt and IsPosRat ], 0, function( x, i ) return x![1][ 2*i ]; end );
@@ -411,7 +411,7 @@ InstallMethod( ExponentSums, true, [ IsInfBitsAssocWord ], 0,
     function( obj )
     local expvec, i;
     expvec:= [];
-    for i in [ 1 .. KindObj( obj )![ AWP_NR_GENS ] ] do
+    for i in [ 1 .. TypeObj( obj )![ AWP_NR_GENS ] ] do
       expvec[i]:= 0;
     od;
     obj:= obj![1];
@@ -427,8 +427,8 @@ InstallOtherMethod( ExponentSums, true,
     local expvec, i;
     expvec:= [];
     if from < 2 then from:= 1; else from:= 2 * from - 1; fi;
-    if KindObj( obj )![ AWP_NR_GENS ] / 2 < to then
-      to:= KindObj( obj )![ AWP_NR_GENS ] / 2 - 1;
+    if TypeObj( obj )![ AWP_NR_GENS ] / 2 < to then
+      to:= TypeObj( obj )![ AWP_NR_GENS ] / 2 - 1;
     else
       to:= 2 * to - 1;
     fi;
@@ -445,11 +445,11 @@ InstallOtherMethod( ExponentSums, true,
 
 #############################################################################
 ##
-#F  ObjByVector( <Kind>, <vector> )
+#F  ObjByVector( <Type>, <vector> )
 #T  ObjByVector( <Fam>, <vector> )
 ##
-ObjByVector := function( Kind, vec )
-    return Kind![ AWP_FUN_OBJ_BY_VECTOR ]( Kind![ AWP_PURE_KIND ], vec );
+ObjByVector := function( Type, vec )
+    return Type![ AWP_FUN_OBJ_BY_VECTOR ]( Type![ AWP_PURE_TYPE ], vec );
 end;
 
 
@@ -471,31 +471,31 @@ end;
 #M  ObjByExtRep( <Fam>, <exp>, <maxcand>, <descr> )
 ##
 ##  If the family does already know that all only words in a prescribed
-##  kind will be constructed then we store this in the family,
+##  type will be constructed then we store this in the family,
 ##  and 'ObjByExtRep' will construct only such objects.
 ##
 InstallOtherMethod( ObjByExtRep, true,
     [ IsAssocWordFamily and Is8BitsAssocWord, IsInt, IsInt, IsList ], 0,
     function( F, exp, maxcand, descr )
-    return 8Bits_AssocWord( F!.kinds[1], descr );
+    return 8Bits_AssocWord( F!.types[1], descr );
     end );
 
 InstallOtherMethod( ObjByExtRep, true,
     [ IsAssocWordFamily and Is16BitsAssocWord, IsInt, IsInt, IsList ], 0,
     function( F, exp, maxcand, descr )
-    return 16Bits_AssocWord( F!.kinds[2], descr );
+    return 16Bits_AssocWord( F!.types[2], descr );
     end );
 
 InstallOtherMethod( ObjByExtRep, true,
     [ IsAssocWordFamily and Is32BitsAssocWord, IsInt, IsInt, IsList ], 0,
     function( F, exp, maxcand, descr )
-    return 32Bits_AssocWord( F!.kinds[3], descr );
+    return 32Bits_AssocWord( F!.types[3], descr );
     end );
 
 InstallOtherMethod( ObjByExtRep, true,
     [ IsAssocWordFamily and IsInfBitsAssocWord, IsInt, IsInt, IsList ], 0,
     function( F, exp, maxcand, descr )
-    return InfBits_AssocWord( F!.kinds[4], descr );
+    return InfBits_AssocWord( F!.types[4], descr );
     end );
 
 
@@ -516,64 +516,213 @@ StoreInfoFreeMagma := function( F, names, req )
           rbits,
           K;
 
-    # Install the data (names, number of bits available for exponents).
-    # Note that in the case of the 32 bits representation,
-    # at most 28 bits are allowed for the exponents in order to avoid
-    # overflow checks.
-    rank  := Length( names );
-    rbits := 1;
-    while 2^rbits < rank do
-      rbits:= rbits + 1;
-    od;
-    F!.names         := Immutable( names );
-    F!.expBits       := [  8 - rbits,
-                          16 - rbits,
-                          Minimum( 32 - rbits, 28 ),
-                          infinity ];
-    F!.expBitsInfo   := [ 2^( F!.expBits[1] - 1 ),
-                          2^( F!.expBits[2] - 1 ),
-                          2^( F!.expBits[3] - 1 ),
-                          infinity          ];
+    # Store the names, initialize the types list.
+    F!.types := [];
+    F!.names := Immutable( names );
 
-    # Construct and store the kinds.
-    F!.kinds:= [];
+    if not IsFinite( names ) then
 
-    K:= NewKind( F, Is8BitsAssocWord and req );
-    K![ AWP_PURE_KIND    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 8;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
-    F!.kinds[1]:= K;
+      SetFilterObj( F, IsInfBitsAssocWord );
 
-    K:= NewKind( F, Is16BitsAssocWord and req );
-    K![ AWP_PURE_KIND    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 16;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
-    F!.kinds[2]:= K;
+    else
 
-    K:= NewKind( F, Is32BitsAssocWord and req );
-    K![ AWP_PURE_KIND    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 32;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
-    F!.kinds[3]:= K;
+      # Install the data (number of bits available for exponents).
+      # Note that in the case of the 32 bits representation,
+      # at most 28 bits are allowed for the exponents in order to avoid
+      # overflow checks.
+      rank  := Length( names );
+      rbits := 1;
+      while 2^rbits < rank do
+        rbits:= rbits + 1;
+      od;
+      F!.expBits       := [  8 - rbits,
+                            16 - rbits,
+                            Minimum( 32 - rbits, 28 ),
+                            infinity ];
+      F!.expBitsInfo   := [ 2^( F!.expBits[1] - 1 ),
+                            2^( F!.expBits[2] - 1 ),
+                            2^( F!.expBits[3] - 1 ),
+                            infinity          ];
 
-    K:= NewKind( F, IsInfBitsAssocWord and req );
-    K![ AWP_PURE_KIND    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[4];
-    K![ AWP_NR_GENS      ]      := rank;
+      # Store the internal types.
+      K:= NewType( F, Is8BitsAssocWord and req );
+      K![ AWP_PURE_TYPE    ]      := K;
+      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
+      K![ AWP_NR_GENS      ]      := rank;
+      K![ AWP_NR_BITS_PAIR ]      := 8;
+      K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
+      K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
+      F!.types[1]:= K;
+  
+      K:= NewType( F, Is16BitsAssocWord and req );
+      K![ AWP_PURE_TYPE    ]      := K;
+      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
+      K![ AWP_NR_GENS      ]      := rank;
+      K![ AWP_NR_BITS_PAIR ]      := 16;
+      K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
+      K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
+      F!.types[2]:= K;
+  
+      K:= NewType( F, Is32BitsAssocWord and req );
+      K![ AWP_PURE_TYPE    ]      := K;
+      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
+      K![ AWP_NR_GENS      ]      := rank;
+      K![ AWP_NR_BITS_PAIR ]      := 32;
+      K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
+      K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
+      F!.types[3]:= K;
+
+    fi;
+
+    K:= NewType( F, IsInfBitsAssocWord and req );
+    K![ AWP_PURE_TYPE    ]      := K;
+    K![ AWP_NR_BITS_EXP  ]      := infinity;
+    K![ AWP_NR_GENS      ]      := infinity;
     K![ AWP_NR_BITS_PAIR ]      := infinity;
     K![ AWP_FUN_OBJ_BY_VECTOR ] := InfBits_ObjByVector;
     K![ AWP_FUN_ASSOC_WORD    ] := InfBits_AssocWord;
-    F!.kinds[4]:= K;
+    F!.types[4]:= K;
 
+end;
+
+
+#############################################################################
+##
+#R  IsInfiniteListOfNamesRep( <string> )
+##
+##  is a representation of a list containing at position $i$ the string
+##  '<string>$i$'.
+##
+##  <string> is stored at position 1 in the list object.
+##
+IsInfiniteListOfNamesRep := NewRepresentation( "IsInfiniteListOfNamesRep",
+    IsPositionalObjectRep and IsConstantTimeAccessListRep,
+    [ 1 ] );
+
+InstallMethod( PrintObj,
+    "method for an infinite list of names",
+    true,
+    [ IsList and IsInfiniteListOfNamesRep ], 0,
+    function( list )
+    Print( "[ ", list[1], ", ", list[2], ", ... ]" );
+    end );
+
+InstallMethod( \[\],
+    "method for an infinite list of names",
+    true,
+    [ IsList and IsInfiniteListOfNamesRep, IsInt and IsPosRat ], 0,
+    function( list, pos )
+    local entry;
+    entry:= Concatenation( list![1], String( pos ) );
+    ConvertToStringRep( entry );
+    return entry;
+    end );
+
+InstallMethod( Position,
+    "method for an infinite list of names, an object, and zero",
+    true,
+    [ IsList and IsInfiniteListOfNamesRep, IsObject, IsZeroCyc ], 0,
+    function( list, obj, zero )
+    local digits, pos, i;
+    if    ( not IsString( obj ) )
+       or Length( obj ) <= Length( list![1] )
+       or obj{ [ 1 .. Length( list![1] ) ] } <> list![1] then
+      return fail;
+    fi;
+    digits:= "0123456789";
+    pos:= 0;
+    for i in [ Length( list![1] ) + 1 .. Length( obj ) ] do
+      if obj[i] in digits then
+        pos:= 10*pos + Position( digits, obj[i], 0 ) - 1;
+      else
+        return fail;
+      fi;
+    od;
+    return pos;
+    end );
+
+
+#############################################################################
+##
+#F  InfiniteListOfNames( <string> )
+##
+InfiniteListOfNames := function( string )
+    local list;
+    list:= Objectify( NewType( CollectionsFamily( FamilyObj( string ) ),
+                                   IsList
+                               and IsDenseList
+                               and IsInfiniteListOfNamesRep ),
+                      [ string ] );
+    SetIsFinite( list, false );
+    SetIsEmpty( list, false );
+    SetLength( list, infinity );
+    return list;
+end;
+
+
+#############################################################################
+##
+#R  IsInfiniteListOfGeneratorsRep( <F> )
+##
+##  is a representation of a list containing at position $i$ the $i$-th
+##  generator of the free something family <F>.
+##
+##  <F> is stored at position 1 in the list object.
+##
+IsInfiniteListOfGeneratorsRep := NewRepresentation(
+    "IsInfiniteListOfGeneratorsRep",
+    IsPositionalObjectRep and IsConstantTimeAccessListRep,
+    [ 1 ] );
+
+InstallMethod( PrintObj,
+    "method for an infinite list of generators",
+    true,
+    [ IsList and IsInfiniteListOfGeneratorsRep ], 0,
+    function( list )
+    Print( "[ ", list[1], ", ", list[2], ", ... ]" );
+    end );
+
+InstallMethod( \[\],
+    "method for an infinite list of generators",
+    true,
+    [ IsList and IsInfiniteListOfGeneratorsRep, IsInt and IsPosRat ], 0,
+    function( list, i )
+    return ObjByExtRep( list![1], 1, 1, [ i, 1 ] );
+    end );
+
+InstallMethod( Position,
+    "method for an infinite list of generators, an object, and zero",
+    true,
+    [ IsList and IsInfiniteListOfGeneratorsRep, IsObject, IsZeroCyc ], 0,
+    function( list, obj, zero )
+    local digits, pos;
+    if FamilyObj( obj ) <> list![1] then
+      return fail;
+    fi;
+    obj:= ExtRepOfObj( obj );
+    if obj[2] <> 1 then
+      return fail;
+    else
+      return obj[1];
+    fi;
+    end );
+    
+
+#############################################################################
+##
+#F  InfiniteListOfGenerators( <F> )
+##
+InfiniteListOfGenerators := function( F )
+    local list;
+    list:= Objectify( NewType( CollectionsFamily( F ),
+                                   IsList
+                               and IsDenseList
+                               and IsInfiniteListOfGeneratorsRep ),
+                      [ F ] );
+    SetIsFinite( list, false );
+    SetIsEmpty( list, false );
+    SetLength( list, infinity );
+    return list;
 end;
 
 

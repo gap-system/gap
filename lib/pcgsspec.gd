@@ -31,7 +31,6 @@ HasIsSpecialPcgs := Tester(IsSpecialPcgs);
 
 #############################################################################
 ##
-
 #A  SpecialPcgs( <pcgs> )
 ##
 SpecialPcgs := NewAttribute( "SpecialPcgs",
@@ -45,9 +44,7 @@ HasSpecialPcgs := Tester(SpecialPcgs);
 ##
 #A  LGWeights( <pcgs> )
 ##
-LGWeights := NewAttribute( "LGWeights", 
-    IsPcgs and IsSpecialPcgs );
-
+LGWeights := NewAttribute( "LGWeights", IsPcgs );
 SetLGWeights := Setter(LGWeights);
 HasLGWeights := Tester(LGWeights);
 
@@ -56,9 +53,7 @@ HasLGWeights := Tester(LGWeights);
 ##
 #A  LGLayers( <pcgs> )
 ##
-LGLayers := NewAttribute( "LGLayers", 
-    IsPcgs and IsSpecialPcgs );
-
+LGLayers := NewAttribute( "LGLayers", IsPcgs );
 SetLGLayers := Setter(LGLayers);
 HasLGLayers := Tester(LGLayers);
 
@@ -67,9 +62,7 @@ HasLGLayers := Tester(LGLayers);
 ##
 #A  LGFirst( <pcgs> )
 ##
-LGFirst := NewAttribute( "LGFirst", 
-    IsPcgs and IsSpecialPcgs );
-
+LGFirst := NewAttribute( "LGFirst", IsPcgs );
 SetLGFirst := Setter(LGFirst);
 HasLGFirst := Tester(LGFirst);
 

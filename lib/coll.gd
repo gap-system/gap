@@ -206,7 +206,7 @@ InstallSubsetMaintainedMethod := function( operation, super_req, sub_req )
 
     # Are there methods that may give us some of the requirements?
     upper:= SUM_FLAGS;
-    # We must not call `SUBTR_SET' here because the lists kinds may be
+    # We must not call `SUBTR_SET' here because the lists types may be
     # not yet defined.
     # filtssub:= TRUES_FLAGS( FLAGS_FILTER( sub_req ) );
     # SUBTR_SET( filtssub, CATS_AND_REPS );
@@ -231,7 +231,7 @@ InstallSubsetMaintainedMethod := function( operation, super_req, sub_req )
     if filt1 = false then
       filt1:= FLAGS_FILTER( Tester( operation ) );
     fi;
-    # We must not call `SUBTR_SET' here because the lists kinds may be
+    # We must not call `SUBTR_SET' here because the lists types may be
     # not yet defined.
     # filtsopr:= SHALLOW_COPY_OBJ( TRUES_FLAGS( filt1 ) );
     # SUBTR_SET( filtsopr, CATS_AND_REPS );
@@ -802,7 +802,7 @@ List :=
 ##  proportional to its length.
 ##  'ListSorted' is an operation.
 ##
-##  For lists this is implemented by 'ShallowCopy( ListSortedList(<coll>) )'.
+##  For lists this is implemented by 'ListSortedList( <coll> )'.
 ##  For collections that are not lists, the generic method is
 ##  'ShallowCopy( EnumeratorSorted( <coll> ) )'.
 ##

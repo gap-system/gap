@@ -198,13 +198,13 @@ InstallMethod( FLMLORByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLOR
                               and IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLOR
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
@@ -240,7 +240,7 @@ InstallOtherMethod( FLMLORByGenerators,
       Error( "<zero> must be a square matrix" );
     fi;
 
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLOR
                             and IsGaussianSpace
                             and IsGaussianMatrixSpaceRep
@@ -280,13 +280,13 @@ InstallOtherMethod( FLMLORByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLOR
                               and IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLOR
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
@@ -333,13 +333,13 @@ InstallMethod( FLMLORByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLOR
                               and IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLOR
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
@@ -373,7 +373,7 @@ InstallOtherMethod( FLMLORByGenerators,
       Error( "<zero> must be a square matrix" );
     fi;
 
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLOR
                             and IsGaussianSpace
                             and IsGaussianMatrixSpaceRep
@@ -414,13 +414,13 @@ InstallOtherMethod( FLMLORByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLOR
                               and IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLOR
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
@@ -465,13 +465,13 @@ InstallMethod( FLMLORWithOneByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLORWithOne
                               and IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLORWithOne
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
@@ -506,7 +506,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
       Error( "<zero> must be a square matrix" );
     fi;
 
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLORWithOne
                             and IsGaussianSpace
                             and IsGaussianMatrixSpaceRep
@@ -548,13 +548,13 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     fi;
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLORWithOne
                               and IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
-      A:= Objectify( NewKind( FamilyObj( mats ),
+      A:= Objectify( NewType( FamilyObj( mats ),
                                   IsFLMLORWithOne
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
@@ -1238,7 +1238,7 @@ EmptyMatrix := function( char )
     fi;
 
     # Construct the matrix.
-    mat:= Objectify( NewKind( Fam,
+    mat:= Objectify( NewType( Fam,
                                   IsList
                               and IsEmpty
                               and IsMatrix

@@ -6,7 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 */
-#include	"system.h"
+#include        "system.h"
 #include        "compstat.h"
 
 

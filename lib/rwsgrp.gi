@@ -34,7 +34,7 @@ InstallMethod( ElementByRws,
 
 function( fam, elm )
     elm := [ Immutable(elm) ];
-    return Objectify( fam!.defaultKind, elm );
+    return Objectify( fam!.defaultType, elm );
 end );
 
 
@@ -291,8 +291,8 @@ function( rws )
     # store the rewriting system
     fam!.rewritingSystem := Immutable(rws);
 
-    # create the default kind for the elements
-    fam!.defaultKind := NewKind( fam, IsElementByRwsDefaultRep );
+    # create the default type for the elements
+    fam!.defaultType := NewType( fam, IsElementByRwsDefaultRep );
 
     # that's it
     return fam;

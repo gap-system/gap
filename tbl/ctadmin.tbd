@@ -445,7 +445,7 @@ CharacterTableSpecialized := NewOperationArgs( "CharacterTableSpecialized" );
 ##  <record> must have one of the components 'isGenericTable' or
 ##  'underlyingCharacteristic'.
 ##
-##  The components listed in 'SupportedCharacterTableInfo' are used to set
+##  The components listed in 'SupportedOrdinaryTableInfo' are used to set
 ##  properties and attributes.
 ##  All other components will simply become components of the record object.
 ##  
@@ -813,6 +813,17 @@ PrintToLib := NewOperationArgs( "PrintToLib" );
 ##   In case of splitting, each Clifford record must contain 'splitinfos'.
 ##
 PrintClmsToLib := NewOperationArgs( "PrintClmsToLib" );
+
+
+#############################################################################
+##
+#F  OrbitsResidueClass( <pq> )
+##
+##  is used in the generic character table of the groups $p \colon q$.
+##  <pq> must be a list of length 2, the first entry being $p$, the second
+##  being $q$.
+##
+OrbitsResidueClass := NewOperationArgs( "OrbitsResidueClass" );
 
 
 #############################################################################

@@ -19,7 +19,7 @@ char * Revision_gap_c =
 
 extern char * In;
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* InitGVars                       */
@@ -88,15 +88,25 @@ extern char * In;
 **
 
 *V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
-*V  Last2 . . . . . . . . . . . . . . . . . . . . . . global variable 'last2'
-*V  Last3 . . . . . . . . . . . . . . . . . . . . . . global variable 'last3'
 **
 **  'Last',  'Last2', and 'Last3'  are the  global variables 'last', 'last2',
 **  and  'last3', which are automatically  assigned  the result values in the
 **  main read-eval-print loop.
 */
 UInt Last;
+
+
+/****************************************************************************
+**
+*V  Last2 . . . . . . . . . . . . . . . . . . . . . . global variable 'last2'
+*/
 UInt Last2;
+
+
+/****************************************************************************
+**
+*V  Last3 . . . . . . . . . . . . . . . . . . . . . . global variable 'last3'
+*/
 UInt Last3;
 
 
@@ -129,13 +139,18 @@ int main (
 
     /* maybe compile                                                       */
     if ( SyCompilePlease ) {
-        func = READ_AS_FUNC( SyCompileInput );
-        if ( func == Fail )  SyExit( 1 );
-        crc = SyGAPCRC( SyCompileInput );
-        type = CompileFunc(
-            SyCompileOutput, func, SyCompileName,
-            crc, SyCompileMagic1 );
-        if ( type == 0 )  SyExit( 1 );
+        if ( ! OpenInput(SyCompileInput) ) {
+            SyExit(1);
+        }
+        func = READ_AS_FUNC(SyCompileInput);
+        crc  = SyGAPCRC(SyCompileInput);
+        type = CompileFunc( SyCompileOutput,
+                            func,
+                            SyCompileName,
+                            crc,
+                            SyCompileMagic1 );
+        if ( type == 0 )
+            SyExit( 1 );
         SyExit( 0 );
     }
 
@@ -148,6 +163,7 @@ int main (
         /* read and evaluate one command                                   */
         Prompt = "gap> ";
         NrError = 0;
+        DualSemicolon = 0;
         type = ReadEvalCommand();
 
         /* stop the stopwatch                                              */
@@ -162,21 +178,16 @@ int main (
             AssGVar( Last,  ReadEvalResult   );
 
             /* print the result                                            */
-            if ( *In != ';' ) {
+            if ( ! DualSemicolon ) {
                 IsStringConv( ReadEvalResult );
                 PrintObj( ReadEvalResult );
                 Pr( "\n", 0L, 0L );
             }
-            else {
-                Match( S_SEMICOLON, ";", 0UL );
-            }
-
         }
 
         /* handle return-value or return-void command                      */
         else if ( type == 1 || type == 2 ) {
-            Pr(
-                "'return' must not be used in main read-eval-print loop",
+            Pr( "'return' must not be used in main read-eval-print loop",
                 0L, 0L );
         }
 
@@ -284,7 +295,7 @@ Obj SizeScreenHandler (
     }
     else {
         elm = ELMW_LIST(size,1);
-        while ( TYPE_OBJ(elm) != T_INT ) {
+        while ( TNUM_OBJ(elm) != T_INT ) {
             elm = ErrorReturnObj(
                 "SizeScreen: <x> must be an integer",
                 0L, 0L,
@@ -301,7 +312,7 @@ Obj SizeScreenHandler (
     }
     else {
         elm = ELMW_LIST(size,2);
-        while ( TYPE_OBJ(elm) != T_INT ) {
+        while ( TNUM_OBJ(elm) != T_INT ) {
             elm = ErrorReturnObj(
                 "SizeScreen: <y> must be an integer",
                 0L, 0L,
@@ -426,12 +437,12 @@ Obj FuncWhere (
             if ( call == 0 ) {
                 Pr( "<corrupted call value> ", 0L, 0L );
             }
-            else if ( T_PROCCALL_0ARGS <= TYPE_STAT(call)
-                   && TYPE_STAT(call)  <= T_PROCCALL_XARGS ) {
+            else if ( T_PROCCALL_0ARGS <= TNUM_STAT(call)
+                   && TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
                 PrintStat( call );
             }
-            else if ( T_FUNCCALL_0ARGS <= TYPE_EXPR(call)
-                   && TYPE_EXPR(call)  <= T_FUNCCALL_XARGS ) {
+            else if ( T_FUNCCALL_0ARGS <= TNUM_EXPR(call)
+                   && TNUM_EXPR(call)  <= T_FUNCCALL_XARGS ) {
                 PrintExpr( call );
             }
             Pr( " called from\n", 0L, 0L );
@@ -475,6 +486,19 @@ Obj ErrorMode (
     UInt                errorLLevel;
     UInt                type;
     char                prompt [16];
+
+    /* ignore all errors when testing                                      */
+    if ( TestInput != 0 && TestOutput == Output ) {
+        if ( msg != (Char*)0 ) {
+            Pr( msg, arg1, arg2 );
+        }
+        else if ( args != (Obj)0 ) {
+            Pr( "Error ", 0L, 0L );
+            FuncPrint( (Obj)0, args );
+        }
+        Pr( "\n", 0L, 0L );
+        ReadEvalError();
+    }
 
     /* open the standard error output file                                 */
     OpenOutput( "*errout*" );
@@ -702,7 +726,7 @@ void Complete (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "COMPLETE: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -880,8 +904,8 @@ Obj DoCompleteXargs (
 **
 *F  FuncCOM_FILE( <self>, <filename>, <crc> ) . . . . . . . . .  set filename
 */
-Obj  CompLists;
-Obj  CompThenFuncs;
+Obj CompLists;
+Obj CompThenFuncs;
 
 
 Obj FuncCOM_FILE (
@@ -901,13 +925,13 @@ Obj FuncCOM_FILE (
     while ( ! IsStringConv(filename) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
-    while ( TYPE_OBJ(crc)!=T_INTPOS && !IS_INTOBJ(crc) ) {
+    while ( TNUM_OBJ(crc)!=T_INTPOS && !IS_INTOBJ(crc) ) {
         crc = ErrorReturnObj(
             "<crc> must be an positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(crc)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(crc)].name), 0L,
             "you can return an integer or 'false' for <crc>" );
     }
 
@@ -1073,7 +1097,7 @@ Obj FuncMAKE_INIT (
         filename = ELM_PLIST( args, i );
         if ( ! IsStringConv( filename ) ) {
             ErrorQuit( "%d.th argument must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L );
         }
     }
 
@@ -1089,7 +1113,7 @@ Obj FuncMAKE_INIT (
 
         /* try to open the file                                            */
         if ( ! OpenInput( CSTR_STRING(filename) ) ) {
-	    CloseOutput();
+            CloseOutput();
             ErrorQuit( "'%s' must exist and be readable",
                        (Int)CSTR_STRING(filename), 0L );
         }
@@ -1280,7 +1304,7 @@ Obj FuncGAP_CRC (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
 
@@ -1310,13 +1334,13 @@ Obj FuncLOAD_DYN (
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
-    while ( TYPE_OBJ(crc)!=T_INTPOS && !IS_INTOBJ(crc) && crc!=False ) {
+    while ( TNUM_OBJ(crc)!=T_INTPOS && !IS_INTOBJ(crc) && crc!=False ) {
         crc = ErrorReturnObj(
             "<crc> must be an integer or 'false' (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(crc)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(crc)].name), 0L,
             "you can return an integer or 'false' for <crc>" );
     }
 
@@ -1380,19 +1404,19 @@ Obj FuncLOAD_STAT (
     StructCompInitInfo* info;
     Obj                 crc1;
     Int                 k;
-    Obj			func;
+    Obj                 func;
 
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
             "you can return a string for <filename>" );
     }
-    while ( TYPE_OBJ(crc)!=T_INTPOS && !IS_INTOBJ(crc) && crc!=False ) {
+    while ( TNUM_OBJ(crc)!=T_INTPOS && !IS_INTOBJ(crc) && crc!=False ) {
         crc = ErrorReturnObj(
             "<crc> must be an integer or 'false' (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(crc)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(crc)].name), 0L,
             "you can return an integer or 'false' for <crc>" );
     }
 
@@ -1447,7 +1471,7 @@ Obj FuncLOAD_STAT (
 Obj FuncSHOW_STAT (
     Obj                 self )
 {
-    Obj			modules;
+    Obj                 modules;
     Obj                 crc1;
     Obj                 name;
     StructCompInitInfo* info;
@@ -1460,7 +1484,7 @@ Obj FuncSHOW_STAT (
         if ( info == 0 ) {
             continue;
         }
-	im++;
+        im++;
     }
 
     /* make a list of modules with crc values                              */
@@ -1472,16 +1496,16 @@ Obj FuncSHOW_STAT (
         if ( info == 0 ) {
             continue;
         }
-	name = NEW_STRING( SyStrlen(info->magic2) );
-	SyStrncat( CSTR_STRING(name), info->magic2, SyStrlen(info->magic2) );
-	SET_ELM_PLIST( modules, im, name );
+        name = NEW_STRING( SyStrlen(info->magic2) );
+        SyStrncat( CSTR_STRING(name), info->magic2, SyStrlen(info->magic2) );
+        SET_ELM_PLIST( modules, im, name );
 
-	/* compute the crc value                                           */
+        /* compute the crc value                                           */
         crc1 = INTOBJ_INT( info->magic1 >> 16 );
         crc1 = PROD( INTOBJ_INT(1<<16), crc1 );
         crc1 = SUM( crc1, INTOBJ_INT( info->magic1 & 0xFFFFL ) );
-	SET_ELM_PLIST( modules, im+1, crc1 );
-	im += 2;
+        SET_ELM_PLIST( modules, im+1, crc1 );
+        im += 2;
     }
 
     return modules;
@@ -1529,7 +1553,7 @@ again:
         while ( ! IsStringConv(cmd) ) {
            cmd = ErrorReturnObj(
                "GASMAN: <cmd> must be a string (not a %s)",
-               (Int)(InfoBags[TYPE_OBJ(cmd)].name), 0L,
+               (Int)(InfoBags[TNUM_OBJ(cmd)].name), 0L,
                "you can return a string for <cmd>" );
        }
 
@@ -1540,8 +1564,8 @@ again:
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( k = 0; k < 256; k++ ) {
                 if ( InfoBags[k].name != 0 ) {
-		    buf[0] = '\0';
-		    SyStrncat( buf, InfoBags[k].name, 40 );
+                    buf[0] = '\0';
+                    SyStrncat( buf, InfoBags[k].name, 40 );
                     Pr("%40s ",    (Int)buf, 0L );
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
@@ -1576,13 +1600,13 @@ again:
 
         /* or display information about global bags                        */
         else if ( SyStrcmp( CSTR_STRING(cmd), "global" ) == 0 ) {
-	    for ( i = 0;  i < GlobalBags.nr;  i++ ) {
-		if ( *(GlobalBags.addr[i]) != 0 ) {
-		    Pr( "%50s: %12d bytes\n", (Int)GlobalBags.cookie[i], 
-		        (Int)SIZE_BAG(*(GlobalBags.addr[i])) );
-		}
-	    }
-	}
+            for ( i = 0;  i < GlobalBags.nr;  i++ ) {
+                if ( *(GlobalBags.addr[i]) != 0 ) {
+                    Pr( "%50s: %12d bytes\n", (Int)GlobalBags.cookie[i], 
+                        (Int)SIZE_BAG(*(GlobalBags.addr[i])) );
+                }
+            }
+        }
 
         /* or finally toggle Gasman messages                               */
         else if ( SyStrcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
@@ -1619,9 +1643,9 @@ Obj FuncSHALLOW_SIZE (
 
 /****************************************************************************
 **
-*F  FuncTYPE_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TYPE_OBJ'
+*F  FuncTNUM_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TNUM_OBJ'
 */
-Obj FuncTYPE_OBJ (
+Obj FuncTNUM_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1633,8 +1657,8 @@ Obj FuncTYPE_OBJ (
     SET_LEN_PLIST( res, 2 );
 
     /* set the type                                                        */
-    SET_ELM_PLIST( res, 1, INTOBJ_INT( TYPE_OBJ(obj) ) );
-    cst = InfoBags[TYPE_OBJ(obj)].name;
+    SET_ELM_PLIST( res, 1, INTOBJ_INT( TNUM_OBJ(obj) ) );
+    cst = InfoBags[TNUM_OBJ(obj)].name;
     str = NEW_STRING( SyStrlen(cst) );
     SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
     SET_ELM_PLIST( res, 2, str );
@@ -1646,9 +1670,9 @@ Obj FuncTYPE_OBJ (
 
 /****************************************************************************
 **
-*F  FuncXTYPE_OBJ( <self>, <obj> )  . . . . . . . expert function 'XTYPE_OBJ'
+*F  FuncXTNUM_OBJ( <self>, <obj> )  . . . . . . . expert function 'XTNUM_OBJ'
 */
-Obj FuncXTYPE_OBJ (
+Obj FuncXTNUM_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1661,7 +1685,7 @@ Obj FuncXTYPE_OBJ (
     SET_LEN_PLIST( res, 2 );
 
     /* set the type                                                        */
-    xtype = XType(obj);
+    xtype = XTNum(obj);
     SET_ELM_PLIST( res, 1, INTOBJ_INT(xtype) );
     if ( xtype == T_OBJECT ) {
         cst = "virtual object";
@@ -1699,7 +1723,7 @@ Obj FuncOBJ_HANDLE (
     if ( IS_INTOBJ(obj) ) {
         return (Obj)INT_INTOBJ(obj);
     }
-    else if ( TYPE_OBJ(obj) == T_INTPOS ) {
+    else if ( TNUM_OBJ(obj) == T_INTPOS ) {
         hand = 0;
         prod = 1;
         while ( EQ( obj, INTOBJ_INT(0) ) == 0 ) {
@@ -1754,11 +1778,11 @@ Obj FuncSWAP_MPTR (
     Obj                 obj1,
     Obj                 obj2 )
 {
-    if ( TYPE_OBJ(obj1) == T_INT || TYPE_OBJ(obj1) == T_FFE ) {
+    if ( TNUM_OBJ(obj1) == T_INT || TNUM_OBJ(obj1) == T_FFE ) {
         ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
         return 0;
     }
-    if ( TYPE_OBJ(obj2) == T_INT || TYPE_OBJ(obj2) == T_FFE ) {
+    if ( TNUM_OBJ(obj2) == T_INT || TNUM_OBJ(obj2) == T_FFE ) {
         ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
         return 0;
     }
@@ -1781,7 +1805,7 @@ Obj FuncIDENTS_GVAR (
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
     for ( i = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
-	SET_ELM_PLIST( copy, i, ELM_PLIST( NameGVars, i ) );
+        SET_ELM_PLIST( copy, i, ELM_PLIST( NameGVars, i ) );
     }
     SET_LEN_PLIST( copy, LEN_PLIST(NameGVars) );
     return copy;
@@ -1801,7 +1825,7 @@ Obj FuncASS_GVAR (
     while ( ! IsStringConv( gvar ) ) {
         gvar = ErrorReturnObj(
             "READ: <gvar> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(gvar)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(gvar)].name), 0L,
             "you can return a string for <gvar>" );
     }
 
@@ -1827,20 +1851,20 @@ static UInt   NrImportedGVars = 0;
 
 
 void ImportGVarFromLibrary(
-    Char *	    name,
+    Char *          name,
     Obj *           address )
 {
     if ( NrImportedGVars == 1024 ) {
-	if ( ! SyQuiet ) {
-	    Pr( "#W  warning: too many imported GVars\n", 0L, 0L );
-	}
-	InitCopyGVar( GVarName(name), address );
+        if ( ! SyQuiet ) {
+            Pr( "#W  warning: too many imported GVars\n", 0L, 0L );
+        }
+        InitCopyGVar( GVarName(name), address );
     }
     else {
-	ImportedGVars[NrImportedGVars]     = GVarName(name);
-	ImportedGVarAddrs[NrImportedGVars] = address;
-	InitCopyGVar( ImportedGVars[NrImportedGVars], address );
-	NrImportedGVars++;
+        ImportedGVars[NrImportedGVars]     = GVarName(name);
+        ImportedGVarAddrs[NrImportedGVars] = address;
+        InitCopyGVar( ImportedGVars[NrImportedGVars], address );
+        NrImportedGVars++;
     }
 }
 
@@ -1855,20 +1879,20 @@ static UInt   NrImportedFuncs = 0;
 
 
 void ImportFuncFromLibrary(
-    Char *	    name,
+    Char *          name,
     Obj *           address )
 {
     if ( NrImportedFuncs == 1024 ) {
-	if ( ! SyQuiet ) {
-	    Pr( "#W  warning: too many imported Funcs\n", 0L, 0L );
-	}
-	InitFopyGVar( GVarName(name), address );
+        if ( ! SyQuiet ) {
+            Pr( "#W  warning: too many imported Funcs\n", 0L, 0L );
+        }
+        InitFopyGVar( GVarName(name), address );
     }
     else {
-	ImportedFuncs[NrImportedFuncs]     = GVarName(name);
-	ImportedFuncAddrs[NrImportedFuncs] = address;
-	InitFopyGVar( ImportedFuncs[NrImportedFuncs], address );
-	NrImportedFuncs++;
+        ImportedFuncs[NrImportedFuncs]     = GVarName(name);
+        ImportedFuncAddrs[NrImportedFuncs] = address;
+        InitFopyGVar( ImportedFuncs[NrImportedFuncs], address );
+        NrImportedFuncs++;
     }
 }
 
@@ -1878,37 +1902,37 @@ void ImportFuncFromLibrary(
 *F  FuncExportToKernelFinished( <self> )  . . . . . . . . . . check functions
 */
 Obj FuncExportToKernelFinished (
-    Obj		    self )
+    Obj             self )
 {
-    UInt	    i;
-    Int		    errs = 0;
+    UInt            i;
+    Int             errs = 0;
 
     for ( i = 0;  i < NrImportedGVars;  i++ ) {
-	if ( *ImportedGVarAddrs[i] == 0 ) {
-	    errs++;
-	    if ( ! SyQuiet ) {
-		Pr( "#W  global variable '%s' has not been defined\n",
-		    (Int)NameGVar(ImportedGVars[i]), 0L );
-	    }
-	}
-	else {
-	    SET_ELM_PLIST( WriteGVars, ImportedGVars[i], INTOBJ_INT(0) );
-	}
+        if ( *ImportedGVarAddrs[i] == 0 ) {
+            errs++;
+            if ( ! SyQuiet ) {
+                Pr( "#W  global variable '%s' has not been defined\n",
+                    (Int)NameGVar(ImportedGVars[i]), 0L );
+            }
+        }
+        else {
+            SET_ELM_PLIST( WriteGVars, ImportedGVars[i], INTOBJ_INT(0) );
+        }
     }
     
     for ( i = 0;  i < NrImportedFuncs;  i++ ) {
-	if ( *ImportedFuncAddrs[i] == ErrorMustEvalToFuncFunc
+        if ( *ImportedFuncAddrs[i] == ErrorMustEvalToFuncFunc
           || *ImportedFuncAddrs[i] == ErrorMustHaveAssObjFunc )
-	{
-	    errs++;
-	    if ( ! SyQuiet ) {
-		Pr( "#W  global function '%s' has not been defined\n",
-		    (Int)NameGVar(ImportedFuncs[i]), 0L );
-	    }
-	}
-	else {
-	    SET_ELM_PLIST( WriteGVars, ImportedFuncs[i], INTOBJ_INT(0) );
-	}
+        {
+            errs++;
+            if ( ! SyQuiet ) {
+                Pr( "#W  global function '%s' has not been defined\n",
+                    (Int)NameGVar(ImportedFuncs[i]), 0L );
+            }
+        }
+        else {
+            SET_ELM_PLIST( WriteGVars, ImportedFuncs[i], INTOBJ_INT(0) );
+        }
     }
     
     return errs == 0 ? True : False;
@@ -1934,7 +1958,7 @@ UInt   RevisionsSize = 0;
 **
 *F  InitGap() . . . . . . . . . . . . . . . . . . . . . . . . . intialize GAP
 */
-extern TypeMarkFuncBags TabMarkFuncBags [ 256 ];
+extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 
 void InitGap (
     int *               pargc,
@@ -1962,7 +1986,7 @@ void InitGap (
     SET_REVISION( "gasman_h",   Revision_gasman_h );
 
 
-    /* read all packages                                                   */
+    /* initialise the global variables                                     */
     SET_REVISION( "gap_c",      Revision_gap_c );
     SET_REVISION( "gap_h",      Revision_gap_h );
 
@@ -1970,9 +1994,20 @@ void InitGap (
     SET_REVISION( "gvars_c",    Revision_gvars_c );
     SET_REVISION( "gvars_h",    Revision_gvars_h );
 
+    /* now initialise the important filter/properties                      */
+#if 0
+    RESERVE_FILTER(   IsMutableObjFilt, F_MUTABLE             );
+    RESERVE_PROPERTY( IsEmptyProp,      F_EMPTY,  F_NOT_EMPTY );
+    RESERVE_PROPERTY( IsSSortProp,      F_SSORT,  F_NOT_SSORT );
+    RESERVE_PROPERTY( IsDenseProp,      F_DENSE,  F_NOT_DENSE );
+    RESERVE_PROPERTY( IsHomogProp,      F_HOMOG,  F_NOT_HOMOG );
+    RESERVE_PROPERTY( IsTableProp,      F_TABLE,  F_NOT_TABLE );
+#endif
+
+    /* read all the other packages                                         */
     InitStreams();
-    SET_REVISION( "gap_c",      Revision_streams_c );
-    SET_REVISION( "gap_h",      Revision_streams_h );
+    SET_REVISION( "streams_c",  Revision_streams_c );
+    SET_REVISION( "streams_h",  Revision_streams_h );
 
     InitObjects();
     SET_REVISION( "objects_c",  Revision_objects_c );
@@ -2126,7 +2161,7 @@ void InitGap (
 
 
     /* and now for a special hack                                          */
-    for ( i = LAST_CONSTANT_TYPE+1; i <= LAST_REAL_TYPE; i++ ) {
+    for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
         TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
     }
 
@@ -2170,16 +2205,16 @@ void InitGap (
 
     /* library name and other stuff                                        */
     AssGVar( GVarName( "QUIET" ),
-	     (SyQuiet  ? True : False) );
+             (SyQuiet  ? True : False) );
 
     AssGVar( GVarName( "BANNER" ),
-	     (SyBanner ? True : False) );
+             (SyBanner ? True : False) );
 
     AssGVar( GVarName( "DEBUG_LOADING" ),
-	     (SyDebugLoading ? True : False) );
+             (SyDebugLoading ? True : False) );
 
     AssGVar( GVarName( "CHECK_FOR_COMP_FILES" ),
-	     (SyCheckForCompFiles ? True : False) );
+             (SyCheckForCompFiles ? True : False) );
 
 
     /* install the internal functions                                      */
@@ -2199,16 +2234,11 @@ void InitGap (
                     FuncID_FUNC ) );
 
     AssGVar( GVarName( "ExportToKernelFinished" ),
-	 NewFunctionC( "ExportToKernelFinished", 0L, "",
-		    FuncExportToKernelFinished ) );
+         NewFunctionC( "ExportToKernelFinished", 0L, "",
+                    FuncExportToKernelFinished ) );
 
 
-    /* install the print and error functions                               */
-    InitHandlerFunc( FuncPrint, "Print");
-    AssGVar( GVarName( "Print" ),
-         NewFunctionC( "Print", -1L, "args",
-                    FuncPrint ) );
-
+    /* install the error functions                                         */
     InitHandlerFunc( FuncDownEnv, "DownEnv");
     AssGVar( GVarName( "DownEnv" ),
          NewFunctionC( "DownEnv", -1L, "",
@@ -2266,8 +2296,8 @@ void InitGap (
 
     InitHandlerFunc( FuncExportToKernelFinished, "ExportToKernelFinished");
     AssGVar( GVarName( "ExportToKernelFinished" ),
-	 NewFunctionC( "ExportToKernelFinished", 0L, "",
-		    FuncExportToKernelFinished ) );
+         NewFunctionC( "ExportToKernelFinished", 0L, "",
+                    FuncExportToKernelFinished ) );
 
 
     /* debugging functions                                                 */
@@ -2281,15 +2311,15 @@ void InitGap (
          NewFunctionC(  "SHALLOW_SIZE", 1L, "object",
                      FuncSHALLOW_SIZE ) );
 
-    InitHandlerFunc( FuncTYPE_OBJ, "TYPE_OBJ");
-    AssGVar( GVarName(  "TYPE_OBJ" ),
-         NewFunctionC(  "TYPE_OBJ", 1L, "object",
-                     FuncTYPE_OBJ ) );
+    InitHandlerFunc( FuncTNUM_OBJ, "TNUM_OBJ");
+    AssGVar( GVarName(  "TNUM_OBJ" ),
+         NewFunctionC(  "TNUM_OBJ", 1L, "object",
+                     FuncTNUM_OBJ ) );
 
-    InitHandlerFunc( FuncXTYPE_OBJ, "XTYPE_OBJ");
-    AssGVar( GVarName(  "XTYPE_OBJ" ),
-         NewFunctionC(  "XTYPE_OBJ", 1L, "object",
-                     FuncXTYPE_OBJ ) );
+    InitHandlerFunc( FuncXTNUM_OBJ, "XTNUM_OBJ");
+    AssGVar( GVarName(  "XTNUM_OBJ" ),
+         NewFunctionC(  "XTNUM_OBJ", 1L, "object",
+                     FuncXTNUM_OBJ ) );
 
     InitHandlerFunc( FuncOBJ_HANDLE, "OBJ_HANDLE");
     AssGVar( GVarName(  "OBJ_HANDLE" ),
@@ -2325,7 +2355,7 @@ void InitGap (
         if ( READ_GAP_ROOT(SySystemInitFile) == 0 ) {
             if ( ! SyQuiet ) {
                 Pr( "gap: hmm, I cannot find '%s' maybe",
-		    (Int)SySystemInitFile, 0L );
+                    (Int)SySystemInitFile, 0L );
                 Pr( " use option '-l <gaproot>'?\n", 0L, 0L );
             }
         }

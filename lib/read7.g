@@ -12,6 +12,7 @@ ReadLib( "ctblsymm.gd" );
 ReadLib( "ctblpope.gd" );
 ReadLib( "ctblmoli.gd" );
 ReadLib( "ctblmono.gd" );
+ReadLib( "ctblgrp.gd"  );
 
 
 #############################################################################
@@ -29,12 +30,15 @@ ReadLib( "ctbl.gi"     );
 ReadLib( "ctblfuns.gi" );
 ReadLib( "ctblchar.gi" );
 ReadLib( "ctblmaps.gi" );
+# ReadLib( "ctblauto.gi" );
 ReadLib( "ctbllatt.gi" );
 ReadLib( "ctblsymm.gi" );
 ReadLib( "ctblsolv.gi" );
 ReadLib( "ctblpope.gi" );
 ReadLib( "ctblmoli.gi" );
 ReadLib( "ctblmono.gi" );
+ReadLib( "ctblgrp.gi"  );
+ReadLib( "ctblperm.gi" );
 
 ReadTbl( "ctprimar.tbl" );
 ReadTbl( "ctadmin.tbi"  );

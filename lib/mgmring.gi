@@ -85,7 +85,7 @@ InstallMethod( ElementOfFreeMagmaRing,
     local rep, i;
 
     # Check that the data is admissible.
-    if not IsBound( Fam!.defaultKind ) then
+    if not IsBound( Fam!.defaultType ) then
       TryNextMethod();
     elif not IsIdentical( FamilyObj( coeff ), Fam!.familyRing ) then
       Error( "<coeff> are not all in the correct domain" );
@@ -105,7 +105,7 @@ InstallMethod( ElementOfFreeMagmaRing,
     od;
 
     # Remove all words with zero coefficients.
-    return Objectify( Fam!.defaultKind,
+    return Objectify( Fam!.defaultType,
                [ zerocoeff, FMRRemoveZero( rep, Fam!.zeroRing ) ] );
     end );
 
@@ -241,7 +241,7 @@ InstallMethod( \+,
 
     Append( coeff, x{ [ posx .. lenx ] } );
 
-    return Objectify( F!.defaultKind, [ zero, coeff ] );
+    return Objectify( F!.defaultType, [ zero, coeff ] );
     end );
 
 
@@ -260,7 +260,7 @@ InstallMethod( AdditiveInverse,
       ext[i]:= AdditiveInverse( ext[i] );
     od;
     Fam:= FamilyObj( x );
-    return Objectify( Fam!.defaultKind, [ Fam!.zeroRing, ext ] );
+    return Objectify( Fam!.defaultType, [ Fam!.zeroRing, ext ] );
     end );
 
 
@@ -326,7 +326,7 @@ InstallMethod( \*,
     od;
 
     # Remove all words with zero coefficients.
-    return Objectify( F!.defaultKind,
+    return Objectify( F!.defaultType,
                       [ F!.zeroRing, FMRRemoveZero( coeff, F!.zeroRing ) ] );
     end );
 
@@ -353,7 +353,7 @@ ElmTimesRingElm := function( x, y )
     for i in [ 2, 4 .. Length(x) ] do
       x[i]:= x[i] * y;
     od;
-    return Objectify( F!.defaultKind,
+    return Objectify( F!.defaultType,
                       [ F!.zeroRing, FMRRemoveZero( x, F!.zeroRing ) ] );
 end;
 
@@ -381,7 +381,7 @@ RingElmTimesElm := function( x, y )
     for i in [ 2, 4 .. Length(y) ] do
       y[i]:= x * y[i];
     od;
-    return Objectify( F!.defaultKind,
+    return Objectify( F!.defaultType,
                       [ F!.zeroRing, FMRRemoveZero( y, F!.zeroRing ) ] );
 end;
 
@@ -409,7 +409,7 @@ ElmDivRingElm := function( x, y )
     for i in [ 2, 4 .. Length(x) ] do
       x[i]:= x[i] / y;
     od;
-    return Objectify( F!.defaultKind, [ F!.zeroRing, x ] );
+    return Objectify( F!.defaultType, [ F!.zeroRing, x ] );
 end;
 
 InstallOtherMethod( \/,
@@ -438,7 +438,7 @@ InstallOtherMethod( Inverse,
     F:= FamilyObj( elm );
     elm:= CoefficientsAndMagmaElements( elm );
     if Length( elm ) = 2 then
-      return Objectify( F!.defaultKind,
+      return Objectify( F!.defaultType,
                  [ F!.zeroRing, [ Inverse( elm[1] ), Inverse( elm[2] ) ] ] );
     else
       TryNextMethod();
@@ -458,7 +458,7 @@ InstallMethod( One,
     local F, zerocoeff;
     F:= FamilyObj( elm );
     zerocoeff:= F!.zeroRing;
-    return Objectify( F!.defaultKind,
+    return Objectify( F!.defaultType,
                [ zerocoeff, [ One( ElementsFamily( F!.familyMagma ) ),
                               One( zerocoeff ) ] ] );
 #T problem!!
@@ -473,7 +473,7 @@ InstallMethod( Zero,
     "method for free magma ring element",
     true,
     [ IsElementOfFreeMagmaRing ], 0,
-    x -> Objectify( FamilyObj(x)!.defaultKind,
+    x -> Objectify( FamilyObj(x)!.defaultType,
              [ FamilyObj(x)!.zeroRing, [] ] ) );
 
 
@@ -544,7 +544,7 @@ FreeMagmaRing := function( R, M )
     one:= One( R );
     zero:= Zero( R );
 
-    F!.defaultKind := NewKind( F, IsFreeMagmaRingObjDefaultRep );
+    F!.defaultType := NewType( F, IsFreeMagmaRingObjDefaultRep );
     F!.familyRing  := FamilyObj( R );
     F!.familyMagma := FamilyObj( M );
     F!.zeroRing    := zero;
@@ -552,12 +552,12 @@ FreeMagmaRing := function( R, M )
 
     # Make the magma ring object.
     if IsMagmaWithOne( M ) then
-      RM:= Objectify( NewKind( CollectionsFamily( F ),
+      RM:= Objectify( NewType( CollectionsFamily( F ),
                                    IsFreeMagmaRingWithOne
                                and IsAttributeStoringRep ),
                       rec() );
     else
-      RM:= Objectify( NewKind( CollectionsFamily( F ),
+      RM:= Objectify( NewType( CollectionsFamily( F ),
                                    IsFreeMagmaRing
                                and IsAttributeStoringRep ),
                       rec() );
@@ -658,14 +658,14 @@ InstallMethod( CanonicalBasis,
     local B, one, zero, F;
 
     F:= ElementsFamily( FamilyObj( RM ) );
-    if not IsBound( F!.defaultKind ) then
+    if not IsBound( F!.defaultType ) then
       TryNextMethod();
     fi;
 
     one  := One(  LeftActingDomain( RM ) );
     zero := Zero( LeftActingDomain( RM ) );
 
-    B:= Objectify( NewKind( FamilyObj( RM ),
+    B:= Objectify( NewType( FamilyObj( RM ),
                                 IsBasis
                             and IsCanonicalBasisFreeMagmaRingRep ),
                    rec() );
@@ -928,7 +928,7 @@ InstallMethod( Embedding,
     fi;
 
     # Make the mapping object.
-    emb := Objectify( KindOfDefaultGeneralMapping( R, RM,
+    emb := Objectify( TypeOfDefaultGeneralMapping( R, RM,
                                IsEmbeddingRingMagmaRing ),
                       rec() );
 
@@ -979,7 +979,7 @@ InstallMethod( Embedding,
     fi;
 
     # Make the mapping object.
-    emb := Objectify( KindOfDefaultGeneralMapping( M, RM,
+    emb := Objectify( TypeOfDefaultGeneralMapping( M, RM,
                                IsEmbeddingMagmaMagmaRing ),
                       rec() );
 
@@ -1063,7 +1063,7 @@ InstallMethod( ObjByExtRep,
       elm[i]:= ObjByExtRep( FM, elm[i] );
     od;
 #T sort this !!
-    return Objectify( Fam!.defaultKind, [ descr[1], elm ] );
+    return Objectify( Fam!.defaultType, [ descr[1], elm ] );
     end );
 
 
@@ -1222,7 +1222,7 @@ InstallMethod( LeftModuleByGenerators,
     [ IsRing, IsElementOfFreeMagmaRingCollection ] , 0,
     function( F, gens )
     local V;
-    V:= Objectify( NewKind( FamilyObj( gens ),
+    V:= Objectify( NewType( FamilyObj( gens ),
                                 IsFreeLeftModule
                             and IsSpaceOfElementsOfFreeMagmaRingRep ),
                    rec() );
@@ -1243,7 +1243,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     0,
     function( F, gens, zero )
     local V;
-    V:= Objectify( NewKind( FamilyObj( F ),
+    V:= Objectify( NewType( FamilyObj( F ),
                                 IsFreeLeftModule
                             and IsSpaceOfElementsOfFreeMagmaRingRep ),
                    rec() );
@@ -1264,7 +1264,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     [ IsRing, IsList and IsEmpty, IsElementOfFreeMagmaRing ], 0,
     function( F, empty, zero )
     local V;
-    V:= Objectify( NewKind( FamilyObj( F ),
+    V:= Objectify( NewType( FamilyObj( F ),
                                 IsFreeLeftModule
                             and IsTrivial
                             and IsSpaceOfElementsOfFreeMagmaRingRep ),
@@ -1289,7 +1289,7 @@ InstallMethod( FLMLORByGenerators,
     function( R, elms )
     local A;
 
-    A:= Objectify( NewKind( FamilyObj( elms ),
+    A:= Objectify( NewType( FamilyObj( elms ),
                                 IsFLMLOR
                             and IsSpaceOfElementsOfFreeMagmaRingRep ),
                      rec() );
@@ -1308,7 +1308,7 @@ InstallOtherMethod( FLMLORByGenerators,
     function( R, empty, zero )
     local A;
 
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLOR
                             and IsSpaceOfElementsOfFreeMagmaRingRep
                             and IsTrivial ),
@@ -1329,7 +1329,7 @@ InstallOtherMethod( FLMLORByGenerators,
     function( F, elms, zero )
     local A;
 
-    A:= Objectify( NewKind( FamilyObj( elms ),
+    A:= Objectify( NewType( FamilyObj( elms ),
                                 IsFLMLOR
                             and IsSpaceOfElementsOfFreeMagmaRingRep ),
                      rec() );
@@ -1356,7 +1356,7 @@ InstallMethod( FLMLORWithOneByGenerators,
     function( R, elms )
     local A;
 
-    A:= Objectify( NewKind( FamilyObj( elms ),
+    A:= Objectify( NewType( FamilyObj( elms ),
                                 IsFLMLORWithOne
                             and IsSpaceOfElementsOfFreeMagmaRingRep ),
                    rec() );
@@ -1375,7 +1375,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     function( R, empty, zero )
     local A;
 
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFLMLORWithOne
                             and IsSpaceOfElementsOfFreeMagmaRingRep
                             and IsAssociative ),
@@ -1396,7 +1396,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     function( R, elms, zero )
     local A;
 
-    A:= Objectify( NewKind( FamilyObj( elms ),
+    A:= Objectify( NewType( FamilyObj( elms ),
                                 IsFLMLORWithOne
                             and IsSpaceOfElementsOfFreeMagmaRingRep ),
                    rec() );

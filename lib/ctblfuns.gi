@@ -1063,7 +1063,7 @@ InstallMethod( ClassFunctionByValues,
       Error( "no. of classes in <tbl> and <values> must be equal" );
     fi;
 
-    chi:= Objectify( NewKind( ClassFunctionsFamily( tbl ),
+    chi:= Objectify( NewType( ClassFunctionsFamily( tbl ),
                                   IsClassFunction
                               and IsAttributeStoringRep ),
                      rec() );
@@ -1086,7 +1086,7 @@ InstallMethod( ClassFunctionByValues,
       Error( "no. of classes in <tbl> and <values> must be equal" );
     fi;
 
-    chi:= Objectify( NewKind( ClassFunctionsFamily( tbl ),
+    chi:= Objectify( NewType( ClassFunctionsFamily( tbl ),
                                   IsClassFunctionWithGroup
                               and IsAttributeStoringRep ),
                      rec() );
@@ -2914,7 +2914,7 @@ InstallOtherMethod( GroupByGenerators,
     fi;
 
     # Construct the group.
-    G:= Objectify( NewKind( FamilyObj( gens ),
+    G:= Objectify( NewType( FamilyObj( gens ),
                             IsGroup and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( G, AsList( gens ) );
@@ -2936,7 +2936,7 @@ InstallOtherMethod( GroupByGenerators,
     fi;
 
     # Construct the group.
-    G:= Objectify( NewKind( FamilyObj( gens ),
+    G:= Objectify( NewType( FamilyObj( gens ),
                             IsGroup and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( G, AsList( gens ) );
@@ -2957,7 +2957,7 @@ InstallOtherMethod( GroupByGenerators,
     fi;
 
     # Construct the group.
-    G:= Objectify( NewKind( CollectionsFamily( FamilyObj( id ) ),
+    G:= Objectify( NewType( CollectionsFamily( FamilyObj( id ) ),
                             IsGroup and IsAttributeStoringRep ),
                    rec() );
     SetGeneratorsOfMagmaWithInverses( G, [] );
@@ -3135,7 +3135,7 @@ NormalSubgroupClasses := function( G, classes )
 
         # Identify our normal subgroup.
         ccl:= ConjugacyClasses( G ){ classes };
-        size:= Sum( ccl, Size );
+        size:= Sum( ccl, Size, 0 );
         candidates:= Filtered( NormalSubgroups( G ), x -> Size( x ) = size );
         if Length( candidates ) = 1 then
           group:= candidates[1];

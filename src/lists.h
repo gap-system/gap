@@ -35,9 +35,9 @@ char *          Revision_lists_h =
 **  vector type must set  it to '2'.  A  package implementing an matrix  type
 **  must set it to '3'.
 */
-#define IS_LIST(obj)    ((*IsListFuncs[ TYPE_OBJ( obj ) ])( obj ))
+#define IS_LIST(obj)    ((*IsListFuncs[ TNUM_OBJ( obj ) ])( obj ))
 
-extern  Int             (*IsListFuncs [LAST_REAL_TYPE+1]) ( Obj obj );
+extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
 
 /****************************************************************************
@@ -54,9 +54,9 @@ extern  Int             (*IsListFuncs [LAST_REAL_TYPE+1]) ( Obj obj );
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LenListFuncs[<type>]'.
 */
-#define LEN_LIST(list)  ((*LenListFuncs[ TYPE_OBJ(list) ])( list ))
+#define LEN_LIST(list)  ((*LenListFuncs[ TNUM_OBJ(list) ])( list ))
 
-extern  Int             (*LenListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+extern  Int             (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 
 /****************************************************************************
@@ -87,14 +87,14 @@ extern  Int             (*LenListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
 **  <list>.
 */
 #define ISB_LIST(list,pos) \
-                        ((*IsbListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*IsbListFuncs[TNUM_OBJ(list)])(list,pos))
 
 #define ISBV_LIST(list,pos) \
-                        ((*IsbvListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*IsbvListFuncs[TNUM_OBJ(list)])(list,pos))
 
-extern  Int             (*IsbListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+extern  Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-extern  Int             (*IsbvListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+extern  Int             (*IsbvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 
 /****************************************************************************
@@ -125,14 +125,14 @@ extern  Int             (*IsbvListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos )
 **  <list>.
 */
 #define ELM0_LIST(list,pos) \
-                        ((*Elm0ListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*Elm0ListFuncs[TNUM_OBJ(list)])(list,pos))
 
 #define ELMV0_LIST(list,pos) \
-                        ((*Elm0vListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*Elm0vListFuncs[TNUM_OBJ(list)])(list,pos))
 
-extern  Obj             (*Elm0ListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+extern  Obj             (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-extern  Obj             (*Elm0vListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+extern  Obj             (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 
 /****************************************************************************
@@ -176,19 +176,19 @@ extern  Obj             (*Elm0vListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos 
 **  or that <list> has an assigned object at <pos>.
 */
 #define ELM_LIST(list,pos) \
-                        ((*ElmListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*ElmListFuncs[TNUM_OBJ(list)])(list,pos))
 
 #define ELMV_LIST(list,pos) \
-                        ((*ElmvListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*ElmvListFuncs[TNUM_OBJ(list)])(list,pos))
 
 #define ELMW_LIST(list,pos) \
-                        ((*ElmwListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*ElmwListFuncs[TNUM_OBJ(list)])(list,pos))
 
-extern  Obj             (*ElmListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+extern  Obj             (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-extern  Obj             (*ElmvListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+extern  Obj             (*ElmvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-extern  Obj             (*ElmwListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+extern  Obj             (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 
 /****************************************************************************
@@ -217,9 +217,9 @@ extern  Obj             (*ElmwListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos )
 **  the same representation as a plain list.
 */
 #define ELMS_LIST(list,poss) \
-                        ((*ElmsListFuncs[TYPE_OBJ(list)])(list,poss))
+                        ((*ElmsListFuncs[TNUM_OBJ(list)])(list,poss))
 
-extern  Obj             (*ElmsListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Obj poss );
+extern  Obj             (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 
 extern  Obj             ElmsListDefault (
             Obj                 list,
@@ -244,9 +244,9 @@ extern  Obj             ElmsListDefault (
 **  representation of <list> to that of a plain list if necessary.
 */
 #define UNB_LIST(list,pos) \
-                        ((*UnbListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*UnbListFuncs[TNUM_OBJ(list)])(list,pos))
 
-extern void             (*UnbListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+extern void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 
 /****************************************************************************
@@ -269,9 +269,9 @@ extern void             (*UnbListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
 **  the representation of <list> to that of a plain list if necessary.
 */
 #define ASS_LIST(list,pos,obj) \
-                        ((*AssListFuncs[TYPE_OBJ(list)])(list,pos,obj))
+                        ((*AssListFuncs[TNUM_OBJ(list)])(list,pos,obj))
 
-extern  void            (*AssListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos, Obj obj );
+extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
 
 /****************************************************************************
@@ -296,9 +296,9 @@ extern  void            (*AssListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos, O
 **  necessary.
 */
 #define ASSS_LIST(list,poss,objs) \
-                        ((*AsssListFuncs[TYPE_OBJ(list)])(list,poss,objs))
+                        ((*AsssListFuncs[TNUM_OBJ(list)])(list,poss,objs))
 
-extern  void            (*AsssListFuncs[LAST_REAL_TYPE+1]) (Obj list, Obj poss, Obj objs);
+extern  void            (*AsssListFuncs[LAST_REAL_TNUM+1]) (Obj list, Obj poss, Obj objs);
 
 extern  void            AsssListDefault (
             Obj                 list,
@@ -323,9 +323,9 @@ extern  void            AsssListDefault (
 **  already that the list is dense (e.g. for sets).
 */
 #define IS_DENSE_LIST(list) \
-                        ((*IsDenseListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsDenseListFuncs[TNUM_OBJ(list)])(list))
 
-extern  Int             (*IsDenseListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+extern  Int             (*IsDenseListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 extern  Int             IsDenseListDefault (
             Obj                 list );
@@ -350,9 +350,9 @@ extern  Int             IsDenseListDefault (
 **  homogeneous (e.g. for sets).
 */
 #define IS_HOMOG_LIST(list) \
-                        ((*IsHomogListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsHomogListFuncs[TNUM_OBJ(list)])(list))
 
-extern  Int             (*IsHomogListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+extern  Int             (*IsHomogListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 extern  Int             IsHomogListDefault (
             Obj                 list );
@@ -376,9 +376,9 @@ extern  Int             IsHomogListDefault (
 **  guarantees already that the list has this property.
 */
 #define IS_TABLE_LIST(list) \
-                        ((*IsTableListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsTableListFuncs[TNUM_OBJ(list)])(list))
 
-extern  Int             (*IsTableListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+extern  Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 extern  Int             IsTableListDefault (
             Obj                 list );
@@ -402,9 +402,9 @@ extern  Int             IsTableListDefault (
 **  of the list guarantees already that the list is strictly sorted.
 */
 #define IS_SSORT_LIST(list) \
-                        ((*IsSSortListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsSSortListFuncs[TNUM_OBJ(list)])(list))
 
-extern  Int             (*IsSSortListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+extern  Int             (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 extern  Int             IsSSortListDefault (
             Obj                 list );
@@ -444,9 +444,9 @@ extern Obj IsNSortListProp;
 **  acceptable (e.g. a range with positive <low> and <high> values).
 */
 #define IS_POSS_LIST(list) \
-                        ((*IsPossListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsPossListFuncs[TNUM_OBJ(list)])(list))
 
-extern  Int             (*IsPossListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+extern  Int             (*IsPossListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 extern  Int             IsPossListDefault (
             Obj                 list );
@@ -469,9 +469,9 @@ extern  Int             IsPossListDefault (
 **  and install it in 'PosListFuncs[<type>]'.
 */
 #define POS_LIST(list,obj,start) \
-                        ((*PosListFuncs[TYPE_OBJ(list)])(list,obj,start))
+                        ((*PosListFuncs[TNUM_OBJ(list)])(list,obj,start))
 
-extern  Int             (*PosListFuncs[LAST_REAL_TYPE+1]) (Obj list, Obj obj, Int start);
+extern  Int             (*PosListFuncs[LAST_REAL_TNUM+1]) (Obj list, Obj obj, Int start);
 
 extern  Int             PosListDefault (
             Obj                 list,
@@ -606,25 +606,25 @@ extern  void            AsssListLevel (
 **  and install it in 'PlainListFuncs[<type>]'.
 */
 #define PLAIN_LIST(list) \
-                        ((*PlainListFuncs[TYPE_OBJ(list)])(list))
+                        ((*PlainListFuncs[TNUM_OBJ(list)])(list))
 
-extern  void            (*PlainListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+extern  void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 
 /****************************************************************************
 **
-*F  XType(<obj>)  . . . . . . . . . . . . . . . .  extended type of an object
-*F  IS_XTYPE_LIST(<type>,<obj>) . . . . . . . . . . .  test for extended type
-*V  IsXTypeListFuncs[<type>]  . . . . . table of extended type test functions
+*F  XTNum(<obj>)  . . . . . . . . . . . . . . . .  extended type of an object
+*F  IS_XTNUM_LIST(<type>,<obj>) . . . . . . . . . . .  test for extended type
+*V  IsXTNumListFuncs[<type>]  . . . . . table of extended type test functions
 **
-**  'XType' returns  the extended type of  the object <obj>.   For everything
+**  'XTNum' returns  the extended type of  the object <obj>.   For everything
 **  except objects of type 'T_PLIST' and 'T_SET' this is just the type of the
-**  object.  For objects of type 'T_PLIST' and 'T_SET', 'XType'  examines the
+**  object.  For objects of type 'T_PLIST' and 'T_SET', 'XTNum'  examines the
 **  object closer and returns  'T_VECTOR', 'T_VECFFE', 'T_BLIST', 'T_STRING',
 **  'T_RANGE',  'T_MATRIX', 'T_MATFFE', and  'T_LISTX'.  As  a sideeffect the
 **  object <obj> is converted into  the representation  of the extended  type,
-**  e.g., if  'XType' returns 'T_MATFFE', <obj>  is converted into a  list of
-**  vectors over  a  common  finite field.  'XType'  is   used by the  binary
+**  e.g., if  'XTNum' returns 'T_MATFFE', <obj>  is converted into a  list of
+**  vectors over  a  common  finite field.  'XTNum'  is   used by the  binary
 **  operations  functions for lists to decide   to which function they should
 **  dispatch.  'T_LISTX'  is the extended  type of otherwise untypable lists.
 **  The  only operation defined  for such lists  is the product with a scalar
@@ -632,25 +632,25 @@ extern  void            (*PlainListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
 **  is allowed or not).
 **
 **  A package implementing    a    list  type    <type>  must    provide    a
-**  tester/conversion function  and install it in 'IsXTypeListFuncs[<type>]'.
+**  tester/conversion function  and install it in 'IsXTNumListFuncs[<type>]'.
 **  This function should accept a list <list>  (with a representation that is
 **  equivalent  to  that of a  plain  list),  and  return 1 if  <list>  could
 **  successfully be converted to the type <type> and 0 otherwise.
 */
-#define IS_XTYPE_LIST(t,obj) \
-                        ((*IsXTypeListFuncs[t])(obj))
+#define IS_XTNUM_LIST(t,obj) \
+                        ((*IsXTNumListFuncs[t])(obj))
 
-extern  Int             (*IsXTypeListFuncs[LAST_VIRTUAL_TYPE+1]) ( Obj obj );
+extern  Int             (*IsXTNumListFuncs[LAST_VIRTUAL_TNUM+1]) ( Obj obj );
 
-extern  Int             XType (
+extern  Int             XTNum (
             Obj                 obj );
 
 
 /****************************************************************************
 **
-*F  KINDS_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
+*F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
 */
-extern  Obj             KINDS_LIST_FAM (
+extern  Obj             TYPES_LIST_FAM (
             Obj                 fam );
 
 

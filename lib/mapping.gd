@@ -371,13 +371,13 @@ GeneralMappingsFamily := NewOperationArgs( "GeneralMappingsFamily" );
 
 #############################################################################
 ##
-#F  KindOfDefaultGeneralMapping( <source>, <range>, <filter> )
+#F  TypeOfDefaultGeneralMapping( <source>, <range>, <filter> )
 ##
-##  is the kind of mappings with 'IsDefaultGeneralMappingRep' with source
+##  is the type of mappings with 'IsDefaultGeneralMappingRep' with source
 ##  <source> and range <range> and additional categories <filter>.
 ##
-KindOfDefaultGeneralMapping := NewOperationArgs(
-    "KindOfDefaultGeneralMapping" );
+TypeOfDefaultGeneralMapping := NewOperationArgs(
+    "TypeOfDefaultGeneralMapping" );
 
 
 #############################################################################

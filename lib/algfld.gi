@@ -74,9 +74,9 @@ local fam,i;
   fam:=NewFamily("AlgebraicElementsFamily(...)",IsAlgebraicElement,
          IsObject,IsAlgebraicElementsFamily);
 
-  # The two kinds
-  fam!.baseKind := NewKind(fam,IsAlgBFRep);
-  fam!.extKind := NewKind(fam,IsAlgExtRep);
+  # The two types
+  fam!.baseType := NewType(fam,IsAlgBFRep);
+  fam!.extType := NewType(fam,IsAlgExtRep);
 
   # Important trivia
   fam!.baseField:=f;
@@ -114,7 +114,7 @@ local e,fam;
   fi;
 
   fam:=AlgebraicElementsFamily(f,p);
-  e:=Objectify(NewKind(CollectionsFamily(fam),IsAlgebraicExtensionDefaultRep),
+  e:=Objectify(NewType(CollectionsFamily(fam),IsAlgebraicExtensionDefaultRep),
                rec());
 
   e!.definingPolynomial:=p;
@@ -182,7 +182,7 @@ InstallMethod(ObjByExtRep,"baseFieldElm",true,
 function(fam,e)
   #AH: Immutable
   e:=[e];
-  Objectify(fam!.baseKind,e);
+  Objectify(fam!.baseType,e);
   return e;
 end);
 
@@ -195,7 +195,7 @@ InstallMethod(ObjByExtRep,"ExtElm",true,
 function(fam,e)
   #AH: Immutable
   e:=[e];
-  Objectify(fam!.extKind,e);
+  Objectify(fam!.extType,e);
   return e;
 end);
 

@@ -108,9 +108,9 @@ extern  void            PrintString1 (
 **  Note that 'IS_STRING' is a  macro, so do not call  it with arguments that
 **  have sideeffects.
 */
-#define IS_STRING(obj)  ((*IsStringFuncs[ TYPE_OBJ( obj ) ])( obj ))
+#define IS_STRING(obj)  ((*IsStringFuncs[ TNUM_OBJ( obj ) ])( obj ))
 
-extern  Int             (*IsStringFuncs [LAST_REAL_TYPE+1]) ( Obj obj );
+extern  Int             (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
 
 /****************************************************************************

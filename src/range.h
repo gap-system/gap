@@ -49,7 +49,7 @@ char *          Revision_range_h =
 **  Note that  'IS_RANGE' is a  macro, so do not  call it with arguments that
 **  have sideeffects.
 */
-#define IS_RANGE(val)   (TYPE_OBJ(val)==T_RANGE_NSORT || TYPE_OBJ(val)==T_RANGE_SSORT)
+#define IS_RANGE(val)   (TNUM_OBJ(val)==T_RANGE_NSORT || TNUM_OBJ(val)==T_RANGE_SSORT)
 
 
 /****************************************************************************

@@ -24,7 +24,7 @@ char *          Revision_lists_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -33,7 +33,7 @@ char *          Revision_lists_c =
 #include        "opers.h"               /* NewFilter, NewOperation, ...    */
 #include        "ariths.h"              /* EQ, LT                          */
 
-#include        "records.h"             /* RNamName (for KINDS_LIST_FAM)   */
+#include        "records.h"             /* RNamName (for TYPES_LIST_FAM)   */
 
 #define INCLUDE_DECLARATION_PART
 #include        "lists.h"               /* declaration part of the package */
@@ -41,7 +41,7 @@ char *          Revision_lists_c =
 
 #include        "bool.h"                /* True, False                     */
 
-#include        "precord.h"             /* ElmPRec (for KINDS_LIST_FAM)    */
+#include        "precord.h"             /* ElmPRec (for TYPES_LIST_FAM)    */
 
 #include        "plist.h"               /* LEN_PLIST, SET_LEN_PLIST,   ... */
 #include        "range.h"               /* IS_RANGE, GET_LEN_RANGE, ...    */
@@ -60,9 +60,9 @@ char *          Revision_lists_c =
 **
 **  'IS_LIST' is defined in the declaration part of this package as follows
 **
-#define IS_LIST(obj)    (*IsListFuncs[ TYPE_OBJ( (obj) ) ])( obj )
+#define IS_LIST(obj)    (*IsListFuncs[ TNUM_OBJ( (obj) ) ])( obj )
 */
-Int             (*IsListFuncs [LAST_REAL_TYPE+1]) ( Obj obj );
+Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
 Obj             IsListFilt;
 
@@ -94,6 +94,54 @@ Int             IsListObject (
 
 /****************************************************************************
 **
+*F  LENGTHHandler( <self>, <list> ) . . . . . . . . . . .  'Length' interface
+**
+**  There are  the ``relatively''  easy  changes to  'LEN_LIST' to  allow  it
+**  return GAP  objects instead of small C  integers, but then the kernel has
+**  to be very careful not to assume that the length is small and most of the
+**  code has to duplicated,  namely  one large  and  one small version.    So
+**  instead the following solution has been taken:
+**
+**  - internal lists  have always a  small length,  that means that it is not
+**    possible to have plain list of length larger than 2^28  (or maybe 2^32)
+**    on 32-bit machines, 'LEN_LIST' can only be applied to internal objects,
+**    'LENGTH' is the GAP interface for all kind of objects
+**
+**  - on  the  other hand we want ranges to have  large start and end points,
+**    therefore  ranges  are no  longer  *internal*  objects,  they  are  now
+**    external objects (NOT YET IMPLEMENTED)
+**
+**  - the for/list assignment has to be carefull to catch the special case of
+**    a range constructor with small integer bounds
+**
+**  - the list access/assigment is a binary operation (NOT YET IMPLEMENTED)
+**
+**  - the conversion/test functions are split into three different functions
+**    (NOT YET IMPLEMENTED)
+**
+**  - 'ResetFilterObj' and 'SetFilterObj'  are implemented using a table  for
+**    internal types (NOT YET IMPLEMENTED)
+*/
+Obj LengthAttr;
+
+Obj LENGTHHandler (
+    Obj             self,
+    Obj             list )
+{
+    /* internal list types                                                 */
+    if ( FIRST_LIST_TNUM<=TNUM_OBJ(list) && TNUM_OBJ(list)<=LAST_LIST_TNUM) {
+        return INTOBJ_INT( LEN_LIST(list) );
+    }
+
+    /* external types                                                      */
+    else {
+        return DoAttribute( LengthAttr, list );
+    }
+}
+
+
+/****************************************************************************
+**
 *F  LEN_LIST(<list>)  . . . . . . . . . . . . . . . . . . .  length of a list
 *V  LenListFuncs[<type>]  . . . . . . . . . . . . . table of length functions
 *F  LenListError(<list>)  . . . . . . . . . . . . . . . error length function
@@ -105,46 +153,51 @@ Int             IsListObject (
 **
 **  'LEN_LIST' is defined in the declaration part of this package as follows
 **
-#define LEN_LIST(list)  ((*LenListFuncs[ TYPE_OBJ((list)) ])( (list) ))
+#define LEN_LIST(list)  ((*LenListFuncs[ TNUM_OBJ((list)) ])( (list) ))
+**
+**  At the  moment  this also handles external    types but this   is a hack,
+**  because external  lists can have large  length or even  be infinite.  See
+**  'LENGTHHandler'.
 */
-Int             (*LenListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+Int (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Obj             LenListAttr;
-
-Obj             LenListHandler (
+Obj LenListHandler (
     Obj                 self,
     Obj                 list )
 {
     /* special case for plain lists (avoid conversion back and forth)      */
-    if ( TYPE_OBJ(list) == T_PLIST ) {
+    if ( TNUM_OBJ(list) == T_PLIST ) {
         return INTOBJ_INT( LEN_PLIST( list ) );
     }
 
     /* generic case (will signal an error if <list> is not a list)         */
     else {
-        return INTOBJ_INT( LEN_LIST( list ) );
+        return LENGTHHandler( LengthAttr, list );
     }
 }
 
-Int             LenListError (
+
+Int LenListError (
     Obj                 list )
 {
     list = ErrorReturnObj(
         "Length: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     return LEN_LIST( list );
 }
 
-Int             LenListObject (
+
+Int LenListObject (
     Obj                 obj )
 {
     Obj                 len;
-    len = DoAttribute( LenListAttr, obj );
-    while ( TYPE_OBJ(len) != T_INT || INT_INTOBJ(len) < 0 ) {
+
+    len = LENGTHHandler( LengthAttr, obj );
+    while ( TNUM_OBJ(len) != T_INT || INT_INTOBJ(len) < 0 ) {
         len = ErrorReturnObj(
             "Length: method must return a nonnegative value (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(len)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(len)].name), 0L,
             "you can return a nonnegative integer value for <length>" );
     }
     return INT_INTOBJ( len );
@@ -167,14 +220,14 @@ Int             LenListObject (
 **  package as follows
 **
 #define ISB_LIST(list,pos) \
-                        ((*IsbListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*IsbListFuncs[TNUM_OBJ(list)])(list,pos))
 
 #define ISBV_LIST(list,pos) \
-                        ((*IsbvListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*IsbvListFuncs[TNUM_OBJ(list)])(list,pos))
 */
-Int             (*IsbListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-Int             (*IsbvListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+Int             (*IsbvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 Obj             IsbListOper;
 
@@ -192,7 +245,7 @@ Int             IsbListError (
 {
     list = ErrorReturnObj(
         "IsBound: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     return ISB_LIST( list, pos );
 }
@@ -221,14 +274,14 @@ Int             IsbListObject (
 **  package as follows
 **
 #define ELM0_LIST(list,pos) \
-                        ((*Elm0ListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*Elm0ListFuncs[TNUM_OBJ(list)])(list,pos))
 
 #define ELMV0_LIST(list,pos) \
-                        ((*Elm0vListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*Elm0vListFuncs[TNUM_OBJ(list)])(list,pos))
 */
-Obj             (*Elm0ListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+Obj             (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-Obj             (*Elm0vListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+Obj             (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 Obj             Elm0ListOper;
 
@@ -253,7 +306,7 @@ Obj             Elm0ListError (
 {
     list = ErrorReturnObj(
         "List Element: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     return ELM0_LIST( list, pos );
 }
@@ -291,19 +344,19 @@ Obj             Elm0ListObject (
 **  part of this package as follows
 **
 #define ELM_LIST(list,pos) \
-                        ((*ElmListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*ElmListFuncs[TNUM_OBJ(list)])(list,pos))
 
 #define ELMV_LIST(list,pos) \
-                        ((*ElmvListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*ElmvListFuncs[TNUM_OBJ(list)])(list,pos))
 
 #define ELMW_LIST(list,pos) \
-                        ((*ElmvListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*ElmvListFuncs[TNUM_OBJ(list)])(list,pos))
 */
-Obj             (*ElmListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+Obj             (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-Obj             (*ElmvListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+Obj             (*ElmvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-Obj             (*ElmwListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+Obj             (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 Obj             ElmListOper;
 
@@ -321,7 +374,7 @@ Obj             ElmListError (
 {
     list = ErrorReturnObj(
         "List Element: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     return ELM_LIST( list, pos );
 }
@@ -349,10 +402,10 @@ Obj             ElmListObject (
 **  follows
 **
 #define ELMS_LIST(list,poss) \
-                        ((*ElmsListFuncs[TYPE_OBJ(list)])(list,poss))
+                        ((*ElmsListFuncs[TNUM_OBJ(list)])(list,poss))
 
 */
-Obj             (*ElmsListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Obj poss );
+Obj             (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 
 Obj             ElmsListOper;
 
@@ -370,7 +423,7 @@ Obj             ElmsListError (
 {
     list = ErrorReturnObj(
         "List Elements: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     return ELMS_LIST( list, poss );
 }
@@ -509,9 +562,9 @@ Obj             ElmsListDefaultHandler (
 *F  UnbListError(<list>,<pos>)  . . . . . . . . . . . . error unbind function
 **
 #define UNB_LIST(list,pos) \
-                        ((*UnbListFuncs[TYPE_OBJ(list)])(list,pos))
+                        ((*UnbListFuncs[TNUM_OBJ(list)])(list,pos))
 */
-void             (*UnbListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos );
+void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 Obj             UnbListOper;
 
@@ -530,7 +583,7 @@ void            UnbListError (
 {
     list = ErrorReturnObj(
         "Unbind: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     UNB_LIST( list, pos );
 }
@@ -565,9 +618,9 @@ void            UnbListObject (
 **  'ASS_LIST' is defined in the declaration part of this package as follows.
 **
 #define ASS_LIST(list,pos,obj) \
-                        ((*AssListFuncs[TYPE_OBJ(list)])(list,pos,obj))
+                        ((*AssListFuncs[TNUM_OBJ(list)])(list,pos,obj))
 */
-void            (*AssListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Int pos, Obj obj );
+void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
 Obj             AssListOper;
 
@@ -588,7 +641,7 @@ void            AssListError (
 {
     list = ErrorReturnObj(
         "List Assignment: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     ASS_LIST( list, pos, obj );
 }
@@ -626,9 +679,9 @@ void            AssListObject (
 **  follows
 **
 #define ASSS_LIST(list,poss,objs) \
-                        ((*AsssListFuncs[TYPE_OBJ(list)])(list,poss,objs))
+                        ((*AsssListFuncs[TNUM_OBJ(list)])(list,poss,objs))
 */
-void            (*AsssListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Obj poss, Obj objs );
+void            (*AsssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss, Obj objs );
 
 Obj             AsssListOper;
 
@@ -649,7 +702,7 @@ void            AsssListError (
 {
     list = ErrorReturnObj(
         "List Assignments: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     ASSS_LIST( list, poss, objs );
 }
@@ -746,9 +799,9 @@ Obj             AsssListDefaultHandler (
 **  follows
 **
 #define IS_DENSE_LIST(list) \
-                        ((*IsDenseListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsDenseListFuncs[TNUM_OBJ(list)])(list))
 */
-Int             (*IsDenseListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+Int             (*IsDenseListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 Obj             IsDenseListFilt;
 
@@ -818,9 +871,9 @@ Int             IsDenseListObject (
 **  follows
 **
 #define IS_HOMOG_LIST(list) \
-                        ((*IsHomogListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsHomogListFuncs[TNUM_OBJ(list)])(list))
 */
-Int             (*IsHomogListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+Int             (*IsHomogListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 Obj             IsHomogListFilt;
 
@@ -864,12 +917,12 @@ Int             IsHomogListDefault (
     if ( elm == 0 ) {
         return 0L;
     }
-    fam = FAMILY_KIND( KIND_OBJ( elm ) );
+    fam = FAMILY_TYPE( TYPE_OBJ( elm ) );
 
     /* loop over the entries of the list                                   */
     for ( i = 2; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || fam != FAMILY_KIND( KIND_OBJ( elm ) ) ) {
+        if ( elm == 0 || fam != FAMILY_TYPE( TYPE_OBJ( elm ) ) ) {
             return 0L;
         }
     }
@@ -900,9 +953,9 @@ Int             IsHomogListObject (
 **  follows
 **
 #define IS_TABLE_LIST(list) \
-                        ((*IsTableListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsTableListFuncs[TNUM_OBJ(list)])(list))
 */
-Int             (*IsTableListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 Obj             IsTableListFilt;
 
@@ -950,13 +1003,13 @@ Int             IsTableListDefault (
     if ( ! IS_HOMOG_LIST( elm ) ) {
         return 0L;
     }
-    fam = FAMILY_KIND( KIND_OBJ( elm ) );
+    fam = FAMILY_TYPE( TYPE_OBJ( elm ) );
     len = LEN_LIST( elm );
 
     /* loop over the entries of the list                                   */
     for ( i = 2; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || fam != FAMILY_KIND( KIND_OBJ( elm ) ) ) {
+        if ( elm == 0 || fam != FAMILY_TYPE( TYPE_OBJ( elm ) ) ) {
             return 0L;
         }
         if ( ! IS_LIST( elm ) || LEN_LIST( elm ) != len ) {
@@ -990,9 +1043,9 @@ Int             IsTableListObject (
 **  follows
 **
 #define IS_SSORTED_LIST(list) \
-                        ((*IsSSortListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsSSortListFuncs[TNUM_OBJ(list)])(list))
 */
-Int (*IsSSortListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+Int (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 Obj IsSSortListProp;
 
@@ -1099,9 +1152,9 @@ Obj IsNSortListHandler (
 **  follows
 **
 #define IS_POSS_LIST(list) \
-                        ((*IsPossListFuncs[TYPE_OBJ(list)])(list))
+                        ((*IsPossListFuncs[TNUM_OBJ(list)])(list))
 */
-Int             (*IsPossListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+Int             (*IsPossListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 Obj             IsPossListProp;
 
@@ -1176,9 +1229,9 @@ Obj             IsPossListDefaultHandler (
 **  'POS_LIST' is defined in the declaration part of this package as follows
 **
 #define POS_LIST(list,obj,start) \
-                        ((*PosListFuncs[TYPE_OBJ(list)])(list,obj,start))
+                        ((*PosListFuncs[TNUM_OBJ(list)])(list,obj,start))
 */
-Int             (*PosListFuncs[LAST_REAL_TYPE+1]) ( Obj list, Obj obj, Int start );
+Int             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Int start );
 
 Obj             PosListOper;
 
@@ -1202,7 +1255,7 @@ Obj             PosListHandler3 (
     while ( ! IS_INTOBJ(start) || INT_INTOBJ(start) < 0 ) {
         start = ErrorReturnObj(
             "Position: <start> must be a nonnegative integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(start)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(start)].name), 0L,
             "you can return a nonnegative integer for <start>" );
     }
     pos = POS_LIST( list, obj, INT_INTOBJ(start) );
@@ -1216,7 +1269,7 @@ Int             PosListError (
 {
     list = ErrorReturnObj(
         "Position: <list> must be a list (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
         "you can return a list for <list>" );
     return POS_LIST( list, obj, start );
 }
@@ -1257,10 +1310,10 @@ Int             PosListObject (
 {
     Obj                 pos;
     pos = DoOperation3Args( PosListOper, list, obj, INTOBJ_INT(start) );
-    while ( pos!=Fail && ( TYPE_OBJ(pos)!=T_INT || INT_INTOBJ(pos)<1 ) ) {
+    while ( pos!=Fail && ( TNUM_OBJ(pos)!=T_INT || INT_INTOBJ(pos)<1 ) ) {
       pos = ErrorReturnObj(
         "Position: method must return a positive integer (not a %s) or fail",
-        (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(pos)].name), 0L,
         "you can return a positive integer for <pos> or fail" );
     }
     return ( pos == Fail ? 0 : INT_INTOBJ( pos ) );
@@ -1424,7 +1477,7 @@ void            AssListLevel (
         if ( ! IS_DENSE_LIST(objs) ) {
             objs = ErrorReturnObj(
                 "List Assignment: <objs> must be a dense list (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(objs)].name), 0L,
+                (Int)(InfoBags[TNUM_OBJ(objs)].name), 0L,
                 "you can return a new dense list for <objs>" );
         }
         if ( LEN_LIST(lists) != LEN_LIST(objs) ) {
@@ -1502,7 +1555,7 @@ void            AsssListLevel (
         if ( ! IS_DENSE_LIST(objs) ) {
             objs = ErrorReturnObj(
                 "List Assignment: <objs> must be a dense list (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(objs)].name), 0L,
+                (Int)(InfoBags[TNUM_OBJ(objs)].name), 0L,
                 "you can return a new dense list for <objs>" );
         }
         if ( LEN_LIST(lists) != LEN_LIST(objs) ) {
@@ -1530,7 +1583,7 @@ void            AsssListLevel (
                 if ( ! IS_DENSE_LIST( obj ) ) {
                     obj = ErrorReturnObj(
                   "List Assignments: <objs> must be a dense list (not a %s)",
-                        (Int)(InfoBags[TYPE_OBJ(obj)].name), 0L,
+                        (Int)(InfoBags[TNUM_OBJ(obj)].name), 0L,
                         "you can return a new dense list for <objs>" );
                 }
                 if ( LEN_LIST( poss ) != LEN_LIST( obj ) ) {
@@ -1586,51 +1639,51 @@ void            AsssListLevel (
 **  follows
 **
 #define PLAIN_LIST(list) \
-                        ((*PlainListFuncs[TYPE_OBJ(list)])(list))
+                        ((*PlainListFuncs[TNUM_OBJ(list)])(list))
 */
-void            (*PlainListFuncs[LAST_REAL_TYPE+1]) ( Obj list );
+void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 void            PlainListError (
     Obj                 list )
 {
     ErrorQuit(
         "Panic: cannot convert <list> (is a %s) to a plain list",
-        (Int)(InfoBags[TYPE_OBJ(list)].name), 0L );
+        (Int)(InfoBags[TNUM_OBJ(list)].name), 0L );
 }
 
 
 /****************************************************************************
 **
-*F  XType(<list>) . . . . . . . . . . . . . . . . . extended type of an value
-*F  IS_XTYPE_LIST(<type>,<list>)  . . . . . . . . . .  test for extended type
-*V  IsXTypeListFuncs[<type>]  . . . . . table of extended type test functions
+*F  XTNum(<list>) . . . . . . . . . . . . . . . . . extended type of an value
+*F  IS_XTNUM_LIST(<type>,<list>)  . . . . . . . . . .  test for extended type
+*V  IsXTNumListFuncs[<type>]  . . . . . table of extended type test functions
 **
-**  'XType'  calls 'IS_XTYPE_LIST(<type>,<list>)'  with  <type> running  from
+**  'XTNum'  calls 'IS_XTNUM_LIST(<type>,<list>)'  with  <type> running  from
 **  'T_VECTOR' to 'T_MATFFE' and returns    the first  type for which    this
-**  function returns 1.  If no one returns  1, then 'XType' returns 'T_LISTX'
+**  function returns 1.  If no one returns  1, then 'XTNum' returns 'T_LISTX'
 **  (and leaves the list as 'T_PLIST' or 'T_SET').
 **
-**  'IS_XTYPE_LIST' is defined in  the declaration  part  of this package  as
+**  'IS_XTNUM_LIST' is defined in  the declaration  part  of this package  as
 **  follows
 **
-#define IS_XTYPE_LIST(t,list) \
-                        ((*IsXTypeListFuncs[t])(list))
+#define IS_XTNUM_LIST(t,list) \
+                        ((*IsXTNumListFuncs[t])(list))
 */
-Int             (*IsXTypeListFuncs[LAST_VIRTUAL_TYPE+1]) ( Obj obj );
+Int             (*IsXTNumListFuncs[LAST_VIRTUAL_TNUM+1]) ( Obj obj );
 
-Int             XType (
+Int             XTNum (
     Obj                 obj )
 {
     Int                 type;           /* loop variable                   */
 
     /* first handle non lists                                              */
-    if ( TYPE_OBJ(obj) < FIRST_LIST_TYPE || LAST_LIST_TYPE < TYPE_OBJ(obj) )
-        return TYPE_OBJ(obj);
+    if ( TNUM_OBJ(obj) < FIRST_LIST_TNUM || LAST_LIST_TNUM < TNUM_OBJ(obj) )
+        return TNUM_OBJ(obj);
 
     /* otherwise try the extended types in turn                            */
     /* this is done backwards to catch the more specific types first       */
-    for ( type = LAST_VIRTUAL_TYPE; FIRST_REAL_TYPE <= type; type-- ) {
-        if ( IsXTypeListFuncs[type] != 0 && IS_XTYPE_LIST( type, obj ) )
+    for ( type = LAST_VIRTUAL_TNUM; FIRST_REAL_TNUM <= type; type-- ) {
+        if ( IsXTNumListFuncs[type] != 0 && IS_XTNUM_LIST( type, obj ) )
             return type;
     }
 
@@ -1641,14 +1694,14 @@ Int             XType (
 
 /****************************************************************************
 **
-*F  KINDS_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
+*F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
 */
-UInt            KINDS_LIST_FAM_RNam;
+UInt            TYPES_LIST_FAM_RNam;
 
-Obj             KINDS_LIST_FAM (
+Obj             TYPES_LIST_FAM (
     Obj                 fam )
 {
-    return ElmPRec( fam, KINDS_LIST_FAM_RNam );
+    return ElmPRec( fam, TYPES_LIST_FAM_RNam );
 }
 
 
@@ -1741,25 +1794,28 @@ void            InitLists ()
     IsListFilt = NewFilterC(
         "IS_LIST", 1L, "obj", IsListHandler );
     AssGVar( GVarName( "IS_LIST" ), IsListFilt );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsListFuncs[ type ] = IsListNot;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsListFuncs[ type ] = IsListYes;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsListFuncs[ type ] = IsListObject;
     }
 
-    /* make and install the 'LEN_LIST' operation                           */
-    InitHandlerFunc( LenListHandler, "LEN_LIST" );
-    LenListAttr = NewAttributeC(
-        "LEN_LIST", 1L, "list", LenListHandler );
-    AssGVar( GVarName( "LEN_LIST" ), LenListAttr );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    /* make and install the length attribute                               */
+    C_NEW_GVAR_ATTR( "LENGTH", "list", LengthAttr, LENGTHHandler,
+         "src/lists.c:LENGTH" );
+
+    /* make and install the 'LEN_LIST' function                            */
+    C_NEW_GVAR_FUNC( "LEN_LIST", 1L, "list", LenListHandler,
+         "src/lists.c:LEN_LIST" );
+
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         LenListFuncs[ type ] = LenListError;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         LenListFuncs[ type ] = LenListObject;
     }
 
@@ -1768,11 +1824,11 @@ void            InitLists ()
     IsbListOper = NewOperationC(
         "ISB_LIST", 2L, "list, pos", IsbListHandler );
     AssGVar( GVarName( "ISB_LIST" ), IsbListOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsbListFuncs[ type ] = IsbListError;
         IsbvListFuncs[ type ] = IsbListError;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsbListFuncs[ type ] = IsbListObject;
         IsbvListFuncs[ type ] = IsbListObject;
     }
@@ -1782,11 +1838,11 @@ void            InitLists ()
     Elm0ListOper = NewOperationC(
         "ELM0_LIST", 2L, "list, pos", Elm0ListHandler );
     AssGVar( GVarName( "ELM0_LIST" ), Elm0ListOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         Elm0ListFuncs[ type ] = Elm0ListError;
         Elm0vListFuncs[ type ] = Elm0ListError;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         Elm0ListFuncs[ type ] = Elm0ListObject;
         Elm0vListFuncs[ type ] = Elm0ListObject;
     }
@@ -1796,12 +1852,12 @@ void            InitLists ()
     ElmListOper = NewOperationC(
         "ELM_LIST", 2L, "list, pos", ElmListHandler );
     AssGVar( GVarName( "ELM_LIST" ), ElmListOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         ElmListFuncs[  type ] = ElmListError;
         ElmvListFuncs[ type ] = ElmListError;
         ElmwListFuncs[ type ] = ElmListError;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         ElmListFuncs[  type ] = ElmListObject;
         ElmvListFuncs[ type ] = ElmListObject;
         ElmwListFuncs[ type ] = ElmListObject;
@@ -1812,20 +1868,20 @@ void            InitLists ()
     ElmsListOper = NewOperationC(
         "ELMS_LIST", 2L, "list, poss", ElmsListHandler );
     AssGVar( GVarName( "ELMS_LIST" ), ElmsListOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         ElmsListFuncs[ type ] = ElmsListError;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         ElmsListFuncs[ type ] = ElmsListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         ElmsListFuncs[ type ] = ElmsListObject;
     }
 
 
     InitHandlerFunc( ElmsListDefaultHandler, "ELMS_LIST_DEFAULT");
     ElmsListDefaultFunc = NewFunctionC(
-	 "ELMS_LIST_DEFAULT", 2L, "list, poss", ElmsListDefaultHandler );
+         "ELMS_LIST_DEFAULT", 2L, "list, poss", ElmsListDefaultHandler );
     AssGVar( GVarName( "ELMS_LIST_DEFAULT" ), ElmsListDefaultFunc );
 
     /* make and install the 'UNB_LIST' operation                           */
@@ -1833,13 +1889,13 @@ void            InitLists ()
     UnbListOper = NewOperationC(
         "UNB_LIST", 2L, "list, pos", UnbListHandler );
     AssGVar( GVarName( "UNB_LIST" ), UnbListOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         UnbListFuncs[ type ] = UnbListError;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         UnbListFuncs[ type ] = UnbListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         UnbListFuncs[ type ] = UnbListObject;
     }
 
@@ -1848,13 +1904,13 @@ void            InitLists ()
     AssListOper = NewOperationC(
         "ASS_LIST", 3L, "list, pos, obj", AssListHandler );
     AssGVar( GVarName( "ASS_LIST" ), AssListOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         AssListFuncs[ type ] = AssListError;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         AssListFuncs[ type ] = AssListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AssListFuncs[ type ] = AssListObject;
     }
 
@@ -1863,13 +1919,13 @@ void            InitLists ()
     AsssListOper = NewOperationC(
         "ASSS_LIST", 3L, "list, poss, objs", AsssListHandler );
     AssGVar( GVarName( "ASSS_LIST" ), AsssListOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         AsssListFuncs[ type ] = AsssListError;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         AsssListFuncs[ type ] = AsssListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AsssListFuncs[ type ] = AsssListObject;
     }
     
@@ -1883,13 +1939,13 @@ void            InitLists ()
     IsDenseListFilt = NewFilterC(
         "IS_DENSE_LIST", 1L, "obj", IsDenseListHandler );
     AssGVar( GVarName( "IS_DENSE_LIST" ), IsDenseListFilt );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsDenseListFuncs[ type ] = IsDenseListNot;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsDenseListFuncs[ type ] = IsDenseListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsDenseListFuncs[ type ] = IsDenseListObject;
     }
 
@@ -1898,13 +1954,13 @@ void            InitLists ()
     IsHomogListFilt = NewFilterC(
         "IS_HOMOG_LIST", 1L, "obj", IsHomogListHandler );
     AssGVar( GVarName( "IS_HOMOG_LIST" ), IsHomogListFilt );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsHomogListFuncs[ type ] = IsHomogListNot;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsHomogListFuncs[ type ] = IsHomogListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsHomogListFuncs[ type ] = IsHomogListObject;
     }
 
@@ -1913,13 +1969,13 @@ void            InitLists ()
     IsTableListFilt = NewFilterC(
         "IS_TABLE_LIST", 1L, "obj", IsTableListHandler );
     AssGVar( GVarName( "IS_TABLE_LIST" ), IsTableListFilt );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsTableListFuncs[ type ] = IsTableListNot;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsTableListFuncs[ type ] = IsTableListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsTableListFuncs[ type ] = IsTableListObject;
     }
 
@@ -1928,13 +1984,13 @@ void            InitLists ()
     IsSSortListProp = NewPropertyC(
         "IS_SSORT_LIST", 1L, "obj", IsSSortListHandler );
     AssGVar( GVarName( "IS_SSORT_LIST" ), IsSSortListProp );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsSSortListFuncs[ type ] = IsSSortListNot;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsSSortListFuncs[ type ] = IsSSortListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsSSortListFuncs[ type ] = IsSSortListObject;
     }
 
@@ -1954,13 +2010,13 @@ void            InitLists ()
     IsPossListProp = NewPropertyC(
         "IS_POSS_LIST", 1L, "obj", IsPossListHandler );
     AssGVar( GVarName( "IS_POSS_LIST" ), IsPossListProp );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsPossListFuncs[ type ] = IsPossListNot;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsPossListFuncs[ type ] = IsPossListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsPossListFuncs[ type ] = IsPossListObject;
     }
 
@@ -1977,13 +2033,13 @@ void            InitLists ()
     HDLR_FUNC( PosListOper, 2 ) = PosListHandler2;
     HDLR_FUNC( PosListOper, 3 ) = PosListHandler3;
     AssGVar( GVarName( "POS_LIST" ), PosListOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         PosListFuncs[ type ] = PosListError;
     }
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         PosListFuncs[ type ] = PosListDefault;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         PosListFuncs[ type ] = PosListObject;
     }
 
@@ -1993,15 +2049,15 @@ void            InitLists ()
     AssGVar( GVarName( "POS_LIST_DEFAULT" ), PosListDefaultFunc );
 
     /* install the error functions into the other tables                   */
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         PlainListFuncs  [ type ] = PlainListError;
     }
 
     /* whats that?                                                         */
-    KINDS_LIST_FAM_RNam = RNamName( "KINDS_LIST_FAM" );
+    TYPES_LIST_FAM_RNam = RNamName( "TYPES_LIST_FAM" );
 
     /* install the generic mutability test function                        */
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type += 2 ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type += 2 ) {
         IsMutableObjFuncs[  type           ] = IsMutableListYes;
         IsMutableObjFuncs[  type+IMMUTABLE ] = IsMutableListNo;
         IsCopyableObjFuncs[ type           ] = IsCopyableListYes;
@@ -2009,7 +2065,7 @@ void            InitLists ()
     }
 
     /* install the default printers                                        */
-    for ( type = FIRST_LIST_TYPE; type <= LAST_LIST_TYPE; type++ ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         PrintObjFuncs [ type ] = PrintListDefault;
         PrintPathFuncs[ type ] = PrintPathList;
     }

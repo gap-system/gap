@@ -14,7 +14,7 @@ char *          Revision_listfunc_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -23,7 +23,7 @@ char *          Revision_listfunc_c =
 #include        "opers.h"               /* operations                      */
 
 #include        "ariths.h"              /* generic operations package      */
-#include        "lists.h"               /* XType, LEN_LIST, ELM_LIST,  ... */
+#include        "lists.h"               /* XTNum, LEN_LIST, ELM_LIST,  ... */
 
 #include        "bool.h"                /* True, False                     */
 
@@ -70,12 +70,12 @@ void            AddPlist (
     Int                 pos;            /* position to assign to           */
 
     if ( IS_IMM_PLIST(list) ) {
-	list = ErrorReturnObj(
-	        "Lists Assignment: <list> must be a mutable list",
-		0L, 0L,
-		"you may return a mutable list" );
-	AddListHandler( 0, list, obj );
-	return;
+        list = ErrorReturnObj(
+                "Lists Assignment: <list> must be a mutable list",
+                0L, 0L,
+                "you may return a mutable list" );
+        AddListHandler( 0, list, obj );
+        return;
     }
     RetypeBag( list, T_PLIST );
     pos = LEN_PLIST( list ) + 1;
@@ -93,11 +93,11 @@ Obj             AddListHandler (
     Obj                 obj )
 {
     /* dispatch                                                            */
-    if ( T_PLIST          <= TYPE_OBJ( list )
-      && TYPE_OBJ( list ) <= T_PLIST_CYC_SSORT ) {
+    if ( T_PLIST          <= TNUM_OBJ( list )
+      && TNUM_OBJ( list ) <= T_PLIST_CYC_SSORT ) {
         AddPlist( list, obj );
     }
-    else if ( TYPE_OBJ( list ) < FIRST_EXTERNAL_TYPE ) {
+    else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
         AddList( list, obj );
     }
     else {
@@ -137,11 +137,11 @@ Obj             AppendListIntrHandler (
     Int                 i;              /* loop variable                   */
 
     /* check the type of the first argument                                */
-    if ( TYPE_OBJ( list1 ) != T_PLIST ) {
+    if ( TNUM_OBJ( list1 ) != T_PLIST ) {
         while ( ! IS_LIST( list1 ) ) {
             list1 = ErrorReturnObj(
                 "AppendList: <list1> must be a list (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(list1)].name), 0L,
+                (Int)(InfoBags[TNUM_OBJ(list1)].name), 0L,
                 "you can return a list for <list1>" );
         }
         PLAIN_LIST( list1 );
@@ -150,11 +150,11 @@ Obj             AppendListIntrHandler (
     len1 = LEN_PLIST( list1 );
 
     /* check the type of the second argument                               */
-    if ( TYPE_OBJ( list2 ) != T_PLIST ) {
+    if ( TNUM_OBJ( list2 ) != T_PLIST ) {
         while ( ! IS_LIST( list2 ) ) {
             list2 = ErrorReturnObj(
                 "AppendList: <list2> must be a list (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(list2)].name), 0L,
+                (Int)(InfoBags[TNUM_OBJ(list2)].name), 0L,
                 "you can return a list for <list2>"  );
         }
         len2 = LEN_LIST( list2 );
@@ -170,7 +170,7 @@ Obj             AppendListIntrHandler (
     }
 
     /* add the elements                                                    */
-    if ( TYPE_OBJ(list2) == T_PLIST ) {
+    if ( TNUM_OBJ(list2) == T_PLIST ) {
         ptr1 = ADDR_OBJ(list1) + len1;
         ptr2 = ADDR_OBJ(list2);
         for ( i = 1; i <= len2; i++ ) {
@@ -264,13 +264,13 @@ Obj             PositionSortedListHandler (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "PositionSortedList: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
             "you can return a list for <list>" );
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE  <= TYPE_OBJ(list)
-      && TYPE_OBJ(list) <= T_PLIST_CYC_SSORT ) {
+    if ( T_PLIST_DENSE  <= TNUM_OBJ(list)
+      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT ) {
         h = PositionSortedDensePlist( list, obj );
     }
     else {
@@ -358,21 +358,21 @@ Obj             PositionSortedListCompHandler (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "PositionSortedListComp: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
             "you can return a list for <list>" );
     }
 
     /* check the third argument                                            */
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "PositionSortedListComp: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE  <= TYPE_OBJ(list)
-      && TYPE_OBJ(list) <= T_PLIST_CYC_SSORT ) {
+    if ( T_PLIST_DENSE  <= TNUM_OBJ(list)
+      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT ) {
         h = PositionSortedDensePlistComp( list, obj, func );
     }
     else {
@@ -482,13 +482,13 @@ Obj             SortListHandler (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "SortList: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
             "you can return a list for <list>" );
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE  <= TYPE_OBJ(list)
-      && TYPE_OBJ(list) <= T_PLIST_CYC_SSORT ) {
+    if ( T_PLIST_DENSE  <= TNUM_OBJ(list)
+      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT ) {
         SortDensePlist( list );
     }
     else {
@@ -577,21 +577,21 @@ Obj             SortListCompHandler (
     while ( ! IS_LIST(list) ) {
         list = ErrorReturnObj(
             "SortListComp: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
             "you can return a list for <list>" );
     }
 
     /* check the third argument                                            */
-    while ( TYPE_OBJ( func ) != T_FUNCTION ) {
+    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
             "SortListComp: <func> must be a function (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(func)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(func)].name), 0L,
             "you can return a function for <func>" );
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE  <= TYPE_OBJ(list)
-      && TYPE_OBJ(list) <= T_PLIST_CYC_SSORT ) {
+    if ( T_PLIST_DENSE  <= TNUM_OBJ(list)
+      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT ) {
         SortDensePlistComp( list, func );
     }
     else {
@@ -695,7 +695,7 @@ Obj             FuncOnPairs (
     while ( ! IS_LIST( pair ) || LEN_LIST( pair ) != 2 ) {
         pair = ErrorReturnObj(
             "OnPairs: <pair> must be a list of length 2 (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(pair)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(pair)].name), 0L,
             "you can return a list of length 2 for <pair>" );
     }
 
@@ -741,12 +741,12 @@ Obj             FuncOnTuples (
     while ( ! IS_LIST( tuple ) ) {
         tuple = ErrorReturnObj(
             "OnTuples: <tuple> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(tuple)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(tuple)].name), 0L,
             "you can return a list for <tuple>" );
     }
 
     /* special case for permutations                                       */
-    if ( TYPE_OBJ(elm) == T_PERM2 || TYPE_OBJ(elm) == T_PERM4 ) {
+    if ( TNUM_OBJ(elm) == T_PERM2 || TNUM_OBJ(elm) == T_PERM4 ) {
         PLAIN_LIST( tuple );
         return OnTuplesPerm( tuple, elm );
     }
@@ -787,15 +787,15 @@ Obj             FuncOnSets (
     UInt                mutable;        /* the elements are mutable        */
 
     /* check the type of the first argument                                */
-    while ( TYPE_OBJ( set ) != T_PLIST_HOM_SSORT && ! IsSet( set ) ) {
+    while ( TNUM_OBJ( set ) != T_PLIST_HOM_SSORT && ! IsSet( set ) ) {
         set = ErrorReturnObj(
             "OnSets: <set> must be a set (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(set)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(set)].name), 0L,
             "you can return a set for <set>" );
     }
 
     /* special case for permutations                                       */
-    if ( TYPE_OBJ(elm) == T_PERM2 || TYPE_OBJ(elm) == T_PERM4 ) {
+    if ( TNUM_OBJ(elm) == T_PERM2 || TNUM_OBJ(elm) == T_PERM4 ) {
         return OnSetsPerm( set, elm );
     }
 
@@ -893,7 +893,7 @@ Obj             DepthListx (
 
     /* construct zero                                                      */
     tmp = ELMV_LIST(vec,1);
-    if ( TYPE_OBJ(tmp) == T_INT )
+    if ( TNUM_OBJ(tmp) == T_INT )
         zero = INTOBJ_INT( 0L );
     else
         zero = PROD( INTOBJ_INT( 0L ), tmp );
@@ -901,11 +901,11 @@ Obj             DepthListx (
     /* loop over vector and compare                                        */
     for ( pos = 1;  pos <= len;  pos++ ) {
         tmp = ELMV_LIST(vec,pos);
-        while ( FIRST_LIST_TYPE <= TYPE_OBJ(tmp)
-             && TYPE_OBJ(tmp) <= LAST_LIST_TYPE ) {
+        while ( FIRST_LIST_TNUM <= TNUM_OBJ(tmp)
+             && TNUM_OBJ(tmp) <= LAST_LIST_TNUM ) {
             tmp = ErrorReturnObj(
                 "DepthVector: <list> must be a vector (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(tmp)].name), 0L,
+                (Int)(InfoBags[TNUM_OBJ(tmp)].name), 0L,
                 "you can return a vector for <list>" );
         }
         if ( ! EQ( zero, tmp ) )
@@ -921,16 +921,16 @@ Obj             DepthListx (
 **
 *F  DepthVector(<vec>)  . . . . . . . . . . . . . . . . . . depth of a vector
 */
-Obj       (*DepthVectorFuncs[LAST_REAL_TYPE+1]) ( Obj vec );
+Obj       (*DepthVectorFuncs[LAST_REAL_TNUM+1]) ( Obj vec );
 
 Obj       CantDepthVector (
     Obj                 vec )
 {
     vec = ErrorReturnObj(
         "DepthVector: <vec> must be a vector (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(vec)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(vec)].name), 0L,
         "you can return a vector for <vec>" );
-    return DepthVectorFuncs[XType(vec)]( vec );
+    return DepthVectorFuncs[XTNum(vec)]( vec );
 }
 
 Obj       DepthVectorHandler (
@@ -938,7 +938,7 @@ Obj       DepthVectorHandler (
     Obj                 vec )
 {
     /* jump through the table 'DepthVectorFuncs'                           */
-    return DepthVectorFuncs[XType(vec)]( vec );
+    return DepthVectorFuncs[XTNum(vec)]( vec );
 }
 
 
@@ -953,7 +953,7 @@ void            InitListFunc ( void )
     UInt                type;           /* loop variable                   */
 
     /* install tables for gap functions                                    */
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         DepthVectorFuncs[ type ] = CantDepthVector;
     }
     /* DepthVectorFuncs[ T_LISTX           ] = DepthListx; */

@@ -17,8 +17,8 @@
 ##        list of names of the basis vectors (for printing only),
 ##  'zerocoeff' :
 ##        the zero coefficient (needed already for the s.c. table),
-##  'defaultKindDenseCoeffVectorRep' :
-##        the kind of s.c. algebra elements that are represented by
+##  'defaultTypeDenseCoeffVectorRep' :
+##        the type of s.c. algebra elements that are represented by
 ##        a dense list of coefficients.
 ##
 ##  If the family has *not* the category 'IsFamilyOverFullCoefficientsFamily'
@@ -86,7 +86,7 @@ InstallMethod( ObjByExtRep,
     elif not ForAll( coeffs, c -> c in Fam!.coefficientsDomain ) then
       Error( "all in <coeffs> must lie in '<Fam>!.coefficientsDomain'" );
     fi;
-    return Objectify( Fam!.defaultKindDenseCoeffVectorRep,
+    return Objectify( Fam!.defaultTypeDenseCoeffVectorRep,
                       [ Immutable( coeffs ) ] );
     end );
 
@@ -102,7 +102,7 @@ InstallMethod( ObjByExtRep,
     elif Length( coeffs ) <> Length( Fam!.names ) then
       Error( "<coeffs> must be a list of length ", Fam!.names );
     fi;
-    return Objectify( Fam!.defaultKindDenseCoeffVectorRep,
+    return Objectify( Fam!.defaultTypeDenseCoeffVectorRep,
                       [ Immutable( coeffs ) ] );
     end );
 
@@ -140,6 +140,13 @@ InstallMethod( PrintObj,
     names := F!.names;
     elm   := ExtRepOfObj( elm );
     len   := Length( elm );
+
+    # Treat the case that the algebra is trivial.
+    if len = 0 then
+      Print( "<zero of zero s.c. algebra>" );
+      return;
+    fi;
+
     zero  := Zero( elm[1] );
     depth := PositionNot( elm, zero );
   
@@ -465,9 +472,13 @@ AlgebraByStructureConstantsArg := function( arglist, filter )
     # Check the s.c. table.
 #T really do this!
     sctable := Immutable( arglist[2] );
-    n       := Length( sctable[1] );
     R       := arglist[1];
     zero    := Zero( R );
+    if Length( sctable ) = 2 then
+      n:= 0;
+    else
+      n:= Length( sctable[1] );
+    fi;
 
     # Construct names of generators (used only for printing).
     if   Length( arglist ) = 2 then
@@ -500,23 +511,23 @@ AlgebraByStructureConstantsArg := function( arglist, filter )
     Fam!.names     := Immutable( names );
     Fam!.zerocoeff := zero;
 
-    # Construct the default kind of the family.
-    Fam!.defaultKindDenseCoeffVectorRep :=
-        NewKind( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep );
+    # Construct the default type of the family.
+    Fam!.defaultTypeDenseCoeffVectorRep :=
+        NewType( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep );
 
     SetCharacteristic( Fam, Characteristic( R ) );
     SetCoefficientsFamily( Fam, ElementsFamily( FamilyObj( R ) ) );
-    SetZero( Fam, ObjByExtRep( Fam, List( [ 1 .. n ], x -> zero ) ) );
 
     # Make the generators and the algebra.
     if 0 < n then
+      SetZero( Fam, ObjByExtRep( Fam, List( [ 1 .. n ], x -> zero ) ) );
       gens:= Immutable( List( IdentityMat( n, R ),
                               x -> ObjByExtRep( Fam, x ) ) );
       A:= FLMLORByGenerators( R, gens );
       UseBasis( A, gens );
     else
-      SetName( Zero( A ), "<zero of zero s.c. algebra>" );
-      gens:= [];
+      SetZero( Fam, ObjByExtRep( Fam, EmptyRowVector( FamilyObj(zero) ) ) );
+      gens:= Immutable( [] );
       A:= FLMLORByGenerators( R, gens, Zero( Fam ) );
     fi;
     Fam!.basisVectors:= gens;
@@ -762,13 +773,13 @@ InstallTrueMethod( IsSCAlgebraObjSpaceRep,
 #T     local V;
 #T 
 #T     if HasIsDivisionRing( R ) and IsDivisionRing( R ) then
-#T       V:= Objectify( NewKind( FamilyObj( R ),
+#T       V:= Objectify( NewType( FamilyObj( R ),
 #T                                   IsLeftVectorSpace
 #T                               and IsSCAlgebraObjSpace
 #T                               and IsAttributeStoringRep ),
 #T                      rec() );
 #T     else
-#T       V:= Objectify( NewKind( FamilyObj( R ),
+#T       V:= Objectify( NewType( FamilyObj( R ),
 #T                                   IsFreeLeftModule
 #T                               and IsSCAlgebraObjSpace
 #T                               and IsAttributeStoringRep ),
@@ -787,13 +798,13 @@ InstallTrueMethod( IsSCAlgebraObjSpaceRep,
 #T     local V;
 #T 
 #T     if HasIsDivisionRing( R ) and IsDivisionRing( R ) then
-#T       V:= Objectify( NewKind( FamilyObj( R ),
+#T       V:= Objectify( NewType( FamilyObj( R ),
 #T                                   IsLeftVectorSpace
 #T                               and IsSCAlgebraObjSpace
 #T                               and IsAttributeStoringRep ),
 #T                      rec() );
 #T     else
-#T       V:= Objectify( NewKind( FamilyObj( R ),
+#T       V:= Objectify( NewType( FamilyObj( R ),
 #T                                   IsFreeLeftModule
 #T                               and IsSCAlgebraObjSpace
 #T                               and IsAttributeStoringRep ),
@@ -819,13 +830,13 @@ InstallTrueMethod( IsSCAlgebraObjSpaceRep,
 #T     local V;
 #T 
 #T     if HasIsDivisionRing( R ) and IsDivisionRing( R ) then
-#T       V:= Objectify( NewKind( FamilyObj( R ),
+#T       V:= Objectify( NewType( FamilyObj( R ),
 #T                                   IsAlgebra
 #T                               and IsSCAlgebraObjSpace
 #T                               and IsAttributeStoringRep ),
 #T                      rec() );
 #T     else
-#T       V:= Objectify( NewKind( FamilyObj( R ),
+#T       V:= Objectify( NewType( FamilyObj( R ),
 #T                                   IsFLMLOR
 #T                               and IsSCAlgebraObjSpace
 #T                               and IsAttributeStoringRep ),
@@ -844,13 +855,13 @@ InstallTrueMethod( IsSCAlgebraObjSpaceRep,
 #T     local V;
 #T 
 #T     if HasIsDivisionRing( R ) and IsDivisionRing( R ) then
-#T       V:= Objectify( NewKind( FamilyObj( R ),
+#T       V:= Objectify( NewType( FamilyObj( R ),
 #T                                   IsAlgebra
 #T                               and IsSCAlgebraObjSpace
 #T                               and IsAttributeStoringRep ),
 #T                      rec() );
 #T     else
-#T       V:= Objectify( NewKind( FamilyObj( R ),
+#T       V:= Objectify( NewType( FamilyObj( R ),
 #T                                   IsFLMLOR
 #T                               and IsSCAlgebraObjSpace
 #T                               and IsAttributeStoringRep ),
@@ -986,7 +997,7 @@ InstallMethod( CanonicalBasis,
     [ IsFreeLeftModule and IsSCAlgebraObjCollection and IsFullSCAlgebra ], 0,
     function( A )
     local B;
-    B:= Objectify( NewKind( FamilyObj( A ),
+    B:= Objectify( NewType( FamilyObj( A ),
                                 IsCanonicalBasisFullSCAlgebra
                             and IsAttributeStoringRep
                             and IsBasis

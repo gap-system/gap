@@ -41,7 +41,7 @@ char *          Revision_sctable_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* Bag, NewBag                     */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -87,7 +87,7 @@ Obj         SCTableEntryHandler (
     if ( ! IS_LIST(table) ) {
         table = ErrorReturnObj(
             "SCTableEntry: <table> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(table)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(table)].name), 0L,
             "you can return a list for <table>" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
@@ -255,7 +255,7 @@ Obj             SCTableProductHandler (
     if ( ! IS_LIST(table) ) {
         table = ErrorReturnObj(
             "SCTableProduct: <table> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(table)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(table)].name), 0L,
             "you can return a list for <table>" );
         return SCTableProductHandler( self, table, list1, list2 );
     }

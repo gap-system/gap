@@ -646,7 +646,7 @@ end;
 ##
 SolvableNormalClosurePermGroup := function( G, H )
     local   U,  oldlen,  series,  bound,  z,  S;
-    
+
     U := CopyStabChain( StabChainAttr( TrivialSubgroup( G ) ) );
     oldlen := Length( U.labels );
     
@@ -678,7 +678,7 @@ SolvableNormalClosurePermGroup := function( G, H )
     od;
     
     U := GroupStabChain( G, series[ 1 ], true );
-    SetPcgs( U, PcgsStabChainSeries( IsPcgsPermGroupRep, G,
+    SetPcgs( U, PcgsStabChainSeries( IsPcgsPermGroupRep, U,
             ElementaryAbelianSeries, series, oldlen ) );
     SetIsSolvableGroup( U, true );
     SetIsNormalInParent( U, true );

@@ -54,7 +54,7 @@ InstallMethod( FLMLORByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local A;
-    A:= Objectify( NewKind( FamilyObj( gens ),
+    A:= Objectify( NewType( FamilyObj( gens ),
                             IsFLMLOR and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
@@ -68,7 +68,7 @@ InstallOtherMethod( FLMLORByGenerators,
     [ IsRing, IsHomogeneousList, IsRingElement ], 0,
     function( R, gens, zero )
     local A;
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                             IsFLMLOR and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
@@ -95,7 +95,7 @@ InstallMethod( FLMLORWithOneByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local A;
-    A:= Objectify( NewKind( FamilyObj( gens ),
+    A:= Objectify( NewType( FamilyObj( gens ),
                             IsFLMLORWithOne and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
@@ -109,7 +109,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     [ IsRing, IsHomogeneousList, IsRingElement ], 0,
     function( R, gens, zero )
     local A;
-    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    A:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                             IsFLMLORWithOne and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
@@ -209,7 +209,7 @@ Subalgebra := SubFLMLOR;
 SubFLMLORNC := function( arg )
     local S;
     if IsEmpty( arg[2] ) then
-      S:= Objectify( NewKind( FamilyObj( arg[1] ),
+      S:= Objectify( NewType( FamilyObj( arg[1] ),
                                   IsFLMLOR
                               and IsTrivial
                               and IsIdealInParent
@@ -2942,7 +2942,7 @@ InstallMethod( IdealByGenerators,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
     local I;
-    I:= Objectify( NewKind( FamilyObj( A ),
+    I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsIdealInParent
                             and IsAttributeStoringRep ),
@@ -2964,7 +2964,7 @@ InstallMethod( LeftIdealByGenerators,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
     local I;
-    I:= Objectify( NewKind( FamilyObj( A ),
+    I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsLeftIdealInParent
                             and IsAttributeStoringRep ),
@@ -2986,7 +2986,7 @@ InstallMethod( RightIdealByGenerators,
     [ IsFLMLOR, IsCollection ], 0,
     function( A, gens )
     local I;
-    I:= Objectify( NewKind( FamilyObj( A ),
+    I:= Objectify( NewType( FamilyObj( A ),
                                 IsFLMLOR
                             and IsRightIdealInParent
                             and IsAttributeStoringRep ),

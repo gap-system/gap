@@ -47,7 +47,7 @@ InstallMethod( Iterator,
       TryNextMethod();
     fi;
 
-    return Objectify( NewKind( IteratorsFamily, IsFreeSemigroupIterator ),
+    return Objectify( NewType( IteratorsFamily, IsFreeSemigroupIterator ),
             rec(
                  family       := ElementsFamily( FamilyObj( M ) ),
                  nrgenerators := Length( GeneratorsOfMagmaWithOne( M ) ),
@@ -93,7 +93,7 @@ InstallMethod( Enumerator,
       TryNextMethod();
     fi;
 
-    enum:= Objectify( NewKind( FamilyObj( M ), IsFreeMonoidEnumerator ),
+    enum:= Objectify( NewType( FamilyObj( M ), IsFreeMonoidEnumerator ),
            rec( family       := ElementsFamily( FamilyObj( M ) ),
                 nrgenerators := Length( GeneratorsOfMagmaWithOne( M ) ) ) );
     SetUnderlyingCollection( enum, M );
@@ -192,45 +192,56 @@ InstallMethod( GeneratorsMagmaFamily,
 
 #############################################################################
 ##
-#F  FreeMonoid( <n> )
+#F  FreeMonoid( <rank> )
+#F  FreeMonoid( <rank>, <name> )
+#F  FreeMonoid( <name1>, <name2>, ... )
 #F  FreeMonoid( <names> )
 ##
-##  is a free monoid on <n> generators, or on generators that shall be
-##  printed as the strings in the list <names>.
-##
-FreeMonoid := function( n )
+FreeMonoid := function( arg )
 
     local   names,      # list of generators names
             F,          # family of free monoid element objects
             M;          # free monoid, result
 
-    # Check the arguments.
-    if IsInt( n ) and 0 <= n then
-      names:= List( [ 1 .. n ], x -> Concatenation( "m.", String( x ) ) );
-    elif IsList( n ) and 0 <= Length( n ) and ForAll( n, IsString ) then
-      names:= n;
-      n:= Length( names );
+    # Get and check the argument list, and construct names if necessary.
+    if   Length( arg ) = 1 and arg[1] = infinity then
+      names:= InfiniteListOfNames( "m." );
+    elif Length( arg ) = 2 and arg[1] = infinity then
+      names:= InfiniteListOfNames( arg[2] );
+    elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 <= arg[1] then
+      names:= List( [ 1 .. arg[1] ],
+                    i -> Concatenation( "m.", String(i) ) );
+    elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 <= arg[1] then
+      names:= List( [ 1 .. arg[1] ],
+                    i -> Concatenation( arg[2], String(i) ) );
+    elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
+      names:= arg;
+    elif Length( arg ) = 1 and IsList( arg[1] ) then
+      names:= arg[1];
     else
-      Error( "<n> must be a nonnegative integer or a list of strings" );
+      Error("usage: FreeMonoid(<name1>,<name2>..) or FreeMonoid(<rank>)");
+    fi;
+
+    # Handle the trivial case.
+    if IsEmpty( names ) then
+      return FreeGroup( 0 );
     fi;
 
     # Construct the family of element objects of our monoid.
     F:= NewFamily( "FreeMonoidElementsFamily", IsAssocWordWithOne );
 
-    # Install the data (names, no. of bits available for exponents, kinds).
+    # Install the data (names, no. of bits available for exponents, types).
     StoreInfoFreeMagma( F, names, IsAssocWordWithOne );
 
     # Make the monoid
-    if IsEmpty( names ) then
-      M:= MonoidByGenerators( [], One( F ) );
-    else
+    if IsFinite( names ) then
       M:= MonoidByGenerators( List( [ 1 .. Length( names ) ],
-                            i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
+                              i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
+    else
+      M:= MonoidByGenerators( InfiniteListOfGenerators( F ) );
     fi;
-    SetIsWholeFamily( M, true );
 
-    # Store whether the monoid is trivial.
-    SetIsTrivial( M, n = 0 );
+    SetIsWholeFamily( M, true );
 
     # Return the free monoid.
     return M;

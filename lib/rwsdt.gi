@@ -15,7 +15,7 @@ Revision.rwsdt_gi :=
 IsDeepThoughtCollectorRep := NewRepresentation(
          "IsDeepThoughtCollectorRep",
          IsPositionalObjectRep,   
-         [1..PC_DEFAULT_KIND],
+         [1..PC_DEFAULT_TYPE],
          IsPowerConjugateCollector);
 
 
@@ -84,7 +84,7 @@ InstallMethod( DeepThoughtCollectorByGenerators,
     0,
 
 function( efam, gens, orders )
-    local   i,  dt,  m,  bits,  kind,  fam;
+    local   i,  dt,  m,  bits,  type,  fam;
 
     # create the correct family
     fam := NewFamily( "PowerConjugateCollectorFamily",
@@ -105,14 +105,14 @@ function( efam, gens, orders )
     # construct a deep thought collector as positional object
     dt := [];
 
-    # and a default kind 
-    dt[PC_DEFAULT_KIND] := efam!.kinds[4];
+    # and a default type 
+    dt[PC_DEFAULT_TYPE] := efam!.types[4];
 
     # the generators must have IsInfBitsAssocWord
     gens := ShallowCopy(gens);
     for i  in [ 1 .. Length(gens) ]  do
         if not IsInfBitsAssocWord(gens[i])  then
-            gens[i] := AssocWord( dt[PC_DEFAULT_KIND], ExtRepOfObj(gens[i]) );
+            gens[i] := AssocWord( dt[PC_DEFAULT_TYPE], ExtRepOfObj(gens[i]) );
         fi;
     od;
     # the rhs of the powers
@@ -122,8 +122,8 @@ function( efam, gens, orders )
     dt[PC_CONJUGATES] := [];
 
     # convert into a positional object
-    kind := NewKind( fam, IsDeepThoughtCollectorRep and IsMutable );
-    Objectify( kind, dt );
+    type := NewType( fam, IsDeepThoughtCollectorRep and IsMutable );
+    Objectify( type, dt );
 
     # underlying family vermutlich nicht n"otig
 
@@ -166,7 +166,7 @@ function( dtrws )
 	if IsBound( ords[i] )  then
             if IsBound( dtrws![PC_POWERS][i] )  then
                 Add( rels, gens[i]^ords[i] / 
-                           InfBits_AssocWord( dtrws![PC_DEFAULT_KIND], 
+                           InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE], 
                                               dtrws![PC_POWERS][i] ) );
             else
                 Add( rels, gens[i]^ords[i] );
@@ -179,7 +179,7 @@ function( dtrws )
         for j  in [ 1 .. i-1 ]  do
             if IsBound( dtrws![PC_CONJUGATES][i][j] )  then
                 Add( rels, gens[i]^gens[j] / 
-                           InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+                           InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
                                               dtrws![PC_CONJUGATES][i][j] ) );
             else
                 Add( rels, gens[i]^gens[j] / gens[i] );
@@ -587,7 +587,7 @@ InstallMethod(ReducedProduct,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
                               DTMultiply( ExtRepOfObj(lword), 
                                           ExtRepOfObj(rword),
                                           dtrws )  );
@@ -609,7 +609,7 @@ InstallMethod(ReducedComm,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
                               DTCommutator( ExtRepOfObj(lword), 
                                             ExtRepOfObj(rword),
                                             dtrws )  );
@@ -631,7 +631,7 @@ InstallMethod(ReducedLeftQuotient,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
                               DTSolution( ExtRepOfObj(lword), 
                                           ExtRepOfObj(rword),
                                           dtrws )  );
@@ -653,7 +653,7 @@ InstallMethod(ReducedPower,
      0,
 
 function(dtrws, word, int)
-    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
                               DTPower( ExtRepOfObj(word), int, dtrws )  );
 end   );
 
@@ -673,7 +673,7 @@ InstallMethod(ReducedQuotient,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
                               DTQuotient( ExtRepOfObj(lword), 
                                           ExtRepOfObj(rword),
                                           dtrws )  );
@@ -695,7 +695,7 @@ InstallMethod(ReducedConjugate,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
                               DTConjugate( ExtRepOfObj(lword), 
                                            ExtRepOfObj(rword),
                                            dtrws )  );
@@ -716,7 +716,7 @@ InstallMethod(ReducedInverse,
      0,
 
 function(dtrws, word)
-    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
                               DTSolution( ExtRepOfObj(word), [], dtrws )  );
 end   );
 
@@ -813,7 +813,7 @@ function(dtrws, l)
 	    Append( res, [ i, l[i] ] );
 	fi;
     od;
-    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND], res );
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE], res );
 end  );
 
 #############################################################################

@@ -125,18 +125,18 @@ extern  Obj             SuccFF;
 
 /****************************************************************************
 **
-*F  KIND_FF(<ff>) . . . . . . . . . . . . . . .  kind of a small finite field
+*F  TYPE_FF(<ff>) . . . . . . . . . . . . . . .  kind of a small finite field
 **
-**  'KIND_FF' returns the kind of elements of the small finite field <ff>.
+**  'TYPE_FF' returns the kind of elements of the small finite field <ff>.
 **
-**  Note that  'KIND_FF' is a macro, so  do not call  it  with arguments that
+**  Note that  'TYPE_FF' is a macro, so  do not call  it  with arguments that
 **  have sideeffects.
 */
-#define KIND_FF(ff)             (ELM_PLIST( KindFF, ff ))
+#define TYPE_FF(ff)             (ELM_PLIST( TypeFF, ff ))
 
-extern  Obj             KindFF;
+extern  Obj             TypeFF;
 
-extern  Obj             KIND_FFE;
+extern  Obj             TYPE_FFE;
 
 
 /****************************************************************************
@@ -378,14 +378,14 @@ extern  UInt            DegreeFFE (
 
 /****************************************************************************
 **
-*F  KindFFE(<ffe>)  . . . . . . . . . . kind of element of small finite field
+*F  TypeFFE(<ffe>)  . . . . . . . . . . kind of element of small finite field
 **
-**  'KindFFE' returns the kind of the element <ffe> of a small finite field.
+**  'TypeFFE' returns the kind of the element <ffe> of a small finite field.
 **
-**  'KindFFE' is the function in 'KindObjFuncs' for  elements in small finite
+**  'TypeFFE' is the function in 'TypeObjFuncs' for  elements in small finite
 **  fields.
 */
-extern  Obj             KindFFE (
+extern  Obj             TypeFFE (
             Obj                 ffe );
 
 

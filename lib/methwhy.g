@@ -39,7 +39,7 @@ end;
 ##  if skip is negative, all methods will be tried. In this case, a list of
 ##  all possible methods is returned.
 MethodXArgs := function(arg)
-local oper,l,obj,skip,verbos,fams,kind,i,j,methods,flag,flag2,lent,nam,val,
+local oper,l,obj,skip,verbos,fams,type,i,j,methods,flag,flag2,lent,nam,val,
       erg,has,need;
   if Length(arg)<2 or not IS_LIST(arg[2]) or not IS_FUNCTION(arg[1]) then
     Error("usage: MethodXArgs(<operation>,<arglist>[,<verbosity>[,<skip>]])");
@@ -62,10 +62,10 @@ local oper,l,obj,skip,verbos,fams,kind,i,j,methods,flag,flag2,lent,nam,val,
     Print("Searching Method for ",NAME_FUNCTION(oper)," with ",l,
 	  " arguments:\n");
   fi;
-  kind:=[];
+  type:=[];
   fams:=[];
   for i in obj do
-    Add(kind,KindObj(i));
+    Add(type,TypeObj(i));
     Add(fams,FamilyObj(i));
   od;
   methods:=METHODS_OPERATION(oper,l);
@@ -84,11 +84,11 @@ local oper,l,obj,skip,verbos,fams,kind,i,j,methods,flag,flag2,lent,nam,val,
     flag:=true;
     j:=1;
     while j<=l and (flag or verbos>3) do
-      flag2:=IS_SUBSET_FLAGS(kind[j]![2],methods[lent*(i-1)+1+j]);
+      flag2:=IS_SUBSET_FLAGS(type[j]![2],methods[lent*(i-1)+1+j]);
       flag:=flag and flag2;
       if flag2=false and verbos>2 then
 	need:=NamesFilter(methods[lent*(i-1)+1+j]);
-	has:=NamesFilter(kind[j]![2]);
+	has:=NamesFilter(type[j]![2]);
         Print(" - ",Ordinal(j)," argument needs ",
 	      Filtered(need,i->not i in has),"\n");
       fi;

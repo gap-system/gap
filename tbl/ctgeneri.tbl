@@ -1145,19 +1145,11 @@ size:=(pq->pq[1]*pq[2]),
 text:="generic character table of P:Q for prime P",
 centralizers:= [ function(pq,l) return pq[1]*pq[2]/Length(l); end,
                  function(pq,l) return pq[2]; end ],
-classparam:= [ pq -> List(Orbits(Group(ResidueClass(
-                  PrimitiveRootMod(pq[1]),pq[1] )^((pq[1]-1)/pq[2]) ),
-                           [0..pq[1]-1],
-                       function(pnt,g)
-                       return (pnt*g.representative) mod pq[1]; end ),
-                       x->Set(List(x,y->E(pq[1])^y))),
+classparam:= [ pq -> List( OrbitsResidueClass( pq ),
+                           x -> Set( List( x, y -> E(pq[1])^y ) ) ),
                pq -> List([1..pq[2]-1],x->E(pq[2])^x)],
 charparam:= [ pq -> [0..pq[2]-1],
-              pq -> Orbits( Group( ResidueClass(
-                  PrimitiveRootMod(pq[1]),pq[1])^((pq[1]-1)/pq[2])),
-                           [1..pq[1]-1],
-                       function(pnt,g)
-                       return (pnt*g.representative) mod pq[1]; end ) ],
+              OrbitsResidueClass ],
 powermap:= [ function(pq,l,pow)
              return [1,Set(List(l,x->GaloisCyc(x,pow)))]; end,
              function(pq,l,pow)
@@ -1167,7 +1159,7 @@ powermap:= [ function(pq,l,pow)
              else return [2,im]; fi; end ],
 orders:= [ function(pq,l) if l=[1] then return 1;
                           else return pq[1]; fi; end,
-           function(pq,l) return OrderCyc(l); end ],
+           function(pq,l) return Order(l); end ],
 irreducibles:= [ [ function(pq,k,l) return 1; end,
                    function(pq,k,l) return l^k; end ],
                  [ function(pq,k,l)

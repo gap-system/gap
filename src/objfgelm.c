@@ -13,17 +13,17 @@
 **  the family.  Any object of this type looks like:
 **
 **    +------+-----+-------+-------+-----+-----------+
-**    | KIND | len | g1/e1 | g2/e2 | ... | glen/elen | 
+**    | TYPE | len | g1/e1 | g2/e2 | ... | glen/elen | 
 **    +------+-----+-------+-------+-----+-----------+
 **
 **  where  <len> is a GAP integer  object and <gi>/<ei> occupies 8, 16, or 32
-**  bits depending on the type.  A KIND of such an objects looks like:
+**  bits depending on the type.  A TYPE of such an objects looks like:
 **
 **    +--------+-------+--------+----------+-------+------+------+
-**    | FAMILY | FLAGS | SHARED | PUREKIND | EBITS | RANK | BITS |
+**    | FAMILY | FLAGS | SHARED | PURETYPE | EBITS | RANK | BITS |
 **    +--------+-------+--------+----------+-------+------+------+
 **
-**  <PUREKIND> is the kind  of a result, <EBITS>  is the number of  bits used
+**  <PURETYPE> is the kind  of a result, <EBITS>  is the number of  bits used
 **  for the exponent, <RANK> is number of free group generators.  But instead
 **  of accessing these entries directly you should use the following macros.
 **
@@ -54,20 +54,20 @@
 **  RANK_WORD( <word> )
 **    returns the rank as C integer
 **
-**  PUREKIND_WORD( <word> )
+**  PURETYPE_WORD( <word> )
 **    returns the result kind
 **
 **
-**  BITS_WORDKIND( <kind> )
+**  BITS_WORDTYPE( <kind> )
 **    returns the number of bits as C integers
 **
-**  EBITS_WORDKIND( <kind> )
+**  EBITS_WORDTYPE( <kind> )
 **    returns the ebits as C integer
 **
-**  RANK_WORDKIND( <kind> )
+**  RANK_WORDTYPE( <kind> )
 **    returns the rank as C integer
 **
-**  PUREKIND_WORDKIND( <kind> )
+**  PURETYPE_WORDTYPE( <kind> )
 **    returns the result kind
 */
 char * Revision_objfgelm_c =
@@ -78,7 +78,7 @@ char * Revision_objfgelm_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -205,10 +205,10 @@ Obj Func8Bits_ExponentSums3 (
             else
                 exp = (*ptr)&expm;
 
-	    /* this will not cause a garbage collection                    */
+            /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-	    assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+            assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -293,10 +293,10 @@ Obj Func8Bits_ExtRepOfObj (
     Obj         lst;            /* result                                  */
 
     /* get the kind of <obj>                                               */
-    kind = KIND_DATOBJ(obj);
+    kind = TYPE_DATOBJ(obj);
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent masks                                              */
     exps = 1UL << (ebits-1);
@@ -319,7 +319,7 @@ Obj Func8Bits_ExtRepOfObj (
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-	assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -399,13 +399,13 @@ Obj Func8Bits_HeadByNumber (
     sl = 0;
     pl = (UInt1*)DATA_WORD(l);
     while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
-	sl++;  pl++;
+        sl++;  pl++;
     }
     if ( sl == nl )
-	return l;
+        return l;
 
     /* create a new word                                                   */
-    NEW_WORD( obj, PUREKIND_WORD(l), sl );
+    NEW_WORD( obj, PURETYPE_WORD(l), sl );
 
     /* copy the <l> part into the word                                     */
     po = (UInt1*)DATA_WORD(obj);
@@ -498,7 +498,7 @@ Obj Func8Bits_AssocWord (
     UInt1 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -511,20 +511,20 @@ Obj Func8Bits_AssocWord (
     ptr = (UInt1*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
-	/* this will not cause a garbage collection                        */
+        /* this will not cause a garbage collection                        */
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
         nexp = INT_INTOBJ(vexp);
-	while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-	    vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
-				   "you can return a positive integer" );
-	    nexp = INT_INTOBJ(vexp);
-	    ptr  = (UInt1*)DATA_WORD(obj) + (i-1);
-	}
-	nexp = nexp & expm;
+        while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
+            vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
+                                   "you can return a positive integer" );
+            nexp = INT_INTOBJ(vexp);
+            ptr  = (UInt1*)DATA_WORD(obj) + (i-1);
+        }
+        nexp = nexp & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-	assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -552,20 +552,20 @@ Obj Func8Bits_ObjByVector (
     UInt1 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* count the number of non-zero entries                                */
     for ( i = LEN_LIST(data), num = 0, j = 1;  0 < i;  i-- ) {
-	vexp = ELMW_LIST(data,i);
-	while ( ! IS_INTOBJ(vexp) ) {
-	    vexp = ErrorReturnObj(
+        vexp = ELMW_LIST(data,i);
+        while ( ! IS_INTOBJ(vexp) ) {
+            vexp = ErrorReturnObj(
                 "%d element must be integer (not a %s)",
-		(Int) i, (Int) (InfoBags[TYPE_OBJ(vexp)].name),
-		"you can return an integer" );
-	}
+                (Int) i, (Int) (InfoBags[TNUM_OBJ(vexp)].name),
+                "you can return an integer" );
+        }
         if ( vexp != INTOBJ_INT(0) ) {
             j = i;
             num++;
@@ -579,13 +579,13 @@ Obj Func8Bits_ObjByVector (
     ptr = (UInt1*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
-	/* this will not cause a garbage collection                        */
+        /* this will not cause a garbage collection                        */
         while ( ELMW_LIST(data,j) == INTOBJ_INT(0) )
             j++;
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-	assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -637,7 +637,7 @@ Obj Func8Bits_Power (
     /* if <pow> is zero return the identity                                */
     pow = INT_INTOBJ(r);
     if ( pow == 0 ) {
-        NEW_WORD( obj, PUREKIND_WORD(l), 0 );
+        NEW_WORD( obj, PURETYPE_WORD(l), 0 );
         return obj;
     }
 
@@ -647,7 +647,7 @@ Obj Func8Bits_Power (
 
     /* if <pow> is minus one invert <l>                                    */
     if ( pow == -1 ) {
-        NEW_WORD( obj, PUREKIND_WORD(l), nl );
+        NEW_WORD( obj, PURETYPE_WORD(l), nl );
         pl = (UInt1*)DATA_WORD(l);
         pr = (UInt1*)DATA_WORD(obj) + (nl-1);
         sl = nl;
@@ -681,11 +681,11 @@ Obj Func8Bits_Power (
 
         /* check that n*pow fits into the exponent                         */
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
 
         /* copy <l> into <obj>                                             */
-        NEW_WORD( obj, PUREKIND_WORD(l), nl );
+        NEW_WORD( obj, PURETYPE_WORD(l), nl );
         pl = (UInt1*)DATA_WORD(l);
         pr = (UInt1*)DATA_WORD(obj);
         sl = nl;
@@ -707,7 +707,7 @@ Obj Func8Bits_Power (
 
         /* check that <ex> fits into the exponent                          */
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
         if ( 0 < pow )
             ex = ex & ((1UL<<ebits)-1);
@@ -716,7 +716,7 @@ Obj Func8Bits_Power (
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
-        NEW_WORD( obj, PUREKIND_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
+        NEW_WORD( obj, PURETYPE_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
         pl = (UInt1*)DATA_WORD(l);
@@ -773,7 +773,7 @@ Obj Func8Bits_Power (
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
-        NEW_WORD( obj, PUREKIND_WORD(l), 2*sl+apw*(sr-sl+1) );
+        NEW_WORD( obj, PURETYPE_WORD(l), 2*sl+apw*(sr-sl+1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
         pl = (UInt1*)DATA_WORD(l);
@@ -881,10 +881,10 @@ Obj Func8Bits_Product (
         if ( *pl & exps )  ex -= exps;
         if ( *pr & exps )  ex -= exps;
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
     }
-    NEW_WORD( obj, PUREKIND_WORD(l), nl+(nr-sr)-over );
+    NEW_WORD( obj, PURETYPE_WORD(l), nl+(nr-sr)-over );
 
     /* copy the <l> part into the word                                     */
     po = (UInt1*)DATA_WORD(obj);
@@ -964,10 +964,10 @@ Obj Func8Bits_Quotient (
         if ( *pl & exps )  ex -= exps;
         if ( *pr & exps )  ex += exps;
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
     }
-    NEW_WORD( obj, PUREKIND_WORD(l), nl+nr-over );
+    NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
 
     /* copy the <l> part into the word                                     */
     po = (UInt1*)DATA_WORD(obj);
@@ -1098,10 +1098,10 @@ Obj Func16Bits_ExponentSums3 (
             else
                 exp = (*ptr)&expm;
 
-	    /* this will not cause a garbage collection                    */
+            /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-	    assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+            assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -1186,10 +1186,10 @@ Obj Func16Bits_ExtRepOfObj (
     Obj         lst;            /* result                                  */
 
     /* get the kind of <obj>                                               */
-    kind = KIND_DATOBJ(obj);
+    kind = TYPE_DATOBJ(obj);
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent masks                                              */
     exps = 1UL << (ebits-1);
@@ -1206,13 +1206,13 @@ Obj Func16Bits_ExtRepOfObj (
     ptr = (UInt2*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
-	/* this will not cause a garbage collection                        */
+        /* this will not cause a garbage collection                        */
         SET_ELM_PLIST( lst, 2*i-1, INTOBJ_INT(((*ptr) >> ebits)+1) );
         if ( (*ptr) & exps )
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-	assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -1292,13 +1292,13 @@ Obj Func16Bits_HeadByNumber (
     sl = 0;
     pl = (UInt2*)DATA_WORD(l);
     while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
-	sl++;  pl++;
+        sl++;  pl++;
     }
     if ( sl == nl )
-	return l;
+        return l;
 
     /* create a new word                                                   */
-    NEW_WORD( obj, PUREKIND_WORD(l), sl );
+    NEW_WORD( obj, PURETYPE_WORD(l), sl );
 
     /* copy the <l> part into the word                                     */
     po = (UInt2*)DATA_WORD(obj);
@@ -1391,7 +1391,7 @@ Obj Func16Bits_AssocWord (
     UInt2 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -1404,20 +1404,20 @@ Obj Func16Bits_AssocWord (
     ptr = (UInt2*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
-	/* this will not cause a garbage collection                        */
+        /* this will not cause a garbage collection                        */
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
         nexp = INT_INTOBJ(vexp);
-	while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-	    vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
-				   "you can return a positive integer" );
-	    nexp = INT_INTOBJ(vexp);
-	    ptr = (UInt2*)DATA_WORD(obj) + (i-1);
-	}
-	nexp = nexp & expm;
+        while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
+            vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
+                                   "you can return a positive integer" );
+            nexp = INT_INTOBJ(vexp);
+            ptr = (UInt2*)DATA_WORD(obj) + (i-1);
+        }
+        nexp = nexp & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-	assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -1445,20 +1445,20 @@ Obj Func16Bits_ObjByVector (
     UInt2 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* count the number of non-zero entries                                */
     for ( i = LEN_LIST(data), num = 0, j = 1;  0 < i;  i-- ) {
-	vexp = ELMW_LIST(data,i);
-	while ( ! IS_INTOBJ(vexp) ) {
-	    vexp = ErrorReturnObj(
+        vexp = ELMW_LIST(data,i);
+        while ( ! IS_INTOBJ(vexp) ) {
+            vexp = ErrorReturnObj(
                 "%d element must be integer (not a %s)",
-		(Int) i, (Int) (InfoBags[TYPE_OBJ(vexp)].name),
-		"you can return an integer" );
-	}
+                (Int) i, (Int) (InfoBags[TNUM_OBJ(vexp)].name),
+                "you can return an integer" );
+        }
         if ( vexp != INTOBJ_INT(0) ) {
             j = i;
             num++;
@@ -1472,13 +1472,13 @@ Obj Func16Bits_ObjByVector (
     ptr = (UInt2*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
-	/* this will not cause a garbage collection                        */
+        /* this will not cause a garbage collection                        */
         while ( ELMW_LIST(data,j) == INTOBJ_INT(0) )
             j++;
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-	assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -1530,7 +1530,7 @@ Obj Func16Bits_Power (
     /* if <pow> is zero return the identity                                */
     pow = INT_INTOBJ(r);
     if ( pow == 0 ) {
-        NEW_WORD( obj, PUREKIND_WORD(l), 0 );
+        NEW_WORD( obj, PURETYPE_WORD(l), 0 );
         return obj;
     }
 
@@ -1540,7 +1540,7 @@ Obj Func16Bits_Power (
 
     /* if <pow> is minus one invert <l>                                    */
     if ( pow == -1 ) {
-        NEW_WORD( obj, PUREKIND_WORD(l), nl );
+        NEW_WORD( obj, PURETYPE_WORD(l), nl );
         pl = (UInt2*)DATA_WORD(l);
         pr = (UInt2*)DATA_WORD(obj) + (nl-1);
         sl = nl;
@@ -1574,11 +1574,11 @@ Obj Func16Bits_Power (
 
         /* check that n*pow fits into the exponent                         */
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
 
         /* copy <l> into <obj>                                             */
-        NEW_WORD( obj, PUREKIND_WORD(l), nl );
+        NEW_WORD( obj, PURETYPE_WORD(l), nl );
         pl = (UInt2*)DATA_WORD(l);
         pr = (UInt2*)DATA_WORD(obj);
         sl = nl;
@@ -1600,7 +1600,7 @@ Obj Func16Bits_Power (
 
         /* check that <ex> fits into the exponent                          */
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
         if ( 0 < pow )
             ex = ex & ((1UL<<ebits)-1);
@@ -1609,7 +1609,7 @@ Obj Func16Bits_Power (
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
-        NEW_WORD( obj, PUREKIND_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
+        NEW_WORD( obj, PURETYPE_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
         pl = (UInt2*)DATA_WORD(l);
@@ -1666,7 +1666,7 @@ Obj Func16Bits_Power (
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
-        NEW_WORD( obj, PUREKIND_WORD(l), 2*sl+apw*(sr-sl+1) );
+        NEW_WORD( obj, PURETYPE_WORD(l), 2*sl+apw*(sr-sl+1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
         pl = (UInt2*)DATA_WORD(l);
@@ -1774,10 +1774,10 @@ Obj Func16Bits_Product (
         if ( *pl & exps )  ex -= exps;
         if ( *pr & exps )  ex -= exps;
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
     }
-    NEW_WORD( obj, PUREKIND_WORD(l), nl+(nr-sr)-over );
+    NEW_WORD( obj, PURETYPE_WORD(l), nl+(nr-sr)-over );
 
     /* copy the <l> part into the word                                     */
     po = (UInt2*)DATA_WORD(obj);
@@ -1857,10 +1857,10 @@ Obj Func16Bits_Quotient (
         if ( *pl & exps )  ex -= exps;
         if ( *pr & exps )  ex += exps;
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
     }
-    NEW_WORD( obj, PUREKIND_WORD(l), nl+nr-over );
+    NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
 
     /* copy the <l> part into the word                                     */
     po = (UInt2*)DATA_WORD(obj);
@@ -1991,10 +1991,10 @@ Obj Func32Bits_ExponentSums3 (
             else
                 exp = (*ptr)&expm;
 
-	    /* this will not cause a garbage collection                    */
+            /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-	    assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+            assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -2079,10 +2079,10 @@ Obj Func32Bits_ExtRepOfObj (
     Obj         lst;            /* result                                  */
 
     /* get the kind of <obj>                                               */
-    kind = KIND_DATOBJ(obj);
+    kind = TYPE_DATOBJ(obj);
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent masks                                              */
     exps = 1UL << (ebits-1);
@@ -2099,13 +2099,13 @@ Obj Func32Bits_ExtRepOfObj (
     ptr = (UInt4*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
-	/* this will not cause a garbage collection                    */
+        /* this will not cause a garbage collection                    */
         SET_ELM_PLIST( lst, 2*i-1, INTOBJ_INT(((*ptr) >> ebits)+1) );
         if ( (*ptr) & exps )
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-	assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -2185,13 +2185,13 @@ Obj Func32Bits_HeadByNumber (
     sl = 0;
     pl = (UInt4*)DATA_WORD(l);
     while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
-	sl++;  pl++;
+        sl++;  pl++;
     }
     if ( sl == nl )
-	return l;
+        return l;
 
     /* create a new word                                                   */
-    NEW_WORD( obj, PUREKIND_WORD(l), sl );
+    NEW_WORD( obj, PURETYPE_WORD(l), sl );
 
     /* copy the <l> part into the word                                     */
     po = (UInt4*)DATA_WORD(obj);
@@ -2284,7 +2284,7 @@ Obj Func32Bits_AssocWord (
     UInt4 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
@@ -2297,20 +2297,20 @@ Obj Func32Bits_AssocWord (
     ptr = (UInt4*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
-	/* this will not cause a garbage collection                        */
+        /* this will not cause a garbage collection                        */
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
         nexp = INT_INTOBJ(vexp);
-	while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-	    vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
-				   "you can return a positive integer" );
-	    nexp = INT_INTOBJ(vexp);
-	    ptr = (UInt4*)DATA_WORD(obj) + (i-1);
-	}
-	nexp = nexp & expm;
+        while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
+            vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
+                                   "you can return a positive integer" );
+            nexp = INT_INTOBJ(vexp);
+            ptr = (UInt4*)DATA_WORD(obj) + (i-1);
+        }
+        nexp = nexp & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-	assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -2338,20 +2338,20 @@ Obj Func32Bits_ObjByVector (
     UInt4 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
-    ebits = EBITS_WORDKIND(kind);
+    ebits = EBITS_WORDTYPE(kind);
 
     /* get the exponent mask                                               */
     expm = (1UL << ebits) - 1;
 
     /* count the number of non-zero entries                                */
     for ( i = LEN_LIST(data), num = 0, j = 1;  0 < i;  i-- ) {
-	vexp = ELMW_LIST(data,i);
-	while ( ! IS_INTOBJ(vexp) ) {
-	    vexp = ErrorReturnObj(
+        vexp = ELMW_LIST(data,i);
+        while ( ! IS_INTOBJ(vexp) ) {
+            vexp = ErrorReturnObj(
                 "%d element must be integer (not a %s)",
-		(Int) i, (Int) (InfoBags[TYPE_OBJ(vexp)].name),
-		"you can return an integer" );
-	}
+                (Int) i, (Int) (InfoBags[TNUM_OBJ(vexp)].name),
+                "you can return an integer" );
+        }
         if ( vexp != INTOBJ_INT(0) ) {
             j = i;
             num++;
@@ -2365,13 +2365,13 @@ Obj Func32Bits_ObjByVector (
     ptr = (UInt4*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
-	/* this will not cause a garbage collection                        */
+        /* this will not cause a garbage collection                        */
         while ( ELMW_LIST(data,j) == INTOBJ_INT(0) )
             j++;
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-	assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -2424,7 +2424,7 @@ Obj Func32Bits_Power (
     /* if <pow> is zero return the identity                                */
     pow = INT_INTOBJ(r);
     if ( pow == 0 ) {
-        NEW_WORD( obj, PUREKIND_WORD(l), 0 );
+        NEW_WORD( obj, PURETYPE_WORD(l), 0 );
         return obj;
     }
 
@@ -2434,7 +2434,7 @@ Obj Func32Bits_Power (
 
     /* if <pow> is minus one invert <l>                                    */
     if ( pow == -1 ) {
-        NEW_WORD( obj, PUREKIND_WORD(l), nl );
+        NEW_WORD( obj, PURETYPE_WORD(l), nl );
         pl = (UInt4*)DATA_WORD(l);
         pr = (UInt4*)DATA_WORD(obj) + (nl-1);
         sl = nl;
@@ -2469,11 +2469,11 @@ Obj Func32Bits_Power (
 
         /* check that n*pow fits into the exponent                         */
         if ( ex/pow!=exs || (0<ex && expm<ex) || (ex<0 && expm<-ex) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
 
         /* copy <l> into <obj>                                             */
-        NEW_WORD( obj, PUREKIND_WORD(l), nl );
+        NEW_WORD( obj, PURETYPE_WORD(l), nl );
         pl = (UInt4*)DATA_WORD(l);
         pr = (UInt4*)DATA_WORD(obj);
         sl = nl;
@@ -2495,7 +2495,7 @@ Obj Func32Bits_Power (
 
         /* check that <ex> fits into the exponent                          */
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
         if ( 0 < pow )
             ex = ex & ((1UL<<ebits)-1);
@@ -2504,7 +2504,7 @@ Obj Func32Bits_Power (
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
-        NEW_WORD( obj, PUREKIND_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
+        NEW_WORD( obj, PURETYPE_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
         pl = (UInt4*)DATA_WORD(l);
@@ -2561,7 +2561,7 @@ Obj Func32Bits_Power (
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
-        NEW_WORD( obj, PUREKIND_WORD(l), 2*sl+apw*(sr-sl+1) );
+        NEW_WORD( obj, PURETYPE_WORD(l), 2*sl+apw*(sr-sl+1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
         pl = (UInt4*)DATA_WORD(l);
@@ -2669,10 +2669,10 @@ Obj Func32Bits_Product (
         if ( *pl & exps )  ex -= exps;
         if ( *pr & exps )  ex -= exps;
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
     }
-    NEW_WORD( obj, PUREKIND_WORD(l), nl+(nr-sr)-over );
+    NEW_WORD( obj, PURETYPE_WORD(l), nl+(nr-sr)-over );
 
     /* copy the <l> part into the word                                     */
     po = (UInt4*)DATA_WORD(obj);
@@ -2752,10 +2752,10 @@ Obj Func32Bits_Quotient (
         if ( *pl & exps )  ex -= exps;
         if ( *pr & exps )  ex += exps;
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-	    return TRY_NEXT_METHOD;
+            return TRY_NEXT_METHOD;
         }
     }
-    NEW_WORD( obj, PUREKIND_WORD(l), nl+nr-over );
+    NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
 
     /* copy the <l> part into the word                                     */
     po = (UInt4*)DATA_WORD(obj);
@@ -2810,8 +2810,8 @@ void InitFreeGroupElements ( void )
     /* export position numbers 'AWP_SOMETHING'                             */
     AssGVar( GVarName( "AWP_FIRST_ENTRY" ),
              INTOBJ_INT(AWP_FIRST_ENTRY) );
-    AssGVar( GVarName( "AWP_PURE_KIND" ),
-             INTOBJ_INT(AWP_PURE_KIND) );
+    AssGVar( GVarName( "AWP_PURE_TYPE" ),
+             INTOBJ_INT(AWP_PURE_TYPE) );
     AssGVar( GVarName( "AWP_NR_BITS_EXP" ),
              INTOBJ_INT(AWP_NR_BITS_EXP) );
     AssGVar( GVarName( "AWP_NR_GENS" ),

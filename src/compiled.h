@@ -5,23 +5,23 @@
 **  This package defines macros and functions that are used by compiled code.
 **  Those macros and functions should go into the appropriate packages.
 */
-#include 	"system.h"
-#include 	"gasman.h"
-#include 	"objects.h"
-#include 	"gvars.h"
-#include 	"calls.h"
-#include 	"ariths.h"
-#include 	"records.h"
-#include 	"lists.h"
-#include 	"bool.h"
-#include 	"integer.h"
-#include 	"precord.h"
-#include 	"plist.h"
-#include 	"string.h"
-#include 	"code.h"
-#include 	"vars.h"
-#include 	"gap.h"
-#include 	"permutat.h"
+#include        "system.h"
+#include        "gasman.h"
+#include        "objects.h"
+#include        "gvars.h"
+#include        "calls.h"
+#include        "ariths.h"
+#include        "records.h"
+#include        "lists.h"
+#include        "bool.h"
+#include        "integer.h"
+#include        "precord.h"
+#include        "plist.h"
+#include        "string.h"
+#include        "code.h"
+#include        "vars.h"
+#include        "gap.h"
+#include        "permutat.h"
 
 
 extern Obj InfoDecision;
@@ -34,7 +34,7 @@ extern Obj NewAndFilter (
 
 
 extern Obj Array2Perm(
-    Obj			array );
+    Obj                 array );
 
 
 /* types, should go into 'gvars.c' and 'records.c' * * * * * * * * * * * * */
@@ -76,7 +76,7 @@ extern  void            ErrorQuitBool (
             Obj                 obj );
 
 #define CHECK_FUNC(obj) \
- if ( TYPE_OBJ(obj) != T_FUNCTION ) ErrorQuitFunc(obj);
+ if ( TNUM_OBJ(obj) != T_FUNCTION ) ErrorQuitFunc(obj);
 
 extern  void            ErrorQuitFunc (
             Obj                 obj );
@@ -202,7 +202,7 @@ extern  void            ErrorQuitNrArgs (
 
 
 #define C_ELM_POSOBJ_NLE( elm, list, pos ) \
-    if ( TYPE_OBJ(list) == T_POSOBJ ) { \
+    if ( TNUM_OBJ(list) == T_POSOBJ ) { \
         elm = ELM_PLIST( list, pos ); \
     } \
     else { \
@@ -210,18 +210,18 @@ extern  void            ErrorQuitNrArgs (
     }
 
 #define C_ASS_POSOBJ_INTOBJ( list, pos, elm ) \
-    if ( TYPE_OBJ(list) == T_POSOBJ ) { \
+    if ( TNUM_OBJ(list) == T_POSOBJ ) { \
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < pos ) { \
             ResizeBag( list, (pos+1)*sizeof(Obj) ); \
         } \
         SET_ELM_PLIST( list, pos, elm ); \
     } \
     else { \
-	ASS_LIST( list, pos, elm ); \
+        ASS_LIST( list, pos, elm ); \
     }
 
 #define C_ASS_POSOBJ( list, pos, elm ) \
-    if ( TYPE_OBJ(list) == T_POSOBJ ) { \
+    if ( TNUM_OBJ(list) == T_POSOBJ ) { \
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < pos ) { \
             ResizeBag( list, (pos+1)*sizeof(Obj) ); \
         } \
@@ -229,7 +229,7 @@ extern  void            ErrorQuitNrArgs (
         CHANGED_BAG(list); \
     } \
     else { \
-	ASS_LIST( list, pos, elm ); \
+        ASS_LIST( list, pos, elm ); \
     }
 
 
@@ -240,7 +240,7 @@ extern  void            ErrorQuitNrArgs (
  len = INTOBJ_INT( LEN_LIST(list) );
 
 #define C_LEN_LIST_FPL(len,list) \
- if ( TYPE_OBJ(list) == T_PLIST ) { \
+ if ( TNUM_OBJ(list) == T_PLIST ) { \
   len = INTOBJ_INT( LEN_PLIST(list) ); \
  } \
  else { \
@@ -254,7 +254,7 @@ extern  void            ErrorQuitNrArgs (
  elm = ELMW_LIST( list, p );
 
 #define C_ELM_LIST_FPL(elm,list,p) \
- if ( TYPE_OBJ(list) == T_PLIST ) { \
+ if ( TNUM_OBJ(list) == T_PLIST ) { \
   if ( p <= LEN_PLIST(list) ) { \
    elm = ELM_PLIST( list, p ); \
    if ( elm == 0 ) elm = ELM_LIST( list, p ); \
@@ -262,7 +262,7 @@ extern  void            ErrorQuitNrArgs (
  } else elm = ELM_LIST( list, p );
 
 #define C_ELM_LIST_NLE_FPL(elm,list,p) \
- if ( TYPE_OBJ(list) == T_PLIST ) { \
+ if ( TNUM_OBJ(list) == T_PLIST ) { \
   elm = ELM_PLIST( list, p ); \
  } else elm = ELMW_LIST( list, p );
 
@@ -270,7 +270,7 @@ extern  void            ErrorQuitNrArgs (
  ASS_LIST( list, p, rhs ); \
 
 #define C_ASS_LIST_FPL(list,p,rhs) \
- if ( TYPE_OBJ(list) == T_PLIST ) { \
+ if ( TNUM_OBJ(list) == T_PLIST ) { \
   if ( LEN_PLIST(list) < p ) { \
    GROW_PLIST( list, p ); \
    SET_LEN_PLIST( list, p ); \
@@ -283,7 +283,7 @@ extern  void            ErrorQuitNrArgs (
  }
 
 #define C_ASS_LIST_FPL_INTOBJ(list,p,rhs) \
- if ( TYPE_OBJ(list) == T_PLIST ) { \
+ if ( TNUM_OBJ(list) == T_PLIST ) { \
   if ( LEN_PLIST(list) < p ) { \
    GROW_PLIST( list, p ); \
    SET_LEN_PLIST( list, p ); \
@@ -306,7 +306,7 @@ extern  void            AddPlist (
  AddList( list, obj );
 
 #define C_ADD_LIST_FPL(list,obj) \
- if ( TYPE_OBJ(list) == T_PLIST ) { \
+ if ( TNUM_OBJ(list) == T_PLIST ) { \
   AddPlist( list, obj ); \
  } \
  else { \

@@ -42,7 +42,7 @@ char *          Revision_permutat_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -127,26 +127,26 @@ Obj                     TmpPerm;
 
 /****************************************************************************
 **
-*F  KindPerm( <perm> )  . . . . . . . . . . . . . . . . kind of a permutation
+*F  TypePerm( <perm> )  . . . . . . . . . . . . . . . . kind of a permutation
 **
-**  'KindPerm' returns the kind of permutations.
+**  'TypePerm' returns the kind of permutations.
 **
-**  'KindPerm' is the function in 'KindObjFuncs' for permutations.
+**  'TypePerm' is the function in 'TypeObjFuncs' for permutations.
 */
-Obj             KIND_PERM2;
+Obj             TYPE_PERM2;
 
-Obj             KIND_PERM4;
+Obj             TYPE_PERM4;
 
-Obj             KindPerm2 (
+Obj             TypePerm2 (
     Obj                 perm )
 {
-    return KIND_PERM2;
+    return TYPE_PERM2;
 }
 
-Obj             KindPerm4 (
+Obj             TypePerm4 (
     Obj                 perm )
 {
-    return KIND_PERM4;
+    return TYPE_PERM4;
 }
 
 
@@ -1231,7 +1231,7 @@ Obj             PowPerm2Int (
     pow = NEW_PERM2( deg );
 
     /* compute the power by repeated mapping for small positive exponents  */
-    if ( TYPE_OBJ(opR) == T_INT
+    if ( TNUM_OBJ(opR) == T_INT
       && 0 <= INT_INTOBJ(opR) && INT_INTOBJ(opR) < 8 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1250,7 +1250,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TYPE_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
+    else if ( TNUM_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
 
         /* make sure that the buffer bag is large enough                   */
         if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
@@ -1297,7 +1297,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TYPE_OBJ(opR) == T_INTPOS ) {
+    else if ( TNUM_OBJ(opR) == T_INTPOS ) {
 
         /* make sure that the buffer bag is large enough                   */
         if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
@@ -1344,7 +1344,7 @@ Obj             PowPerm2Int (
     }
 
     /* special case for inverting permutations                             */
-    else if ( TYPE_OBJ(opR) == T_INT && INT_INTOBJ(opR) == -1 ) {
+    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
         ptL = ADDR_PERM2(opL);
@@ -1357,7 +1357,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by repeated mapping for small negative exponents  */
-    else if ( TYPE_OBJ(opR) == T_INT
+    else if ( TNUM_OBJ(opR) == T_INT
           && -8 < INT_INTOBJ(opR) && INT_INTOBJ(opR) < 0 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1376,7 +1376,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TYPE_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
+    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
 
         /* make sure that the buffer bag is large enough                   */
         if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
@@ -1423,7 +1423,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TYPE_OBJ(opR) == T_INTNEG ) {
+    else if ( TNUM_OBJ(opR) == T_INTNEG ) {
 
         /* make sure that the buffer bag is large enough                   */
         if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
@@ -1492,7 +1492,7 @@ Obj             PowPerm4Int (
     pow = NEW_PERM4( deg );
 
     /* compute the power by repeated mapping for small positive exponents  */
-    if ( TYPE_OBJ(opR) == T_INT
+    if ( TNUM_OBJ(opR) == T_INT
       && 0 <= INT_INTOBJ(opR) && INT_INTOBJ(opR) < 8 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1511,7 +1511,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TYPE_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
+    else if ( TNUM_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
 
         /* make sure that the buffer bag is large enough                   */
         if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
@@ -1558,7 +1558,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TYPE_OBJ(opR) == T_INTPOS ) {
+    else if ( TNUM_OBJ(opR) == T_INTPOS ) {
 
         /* make sure that the buffer bag is large enough                   */
         if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
@@ -1605,7 +1605,7 @@ Obj             PowPerm4Int (
     }
 
     /* special case for inverting permutations                             */
-    else if ( TYPE_OBJ(opR) == T_INT && INT_INTOBJ(opR) == -1 ) {
+    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
         ptL = ADDR_PERM4(opL);
@@ -1618,7 +1618,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by repeated mapping for small negative exponents  */
-    else if ( TYPE_OBJ(opR) == T_INT
+    else if ( TNUM_OBJ(opR) == T_INT
            && -8 < INT_INTOBJ(opR) && INT_INTOBJ(opR) < 0 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1637,7 +1637,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TYPE_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
+    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
 
         /* make sure that the buffer bag is large enough                   */
         if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
@@ -1684,7 +1684,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TYPE_OBJ(opR) == T_INTNEG ) {
+    else if ( TNUM_OBJ(opR) == T_INTNEG ) {
 
         /* make sure that the buffer bag is large enough                   */
         if ( SIZE_OBJ(TmpPerm) < SIZE_OBJ(opL) ) {
@@ -1738,6 +1738,17 @@ Obj             PowPerm4Int (
 
 /****************************************************************************
 **
+*F  InvPerm( <perm> ) . . . . . . . . . . . . . . .  inverse of a permutation
+*/
+Obj InvPerm (
+    Obj             perm )
+{
+    return POW( perm, INTOBJ_INT(-1) );
+}
+
+
+/****************************************************************************
+**
 *F  PowIntPerm( <opL>, <opR> )  . . . image of an integer under a permutation
 **
 **  'PowIntPerm' returns the  image of the positive  integer  <opL> under the
@@ -1751,7 +1762,7 @@ Obj             PowIntPerm2 (
     Int                 img;            /* image (result)                  */
 
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
-    if ( TYPE_OBJ(opL) == T_INTPOS )
+    if ( TNUM_OBJ(opL) == T_INTPOS )
         return opL;
 
     /* permutations do not act on negative integers                        */
@@ -1780,7 +1791,7 @@ Obj             PowIntPerm4 (
     Int                 img;            /* image (result)                  */
 
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
-    if ( TYPE_OBJ(opL) == T_INTPOS )
+    if ( TNUM_OBJ(opL) == T_INTPOS )
         return opL;
 
     /* permutations do not act on negative integers                        */
@@ -1826,7 +1837,7 @@ Obj             QuoIntPerm2 (
     UInt2 *             ptR;            /* pointer to the permutation      */
 
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
-    if ( TYPE_OBJ(opL) == T_INTPOS )
+    if ( TNUM_OBJ(opL) == T_INTPOS )
         return opL;
 
     /* permutations do not act on negative integers                        */
@@ -1860,7 +1871,7 @@ Obj             QuoIntPerm4 (
     UInt4 *             ptR;            /* pointer to the permutation      */
 
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
-    if ( TYPE_OBJ(opL) == T_INTPOS )
+    if ( TNUM_OBJ(opL) == T_INTPOS )
         return opL;
 
     /* permutations do not act on negative integers                        */
@@ -2257,19 +2268,19 @@ Obj IsPermHandler (
     Obj                 val )
 {
     /* return 'true' if <val> is a permutation and 'false' otherwise       */
-    switch ( TYPE_OBJ(val) ) {
+    switch ( TNUM_OBJ(val) ) {
 
-	case T_PERM2:
-	case T_PERM4:
-	    return True;
+        case T_PERM2:
+        case T_PERM4:
+            return True;
 
-	case T_COMOBJ:
-	case T_POSOBJ:
-	case T_DATOBJ:
-	    return DoFilter( self, val );
+        case T_COMOBJ:
+        case T_POSOBJ:
+        case T_DATOBJ:
+            return DoFilter( self, val );
 
         default:
-	    return False;
+            return False;
     }
 }
 
@@ -2304,7 +2315,7 @@ Obj             FuncPermList (
     while ( ! IS_LIST( list ) ) {
         list = ErrorReturnObj(
             "PermList: <list> must be a list (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(list)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(list)].name), 0L,
             "you can return a list for <list>" );
     }
     PLAIN_LIST( list );
@@ -2337,7 +2348,7 @@ Obj             FuncPermList (
                     "you can return a new list for <list>" );
                 return FuncPermList( 0, list );
             }
-            if ( TYPE_OBJ(ptList[i]) != T_INT ) {
+            if ( TNUM_OBJ(ptList[i]) != T_INT ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp2[i-1] = 0;
                 list = ErrorReturnObj(
                     "PermList: <list>[%d] must be an integer",
@@ -2404,7 +2415,7 @@ Obj             FuncPermList (
                     "you can return a new list for <list>" );
                 return FuncPermList( 0, list );
             }
-            if ( TYPE_OBJ(ptList[i]) != T_INT ) {
+            if ( TNUM_OBJ(ptList[i]) != T_INT ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp4[i-1] = 0;
                 list = ErrorReturnObj(
                     "PermList: <list>[%d] must be an integer",
@@ -2471,15 +2482,15 @@ Obj             FuncLargestMovedPointPerm (
     UInt4 *             ptPerm4;        /* pointer to the permutation      */
 
     /* check the argument                                                  */
-    while ( TYPE_OBJ(perm) != T_PERM2 && TYPE_OBJ(perm) != T_PERM4 ) {
+    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "LargestMovedPointPerm: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(perm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
             "you can return a permutation for <perm>" );
     }
 
     /* handle small permutations                                           */
-    if ( TYPE_OBJ(perm) == T_PERM2 ) {
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* find the largest moved point                                    */
         ptPerm2 = ADDR_PERM2(perm);
@@ -2543,21 +2554,21 @@ Obj             FuncCycleLengthPermInt (
     UInt                p;              /* loop variable                   */
 
     /* evaluate and check the arguments                                    */
-    while ( TYPE_OBJ(perm) != T_PERM2 && TYPE_OBJ(perm) != T_PERM4 ) {
+    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "CycleLengthPermInt: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(perm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
             "you can return a permutation for <perm>" );
     }
-    while ( TYPE_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
+    while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
          "CycleLengthPermInt: <point> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(point)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(point)].name), 0L,
             "you can return a positive integer for <point>" );
     }
 
     /* handle small permutations                                           */
-    if ( TYPE_OBJ(perm) == T_PERM2 ) {
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* get pointer to the permutation, the degree, and the point       */
         ptPerm2 = ADDR_PERM2(perm);
@@ -2621,21 +2632,21 @@ Obj             FuncCyclePermInt (
     UInt                p;              /* loop variable                   */
 
     /* evaluate and check the arguments                                    */
-    while ( TYPE_OBJ(perm) != T_PERM2 && TYPE_OBJ(perm) != T_PERM4 ) {
+    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "CyclePermInt: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(perm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
             "you can return a permutation for <perm>" );
     }
-    while ( TYPE_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
+    while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
             "CyclePermInt: <point> must be a positive integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(point)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(point)].name), 0L,
             "you can return a positive integer for <point>" );
     }
 
     /* handle small permutations                                           */
-    if ( TYPE_OBJ(perm) == T_PERM2 ) {
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* get pointer to the permutation, the degree, and the point       */
         ptPerm2 = ADDR_PERM2(perm);
@@ -2729,10 +2740,10 @@ Obj             FuncOrderPerm (
     UInt                p, q;           /* loop variables                  */
 
     /* check arguments and extract permutation                             */
-    while ( TYPE_OBJ(perm) != T_PERM2 && TYPE_OBJ(perm) != T_PERM4 ) {
+    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "OrderPerm: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(perm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
             "you can return a permutation for <perm>" );
     }
 
@@ -2742,7 +2753,7 @@ Obj             FuncOrderPerm (
     }
 
     /* handle small permutations                                           */
-    if ( TYPE_OBJ(perm) == T_PERM2 ) {
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* get the pointer to the bags                                     */
         ptPerm2  = ADDR_PERM2(perm);
@@ -2853,10 +2864,10 @@ Obj             FuncSignPerm (
     UInt                p,  q;          /* loop variables                  */
 
     /* check arguments and extract permutation                             */
-    while ( TYPE_OBJ(perm) != T_PERM2 && TYPE_OBJ(perm) != T_PERM4 ) {
+    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "SignPerm: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(perm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
             "you can return a permutation for <perm>" );
     }
 
@@ -2866,7 +2877,7 @@ Obj             FuncSignPerm (
     }
 
     /* handle small permutations                                           */
-    if ( TYPE_OBJ(perm) == T_PERM2 ) {
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* get the pointer to the bags                                     */
         ptPerm2  = ADDR_PERM2(perm);
@@ -2978,10 +2989,10 @@ Obj             FuncSmallestGeneratorPerm (
     UInt                l, n, x, gcd2;  /* loop variable                   */
 
     /* check arguments and extract permutation                             */
-    while ( TYPE_OBJ(perm) != T_PERM2 && TYPE_OBJ(perm) != T_PERM4 ) {
+    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
             "SmallestGeneratorPerm: <perm> must be a permutation (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(perm)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(perm)].name), 0L,
             "you can return a permutation for <perm>" );
     }
 
@@ -2991,7 +3002,7 @@ Obj             FuncSmallestGeneratorPerm (
     }
 
     /* handle small permutations                                           */
-    if ( TYPE_OBJ(perm) == T_PERM2 ) {
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* allocate the result bag                                         */
         small = NEW_PERM2( DEG_PERM2(perm) );
@@ -3160,7 +3171,7 @@ Obj             OnTuplesPerm (
     ADDR_OBJ(res)[0] = ADDR_OBJ(tup)[0];
 
     /* handle small permutations                                           */
-    if ( TYPE_OBJ(perm) == T_PERM2 ) {
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* get the pointer                                                 */
         ptTup = ADDR_OBJ(tup) + LEN_LIST(tup);
@@ -3170,7 +3181,7 @@ Obj             OnTuplesPerm (
 
         /* loop over the entries of the tuple                              */
         for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TYPE_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
                     tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
@@ -3201,7 +3212,7 @@ Obj             OnTuplesPerm (
 
         /* loop over the entries of the tuple                              */
         for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TYPE_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
                     tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );
@@ -3254,7 +3265,7 @@ Obj             OnSetsPerm (
     ADDR_OBJ(res)[0] = ADDR_OBJ(set)[0];
 
     /* handle small permutations                                           */
-    if ( TYPE_OBJ(perm) == T_PERM2 ) {
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* get the pointer                                                 */
         ptTup = ADDR_OBJ(set) + LEN_LIST(set);
@@ -3265,7 +3276,7 @@ Obj             OnSetsPerm (
         /* loop over the entries of the tuple                              */
         isint = 1;
         for ( i = LEN_LIST(set); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TYPE_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
                     tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
@@ -3298,7 +3309,7 @@ Obj             OnSetsPerm (
         /* loop over the entries of the tuple                              */
         isint = 1;
         for ( i = LEN_LIST(set); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TYPE_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
                     tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );
@@ -3398,11 +3409,11 @@ void            InitPermutat ( void )
 
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "KIND_PERM2", &KIND_PERM2 );
-    ImportGVarFromLibrary( "KIND_PERM4", &KIND_PERM4 );
+    ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
+    ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
 
-    KindObjFuncs[ T_PERM2 ] = KindPerm2;
-    KindObjFuncs[ T_PERM4 ] = KindPerm4;
+    TypeObjFuncs[ T_PERM2 ] = TypePerm2;
+    TypeObjFuncs[ T_PERM4 ] = TypePerm4;
 
 
     /* install the printing functions                                      */
@@ -3513,11 +3524,15 @@ void            InitPermutat ( void )
     /* install the 'ONE' function for permutations                         */
     OneFuncs[ T_PERM2 ] = OnePerm;
     OneFuncs[ T_PERM4 ] = OnePerm;
+
+    /* install the 'INV' function for permutations                         */
+    InvFuncs[ T_PERM2 ] = InvPerm;
+    InvFuncs[ T_PERM4 ] = InvPerm;
 }
 
 
 /****************************************************************************
 **
 
-*E  permutat.c 	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*E  permutat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

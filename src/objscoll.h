@@ -19,11 +19,11 @@ char * Revision_objscoll_h =
 **
 **  WARNING: 'cwVector' and 'cw2Vector' must be cleaned after using them.
 */
-#define SCP_UNDERLYING_FAMILY       1	/* the family of our free grp elms */
+#define SCP_UNDERLYING_FAMILY       1   /* the family of our free grp elms */
 #define SCP_RWS_GENERATORS          2   /* the free grp generators used    */
 #define SCP_NUMBER_RWS_GENERATORS   3   /* number of generators            */
-#define SCP_DEFAULT_KIND            4   /* default kind of the result      */
-#define SCP_IS_DEFAULT_KIND         5   /* tester for default kind         */
+#define SCP_DEFAULT_TYPE            4   /* default kind of the result      */
+#define SCP_IS_DEFAULT_TYPE         5   /* tester for default kind         */
 #define SCP_RELATIVE_ORDERS         6   /* list of relative orders         */
 #define SCP_POWERS                  7   /* list of power rhs               */
 #define SCP_CONJUGATES              8   /* list of list of conjugates rhs  */
@@ -61,8 +61,8 @@ char * Revision_objscoll_h =
 #define SC_CW2_VECTOR(sc) \
     (ADDR_OBJ(sc)[SCP_CW2_VECTOR])
 
-#define SC_DEFAULT_KIND(sc) \
-    (ADDR_OBJ(sc)[SCP_DEFAULT_KIND])
+#define SC_DEFAULT_TYPE(sc) \
+    (ADDR_OBJ(sc)[SCP_DEFAULT_TYPE])
 
 #define SC_EW_STACK(sc) \
     (ADDR_OBJ(sc)[SCP_EW_STACK])

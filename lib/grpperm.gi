@@ -469,7 +469,7 @@ InstallMethod( Size, true, [ IsPermGroup ], 0,
 ##
 InstallMethod( Enumerator, true, [ IsPermGroup ], 0,
     function( G )
-    return Objectify( NewKind( FamilyObj( G ), IsPermGroupEnumerator ),
+    return Objectify( NewType( FamilyObj( G ), IsPermGroupEnumerator ),
                    rec( stabChain := StabChainAttr( G ) ) );
 end );
 
@@ -1427,7 +1427,7 @@ end;
 RightTransversalPermGroupConstructor := function( filter, G, U )
     local   enum,  orbs,  domain,  bpt;
     
-    enum := Objectify( NewKind( FamilyObj( G ), filter ),
+    enum := Objectify( NewType( FamilyObj( G ), filter ),
           rec( group := G,
             subgroup := U,
       stabChainGroup := CopyStabChain( StabChainAttr( G ) ),

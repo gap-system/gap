@@ -30,7 +30,7 @@ InstallMethod( HomeEnumerator, true, [ IsRightCoset ], 0,
     function( C )
     local   enum;
     
-    enum := Objectify( NewKind( FamilyObj( C ), IsRightCosetEnumerator ),
+    enum := Objectify( NewType( FamilyObj( C ), IsRightCosetEnumerator ),
             rec( groupEnumerator := Enumerator( ActingDomain( C ) ),
                   representative := Representative( C ) ) );
     SetUnderlyingCollection( enum, C );
@@ -153,7 +153,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens;
 	      repeat
 		r:=Random(bb);
 	      until not(r in a);
-	      if a.normalStep then
+	      if normalStep then
 		b:=ClosureGroup(a,r);
               else
 		# self normalizing subgroup: thus every element not in <a>
@@ -191,14 +191,14 @@ function(G,U)
   return RefinedChain(G,[U,G]);
 end);
 
-InstallMethod( DoubleCosetsDefaultKind, "generic", true, [IsFamily], 0,
+InstallMethod( DoubleCosetsDefaultType, "generic", true, [IsFamily], 0,
 function(f)
-  return NewKind(f,IsDoubleCosetDefaultRep);
+  return NewType(f,IsDoubleCosetDefaultRep);
 end);
 
-InstallMethod( RightCosetsDefaultKind, "generic", true, [IsFamily], 0,
+InstallMethod( RightCosetsDefaultType, "generic", true, [IsFamily], 0,
 function(f)
-  return NewKind(f,IsRightCosetDefaultRep);
+  return NewType(f,IsRightCosetDefaultRep);
 end);
 
 InstallMethod(DoubleCoset,"generic",IsCollsElmsColls,
@@ -207,7 +207,7 @@ function(U,g,V)
 local d;
   # noch tests...
 
-  d:=Objectify(DoubleCosetsDefaultKind(FamilyObj(U)),rec());
+  d:=Objectify(DoubleCosetsDefaultType(FamilyObj(U)),rec());
   SetLeftActingDomain(d,U);
   SetRightActingDomain(d,V);
   SetRepresentative(d,g);
@@ -258,7 +258,7 @@ function(U,g)
 local d;
   # noch tests...
 
-  d:=Objectify(RightCosetsDefaultKind(FamilyObj(U)),rec());
+  d:=Objectify(RightCosetsDefaultType(FamilyObj(U)),rec());
   SetActingDomain(d,U);
   # AH
   # SetFunctionOperation(d,OnLeft);

@@ -31,7 +31,7 @@ InstallMethod( DivisionRingByGenerators,
     [ IsDivisionRing, IsCollection ] , 0,
     function( F, gens )
     local D;
-    D:= Objectify( NewKind( FamilyObj( gens ),
+    D:= Objectify( NewType( FamilyObj( gens ),
                             IsField and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( D, F );
@@ -52,7 +52,7 @@ InstallMethod( FieldOverItselfByGenerators,
     if IsEmpty( gens ) then
       Error( "need at least one element" );
     fi;
-    F:= Objectify( NewKind( FamilyObj( gens ),
+    F:= Objectify( NewType( FamilyObj( gens ),
                             IsField and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( F, F );
@@ -154,7 +154,7 @@ end;
 SubfieldNC := function( F, gens )
     local S;
     if IsEmpty( gens ) then
-      S:= Objectify( NewKind( FamilyObj( F ),
+      S:= Objectify( NewType( FamilyObj( F ),
                               IsDivisionRing and IsAttributeStoringRep ),
                      rec() );
       SetLeftActingDomain( S, F );
@@ -763,7 +763,7 @@ InstallMethod( LeftModuleByGenerators,
     [ IsDivisionRing, IsScalarCollection ] , 0,
     function( F, gens )
     local V;
-    V:= Objectify( NewKind( FamilyObj( gens ),
+    V:= Objectify( NewType( FamilyObj( gens ),
                                 IsFreeLeftModule
                             and IsLeftActedOnByDivisionRing
                             and IsFieldElementsSpaceRep
@@ -785,7 +785,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     [ IsDivisionRing, IsScalarCollection, IsScalar ], 0,
     function( F, gens, zero )
     local V;
-    V:= Objectify( NewKind( FamilyObj( F ),
+    V:= Objectify( NewType( FamilyObj( F ),
                                 IsFreeLeftModule
                             and IsLeftActedOnByDivisionRing
                             and IsFieldElementsSpaceRep
@@ -808,7 +808,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     [ IsDivisionRing, IsList and IsEmpty, IsScalar ], 0,
     function( F, empty, zero )
     local V;
-    V:= Objectify( NewKind( FamilyObj( F ),
+    V:= Objectify( NewType( FamilyObj( F ),
                                 IsFreeLeftModule
                             and IsLeftActedOnByDivisionRing
                             and IsTrivial

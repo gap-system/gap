@@ -38,5 +38,5 @@ extern UInt   syNrchar;               /* nr of chars already on the line */
 /****************************************************************************
 **
 
-*E  sysfiles.h	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

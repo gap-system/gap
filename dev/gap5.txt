@@ -1,0 +1,193 @@
+This is a list of features which should eventually become part of GAP.
+
+Table Of Contents
+-----------------
+
+1) Weak pointers
+2) Finalise methods
+
+
+-----------------------------------------------------------------------------
+
+1) Weak pointers
+----------------
+
+1.1) Definition
+---------------
+
+A weak pointer is a pointer $P$ pointing to an object $O$ such that
+object $O$ is *not* kept alive by $P$, that is to say, if there is no
+reference to object $O$ by an ordinary pointer than $O$ can be
+collected.  In this case the pointer $P$ has to updated in such a way
+that it no longer points to object $O$.
+
+1.2) Possible Implementation
+----------------------------
+
+The following subsections describe possible implementations of weak
+pointers in GAP 4.  The interface could be implement as
+
+'w := WeakPointerObject()'
+
+create a weak pointer object.
+
+'w[1] := <obj>'
+
+weak pointer to <obj>.
+
+'w[1]'
+
+return <obj>.
+
+'IsBound(w[1])'
+
+check if <obj> is still alive.
+
+1.2.1) List of weak pointers
+----------------------------
+
+Assuming that there are not too many weak pointers it is possible to
+keep a global list $L$ of them.  The garbage collection has to proceed as
+follows:
+
+a) mark all objects alive which can be reached from the global bags
+   but ignore all references from weak pointer objects and from $L$.
+
+b) run through the list $L$ of weak pointer.  If the weak pointer is
+   garbage, remove it from the list.  If the object pointed to by
+   the weak pointer if garbage, unbind it from the weak pointer.
+
+c) collect the garbage.
+
+Care has to be taken that weak pointers are allocated in clusters,
+otherwise the swapper will run amok.
+
+
+1.2.2) Weak pointers for component objects
+------------------------------------------
+
+Assuming that there are quite a lot of weak pointers one could
+restrict weak pointer to only point to component objects forcing an
+extra slot 'POINTED_TO_BY' to point back to the weak pointer.  In case
+that more than one weak pointer is allowed for an object the weak
+pointers must be some sort of linked list.  The garbage collection has
+to proceed as follows:
+
+a) mark all objects alive which can be reached from the global bags
+   but ignore all references from weak pointer objects.
+
+b) run through the list of garbage and check of the component objects
+   occuring have a 'POINTED_TO_BY'.  In this case update the weak
+   pointer.
+
+c) collect the garbage.
+
+The slot 'POINTED_TO_BY' should be the first one in an component object
+in order to avoid searching for the component.
+
+
+-----------------------------------------------------------------------------
+
+2) Finalise methods
+-------------------
+
+2.1) Definition
+---------------
+
+When an object <obj> is collected as garbage it should be possible to
+call a method 'Finalise' which will clean up anything associated with
+this object outside the control of GASMAN, for example, files,
+directories, streams belonging to this object.
+
+2.2) Problems
+-------------
+
+There are various problems with finalise methods:
+
+- because the finalise occurs inside the garbage collections calling 
+  any methods must be postponed until the heap is in a clean state again
+  and objects with a finalise method (and their subobjects!) must not 
+  thrown away (see below) until this method has been called.
+
+- 'NewBag' must be reentrant
+
+- The finalise methods might again cause a garbage collection, special
+  care has to be taken so that this does not cause any problems
+
+- Thinking of the example above the objects involving finalise methods
+  might be ordered in a tree structure , these trees must be cleared
+  top-down (example: files point to directories, therefore the files
+  must be finalised before finalising the directories).  If there is
+  a cycle you lose!
+
+- Functions can be called without a (obvious) reason, for example, 
+  "(1,2)^2" triggers a garbage collection which will cause various objects
+  to finalise.  This is a philosophical problem not a technical one.
+
+
+2.3) Possible Implementation
+----------------------------
+
+This implementation assumes that objects with finalise methods are not
+inside a deep tree structure (where all the nodes must be finalised).  It
+will not collect all garbage immediately but instead postpone some so
+that it can finalise trees top-down.
+
+A list of objects which can be finalised is stored as linked list in
+'ToBeFinalised'.
+
+Lets assume the a garbage collections starts which is not inside a
+garbage collection.  In this case 'ToBeFinalised' is zero.
+
+a) Set 'ToBeFinalised' to something non-zero.
+
+b) run through the heap and mark all objects alive which can be reached
+   from global pointers
+
+c) run through the heap and look for soon-to-be-dead objects with a 
+   finalise method, mark all *subobjects* as alive
+
+d) run through the heap and look for soon-to-be-dead objects with a 
+   finalise method, put them on the linked list 'ToBeFinalised' and
+   mark them as alive
+
+e) collect the garbage, if there is no room gained by this step we might
+   be in *deep* trouble, try to get more space from the OS.
+
+f) restore the heap to a sane state, note that it *might* be possible
+   to use the link fields to implement the linked list 'ToBeFinalised'.
+
+g) now loop over the linked list 'ToBeFinalised', take the first
+   element on this list and *do not* remove it right now (see below
+   in case of a nested garbage collection).  Call the finalise method
+   for this object - this might cause a nested garbage collection!
+
+h) after the finalise method is finished remove the object from the
+   'ToBeFinalised' list, and free its memory
+
+i) repeat g)
+
+Lets assume that a nested garbage collection is going on.  In this
+case 'ToBeFinalised' is *not* zero.
+
+a) run through the heap and mark all objects alive which can be reached
+   from global pointers *including* the list 'ToBeFinalised'
+
+b) run through the heap and look for soon-to-be-dead objects with a 
+   finalise method, mark all *subobjects* as alive
+
+c) run through the heap and look for objects with a finalise method,
+   add them on the linked list 'ToBeFinalised' and mark them as alive
+
+d) collect the garbage, if there is no room gain by this step we might
+   be in *deep* trouble
+
+e) restore the heap to a sane state, note that it *might* be possible
+   to use the link fields to implement the linked list 'ToBeFinalised'.
+
+h) *do not* loop over the linked list 'ToBeFinalised' in order
+   to avoid finalising an object twice.
+
+i) return to the called NewBag, then the finalising method which called 
+   the NewBag, and eventually to the top garbage collection.  This will 
+   deal with the new objects on 'ToBeFinalised'.

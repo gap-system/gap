@@ -613,6 +613,84 @@ function( group )
     return spec;
 end );
 
+#############################################################################
+##
+#M LGWeights( pcgs )
+##
+InstallMethod( LGWeights,
+               "for induced wrt special",
+               true,
+               [IsInducedPcgsWrtSpecialPcgs],
+               0,
+function( pcgs )
+    local spec, sweights, weights, i, g, d;
+
+    # catch special pcgs
+    spec := ParentPcgs( pcgs );
+    sweights := LGWeights( spec );
+
+    # rewrite weights
+    weights := List( pcgs, x -> true );
+    for i in [1..Length(pcgs)] do
+        g := pcgs[i];
+        d := DepthOfPcElement( spec, g );
+        weights[i] := sweights[d];
+    od;
+    return weights;
+end );
+
+#############################################################################
+##
+#M LGLayers( pcgs )
+##
+InstallMethod( LGLayers, 
+               "for induced wrt special",
+               true,
+               [IsInducedPcgsWrtSpecialPcgs],
+               0,
+function( pcgs )
+    local weights, layers, layer, o, i, w;
+
+    weights := LGWeights( pcgs );
+    layers  := List( pcgs, x -> true );
+    layer   := 1;
+    o       := weights[1];
+    for i in [1..Length( pcgs )] do
+        w := weights[i];
+        if w <> o then
+            o := w;
+            layer := layer + 1;
+        fi;
+        layers[i] := layer;
+    od;
+    return layers;
+end );
+
+#############################################################################
+##
+#M LGFirst( pcgs )
+##
+InstallMethod( LGFirst, 
+               "for induced wrt special",
+               true,
+               [IsInducedPcgsWrtSpecialPcgs],
+               0,
+function( pcgs )
+    local weights, first, o, i, w;
+
+    weights := LGWeights( pcgs );
+    first   := [1];
+    o       := weights[1];
+    for i in [1..Length( pcgs )] do
+        w := weights[i];
+        if w <> o then
+            o := w;
+            Add( first, i );
+        fi;
+    od;
+    Add( first, Length(pcgs) + 1 );
+    return first;
+end );
 
 #############################################################################
 ##

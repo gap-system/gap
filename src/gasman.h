@@ -53,7 +53,7 @@ char *          Revision_gasman_h =
 **
 **  'NewBag'  returns  the identifier of   the newly   allocated bag and  the
 **  application passes this identifier to every {\Gasman} function to tell it
-**  which bag  it should  operate  on (see "NewBag",  "TYPE_BAG", "SIZE_BAG",
+**  which bag  it should  operate  on (see "NewBag",  "TNUM_BAG", "SIZE_BAG",
 **  "PTR_BAG", "CHANGED_BAG", "RetypeBag", and "ResizeBag").
 **
 **  Note that the  identifier of a  bag is different from  the address of the
@@ -72,11 +72,11 @@ typedef UInt * *        Bag;
 
 /****************************************************************************
 **
-*F  TYPE_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . type of a bag
+*F  TNUM_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . type of a bag
 **
-**  'TYPE_BAG( <bag> )'
+**  'TNUM_BAG( <bag> )'
 **
-**  'TYPE_BAG' returns the type of the the bag with the identifier <bag>.
+**  'TNUM_BAG' returns the type of the the bag with the identifier <bag>.
 **
 **  Each bag has a certain type that identifies its structure.  The type is a
 **  integer between 0  and  253.  The types 254   and  255 are  reserved  for
@@ -88,10 +88,10 @@ typedef UInt * *        Bag;
 **  to  call  to  mark all subbags  of a  given bag (see "InitMarkFuncBags").
 **  Apart from that {\Gasman} does not care at all about types.
 **
-**  Note  that 'TYPE_BAG' is a macro, so do not call  it with arguments  that
+**  Note  that 'TNUM_BAG' is a macro, so do not call  it with arguments  that
 **  have sideeffects.
 */
-#define TYPE_BAG(bag)   (*(*(bag)-2) & 0xFFL)
+#define TNUM_BAG(bag)   (*(*(bag)-2) & 0xFFL)
 
 
 /****************************************************************************
@@ -235,7 +235,7 @@ extern  Bag                     ChangedBags;
 **
 **  <type> must be a  value  between 0 and 253.    The types 254 and  255 are
 **  reserved for {\Gasman}.  The application can find the type  of a bag with
-**  'TYPE_BAG'    and change   it  with  'RetypeBag'     (see  "TYPE_BAG" and
+**  'TNUM_BAG'    and change   it  with  'RetypeBag'     (see  "TNUM_BAG" and
 **  "RetypeBag").
 **
 **  It is probably a good idea to define symbolic constants  for all types in
@@ -371,8 +371,8 @@ extern  UInt            CollectBags (
 *F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
 */
 extern void SwapMasterPoint (
-    Bag			bag1,
-    Bag			bag2 );
+    Bag                 bag1,
+    Bag                 bag2 );
 
 
 /****************************************************************************
@@ -476,9 +476,9 @@ typedef struct  {
     UInt                    nrAll;
     UInt                    sizeLive;
     UInt                    sizeAll;
-}                       TypeInfoBags;
+}                       TNumInfoBags;
 
-extern  TypeInfoBags            InfoBags [ 256 ];
+extern  TNumInfoBags            InfoBags [ 256 ];
 
 
 /****************************************************************************
@@ -546,13 +546,13 @@ extern  TypeInfoBags            InfoBags [ 256 ];
 **  34+3016 is the  number  of bags allocated  between  the last two  garbage
 **  collections, using 978 KByte and the other two numbers are as above.
 */
-typedef void            (* TypeMsgsFuncBags) (
+typedef void            (* TNumMsgsFuncBags) (
             UInt                full,
             UInt                phase,
             Int                 nr );
 
 extern  void            InitMsgsFuncBags (
-            TypeMsgsFuncBags    msgs_func );
+            TNumMsgsFuncBags    msgs_func );
 
 
 /****************************************************************************
@@ -634,12 +634,12 @@ extern  void            InitMsgsFuncBags (
 **  bag identifiers for the elements  of the  list or 0   if an entry has  no
 **  assigned value.
 */
-typedef void            (* TypeMarkFuncBags ) (
+typedef void            (* TNumMarkFuncBags ) (
             Bag                 bag );
 
 extern  void            InitMarkFuncBags (
             UInt                type,
-            TypeMarkFuncBags    mark_func );
+            TNumMarkFuncBags    mark_func );
 
 extern  void            MarkNoSubBags (
             Bag                 bag );
@@ -680,9 +680,9 @@ typedef struct {
     Bag *                   addr [NR_GLOBAL_BAGS];
     Char *                  cookie [NR_GLOBAL_BAGS];
     UInt                    nr;
-} TypeGlobalBags;
+} TNumGlobalBags;
 
-extern TypeGlobalBags GlobalBags;
+extern TNumGlobalBags GlobalBags;
 
 
 /****************************************************************************
@@ -712,7 +712,7 @@ extern TypeGlobalBags GlobalBags;
 
 extern  void            InitGlobalBag (
             Bag *               addr,
-	    Char *              cookie );
+            Char *              cookie );
 
 
 /****************************************************************************
@@ -736,12 +736,12 @@ extern  void            InitGlobalBag (
 **  for the subbags of   <bag> (if there   are freeing functions for  bags of
 **  their types) are called before or after the freeing function for <bag>.
 */
-typedef void            (* TypeFreeFuncBags ) (
+typedef void            (* TNumFreeFuncBags ) (
             Bag                 bag );
 
 extern  void            InitFreeFuncBag (
             UInt                type,
-            TypeFreeFuncBags    free_func );
+            TNumFreeFuncBags    free_func );
 
 
 /****************************************************************************
@@ -761,11 +761,11 @@ extern  void            InitFreeFuncBag (
 **  you do not have to update that pointer after every operation that might
 **  cause a garbage collection.
 */
-typedef void            (* TypeCollectFuncBags) ( void );
+typedef void            (* TNumCollectFuncBags) ( void );
 
 extern  void            InitCollectFuncBags (
-            TypeCollectFuncBags before_func,
-            TypeCollectFuncBags after_func );
+            TNumCollectFuncBags before_func,
+            TNumCollectFuncBags after_func );
 
 
 /****************************************************************************
@@ -861,24 +861,24 @@ extern  void            InitCollectFuncBags (
 **  it  might want to display this   message before aborting the application.
 **  This function should never return.
 */
-typedef Bag *           (* TypeAllocFuncBags) (
+typedef Bag *           (* TNumAllocFuncBags) (
                                 Int             size,
                                 UInt            need );
 
-typedef void            (* TypeStackFuncBags) ( void );
+typedef void            (* TNumStackFuncBags) ( void );
 
-typedef void            (* TypeAbortFuncBags) (
+typedef void            (* TNumAbortFuncBags) (
                                 Char *          msg );
 
 extern  void            InitBags (
-            TypeAllocFuncBags   alloc_func,
+            TNumAllocFuncBags   alloc_func,
             UInt                initial_size,
-            TypeStackFuncBags   stack_func,
+            TNumStackFuncBags   stack_func,
             Bag *               stack_bottom,
             UInt                stack_align,
             UInt                cache_size,
             UInt                dirty,
-            TypeAbortFuncBags   abort_func );
+            TNumAbortFuncBags   abort_func );
 
 /****************************************************************************
 **

@@ -72,7 +72,7 @@ InstallMethod( FromTheLeftCollector,
     pcp[ PC_EXPONENT_STACK ]           := [1..pcp[ PC_STACK_SIZE]] * 0;
     pcp[ PC_STACK_POINTER ]            := 0;
 
-    return Objectify( NewKind( FromTheLeftCollectorFamily,
+    return Objectify( NewType( FromTheLeftCollectorFamily,
                    IsFromTheLeftCollectorRep ), pcp );
 end );
 

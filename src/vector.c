@@ -21,7 +21,7 @@ char *          Revision_vector_c =
 #include        "system.h"              /* system dependent functions      */
 
 #include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
-#include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "objects.h"             /* Obj, TNUM_OBJ, SIZE_OBJ, ...    */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "ariths.h"              /* generic operations package      */
@@ -46,9 +46,9 @@ char *          Revision_vector_c =
 
 /****************************************************************************
 **
-*F  IsXTypeEmpty(<list>)  . test if a list is an empty list (almost a vector)
+*F  IsXTNumEmpty(<list>)  . test if a list is an empty list (almost a vector)
 */
-Int             IsXTypeEmpty (
+Int             IsXTNumEmpty (
     Obj                 list )
 {
     return (LEN_LIST( list ) == 0);
@@ -57,17 +57,17 @@ Int             IsXTypeEmpty (
 
 /****************************************************************************
 **
-*F  IsXTypePlistCyc(<list>) . . . . . . . . . . .  test if a list is a vector
+*F  IsXTNumPlistCyc(<list>) . . . . . . . . . . .  test if a list is a vector
 **
-**  'IsXTypePlistCyc'  returns 1  if   the list <list>  is   a vector  and  0
+**  'IsXTNumPlistCyc'  returns 1  if   the list <list>  is   a vector  and  0
 **  otherwise.    As a  sideeffect    the type of  the   list  is  changed to
 **  'T_VECTOR'.
 **
-**  'IsXTypePlistCyc' is the function in 'IsXTypeListFuncs' for vectors.
+**  'IsXTNumPlistCyc' is the function in 'IsXTNumListFuncs' for vectors.
 */
-#define IS_IMM_PLIST(list)  ((TYPE_OBJ(list) - T_PLIST) % 2)
+#define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
 
-Int             IsXTypePlistCyc (
+Int             IsXTNumPlistCyc (
     Obj                 list )
 {
     Int                 isVector;       /* result                          */
@@ -76,26 +76,26 @@ Int             IsXTypePlistCyc (
     UInt                i;              /* loop variable                   */
 
     /* if we already know that the list is a vector, very good             */
-    if      ( T_PLIST_CYC    <= TYPE_OBJ(list)
-           && TYPE_OBJ(list) <= T_PLIST_CYC_SSORT +IMMUTABLE ) {
+    if      ( T_PLIST_CYC    <= TNUM_OBJ(list)
+           && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT +IMMUTABLE ) {
         isVector = 1;
     }
 
     /* if it is a nonempty plain list, check the entries                   */
-    else if ( (TYPE_OBJ(list) == T_PLIST
-            || TYPE_OBJ(list) == T_PLIST +IMMUTABLE
-            || TYPE_OBJ(list) == T_PLIST_DENSE
-            || TYPE_OBJ(list) == T_PLIST_DENSE +IMMUTABLE
-            || (T_PLIST_HOM <= TYPE_OBJ(list)
-             && TYPE_OBJ(list) <= T_PLIST_HOM_SSORT +IMMUTABLE))
+    else if ( (TNUM_OBJ(list) == T_PLIST
+            || TNUM_OBJ(list) == T_PLIST +IMMUTABLE
+            || TNUM_OBJ(list) == T_PLIST_DENSE
+            || TNUM_OBJ(list) == T_PLIST_DENSE +IMMUTABLE
+            || (T_PLIST_HOM <= TNUM_OBJ(list)
+             && TNUM_OBJ(list) <= T_PLIST_HOM_SSORT +IMMUTABLE))
            && LEN_PLIST(list) != 0
            && ELM_PLIST(list,1) != 0
-           && TYPE_OBJ( ELM_PLIST(list,1) ) <= T_CYC ) {
+           && TNUM_OBJ( ELM_PLIST(list,1) ) <= T_CYC ) {
         len = LEN_PLIST(list);
         for ( i = 2; i <= len; i++ ) {
             elm = ELM_PLIST( list, i );
             if ( elm == 0
-              || ! (TYPE_OBJ(elm) <= T_CYC) )
+              || ! (TNUM_OBJ(elm) <= T_CYC) )
                 break;
         }
         isVector = (len < i) ? 1 : 0;
@@ -104,12 +104,12 @@ Int             IsXTypePlistCyc (
 
     /* a range is a vector, but we have to convert it                      */
     /*N 1993/01/30 martin finds it nasty that vector knows about ranges    */
-    else if ( TYPE_OBJ(list) == T_RANGE_NSORT ) {
+    else if ( TNUM_OBJ(list) == T_RANGE_NSORT ) {
         PLAIN_LIST( list );
         RetypeBag( list, T_PLIST_CYC_NSORT + IS_IMM_PLIST(list) );
         isVector = 1;
     }
-    else if ( TYPE_OBJ(list) == T_RANGE_SSORT ) {
+    else if ( TNUM_OBJ(list) == T_RANGE_SSORT ) {
         PLAIN_LIST( list );
         RetypeBag( list, T_PLIST_CYC_SSORT + IS_IMM_PLIST(list) );
         isVector = 1;
@@ -127,14 +127,14 @@ Int             IsXTypePlistCyc (
 
 /****************************************************************************
 **
-*F  IsXTypeMatCyc(<list>) . . . . . . . . . . . .  test if a list is a matrix
+*F  IsXTNumMatCyc(<list>) . . . . . . . . . . . .  test if a list is a matrix
 **
-**  'IsXTypeMatCyc' returns 1 if the list <list> is a matrix and 0 otherwise.
+**  'IsXTNumMatCyc' returns 1 if the list <list> is a matrix and 0 otherwise.
 **  As a sideeffect the type of the rows is changed to 'T_VECTOR'.
 **
-**  'IsXTypeMatCyc' is the function in 'IsXTypeListFuncs' for matrices.
+**  'IsXTNumMatCyc' is the function in 'IsXTNumListFuncs' for matrices.
 */
-Int             IsXTypeMatCyc (
+Int             IsXTNumMatCyc (
     Obj                 list )
 {
     Int                 isMatrix;       /* result                          */
@@ -144,22 +144,22 @@ Int             IsXTypeMatCyc (
     UInt                i;              /* loop variable                   */
 
     /* if it is a nonempty plain list, check the entries                   */
-    if ( (TYPE_OBJ(list) == T_PLIST
-       || TYPE_OBJ(list) == T_PLIST +IMMUTABLE
-       || TYPE_OBJ(list) == T_PLIST_DENSE
-       || TYPE_OBJ(list) == T_PLIST_DENSE +IMMUTABLE
-       || (T_PLIST_HOM <= TYPE_OBJ(list)
-        && TYPE_OBJ(list) <= T_PLIST_HOM_SSORT +IMMUTABLE))
+    if ( (TNUM_OBJ(list) == T_PLIST
+       || TNUM_OBJ(list) == T_PLIST +IMMUTABLE
+       || TNUM_OBJ(list) == T_PLIST_DENSE
+       || TNUM_OBJ(list) == T_PLIST_DENSE +IMMUTABLE
+       || (T_PLIST_HOM <= TNUM_OBJ(list)
+        && TNUM_OBJ(list) <= T_PLIST_HOM_SSORT +IMMUTABLE))
       && LEN_PLIST( list ) != 0
       && ELM_PLIST( list, 1 ) != 0
-      && IsXTypePlistCyc( ELM_PLIST( list, 1 ) ) ) {
+      && IsXTNumPlistCyc( ELM_PLIST( list, 1 ) ) ) {
         len = LEN_PLIST( list );
         elm = ELM_PLIST( list, 1 );
         cols = LEN_PLIST( elm );
         for ( i = 2; i <= len; i++ ) {
             elm = ELM_PLIST( list, i );
             if ( elm == 0
-              || ! IsXTypePlistCyc( elm )
+              || ! IsXTNumPlistCyc( elm )
               || LEN_PLIST( elm ) != cols )
                 break;
         }
@@ -770,9 +770,9 @@ void            InitVector ( void )
     Int                 t1;
     Int                 t2;
 
-    IsXTypeListFuncs[ T_PLIST_EMPTY  ] = IsXTypeEmpty;
-    IsXTypeListFuncs[ T_PLIST_CYC    ] = IsXTypePlistCyc;
-    IsXTypeListFuncs[ T_MAT_CYC      ] = IsXTypeMatCyc;
+    IsXTNumListFuncs[ T_PLIST_EMPTY  ] = IsXTNumEmpty;
+    IsXTNumListFuncs[ T_PLIST_CYC    ] = IsXTNumPlistCyc;
+    IsXTNumListFuncs[ T_MAT_CYC      ] = IsXTNumMatCyc;
 
     /* install the arithmetic operation methods                            */
     for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1++ ) {

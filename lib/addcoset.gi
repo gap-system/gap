@@ -38,7 +38,7 @@ InstallMethod( AdditiveCoset,
     IsCollsElms,
     [ IsAdditiveGroup, IsAdditiveElement ], 0,
     function( A, a )
-    return Objectify( NewKind( FamilyObj( A ),
+    return Objectify( NewType( FamilyObj( A ),
                                    IsAdditiveCoset
                                and IsAdditiveCosetDefaultRep ),
                       [ A, a ] );

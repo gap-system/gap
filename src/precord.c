@@ -18,7 +18,7 @@ char *          Revision_precord_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* global variables                */
@@ -128,26 +128,26 @@ char *          Revision_precord_c =
 
 /****************************************************************************
 **
-*F  KindPRec(<rec>) . . . . . . . . . . . . . . . . .  kind of a plain record
+*F  TypePRec(<rec>) . . . . . . . . . . . . . . . . .  kind of a plain record
 **
-**  'KindPRec' returns the kind of the plain record <rec>.
+**  'TypePRec' returns the kind of the plain record <rec>.
 **
-**  'KindPRec' is the function in 'KindObjFuncs' for plain records.
+**  'TypePRec' is the function in 'TypeObjFuncs' for plain records.
 */
-Obj             KIND_PREC_MUTABLE;
+Obj             TYPE_PREC_MUTABLE;
 
-Obj             KindPRecMut (
+Obj             TypePRecMut (
     Obj                 prec )
 {
-    return KIND_PREC_MUTABLE;
+    return TYPE_PREC_MUTABLE;
 }
 
-Obj             KIND_PREC_IMMUTABLE;
+Obj             TYPE_PREC_IMMUTABLE;
 
-Obj             KindPRecImm (
+Obj             TypePRecImm (
     Obj                 prec )
 {
-    return KIND_PREC_IMMUTABLE;
+    return TYPE_PREC_IMMUTABLE;
 }
 
 
@@ -228,13 +228,13 @@ Obj             CopyPRec (
     /* if an empty record has not yet been copied                          */
     if ( LEN_PREC(rec) == 0 ) {
 
-	/* make a copy                                                     */
-	if ( mut ) {
-	    copy = NewBag( TYPE_OBJ(rec), SIZE_OBJ(rec) );
-	}
-	else {
-	    copy = NewBag( IMMUTABLE_TYPE(TYPE_OBJ(rec)), SIZE_OBJ(rec) );
-	}
+        /* make a copy                                                     */
+        if ( mut ) {
+            copy = NewBag( TNUM_OBJ(rec), SIZE_OBJ(rec) );
+        }
+        else {
+            copy = NewBag( IMMUTABLE_TNUM(TNUM_OBJ(rec)), SIZE_OBJ(rec) );
+        }
 
         /* leave a forwarding pointer                                      */
         ResizeBag( rec, SIZE_OBJ(rec) + sizeof(Obj) );
@@ -242,19 +242,19 @@ Obj             CopyPRec (
         CHANGED_BAG( rec );
 
         /* now it is copied                                                */
-        RetypeBag( rec, TYPE_OBJ(rec) + COPYING );
+        RetypeBag( rec, TNUM_OBJ(rec) + COPYING );
     }
 
     /* if the record has not yet been copied                               */
     else {
 
-	/* make a copy                                                     */
-	if ( mut ) {
-	    copy = NewBag( TYPE_OBJ(rec), SIZE_OBJ(rec) );
-	}
-	else {
-	    copy = NewBag( IMMUTABLE_TYPE(TYPE_OBJ(rec)), SIZE_OBJ(rec) );
-	}
+        /* make a copy                                                     */
+        if ( mut ) {
+            copy = NewBag( TNUM_OBJ(rec), SIZE_OBJ(rec) );
+        }
+        else {
+            copy = NewBag( IMMUTABLE_TNUM(TNUM_OBJ(rec)), SIZE_OBJ(rec) );
+        }
         SET_RNAM_PREC( copy, 1, GET_RNAM_PREC( rec, 1 ) );
 
         /* leave a forwarding pointer                                      */
@@ -262,7 +262,7 @@ Obj             CopyPRec (
         CHANGED_BAG( rec );
 
         /* now it is copied                                                */
-        RetypeBag( rec, TYPE_OBJ(rec) + COPYING );
+        RetypeBag( rec, TNUM_OBJ(rec) + COPYING );
 
         /* copy the subvalues                                              */
         tmp = COPY_OBJ( GET_ELM_PREC( rec, 1 ), mut );
@@ -305,7 +305,7 @@ void            CleanPRecCopy (
         ResizeBag( rec, SIZE_OBJ(rec) - sizeof(Obj) );
 
         /* now it is cleaned                                               */
-        RetypeBag( rec, TYPE_OBJ(rec) - COPYING );
+        RetypeBag( rec, TNUM_OBJ(rec) - COPYING );
     }
 
     /* nonempty record                                                     */
@@ -315,7 +315,7 @@ void            CleanPRecCopy (
         SET_RNAM_PREC( rec, 1, GET_RNAM_PREC( GET_RNAM_PREC( rec, 1 ), 1 ) );
 
         /* now it is cleaned                                               */
-        RetypeBag( rec, TYPE_OBJ(rec) - COPYING );
+        RetypeBag( rec, TNUM_OBJ(rec) - COPYING );
 
         /* clean the subvalues                                             */
         CLEAN_OBJ( GET_ELM_PREC( rec, 1 ) );
@@ -509,7 +509,7 @@ Obj             MethodPRec (
     UInt                i;              /* loop variable                   */
 
     /* is <rec> a record?                                                  */
-    if ( TYPE_OBJ(rec) != T_PREC )
+    if ( TNUM_OBJ(rec) != T_PREC )
         return 0;
 
     /* try to get the operations record                                    */
@@ -522,7 +522,7 @@ Obj             MethodPRec (
         return 0;
     }
     opers = GET_ELM_PREC( rec, i );
-    if ( TYPE_OBJ( opers ) != T_PREC ) {
+    if ( TNUM_OBJ( opers ) != T_PREC ) {
         return 0;
     }
 
@@ -536,7 +536,7 @@ Obj             MethodPRec (
         return 0;
     }
     method = GET_ELM_PREC( opers, i );
-    if ( TYPE_OBJ( method ) != T_PREC ) {
+    if ( TNUM_OBJ( method ) != T_PREC ) {
         return 0;
     }
 
@@ -652,8 +652,8 @@ Int             EqPRec (
       && ! (method = MethodPRec( left,  EqRNam )) ) {
 
         /* quick first checks                                              */
-        if ( TYPE_OBJ(left ) <  TYPE_OBJ(right) )  return 0L;
-        if ( TYPE_OBJ(left ) >  TYPE_OBJ(right) )  return 0L;
+        if ( TNUM_OBJ(left ) <  TNUM_OBJ(right) )  return 0L;
+        if ( TNUM_OBJ(left ) >  TNUM_OBJ(right) )  return 0L;
         if ( LEN_PREC(left ) != LEN_PREC(right) )  return 0L;
 
         /* sort both records                                               */
@@ -710,8 +710,8 @@ Int             LtPRec (
       && ! (method = MethodPRec( left,  LtRNam )) ) {
 
         /* quick first checks                                              */
-        if ( TYPE_OBJ(left ) < TYPE_OBJ(right) )  return 1L;
-        if ( TYPE_OBJ(left ) > TYPE_OBJ(right) )  return 0L;
+        if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return 1L;
+        if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return 0L;
 
         /* sort both records                                               */
         SortPRec( left );
@@ -1069,11 +1069,11 @@ Obj             RecNamesHandler (
     UInt                i;              /* loop variable                   */
 
     /* check the argument                                                  */
-    while ( TYPE_OBJ(rec) != T_PREC &&
-	    TYPE_OBJ(rec) != T_PREC + IMMUTABLE ) {
+    while ( TNUM_OBJ(rec) != T_PREC &&
+            TNUM_OBJ(rec) != T_PREC + IMMUTABLE ) {
         rec = ErrorReturnObj(
             "RecNames: <rec> must be a record (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(rec)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
             "you can return a record for <rec>" );
     }
 
@@ -1098,7 +1098,7 @@ Obj             RecNamesHandler (
 
 /****************************************************************************
 **
-*F  FuncREC_NAMES_ROBJ( <self>, <rec> )	. . . record names of a record object
+*F  FuncREC_NAMES_ROBJ( <self>, <rec> ) . . . record names of a record object
 */
 Obj FuncREC_NAMES_ROBJ (
     Obj                 self,
@@ -1110,10 +1110,10 @@ Obj FuncREC_NAMES_ROBJ (
     UInt                i;              /* loop variable                   */
 
     /* check the argument                                                  */
-    while ( TYPE_OBJ(rec) != T_COMOBJ ) {
+    while ( TNUM_OBJ(rec) != T_COMOBJ ) {
         rec = ErrorReturnObj(
             "RecNames: <rec> must be a component object (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(rec)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
             "you can return a component object for <rec>" );
     }
 
@@ -1173,11 +1173,11 @@ void            InitPRecord ( void )
 
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "KIND_PREC_MUTABLE",   &KIND_PREC_MUTABLE   );
-    ImportGVarFromLibrary( "KIND_PREC_IMMUTABLE", &KIND_PREC_IMMUTABLE );
+    ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
+    ImportGVarFromLibrary( "TYPE_PREC_IMMUTABLE", &TYPE_PREC_IMMUTABLE );
 
-    KindObjFuncs[ T_PREC            ] = KindPRecMut;
-    KindObjFuncs[ T_PREC +IMMUTABLE ] = KindPRecImm;
+    TypeObjFuncs[ T_PREC            ] = TypePRecMut;
+    TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
 
 
     /* install mutability test                                             */
@@ -1206,8 +1206,8 @@ void            InitPRecord ( void )
 
 
     /* install evaluators                                                  */
-    for ( i = FIRST_REAL_TYPE; i <= LAST_VIRTUAL_TYPE; i++ ) {
-        if ( i < FIRST_EXTERNAL_TYPE || LAST_EXTERNAL_TYPE < i ) {
+    for ( i = FIRST_REAL_TNUM; i <= LAST_VIRTUAL_TNUM; i++ ) {
+        if ( i < FIRST_EXTERNAL_TNUM || LAST_EXTERNAL_TNUM < i ) {
             EqFuncs  [ i                 ][ T_PREC            ] = EqPRec;
             EqFuncs  [ i                 ][ T_PREC +IMMUTABLE ] = EqPRec;
             EqFuncs  [ T_PREC            ][ i                 ] = EqPRec;

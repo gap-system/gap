@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declaration of operations for semigroups.
 ##
@@ -81,8 +81,20 @@ SubsemigroupNC := SubmagmaNC;
 
 #############################################################################
 ##
-#F  FreeSemigroup( <rank> ) . . . . . . . . . .  free semigroup of given rank
+#F  FreeSemigroup( <rank> )
+#F  FreeSemigroup( <rank>, <name> )
+#F  FreeSemigroup( <name1>, <name2>, ... )
 #F  FreeSemigroup( <names> )
+##
+##  Called in the first form, 'FreeSemigroup' returns a free semigroup on
+##  <rank> generators.
+##  Called in the second form, 'FreeSemigroup' returns a free semigroup on
+##  <rank> generators, printed as '<name>1', '<name>2' etc.
+##  Called in the third form, 'FreeSemigroup' returns a free semigroup on
+##  as many generators as arguments, printed as <name1>, <name2> etc.
+##  Called in the fourth form, 'FreeSemigroup' returns a free semigroup on
+##  as many generators as the length of the list <names>, the $i$-th
+##  generator being printed as '<names>[$i$]'.
 ##
 FreeSemigroup := NewOperationArgs( "FreeSemigroup" );
 

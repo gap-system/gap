@@ -26,7 +26,7 @@ InstallMethod( LeftModuleByGenerators,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local V;
-    V:= Objectify( NewKind( FamilyObj( gens ),
+    V:= Objectify( NewType( FamilyObj( gens ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( V, R );
@@ -46,7 +46,7 @@ InstallOtherMethod( LeftModuleByGenerators,
       Error( "the elements of <gens> must lie in the family of <zero>" );
     fi;
 
-    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( V, R );
@@ -277,7 +277,7 @@ end;
 SubmoduleNC := function( arg )
     local S;
     if IsEmpty( arg[2] ) then
-      S:= Objectify( NewKind( FamilyObj( arg[1] ),
+      S:= Objectify( NewType( FamilyObj( arg[1] ),
                                   IsFreeLeftModule
                               and IsTrivial
                               and IsAttributeStoringRep ),

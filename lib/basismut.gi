@@ -66,7 +66,7 @@ InstallMethod( MutableBasisByGenerators,
              leftActingDomain := R
             );
 
-    return Objectify( NewKind( FamilyObj( vectors ),
+    return Objectify( NewType( FamilyObj( vectors ),
                                    IsMutableBasis
                                and IsMutableBasisByImmutableBasisRep ),
                       B );
@@ -86,7 +86,7 @@ InstallOtherMethod( MutableBasisByGenerators,
              leftActingDomain := R
             );
 
-    return Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    return Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                    IsMutableBasis
                                and IsMutableBasisByImmutableBasisRep ),
                       B );
@@ -206,7 +206,7 @@ MutableBasisViaNiceMutableBasisMethod2 := function( R, vectors )
              leftModule := M
             );
 
-    return Objectify( NewKind( FamilyObj( vectors ),
+    return Objectify( NewType( FamilyObj( vectors ),
                                    IsMutableBasis
                                and IsMutableBasisViaNiceMutableBasisRep ),
                       B );
@@ -245,7 +245,7 @@ MutableBasisViaNiceMutableBasisMethod3 := function( R, vectors, zero )
       Error( "<M> is not handled via nice bases" );
     fi;
 
-    return Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+    return Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                    IsMutableBasis
                                and IsMutableBasisViaNiceMutableBasisRep ),
                       B );

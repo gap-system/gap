@@ -62,7 +62,7 @@ InstallMethod( ObjByExtRep, true,
     [ IsMagmaByMultiplicationTableObjFamily, IsPosRat and IsInt ], 0,
     function( F, i )
     if 0 < i and i <= F!.n then
-      return Objectify( NewKind( F, IsMagmaByMultiplicationTableObj ), [i] );
+      return Objectify( NewType( F, IsMagmaByMultiplicationTableObj ), [i] );
     else
       Error( "<i> must be in the range '[ 1 .. ", F!.n, " ]'" );
     fi;
@@ -137,7 +137,7 @@ MagmaByMultiplicationTable := function( A )
         F!.set:= Immutable( List( [ 1 .. n ], i -> ObjByExtRep( F, i ) ) );
 
         # Construct the magma.
-        M:= Objectify( NewKind( CollectionsFamily( F ),
+        M:= Objectify( NewType( CollectionsFamily( F ),
                                     IsMagmaByMultiplicationTable
                                 and IsAttributeStoringRep ),
                        rec() );
@@ -189,7 +189,7 @@ MagmaWithOneByMultiplicationTable := function( A )
         SetOne( F, F!.set[ onepos ] );
 
         # Construct the magma with one.
-        M:= Objectify( NewKind( CollectionsFamily( F ),
+        M:= Objectify( NewType( CollectionsFamily( F ),
                                     IsMagmaByMultiplicationTable
                                 and IsMagmaWithOne
                                 and IsAttributeStoringRep ),
@@ -258,7 +258,7 @@ MagmaWithInversesByMultiplicationTable := function( A )
         F!.inverse:= List( inv, i -> ObjByExtRep( F, i ) );
 
         # Construct the magma with one.
-        M:= Objectify( NewKind( CollectionsFamily( F ),
+        M:= Objectify( NewType( CollectionsFamily( F ),
                                     IsMagmaByMultiplicationTable
                                 and IsMagmaWithInverses
                                 and IsAttributeStoringRep ),

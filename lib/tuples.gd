@@ -75,7 +75,7 @@ TUPLES_FAMILIES := [];
 #O  Tuple ( <objlist> ) . . . . .. . . . . . . . basic tuple making operation
 #O  Tuple ( <tuplesfam>, <objlist> ) . . .  alternate form if family is known
 ##
-##  methods of this kind have to be OtherMethods
+##  methods of this type have to be OtherMethods
 ##
 #O  TupleNC ( <tuplesfam>, <objlist> ) . . . . omits check on object families
 ##                                             and objlist length  

@@ -54,7 +54,7 @@ function( nice, grp )
     local   fam,  pre;
 
     fam := FamilyObj( Source(nice) );
-    pre := Objectify(NewKind(fam,IsGroup and IsAttributeStoringRep), rec());
+    pre := Objectify(NewType(fam,IsGroup and IsAttributeStoringRep), rec());
     SetIsHandledByNiceMonomorphism( pre, true );
     SetNiceMonomorphism( pre, nice );
     SetNiceObject( pre, grp );

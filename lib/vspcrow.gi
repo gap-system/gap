@@ -96,12 +96,12 @@ InstallMethod( LeftModuleByGenerators,
     local V;
 
     if ForAll( mat, row -> IsSubset( F, row ) ) then
-      V:= Objectify( NewKind( FamilyObj( mat ),
+      V:= Objectify( NewType( FamilyObj( mat ),
                                   IsGaussianSpace
                               and IsGaussianRowSpaceRep ),
                      rec() );
     else
-      V:= Objectify( NewKind( FamilyObj( mat ),
+      V:= Objectify( NewType( FamilyObj( mat ),
                                   IsVectorSpace
                               and IsNonGaussianRowSpaceRep ),
                      rec() );
@@ -135,7 +135,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     fi;
 #T explicit 2nd argument above!
 
-    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( F ) ),
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( F ) ),
                                 IsGaussianSpace
                             and IsGaussianRowSpaceRep ),
                    rec() );
@@ -161,12 +161,12 @@ InstallOtherMethod( LeftModuleByGenerators,
 #T explicit 2nd argument above!
 
     if ForAll( mat, row -> IsSubset( F, row ) ) then
-      V:= Objectify( NewKind( FamilyObj( mat ),
+      V:= Objectify( NewType( FamilyObj( mat ),
                                   IsGaussianSpace
                               and IsGaussianRowSpaceRep ),
                      rec() );
     else
-      V:= Objectify( NewKind( FamilyObj( mat ),
+      V:= Objectify( NewType( FamilyObj( mat ),
                                   IsVectorSpace
                               and IsNonGaussianRowSpaceRep ),
                      rec() );
@@ -526,7 +526,7 @@ InstallMethod( BasisByGenerators,
     fi;
 
     # Construct the basis.
-    B:= Objectify( NewKind( FamilyObj( gens ),
+    B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -564,7 +564,7 @@ InstallMethod( BasisByGeneratorsNC, IsIdentical,
     fi;
 
     # Construct the basis.
-    B:= Objectify( NewKind( FamilyObj( gens ),
+    B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -596,7 +596,7 @@ InstallMethod( SemiEchelonBasisOfDomain,
     [ IsGaussianSpace and IsGaussianRowSpaceRep ], 0,
     function( V )
     local B;
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -622,7 +622,7 @@ InstallMethod( SemiEchelonBasisByGenerators,
     fi;
 
     # Construct the basis.
-    B:= Objectify( NewKind( FamilyObj( gens ),
+    B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -654,7 +654,7 @@ InstallMethod( SemiEchelonBasisByGeneratorsNC,
     local B,  # the basis, result
           v;  # loop over vector space generators
 
-    B:= Objectify( NewKind( FamilyObj( gens ),
+    B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
@@ -971,7 +971,7 @@ InstallMethod( CanonicalBasis,
       fi;
     od;
 
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep
@@ -1032,7 +1032,7 @@ InstallMethod( CanonicalBasis,
 
     fi;
 
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsSemiEchelonized
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep
@@ -1104,7 +1104,7 @@ InstallMethod( CanonicalBasis, true,
     [ IsGaussianSpace and IsGaussianRowSpaceRep and IsFullRowModule ], 0,
     function( V )
     local B;
-    B:= Objectify( NewKind( FamilyObj( V ),
+    B:= Objectify( NewType( FamilyObj( V ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsSemiEchelonized
@@ -1191,7 +1191,7 @@ InstallMethod( Iterator,
       # positions that can be chosen arbitrarily, so we may loop over
       # the elements of a space of this dimension.
 
-      iter:= Objectify( NewKind( IteratorsFamily,
+      iter:= Objectify( NewType( IteratorsFamily,
                                      IsIterator
                                  and IsDimSubspacesFullRowSpaceIteratorRep ),
                         rec(
@@ -1215,7 +1215,7 @@ InstallMethod( Iterator,
       # Loop over all subspaces of 'V'.
       # For that, use iterators for subspaces of fixed dimension,
       # and loop over all dimensions.
-      iter:= Objectify( NewKind( IteratorsFamily,
+      iter:= Objectify( NewType( IteratorsFamily,
                                      IsIterator
                                  and IsAllSubspacesFullRowSpaceIteratorRep ),
                         rec(
@@ -1312,7 +1312,7 @@ InstallMethod( SubspacesDim,
 #T really needed ?
       IsInt ], 0,
     function( V, dim )
-    return Objectify( NewKind( CollectionsFamily( FamilyObj( V ) ),
+    return Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
                                IsDomain and IsSubspacesFullRowSpaceRep ),
                       rec(
                            structure  := V,
@@ -1324,7 +1324,7 @@ InstallMethod( SubspacesDim,
 InstallMethod( SubspacesAll, true,
     [ IsGaussianSpace and IsFullRowModule and IsGaussianRowSpaceRep ], 0,
 #T really needed ?
-    V -> Objectify( NewKind( CollectionsFamily( FamilyObj( V ) ),
+    V -> Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
                              IsDomain and IsSubspacesFullRowSpaceRep ),
                     rec(
                          structure  := V,
@@ -1376,7 +1376,7 @@ InstallMethod( MutableBasisByGenerators,
       # Note that 'vectors' is not empty.
       newvectors:= SemiEchelonMat( vectors );
 
-      B:= Objectify( NewKind( FamilyObj( vectors ),
+      B:= Objectify( NewType( FamilyObj( vectors ),
                                   IsMutableBasis
                               and IsMutableBasisOfGaussianRowSpaceRep ),
                      rec(
@@ -1410,7 +1410,7 @@ InstallOtherMethod( MutableBasisByGenerators,
 
     else
 
-      B:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+      B:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                   IsMutableBasis
                               and IsMutableBasisOfGaussianRowSpaceRep ),
                      rec(
@@ -1614,7 +1614,7 @@ IsProjectiveSpaceEnumerator := NewRepresentation
 #F  AffineSpace( <space> )  . . . . .  constructor function for affine spaces
 ##
 AffineSpace := function( space )
-    return Objectify( NewKind( FamilyObj( space ), IsAffineSpace ),
+    return Objectify( NewType( FamilyObj( space ), IsAffineSpace ),
                    rec( space := space ) );
 end;
 
@@ -1629,7 +1629,7 @@ InstallMethod( Enumerator,"affine", true, [ IsAffineSpace ], 0,
     function( aspace )
     local   enum;
     
-    enum := Objectify( NewKind( FamilyObj( aspace ),
+    enum := Objectify( NewType( FamilyObj( aspace ),
                     IsAffineSpaceEnumerator ), rec
             ( spaceEnumerator := Enumerator( aspace!.space ) ) );
     SetUnderlyingCollection( enum, aspace );
@@ -1654,7 +1654,7 @@ end );
 #F  ProjectiveSpace( <space> )  .  constructor function for projective spaces
 ##
 ProjectiveSpace := function( space )
-    return Objectify( NewKind( FamilyObj( space ), IsProjectiveSpace ),
+    return Objectify( NewType( FamilyObj( space ), IsProjectiveSpace ),
                    rec( space := space ) );
 end;
     
@@ -1676,7 +1676,7 @@ InstallMethod( Enumerator,"projective", true, [ IsProjectiveSpace ], 0,
     function( pspace )
     local   enum;
     
-    enum := Objectify( NewKind( FamilyObj( pspace ),
+    enum := Objectify( NewType( FamilyObj( pspace ),
         IsProjectiveSpaceEnumerator ), rec( enumeratorField :=
                     Enumerator( LeftActingDomain( pspace!.space ) ) ) );
     SetUnderlyingCollection( enum, pspace );

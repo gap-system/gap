@@ -97,15 +97,15 @@ InstallMethod( \*, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
     if l < 0 then
 
       # The first argument has been eaten up,
-      # so the product can be formed as object of the same kind as 'y'.
-      return AssocWord( KindObj( y )![ AWP_PURE_KIND ],
+      # so the product can be formed as object of the same type as 'y'.
+      return AssocWord( TypeObj( y )![ AWP_PURE_TYPE ],
                         yy{ [ p .. len+1 ] } );
 
     elif len < p then
 
       # The second argument has been eaten up,
-      # so the product can be formed as object of the same kind as 'x'.
-      return AssocWord( KindObj( x )![ AWP_PURE_KIND ],
+      # so the product can be formed as object of the same type as 'x'.
+      return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ],
                         xx{ [ 1 .. l+1 ] } );
 
     else
@@ -126,15 +126,15 @@ InstallMethod( \*, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
         Unbind( xx[ l+1 ] );
         Append( xx, yy );
 
-        # This is the only case where the subkinds of 'x' and 'y'
+        # This is the only case where the subtypes of 'x' and 'y'
         # may be too small.
-        # So let 'ObjByExtRep' choose the appropriate subkind.
-        if    KindObj( x )![ AWP_NR_BITS_EXP ]
-              <= KindObj( y )![ AWP_NR_BITS_EXP ] then
-          return ObjByExtRep( FamilyObj( x ), KindObj( y )![ AWP_NR_BITS_EXP ],
+        # So let 'ObjByExtRep' choose the appropriate subtype.
+        if    TypeObj( x )![ AWP_NR_BITS_EXP ]
+              <= TypeObj( y )![ AWP_NR_BITS_EXP ] then
+          return ObjByExtRep( FamilyObj( x ), TypeObj( y )![ AWP_NR_BITS_EXP ],
                                   yy[2], xx );
         else
-          return ObjByExtRep( FamilyObj( x ), KindObj( x )![ AWP_NR_BITS_EXP ],
+          return ObjByExtRep( FamilyObj( x ), TypeObj( x )![ AWP_NR_BITS_EXP ],
                                   yy[2], xx );
         fi;
 
@@ -142,12 +142,12 @@ InstallMethod( \*, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
 
         # The exponents of the result do not exceed the exponents
         # of 'x' and 'y'.
-        # So the bigger of the two kinds will be sufficient.
+        # So the bigger of the two types will be sufficient.
         Append( xx, yy );
-        if    KindObj( x )![ AWP_NR_BITS_EXP ] <= KindObj( y )![ AWP_NR_BITS_EXP ] then
-          return AssocWord( KindObj( y )![ AWP_PURE_KIND ], xx );
+        if    TypeObj( x )![ AWP_NR_BITS_EXP ] <= TypeObj( y )![ AWP_NR_BITS_EXP ] then
+          return AssocWord( TypeObj( y )![ AWP_PURE_TYPE ], xx );
         else
-          return AssocWord( KindObj( x )![ AWP_PURE_KIND ], xx );
+          return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], xx );
         fi;
 
       fi;
@@ -220,13 +220,13 @@ InstallMethod( \^, true, [ IsAssocWord, IsPosRat and IsInt ], 0,
       if exp = 0 then
 
         # The exponents in the power do not exceed the exponents in 'x'.
-        return AssocWord( KindObj( x )![ AWP_PURE_KIND ], result );
+        return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], result );
 
       else
 
         result[2]:= exp;
         Append( result, tail );
-        return ObjByExtRep( FamilyObj( x ), KindObj( x )![ AWP_NR_BITS_EXP ],
+        return ObjByExtRep( FamilyObj( x ), TypeObj( x )![ AWP_NR_BITS_EXP ],
                                 xx[2], result );
 
       fi;
@@ -298,7 +298,7 @@ InstallMethod( \^, true, [ IsAssocWordWithInverse, IsInt ], 0,
     if l = p then
       exp:= n * xx[ l+1 ];
       xx[ l+1 ]:= exp;
-      return ObjByExtRep( FamilyObj( x ), KindObj( x )![ AWP_NR_BITS_EXP ], exp, xx );
+      return ObjByExtRep( FamilyObj( x ), TypeObj( x )![ AWP_NR_BITS_EXP ], exp, xx );
     fi;
 
     head:= xx{ [ 1 .. p-1 ] };
@@ -338,14 +338,14 @@ InstallMethod( \^, true, [ IsAssocWordWithInverse, IsInt ], 0,
       # The exponents in the power do not exceed the exponents in 'x'.
       Append( head, result );
       Append( head, tail );
-      return AssocWord( KindObj( x )![ AWP_PURE_KIND ], head );
+      return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], head );
 
     else
 
       result[2]:= exp;
       Append( head, result );
       Append( head, tail );
-      return ObjByExtRep( FamilyObj( x ), KindObj( x )![ AWP_NR_BITS_EXP ],
+      return ObjByExtRep( FamilyObj( x ), TypeObj( x )![ AWP_NR_BITS_EXP ],
                               xx[2], head );
 
     fi;
@@ -382,7 +382,7 @@ InstallMethod( Inverse, true, [ IsAssocWordWithInverse ], 0,
 
     # The exponents in the inverse do not exceed the exponents in 'x'.
 #T ??
-    return AssocWord( KindObj( x )![ AWP_PURE_KIND ], cxx );
+    return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], cxx );
     end );
 
 

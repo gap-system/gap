@@ -512,8 +512,8 @@ DisplayCacheStats := function()
         WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS,
         WITH_IMPS_FLAGS_CACHE_HIT,
         WITH_IMPS_FLAGS_CACHE_MISS,
-        NEW_KIND_CACHE_HIT,
-        NEW_KIND_CACHE_MISS,
+        NEW_TYPE_CACHE_HIT,
+        NEW_TYPE_CACHE_MISS,
         Length(AND_FLAGS_CACHE)/3,
         Length(Set(List(Filtered(AND_FLAGS_CACHE,x->x<>0),HANDLE_OBJ))),
     ] );
@@ -532,8 +532,8 @@ DisplayCacheStats := function()
         "WITH_HIDDEN_IMPS misses",
         "WITH_IMPS hits",
         "WITH_IMPS misses",
-        "NEW_KIND hits",
-        "NEW_KIND misses",
+        "NEW_TYPE hits",
+        "NEW_TYPE misses",
         "AND_FLAGS cache size",
         "AND_FLAGS flags",
     ];
@@ -565,8 +565,8 @@ ClearCacheStats := function()
     WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
     WITH_IMPS_FLAGS_CACHE_HIT := 0;
     WITH_IMPS_FLAGS_CACHE_MISS := 0;
-    NEW_KIND_CACHE_HIT := 0;
-    NEW_KIND_CACHE_MISS := 0;
+    NEW_TYPE_CACHE_HIT := 0;
+    NEW_TYPE_CACHE_MISS := 0;
 end;
 
 

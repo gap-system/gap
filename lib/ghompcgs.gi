@@ -28,7 +28,7 @@ function( G, H, gens, imgs )
               IsToPcGroupHomomorphismByImages;
 
     hom := Objectify( 
-           NewKind( 
+           NewType( 
            GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                   ElementsFamily( FamilyObj( H ) ) ),
            filter ),
@@ -68,7 +68,7 @@ function( G, H, gens, imgs )
     filter := IsPcGroupHomomorphismByImages;
 
     hom := Objectify( 
-           NewKind( 
+           NewType( 
            GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                   ElementsFamily( FamilyObj( H ) ) ),
            filter ),
@@ -120,7 +120,7 @@ function( hom1, hom2 )
     fi;
 
     hom := Objectify( 
-           NewKind( 
+           NewType( 
            GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                   ElementsFamily( FamilyObj( H ) ) ),
            filter ),
@@ -351,7 +351,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
     fi;
     pcgsF := pcgsG mod pcgsK;
     F := GroupByPcgs( pcgsF );
-    hom := Objectify( NewKind( GeneralMappingsFamily
+    hom := Objectify( NewType( GeneralMappingsFamily
                    ( ElementsFamily( FamilyObj( G ) ),
                      ElementsFamily( FamilyObj( F ) ) ),
                    IsNaturalHomomorphismPcGroupRep ),
@@ -360,6 +360,28 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
     SetSource( hom, G );
     SetRange ( hom, F );
     SetKernelOfMultiplicativeGeneralMapping( hom, GroupOfPcgs( pcgsK ) );
+    return hom;
+end );
+
+InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
+        [ IsGroup and HasSpecialPcgs, 
+          IsGroup and HasInducedPcgsWrtSpecialPcgs ], 0,
+    function( G, N )
+    local   pcgsG,  pcgsN,  pcgsF,  F,  hom;
+    
+    pcgsG := SpecialPcgs( G );
+    pcgsN := InducedPcgsWrtSpecialPcgs( N ); 
+    pcgsF := pcgsG mod pcgsN;
+    F     := GroupByPcgs( pcgsF );
+    hom   := Objectify( NewType( GeneralMappingsFamily
+                   ( ElementsFamily( FamilyObj( G ) ),
+                     ElementsFamily( FamilyObj( F ) ) ),
+                   IsNaturalHomomorphismPcGroupRep ),
+                   rec( pcgsSource := pcgsF,
+                        pcgsRange  := Pcgs( F ) ) );
+    SetSource( hom, G );
+    SetRange ( hom, F );
+    SetKernelOfMultiplicativeGeneralMapping( hom, N );
     return hom;
 end );
 

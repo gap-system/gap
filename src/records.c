@@ -17,7 +17,7 @@ char *          Revision_records_c =
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
@@ -179,7 +179,7 @@ UInt            RNamObj (
     }
 
     /* convert string object (empty string may have type T_PLIST)          */
-    else if ( IsStringConv(obj) && MUTABLE_TYPE(TYPE_OBJ(obj))==T_STRING ) {
+    else if ( IsStringConv(obj) && MUTABLE_TNUM(TNUM_OBJ(obj))==T_STRING ) {
         return RNamName( CSTR_STRING(obj) );
     }
 
@@ -237,7 +237,7 @@ Obj             NameRNamHandler (
         || CountRNam < INT_INTOBJ(rnam) ) {
         rnam = ErrorReturnObj(
             "NameRName: <rnam> must be a record name (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(rnam)].name), 0L,
+            (Int)(InfoBags[TNUM_OBJ(rnam)].name), 0L,
             "you can return a record name for <rnam>" );
     }
     name = NEW_STRING( SyStrlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
@@ -261,9 +261,9 @@ Obj             NameRNamHandler (
 **
 **  'IS_REC' is defined in the declaration part of this package as follows
 **
-#define IS_REC(obj)     ((*IsRecFuncs[ TYPE_OBJ(obj) ])( obj ))
+#define IS_REC(obj)     ((*IsRecFuncs[ TNUM_OBJ(obj) ])( obj ))
 */
-Int             (*IsRecFuncs[LAST_REAL_TYPE+1]) ( Obj obj );
+Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 Obj             IsRecFilt;
 
@@ -307,9 +307,9 @@ Int             IsRecObject (
 **  'ELM_REC' is defined in the declaration part of this package as follows
 **
 #define ELM_REC(rec,rnam) \
-                        ((*ElmRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam ))
+                        ((*ElmRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 */
-Obj             (*ElmRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
+Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
 Obj             ElmRecOper;
 
@@ -327,7 +327,7 @@ Obj             ElmRecError (
 {
     rec = ErrorReturnObj(
         "Record Element: <rec> must be a record (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(rec)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
         "you can return a record for <rec>" );
     return ELM_REC( rec, rnam );
 }
@@ -354,9 +354,9 @@ Obj             ElmRecObject (
 **  'ISB_REC' is defined in the declaration part of this package as follows
 **
 #define ISB_REC(rec,rnam) \
-                        ((*IsbRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam ))
+                        ((*IsbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 */
-Int             (*IsbRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
+Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
 Obj             IsbRecOper;
 
@@ -374,7 +374,7 @@ Int             IsbRecError (
 {
     rec = ErrorReturnObj(
         "IsBound: <rec> must be a record (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(rec)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
         "you can return a record for <rec>" );
     return ISB_REC( rec, rnam );
 }
@@ -398,9 +398,9 @@ Int             IsbRecObject (
 **  'ASS_REC' is defined in the declaration part of this package as follows
 **
 #define ASS_REC(rec,rnam,obj) \
-                        ((*AssRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam, obj ))
+                        ((*AssRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam, obj ))
 */
-void            (*AssRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam, Obj obj );
+void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, Obj obj );
 
 Obj             AssRecOper;
 
@@ -421,7 +421,7 @@ void            AssRecError (
 {
     rec = ErrorReturnObj(
         "Record Assignment: <rec> must be a record (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(rec)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
         "you can return a record for <rec>" );
     ASS_REC( rec, rnam, obj );
 }
@@ -448,9 +448,9 @@ void            AssRecObject (
 **  'UNB_REC' is defined in the declaration part of this package as follows
 **
 #define UNB_REC(rec,rnam) \
-                        ((*UnbRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam ))
+                        ((*UnbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 */
-void            (*UnbRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
+void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
 Obj             UnbRecOper;
 
@@ -469,7 +469,7 @@ void            UnbRecError (
 {
     rec = ErrorReturnObj(
         "Unbind: <rec> must be a record (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(rec)].name), 0L,
+        (Int)(InfoBags[TNUM_OBJ(rec)].name), 0L,
         "you can return a record for <rec>" );
     UNB_REC( rec, rnam );
 }
@@ -566,13 +566,13 @@ void            InitRecords ( void )
     InitHandlerFunc( IsRecHandler, "IS_REC" );
     IsRecFilt = NewFilterC( "IS_REC", 1L, "obj", IsRecHandler );
     AssGVar( GVarName( "IS_REC" ), IsRecFilt );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsRecFuncs[ type ] = IsRecNot;
     }
-    for ( type = FIRST_RECORD_TYPE; type <= LAST_RECORD_TYPE; type++ ) {
+    for ( type = FIRST_RECORD_TNUM; type <= LAST_RECORD_TNUM; type++ ) {
         IsRecFuncs[ type ] = IsRecYes;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsRecFuncs[ type ] = IsRecObject;
     }
 
@@ -581,10 +581,10 @@ void            InitRecords ( void )
     ElmRecOper = NewOperationC( "ELM_REC", 2L, "obj, rnam",
                                 ElmRecHandler );
     AssGVar( GVarName( "ELM_REC" ), ElmRecOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         ElmRecFuncs[ type ] = ElmRecError;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         ElmRecFuncs[ type ] = ElmRecObject;
     }
 
@@ -593,10 +593,10 @@ void            InitRecords ( void )
     IsbRecOper = NewOperationC( "ISB_REC", 2L, "obj, rnam",
                                 IsbRecHandler );
     AssGVar( GVarName( "ISB_REC" ), IsbRecOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsbRecFuncs[ type ] = IsbRecError;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsbRecFuncs[ type ] = IsbRecObject;
     }
 
@@ -605,10 +605,10 @@ void            InitRecords ( void )
     AssRecOper = NewOperationC( "ASS_REC", 3L, "obj, rnam, val",
                                 AssRecHandler );
     AssGVar( GVarName( "ASS_REC" ), AssRecOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         AssRecFuncs[ type ] = AssRecError;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AssRecFuncs[ type ] = AssRecObject;
     }
 
@@ -617,10 +617,10 @@ void            InitRecords ( void )
     UnbRecOper = NewOperationC( "UNB_REC", 2L, "obj, rnam",
                                 UnbRecHandler );
     AssGVar( GVarName( "UNB_REC" ), UnbRecOper );
-    for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
+    for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         UnbRecFuncs[ type ] = UnbRecError;
     }
-    for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
+    for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         UnbRecFuncs[ type ] = UnbRecObject;
     }
 

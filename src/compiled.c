@@ -48,7 +48,7 @@ void            ErrorQuitIntSmall (
 {
     ErrorQuit(
         "<obj> must be a small integer (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(obj)].name), 0L );
+        (Int)(InfoBags[TNUM_OBJ(obj)].name), 0L );
 }
 
 void            ErrorQuitIntSmallPos (
@@ -56,7 +56,7 @@ void            ErrorQuitIntSmallPos (
 {
     ErrorQuit(
         "<obj> must be a positive small integer (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(obj)].name), 0L );
+        (Int)(InfoBags[TNUM_OBJ(obj)].name), 0L );
 }
 
 void            ErrorQuitBool (
@@ -64,7 +64,7 @@ void            ErrorQuitBool (
 {
     ErrorQuit(
         "<obj> must be 'true' or 'false' (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(obj)].name), 0L );
+        (Int)(InfoBags[TNUM_OBJ(obj)].name), 0L );
 }
 
 void            ErrorQuitFunc (
@@ -72,7 +72,7 @@ void            ErrorQuitFunc (
 {
     ErrorQuit(
         "<obj> must be a function (not a %s)",
-        (Int)(InfoBags[TYPE_OBJ(obj)].name), 0L );
+        (Int)(InfoBags[TNUM_OBJ(obj)].name), 0L );
 }
 
 void            ErrorQuitNrArgs (
@@ -155,7 +155,7 @@ void AsssPosObjCheck (
      "List Assignment: <rhss> must have the same length as <positions> (%d)",
             (Int)LEN_LIST(poss), 0L );
     }
-    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ ) {
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
     else {
@@ -189,13 +189,13 @@ Obj             Range2Check (
     if ( ! IS_INTOBJ(first) ) {
         ErrorQuit(
             "Range: <first> must be a positive small integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(first)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(first)].name), 0L );
     }
     f = INT_INTOBJ(first);
     if ( ! IS_INTOBJ(last) ) {
         ErrorQuit(
             "Range: <last> must be a positive small integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(last)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(last)].name), 0L );
     }
     l = INT_INTOBJ(last);
     if ( f > l ) {
@@ -226,13 +226,13 @@ Obj             Range3Check (
     if ( ! IS_INTOBJ(first) ) {
         ErrorQuit(
             "Range: <first> must be a positive small integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(first)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(first)].name), 0L );
     }
     f = INT_INTOBJ(first);
     if ( ! IS_INTOBJ(second) ) {
         ErrorQuit(
             "Range: <second> must be a positive small integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(second)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(second)].name), 0L );
     }
     if ( first == second ) {
         ErrorQuit(
@@ -243,7 +243,7 @@ Obj             Range3Check (
     if ( ! IS_INTOBJ(last) ) {
         ErrorQuit(
             "Range: <last> must be a positive small integer (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(last)].name), 0L );
+            (Int)(InfoBags[TNUM_OBJ(last)].name), 0L );
     }
     l = INT_INTOBJ(last);
     if ( (l - f) % i != 0 ) {
@@ -274,7 +274,7 @@ Obj             Range3Check (
 
 
 Obj Array2Perm (
-    Obj			array )
+    Obj                 array )
 {
     Obj                 perm;           /* permutation, result             */
     UInt4 *             ptr4;           /* pointer into perm               */
@@ -297,12 +297,12 @@ Obj Array2Perm (
     /* loop over the cycles                                                */
     for ( i = 1; i <= LEN_LIST(array); i++ ) {
         cycle = ELM_LIST( array, i );
-	while ( ! IS_LIST(cycle) ) {
-	    cycle = ErrorReturnObj(
-	        "Arra2Perm: <cycle> must be a list (not a %s)",
-		(Int)(InfoBags[TYPE_OBJ(cycle)].name), 0L,
-		"you can return a list" );
-	}
+        while ( ! IS_LIST(cycle) ) {
+            cycle = ErrorReturnObj(
+                "Arra2Perm: <cycle> must be a list (not a %s)",
+                (Int)(InfoBags[TNUM_OBJ(cycle)].name), 0L,
+                "you can return a list" );
+        }
 
         /* loop over the entries of the cycle                              */
         c = p = l = 0;
@@ -313,7 +313,7 @@ Obj Array2Perm (
             while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
                 val = ErrorReturnObj(
               "Permutation: <expr> must be a positive integer (not to a %s)",
-                    (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+                    (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,
                     "you can return a positive integer" );
             }
             c = INT_INTOBJ(val);

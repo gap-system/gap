@@ -25,8 +25,8 @@ InfoMonomial := NewInfoClass( "InfoMonomial" );
 ##
 #A  Alpha( <G> )
 ##
-##  returns for a group <G> a list whose <i>-th entry is the maximal derived
-##  length of groups $<G>  / \ker(\chi)$ for $\chi\in Irr(<G>)$ with
+##  For a group <G>, 'Alpha' returns a list whose <i>-th entry is the maximal
+##  derived length of groups $<G> / \ker(\chi)$ for $\chi\in Irr(<G>)$ with
 ##  $\chi(1)$ at most the <i>-th irreducible degree of <G>.
 ##
 Alpha := NewAttribute( "Alpha", IsGroup );
@@ -38,7 +38,7 @@ HasAlpha := Tester( Alpha );
 ##
 #A  Delta( <G> )
 ##
-##  returns the list '[ 1, alp[2] - alp[1], ..., alp[<n>] - alp[<n>-1] ]'
+##  is the list '[ 1, alp[2] - alp[1], ..., alp[<n>] - alp[<n>-1] ]',
 ##  where 'alp = Alpha( <G> )'.
 ##
 Delta := NewAttribute( "Delta", IsGroup );
@@ -77,7 +77,7 @@ BergerCondition := IsBergerCondition;
 ##
 #F  TestHomogeneous( <chi>, <N> )
 ##
-##  returns a record with information whether the restriction of the group
+##  is a record with information whether the restriction of the group
 ##  character <chi> of the group $G$ to the normal subgroup <N> of $G$ is
 ##  homogeneous, i.e., is a multiple of an irreducible character.
 ##
@@ -90,9 +90,9 @@ TestHomogeneous := NewOperationArgs( "TestHomogeneous" );
 ##
 #A  TestQuasiPrimitive( <chi> )
 ##
-##  returns a record with information about quasiprimitivity of the group
-##  character <chi> (i.e., whether <chi> restricts homogeneously to every
-##  normal subgroup of <G>).
+##  is a record with information about quasiprimitivity of the group
+##  character <chi>, i.e., whether <chi> restricts homogeneously to every
+##  normal subgroup of <G>.
 ##
 ##  The record contains at least the component
 ##  'isQuasiPrimitive':  \\ 'true' or 'false'.
@@ -114,8 +114,9 @@ HasTestQuasiPrimitive := Tester( TestQuasiPrimitive );
 ##
 #P  IsQuasiPrimitive( <chi> )
 ##
-##  returns whether the character <chi> of the group <G> is quasiprimitive,
-##  i.e., restricts homogeneously to every normal subgroup of <G>.
+##  is 'true' if the character <chi> of the group $G$ is quasiprimitive,
+##  i.e., restricts homogeneously to every normal subgroup of $G$,
+##  and 'false' otherwise.
 ##
 IsQuasiPrimitive := NewProperty( "IsQuasiPrimitive", IsCharacter );
 SetIsQuasiPrimitive := Setter( IsQuasiPrimitive );
@@ -124,13 +125,26 @@ HasIsQuasiPrimitive := Tester( IsQuasiPrimitive );
 
 #############################################################################
 ##
-#P  IsPrimitive( <chi> )
+#P  IsMonomialCharacter( <chi> )
 ##
-##  returns whether the character <chi> of the group <G> is quasiprimitive,
-##  i.e., restricts homogeneously to every normal subgroup of <G>.
+##  is 'true' if the character <chi> is induced from a linear character of a
+##  subgroup, and 'false' otherwise.
 ##
-#T defined elsewhere, maybe with a different definition ...
-#T how to deal with such situations?
+IsMonomialCharacter := NewProperty( "IsMonomialCharacter", IsCharacter );
+SetIsMonomialCharacter := Setter( IsMonomialCharacter );
+HasIsMonomialCharacter := Tester( IsMonomialCharacter );
+
+
+#############################################################################
+##
+#P  IsPrimitiveCharacter( <chi> )
+##
+##  is 'true' if the character <chi> is not induced from any proper subgroup,
+##  and 'false' otherwise.
+##
+IsPrimitiveCharacter := NewProperty( "IsPrimitiveCharacter", IsCharacter );
+SetIsPrimitiveCharacter := Setter( IsPrimitiveCharacter );
+HasIsPrimitiveCharacter := Tester( IsPrimitiveCharacter );
 
 
 #############################################################################
@@ -138,7 +152,7 @@ HasIsQuasiPrimitive := Tester( IsQuasiPrimitive );
 #F  TestInducedFromNormalSubgroup( <chi>, <N> )
 #F  TestInducedFromNormalSubgroup( <chi> )
 ##
-##  returns a record with information about whether the irreducible group
+##  is a record with information about whether the irreducible group
 ##  character <chi> of the group $G$ is induced from a proper normal subgroup
 ##  of $G$.
 ##
@@ -165,8 +179,8 @@ TestInducedFromNormalSubgroup := NewOperationArgs(
 ##
 #P  IsInducedFromNormalSubgroup( <chi> )
 ##
-##  returns whether the character <chi> of the group $G$ is induced from a
-##  normal subgroup of $G$.
+##  is 'true' if the character <chi> of the group $G$ is induced from a
+##  normal subgroup of $G$, and 'false' otherwise.
 ##
 IsInducedFromNormalSubgroup := NewProperty( "IsInducedFromNormalSubgroup",
     IsCharacter );
@@ -179,7 +193,7 @@ HasIsInducedFromNormalSubgroup := Tester( IsInducedFromNormalSubgroup );
 #A  TestSubnormallyMonomial( <G> )
 #A  TestSubnormallyMonomial( <chi> )
 ##
-##  returns a record with information whether the group <G> or the
+##  is a record with information whether the group <G> or the
 ##  irreducible group character <chi> is subnormally monomial.
 ##
 ##  The result contains components 'comment' (a string)
@@ -206,9 +220,9 @@ HasIsSubnormallyMonomial := Tester( IsSubnormallyMonomial );
 
 #############################################################################
 ##
-#M  IsMonomial( <n> )
+#A  IsMonomialNumber( <n> )
 ##
-##  returns 'true' if every solvable group of order <n> is monomial,
+##  is 'true' if every solvable group of order <n> is monomial,
 ##  and 'false' otherwise.
 ##
 ##  Let $\nu_p(n)$ denote the multiplicity of the prime $p$ as
@@ -238,16 +252,14 @@ HasIsSubnormallyMonomial := Tester( IsSubnormallyMonomial );
 ##  nonmonomial groups that can occur as subgroup or factor group of
 ##  the group with order $n$.
 ##
-#T problem: where is the attribute defined?
-#T IsMonomialNumber?
-##
+IsMonomialNumber := NewAttribute( "IsMonomialNumber", IsInt and IsPosRat );
 
 
 #############################################################################
 ##
 #A  TestMonomialQuick( <obj> )
 ##
-##  returns a record with components
+##  is a record with components
 ##
 ##  'isMonomial': \\ either 'true' or 'false' or '"?"'
 ##
@@ -263,7 +275,7 @@ HasTestMonomialQuick := Tester( TestMonomialQuick );
 #A  TestMonomial( <chi> )
 #A  TestMonomial( <G> )
 ##
-##  returns a record containing information about monomiality of the group
+##  is a record containing information about monomiality of the group
 ##  <G> or the group character <chi>, respectively.
 ##
 ##  If a character <chi> was proved to be monomial the result contains
@@ -325,20 +337,6 @@ HasTestMonomial := Tester( TestMonomial );
 ##
 ##  *Note* that it is not checked whether $G$ is SM.
 ##
-##  The algorithm for a character <chi> and a normal subgroup <N>
-##  proceeds as follows.
-##  If <N> is abelian or has nilpotent factor then <chi> is relatively SM
-##  with respect to <N>.
-##  Otherwise we check whether <chi> restricts irreducibly to <N>; in this
-##  case we also get a positive answer.
-##  Otherwise a subnormal subgroup from that <chi> is induced must be
-##  contained in a maximal normal subgroup of <N>.  So we get all maximal
-##  normal subgroups containing <N> from that <chi> can be induced, take a
-##  character that induces to <chi>, and check recursively whether it is
-##  relatively subnormally monomial with respect to <N>.
-##
-##  For a group $G$ we consider only representatives of character orbits.
-##
 TestRelativelySM := NewOperationArgs( "TestRelativelySM" );
 
 
@@ -347,9 +345,9 @@ TestRelativelySM := NewOperationArgs( "TestRelativelySM" );
 #P  IsRelativelySM( <chi> )
 #P  IsRelativelySM( <G> )
 ##
-##  returns whether the the group <G> resp. the irreducible character <chi>
+##  is 'true' if the group <G> resp. the irreducible character <chi>
 ##  of the group <G> is relatively subnormally monomial with respect to
-##  every normal subgroup of <G>.
+##  every normal subgroup of <G>, and 'false' otherwise.
 ##
 ##  <G> must be subnormally monomial.  (This is *not* checked.)
 ##
@@ -362,7 +360,7 @@ HasIsRelativelySM := Tester( IsRelativelySM );
 ##
 #P  IsMinimalNonmonomial( <G> )
 ##
-##  returns 'true' if the group <G> is a minimal nonmonomial group, and
+##  is 'true' if the group <G> is a minimal nonmonomial group, and
 ##  'false' otherwise.
 ##
 IsMinimalNonmonomial := NewProperty( "IsMinimalNonmonomial", IsGroup );

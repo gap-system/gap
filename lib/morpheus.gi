@@ -51,7 +51,7 @@ local xset,fam,hom;
   fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( aut ) ),
 				PermutationsFamily );
   hom := rec( externalSet := xset );
-  hom:=Objectify(NewKind(fam,IsOperationHomomorphismAutomGroup ),hom);
+  hom:=Objectify(NewType(fam,IsOperationHomomorphismAutomGroup ),hom);
   hom!.basepos:=List(elmsgens,i->Position(elms,i));
   SetIsInjective(hom,true);
   SetRange( hom, Image( hom ) );

@@ -1157,7 +1157,7 @@ GeneralMappingByElements := function( S, R, elms )
     fi;
 
     # Construct the general mapping.
-    map:= Objectify( KindOfDefaultGeneralMapping( S, R,
+    map:= Objectify( TypeOfDefaultGeneralMapping( S, R,
                              IsNonSPGeneralMapping
                          and IsAttributeStoringRep ),
                      rec() );
@@ -1182,7 +1182,7 @@ InstallMethod( UnderlyingRelation,
     [ IsGeneralMapping ], 0,
     function( map )
     local rel;
-    rel:= Objectify( NewKind( CollectionsFamily(
+    rel:= Objectify( NewType( CollectionsFamily(
           TuplesFamily( [ ElementsFamily( FamilyObj( Source( map ) ) ),
                           ElementsFamily( FamilyObj( Range( map  ) ) ) ] ) ),
                               IsDomain and IsAttributeStoringRep ),

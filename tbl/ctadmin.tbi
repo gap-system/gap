@@ -34,19 +34,18 @@ Revision.ctadmin_tbi :=
 ##
 if IsBound( LIBLIST ) then
 
-  LIBLIST.firstnames :=   List( LIBLIST.firstnames, Immutable );
-  LIBLIST.files :=        List( LIBLIST.files, Immutable );
-  LIBLIST.fusionsource := List( LIBLIST.fusionsource, Immutable );
-  LIBLIST.allnames:=      List( LIBLIST.allnames, Immutable );
-  LIBLIST.projections :=  List( LIBLIST.projections, Immutable );
-  
-  LIBLIST.simpleInfo := Immutable( LIBLIST.simpleInfo );
-  
+  LIBLIST.firstnames :=   Immutable( LIBLIST.firstnames   );
+  LIBLIST.files :=        Immutable( LIBLIST.files        );
+  LIBLIST.fusionsource := Immutable( LIBLIST.fusionsource );
+  LIBLIST.allnames:=      Immutable( LIBLIST.allnames     );
+  LIBLIST.projections :=  Immutable( LIBLIST.projections  );
+  LIBLIST.simpleInfo :=   Immutable( LIBLIST.simpleInfo   );
+
   LIBLIST.sporadicSimple := Immutable( [
     "M11", "M12", "J1", "M22", "J2", "M23", "HS", "J3", "M24", "McL", "He",
     "Ru", "Suz", "ON", "Co3", "Co2", "Fi22", "HN", "Ly", "Th", "Fi23", "Co1",
     "J4", "F3+", "B", "M" ] );
-  
+
   LIBTABLE.LIBLIST := LIBLIST;
   Unbind( LIBLIST );
 
@@ -129,11 +128,11 @@ ALF := function( arg )
       text:= Concatenation( arg[4] );
       ConvertToStringRep( text );
       Add( LIBTABLE.( LIBTABLE.TABLEFILENAME ).(
-               arg[1] ).computedClassFusions,
+               arg[1] ).ComputedClassFusions,
            rec( name:= arg[2], map:= arg[3], text:= text ) );
     else
       Add( LIBTABLE.( LIBTABLE.TABLEFILENAME ).(
-               arg[1] ).computedClassFusions,
+               arg[1] ).ComputedClassFusions,
            rec( name:= arg[2], map:= arg[3] ) );
     fi;
 end;
@@ -273,15 +272,15 @@ MBT := function( arg )
     local i, record;
 
     record:= rec(
-                  infoText                 := arg[ 3],
-                  underlyingCharacteristic := arg[ 2],
+                  InfoText                 := arg[ 3],
+                  UnderlyingCharacteristic := arg[ 2],
                   block                    := arg[ 4],
                   defect                   := arg[ 5],
                   basicset                 := arg[ 6],
                   brauertree               := arg[ 7],
                   decinv                   := arg[ 8],
                   factorblocks             := arg[ 9],
-                  automorphismsOfTable     := arg[10],
+                  AutomorphismsOfTable     := arg[10],
                   indicator                := arg[11]
                  );
 
@@ -310,17 +309,18 @@ MOT := function( arg )
 
     # Construct the record.
     record:= rec(
-                  infoText                 := arg[2],
-                  underlyingCharacteristic := 0,
-                  sizesCentralizers        := arg[3],
-                  computedPowerMaps        := arg[4],
-                  computedClassFusions     := [],
-                  irr                      := arg[5],
-                  automorphismsOfTable     := arg[6]
+                  Identifier               := arg[1],
+                  InfoText                 := arg[2],
+                  UnderlyingCharacteristic := 0,
+                  SizesCentralizers        := arg[3],
+                  ComputedPowerMaps        := arg[4],
+                  ComputedClassFusions     := [],
+                  Irr                      := arg[5],
+                  AutomorphismsOfTable     := arg[6]
                  );
 
-    for i in [ "infoText", "sizesCentralizers", "computedPowerMaps",
-               "computedClassFusions", "irr", "automorphismsOfTable" ] do
+    for i in [ "InfoText", "SizesCentralizers", "ComputedPowerMaps",
+               "ComputedClassFusions", "Irr", "AutomorphismsOfTable" ] do
       if record.(i) = 0 then
         Unbind( record.(i) );
       fi;
@@ -511,19 +511,19 @@ CharacterTableFromLibrary := function( arglist )
         # If the table is a generic table, simply return it.
         if IsBound( libtbl.isGenericTable )
            and libtbl.isGenericTable = true then
-          libtbl.identifier := firstname;
+          libtbl.Identifier := firstname;
           return ConvertToLibraryCharacterTableNC( libtbl );
         fi;
 
         # Concatenate the lines of the 'text' component.
-        if IsBound( libtbl.infoText ) then
-          libtbl.infoText:= Concatenation( libtbl.infoText );
-          ConvertToStringRep( libtbl.infoText );
+        if IsBound( libtbl.InfoText ) then
+          libtbl.InfoText:= Concatenation( libtbl.InfoText );
+          ConvertToStringRep( libtbl.InfoText );
         fi;
 
         # Store the fusion sources.
         pos:= Position( LIBTABLE.LIBLIST.firstnames, firstname );
-        libtbl.namesOfFusionSources:=
+        libtbl.NamesOfFusionSources:=
             ShallowCopy( LIBTABLE.LIBLIST.fusionsource[ pos ] );
 
         # Evaluate characters encoded as '[GALOIS,[i,j]]'
@@ -551,27 +551,31 @@ CharacterTableFromLibrary := function( arglist )
         fi;
 
         # initialize some components
-        libtbl.identifier:= firstname;
-        if     IsBound( libtbl.computedPowerMaps )
-           and not IsEmpty( libtbl.computedPowerMaps )
-           and not IsBound( libtbl.ordersClassRepresentatives ) then
-          libtbl.ordersClassRepresentatives:=
-                       ElementOrdersPowerMap( libtbl.computedPowerMaps );
+#       libtbl.Identifier:= firstname;
+        if     IsBound( libtbl.ComputedPowerMaps )
+           and not IsEmpty( libtbl.ComputedPowerMaps )
+           and not IsBound( libtbl.OrdersClassRepresentatives ) then
+          libtbl.OrdersClassRepresentatives:=
+                       ElementOrdersPowerMap( libtbl.ComputedPowerMaps );
         fi;
 
-        if IsBound( libtbl.automorphismsOfTable ) then
-          libtbl.automorphismsOfTable:= GroupByGenerators(
-                     libtbl.automorphismsOfTable, () );
+        if IsBound( libtbl.AutomorphismsOfTable ) then
+          libtbl.AutomorphismsOfTable:= GroupByGenerators(
+                     libtbl.AutomorphismsOfTable, () );
+        fi;
+
+        if IsBound( libtbl.maxes ) then
+          libtbl.Maxes:= libtbl.maxes;
         fi;
 
         # Evaluate characters encoded as '[GALOIS,[i,j]]', '[TENSOR,[i,j]]'.
-        EvalChars( libtbl.irr );
+        EvalChars( libtbl.Irr );
 
         # If necessary, decode the irredinfo component.
         # ('irredinfo' is then a record, its components are lists,
         # each element a list of same length as 'irr')
         if IsBound( libtbl.irredinfo ) then
-          newirredinfo:= List( libtbl.irr, x -> rec() );
+          newirredinfo:= List( libtbl.Irr, x -> rec() );
           for fld in RecNames( libtbl.irredinfo ) do
             info:= libtbl.irredinfo.( fld );
             for i in [ 1 .. Length( newirredinfo ) ] do
@@ -585,7 +589,7 @@ CharacterTableFromLibrary := function( arglist )
               od;
             od;
           od;
-          libtbl.irredInfo:= newirredinfo;
+          libtbl.IrredInfo:= newirredinfo;
           Unbind( libtbl.irredinfo );
         fi;
 
@@ -937,15 +941,15 @@ BrauerTable := function( name, ordtbl )
     fi;
 
     # Otherwise we have to work.
-    prime:= libtbl.underlyingCharacteristic;
+    prime:= libtbl.UnderlyingCharacteristic;
     reg:= CharacterTableRegular( ordtbl, prime );
 
-    SetInfoText( reg, libtbl.infoText );
+    SetInfoText( reg, libtbl.InfoText );
 
     # If automorphisms are known (list of generators), convert to a group.
-    if IsBound( libtbl.automorphismsOfTable ) then
+    if IsBound( libtbl.AutomorphismsOfTable ) then
       SetAutomorphismsOfTable( reg,
-          GroupByGenerators( libtbl.automorphismsOfTable, () ) );
+          GroupByGenerators( libtbl.AutomorphismsOfTable, () ) );
     fi;
 
     # Initialize some components.
@@ -1198,39 +1202,39 @@ CharacterTableSpecialized := function( gtab, q )
 
       # Compute the name of the table.
       if IsBound( gtab!.specializedname ) then
-        taf.identifier:= gtab!.specializedname( q );
-        ConvertToStringRep( taf.identifier );
+        taf.Identifier:= gtab!.specializedname( q );
+        ConvertToStringRep( taf.Identifier );
       fi;
 
       # Compute the group order.
       if IsBound( gtab!.size ) then
-        taf.size := gtab!.size(q);
+        taf.Size := gtab!.size(q);
       fi;
 
       # Compute centralizer and representative orders.
       if IsBound( gtab!.centralizers ) then
-        taf.sizesCentralizers := List( [ 1 .. Length( classparam ) ],
+        taf.SizesCentralizers := List( [ 1 .. Length( classparam ) ],
                 j -> gtab!.centralizers[ genclass[j] ]( q, classparam[j] ) );
       fi;
 
       if IsBound( gtab!.orders ) then
-        taf.ordersClassRepresentatives :=
+        taf.OrdersClassRepresentatives :=
                 List( [ 1 .. Length( classparam ) ],
                       j -> gtab!.orders[ genclass[j] ]( q, classparam[j] ) );
       fi;
 
       # Compute the power maps.
-      taf.computedPowerMaps := [];
+      taf.ComputedPowerMaps := [];
       if IsBound( gtab!.powermap ) and IsBound( taf!.size ) then
         for i in Reversed( Set( Factors( taf!.size ) ) ) do
-          taf.computedPowerMaps[i] := [];
+          taf.ComputedPowerMaps[i] := [];
           for class in Reversed( [1 .. Length( classparam ) ] ) do
             parm := gtab!.powermap[genclass[class]](q, classparam[class],i);
             k := 1;
             while genclass[k] <> parm[1] or classparam[k] <> parm[2] do
               k := k+1;
             od;
-            taf.computedPowerMaps[i][class] := k;
+            taf.ComputedPowerMaps[i][class] := k;
           od;
         od;
       fi;
@@ -1243,21 +1247,27 @@ CharacterTableSpecialized := function( gtab, q )
 
       # Compute the character values.
       if IsBound( gtab!.matrix ) then
-        taf.irr := gtab!.matrix( q );
+        taf.Irr := gtab!.matrix( q );
       elif IsBound( gtab!.irreducibles ) then
-        taf.irr := List( [ 1 .. Length( charparam ) ],
+        taf.Irr := List( [ 1 .. Length( charparam ) ],
                   i -> List( [1..Length(classparam)],
                              j -> gtab!.irreducibles[genchar[i]][genclass[j]]
                                   ( q, charparam[i], classparam[j] ) ) );
       fi;
 
-      taf.classParameters := List( [ 1 .. Length( classparam ) ],
+      taf.ClassParameters := List( [ 1 .. Length( classparam ) ],
                                    i -> [ genclass[i], classparam[i] ] );
-      taf.irredInfo:= List( [ 1 .. Length( charparam ) ],
+      taf.IrredInfo:= List( [ 1 .. Length( charparam ) ],
                             i->rec(charparam:= [genchar[i],charparam[i]]) );
 
       if IsBound( gtab!.text ) then
-        taf.infoText:= Concatenation( "computed using ", gtab!.text );
+        taf.InfoText:= Concatenation( "computed using ", gtab!.text );
+      fi;
+
+      if IsBound( gtab!.UnderlyingCharacteristic ) then
+        taf.UnderlyingCharacteristic:= gtab!.UnderlyingCharacteristic;
+      else
+        taf.UnderlyingCharacteristic:= 0;
       fi;
 
     fi;
@@ -1281,19 +1291,19 @@ ConvertToLibraryCharacterTableNC := function( record )
 
     # Make the object.
     if IsBound( record.isGenericTable ) and record.isGenericTable then
-      Objectify( NewKind( NearlyCharacterTablesFamily,
+      Objectify( NewType( NearlyCharacterTablesFamily,
                           IsGenericCharacterTableRep ),
                  record );
-    elif not IsBound( record.underlyingCharacteristic ) then
+    elif not IsBound( record.UnderlyingCharacteristic ) then
       Error( "<record> must have one of 'isGenericTable' or ",
-             "'underlyingCharacteristic'" );
-    elif record.underlyingCharacteristic = 0 then
-      Objectify( NewKind( NearlyCharacterTablesFamily,
+             "'UnderlyingCharacteristic'" );
+    elif record.UnderlyingCharacteristic = 0 then
+      Objectify( NewType( NearlyCharacterTablesFamily,
                               IsOrdinaryTable
                           and IsLibraryCharacterTableRep ),
                  record );
     else
-      Objectify( NewKind( NearlyCharacterTablesFamily,
+      Objectify( NewType( NearlyCharacterTablesFamily,
                               IsBrauerTable
                           and IsLibraryCharacterTableRep ),
                  record );
@@ -1301,15 +1311,16 @@ ConvertToLibraryCharacterTableNC := function( record )
 
     # Enter the properties and attributes.
     for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
-      if SupportedOrdinaryTableInfo[i] in names then
+      if     SupportedOrdinaryTableInfo[i] in names
+         and SupportedOrdinaryTableInfo[i] <> "Irr" then
         Setter( SupportedOrdinaryTableInfo[ i-1 ] )( record,
                             record!.( SupportedOrdinaryTableInfo[i] ) );
       fi;
     od;
 
     # Make the lists of character values into character objects.
-    if "irr" in names then
-      SetIrr( record, List( record!.irr,
+    if "Irr" in names then
+      SetIrr( record, List( record!.Irr,
                             chi -> CharacterByValues( record, chi ) ) );
     fi;
 
@@ -1327,7 +1338,9 @@ TransferComponentsToLibraryTableRecord := function( t, tbl )
     local names, i, fld;
 
     names:= RecNames( tbl );
+    Add( names, "Irr" );
 
+    # Set the supported attribute values.
     for i in [ 1, 3 .. Length( SupportedOrdinaryTableInfo ) - 1 ] do
       if     not SupportedOrdinaryTableInfo[ i+1 ] in names
          and Tester( SupportedOrdinaryTableInfo[i] )( t ) then
@@ -1336,11 +1349,17 @@ TransferComponentsToLibraryTableRecord := function( t, tbl )
       fi;
     od;
 
+    # Set the supported library table components.
     for fld in Difference( SupportedLibraryTableComponents, names ) do
       if IsBound( t!.( fld ) ) then
         tbl.( fld ):= t!.( fld );
       fi;
     od;
+
+    # Set the irreducibles if necessary.
+    if HasIrr( t ) and not IsBound( tbl!.Irr ) then
+      tbl.Irr:= List( Irr( t ), ValuesOfClassFunction );
+    fi;
 end;
 
 
@@ -1356,17 +1375,20 @@ ConstructMixed := function( tbl, subname, factname, plan, perm )
           irreds,   # list of irreducibles
           zero;     # list of zeros to be appended to the characters
 
+    factfus  := First( tbl.ComputedClassFusions,
+                       fus -> fus.name = factname ).map;
     factname := CharacterTableFromLibrary( [ factname ] );
     subname  := CharacterTableFromLibrary( [ subname ] );
-    factfus := GetFusionMap( tbl, factname );
-    subfus  := GetFusionMap( subname, tbl );
+    subfus   := First( ComputedClassFusions( subname ),
+                       fus -> fus.name = tbl.Identifier ).map;
     proj    := ProjectionMap( subfus );
     irreds  := List( Irr( factname ),
                      x -> ValuesOfClassFunction( x ){ factfus } );
-    zero    := [ Maximum( subfus ) + 1 .. NrConjugacyClasses( tbl ) ] * 0;
+    zero    := Zero( [ Maximum( subfus ) + 1
+                       .. Length( tbl.SizesCentralizers ) ] );
     Append( irreds, List( plan, entry ->
          Concatenation( Sum( Irr( subname ){ entry } ){ proj }, zero ) ) );
-    tbl.irr:= Permuted( irreds, perm );
+    tbl.Irr:= Permuted( irreds, perm );
 end;
 
 
@@ -1384,11 +1406,11 @@ ConstructProj := function( tbl )
           ext, lin, chi, faith, nccl, partner, divs, prox, foll,
           vals;
 
-    nccl:= Length( tbl.sizesCentralizers );
-    factor:= CharacterTableFromLibrary( [ tbl.irr[1][1] ] );
-    fus:= GetFusionMap( tbl, factor );
-#T works ?
-    mult:= tbl.sizesCentralizers[1] / Size( factor );
+    nccl:= Length( tbl.SizesCentralizers );
+    factor:= CharacterTableFromLibrary( [ tbl.Irr[1][1] ] );
+    fus:= First( tbl.ComputedClassFusions,
+                 fus -> fus.name = tbl.Irr[1][1] ).map;
+    mult:= tbl.SizesCentralizers[1] / Size( factor );
     irreds:= List( Irr( factor ), x -> ValuesOfClassFunction( x ){ fus } );
     linear:= Filtered( irreds, x -> x[1] = 1 );
     linear:= linear{ [ 2 .. Length( linear ) ] };
@@ -1412,16 +1434,16 @@ ConstructProj := function( tbl )
       # on the small table 'factor') as if we would create this extension,
       # and then we blow up these characters to the whole table.
 
-      name:= tbl.irr[d][1];
-      partner:= tbl.irr[d][2];
+      name:= tbl.Irr[d][1];
+      partner:= tbl.Irr[d][2];
       proj:= First( factor!.projectives, x -> x.name = name );
       faith:= List( proj.chars, y -> y{ fus } );
       proj:= ShallowCopy( proj.map );
 
-      if name = tbl.identifier then
-        factfus:= [ 1 .. Length( tbl.sizesCentralizers ) ];
+      if name = tbl.Identifier then
+        factfus:= [ 1 .. Length( tbl.SizesCentralizers ) ];
       else
-        factfus:= First( tbl.computedClassFusions, x -> x.name = name ).map;
+        factfus:= First( tbl.ComputedClassFusions, x -> x.name = name ).map;
       fi;
       Add( proj, Length( factfus ) + 1 );    # for termination of loop
       adjust:= [];
@@ -1540,7 +1562,7 @@ ConstructProj := function( tbl )
 
       fi;
     od;
-    tbl.irr:= irreds;
+    tbl.Irr:= irreds;
 end;
 
 
@@ -1567,7 +1589,7 @@ ConstructDirectProduct := function( arg )
     fi;
     TransferComponentsToLibraryTableRecord( t, tbl );
     if 1 < Length( tbl.factors ) then
-      Append( tbl.computedClassFusions, ComputedClassFusions( t ) );
+      Append( tbl.ComputedClassFusions, ComputedClassFusions( t ) );
     fi;
 end;
 
@@ -1622,13 +1644,13 @@ ConstructV4G := function( tbl, facttbl, aut )
 
     local fus, chars;
 
+    fus:= First( tbl.ComputedClassFusions, fus -> fus.name = facttbl ).map;
     facttbl:= CharacterTableFromLibrary( [ facttbl ] );
-    fus:= GetFusionMap( tbl, facttbl );
-    tbl.irr:= List( Irr( facttbl ), x -> ValuesOfClassFunction( x ){ fus } );
-    chars:= List( Filtered( tbl.irr, x -> x[1] <> x[3] ),
+    tbl.Irr:= List( Irr( facttbl ), x -> ValuesOfClassFunction( x ){ fus } );
+    chars:= List( Filtered( tbl.Irr, x -> x[1] <> x[3] ),
                   x -> Permuted( x, aut ) );
-    Append( tbl.irr, chars );
-    Append( tbl.irr, List( chars, x -> Permuted( x, aut ) ) );
+    Append( tbl.Irr, chars );
+    Append( tbl.Irr, List( chars, x -> Permuted( x, aut ) ) );
 end;
 
 
@@ -1650,7 +1672,7 @@ InducedLibraryCharacters := function( subtbl, tblrec, chars, fusion )
           singleinduced,  # one induced character
           char;           # one character to be induced
 
-    centralizers:= tblrec.sizesCentralizers;
+    centralizers:= tblrec.SizesCentralizers;
     nccl:= Length( centralizers );
     suborder:= Size( subtbl );
     subclasses:= SizesConjugacyClasses( subtbl );
@@ -1711,8 +1733,10 @@ ConstructGS3 := function( tbls3, tbl2, tbl3, ind2, ind3, ext, perm )
     tbl2:= CharacterTableFromLibrary( [ tbl2 ] );
     tbl3:= CharacterTableFromLibrary( [ tbl3 ] );
 
-    fus2:= GetFusionMap( tbl2, tbls3 );
-    fus3:= GetFusionMap( tbl3, tbls3 );
+    fus2:= First( ComputedClassFusions( tbl2 ),
+                  fus -> fus.name = tbls3.Identifier ).map;
+    fus3:= First( ComputedClassFusions( tbl3 ),
+                  fus -> fus.name = tbls3.Identifier ).map;
 
     proj2:= ProjectionMap( fus2 );
     pos:= First( [ 1 .. Length( proj2 ) ], x -> not IsBound( proj2[x] ) );
@@ -1721,7 +1745,7 @@ ConstructGS3 := function( tbls3, tbl2, tbl3, ind2, ind3, ext, perm )
     proj2o:= proj2{ [ pos .. Length( proj2 ) ] };
     proj3:= ProjectionMap( fus3 );
 
-    zeroon2:= Zero( Difference( [ 1 .. Length( tbls3.sizesCentralizers ) ],
+    zeroon2:= Zero( Difference( [ 1 .. Length( tbls3.SizesCentralizers ) ],
                     fus3 ) );
 
     # Induce the characters given by 'ind2' from 'tbl2'.
@@ -1745,51 +1769,44 @@ ConstructGS3 := function( tbls3, tbl2, tbl3, ind2, ind3, ext, perm )
     irr:= Permuted( irr, perm );
 
     # Store the irreducibles.
-    tbls3.irr:= irr;
+    tbls3.Irr:= irr;
 end;
 
 
-#T #############################################################################
-#T ##
-#T #F  ConstructPermuted( <tbl>, <libnam>, <prmclasses>, <prmchars> )
-#T ##
-#T ##  The library table <tbl> is completed with help of the library table with
-#T ##  name <libnam>, whose classes and characters must be permuted by the
-#T ##  permutations <prmclasses> and <prmchars>, respectively.
-#T ##
-#T ConstructPermuted := function( tbl, libnam, prmclasses, prmchars )
-#T     local t, fld, automorphisms, classtext, fusions;
-#T     t := CharTableLibrary( libnam );
-#T     for fld  in RecFields( t )  do
-#T       if not IsBound( tbl.( fld ) ) then
-#T         tbl.(fld) := t.(fld);
-#T       fi;
-#T     od;
-#T     if IsBound( tbl.automorphisms ) then
-#T       automorphisms:= tbl.automorphisms;
-#T       Unbind( tbl.automorphisms );
-#T     fi;
-#T     if IsBound( tbl.classtext ) then
-#T       classtext:= tbl.classtext;
-#T       Unbind( tbl.classtext );
-#T     fi;
-#T     if IsBound( tbl.fusions ) then
-#T       fusions:= tbl.fusions;
-#T       tbl.fusions:= [];
-#T     fi;
-#T     SortClassesCharTable( tbl, prmclasses );
-#T     SortCharactersCharTable( tbl, prmchars );
-#T     Unbind( tbl.permutation );
-#T     if IsBound( automorphisms ) then
-#T       tbl.automorphisms:= automorphisms;
-#T     fi;
-#T     if IsBound( classtext ) then
-#T       tbl.classtext:= classtext;
-#T     fi;
-#T     if IsBound( fusions ) then
-#T       tbl.fusions:= fusions;
-#T     fi;
-#T end;
+#############################################################################
+##
+#F  ConstructPermuted( <tbl>, <libnam>, <prmclasses>, <prmchars> )
+##
+##  The library table <tbl> is completed with help of the library table with
+##  name <libnam>, whose classes and characters must be permuted by the
+##  permutations <prmclasses> and <prmchars>, respectively.
+##
+ConstructPermuted := function( tbl, libnam, prmclasses, prmchars )
+
+    local t;
+
+    # There may be fusions into 'tbl',
+    # so we must guarantee a trivial class permutation.
+    if not IsBound( tbl.ClassPermutation ) then
+      tbl.ClassPermutation:= ();
+    fi;
+
+    # Get the permuted table.
+    t := CharacterTableFromLibrary( libnam );
+    if prmclasses <> () then
+      t:= CharacterTableWithSortedClasses( t, prmclasses );
+    fi;
+    if prmchars <> () then
+      t:= CharacterTableWithSortedCharacters( t, prmchars );
+    fi;
+
+    # Store the components in 'tbl'.
+    TransferComponentsToLibraryTableRecord( t, tbl );
+#T Due to my stupidity, hte table files contain 'return ConstructPermuted',
+#T which was no problem in GAP-3.
+#T So I need a 'return' statement here.
+    return 0;
+end;
 
 
 #############################################################################
@@ -1847,7 +1864,7 @@ ConstructClifford := function( tbl )
         ct[i]:= [];
         linear:= List( Filtered( Irr( eintr ), x -> x[1] = 1 ),
                        ValuesOfClassFunction );
-        n:= Length( eintr!.irr );
+        n:= Length( Irr( eintr ) );
 #T ?
         for chi in chars do
           for lin in linear do
@@ -1865,7 +1882,7 @@ ConstructClifford := function( tbl )
     od;
 
     # Construct the matrix of irreducibles characters.
-    newct := List( tbl.sizesCentralizers, x -> [] );
+    newct := List( tbl.SizesCentralizers, x -> [] );
     colct := 0;
 
     for i in tbl.cliffordTable.cliffordrecords do
@@ -1898,7 +1915,7 @@ ConstructClifford := function( tbl )
 
     od;
 
-    tbl.irr := newct;
+    tbl.Irr := newct;
 end;
 
 
@@ -2681,7 +2698,7 @@ end;
 #T        or OrdersClassRepresentatives( tbl )
 #T            <> ElementOrdersPowerMap( ComputedPowerMaps( tbl ) ) then
 #T 
-#T       Print( "ARC(\"", name, "\",\"ordersClassRepresentatives\"," );
+#T       Print( "ARC(\"", name, "\",\"OrdersClassRepresentatives\"," );
 #T       BlanklessPrint( tbl.( fld ) );
 #T       Print( ");\n" );
 #T       
@@ -2738,16 +2755,16 @@ end;
 #T 
 #T     # Print remaining supported attributes of ordinary tables.
 #T     done:= [
-#T              "automorphismsOfTable",
-#T              "computedClassFusions",
-#T              "computedPowerMaps",
-#T              "identifier",
-#T              "infoText",
-#T              "irr",
-#T              "ordersClassRepresentatives",
-#T              "sizesCentralizers",
-#T              "sizesConjugacyClasses",
-#T              "underlyingCharacteristic",
+#T              "AutomorphismsOfTable",
+#T              "ComputedClassFusions",
+#T              "ComputedPowerMaps",
+#T              "Identifier",
+#T              "InfoText",
+#T              "Irr",
+#T              "OrdersClassRepresentatives",
+#T              "SizesCentralizers",
+#T              "SizesConjugacyClasses",
+#T              "UnderlyingCharacteristic",
 #T              ];
 #T        
 #T     for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
@@ -2915,6 +2932,36 @@ end;
 #T 
 #T     return;
 #T end;
+
+
+#############################################################################
+##
+#F  OrbitsResidueClass( <pq> )
+##
+OrbitsResidueClass := function( pq )
+
+    local gen,
+          orbs,
+          set,
+          pnt,
+          orb,
+          i;
+
+    gen:= PowerModInt( PrimitiveRootMod( pq[1] ), (pq[1]-1)/pq[2], pq[1] );
+    orbs:= [];
+    set:= [ 1 .. pq[1]-1 ];
+    while not IsEmpty( set ) do
+      pnt:= set[1];
+      orb:= [];
+      for i in [ 1 .. pq[2] ] do
+        orb[i]:= pnt;
+        pnt:= ( pnt * gen ) mod pq[1];
+      od;
+      Add( orbs, orb );
+      SubtractSet( set, orb );
+    od;
+    return orbs;
+end;
 
 
 #############################################################################

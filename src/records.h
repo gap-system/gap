@@ -74,9 +74,9 @@ extern  UInt            RNamObj (
 **  Note that 'IS_REC' is a record, so do not call  it  with  arguments  that
 **  sideeffects.
 */
-#define IS_REC(obj)     ((*IsRecFuncs[ TYPE_OBJ(obj) ])( obj ))
+#define IS_REC(obj)     ((*IsRecFuncs[ TNUM_OBJ(obj) ])( obj ))
 
-extern  Int             (*IsRecFuncs[LAST_REAL_TYPE+1]) ( Obj obj );
+extern  Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 
 /****************************************************************************
@@ -91,9 +91,9 @@ extern  Int             (*IsRecFuncs[LAST_REAL_TYPE+1]) ( Obj obj );
 **  have sideeffects.
 */
 #define ELM_REC(rec,rnam) \
-                        ((*ElmRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam ))
+                        ((*ElmRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 
-extern  Obj             (*ElmRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
+extern  Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
 
 /****************************************************************************
@@ -108,9 +108,9 @@ extern  Obj             (*ElmRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
 **  have sideeffects.
 */
 #define ISB_REC(rec,rnam) \
-                        ((*IsbRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam ))
+                        ((*IsbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 
-extern  Int             (*IsbRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
+extern  Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
 
 /****************************************************************************
@@ -125,9 +125,9 @@ extern  Int             (*IsbRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
 **  have sideeffects.
 */
 #define ASS_REC(rec,rnam,obj) \
-                        ((*AssRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam, obj ))
+                        ((*AssRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam, obj ))
 
-extern  void            (*AssRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam, Obj obj );
+extern  void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, Obj obj );
 
 
 /****************************************************************************
@@ -141,9 +141,9 @@ extern  void            (*AssRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam, O
 **  have sideeffects.
 */
 #define UNB_REC(rec,rnam) \
-                        ((*UnbRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam ))
+                        ((*UnbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 
-extern  void            (*UnbRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
+extern  void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
 
 /****************************************************************************

@@ -16,7 +16,7 @@ Revision.rational_gi :=
 ##
 #V  Rationals . . . . . . . . . . . . . . . . . . . . . .  field of rationals
 ##
-Rationals := Objectify( NewKind(
+Rationals := Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
     IsRationals ), rec() );
 SetName( Rationals, "Rationals" );
@@ -36,7 +36,7 @@ SetGeneratorsOfLeftModule( Rationals, [ 1 ] );
 ##
 #V  GaussianRationals . . . . . . . . . . . . . . field of Gaussian rationals
 ##
-GaussianRationals := Objectify( NewKind(
+GaussianRationals := Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
     IsGaussianRationals ), rec() );
 SetName( GaussianRationals, "GaussianRationals" );
@@ -98,7 +98,7 @@ InstallMethod( CanonicalBasis,
     true, [ IsRationals ], 0,
     function( Rationals )
     local B;
-    B:= Objectify( NewKind( FamilyObj( Rationals ),
+    B:= Objectify( NewType( FamilyObj( Rationals ),
                                 IsBasis
                             and IsCanonicalBasis
                             and IsCanonicalBasisRationals ),
@@ -158,7 +158,7 @@ IsRationalsIterator := NewRepresentation( "IsRationalsIterator",
 ##
 InstallMethod( Iterator, true, [ IsRationals ], 0,
     function( Rationals )
-    return Objectify( NewKind( IteratorsFamily, IsRationalsIterator ),
+    return Objectify( NewType( IteratorsFamily, IsRationalsIterator ),
                       rec(
                            structure := Rationals,
                            actualn   := 0,
@@ -240,7 +240,7 @@ IsRationalsEnumerator := NewRepresentation( "IsRationalsEnumerator",
 InstallMethod( Enumerator, true, [ IsRationals ], 0,
     function( Rationals )
     local enum;
-    enum:= Objectify( NewKind( FamilyObj( Rationals ),
+    enum:= Objectify( NewType( FamilyObj( Rationals ),
                                IsRationalsEnumerator ),
                       rec() );
     SetUnderlyingCollection( enum, Rationals );

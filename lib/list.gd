@@ -39,7 +39,7 @@ IsEnumerator := NewRepresentation( "IsEnumerator",
 ##
 Length := NewAttributeKernel( "Length",
     IsList,
-    LEN_LIST );
+    LENGTH );
 SetLength := Setter( Length );
 HasLength := Tester( Length );
 
@@ -456,6 +456,9 @@ IteratorList :=
 #############################################################################
 ##
 #O  First(<C>,<func>) . . . . .  find first element in a list with a property
+##
+##  First returns the first element of <C> which fullfills <func>. If no 
+##  such element is contained in <C>, then First returns fail.
 ##
 First :=
     NewOperation( "First",
