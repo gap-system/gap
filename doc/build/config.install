@@ -2,7 +2,7 @@
 @gdfiles = ("package.g","files.gd","system.g");
 $DIR = "../ref";
 $LIB = "../../lib"; 
-versionnumber=4.2
-versionsuffix=4r2
-gapdirname=gap4r2
-ucgapdirname=GAP4R2
+versionnumber=4.3pre1
+versionsuffix=4r3pre1
+gapdirname=gap4r3pre1
+ucgapdirname=GAP4R3PRE1

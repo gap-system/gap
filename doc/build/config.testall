@@ -39,9 +39,9 @@
 
 $DIR = "../ref";
 $LIB = "../../lib"; 
-versionnumber=4b5
-versionsuffix=4b5
-gapdirname=gap4b5
-ucgapdirname=GAP4B5
+versionnumber=4.3pre1
+versionsuffix=4.3pre1
+gapdirname=gap4r3pre1
+ucgapdirname=GAP4R3PRE1
 check
 

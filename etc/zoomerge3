@@ -29,13 +29,14 @@ BEGIN{com=0; text = 0;}
      text = 1;
   else
      text = 0;} 
-else {if (com != 0) { print "zoo ahc blubber.zoo \"" name "\" < comment"; 
+else {if (com != 0) { print "zoo ahc blubber.zoo \"" name "\" < comment >& /dev/null"; 
     if (text != 0) 
-        print "zip -l blubber.zip \"" name "\""; 
+        print "zip -l blubber.zip \"" name "\" >& /dev/null"; 
      else 
-        print "zip blubber.zip \"" name "\""; 
+        print "zip blubber.zip \"" name "\" >& /dev/null"; 
     } 
-else {print "zoo ah blubber.zoo \"" name "\"";} 
+else {print "zoo ah blubber.zoo \"" name "\" >& /dev/null";
+      print "zip blubber.zip \"" name "\" >& /dev/null";} 
 print "tar rf blubber.tar \"" name "\""; 
 print "rm -f \"" name "\""; 
 name=substr($0,48);com=0; 
@@ -43,7 +44,7 @@ while ((length(name)>0)&&(substr(name,1,1)==" ") ) {
   name=substr(name,2); 
 } 
 EOF
-echo if \(name !=\"\"\) {print \"unzoo -x -o $2 \\\"\" name \"\\\"\"\; >> awkprog
+echo if \(name !=\"\"\) {print \"unzoo -x -o $2 \\\"\" name \"\\\" \>\& /dev/null\"\; >> awkprog
 if [ "x$3" != "x" ]; then
    echo print \"mkdir -p \`dirname $3/\" name \"\`\" \; >> awkprog
    echo print \"mv \" name \" $3/\" name \; >> awkprog
@@ -52,6 +53,11 @@ fi
 cat << EOF >> awkprog
 } 
 }}
+END { if (com == 0 && name != "") { 
+    print "zoo ah blubber.zoo \"" name "\" >& /dev/null";
+    print "zip blubber.zip \"" name "\">& /dev/null";
+    print "tar rf blubber.tar \"" name "\""; 
+    print "rm -f \"" name "\""; } }
 
 EOF
 awk -f awkprog infile >maches

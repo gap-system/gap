@@ -226,8 +226,10 @@ done
 
 chmod 755 ${DISTNAME}/etc/zoomerge3
 
+echo "Character Tables and Tables of Marks"
+
 for j in /home/ftp/pub/gappre/sys$RBVERSION/*.zoo; do
-    for i in tdat$RBVERSION mappc gap$RBVERSION; do
+    for i in tdat$RBVERSION macpc gap$RBVERSION; do
 	${DISTNAME}/etc/zoomerge3 $i $j ${DISTNAME}/pkg
     done;
 done;

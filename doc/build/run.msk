@@ -157,11 +157,12 @@ total allocated memory of 4096 KBytes are available afterwards.
 \indextt{-m}
 `-m <memory>' &
 tells {\GAP} to allocate <memory> bytes at  startup  time.  If  the  last
-character of <memory> is `k' or `K' it is taken as KBytes and if the last
-character is `m' or `M' <memory> is taken as MBytes.
+character of <memory> is `k' or `K' it is taken as KBytes, if the last
+character is `m' or `M' <memory> is taken as MBytes and if it is 'g'
+or 'G' it is taken as Gigabytes.
 
 &
-Under UNIX the default amount of memory allocated by {\GAP} is 8  MBytes.
+Under UNIX the default amount of memory allocated by {\GAP} is 24  MBytes.
 The amount of memory should be large enough so that computations  do  not
 require too many garbage  collections.  On  the  other  hand,  if  {\GAP}
 allocates more virtual memory than is physically available, it will spend
@@ -170,11 +171,12 @@ most of the time paging.
 \indextt{-o}
 `-o <memory>' &
 tells {\GAP} to allocate at most <memory> bytes. If the last character of
-<memory> is `k' or `K' it is taken as KBytes and if the last character is
-`m' or `M' <memory> is taken as MBytes.
+<memory> is `k' or `K' it is taken as KBytes, if the last character is
+`m' or `M' <memory> is taken as MBytes and if it is 'g' or 'G' it is
+taken as Gigabytes. 
 
 &
-Under UNIX the default amount is 128 MBytes.  If more than this amount is
+Under UNIX the default amount is 256 MBytes.  If more than this amount is
 required  during the {\GAP} session,  {\GAP} prints an error messages and
 enters a break loop.
 
