@@ -2792,13 +2792,33 @@ InstallOtherMethod( DerivedSeriesOfAlgebra,
 
 #############################################################################
 ##
-#M  GeneratorsOfAlgebra( <A> )  . . . . . . . . . . . . . for a unital FLMLOR
+#M  GeneratorsOfLeftOperatorRing( <A> ) . . . . . . . . . for a unital FLMLOR
 ##
-InstallMethod( GeneratorsOfAlgebra,
+InstallMethod( GeneratorsOfLeftOperatorRing,
     "method for a unital FLMLOR",
     true, [ IsUnitalFLMLOR ], 0,
     A -> Set( Concatenation( [ One( A ) ],
-                             GeneratorsOfLeftOperatorRing( A ) ) ) );
+                             GeneratorsOfLeftOperatorUnitalRing( A ) ) ) );
+
+
+#############################################################################
+##
+#M  GeneratorsOfLeftOperatorRing( <A> ) . . . .  for FLMLOR with module gens.
+##
+InstallMethod( GeneratorsOfLeftOperatorRing,
+    "method for a FLMLOR with known left module generators",
+    true, [ IsFLMLOR and HasGeneratorsOfLeftModule ], 0,
+    A -> GeneratorsOfLeftModule( A ) );
+
+
+#############################################################################
+##
+#M  GeneratorsOfLeftOperatorUnitalRing( <A> ) .  for FLMLOR with module gens.
+##
+InstallMethod( GeneratorsOfLeftOperatorUnitalRing,
+    "method for a unital FLMLOR with known left module generators",
+    true, [ IsUnitalFLMLOR and HasGeneratorsOfLeftModule ], 0,
+    A -> GeneratorsOfLeftModule( A ) );
 
 
 #############################################################################

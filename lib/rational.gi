@@ -29,7 +29,6 @@ SetDimension( Rationals, 1 );
 SetGaloisStabilizer( Rationals, [ 1 ] );
 SetGeneratorsOfLeftModule( Rationals, [ 1 ] );
 #T necessary?
-#T SetPolynomialRing( Rationals, RationalsPolynomials );
 #T     automorphisms               := [ e -> e ],
 
 
@@ -48,8 +47,8 @@ SetSize( GaussianRationals, infinity );
 SetConductor( GaussianRationals, 4 );
 SetDimension( GaussianRationals, 2 );
 SetGaloisStabilizer( GaussianRationals, [ 1 ] );
+SetGeneratorsOfRing( GaussianRationals, [ E(4) ] );
 SetGeneratorsOfLeftModule( GaussianRationals, [ 1, E(4) ] );
-#T necessary?
 
 
 #############################################################################
