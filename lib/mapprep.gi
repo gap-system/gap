@@ -685,14 +685,23 @@ IsInverseGeneralMappingRep := NewRepresentation(
 
 #############################################################################
 ##
-#M  InverseGeneralMapping( <map> ) . . . inverse mapping of a general mapping
-##
-##  This inverse of a general mapping is again a general mapping.
+#M  InverseGeneralMapping( <map> ) . for a general mapping with known inverse
 ##
 InstallImmediateMethod( InverseGeneralMapping,
     IsGeneralMapping and HasInverse, 0,
-    Inverse );
+    function( map )
+    if Inverse( map ) <> fail then
+      return Inverse( map );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
+
+#############################################################################
+##
+#M  InverseGeneralMapping( <map> ) . . . . . . . . . .  for a general mapping
+##
 InstallMethod( InverseGeneralMapping,
     "method for a general mapping",
     true,

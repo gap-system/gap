@@ -3076,20 +3076,9 @@ MOT("U4(3).2_2'",
 0,
 0,
 0,
-0,
-function ( tbl )
-    local  t, fld;
-    t := CharTable( "U4(3).2_2" );
-    SortClassesCharTable( t, ( 4, 5)(11,12)(15,16,17) );
-    SortCharactersCharTable( t, ( 5, 7)( 6, 8)(17,18,19,20,21)(22,24)(23,25) 
-     );
-    Unbind( t.permutation );
-    for fld  in RecFields( t )  do
-      if not IsBound( tbl.(fld) ) then
-        tbl.(fld) := t.(fld);
-      fi;
-    od;
-end);
+[(16,17)(23,24)(33,34)],
+function( tbl ) return ConstructPermuted(tbl,["U4(3).2_2"],
+( 4, 5)(11,12)(15,16,17),( 5, 7)( 6, 8)(17,18,19,20,21)(22,24)(23,25) );end);
 ALF("U4(3).2_2'","U4(3).(2^2)_{122}",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
 16,17,46,47,48,49,50,50,51,52,53,54,55,56,57,58,59,59]);
 
@@ -3171,13 +3160,8 @@ MOT("U4(3).2_3'",
 0,
 0,
 0,
-function ( tbl )
-    local  t, fld;
-    t := CharTable( "U4(3).2_3" );
-    for fld  in RecFields( t )  do
-        tbl.(fld) := t.(fld);
-    od;
-end);
+function( tbl ) return ConstructPermuted(tbl,["U4(3).2_3"],
+(),());end);
 
 MOT("U4(3).4",
 [

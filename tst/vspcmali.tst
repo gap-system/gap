@@ -370,9 +370,7 @@ VectorSpace( GF(3^2), [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ),
   LieObject( [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ] ) ] )
 gap> Intersection( v, c );
-Subspace( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), [  ] )
+VectorSpace( GF(3^2), [  ] )
 gap> Intersection( v, f ) = v;
 true
 

@@ -127,7 +127,7 @@ Int CompCheckPosObjElements = 0;
 **  unneccessary  computations during the first pass,  the  advantage is that
 **  the two passes are guaranteed to do exactely the same computations.
 */
-Int CompPass;
+Int CompPass = 0;
 
 
 /****************************************************************************
@@ -3523,6 +3523,7 @@ CVar CompElmComObjExpr (
     SetInfoCVar( elm, W_BOUND );
 
     /* free the temporaries                                                */
+    if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
     /* return the element                                                  */
@@ -5373,11 +5374,14 @@ Int CompileFunc (
 {
     Int                 i;              /* loop variable                   */
     Obj                 n;              /* temporary                       */
+    UInt		col;
 
     /* open the output file                                                */
     if ( ! OpenOutput( output ) ) {
         return 0;
     }
+    col = SyNrCols;
+    SyNrCols = 255;
 
     /* create 'CompInfoGVar' and 'CompInfoRNam'                            */
     CompInfoGVar = NewBag( T_STRING, sizeof(UInt) * 1024 );
@@ -5514,6 +5518,7 @@ Int CompileFunc (
     Emit( "\n/* compiled code ends here */\n" );
 
     /* close the output file                                               */
+    SyNrCols = col;
     CloseOutput();
 
     /* return success                                                      */

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for lists in general.
 ##
@@ -66,12 +66,23 @@ InstallMethod( IN,
 
 #############################################################################
 ##
-#M  String(<list>)  . . . . . . . . . . . . . . .  convert list into a string
+#M  String( <list> )  . . . . . . . . . . . . . . . . . . . . . .  for a list
+#M  String( <range> ) . . . . . . . . . . . . . . . . . . . . . . for a range
 ##
 InstallMethod( String,
-    true, [ IsList ], 0,
+    "method for a list",
+    true,
+    [ IsList ], 0,
     function ( list )
     local   str, i;
+
+    # We cannot handle the case of an empty string in the method for strings
+    # because the kind of the empty string does not satify the requirement
+    # 'IsString'.
+    if IsEmptyString( list ) then
+      return "";
+    fi;
+
     str := "[ ";
     for i in [ 1 .. Length( list ) ]  do
         if IsBound( list[ i ] )  then
@@ -87,7 +98,9 @@ InstallMethod( String,
     end );
 
 InstallMethod( String,
-    true, [ IsRange ], 0,
+    "method for a range",
+    true,
+    [ IsRange ], 0,
     function( list )
     local   str;
     str := Concatenation( "[ ", String( list[ 1 ] ) );
@@ -100,10 +113,10 @@ InstallMethod( String,
         Append( str, String( list[ Length( list ) ] ) );
     fi;
     Append( str, " ]" );
+    ConvertToStringRep( str );
     return str;
     end );
 
-InstallMethod( String, true, [ IsList and IsEmpty ], 0, list -> "[  ]" );
 
 #############################################################################
 ##

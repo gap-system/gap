@@ -190,6 +190,9 @@ MutableBasisViaNiceMutableBasisMethod2 := function( R, vectors )
     fi;
 
     M:= LeftModuleByGenerators( R, vectors );
+    if not IsHandledByNiceBasis( M ) then
+      Error( "<M> is not handled via nice bases" );
+    fi;
     PrepareNiceFreeLeftModule( M );
 #T is this an argument against binding 'NiceVector' to a module?
 #T (would a homomorphism be more elegant?)

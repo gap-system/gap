@@ -203,9 +203,9 @@ InstallOtherMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <F>, <mats> ) . . . . . . . . .  for Lie matrices
 ##
 InstallMethod( LeftModuleByGenerators,
-    "method for division ring and list of matrices over it",
+    "method for division ring and list of Lie matrices over it",
     IsElmsCollLieColls,
-    [ IsDivisionRing, IsCollection and IsList ], 0,
+    [ IsDivisionRing, IsLieObjectCollection and IsList ], 0,
     function( F, mats )
     local dims, V;
 
@@ -276,7 +276,9 @@ InstallOtherMethod( LeftModuleByGenerators,
 InstallOtherMethod( LeftModuleByGenerators,
     "method for division ring, list of Lie matrices over it, and Lie matrix",
     true,
-    [ IsDivisionRing, IsCollection and IsList, IsMatrix and IsLieObject ], 0,
+    [ IsDivisionRing,
+      IsLieObjectCollection and IsList,
+      IsMatrix and IsLieObject ], 0,
     function( F, mats, zero )
     local dims, V;
 
@@ -1094,6 +1096,7 @@ InstallMethod( CanonicalBasis,
 ##  Note that we switch to a mutable basis of representation
 ##  'IsMutableBasisByImmutableBasisRep' if the mutable basis is closed by a
 ##  vector that makes the space non-Gaussian.
+#T better switch to mutable basis by nice mutable basis !
 ##
 ##  Note that the 'basisVectors' component consists of ordinary matrices
 ##  also if the defining matrices are Lie matrices.
@@ -1147,9 +1150,9 @@ InstallMethod( MutableBasisByGenerators,
 #M  MutableBasisByGenerators( <R>, <mats> ) . . . . . . . .  for Lie matrices
 ##
 InstallMethod( MutableBasisByGenerators,
-    "method to construct mutable bases of a Lie matrix spaces",
+    "method to construct a mutable basis of a Lie matrix space",
     IsElmsCollLieColls,
-    [ IsRing, IsCollection ], 0,
+    [ IsDivisionRing, IsLieObjectCollection ], 0,
     function( R, mats )
     local B, newmats;
 

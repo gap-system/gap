@@ -51,6 +51,7 @@ ReadLib( "ringpoly.gi" );
 ReadLib( "upoly.gi"    );
 ReadLib( "polyfinf.gi" );
 ReadLib( "polyrat.gi"  );
+ReadLib( "polyconw.gi" );
 ReadLib( "algfld.gi"   );
 
 ReadLib( "unknown.gi"  );
@@ -102,6 +103,7 @@ ReadLib( "grppc.gi"    );
 ReadLib( "grppcint.gi" );
 ReadLib( "grppcprp.gi" );
 ReadLib( "grppcatr.gi" );
+ReadLib( "grppcnrm.gi" );
 
 ReadLib( "mgmring.gi"  );
 ReadLib( "grptbl.gi"   );
@@ -151,11 +153,6 @@ ReadLib( "grpmat.gi"   );
 ReadLib( "grpffmat.gi" );
 
 
-# files dealing with character tables and class functions
-ReadLib( "chartabl.gi" );
-ReadLib( "classfun.gi" );
-
-
 # files dealing with fp groups
 ReadLib( "grpfp.gi"    );
 ReadLib( "grpfpsgp.gi" );
@@ -163,9 +160,5 @@ ReadLib( "grpfpsgp.gi" );
 
 # files dealing with trees and hash tables
 ReadLib( "hash.gi"     );
-
-
-# files dealing with overloaded operations
-ReadLib( "overload.g"  );
 
 

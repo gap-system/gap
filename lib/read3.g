@@ -46,6 +46,7 @@ ReadLib( "padics.gd"   );
 ReadLib( "ringpoly.gd" );
 ReadLib( "upoly.gd"    );
 ReadLib( "polyrat.gd"  );
+ReadLib( "polyconw.gd" );
 ReadLib( "algfld.gd"   );
 
 ReadLib( "unknown.gd"  );
@@ -71,6 +72,7 @@ ReadLib( "pcgsspec.gd" );
 
 # files dealing with finite polycyclic groups
 ReadLib( "grppc.gd"    );
+ReadLib( "grppcnrm.gd" );
 
 ReadLib( "mgmring.gd"  );
 ReadLib( "grptbl.gd"   );
@@ -128,11 +130,6 @@ ReadLib( "grpnice.gd"  );
 # files dealing with matrix groups (grpffmat.gd needs grpnice.gd)
 ReadLib( "grpmat.gd"   );
 ReadLib( "grpffmat.gd" );
-
-
-# files dealing with character tables and class functions
-ReadLib( "chartabl.gd" );
-ReadLib( "classfun.gd" );
 
 
 # group library

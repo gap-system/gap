@@ -105,7 +105,7 @@ ExtensionSQ := function( C, G, M, c )
         od;
     od;
 
-    H := PcGroupFpGroup( rec( group := F, relators := relators ) );
+    H := PcGroupFpGroup( F / relators );
     # and return
     return H;
 end;
@@ -218,14 +218,15 @@ InstallMethod( ExtensionRepresentatives,
     [ IsPcGroup, IsObject, IsObject ],
     0,
 function( G, M, P )
-    local C, cc, l, ext, gens, mats, id, g, mat, c, sub, pcgsN, imgs,
+    local C, cc, l, ext, gens, mats, id, g, mat, c, sub, pcgsN, imgs, rels,
           new, Mgrp, orbs, o, H, n, pcgs, d, co, cb, base, pcgsH, F, f;
 
     pcgs := Pcgs(G);
     n := Length(pcgs);
     d := M.dimension;
-    F := FpGroupPcGroup( G );
-    f := GeneratorsOfGroup( F.group );
+    F := Image( IsomorphismFpGroup( G ) );
+    rels := RelatorsOfFpGroup( F );
+    f := GeneratorsOfGroup( FreeGroupOfFpGroup( F ) );
 
     # compute H^2(G, M)
     C  := CollectorSQ( G, M, false ); 
@@ -262,7 +263,7 @@ function( G, M, P )
             imgs  := List( imgs, x -> ExponentsOfPcElement( pcgs, x ) );
             imgs  := List( imgs, 
                      x -> PcElementByExponents( pcgsH, pcgsH{[1..n]}, x ) );
-            new  := List( F.relators, x -> MappedWord( x, f, imgs ) );
+            new  := List( rels, x -> MappedWord( x, f, imgs ) );
             new  := List( new, x -> ExponentsOfPcElement(pcgsN, x, M.field));
             new  := List( new, x -> g[2] * x * g[2]^-1 );
             new  := Concatenation( new );
@@ -308,24 +309,26 @@ InstallOtherMethod( SplitExtension,
     0,
 function( G, aut, N )
     local pcgsG, fpg, n, gensG, pcgsN, fpn, d, gensN, F, gensF, relators,
-          rel, new, g, e, t, l, i, j, k, H, m, gensH,hom1,hom2;
+          rel, new, g, e, t, l, i, j, k, H, m, gensH,hom1,hom2, relsN, relsG;
     
     pcgsG := Pcgs( G );
-    fpg   := FpGroupPcGroup( G );
+    fpg   := Image( IsomorphismFpGroup( G ) );
     n     := Length( pcgsG );
-    gensG := GeneratorsOfGroup( fpg.group );
+    gensG := GeneratorsOfGroup( FreeGroupOfFpGroup( fpg ) );
+    relsG := RelatorsOfFpGroup( fpg );
 
     pcgsN := Pcgs( N );
-    fpn   := FpGroupPcGroup( N );
+    fpn   := Image( IsomorphismFpGroup( N ) );
     d     := Length( pcgsN );
-    gensN := GeneratorsOfGroup( fpn.group );
+    gensN := GeneratorsOfGroup( FreeGroupOfFpGroup( fpn ) );
+    relsN := RelatorsOfFpGroup( fpn );
    
     F := FreeGroup( n + d );
     gensF := GeneratorsOfGroup( F );
     relators := [];
 
     # relators of G
-    for rel in fpg.relators do
+    for rel in relsG do
         new := MappedWord( rel, gensG, gensF{[1..n]} );
         Add( relators, new );
     od;
@@ -352,12 +355,12 @@ function( G, aut, N )
     od;
             
     # relators of N
-    for rel in fpn.relators do
+    for rel in relsN do
         new := MappedWord( rel, gensN, gensF{[n+1..n+d]} );
         Add( relators, new );
     od;
 
-    H := PcGroupFpGroup( rec( group := F, relators := relators ) );
+    H := PcGroupFpGroup( F / relators );
     return H;
 end);
 
@@ -398,8 +401,8 @@ function( G, aut, p )
 
     pcgs := Pcgs( G );
     n    := Length( pcgs );
-    R    := FpGroupPcGroup( G );
-    gensR := GeneratorsOfGroup( R.group );
+    R    := Image( IsomorphismFpGroup( G ) );
+    gensR := GeneratorsOfGroup( FreeGroupOfFpGroup( R ) );
     
     F := FreeGroup( n + 1 );
     gens := GeneratorsOfGroup( F );
@@ -426,7 +429,7 @@ function( G, aut, p )
     od;
 
     # add relators 
-    Append( relators, List( R.relators, 
+    Append( relators, List( RelatorsOfFpGroup( R ),
                       x -> MappedWord( x, gensR, gens{[2..n+1]} ) ) ); 
 
     # set up groups
@@ -438,8 +441,7 @@ function( G, aut, p )
         od;
         rel := gens[1]^p / t;
         new := Concatenation( [rel], relators );
-        H   := rec( group := F, relators := new );
-        grps[i] := PcGroupFpGroup( H );
+        grps[i] := PcGroupFpGroup( F / new );
     od;
 
     # return 

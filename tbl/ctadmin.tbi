@@ -1,0 +1,2917 @@
+#############################################################################
+##
+#W  ctadmin.tbi                 GAP table library               Thomas Breuer
+#W                                                               Ute Schiffer
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the implementation part of the data of the {\GAP}
+##  character table library that is not automatically produced from the
+##  library files.
+##
+##  1. Representations of library tables
+##  2. Functions used in the library files
+##  3. Functions to construct library tables
+##  4. Functions used as 'construction' component of library tables
+##  5. Selection functions for the table library
+##  6. Functions to produce tables in library format
+##
+##  Note that in all construction functions, the table under construction is
+##  a plain record, *not* a table object.
+##
+Revision.ctadmin_tbi :=
+    "@(#)$Id$";
+
+
+#############################################################################
+##
+##  The global variable 'LIBLIST' that was defined in the file 'ctprimar.tbl'
+##  must be modified here.
+##
+##  (Note that 'ctprimar.tbl' is also used by {\GAP}-3.4.4.)
+##
+if IsBound( LIBLIST ) then
+
+  LIBLIST.firstnames :=   List( LIBLIST.firstnames, Immutable );
+  LIBLIST.files :=        List( LIBLIST.files, Immutable );
+  LIBLIST.fusionsource := List( LIBLIST.fusionsource, Immutable );
+  LIBLIST.allnames:=      List( LIBLIST.allnames, Immutable );
+  LIBLIST.projections :=  List( LIBLIST.projections, Immutable );
+  
+  LIBLIST.simpleInfo := Immutable( LIBLIST.simpleInfo );
+  
+  LIBLIST.sporadicSimple := Immutable( [
+    "M11", "M12", "J1", "M22", "J2", "M23", "HS", "J3", "M24", "McL", "He",
+    "Ru", "Suz", "ON", "Co3", "Co2", "Fi22", "HN", "Ly", "Th", "Fi23", "Co1",
+    "J4", "F3+", "B", "M" ] );
+  
+  LIBTABLE.LIBLIST := LIBLIST;
+  Unbind( LIBLIST );
+
+fi;
+
+
+#############################################################################
+##
+#F  SET_TABLEFILENAME( <filename> )
+##
+SET_TABLEFILENAME := function( filename )
+    LIBTABLE.TABLEFILENAME:= filename;
+    LIBTABLE.( filename ):= rec();
+end;
+
+
+#############################################################################
+##
+#F  GALOIS( <chars>, <list> )
+#F  TENSOR( <chars>, <list> )
+#F  EvalChars( <chars> )
+##
+GALOIS := function( chars, li )
+    return List( chars[ li[1] ], x -> GaloisCyc( x, li[2] ) );
+end;
+
+TENSOR := function( chars, list )
+    local i, chi, psi, result;
+    chi:= chars[ list[1] ];
+    psi:= chars[ list[2] ];
+    result:= [];
+    for i in [ 1 .. Length( chi ) ] do result[i]:= chi[i] * psi[i]; od;
+    return result;
+end;
+
+EvalChars := function( chars )
+    local i;
+    for i in [ 1 .. Length( chars ) ] do
+      if IsFunction( chars[i][1] ) then
+        chars[i]:= chars[i][1]( chars, chars[i][2] );
+      fi;
+    od;
+end;
+
+
+#############################################################################
+##
+#F  ALF( <from>, <to>, <map> ) . . . . . . . . . .  add library table fusions
+#F  ALF( <from>, <to>, <map>, <text> )
+##
+ALF := function( arg )
+
+    local pos, text;
+
+    if ALN <> Ignore then
+
+      # A file is read that does not belong to the official library.
+      # Check that the names are valid.
+      pos:= Position( LIBTABLE.LIBLIST.firstnames, arg[2] );
+      if not arg[1] in RecNames( LIBTABLE.( LIBTABLE.TABLEFILENAME ) ) then
+        Error( "source '", arg[1], "' is not stored in 'LIBTABLE.",
+               LIBTABLE.TABLEFILENAME, "'" );
+      elif pos = fail then
+        Error( "destination '", arg[2], "' is not a valid first name" );
+      fi;
+
+      # Check whether there was already such a fusion.
+      if arg[1] in LIBTABLE.LIBLIST.fusionsource[ pos ] then
+        Error( "there is already a fusion from '",
+               arg[1], "' to '", arg[2], "'" );
+      fi;
+
+      # Store the fusion source.
+      LIBTABLE.LIBLIST.fusionsource[ pos ]:= Immutable( Concatenation(
+          LIBTABLE.LIBLIST.fusionsource[ pos ], [ arg[1] ] ) );
+
+    fi;
+
+    if Length( arg ) = 4 then
+      text:= Concatenation( arg[4] );
+      ConvertToStringRep( text );
+      Add( LIBTABLE.( LIBTABLE.TABLEFILENAME ).(
+               arg[1] ).computedClassFusions,
+           rec( name:= arg[2], map:= arg[3], text:= text ) );
+    else
+      Add( LIBTABLE.( LIBTABLE.TABLEFILENAME ).(
+               arg[1] ).computedClassFusions,
+           rec( name:= arg[2], map:= arg[3] ) );
+    fi;
+end;
+
+
+#############################################################################
+##
+#F  ACM( <spec>, <dim>, <val> ) . . . . . . . . . . . . . add Clifford matrix
+##
+ACM := function( spec, dim, val )
+    spec:= LIBTABLE.( Concatenation( "clm", spec ) );
+    if not IsBound( spec[ dim ] ) then
+      spec[ dim ]:= [];
+    fi;
+    Add( spec[ dim ], val );
+end;
+
+
+#############################################################################
+##
+#F  ARC( <name>, <comp>, <val> ) . . . . . . . add component of library table
+##
+ARC := function( name, comp, val )
+    LIBTABLE.( LIBTABLE.TABLEFILENAME ).( name ).( comp ):= val;
+end;
+
+
+#############################################################################
+##
+#F  NotifyNameOfCharacterTable( <firstname>, <newnames> )
+##
+##  notifies the new names in the list <newnames> for the library table with
+##  first name <firstname>, if there is no other table yet for that some of
+##  these names are admissible.
+##
+NotifyNameOfCharacterTable := function( firstname, newnames )
+
+    local lower,
+          pos,
+          pos2,
+          name,
+          j;
+
+    if not ( IsString( firstname )
+             and IsList( newnames ) and ForAll( newnames, IsString ) ) then
+      Error( "<firstname> and entries in list <newnames> must be strings" );
+    elif ForAny( [ 1 .. Length( firstname ) - 2 ],
+               x -> firstname{ [ x .. x+2 ] } = "mod" ) then
+      Error( "Brauer tables must not have explicitly given 'othernames'" );
+    fi;
+
+    pos:= Position( LIBTABLE.LIBLIST.firstnames, firstname );
+    if pos = fail then
+      Error( "no GAP library table with first name '", firstname, "'" );
+    fi;
+    lower:= List( newnames, LowercaseString );
+    if ForAny( lower, x -> x in LIBTABLE.LIBLIST.allnames ) then
+      Error( "<newnames> must contain only new names" );
+    fi;
+
+    # Change 'LIBTABLE.LIBLIST'.
+    LIBTABLE.LIBLIST.allnames:= Concatenation(
+        LIBTABLE.LIBLIST.allnames, lower );
+    LIBTABLE.LIBLIST.position:= Concatenation(
+        LIBTABLE.LIBLIST.position, List( lower, x -> pos ) );
+    SortParallel( LIBTABLE.LIBLIST.allnames, LIBTABLE.LIBLIST.position );
+    LIBTABLE.LIBLIST.allnames := Immutable( LIBTABLE.LIBLIST.allnames );
+    LIBTABLE.LIBLIST.position := Immutable( LIBTABLE.LIBLIST.position );
+end;
+
+
+#############################################################################
+##
+#F  ALN( <name>, <names> )  . . . . . . . . . . . . . add library table names
+##
+ALN := NotifyNameOfCharacterTable;
+
+
+#############################################################################
+##
+#F  NotifyCharacterTable( <firstname>, <filename>, <othernames> )
+##
+##  notifies a new ordinary table to the library.
+##  This table has 'identifier' component <firstname>,
+##  it is contained in the file with name <filename>, and
+##  it is known to have also the names contained in the list <othernames>.
+##
+##  'NotifyCharacterTable' modifies the global variable 'LIBLIST' after
+##  having checked that there is no other table yet with admissible name
+##  equal to <firstname> or contained in <othernames>.
+##
+NotifyCharacterTable := function( firstname, filename, othernames )
+
+    local len, pos;
+
+    if not ( IsString( firstname ) and IsString( filename )
+                                   and IsList( othernames ) ) then
+      Error( "<firstname>, <filename> must be strings, ",
+             "<othernames> must be a list" );
+    fi;
+
+    if LowercaseString( firstname ) in LIBTABLE.LIBLIST.allnames then
+      Error( "'", firstname, "' is already a valid name" );
+    fi;
+
+    # Change 'LIBTABLE.LIBLIST'.
+    LIBTABLE.LIBLIST.firstnames:= Immutable( Concatenation(
+        LIBTABLE.LIBLIST.firstnames, [ firstname ] ) );
+    if not filename in LIBTABLE.LIBLIST.files then
+      LIBTABLE.LIBLIST.files:= Immutable( Concatenation(
+          LIBTABLE.LIBLIST.files, [ filename ] ) );
+    fi;
+    len:= Length( LIBTABLE.LIBLIST.firstnames );
+    LIBTABLE.LIBLIST.filenames:= ShallowCopy( LIBTABLE.LIBLIST.filenames );
+    LIBTABLE.LIBLIST.filenames[ len ]:=
+        Position( LIBTABLE.LIBLIST.files, filename );
+    LIBTABLE.LIBLIST.filenames:= Immutable( LIBTABLE.LIBLIST.filenames );
+    LIBTABLE.LIBLIST.fusionsource:= ShallowCopy(
+        LIBTABLE.LIBLIST.fusionsource );
+    LIBTABLE.LIBLIST.fusionsource[ len ]:= [];
+    LIBTABLE.LIBLIST.fusionsource:= Immutable(
+        LIBTABLE.LIBLIST.fusionsource );
+    NotifyNameOfCharacterTable( firstname, [ firstname ] );
+    NotifyNameOfCharacterTable( firstname, othernames );
+
+    # Allow natural names.
+#T !!
+end;
+
+
+#############################################################################
+##
+#F  MBT( <arg> )
+##
+MBT := function( arg )
+
+    local i, record;
+
+    record:= rec(
+                  infoText                 := arg[ 3],
+                  underlyingCharacteristic := arg[ 2],
+                  block                    := arg[ 4],
+                  defect                   := arg[ 5],
+                  basicset                 := arg[ 6],
+                  brauertree               := arg[ 7],
+                  decinv                   := arg[ 8],
+                  factorblocks             := arg[ 9],
+                  automorphismsOfTable     := arg[10],
+                  indicator                := arg[11]
+                 );
+
+    for i in RecNames( record ) do
+      if record.(i) = 0 then
+        Unbind( record.(i) );
+      fi;
+    od;
+    if Length( arg ) = 12 then
+      for i in RecNames( arg[12] ) do
+        record.(i):= arg[12].(i);
+      od;
+    fi;
+    LIBTABLE.( LIBTABLE.TABLEFILENAME ).(
+                 Concatenation( arg[1], "mod", String( arg[2] ) ) ):= record;
+end;
+
+
+#############################################################################
+##
+#F  MOT( <arg> )
+##
+MOT := function( arg )
+
+    local record, i;
+
+    # Construct the record.
+    record:= rec(
+                  infoText                 := arg[2],
+                  underlyingCharacteristic := 0,
+                  sizesCentralizers        := arg[3],
+                  computedPowerMaps        := arg[4],
+                  computedClassFusions     := [],
+                  irr                      := arg[5],
+                  automorphismsOfTable     := arg[6]
+                 );
+
+    for i in [ "infoText", "sizesCentralizers", "computedPowerMaps",
+               "computedClassFusions", "irr", "automorphismsOfTable" ] do
+      if record.(i) = 0 then
+        Unbind( record.(i) );
+      fi;
+    od;
+    if IsBound( arg[7] ) then
+      record.construction:= arg[7];
+    fi;
+
+    # Store the table record.
+    LIBTABLE.( LIBTABLE.TABLEFILENAME ).( arg[1] ):= record;
+end;
+
+
+#############################################################################
+##
+#F  PrimeBase( <q> )
+##
+PrimeBase := function( q )
+    if not IsBound( GEN_Q_P[q] ) then
+      GEN_Q_P[q]:= FactorsInt( q )[1];
+    fi;
+    return GEN_Q_P[q];
+end;
+
+
+#############################################################################
+##
+#F  LibInfoCharacterTable( <tblname> )
+##
+LibInfoCharacterTable := function( tblname )
+
+    local i, ordinfo, obj, pos;
+
+    # Is 'tblname' the name of a Brauer table, i.e., has it the structure
+    # '<ordname>mod<prime>' ?
+    # If so, return '<firstordname>mod<prime>' where
+    # '<firstordname> = LibInfoCharacterTable( <ordname> ).firstName'.
+
+    tblname:= LowercaseString( tblname );
+    for i in [ 1 .. Length( tblname ) - 2 ] do
+      if tblname{ [ i .. i+2 ] } = "mod" then
+        ordinfo:= LibInfoCharacterTable( tblname{ [ 1 .. i-1 ] } );
+        if ordinfo <> fail then
+          ordinfo.firstName:= Concatenation( ordinfo.firstName,
+                                  tblname{ [ i .. Length( tblname ) ] } );
+          ConvertToStringRep( ordinfo.firstName );
+          ordinfo.fileName:= ShallowCopy( ordinfo.fileName );
+          ordinfo.fileName[3]:= 'b';
+          ConvertToStringRep( ordinfo.fileName );
+        fi;
+        return ordinfo;
+      fi;
+    od;
+
+    # The name might belong to an ordinary table.
+    pos:= Position( LIBTABLE.LIBLIST.allnames, tblname );
+    if pos <> fail then
+      pos:= LIBTABLE.LIBLIST.position[ pos ];
+      if pos <> fail then
+        return rec( firstName := LIBTABLE.LIBLIST.firstnames[ pos ],
+                    fileName  := LIBTABLE.LIBLIST.files[
+                                     LIBTABLE.LIBLIST.filenames[ pos ] ] );
+      fi;
+      return fail;
+    fi;
+
+    # The name might belong to a generic table.
+    if tblname in LIBTABLE.LIBLIST.GENERIC.allnames then
+      return rec( firstName := LIBTABLE.LIBLIST.GENERIC.firstnames[
+                            Position( LIBTABLE.LIBLIST.GENERIC.allnames,
+                                      tblname ) ],
+                  fileName  := "ctgeneri" );
+    fi;
+
+    return fail;
+end;
+
+
+#############################################################################
+##
+#F  LibraryTables( <filename> )
+##
+LibraryTables := function( filename )
+
+    local file;
+
+    if not IsBound( LIBTABLE.LOADSTATUS.( filename ) )
+       or LIBTABLE.LOADSTATUS.( filename ) = "unloaded" then
+
+      # It is necessary to read a library file.
+      # First unload all files which are not '"userloaded"', except that
+      # with the ordinary resp. Brauer tables corresponding to those in
+      # the file 'filename'
+      for file in RecNames( LIBTABLE.LOADSTATUS ) do
+        if LIBTABLE.LOADSTATUS.( file ) <> "userloaded" and
+           filename{ [ 4 .. Length( filename ) ] }
+            <> file{ [ 4 .. Length( file ) ] } then
+          LIBTABLE.( file ):= rec();
+          LIBTABLE.LOADSTATUS.( file ):= "unloaded";
+        fi;
+      od;
+
+      # Try to read the file.
+      LIBTABLE.( filename ):= rec();
+#T      LIBTABLE.TABLEFILENAME:= filename;
+#T allow to read files in other directories if the tables were notified there!
+      ReadTbl( Concatenation( filename, ".tbl" ) );
+#T       if not ReadPath( TBLNAME, filename, ".tbl", "ReadTbl" ) then
+#T         Print( "#E ReadTbl: no file with name '", filename,
+#T                "' in the GAP table library\n" );
+#T         return fail;
+#T       fi;
+
+      # Reset the load status from '"userloaded"' to '"loaded"'.
+      LIBTABLE.LOADSTATUS.( filename ):= "loaded";
+
+    fi;
+
+    return LIBTABLE.( filename );
+end;
+
+
+#############################################################################
+##
+#F  CharacterTableFromLibrary( [ <tblname> ] )
+#F  CharacterTableFromLibrary( [ <series>, <parameters> ] )
+##
+CharacterTableFromLibrary := function( arglist )
+
+    local i,
+          j,
+          tblname,
+          firstname,
+          filename,
+          libtbl,
+          librarytables,
+          file,
+          newirredinfo,
+          info,
+          pos,
+          fld,
+          name,
+          fus;
+
+    if IsEmpty( arglist ) or not IsString( arglist[1] ) then
+
+      Error( "usage: CharacterTableFromLibrary( [ <tblname> ] )\n",
+             " resp. CharacterTableFromLibrary( [ <series>, <parameters> ] )" );
+
+    elif Length( arglist ) = 1 then
+
+      # 'CharacterTableFromLibrary( tblname )'
+      tblname:= arglist[1];
+      firstname:= LibInfoCharacterTable( tblname );
+      if firstname = fail then
+        Info( InfoCharacterTable, 1,
+              "No library table with name '", tblname, "'" );
+        return fail;
+      fi;
+      filename  := firstname.fileName;
+      firstname := firstname.firstName;
+
+      if filename{ [ 1 .. 3 ] } = "ctb" then
+
+        # Brauer table, call 'BrauerTable'
+        # (First get the ordinary table.)
+        return BrauerTable( firstname, CharacterTableFromLibrary(
+                   [ PartsBrauerTableName( firstname ).ordname ] ) );
+
+      fi;
+
+      # ordinary or generic table
+
+      librarytables:= LibraryTables( filename );
+
+      if not IsBound( librarytables.( firstname ) ) then
+        Info( InfoCharacterTable, 1,
+              "No library table with name '", tblname, "'" );
+        return fail;
+      fi;
+
+      libtbl:= librarytables.( firstname );
+
+      # If the table has not yet been converted to an object,
+      # we must do this now.
+      if IsRecord( libtbl ) then
+
+        # If the table is a generic table, simply return it.
+        if IsBound( libtbl.isGenericTable )
+           and libtbl.isGenericTable = true then
+          libtbl.identifier := firstname;
+          return ConvertToLibraryCharacterTableNC( libtbl );
+        fi;
+
+        # Concatenate the lines of the 'text' component.
+        if IsBound( libtbl.infoText ) then
+          libtbl.infoText:= Concatenation( libtbl.infoText );
+          ConvertToStringRep( libtbl.infoText );
+        fi;
+
+        # Store the fusion sources.
+        pos:= Position( LIBTABLE.LIBLIST.firstnames, firstname );
+        libtbl.namesOfFusionSources:=
+            ShallowCopy( LIBTABLE.LIBLIST.fusionsource[ pos ] );
+
+        # Evaluate characters encoded as '[GALOIS,[i,j]]'
+        # or '[TENSOR,[i,j]]'.
+        if IsBound( libtbl.projectives ) then
+          fld:= libtbl.projectives;
+          libtbl.projectives:= [];
+          for i in [ 1, 3 .. Length( fld ) - 1 ] do
+            EvalChars( fld[i+1] );
+            for fus in LIBTABLE.LIBLIST.projections do
+              if fus[2] = firstname and fus[1] = fld[i] then
+                Add( libtbl.projectives, rec(
+                                              name  := fld[i],
+                                              chars := fld[i+1],
+                                              map   := fus[3]
+                                             ) );
+              fi;
+            od;
+          od;
+        fi;
+
+        # Obey the construction component.
+        if IsBound( libtbl.construction ) then
+          libtbl.construction( libtbl );
+        fi;
+
+        # initialize some components
+        libtbl.identifier:= firstname;
+        if     IsBound( libtbl.computedPowerMaps )
+           and not IsEmpty( libtbl.computedPowerMaps )
+           and not IsBound( libtbl.ordersClassRepresentatives ) then
+          libtbl.ordersClassRepresentatives:=
+                       ElementOrdersPowerMap( libtbl.computedPowerMaps );
+        fi;
+
+        if IsBound( libtbl.automorphismsOfTable ) then
+          libtbl.automorphismsOfTable:= GroupByGenerators(
+                     libtbl.automorphismsOfTable, () );
+        fi;
+
+        # Evaluate characters encoded as '[GALOIS,[i,j]]', '[TENSOR,[i,j]]'.
+        EvalChars( libtbl.irr );
+
+        # If necessary, decode the irredinfo component.
+        # ('irredinfo' is then a record, its components are lists,
+        # each element a list of same length as 'irr')
+        if IsBound( libtbl.irredinfo ) then
+          newirredinfo:= List( libtbl.irr, x -> rec() );
+          for fld in RecNames( libtbl.irredinfo ) do
+            info:= libtbl.irredinfo.( fld );
+            for i in [ 1 .. Length( newirredinfo ) ] do
+              newirredinfo[i].( fld ):= [];
+            od;
+            for i in [ 1 .. Length( info ) ] do
+              for j in [ 1 .. Length( newirredinfo ) ] do
+                if IsBound( info[i] ) then
+                  newirredinfo[j].( fld )[i]:= info[i][j];
+                fi;
+              od;
+            od;
+          od;
+          libtbl.irredInfo:= newirredinfo;
+          Unbind( libtbl.irredinfo );
+        fi;
+
+        # Make the table object, and store it for the next call.
+        ConvertToLibraryCharacterTableNC( libtbl );
+        librarytables.( firstname ):= libtbl;
+
+      fi;
+
+      # Return the library table.
+      return libtbl;
+
+    else
+
+      if arglist[1] = "Quaternionic" and Length( arglist ) = 2
+         and IsInt( arglist[2] ) then
+        return CharacterTableQuaternionic( arglist[2] );
+
+      elif arglist[1] = "GL" and Length( arglist ) = 3
+           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+
+        # 'CharacterTable( GL, 2, q )'
+        if arglist[2] = 2 then
+          return CharacterTableSpecialized(
+                     CharacterTableFromLibrary( [ "GL2" ] ), arglist[3] );
+        else
+          Info( InfoCharacterTable, 1,
+                "Table of GL(", arglist[2], ",q) not yet implemented" );
+          return fail;
+        fi;
+
+      elif arglist[1] = "SL" and Length( arglist ) = 3
+           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+
+        # CharacterTable( SL, 2, q )
+        if arglist[2] = 2 then
+          if arglist[3] mod 2 = 0 then
+            return CharacterTableSpecialized(
+                       CharacterTableFromLibrary( [ "SL2even" ] ),
+                       arglist[3] );
+          else
+            return CharacterTableSpecialized(
+                       CharacterTableFromLibrary( [ "SL2odd" ] ),
+                       arglist[3] );
+          fi;
+        else
+          Info( InfoCharacterTable, 1,
+                "Table of SL(", arglist[2], ",q) not yet implemented" );
+          return fail;
+        fi;
+
+      elif arglist[1] = "PSL" and Length( arglist ) = 3
+           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+
+        # PSL( 2, q )
+        if arglist[2] = 2 then
+          if arglist[3] mod 2 = 0 then
+            return CharacterTableSpecialized(
+                       CharacterTableFromLibrary( [ "SL2even" ] ),
+                       arglist[3] );
+          elif ( arglist[3] - 1 ) mod 4 = 0 then
+            return CharacterTableSpecialized(
+                       CharacterTableFromLibrary( [ "PSL2even" ] ),
+                       arglist[3] );
+          else
+            return CharacterTableSpecialized(
+                       CharacterTableFromLibrary( [ "PSL2odd" ] ),
+                       arglist[3] );
+          fi;
+        else
+          Info( InfoCharacterTable, 1,
+                "Table of PSL(", arglist[2], ",q) not yet implemented" );
+          return fail;
+        fi;
+
+      elif arglist[1] = "GU" and Length( arglist ) = 3
+           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+
+        # GU( 3, q )
+        if arglist[2] = 3 then
+          return CharacterTableSpecialized(
+                     CharacterTableFromLibrary( [ "GU3" ] ), arglist[3] );
+        else
+          Info( InfoCharacterTable, 1,
+                "Table of GU(", arglist[2], ",q) not yet implemented" );
+          return fail;
+        fi;
+
+      elif arglist[1] = "SU" and Length( arglist ) = 3
+           and IsInt( arglist[2] ) and IsInt( arglist[3] ) then
+
+        # SU( 3, q )
+        if arglist[2] = 3 then
+          return CharacterTableSpecialized(
+                     CharacterTableFromLibrary( [ "SU3" ] ),
+                     arglist[3] );
+        else
+          Info( InfoCharacterTable, 1,
+                "Table of SU(", arglist[2], ",q) not yet implemented" );
+          return fail;
+        fi;
+
+      elif arglist[1] = "Suzuki" and Length( arglist ) = 2
+           and IsInt( arglist[2] ) then
+        if not Set( FactorsInt( arglist[2] ) ) = [ 2 ] then
+          Info( InfoCharacterTable, 1,
+                "CharacterTable(\"Suzuki\",q): q must be a power of 2");
+          return fail;
+        fi;
+        return CharacterTableSpecialized(
+                   CharacterTableFromLibrary( [ "Suzuki" ] ),
+                   [ arglist[2],
+                     2^((Length(FactorsInt(arglist[2]))+1)/2) ] );
+
+      else
+        return CharacterTableSpecialized(
+                   CharacterTableFromLibrary( [ arglist[1] ] ), arglist[2] );
+      fi;
+    fi;
+end;
+
+
+#############################################################################
+##
+#M  CharacterTable( <name> )  . . . . . . . . . library table with given name
+#M  CharacterTable( <series>, <parameters> )
+##
+InstallOtherMethod( CharacterTable,
+    "method for a string",
+    true,
+    [ IsString ], 0,
+    name -> CharacterTableFromLibrary( [ name ] ) );
+
+InstallOtherMethod( CharacterTable,
+    "method for a string and an object",
+    true,
+    [ IsString, IsObject ], 1,
+    function( series, parameters )
+    return CharacterTableFromLibrary( [ series, parameters ] );
+    end );
+
+
+#############################################################################
+##
+#F  PartsBrauerTableName( <modname> )
+##
+PartsBrauerTableName := function( modname )
+
+    local i, primestring, ordname, prime, digits;
+
+    primestring:= 0;
+    for i in [ 1 .. Length( modname ) - 2 ] do
+      if modname{ [ i .. i + 2 ] } = "mod" then
+        primestring:= modname{ [ i + 3 .. Length( modname ) ] };
+        ordname:= modname{ [ 1 .. i-1 ] };
+      fi;
+    od;
+    if primestring = 0 then
+      Print( "#I PartsBrauerTableName: ", modname,
+             " is no valid name\n",
+             "#I      for a Brauer table\n" );
+      return fail;
+    fi;
+
+    # Convert the string back to a number.
+    digits:= "0123456789";
+    primestring:= List( primestring, x -> Position( digits, x ) );
+    if fail in primestring then
+      Print( "#I PartsBrauerTableName: ", modname,
+             " is no valid name\n",
+             "#I      for a Brauer table\n" );
+      return fail;
+    fi;
+    prime:= 0;
+    for i in [ 1 .. Length( primestring ) ] do
+      prime:= 10 * prime + ( primestring[i] - 1 );
+    od;
+
+    return rec( ordname:= ordname, prime:= prime );
+end;
+
+
+#############################################################################
+##
+#F  BasicSetBrauerTree( <brauertree> )
+##
+BasicSetBrauerTree := function( brauertree )
+
+    local i,
+          degrees,
+          basicset,
+          edge,
+          elm;
+
+    brauertree:= Set( brauertree );
+    basicset:= [];
+
+    # degrees of the vertices
+    degrees:= [];
+    for edge in brauertree do
+      for i in edge do
+        if not IsBound( degrees[i] ) then
+          degrees[i]:= 1;
+        else
+          degrees[i]:= degrees[i] + 1;
+        fi;
+      od;
+    od;
+
+    while brauertree <> [] do
+
+      # take a vertex of degree 1, remove its edge, adjust 'degrees'
+      elm:= Position( degrees, 1 );
+      AddSet( basicset, elm );
+      edge:= First( brauertree, x -> elm in x );
+      RemoveSet( brauertree, edge );
+      for i in edge do
+        degrees[i]:= degrees[i] - 1;
+      od;
+    od;
+
+    return basicset;
+end;
+
+
+#############################################################################
+##
+#F  DecMatBrauerTree( <brauertree> )
+##
+DecMatBrauerTree := function( brauertree )
+
+    local i,
+          j,
+          max,
+          decmat;
+
+    max:= 1;
+    for i in brauertree do
+      max:= Maximum( max, Maximum(i) );
+    od;
+    decmat:= NullMat( max, Length( brauertree ) );
+    for i in [ 1 .. Length( brauertree ) ] do
+      for j in brauertree[i] do
+        decmat[j][i]:= 1;
+      od;
+    od;
+    return decmat;
+end;
+
+
+#############################################################################
+##
+#F  BrauerTree( <decmat> )
+##
+BrauerTree := function( decmat )
+
+    local i, j, brauertree, edge, len;
+
+    if not ( IsMatrix( decmat )
+             and ForAll( decmat, x -> ForAll( x, y -> y=0 or y=1 ) ) ) then
+      Print( "#I BrauerTree: <decmat> is not decomposition matrix\n",
+             "#I     of a block of cyclic defect\n");
+      return fail;
+    fi;
+
+    if decmat = [ [ 1 ] ] then return []; fi;
+
+    brauertree:= [];
+    for i in [ 1 .. Length( decmat[1] ) ] do
+
+      # find the entries 1 in column 'i'
+      edge:= [];
+      for j in [ 1 .. Length( decmat ) ] do
+        if decmat[j][i] = 1 then Add( edge, j ); fi;
+      od;
+      len:= Length( edge );
+
+      # If 'len = 2', we have an ordinary edge of the tree; else this may
+      # concern an exceptional character.
+
+      if len = 2 then
+        Add( brauertree, edge );
+      else
+        if Length( Set( decmat{ edge } ) ) <= 2 then
+
+          # all or all but one ordinary irreducibles restrict identically
+          Add( brauertree, edge );
+
+        else
+          Print( "#I BrauerTree: <decmat> is not decomposition",
+                 " matrix\n",
+                 "#I     of a block of cyclic defect\n");
+          return fail;
+        fi;
+      fi;
+    od;
+    return brauertree;
+end;
+
+
+#############################################################################
+##
+#F  BrauerTable( <name>, <ordtbl> )
+##
+BrauerTable := function( name, ordtbl )
+
+    local filename,     # name of the file containing the Brauer table
+          fld,          # library tables of the whole library file
+          libtbl,       # record with data of the desired table
+          reg,          # Brauer table, result
+          result_blocks,
+          i, j,
+          ord,
+          pow,
+          ordblocks,
+          modblocks,
+          defect,
+          prime,
+          irreducibles,
+          restricted,
+          block,
+          basicset,
+          class,
+          images,
+          chi,
+          gal,
+          newimages,
+          pos,
+          im,
+          decmat,
+          brauertree,
+          facttbl,
+          offset,
+          decinv;
+
+    # Get the library file if possible.
+    filename:= LibInfoCharacterTable( name ).fileName;
+    fld:= LibraryTables( filename );
+    if fld = fail or not IsBound( fld.( name ) ) then
+      Info( InfoCharacterTable, 1,
+            "No library table with name '", name, "'" );
+      return fail;
+    fi;
+    libtbl:= fld.( name );
+
+    # If the table was already constructed simply return it.
+    if IsBrauerTable( libtbl ) then
+      return libtbl;
+    fi;
+
+    # Otherwise we have to work.
+    prime:= libtbl.underlyingCharacteristic;
+    reg:= CharacterTableRegular( ordtbl, prime );
+
+    SetInfoText( reg, libtbl.infoText );
+
+    # If automorphisms are known (list of generators), convert to a group.
+    if IsBound( libtbl.automorphismsOfTable ) then
+      SetAutomorphismsOfTable( reg,
+          GroupByGenerators( libtbl.automorphismsOfTable, () ) );
+    fi;
+
+    # Initialize some components.
+    if not IsBound( libtbl.decinv ) then
+      libtbl.decinv:= [];
+    fi;
+
+    block:= [];
+    defect:= [];
+    basicset:= [];
+    brauertree:= [];
+    decinv:= [];
+
+    ordblocks:= InverseMap( List( IrredInfo( ordtbl ),
+                                  x -> x.pblock[prime] ) );
+#T why is this available?
+#T (better compute anew?)
+
+    # Get the blocks of factor groups if necessary;
+    # 'factorblocks' is a list of pairs containing the names of the
+    # tables that hold the blocks and the offset of basic set characters.
+    if IsBound( libtbl.factorblocks ) then
+
+      for i in libtbl.factorblocks do
+        facttbl:= LIBTABLE.( filename ).( Concatenation(
+                                            i[1], "mod", String( prime ) ) );
+        if block = [] then
+          offset:= 0;
+        else
+          offset:= Maximum( block ) + 1 - Minimum( facttbl!.block );
+        fi;
+        pos:= Length( defect );
+        Append( defect, facttbl!.defect );
+        Append( block, offset + facttbl!.block );
+        for j in [ 1 .. Length( facttbl!.defect ) ] do
+          if facttbl!.defect[j] <> 0 then
+            if IsBound( facttbl!.decinv ) and
+               IsBound( facttbl!.decinv[j] ) then
+              if IsInt( facttbl!.decinv[j] ) then
+                decinv[ pos + j ]:= facttbl!.decinv[ facttbl!.decinv[j] ];
+              else
+                decinv[ pos + j ]:= facttbl!.decinv[j];
+              fi;
+              brauertree[ pos + j ]:= fail;
+              basicset[ pos + j ]:= i[2] + facttbl!.basicset[j];
+            else
+              if IsInt( facttbl!.brauertree[j] ) then
+                brauertree[ pos + j ]:=
+                    facttbl!.brauertree[ facttbl!.brauertree[j] ];
+              else
+                brauertree[ pos + j ]:= facttbl!.brauertree[j];
+              fi;
+              basicset[ pos + j ]:= ordblocks[ pos + j ]{
+                            BasicSetBrauerTree( brauertree[ pos + j ] ) };
+            fi;
+          fi;
+        od;
+      od;
+
+    fi;
+
+    pos:= Length( defect );
+    Append( defect, libtbl.defect );
+    Append( block, libtbl.block );
+    for j in [ 1 .. Length( libtbl.defect ) ] do
+      if libtbl.defect[j] <> 0 then
+        if IsBound( libtbl.decinv[j] ) then
+          if IsInt( libtbl.decinv[j] ) then
+            decinv[ pos + j ]:= libtbl.decinv[ libtbl.decinv[j] ];
+          else
+            decinv[ pos + j ]:= libtbl.decinv[j];
+          fi;
+          brauertree[ pos + j ]:= fail;
+          basicset[ pos + j ]:= libtbl.basicset[j];
+        else
+          if IsInt( libtbl.brauertree[j] ) then
+            brauertree[ pos + j ]:=
+                libtbl.brauertree[ libtbl.brauertree[j] ];
+          else
+            brauertree[ pos + j ]:= libtbl.brauertree[j];
+          fi;
+          basicset[ pos + j ]:= ordblocks[ pos + j ]{
+                            BasicSetBrauerTree( brauertree[ pos + j ] ) };
+        fi;
+      fi;
+    od;
+
+    # compute the blocks and the irreducibles of each block,
+    # and assign them to the right positions;
+    # assign the known decomposition matrices and Brauer trees;
+    # ignore defect 0 blocks
+    irreducibles:= [];
+    restricted:= RestrictedClassFunctions( Irr( ordtbl ), reg );
+
+    modblocks := InverseMap( block );
+    result_blocks:= [];
+
+    for i in [ 1 .. Length( ordblocks ) ] do
+
+      if IsInt( ordblocks[i] ) then ordblocks[i]:= [ ordblocks[i] ]; fi;
+      if IsInt( modblocks[i] ) then modblocks[i]:= [ modblocks[i] ]; fi;
+
+      if defect[i] = 0 then
+
+        irreducibles[ modblocks[i][1] ]:= restricted[ ordblocks[i][1] ];
+        decinv[i]:= [ [1] ];
+        basicset[i]:= ordblocks[i];
+
+      else
+
+        if IsBound( basicset[i] ) then
+          if IsBound( brauertree[i] ) and brauertree[i] <> fail then
+            decinv[i]:= DecMatBrauerTree( brauertree[i]){
+                             Filtered( [ 1 .. Length( ordblocks[i] ) ],
+                                       x -> ordblocks[i][x] in basicset[i] )
+                            }^(-1) ;
+          fi;
+          if IsBound( decinv[i] ) then
+            irreducibles{ modblocks[i] }:=
+                List( decinv[i] * List( restricted{ basicset[i] },
+                                        ValuesOfClassFunction ),
+                      vals -> CharacterByValues( reg, vals ) );
+          else
+            Error( "at least one of the components <decinv>, <brauertree> ",
+                   "must be bound at pos. ", i );
+          fi;
+        else
+          Print( "#E BrauerTable: no basic set for block ", i, "\n" );
+        fi;
+      fi;
+
+      result_blocks[i]:= rec( defect    := defect[i],
+                              ordchars  := Immutable( ordblocks[i] ),
+                              modchars  := Immutable( modblocks[i] ),
+                              decinv    := Immutable( decinv[i] ),
+                              basicset  := Immutable( basicset[i] )   );
+      if IsBound( brauertree[i] ) and brauertree[i] <> fail then
+        result_blocks[i].brauertree:= Immutable( brauertree[i] );
+      fi;
+
+    od;
+
+    SetBlocksInfo( reg, result_blocks );
+    SetIrr( reg, irreducibles );
+
+    # decode the 'IrredInfo' value
+    # (contains 2nd indicator if the prime is 2, else nothing)
+    if IsBound( libtbl.indicator ) then
+      SetIrredInfo( reg, List( libtbl.indicator,
+                               x -> rec( indicator:= [ , x ] ) ) );
+    fi;
+
+#T BAD HACK until incomplete tables disappeared ...
+#T only Co2mod2 ...
+    if IsBound( libtbl.warning ) then
+      Print( "#W warning for table of '", libtbl.identifier, "':\n",
+             libtbl.warning, "\n" );
+    fi;
+
+    # Store the Brauer table for the next call.
+    fld.( name ):= reg;
+
+    # Return the Brauer table.
+    return reg;
+end;
+
+
+#############################################################################
+##
+#M  \mod( <tbl>, <p> )  . . . . . . . . . . . . . . <p>-modular library table
+##
+##  If <tbl> is an {\ATLAS} library table then take the Brauer table from the
+##  library if possible.
+##
+InstallMethod( \mod,
+    "method for a library character table and a positive integer",
+    true,
+    [ IsOrdinaryTable and IsLibraryCharacterTableRep,
+      IsPosRat and IsInt ], 0,
+    function( tbl, p )
+    return BrauerTable( Concatenation( Identifier( tbl ), "mod", String(p) ),
+                        tbl );
+    end );
+
+
+#############################################################################
+##
+#F  CharacterTableSpecialized( <generic_table>, <q> )  . . . . specialise <q>
+##
+CharacterTableSpecialized := function( gtab, q )
+
+    local taf,         # record of the specialized table, result
+          genclass,    #
+          classparam,  #
+          genchar,     #
+          charparam,   #
+          parm,        #
+          i, k,        #
+          class;       #
+
+    # Check if the argument is valid.
+    if not IsGenericCharacterTableRep( gtab ) then
+      Error( "this is not a generic character table" );
+    elif IsBound( gtab!.domain ) and not gtab!.domain( q ) then
+      Error( q, " is not a valid paramater for this generic table" );
+    fi;
+
+    # A generic character table must contain at least functions to compute
+    # the parametrisation of classes and characters.
+
+    if IsBound( gtab!.wholetable ) then
+
+      # If the generic table has a component 'wholetable'
+      # (a function which takes the generic table and 'q' as arguments),
+      # use this function to construct the whole table.
+      taf:= gtab!.wholetable( gtab, q );
+
+    else
+
+      taf := rec();
+
+      # Get the parametrisation of classes and characters.
+      # 'genclass' stores for each class of the specialized character table
+      # the number of the class of the generic table it stems from.
+      # 'classparam' stores the parameter of the special class.
+      # 'genchar' and 'charparam' do the same for characters.
+
+      if    not IsBound( gtab!.classparam )
+         or not IsBound( gtab!.charparam ) then
+        Error( "components 'classparam' and 'charparam' are missing" );
+      fi;
+
+      genclass   := [];
+      classparam := [];
+
+      for i in [ 1 .. Length( gtab!.classparam ) ] do
+        parm := gtab!.classparam[i](q);
+        Append( classparam, parm );
+        Append( genclass, List( parm, j -> i ) );
+      od;
+
+      genchar   := [];
+      charparam := [];
+
+      for i in [ 1 .. Length( gtab!.charparam ) ] do
+        parm := gtab!.charparam[i](q);
+        Append( charparam, parm );
+        Append( genchar, List( parm, j -> i ) );
+      od;
+
+      # Compute the name of the table.
+      if IsBound( gtab!.specializedname ) then
+        taf.identifier:= gtab!.specializedname( q );
+      fi;
+
+      # Compute the group order.
+      if IsBound( gtab!.size ) then
+        taf.size := gtab!.size(q);
+      fi;
+
+      # Compute centralizer and representative orders.
+      if IsBound( gtab!.centralizers ) then
+        taf.sizesCentralizers := List( [ 1 .. Length( classparam ) ],
+                j -> gtab!.centralizers[ genclass[j] ]( q, classparam[j] ) );
+      fi;
+
+      if IsBound( gtab!.orders ) then
+        taf.ordersClassRepresentatives :=
+                List( [ 1 .. Length( classparam ) ],
+                      j -> gtab!.orders[ genclass[j] ]( q, classparam[j] ) );
+      fi;
+
+      # Compute the power maps.
+      taf.computedPowerMaps := [];
+      if IsBound( gtab!.powermap ) and IsBound( taf!.size ) then
+        for i in Reversed( Set( Factors( taf!.size ) ) ) do
+          taf.computedPowerMaps[i] := [];
+          for class in Reversed( [1 .. Length( classparam ) ] ) do
+            parm := gtab!.powermap[genclass[class]](q, classparam[class],i);
+            k := 1;
+            while genclass[k] <> parm[1] or classparam[k] <> parm[2] do
+              k := k+1;
+            od;
+            taf.computedPowerMaps[i][class] := k;
+          od;
+        od;
+      fi;
+
+      # Perform some initialisations, if the necessary data are present.
+      if IsBound( gtab!.classtext ) then
+        taf.classtext := List( [ 1 .. Length( classparam ) ],
+                   j -> gtab!.classtext[ genclass[j] ]( q, classparam[j] ) );
+      fi;
+
+      # Compute the character values.
+      if IsBound( gtab!.matrix ) then
+        taf.irr := gtab!.matrix( q );
+      elif IsBound( gtab!.irreducibles ) then
+        taf.irr := List( [ 1 .. Length( charparam ) ],
+                  i -> List( [1..Length(classparam)],
+                             j -> gtab!.irreducibles[genchar[i]][genclass[j]]
+                                  ( q, charparam[i], classparam[j] ) ) );
+      fi;
+
+      taf.classParameters := List( [ 1 .. Length( classparam ) ],
+                                   i -> [ genclass[i], classparam[i] ] );
+      taf.irredInfo:= List( [ 1 .. Length( charparam ) ],
+                            i->rec(charparam:= [genchar[i],charparam[i]]) );
+
+      if IsBound( gtab!.text ) then
+        taf.infoText:= Concatenation( "computed using ", gtab!.text );
+      fi;
+
+    fi;
+
+    # Objectify and return the table.
+    ConvertToLibraryCharacterTableNC( taf );
+    return taf;
+end;
+
+
+#############################################################################
+##
+#F  ConvertToLibraryCharacterTableNC( <record> )
+##
+ConvertToLibraryCharacterTableNC := function( record )
+
+    local names,    # list of component names
+          i;        # loop over 'SupportedOrdinaryTableInfo'
+
+    names:= RecNames( record );
+
+    # Make the object.
+    if record.underlyingCharacteristic = 0 then
+      Objectify( NewKind( NearlyCharacterTablesFamily,
+                              IsOrdinaryTable
+                          and IsLibraryCharacterTableRep ),
+                 record );
+    else
+      Objectify( NewKind( NearlyCharacterTablesFamily,
+                              IsBrauerTable
+                          and IsLibraryCharacterTableRep ),
+                 record );
+    fi;
+
+    # Enter the properties and attributes.
+    for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
+      if SupportedOrdinaryTableInfo[i] in names then
+        Setter( SupportedOrdinaryTableInfo[ i-1 ] )( record,
+                            record!.( SupportedOrdinaryTableInfo[i] ) );
+      fi;
+    od;
+
+    # Make the lists of character values into character objects.
+    if "irr" in names then
+      SetIrr( record, List( record!.irr,
+                            chi -> CharacterByValues( record, chi ) ) );
+    fi;
+
+    # Return the object.
+    return record;
+end;
+
+
+#############################################################################
+##
+#F  TransferComponentsToLibraryTableRecord( <t>, <tbl> )
+##
+TransferComponentsToLibraryTableRecord := function( t, tbl )
+
+    local names, i, fld;
+
+    names:= RecNames( tbl );
+
+    for i in [ 1, 3 .. Length( SupportedOrdinaryTableInfo ) - 1 ] do
+      if     not SupportedOrdinaryTableInfo[ i+1 ] in names
+         and Tester( SupportedOrdinaryTableInfo[i] )( t ) then
+        tbl.( SupportedOrdinaryTableInfo[ i+1 ] ):=
+            SupportedOrdinaryTableInfo[i]( t );
+      fi;
+    od;
+
+    for fld in Difference( SupportedLibraryTableComponents, names ) do
+      if IsBound( t!.( fld ) ) then
+        tbl.( fld ):= t!.( fld );
+      fi;
+    od;
+end;
+
+
+#############################################################################
+##
+#F  ConstructMixed( <tbl>, <subname>, <factname>, <plan>, <perm> )
+##
+ConstructMixed := function( tbl, subname, factname, plan, perm )
+
+    local factfus,  # factor fusion from 'tbl' to 'fact'
+          subfus,   # subgroup fusion from 'sub' to 'tbl'
+          proj,     # projection map of 'subfus'
+          irreds,   # list of irreducibles
+          zero;     # list of zeros to be appended to the characters
+
+    factname := CharacterTableFromLibrary( [ factname ] );
+    subname  := CharacterTableFromLibrary( [ subname ] );
+    factfus := GetFusionMap( tbl, factname );
+    subfus  := GetFusionMap( subname, tbl );
+    proj    := ProjectionMap( subfus );
+    irreds  := List( Irr( factname ),
+                     x -> ValuesOfClassFunction( x ){ factfus } );
+    zero    := [ Maximum( subfus ) + 1 .. NrConjugacyClasses( tbl ) ] * 0;
+    Append( irreds, List( plan, entry ->
+         Concatenation( Sum( Irr( subname ){ entry } ){ proj }, zero ) ) );
+    tbl.irr:= Permuted( irreds, perm );
+end;
+
+
+#############################################################################
+##
+#F  ConstructProj( <tbl> )
+##
+##  constructs irreducibles for projective tables from projectives of
+##  a factor group table.
+##
+ConstructProj := function( tbl )
+
+    local i, j, factor, fus, mult, irreds, linear, omegasquare, I,
+          d, name, factfus, proj, adjust, Adjust,
+          ext, lin, chi, faith, nccl, partner, divs, prox, foll,
+          vals;
+
+    nccl:= Length( tbl.sizesCentralizers );
+    factor:= CharacterTableFromLibrary( [ tbl.irr[1][1] ] );
+    fus:= GetFusionMap( tbl, factor );
+#T works ?
+    mult:= tbl.sizesCentralizers[1] / Size( factor );
+    irreds:= List( Irr( factor ), x -> ValuesOfClassFunction( x ){ fus } );
+    linear:= Filtered( irreds, x -> x[1] = 1 );
+    linear:= linear{ [ 2 .. Length( linear ) ] };
+
+    # some roots of unity
+    omegasquare:= E(3)^2;
+    I:= E(4);
+
+    # Loop over the divisors of 'mult' (a divisor of 12).
+    # Note the succession for 'mult = 12'!
+    if mult <> 12 then
+      divs:= Difference( DivisorsInt( mult ), [ 1 ] );
+    else
+      divs:= [ 2, 4, 3, 6, 12 ];
+    fi;
+
+    for d in divs do
+
+      # Construct the faithful irreducibles for an extension by 'd'.
+      # For that, we split and adjust the portion of characters (stored
+      # on the small table 'factor') as if we would create this extension,
+      # and then we blow up these characters to the whole table.
+
+      name:= tbl.irr[d][1];
+      partner:= tbl.irr[d][2];
+      proj:= First( factor!.projectives, x -> x.name = name );
+      faith:= List( proj.chars, y -> y{ fus } );
+      proj:= ShallowCopy( proj.map );
+
+      if name = tbl.identifier then
+        factfus:= [ 1 .. Length( tbl.sizesCentralizers ) ];
+      else
+        factfus:= First( tbl.computedClassFusions, x -> x.name = name ).map;
+      fi;
+      Add( proj, Length( factfus ) + 1 );    # for termination of loop
+      adjust:= [];
+      for i in [ 1 .. Length( proj ) - 1 ] do
+        for j in [ proj[i] .. proj[i+1]-1 ] do
+          adjust[ j ]:= proj[i];
+        od;
+      od;
+
+      # now we have to multiply the values on certain classes 'j' with
+      # roots of unity, dependent on the value of 'd'\:
+
+      Adjust:= [];
+      for i in [ 1 .. d-1 ] do
+        Adjust[i]:= Filtered( [ 1 .. Length( factfus ) ],
+                              x -> adjust[ factfus[x] ] = factfus[x] - i );
+      od;
+
+      # d =  2\:\ classes in 'Adjust[1]' multiply with '-1'
+      # d =  3\:\ classes in 'Adjust[x]' multiply
+      #                       with 'E(3)^x' for the proxy cohort,
+      #                       with 'E(3)^(2*x)' for the follower cohort
+      # d =  4\:\ classes in 'Adjust[x]' multiply
+      #                       with 'E(4)^x' for the proxy cohort,
+      #                       with '(-E(4))^x' for the follower cohort,
+      # d =  6\:\ classes in 'Adjust[x]' multiply with '(-E(3))^x'
+      # d = 12\:\ classes in 'Adjust[x]' multiply with '(E(12)^7)^x'
+      #
+      # (*Note* that follower cohorts of classes never occur in projective
+      #  ATLAS tables ... )
+
+      # determine proxy classes and follower classes\:
+
+      if Length( linear ) in [ 2, 5 ] then  # out in [ 3, 6 ]
+        prox:= [];
+        foll:= [];
+        chi:= irreds[ Length( linear ) ];
+        for i in [ 1 .. nccl ] do
+          if chi[i] = omegasquare then
+            Add( foll, i );
+          else
+            Add( prox, i );
+          fi;
+        od;
+      elif Length( linear ) = 3 then        # out = 4
+        prox:= [];
+        foll:= [];
+        chi:= irreds[2];
+        for i in [ 1 .. nccl ] do
+          if chi[i] = -I then Add( foll, i ); else Add( prox, i ); fi;
+        od;
+      else
+        prox:= [ 1 .. nccl ];
+        foll:= [];
+      fi;
+
+      if d = 2 then
+        # special case without Galois partners
+        for chi in faith do
+          for i in Adjust[1] do chi[i]:= - chi[i]; od;
+          Add( irreds, chi );
+          for lin in linear do
+            ext:= List( [ 1 .. nccl ], x -> lin[x] * chi[x] );
+            if not ext in irreds then Add( irreds, ext ); fi;
+          od;
+        od;
+      elif d = 12 then
+        # special case with three Galois partners and 'lin = []'
+        vals:= [ E(12)^7, - omegasquare, - I, E(3), E(12)^11, -1,
+                 -E(12)^7, omegasquare, I, -E(3), -E(12)^11 ];
+        for j in [ 1 .. Length( faith ) ] do
+          chi:= faith[j];
+          for i in [ 1 .. 11 ] do
+            chi{ Adjust[i] }:= vals[i] * chi{ Adjust[i] };
+          od;
+          Add( irreds, chi );
+          for i in partner[j] do
+            Add( irreds, List( chi, x -> GaloisCyc( x, i ) ) );
+          od;
+        od;
+      else
+
+        if d = 3 then
+          Adjust{ [ 1, 2 ] }:= [ Union( Intersection( Adjust[1], prox ),
+                                        Intersection( Adjust[2], foll ) ),
+                                 Union( Intersection( Adjust[2], prox ),
+                                        Intersection( Adjust[1], foll ) ) ];
+          vals:= [ E(3), E(3)^2 ];
+        elif d = 4 then
+          Adjust{ [ 1, 3 ] }:= [ Union( Intersection( Adjust[1], prox ),
+                                        Intersection( Adjust[3], foll ) ),
+                                 Union( Intersection( Adjust[3], prox ),
+                                        Intersection( Adjust[1], foll ) ) ];
+          vals:= [ I, -1, -I ];
+        elif d = 6 then
+          vals:= [ -E(3), omegasquare, -1, E(3), - omegasquare ];
+        fi;
+
+        for j in [ 1 .. Length( faith ) ] do
+          chi:= faith[j];
+          for i in [ 1 .. d-1 ] do
+            chi{ Adjust[i] }:= vals[i] * chi{ Adjust[i] };
+          od;
+          Add( irreds, chi );
+          for lin in linear do
+            ext:= List( [ 1 .. nccl ], x -> lin[x] * chi[x] );
+            if not ext in irreds then Add( irreds, ext ); fi;
+          od;
+          chi:= List( chi, x -> GaloisCyc( x, partner[j] ) );
+          Add( irreds, chi );
+          for lin in linear do
+            ext:= List( [ 1 .. nccl ], x -> lin[x] * chi[x] );
+            if not ext in irreds then Add( irreds, ext ); fi;
+          od;
+        od;
+
+      fi;
+    od;
+    tbl.irr:= irreds;
+end;
+
+
+#############################################################################
+##
+#F  ConstructDirectProduct( <tbl> )
+#F  ConstructDirectProduct( <tbl>, <permclasses>, <permchars> )
+##
+ConstructDirectProduct := function( arg )
+
+    local tbl, t, i;
+
+    tbl:= arg[1];
+    t:= CharacterTableFromLibrary( tbl.factors[1] );
+    for i in [ 2 .. Length( tbl.factors ) ] do
+      t:= CharacterTableDirectProduct( t,
+              CharacterTableFromLibrary( tbl.factors[i] ) );
+    od;
+    if 1 < Length( arg ) then
+      Error( "three argument version not yet provided!" );
+#T       SortClassesCharTable( t, arg[2] );
+#T       SortCharactersCharTable( t, arg[3] );
+#T       Unbind( t.permutation );
+    fi;
+    TransferComponentsToLibraryTableRecord( t, tbl );
+    if 1 < Length( tbl.factors ) then
+      Append( tbl.computedClassFusions, ComputedClassFusions( t ) );
+    fi;
+end;
+
+
+#T #############################################################################
+#T ##
+#T #F  ConstructSubdirect( <tbl>, <factors>, <choice> )
+#T ##
+#T ConstructSubdirect := function( tbl, factors, choice  )
+#T 
+#T     local t, i;
+#T 
+#T     t:= CharacterTableFromLibrary( factors[1] );
+#T     for i in [ 2 .. Length( factors ) ] do
+#T       t:= CharacterTableDirectProduct( t,
+#T               CharacterTableFromLibrary( factors[i] ) );
+#T     od;
+#T     t:= CharacterTableNormalSubgroup( t, choice );
+#T     TransferComponentsToLibraryTableRecord( t, tbl );
+#T end;
+
+
+#############################################################################
+##
+#F  ConstructIsoclinic( <tbl> )
+#F  ConstructIsoclinic( <tbl>, <nsg> )
+##
+ConstructIsoclinic := function( arg )
+
+    local tbl, t, i, fld;
+
+    tbl:= arg[1];
+    t:= CharacterTableFromLibrary( tbl.factors[1] );
+    for i in [ 2 .. Length( tbl.factors ) ] do
+      t:= CharacterTableDirectProduct( t,
+              CharacterTableFromLibrary( tbl.factors[i] ) );
+    od;
+    if Length( arg ) = 1 then
+      t:= CharacterTableIsoclinic( t );
+    else
+      t:= CharacterTableIsoclinic( t, arg[2] );
+    fi;
+    TransferComponentsToLibraryTableRecord( t, tbl );
+end;
+
+
+#############################################################################
+##
+#F  ConstructV4G( <tbl>, <facttbl>, <aut> )
+##
+ConstructV4G := function( tbl, facttbl, aut )
+
+    local fus, chars;
+
+    facttbl:= CharacterTableFromLibrary( [ facttbl ] );
+    fus:= GetFusionMap( tbl, facttbl );
+    tbl.irr:= List( Irr( facttbl ), x -> ValuesOfClassFunction( x ){ fus } );
+    chars:= List( Filtered( tbl.irr, x -> x[1] <> x[3] ),
+                  x -> Permuted( x, aut ) );
+    Append( tbl.irr, chars );
+    Append( tbl.irr, List( chars, x -> Permuted( x, aut ) ) );
+end;
+
+
+#############################################################################
+##
+#F  InducedLibraryCharacters( <subtbl>, <tblrec>, <chars>, <fusionmap> )
+##
+##  is the list of class function values lists
+##
+InducedLibraryCharacters := function( subtbl, tblrec, chars, fusion )
+
+    local j,              # loop variables
+          centralizers,   # centralizer orders in hte supergroup
+          nccl,           # number of conjugacy classes of the group
+          subnccl,        # number of conjugacy classes of the subgroup
+          suborder,       # order of the subgroup
+          subclasses,     # class lengths in the subgroup
+          induced,        # list of induced characters, result
+          singleinduced,  # one induced character
+          char;           # one character to be induced
+
+    centralizers:= tblrec.sizesCentralizers;
+    nccl:= Length( centralizers );
+    suborder:= Size( subtbl );
+    subclasses:= SizesConjugacyClasses( subtbl );
+    subnccl:= Length( subclasses );
+
+    induced:= [];
+
+    for char in chars do
+
+      # preset the character with zeros
+      singleinduced:= Zero( centralizers );
+
+      # add the contribution of each class of the subgroup
+      for j in [ 1 .. subnccl ] do
+        if char[j] <> 0 then
+          singleinduced[ fusion[j] ]:= singleinduced[ fusion[j] ]
+                                   + char[j] * subclasses[j];
+        fi;
+      od;
+
+      # adjust the values by multiplication
+      for j in [ 1 .. nccl ] do
+        singleinduced[j]:= singleinduced[j] * centralizers[j] / suborder;
+      od;
+
+      Add( induced, singleinduced );
+
+    od;
+
+    # Return the list of values lists.
+    return induced;
+end;
+
+
+#############################################################################
+##
+#F  ConstructGS3( <tbls3>, <tbl2>, <tbl3>, <ind2>, <ind3>, <ext>, <perm> )
+##
+ConstructGS3 := function( tbls3, tbl2, tbl3, ind2, ind3, ext, perm )
+
+    local fus2,       # fusion map 'tbl2' in 'tbls3'
+          fus3,       # fusion map 'tbl3' in 'tbls3'
+          proj2,      # projection $G.S3$ to $G.2$
+          pos,        # position in 'proj2'
+          proj2i,     # inner part of projection $G.S3$ to $G.2$
+          proj2o,     # outer part of projection $G.S3$ to $G.2$
+          proj3,      # projection $G.S3$ to $G.3$
+          zeroon2,    # zeros for part of $G.2 \setminus G$ in $G.S_3$
+          irr,        # irreducible characters of 'tbls3'
+          irr3,       # irreducible characters of 'tbl3'
+          irr2,       # irreducible characters of 'tbl2'
+          i,          # loop over 'ind2'
+          pair,       # loop over 'ind3' and 'ext'
+          chi,        # character
+          chii,       # inner part of character
+          chio;       # outer part of character
+
+    tbl2:= CharacterTableFromLibrary( [ tbl2 ] );
+    tbl3:= CharacterTableFromLibrary( [ tbl3 ] );
+
+    fus2:= GetFusionMap( tbl2, tbls3 );
+    fus3:= GetFusionMap( tbl3, tbls3 );
+
+    proj2:= ProjectionMap( fus2 );
+    pos:= First( [ 1 .. Length( proj2 ) ], x -> not IsBound( proj2[x] ) );
+    proj2i:= proj2{ [ 1 .. pos-1 ] };
+    pos:= First( [ pos .. Length( proj2 ) ], x -> IsBound( proj2[x] ) );
+    proj2o:= proj2{ [ pos .. Length( proj2 ) ] };
+    proj3:= ProjectionMap( fus3 );
+
+    zeroon2:= Zero( Difference( [ 1 .. Length( tbls3.sizesCentralizers ) ],
+                    fus3 ) );
+
+    # Induce the characters given by 'ind2' from 'tbl2'.
+    irr:= InducedLibraryCharacters( tbl2, tbls3, Irr( tbl2 ){ ind2 }, fus2 );
+
+    # Induce the characters given by 'ind3' from 'tbl3'.
+    irr3:= List( Irr( tbl3 ), ValuesOfClassFunction );
+    Append( irr, List( ind3,
+        pair -> Concatenation( Sum( irr3{ pair } ){ proj3 }, zeroon2 ) ) );
+
+    # Put the extensions from 'tbl' together.
+    irr2:= List( Irr( tbl2 ), ValuesOfClassFunction );
+    for pair in ext do
+      chii:= irr3[ pair[1] ]{ proj3 };
+      chio:= irr2[ pair[2] ]{ proj2o };
+      Add( irr, Concatenation( chii,  chio ) );
+      Add( irr, Concatenation( chii, -chio ) );
+    od;
+
+    # Permute the characters with 'perm'.
+    irr:= Permuted( irr, perm );
+
+    # Store the irreducibles.
+    tbls3.irr:= irr;
+end;
+
+
+#T #############################################################################
+#T ##
+#T #F  ConstructPermuted( <tbl>, <libnam>, <prmclasses>, <prmchars> )
+#T ##
+#T ##  The library table <tbl> is completed with help of the library table with
+#T ##  name <libnam>, whose classes and characters must be permuted by the
+#T ##  permutations <prmclasses> and <prmchars>, respectively.
+#T ##
+#T ConstructPermuted := function( tbl, libnam, prmclasses, prmchars )
+#T     local t, fld, automorphisms, classtext, fusions;
+#T     t := CharTableLibrary( libnam );
+#T     for fld  in RecFields( t )  do
+#T       if not IsBound( tbl.( fld ) ) then
+#T         tbl.(fld) := t.(fld);
+#T       fi;
+#T     od;
+#T     if IsBound( tbl.automorphisms ) then
+#T       automorphisms:= tbl.automorphisms;
+#T       Unbind( tbl.automorphisms );
+#T     fi;
+#T     if IsBound( tbl.classtext ) then
+#T       classtext:= tbl.classtext;
+#T       Unbind( tbl.classtext );
+#T     fi;
+#T     if IsBound( tbl.fusions ) then
+#T       fusions:= tbl.fusions;
+#T       tbl.fusions:= [];
+#T     fi;
+#T     SortClassesCharTable( tbl, prmclasses );
+#T     SortCharactersCharTable( tbl, prmchars );
+#T     Unbind( tbl.permutation );
+#T     if IsBound( automorphisms ) then
+#T       tbl.automorphisms:= automorphisms;
+#T     fi;
+#T     if IsBound( classtext ) then
+#T       tbl.classtext:= classtext;
+#T     fi;
+#T     if IsBound( fusions ) then
+#T       tbl.fusions:= fusions;
+#T     fi;
+#T end;
+
+
+#############################################################################
+##
+#F  ConstructClifford( <tbl> )
+##
+ConstructClifford := function( tbl )
+
+    local i, j, n,
+          AnzTi,
+          tables,
+          ct,        # list of lists of relevant characters,
+                     # one for each inertia factor group
+          clmexp,
+          clmat,
+          matsize,
+          grps,
+          newct,     # the list of irreducibles of 'tbl'
+          rowct,     # actual row
+          colct,     # actual column
+          eintr,
+          chars,
+          linear,
+          chi,       # loop over a character list
+          lin,
+          new;
+
+    # Decode the 'cliffordTable' component of 'tbl'.
+    tbl.cliffordTable:= rec( Ti:= rec( fusions:= tbl.cliffordTable[1],
+                                        tables := tbl.cliffordTable[2] ),
+                             cliffordrecords:= tbl.cliffordTable[3] );
+    tbl.cliffordTable.Ti.ident:= DeepCopy( tbl.cliffordTable.Ti.tables );
+#T really ?
+
+    # Get the character tables of the inertia groups,
+    # and store the relevant list of characters.
+    tables:= tbl.cliffordTable.Ti.tables;
+    AnzTi:= Length( tables );
+    ct:= [];
+    for i in [ 1 .. AnzTi ] do
+      if tables[i][1] = "projectives" then
+        eintr:= CharacterTableFromLibrary( [ tables[i][2] ] );
+      else
+        eintr:= CharacterTableFromLibrary( tables[i] );
+      fi;
+      if eintr = fail then
+        Error( "table of inertia factor group '", tables[i],
+               "' not in the library" );
+      fi;
+      if tables[i][1] = "projectives" then
+
+        # We must multiply the stored projectives with all linear characters
+        # of the factor group in order to get the full list.
+        chars:= First( eintr!.projectives, x -> x.name = tables[i][3] ).chars;
+        ct[i]:= [];
+        linear:= List( Filtered( Irr( eintr ), x -> x[1] = 1 ),
+                       ValuesOfClassFunction );
+        n:= Length( eintr!.irr );
+#T ?
+        for chi in chars do
+          for lin in linear do
+            new:= List( [ 1 .. n ], x -> chi[x] * lin[x] );
+            if not new in ct[i] then
+              Add( ct[i], new );
+            fi;
+          od;
+        od;
+
+      else
+        ct[i]:= List( Irr( eintr ), ValuesOfClassFunction );
+      fi;
+      tables[i]:= eintr;
+    od;
+
+    # Construct the matrix of irreducibles characters.
+    newct := List( tbl.sizesCentralizers, x -> [] );
+    colct := 0;
+
+    for i in tbl.cliffordTable.cliffordrecords do
+
+      # Get the necessary components of the 'i'-th Clifford matrix,
+      # and multiply it with the character tables of inertia factor groups.
+
+      clmexp  := UnpackedCll( i );
+      clmat   := clmexp.mat;
+      matsize := Length( clmat );
+      grps    := clmexp.inertiagrps;
+
+      # Loop over the columns of the matrix.
+      for n in [ 1 .. matsize ] do
+
+        rowct := 0;
+        colct := colct + 1;
+
+        # Loop over the inertia factor groups.
+        for j in [ 1 .. AnzTi ] do
+          for chi in ct[j] do
+            rowct:= rowct + 1;
+            newct[rowct][colct]:= Sum( Filtered( [ 1 .. matsize ],
+                                                 r -> grps[r] = j ),
+               x -> clmat[x][n] * chi[ clmexp.fusionclasses[x] ]);
+          od;
+        od;
+
+      od;
+
+    od;
+
+    tbl.irr := newct;
+end;
+
+
+#############################################################################
+##
+#F  UnpackedCll( <cll> )
+##
+UnpackedCll := function( cll )
+
+    local l, clmlist,  # library list of the possible matrices
+          clf,         # Clifford matrix record, result
+          pi;          # permutation to sort library matrices
+
+    # Initialize the Clifford matrix record.
+    clf:= rec(
+               inertiagrps   := cll[1],
+               fusionclasses := cll[2]
+              );
+
+    if Length( cll[2] ) = 1 then
+
+      clf.mat:= [ [ 1 ] ];
+
+    elif Length( cll[3] ) = 2 then
+
+      # is already unpacked, for example dimension 2
+      clf.mat:= cll[3];
+
+    else
+
+      # Fetch the matrix from the library.
+      cll:= cll[3];
+      clf.libname:= cll;
+      l:= cll[2];
+      clmlist:= LibraryTables( Concatenation( "clm", cll[1] ) );
+      if clmlist = fail or not IsBound( clmlist[l] ) then
+        Error( "sorry, component <mat> not found in the library" );
+      fi;
+
+      clf.mat:= List( clmlist[l][ cll[3] ], ShallowCopy );
+
+      # Sort the rows and columns of the Clifford matrix
+      # w.r.t. the explicitly given permutations.
+      if IsBound( cll[4] ) then
+        clf.mat:= Permuted( clf.mat, cll[4] );
+      fi;
+      if IsBound( cll[5] ) then
+        pi:= cll[5];
+        clf.mat:= List( clf.mat, x -> Permuted( x, pi ) );
+      fi;
+
+    fi;
+
+    return clf;
+end;
+
+
+#############################################################################
+##
+#F  CllToClf( <tbl>, <cll> )
+##
+CllToClf := function( tbl, cll )
+
+    local Ti,          #
+          factor,      # character table of the factor group G/N
+          classnames,
+          i, nr,
+          dim,         # dimension of the matrix
+          clf,         # expanded record
+          pos,
+          map;
+
+    Ti:= tbl!.cliffordTable.Ti;
+    factor:= Ti.tables[1];
+    classnames:= ClassNames( factor );
+
+    nr:= cll[2][1];
+    dim:= Length( cll[2] );
+
+    # Decode 'cll'.
+    clf:= UnpackedCll( cll );
+
+    # Fill the Clifford matrix record.
+    clf.nr     := nr;
+    clf.size   := dim;
+    clf.order  := factor.orders[nr];
+    clf.orders := [ factor.orders[nr] ];
+    clf.elname := classnames[nr];
+    clf.full   := true;
+
+    # Compute the row weights $b_a = |C_{T_m/N}(gN)|$.
+    clf.roww:= List( [ 1 .. dim ],
+        i -> SizesCentralizers( Ti.tables[ cll[1][i] ] )[ cll[2][i] ] );
+
+    # Compute the column weights $m_k = |Cl_{G/N}(gN)| / |Cl_G(g_k)|$.
+    pos:= 0;
+    for map in Ti.fusions do
+      pos:= pos + Number( map, x -> x < nr );
+    od;
+    clf.colw:= List( [ 1 .. dim ],
+                     i -> SizesConjugacyClasses( tbl )[ pos+i ] /
+                          SizesConjugacyClasses( factor )[nr] );
+#T !!
+
+#     if dim = 1 then
+#       if IsBound( cll[4] ) then
+#         clf.colw := [cll[4][2]];
+#       else
+#         clf.colw := [1];
+# #T ??
+#       fi;
+#     elif dim = 2 then
+#
+#         factor:= Ti.tables[ clf.inertiagrps[2] ];
+#         if not IsCharacterTable( factor ) then
+#           factor:= CharacterTableFromLibrary( factor );
+#         fi;
+#
+#         if IsBound( cll[4] )  then
+#             if cll[4][1] = 0 then #not really splitted
+#                 clf.colw := cll[4][2]*[1, clf.roww[1]/clf.roww[2]];
+#                 clf.mat:= [[1,1],[clf.roww[1]/clf.roww[2],-1]];
+#             else
+#                 clf.colw := [ 1, cll[4][2]-1 ];
+#                 clf.mat:= [[1,1],[cll[4][4]*clf.colw[2],-cll[4][4]]];
+#             fi;
+#         else
+#             clf.colw := [1, clf.roww[1]/clf.roww[2]];
+#             clf.mat:= [[1,1],[clf.colw[2],-1]];
+# #T but this holds only for split cosets!
+#         fi;
+#     fi;
+
+    # Handle the special case of extraspecial groups.
+    if Length( cll ) = 4 then
+      clf.splitinfos:= rec( classindex := cll[4][1],
+                            p          := cll[4][2] );
+      if IsBound( cll[4][3] ) then
+        clf.splitinfos.numclasses:= cll[4][3];
+      fi;
+      if IsBound( cll[4][4] ) then
+        clf.splitinfos.root:= cll[4][4];
+      fi;
+    fi;
+
+    return clf;
+end;
+
+
+#############################################################################
+##
+#F  AddDecMats( <modtbl> )
+##
+AddDecMats := function( modtbl )
+
+    local ordtbl,
+          fus,
+          block,
+          ordchars,
+          modchars;
+
+    if not IsBrauerTable( modtbl ) then
+      Error( "<modtbl> must be a Brauer table" );
+    fi;
+    ordtbl:= OrdinaryCharacterTable( modtbl );
+    fus:= GetFusionMap( modtbl, ordtbl );
+    for block in BlocksInfo( modtbl ) do
+      if block.defect = 0 then
+        block.decmat:= [ [ 1 ] ];
+      else
+        ordchars:= List( Irr( ordtbl ){ block.ordchars },
+                         chi -> ValuesOfClassFunction( chi ){ fus } );
+        modchars:= List( Irr( modtbl ){ block.modchars },
+                         ValuesOfClassFunction );
+        block.decmat:= Decomposition( modchars, ordchars, "nonnegative" );
+      fi;
+    od;
+end;
+
+
+#############################################################################
+##
+#F  OfThose()
+#F  IsSporadicSimple( <G> )
+#F  SchurCover()
+##
+##  dummy functions for selection function
+##
+OfThose          := function( ) Error("this is just a dummy function" ); end;
+IsSporadicSimple := function(G) Error("this is just a dummy function" ); end;
+#T make this a property!
+SchurCover  := function( ) Error("this is just a dummy function" ); end;
+#T make this an attribute!
+
+
+#############################################################################
+##
+#F  AllCharacterTableNames( ) . . . . all ordinary table names in the library
+#F  AllCharacterTableNames( IsSimpleGroup, true )
+#F  AllCharacterTableNames( IsSporadicSimple, true )
+#F  AllCharacterTableNames( <func>, <val> )
+#F  AllCharacterTableNames( ..., OfThose, AutomorphismGroup )
+#F  AllCharacterTableNames( ..., OfThose, SchurCover )
+#F  AllCharacterTableNames( ..., OfThose, <func> )
+##
+##  selection function for {\GAP} library tables
+##
+AllCharacterTableNames := function( arg )
+
+    local sporsimp, list, pos, i, t, pp, oft, funcs, resul,
+          newlist, multinfo, autoinfo, simpinfo;
+
+    if IsEmpty( arg ) then
+
+      # all table names in the library
+      return ShallowCopy( LIBTABLE.LIBLIST.firstnames );
+
+    fi;
+
+    # table names of sporadic simple groups
+    # (sorted according to size)
+
+    sporsimp:= LIBTABLE.LIBLIST.sporadicSimple;
+    multinfo:= List( LIBTABLE.LIBLIST.simpleInfo, x -> x[1] );
+    simpinfo:= List( LIBTABLE.LIBLIST.simpleInfo, x -> x[2] );
+    autoinfo:= List( LIBTABLE.LIBLIST.simpleInfo, x -> x[3] );
+
+    # initialize the names list;
+    # supported up to now: special cases 'IsSimpleGroup', 'IsSporadicSimple'
+
+#T     if     ( arg[1] = IsSimple or arg[1] = IsSimpleGroup )
+    if     arg[1] = IsSimpleGroup
+       and arg[2] = true then
+      list:= simpinfo;
+    elif arg[1] = IsSporadicSimple and arg[2] = true then
+      list:= sporsimp;
+    else
+      list:= Filtered( LIBTABLE.LIBLIST.firstnames,
+                x -> arg[1]( CharacterTableFromLibrary( [ x ] ) ) = arg[2] );
+    fi;
+
+    # now there are two possibilities:
+    # Either one filters the actual list 'list',
+    # or we reach an 'OfThose', so we replace each entry of 'list' by
+    # the list of images under the mapping instruction after 'OfThose'
+    pos:= 3;
+    while pos <= Length( arg ) do
+
+      oft:= Position( arg, OfThose, pos - 1 );
+      if oft = fail then
+        oft:= Length( arg ) + 1;
+      fi;
+
+      # filter between two 'OfThose' mappings
+      funcs:= [];
+      resul:= [];
+      for i in [ pos, pos + 2 .. oft - 2 ] do
+        Add( funcs, arg[  i  ] );
+        Add( resul, arg[ i+1 ] );
+      od;
+
+      if funcs <> [] then
+        newlist:= [];
+        for i in list do
+          t:= CharacterTable( i );
+          if ForAll( [ 1 .. Length( funcs ) ],
+                     x -> funcs[x]( t ) = resul[x] ) then
+            Add( newlist, i );
+          fi;
+        od;
+      else
+        newlist:= list;
+      fi;
+
+      if Length( arg ) > oft then
+
+        # mapping instruction 'OfThose',
+        # supported special cases are
+        # 'SchurCover', 'AutomorphismGroup'.
+
+        list:= [];
+
+        if   arg[ oft + 1 ] = SchurCover then
+
+          for i in newlist do
+
+            pp:= Position( simpinfo, i );
+            if pp = fail then
+              Error( "no info about Schur multiplier of '", i,
+                     "' stored" );
+            fi;
+            if multinfo[ pp ] = "" then
+              Add( list, simpinfo[ pp ] );
+            else
+              Add( list, Concatenation( multinfo[ pp ], ".",
+                                        simpinfo[ pp ] ) );
+            fi;
+
+          od;
+
+        elif arg[ oft + 1 ] = AutomorphismGroup then
+
+          for i in newlist do
+
+            pp:= Position( simpinfo, i );
+            if pp = fail then
+              Error( "no info about automorphism group of '", i,
+                     "' stored" );
+            fi;
+            if autoinfo[ pp ] = "" then
+              Add( list, simpinfo[ pp ] );
+            else
+              Add( list, Concatenation( simpinfo[ pp ], ".",
+                                        autoinfo[ pp ] ) );
+            fi;
+
+          od;
+
+        else
+
+          list:= Concatenation( List( newlist, x -> arg[ oft+1 ] ) );
+
+        fi;
+
+      else
+
+        list:= newlist;
+
+      fi;
+
+      pos:= oft + 2;
+
+    od;
+
+    return list;
+end;
+#T change strategy: if necessary construct the character table once,
+#T then trace it through the whole argument!
+
+
+#############################################################################
+##
+#F  ShrinkClifford( <tbl> )
+##
+ShrinkClifford := function( tbl )
+
+    local i, flds, cltbl;
+
+    cltbl:= tbl!.cliffordTable;
+    cltbl.Ti.tables := cltbl.Ti.ident;
+
+    cltbl.cliffordrecords:= [];
+
+    for i in  [1..cltbl.size] do
+
+      cltbl.cliffordrecords[i]:= ClfToCll( cltbl.(i) );
+      Unbind( cltbl.(i) );
+
+    od;
+
+    Unbind( tbl.irreducibles);
+#T how to remove attributes ??
+    Unbind( cltbl.Ti.ident );
+    Unbind( cltbl.Ti.expN );
+
+    for flds in [ "name", "grpname", "elements", "isDomain", "operations",
+                  "charTable", "size", "expN" ] do
+      Unbind( cltbl.(flds) );
+    od;
+end;
+
+
+#############################################################################
+##
+#F  TextString( <text> )
+##
+TextString := function( text )
+    local str, start, stop, line, len, pos;
+    str:=  "[\n\"";
+    stop:= 1;
+    len:= Length( text );
+    while stop <= len do
+      start:= stop;
+      while stop <= len and text[stop] <> '\n' do
+        stop:= stop + 1;
+      od;
+      line:= text{ [ start .. stop-1 ] };
+      pos:= Position( line, '\"' );
+      while pos <> fail do
+        line:= Concatenation( line{ [ 1 .. pos-1 ] },
+               "\\\"", line{ [ pos+1 .. Length( line ) ] } );
+        pos:= Position( line, '\"', pos + 1 );
+      od;
+      Append( str, line );
+      if stop <= len then
+        Append( str, "\\n\",\n\"" );
+        stop:= stop+1;     # skip the '\n'
+      fi;
+    od;
+    Append( str, "\"\n]" );
+    return str;
+end;
+
+
+#############################################################################
+##
+#F  BlanklessPrint( <obj> )
+##
+BlanklessPrint := function( obj )
+    local i, names;
+    if   IsEmptyString( obj ) then
+      Print( "\"\"" );
+    elif IsList( obj ) and IsEmpty( obj ) then
+      Print( "[]" );
+    elif IsString( obj ) then
+      if '\n' in obj then
+        Print( TextString( obj ) );
+      else
+        Print( "\"", obj, "\"" );
+      fi;
+    elif IsList( obj ) then
+      Print( "[" );
+      for i in [ 1 .. Length( obj ) - 1 ] do
+        if IsBound( obj[i] ) then BlanklessPrint( obj[i] ); fi;
+        Print( "," );
+      od;
+      if obj <> [] then BlanklessPrint( obj[ Length( obj ) ] ); fi;
+      Print( "]" );
+    elif IsRecord( obj ) then
+      Print( "rec(" );
+      names:= RecNames( obj );
+      for i in [ 1 .. Length( names ) - 1 ] do
+        Print( names[i], ":=" );
+        BlanklessPrint( obj.( names[i] ) );
+        Print( ",\n" );
+      od;
+      if not IsEmpty( names  ) then
+        i:= Length( names );
+        Print( names[i], ":=" );
+        BlanklessPrint( obj.( names[i] ) );
+      fi;
+      Print( ")" );
+    else
+      Print( obj );
+    fi;
+end;
+
+
+#############################################################################
+##
+#F  ShrinkChars( <chars> )
+##
+ShrinkChars := function( chars )
+    local i, j, k, N, oldchars, linear, chi, fams, pos, ppos;
+
+    linear:= Filtered( chars, x -> x[1] = 1 );
+    fams:= GaloisMat( chars ).galoisfams;
+    chars:=    ShallowCopy( chars );
+    oldchars:= ShallowCopy( chars );
+
+    if Length( linear ) > 1 then
+      ppos:= List( linear, x -> Position( chars, x ) );
+      for i in [ 1 .. Length( chars ) ] do
+        chi:= chars[i];
+        if not IsString( chi ) then
+          for j in [ 1 .. Length( linear ) ] do
+            pos:= Position( chars, Tensored( [ linear[j] ],[ chi ] )[1] );
+            if pos <> fail and pos > i and pos > ppos[j] then
+              chars[ pos ]:= Concatenation( "\n[TENSOR,[",
+                                  String(i),",",String( ppos[j] ),"]]");
+            fi;
+          od;
+        fi;
+      od;
+    fi;
+
+    for i in [ 1 .. Length( chars ) ] do
+      if IsList( fams[i] ) then
+        for j in [ 2 .. Length( fams[i][1] ) ] do
+          if fams[i][1][j] <= Length( chars ) then
+            chi:= chars[ fams[i][1][j] ];
+            if not IsString( chi ) then
+              N:= Lcm( List( chi, NofCyc ) );
+              k:= First( [ 2..N ], x -> chi = List( oldchars[i],
+                                                    y -> GaloisCyc(y,x) ) );
+              chars[ fams[i][1][j] ]:=Concatenation("\n[GALOIS,[",
+                                               String(i),",",String(k),"]]");
+            fi;
+          fi;
+        od;
+      fi;
+    od;
+
+    return chars;
+end;
+
+
+#T #############################################################################
+#T ##
+#T #F  ClfToCll( <clf> )
+#T ##
+#T ClfToCll := function( clf )
+#T 
+#T     local p,       # position of the Clifford matrix clm in CLM[*]
+#T           cll,     # compressed record
+#T           clm,     # the pure Clifford matrix consisting of "mat" and "colw"
+#T           clmlist, # list of stored cliffordrecords
+#T           l,
+#T           lname,   # name of item in the library
+#T           list,    #
+#T           tr;
+#T 
+#T     # Check the input.
+#T     if not IsRecord( clf ) or
+#T        not IsBound( clf.inertiagrps ) or
+#T        not IsBound( clf.fusionclasses ) or
+#T        not IsBound( clf.mat ) then
+#T       Error( "<clf> must be record with components 'inertiagrps', 'mat' ",
+#T              "and 'fusionclasses'" );
+#T     fi;
+#T 
+#T     l:= Length( clf.mat[1] );
+#T     cll:= [ clf.inertiagrps, clf.fusionclasses ];
+#T 
+#T     if IsBound( clf.splitinfos )  then
+#T       lname := "exsp";
+#T       cll[4]:= [ clf.splitinfos.classindex, clf.splitinfos.p ];
+#T       if IsBound( clf.splitinfos.numclasses ) then
+#T         cll[4][3]:= clf.splitinfos.numclasses;
+#T       fi;
+#T       if IsBound( clf.splitinfos.root ) then
+#T         cll[4][4]:= clf.splitinfos.root;
+#T       fi;
+#T     else
+#T       lname := "elab";
+#T     fi;
+#T 
+#T     if l = 2  then
+#T 
+#T       # Store the full matrix.
+#T       cll[3]:= clf.mat;
+#T 
+#T     elif 2 < l then
+#T 
+#T       clm:= clf.mat;
+#T       cll[3]:= clm;
+#T 
+#T       # Try to find the matrix in the library of Clifford matrices.
+#T       clmlist := LibraryTables( Concatenation( "clm", lname ) );
+#T       if not IsList( clmlist ) then
+#T         Error( "#E ClfToCll: can't find library of Clifford matrices.\n" );
+#T       fi;
+#T 
+#T       if IsBound( clmlist[l] ) then
+#T 
+#T         list:= clmlist[l];
+#T         p:= Position( list, clm );
+#T         if p <> fail then
+#T 
+#T           # Just store the library code.
+#T           cll[3]:= [ lname, l, p ];
+#T           return cll;
+#T 
+#T         else
+#T 
+#T           # The matrix itself is not in the library.
+#T           # Perhaps it is contained up to permutations of rows/columns,
+#T           # in this case print an appropriate message.
+#T           for p in [ 1 .. Length( list ) ] do
+#T 
+#T             tr:= TransformingPermutations( clm, list[p] );
+#T             if tr <> fail then
+#T 
+#T               # The matrix can be permuted to a library matrix.
+#T               cll[3]:= [ lname, l, p ];
+#T               if tr.rows <> () then
+#T                 cll[3][4]:= tr.rows^-1;
+#T               fi;
+#T               if tr.columns <> () then
+#T                 cll[3][5]:= tr.columns^-1;
+#T               fi;
+#T               return cll;
+#T 
+#T             fi;
+#T 
+#T           od;
+#T 
+#T           Print( "#I Clifford matrix not found in the library\n" );
+#T 
+#T # 'clm' not found in library, either because given libname is wrong or
+#T # the matrix must be added first by an authorized person.
+#T # The order would be:
+#T #           PrintClmsToLib( <file>, [clf] );
+#T 
+#T         fi;
+#T       fi;
+#T     fi;
+#T 
+#T     return cll;
+#T end;
+
+
+#############################################################################
+##
+#F  PrintFusion( <name>, <fus> )
+##
+PrintFusion := function( name, fus )
+
+    local i, linelen;
+
+    linelen:= Length( name ) + Length( fus.name ) + 11;
+    Print( "ALF(\"", name, "\",\"", fus.name, "\",[" );
+    for i in [ 1 .. Length( fus.map ) - 1 ] do
+      if linelen + Length( String( fus.map[i] ) ) + 1 < 75 then
+        linelen:= linelen + Length( String( fus.map[i] ) ) + 1;
+      else
+        Print( "\n" );
+        linelen:= Length( String( fus.map[i] ) ) + 1;
+      fi;
+      Print( fus.map[i], "," );
+    od;
+    i:= Length( fus.map );
+    if linelen + Length( String( fus.map[i] ) ) + 1 < 75 then
+      linelen:= linelen + Length( String( fus.map[i] ) ) + 1;
+    else
+      Print( "\n" );
+      linelen:= Length( String( fus.map[i] ) ) + 1;
+    fi;
+    Print( fus.map[i], "]" );
+    if IsBound( fus.text ) then
+      Print( ",", TextString( fus.text ) );
+    fi;
+    Print( ");\n" );
+end;
+
+
+#T #############################################################################
+#T ##
+#T #F  PrintToLib( <file>, <tbl> )
+#T ##
+#T PrintToLib := function( file, tbl )
+#T 
+#T     local special,
+#T           func;
+#T 
+#T     if not ( IsOrdinaryTable( tbl ) and HasIdentifier( tbl ) ) then
+#T       Error( "usage: PrintToLib( <file>, <tbl> ) for char. table <tbl>" );
+#T     fi;
+#T 
+#T     # if 'file' has already extension '.tbl', remove this
+#T     if     3 < Length( file )
+#T        and file{ [ Length( file ) - 3 .. Length( file ) ] } = ".tbl" then
+#T       file:= file{ [ 1 .. Length( file ) - 4 ] };
+#T     fi;
+#T 
+#T     # special cases are 'Irr( tbl )' and 'tbl!.projectives' since
+#T     # after the call of 'ShrinkChars' they may
+#T     # contain strings, which shall be printed without '"'
+#T 
+#T     special:= function( chars )
+#T         local j;
+#T         Print( "[" );
+#T         for j in [ 1 .. Length( chars ) - 1 ] do
+#T           if IsBound( chars[j] ) then
+#T             if IsString( chars[j] ) then
+#T               Print( chars[j] );            # strip the '"'
+#T             else
+#T               BlanklessPrint( chars[j] );
+#T             fi;
+#T           fi;
+#T           Print( "," );
+#T         od;
+#T         if chars <> [] then
+#T           j:= Length( chars );
+#T           if IsString( chars[j] ) then
+#T             Print( chars[j] );                # strip the '"'
+#T           else
+#T             BlanklessPrint( chars[j] );
+#T           fi;
+#T         fi;
+#T         Print( "]" );
+#T     end;
+#T 
+#T     func:= function( tbl )
+#T 
+#T     local flds,
+#T           i, j,
+#T           name,
+#T           tblinfo,
+#T           chars,
+#T           fld, 
+#T           info,
+#T           newirredinfo,
+#T           fus,
+#T           names,
+#T           linelen,
+#T           done,
+#T           libinfo,
+#T           maxes;
+#T 
+#T     name:= Identifier( tbl );
+#T 
+#T     # Step 1:  preparatory work
+#T     # Shrink the Clifford records, remove the irreducibles.
+#T     if IsBound( tbl!.cliffordTable ) then
+#T       if HasIrr( tbl ) then
+#T Error( "handling of Clifford tables not yet installed!" );
+#T         tbl.cliffordTable:= DeepCopy( tbl.cliffordTable );
+#T #T semi-shallow ?
+#T         ShrinkClifford( tbl );
+#T       fi;
+#T       if IsRecord( tbl!.cliffordTable ) then
+#T         tbl!.cliffordTable:= [ tbl!.cliffordTable.Ti.fusions,
+#T                                tbl!.cliffordTable.Ti.tables,
+#T                                tbl!.cliffordTable.cliffordrecords ];
+#T       fi;
+#T     fi;
+#T 
+#T     # Step 2:  Print the compulsory components.
+#T     Print( "MOT(\"", Identifier( tbl ), "\",\n" );
+#T     if HasInfoText( tbl ) then
+#T       Print( TextString( InfoText( tbl ) ), ",\n" );
+#T     else
+#T       Print( "0,\n" );
+#T     fi;
+#T 
+#T     if HasSizesCentralizers( tbl ) then
+#T       BlanklessPrint( SizesCentralizers( tbl ) );
+#T       Print( ",\n" );
+#T     else
+#T       Print( "0,\n" );
+#T     fi;
+#T 
+#T     if not IsEmpty( ComputedPowerMaps( tbl ) ) then
+#T       BlanklessPrint( ComputedPowerMaps( tbl ) );
+#T       Print( ",\n" );
+#T     else
+#T       Print( "0,\n" );
+#T     fi;
+#T 
+#T     if HasIrr( tbl ) then
+#T       special( ShrinkChars( Irr( tbl ) ) );
+#T       Print( ",\n" );
+#T     else
+#T       Print( "0,\n" );
+#T     fi;
+#T 
+#T     if HasAutomorphismsOfTable( tbl ) then
+#T       BlanklessPrint( GeneratorsOfGroup( AutomorphismsOfTable( tbl ) ) );
+#T     else
+#T       Print( "0" );
+#T     fi;
+#T 
+#T     if IsBound( tbl!.construction ) then
+#T       if   tbl!.construction = ConstructClifford then
+#T         Print( ",\nConstructClifford" );
+#T       elif tbl!.construction = ConstructDirectProduct then
+#T         Print( ",\nConstructDirectProduct" );
+#T       elif tbl!.construction = ConstructGS3 then
+#T         Print( ",\nConstructGS3" );
+#T       elif tbl!.construction = ConstructIsoclinic then
+#T         Print( ",\nConstructIsoclinic" );
+#T       elif tbl!.construction = ConstructMixed then
+#T         Print( ",\nConstructMixed" );
+#T       elif tbl!.construction = ConstructProj then
+#T         Print( ",\nConstructProj" );
+#T       elif tbl!.construction = ConstructV4G then
+#T         Print( ",\nConstructV4G" );
+#T       else
+#T         Print( ",\n", tbl!.construction );
+#T       fi;
+#T     fi;
+#T     Print( ");\n" );
+#T 
+#T     # Step 3:  Print the optional components.
+#T 
+#T     # Print the representative orders only if they are not redundant.
+#T     if    IsEmpty( ComputedPowerMaps( tbl ) )
+#T        or not HasOrdersClassRepresentatives( tbl )
+#T        or OrdersClassRepresentatives( tbl )
+#T            <> ElementOrdersPowerMap( ComputedPowerMaps( tbl ) ) then
+#T 
+#T       Print( "ARC(\"", name, "\",\"ordersClassRepresentatives\"," );
+#T       BlanklessPrint( tbl.( fld ) );
+#T       Print( ");\n" );
+#T       
+#T     fi;
+#T 
+#T     # Shrink and print the projectives.
+#T     if IsBound( tbl!.projectives ) then
+#T 
+#T       Print( "ARC(\"", name, "\",\"projectives\",[" );
+#T       for j in tbl!.projectives do
+#T         Print( "\"", j.name, "\"," );
+#T         EvalChars( j.chars );
+#T         special( ShrinkChars( j.chars ) );
+#T         Print( "," );
+#T       od;
+#T       Print( "]);\n" );
+#T 
+#T     fi;
+#T 
+#T     # Encode and print the 'IrredInfo' component.
+#T     if HasIrredInfo( tbl ) then
+#T 
+#T       tblinfo:= IrredInfo( tbl );
+#T       newirredinfo:= rec();
+#T       for fld in RecNames( tblinfo[1] ) do
+#T         newirredinfo.( fld ):= [];
+#T         info:= info[1].( fld );
+#T         for i in [ 1 .. Length( info ) ] do
+#T           if IsBound( info[i] ) then
+#T             newirredinfo.( fld )[i]:= List( tblinfo, x -> x.( fld )[i] );
+#T           fi;
+#T         od;
+#T       od;
+#T       Print( "ARC(\"", name, "\",\"irredinfo\"," );
+#T       BlanklessPrint( newirredinfo );
+#T       Print( ");\n" );
+#T 
+#T     fi;
+#T 
+#T     # Print remaining supported components of library tables.
+#T     flds:= Difference( SupportedLibraryTableComponents, [
+#T                "cliffordTable",
+#T                "construction",
+#T                "projectives",
+#T                "maxes",
+#T               ] );
+#T 
+#T     for fld in flds do
+#T       if IsBound( tbl!.( fld ) ) then
+#T         Print( "ARC(\"", name, "\",\"", fld, "\"," );
+#T         BlanklessPrint( tbl.( fld ) );
+#T         Print( ");\n" );
+#T       fi;
+#T     od;
+#T 
+#T     # Print remaining supported attributes of ordinary tables.
+#T     done:= [
+#T              "automorphismsOfTable",
+#T              "computedClassFusions",
+#T              "computedPowerMaps",
+#T              "identifier",
+#T              "infoText",
+#T              "irr",
+#T              "ordersClassRepresentatives",
+#T              "sizesCentralizers",
+#T              "sizesConjugacyClasses",
+#T              "underlyingCharacteristic",
+#T              ];
+#T        
+#T     for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
+#T       fld:= SupportedOrdinaryTableInfo[i];
+#T       if     not name in done
+#T          and Tester( SupportedOrdinaryTableInfo[ i-1 ] )( tbl ) then
+#T         Print( "ARC(\"", name, "\",\"", fld, "\"," );
+#T         BlanklessPrint( SupportedOrdinaryTableInfo( tbl ) );
+#T         Print( ");\n" );
+#T       fi;
+#T     od;
+#T         
+#T     # Write the fusion assignments to the file.
+#T     for fus in ComputedClassFusions( tbl ) do
+#T       PrintFusion( name, fus );
+#T     od;
+#T 
+#T     # Write the names information to the file.
+#T     libinfo:= LibInfoCharacterTable( name );
+#T     if libinfo <> fail then
+#T       names:= [];
+#T #T       if IsBound( libinfo.othernames ) then
+#T #T         Append( names, libinfo.othernames );
+#T #T       fi;
+#T #T       if IsBound( libinfo.CASnames ) then
+#T #T         Append( names, libinfo.CASnames );
+#T #T       fi;
+#T #T get the other names from somewhere ...
+#T       if names <> [] then
+#T         linelen:= Length( name ) + 8;
+#T         Print( "ALN(\"", name, "\",[" );
+#T         for i in [ 1 .. Length( names )-1 ] do
+#T           if linelen + Length( names[i] ) + 3 < 77 then
+#T             linelen:= linelen + Length( names[i] ) + 3;
+#T           else
+#T             Print( "\n" );
+#T             linelen:= Length( names[i] ) + 3;
+#T           fi;
+#T           Print( "\"", names[i], "\"," );
+#T         od;
+#T         if linelen + Length( names[ Length( names ) ] ) + 5 >= 77 then
+#T           Print( "\n" );
+#T         fi;
+#T         Print( "\"", names[ Length( names ) ], "\"]);\n" );
+#T       fi;
+#T     fi;
+#T 
+#T     # Write the 'maxes' information to the file.
+#T     if IsBound( tbl!.maxes ) then
+#T       linelen:= Length( name ) + 16;
+#T       maxes:= tbl!.maxes;
+#T       Print( "ARC(\"", name, "\",\"maxes\",[" );
+#T       for i in [ 1 .. Length( maxes )-1 ] do
+#T         if IsBound( maxes[i] ) then
+#T           if linelen + Length( maxes[i] ) + 3 < 77 then
+#T             linelen:= linelen + Length( maxes[i] ) + 3;
+#T           else
+#T             Print( "\n" );
+#T             linelen:= Length( maxes[i] ) + 3;
+#T           fi;
+#T           Print( "\"", maxes[i], "\"," );
+#T         else
+#T           if linelen + 1 < 77 then
+#T             linelen:= linelen + 1;
+#T           else
+#T             Print( "\n" );
+#T             linelen:= 1;
+#T           fi;
+#T           Print( "," );
+#T         fi;
+#T       od;
+#T       if linelen + Length( maxes[ Length( maxes ) ] ) + 5 >= 77 then
+#T         Print( "\n" );
+#T       fi;
+#T       Print( "\"", maxes[ Length( maxes ) ], "\"]);\n" );
+#T     fi;
+#T 
+#T     end;
+#T 
+#T     # Call the local function.
+#T     AppendTo( Concatenation( file, ".tbl" ), func( tbl ), "\n" );
+#T end;
+
+
+#T ################################################################################
+#T ##
+#T #F  PrintClmsToLib( <file>, <clms> )
+#T ##
+#T PrintClmsToLib := function( filename, clms )
+#T 
+#T     local  ind, i, il, lclms, clm, size,
+#T         l,               # clmname
+#T         clmlist,         # list of cliffordmatrices in the library
+#T         lname,           # name of the file in the library
+#T         ir,              # the internal record used here of the library
+#T         found;           # whether the clm is already in the library
+#T 
+#T     if not( IsCliffordTable( clms ) or 
+#T             IsList( clms ) and ForAll( clms, x-> IsBound( x.mat ) and 
+#T                           IsBound( x.colw ) ) )  then
+#T         Error( "usage: PrintClmsToLib( <file>, <clms> ) for a list ",
+#T                "of cliffordrecords or a cliffordtable " ); 
+#T     fi;
+#T 
+#T     if IsList( clms ) then lclms := Length( clms );
+#T     else                   lclms := clms.size;
+#T     fi;
+#T 
+#T     ir := [];
+#T     for ind in [1..lclms] do
+#T         if IsList( clms ) then clm := clms[ind];
+#T         else       clm := clms.(ind);
+#T         fi;
+#T 
+#T         size := 0; 
+#T         if IsBound( clm.mat )  then size := Length( clm.mat[1] ); fi;
+#T 
+#T         if size = 0  then
+#T             Print("#I PrintClmsToLib: no <mat> and <colw>. Nothing done.\n");
+#T         elif  size > 2  then
+#T             if IsBound( clm.splitinfos )  then
+#T               lname := "exsp";
+#T             else
+#T               lname := "elab";
+#T             fi;
+#T             l := Concatenation( lname, String( size ));
+#T 
+#T             clmlist := LibraryTables( Concatenation( "clm", lname ) );
+#T             found := false;
+#T             if IsBound( clmlist.(l) ) then
+#T                 i := 0;
+#T                 il := Length( clmlist.(l) );
+#T                 while ( not found and i < il ) do
+#T                     i := i+1;
+#T                     found := clmlist.(l)[i][1] = clm.mat 
+#T                          and clmlist.(l)[i][2] = clm.colw;
+#T                 od;
+#T             fi;
+#T             if not found and IsBound( ir[size] ) then
+#T                 i := 0;
+#T                 il := Length( ir[size] );
+#T                 while ( not found and i < il ) do
+#T                     i := i+1;
+#T                     found := ir[size][i][1] = clm.mat 
+#T                          and ir[size][i][2] = clm.colw;
+#T                 od;
+#T             fi;
+#T 
+#T             if not found then
+#T                 if IsBound( ir[size] )  then
+#T                   ir[size][Length( ir[size] )+1] := 
+#T                                          [clm.mat, clm.colw];
+#T                 else
+#T                   ir[size] := [ [clm.mat, clm.colw] ];
+#T                 fi;
+#T             else
+#T                 Print( "#I PrintClmsToLib: Matrix ", ind, 
+#T                        " already in library or in ", filename, ".\n" );
+#T             fi;
+#T         fi;
+#T     od;
+#T 
+#T     PrintTo( filename, ir, "\n" );
+#T 
+#T     return;
+#T end;
+
+
+#############################################################################
+##
+#E  ctadmin.tbi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+
+

@@ -856,18 +856,13 @@ InstallMethod( ImagesSet,
     CollFamSourceEqFamElms,
     [ IsGeneralMapping, IsCollection ], 0,
     function( map, elms )
-    local imgs, elm, im;
+    local imgs, elm;
     if not IsFinite( elms ) then
       TryNextMethod();
     fi;
     imgs:= [];
     for elm in Enumerator( elms ) do
-      im:= ImagesElm( map, elm );
-      if im = fail then
-        return fail;
-      else
-        UniteSet( imgs, AsList( im ) );
-      fi;
+      UniteSet( imgs, AsList( ImagesElm( map, elm ) ) );
     od;
     return imgs;
     end );
@@ -1008,18 +1003,13 @@ InstallMethod( PreImagesSet,
     CollFamRangeEqFamElms,
     [ IsGeneralMapping, IsCollection ], 0,
     function( map, elms )
-    local primgs, elm, prim;
+    local primgs, elm;
     if not IsFinite( elms ) then
       TryNextMethod();
     fi;
     primgs:= [];
     for elm in Enumerator( elms ) do
-      prim:= PreImagesElm( map, elm );
-      if prim = fail then
-        return fail;
-      else
-        UniteSet( primgs, AsList( prim ) );
-      fi;
+      UniteSet( primgs, AsList( PreImagesElm( map, elm ) ) );
     od;
     return primgs;
     end );

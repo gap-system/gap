@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  classfun.gi                 GAP library                     Thomas Breuer
+#W  ctblfuns.gi                 GAP library                     Thomas Breuer
 ##
 #H  @(#)$Id$
 ##
@@ -14,7 +14,7 @@
 ##  4. methods for auxiliary operations
 ##  5. vector spaces of class functions
 ##
-Revision.classfun_gi :=
+Revision.ctblfuns_gi :=
     "@(#)$Id$";
 
 
@@ -84,7 +84,7 @@ InstallMethod( Position,
 ##  values.
 ##
 InstallMethod( \=,
-    "method for two class functions",
+    "method for two class functions (same family)",
     IsIdentical,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
@@ -92,7 +92,7 @@ InstallMethod( \=,
     end );
 
 InstallMethod( \=,
-    "method for two class functions",
+    "method for two class functions (nonidentical families)",
     IsNotIdentical,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
@@ -606,12 +606,8 @@ InstallMethod( PrintObj,
     true,
     [ IsClassFunction ], 0,
     function( psi )
-    Print( "<class function of ", UnderlyingCharacterTable( psi ),
-           ", values ", ValuesOfClassFunction( psi ) );
-    if UnderlyingCharacteristic( psi ) <> 0 then
-      Print( ", char. = ", UnderlyingCharacteristic( psi ) );
-    fi;
-    Print( " )" );
+    Print( "ClassFunction( ", UnderlyingCharacterTable( psi ),
+           ", ", ValuesOfClassFunction( psi ), " )" );
     end );
 
 InstallMethod( PrintObj,
@@ -619,10 +615,10 @@ InstallMethod( PrintObj,
     true,
     [ IsClassFunctionWithGroup ], 0,
     function( psi )
-    Print( "<class function of ", UnderlyingGroup( psi ),
-           ", values ", ValuesOfClassFunction( psi ) );
+    Print( "ClassFunction( ", UnderlyingGroup( psi ),
+           ", ", ValuesOfClassFunction( psi ) );
     if UnderlyingCharacteristic( psi ) <> 0 then
-      Print( ", char. = ", UnderlyingCharacteristic( psi ) );
+      Print( ", ", UnderlyingCharacteristic( psi ) );
     fi;
     Print( " )" );
     end );
@@ -632,12 +628,8 @@ InstallMethod( PrintObj,
     true,
     [ IsClassFunction and IsVirtualCharacter ], 0,
     function( psi )
-    Print( "<virt. character of ", UnderlyingCharacterTable( psi ),
-           ", values ", ValuesOfClassFunction( psi ) );
-    if UnderlyingCharacteristic( psi ) <> 0 then
-      Print( ", char. = ", UnderlyingCharacteristic( psi ) );
-    fi;
-    Print( " )" );
+    Print( "VirtualCharacter( ", UnderlyingCharacterTable( psi ),
+           ", ", ValuesOfClassFunction( psi ), " )" );
     end );
 
 InstallMethod( PrintObj,
@@ -645,10 +637,10 @@ InstallMethod( PrintObj,
     true,
     [ IsVirtualCharacter and IsClassFunctionWithGroup ], 0,
     function( psi )
-    Print( "<virt. character of ", UnderlyingGroup( psi ),
-           ", values ", ValuesOfClassFunction( psi ) );
+    Print( "VirtualCharacter( ", UnderlyingGroup( psi ),
+           ", ", ValuesOfClassFunction( psi ) );
     if UnderlyingCharacteristic( psi ) <> 0 then
-      Print( ", char. = ", UnderlyingCharacteristic( psi ) );
+      Print( ", ", UnderlyingCharacteristic( psi ) );
     fi;
     Print( " )" );
     end );
@@ -658,12 +650,8 @@ InstallMethod( PrintObj,
     true,
     [ IsClassFunction and IsCharacter ], 0,
     function( psi )
-    Print( "<character of ", UnderlyingCharacterTable( psi ),
-           ", values ", ValuesOfClassFunction( psi ) );
-    if UnderlyingCharacteristic( psi ) <> 0 then
-      Print( ", char. = ", UnderlyingCharacteristic( psi ) );
-    fi;
-    Print( " )" );
+    Print( "Character( ", UnderlyingCharacterTable( psi ),
+           ", ", ValuesOfClassFunction( psi ), " )" );
     end );
 
 InstallMethod( PrintObj,
@@ -671,10 +659,10 @@ InstallMethod( PrintObj,
     true,
      [ IsClassFunctionWithGroup and IsCharacter ], 0,
     function( psi )
-    Print( "<character of ", UnderlyingGroup( psi ),
-           ", values ", ValuesOfClassFunction( psi ) );
+    Print( "Character( ", UnderlyingGroup( psi ),
+           ", ", ValuesOfClassFunction( psi ) );
     if UnderlyingCharacteristic( psi ) <> 0 then
-      Print( ", char. = ", UnderlyingCharacteristic( psi ) );
+      Print( ", ", UnderlyingCharacteristic( psi ) );
     fi;
     Print( " )" );
     end );
@@ -1645,8 +1633,221 @@ InstallOtherMethod( InducedClassFunctions,
 
 #############################################################################
 ##
-#F  MatScalarProducts( <tbl>, <characters1>, <characters2> )
-#F  MatScalarProducts( <tbl>, <characters> )
+#M  ReducedClassFunctions( <ordtbl>, <constituents>, <reducibles> )
+#M  ReducedClassFunctions( <ordtbl>, <reducibles> )
+##
+InstallMethod( ReducedClassFunctions,
+    "method for ordinary character table, and two lists of class functions",
+    true,
+    [ IsOrdinaryTable, IsHomogeneousList , IsHomogeneousList ], 0,
+    function( ordtbl, constituents, reducibles )
+
+    local i, j,
+          normsquare,
+          upper,
+          found,          # list of found irreducible characters
+          remainders,     # list of reducible remainders after reduction
+          single,
+          reduced,
+          scpr;
+
+    upper:= Length( constituents );
+    upper:= List( reducibles, x -> upper );
+    normsquare:= List( constituents, x -> ScalarProduct( ordtbl, x, x ) );
+    found:= [];
+    remainders:= [];
+
+    for i in [ 1 .. Length( reducibles ) ] do
+      single:= reducibles[i];
+      for j in [ 1 .. upper[i] ] do
+        scpr:= ScalarProduct( ordtbl, single, constituents[j] );
+        if IsInt( scpr ) then
+          scpr:= Int( scpr / normsquare[j] );
+          if scpr <> 0 then
+            single:= single - scpr * constituents[j];
+          fi;
+        else
+          Info( InfoCharacterTable, 1,
+                "ReducedClassFunctions: scalar product of X[", j,
+                "] with Y[", i, "] not integral (ignore)" );
+        fi;
+      od;
+      if ForAny( single, x -> x <> 0 ) then
+        if single[1] < 0 then single:= - single; fi;
+        if ScalarProduct( ordtbl, single, single ) = 1 then
+          if not single in found and not single in constituents then
+            Info( InfoCharacterTable, 2,
+                  "ReducedClassFunctions: irreducible character of degree ",
+                  single[1], " found" );
+            AddSet( found, single );
+          fi;
+        else 
+          AddSet( remainders, single );
+        fi;
+      fi;
+    od;
+
+    # If no irreducibles were found, return the remainders.
+    if IsEmpty( found ) then
+      return rec( remainders:= remainders, irreducibles:= [] );
+    fi;
+
+    # Try to find new irreducibles by recursively calling the reduction.
+    reduced:= ReducedClassFunctions( ordtbl, found, remainders );
+
+    # Return the result.
+    return rec( remainders:= reduced.remainders,
+                irreducibles:= Union( found, reduced.irreducibles ) );
+    end );
+
+InstallOtherMethod( ReducedClassFunctions,
+    "method for ordinary character table, and list of class functions",
+    true,
+    [ IsOrdinaryTable, IsHomogeneousList ], 0,
+    function( ordtbl, reducibles )
+
+    local upper,
+          normsquare,
+          found,        # list of found irreducible characters
+          remainders,   # list of reducible remainders after reduction
+          i, j,
+          single,
+          reduced,
+          scpr;
+
+    upper:= [ 0 .. Length( reducibles ) - 1 ];
+    normsquare:= List( reducibles, x -> ScalarProduct( ordtbl, x, x ) );
+    found:= [];
+    remainders:= [];
+  
+    for i in [ 1 .. Length( reducibles ) ] do
+      if normsquare[i] = 1 then
+        if 0 < reducibles[i][1] then
+          AddSet( found, reducibles[i] );
+        else
+          AddSet( found, - reducibles[i] );
+        fi;
+      fi;
+    od;
+
+    for i in [ 1 .. Length( reducibles ) ] do
+      single:= reducibles[i];
+      for j in [ 1 .. upper[i] ] do
+        scpr:= ScalarProduct( ordtbl, single, reducibles[j] );
+        if IsInt( scpr ) then
+          scpr:= Int( scpr / normsquare[j] );
+          if scpr <> 0 then
+            single:= single - scpr * reducibles[j];
+          fi;
+        else
+          Info( InfoCharacterTable, 1,
+                "ReducedClassFunctions: scalar product of X[", j,
+                "] with Y[", i, "] not integral (ignore)" );
+        fi;
+      od;
+      if ForAny( single, x -> x <> 0 ) then
+        if single[1] < 0 then single:= - single; fi;
+        if ScalarProduct( ordtbl, single, single ) = 1 then
+          if not single in found and not single in reducibles then
+            Info( InfoCharacterTable, 2,
+                  "ReducedClassFunctions: irreducible character of degree ",
+                  single[1], " found" );
+            AddSet( found, single );
+          fi;
+        else 
+          AddSet( remainders, single );
+        fi;
+      fi;
+    od;
+
+    # If no irreducibles were found, return the remainders.
+    if IsEmpty( found ) then
+      return rec( remainders:= remainders, irreducibles:= [] );
+    fi;
+
+    # Try to find new irreducibles by recursively calling the reduction.
+    reduced:= ReducedClassFunctions( ordtbl, found, remainders );
+
+    # Return the result.
+    return rec( remainders:= reduced.remainders,
+                irreducibles:= Union( found, reduced.irreducibles ) );
+    end );
+
+
+#############################################################################
+##
+#M  ReducedCharacters( <ordtbl>, <constituents>, <reducibles> )
+##
+InstallMethod( ReducedCharacters,
+    "method for ordinary character table, and two lists of characters",
+    true,
+    [ IsOrdinaryTable, IsHomogeneousList , IsHomogeneousList ], 0,
+    function( ordtbl, constituents, reducibles )
+
+    local normsquare,
+          found,
+          remainders,
+          single,
+          i, j,
+          nchars,
+          reduced,
+          scpr;
+
+    normsquare:= List( constituents, x -> ScalarProduct( ordtbl, x, x ) );
+    found:= [];
+    remainders:= [];
+    nchars:= Length( constituents );
+    for i in [ 1 .. Length( reducibles ) ] do
+
+      single:= reducibles[i];
+      for j in [ 1 .. nchars ] do
+        if constituents[j][1] <= single[1] then
+          scpr:= ScalarProduct( ordtbl, single, constituents[j] );
+          if IsInt( scpr ) then
+            scpr:= Int( scpr / normsquare[j] );
+            if scpr <> 0 then single:= single - scpr * constituents[j]; fi;
+          else
+            Info( InfoCharacterTable, 1,
+                  "ReducedCharacters: scalar product of X[", j, "] with Y[",
+                  i, "] not integral (ignore)" );
+          fi;
+        fi;
+      od;
+
+      if ForAny( single, x -> x <> 0 ) then
+        if ScalarProduct( ordtbl, single, single ) = 1 then
+          if single[1] < 0 then single:= - single; fi;
+          if not single in found and not single in constituents then
+            Info( InfoCharacterTable, 2,
+                  "ReducedCharacters: irreducible character of",
+                  " degree ", single[1], " found" );
+            AddSet( found, single );
+          fi;
+        else 
+          AddSet( remainders, single );
+        fi;
+      fi;
+
+    od;
+
+    # If no irreducibles were found, return the remainders.
+    if IsEmpty( found ) then
+      return rec( remainders:= remainders, irreducibles:= [] );
+    fi;
+
+    # Try to find new irreducibles by recursively calling the reduction.
+    reduced:= ReducedCharacters( ordtbl, found, remainders );
+
+    # Return the result.
+    return rec( remainders:= reduced.remainders,
+                irreducibles:= Union( found, reduced.irreducibles ) );
+    end );
+
+
+#############################################################################
+##
+#F  MatScalarProducts( <ordtbl>, <characters1>, <characters2> )
+#F  MatScalarProducts( <ordtbl>, <characters> )
 ##
 MatScalarProducts := function( arg )
 
@@ -1671,7 +1872,6 @@ MatScalarProducts := function( arg )
     order:= Size( tbl );
 
     scprmatrix:= [];
-    chars:= List( chars, ValuesOfClassFunction );
     if Length( arg ) = 3 then
       chars2:= arg[3];
       for i in [ 1 .. Length( chars2 ) ] do
@@ -2934,7 +3134,7 @@ end;
 
 #############################################################################
 ##
-#E  classfun.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E  ctblfuns.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 
 

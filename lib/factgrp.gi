@@ -467,7 +467,7 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
 	      k:=KernelOfMultiplicativeGeneralMapping(op);
 	      op:=GroupHomomorphismByImages(G,Range(op),GeneratorsOfGroup(G),
 		 List(gens,i->Image(op,i)));
-	      SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
+	      SetKernelOfMultiplicativeGeneralMapping(op,PreImages(oh,k));
 	      AddNaturalHomomorphismsPool(G,
                   KernelOfMultiplicativeGeneralMapping(op),
                                           op,Length(bb));
@@ -491,7 +491,7 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
 	  # keep action knowledge
 	  op:=GroupHomomorphismByImages(G,Range(op),GeneratorsOfGroup(G),
 	     List(gens,i->Image(op,i)));
-	  SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
+	  SetKernelOfMultiplicativeGeneralMapping(op,PreImages(oh,k));
 	  AddNaturalHomomorphismsPool(G,
               KernelOfMultiplicativeGeneralMapping(op),
                                       op,Length(b));

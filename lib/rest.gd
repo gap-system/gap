@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares various odds and ends.
 ##
@@ -106,6 +106,14 @@ IsString := NewCategoryKernel(
     "IsString",
     IsDenseList,
     IS_STRING_CONV );
+
+##  Note that empty list and empty string have the same kind,
+##  the only way to distinguish them is via 'TYPE_OBJ'.
+IsEmptyString := function( obj )
+    return     IsString( obj )
+           and IsEmpty( obj )
+           and TYPE_OBJ( obj ) = TYPE_OBJ( "" );
+end;
 
 ConvertToStringRep      := CONV_STRING;
 

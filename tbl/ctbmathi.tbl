@@ -58,11 +58,10 @@ rec(version:=1,
 date:="21.04.92"));
 
 MBT("12.M22",11,
-Concatenation(
-"origin: modular ATLAS of finite groups, tests: DEC, TENS\n",
-"Note: The faithful characters are sorted according to blocks,\n",
-"      not all Galois conjugates exist, the blocks behave completely\n",
-"      different! (no adequate ATLAS notation)"),
+"origin: modular ATLAS of finite groups, tests: DEC, TENS\n\
+Note: The faithful characters are sorted according to blocks,\n\
+      not all Galois conjugates exist, the blocks behave completely\n\
+      different! (no adequate ATLAS notation)",
 [34,37,34,37,34,37,34,37,34,37,35,36,35,36,35,36,35,36,35,36],
 [1,1,1,1],
 [],

@@ -79,10 +79,10 @@ char * Revision_vars_c =
                             (old) = CurrLVars;                              \
                             CHANGED_BAG( (old) );                           \
                             CurrLVars = NewBag( T_LVARS,                    \
-                                                sizeof(Obj)*(1+narg+nloc) );\
+                                                sizeof(Obj)*(3+narg+nloc) );\
                             PtrLVars  = PTR_BAG( CurrLVars );               \
                             CURR_FUNC = (func);                             \
-                            PtrBody   = PTR_BAG( BODY_FUNC( CURR_FUNC ) );  \
+                            PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
                             SET_BRK_CALL_FROM( old );                       \
                         } while ( 0 )
 */
@@ -99,6 +99,7 @@ char * Revision_vars_c =
 **
 #define SWITCH_TO_OLD_LVARS(old)                                            \
                         do {                                                \
+			    CHANGED_BAG( CurrLVars );                       \
                             CurrLVars = (old);                              \
                             PtrLVars  = PTR_BAG( CurrLVars );               \
                             PtrBody   = PTR_BAG( BODY_FUNC( CURR_FUNC ) );  \
@@ -976,7 +977,7 @@ void            ASS_HVAR (
 
     /* assign the value                                                    */
     ASS_LVAR( hvar & 0xFFFF, val );
-    CHANGED_BAG( CurrLVars );
+    /* CHANGED_BAG( CurrLVars ); is done in the switch below               */
 
     /* switch back to current local variables bag                          */
     SWITCH_TO_OLD_LVARS( currLVars );
@@ -2861,7 +2862,7 @@ void            InitVars ( )
     Obj                 tmp;
 
     /* install the marking functions for local variables bag               */
-    InfoBags[        T_LVARS          ].name = "values bag";
+    InfoBags[         T_LVARS          ].name = "values bag";
     InitMarkFuncBags( T_LVARS          , MarkAllSubBags );
 
     /* install executors, evaluators, and printers for local variables     */
@@ -3008,6 +3009,7 @@ void            InitVars ( )
     InitGlobalBag( &CurrLVars );
     InitGlobalBag( &BottomLVars );
     BottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
+    CurrLVars   = BottomLVars;
     tmp = NewFunctionC( "bottom", 0, "", 0 );
     PTR_BAG(BottomLVars)[0] = tmp;
     tmp = NewBag( T_BODY, 0 );

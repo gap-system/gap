@@ -75,6 +75,8 @@
 ##  The output is written to 'OUTFILE', whose string version is 'OUTNAME'.
 ##  'TMPFILE' and 'PRJFILE' are intermediate files.
 ##  The old version of 'OUTFILE' is saved in 'OLDFILE'.
+##  'CHECKFILE' and 'CHECKFILE2' are used to construct a {\GAP} input file
+##  when the files are checked for being readable.
 ##
 INFILES=tbl/cto*.tbl
 OUTFILE=tbl/ctprimar.tbl
@@ -84,6 +86,8 @@ PRJFILE="tbl/project.tbl"
 NAMFILE="tbl/names.tbl"
 NAMFILE2="tbl/names2.tbl"
 OLDFILE=tbl/ctprimar.tbl~
+CHECKFILE=tbl/check
+CHECKFILE2=tbl/check2
 
 
 #############################################################################
@@ -576,6 +580,51 @@ echo '#E  ctprimar.tbl  . . . . . . . . . . . . . . . . . . . . . . . . . ends h
 ##  Print the differences between old and new version.
 ##
 diff -u $OLDFILE $OUTFILE
+
+
+#############################################################################
+##
+##  Call {\GAP} without library functions, and check that the table files
+##  'clm*', 'ctb*', and 'cto*' can be read and do contain only admissible
+##  function calls.
+##  In the list given below, 'Concatenation' and 'TransposedMat' are the only
+##  library functions that are not defined in the 'ctadmin' file.
+##
+echo 'Revision:= rec();;' > $CHECKFILE
+echo 'LIBTABLE := rec( LOADSTATUS := rec(), clmelab := [],' >> $CHECKFILE
+echo '                 clmexsp := [] );;' >> $CHECKFILE
+echo 'SET_TABLEFILENAME := Ignore;;' >> $CHECKFILE
+echo 'GALOIS := ( x -> x );;' >> $CHECKFILE
+echo 'TENSOR := ( x -> x );;' >> $CHECKFILE
+echo 'EvalChars := Ignore;;' >> $CHECKFILE
+echo 'ALF := function( arg ); end;;' >> $CHECKFILE
+echo 'ACM := function( arg ); end;;' >> $CHECKFILE
+echo 'ARC := function( arg ); end;;' >> $CHECKFILE
+echo 'NotifyCharTableName := function( arg ); end;;' >> $CHECKFILE
+echo 'ALN := NotifyCharTableName;;' >> $CHECKFILE
+echo 'MBT := function( arg ); end;;' >> $CHECKFILE
+echo 'MOT := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructMixed := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructProj := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructDirectProduct := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructSubdirect := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructIsoclinic := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructV4G := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructGS3 := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructPermuted := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructClifford := function( arg ); end;;' >> $CHECKFILE
+echo 'Concatenation := function( arg ) return 0; end;;' >> $CHECKFILE
+echo 'TransposedMat := function( arg ) return 0; end;;' >> $CHECKFILE
+
+ls tbl | grep clm > $CHECKFILE2
+ls tbl | grep ctb >> $CHECKFILE2
+ls tbl | grep cto >> $CHECKFILE2
+sed -e 's/^/READ("tbl\//;s/\.tbl.*$/.tbl");/' \
+     < $CHECKFILE2 >> $CHECKFILE
+gap -l tbl < $CHECKFILE > $CHECKFILE2
+sed -e '1d;/^gap> true$/d;/^gap> $/d' \
+     < $CHECKFILE2
+rm $CHECKFILE $CHECKFILE2
 
 
 #############################################################################

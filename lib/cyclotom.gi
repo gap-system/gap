@@ -103,7 +103,7 @@ InstallMethod( String, true, [ IsCyc ], 0,
     i := 1;
     while coeffs[i] = 0 do i:= i+1; od;
     if i = 1  then
-        str := String( coeffs[1] );
+        str := ShallowCopy( String( coeffs[1] ) );
     elif coeffs[i] = -1 then
         str := Concatenation( "-", En );
     elif coeffs[i] = 1 then
@@ -806,7 +806,7 @@ Quadratic := function( cyc )
         elif b = -1 then
           ATLAS:= "-";
         else
-          ATLAS:= String( b );
+          ATLAS:= ShallowCopy( String( b ) );
         fi;
       elif b = 1 then
         ATLAS:= Concatenation( String( ( a + b ) / 2 ), "+" );
@@ -831,7 +831,7 @@ Quadratic := function( cyc )
       if a = 0 then
         ATLAS:= "";
       else
-        ATLAS:= String( a );
+        ATLAS:= ShallowCopy( String( a ) );
       fi;
       if a <> 0 and b > 0 then Append( ATLAS, "+" ); fi;
       if b = -1 then

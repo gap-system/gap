@@ -53,6 +53,10 @@
 ##  and methods for '(Pre)ImagesElm' must not call the secondary operations.
 ##  Especially there are no generic methods for '(Pre)ImagesElm'.
 ##
+##  Methods for '(Pre)ImagesSet' must *not* use 'PreImagesRange' and
+##  'ImagesSource', e.g., compute the intersection of the set in question
+##  with the preimage of the range resp. the image of the source.
+##
 ##  For general mappings of the second category (which means structure
 ##  preserving general mappings), the situation is different.
 ##  The set of preimages under a group homomorphism, for example, is either

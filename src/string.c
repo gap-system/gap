@@ -1007,7 +1007,7 @@ void            ConvString (
         CSTR_STRING(string)[i-1] = *((UChar*)ADDR_OBJ(elm));
     }
     CSTR_STRING(string)[lenString] = '\0';
-    RetypeBag( string, T_STRING );
+    RetypeBag( string, T_STRING + (IS_MUTABLE_OBJ(string)?0:IMMUTABLE) );
     ResizeBag( string, lenString+1 );
 }
 

@@ -59,6 +59,7 @@ char *          Revision_vars_h =
 */
 #define SWITCH_TO_OLD_LVARS(old)                                            \
                         do {                                                \
+			    CHANGED_BAG( CurrLVars );                       \
                             CurrLVars = (old);                              \
                             PtrLVars  = PTR_BAG( CurrLVars );               \
                             PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains various odds and ends.
 ##
@@ -95,6 +95,20 @@ InstallMethod( LogFFE, IsIdentical,
 InstallMethod( IntFFE, true, [ IsFFE and IsInternalRep ], 0,
     INT_FFE_DEFAULT );
 
+#############################################################################
+##
+#F  SUM_FFE_LARGE
+#F  DIFF_FFE_LARGE
+#F  PROD_FFE_LARGE
+#F  QUO_FFE_LARGE
+#F  LOG_FFE_LARGE
+##
+SUM_FFE_LARGE := function(arg) Error( "not supported yet" ); end;
+DIFF_FFE_LARGE := function(arg) Error( "not supported yet" ); end;
+PROD_FFE_LARGE := function(arg) Error( "not supported yet" ); end;
+QUO_FFE_LARGE := function(arg) Error( "not supported yet" ); end;
+LOG_FFE_LARGE := function(arg) Error( "not supported yet" ); end;
+
 
 # Permutations
 PermutationsFamily      := NewFamily(  "PermutationsFamily", IS_PERM );
@@ -165,17 +179,24 @@ KIND_RANGE_NSORT_IMMUTABLE := Subkind(
 
 #############################################################################
 ##
-#M  String( <n> ) . . . . . . . . . . . . . convert integer <n> into a string
+#M  String( <n> ) . . . . . . . . . . . . . . . . . . . . . .  for an integer
 ##
-InstallMethod( String, true, [ IsInt ], 0,
+InstallMethod( String,
+    "method for an integer",
+    true,
+    [ IsInt ], 0,
     STRING_INT );
 
 
 #############################################################################
 ##
-#M  String( <str> ) . . . . . . . . . . .  convert string <str> into a string
+#M  String( <str> ) . . . . . . . . . . . . . . . . . . . . . .  for a string
 ##
-InstallMethod( String, true, [ IsString ], 0, IdFunc );
+InstallMethod( String,
+    "method for a string",
+    true,
+    [ IsString ], 0,
+    IdFunc );
 
 
 #############################################################################
@@ -206,7 +227,7 @@ end;
 ##
 #F  WordAlp( <alpha>, <nr> ) . . . . . .  <nr>-th word over alphabet <alpha>
 ##
-##  returns a string that is the <nr>-th word over the alphabet <alpha>,
+##  is a string that is the <nr>-th word over the alphabet <alpha>,
 ##  w.r. to word length and lexicographical order.
 ##  The empty word is 'WordAlp( <alpha>, 0 )'.
 ##
@@ -225,8 +246,7 @@ WordAlp := function( alpha, nr )
       nr:= ( nr - nrmod ) / lalpha;
     od;
     return Reversed( word );
-    end;
-
+end;
 
 
 #############################################################################

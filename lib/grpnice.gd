@@ -139,7 +139,7 @@ AttributeMethodByNiceMonomorphismCollElm := function( oper, par )
         0,
         function( obj1, obj2 )
             local   img;
-            img := Image( NiceMonomorphism(obj1), obj2 );
+            img := ImagesRepresentative( NiceMonomorphism(obj1), obj2 );
             if img = fail  then
                 TryNextMethod();
             fi;
@@ -168,7 +168,7 @@ AttributeMethodByNiceMonomorphismElmColl := function( oper, par )
         0,
         function( obj1, obj2 )
             local   img;
-            img := Image( NiceMonomorphism(obj2), obj1 );
+            img := ImagesRepresentative( NiceMonomorphism(obj2), obj1 );
             if img = fail  then
                 TryNextMethod();
             fi;
@@ -318,7 +318,7 @@ GroupMethodByNiceMonomorphismCollElm := function( oper, par )
         function( obj1, obj2 )
             local   nice,  img,  img1;
             nice := NiceMonomorphism(obj1);
-            img  := Image( nice, obj2 );
+            img  := ImagesRepresentative( nice, obj2 );
             if img = fail  then
                 TryNextMethod();
             fi;
@@ -481,7 +481,7 @@ GroupSeriesMethodByNiceMonomorphismCollElm := function( oper, par )
         function( obj1, obj2 )
             local   nice,  img,  list,  i;
             nice := NiceMonomorphism(obj1);
-            img  := Image( nice, obj2 );
+            img  := ImagesRepresentative( nice, obj2 );
             if img = fail  then
                 TryNextMethod();
             fi;

@@ -152,11 +152,11 @@ AffineOperation := NewOperation(
 
 #############################################################################
 ##
-#O  LinearOperation( <G>, <basisvectors>, <linear> )
+#O  LinearOperation( <Ggens>, <basisvectors>, <linear> )
 ##
 LinearOperation := NewOperation(
     "LinearOperation",
-    [ IsGroup, IsMatrix, IsObject ] );
+    [ IsList, IsMatrix, IsFunction ] );
 
 
 #############################################################################

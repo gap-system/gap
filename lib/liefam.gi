@@ -360,17 +360,22 @@ IsLieObjectsModuleRep := NewRepresentation(
 #M  MutableBasisByGenerators( <R>, <lieelms> )
 #M  MutableBasisByGenerators( <R>, <lieelms>, <zero> )
 ##
-##  We choose a mutable basis that stores a mutable basis for a nice module.
+##  In general, we choose a mutable basis that stores a mutable basis for a
+##  nice module.
+##
+##  Note that the case of Lie matrices must *not* be treated by these methods
+##  since the space may be Gaussian and thus handled in a completely
+##  different way.
 ##
 InstallMethod( MutableBasisByGenerators,
     "method for ring and collection of Lie elements",
-    true,
+    function( F1, F2 ) return not IsElmsCollLieColls( F1, F2 ); end,
     [ IsRing, IsLieObjectCollection ], 0,
     MutableBasisViaNiceMutableBasisMethod2 );
 
 InstallOtherMethod( MutableBasisByGenerators,
     "method for ring, (possibly empty) list, and Lie zero",
-    true,
+    function( F1, F2, F3 ) return not IsElmsLieColls( F1, F3 ); end,
     [ IsRing, IsList, IsLieObject ], 0,
     MutableBasisViaNiceMutableBasisMethod3 );
 
@@ -378,10 +383,16 @@ InstallOtherMethod( MutableBasisByGenerators,
 #############################################################################
 ##
 #M  LeftModuleByGenerators( <R>, <lieelms> )  . . . . . . . . for Lie objects 
+#M  LeftModuleByGenerators( <R>, <empty>, <zero> )  . . . . . for Lie objects
+#M  LeftModuleByGenerators( <R>, <lieelms>, <zero> )  . . . . for Lie objects
+##
+##  Note that the case of Lie matrices must *not* be treated by these methods
+##  since the space may be Gaussian and thus handled in a completely
+##  different way.
 ##
 InstallMethod( LeftModuleByGenerators,
     "method for ring and list of Lie objects",
-    true,
+    function( F1, F2 ) return not IsElmsCollLieColls( F1, F2 ); end,
     [ IsRing, IsLieObjectCollection and IsList ], 0,
     function( R, lieelms )
     local dims, V;
@@ -397,14 +408,9 @@ InstallMethod( LeftModuleByGenerators,
     return V;
     end );
 
-
-#############################################################################
-##
-#M  LeftModuleByGenerators( <R>, <empty>, <zero> )  . . . . . for Lie objects
-##
 InstallOtherMethod( LeftModuleByGenerators,
     "method for ring, empty list, and Lie object",
-    true,
+    function( F1, F2, F3 ) return not IsElmsLieColls( F1, F3 ); end,
     [ IsRing, IsList and IsEmpty, IsLieObject ], 0,
     function( R, empty, zero )
     local V;
@@ -420,14 +426,9 @@ InstallOtherMethod( LeftModuleByGenerators,
     return V;
     end );
 
-
-#############################################################################
-##
-#M  LeftModuleByGenerators( <R>, <lieelms>, <zero> )  . . . . for Lie objects
-##
 InstallOtherMethod( LeftModuleByGenerators,
     "method for ring, list of Lie objects, and Lie object",
-    true,
+    function( F1, F2, F3 ) return not IsElmsCollLieColls( F1, F2 ); end,
     [ IsRing, IsLieObjectCollection and IsList, IsLieObject ], 0,
     function( R, lieelms, zero )
     local V;

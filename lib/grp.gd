@@ -1091,6 +1091,12 @@ FreeGroup := NewOperationArgs( "FreeGroup" );
 ##
 IsomorphismPcGroup := NewAttribute( "IsomorphismPcGroup", IsGroup );
 
+#############################################################################
+##
+#A  IsomorphismFpGroup( <G> )
+##
+IsomorphismFpGroup := NewOperation( "IsomorphismFpGroup", [IsGroup] );
+
 
 #############################################################################
 ##

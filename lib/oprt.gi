@@ -363,30 +363,22 @@ end );
 
 #############################################################################
 ##
-#M  Size( <xset> ) . . . . . . . . . . . . . . . . . . . for external subsets
-##
-InstallMethod( Size, true, [ IsExternalSubset ], 0,
-    xset -> NrMovedPoints( ImagesSource
-            ( OperationHomomorphismAttr( xset ) ) ) );
-
-#############################################################################
-##
 #M  Enumerator( <xset> )  . . . . . . . . . . . . . . .  for external subsets
 ##
 InstallMethod( Enumerator, true, [ IsExternalSubset ], 0,
     function( xset )
-    local   henum,  sublist;
+    local   henum,  sublist,  pnt;
     
     henum := HomeEnumerator( xset );
-    sublist := MovedPoints( ImagesSource
-                       ( OperationHomomorphismAttr( xset ) ) );
-    if IsEmpty( sublist )  then
-        sublist := [ PositionCanonical( henum, Representative( xset ) ) ];
-    fi;
+    sublist := BlistList( [ 1 .. Length( henum ) ],
+                       MovedPoints( ImagesSource
+                               ( OperationHomomorphismAttr( xset ) ) ) );
+    for pnt  in xset!.start  do
+        sublist[ PositionCanonical( henum, pnt ) ] := true;
+    od;
     return Objectify( NewKind( FamilyObj( henum ), IsSubsetEnumerator ),
         rec( homeEnumerator := henum,
-                    sublist := BlistList( [ 1 .. Length( henum ) ], sublist )
-             ) );
+                    sublist := sublist ) );
 end );
 
 #############################################################################
@@ -848,8 +840,7 @@ InstallMethod( OrbitStabilizerOp,
         "G, D, pnt, gens, oprs, opr", true,
         OrbitishReq, 0,
     function( G, D, pnt, gens, oprs, opr )
-    return rec( orbit := OrbitOp( G, D, pnt, gens, oprs, opr ),
-           stabilizer := StabilizerOp( G, D, pnt, gens, oprs, opr ) );
+    return OrbitStabilizerOp( G, pnt, gens, oprs, opr );
 end );
     
 InstallOtherMethod( OrbitStabilizerOp,
@@ -863,6 +854,9 @@ InstallOtherMethod( OrbitStabilizerOp,
     
     orbstab := OrbitStabilizerByGenerators( gens, oprs, pnt, opr );
     orbstab.stabilizer := SubgroupNC( G, orbstab.stabilizer );
+    if HasSize( G )  then
+        SetSize( orbstab.stabilizer, Size( G ) / Length( orbstab.orbit ) );
+    fi;
     return Immutable( orbstab );
 end );
 
@@ -1908,7 +1902,7 @@ InstallMethod( StabilizerOp,
         hom := OperationHomomorphismAttr( ExternalOrbitOp
                        ( G, D, d, gens, oprs, opr ) );
         d := PositionCanonical( D[ d ] );
-        return PreImage( hom, StabilizerOp
+        return PreImages( hom, StabilizerOp
                        ( ImagesSource( hom ), d, OnPoints ) );
     else
         return StabilizerOp( G, d, opr );
@@ -1922,7 +1916,7 @@ InstallOtherMethod( StabilizerOp,
           IsList,
           IsFunction ], 0,
     function( G, d, gens, oprs, opr )
-    local   stb,  p;
+    local   stb,  p,  orbstab;
     
     if IsIdentical( gens, oprs )  then
         if opr = OnTuples  or  opr = OnPairs  then
@@ -1934,8 +1928,11 @@ InstallOtherMethod( StabilizerOp,
             stb := StabilizerOp( G, d, opr );
         fi;
     else
-        stb := SubgroupNC( G, OrbitStabilizerByGenerators
-                       ( gens, oprs, d, opr ).stabilizer );
+        orbstab := OrbitStabilizerByGenerators( gens, oprs, d, opr );
+        stb := SubgroupNC( G, orbstab.stabilizer );
+        if HasSize( G )  then
+            SetSize( stb, Size( G ) / Length( orbstab.orbit ) );
+        fi;
     fi;
     return stb;
 end );
@@ -1944,9 +1941,15 @@ InstallOtherMethod( StabilizerOp,
         "G, pnt, opr", true,
         [ IsGroup, IsObject, IsFunction ], 0,
     function( G, d, opr )
-    return SubgroupNC( G, OrbitStabilizerByGenerators
-                   ( GeneratorsOfGroup( G ), GeneratorsOfGroup( G ),
-                     d, opr ).stabilizer );
+    local   orbstab,  stb;
+    
+    orbstab := OrbitStabilizerByGenerators( GeneratorsOfGroup( G ),
+                       GeneratorsOfGroup( G ), d, opr );
+    stb := SubgroupNC( G, orbstab.stabilizer );
+    if HasSize( G )  then
+        SetSize( stb, Size( G ) / Length( orbstab.orbit ) );
+    fi;
+    return stb;
 end );
 
 #############################################################################

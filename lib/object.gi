@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains some methods applicable objects in general.
 ##
@@ -36,7 +36,7 @@ InstallMethod( \=, true, [ IsFamily, IsFamily], 0, IS_IDENTICAL_OBJ );
 ##
 #M  FormattedString( <obj>, <width> )  . . . . . convert object into a string
 ##
-InstallOtherMethod( FormattedString,
+InstallMethod( FormattedString,
     true,
     [ IsObject,
       IsPosRat and IsInt ],
@@ -68,7 +68,7 @@ function( str, n )
 end );
 
 
-InstallOtherMethod( FormattedString,
+InstallMethod( FormattedString,
     true,
     [ IsObject,
       IsNegRat and IsInt ],

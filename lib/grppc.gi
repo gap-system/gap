@@ -270,18 +270,18 @@ end;
 
 #############################################################################
 ##
-#F  LinearOperationLayer( <G>, <pcgs>  )
+#F  LinearOperationLayer( <Gpcgs>, <pcgs>  )
 ##
-LinearOperationLayer := function( G, pcgs )
+LinearOperationLayer := function( Gpcgs, pcgs )
 local V, field, linear;
 
     field := GF( RelativeOrderOfPcElement( pcgs, pcgs[1] ) );
-    V:=IdentityMat(Length(pcgs),field);
+    V := IdentityMat(Length(pcgs),field);
     linear := function( x, g ) 
               return ExponentsOfPcElement( pcgs,
                      PcElementByExponents( pcgs, x )^g ) * One(field);
               end;
-    return LinearOperation( G, V, linear );
+    return LinearOperation( Gpcgs, V, linear );
 end;
 
     
@@ -649,7 +649,7 @@ function( G, n )
             pcgsS := InducedPcgsByPcSequenceNC( spec, spec{[start..m]} );
             pcgsN := InducedPcgsByPcSequenceNC( spec, spec{[next..m]} );
             pcgsL := pcgsS mod pcgsN;
-            mats  := LinearOperationLayer( G, pcgsL );
+            mats  := LinearOperationLayer( spec, pcgsL );
             modu  := GModuleByMats( mats,  GF(p) );
             max   := MTX.BasesMaximalSubmodules( modu );
             
@@ -697,26 +697,25 @@ end );
 
 #############################################################################
 ##
-#M  LinearOperation( <G>, <basisvectors>, <linear>  )
+#M  LinearOperation( <Ggens>, <basisvectors>, <linear>  )
 ##
 InstallMethod( LinearOperation,
     true, 
-    [ IsGroup,
+    [ IsList,
       IsMatrix,
       IsFunction ],
     0,
 
-function( G, base, linear )
-    local  gens, mats;
+function( Ggens, base, linear )
+    local  mats;
 
     # catch trivial cases
-    if IsTrivial(G)  then
+    if Length( Ggens ) = 0 then 
         return true;
     fi;
-    gens := GeneratorsOfGroup( G );
 
     # compute matrices
-    mats := List( gens, x -> List( base, y -> linear( y, x ) ) );
+    mats := List( Ggens, x -> List( base, y -> linear( y, x ) ) );
     return mats;
 
 end );
@@ -1241,7 +1240,7 @@ local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
     else
       pcgs:=InducedPcgsWrtHomePcgs(e[i-1]);
       mpcgs:=pcgs mod InducedPcgsWrtHomePcgs(e[i]);
-      op:=LinearOperationLayer(G,mpcgs);
+      op:=LinearOperationLayer(GeneratorsOfGroup(G),mpcgs);
       m:=GModuleByMats(op,GF(RelativeOrderOfPcElement(pcgs,pcgs[1])));
       cs:=MTX.BasesCompositionSeries(m);
       Sort(cs,function(a,b) return Length(a)>Length(b);end);

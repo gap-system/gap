@@ -99,7 +99,7 @@ local o,b,img;
     return fail;
   else
     b:=StabilizerOfBlockNC(img,First(b,i->1 in i));
-    b:=PreImage(o,b);
+    b:=PreImages(o,b);
     return b;
   fi;
 end;

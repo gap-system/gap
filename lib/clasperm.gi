@@ -8,6 +8,9 @@
 ##  classes for permutation groups.
 ##
 #H  $Log$
+#H  Revision 4.8  1997/04/01 09:00:53  htheisse
+#H  replaced `PreImage' by `PreImages'
+#H
 #H  Revision 4.7  1997/01/30 09:14:52  htheisse
 #H  changed the syntax of `CompleteGaloisGroupPElement'
 #H
@@ -367,7 +370,6 @@ SortRationalClasses := function( rationalClasses, p )
             fi;
         fi;
       end );
-    return rationalClasses;
 end;
 
 #############################################################################
@@ -727,7 +729,7 @@ RationalClassesPermGroup := function( G, primes )
                         od;
                         class := RationalClass( G, y );
                         SetStabilizerOfExternalSet( class, Centralizer
-                          ( PreImage( Hom, StabilizerOfExternalSet( class_ ) ),
+                          ( PreImages( Hom, StabilizerOfExternalSet(class_) ),
                             y ) );
                         SetGaloisGroup( class, GroupByPrimeResidues
                                 ( gens, oy ) );

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  chartabl.gd                 GAP library                     Thomas Breuer
+#W  ctbl.gd                     GAP library                     Thomas Breuer
 #W                                                           & Goetz Pfeiffer
 ##
 #H  @(#)$Id$
@@ -10,7 +10,7 @@
 ##  This file contains the definition of categories of character table like
 ##  objects, and their properties, attributes, operations, and functions.
 ##
-Revision.chartabl_gd :=
+Revision.ctbl_gd :=
     "@(#)$Id$";
 
 
@@ -171,7 +171,7 @@ HasCharacterDegrees := Tester( CharacterDegrees );
 #O  CharacterTable( <name> )  . . . . . . . . . library table with given name
 ##
 ##  This dispatches to 'OrdinaryCharacterTable', 'BrauerCharacterTable',
-##  or 'CharTableLibrary'.
+##  or 'CharacterTableFromLibrary'.
 ##
 CharacterTable := NewOperation( "CharacterTable", [ IsGroup, IsInt ] );
 
@@ -286,7 +286,11 @@ HasUnderlyingCharacteristic := Tester( UnderlyingCharacteristic );
 ##
 #A  BlocksInfo( <tbl> )
 ##
-##  is ...
+##  If <tbl> is a Brauer character table then the value of 'BlocksInfo'
+##  is a list of records, the $i$-th entry containing information about
+##  the $i$-th block.
+##
+##  If <tbl> is an ordinary character table then ...
 ##
 BlocksInfo := NewAttribute( "BlocksInfo", IsNearlyCharacterTable );
 SetBlocksInfo := Setter( BlocksInfo );
@@ -388,7 +392,7 @@ HasInverseClasses := Tester( InverseClasses );
 ##  fusions into <tbl> stored.
 ##
 NamesOfFusionSources := NewAttribute( "NamesOfFusionSources",
-    IsNearlyCharacterTable );
+    IsNearlyCharacterTable, "mutable" );
 SetNamesOfFusionSources := Setter( NamesOfFusionSources );
 HasNamesOfFusionSources := Tester( NamesOfFusionSources );
 
@@ -569,7 +573,8 @@ CharacterTableSpecialized := NewOperation( "CharacterTableSpecialized",
 ##       according to a character if there is one with at most 'maxlen'
 ##       possible restrictions.
 ##
-PossibleClassFusions := NewOperationArgs( "PossibleClassFusions" );
+PossibleClassFusions := NewOperation( "PossibleClassFusions",
+    [ IsOrdinaryTable, IsOrdinaryTable, IsRecord ] );
 
 SubgroupFusions := PossibleClassFusions;
 
@@ -616,7 +621,8 @@ SubgroupFusions := PossibleClassFusions;
 ##       according to a character if there is one with at most 'maxlen'
 ##       possible minus-characters.
 ##
-PossiblePowerMaps := NewOperationArgs( "PossiblePowerMaps" );
+PossiblePowerMaps := NewOperation( "PossiblePowerMaps",
+    [ IsOrdinaryTable, IsOrdinaryTable, IsRecord ] );
 
 Powermap := PossiblePowerMaps;
 
@@ -661,7 +667,7 @@ FusionConjugacyClassesOp := NewOperation( "FusionConjugacyClassesOp",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ] );
 
 ComputedClassFusions := NewAttribute( "ComputedClassFusions",
-    IsNearlyCharacterTable );
+    IsNearlyCharacterTable, "mutable" );
 SetComputedClassFusions := Setter( ComputedClassFusions );
 
 
@@ -774,41 +780,28 @@ InverseMap := NewOperationArgs( "InverseMap" );
 ##  by library functions.
 ##
 SupportedOrdinaryTableInfo := [
-    SetAutomorphismsOfTable,         "automorphismsOfTable",
-    SetBlocksInfo,                   "blocksInfo",
-    SetComputedClassFusions,         "computedClassFusions",
-    SetClassParameters,              "classParameters",
-    SetComputedPowerMaps,            "computedPowerMaps",
-    SetIdentifier,                   "identifier",
-    SetInfoText,                     "infoText",
-    SetIrr,                          "irr",
-    SetIsSimpleGroup,                "isSimpleGroup",
-    SetNamesOfFusionSources,         "namesOfFusionSources",
-    SetOrdersClassRepresentatives,   "ordersClassRepresentatives",
-    SetSizesCentralizers,            "sizesCentralizers",
-    SetSizesConjugacyClasses,        "sizesConjugacyClasses",
-    SetUnderlyingCharacteristic,     "underlyingCharacteristic",
-    SetUnderlyingGroup,              "underlyingGroup",
+    AutomorphismsOfTable,         "automorphismsOfTable",
+    BlocksInfo,                   "blocksInfo",
+    ComputedClassFusions,         "computedClassFusions",
+    ClassParameters,              "classParameters",
+    ComputedPowerMaps,            "computedPowerMaps",
+    Identifier,                   "identifier",
+    InfoText,                     "infoText",
+    Irr,                          "irr",
+    IrredInfo,                    "irredInfo",
+    IsSimpleGroup,                "isSimpleGroup",
+    NamesOfFusionSources,         "namesOfFusionSources",
+    OrdersClassRepresentatives,   "ordersClassRepresentatives",
+    SizesCentralizers,            "sizesCentralizers",
+    SizesConjugacyClasses,        "sizesConjugacyClasses",
+    UnderlyingCharacteristic,     "underlyingCharacteristic",
+    UnderlyingGroup,              "underlyingGroup",
     ];
 #T what about classtext?
 
-SupportedBrauerTableInfo := [
-    SetAutomorphismsOfTable,         "automorphismsOfTable",
-    SetBlocksInfo,                   "blocksInfo",
-    SetComputedClassFusions,         "computedClassFusions",
-    SetClassParameters,              "classParameters",
-    SetComputedPowerMaps,            "computedPowerMaps",
-    SetIdentifier,                   "identifier",
-    SetInfoText,                     "infoText",
-    SetIrr,                          "irr",
-    SetNamesOfFusionSources,         "namesOfFusionSources",
-    SetOrdersClassRepresentatives,   "ordersClassRepresentatives",
-    SetOrdinaryCharacterTable,       "ordinaryCharacterTable",
-    SetSizesCentralizers,            "sizesCentralizers",
-    SetSizesConjugacyClasses,        "sizesConjugacyClasses",
-    SetUnderlyingCharacteristic,     "underlyingCharacteristic",
-    SetUnderlyingGroup,              "underlyingGroup",
-    ];
+SupportedBrauerTableInfo := Concatenation( SupportedOrdinaryTableInfo, [
+    OrdinaryCharacterTable,       "ordinaryCharacterTable",
+    ] );
 
 
 #############################################################################
@@ -843,13 +836,6 @@ ConvertToBrauerTableNC := NewOperationArgs( "ConvertToBrauerTableNC" );
 
 #############################################################################
 ##
-#F  CharTableLibrary( <name> )
-##
-CharTableLibrary := NewOperationArgs( "CharTableLibrary" );
-
-
-#############################################################################
-##
 #F  TableAutomorphisms( <name> )
 ##
 TableAutomorphisms := NewOperationArgs( "TableAutomorphisms" );
@@ -872,7 +858,14 @@ Decomposition := NewOperationArgs( "Decomposition" );
 
 #############################################################################
 ##
-#E  chartabl.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#F  LowercaseString( <string> ) . . . string consisting of lower case letters
+##
+LowercaseString := NewOperationArgs( "LowercaseString" );
+
+
+#############################################################################
+##
+#E  ctbl.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 
 

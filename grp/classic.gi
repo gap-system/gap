@@ -4,11 +4,6 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.1  1997/02/14 16:35:37  htheisse
-#H  added functions for classical matrix groups
-#H
-##
 Revision.classic_gi :=
     "@(#)$Id$";
 
@@ -96,8 +91,8 @@ Sp := function( d, q )
         c[i][d-i+1] := o;
         c[d/2+i][d/2-i+1] := -o;
     od;
-    g!.symplecticForm := c;
-    g!.invariantForm  := c;
+    g!.form := c;
+    SetFilterObj( g, IsGeneralLinearGroupWithFormRep );
 
     # and return
     return g;
@@ -187,9 +182,9 @@ GU := function( n, q )
 
      # construct the form
      c := Reversed( One( g ) );
-     g!.unitaryForm   := c;
-     g!.invariantForm := c;
-
+     g!.form := c;
+     SetFilterObj( g, IsGeneralUnitaryGroupWithFormRep );
+     
      # Return the group.
      return g;
 end;
@@ -292,8 +287,8 @@ SU := function( n, q )
 
      # construct the form
      c := Reversed( One( g ) );
-     g!.unitaryForm   := c;
-     g!.invariantForm := c;
+     g!.form := c;
+     SetFilterObj( g, IsGeneralLinearGroupWithFormRep );
 
      # Return the group.
      return g;
@@ -1269,10 +1264,8 @@ O := function( e, d, q )
     SetName( g, Concatenation( "O(", i, String(e), ",", String(d), ",",
                                    String(q), ")" ) );
 
-    # and the form
-    g!.symmetricForm := g!.form;
-    g!.invariantForm := g!.form;
-
+    SetFilterObj( g, IsGeneralLinearGroupWithFormRep );
+    
     # and return
     return g;
 

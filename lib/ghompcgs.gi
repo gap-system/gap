@@ -8,7 +8,6 @@ Revision.ghompcgs_gi :=
 
 #############################################################################
 ##
-
 #M  GroupHomomorphismByImages( <G>, <H>, <gens>, <imgs> )
 ##
 ##  Add NC later
@@ -16,13 +15,13 @@ Revision.ghompcgs_gi :=
 InstallMethod( GroupHomomorphismByImages, 
     "generic method for pc homs",
     true, 
-    [ IsPcGroup, IsGroup, IsList, IsList ],
+    [ IsPcGroup, IsPcGroup, IsList, IsList ],
     0,
 
 function( G, H, gens, imgs )
     local pcgs, U, hom, filter;
 
-    pcgs  := InducedPcgsByGeneratorsWithImages( Pcgs(G), gens, imgs );
+    pcgs  := CanonicalPcgsByGeneratorsWithImages( Pcgs(G), gens, imgs );
     U     := Subgroup( H, pcgs[2] );
 
     filter := IsPcGroupHomomorphismByImages and 
@@ -33,8 +32,70 @@ function( G, H, gens, imgs )
            GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                   ElementsFamily( FamilyObj( H ) ) ),
            filter ),
+           rec( generators       := AsList(pcgs[1]),
+                genimages        := pcgs[2],
+                sourcePcgs       := pcgs[1],
+                sourcePcgsImages := pcgs[2] ) );
+
+    SetSource        ( hom, G );
+    SetPreImagesRange( hom, G );
+
+    SetRange           ( hom, H );
+    SetImagesSource    ( hom, U );
+    SetCoKernelOfMultiplicativeGeneralMapping ( hom, TrivialSubgroup( H ) );
+
+    return hom;
+end );
+
+InstallMethod( GroupHomomorphismByImages, 
+    "generic method for pc homs",
+    true, 
+    [ IsGroup, IsPcGroup, IsList, IsList ],
+    0,
+
+function( G, H, gens, imgs )
+    local pcgs, U, hom, filter;
+
+    filter := IsToPcGroupHomomorphismByImages;
+
+    hom := Objectify( 
+           NewKind( 
+           GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
+                                  ElementsFamily( FamilyObj( H ) ) ),
+           filter ),
            rec( generators       := gens,
-                genimages        := imgs,
+                genimages        := imgs ) );
+
+    SetSource        ( hom, G );
+    SetPreImagesRange( hom, G );
+
+    SetRange( hom, H );
+    SetCoKernelOfMultiplicativeGeneralMapping ( hom, TrivialSubgroup( H ) );
+
+    return hom;
+end );
+
+InstallMethod( GroupHomomorphismByImages, 
+    "generic method for pc homs",
+    true, 
+    [ IsPcGroup, IsGroup, IsList, IsList ],
+    0,
+
+function( G, H, gens, imgs )
+    local pcgs, U, hom, filter;
+
+    pcgs  := CanonicalPcgsByGeneratorsWithImages( Pcgs(G), gens, imgs );
+    U     := Subgroup( H, pcgs[2] );
+
+    filter := IsPcGroupHomomorphismByImages;
+
+    hom := Objectify( 
+           NewKind( 
+           GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
+                                  ElementsFamily( FamilyObj( H ) ) ),
+           filter ),
+           rec( generators       := AsList(pcgs[1]),
+                genimages        := pcgs[2],
                 sourcePcgs       := pcgs[1],
                 sourcePcgsImages := pcgs[2] ) );
 
@@ -73,8 +134,12 @@ function( hom1, hom2 )
     H := Range( hom1 );
     U := Subgroup( H, pcgsimgs );
 
-    filter := IsPcGroupHomomorphismByImages and 
-              IsToPcGroupHomomorphismByImages;
+    if IsPcGroup( H ) then
+        filter := IsPcGroupHomomorphismByImages and 
+                  IsToPcGroupHomomorphismByImages;
+    else
+        filter := IsPcGroupHomomorphismByImages;
+    fi;
 
     hom := Objectify( 
            NewKind( 
@@ -204,9 +269,9 @@ InversePcgs := function( hom )
     fi;
     
     # otherwise we have to do some work
-    pcgs := Pcgs( hom!.range );
-    new  := InducedPcgsByGeneratorsWithImages( pcgs, hom!.genimages,
-                                                     hom!.generators );
+    pcgs := Pcgs( Image( hom ) );
+    new  := CanonicalPcgsByGeneratorsWithImages( pcgs, hom!.genimages,
+                                                       hom!.generators );
     hom!.rangePcgs := new[1];
     hom!.rangePcgsPreimages := new[2];
 end;
@@ -218,7 +283,7 @@ end;
 InstallMethod( KernelOfMultiplicativeGeneralMapping, 
                "method for homs into pc group",
                true,
-               [ IsToPcGroupHomomorphismByImages ],
+               [ IsPcGroupHomomorphismByImages ],
                0,
 
 function( hom )
@@ -227,24 +292,22 @@ function( hom )
     idR := Identity( Range( hom ) );
     idS := Identity( Source( hom ) );
 
-    # precompute pcgs
-    InversePcgs( hom );
-    pcgs := hom!.rangePcgs;
-    gens := hom!.rangePcgsPreimages;
+    gens := hom!.sourcePcgs;
+    pcgs := hom!.sourcePcgsImages;
 
     # Compute kernel 
     gensKer := [];
     for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
         u  := pcgs[ i ];
         v  := gens[ i ];
-        uw := DepthOfPcElement( pcgs, u );
+        uw := DepthOfPcElement( gens, v );
         while u <> idR do
-            tmp := LeadingExponentOfPcElement( pcgs, u )
-                    /  LeadingExponentOfPcElement( pcgs, pcgs[uw] )
-                   mod RelativeOrderOfPcElement( pcgs, u );
+            tmp := LeadingExponentOfPcElement( gens, v )
+                    /  LeadingExponentOfPcElement( gens, gens[uw] )
+                   mod RelativeOrderOfPcElement( gens, v );
             u := pcgs[ uw ] ^ -tmp * u;
             v := gens[ uw ] ^ -tmp * v;
-            uw := DepthOfPcElement( pcgs, u );
+            uw := DepthOfPcElement( gens, v );
         od;
         if v <> idS then
             AddSet( gensKer, v );
@@ -295,8 +358,12 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
     function( G, N )
     local   pcgsK,  pcgsF,  F,  hom;
 
-    pcgsK := NormalIntersectionPcgs( ParentPcgs( Pcgs( G ) ),
-                     Pcgs( N ), Pcgs( G ) );
+    if IsInducedPcgs( G )  then
+        pcgsK := NormalIntersectionPcgs( ParentPcgs( Pcgs( G ) ),
+                         Pcgs( N ), Pcgs( G ) );
+    else
+        pcgsK := Pcgs( N );
+    fi;
     pcgsF := Pcgs( G ) mod pcgsK;
     F := GroupByPcgs( pcgsF );
     hom := Objectify( NewKind( GeneralMappingsFamily

@@ -4,17 +4,6 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 1.3  1997/03/11 17:14:09  htheisse
-#H  added Sims' names and numbers
-#H
-#H  Revision 1.2  1997/02/21 17:15:54  htheisse
-#H  fixed a bug and a typo
-#H
-#H  Revision 1.1  1997/02/20 12:21:25  htheisse
-#H  added the primitive groups library
-#H
-##
 Revision.primitiv_gi :=
     "@(#)$Id$";
 
@@ -238,14 +227,6 @@ end;
 
 #############################################################################
 ##
-#F  OnLeft( <a>, <b> )  . . . . . . . . . . . . . . . operation from the left
-##
-OnLeft := function( a, b )
-    return LeftQuotient( b, a );
-end;
-
-#############################################################################
-##
 #F  CohortProductAction( <coh> )  . . . . . . . . . . . . . . .  product type
 ##
 CohortProductAction := function( coh, n )
@@ -278,7 +259,7 @@ CohortDiagonalAction := function( G )
     SetIsInjective( hom, true );
     coh := CohortOfGroup( Image( hom ) );
     T := GeneratorsOfGroup( Image( hom ) );
-    T_ := GeneratorsOfGroup( Operation( G, G, OnLeft ) );
+    T_ := GeneratorsOfGroup( Operation( G, G, OnLeftInverse ) );
     gens := Concatenation( T, T_ );
     Add( gens, AutomorphismByConjugation( [ 1 .. Size( G ) ],
             Concatenation( T, T_ ), Concatenation( T_, T ) ) );
@@ -289,7 +270,7 @@ CohortDiagonalAction := function( G )
                 Concatenation( T, T_ ),
                 Concatenation( imgs, List( imgs,
                         i -> Permutation( PreImagesRepresentative( hom, i ),
-                                G, OnLeft ) ) ) ) );
+                                G, OnLeftInverse ) ) ) ) );
     od;
     N := GroupByGenerators( gens );
     G := Subgroup( N, Concatenation( T, T_ ) );
@@ -848,7 +829,11 @@ NrSolvableAffinePrimitiveGroups := function( deg )
     else
         p := FactorsInt( deg )[ 1 ];
         n := LogInt( deg, p );
-        return Length( IrredSolGroupList[ n ][ p ] );
+        if n = 1  then
+            return Length( DivisorsInt( p - 1 ) );
+        else
+            return Length( IrredSolGroupList[ n ][ p ] );
+        fi;
     fi;
 end;
 
@@ -857,20 +842,16 @@ end;
 #F  NrAffinePrimitiveGroups( <deg> )  . . . . . . . . . . . counting function
 ##
 NrAffinePrimitiveGroups := function( deg )
-    local   p,  n;
-    
     if not IsPrimePowerInt( deg )  then
         return 0;
     else
-        p := FactorsInt( deg )[ 1 ];
-        n := LogInt( deg, p );
         if     not IsBound( AFFINE_NON_SOLVABLE_GROUPS[ deg ] )
            and not READ_GAP_ROOT( Concatenation
                        ( "prim/deg", String( deg ), ".aff" ) )  then
             AFFINE_NON_SOLVABLE_GROUPS[ deg ] := [  ];
         fi;
         return Length( AFFINE_NON_SOLVABLE_GROUPS[ deg ] ) +
-               Length( IrredSolGroupList[ n ][ p ] );
+               NrSolvableAffinePrimitiveGroups( deg );
     fi;
 end;
 

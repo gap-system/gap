@@ -628,7 +628,7 @@ end;
 ##
 PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     local   ns,  us,  gf,  one,  data,  u,  ui,  mats,  t,  l,  i,  b,  
-            nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s;
+            nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s,  j,  v;
 
     # The situtation is as follows:
     #
@@ -679,7 +679,7 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
         return PCGS_NORMALIZER( home, pcgs, u1, u2 );
     fi;
     Info( InfoPcNormalizer, 4, "|coboundaries| = ", 
-          RelativeOrderOfPcElement(home,ns[1]), "^", Length(B), "\n" );
+          RelativeOrderOfPcElement(home,ns[1]), "^", Length(b) );
 
     # compute the stabilizer
     c := List( NullspaceMat(l), x -> PcElementByExponents(ns,x) );
@@ -726,7 +726,7 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
 
     # compute the blockstabilizer
     Info( InfoPcNormalizer, 4, "computing blockstabilizer" );
-    stab := PCGS_STABILIZER( s mod us,
+    stab := PCGS_STABILIZER( NumeratorOfModuloPcgs(pcgs) mod us,
                              b[1] * Zero(gf),
                              op );
 
@@ -747,7 +747,8 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     od;
 
     # return sum of <L>, <C> and <U1>
-    return InducedPcgsByGeneratorsNC( home, Concatenation( stab, c, u1 ) );
+    return InducedPcgsByGeneratorsNC( home, Concatenation( stab, c, u1 ) )
+       mod DenominatorOfModuloPcgs(pcgs);
 
 end;
 
@@ -1048,7 +1049,7 @@ InstallMethod( Normalizer,
     0,
 
 function( g, u )
-    local   home,  norm;
+    local   home,  norm,  pcgs;
 
     # for small groups use direct calculation
     if Size(g) < 1000  then
@@ -1060,7 +1061,9 @@ function( g, u )
     fi;
 
     # first compute the normalizer with respect to the home
-    norm := NormalizerInHomePcgs(u);
+    pcgs := NormalizerInHomePcgs(u);
+    norm := SubgroupNC( g, pcgs );
+    SetPcgs( norm, pcgs );
 
     # then the intersection
     norm := Intersection( g, norm );

@@ -74,6 +74,8 @@ unknown:
 	@echo "'ibm-i386-linux-gcc2'       for IBM PC under Linux with GNU cc 2"
 	@echo "'ibm-i386-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2"
 	@echo "                            (GNU cc 2.5.8 comes with NeXTSTEP 3.3)"
+	@echo "'sgi-mips-irix-gcc2'        for SGI Mips under IRIX 5/6 with GNU cc 2"
+	@echo "'sgi-mips-irix-cc'          for SGI Mips under IRIX 5/6 with cc"
 	@echo "'sun-sparc-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2"
 	@echo "'sun-sparc-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2"
 	@echo ""
@@ -136,6 +138,7 @@ dec-mips-ultrix-cc:
 	               -DSYS_ARCH='\"dec-mips-ultrix\"'" )
 	@(cd ../bin/dec-mips-ultrix; $(MAKE) -f ../../src/Makefile gac \
             SRC="../../src" \
+	    CC="cc" \
             TARGET="dec-mips-ultrix-cc" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="UNSUPPORTED" \
@@ -170,11 +173,12 @@ hp-hppa1.1-hpux-gcc2:
 	               -DSYS_HAS_TIME_PROTO  -DSYS_HAS_MISC_PROTO" )
 	@(cd ../bin/hp-hppa1.1-hpux; $(MAKE) -f ../../src/Makefile gac \
             SRC="../../src" \
+	    CC="gcc" \
             TARGET="hp-hppa1.1-hpux-gcc2" \
             COPTIONS="-ansi -Wall -O2" \
-            CDYNOPTIONS="UNSUPPORTED" \
-            CDYNLINKER="echo" \
-            CDYNLINKING="UNSUPPORTED" )
+            CDYNOPTIONS="-fpic" \
+            CDYNLINKER="ld" \
+            CDYNLINKING="-b +e Init__Dynamic" )
 
 
 #############################################################################
@@ -207,6 +211,7 @@ ibm-i386-freebsd2.0-gcc2:
 	@(cd ../bin/ibm-i386-freebsd2.0; \
           $(MAKE) -f ../../src/Makefile gac \
 	    SRC="../../src" \
+	    CC="gcc" \
             TARGET="ibm-i386-freebsd2.0-gcc2" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="-fpic -ansi -Wall -O2" \
@@ -252,6 +257,7 @@ ibm-i386-linux-gcc2:
         )
 	@(cd ../bin/ibm-i386-linux; $(MAKE) -f ../../src/Makefile gac \
 	    SRC="../../src" \
+	    CC="gcc" \
             TARGET="ibm-i386-linux-gcc2" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="-fpic -ansi -Wall -O2" \
@@ -295,9 +301,10 @@ next-any-nextstep-cc:
 	@(cd ../bin/next-$(ADIR)-nextstep$(EXTDIR); \
           $(MAKE) -f ../../src/Makefile gac \
 	    SRC="../../src" \
+	    CC="cc" \
             TARGET="next-$(ADIR)-nextstep-cc" \
-            COPTIONS="-ansi -Wall -O2 $(ARCH)" \
-            CDYNOPTIONS="-ansi -Wall -O2 $(ARCH)" \
+            COPTIONS="-ansi -Wall -O2 $(ARCH) $(COPTIONS)" \
+            CDYNOPTIONS="-ansi -Wall -O2 $(ARCH) $(CDYNOPTIONS)" \
             CDYNLINKER="cc" \
             CDYNLINKING="$(ARCH) -Xlinker -r -Xlinker -x -nostdlib" )
 
@@ -323,7 +330,60 @@ next-i386-nextstep-cc-prof:
 	$(MAKE) -f Makefile next-any-nextstep-cc \
 		COPTS="$(COPTS) -pg" LOPTS="$(LOPTS) -pg" \
 		ARCH="-arch i386"  \
-		ADIR="i386" EXTDIR="-prof"
+		ADIR="i386" EXTDIR="-prof" \
+		CDYNOPTIONS="-pg"
+
+
+#############################################################################
+##
+#F  sgi-mips-irix-gcc2
+##
+##  From: Olaf.Weber@cwi.nl (Olaf Weber)
+##
+sgi-mips-irix-gcc2:
+	@(if test ! -d ../bin; then mkdir ../bin; fi; \
+          cd ../bin; \
+          if test ! -d sgi-mips-irix-gcc2; then \
+                mkdir sgi-mips-irix-gcc2; \
+          fi; \
+          cd sgi-mips-irix-gcc2; \
+	$(MAKE) -f ../../src/Makefile gap \
+            SRC="../../src" \
+            CC="gcc" \
+            LFLAGS="$(LOPTS)" \
+            CFLAGS="$(COPTS) -O2" \
+            CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+            CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
+                       -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
+                       -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
+                       -DSYS_HAS_MISC_PROTO -DSYS_HAS_MALLOC_PROTO \
+                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
+
+
+#############################################################################
+##
+#F  sgi-mips-irix-cc
+##
+##  From: Olaf.Weber@cwi.nl (Olaf Weber)
+##
+sgi-mips-irix-cc:
+	@(if test ! -d ../bin; then mkdir ../bin; fi; \
+	  cd ../bin; \
+	  if test ! -d sgi-mips-irix-cc; then \
+		mkdir sgi-mips-irix-cc; \
+	  fi; \
+	  cd sgi-mips-irix-cc; \
+	$(MAKE) -f ../../src/Makefile gap \
+            SRC="../../src" \
+	    CC="cc" \
+	    LFLAGS="$(LOPTS)" \
+	    CFLAGS="$(COPTS) -O2" \
+	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
+                       -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
+                       -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
+                       -DSYS_HAS_MISC_PROTO -DSYS_HAS_MALLOC_PROTO \
+                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
 
 
 #############################################################################

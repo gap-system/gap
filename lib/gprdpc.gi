@@ -1,28 +1,42 @@
 #############################################################################
 ##
+#W  gprdpc.gi                   GAP library                      Bettina Eick
+##
+Revision.grppcext_gi :=
+    "@(#)$Id:";
+
+#############################################################################
+##
 #F  DirectProductPcGroupConstructor( G, H, groups, lenlist )
 ##
 DirectProductPcGroupConstructor := function( G, H, groups, lenlist )
-    local lenG, lenH, FG, gensFG, FH, gensFH, F, gens, rels, D, info, list,
-          grps;
+    local lenG, lenH, isoG, FG, relsG, gensFG, isoH, FH, relsH, gensFH, 
+          F, gens, rels, D, info, list, grps;
 
     lenG := Length( Pcgs( G ) );
     lenH := Length( Pcgs( H ) );
    
-    FG := FpGroupPcGroup( G ); gensFG := GeneratorsOfGroup( FG.group );
-    FH := FpGroupPcGroup( H ); gensFH := GeneratorsOfGroup( FH.group );
+    isoG := IsomorphismFpGroup( G );
+    FG   := Image( isoG );
+    relsG := RelatorsOfFpGroup( FG );
+    gensFG := GeneratorsOfGroup( FreeGroupOfFpGroup( FG ) );
+
+    isoH := IsomorphismFpGroup( H );
+    FH   := Image( isoH );
+    relsH := RelatorsOfFpGroup( FH );
+    gensFH := GeneratorsOfGroup( FreeGroupOfFpGroup( FH ) );
 
     F  := FreeGroup( lenG + lenH );
     gens := GeneratorsOfGroup( F );
  
-    rels := List( FG.relators, x -> MappedWord( x, gensFG, 
-                  gens{[1..lenG]} ) );
+    rels := List( relsG, x -> MappedWord( x, gensFG, 
+                                         gens{[1..lenG]} ) );
     Append( rels, 
-            List( FH.relators, x -> MappedWord( x, gensFH,
-                  gens{[lenG+1..lenG+lenH]} ) ) );
+            List( relsH, x -> MappedWord( x, gensFH,
+                                         gens{[lenG+1..lenG+lenH]} ) ) );
     
     # create direct product
-    D := PcGroupFpGroup( rec( group := F, relators := rels ) );
+    D := PcGroupFpGroup( F / rels );
 
     # create info
     grps := Concatenation( groups, [H] );
@@ -136,7 +150,7 @@ function( G, aut, N )
     info := rec( groups := [G, N],
                  lenlist := [0, Length(Pcgs(G)), Length(Pcgs(H))],
                  embeddings := [],
-                 projections := [] );
+                 projections := true );
     SetSemidirectProductInfo( H, info );
     return H;
 end );
@@ -153,7 +167,7 @@ function( G, M )
                  List([1..M.dimension], x -> Characteristic(M.field)) )],
                  lenlist := [0, Length(Pcgs(G)), Length(Pcgs(H))],
                  embeddings := [],
-                 projections := [] );
+                 projections := true );
     SetSemidirectProductInfo( H, info );
     return H;
 end );
@@ -168,15 +182,8 @@ function( G, pr )
     U := Image( pr );
     M := rec( dimension  := DimensionOfMatrixGroup( U ),
               field      := FieldOfMatrixGroup( U ),
-              generators := List( Pcgs( G ), x -> ImagesElm( pr, x ) ) );
-    H := Extension( G, M, 0 );
-    info := rec( groups := [G, AbelianGroup( 
-                 List([1..M.dimension], x -> Characteristic(M.field)) )],
-                 lenlist := [0, Length(Pcgs(G)), Length(Pcgs(H))],
-                 embeddings := [],
-                 projections := [] );
-    SetSemidirectProductInfo( H, info );
-    return H;
+              generators := List( Pcgs( G ), x -> Image( pr, x ) ) );
+    return SemidirectProduct( G, M );
 end );
 
 #############################################################################
@@ -222,7 +229,7 @@ InstallOtherMethod( Projection,
 
     # check
     info := SemidirectProductInfo( D );
-    if IsBound( info.projections ) then 
+    if not IsBool( info.projections ) then
         return info.projections;
     fi;
 
@@ -230,9 +237,9 @@ InstallOtherMethod( Projection,
     G    := info.groups[1];
     list := info.lenlist;
     imgs := Concatenation( AsList( Pcgs(G) ),
-                           List( [list[2]+1..list[3]], x -> One(G)));
+                           List( [list[2]+1..list[3]], x -> One(G)) );
     hom := GroupHomomorphismByImages( D, G, AsList( Pcgs(D) ), imgs );
-    N := Subgroup( D, Pcgs(D){Concatenation( [list[2]+1..list[3]] )});
+    N := Subgroup( D, Pcgs(D){[list[2]+1..list[3]]});
     SetIsSurjective( hom, true );
     SetKernelOfMultiplicativeGeneralMapping( hom, N );
 

@@ -76,9 +76,12 @@ end;
 
 #############################################################################
 ##
-#M  AsSubspace( <V>, <W> )
+#M  AsSubspace( <V>, <W> )  . . . . . . . . . . . . . . for two vector spaces
 ##
-InstallMethod( AsSubspace, IsIdentical, [ IsVectorSpace, IsVectorSpace ], 0,
+InstallMethod( AsSubspace,
+    "method for two vector spaces",
+    IsIdentical,
+    [ IsVectorSpace, IsVectorSpace ], 0,
     function( V, W )
     local newW, feature;
 
@@ -99,13 +102,17 @@ InstallMethod( AsSubspace, IsIdentical, [ IsVectorSpace, IsVectorSpace ], 0,
 
 #############################################################################
 ##
-#M  AsLeftModule( <F>, <V> )
+#M  AsLeftModule( <F>, <V> )  . . . . . . .  for division ring and collection
+#M  AsLeftModule( <F>, <V> )  . . . . . .  for division ring and vector space
 ##
 ##  View the collection <V> as a vector space over the division ring <F>.
 ##
 #T InstallMethod( AsLeftModule, true, [ IsDivisionRing, IsCollection ], 0,
 
-InstallMethod( AsLeftModule, true, [ IsDivisionRing, IsVectorSpace ], 0,
+InstallMethod( AsLeftModule,
+    "method for a division ring and a vector space",
+    true,
+    [ IsDivisionRing, IsVectorSpace ], 0,
     function( F, V )
 
     local W,        # the space, result
@@ -182,21 +189,11 @@ InstallMethod( AsLeftModule, true, [ IsDivisionRing, IsVectorSpace ], 0,
 
 #############################################################################
 ##
-#M  PrintObj( <V> )
+#M  PrintObj( <V> ) . . . . . . . . . . . . . . . . . . .  for a vector space
 ##
-InstallMethod( PrintObj, true,
-    [ IsVectorSpace and HasParent and HasGeneratorsOfLeftModule ], 0,
-    function( V )
-    Print( "Subspace( ", Parent( V ), ", ",
-           GeneratorsOfLeftModule( V ), " )" );
-    end );
-
-InstallMethod( PrintObj, true, [ IsVectorSpace and HasParent ], 0,
-    function( V )
-    Print( "Subspace( ", Parent( V ), ", ... )" );
-    end );
-
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for vector space with left module generators",
+    true,
     [ IsVectorSpace and HasGeneratorsOfLeftModule ], 0,
     function( V )
     Print( "VectorSpace( ", LeftActingDomain( V ), ", ",
@@ -208,7 +205,10 @@ InstallMethod( PrintObj, true,
     fi;
     end );
 
-InstallMethod( PrintObj, true, [ IsVectorSpace ], 0,
+InstallMethod( PrintObj,
+    "method for vector space",
+    true,
+    [ IsVectorSpace ], 0,
     function( V )
     Print( "VectorSpace( ", LeftActingDomain( V ), ", ... )" );
     end );
@@ -305,9 +305,11 @@ end;
 
 #############################################################################
 ##
-#M  Intersection2( <V>, <W> )
+#M  Intersection2( <V>, <W> ) . . . . . . . . . . . . . for two vector spaces
 ##
-InstallMethod( Intersection2, IsIdentical,
+InstallMethod( Intersection2,
+    "method for two vector spaces",
+    IsIdentical,
     [ IsVectorSpace, IsVectorSpace ], 0,
     Intersection2Spaces( AsLeftModule, SubspaceNC, VectorSpace ) );
 
@@ -316,7 +318,9 @@ InstallMethod( Intersection2, IsIdentical,
 ##
 #M  ClosureLeftModule( <V>, <a> ) . . . . . . . . . closure of a vector space
 ##
-InstallMethod( ClosureLeftModule, IsCollsElms,
+InstallMethod( ClosureLeftModule,
+    "method for a vector space with basis, and a vector",
+    IsCollsElms,
     [ IsVectorSpace and HasBasisOfDomain, IsVector ], 0,
     function( V, w )
     local   B; # basis of 'V'
@@ -358,9 +362,12 @@ IsSubspacesVectorSpace := NewRepresentation( "IsSubspacesVectorSpace",
 
 #############################################################################
 ##
-#M  Print( <D> )
+#M  PrintObj( <D> )  . . . . . . . . . . . . . . . . . .  for a subspaces domain
 ##
-InstallMethod( PrintObj, true, [ IsSubspacesVectorSpace ], 0,
+InstallMethod( PrintObj,
+    "method for a subspaces domain",
+    true,
+    [ IsSubspacesVectorSpace ], 0,
     function( D )
     if IsInt( D!.dimension ) then
       Print( "Subspaces( ", D!.structure, ", ", D!.dimension, " )" );
@@ -372,7 +379,7 @@ InstallMethod( PrintObj, true, [ IsSubspacesVectorSpace ], 0,
 
 #############################################################################
 ##
-#M  Size( <D> )
+#M  Size( <D> ) . . . . . . . . . . . . . . . . . . .  for a subspaces domain
 ##
 ##  The number of $k$-dimensional subspaces in a $n$-dimensional space over
 ##  the field with $q$ elements is
@@ -383,7 +390,10 @@ InstallMethod( PrintObj, true, [ IsSubspacesVectorSpace ], 0,
 ##
 ##  (The number of all subspaces is $\sum_{k=0}^n a(n,k)$.)
 ##
-InstallMethod( Size, true, [ IsSubspacesVectorSpace ], 0,
+InstallMethod( Size,
+    "method for a subspaces domain",
+    true,
+    [ IsSubspacesVectorSpace ], 0,
     function( D )
 
     local k,
@@ -460,12 +470,15 @@ InstallMethod( Size, true, [ IsSubspacesVectorSpace ], 0,
 
 #############################################################################
 ##
-#M  Enumerator( <D> )
+#M  Enumerator( <D> ) . . . . . . . . . . . . . . . .  for a subspaces domain
 ##
 ##  Use the iterator to compute the elements list.
 #T This is not allowed!
 ##
-InstallMethod( Enumerator, true, [ IsSubspacesVectorSpace ], 0,
+InstallMethod( Enumerator,
+    "method for a subspaces domain",
+    true,
+    [ IsSubspacesVectorSpace ], 0,
     function( D )
     local iter,    # iterator for 'D'
           elms;    # elements list, result
@@ -494,12 +507,18 @@ IsSubspacesSpaceIterator := NewRepresentation( "IsSubspacesSpaceIterator",
 
 #############################################################################
 ##
-#M  Iterator( <D> )
+#M  Iterator( <D> ) . . . . . . . . . . . . . . . . .  for a subspaces domain
 ##
-InstallMethod( IsDoneIterator, true, [ IsSubspacesSpaceIterator ], 0,
+InstallMethod( IsDoneIterator,
+    "method for an iterator of a subspaces domain",
+    true,
+    [ IsSubspacesSpaceIterator ], 0,
     iter -> IsDoneIterator( iter!.associatedIterator ) );
 
-InstallMethod( NextIterator, true, [ IsSubspacesSpaceIterator ], 0,
+InstallMethod( NextIterator,
+    "method for an iterator of a subspaces domain",
+    true,
+    [ IsSubspacesSpaceIterator ], 0,
     function( iter )
     local next;
     next:= NextIterator( iter!.associatedIterator );
@@ -508,7 +527,10 @@ InstallMethod( NextIterator, true, [ IsSubspacesSpaceIterator ], 0,
     return Subspace( iter!.structure, next, "basis" );
     end );
 
-InstallMethod( Iterator, true, [ IsSubspacesVectorSpace ], 0,
+InstallMethod( Iterator,
+    "method for a subspaces domain",
+    true,
+    [ IsSubspacesVectorSpace ], 0,
     function( D )
     local V;      # the vector space
 
@@ -531,7 +553,10 @@ InstallMethod( Iterator, true, [ IsSubspacesVectorSpace ], 0,
 #M  SubspacesDim( <V>, <dim> )
 #M  SubspacesAll( <V> )
 ##
-InstallMethod( SubspacesDim, true, [ IsVectorSpace, IsInt ], 0,
+InstallMethod( SubspacesDim,
+    "method for a vector space, and an integer",
+    true,
+    [ IsVectorSpace, IsInt ], 0,
     function( V, dim )
     return Objectify( NewKind( CollectionsFamily( V ),
                                IsSubspacesVectorSpace ),
@@ -542,7 +567,10 @@ InstallMethod( SubspacesDim, true, [ IsVectorSpace, IsInt ], 0,
                      );
     end );
 
-InstallMethod( SubspacesAll, true, [ IsVectorSpace ], 0,
+InstallMethod( SubspacesAll,
+    "method for a vector space",
+    true,
+    [ IsVectorSpace ], 0,
     V -> Objectify( NewKind( CollectionsFamily( V ),
                              IsSubspacesVectorSpace ),
                     rec(

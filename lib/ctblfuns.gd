@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  classfun.gd                 GAP library                     Thomas Breuer
+#W  ctblfuns.gd                 GAP library                     Thomas Breuer
 ##
 #H  @(#)$Id$
 ##
@@ -9,7 +9,7 @@
 ##  This file contains the definition of categories of class functions,
 ##  and the corresponding properties, attributes, and operations.
 ##
-Revision.classfun_gd :=
+Revision.ctblfuns_gd :=
     "@(#)$Id$";
 
 #T TODO:
@@ -463,6 +463,57 @@ InducedClassFunctions := NewOperation( "InducedClassFunctions",
 
 #############################################################################
 ##
+#O  ReducedClassFunctions( <ordtbl>, <constituents>, <reducibles> )
+#O  ReducedClassFunctions( <ordtbl>, <reducibles> )
+##
+##  is a record with components 'remainders' and 'irreducibles', both lists
+##
+##  Let 'rems' be the set of nonzero characters obtained from <reducibles>
+##  by subtraction of
+##  $\sum_{j}
+##   \frac{'ScalarProduct( <ordtbl>, <reducibles>[i], <constituents>[j]}
+##        {'ScalarProduct( <ordtbl>, <constituents>[j], <constituents>[j]}
+##            \cdot <constituents>[j]$
+##  from '<reducibles>[i]'.
+##
+##  Let 'irrs' be the list of irreducible characters in 'rems'.
+##
+##  We reduce 'rems' with 'irrs' and all found irreducibles until no new
+##  irreducibles are found.
+##  Then 'irreducibles' is the set of all found irreducible characters,
+##  'remainders' is the set of all nonzero remainders.
+##
+##  The class functions in <constituents> and <reducibles> are assumed to
+##  be virtual characters.
+##
+#T why not to allow a projection into the orthogonal space of <constituents>?
+#T (<constituents> would have to be irreducibles then)
+##  
+ReducedClassFunctions := NewOperation( "ReducedClassFunctions",
+    [ IsOrdinaryTable, IsHomogeneousList, IsHomogeneousList ] );
+
+Reduced:= ReducedClassFunctions;
+#T compatibility with GAP-3
+
+
+#############################################################################
+##
+#O  ReducedCharacters( <ordtbl>, <constituents>, <reducibles> )
+##
+##  like 'Reduced', but <constituents> and <reducibles> are known to be
+##  proper characters of <ordtbl>, so only those scalar products must be
+##  formed where the degree of the constituent is not bigger than the
+##  degree of the reducibles character.
+##
+ReducedCharacters := NewOperation( "ReducedOrdinary",
+    [ IsOrdinaryTable, IsHomogeneousList, IsHomogeneousList ] );
+
+ReducedOrdinary:= ReducedCharacters;
+#T compatibility with GAP-3
+
+
+#############################################################################
+##
 ##  auxiliary operations
 ##
 
@@ -671,7 +722,7 @@ OrbitRepresentativesCharacters := NewOperationArgs(
 
 #############################################################################
 ##
-#E  classfun.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E  ctblfuns.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 
 

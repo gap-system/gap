@@ -80,6 +80,14 @@ InducedPcgsByGeneratorsWithImages := NewOperation(
     "InducedPcgsByGeneratorsWithImages",
     [ IsPcgs, IsCollection, IsCollection ] );
 
+#############################################################################
+##
+#O  CanonicalPcgsByGeneratorsWithImages( <pcgs>, <gens>, <imgs> )
+##
+CanonicalPcgsByGeneratorsWithImages := NewOperation(
+    "CanonicalPcgsByGeneratorsWithImages",
+    [ IsPcgs, IsCollection, IsCollection ] );
+
 
 #############################################################################
 ##

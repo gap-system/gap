@@ -11,17 +11,18 @@ Revision.grppcfp_gi :=
 ##
 PcGroupFpGroup := function( F )
     local gens, indices, powrels, comrels, conrels, rel, l, f, g, e, i, j, 
-          t, rws;
+          t, rws, H;
 
     # set up
-    gens    := GeneratorsOfGroup( F.group );
+    H       := FreeGroupOfFpGroup( F );
+    gens    := GeneratorsOfGroup( H );
     indices := List( gens, x -> true );
     powrels := [];
     comrels := [];
     conrels := [];
 
     # run through relators of F
-    for rel in F.relators do
+    for rel in RelatorsOfFpGroup( F ) do
         l := LengthWord( rel );
         f := Subword( rel, 1, 1 );
         g := Subword( rel, 2, 2 );
@@ -33,7 +34,7 @@ PcGroupFpGroup := function( F )
             if e+1 <= l then
                 t := Subword( rel, e+1, l )^-1;
             else
-                t := One( F.group );
+                t := One( H );
             fi;
             indices[i] := e;
             Add( powrels, [i, t] );
@@ -42,23 +43,22 @@ PcGroupFpGroup := function( F )
             i := Position( gens, g^-1 );
             if not IsBool( i ) and 5 <= l then
                 t := Subword( rel, 5, l )^-1;
-                if t <> One( F.group ) then
+                if t <> One( H ) then
                     Add( comrels, [j, i, t] );
                 fi;
             fi;
             if IsBool( i ) and 4 <= l then
                 i := Position( gens, g );
                 t := Subword( rel, 4, l )^-1;
-                if t <> One( F.group ) then
+                if t <> One( H ) then
                     Add( conrels, [i, j, t] );
                 fi;
-       
             fi;
         fi;
     od;
   
     # create the collector for the free group
-    rws := SingleCollector( F.group, indices );
+    rws := SingleCollector( H, indices );
 
     # add power relators
     for rel in powrels do
@@ -81,14 +81,14 @@ end;
 
 #############################################################################
 ##
-#F  FpGroupPcGroup( G )
+#F  IsomorphismFpGroupPcGroup( G, str )
 ##
-FpGroupPcGroup := function( G )
-    local pcgs, n, F, gens, rels, i, pis, exp, t, h, rel, comm, j;
+IsomorphismFpGroupPcGroup := function( G, str )
+    local pcgs, n, F, gens, rels, i, pis, exp, t, h, rel, comm, j, H;
 
     pcgs := Pcgs( G );
     n    := Length( pcgs );
-    F    := FreeGroup( n );
+    F    := FreeGroup( n, str );
     gens := GeneratorsOfGroup( F );
     pis  := RelativeOrders( pcgs );
     rels := [ ];
@@ -115,9 +115,33 @@ FpGroupPcGroup := function( G )
             Add( rels, rel );
         od;
     od;
-    return rec( group := F, relators := rels );
+    H := F / rels;
+    return GroupHomomorphismByImages( G, H, AsList( pcgs ),
+                                      GeneratorsOfGroup( H ) );
 end;
 
+#############################################################################
+##
+#O  IsomorphismFpGroup( G [,str] )
+##
+InstallMethod( IsomorphismFpGroup, 
+               "method for pc groups",
+               true,
+               [IsPcGroup],
+               0,
+function( G )
+    return IsomorphismFpGroupPcGroup( G, "f" );
+end );
+               
+InstallOtherMethod( IsomorphismFpGroup, 
+               "method for pc groups",
+               true,
+               [IsPcGroup, IsString],
+               0,
+function( G, str )
+    return IsomorphismFpGroupPcGroup( G, str );
+end );
+               
 #############################################################################
 ##
 #F  SmithNormalFormSQ( mat )

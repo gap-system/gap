@@ -279,17 +279,43 @@ InstallMethod( ImagesSet,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ], 0,
     function( map, elms )
-
-    if not IsTotal( map ) then
-      elms:= Intersection2( PreImagesRange( map ), elms );
+    local genimages;
+    genimages:= List( GeneratorsOfMagmaWithInverses( elms ),
+                      gen -> ImagesRepresentative( map, gen ) );
+    if fail in genimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureGroup( CoKernelOfMultiplicativeGeneralMapping( map ),
-                   SubgroupNC( Range( map ),
-                   List( GeneratorsOfMagmaWithInverses( elms ),
-                         gen -> ImagesRepresentative( map, gen ) ) ) );
-    UseSubsetRelation( Range( map ), elms );
-    return elms;
+    return SubgroupNC( Range( map ), Concatenation(
+               GeneratorsOfMagmaWithInverses( 
+                   CoKernelOfMultiplicativeGeneralMapping( map ) ),
+               genimages ) );
+    end );
+
+InstallMethod( ImagesSet,
+    "method for injective s.p. mapping respecting mult. & inv., and group",
+    CollFamSourceEqFamElms,
+    [ IsSPGeneralMapping and IsMapping and IsInjective and
+      RespectsMultiplication and RespectsInverses,
+      IsGroup ], 0,
+    function( map, elms )
+    local   img;
+
+    img := SubgroupNC( Range( map ),
+                    List( GeneratorsOfMagmaWithInverses( elms ),
+                          gen -> ImagesRepresentative( map, gen ) ) );
+    UseIsomorphismRelation( elms, img );
+    if     IsOperationHomomorphism( map )
+       and HasBase( map!.externalSet )
+       and not HasStabChain( img )  then
+        if not IsBound( map!.externalSet!.baseIntegers )  then
+            map!.externalSet!.baseIntegers := List( Base( map!.externalSet ),
+                b -> PositionCanonical( HomeEnumerator( map!.externalSet ),
+                                        b ) );
+        fi;
+        SetBase( img, map!.externalSet!.baseIntegers );
+    fi;
+    return img;
     end );
 
 
@@ -324,15 +350,33 @@ InstallMethod( PreImagesSet,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ], 0,
     function( map, elms )
-    if not IsSurjective( map ) then
-      elms:= Intersection2( ImagesSource( map ), elms );
+    local genpreimages;
+    genpreimages:= List( GeneratorsOfMagmaWithInverses( elms ),
+                      gen -> PreImagesRepresentative( map, gen ) );
+    if fail in genpreimages then
+      TryNextMethod();
     fi;
-    elms:= ClosureGroup( KernelOfMultiplicativeGeneralMapping( map ),
-                   SubgroupNC( Source( map ),
-                   List( GeneratorsOfMagmaWithInverses( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) ) ) );
-    UseSubsetRelation( Source( map ), elms );
-    return elms;
+
+    return SubgroupNC( Source( map ), Concatenation(
+               GeneratorsOfMagmaWithInverses( 
+                   KernelOfMultiplicativeGeneralMapping( map ) ),
+               genpreimages ) );
+    end );
+
+InstallMethod( PreImagesSet,
+    "method for injective s.p. mapping respecting mult. & inv., and group",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and IsMapping and IsInjective and
+      RespectsMultiplication and RespectsInverses,
+      IsGroup ], 0,
+    function( map, elms )
+    local   pre;
+
+    pre := SubgroupNC( Source( map ),
+                    List( GeneratorsOfMagmaWithInverses( elms ),
+                          gen -> PreImagesRepresentative( map, gen ) ) );
+    UseIsomorphismRelation( elms, pre );
+    return pre;
     end );
 
 
@@ -599,17 +643,17 @@ InstallMethod( ImagesSet,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
       IsAdditiveGroup ], 0,
     function( map, elms )
-
-    if not IsTotal( map ) then
-      elms:= Intersection2( PreImagesRange( map ), elms );
+    local genimages;
+    genimages:= List( GeneratorsOfAdditiveMagmaWithInverses( elms ),
+                      gen -> ImagesRepresentative( map, gen ) );
+    if fail in genimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureAdditiveGroup( CoKernelOfAdditiveGeneralMapping( map ),
-                   SubadditiveMagmaWithInversesNC( Range( map ),
-                   List( GeneratorsOfAdditiveMagmaWithInverses( elms ),
-                         gen -> ImagesRepresentative( map, gen ) ) ) );
-    UseSubsetRelation( Range( map ), elms );
-    return elms;
+    return SubadditiveMagmaWithInversesNC( Range( map ), Concatenation(
+               GeneratorsOfAdditiveMagmaWithInverses(
+                   CoKernelOfAdditiveGeneralMapping( map ) ),
+               genimages ) );
     end );
 
 
@@ -644,17 +688,17 @@ InstallMethod( PreImagesSet,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
       IsAdditiveGroup ], 0,
     function( map, elms )
-
-    if not IsSurjective( map ) then
-      elms:= Intersection2( ImagesSource( map ), elms );
+    local genpreimages;
+    genpreimages:= List( GeneratorsOfAdditiveMagmaWithInverses( elms ),
+                      gen -> PreImagesRepresentative( map, gen ) );
+    if fail in genpreimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureAdditiveGroup( KernelOfAdditiveGeneralMapping( map ),
-                   SubadditiveMagmaWithInversesNC( Source( map ),
-                   List( GeneratorsOfAdditiveMagmaWithInverses( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) ) ) );
-    UseSubsetRelation( Source( map ), elms );
-    return elms;
+    return SubadditiveMagmaWithInversesNC( Source( map ), Concatenation(
+               GeneratorsOfAdditiveMagmaWithInverses(
+                   KernelOfAdditiveGeneralMapping( map ) ),
+               genpreimages ) );
     end );
 
 
@@ -805,18 +849,17 @@ InstallMethod( ImagesSet,
           and RespectsScalarMultiplication,
       IsLeftModule ], 0,
     function( map, elms )
-
-    if not IsTotal( map ) then
-      elms:= Intersection2( elms, PreImagesRange( map ) );
+    local genimages;
+    genimages:= List( GeneratorsOfLeftModule( elms ),
+                      gen -> ImagesRepresentative( map, gen ) );
+    if fail in genimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureLeftModule( CoKernelOfAdditiveGeneralMapping( map ),
-                   LeftModuleByGenerators( LeftActingDomain( elms ),
-                       List( GeneratorsOfLeftModule( elms ),
-                             gen -> ImagesRepresentative( map, gen ) ),
-                       Zero( Range( map ) ) ) );
-    UseSubsetRelation( Range( map ), elms );
-    return elms;
+    return SubmoduleNC( Range( map ), Concatenation(
+               GeneratorsOfLeftModule(
+                   CoKernelOfAdditiveGeneralMapping( map ) ),
+               genimages ) );
     end );
 
 
@@ -831,18 +874,17 @@ InstallMethod( PreImagesSet,
           and RespectsScalarMultiplication,
       IsLeftModule ], 0,
     function( map, elms )
-
-    if not IsSurjective( map ) then
-      elms:= Intersection( elms, ImagesSource( map ) );
+    local genpreimages;
+    genpreimages:= List( GeneratorsOfLeftModule( elms ),
+                         gen -> PreImagesRepresentative( map, gen ) );
+    if fail in genpreimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureLeftModule( KernelOfAdditiveGeneralMapping( map ),
-                   LeftModuleByGenerators( LeftActingDomain( elms ),
-                       List( GeneratorsOfLeftModule( elms ),
-                             gen -> PreImagesRepresentative( map, gen ) ),
-                       Zero( Source( map ) ) ) );
-    UseSubsetRelation( Source( map ), elms );
-    return elms;
+    return SubmoduleNC( Source( map ), Concatenation(
+               GeneratorsOfLeftModule(
+                   KernelOfAdditiveGeneralMapping( map ) ),
+               genpreimages ) );
     end );
 
 
@@ -874,18 +916,17 @@ InstallMethod( ImagesSet,
           and RespectsScalarMultiplication and RespectsMultiplication,
       IsFLMLOR ], 0,
     function( map, elms )
-
-    if not IsTotal( map ) then
-      elms:= Intersection2( elms, PreImagesRange( map ) );
+    local genimages;
+    genimages:= List( GeneratorsOfLeftOperatorRing( elms ),
+                      gen -> ImagesRepresentative( map, gen ) );
+    if fail in genimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureLeftOperatorRing( CoKernelOfAdditiveGeneralMapping( map ),
-                   FLMLORByGenerators( LeftActingDomain( elms ),
-                       List( GeneratorsOfLeftOperatorRing( elms ),
-                             gen -> ImagesRepresentative( map, gen ) ),
-                       Zero( Range( map ) ) ) );
-    UseSubsetRelation( Range( map ), elms );
-    return elms;
+    return SubFLMLORNC( Range( map ), Concatenation(
+               GeneratorsOfLeftOperatorRing(
+                   CoKernelOfAdditiveGeneralMapping( map ) ),
+               genimages ) );
     end );
 
 
@@ -901,18 +942,17 @@ InstallMethod( ImagesSet,
           and RespectsOne,
       IsFLMLORWithOne ], 0,
     function( map, elms )
-
-    if not IsTotal( map ) then
-      elms:= Intersection2( elms, PreImagesRange( map ) );
+    local genimages;
+    genimages:= List( GeneratorsOfLeftOperatorRingWithOne( elms ),
+                      gen -> ImagesRepresentative( map, gen ) );
+    if fail in genimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureLeftOperatorRing( CoKernelOfAdditiveGeneralMapping( map ),
-                   FLMLORWithOneByGenerators( LeftActingDomain( elms ),
-                       List( GeneratorsOfLeftOperatorRingWithOne( elms ),
-                             gen -> ImagesRepresentative( map, gen ) ),
-                       Zero( Range( map ) ) ) );
-    UseSubsetRelation( Range( map ), elms );
-    return elms;
+    return SubFLMLORWithOneNC( Range( map ), Concatenation(
+               GeneratorsOfLeftOperatorRingWithOne(
+                   CoKernelOfAdditiveGeneralMapping( map ) ),
+               genimages ) );
     end );
 
 
@@ -927,18 +967,17 @@ InstallMethod( PreImagesSet,
           and RespectsScalarMultiplication and RespectsMultiplication,
       IsFLMLOR ], 0,
     function( map, elms )
-
-    if not IsSurjective( map ) then
-      elms:= Intersection( elms, ImagesSource( map ) );
+    local genpreimages;
+    genpreimages:= List( GeneratorsOfLeftOperatorRing( elms ),
+                         gen -> PreImagesRepresentative( map, gen ) );
+    if fail in genpreimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureLeftOperatorRing( KernelOfAdditiveGeneralMapping( map ),
-                   FLMLORByGenerators( LeftActingDomain( elms ),
-                       List( GeneratorsOfLeftOperatorRing( elms ),
-                             gen -> PreImagesRepresentative( map, gen ) ),
-                       Zero( Source( map ) ) ) );
-    UseSubsetRelation( Source( map ), elms );
-    return elms;
+    return SubFLMLORNC( Source( map ), Concatenation(
+               GeneratorsOfLeftOperatorRing(
+                   KernelOfAdditiveGeneralMapping( map ) ),
+               genpreimages ) );
     end );
 
 
@@ -954,18 +993,17 @@ InstallMethod( PreImagesSet,
           and RespectsOne,
       IsFLMLORWithOne ], 0,
     function( map, elms )
-
-    if not IsSurjective( map ) then
-      elms:= Intersection( elms, ImagesSource( map ) );
+    local genpreimages;
+    genpreimages:= List( GeneratorsOfLeftOperatorRingWithOne( elms ),
+                         gen -> PreImagesRepresentative( map, gen ) );
+    if fail in genpreimages then
+      TryNextMethod();
     fi;
 
-    elms:= ClosureLeftOperatorRing( KernelOfAdditiveGeneralMapping( map ),
-                   FLMLORWithOneByGenerators( LeftActingDomain( elms ),
-                       List( GeneratorsOfLeftOperatorRingWithOne( elms ),
-                             gen -> PreImagesRepresentative( map, gen ) ),
-                       Zero( Source( map ) ) ) );
-    UseSubsetRelation( Source( map ), elms );
-    return elms;
+    return SubFLMLORNC( Source( map ), Concatenation(
+               GeneratorsOfLeftOperatorRingWithOne(
+                   KernelOfAdditiveGeneralMapping( map ) ),
+               genpreimages ) );
     end );
 
 

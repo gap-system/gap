@@ -15,6 +15,36 @@ Revision.grpffmat_gi :=
 #############################################################################
 ##
 
+#R  IsGeneralLinearGroupWithFormRep . . . isometry group of non-singular form
+##
+IsGeneralLinearGroupWithFormRep := NewRepresentation
+    ( "IsGeneralLinearGroupWithFormRep", IsMatrixGroup, [ "form" ] );
+
+IsGeneralUnitaryGroupWithFormRep := NewRepresentation
+    ( "IsGeneralLinearGroupWithFormRep", IsMatrixGroup, [ "form" ] );
+
+#############################################################################
+##
+#M  <mat> in <G>  . . . . . . . . . . . . . . . . . . . .  is form invariant?
+##
+InstallMethod( \in, IsElmsColls,
+        [ IsMatrix, IsGeneralLinearGroupWithFormRep ], 0,
+    function( mat, G )
+    return mat * G!.form * TransposedMat( mat ) = G!.form;
+end );
+
+InstallMethod( \in, IsElmsColls,
+        [ IsMatrix, IsGeneralUnitaryGroupWithFormRep ], 0,
+    function( mat, G )
+    local   f;
+    
+    f := FrobeniusAutomorphism( FieldOfMatrixGroup( G ) );
+    return mat * G!.form * List( TransposedMat( mat ),
+                   row -> OnTuples( row, f ) ) = G!.form;
+end );
+
+#############################################################################
+##
 #M  FieldOfMatrixGroup( <ffe-mat-grp> )
 ##
 InstallMethod( FieldOfMatrixGroup,
@@ -40,6 +70,13 @@ function( grp )
     return GF(char^deg);
 end );
 
+#############################################################################
+##
+#M  One( <ffe-mat-grp> )
+##
+InstallOtherMethod( One, true, [ IsFFEMatrixGroup ], 0,
+    grp -> IdentityMat( DimensionOfMatrixGroup( grp ),
+                        DefaultFieldOfMatrixGroup( grp ) ) );
 
 #############################################################################
 ##
@@ -62,18 +99,23 @@ end );
 #M  NiceMonomorphism( <ffe-mat-grp> )
 ##
 NicomorphismOfFFEMatrixGroup := function( grp )
-    local   field,  dim,  xset,  nice;
-
-    # construct
-    field  := FieldOfMatrixGroup(grp);
-    dim    := DimensionOfMatrixGroup(grp);
-    xset   := ExternalSubset( grp, field^dim, One(grp) );
-    SetBase( xset, One(grp) );
-
-    nice := OperationHomomorphism(xset);
+    local   field,  dim,  V,  xset,  nice;
+    
+    Size( grp );
+    field := FieldOfMatrixGroup( grp );
+    dim   := DimensionOfMatrixGroup( grp );
+    V     := field ^ dim;
+    if    HasIsGeneralLinearGroup( grp )  and  IsGeneralLinearGroup( grp )
+       or IsGeneralLinearGroupWithFormRep( grp )
+       or IsGeneralUnitaryGroupWithFormRep( grp )  then
+        xset := ExternalSet( grp, V );
+    else
+        xset := ExternalSubset( grp, V, One( grp ) );
+    fi;
+    SetBase( xset, One( grp ) );
+    nice := OperationHomomorphism( xset );
     SetIsInjective( nice, true );
     return nice;
-
 end;
 
 InstallMethod( NiceMonomorphism,

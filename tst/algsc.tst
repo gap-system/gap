@@ -76,8 +76,7 @@ gap> Dimension( s );
 4
 
 gap> v:= Subspace( a, [ v, 0*v, v^0, w ] );
-Subspace( <algebra of dimension 4 over Rationals>, 
-[ v.2+v.4, 0*v.1, v.1, v.1+(2)*v.2+(3)*v.3+(4)*v.4 ] )
+VectorSpace( Rationals, [ v.2+v.4, 0*v.1, v.1, v.1+(2)*v.2+(3)*v.3+(4)*v.4 ] )
 gap> Dimension( v );
 3
 
@@ -167,8 +166,7 @@ gap> LieNormalizer( l1, ps );
 # use AsAlgebra etc.
 
 gap> KappaPerp( l1, ps );
-Subspace( <Lie algebra of dimension 10 over Rationals>, 
-[ v.1, v.2, v.7, v.8, v.9, v.10 ] )
+VectorSpace( Rationals, [ v.1, v.2, v.7, v.8, v.9, v.10 ] )
 
 gap> b:= Basis( l1 );
 CanonicalBasis( <Lie algebra of dimension 10 over Rationals> )
@@ -465,11 +463,10 @@ gap> LieNormalizer( l2, ps );
 <Lie algebra of dimension 10 over Rationals>
 
 gap> KappaPerp( l2, ps );
-Subspace( <Lie algebra of dimension 15 over Rationals>, 
-[ v.1, v.2+(1/2)*v.11+(-1/2)*v.12, v.3, v.4+(-1/2)*v.11+(3/2)*v.12, 
-  v.5+(2/3)*v.14+(-1/3)*v.15, v.6+(2)*v.14+(-1)*v.15, 
-  v.7+(-1/9)*v.14+(-1/9)*v.15, v.8+(-1/3)*v.14+(2/3)*v.15, v.9, v.10, 
-  v.13+(-8/3)*v.14+(4/3)*v.15 ] )
+VectorSpace( Rationals, [ v.1, v.2+(1/2)*v.11+(-1/2)*v.12, v.3, 
+  v.4+(-1/2)*v.11+(3/2)*v.12, v.5+(2/3)*v.14+(-1/3)*v.15, 
+  v.6+(2)*v.14+(-1)*v.15, v.7+(-1/9)*v.14+(-1/9)*v.15, 
+  v.8+(-1/3)*v.14+(2/3)*v.15, v.9, v.10, v.13+(-8/3)*v.14+(4/3)*v.15 ] )
 
 gap> b:= Basis( l2 );
 CanonicalBasis( <Lie algebra of dimension 15 over Rationals> )

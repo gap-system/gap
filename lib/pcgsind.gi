@@ -517,6 +517,66 @@ end );
 
 #############################################################################
 ##
+#M  CanonicalPcgsByGeneratorsWithImages( <pcgs>, <gens>, <imgs> )
+##
+InstallMethod( CanonicalPcgsByGeneratorsWithImages,
+    true,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsCollection,
+      IsCollection ],
+    0,
+
+function( pcgs, gens, imgs )
+    local new, ros, cgs, img, i, exp, j;
+
+    # get the induced one first
+    new := InducedPcgsByGeneratorsWithImages( pcgs, gens, imgs );
+
+    # normalize leading exponents
+    ros := RelativeOrders(new[1]);
+    cgs := [];
+    img := [];
+    for i  in [ 1 .. Length(new[1]) ]  do
+        exp := LeadingExponentOfPcElement( pcgs, new[1][i] );
+        cgs[i] := new[1][i] ^ (1/exp mod ros[i]);
+        img[i] := new[2][i] ^ (1/exp mod ros[i]);
+    od;
+
+    # make zeros above the diagonale
+    for i  in [ 1 .. Length(cgs)-1 ]  do
+        for j  in [ i+1 .. Length(cgs) ]  do
+            exp := ExponentOfPcElement( pcgs, cgs[i], DepthOfPcElement(
+                pcgs, cgs[j] ) );
+            if exp <> 0  then
+                cgs[i] := cgs[i] * cgs[j] ^ ( ros[j] - exp );
+                img[i] := img[i] * img[j] ^ ( ros[j] - exp );
+            fi;
+        od;
+    od;
+
+    # construct the cgs
+    cgs := InducedPcgsByPcSequenceNC( pcgs, cgs );
+    SetIsCanonicalPcgs( cgs, true );
+
+    # and return
+    return [cgs, img];
+end );
+
+InstallOtherMethod( CanonicalPcgsByGeneratorsWithImages,
+    true,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsList and IsEmpty,
+      IsList and IsEmpty ],
+    0,
+
+function( pcgs, gens, imgs )
+    local igs;
+    igs := InducedPcgsByPcSequenceNC( pcgs, gens );
+    return [igs, imgs];
+end );
+
+#############################################################################
+##
 #M  InducedPcgsByGeneratorsNC( <pcgs>, <gen> )
 ##
 

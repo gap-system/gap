@@ -213,7 +213,7 @@ VectorSpace( GF(3), [ [ Z(3), Z(3) ], [ 0*Z(3), 0*Z(3) ], [ Z(3), 0*Z(3) ] ] )
 gap> PreImagesRange( map6 );
 GF(3^3)
 gap> CoKernelOfAdditiveGeneralMapping( map6 );
-Subspace( ( GF(3)^2 ), [  ] )
+VectorSpace( GF(3), [  ] )
 gap> KernelOfAdditiveGeneralMapping( map6 );
 VectorSpace( GF(3), [ 0*Z(3), Z(3^3), Z(3^3)^14 ] )
 gap> IsSingleValued( map6 );
@@ -354,9 +354,9 @@ gap> ImagesSource( nathom );
 gap> PreImagesRange( nathom );
 ( GF(3)^2 )
 gap> CoKernelOfAdditiveGeneralMapping( nathom );
-Subspace( ( GF(3)^1 ), [  ] )
+VectorSpace( GF(3), [  ] )
 gap> KernelOfAdditiveGeneralMapping( nathom );
-Subspace( ( GF(3)^2 ), [ [ Z(3), Z(3) ] ] )
+VectorSpace( GF(3), [ [ Z(3), Z(3) ] ] )
 gap> IsInjective( nathom );
 false
 gap> IsSingleValued( nathom );
@@ -395,8 +395,7 @@ true
 gap> map6 in hom;
 true
 gap> sub:= Subspace( hom, [ map6 ] );
-Subspace( Hom( GF(3), GF(3^3), ( GF(3)^2 ) ), 
-[ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ] )
+VectorSpace( GF(3), [ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ] )
 gap> BasisVectors( BasisOfDomain( sub ) );
 [ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ]
 

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file initializes GAP.
 ##
@@ -286,6 +286,12 @@ HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
 
 ReadOrComplete( "lib/read5.g" );
 ReadOrComplete( "lib/read6.g" );
+
+# character theory stuff
+ReadOrComplete( "lib/read7.g" );
+
+# overloaded operations
+ReadOrComplete( "lib/read8.g" );
 
 
 #############################################################################

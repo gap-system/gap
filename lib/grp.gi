@@ -944,7 +944,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
         Add( S, C );
         Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
         hom := NaturalHomomorphismByNormalSubgroup( G, C );
-        C := PreImage( hom, Centre( Image( hom ) ) );
+        C := PreImages( hom, Centre( Image( hom ) ) );
     od;
 
     # return the series when it becomes stable

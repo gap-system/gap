@@ -143,8 +143,7 @@ local i,pcgs;
     # 'moduleMap' is constructed using 'Exponents'.
     ocr.moduleMap := x -> ExponentsOfPcElement(ocr.modulePcgs,x)
                           * ocr.one;
-    ocr.matrices := LinearOperationLayer(
-    	    	        Subgroup( ocr.group, ocr.generators), ocr.modulePcgs);
+    ocr.matrices := LinearOperationLayer(ocr.generators, ocr.modulePcgs);
     ocr.identityMatrix := IdentityMat( Length( ocr.modulePcgs ), ocr.field );
     List( ocr.matrices, IsMatrix );
     IsMatrix( ocr.identityMatrix );
@@ -152,8 +151,7 @@ local i,pcgs;
     # Do the same for the operations of 'normalIn' if present.
     if IsBound( ocr.normalIn )  then
         if not IsBound( ocr.normalMatrices )  then
-            ocr.normalMatrices := LinearOperationLayer(
-                Subgroup( ocr.normalIn,ocr.normalGenerators),
+            ocr.normalMatrices := LinearOperationLayer(ocr.normalGenerators,
                 ocr.modulePcgs);
     	    List( ocr.normalMatrices, IsMatrix );
         fi;

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  chartabl.gi                 GAP library                     Thomas Breuer
+#W  ctbl.gi                     GAP library                     Thomas Breuer
 #W                                                           & Goetz Pfeiffer
 ##
 #H  @(#)$Id$
@@ -12,7 +12,7 @@
 ##  1. methods for operations that take a group or a table as argument
 ##  2. method for character tables only
 ##
-Revision.chartabl_gi :=
+Revision.ctbl_gi :=
     "@(#)$Id$";
 
 
@@ -76,13 +76,19 @@ InstallOtherMethod( CharacterDegrees,
 
 #############################################################################
 ##
+#M  CharacterDegrees( <G> ) . . . . . for group handled via nice monomorphism
+##
+AttributeMethodByNiceMonomorphism( CharacterDegrees,
+    [ IsGroup ] );
+
+
+#############################################################################
+##
 #M  CharacterTable( <G>, <p> )  . . . . . characteristic <p> table of a group
 #M  CharacterTable( <ordtbl>, <p> )
 #M  CharacterTable( <G> ) . . . . . . . . . . ordinary char. table of a group
-#M  CharacterTable( <name> )  . . . . . . . . . library table with given name
 ##
-##  We delegate to 'OrdinaryCharacterTable', 'BrauerCharacterTable',
-##  or 'CharTableLibrary'.
+##  We delegate to 'OrdinaryCharacterTable' or 'BrauerCharacterTable'.
 ##
 InstallMethod( CharacterTable,
     "method for a group and a prime",
@@ -107,12 +113,6 @@ InstallOtherMethod( CharacterTable,
     true,
     [ IsGroup ], 0,
     OrdinaryCharacterTable );
-
-InstallOtherMethod( CharacterTable,
-    "method for a string",
-    true,
-    [ IsString ], 0,
-    CharTableLibrary );
 
 
 #############################################################################
@@ -1474,19 +1474,33 @@ InstallOtherMethod( \/,
 ##
 #F  CharacterTableQuaternionic( <4n> )
 ##
+CharacterTableQuaternionic := function( 4n )
 
-#T missing!
+    local quaternionic;
+
+    if 4n mod 4 <> 0 then
+      Error( "argument must be a multiple of 4" );
+    elif 4n = 4 then
+      quaternionic:= CharacterTable( "Cyclic", 4 );
+    else
+      quaternionic:= CharacterTableIsoclinic(
+                         CharacterTable( "Dihedral", 4n ),
+                         [ 1 .. 4n / 4 + 1 ] );
+    fi;
+    SetIdentifier( quaternionic, Concatenation( "Q", String( 4n ) ) );
+    return quaternionic;
+end;
 
 
 #############################################################################
 ##
-#M  CharacterTableRegular( <tbl>, <p> ) .  table consist. of <p>-reg. classes
+#M  CharacterTableRegular( <ordtbl>, <p> )  . restriction to <p>-reg. classes
 ##
 InstallMethod( CharacterTableRegular,
     "method for an ordinary character table, and a positive integer",
     true,
     [ IsNearlyCharacterTable, IsInt and IsPosRat ], 0,
-    function( tbl, prime )
+    function( ordtbl, prime )
 
     local fusion,
           inverse,
@@ -1497,13 +1511,13 @@ InstallMethod( CharacterTableRegular,
 
     if not IsPrimeInt( prime ) then
       Error( "<prime> must be a prime" );
-    elif IsBrauerTable( tbl ) then
-      Error( "<tbl> is already a Brauer table" );
+    elif IsBrauerTable( ordtbl ) then
+      Error( "<ordtbl> is already a Brauer table" );
     fi;
 
     fusion:= [];
     inverse:= [];
-    orders:= OrdersClassRepresentatives( tbl );
+    orders:= OrdersClassRepresentatives( ordtbl );
     for i in [ 1 .. Length( orders ) ] do
       if orders[i] mod prime <> 0 then
         Add( fusion, i );
@@ -1512,17 +1526,17 @@ InstallMethod( CharacterTableRegular,
     od;
 
     regular:= rec(
-       identifier                 := Concatenation( "Regular(",
-                              Identifier( tbl ), ",", String( prime ), ")" ),
+       identifier                 := Concatenation( Identifier( ordtbl ),
+                                         "mod", String( prime ) ),
        underlyingCharacteristic   := prime,
-       size                       := Size( tbl ),
+       size                       := Size( ordtbl ),
        ordersClassRepresentatives := orders{ fusion },
-       sizesCentralizers          := SizesCentralizers( tbl ){ fusion },
+       sizesCentralizers          := SizesCentralizers( ordtbl ){ fusion },
        computedPowerMaps          := [],
-       ordinaryCharacterTable     := tbl
+       ordinaryCharacterTable     := ordtbl
       );
 
-    power:= ComputedPowerMaps( tbl );
+    power:= ComputedPowerMaps( ordtbl );
     for i in [ 1 .. Length( power ) ] do
       if IsBound( power[i] ) then
         regular.computedPowerMaps[i]:= inverse{ power[i]{ fusion } };
@@ -1530,7 +1544,7 @@ InstallMethod( CharacterTableRegular,
     od;
     
     regular:= ConvertToBrauerTableNC( regular );
-    StoreFusion( regular, tbl, rec( map:= fusion, type:= "choice" ) );
+    StoreFusion( regular, ordtbl, rec( map:= fusion, type:= "choice" ) );
 
     return regular;
     end );
@@ -1571,11 +1585,9 @@ InstallMethod( PrintObj,
     [ IsOrdinaryTable ], 0,
     function( tbl )
     if HasUnderlyingGroup( tbl ) then
-      Print( "<ordinary character table of group ",
-             UnderlyingGroup( tbl ), ">" );
+      Print( "CharacterTable( ", UnderlyingGroup( tbl ), " )" );
     else
-      Print( "<ordinary character table called \"",
-             Identifier( tbl ), "\">" );
+      Print( "CharacterTable( \"", Identifier( tbl ), "\" )" );
     fi;
     end );
 
@@ -1584,12 +1596,11 @@ InstallMethod( PrintObj,
     [ IsBrauerTable ], 0,
     function( tbl )
     if HasUnderlyingGroup( tbl ) then
-      Print( "<Brauer character table of group ",
-             UnderlyingGroup( tbl ), ", p = ",
-             UnderlyingCharacteristic( tbl ), ">" );
+      Print( "BrauerTable( ", UnderlyingGroup( tbl ), ", ",
+             UnderlyingCharacteristic( tbl ), " )" );
     else
-      Print( "<Brauer character table called \"",
-             Identifier( tbl ), "\">" );
+      Print( "BrauerTable( \"", Identifier( OrdinaryCharacterTable( tbl ) ),
+             "\", ", UnderlyingCharacteristic( tbl ), " )" );
     fi;
     end );
 
@@ -1972,7 +1983,7 @@ StoreFusion := function( source, fusion, destination )
 
     # The fusion is new, simply add it.
     Add( ComputedClassFusions( source ), fusion );
-    AddSet( NamesOfFusionSources( destination ), Identifier( source ) );
+    Add( NamesOfFusionSources( destination ), Identifier( source ) );
 end;
 
 
@@ -2476,9 +2487,9 @@ InstallOtherMethod( Display,
           od;
 
           for prime in primes do
-             Print( String( prime, prin[1] ) );
+             Print( FormattedString( prime, prin[1] ) );
              for j in [1..acol] do
-               Print( String( cen[prime][col+j-1], prin[col+j] ) );
+               Print( FormattedString( cen[prime][col+j-1], prin[col+j] ) );
              od;
              Print("\n");
           od;
@@ -2486,22 +2497,23 @@ InstallOtherMethod( Display,
        fi;
 
        # class names
-       Print( String( "", prin[1] ) );
+       Print( FormattedString( "", prin[1] ) );
        for i in [ 1 .. acol ] do
-         Print( String( nam[classes[col+i-1]], prin[col+i] ) );
+         Print( FormattedString( nam[classes[col+i-1]], prin[col+i] ) );
        od;
        Print("\n");
 
        # power maps
        if powermap <> [] then
           for i in powermap do
-             Print( String( Concatenation( String(i), "P" ), prin[1] ) );
+             Print( FormattedString( Concatenation( String(i), "P" ),
+                                     prin[1] ) );
              for j in [1..acol] do
                 q:= tbl_powermap[i][classes[col+j-1]];
                 if IsInt(q) then
-                   Print( String( nam[q], prin[col+j] ) );
+                   Print( FormattedString( nam[q], prin[col+j] ) );
                 else
-                   Print( String( "?", prin[col+j] ) );
+                   Print( FormattedString( "?", prin[col+j] ) );
                 fi;
              od;
              Print("\n");
@@ -2511,9 +2523,9 @@ InstallOtherMethod( Display,
        # empty column resp. indicators
        if indicator <> [] then
           prin[1]:= prin[1] - iw[1];
-          Print( String( "", prin[1] ) );
+          Print( FormattedString( "", prin[1] ) );
           for i in indicator do
-             Print( String( i, iw[i] ) );
+             Print( FormattedString( i, iw[i] ) );
           od;
        fi;
        Print("\n");
@@ -2522,35 +2534,37 @@ InstallOtherMethod( Display,
        for i in [1..Length(chars)] do
 
           # character name
-          Print( String( charnames[i], -prin[1] ) );
+          Print( FormattedString( charnames[i], -prin[1] ) );
 
           # indicators
           for j in indicator do
              if IsBound(indic[j][cnr[i]]) then
                 if j = 2 then
                    if indic[j][cnr[i]] = 0 then
-                      Print( String( "o", iw[j] ) );
+                      Print( FormattedString( "o", iw[j] ) );
                    elif indic[j][cnr[i]] = 1 then
-                      Print( String( "+", iw[j] ) );
+                      Print( FormattedString( "+", iw[j] ) );
                    elif indic[j][cnr[i]] = -1 then
-                      Print( String( "-", iw[j] ) );
+                      Print( FormattedString( "-", iw[j] ) );
                    fi;
                 else
                    if indic[j][cnr[i]] = 0 then
-                      Print( String( "0", iw[j] ) );
+                      Print( FormattedString( "0", iw[j] ) );
                    else
-                      Print( String( stringEntry(indic[j][cnr[i]]), iw[j]) );
+                      Print( FormattedString( stringEntry(indic[j][cnr[i]]),
+                                              iw[j]) );
                    fi;
                 fi;
              else
-                Print( String( "", iw[j] ) );
+                Print( FormattedString( "", iw[j] ) );
              fi;
           od;
           if indicator <> [] then
             Print(" ");
           fi;
           for j in [ 1 .. acol ] do
-            Print( String( charvals[i][ classes[col+j-1] ], prin[ col+j ] ) );
+            Print( FormattedString( charvals[i][ classes[col+j-1] ],
+                                    prin[ col+j ] ) );
           od;
           Print("\n");
        od;
@@ -2601,7 +2615,7 @@ ConvertToCharacterTableNC := function( record )
       # Enter the properties and attributes.
       for i in [ 1, 3 .. Length( SupportedOrdinaryTableInfo ) - 1 ] do
         if SupportedOrdinaryTableInfo[ i+1 ] in names then
-          SupportedOrdinaryTableInfo[i]( record,
+          Setter( SupportedOrdinaryTableInfo[i] )( record,
               record!.( SupportedOrdinaryTableInfo[ i+1 ] ) );
         fi;
       od;
@@ -2643,7 +2657,7 @@ ConvertToBrauerTableNC := function( record )
     # Enter the properties and attributes.
     for i in [ 1, 3 .. Length( SupportedBrauerTableInfo ) - 1 ] do
       if SupportedBrauerTableInfo[ i+1 ] in names then
-        SupportedBrauerTableInfo[i]( record,
+        Setter( SupportedBrauerTableInfo[i] )( record,
             record!.( SupportedBrauerTableInfo[ i+1 ] ) );
       fi;
     od;
@@ -3410,7 +3424,32 @@ end;
 
 #############################################################################
 ##
-#E  chartabl.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#F  LowercaseString( <string> ) . . . string consisting of lower case letters
+##
+#T should be meved eventually to 'string.g?'
+LowercaseString := function( str )
+
+    local alp, ALP, result, i, pos;
+
+    alp:= "abcdefghijklmnopqrstuvwxyz";
+    ALP:= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    result:= "";
+    for i in str do
+      pos:= Position( ALP, i );
+      if pos = fail then
+        Add( result, i );
+      else
+        Add( result, alp[ pos ] );
+      fi;
+    od;
+    ConvertToStringRep( result );
+    return result;
+end;
+
+
+#############################################################################
+##
+#E  ctbl.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 
 

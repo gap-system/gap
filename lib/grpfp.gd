@@ -109,6 +109,18 @@ CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
 ##
 CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
 
+############################################################################
+##
+#F RelatorsOfFpGroup 
+##
+RelatorsOfFpGroup := NewOperationArgs( "RelatorsOfFpGroup" );
+
+############################################################################
+##
+#F FreeGroupOfFpGroup 
+##
+FreeGroupOfFpGroup := NewOperationArgs( "FreeGroupOfFpGroup" );
+
 
 #############################################################################
 ##

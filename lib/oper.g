@@ -36,7 +36,7 @@ STRING_INT := function ( n )
     if n < 0  then
         ADD_LIST( str, '-' );
     fi;
-    return str{[LEN_LIST(str),LEN_LIST(str)-1 .. 1]};
+    return IMMUTABLE_COPY_OBJ( str{[LEN_LIST(str),LEN_LIST(str)-1 .. 1]} );
 end;
 
 

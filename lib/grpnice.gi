@@ -72,7 +72,7 @@ InstallMethod( NiceObject,
     0,
 
 function( G )
-    return Image( NiceMonomorphism(G), G );
+    return ImagesSet( NiceMonomorphism(G), G );
 end );
 
 
@@ -581,7 +581,7 @@ local mon,cl,clg,c,i;
    for i in cl do
      c:=ConjugacyClass(g,PreImagesRepresentative(mon,Representative(i)));
      if HasStabilizerOfExternalSet(i) then
-       SetStabilizerOfExternalSet(c,PreImage(mon,StabilizerOfExternalSet(i)));
+       SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
      fi;
      Add(clg,c);
    od;
@@ -598,7 +598,7 @@ InstallMethod(RightTransversal,"via niceomorphism",true,
 function(g,u)
 local mon,rt;
    mon:=NiceMonomorphism(g);
-   rt:=RightTransversal(Image(mon,g),Image(mon,u));
+   rt:=RightTransversal(ImagesSet(mon,g),ImagesSet(mon,u));
    rt:=List(rt,i->PreImagesRepresentative(mon,i));
    return rt;
 end);
